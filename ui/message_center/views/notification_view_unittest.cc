@@ -30,6 +30,7 @@
 #include "ui/views/animation/test/ink_drop_impl_test_api.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/radio_button.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
@@ -787,6 +788,41 @@ TEST_F(NotificationViewTest, TestAccentColorTextFlagAffectsActionButtons) {
         notification_view()->GetActionButtonColorForTesting(action_button),
         data.accent_color);
   }
+}
+
+TEST_F(NotificationViewTest, UpdateFiresAccessibilityEvents) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+
+  // Setting the title does not result in a text-changed accessibility event
+  // being fired on the notification view.
+  notification->set_title(u"first title");
+  EXPECT_EQ(
+      0, counter.GetCount(ax::mojom::Event::kTextChanged, notification_view()));
+
+  // Updating the view after changing the title should cause one text-changed
+  // event to be fired on the notification view.
+  UpdateNotificationViews(*notification);
+  EXPECT_EQ(
+      1, counter.GetCount(ax::mojom::Event::kTextChanged, notification_view()));
+
+  counter.ResetAllCounts();
+
+  // If we update the view and the title hasn't actually changed, there should
+  // not be a text-changed event fired on the notification view.
+  notification->set_title(u"first title");
+  UpdateNotificationViews(*notification);
+  EXPECT_EQ(
+      0, counter.GetCount(ax::mojom::Event::kTextChanged, notification_view()));
+
+  counter.ResetAllCounts();
+
+  // Because the title has been changed again, updating the view should cause
+  // one text-changed event to be fired on the notification view.
+  notification->set_title(u"second title");
+  UpdateNotificationViews(*notification);
+  EXPECT_EQ(
+      1, counter.GetCount(ax::mojom::Event::kTextChanged, notification_view()));
 }
 
 }  // namespace message_center

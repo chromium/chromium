@@ -41,6 +41,8 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
                            EnterpriseManagedVisibleForActiveDirectory);
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest,
                            EnterpriseUserManagedVisible);
+  FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewTest,
+                           UpdateFiresAccessibilityEvents);
   FRIEND_TEST_ALL_PREFIXES(UnifiedSystemInfoViewNoSessionTest, ChildVisible);
 
   // Raw pointer to the combo view (owned by `UnifiedSystemInfoView`) that
@@ -51,6 +53,11 @@ class ASH_EXPORT UnifiedSystemInfoView : public views::View {
   // `UnifiedSystemInfoView`) that facilitates introspection needed for unit
   // tests.
   ChannelIndicatorQuickSettingsView* channel_view_ = nullptr;
+
+  // Introspection methods needed for unit tests.
+  views::View* GetDateViewForTesting();
+  views::View* GetDateViewLabelForTesting();
+  void UpdateDateViewForTesting();
 };
 
 }  // namespace ash

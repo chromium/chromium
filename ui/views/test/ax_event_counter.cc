@@ -21,6 +21,8 @@ void AXEventCounter::OnViewEvent(views::View* view,
                                  ax::mojom::Event event_type) {
   ++event_counts_[event_type];
 
+  ++event_counts_for_view_[std::make_pair(event_type, view)];
+
   // TODO(accessibility): There are a non-trivial number of events, mostly
   // kChildrenChanged, being fired during the creation process. When this
   // occurs calling GetAccessibleNodeData() on the related View can lead
@@ -48,9 +50,14 @@ int AXEventCounter::GetCount(ax::mojom::Event event_type,
   return event_counts_for_role_[std::make_pair(event_type, role)];
 }
 
+int AXEventCounter::GetCount(ax::mojom::Event event_type, views::View* view) {
+  return event_counts_for_view_[std::make_pair(event_type, view)];
+}
+
 void AXEventCounter::ResetAllCounts() {
   event_counts_.clear();
   event_counts_for_role_.clear();
+  event_counts_for_view_.clear();
 }
 
 void AXEventCounter::WaitForEvent(ax::mojom::Event event_type) {

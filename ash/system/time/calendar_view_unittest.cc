@@ -42,6 +42,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -801,6 +802,26 @@ TEST_F(CalendarViewTest, FocusReturnsToTodaysDate) {
 
   // After EventListView is closed, todays DateCellView should be focused.
   EXPECT_EQ(todays_date_cell_view, focus_manager->GetFocusedView());
+}
+
+TEST_F(CalendarViewTest, OpenListAndCloseListFireAccessibilityEvents) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  CreateCalendarView();
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  const auto* todays_date_cell_view = focus_manager->GetFocusedView();
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, scroll_view()));
+
+  // Clicking on the date cell will open the event list. There should be one
+  // text-changed accessibility event fired on the scroll view.
+  ClickDateCell(static_cast<const views::LabelButton*>(todays_date_cell_view));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, scroll_view()));
+
+  counter.ResetAllCounts();
+
+  // Pressing enter will close the event list. There should be one text-changed
+  // accessibility event fired on the scroll view.
+  PressEnter();
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, scroll_view()));
 }
 
 // Tests `RequestFocusForEventListCloseButton()`.

@@ -83,6 +83,8 @@ class DateView : public views::Button, public ClockObserver {
   void OnThemeChanged() override;
 
  private:
+  friend class ash::UnifiedSystemInfoView;
+
   // Callback called when this is pressed.
   void OnButtonPressed(const ui::Event& event);
 
@@ -194,7 +196,7 @@ class ManagementPowerDateComboView : public views::View {
         kUnifiedSystemInfoSpacing));
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    AddChildView(std::make_unique<DateView>(controller));
+    date_view_ = AddChildView(std::make_unique<DateView>(controller));
 
     if (PowerStatus::Get()->IsBatteryPresent()) {
       separator_view_ = AddChildView(std::make_unique<views::Separator>());
@@ -225,6 +227,8 @@ class ManagementPowerDateComboView : public views::View {
   }
 
  private:
+  friend class UnifiedSystemInfoView;
+
   // Pointer to the actual child view is maintained for unit testing, owned by
   // `ManagementPowerDateComboView`.
   EnterpriseManagedView* enterprise_managed_view_ = nullptr;
@@ -236,6 +240,10 @@ class ManagementPowerDateComboView : public views::View {
   // Separator between date and battery views, owned by
   // `ManagementPowerDateComboView`.
   views::Separator* separator_view_ = nullptr;
+
+  // Pointer to the actual child view is maintained for unit testing, owned by
+  // `ManagementPowerDateComboView`.
+  DateView* date_view_ = nullptr;
 };
 
 UnifiedSystemInfoView::UnifiedSystemInfoView(
@@ -283,6 +291,20 @@ void UnifiedSystemInfoView::ChildPreferredSizeChanged(views::View* child) {
 
 bool UnifiedSystemInfoView::IsSupervisedVisibleForTesting() {
   return combo_view_->IsSupervisedVisibleForTesting();  // IN-TEST
+}
+
+views::View* UnifiedSystemInfoView::GetDateViewForTesting() {
+  return combo_view_->date_view_;
+}
+
+views::View* UnifiedSystemInfoView::GetDateViewLabelForTesting() {
+  DCHECK(combo_view_->date_view_);
+  return combo_view_->date_view_->label_;
+}
+
+void UnifiedSystemInfoView::UpdateDateViewForTesting() {
+  DCHECK(combo_view_->date_view_);
+  combo_view_->date_view_->Update();
 }
 
 BEGIN_METADATA(UnifiedSystemInfoView, views::View)
