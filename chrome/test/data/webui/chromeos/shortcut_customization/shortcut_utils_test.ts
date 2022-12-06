@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Accelerator, Modifier, MojoAccelerator} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {areAcceleratorsEqual, getAcceleratorId, isCustomizationDisabled} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

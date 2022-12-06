@@ -4,7 +4,7 @@
 
 import {Destination, DestinationOrigin, DuplexType, Margins, MarginsType, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
 // <if expr="is_chromeos">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

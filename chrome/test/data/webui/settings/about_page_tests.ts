@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, MinimumRoutes, Route, Router, SettingsAboutPageElement} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';

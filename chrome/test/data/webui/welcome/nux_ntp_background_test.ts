@@ -4,7 +4,7 @@
 
 import 'chrome://welcome/ntp_background/nux_ntp_background.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {NtpBackgroundMetricsProxyImpl} from 'chrome://welcome/ntp_background/ntp_background_metrics_proxy.js';
 import {NtpBackgroundData, NtpBackgroundProxyImpl} from 'chrome://welcome/ntp_background/ntp_background_proxy.js';

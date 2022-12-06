@@ -6,7 +6,7 @@ import 'chrome://new-tab-page/lazy_load.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {DiscountConsentCard} from 'chrome://new-tab-page/lazy_load.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

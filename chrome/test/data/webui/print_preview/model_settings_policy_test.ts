@@ -5,7 +5,7 @@
 import {ColorModeRestriction, Destination, DestinationOrigin, DuplexModeRestriction, Margins, PrintPreviewModelElement, Size} from 'chrome://print/print_preview.js';
 // <if expr="is_chromeos">
 import {PinModeRestriction} from 'chrome://print/print_preview.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';

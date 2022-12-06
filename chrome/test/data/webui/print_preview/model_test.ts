@@ -7,7 +7,7 @@ import {Destination, DestinationOrigin, DuplexMode, makeRecentDestination, Margi
 import {GooglePromotedDestinationId} from 'chrome://print/print_preview.js';
 // </if>
 // <if expr="is_chromeos">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

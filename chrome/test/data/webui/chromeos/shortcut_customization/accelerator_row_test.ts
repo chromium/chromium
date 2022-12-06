@@ -5,7 +5,7 @@
 import 'chrome://shortcut-customization/js/accelerator_row.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';

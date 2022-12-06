@@ -10,7 +10,7 @@ import {$$, BrowserCommandProxy, CrAutoImgElement, NewTabPageProxy} from 'chrome
 import {PageCallbackRouter, PageHandlerRemote, PageRemote, Promo} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

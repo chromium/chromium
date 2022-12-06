@@ -4,7 +4,7 @@
 
 // clang-format off
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsPaymentsSectionElement, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';

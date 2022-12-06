@@ -7,7 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AppearanceBrowserProxy, AppearanceBrowserProxyImpl,HomeUrlInputElement, SettingsAppearancePageElement, SystemTheme} from 'chrome://settings/settings.js';
 import {assertEquals,assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // clang-format on
 
 class TestAppearanceBrowserProxy extends TestBrowserProxy implements

@@ -4,7 +4,7 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
