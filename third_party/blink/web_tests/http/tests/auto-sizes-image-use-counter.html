@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src=resources/common.js></script>
-<script src=../resources/testharness.js></script>
-<script src=../resources/testharnessreport.js></script>
+<title>The auto-sizes use-counters work properly</title>
+<script src="resources/common.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
 </head>
 <body>
 <script>
   // The UseCounter ID.
   const kViewportDependentLazyLoadedImageWithSizesAttribute = 4351;
   const kViewportDependentLazyLoadedImageWithoutSizesAttribute = 4381;
-
 
   const clearUseCounter = () => {
     internals.clearUseCounter(document, kViewportDependentLazyLoadedImageWithSizesAttribute);
@@ -72,28 +72,33 @@
     assert_equals(internals.isUseCounted(document,
                  kViewportDependentLazyLoadedImageWithSizesAttribute),
                  lazy && sizes,
-                 'ViewportDependentLazyLoadedImageWithSizesAttribute is not set'
-                 + ' for non-matching image. '
-                 + `|lazy| is ${lazy} and |sizes| is ${sizes}.`);
+                 'ViewportDependentLazyLoadedImageWithSizesAttribute'
+                 + ' is not set for non-matching image.');
     assert_equals(internals.isUseCounted(document,
                  kViewportDependentLazyLoadedImageWithoutSizesAttribute),
                  lazy && !sizes,
-                 'ViewportDependentLazyLoadedImageWithoutSizesAttribute is not'
-                 + ' set for non-matching image. '
-                 + `|lazy| is ${lazy} and |sizes| is ${sizes}.`);
+                 'ViewportDependentLazyLoadedImageWithoutSizesAttribute'
+                 + ' is not set for non-matching image.');
   }
 
-  test(t => {
-    test_image(/*lazy=*/false, /*sizes=*/false);
-    test_image(/*lazy=*/false, /*sizes=*/true);
-    test_image(/*lazy=*/true, /*sizes=*/false);
-    test_image(/*lazy=*/true, /*sizes=*/true);
-    test_picture(/*lazy=*/false, /*sizes=*/false);
-    test_picture(/*lazy=*/false, /*sizes=*/true);
-    test_picture(/*lazy=*/true, /*sizes=*/false);
-    test_picture(/*lazy=*/true, /*sizes=*/true);
-  }, 'The auto-sizes use-counters work properly');
+  const combinations = [
+    [/*lazy=*/false, /*sizes=*/false],
+    [/*lazy=*/false, /*sizes=*/true],
+    [/*lazy=*/true, /*sizes=*/false],
+    [/*lazy=*/true, /*sizes=*/true],
+  ];
 
+  for (let [lazy, sizes] of combinations) {
+    promise_test(t => {
+      return test_image(lazy, sizes);
+    }, `${document.title}, img, |lazy| is ${lazy} and |sizes| is ${sizes}.`);
+  }
+
+  for (let [lazy, sizes] of combinations) {
+    promise_test(t => {
+      return test_picture(lazy, sizes);
+    }, `${document.title}, picture, |lazy| is ${lazy} and |sizes| is ${sizes}.`);
+  }
 </script>
 </body>
 </html>
