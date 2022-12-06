@@ -99,7 +99,8 @@ void MessageStreamLookupImpl::DevicePairedChanged(
 
   QP_LOG(VERBOSE) << __func__
                   << ": Attempting to create MessageStream for device = ["
-                  << device->GetAddress() << "]";
+                  << device->GetAddress() << "] "
+                  << device->GetNameForDisplay();
   AttemptCreateMessageStream(
       device, CreateMessageStreamAttemptType::kDevicePairedChanged);
 }
@@ -122,7 +123,8 @@ void MessageStreamLookupImpl::DeviceConnectedStateChanged(
 
   QP_LOG(VERBOSE) << __func__
                   << ": Attempting to create MessageStream for device = ["
-                  << device->GetAddress() << "]";
+                  << device->GetAddress() << "] "
+                  << device->GetNameForDisplay();
   AttemptCreateMessageStream(
       device, CreateMessageStreamAttemptType::kDeviceConnectedStateChanged);
 }
@@ -141,7 +143,8 @@ void MessageStreamLookupImpl::DeviceChanged(device::BluetoothAdapter* adapter,
   QP_LOG(VERBOSE) << __func__
                   << ": found connected device. Attempting to create "
                      "MessageStream for device = ["
-                  << device->GetAddress() << "]";
+                  << device->GetAddress() << "] "
+                  << device->GetNameForDisplay();
   AttemptCreateMessageStream(device,
                              CreateMessageStreamAttemptType::kDeviceChanged);
 }
@@ -160,7 +163,8 @@ void MessageStreamLookupImpl::DeviceAdded(device::BluetoothAdapter* adapter,
   QP_LOG(VERBOSE) << __func__
                   << ": found connected device. Attempting to create "
                      "MessageStream for device = ["
-                  << device->GetAddress() << "]";
+                  << device->GetAddress() << "] "
+                  << device->GetNameForDisplay();
   AttemptCreateMessageStream(device,
                              CreateMessageStreamAttemptType::kDeviceAdded);
 }
@@ -184,6 +188,7 @@ void MessageStreamLookupImpl::AttemptRemoveMessageStream(
 
 void MessageStreamLookupImpl::AttemptEraseMessageStream(
     const std::string& device_address) {
+  QP_LOG(VERBOSE) << __func__ << ": device address = " << device_address;
   // Remove map entry if it exists. It may not exist if it was failed to be
   // created due to a |ConnectToService| error.
   if (!base::Contains(message_streams_, device_address))
@@ -215,12 +220,12 @@ void MessageStreamLookupImpl::AttemptCreateMessageStream(
   // different connection scenarios, and have coverage for different devices.
   const std::string& device_address = device->GetAddress();
   if (base::Contains(message_streams_, device->GetAddress())) {
-    QP_LOG(VERBOSE) << "Message Stream exists already for device";
+    QP_LOG(INFO) << __func__ << ": Message Stream exists already for device";
     return;
   }
 
   if (base::Contains(pending_connect_requests_, device->GetAddress())) {
-    QP_LOG(VERBOSE) << __func__ << ": Ignoring due to matching pending request";
+    QP_LOG(INFO) << __func__ << ": Ignoring due to matching pending request";
     return;
   }
 
@@ -258,8 +263,14 @@ void MessageStreamLookupImpl::OnConnected(
     DCHECK(retry_ct_erased_ct == 1);
   }
 
-  QP_LOG(INFO) << __func__ << ": device = " << device_address
-               << " Type = " << CreateMessageStreamAttemptTypeToString(type);
+  // It is expected that at the point of a successful RFCOMM connection, the
+  // device is known to the adapter.
+  device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
+  DCHECK(bt_device);
+  QP_LOG(VERBOSE) << __func__ << ": device = " << device_address
+                  << " device name = " << bt_device->GetNameForDisplay()
+                  << " Type = " << CreateMessageStreamAttemptTypeToString(type);
+
   RecordMessageStreamConnectToServiceResult(/*success=*/true);
   RecordMessageStreamConnectToServiceTime(base::TimeTicks::Now() -
                                           connect_to_service_start_time);

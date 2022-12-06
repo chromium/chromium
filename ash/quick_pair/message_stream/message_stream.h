@@ -134,6 +134,9 @@ class MessageStream {
   // notifies observers with the proper method based on the value stored.
   void NotifyObservers(const mojom::MessageStreamMessagePtr& message);
 
+  std::string MessageStreamMessageTypeToString(
+      const mojom::MessageStreamMessagePtr& message);
+
   int receive_retry_counter_ = 0;
   std::string device_address_;
 
