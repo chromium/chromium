@@ -12,6 +12,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -679,8 +680,13 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     SimulateNetworkGoingOnline(popup);
     ForceScheduledAutoReloadNow(popup);
     navigation_observer.WaitForNavigationFinished();
-    // TODO(https://crbug.com/1357366): This must be false instead.
-    EXPECT_TRUE(handle_observer.is_download());
+    if (base::FeatureList::IsEnabled(
+            features::kBrowserSideDownloadPolicySandbox)) {
+      EXPECT_FALSE(handle_observer.is_download());
+    } else {
+      // TODO(https://crbug.com/1357366): This must be false instead.
+      EXPECT_TRUE(handle_observer.is_download());
+    }
   }
 }
 

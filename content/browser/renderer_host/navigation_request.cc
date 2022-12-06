@@ -1569,6 +1569,8 @@ NavigationRequest::NavigationRequest(
   CHECK(!rfh_restored_from_back_forward_cache.WasInvalidated());
   ScopedCrashKeys crash_keys(*this);
 
+  ComputeDownloadPolicy();
+
   // Ensure the blink::RuntimeFeatureStateContext is initialized.
   runtime_feature_state_context_ = blink::RuntimeFeatureStateContext();
 
@@ -8366,6 +8368,39 @@ NavigationRequest::GetMutableRuntimeFeatureStateContext() {
 const blink::RuntimeFeatureStateContext&
 NavigationRequest::GetRuntimeFeatureStateContext() {
   return runtime_feature_state_context_;
+}
+
+// The NavigationDownloadPolicy is currently computed by the renderer process.
+// The problem: not every navigation are initiated from the renderer. Most
+// fields from the bitfield can be computed from the browser process. This
+// function is a partial attempt at doing it.
+void NavigationRequest::ComputeDownloadPolicy() {
+  blink::NavigationDownloadPolicy& download_policy =
+      common_params_->download_policy;
+
+  // [ViewSource]
+  if (GetNavigationEntry() && GetNavigationEntry()->IsViewSourceMode()) {
+    download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
+  }
+
+  // [Sandbox]
+  if (base::FeatureList::IsEnabled(
+          features::kBrowserSideDownloadPolicySandbox) &&
+      (commit_params_->frame_policy.sandbox_flags &
+       network::mojom::WebSandboxFlags::kDownloads) ==
+          network::mojom::WebSandboxFlags::kDownloads) {
+    download_policy.SetDisallowed(blink::NavigationDownloadType::kSandbox);
+  }
+
+  // TODO(arthursonzogni): Check if the following fields from the
+  // NavigationDownloadPolicy could be computed here from the browser process
+  // instead:
+  //
+  // [NoGesture]
+  // [OpenerCrossOrigin]
+  // [AdFrameNoGesture]
+  // [AdFrame]
+  // [Interstitial]
 }
 
 }  // namespace content

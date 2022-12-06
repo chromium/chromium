@@ -823,16 +823,13 @@ NavigationEntryImpl::ConstructCommonNavigationParams(
     blink::mojom::NavigationType navigation_type,
     base::TimeTicks navigation_start,
     base::TimeTicks input_start) {
-  blink::NavigationDownloadPolicy download_policy;
-  if (IsViewSourceMode())
-    download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
   // `base_url_for_data_url` is saved in NavigationEntry but should only be used
   // by main frames, because loadData* navigations can only happen on the main
   // frame.
   bool is_for_main_frame = (root_node()->frame_entry == &frame_entry);
   return blink::mojom::CommonNavigationParams::New(
       dest_url, frame_entry.initiator_origin(), std::move(dest_referrer),
-      GetTransitionType(), navigation_type, download_policy,
+      GetTransitionType(), navigation_type, blink::NavigationDownloadPolicy(),
       // It's okay to pass false for `should_replace_entry` because we never
       // replace an entry on session history / reload / restore navigation. New
       // navigation that may use replacement create their CommonNavigationParams
