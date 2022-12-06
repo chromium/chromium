@@ -5,6 +5,7 @@
 #include "content/browser/metrics/histogram_controller.h"
 
 #include "base/bind.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "content/browser/metrics/histogram_subscriber.h"
@@ -104,9 +105,13 @@ void HistogramController::InsertChildHistogramFetcherInterface(
         child_histogram_fetcher) {
   // Broken pipe means remove this from the map. The map size is a proxy for
   // the number of known processes
+  //
+  // `RemoveChildHistogramFetcherInterface` will only use `host` for address
+  // comparison without being dereferenced , therefore it's not going to create
+  // a UAF.
   child_histogram_fetcher.set_disconnect_handler(base::BindOnce(
       &HistogramController::RemoveChildHistogramFetcherInterface<T>,
-      base::Unretained(this), base::UnsafeDanglingUntriaged(host)));
+      base::Unretained(this), base::UnsafeDangling(host)));
   GetChildHistogramFetcherMap<T>()[host] = std::move(child_histogram_fetcher);
 }
 
