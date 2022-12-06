@@ -114,6 +114,22 @@ class SettingsAudioElement extends SettingsAudioElementBase {
         MuteState.kMutedByPolicy;
   }
 
+  /** Handles updating active input device. */
+  protected onInputDeviceChanged(): void {
+    // TODO(b/260277007): Remove condition when setActiveDevice added to mojo
+    // definition.
+    if (!this.crosAudioConfig_.setActiveDevice) {
+      return;
+    }
+    const inputDeviceSelect = this.shadowRoot!.querySelector<HTMLSelectElement>(
+        '#audioInputDeviceDropdown');
+    assert(!!inputDeviceSelect);
+    const nextActiveDevice = this.audioSystemProperties_.inputDevices.find(
+        (device: AudioDevice) => device.id === BigInt(inputDeviceSelect.value));
+    assert(!!nextActiveDevice);
+    this.crosAudioConfig_.setActiveDevice(nextActiveDevice);
+  }
+
   /**
    * Handles the event where the output volume slider is being changed.
    */

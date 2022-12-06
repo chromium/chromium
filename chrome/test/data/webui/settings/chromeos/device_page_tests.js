@@ -796,12 +796,19 @@ suite('SettingsDevicePage', function() {
 
       // change active device.
       outputDeviceDropdown.selectedIndex = 0;
+      outputDeviceDropdown.dispatchEvent(
+          new CustomEvent('change', {bubbles: true}));
       await flushTasks();
 
       // Verify selected updated to latest active device.
       const expectedUpdatedSelectionId =
           `${fakeCrosAudioConfig.defaultFakeSpeaker.id}`;
       assertEquals(expectedUpdatedSelectionId, outputDeviceDropdown.value);
+      const nextActiveDevice =
+          audioPage.audioSystemProperties_.outputDevices.find(
+              device =>
+                  device.id === fakeCrosAudioConfig.defaultFakeSpeaker.id);
+      assertTrue(nextActiveDevice.isActive);
     });
 
     test('input device mojo test', async function() {
@@ -817,6 +824,33 @@ suite('SettingsDevicePage', function() {
           fakeCrosAudioConfig.defaultFakeAudioSystemProperties.inputDevices
               .length,
           inputDeviceDropdown.length);
+    });
+
+    test('simulate setting active input device', async function() {
+      // Get dropdown.
+      /** @type {!HTMLSelectElement}*/
+      const inputDeviceDropdown =
+          audioPage.shadowRoot.querySelector('#audioInputDeviceDropdown');
+
+      // Verify selected is active device.
+      const expectedInitialSelectionId =
+          `${fakeCrosAudioConfig.fakeInternalFrontMic.id}`;
+      assertEquals(expectedInitialSelectionId, inputDeviceDropdown.value);
+
+      // change active device.
+      inputDeviceDropdown.selectedIndex = 1;
+      inputDeviceDropdown.dispatchEvent(
+          new CustomEvent('change', {bubbles: true}));
+      await flushTasks();
+
+      // Verify selected updated to latest active device.
+      const expectedUpdatedSelectionId =
+          `${fakeCrosAudioConfig.fakeBluetoothMic.id}`;
+      assertEquals(expectedUpdatedSelectionId, inputDeviceDropdown.value);
+      const nextActiveDevice =
+          audioPage.audioSystemProperties_.inputDevices.find(
+              device => device.id === fakeCrosAudioConfig.fakeBluetoothMic.id);
+      assertTrue(nextActiveDevice.isActive);
     });
   });
 
