@@ -166,11 +166,10 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 // Tests whether input mode in an omnibox can be canceled via tapping the typing
 // shield and asserts it doesn't commit the omnibox contents if the input is
 // canceled.
-// TODO(crbug.com/1378626): Test is flaky.
-- (void)DISABLED_testToolbarOmniboxTypingShield {
+- (void)testToolbarOmniboxTypingShield {
   // Tablet only (handset keyboard does not have "hide keyboard" button).
   if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test not support on iPhone");
+    EARL_GREY_TEST_SKIPPED(@"There is no typing shield on iPhone, skip.");
   }
 
   const GURL URL = self.testServer->GetURL("/echo");
