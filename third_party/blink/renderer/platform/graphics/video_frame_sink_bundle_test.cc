@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 
+#include <memory>
 #include <tuple>
+#include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -37,6 +40,12 @@ const uint32_t kTestClientId = 1;
 const viz::FrameSinkId kTestVideoSinkId1(kTestClientId, 2);
 const viz::FrameSinkId kTestVideoSinkId2(kTestClientId, 3);
 const viz::FrameSinkId kTestVideoSinkId3(kTestClientId, 4);
+
+class MockBeginFrameObserver : public VideoFrameSinkBundle::BeginFrameObserver {
+ public:
+  MOCK_METHOD(void, OnBeginFrameCompletion, (), (override));
+  MOCK_METHOD(void, OnBeginFrameCompletionEnabled, (bool), (override));
+};
 
 MATCHER(IsEmpty, "") {
   return arg.IsEmpty();
@@ -231,6 +240,74 @@ TEST_F(VideoFrameSinkBundleTest, BatchSubmissionsDuringOnBeginFrame) {
           AllOf(IsFrame(), ForSink(kTestVideoSinkId3.sink_id())))))
       .Times(1);
   mock_frame_sink_bundle().FlushReceiver();
+}
+
+TEST_F(VideoFrameSinkBundleTest,
+       DeliversBeginFramesDisabledWithoutSinksOnRegistration) {
+  CreateTestBundle();
+  VideoFrameSinkBundle& bundle = test_bundle();
+  auto observer = std::make_unique<MockBeginFrameObserver>();
+  EXPECT_CALL(*observer, OnBeginFrameCompletionEnabled(false));
+  bundle.SetBeginFrameObserver(std::move(observer));
+}
+
+TEST_F(VideoFrameSinkBundleTest,
+       DeliversBeginFramesEnabledWithSinkOnRegistration) {
+  CreateTestBundle();
+  VideoFrameSinkBundle& bundle = test_bundle();
+  auto observer = std::make_unique<MockBeginFrameObserver>();
+  EXPECT_CALL(*observer, OnBeginFrameCompletionEnabled(true));
+  bundle.SetNeedsBeginFrame(kTestVideoSinkId1.sink_id(), true);
+  bundle.SetBeginFrameObserver(std::move(observer));
+}
+
+TEST_F(VideoFrameSinkBundleTest, DeliversBeginFramesDisabledOnSinksDisabled) {
+  CreateTestBundle();
+  VideoFrameSinkBundle& bundle = test_bundle();
+  bundle.SetNeedsBeginFrame(kTestVideoSinkId1.sink_id(), true);
+  auto observer = std::make_unique<MockBeginFrameObserver>();
+  MockBeginFrameObserver* observer_ptr = observer.get();
+  bundle.SetBeginFrameObserver(std::move(observer));
+  EXPECT_CALL(*observer_ptr, OnBeginFrameCompletionEnabled(false));
+  bundle.SetNeedsBeginFrame(kTestVideoSinkId1.sink_id(), false);
+}
+
+TEST_F(VideoFrameSinkBundleTest, DeliversBeginFramesEnabledOnSinkAdded) {
+  CreateTestBundle();
+  VideoFrameSinkBundle& bundle = test_bundle();
+  auto observer = std::make_unique<MockBeginFrameObserver>();
+  MockBeginFrameObserver* observer_ptr = observer.get();
+  bundle.SetBeginFrameObserver(std::move(observer));
+  EXPECT_CALL(*observer_ptr, OnBeginFrameCompletionEnabled(true));
+  bundle.SetNeedsBeginFrame(kTestVideoSinkId1.sink_id(), true);
+}
+
+TEST_F(VideoFrameSinkBundleTest,
+       DeliversBeginFrameCompletionOnFlushWithBeginFrames) {
+  CreateTestBundle();
+  VideoFrameSinkBundle& bundle = test_bundle();
+
+  auto make_begin_frames = [] {
+    WTF::Vector<viz::mojom::blink::BeginFrameInfoPtr> begin_frames;
+    begin_frames.push_back(MakeBeginFrameInfo(kTestVideoSinkId1.sink_id()));
+    return begin_frames;
+  };
+
+  auto observer = std::make_unique<MockBeginFrameObserver>();
+  EXPECT_CALL(*observer, OnBeginFrameCompletion).Times(2);
+  bundle.SetBeginFrameObserver(std::move(observer));
+  bundle.FlushNotifications({}, make_begin_frames(), {});
+  bundle.FlushNotifications({}, make_begin_frames(), {});
+}
+
+TEST_F(VideoFrameSinkBundleTest,
+       OmitsBeginFrameCompletionOnceOnFlushWithoutBeginFrames) {
+  CreateTestBundle();
+  VideoFrameSinkBundle& bundle = test_bundle();
+  auto observer = std::make_unique<MockBeginFrameObserver>();
+  EXPECT_CALL(*observer, OnBeginFrameCompletion).Times(0);
+  bundle.SetBeginFrameObserver(std::move(observer));
+  bundle.FlushNotifications({}, {}, {});
 }
 
 }  // namespace

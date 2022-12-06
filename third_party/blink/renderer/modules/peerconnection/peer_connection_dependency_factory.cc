@@ -13,8 +13,11 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -38,9 +41,12 @@
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_error_util.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
+#include "third_party/blink/renderer/platform/graphics/video_frame_sink_bundle.h"
 #include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
@@ -53,6 +59,8 @@
 #include "third_party/blink/renderer/platform/p2p/socket_dispatcher.h"
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/video_codec_factory.h"
+#include "third_party/blink/renderer/platform/peerconnection/vsync_provider.h"
+#include "third_party/blink/renderer/platform/peerconnection/vsync_tick_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
@@ -70,6 +78,7 @@
 #include "third_party/webrtc/rtc_base/openssl_stream_adapter.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/ssl_adapter.h"
+#include "third_party/webrtc_overrides/metronome_source.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
 
@@ -83,6 +92,17 @@ struct CrossThreadCopier<base::RepeatingCallback<void(base::TimeDelta)>>
 }  // namespace WTF
 
 namespace blink {
+
+// Feature flag for driving the Metronome by VSyncs instead of by timer.
+BASE_FEATURE(kVSyncDecoding,
+             "VSyncDecoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature parameter controlling VSyncDecoding tick durations during occluded
+// tabs.
+const base::FeatureParam<base::TimeDelta>
+    kVSyncDecodingHiddenOccludedTickDuration{
+        &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
 
 namespace {
 
@@ -164,7 +184,7 @@ class PeerConnectionStaticDeps {
     return *metronome_source_;
   }
 
-  void EnsureChromeThreadsStarted() {
+  void EnsureChromeThreadsStarted(ExecutionContext& context) {
     base::ThreadType thread_type = base::ThreadType::kDefault;
     if (base::FeatureList::IsEnabled(
             features::kWebRtcThreadsUseResourceEfficientType)) {
@@ -187,9 +207,26 @@ class PeerConnectionStaticDeps {
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
     if (!metronome_source_) {
-      metronome_source_ = std::make_unique<MetronomeSource>(
-          std::make_unique<TimerBasedTickProvider>(
-              TimerBasedTickProvider::kDefaultPeriod));
+      std::unique_ptr<MetronomeSource::TickProvider> tick_provider;
+      if (base::FeatureList::IsEnabled(kVSyncDecoding)) {
+        vsync_provider_.emplace(
+            Platform::Current()->VideoFrameCompositorTaskRunner(),
+            To<LocalDOMWindow>(context)
+                .GetFrame()
+                ->GetPage()
+                ->GetChromeClient()
+                .GetFrameSinkId(To<LocalDOMWindow>(context).GetFrame())
+                .client_id());
+        tick_provider = VSyncTickProvider::Create(
+            *vsync_provider_, chrome_worker_thread_.task_runner(),
+            std::make_unique<TimerBasedTickProvider>(
+                kVSyncDecodingHiddenOccludedTickDuration.Get()));
+      } else {
+        tick_provider = std::make_unique<TimerBasedTickProvider>(
+            TimerBasedTickProvider::kDefaultPeriod);
+      }
+      metronome_source_ =
+          std::make_unique<MetronomeSource>(std::move(tick_provider));
     }
   }
 
@@ -326,6 +363,8 @@ class PeerConnectionStaticDeps {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED};
 
+  absl::optional<VSyncProviderImpl> vsync_provider_;
+
   THREAD_CHECKER(thread_checker_);
 };
 
@@ -428,7 +467,8 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
   DVLOG(1) << "PeerConnectionDependencyFactory::CreatePeerConnectionFactory()";
 
-  StaticDeps().EnsureChromeThreadsStarted();
+  StaticDeps().EnsureChromeThreadsStarted(
+      *ExecutionContextLifecycleObserver::GetExecutionContext());
   base::WaitableEvent& worker_thread_started_event =
       StaticDeps().InitializeWorkerThread();
   StaticDeps().InitializeNetworkThread();

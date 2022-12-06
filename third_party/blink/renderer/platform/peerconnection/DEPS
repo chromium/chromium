@@ -8,11 +8,17 @@ include_rules = [
     "+third_party/blink/renderer/platform/media_capabilities",
     "+third_party/blink/renderer/platform/mediastream",
     "+third_party/blink/renderer/platform/webrtc",
+    "+third_party/blink/renderer/platform/graphics",
 
     # Dependencies.
     "+base/containers/circular_deque.h",
+    "+base/functional/bind.h",
+    "+base/functional/bind_post_task.h",
+    "+base/functional/callback.h",
+    "+base/functional/callback_forward.h",
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_split.h",
+    "+base/task/bind_post_task.h",
     "+base/task/task_traits.h",
     "+base/threading/sequenced_task_runner_handle.h",
     "+base/threading/thread_restrictions.h",

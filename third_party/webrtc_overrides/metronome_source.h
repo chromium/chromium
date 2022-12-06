@@ -52,7 +52,7 @@ class RTC_EXPORT MetronomeSource final {
     // same sequence that called this method.
     virtual void RequestCallOnNextTick(base::OnceClosure callback) = 0;
 
-    // Estimate the current tick period.
+    // Estimate the current tick period. A soft lower bound value is okay here.
     virtual base::TimeDelta TickPeriod() = 0;
   };
 
