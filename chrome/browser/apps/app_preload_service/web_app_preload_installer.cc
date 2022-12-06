@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -33,6 +34,12 @@ void WebAppPreloadInstaller::InstallApp(
       FROM_HERE,
       base::BindOnce(&WebAppPreloadInstaller::InstallAppImpl,
                      weak_ptr_factory_.GetWeakPtr(), app, std::move(callback)));
+}
+
+std::string WebAppPreloadInstaller::GetAppId(
+    const PreloadAppDefinition& app) const {
+  // The app's "Web app manifest ID" is the equivalent of the unhashed app ID.
+  return web_app::GenerateAppIdFromUnhashed(app.GetWebAppManifestId());
 }
 
 void WebAppPreloadInstaller::InstallAppImpl(

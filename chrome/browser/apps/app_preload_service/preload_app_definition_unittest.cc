@@ -214,4 +214,24 @@ TEST_F(PreloadAppDefinitionTest,
   EXPECT_EQ(blink::mojom::DisplayMode::kStandalone, install_info->display_mode);
 }
 
+TEST_F(PreloadAppDefinitionTest, GetWebAppManifestId) {
+  proto::AppProvisioningResponse_App app = CreateTestWebApp();
+  app.mutable_web_extras()->set_manifest_id(
+      "https://www.example.com/manifest_id/");
+
+  PreloadAppDefinition app_def(app);
+
+  ASSERT_EQ(app_def.GetWebAppManifestId(),
+            "https://www.example.com/manifest_id/");
+}
+
+TEST_F(PreloadAppDefinitionTest, GetWebAppManifestIdNotSpecified) {
+  proto::AppProvisioningResponse_App app;
+  app.set_platform(proto::AppProvisioningResponse::PLATFORM_WEB);
+
+  PreloadAppDefinition app_def(app);
+
+  ASSERT_TRUE(app_def.GetWebAppManifestId().empty());
+}
+
 }  // namespace apps
