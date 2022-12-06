@@ -246,6 +246,10 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   virtual void GetKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback) = 0;
 
+  // Sets the keyboard backlight brightness per |request|.
+  virtual void SetKeyboardBrightness(
+      const power_manager::SetBacklightBrightnessRequest& request) = 0;
+
   // Toggle the keyboard backlight on or off.
   virtual void ToggleKeyboardBacklight() = 0;
 

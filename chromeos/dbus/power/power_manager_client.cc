@@ -337,6 +337,21 @@ class PowerManagerClientImpl : public PowerManagerClient {
             weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SetKeyboardBrightness(
+      const power_manager::SetBacklightBrightnessRequest& request) override {
+    dbus::MethodCall method_call(power_manager::kPowerManagerInterface,
+                                 power_manager::kSetKeyboardBrightnessMethod);
+    if (!dbus::MessageWriter(&method_call).AppendProtoAsArrayOfBytes(request)) {
+      POWER_LOG(ERROR) << "Error serializing "
+                       << power_manager::kSetKeyboardBrightnessMethod
+                       << " request";
+      return;
+    }
+    power_manager_proxy_->CallMethod(&method_call,
+                                     dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                                     base::DoNothing());
+  }
+
   void RequestStatusUpdate() override {
     POWER_LOG(USER) << "RequestStatusUpdate";
     dbus::MethodCall method_call(

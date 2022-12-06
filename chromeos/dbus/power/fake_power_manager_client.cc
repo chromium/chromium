@@ -157,6 +157,19 @@ void FakePowerManagerClient::GetKeyboardBrightnessPercent(
       base::BindOnce(std::move(callback), keyboard_brightness_percent_));
 }
 
+void FakePowerManagerClient::SetKeyboardBrightness(
+    const power_manager::SetBacklightBrightnessRequest& request) {
+  keyboard_brightness_percent_ = request.percent();
+
+  power_manager::BacklightBrightnessChange change;
+  change.set_percent(request.percent());
+  change.set_cause(RequestCauseToChangeCause(request.cause()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FakePowerManagerClient::SendKeyboardBrightnessChanged,
+                     weak_ptr_factory_.GetWeakPtr(), change));
+}
+
 void FakePowerManagerClient::ToggleKeyboardBacklight() {}
 
 const absl::optional<power_manager::PowerSupplyProperties>&
