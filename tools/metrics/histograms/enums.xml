@@ -63574,6 +63574,7 @@ from previous Chrome versions.
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
   <int value="1665430464" label="force-control-face-ae"/>
+  <int value="1667533501" label="SameAppWindowCycle:disabled"/>
   <int value="1667584730" label="WebXR:disabled"/>
   <int value="1668611601" label="enable-encrypted-media"/>
   <int value="1669522336"
@@ -63868,6 +63869,7 @@ from previous Chrome versions.
   <int value="1835523483" label="OmniboxUIExperimentSwapTitleAndUrl:enabled"/>
   <int value="1835931933" label="ShareUsageRankingFixedMore:enabled"/>
   <int value="1836557489" label="EnableDangerousDownloadDialog:disabled"/>
+  <int value="1836774441" label="SameAppWindowCycle:enabled"/>
   <int value="1836916996" label="OmniboxShortcutExpanding:disabled"/>
   <int value="1837330563" label="WebPaymentsMinimalUI:disabled"/>
   <int value="1837847580" label="MutingCompromisedCredentials:disabled"/>

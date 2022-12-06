@@ -1138,6 +1138,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cros-labs-window-cycle-shortcut",
+    "owners": [ "andp", "benbecker", "nupurjain" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "cros-libassistant-v2-migration",
     "owners": ["wutao@chromium.com", "assistive-eng@google.com"],
     "expiry_milestone": 112

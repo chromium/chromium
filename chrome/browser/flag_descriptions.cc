@@ -2554,6 +2554,10 @@ const char kSafetyCheckUnusedSitePermissionsDescription[] =
     "When enabled, adds the unused sites permission module to Safety Check on "
     "desktop. The module will be shown depending on the browser state.";
 
+const char kSameAppWindowCycleName[] = "Cros Labs: Same App Window Cycling";
+const char kSameAppWindowCycleDescription[] =
+    "Use Alt+` to cycle through the windows of the active application.";
+
 const char kPartitionedCookiesName[] = "Partitioned cookies";
 const char kPartitionedCookiesDescription[] =
     "Controls if the Partitioned cookie attribute is enabled.";
