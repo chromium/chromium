@@ -98,13 +98,15 @@ suite('LensUploadDialogTest', () => {
             LensUploadDialogAction.DIALOG_CLOSED));
   });
 
-  test('clicking outside the upload dialog closes the dialog', async () => {
+  test('focusing outside the upload dialog closes the dialog', async () => {
     // Arrange.
     uploadDialog.openDialog();
     await waitAfterNextRender(uploadDialog);
+    const event =
+        new FocusEvent('focusout', {relatedTarget: outsideClickTarget});
 
     // Act.
-    outsideClickTarget.click();
+    uploadDialog.$.dialog.dispatchEvent(event);
 
     // Assert.
     assertTrue(uploadDialog.$.dialog.hidden);
@@ -114,6 +116,27 @@ suite('LensUploadDialogTest', () => {
             'NewTabPage.Lens.UploadDialog.DialogAction',
             LensUploadDialogAction.DIALOG_CLOSED));
   });
+
+  test(
+      'focusing inside the upload dialog does not close the dialog',
+      async () => {
+        // Arrange.
+        uploadDialog.openDialog();
+        await waitAfterNextRender(uploadDialog);
+        const event = new FocusEvent(
+            'focusout', {relatedTarget: uploadDialog.$.closeButton});
+
+        // Act.
+        uploadDialog.$.dialog.dispatchEvent(event);
+
+        // Assert.
+        assertFalse(uploadDialog.$.dialog.hidden);
+        assertEquals(
+            0,
+            metrics.count(
+                'NewTabPage.Lens.UploadDialog.DialogAction',
+                LensUploadDialogAction.DIALOG_CLOSED));
+      });
 
   test('clicking esc key closes the dialog', async () => {
     // Arrange.
@@ -270,23 +293,6 @@ suite('LensUploadDialogTest', () => {
         await waitAfterNextRender(uploadDialog);
         // Assert.
         assertTrue(uploadDialog.hasAttribute('is-normal-or-error_'));
-      });
-
-  test(
-      'two dragenter events followed by dragleave should stay in dragging state',
-      async () => {
-        // Arrange.
-        uploadDialog.openDialog();
-        await waitAfterNextRender(uploadDialog);
-        uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
-        await waitAfterNextRender(uploadDialog);
-        uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragenter'));
-        await waitAfterNextRender(uploadDialog);
-        // Act.
-        uploadDialog.$.dragDropArea.dispatchEvent(new DragEvent('dragleave'));
-        await waitAfterNextRender(uploadDialog);
-        // Assert.
-        assertTrue(uploadDialog.hasAttribute('is-dragging_'));
       });
 
   test('drop event should submit files', async () => {
