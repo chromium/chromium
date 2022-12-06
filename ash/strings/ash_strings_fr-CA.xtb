@@ -31,7 +31,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1148499908455722006">Ouvrir la boîte de dialogue d'information pour <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Appareils associés</translation>
-<translation id="1165712434476988950">Vous devez redémarrer l'appareil pour appliquer la mise à jour.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Votre câble USB-C peut ne pas se connecter correctement aux écrans</translation>
 <translation id="1175572348579024023">Faire défiler</translation>
@@ -668,6 +667,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4666082839192943839">Désactivez l'accès à l'appareil photo sur cet appareil pour bloquer tous les appareils en permanence.</translation>
 <translation id="4666911709726371538">Autres applications</translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours…</translation>
+<translation id="468293128311738995">Applications de votre téléphone</translation>
 <translation id="4690510401873698237">Étagère dans le bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
@@ -1290,6 +1290,7 @@ Nouvelle installation</translation>
 <translation id="8142441511840089262">Double-clic</translation>
 <translation id="8142699993796781067">Réseau privé</translation>
 <translation id="8144760705599030999">Enregistrez votre <ph name="NAME" /> sous l'adresse <ph name="EMAIL" /> afin de l'associer plus rapidement à vos autres appareils</translation>
+<translation id="8144914663975476336">Sélectionner le format d'enregistrement</translation>
 <translation id="8149413265954228307">Afficher les paramètres Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Appuyez sur les touches Ctrl + W pour fermer.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, saisie semi-automatique</translation>
@@ -1462,7 +1463,6 @@ Nouvelle installation</translation>
 <translation id="9089416786594320554">Méthodes d'entrée</translation>
 <translation id="9091626656156419976">Affichage <ph name="DISPLAY_NAME" /> supprimé</translation>
 <translation id="9098969848082897657">Téléphone silencieux</translation>
-<translation id="9099154003160514616">Une mise à jour de Lacros est proposée</translation>
 <translation id="9100887602489003640">Ajout du profil en cours… Patientez quelques minutes.</translation>
 <translation id="9105450214093926548">Un second utilisateur ne peut pas se connecter lorsque le navigateur Lacros est en cours d'exécution. Veuillez utiliser un second profil de navigateur dans Lacros ou fermer ce dernier, puis réessayer.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ou <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

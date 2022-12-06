@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Naredbe za preskakanje mogu se koristiti za učinkovito kretanje web-stranicama.</translation>
 <translation id="116896278675803795">Automatski promijeni jezik u jezik odabranog sadržaja</translation>
 <translation id="1175914831232945926">Znamenke</translation>
-<translation id="1181003590763099524">premjesti na početak</translation>
 <translation id="1188858454923323853">dopunski</translation>
 <translation id="1189258430971676908">Područje za vježbu: padajući popisi</translation>
 <translation id="1195238899008218998">Pogovor</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Veličina: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Akord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Srednja orhideja</translation>
-<translation id="1928535370180099152">istakni prethodni znak</translation>
 <translation id="1928932365747995741">Nema prethodnog tekstualnog polja koje je moguće urediti</translation>
 <translation id="1964135212174907577">Sljedeći objekt</translation>
 <translation id="1966649499058910679">Istakni svaku riječ dok se izgovara</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Uključivanje ili isključivanje govora</translation>
 <translation id="2390264819538553347">Za prelazak na sljedeću stranicu pritisnite Enter, a za povratak pritisnite Backspace.</translation>
 <translation id="2398579267367951220">Unesite za pretraživanje stranice. Pritisnite tipku Enter za prelazak na rezultat, strelice prema gore ili dolje za pretraživanje rezultata, nastavite upisivati kako biste izmijenili pretraživanje ili pritisnite tipku Escape za poništavanje.</translation>
-<translation id="2407047351320112166">istakni sljedeći znak</translation>
 <translation id="240709722712693803">Plavoljubičasta</translation>
 <translation id="2410298923485357543">Koristi prirodni glas kad je uređaj povezan s internetom</translation>
 <translation id="2416512023405990736">Prazan potvrdni okvir</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Pomicanje pokazivača</translation>
 <translation id="3103579948980282461">Srednja ljubičastocrvena</translation>
 <translation id="3104705064753753826">dij upoz</translation>
-<translation id="3105857328626674463">istakni prethodnu riječ</translation>
 <translation id="3109724472072898302">Sažeto</translation>
 <translation id="311015743332597320">Prijeđite s četiri prsta udesno</translation>
 <translation id="3112457281078985179">ChromeVox možete uključiti ili isključiti pritiskom tipki Control + Alt + Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Prethodna posjećena veza</translation>
 <translation id="3241638166094654466">Ćelije u svakom retku:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">premjesti na kraj</translation>
 <translation id="3260949043575829030">Prethodna slična stavka</translation>
 <translation id="3270069636408109001">Nema sljedeće tablice</translation>
 <translation id="3273791280096244679">Spremi oznaku</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">ptvrdstizb</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{znak dolara}one{# znak dolara}few{# znaka dolara}other{# znakova dolara}}</translation>
 <translation id="3659787053479271466">upoz</translation>
-<translation id="3661265561216135784">ponovi</translation>
 <translation id="366419593095697301">Savjet: pritisnite Escape ako želite napustiti ovaj vodič.</translation>
 <translation id="3676062394766691318">Nakon postavljanja uređaja možete se vratiti i pregledati više vodiča tako što ćete pritisnuti tipku za pretraživanje i O, a zatim T.</translation>
 <translation id="3681531118904532409">Papaja</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Primjer</translation>
 <translation id="7439060726180460871">Direktorij</translation>
 <translation id="744163271241493234">zprk</translation>
-<translation id="7443479558101073378">istakni sljedeću riječ</translation>
 <translation id="7465123027577412805">Želite li koristiti prirodan glas?</translation>
 <translation id="7491962110804786152">kart</translation>
 <translation id="7492497529767769458">Prelazak na sljedeći odjeljak. Primjeri uključuju traku statusa i Pokretač.</translation>
 <translation id="7505149250476994901">Recite "cap" (veliko slovo) prije slova</translation>
 <translation id="7533226154149229506">Svijetla zlatnožuta</translation>
-<translation id="7541021454094606506">izbriši sve</translation>
 <translation id="7543255924852002459">Odbaci oznaku</translation>
 <translation id="7552432549459840808">Korisni prečaci Chromea</translation>
 <translation id="7553679324939294712">umetni <ph name="INSERT_PHRASE" /> ispred <ph name="BEFORE_PHRASE" /></translation>

@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Жооп пикир баяндамасын жөнөтүү</translation>
 <translation id="2407209115954268704">SIM картаны кулпулоо абалы</translation>
+<translation id="241419523391571119">Сынап көрүү үчүн капкагын кайра ачыңыз</translation>
 <translation id="2414886740292270097">Кочкул</translation>
 <translation id="2418150275289244458">Жөндөөлөрдө ачуу</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> ичинен <ph name="CURRENT_PAGE" />-сүрөт</translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Батареянын кубаты <ph name="NUM_SECONDS" /> секундда <ph name="RATE" /> түгөндү.</translation>
 <translation id="2902312830803030883">Көбүрөөк аракеттер</translation>
 <translation id="2926057806159140518">Колдонуучу атыңызды жана сырсөзүңүздү киргизип же QR кодуңузду скандаңыз</translation>
+<translation id="2940811910881150316">Түзмөктү сыноого болбойт. Сынап көрүү үчүн капкагын кайра ачыңыз.</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
 <translation id="3009958530611748826">Скандалган нерселерди сактоо үчүн папка тандаңыз</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">PIN код жараксыз.</translation>
 <translation id="3824259034819781947">Файлдарды тиркөө</translation>
 <translation id="3838338534323494292">Жаңы сырсөз</translation>
+<translation id="3845880861638660475">Диалогду жабуу үчүн <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> баскычтарын бирге басыңыз.</translation>
 <translation id="385051799172605136">Артка</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3862598938296403232">Учкай маалымат талап кылынат</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">Сүрөттөлүшү</translation>
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
 <translation id="3885327323343477505">Көшөгөнү өзгөртүү</translation>
+<translation id="391412459402535266">Түзмөктү сыноого болбойт. Сынап көрүү үчүн ноутбук режимине которулуңуз.</translation>
 <translation id="3923184630988645767">Маалыматтардын өткөрүлүшү</translation>
 <translation id="3932043219784172185">Бир да түзмөк туташкан жок</translation>
 <translation id="3941014780699102620">Башкы түйүн чечилген жок</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> түзмөгүңүз жаңыртылды</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
+<translation id="4021031199988160623">Сынап көрүү үчүн ноутбук режимине которулуңуз</translation>
 <translation id="4034824040120875894">Принтер</translation>
 <translation id="4044093238444069296">Шлюзга туташпай жатат</translation>
 <translation id="4046123991198612571">Кийинки трек</translation>

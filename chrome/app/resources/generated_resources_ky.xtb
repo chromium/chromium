@@ -804,7 +804,6 @@
 <translation id="1719312230114180055">Эскертүү: Манжа издерине караганда сырсөз же PIN код кыйла коопсузураак.</translation>
 <translation id="1720318856472900922">TLS WWW серверинин аныктыгын текшерүү</translation>
 <translation id="172123215662733643">Сүрөттөрдү <ph name="VISUAL_SEARCH_PROVIDER" /> аркылуу издөө</translation>
-<translation id="1721312023322545264">Бул сайтка кирүү үчүн сизге <ph name="NAME" /> уруксат бериши керек</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> түзмөгүңүз<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> тарабынан башкарылууда</translation>
 <translation id="1723824996674794290">&amp;Жаңы терезе</translation>
 <translation id="1724801751621173132">Киргизүү режими</translation>
@@ -5928,6 +5927,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6508248480704296122"><ph name="NAME_PH" /> аракетине байланыштуу</translation>
 <translation id="6508261954199872201">Колдонмо: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Медиа уруксаттамасы</translation>
+<translation id="6511279028091289182">Вебсайттарга кантип коопсуз туташуу керек экенин аныктайт. <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> сайтындагы көзөмөлдөнгөн кызмат көрсөтүүчү колдонулат</translation>
 <translation id="6511827214781912955">Бул түзмөктү колдонгон башка колдонуучулар сырсөздөрүңүздү көрүп албашы үчүн, <ph name="FILENAME" /> файлын өчүрүү сунушталат</translation>
 <translation id="6512808201725371249">Бул аккаунттун сырсөзү Сырсөздөрдү башкаргычка (<ph name="USER_EMAIL" />) мурунтан эле сакталган</translation>
 <translation id="6513247462497316522">Башка тармакка туташып турбасаңыз, Google Chrome мобилдик дайындарды колдонот.</translation>
@@ -5997,6 +5997,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6568283005472142698">Өтмөктө издөө</translation>
 <translation id="65711204837946324">Жүктөп алуу үчүн уруксат керек</translation>
 <translation id="6571772921213691236">Аккаунтка кирүү дайындарын түзөтүү</translation>
+<translation id="657229725818377235">Кооптуу вебсайттардан жана жүктөлүп алынган файлдардан коргонуңуз</translation>
 <translation id="6573096386450695060">Дайым уруксат берүү</translation>
 <translation id="6573497332121198392">Ыкчам баскыч өчпөй жатат</translation>
 <translation id="657402800789773160">&amp;Бул бетти кайра жүктөө</translation>
@@ -6581,7 +6582,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7099337801055912064">Көлөмдүү PPD жүктөлбөйт. Көлөмү 250 Кб ашпашы керек.</translation>
 <translation id="7099739618316136113">{COUNT,plural, =0{Уурдалган сырсөздөр жок}=1{{COUNT} уурдалган сырсөз бар}other{{COUNT} уурдалган сырсөз бар}}</translation>
 <translation id="7102832101143475489">Сурамдын күтүү мөөнөтү аяктады</translation>
-<translation id="710640343305609397">Тармактын жөндөөлөрүн ачуу</translation>
+<translation id="710640343305609397">Тармактын параметрлерин ачуу</translation>
 <translation id="7107609441453408294">Бир эле аудиону бардык динамиктерде ойнотуу</translation>
 <translation id="7108338896283013870">Жашыруу</translation>
 <translation id="7108668606237948702">enter</translation>
@@ -8499,7 +8500,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8899851313684471736">Шилтеме жаңы &amp;терезеде ачылсын</translation>
 <translation id="8900413463156971200">Мобилдик тармакты күйгүзүү</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> дайын-даректериңиздин камдык көчүрмөсүн сактап, бул <ph name="DEVICE_TYPE" /> түзмөгүн бүгүн кайтарууну талап кылууда.}other{<ph name="MANAGER" /> дайын-даректериңиздин камдык көчүрмөсүн сактап, бул <ph name="DEVICE_TYPE" /> түзмөгүн мөөнөтү бүткөнгө чейин кайтарууну талап кылууда.}}</translation>
-<translation id="8902667442496790482">"Басып туруп угуу" кызматынын жөндөөлөрүн ачуу</translation>
+<translation id="8902667442496790482">"Басып туруп угуу" кызматынын параметрлерин ачуу</translation>
 <translation id="8903263458134414071">Кирүү үчүн, аккаунт тандаңыз</translation>
 <translation id="890616557918890486">Булагын өзгөртүү</translation>
 <translation id="8907701755790961703">Өлкө тандаңыз</translation>

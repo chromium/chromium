@@ -685,6 +685,7 @@
 <translation id="7415801143053185905">เวลาในการตอบสนองของ HTTP สูงมาก</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
+<translation id="7458970041932198923">โปรดเชื่อมต่อเครือข่ายและโหลดหน้าเว็บซ้ำเพื่อดูและตั้งค่ารูปโปรไฟล์</translation>
 <translation id="7469648432129124067">ตรวจพบพอร์ทัล</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7487067081878637334">เทคโนโลยี</translation>
@@ -839,6 +840,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{สแกน}=1{สแกนหน้า {NUMBER_OF_PAGES}}other{สแกนหน้า {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">อุปกรณ์มีแบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="8998289560386111590">ใช้ไม่ได้ในอุปกรณ์ของคุณ</translation>
 <translation id="9003704114456258138">ความถี่</translation>
 <translation id="9025198690966128418">ใช้เป็นอุปกรณ์ส่วนบุคคล</translation>
 <translation id="9028832514430399253">เปิดตัวสลับเพื่อเลือกตัวเลือกของโปรแกรมรักษาหน้าจอ</translation>

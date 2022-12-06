@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Les ordres de salt es poden utilitzar per navegar de manera eficient per una pàgina web.</translation>
 <translation id="116896278675803795">Canvia automàticament l'idioma perquè coincideixi amb el contingut seleccionat</translation>
 <translation id="1175914831232945926">Dígits</translation>
-<translation id="1181003590763099524">mou al principi</translation>
 <translation id="1188858454923323853">complementari</translation>
 <translation id="1189258430971676908">Zona de pràctiques: llistes desplegables</translation>
 <translation id="1195238899008218998">Cloenda</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Mida <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Acord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Orquídia mitjà</translation>
-<translation id="1928535370180099152">marca el caràcter anterior</translation>
 <translation id="1928932365747995741">No hi ha cap camp de text anterior que es pugui editar</translation>
 <translation id="1964135212174907577">Objecte següent</translation>
 <translation id="1966649499058910679">Marca cada paraula a mesura que es digui</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Activa o desactiva la veu</translation>
 <translation id="2390264819538553347">Prem Retorn per avançar i Retrocés per tornar enrere.</translation>
 <translation id="2398579267367951220">Escriu per cercar a la pàgina. Prem Retorn per anar directament al resultat, prem les fletxes amunt i avall per moure't pels resultats, continua escrivint per modificar la cerca o prem Esc per cancel·lar.</translation>
-<translation id="2407047351320112166">marca el caràcter següent</translation>
 <translation id="240709722712693803">Violeta blavós</translation>
 <translation id="2410298923485357543">Fes servir la veu natural quan el dispositiu estigui connectat</translation>
 <translation id="2416512023405990736">Una casella de selecció desmarcada</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Mou el cursor</translation>
 <translation id="3103579948980282461">Vermell violaci mitjà</translation>
 <translation id="3104705064753753826">diàleg d'alerta</translation>
-<translation id="3105857328626674463">marca la paraula anterior</translation>
 <translation id="3109724472072898302">Reduït</translation>
 <translation id="311015743332597320">Fes lliscar quatre dits cap a la dreta</translation>
 <translation id="3112457281078985179">Per activar o desactivar ChromeVox, fes servir Control+Alt+Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Enllaç visitat anterior</translation>
 <translation id="3241638166094654466">Cel·les en cada línia:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">mou al final</translation>
 <translation id="3260949043575829030">Element similar anterior</translation>
 <translation id="3270069636408109001">No hi ha cap taula més</translation>
 <translation id="3273791280096244679">Desa l'etiqueta</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dòlar}other{# símbols de dòlar}}</translation>
 <translation id="3659787053479271466">alerta</translation>
-<translation id="3661265561216135784">repeteix</translation>
 <translation id="366419593095697301">Suggeriment: si vols sortir del tutorial, prem la tecla d'escapada.</translation>
 <translation id="3676062394766691318">Després de configurar el dispositiu, pots tornar i veure més tutorials prement la tecla Cerca+O i, després, T.</translation>
 <translation id="3681531118904532409">Papaia clar</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Exemple</translation>
 <translation id="7439060726180460871">Directori</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">marca la paraula següent</translation>
 <translation id="7465123027577412805">Vols utilitzar una veu natural?</translation>
 <translation id="7491962110804786152">pestanya</translation>
 <translation id="7492497529767769458">Va a la secció següent. Entre els exemples s'inclouen la safata d'estat i el menú d'aplicacions.</translation>
 <translation id="7505149250476994901">Digues "majúscula" abans de la lletra</translation>
 <translation id="7533226154149229506">Groc daurat clar</translation>
-<translation id="7541021454094606506">suprimeix-ho tot</translation>
 <translation id="7543255924852002459">Etiqueta Descarta</translation>
 <translation id="7552432549459840808">Dreceres útils de Chrome</translation>
 <translation id="7553679324939294712">insereix <ph name="INSERT_PHRASE" /> abans de <ph name="BEFORE_PHRASE" /></translation>

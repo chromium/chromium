@@ -31,7 +31,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1148499908455722006">Open info dialogue for <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendar</translation>
 <translation id="1153356358378277386">Paired devices</translation>
-<translation id="1165712434476988950">Device restart is required to apply the update.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Your USB-C cable may not connect to displays properly</translation>
 <translation id="1175572348579024023">Scroll</translation>
@@ -1291,6 +1290,7 @@ New install</translation>
 <translation id="8142441511840089262">Double click</translation>
 <translation id="8142699993796781067">Private network</translation>
 <translation id="8144760705599030999">Save your <ph name="NAME" /> to <ph name="EMAIL" /> for faster pairing to your other devices</translation>
+<translation id="8144914663975476336">Select recording format</translation>
 <translation id="8149413265954228307">Show Bluetooth settings. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Press Ctrl + W to close.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autocomplete</translation>
@@ -1464,7 +1464,6 @@ New install</translation>
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silence phone</translation>
-<translation id="9099154003160514616">Lacros update available</translation>
 <translation id="9100887602489003640">Adding profile. Wait a few minutes.</translation>
 <translation id="9105450214093926548">Signing in a second user is not supported while the Lacros browser is running. Please use a second browser profile in Lacros instead, or close Lacros and try again.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> or <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

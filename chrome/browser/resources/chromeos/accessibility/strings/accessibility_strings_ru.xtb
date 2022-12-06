@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Команды для быстрого перехода упрощают навигацию на веб-страницах.</translation>
 <translation id="116896278675803795">Автоматически устанавливать язык, соответствующий выбранному контенту</translation>
 <translation id="1175914831232945926">по цифрам</translation>
-<translation id="1181003590763099524">Переместить в начало</translation>
 <translation id="1188858454923323853">дополнительно</translation>
 <translation id="1189258430971676908">Практические задания: раскрывающиеся списки</translation>
 <translation id="1195238899008218998">Послесловие</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Размер <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">комбинация: <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Умеренный цвет орхидеи</translation>
-<translation id="1928535370180099152">выделить предыдущий символ</translation>
 <translation id="1928932365747995741">Предыдущего редактируемого текстового поля нет</translation>
 <translation id="1964135212174907577">Перейти к следующему элементу</translation>
 <translation id="1966649499058910679">Выделять слова по мере озвучивания</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Включить или выключить озвучивание действий</translation>
 <translation id="2390264819538553347">Чтобы продолжить, нажмите ВВОД. Чтобы вернуться на предыдущую страницу, нажмите BACKSPACE.</translation>
 <translation id="2398579267367951220">Чтобы выполнить поиск на странице, начните вводить текст. Чтобы перейти к результатам, нажмите клавишу Ввод. Для перемещения по результатам используйте стрелки вверх и вниз. При необходимости измените запрос или нажмите Esc, чтобы отменить поиск.</translation>
-<translation id="2407047351320112166">выделить следующий символ</translation>
 <translation id="240709722712693803">Сине-фиолетовый</translation>
 <translation id="2410298923485357543">Использовать естественный голос, когда устройство подключено к интернету</translation>
 <translation id="2416512023405990736">Снятый флажок</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Перемещение курсора</translation>
 <translation id="3103579948980282461">Умеренный фиолетово-красный</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">выделить предыдущее слово</translation>
 <translation id="3109724472072898302">Свернуто</translation>
 <translation id="311015743332597320">Проведите четырьмя пальцами вправо</translation>
 <translation id="3112457281078985179">Чтобы включить или отключить ChromeVox, нажмите CTRL + ALT + Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Перейти к предыдущей открытой ссылке</translation>
 <translation id="3241638166094654466">Ячеек в каждой строке:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">переместить курсор в конец</translation>
 <translation id="3260949043575829030">Предыдущий похожий объект</translation>
 <translation id="3270069636408109001">Следующей таблицы нет</translation>
 <translation id="3273791280096244679">Сохранить метку</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{знак доллара}one{# знак доллара}few{# знака доллара}many{# знаков доллара}other{# dollar signs}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">повторить</translation>
 <translation id="366419593095697301">Подсказка. Чтобы выйти из этого руководства, нажмите Esc.</translation>
 <translation id="3676062394766691318">После настройки устройства вы можете посмотреть и другие руководства, нажав Поиск + O, а затем – T.</translation>
 <translation id="3681531118904532409">Папайя со взбитыми сливками</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">Пример</translation>
 <translation id="7439060726180460871">Каталог</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">выделить следующее слово</translation>
 <translation id="7465123027577412805">Использовать естественный голос?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Перейти к следующему разделу, например к панели состояния или запуска.</translation>
 <translation id="7505149250476994901">Произносить фразу "Прописная буква" перед прописной буквой</translation>
 <translation id="7533226154149229506">Светло-желтый золотарник</translation>
-<translation id="7541021454094606506">удалить все</translation>
 <translation id="7543255924852002459">Кнопка "Отменить"</translation>
 <translation id="7552432549459840808">Быстрые клавиши для работы с Chrome</translation>
 <translation id="7553679324939294712">вставить "<ph name="INSERT_PHRASE" />" перед "<ph name="BEFORE_PHRASE" />"</translation>

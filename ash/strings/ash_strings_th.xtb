@@ -31,7 +31,6 @@
 <translation id="1148499908455722006">เปิดกล่องโต้ตอบข้อมูลของ <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">ปฏิทิน</translation>
 <translation id="1153356358378277386">อุปกรณ์ที่จับคู่</translation>
-<translation id="1165712434476988950">ต้องรีสตาร์ทอุปกรณ์เพื่อใช้การอัปเดต</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" /> <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">สาย USB-C อาจเชื่อมต่อกับจอแสดงผลอย่างไม่ถูกต้อง</translation>
 <translation id="1175572348579024023">เลื่อน</translation>
@@ -1463,7 +1462,6 @@
 <translation id="9089416786594320554">วิธีป้อนข้อมูล</translation>
 <translation id="9091626656156419976">นำจอแสดงผล <ph name="DISPLAY_NAME" /> ออกแล้ว</translation>
 <translation id="9098969848082897657">ปิดเสียงโทรศัพท์</translation>
-<translation id="9099154003160514616">มีการอัปเดต Lacros</translation>
 <translation id="9100887602489003640">กำลังเพิ่มโปรไฟล์ รอสักครู่</translation>
 <translation id="9105450214093926548">ผู้ใช้คนที่ 2 ไม่สามารถลงชื่อเข้าใช้ขณะที่เบราว์เซอร์ Lacros ทำงานอยู่ โปรดใช้โปรไฟล์ที่ 2 ของเบราว์เซอร์ Lacros แทน หรือปิด Lacros แล้วลองอีกครั้ง</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> หรือ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
+<translation id="241419523391571119">Buka kembali penutup untuk menguji</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2418150275289244458">Buka di setelan</translation>
 <translation id="2421798028054665193">Gambar <ph name="CURRENT_PAGE" /> dari <ph name="TOTAL_PAGES" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Daya terpakai <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan sandi atau pindai kode QR</translation>
+<translation id="2940811910881150316">Tidak dapat menguji perangkat. Buka kembali penutup untuk menguji.</translation>
 <translation id="3008341117444806826">PERBARUI</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">PIN tidak valid.</translation>
 <translation id="3824259034819781947">Lampirkan file</translation>
 <translation id="3838338534323494292">Sandi baru</translation>
+<translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3862598938296403232">Deskripsi wajib diisi</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">Deskripsi</translation>
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
 <translation id="3885327323343477505">Ubah screensaver</translation>
+<translation id="391412459402535266">Tidak dapat menguji perangkat. Beralih ke mode laptop untuk menguji.</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> Anda sekarang sudah diupdate</translation>
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
+<translation id="4021031199988160623">Beralih ke mode laptop untuk menguji</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4044093238444069296">Tidak dapat terhubung ke gateway</translation>
 <translation id="4046123991198612571">Lagu berikutnya</translation>

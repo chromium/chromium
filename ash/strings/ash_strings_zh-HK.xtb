@@ -31,7 +31,6 @@
 <translation id="1148499908455722006">打開 <ph name="USER_NAME" /> 嘅資料對話框</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">已配對的裝置</translation>
-<translation id="1165712434476988950">裝置必須重新啟動，才能套用更新。</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">您的 USB-C 連接線可能未妥善連接顯示屏</translation>
 <translation id="1175572348579024023">捲動</translation>
@@ -1463,7 +1462,6 @@
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="9091626656156419976">已移除「<ph name="DISPLAY_NAME" />」畫面</translation>
 <translation id="9098969848082897657">將手機設為靜音</translation>
-<translation id="9099154003160514616">有可用的 Lacros 更新</translation>
 <translation id="9100887602489003640">正在新增設定檔。請等候幾分鐘。</translation>
 <translation id="9105450214093926548">Lacros 瀏覽器執行時，系統不支援第二位使用者登入。請改為在 Lacros 中使用第二個瀏覽器設定檔，或者關閉 Lacros，然後再試一次。</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

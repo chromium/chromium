@@ -31,7 +31,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1148499908455722006">Abre el cuadro de diálogo con información de <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1153356358378277386">Dispositivos vinculados</translation>
-<translation id="1165712434476988950">Se debe reiniciar el dispositivo para aplicar la actualización.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Tu cable USB‑C podría no conectarse correctamente a pantallas</translation>
 <translation id="1175572348579024023">Desplazarse</translation>
@@ -669,6 +668,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4666082839192943839">Desactiva el acceso a la cámara en este dispositivo para bloquear todas las cámaras en todo momento.</translation>
 <translation id="4666911709726371538">Más aplicaciones</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Aplicaciones de tu teléfono</translation>
 <translation id="4690510401873698237">La estantería está en la parte inferior</translation>
 <translation id="4696813013609194136">Desbloquear con código parental</translation>
 <translation id="4702647871202761252">La pantalla de privacidad está desactivada</translation>
@@ -1464,7 +1464,6 @@ Nueva instalación</translation>
 <translation id="9089416786594320554">Métodos de entrada</translation>
 <translation id="9091626656156419976">Se ha quitado la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
-<translation id="9099154003160514616">Actualización de Lacros disponible</translation>
 <translation id="9100887602489003640">Añadiendo perfil. Espera unos minutos.</translation>
 <translation id="9105450214093926548">No es posible que un segundo usuario inicie sesión mientras el navegador Lacros se está ejecutando. Utiliza un perfil del navegador secundario en Lacros o cierra Lacros y vuelve a intentarlo.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> o <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

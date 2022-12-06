@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">สามารถใช้คำสั่งข้ามเพื่อไปยังส่วนต่างๆ ของหน้าเว็บได้อย่างมีประสิทธิภาพ</translation>
 <translation id="116896278675803795">เปลี่ยนภาษาโดยอัตโนมัติให้ตรงกับเนื้อหาที่เลือก</translation>
 <translation id="1175914831232945926">ตัวเลข</translation>
-<translation id="1181003590763099524">ย้ายไปที่จุดเริ่มต้น</translation>
 <translation id="1188858454923323853">ส่วนเสริม</translation>
 <translation id="1189258430971676908">พื้นที่ฝึกปฏิบัติ: รายการแบบเลื่อนลง</translation>
 <translation id="1195238899008218998">คำแถลงท้ายเล่ม</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">ขนาด <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> คอร์ด</translation>
 <translation id="1923956950274750765">สีม่วงกล้วยไม้ปานกลาง</translation>
-<translation id="1928535370180099152">ไฮไลต์อักขระก่อนหน้า</translation>
 <translation id="1928932365747995741">ไม่มีช่องข้อความที่แก้ไขได้ก่อนหน้า</translation>
 <translation id="1964135212174907577">ออบเจ็กต์ถัดไป</translation>
 <translation id="1966649499058910679">ไฮไลต์แต่ละคำในขณะที่พูด</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">เปิดหรือปิดสวิตช์เสียงพูด</translation>
 <translation id="2390264819538553347">กด Enter เพื่อดำเนินการต่อ หรือกด Backspace เพื่อกลับ</translation>
 <translation id="2398579267367951220">พิมพ์เพื่อค้นหาในหน้า กด Enter เพื่อข้ามไปยังผลลัพธ์ กดลูกศรขึ้นหรือลงเพื่อเรียกดูผลลัพธ์ พิมพ์ต่อเพื่อเปลี่ยนคำค้นหา หรือกด Escape เพื่อยกเลิก</translation>
-<translation id="2407047351320112166">ไฮไลต์อักขระถัดไป</translation>
 <translation id="240709722712693803">สีม่วงอมน้ำเงิน</translation>
 <translation id="2410298923485357543">ใช้เสียงที่เป็นธรรมชาติเมื่ออุปกรณ์ออนไลน์</translation>
 <translation id="2416512023405990736">ช่องทำเครื่องหมายที่ไม่ได้ทำเครื่องหมาย</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">เลื่อนเคอร์เซอร์</translation>
 <translation id="3103579948980282461">สีแดงอมม่วงปานกลาง</translation>
 <translation id="3104705064753753826">ข้อความแจ้งเตือน</translation>
-<translation id="3105857328626674463">ไฮไลต์คำก่อนหน้า</translation>
 <translation id="3109724472072898302">ยุบแล้ว</translation>
 <translation id="311015743332597320">เลื่อน 4 นิ้วไปทางขวา</translation>
 <translation id="3112457281078985179">หากต้องการเปิดหรือปิด ChromeVox ให้ใช้ Control+Alt+Z</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">ลิงก์ที่เคยเข้าชมก่อนหน้า</translation>
 <translation id="3241638166094654466">จำนวนเซลล์ในแต่ละบรรทัด:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">ย้ายไปด้านท้าย</translation>
 <translation id="3260949043575829030">รายการที่คล้ายกันก่อนหน้า</translation>
 <translation id="3270069636408109001">ไม่มีตารางถัดไป</translation>
 <translation id="3273791280096244679">บันทึกป้ายกำกับ</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{เครื่องหมายดอลลาร์}other{# เครื่องหมายดอลลาร์}}</translation>
 <translation id="3659787053479271466">การแจ้งเตือน</translation>
-<translation id="3661265561216135784">ทำซ้ำ</translation>
 <translation id="366419593095697301">คำแนะนำ: กดแป้น Escape หากต้องการออกจากบทแนะนำนี้</translation>
 <translation id="3676062394766691318">หลังจากตั้งค่าอุปกรณ์แล้ว คุณกลับมาดูบทแนะนำเพิ่มเติมได้โดยกดแป้น Search + O แล้วกด T</translation>
 <translation id="3681531118904532409">สีชมพูพาพายาวิป</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">ตัวอย่าง</translation>
 <translation id="7439060726180460871">ไดเรกทอรี</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">ไฮไลต์คำถัดไป</translation>
 <translation id="7465123027577412805">ใช้เสียงที่เป็นธรรมชาติไหม</translation>
 <translation id="7491962110804786152">แท็บ</translation>
 <translation id="7492497529767769458">ไปที่ส่วนถัดไป เช่น ถาดสถานะและ Launcher</translation>
 <translation id="7505149250476994901">พูด "ตัวพิมพ์ใหญ่" ต่อจากตัวอักษร</translation>
 <translation id="7533226154149229506">สีเหลืองโกลเด้นร็อดอ่อน</translation>
-<translation id="7541021454094606506">ลบทั้งหมด</translation>
 <translation id="7543255924852002459">ทิ้งป้ายกำกับ</translation>
 <translation id="7552432549459840808">แป้นพิมพ์ลัดของ Chrome ที่มีประโยชน์</translation>
 <translation id="7553679324939294712">แทรก <ph name="INSERT_PHRASE" /> ก่อน <ph name="BEFORE_PHRASE" /></translation>

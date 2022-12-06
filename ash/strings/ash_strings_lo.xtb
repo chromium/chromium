@@ -31,7 +31,6 @@
 <translation id="1148499908455722006">ເປີດກ່ອງໂຕ້​ຕອບຂໍ້ມູນສຳລັບ <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">ປະຕິທິນ</translation>
 <translation id="1153356358378277386">ອຸປະກອນທີ່ຈັບຄູ່ກັນແລ້ວ</translation>
-<translation id="1165712434476988950">ຈຳເປັນຕ້ອງຣິສະຕາດອຸປະກອນເພື່ອນຳໃຊ້ການອັບເດດ.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">ສາຍ USB-C ຂອງທ່ານອາດບໍ່ໄດ້ເຊື່ອມຕໍ່ຫາການສະແດງຜົນຢ່າງຖືກຕ້ອງ</translation>
 <translation id="1175572348579024023">ເລື່ອນ</translation>
@@ -1290,6 +1289,7 @@
 <translation id="8142441511840089262">ຄລິກສອງຄັ້ງ</translation>
 <translation id="8142699993796781067">ເຄືອ​ຂ່າຍ​ສ່ວນຕົວ</translation>
 <translation id="8144760705599030999">ບັນທຶກ <ph name="NAME" /> ຂອງທ່ານໄປໃສ່ <ph name="EMAIL" /> ເພື່ອຈັບຄູ່ຫາອຸປະກອນອື່ນຂອງທ່ານໄດ້ໄວຂຶ້ນ</translation>
+<translation id="8144914663975476336">ເລືອກຮູບແບບການບັນທຶກ</translation>
 <translation id="8149413265954228307">ສະແດງການຕັ້ງຄ່າ Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">ກົດ Ctrl + W ເພື່ອປິດ.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ຕື່ມອັດຕະໂນມັດ</translation>
@@ -1463,7 +1463,6 @@
 <translation id="9089416786594320554">ວິ​ທີ​ການ​ປ້ອນເຂົ້າ</translation>
 <translation id="9091626656156419976">ລຶບຈໍສະແດງຜົນ <ph name="DISPLAY_NAME" /> ອອກແລ້ວ</translation>
 <translation id="9098969848082897657">ປິດສຽງໂທລະສັບ</translation>
-<translation id="9099154003160514616">ມີການອັບເດດ Lacros</translation>
 <translation id="9100887602489003640">ກຳລັງເພີ່ມໂປຣໄຟລ໌. ກະລຸນາລໍຖ້າສອງສາມນາທີ.</translation>
 <translation id="9105450214093926548">ບໍ່ຮອງຮັບການເຂົ້າສູ່ລະບົບຫາຜູ້ໃຊ້ທີສອງໃນຂະນະທີ່ກຳລັງໃຊ້ໂປຣແກຣມທ່ອງເວັບ Lacros ຢູ່. ກະລຸນາໃຊ້ໂປຣໄຟລ໌ໂປຣແກຣມທ່ອງເວັບທີສອງໃນ Lacros ແທນ ຫຼື ປິດ Lacros ແລ້ວລອງໃໝ່.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> ຫຼື <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

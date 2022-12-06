@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Команде за прелазак могу да се користе за ефикасно кретање кроз веб-страницу.</translation>
 <translation id="116896278675803795">Аутоматски промени језик да се подудара са изабраним садржајем</translation>
 <translation id="1175914831232945926">Цифре</translation>
-<translation id="1181003590763099524">премести на почетак</translation>
 <translation id="1188858454923323853">комплементарно</translation>
 <translation id="1189258430971676908">Област за вежбање: падајуће листе</translation>
 <translation id="1195238899008218998">Поговор</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Величина <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Акорд <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Средња љубичаста</translation>
-<translation id="1928535370180099152">истакни претходни знак</translation>
 <translation id="1928932365747995741">Нема претходног поља за унос текста које може да се измени</translation>
 <translation id="1964135212174907577">Следећи објекат</translation>
 <translation id="1966649499058910679">Истакните сваку реч док се изгововара</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Укључите или искључите говор</translation>
 <translation id="2390264819538553347">Да бисте ишли унапред, притисните Enter. Да бисте ишли уназад, притисните тастер за назад (Backspace).</translation>
 <translation id="2398579267367951220">Унесите текст да бисте претражили страницу. Притисните Enter да бисте прешли на резултат, стрелице нагоре или надоле да бисте прегледали резултате, наставите да уносите текст да бисте променили термин за претрагу или притисните Escape да бисте отказали.</translation>
-<translation id="2407047351320112166">истакни следећи знак</translation>
 <translation id="240709722712693803">Плавољубичаста</translation>
 <translation id="2410298923485357543">Користи природан глас кад је уређај онлајн</translation>
 <translation id="2416512023405990736">Неозначено поље за потврду</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Померите курсор</translation>
 <translation id="3103579948980282461">Средња љубичастоцрвена</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">истакни претходну реч</translation>
 <translation id="3109724472072898302">Скупљено</translation>
 <translation id="311015743332597320">Превуците удесно помоћу четири прста</translation>
 <translation id="3112457281078985179">Да бисте укључили или искључили ChromeVox, користите Control + Alt + Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Претходни посећени линк</translation>
 <translation id="3241638166094654466">Ћелија у свакој линији:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">помери на крај</translation>
 <translation id="3260949043575829030">Претходна слична ставка</translation>
 <translation id="3270069636408109001">Нема следеће табеле</translation>
 <translation id="3273791280096244679">Сачувај ознаку</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">поље за потврду ставке менија</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{знак за долар}one{# знак за долар}few{# знака за долар}other{# знакова за долар}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">понови</translation>
 <translation id="366419593095697301">Савет: Притисните тастер Escape ако желите да затворите овај водич.</translation>
 <translation id="3676062394766691318">Када подесите уређај, можете да се вратите и прегледате још водича притиском на тастер за претрагу + O, па T.</translation>
 <translation id="3681531118904532409">Бледа розенаранџаста</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Пример</translation>
 <translation id="7439060726180460871">Каталог</translation>
 <translation id="744163271241493234">лозинка</translation>
-<translation id="7443479558101073378">истакни следећу реч</translation>
 <translation id="7465123027577412805">Желите ли да користите природан глас?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Пређите на следећи одељак. Примери обухватају Статусну траку и Покретач.</translation>
 <translation id="7505149250476994901">Изговорите „велико“ пре слова</translation>
 <translation id="7533226154149229506">Светла златножута</translation>
-<translation id="7541021454094606506">избриши све</translation>
 <translation id="7543255924852002459">Ознака дугмета за одбацивање</translation>
 <translation id="7552432549459840808">Корисне пречице за Chrome</translation>
 <translation id="7553679324939294712">уметни <ph name="INSERT_PHRASE" /> испред <ph name="BEFORE_PHRASE" /></translation>

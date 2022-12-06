@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Hoppekommandoer kan bruges til at navigere effektivt på en webside.</translation>
 <translation id="116896278675803795">Skift automatisk sprog, så det passer med det valgte indhold</translation>
 <translation id="1175914831232945926">Cifre</translation>
-<translation id="1181003590763099524">flyt til begyndelsen</translation>
 <translation id="1188858454923323853">supplerende</translation>
 <translation id="1189258430971676908">Øveområde: Rullelister</translation>
 <translation id="1195238899008218998">Efterskrift</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Størrelse <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Tastekombinationen <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Orkidélilla</translation>
-<translation id="1928535370180099152">fremhæv det forrige tegn</translation>
 <translation id="1928932365747995741">Der er ingen forrige redigerbare tekstfelter</translation>
 <translation id="1964135212174907577">Næste objekt</translation>
 <translation id="1966649499058910679">Fremhæv hvert ord, når det siges</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Slå tale til eller fra</translation>
 <translation id="2390264819538553347">Tryk på Enter for at gå videre. Tryk på Backspace for at gå tilbage.</translation>
 <translation id="2398579267367951220">Skriv for at søge på siden. Tryk på Enter for at gå videre til resultatet, tryk på pil op eller pil ned for at gennemse resultaterne, fortsæt med at skrive for at ændre din søgning, eller tryk på Esc for at annullere.</translation>
-<translation id="2407047351320112166">fremhæv det næste tegn</translation>
 <translation id="240709722712693803">Violetblå</translation>
 <translation id="2410298923485357543">Brug en naturlig stemme, når enheden er online</translation>
 <translation id="2416512023405990736">Et afkrydsningsfelt uden markering</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Flyttemarkør</translation>
 <translation id="3103579948980282461">Rødviolet</translation>
 <translation id="3104705064753753826">advar.dlg</translation>
-<translation id="3105857328626674463">fremhæv det forrige ord</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="311015743332597320">Stryg til højre med fire fingre</translation>
 <translation id="3112457281078985179">Tryk på Ctrl+Alt+Z for at slå ChromeVox til eller fra.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Tidligere besøgt link</translation>
 <translation id="3241638166094654466">Celler i hver linje:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">flyt til sidst i feltet</translation>
 <translation id="3260949043575829030">Forrige lignende element</translation>
 <translation id="3270069636408109001">Der er ikke flere tabeller</translation>
 <translation id="3273791280096244679">Gem etiket</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollar}one{# dollartegn}other{# dollartegn}}</translation>
 <translation id="3659787053479271466">advar</translation>
-<translation id="3661265561216135784">gentag</translation>
 <translation id="366419593095697301">Tip! Tryk på Esc, hvis du vil forlade dette selvstudie.</translation>
 <translation id="3676062394766691318">Når du har konfigureret din enhed, kan du komme tilbage og se flere selvstudier ved at trykke på søgetasten+O efterfulgt af T.</translation>
 <translation id="3681531118904532409">Lys varm orange</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Eksempel</translation>
 <translation id="7439060726180460871">Mappe</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">fremhæv det næste ord</translation>
 <translation id="7465123027577412805">Vil du bruge en naturlig stemme?</translation>
 <translation id="7491962110804786152">fane</translation>
 <translation id="7492497529767769458">Gå til næste sektion. Det kan f.eks. være statusbakken eller Appliste.</translation>
 <translation id="7505149250476994901">Sig "stort" før bogstav</translation>
 <translation id="7533226154149229506">Lysegul gyldenris</translation>
-<translation id="7541021454094606506">slet alt</translation>
 <translation id="7543255924852002459">Kassér etiket</translation>
 <translation id="7552432549459840808">Nyttige genveje i Chrome</translation>
 <translation id="7553679324939294712">indsæt <ph name="INSERT_PHRASE" /> før <ph name="BEFORE_PHRASE" /></translation>

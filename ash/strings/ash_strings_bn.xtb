@@ -31,7 +31,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" />-এর জন্য অ্যাকাউন্টের তথ্য সহ ডায়ালগ খুলুন</translation>
 <translation id="1150989369772528668">ক্যালেন্ডার</translation>
 <translation id="1153356358378277386">যুক্ত করা ডিভাইসগুলি</translation>
-<translation id="1165712434476988950">আপটেড প্রয়োগ করতে ডিভাইস রিস্টার্ট করুন।</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">আপনার USB-C কেবলটি ডিসপ্লেতে সঠিকভাবে কানেক্ট নাও করতে পারে</translation>
 <translation id="1175572348579024023">স্ক্রল করুন</translation>
@@ -668,6 +667,7 @@
 <translation id="4666082839192943839">সব ক্যামেরা সব সময় ব্লক করতে এই ডিভাইসে ক্যামেরা অ্যাক্সেস বন্ধ করুন।</translation>
 <translation id="4666911709726371538">আরও অ্যাপ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ডাউনলোড করা হচ্ছে</translation>
+<translation id="468293128311738995">আপনার ফোন থেকে অ্যাপ</translation>
 <translation id="4690510401873698237">শেল্ফ নিচে দেখানো হচ্ছে</translation>
 <translation id="4696813013609194136">অভিভাবকীয় কোড দিয়ে ডিভাইস আনলক করুন</translation>
 <translation id="4702647871202761252">গোপনীয়তা স্ক্রিন বন্ধ করা আছে</translation>
@@ -1290,6 +1290,7 @@
 <translation id="8142441511840089262">ডবল ক্লিক করুন</translation>
 <translation id="8142699993796781067">ব্যক্তিগত নেটওয়ার্ক</translation>
 <translation id="8144760705599030999">অন্যান্য ডিভাইসের সাথে আরও দ্রুত পেয়ার করতে <ph name="NAME" />-কে <ph name="EMAIL" />-এ সেভ করুন</translation>
+<translation id="8144914663975476336">রেকর্ডিং ফর্ম্যাট বেছে নিন</translation>
 <translation id="8149413265954228307">ব্লুটুথ সেটিংস দেখান। <ph name="STATE_TEXT" />।</translation>
 <translation id="8152092012181020186">বন্ধ করতে Ctrl + W প্রেস করুন।</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, নিজে থেকে সম্পূর্ন করা</translation>
@@ -1463,7 +1464,6 @@
 <translation id="9089416786594320554">ইনপুট পদ্ধতিগুলি</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> প্রদর্শন সরানো হয়েছে</translation>
 <translation id="9098969848082897657">সাইলেন্স ফোন</translation>
-<translation id="9099154003160514616">Lacros আপডেট করা যাবে</translation>
 <translation id="9100887602489003640">প্রোফাইল যোগ করা হচ্ছে। কয়েক মিনিট অপেক্ষা করুন।</translation>
 <translation id="9105450214093926548">Lacros ব্রাউজার চালু থাকাকালীন দ্বিতীয় কোনও ব্যবহারকারী সাইন-ইন করতে পারবেন না। এর পরিবর্তে Lacros-এ দ্বিতীয় কোনও ব্রাউজার প্রোফাইল ব্যবহার করুন অথবা Lacros বন্ধ করে আবার চেষ্টা করুন।</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> বা <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

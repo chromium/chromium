@@ -685,6 +685,7 @@
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{掃描完成，已掃描 1 個頁面}other{掃描完成，已掃描 {NUMBER_OF_PAGES} 個頁面}}</translation>
+<translation id="7458970041932198923">如要查看及設定顯示圖片，請連上網路並重新載入頁面。</translation>
 <translation id="7469648432129124067">已偵測到網路入口</translation>
 <translation id="7481312909269577407">往前</translation>
 <translation id="7487067081878637334">科技資訊</translation>
@@ -839,6 +840,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{掃描}=1{掃描第 {NUMBER_OF_PAGES} 頁}other{掃描第 {NUMBER_OF_PAGES} 頁}}</translation>
 <translation id="8997710128084572139">裝置電池電量為 <ph name="BATTERY_PERCENTAGE" />%。</translation>
+<translation id="8998289560386111590">這項功能無法在你的裝置上使用</translation>
 <translation id="9003704114456258138">頻率</translation>
 <translation id="9025198690966128418">做為個人裝置使用</translation>
 <translation id="9028832514430399253">將切換按鈕設為「開啟」即可選取螢幕保護程式選項</translation>

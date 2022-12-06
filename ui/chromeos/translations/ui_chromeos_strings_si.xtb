@@ -43,8 +43,10 @@
 <translation id="1378727793141957596">Google ධාවකයට සාදරයෙන් පිලිගැනීම !</translation>
 <translation id="1379911846207762492">ඔබට අන්තර්ජාල සම්බන්ධතාවක් නොමැති විට ප්‍රවේශය සඳහා ඔබට ගොනු නොබැඳි ලෙස ලබා ගත හැකි බවට පත් කළ හැකිය.</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
+<translation id="1388045380422025115">සියලු වර්ග</translation>
 <translation id="1395262318152388157">ස්ලයිඩය ලබාගන්න</translation>
 <translation id="1399511500114202393">පරිශීලක සහතිකයක් නැත</translation>
+<translation id="1403008701842173542">සැමතැනම</translation>
 <translation id="1404323374378969387">නෝර්වීජියානු</translation>
 <translation id="1433628812591023318">Parallels Desktop තුළට ගොනු හෙළීමට, ගොනුව Windows ගොනු වෙත ගෙන යා යුතුය.</translation>
 <translation id="1435838927755162558">Parallels Desktop සමඟ ෆෝල්ඩරය බෙදා ගන්න</translation>
@@ -102,6 +104,7 @@
 <translation id="1834290891154666894">වලංගු නොවන මාතෘකා විකල්ප නම ගැළපීම ඇතුළත් කිරීම</translation>
 <translation id="1838709767668011582">Google අඩවිය</translation>
 <translation id="1853795129690976061">මෙම ෆෝල්ඩරය Linux සමග බෙදා ගෙන ඇත</translation>
+<translation id="1859422890169495746">මෙම Chromebook</translation>
 <translation id="1864756863218646478">ගොනුව සොයාගත නොහැකි විය.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, සබඳින්න</translation>
 <translation id="1920670151694390848">මලයාලම් අක්ෂර පරිවර්තනය</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">ජාලය සකසන්න</translation>
 <translation id="2325650632570794183">මෙම ගොනු ආකාරය සහාය නොදක්වයි. මෙම ආකාරයේ ගොනුව විවෘත කළ හැකි යෙදුමක් සොයා ගැනීමට Chrome වෙබ් අලෙවිසැල වෙත යන්න.</translation>
 <translation id="2326539130272988168">බල්ගේරියානු</translation>
+<translation id="2337715497728194187">Bruschetta සමග බෙදා ගන්න</translation>
 <translation id="23721837607121582">ජංගම පැතිකඩ බාගන්න, ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ලැයිස්තු දසුනට මාරු වන්න</translation>
 <translation id="2377590462528165447">ෆෝල්ඩර <ph name="NUMBER_OF_ITEMS" />ක් ලිනක්ස් සමඟ බෙදා ගත්තා</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">අවසරදීම් සහතිකය ජාලය වෙතින් ප්‍රතික්ෂේප විය</translation>
 <translation id="255937426064304553">US ජාත්‍යන්තර</translation>
 <translation id="2563185590376525700">ගෙම්බා</translation>
+<translation id="2574327434504608656">1 ෆෝල්ඩරයක් Bruschetta සමග බෙදා ගෙන ඇත</translation>
 <translation id="2578394532502990878">දෙමළ ශබ්දිම</translation>
 <translation id="2579959351793446050">ඔඩියා</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />වන ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043">සක්‍රිය කරන්න, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Neo 2 යතුරුපුවරුව සමග ජර්මානු (ජර්මනිය)</translation>
 <translation id="3414856743105198592">ඉවත් කළ හැකි මාධ්‍යය හැඩතල ගැන්වීම සියලු දත්ත මැකීමට සුදානම් වේ. ඔබ දිගටම කරගෙන යාමට කැමතිද?</translation>
+<translation id="3435143625481187092">Bruschetta හට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ගොනු වෙත ප්‍රවේශ වීමට අවසරය දෙන්න</translation>
 <translation id="3437801641691368414">සාදන ලද වේලාව</translation>
 <translation id="343907260260897561">ක්ෂණික කැමරාව</translation>
 <translation id="3455931012307786678">එස්තෝනියානු</translation>
@@ -354,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ගෙන යන ලදී.</translation>
 <translation id="4176286497474237543">දැන් කුණු කූඩය හිස් කරන්න</translation>
 <translation id="4179621117429069925">මෙම අයිතමය ඔබේ කුණු කූඩයේ ඇත</translation>
+<translation id="4181839429935094755">Bruschetta සමග ෆෝල්ඩර <ph name="NUMBER_OF_ITEMS" />ක් බෙදා ගෙන ඇත</translation>
 <translation id="4186579485882418952">නොබැඳිව සබල කරන්න</translation>
 <translation id="4193154014135846272">Google ලේඛනය</translation>
 <translation id="4197674956721858839">Zip තේරීම</translation>
@@ -415,6 +422,7 @@
 <translation id="4646813851450205600">Qwerty යතුරු පුවරුව සමග චෙක්</translation>
 <translation id="4656777537938206294">ගොනු නොබැඳිව ලබා ගත හැකි බවට පත් කරන්න</translation>
 <translation id="4658782175094886150">හිමේ සිටින පුද්ගලයා</translation>
+<translation id="466782788172479199">ඔබේ Google Drive හි ඇති ගොනු වෙත ප්‍රවේශ වීමට Bruschetta හට අවසරය ලබා දෙන්න. වෙනස් කිරීම් ඔබේ අනෙකුත් උපාංගවලට සමමුහුර්ත කරනු ඇත.</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' හි සාමාජිකයන්ට මෙම අයිතම ඔවුන් සමග බෙදා ගන්නේ නම් මිස ප්‍රවේශය අහිමි වනු ඇත.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ස්වීඩන</translation>
@@ -448,6 +456,7 @@
 <translation id="4850886885716139402">දසුන</translation>
 <translation id="485316830061041779">ජර්මානු</translation>
 <translation id="4867079195717347957">තීරුව බසින පිළිවෙළට සැකසීමට ක්ලික් කරන්න.</translation>
+<translation id="4867297348137739678">අවසාන සතිය</translation>
 <translation id="4873265419374180291">බයිට් <ph name="NUMBER_OF_BYTES" /></translation>
 <translation id="4874569719830985133">සදහටම මකන්න</translation>
 <translation id="4880214202172289027">හඬ සර්පණය</translation>
@@ -520,6 +529,7 @@
 <translation id="5330145655348521461">මෙම ගොනු වෙනස් ඩෙස්ක්ටොප් එකක විවෘත කරන ලදි. බැලීමට <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) වෙත ගෙන යන්න.</translation>
 <translation id="5330512191124428349">තොරතුරු ලබා ගන්න</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> හැර අනෙකුත් සියලු urls මගින් ගොනු ප්‍රවේශය</translation>
+<translation id="5344246330454251646">Bruschetta බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
 <translation id="535792325654997756">බළලුන් සමග පුද්ගලයා</translation>
 <translation id="5358764674931277">රාමු අනුපාතය</translation>
 <translation id="5363339716524495120">ආදාන භාෂාව චීන වේ</translation>
@@ -565,6 +575,7 @@
 <translation id="5700087501958648444">ශ්‍රව්‍ය තතු</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> කුණු කූඩය වෙත ගෙන යන ලදි</translation>
 <translation id="5724172041621205163">පට්ටචොට් යතුරුපුවරුව සමඟ තායි</translation>
+<translation id="57383366388012121">පසුගිය මාසය</translation>
 <translation id="5756666464756035725">හංගේරියානු Qwerty</translation>
 <translation id="5763377084591234761">ජර්මානු (ස්විට්සර්ලන්තය)</translation>
 <translation id="5769519078756170258">ඇතුළු නොකළ යුතු ධාරකය හෝ වසම</translation>
@@ -674,6 +685,7 @@
 <translation id="6710213216561001401">පෙර</translation>
 <translation id="6732801395666424405">සහතිකය පටවා නොමැත</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Bruschetta සමග ෆෝල්ඩරය බෙදා ගන්න</translation>
 <translation id="6751256176799620176">ෆෝල්ඩර 1ක් තෝරන ලදී</translation>
 <translation id="6755827872271341378">ChromeOS Flex උපාංගය</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
@@ -702,6 +714,7 @@
 <translation id="6935521024859866267">යටිකුරු</translation>
 <translation id="6943836128787782965">HTTP අසාර්ථක විය</translation>
 <translation id="6949408524333579394">සර්බියානු අක්ෂර පරිවර්තනය</translation>
+<translation id="69548399407432279">පසුගිය වසර</translation>
 <translation id="6960565108681981554">සක්‍රිය කර නැත. ඔබගේ වාහකය අමතන්න.</translation>
 <translation id="696203921837389374">ජංගම දත්ත ඔස්සේ සමමුහුර්ත කිරීම සබල කරන්න</translation>
 <translation id="6965382102122355670">හරි</translation>
@@ -845,6 +858,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ශ්‍රව්‍ය</translation>
 <translation id="8045462269890919536">රොමේනියානු</translation>
 <translation id="8049184478152619004">පුද්ගලික අවහිර කිරීම ඉවත් කිරීමේ යතුර (PUK) ඇතුළු කරන්න</translation>
+<translation id="8055538340801153769">මෙම ෆෝල්ඩරය</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> උපුටා ගනිමින්...</translation>
 <translation id="8087576439476816834"><ph name="PROFILE_NAME" />, බාගන්න</translation>
 <translation id="8106045200081704138">මා සමඟ හුවමාරු කළ</translation>

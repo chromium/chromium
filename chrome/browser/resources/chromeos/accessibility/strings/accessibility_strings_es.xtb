@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Los comandos de salto se pueden usar para navegar de forma eficiente por una página web.</translation>
 <translation id="116896278675803795">Cambiar automáticamente el idioma para que coincida con el contenido seleccionado</translation>
 <translation id="1175914831232945926">Dígitos</translation>
-<translation id="1181003590763099524">mover al principio</translation>
 <translation id="1188858454923323853">complementario</translation>
 <translation id="1189258430971676908">Zona de práctica: listas desplegables</translation>
 <translation id="1195238899008218998">Epílogo</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Tamaño <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Acorde <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Orquídea medio</translation>
-<translation id="1928535370180099152">destacar el carácter anterior</translation>
 <translation id="1928932365747995741">No hay ningún campo de texto editable anterior</translation>
 <translation id="1964135212174907577">Objeto siguiente</translation>
 <translation id="1966649499058910679">Destacar cada palabra cuando se pronuncia</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Activa o desactiva los mensajes de voz</translation>
 <translation id="2390264819538553347">Para avanzar, pulsa Intro. Para retroceder, pulsa Retroceso.</translation>
 <translation id="2398579267367951220">Escribe para buscar en la página. Pulsa Intro para ir al resultado, usa las flechas hacia arriba o hacia abajo para explorar los resultados, sigue escribiendo para cambiar la búsqueda o pulsa Esc para cancelar.</translation>
-<translation id="2407047351320112166">destacar el carácter siguiente</translation>
 <translation id="240709722712693803">Violeta azulado</translation>
 <translation id="2410298923485357543">Usar voz natural cuando el dispositivo está online</translation>
 <translation id="2416512023405990736">Una casilla de verificación desmarcada</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Mover cursor</translation>
 <translation id="3103579948980282461">Rosa oscuro medio</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">destacar la palabra anterior</translation>
 <translation id="3109724472072898302">Contraído</translation>
 <translation id="311015743332597320">Deslizar cuatro dedos hacia la derecha</translation>
 <translation id="3112457281078985179">Para activar o desactivar ChromeVox, utiliza Control+Alt+Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Anterior enlace visitado</translation>
 <translation id="3241638166094654466">Celdas en cada línea:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">mover al final</translation>
 <translation id="3260949043575829030">Elemento similar anterior</translation>
 <translation id="3270069636408109001">No hay ninguna tabla posterior</translation>
 <translation id="3273791280096244679">Guardar etiqueta</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dólar}other{# símbolos de dólar}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">repetir</translation>
 <translation id="366419593095697301">Sugerencia: Pulsa Esc si quieres salir de este tutorial.</translation>
 <translation id="3676062394766691318">Cuando hayas configurado el dispositivo, puedes volver a esta página y ver más tutoriales pulsando la tecla de búsqueda + O y, a continuación, T.</translation>
 <translation id="3681531118904532409">Papaya</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Ejemplo</translation>
 <translation id="7439060726180460871">Directorio</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">destacar la siguiente palabra</translation>
 <translation id="7465123027577412805">¿Usar voz natural?</translation>
 <translation id="7491962110804786152">tabulador</translation>
 <translation id="7492497529767769458">Ir a la sección siguiente. Algunos ejemplos son la bandeja de estado y el menú de aplicaciones.</translation>
 <translation id="7505149250476994901">Di "mayúscula" después de la letra</translation>
 <translation id="7533226154149229506">Amarillo dorado claro</translation>
-<translation id="7541021454094606506">eliminar todo</translation>
 <translation id="7543255924852002459">Etiqueta Descartar</translation>
 <translation id="7552432549459840808">Combinaciones de teclas útiles de Chrome</translation>
 <translation id="7553679324939294712">insertar <ph name="INSERT_PHRASE" /> antes de <ph name="BEFORE_PHRASE" /></translation>

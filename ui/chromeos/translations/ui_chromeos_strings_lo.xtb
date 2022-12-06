@@ -43,8 +43,10 @@
 <translation id="1378727793141957596">ຍິນ​ດີ​ຕ້ອນ​ຮັບສູ່ Google Drive!</translation>
 <translation id="1379911846207762492">ທ່ານສາມາດເຮັດໃຫ້ໄຟລ໌ນຳໃຊ້ແບບອອບລາຍໄດ້ເພື່ອເຂົ້າເຖິງເມື່ອທ່ານບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
+<translation id="1388045380422025115">ທຸກປະເພດ</translation>
 <translation id="1395262318152388157">​ແຖບເລື່ອນ​ຊອກ​ຫາ</translation>
 <translation id="1399511500114202393">ບໍ່ມີໃບຮັບຮອງຜູ້ໃຊ້</translation>
+<translation id="1403008701842173542">ທຸກບ່ອນ</translation>
 <translation id="1404323374378969387">ພາສານໍເວກຽນ</translation>
 <translation id="1433628812591023318">ເພື່ອວາງໄຟລ໌ໃນ Parallels Desktop, ໄຟລ໌ນັ້ນຈະຕ້ອງຖືກຍ້າຍໄປໃສ່ໄຟລ໌ Windows ກ່ອນ.</translation>
 <translation id="1435838927755162558">ແບ່ງປັນໂຟນເດີກັບ Parallels Desktop</translation>
@@ -102,6 +104,7 @@
 <translation id="1834290891154666894">ຂໍ້ມູນການຈັບຄູ່ຊື່ສຳຮອງຫົວຂໍ້ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="1838709767668011582">ເວັບໄຊ Google</translation>
 <translation id="1853795129690976061">ມີການແບ່ງປັນໂຟນເດີນີ້ກັບ Linux</translation>
+<translation id="1859422890169495746">Chromebook ນີ້</translation>
 <translation id="1864756863218646478">ບໍ່​ສາ​ມາດພົບໄຟລ​໌ໄດ້​.</translation>
 <translation id="1884013283844450420">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ເຊື່ອມຕໍ່</translation>
 <translation id="1920670151694390848">ການແປທັບສັບພາສາມາລາຢາລຳ</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">ປັບຕັ້ງຄ່າເຄືອຂ່າຍ</translation>
 <translation id="2325650632570794183">ປະເພດໄຟລ໌ນີ້ບໍ່ຖືກຮອງຮັບ. ກະລຸນາເຂົ້າໄປເບິ່ງ Chrome Web Store ເພື່ອຊອກຫາແອັບທີ່ສາມາດເປີດໄຟລ໌ປະເພດນີ້ໄດ້.</translation>
 <translation id="2326539130272988168">ບັງກາຣຽນ</translation>
+<translation id="2337715497728194187">ແບ່ງປັນກັບ Bruschetta</translation>
 <translation id="23721837607121582">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
 <translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">ໃບ​ຢັ້ງ​ຢືນ​ການ​ຮັບຮອງຖືກ​ເຄືອ​ຂ່າຍ​ປະ​ຕິ​ເສດ</translation>
 <translation id="255937426064304553">US ສາ​ກົນ</translation>
 <translation id="2563185590376525700">ກົບ</translation>
+<translation id="2574327434504608656">ແບ່ງປັນ 1 ໂຟນເດີກັບ Bruschetta ແລ້ວ</translation>
 <translation id="2578394532502990878">ພາສາທາມິລ (ຕາມການອອກສຽງ)</translation>
 <translation id="2579959351793446050">ພາສາໂອເດຍ</translation>
 <translation id="2602810353103180630">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ຖືກບລັອກໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ, ລາຍລະອຽດ</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043">ເປີດໃຊ້, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">ພາສາເຢຍລະມັນ (ເຢຍລະມັນ) ທີ່ໃຊ້ແປ້ນພິມ Neo 2</translation>
 <translation id="3414856743105198592">ການຟໍແມັດມີເດຍທີ່ສາມາດຖອດອອກໄ້ຈະລຶບທຸກຂໍ້ມູນ. ທ່ານ​ຕ້ອງ​ການ​​ຈະ​ສືບ​ຕໍ່ບໍ​?</translation>
+<translation id="3435143625481187092">ໃຫ້ສິດເຂົ້າເຖິງໄຟລ໌ໃນໂຟນເດີ <ph name="FOLDER_NAME" /> ແກ່ Bruschetta</translation>
 <translation id="3437801641691368414">ເວລາສ້າງ</translation>
 <translation id="343907260260897561">ກ້ອງຖ່າຍຮູບດ່ວນ</translation>
 <translation id="3455931012307786678">ພາສາເອສໂຕນຽນ</translation>
@@ -320,6 +326,7 @@
 <translation id="3801082500826908679">ພາ​ສາຟາໂຣອີ​ສ</translation>
 <translation id="3809272675881623365">ກະຕ່າຍ</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
+<translation id="3811408895933919563">ອັງກິດ (ປາກີສະຖານ)</translation>
 <translation id="3811494700605067549">ເລືອກ 1 ໄຟລ໌ແລ້ວ</translation>
 <translation id="3817579325494460411">ບໍ່ໄດ້ສະໜອງໃຫ້</translation>
 <translation id="3819448694985509187">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານລອງໄດ້ອີກ 1 ເທື່ອ.</translation>
@@ -354,6 +361,7 @@
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
 <translation id="4176286497474237543">ລ້າງຖັງຂີ້ເຫຍື້ອດຽວນີ້</translation>
 <translation id="4179621117429069925">ລາຍການນີ້ແມ່ນຢູ່ໃນຖັງຂີ້ເຫຍື້ອຂອງທ່ານ.</translation>
+<translation id="4181839429935094755">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Bruschetta ແລ້ວ</translation>
 <translation id="4186579485882418952">ເປີດການນຳໃຊ້ອອບລາຍ</translation>
 <translation id="4193154014135846272">ເອ​ກະ​ສານ​ Google</translation>
 <translation id="4197674956721858839">ການເລືອກຊິບໄຟລ໌</translation>
@@ -415,6 +423,7 @@
 <translation id="4646813851450205600">ພາສາເຊັກທີ່ໃຊ້ແປ້ນພິມ Qwerty</translation>
 <translation id="4656777537938206294">ເຮັດໃຫ້ໄຟລ໌ສາມາດໃຊ້ໄດ້ອອບລາຍ</translation>
 <translation id="4658782175094886150">ຄົນໃນຫິມະ</translation>
+<translation id="466782788172479199">ໃຫ້ສິດເຂົ້າເຖິງໄຟລ໌ໃນ Google Drive ຂອງທ່ານແກ່ Bruschetta. ການປ່ຽນແປງຈະຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນໆຂອງທ່ານ.</translation>
 <translation id="4669606053856530811">ສະມາຊິກ '<ph name="SOURCE_NAME" />' ຈະສູນເສຍການເຂົ້າເຖິງ ເວັ້ນເສຍແຕ່ວ່າມີການແບ່ງປັນລາຍການເຫຼົ່ານີ້ກັບເຂົາເຈົ້າ.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ພາສາຊູແອດ</translation>
@@ -448,6 +457,7 @@
 <translation id="4850886885716139402">ເບິ່ງ</translation>
 <translation id="485316830061041779">ພາສາເຢຍລະມັນ</translation>
 <translation id="4867079195717347957">ຄລິກເພື່ອຮຽງລຳດັບຖັນແຕ່ໃຫຍ່ຫານ້ອຍ.</translation>
+<translation id="4867297348137739678">ອາທິດທີ່ຜ່ານມາ</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ໄບຕ໌</translation>
 <translation id="4874569719830985133">ລຶບຖາວອນ</translation>
 <translation id="4880214202172289027">​ແຖບ​ເລື່ອນປັບ​ລະດັບ​ສຽງ</translation>
@@ -520,6 +530,7 @@
 <translation id="5330145655348521461">ໄຟລ໌ເຫຼົ່ານີ້ເປີດຢູ່ໃນເດັສທັອບອື່ນ. ຍ້າຍໄປຫາ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ເພື່ອເບິ່ງມັນ.</translation>
 <translation id="5330512191124428349">ຮັບເອົາຂໍ້ມູນ</translation>
 <translation id="5337538975554986899">ສິດເຂົ້າເຖິງໄຟລ໌ຕາມ URL ທັງໝົດຍົກເວັ້ນ <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">ຈັດການການແບ່ງປັນກັບ Bruschetta</translation>
 <translation id="535792325654997756">ຄົນກັບແມວ</translation>
 <translation id="5358764674931277">ອັດຕາພາບ</translation>
 <translation id="5363339716524495120">ພາສາປ້ອນເຂົ້າແມ່ນຈີນ</translation>
@@ -565,6 +576,7 @@
 <translation id="5700087501958648444">ຂໍ້ມູນສຽງ</translation>
 <translation id="5720028165859493293">ຍ້າຍ <ph name="FILE_NAME" /> ໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="5724172041621205163">ພາສາໄທທີ່ໃຊ້ແປ້ນພິມປັດຕາໂຊດ</translation>
+<translation id="57383366388012121">ເດືອນທີ່ຜ່ານມາ</translation>
 <translation id="5756666464756035725">QWERTY ພາ​ສາ​ຮົງ​ກາ​ລີ</translation>
 <translation id="5763377084591234761">ພາສາເຢຍລະມັນ (ສະວິດເຊີແລນ)</translation>
 <translation id="5769519078756170258">ໂຮສ ຫຼື ໂດເມນທີ່ຈະຍົກເວັ້ນ</translation>
@@ -674,6 +686,7 @@
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
 <translation id="6732801395666424405">ໃບ​ຢັ້ງ​ຢືນບໍ່ຖືກໂຫຼດ​</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">ແບ່ງປັນໂຟນເດີກັບ Bruschetta</translation>
 <translation id="6751256176799620176">ເລືອກ 1 ໂຟນເດີແລ້ວ</translation>
 <translation id="6755827872271341378">ອຸປະກອນ ChromeOS Flex</translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
@@ -702,6 +715,7 @@
 <translation id="6935521024859866267">ປີ້ນດ້ານ</translation>
 <translation id="6943836128787782965">HTTP ລົ້ມເຫຼວ</translation>
 <translation id="6949408524333579394">ການແປທັບສັບພາສາເຊີບຽນ</translation>
+<translation id="69548399407432279">ປີທີ່ຜ່ານມາ</translation>
 <translation id="6960565108681981554">ບໍ່ໄດ້ເປີດນຳໃຊ້. ກະລຸນາຕິດຕໍ່ຜູ້ໃຫ້ບໍລິການຂອງທ່ານ.</translation>
 <translation id="696203921837389374">ເປີດ​ໃຊ້​ງານ​ການ​ຊິງ​ຄ໌​ເທິງ​ເຄືອ​ຂ່າຍ​ມື​ຖື</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
@@ -845,6 +859,7 @@
 <translation id="8042602468072383151">ສຽງ <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">ພາສາໂຣມານີ</translation>
 <translation id="8049184478152619004">ລະບຸ Personal Unblocking Key (PUK)</translation>
+<translation id="8055538340801153769">ໂຟນເດີນີ້</translation>
 <translation id="807187749540895545">ກຳລັງແຕກໄຟລ໌ <ph name="FILE_NAME" />...</translation>
 <translation id="8087576439476816834">ດາວໂຫຼດ, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ແຊຣ໌ກັບຂ້ອຍ</translation>

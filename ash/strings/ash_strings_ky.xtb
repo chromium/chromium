@@ -31,7 +31,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> үчүн маалымат диалогун ачуу</translation>
 <translation id="1150989369772528668">Жылнаама</translation>
 <translation id="1153356358378277386">Жупташкан түзмөктөр</translation>
-<translation id="1165712434476988950">Жаңыртууну иштетүү үчүн түзмөктү өчүрүп күйгүзүү талап кылынат.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C кабели дисплейлерге туура туташпашы мүмкүн</translation>
 <translation id="1175572348579024023">Сыдыруу</translation>
@@ -1194,7 +1193,7 @@
 <translation id="7634648064048557203">Камера төмөнкү оң бурчка кадалды</translation>
 <translation id="7641938616688887143">Жаздыруу</translation>
 <translation id="7642106959537987271">түстөрдү инверсиялоо режими</translation>
-<translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> тармагынын жөндөөлөрүн ачуу</translation>
+<translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> тармагынын параметрлерин ачуу</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ээси)</translation>
 <translation id="7647488630410863958">Эскертмелериңизди көрүү үчүн түзмөгүңүздү бөгөттөн чыгарыңыз</translation>
 <translation id="7649070708921625228">Жардам</translation>
@@ -1446,7 +1445,7 @@
 <translation id="9029736946581028033">Түзмөктүн батареясы бир аздан кийин отурат</translation>
 <translation id="9030319654231318877">Күн батканга чейин өчүк</translation>
 <translation id="9034924485347205037">Linux файлдары</translation>
-<translation id="9047624247355796468"><ph name="NETWORK_NAME" /> тармагынын жөндөөлөрүн ачуу</translation>
+<translation id="9047624247355796468"><ph name="NETWORK_NAME" /> тармагынын параметрлерин ачуу</translation>
 <translation id="9059834730836941392">Эскертмени жыйыштыруу</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9070640332319875144">Жардамчынын жөндөөлөрү</translation>
@@ -1463,7 +1462,6 @@
 <translation id="9089416786594320554">Киргизүү ыкмалары</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дисплейи өчүрүлдү</translation>
 <translation id="9098969848082897657">Телефондун үнүн өчүрүү</translation>
-<translation id="9099154003160514616">Lacros жаңыртуусу жеткиликтүү</translation>
 <translation id="9100887602489003640">Профиль кошулууда. Бир нече мүнөт күтө туруңуз.</translation>
 <translation id="9105450214093926548">Lacros серепчиси иштеп жатканда экинчи колдонуучу кире албайт. Анын ордуна Lacros'то экинчи профилди колдонуңуз же Lacros'ту жаап, кайра аракет кылыңыз.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> же <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

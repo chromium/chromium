@@ -792,7 +792,6 @@
 <translation id="1719312230114180055">ശ്രദ്ധിക്കുക: ഒരു ശക്തമായ പാസ്‌വേഡിനേക്കാളോ പിൻ നമ്പറിനേക്കാളോ കുറവായിരിക്കാം നിങ്ങളുടെ വിരലടയാളം ഉപയോഗിച്ചുള്ള സുരക്ഷ.</translation>
 <translation id="1720318856472900922">TLS WWW സെര്‍‌വര്‍‌ പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />-ലൂടെ ചിത്രം തിരയൂ</translation>
-<translation id="1721312023322545264">ഈ സൈറ്റ് സന്ദർശിക്കാൻ നിങ്ങൾക്ക് <ph name="NAME" /> എന്നയാളിൽ നിന്നുള്ള അനുമതി ആവശ്യമാണ്</translation>
 <translation id="1722460139690167654">നിങ്ങളുടെ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത്<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ആണ്</translation>
 <translation id="1723824996674794290">&amp;പുതിയ വിൻഡോ</translation>
 <translation id="1724801751621173132">ഇൻപുട്ട് മോഡ്</translation>
@@ -5912,6 +5911,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" /> എന്നതുമായി ബന്ധപ്പെട്ടത്</translation>
 <translation id="6508261954199872201">ആപ്പ്: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">മീഡിയ ലൈസൻസ്</translation>
+<translation id="6511279028091289182">സുരക്ഷിത കണക്ഷനിലൂടെ വെബ്‌സൈറ്റുകളിലേക്ക് എങ്ങനെ കണക്റ്റ് ചെയ്യാമെന്ന് നിർണ്ണയിക്കുന്നു. ഇത്, <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> എന്നതിൽ മാനേജ് ചെയ്യപ്പെടുന്ന സേവന ദാതാവിനെ ഉപയോഗിക്കുന്നു</translation>
 <translation id="6511827214781912955">ഈ ഉപകരണം ഉപയോഗിക്കുന്ന മറ്റ് ആളുകൾ നിങ്ങളുടെ പാസ്‌വേഡുകൾ കാണുന്നത് തടയാൻ <ph name="FILENAME" /> ഇല്ലാതാക്കുന്നത് പരിഗണിക്കുക</translation>
 <translation id="6512808201725371249">ഈ അക്കൗണ്ടിനുള്ള ഒരു പാസ്‌വേഡ് ഇതിനകം തന്നെ നിങ്ങളുടെ Google Password Manager-ൽ (<ph name="USER_EMAIL" />) സംരക്ഷിച്ചിട്ടുണ്ട്</translation>
 <translation id="6513247462497316522">മറ്റൊരു നെറ്റ്‌വർക്കിൽ കണക്‌റ്റ് ചെയ്‌തിട്ടില്ലെങ്കിൽ Google Chrome മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
@@ -5981,6 +5981,7 @@
 <translation id="6568283005472142698">ടാബ് തിരയൽ</translation>
 <translation id="65711204837946324">ഡൗൺലോഡ് ചെയ്യാൻ അനുമതി ആവശ്യമാണ്</translation>
 <translation id="6571772921213691236">സൈൻ ഇൻ ഡാറ്റ എഡിറ്റ് ചെയ്യുക</translation>
+<translation id="657229725818377235">അപകടകരമായ വെബ്‌സെെറ്റുകൾക്കും ഡൗൺലോഡുകൾക്കും എതിരെ കൂടുതൽ പരിരക്ഷ നേടൂ</translation>
 <translation id="6573096386450695060">എല്ലായ്‌പ്പോഴും അനുവദിക്കുക</translation>
 <translation id="6573497332121198392">കുറുക്കുവഴി നീക്കം ചെയ്യാനാകില്ല</translation>
 <translation id="657402800789773160">&amp;ഈ പേജ് വീണ്ടും ലോഡ് ചെയ്യുക</translation>

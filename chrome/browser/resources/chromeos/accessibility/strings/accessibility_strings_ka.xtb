@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">გადასვლის ბრძანებების მეშვეობით შესაძლებელია ეფექტური ნავიგაცია ვებგვერდზე.</translation>
 <translation id="116896278675803795">ავტომატურად შეცვალეთ ენა, რომ არჩეულ კონტენტს დაემთხვეს</translation>
 <translation id="1175914831232945926">ციფრები</translation>
-<translation id="1181003590763099524">დასაწყისში გადატანა</translation>
 <translation id="1188858454923323853">დამატებითი</translation>
 <translation id="1189258430971676908">პრაქტიკის არე: ჩამოსაშლელი სიები</translation>
 <translation id="1195238899008218998">ბოლოსიტყვაობა</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">ზომა: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> აკორდი</translation>
 <translation id="1923956950274750765">ზომიერი ორქიდეისფერი</translation>
-<translation id="1928535370180099152">წინა სიმბოლოს გამოყოფა</translation>
 <translation id="1928932365747995741">წინა რედაქტირებადი ტექსტური ველი არ არის</translation>
 <translation id="1964135212174907577">შემდეგი ობიექტი</translation>
 <translation id="1966649499058910679">წარმოთქმისას თითოეული სიტყვის გამოყოფა</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">გახმოვანების ჩართვა ან გამორთვა</translation>
 <translation id="2390264819538553347">წინ გადასასვლელად, დააჭირეთ „Enter“-ს; უკან გადასასვლელად, დააჭირეთ „უკუშლას“.</translation>
 <translation id="2398579267367951220">აკრიფეთ ტექსტი გვერდზე ძიებისთვის. შედეგზე გადასასვლელად დააჭირეთ კლავიშს „enter“, შედეგების დასათვალიერებლად — კლავიშებს ზემოთ/ქვემოთ მიმართული ისრებით. საძიებო მოთხოვნის შესაცვლელად გააგრძელეთ ტექსტის აკრეფა, ხოლო გასაუქმებლად დააჭირეთ კლავიშს „escape“.</translation>
-<translation id="2407047351320112166">შემდეგი სიმბოლოს გამოყოფა</translation>
 <translation id="240709722712693803">მოლურჯო იისფერი</translation>
 <translation id="2410298923485357543">ბუნებრივი ხმის გამოყენება, როცა მოწყობილობა ონლაინ რეჟიმშია</translation>
 <translation id="2416512023405990736">მოუნიშნავი მოსანიშნი ველი</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">კურსორის გადაადგილება</translation>
 <translation id="3103579948980282461">ზომიერი მოიისფრო წითელი</translation>
 <translation id="3104705064753753826">გაფრთხილების დიალოგი</translation>
-<translation id="3105857328626674463">წინა სიტყვის გამოყოფა</translation>
 <translation id="3109724472072898302">აკეცილი</translation>
 <translation id="311015743332597320">ოთხი თითით გადაფურცვლა მარჯვნივ</translation>
 <translation id="3112457281078985179">ChromeVox-ის ჩასართავად ან გამოსართავად, გამოიყენეთ კლავიშთა კომბინაცია: Control + Alt + Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">წინა მონახულებული ბმული</translation>
 <translation id="3241638166094654466">უჯრედების რაოდენობა თითოეულ ხაზზე:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">ბოლოში გადატანა</translation>
 <translation id="3260949043575829030">წინა მსგავსი ერთეული</translation>
 <translation id="3270069636408109001">შემდეგი ცხრილი არ არის</translation>
 <translation id="3273791280096244679">ლეიბლის შენახვა</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{დოლარი}other{# დოლარის ნიშნები}}</translation>
 <translation id="3659787053479271466">გაფრთხილებ</translation>
-<translation id="3661265561216135784">გამეორება</translation>
 <translation id="366419593095697301">მინიშნება: თუ ამ სახელმძღვანელოდან გასვლა გსურთ, დააჭირეთ Escape კლავიშს.</translation>
 <translation id="3676062394766691318">თქვენი მოწყობილობის დაყენების შემდეგ შეგიძლიათ დაბრუნდეთ და იხილოთ სხვა სახელმძღვანელოები. ამისთვის უნდა დააჭიროთ კლავიშთა კომბინაციას Search + O, შემდეგ კი T.</translation>
 <translation id="3681531118904532409">პაპაიის ყლორტისფერი</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">მაგალითი</translation>
 <translation id="7439060726180460871">დირექტორია</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">შემდეგი სიტყვის გამოყოფა</translation>
 <translation id="7465123027577412805">გსურთ, გამოიყენოთ ბუნებრივი ხმა?</translation>
 <translation id="7491962110804786152">ჩანართი</translation>
 <translation id="7492497529767769458">შემდეგ სექციაზე გადასვლა. მაგალითად, სტატუსის პანელზე და გამშვებზე.</translation>
 <translation id="7505149250476994901">ასომდე „მთავრულის“ წარმოთქმა</translation>
 <translation id="7533226154149229506">ღია ოქროწკეპლისფერი</translation>
-<translation id="7541021454094606506">ყველაფრის წაშლა</translation>
 <translation id="7543255924852002459">დახურვის ლეიბლი</translation>
 <translation id="7552432549459840808">Chrome-ის სასარგებლო მალსახმობები</translation>
 <translation id="7553679324939294712">ჩაისვას „<ph name="INSERT_PHRASE" />“ ფრაზამდე „<ph name="BEFORE_PHRASE" />“</translation>

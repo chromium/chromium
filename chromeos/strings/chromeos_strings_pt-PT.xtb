@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Enviar relatório de feedback</translation>
 <translation id="2407209115954268704">Estado de bloqueio do SIM</translation>
+<translation id="241419523391571119">Reabra a tampa para testar</translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2418150275289244458">Abra nas Definições</translation>
 <translation id="2421798028054665193">Imagem <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Descarregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="2902312830803030883">Mais ações</translation>
 <translation id="2926057806159140518">Introduza o seu nome de utilizador e palavra-passe ou leia o código QR</translation>
+<translation id="2940811910881150316">Não é possível testar o dispositivo. Reabra a tampa para testar.</translation>
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3017079585324758401">Fundo</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">PIN inválido.</translation>
 <translation id="3824259034819781947">Anexar ficheiros</translation>
 <translation id="3838338534323494292">Nova palavra-passe</translation>
+<translation id="3845880861638660475">Prima <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> para fechar a caixa de diálogo.</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">É necessária uma descrição</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">Descrição</translation>
 <translation id="387301095347517405">O número de vezes que a bateria concluiu um ciclo de carregamento completo.</translation>
 <translation id="3885327323343477505">Alterar proteção de ecrã</translation>
+<translation id="391412459402535266">Não é possível testar o dispositivo. Mude para o modo de portátil para testar.</translation>
 <translation id="3923184630988645767">Utilização de dados</translation>
 <translation id="3932043219784172185">Nenhum dispositivo ligado</translation>
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567">As tarefas de impressão com mais de <ph name="NUMBER_OF_DAYS" /> dias serão removidas.</translation>
 <translation id="3993704782688964914">O dispositivo <ph name="DEVICE_NAME" /> está agora atualizado</translation>
 <translation id="4003384961948020559">Falha – Saída cheia</translation>
+<translation id="4021031199988160623">Mude para o modo de portátil para testar</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4044093238444069296">Não é possível contactar o gateway</translation>
 <translation id="4046123991198612571">Faixa seguinte</translation>
@@ -769,6 +774,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8372477600026034341">Anfitriões adicionais</translation>
 <translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> é gerido pela empresa.</translation>
 <translation id="8398927464629426868">A velocidade de carregamento ou descarregamento atual do dispositivo.</translation>
+<translation id="8410244574650205435">Detetado automaticamente</translation>
 <translation id="8420955526972171689">Execute testes e a resolução de problemas de hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8431300646573772016">Novidades no ChromeOS</translation>

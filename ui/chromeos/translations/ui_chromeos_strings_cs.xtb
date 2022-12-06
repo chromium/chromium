@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Vítá vás Disk Google!</translation>
 <translation id="1379911846207762492">Soubory můžete zpřístupnit offline pro případ, že nebudete mít připojení k internetu.</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
+<translation id="1388045380422025115">Všechny typy</translation>
 <translation id="1395262318152388157">Posuvník přehrávání</translation>
 <translation id="1399511500114202393">Žádný certifikát uživatele</translation>
 <translation id="1403008701842173542">Všude</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">Neplatný záznam shody alternativních názvů subjektu</translation>
 <translation id="1838709767668011582">Web Google</translation>
 <translation id="1853795129690976061">Tato složka je sdílena s Linuxem</translation>
+<translation id="1859422890169495746">Tento Chromebook</translation>
 <translation id="1864756863218646478">Soubor se nepodařilo nalézt.</translation>
 <translation id="1884013283844450420">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, připojit</translation>
 <translation id="1920670151694390848">malajálamština (přepis)</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">Konfigurovat síť</translation>
 <translation id="2325650632570794183">Tento typ souboru není podporován. Navštivte prosím Internetový obchod Chrome, kde najdete aplikaci, ve které lze otevřít tento typ souboru.</translation>
 <translation id="2326539130272988168">bulharština</translation>
+<translation id="2337715497728194187">Sdílet s Bruschettou</translation>
 <translation id="23721837607121582">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Přepnout na zobrazení seznamu</translation>
 <translation id="2377590462528165447">Počet složek sdílených s Linuxem: <ph name="NUMBER_OF_ITEMS" /></translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">Ověřovací certifikát byl sítí odmítnut</translation>
 <translation id="255937426064304553">Americká klávesnice (mezinárodní)</translation>
 <translation id="2563185590376525700">Žába</translation>
+<translation id="2574327434504608656">1 složka je sdílena s Bruschettou</translation>
 <translation id="2578394532502990878">tamilština (fonetická)</translation>
 <translation id="2579959351793446050">urijština</translation>
 <translation id="2602810353103180630">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, blokováno administrátorem, podrobnosti</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">Aktivovat, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">němčina (Německo) s klávesnicí Neo 2</translation>
 <translation id="3414856743105198592">Formátování vyměnitelného média vymaže všechna data. Chcete pokračovat?</translation>
+<translation id="3435143625481187092">Udělit Bruschettě oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Čas vytvoření</translation>
 <translation id="343907260260897561">Okamžitý fotoaparát</translation>
 <translation id="3455931012307786678">estonština</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Vysypat koš</translation>
 <translation id="4179621117429069925">Tato položka je ve vašem koši</translation>
+<translation id="4181839429935094755">S Bruschettou je sdílen tento počet složek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="4186579485882418952">Povolit režim offline</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4197674956721858839">Výběr souborů pro komprimaci</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">čeština s klávesnicí Qwerty</translation>
 <translation id="4656777537938206294">Dostupnost souborů v režimu offline</translation>
 <translation id="4658782175094886150">Člověk ve sněhu</translation>
+<translation id="466782788172479199">Udělit Bruschettě oprávnění k přístupu k souborům na Disku Google. Změny se synchronizují do vašich ostatních zařízení.</translation>
 <translation id="4669606053856530811">Pokud s nimi tyto položky nejsou sdíleny, ztratí k nim členové týmu <ph name="SOURCE_NAME" /> přístup.</translation>
 <translation id="467809019005607715">Prezentace Google</translation>
 <translation id="4690246192099372265">švédština</translation>
@@ -522,6 +529,7 @@
 <translation id="5330145655348521461">Tyto soubory jsou otevřeny na jiné ploše. Chcete-li je zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Zobrazit informace</translation>
 <translation id="5337538975554986899">Přístup k souborům ze všech adres URL kromě <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">Spravovat sdílení s Bruschettou</translation>
 <translation id="535792325654997756">Člověk s kočkami</translation>
 <translation id="5358764674931277">Snímková frekvence</translation>
 <translation id="5363339716524495120">Jazyk vstupu je čínština</translation>
@@ -567,6 +575,7 @@
 <translation id="5700087501958648444">Informace o zvuku</translation>
 <translation id="5720028165859493293">Soubor <ph name="FILE_NAME" /> byl přesunut do koše</translation>
 <translation id="5724172041621205163">thajština s klávesnicí Pattachote</translation>
+<translation id="57383366388012121">Minulý měsíc</translation>
 <translation id="5756666464756035725">Maďarská klávesnice QWERTY</translation>
 <translation id="5763377084591234761">němčina (Švýcarsko)</translation>
 <translation id="5769519078756170258">Hostitelský server nebo doména k vyloučení</translation>
@@ -676,6 +685,7 @@
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6732801395666424405">Certifikáty nebyly načteny</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Sdílení složky s Bruschettou</translation>
 <translation id="6751256176799620176">Je vybrána 1 složka</translation>
 <translation id="6755827872271341378">Zařízení se systémem ChromeOS Flex</translation>
 <translation id="6790428901817661496">Přehrát</translation>
@@ -704,6 +714,7 @@
 <translation id="6935521024859866267">Vzhůru nohama</translation>
 <translation id="6943836128787782965">Příkaz GET protokolu HTTP se nezdařil.</translation>
 <translation id="6949408524333579394">srbština (přepis)</translation>
+<translation id="69548399407432279">Minulý rok</translation>
 <translation id="6960565108681981554">Není aktivováno. Kontaktujte svého operátora.</translation>
 <translation id="696203921837389374">Aktivovat synchronizaci pomocí mobilního datového připojení</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -847,6 +858,7 @@
 <translation id="8042602468072383151">Zvuk <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">rumunština</translation>
 <translation id="8049184478152619004">Zadejte kód PUK</translation>
+<translation id="8055538340801153769">Tato složka</translation>
 <translation id="807187749540895545">Rozbalování souboru <ph name="FILE_NAME" />…</translation>
 <translation id="8087576439476816834">Stáhnout, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Sdíleno se mnou</translation>

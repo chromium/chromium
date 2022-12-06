@@ -805,7 +805,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1719312230114180055">Observação: sua impressão digital pode ser menos segura que uma senha forte ou um PIN.</translation>
 <translation id="1720318856472900922">Autenticação do servidor TLS WWW</translation>
 <translation id="172123215662733643">Pesquisar imagens com <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="1721312023322545264">É necessário pedir a permissão de <ph name="NAME" /> para visitar este site</translation>
 <translation id="1722460139690167654">Seu <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> é gerenciado<ph name="END_LINK" /> por <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Nova janela</translation>
 <translation id="1724801751621173132">Modo de entrada</translation>
@@ -891,7 +890,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1800502858278951817">Nenhuma extensão solicitou a leitura ou mudança de <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Suspender quando a capa for fechada</translation>
 <translation id="1802687198411089702">A página não está respondendo. Você pode esperar até que ele volte a responder ou sair.</translation>
-<translation id="1803531841600994172">Idioma de destino</translation>
+<translation id="1803531841600994172">Traduzir para</translation>
 <translation id="1803545009660609783">Redefinir</translation>
 <translation id="1805738995123446102">A guia em segundo plano está usando o microfone</translation>
 <translation id="1805822111539868586">Inspecionar visualizações</translation>
@@ -1973,6 +1972,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="275662540872599901">tela desativada</translation>
 <translation id="2757161511365746634">Ver impressora</translation>
 <translation id="2757338480560142065">A senha que você está salvando precisa corresponder à usada em <ph name="WEBSITE" /></translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Nenhum resultado da pesquisa por "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="2762441749940182211">Câmera bloqueada</translation>
 <translation id="2764786626780673772">Detalhes de VPN</translation>
 <translation id="2764920001292228569">Insira um nome de perfil</translation>
@@ -2322,7 +2322,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3067198360141518313">Executar este plug-in</translation>
 <translation id="3071624960923923138">Você pode clicar aqui para abrir uma nova guia</translation>
 <translation id="3072775339180057696">Permitir que o site veja <ph name="FILE_NAME" />?</translation>
-<translation id="3074499504015191586">Traduzir página inteira</translation>
+<translation id="3074499504015191586">Traduzir a página toda</translation>
 <translation id="3075144191779656260">Toque no sensor de impressão digital no lado esquerdo do seu <ph name="DEVICE_TYPE" />. Seus dados de impressão digital são armazenados de forma segura e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3075874217500066906">É necessária uma reinicialização para iniciar o processo Powerwash. Após a reinicialização, solicitaremos que você confirme que deseja continuar.</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
@@ -5286,6 +5286,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5886112770923972514">Conectar e configurar rapidamente os dispositivos próximos com Pareamento rápido</translation>
 <translation id="5886384907280980632">Desativar agora</translation>
 <translation id="5889282057229379085">Número máximo de autoridades de certificação intermediárias: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">Criptografar dados sincronizados com a <ph name="BEGIN_LINK" />senha longa de sincronização<ph name="END_LINK" />. As formas de pagamento e os endereços do Google Pay não vão ser criptografados. O histórico de navegação do Chrome não será sincronizado.</translation>
 <translation id="5891688036610113830">Redes Wi-Fi preferidas</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5895335062901455404">Suas preferências e atividades salvas vão estar no dispositivo ChromeOS Flex quando você fizer login na sua Conta do Google. Nas Configurações, você pode escolher o que é sincronizado.</translation>
@@ -5339,7 +5340,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> está usando sua câmera e seu microfone</translation>
 <translation id="5935158534896975820">Preparando a solicitação de assinatura de certificado (aguardando o servidor)</translation>
 <translation id="5935656526031444304">Gerenciar "Navegação segura"</translation>
-<translation id="5936065461722368675">Traduzir página inteira</translation>
+<translation id="5936065461722368675">Traduzir a página toda</translation>
 <translation id="5938002010494270685">Atualização de segurança disponível</translation>
 <translation id="5939518447894949180">Redefinir</translation>
 <translation id="5939719276406088041">Não é possível criar o atalho</translation>
@@ -6948,6 +6949,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7465635034594602553">Algo deu errado. Espere alguns minutos e abra o app <ph name="APP_NAME" /> novamente.</translation>
 <translation id="7465778193084373987">URL da revogação do certificado do Netscape</translation>
 <translation id="7466431077154602932">Exibição compacta</translation>
+<translation id="7466556884531675354">Nenhuma observação salva</translation>
 <translation id="746861123368584540">Extensão carregada</translation>
 <translation id="7470424110735398630">Permitir o acesso à área de transferência</translation>
 <translation id="747114903913869239">Erro: Não foi possível decodificar a extensão</translation>
@@ -7927,6 +7929,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8351316842353540018">Sempre mostrar opções de acessibilidade</translation>
 <translation id="8351419472474436977">Essa extensão assumiu o controle das suas configurações de proxy, o que significa que ela pode alterar, quebrar ou escutar qualquer coisa que você faz on-line. Se você não tem certeza do motivo dessa mudança, provavelmente não a deseja.</translation>
 <translation id="8351630282875799764">A bateria não está sendo carregada</translation>
+<translation id="8352287103893778223">Título do grupo de guias</translation>
 <translation id="835238322900896202">Ocorreu um erro durante a desinstalação. Desinstale novamente usando o terminal.</translation>
 <translation id="8353683614194668312">Ele pode:</translation>
 <translation id="8354034204605718473">O PIN da criança foi adicionado</translation>
@@ -8907,7 +8910,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="971774202801778802">URL do favorito</translation>
 <translation id="973473557718930265">Sair</translation>
 <translation id="973558314812359997">Tamanho do mouse</translation>
-<translation id="975893173032473675">Idioma de destino</translation>
+<translation id="975893173032473675">Traduzir para</translation>
 <translation id="976499800099896273">Caixa de diálogo exibida para desfazer a correção automática de <ph name="TYPED_WORD" /> para <ph name="CORRECTED_WORD" />.  Pressione a seta para cima para acessar ou "Esc" para ignorar.</translation>
 <translation id="978146274692397928">A largura da pontuação inicial é inteira</translation>
 <translation id="97905529126098460">Esta janela será fechada assim que o cancelamento terminar.</translation>

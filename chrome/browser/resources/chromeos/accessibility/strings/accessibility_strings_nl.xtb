@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Met navigatieopdrachten kun je makkelijk op een webpagina navigeren.</translation>
 <translation id="116896278675803795">Taal automatisch wijzigen in overeenkomst met geselecteerde content</translation>
 <translation id="1175914831232945926">Cijfers</translation>
-<translation id="1181003590763099524">naar het begin verplaatsen</translation>
 <translation id="1188858454923323853">aanvullend</translation>
 <translation id="1189258430971676908">Oefengedeelte: Dropdownmenu's</translation>
 <translation id="1195238899008218998">Nawoord</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Grootte <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Combinatie <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Midden orchidee</translation>
-<translation id="1928535370180099152">het vorige teken markeren</translation>
 <translation id="1928932365747995741">Geen vorig bewerkbaar tekstveld</translation>
 <translation id="1964135212174907577">Volgend object</translation>
 <translation id="1966649499058910679">Markeer elk woord terwijl het wordt uitgesproken</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Spraak aan- of uitzetten</translation>
 <translation id="2390264819538553347">Druk op Enter om door te gaan. Druk op Backspace om terug te gaan.</translation>
 <translation id="2398579267367951220">Typ om op de pagina te zoeken. Druk op Enter om naar het zoekresultaat te gaan of op de pijlen-omlaag om door resultaten te browsen, blijf typen om je zoekopdracht te wijzigen of druk op Escape om te annuleren.</translation>
-<translation id="2407047351320112166">het volgende teken markeren</translation>
 <translation id="240709722712693803">Violetblauw</translation>
 <translation id="2410298923485357543">Natuurlijke stem gebruiken als het apparaat online is</translation>
 <translation id="2416512023405990736">Een niet-aangevinkt selectievakje</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Cursor verplaatsen</translation>
 <translation id="3103579948980282461">Middenvioletrood</translation>
 <translation id="3104705064753753826">waarschuwingsvenster</translation>
-<translation id="3105857328626674463">het vorige woord markeren</translation>
 <translation id="3109724472072898302">Samengevouwen</translation>
 <translation id="311015743332597320">Swipe met vier vingers naar rechts</translation>
 <translation id="3112457281078985179">Gebruik Ctrl+Alt+Z om ChromeVox aan of uit te zetten.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Vorige bezochte link</translation>
 <translation id="3241638166094654466">Cellen in elke regel:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">naar het einde verplaatsen</translation>
 <translation id="3260949043575829030">Vorige vergelijkbare item</translation>
 <translation id="3270069636408109001">Geen volgende tabel</translation>
 <translation id="3273791280096244679">Label Opslaan</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollarteken}other{# dollartekens}}</translation>
 <translation id="3659787053479271466">waarschuwing</translation>
-<translation id="3661265561216135784">herhalen</translation>
 <translation id="366419593095697301">Hint: Druk op Escape als je deze tutorial wilt afsluiten.</translation>
 <translation id="3676062394766691318">Na het instellen van je apparaat kun je terugkeren en meer tutorials bekijken door op Zoeken + O en daarna op T te drukken.</translation>
 <translation id="3681531118904532409">Papayacréme</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">Voorbeeld</translation>
 <translation id="7439060726180460871">Directory</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">het volgende woord markeren</translation>
 <translation id="7465123027577412805">Natuurlijke stem gebruiken?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Naar volgende sectie. Voorbeelden omvatten het statusvak en de Launcher.</translation>
 <translation id="7505149250476994901">Eerst 'hoofdletter' zeggen vóór de letter</translation>
 <translation id="7533226154149229506">Licht guldenroedegeel</translation>
-<translation id="7541021454094606506">alles verwijderen</translation>
 <translation id="7543255924852002459">Label Weggooien</translation>
 <translation id="7552432549459840808">Handige Chrome-snelkoppelingen</translation>
 <translation id="7553679324939294712">voeg <ph name="INSERT_PHRASE" /> in vóór <ph name="BEFORE_PHRASE" /></translation>

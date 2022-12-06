@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">استخدِم طلبات الانتقال السريع للتنقُّل بسهولة في صفحة ويب.</translation>
 <translation id="116896278675803795">تغيير اللغة تلقائيًا للتوافق مع المحتوى المحدَّد</translation>
 <translation id="1175914831232945926">أرقام</translation>
-<translation id="1181003590763099524">الانتقال إلى البداية</translation>
 <translation id="1188858454923323853">تكميلي</translation>
 <translation id="1189258430971676908">التدريب العملي: القوائم المنسدلة</translation>
 <translation id="1195238899008218998">كلمة ختامية</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">حجم <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">الوَتر <ph name="DOT" /></translation>
 <translation id="1923956950274750765">أرجواني خفيف متوسط</translation>
-<translation id="1928535370180099152">تمييز الحرف السابق</translation>
 <translation id="1928932365747995741">ليس هناك حقل نص سابق قابل للتعديل.</translation>
 <translation id="1964135212174907577">الكائن التالي</translation>
 <translation id="1966649499058910679">تمييز كل كلمة أثناء نطقها
@@ -207,7 +205,6 @@
 <translation id="2381733276052567791">تفعيل ميزة تحويل النص إلى كلام أو إيقافها</translation>
 <translation id="2390264819538553347">‏للتقدم، اضغط على Enter، وللرجوع للخلف، اضغط على Backspace.</translation>
 <translation id="2398579267367951220">‏اكتب للبحث في الصفحة. اضغط على enter للحصول على النتيجة سريعًا، أو اضغط على السهم المتّجه للأسفل أو للأعلى لتصفّح النتائج، أو استمر بالكتابة لتغيير البحث، أو اضغط على escape للإلغاء.</translation>
-<translation id="2407047351320112166">تمييز الحرف التالي</translation>
 <translation id="240709722712693803">بنفسجي مزرق</translation>
 <translation id="2410298923485357543">استخدام صوت طبيعي عند اتصال الجهاز بالإنترنت</translation>
 <translation id="2416512023405990736">مربع اختيار غير محدد</translation>
@@ -331,7 +328,6 @@
 <translation id="309749186376891736">نقل المؤشر</translation>
 <translation id="3103579948980282461">أحمر بنفسجي متوسط</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">تمييز الكلمة السابقة</translation>
 <translation id="3109724472072898302">مصغّر</translation>
 <translation id="311015743332597320">مرِّر سريعًا بأربعة أصابع إلى يسار الشاشة.</translation>
 <translation id="3112457281078985179">‏لتفعيل ChromeVox أو إيقاف تشغيله، استخدم Control+Alt+Z.</translation>
@@ -360,7 +356,6 @@
 <translation id="3241052487511142956">الرابط السابق الذي تمّ الانتقال إليه</translation>
 <translation id="3241638166094654466">الخلايا في كل سطر:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">نقل المؤشّر إلى نهاية حقل الإدخال</translation>
 <translation id="3260949043575829030">العنصر المماثل السابق</translation>
 <translation id="3270069636408109001">ليس هناك جدول تالٍ.</translation>
 <translation id="3273791280096244679">حفظ التصنيف</translation>
@@ -425,7 +420,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{علامة دولار واحدة}zero{# dollar signs}two{علامتا دولار (#)}few{# علامات دولار}many{# علامة دولار}other{# من علامات الدولار}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">تكرار</translation>
 <translation id="366419593095697301">‏معلومة: اضغط على مفتاح Escape إذا أردت الخروج من هذا البرنامج التعليمي.</translation>
 <translation id="3676062394766691318">‏بعد إعداد الجهاز، يمكنك الرجوع إلى هذه الصفحة والاطّلاع على مزيد من البرامج التعليمية عن طريق الضغط على مفتاح البحث + حرف O، ثم الضغط على حرف T.</translation>
 <translation id="3681531118904532409">أصفر باهت</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">مثال</translation>
 <translation id="7439060726180460871">الدليل</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">تمييز الكلمة التالية</translation>
 <translation id="7465123027577412805">هل تريد استخدام الصوت الطبيعي؟</translation>
 <translation id="7491962110804786152">علامة تبويب</translation>
 <translation id="7492497529767769458">الانتقال إلى القسم التالي تتضمّن الأمثلة "شريط الحالة" و"مشغّل التطبيقات".</translation>
 <translation id="7505149250476994901">قُل "حرف كبير" قبل كتابة الحرف</translation>
 <translation id="7533226154149229506">أصفر ذهبي فاتح</translation>
-<translation id="7541021454094606506">حذف الكل</translation>
 <translation id="7543255924852002459">تجاهُل التصنيف</translation>
 <translation id="7552432549459840808">‏اختصارات Chrome المفيدة</translation>
 <translation id="7553679324939294712">إدخال "<ph name="INSERT_PHRASE" />" قبل "<ph name="BEFORE_PHRASE" />"</translation>

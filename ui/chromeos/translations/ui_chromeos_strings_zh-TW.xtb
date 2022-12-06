@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">歡迎使用 Google 雲端硬碟！</translation>
 <translation id="1379911846207762492">你可以將檔案設為可離線使用，以便在沒有網路連線時存取檔案。</translation>
 <translation id="1383876407941801731">搜尋</translation>
+<translation id="1388045380422025115">所有類型</translation>
 <translation id="1395262318152388157">播放進度控制滑桿</translation>
 <translation id="1399511500114202393">不使用使用者憑證</translation>
 <translation id="1403008701842173542">不限地理區域</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">主體替代名稱比對項目無效</translation>
 <translation id="1838709767668011582">Google 網站</translation>
 <translation id="1853795129690976061">已與 Linux 共用這個資料夾</translation>
+<translation id="1859422890169495746">這部 Chromebook</translation>
 <translation id="1864756863218646478">找不到檔案。</translation>
 <translation id="1884013283844450420">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，連線</translation>
 <translation id="1920670151694390848">馬拉雅拉姆文 (音譯)</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">設定網路</translation>
 <translation id="2325650632570794183">系統不支援這個檔案類型。請造訪 Chrome 線上應用程式商店，尋找是否有可開啟這類檔案的應用程式。</translation>
 <translation id="2326539130272988168">保加利亞文</translation>
+<translation id="2337715497728194187">與 Bruschetta 共用</translation>
 <translation id="23721837607121582">下載行動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，名稱為 <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">切換為清單檢視</translation>
 <translation id="2377590462528165447">已與 Linux 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">網路已拒絕驗證憑證</translation>
 <translation id="255937426064304553">美國國際</translation>
 <translation id="2563185590376525700">青蛙</translation>
+<translation id="2574327434504608656">已與 Bruschetta 共用 1 個資料夾</translation>
 <translation id="2578394532502990878">泰米爾文 (拼音)</translation>
 <translation id="2579959351793446050">歐利亞文</translation>
 <translation id="2602810353103180630">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，遭到管理員封鎖，詳細資料</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">啟用，<ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">德文 (德國) 搭配 Neo 2 鍵盤</translation>
 <translation id="3414856743105198592">將卸除式媒體格式化會清除所有資料，你要繼續嗎？</translation>
+<translation id="3435143625481187092">授權 Bruschetta 存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="3437801641691368414">建立時間</translation>
 <translation id="343907260260897561">即可拍相機</translation>
 <translation id="3455931012307786678">愛沙尼亞文</translation>
@@ -321,6 +326,7 @@
 <translation id="3801082500826908679">法羅文</translation>
 <translation id="3809272675881623365">兔子</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3811408895933919563">英文 (巴基斯坦)</translation>
 <translation id="3811494700605067549">已選取 1 個檔案</translation>
 <translation id="3817579325494460411">未提供</translation>
 <translation id="3819448694985509187">PIN 碼不正確，你只剩 1 次重試機會。</translation>
@@ -355,6 +361,7 @@
 <translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
 <translation id="4176286497474237543">立即清空垃圾桶</translation>
 <translation id="4179621117429069925">這個項目在你的垃圾桶中</translation>
+<translation id="4181839429935094755">已與 Bruschetta 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
 <translation id="4186579485882418952">啟用文件離線版</translation>
 <translation id="4193154014135846272">Google 文件</translation>
 <translation id="4197674956721858839">壓縮選取的項目</translation>
@@ -416,6 +423,7 @@
 <translation id="4646813851450205600">捷克文搭配 Qwerty 鍵盤</translation>
 <translation id="4656777537938206294">將檔案設為可離線使用</translation>
 <translation id="4658782175094886150">雪中人</translation>
+<translation id="466782788172479199">授權 Bruschetta 存取你的 Google 雲端硬碟檔案。系統會將變更內容同步至你的其他裝置。</translation>
 <translation id="4669606053856530811">「<ph name="SOURCE_NAME" />」的成員將失去存取權，除非有人與他們共用這些項目。</translation>
 <translation id="467809019005607715">Google 簡報</translation>
 <translation id="4690246192099372265">瑞典文</translation>
@@ -523,6 +531,7 @@
 <translation id="5330145655348521461">這些檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
 <translation id="5330512191124428349">取得資訊</translation>
 <translation id="5337538975554986899">所有網址都能存取檔案，但 <ph name="NON_RESTRICTED_DESTINATIONS" /> 除外</translation>
+<translation id="5344246330454251646">管理 Bruschetta 共用設定</translation>
 <translation id="535792325654997756">人與貓</translation>
 <translation id="5358764674931277">影格速率</translation>
 <translation id="5363339716524495120">輸入語言為中文</translation>
@@ -568,6 +577,7 @@
 <translation id="5700087501958648444">音訊資訊</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> 已移至垃圾桶</translation>
 <translation id="5724172041621205163">泰文搭配 Pattachote 鍵盤</translation>
+<translation id="57383366388012121">上個月</translation>
 <translation id="5756666464756035725">匈牙利文 QWERTY</translation>
 <translation id="5763377084591234761">德文 (瑞士)</translation>
 <translation id="5769519078756170258">要排除的主機或網域</translation>
@@ -677,6 +687,7 @@
 <translation id="6710213216561001401">返回</translation>
 <translation id="6732801395666424405">未載入憑證</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">與 Bruschetta 共用資料夾</translation>
 <translation id="6751256176799620176">已選取 1 個資料夾</translation>
 <translation id="6755827872271341378">ChromeOS Flex 裝置</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -705,6 +716,7 @@
 <translation id="6935521024859866267">上下顛倒</translation>
 <translation id="6943836128787782965">HTTP 擷取失敗</translation>
 <translation id="6949408524333579394">塞爾維亞文 (音譯)</translation>
+<translation id="69548399407432279">去年</translation>
 <translation id="6960565108681981554">未啟用。請與你的電信業者聯絡。</translation>
 <translation id="696203921837389374">啟用透過行動數據進行同步處理的功能</translation>
 <translation id="6965382102122355670">確定</translation>
@@ -848,6 +860,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> 音訊</translation>
 <translation id="8045462269890919536">羅馬尼亞文</translation>
 <translation id="8049184478152619004">輸入個人解鎖金鑰 (PUK)</translation>
+<translation id="8055538340801153769">這個資料夾</translation>
 <translation id="807187749540895545">正在擷取 <ph name="FILE_NAME" />…</translation>
 <translation id="8087576439476816834">下載，設定檔名稱：<ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">與我共用的項目</translation>

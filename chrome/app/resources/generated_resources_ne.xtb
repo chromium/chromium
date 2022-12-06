@@ -790,7 +790,6 @@
 <translation id="1719312230114180055">टिपोट: तपाईंको फिंगरप्रिन्ट भरपर्दो पासवर्ड वा PIN भन्दा कम सुरक्षित हुन सक्छ।</translation>
 <translation id="1720318856472900922">TLS WWW सर्भर प्रमाणीकरण</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> मार्फत फोटोहरू खोज्नुहोस्</translation>
-<translation id="1721312023322545264">यो साइटमा जान तपाईंलाई <ph name="NAME" /> को अनुमति आवश्यक छ</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> ले तपाईंको <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> को व्यवस्थापन गर्छ<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;नयाँ सञ्झ्याल</translation>
 <translation id="1724801751621173132">इनपुट मोड</translation>
@@ -1954,6 +1953,7 @@
 <translation id="275662540872599901">स्क्रिन निष्क्रिय छ</translation>
 <translation id="2757161511365746634">प्रिन्टरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="2757338480560142065">तपाईंले सुरक्षित गर्न लाग्नुभएको पासवर्ड तपाईंको <ph name="WEBSITE" /> को पासवर्डसँग मेल खान्छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> सम्बन्धी कुनै पनि खोज परिणाम भेटिएन</translation>
 <translation id="2762441749940182211">क्यामेरा प्रयोग गर्नमाथि रोक लगाइयो</translation>
 <translation id="2764786626780673772">VPN सम्बन्धी विवरण</translation>
 <translation id="2764920001292228569">प्रोफाइलको नाम हाल्नुहोस्</translation>
@@ -5264,6 +5264,7 @@
 <translation id="5886112770923972514">नजिकै रहेका फास्ट पेयर डिभाइसहरू कनेक्ट गर्नुहोस् तथा द्रुत रूपमा सेटअप गर्नुहोस्</translation>
 <translation id="5886384907280980632">अहिले नै अफ गर्नुहोस्</translation>
 <translation id="5889282057229379085">मध्यवर्ती CA हरूको अधिकतम सङ्ख्या: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">आफ्नै <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> प्रयोग गरेर सिंक गरिएको जानकारी इन्क्रिप्ट गर्नुहोस्। Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैन। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।</translation>
 <translation id="5891688036610113830">रोजाइका Wi-Fi नेटवर्कहरू</translation>
 <translation id="5895138241574237353">पुन: शुरू गर्नुहोस्</translation>
 <translation id="5895335062901455404">तपाईंले आफ्नो Google खातामार्फत साइन इन गर्नुभयो भने ChromeOS Flex चल्ने कुनै पनि डिभाइसमा तपाईंले सेभ गरेका प्राथमिकता तथा गतिविधि उपलब्ध हुने छन्। तपाईं सेटिङमा गई आफूले सिंक गर्न चाहेका कुराहरू छनौट गर्न सक्नुहुन्छ।</translation>
@@ -5908,6 +5909,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" /> सँग सम्बन्धित</translation>
 <translation id="6508261954199872201">एप: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">मिडियाको इजाजत पत्र</translation>
+<translation id="6511279028091289182">यसले सुरक्षित कनेक्सनमार्फत वेबसाइटहरूमा कनेक्ट गर्ने तरिका निर्धारण गर्छ। यसले <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> मा व्यवस्थित सेवा प्रदायक प्रयोग गर्छ</translation>
 <translation id="6511827214781912955">यो डिभाइस प्रयोग गर्ने अरू मान्छेले तपाईंका पासवर्ड देख्न नसकून भन्नाका लागि <ph name="FILENAME" /> मेटाउनुहोस्</translation>
 <translation id="6512808201725371249">यो खाताको पासवर्ड Google पासवर्ड म्यानेजर (<ph name="USER_EMAIL" />) मा सेभ गरिसकिएको छ</translation>
 <translation id="6513247462497316522">यदि तपाइँ अर्को सञ्जालमा जडित हुनुहुन्न भने Google Chrome ले मोबाइल लगत प्रयोग गर्ने छ।</translation>
@@ -5977,6 +5979,7 @@
 <translation id="6568283005472142698">ट्याबमा खोज्ने सुविधा</translation>
 <translation id="65711204837946324">डाउनलोड गर्ने अनुमति चाहिन्छ</translation>
 <translation id="6571772921213691236">साइन इन डेटा सम्पादन गर्नुहोस्</translation>
+<translation id="657229725818377235">खतरनाक वेबसाइट तथा डाउनलोडहरूबाट थप सुरक्षा प्राप्त गर्नुहोस्</translation>
 <translation id="6573096386450695060">सधैँ अनुमति दिनुहोस्</translation>
 <translation id="6573497332121198392">सर्टकट हटाउन सकिँदैन</translation>
 <translation id="657402800789773160">यो पेजलाई &amp;पुन: लोड गर्नुहोस्</translation>
@@ -6921,6 +6924,7 @@
 <translation id="7465635034594602553">केही चिज गडबड भयो। कृपया केही बेर प्रतीक्षा गरी <ph name="APP_NAME" /> फेरि चलाउनुहोस्।</translation>
 <translation id="7465778193084373987">नेटस्केप प्रमाणपत्र रिभोकेसन युआरएल</translation>
 <translation id="7466431077154602932">कम्प्याक्ट भ्यू</translation>
+<translation id="7466556884531675354">कुनै पनि नोट सेभ गरिएको छैन</translation>
 <translation id="746861123368584540">यो एक्स्टेन्सन लोड गरिएको छ</translation>
 <translation id="7470424110735398630">तपाईंको क्लिपबोर्ड हेर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="747114903913869239">त्रुटि: विस्तार डिकोड गर्न असक्षम भयो</translation>
@@ -7899,6 +7903,7 @@
 <translation id="8351316842353540018">सधैँ पहुँचसम्बन्धी विकल्पहरू देखाइयोस्</translation>
 <translation id="8351419472474436977">एक्स्टेन्शनले तपाईंका प्रोक्सी सेटिङहरूलाई नियन्त्रणमा लिएको छ, जसको अर्थ यसले तपाईंले अनलाइनमा गर्ने हेरक कुरालाई परिवर्तन गर्न, भंग गर्न, वा लुकेर कुरा सुन्न सक्दछ। यदि तपाईं यो परिवर्तन किनभयो भन्ने कुरामा निश्चित हुनुहुन्न भने, सम्भवत: तपाईं यसलाई चाहनुहुन्न।</translation>
 <translation id="8351630282875799764">ब्याट्री चार्ज भइरहेको छैन</translation>
+<translation id="8352287103893778223">ट्याब समूहको शीर्षक</translation>
 <translation id="835238322900896202">स्थापना रद्द गर्ने क्रममा कुनै त्रुटि भयो। कृपया टर्मिनलमार्फत स्थापना रद्द गर्नुहोस्।</translation>
 <translation id="8353683614194668312">यसले निम्न गर्न सक्छ:</translation>
 <translation id="8354034204605718473">तपाईंका बच्चाको PIN हालिएको छ</translation>

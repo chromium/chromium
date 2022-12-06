@@ -205,6 +205,7 @@
 <translation id="117916940443676133">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理登入資料。</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183237619868651138">無法在本機快取中安裝 <ph name="EXTERNAL_CRX_FILE" />。</translation>
+<translation id="1184709369107246085">必須要能存取「<ph name="APPLICATION_NAME" />」網址才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="1185924365081634987">您也可以嘗試<ph name="GUEST_SIGNIN_LINK_START" />以訪客身分瀏覽<ph name="GUEST_SIGNIN_LINK_END" />，藉此修正網絡問題。</translation>
 <translation id="1186771945450942097">移除有害的軟件</translation>
 <translation id="1187722533808055681">閒置喚醒</translation>
@@ -803,7 +804,6 @@
 <translation id="1719312230114180055">請注意：相比安全性較強的密碼或 PIN，指紋識別的安全性較低。</translation>
 <translation id="1720318856472900922">TLS WWW 伺服器驗證</translation>
 <translation id="172123215662733643">使用「<ph name="VISUAL_SEARCH_PROVIDER" />」搜尋圖片</translation>
-<translation id="1721312023322545264">您必須獲得<ph name="NAME" />授權，才能瀏覽此網頁</translation>
 <translation id="1722460139690167654">您的 <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> 由 <ph name="END_LINK" /><ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">新視窗(&amp;N)</translation>
 <translation id="1724801751621173132">輸入法</translation>
@@ -2837,6 +2837,7 @@
 <translation id="3582057310199111521">曾在欺詐網站上輸入，並於資料外洩事件中發現</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
+<translation id="3586787825263265024">必須要能存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
 <translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587482841069643663">全部</translation>
@@ -3995,6 +3996,7 @@
 <translation id="4654236001025007561">與附近的 Chromebook 和 Android 裝置分享檔案</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658285806588491142">避免螢幕內容外洩</translation>
+<translation id="4658648180588730283">離線時無法使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="465878909996028221">瀏覽器重新導向僅支援 http、https 和 file 通訊協定。</translation>
 <translation id="4659126640776004816">當您登入 Google 帳戶時，系統會啟用此功能</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{圖片}other{# 張圖片}}</translation>
@@ -4045,6 +4047,7 @@
 <translation id="4699357559218762027">(自動啟動)</translation>
 <translation id="4701025263201366865">家長登入</translation>
 <translation id="4701335814944566468">昨天看過</translation>
+<translation id="4705624512518230041">如果無法存取 OneDrive，系統就無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="470644585772471629">色彩反轉</translation>
 <translation id="4707337002099455863">一律在所有網站上執行</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
@@ -4512,6 +4515,7 @@
 <translation id="5160634252433617617">實體鍵盤</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">來自「<ph name="VENDOR_NAME" />」的 USB 裝置</translation>
+<translation id="5162624292894372900">如果無法存取 Google 雲端硬碟，系統就無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="5162905305237671850">已封鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">分頁移咗去分頁欄嘅最尾</translation>
 <translation id="5164530241085602114">已禁止 <ph name="SITE" /> 傳送通知</translation>
@@ -5418,6 +5422,7 @@
 <translation id="6016178549409952427">導覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 以重設為上個版本</translation>
 <translation id="6016972670657536680">選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
+<translation id="6017503096330453612">你可以選擇「再試一次」或「在離線編輯器中開啟」。如果選擇後者，可以使用有限的查看和編輯選項。</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019169947004469866">剪裁</translation>
 <translation id="6019851026059441029">極佳 - 高清畫質</translation>
@@ -6281,6 +6286,7 @@
 <translation id="682871081149631693">快速修正</translation>
 <translation id="6828860976882136098">無法為所有使用者設定自動更新 (預先執行錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google 私隱權政策</translation>
+<translation id="6830200424658853449">在離線編輯器中開啟</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6832218595502288407">靠左對齊</translation>
 <translation id="6833479554815567477">分頁已經由包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組度移除</translation>
@@ -6644,6 +6650,7 @@
 <translation id="7174199383876220879">新功能！控制音樂、影片及其他內容。</translation>
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7175353351958621980">載入來源：</translation>
+<translation id="7177079607604198383">請檢查網際網路連線並選擇「再試一次」。你也能選擇「在離線編輯器中開啟」，這樣可以使用有限的查看和編輯選項。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7182791023900310535">遷移密碼</translation>
@@ -7345,6 +7352,7 @@
 <translation id="783229689197954457">如果 Google 找到折扣優惠，會在此頁面上顯示</translation>
 <translation id="7833720883933317473">已儲存的自訂字詞將會在這裡顯示</translation>
 <translation id="7835178595033117206">移除咗書籤</translation>
+<translation id="7836535163829106376">無法開啟「<ph name="FILE_NAMES" />」的網址</translation>
 <translation id="7836850009646241041">請嘗試再次輕觸安全密鑰</translation>
 <translation id="7837776265184002579">您的首頁已變更為 <ph name="URL" />。</translation>
 <translation id="7838838951812478896">無法透過<ph name="DEVICE_NAME" /> 儲存「<ph name="NETWORK_NAME" />」</translation>
@@ -7785,6 +7793,7 @@
 <translation id="822347941086490485">正在尋找 HID 裝置…</translation>
 <translation id="8223573963214454788">繼續並刪除資料</translation>
 <translation id="8225046344534779393">檢查互聯網連線</translation>
+<translation id="8225173734540525852">必須要能存取 Google 雲端硬碟才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="8225265270453771718">分享應用程式視窗</translation>
 <translation id="8226222018808695353">禁止</translation>
 <translation id="8226619461731305576">佇列</translation>
@@ -8121,6 +8130,7 @@
 <translation id="8549316893834449916">您將使用 Google 帳戶登入 Chromebook，Google 帳戶是您用於 Gmail、雲端硬碟、YouTube 和其他服務的帳戶。</translation>
 <translation id="8551388862522347954">授權</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
+<translation id="8551647092888540776">離線時無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="8552102814346875916">儲存去「一律啟用這些網站」清單</translation>
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554899698005018844">未選取語言</translation>

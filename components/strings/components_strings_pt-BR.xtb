@@ -1024,7 +1024,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3584299510153766161">Perfuração dupla na parte inferior</translation>
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587738293690942763">Meio</translation>
-<translation id="3595645257662173296">Quais são as evidências?</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Você pode redefinir o grupo a qualquer momento. Leva cerca de um dia para fazer parte de um novo grupo.}=1{Você pode redefinir o grupo a qualquer momento. Leva cerca de um dia para fazer parte de um novo grupo.}one{Você pode redefinir o grupo a qualquer momento. Leva {NUM_DAYS} dia para fazer parte de um novo grupo.}other{Você pode redefinir o grupo a qualquer momento. Leva {NUM_DAYS} dias para fazer parte de um novo grupo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Aplicativo bloqueado pelo administrador</translation>
@@ -1366,7 +1365,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4434045419905280838">Pop-ups e redirecionamentos</translation>
 <translation id="443673843213245140">O uso de um proxy está desativado, mas uma configuração explícita de proxy é especificada.</translation>
 <translation id="4441832193888514600">Ignorada porque a política só pode ser definida como uma política do usuário em nuvem.</translation>
-<translation id="4450893287417543264">Não mostrar novamente</translation>
 <translation id="4451135742916150903">Pode pedir para se conectar a dispositivos HID</translation>
 <translation id="4452328064229197696">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você revise suas senhas salvas.</translation>
 <translation id="4460315069258617173">Com permissão enquanto as guias deste site estiverem abertas</translation>
@@ -1965,6 +1963,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5995727681868049093">Gerenciar suas informações, sua privacidade e sua segurança na Conta do Google.</translation>
 <translation id="5997247540087773573">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você a mude e revise as senhas salvas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6005765687956866568">As informações preenchidas automaticamente foram removidas do formulário</translation>
 <translation id="6006365096047131769">3 x 5 pol.</translation>
 <translation id="6006484371116297560">Clássico</translation>
 <translation id="6008122969617370890">Ordem N a 1</translation>
@@ -2034,7 +2033,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6167577165590485365">Última tentativa de busca:</translation>
 <translation id="6169916984152623906">Agora você pode navegar com privacidade. Outras pessoas que usarem este dispositivo não verão sua atividade, mas os downloads e favoritos serão salvos.</translation>
-<translation id="6176716740821145453">Confirme se essa informação está correta</translation>
 <translation id="6177128806592000436">Sua conexão com esse site não é segura</translation>
 <translation id="6177531123306197852">Envelope C2</translation>
 <translation id="6180316780098470077">Intervalo entre novas tentativas</translation>
@@ -2275,6 +2273,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6826993739343257035">Permitir RA?</translation>
 <translation id="6828866289116430505">Genética</translation>
 <translation id="6831043979455480757">Traduzir</translation>
+<translation id="6832753933931306326">O formulário foi preenchido</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6846340164947227603">Usar um número de cartão virtual…</translation>
 <translation id="6852204201400771460">Recarregar app?</translation>
@@ -2540,7 +2539,6 @@ Mais detalhes:
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481603210197454575">Envelope italiano</translation>
 <translation id="7485870689360869515">Nenhum dado encontrado</translation>
-<translation id="7485948220959728508">Quem está por trás dessa informação?</translation>
 <translation id="748745328507845862">Shows e festivais de música</translation>
 <translation id="7489473601138133813">Recursos e planejamento de carreiras</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
@@ -2646,7 +2644,6 @@ Mais detalhes:
 <translation id="7682451652090915298">Rúgbi</translation>
 <translation id="7687186412095877299">Preencher formulários com suas formas de pagamento salvas</translation>
 <translation id="7687305263118037187">Novas tentativas esgotadas</translation>
-<translation id="7687451951329798396">O que outras fontes dizem?</translation>
 <translation id="7690647519407127574">Cartão postal Oufuku Hagaki</translation>
 <translation id="7693583928066320343">Ordem de páginas recebida</translation>
 <translation id="7696089921647603491">Rock clássico e antigo</translation>
@@ -2731,6 +2728,7 @@ Mais detalhes:
 <translation id="7950027195171824198">Gerencie suas preferências de cookies nas configurações do Chrome</translation>
 <translation id="7951415247503192394">32 bits</translation>
 <translation id="7952192831285741665">EDP (Europa)</translation>
+<translation id="7952804540472583406">Como <ph name="BEGIN_LINK" />fazer login<ph name="END_LINK" /> na rede.</translation>
 <translation id="7953569069500808819">Costura na parte superior</translation>
 <translation id="7956713633345437162">Favoritos nos dispositivos móveis</translation>
 <translation id="7961015016161918242">Nunca</translation>

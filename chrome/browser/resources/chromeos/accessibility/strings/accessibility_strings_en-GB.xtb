@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Jump commands can be used to efficiently navigate through a web page.</translation>
 <translation id="116896278675803795">Automatically change language to match selected content</translation>
 <translation id="1175914831232945926">Digits</translation>
-<translation id="1181003590763099524">move to the start</translation>
 <translation id="1188858454923323853">complementary</translation>
 <translation id="1189258430971676908">Practice area: drop-down lists</translation>
 <translation id="1195238899008218998">Afterword</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Size <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> chord</translation>
 <translation id="1923956950274750765">Medium Orchid</translation>
-<translation id="1928535370180099152">highlight the previous character</translation>
 <translation id="1928932365747995741">No previous editable text field</translation>
 <translation id="1964135212174907577">Next Object</translation>
 <translation id="1966649499058910679">Highlight each word as it is spoken</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Toggle speech on or off</translation>
 <translation id="2390264819538553347">To advance, press enter; to go back, press backspace.</translation>
 <translation id="2398579267367951220">Type to search the page. Press Enter to jump to the result, up or down arrows to browse results, keep typing to change your search, or Escape to cancel.</translation>
-<translation id="2407047351320112166">highlight the next character</translation>
 <translation id="240709722712693803">Blue Violet</translation>
 <translation id="2410298923485357543">Use natural voice when device is online</translation>
 <translation id="2416512023405990736">An unticked tick box</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Move cursor</translation>
 <translation id="3103579948980282461">Medium Violet Red</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">highlight the previous word</translation>
 <translation id="3109724472072898302">Collapsed</translation>
 <translation id="311015743332597320">Swipe four fingers right</translation>
 <translation id="3112457281078985179">To turn ChromeVox on or off, use Control+Alt+Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Previous visited link</translation>
 <translation id="3241638166094654466">Cells in each line:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">move to the end</translation>
 <translation id="3260949043575829030">Previous similar item</translation>
 <translation id="3270069636408109001">No next table</translation>
 <translation id="3273791280096244679">Save label</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollar}other{# dollar signs}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">repeat</translation>
 <translation id="366419593095697301">Hint: Press Escape if you would like to exit this tutorial.</translation>
 <translation id="3676062394766691318">After you set up your device, you can come back and view more tutorials by pressing Search + O, then T.</translation>
 <translation id="3681531118904532409">Papaya Whip</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Example</translation>
 <translation id="7439060726180460871">Directory</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">highlight the next word</translation>
 <translation id="7465123027577412805">Use a natural voice?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Move to next section. Examples include the Status Tray and Launcher.</translation>
 <translation id="7505149250476994901">Say 'cap' before letter</translation>
 <translation id="7533226154149229506">Light Goldenrod Yellow</translation>
-<translation id="7541021454094606506">delete all</translation>
 <translation id="7543255924852002459">Discard label</translation>
 <translation id="7552432549459840808">Helpful Chrome Shortcuts</translation>
 <translation id="7553679324939294712">insert <ph name="INSERT_PHRASE" /> before <ph name="BEFORE_PHRASE" /></translation>

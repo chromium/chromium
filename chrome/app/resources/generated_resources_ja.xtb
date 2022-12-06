@@ -792,7 +792,6 @@
 <translation id="1719312230114180055">注: 指紋は複雑なパスワードや PIN より安全面で劣る場合があります。</translation>
 <translation id="1720318856472900922">TLS WWW サーバー認証</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />で画像を検索</translation>
-<translation id="1721312023322545264">このサイトにアクセスするには <ph name="NAME" /> さんの許可が必要です</translation>
 <translation id="1722460139690167654">ご使用の <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> は <ph name="ENROLLMENT_DOMAIN" /> によって管理されています<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
 <translation id="1724801751621173132">ローマ字入力・かな入力</translation>
@@ -5902,6 +5901,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" /> に関連しています</translation>
 <translation id="6508261954199872201">アプリ: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">メディア ライセンス</translation>
+<translation id="6511279028091289182">ウェブサイトに安全に接続する方法を決定します。これには、<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> のマネージド サービス プロバイダを使用します</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> を削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにすることを検討してください</translation>
 <translation id="6512808201725371249">このアカウントのパスワードはすでに Google パスワード マネージャー（<ph name="USER_EMAIL" />）に保存されています</translation>
 <translation id="6513247462497316522">他のネットワークに接続していない場合、Google Chrome はモバイル データを使用します。</translation>
@@ -5970,6 +5970,7 @@
 <translation id="6568283005472142698">タブ検索</translation>
 <translation id="65711204837946324">ダウンロードの権限が必要です</translation>
 <translation id="6571772921213691236">ログインデータの編集</translation>
+<translation id="657229725818377235">危険なウェブサイトやダウンロードからの保護を強化する</translation>
 <translation id="6573096386450695060">常に許可</translation>
 <translation id="6573497332121198392">ショートカットの削除はできません</translation>
 <translation id="657402800789773160">ページを再読み込み(&amp;R)</translation>

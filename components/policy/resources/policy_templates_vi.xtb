@@ -2272,6 +2272,7 @@ Chính sách này chỉ mang tính tạm thời và sẽ bị loại bỏ trong 
 <translation id="3144173889708944482">Nếu bạn chọn <ph name="PRINTERS_BLOCKLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, thì việc đặt <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng không thể sử dụng. Tất cả máy in sẽ được cung cấp cho người dùng, ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3146711617256415776">Không cho phép dùng các giọng nói của tính năng chuyển văn bản sang lời nói trên mạng nâng cao khi dùng tính năng Chọn để nói</translation>
 <translation id="3150351525324499342">Không hiển thị biểu tượng <ph name="PRODUCT_NAME" /> trên thanh công cụ theo mặc định mà để người dùng chọn</translation>
+<translation id="3152135410085709340">Cho phép truy cập tệp cục bộ vào URL file:// trên các trang web này trong Trình xem PDF</translation>
 <translation id="3152425128389603870">Cho phép Màn hình hợp nhất và chính sách này bật theo mặc định.</translation>
 <translation id="3157857846231611820">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise Connector (kích hoạt khi có tệp được đính kèm vào Chrome).
 
@@ -4725,6 +4726,10 @@ Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính 
       Nếu bạn không đặt chính sách này, tùy chọn cài đặt mặc định sẽ là không được phép đối với người dùng do doanh nghiệp quản lý và được phép đối với người dùng không được quản lý.</translation>
 <translation id="5584132346604748282">Kiểm soát các dịch vụ vị trí của Google trên thiết bị Android</translation>
 <translation id="5584609869321980122">Bắt đầu thời gian trì hoãn của chính sách quản lý nguồn và giới hạn thời lượng phiên hoạt động sau hoạt động ban đầu của người dùng</translation>
+<translation id="5585298198686067735">Nếu bạn đặt chính sách này, thì các miền trong danh sách có thể truy cập URL file:// trong Trình xem PDF.
+Nếu bạn thêm miền vào chính sách, thì miền đó có thể truy cập URL file:// trong Trình xem PDF.
+Nếu bạn xoá miền khỏi chính sách, thì miền đó sẽ không thể truy cập URL file:// trong Trình xem PDF.
+Nếu bạn không đặt chính sách, thì tất cả miền sẽ không thể truy cập URL file:// trong Trình xem PDF.</translation>
 <translation id="5586942249556966598">Không làm gì</translation>
 <translation id="5598417829613725146">Canvas (được hỗ trợ kể từ phiên bản 90)</translation>
 <translation id="5599461642204007579">Cài đặt quản lý <ph name="MS_AD_NAME" /></translation>

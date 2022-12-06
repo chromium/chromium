@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
 <translation id="2407209115954268704">SIM 卡锁定状态</translation>
+<translation id="241419523391571119">重新打开设备的盖子即可进行测试</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2418150275289244458">在“设置”中打开</translation>
 <translation id="2421798028054665193">第 <ph name="CURRENT_PAGE" /> 张图片，共 <ph name="TOTAL_PAGES" /> 张</translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> 秒内释放了 <ph name="RATE" /> 的电量。</translation>
 <translation id="2902312830803030883">更多操作</translation>
 <translation id="2926057806159140518">输入您的用户名和密码，或扫描您的二维码</translation>
+<translation id="2940811910881150316">无法测试设备。重新打开设备的盖子即可进行测试。</translation>
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3017079585324758401">背景</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">PIN 码无效。</translation>
 <translation id="3824259034819781947">附加文件</translation>
 <translation id="3838338534323494292">新密码</translation>
+<translation id="3845880861638660475">按 <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> 即可关闭对话框。</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名称</translation>
 <translation id="3862598938296403232">必须提供说明</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">说明</translation>
 <translation id="387301095347517405">您的电池已经历的完整充电循环次数</translation>
 <translation id="3885327323343477505">更换屏保</translation>
+<translation id="391412459402535266">无法测试设备。切换到笔记本电脑模式即可进行测试。</translation>
 <translation id="3923184630988645767">流量使用</translation>
 <translation id="3932043219784172185">未连接任何设备</translation>
 <translation id="3941014780699102620">未能解析主机</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567">系统会自动移除存在时长已超过 <ph name="NUMBER_OF_DAYS" /> 天的打印任务</translation>
 <translation id="3993704782688964914">您的<ph name="DEVICE_NAME" />目前已是最新版本</translation>
 <translation id="4003384961948020559">失败 - 出纸盘已满</translation>
+<translation id="4021031199988160623">切换到笔记本电脑模式即可进行测试</translation>
 <translation id="4034824040120875894">打印机</translation>
 <translation id="4044093238444069296">无法连接网关</translation>
 <translation id="4046123991198612571">下一曲</translation>

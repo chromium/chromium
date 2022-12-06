@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">‏ברוך בואך אל Google Drive!</translation>
 <translation id="1379911846207762492">ניתן להגדיר קבצים כזמינים אופליין כדי לאפשר גישה אליהם כשאין חיבור לאינטרנט.</translation>
 <translation id="1383876407941801731">חיפוש</translation>
+<translation id="1388045380422025115">כל הסוגים</translation>
 <translation id="1395262318152388157">מחוון חיפוש</translation>
 <translation id="1399511500114202393">אין אישור משתמש</translation>
 <translation id="1403008701842173542">בכל מקום</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">הרשומה של התאמת שמות הנושאים החלופיים לא תקינה</translation>
 <translation id="1838709767668011582">‏אתר שנוצר באמצעות Google Sites</translation>
 <translation id="1853795129690976061">‏התיקייה הזו משותפת עם Linux</translation>
+<translation id="1859422890169495746">‏מכשיר Chromebook הזה</translation>
 <translation id="1864756863218646478">הקובץ לא נמצא.</translation>
 <translation id="1884013283844450420">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />, התחברות</translation>
 <translation id="1920670151694390848">מליאלאם, תעתיק</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">הגדרת רשת</translation>
 <translation id="2325650632570794183">‏סוג קובץ זה אינו נתמך. יש לבקר בחנות האינטרנט של Chrome כדי למצוא יישום שיכול לפתוח קובץ מסוג זה.</translation>
 <translation id="2326539130272988168">בולגרית</translation>
+<translation id="2337715497728194187">‏שיתוף עם Bruschetta</translation>
 <translation id="23721837607121582">הורדה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">מעבר לתצוגת רשימה</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Linux</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">אישור האימות נדחה על ידי הרשת</translation>
 <translation id="255937426064304553">ארה"ב - בינלאומית</translation>
 <translation id="2563185590376525700">צפרדע</translation>
+<translation id="2574327434504608656">‏תיקייה אחת שותפה עם Bruschetta</translation>
 <translation id="2578394532502990878">טמילית פונטית</translation>
 <translation id="2579959351793446050">אודיה</translation>
 <translation id="2602810353103180630">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות <ph name="SIGNAL_STRENGTH" />%, נחסמה על ידי מנהל המערכת, פרטים</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">הפעלה, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">‏גרמנית (גרמניה) עם מקלדת Neo 2</translation>
 <translation id="3414856743105198592">פרמוט המדיה הנשלפת יגרום למחיקת כל הנתונים. האם ברצונך להמשיך?</translation>
+<translation id="3435143625481187092">‏הענקת הרשאה ל-Bruschetta לגשת לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">שעת יצירה</translation>
 <translation id="343907260260897561">מצלמת פיתוח מיידי</translation>
 <translation id="3455931012307786678">אסטונית</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892">ההעברה של <ph name="FILE_NAME" /> הסתיימה.</translation>
 <translation id="4176286497474237543">לריקון האשפה</translation>
 <translation id="4179621117429069925">הפריט הזה נמצא באשפה</translation>
+<translation id="4181839429935094755">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Bruschetta</translation>
 <translation id="4186579485882418952">הפעלת מצב אופליין</translation>
 <translation id="4193154014135846272">‏מסמך Google</translation>
 <translation id="4197674956721858839">כיווץ הקבצים שנבחרו</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">‏צ'כית עם מקלדת Qwerty</translation>
 <translation id="4656777537938206294">הגדרת גישה אופליין לקבצים</translation>
 <translation id="4658782175094886150">אדם בשלג</translation>
+<translation id="466782788172479199">‏הענקת הרשאה ל-Bruschetta לגשת לקבצים ב-Google Drive. השינויים יסתנכרנו עם המכשירים האחרים שלך.</translation>
 <translation id="4669606053856530811">אם הפריטים האלה לא ישותפו עם החברים באחסון השיתופי '<ph name="SOURCE_NAME" />', הם יאבדו את הגישה אליהם.</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">שוודית</translation>
@@ -524,6 +531,7 @@
 <translation id="5330145655348521461">הקבצים האלה נפתחו בשולחן עבודה אחר. יש לעבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי להציג אותם.</translation>
 <translation id="5330512191124428349">פרטי קובץ</translation>
 <translation id="5337538975554986899">‏גישה לקובץ מכל כתובות ה-URL מלבד <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">‏ניהול השיתוף עם Bruschetta</translation>
 <translation id="535792325654997756">אדם עם חתולים</translation>
 <translation id="5358764674931277">קצב פריימים</translation>
 <translation id="5363339716524495120">שפת הקלט היא סינית</translation>
@@ -569,6 +577,7 @@
 <translation id="5700087501958648444">פרטי האודיו</translation>
 <translation id="5720028165859493293">הקובץ <ph name="FILE_NAME" /> הועבר לאשפה</translation>
 <translation id="5724172041621205163">‏תאילנדית עם מקלדת Pattachote</translation>
+<translation id="57383366388012121">מהחודש האחרון</translation>
 <translation id="5756666464756035725">‏הונגרית - QWERTY</translation>
 <translation id="5763377084591234761">גרמנית (שוויץ)</translation>
 <translation id="5769519078756170258">המארח או הדומיין שיש להחריג</translation>
@@ -678,6 +687,7 @@
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="6732801395666424405">האישורים לא נטענו</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> ‏[<ph name="ISSUED_TO" />]‏</translation>
+<translation id="6740270213273127264">‏שיתוף התיקייה עם Bruschetta</translation>
 <translation id="6751256176799620176">תיקייה אחת נבחרה</translation>
 <translation id="6755827872271341378">‏מכשיר עם ChromeOS Flex</translation>
 <translation id="6790428901817661496">הפעלה</translation>
@@ -706,6 +716,7 @@
 <translation id="6935521024859866267">פרפר הפוך</translation>
 <translation id="6943836128787782965">‏פעולת get של HTTP נכשלה</translation>
 <translation id="6949408524333579394">תעתיק סרבית</translation>
+<translation id="69548399407432279">מהשנה האחרונה</translation>
 <translation id="6960565108681981554">הרשת לא פעילה. עליך לפנות לספק חבילת הסלולר שלך.</translation>
 <translation id="696203921837389374">הפעלת סנכרון של חבילת הגלישה</translation>
 <translation id="6965382102122355670">אישור</translation>
@@ -849,6 +860,7 @@
 <translation id="8042602468072383151">קובץ אודיו בפורמט <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">רומנית</translation>
 <translation id="8049184478152619004">‏יש להזין מפתח אישי לביטול חסימה (PUK)</translation>
+<translation id="8055538340801153769">התיקייה הזו</translation>
 <translation id="807187749540895545">מתבצע חילוץ של הקובץ <ph name="FILE_NAME" />…</translation>
 <translation id="8087576439476816834">הורדה, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">בשיתוף איתי</translation>

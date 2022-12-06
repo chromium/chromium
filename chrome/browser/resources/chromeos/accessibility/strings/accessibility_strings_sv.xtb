@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Med hoppkommandon kan du effektivt navigera genom en webbsida.</translation>
 <translation id="116896278675803795">Ändra språk automatiskt för att matcha valt innehåll</translation>
 <translation id="1175914831232945926">Siffror</translation>
-<translation id="1181003590763099524">flytta till början</translation>
 <translation id="1188858454923323853">kompletterande</translation>
 <translation id="1189258430971676908">Övningsområde: Rullgardinsmenyer</translation>
 <translation id="1195238899008218998">Efterord</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Storlek <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Ackordet <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Mellanmörkt orkidélila</translation>
-<translation id="1928535370180099152">markera föregående tecken</translation>
 <translation id="1928932365747995741">Det finns inget föregående redigerbart textfält</translation>
 <translation id="1964135212174907577">Nästa objekt</translation>
 <translation id="1966649499058910679">Markera orden allt eftersom de läses upp</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Aktivera och inaktivera tal</translation>
 <translation id="2390264819538553347">Tryck på Retur om du vill fortsätta. Tryck på mellanslag om du vill öppna föregående sida.</translation>
 <translation id="2398579267367951220">Skriv det du vill söka efter på sidan. Hoppa till resultatet genom att trycka på Retur. Bläddra mellan resultaten med uppåt- och nedåtpil, fortsätt skriva om du vill ändra sökningen eller tryck på Esc om du vill avbryta.</translation>
-<translation id="2407047351320112166">markera nästa tecken</translation>
 <translation id="240709722712693803">Blåviolett</translation>
 <translation id="2410298923485357543">Använd en naturlig röst när enheten är online</translation>
 <translation id="2416512023405990736">En omarkerad kryssruta</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Flytta muspekaren</translation>
 <translation id="3103579948980282461">Mellanmörkt rödviolett</translation>
 <translation id="3104705064753753826">varnruta</translation>
-<translation id="3105857328626674463">markera föregående ord</translation>
 <translation id="3109724472072898302">Komprimerat</translation>
 <translation id="311015743332597320">Svep åt höger med fyra fingrar</translation>
 <translation id="3112457281078985179">Slå på eller stäng av ChromeVox genom att trycka på Ctrl + Alt + Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Föregående länk som har besökts</translation>
 <translation id="3241638166094654466">Celler i varje rad:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">flytta till slutet</translation>
 <translation id="3260949043575829030">Föregående liknande</translation>
 <translation id="3270069636408109001">Det finns inga fler tabeller</translation>
 <translation id="3273791280096244679">Spara etikett</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">menyalternativ med kryssruta</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollartecken}other{# dollartecken}}</translation>
 <translation id="3659787053479271466">varning</translation>
-<translation id="3661265561216135784">upprepa</translation>
 <translation id="366419593095697301">Tips! Tryck på Esc om du vill avsluta självstudierna.</translation>
 <translation id="3676062394766691318">När du har konfigurerat enheten kan du komma tillbaka senare och göra fler självstudier genom att trycka på Sök + O och sedan T.</translation>
 <translation id="3681531118904532409">Papayakrämorange</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Exempel</translation>
 <translation id="7439060726180460871">Katalog</translation>
 <translation id="744163271241493234">lösenordsfält</translation>
-<translation id="7443479558101073378">markera nästa ord</translation>
 <translation id="7465123027577412805">Vill du använda en naturlig röst?</translation>
 <translation id="7491962110804786152">tabb</translation>
 <translation id="7492497529767769458">Navigera till nästa avsnitt, till exempel statusfältet eller översikten.</translation>
 <translation id="7505149250476994901">Säg ”stort” före bokstaven</translation>
 <translation id="7533226154149229506">Ljust gullrisgul</translation>
-<translation id="7541021454094606506">radera allt</translation>
 <translation id="7543255924852002459">Ignorera etikett</translation>
 <translation id="7552432549459840808">Användbara kortkommandon i Chrome</translation>
 <translation id="7553679324939294712">infoga <ph name="INSERT_PHRASE" /> före <ph name="BEFORE_PHRASE" /></translation>

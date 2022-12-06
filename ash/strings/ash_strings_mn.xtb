@@ -31,7 +31,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" />-н мэдээллийн харилцах цонхыг нээх</translation>
 <translation id="1150989369772528668">Календарь</translation>
 <translation id="1153356358378277386">Хослуулсан төхөөрөмж</translation>
-<translation id="1165712434476988950">Шинэчлэлтийг ашиглахын тулд төхөөрөмжөө дахин эхлүүлэх шаардлагатай.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Таны USB-C кабель дэлгэцүүдэд зохих ёсоор холбогдохгүй байж магадгүй</translation>
 <translation id="1175572348579024023">Гүйлгэх</translation>
@@ -669,6 +668,7 @@
 <translation id="4666082839192943839">Бүх камерыг үргэлж блоклохын тулд энэ төхөөрөмж дээр камерын хандалтыг унтраана уу.</translation>
 <translation id="4666911709726371538">Бусад апп</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" />-г татаж байна</translation>
+<translation id="468293128311738995">Таны утасны аппууд</translation>
 <translation id="4690510401873698237">Доор байгаа shelf</translation>
 <translation id="4696813013609194136">Төхөөрөмжийн түгжээг эцэг эхийн кодоор тайлна уу</translation>
 <translation id="4702647871202761252">Нууцлалын дэлгэц унтраалттай байна</translation>
@@ -1291,6 +1291,7 @@
 <translation id="8142441511840089262">2 товших</translation>
 <translation id="8142699993796781067">Хувийн сүлжээ</translation>
 <translation id="8144760705599030999">Бусад төхөөрөмжтэйгээ илүү хурдан хослуулахын тулд өөрийн <ph name="NAME" />-г <ph name="EMAIL" />-д хадгална уу</translation>
+<translation id="8144914663975476336">Бичлэгийн форматыг сонгоно уу</translation>
 <translation id="8149413265954228307">Bluetooth-н тохиргоог харуулна уу. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Хаахын тулд Ctrl + W дээр дарна уу.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Автоматаар гүйцээх</translation>
@@ -1465,7 +1466,6 @@
 <translation id="9089416786594320554">Оролтын аргууд</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дэлгэцийг хассан</translation>
 <translation id="9098969848082897657">Утасны дууг хаах</translation>
-<translation id="9099154003160514616">Lacros-н шинэчлэлт боломжтой байна</translation>
 <translation id="9100887602489003640">Профайл нэмж байна. Цөөн хэдэн минут хүлээнэ үү.</translation>
 <translation id="9105450214093926548">Lacros хөтчийг ажиллуулж байх үед хоёр дахь хэрэглэгч нэвтрэхийг дэмждэггүй. Оронд нь Lacros-н хоёр дахь хөтчийн профайлыг ашиглах эсвэл Lacros-г хаагаад дахин оролдоно уу.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> эсвэл <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

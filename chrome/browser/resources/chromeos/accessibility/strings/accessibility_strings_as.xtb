@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">এখন ৱেব পৃষ্ঠাত দক্ষতাৰে নেভিগে'ট কৰিবলৈ পোনপটীয়াকৈ যোৱাৰ নিৰ্দেশনাসমূহ ব্যৱহাৰ কৰিব পাৰি।</translation>
 <translation id="116896278675803795">বাছনি কৰা সমল মিলাবলৈ স্বয়ংক্ৰিয়ভাৱে ভাষা সলনি কৰক</translation>
 <translation id="1175914831232945926">অংকবোৰ</translation>
-<translation id="1181003590763099524">আৰম্ভণিলৈ স্থানান্তৰ কৰক</translation>
 <translation id="1188858454923323853">পৰিপূৰক</translation>
 <translation id="1189258430971676908">অনুশীলনৰ ক্ষেত্ৰ: ড্ৰপ ডাউনৰ সূচী</translation>
 <translation id="1195238899008218998">উত্তৰভাষ</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">আকাৰ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ক’ৰ্ড</translation>
 <translation id="1923956950274750765">মধ্যমীয়া অৰ্কিড</translation>
-<translation id="1928535370180099152">পূৰ্বৱৰ্তী বৰ্ণটো হাইলাইট কৰক</translation>
 <translation id="1928932365747995741">কোনো পূর্বৱর্তী সম্পাদনা কৰিব পৰা পাঠ ক্ষেত্ৰ নাই</translation>
 <translation id="1964135212174907577">পৰৱৰ্তী অব্‌জেক্ট</translation>
 <translation id="1966649499058910679">প্ৰতিটো শব্দ কোৱা হৈছে বুলি হাইলাইট কৰক</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">কথন অন বা অফ কৰিবলৈ ট’গ’ল কৰক</translation>
 <translation id="2390264819538553347">আগবাঢ়িবলৈ এণ্টাৰ দবাওক; উভতি যাবলৈ বেকস্পেছ দবাওক।</translation>
 <translation id="2398579267367951220">পৃষ্ঠাখনত সন্ধান কৰিবলৈ টাইপ কৰক। ফলাফললৈ পোনপটীয়াকৈ যাবলৈ এণ্টাৰ টিপক, ফলাফল ব্ৰাউজ কৰিবলৈ আপ অথবা ডাউন এৰ’সমূহ টিপক, আপোনাৰ সন্ধান সলনি কৰিবলৈ টাইপ কৰি থাকক অথবা বাতিল কৰিবলৈ এস্কে’প টিপক।</translation>
-<translation id="2407047351320112166">পৰৱৰ্তী বৰ্ণটো হাইলাইট কৰক</translation>
 <translation id="240709722712693803">নীলা বেঙুনীয়া</translation>
 <translation id="2410298923485357543">ডিভাইচটো অনলাইন হৈ থাকিলে স্বাভাৱিক কণ্ঠধ্বনি ব্যৱহাৰ কৰক</translation>
 <translation id="2416512023405990736">টিক চিহ্ন নিদিয়া চ্চেকবক্স</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">কাৰ্ছৰ স্থানান্তৰ কৰক</translation>
 <translation id="3103579948980282461">মধ্যম বেঙুনীয়া ৰঙা</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">পূৰ্বৱৰ্তী শব্দটো হাইলাইট কৰক</translation>
 <translation id="3109724472072898302">সংকুচিত কৰা আছে</translation>
 <translation id="311015743332597320">চাৰিটা আঙুলিৰে সোঁফাললৈ ছোৱাইপ কৰক</translation>
 <translation id="3112457281078985179">ChromeVox অন বা অফ কৰিবলৈ, Control+Alt+Z ব্যৱহাৰ কৰক৷</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">চোৱা পূর্বৰ লিংক</translation>
 <translation id="3241638166094654466">প্ৰতিটো শাৰীত থকা কক্ষ:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">শেষলৈ নিয়ক</translation>
 <translation id="3260949043575829030">পূৰ্বৱৰ্তী একে ধৰণৰ বস্তু</translation>
 <translation id="3270069636408109001">কোনো পৰৱৰ্তী তালিকা নাই</translation>
 <translation id="3273791280096244679">লেবেল ছেভ কৰক</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">চেকবক্স থকা মেনুৰ বস্তু</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ডলাৰ}one{#টা ডলাৰ চিহ্ন}other{#টা ডলাৰ চিহ্ন}}</translation>
 <translation id="3659787053479271466">সতৰ্ক</translation>
-<translation id="3661265561216135784">পুনৰাবৃত্তি কৰক</translation>
 <translation id="366419593095697301">ইংগিত: আপুনি যদি এই টিউট’ৰিয়েলটোৰ পৰা বাহিৰ হ'বলৈ বিচাৰে তেন্তে এস্কে’প টিপক।</translation>
 <translation id="3676062394766691318">আপুনি নিজৰ ডিভাইচ ছেট আপ কৰাৰ পাছত, আপুনি উভতি আহিব পাৰে আৰু প্ৰথমে ছাৰ্চ + অ' টিপি তাৰ পাছত টি টিপি অধিক টিউট’ৰিয়েল চাব পাৰে।</translation>
 <translation id="3681531118904532409">পাপায়া হুইপ</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">উদাহৰণ</translation>
 <translation id="7439060726180460871">ডাইৰেক্টৰী</translation>
 <translation id="744163271241493234">পাছৱৰ্ড সম্পাদক</translation>
-<translation id="7443479558101073378">পৰৱৰ্তী শব্দটো হাইলাইট কৰক</translation>
 <translation id="7465123027577412805">প্ৰাকৃতিক কণ্ঠ ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="7491962110804786152">টেব</translation>
 <translation id="7492497529767769458">পৰৱৰ্তী শাখাটোলৈ যাওক। উদাহৰণত ষ্টেটাছ ট্ৰে’ আৰু লঞ্চাৰ অন্তৰ্ভুক্ত।</translation>
 <translation id="7505149250476994901">আখৰৰ আগত "cap" বুলি কওক</translation>
 <translation id="7533226154149229506">পাতল সোণালী ৰ'ড হালধীয়া</translation>
-<translation id="7541021454094606506">আটাইবোৰ মচক</translation>
 <translation id="7543255924852002459">লেবেল বাতিল কৰক</translation>
 <translation id="7552432549459840808">কামত অহা Chrome শ্বৰ্টকাট</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" />ৰ পূৰ্বে <ph name="INSERT_PHRASE" /> ভৰাওক</translation>

@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Үсрэх тушаалыг веб хуудсаар үр дүнтэйгээр шилжихэд ашиглах боломжтой.</translation>
 <translation id="116896278675803795">Хэлийг сонгосон контентод тааруулж автоматаар өөрчлөх</translation>
 <translation id="1175914831232945926">Цифр</translation>
-<translation id="1181003590763099524">эхлэл рүү зөөх</translation>
 <translation id="1188858454923323853">нэмэлт</translation>
 <translation id="1189258430971676908">Дадлагын хэсэг: Эвхмэл жагсаалт</translation>
 <translation id="1195238899008218998">Төгсгөлийн үг</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Хэмжээ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> нийлэмж</translation>
 <translation id="1923956950274750765">Дунд зэргийн нил ягаан (Цахирмаа цэцгийн өнгө)</translation>
-<translation id="1928535370180099152">өмнөх тэмдэгтийг тодруул</translation>
 <translation id="1928932365747995741">Өмнөх текст засварлах талбар алга байна</translation>
 <translation id="1964135212174907577">Дараах обьект</translation>
 <translation id="1966649499058910679">Үг бүрийг хэлэх үед нь тодруулах</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Яриаг асаах/унтраах</translation>
 <translation id="2390264819538553347">Дараагийн хуудсанд очих бол Enter товчлуурыг; буцахын тулд арилгах товчлуурыг дарна уу.</translation>
 <translation id="2398579267367951220">Хуудаснаас хайхын тулд бичнэ үү. Илэрц рүү үсэрч очихын тулд Enter, илэрцүүдийг үзэхийн тулд дээш эсвэл доош сумыг дарж, хайлтаа өөрчлөхийн тулд үргэлжлүүлэн бичнэ үү эсвэл болихын тулд escape товчийг дарна уу.</translation>
-<translation id="2407047351320112166">дараагийн тэмдэгтийг тодруул</translation>
 <translation id="240709722712693803">Нил хөх ягаан (Яргуйн өнгө)</translation>
 <translation id="2410298923485357543">Төхөөрөмж онлайн үед төрөлхийн дуу хоолойг ашиглана уу</translation>
 <translation id="2416512023405990736">Сонгоогүй тэмдэглэх нүд</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Курсорыг зөөх</translation>
 <translation id="3103579948980282461">Нил ягаан туяатай тод ягаан</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">өмнөх үгийг тодруулах</translation>
 <translation id="3109724472072898302">Задарсан</translation>
 <translation id="311015743332597320">Дөрвөн хуруугаараа баруун тийш шудрах</translation>
 <translation id="3112457281078985179">ChromeVox-г асаах/унтраахын тулд Control+Alt+Z-г ашиглана уу.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Өмнө нь зочилсон холбоос</translation>
 <translation id="3241638166094654466">Шугам бүрийн нүд:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">төгсгөл рүү зөөх</translation>
 <translation id="3260949043575829030">Өмнөх ижил төстэй зүйл</translation>
 <translation id="3270069636408109001">Дараагийн хүснэгт алга байна</translation>
 <translation id="3273791280096244679">Шошго хадгалах</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ доллар}other{ # долларын тэмдэгтүүд}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">давтах</translation>
 <translation id="366419593095697301">Заавар: Хэрэв та энэ практик хичээлээс гарахыг хүсвэл Escape-г дарна уу.</translation>
 <translation id="3676062394766691318">Та төхөөрөмжөө тохируулж дууссаны дараа Хайлт + O дараа нь T-г даран буцан ирж, бусад практик хичээлийг үзэх боломжтой.</translation>
 <translation id="3681531118904532409">Бага зэргийн бор туяатай цайвар ягаан</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Жишээ</translation>
 <translation id="7439060726180460871">Хадгалалтын файлын сан</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">дараагийн үгийг тодруулах</translation>
 <translation id="7465123027577412805">Төрөлхийн дуу хоолой ашиглах уу?</translation>
 <translation id="7491962110804786152">цонх</translation>
 <translation id="7492497529767769458">Дараагийн хэсэгт шилжих. Жишээнд Статусын мэдээллийн хэсэг болон Эхлүүлэгч багтана.</translation>
 <translation id="7505149250476994901">Үсгийн өмнө "том" гэж хэлнэ үү</translation>
 <translation id="7533226154149229506">Бага зэргийн алтан шаргал туяатай цайвар саарал</translation>
-<translation id="7541021454094606506">бүгдийг устгах</translation>
 <translation id="7543255924852002459">Шошгыг болих</translation>
 <translation id="7552432549459840808">Chrome-н хэрэгтэй товчлол</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" />-н өмнө <ph name="INSERT_PHRASE" />-г оруул</translation>

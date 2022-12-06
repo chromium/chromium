@@ -99,6 +99,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1641113438599504367">Bezpečné prohlížení</translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1650222530560417226">Klepnutím na tlačítko Spustit protokolování začnete shromažďovat budoucí protokoly konzole JavaScriptu a chyby ze všech karet. Protokoly se budou shromažďovat (a ukládat jen do paměti), dokud tuto stránku nezavřete nebo neklepnete na Zastavit protokolování.</translation>
+<translation id="1653432787084483144">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložené heslo.}few{Nad klávesnicí jsou k dispozici {count} uložená hesla.}many{Nad klávesnicí je k dispozici {count} uloženého hesla.}other{Nad klávesnicí je k dispozici {count} uložených hesel.}}</translation>
 <translation id="1657011748321897393">Sdílení se nezdařilo, protože nejste připojeni k síti.</translation>
 <translation id="1657641691196698092">Blokované soubory cookie</translation>
 <translation id="165877110639533037">Žádné otevřené karty</translation>
@@ -139,6 +140,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2015722694326466240">Chcete-li zobrazit hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="2021670401941426298">Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud je k dispozici).</translation>
 <translation id="202292859882676807">Přístup k mikrofonu je povolen</translation>
+<translation id="2050196510205866090">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložená platební metoda.}few{Nad klávesnicí jsou k dispozici {count} uložené platební metody.}many{Nad klávesnicí je k dispozici {count} uložené platební metody.}other{Nad klávesnicí je k dispozici {count} uložených platebních metod.}}</translation>
 <translation id="2073572773299281212">Aktivní před tímto počtem dní: <ph name="DAYS" /></translation>
 <translation id="2074131957428911366">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
@@ -180,6 +182,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2375243552872247702">Sledujte obsah pro vás</translation>
 <translation id="2381405137052800939">Základní nastavení</translation>
 <translation id="2386793615875593361">Vybrána 1 fotka</translation>
+<translation id="2411749908844615428">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložená adresa.}few{Nad klávesnicí jsou k dispozici {count} uložené adresy.}many{Nad klávesnicí je k dispozici {count} uložené adresy.}other{Nad klávesnicí je k dispozici {count} uložených adres.}}</translation>
 <translation id="2421004566762153674">Blokování souborů cookie třetích stran</translation>
 <translation id="2421044535038393232">Pokračovat v úpravách</translation>
 <translation id="2434405374328098816">Heslo pro uživatelské jméno „<ph name="USERNAME" />“ už jste na webu <ph name="WEBSITE" /> uložili</translation>
@@ -439,6 +442,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4375040482473363939">Hledání QR kódu</translation>
 <translation id="4378154925671717803">Telefon</translation>
 <translation id="4389019817280890563">Klepnutím změníte jazyk</translation>
+<translation id="4420409367264901497">Upravit záložku</translation>
 <translation id="4442550905108052454">Otevřete <ph name="BEGIN_BOLD" />Nastavení<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Přidat jazyk</translation>
 <translation id="4462491365653392320">Sledovat ceny na kartách</translation>
@@ -477,6 +481,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 Vaše data jsou šifrována pomocí heslové fráze pro synchronizaci. Chcete-li zahájit synchronizaci, zadejte ji.</translation>
 <translation id="4682686630151240767">1. Otevřete nastavení iPhonu.</translation>
 <translation id="4689564913179979534">Spravovat platební metody...</translation>
+<translation id="469300482518076788">Zavřít kartu</translation>
 <translation id="4697071790493980729">Nebyly nalezeny žádné výsledky</translation>
 <translation id="470966556546083668">Nezapínat synchronizaci</translation>
 <translation id="4737560986434232178">Vyhledávejte v nedávných kartách</translation>
@@ -1025,6 +1030,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731388423028622182">V rámci resetování iPhonu jste byli odhlášeni z účtu <ph name="USER_NAME" />. Níže klepněte na Pokračovat a přihlaste se.</translation>
 <translation id="87371078663613140">Prozkoumejte možnosti na liště s nabídkou.</translation>
+<translation id="8737620822084008350">{count,plural, =1{Nad klávesnicí je k dispozici {count} uložený profil.}few{Nad klávesnicí jsou k dispozici {count} uložené profily.}many{Nad klávesnicí je k dispozici {count} uloženého profilu.}other{Nad klávesnicí je k dispozici {count} uložených profilů.}}</translation>
 <translation id="8741995161408053644">Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> mohou být k dispozici další formy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="8750037785291841318">Zde najdete své karty</translation>
 <translation id="8756969031206844760">Aktualizovat heslo?</translation>

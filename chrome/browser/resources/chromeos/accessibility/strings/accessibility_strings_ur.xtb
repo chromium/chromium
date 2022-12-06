@@ -28,7 +28,6 @@
 جا سکتا ہے۔</translation>
 <translation id="116896278675803795">زبان کو منتخب کردہ مواد سے مماثل کرنے کے لیے خودکار طور پر تبدیل کریں</translation>
 <translation id="1175914831232945926">ہندسے</translation>
-<translation id="1181003590763099524">شروع پر منتقل کریں</translation>
 <translation id="1188858454923323853">اعزازی</translation>
 <translation id="1189258430971676908">پریکٹیس کرنے کی جگہ: ڈراپ ڈاؤن فہرستیں</translation>
 <translation id="1195238899008218998">پسِ نوشت</translation>
@@ -153,7 +152,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="1914424852593176649">سائز <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> کورڈ</translation>
 <translation id="1923956950274750765">میڈیم سحلبی</translation>
-<translation id="1928535370180099152">پچھلے حرف کو نمایاں کریں</translation>
 <translation id="1928932365747995741">کوئی پچھلی قابل ترمیم ٹیکسٹ فیلڈ نہیں ہے</translation>
 <translation id="1964135212174907577">اگلا آبجیکٹ</translation>
 <translation id="1966649499058910679">بولے جانے پر ہر لفظ کو نمایاں کریں</translation>
@@ -207,7 +205,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="2381733276052567791">ٹوگل کر کے اسپیچ کو آن یا آف کریں</translation>
 <translation id="2390264819538553347">آگے جانے کیلئے، انٹر کو دبائیں؛ واپس جانے کیلئے، بیک اسپیس کو دبائیں۔</translation>
 <translation id="2398579267367951220">‏صفحے میں تلاش کرنے کے لئے ٹائپ کریں۔ نتیجے تک جانے کے لیے enter دبائیں، نتائج براؤز کرنے کے لئے اوپر یا نیچے تیر والے بٹن دبائیں، اپنی تلاش کو تبدیل کرنے کے لئے ٹائپنگ جاری رکھیں، یا منسوخ کرنے کے لئے escape دبائیں۔</translation>
-<translation id="2407047351320112166">اگلے حرف کو نمایاں کریں</translation>
 <translation id="240709722712693803">نیلا وائلیٹ</translation>
 <translation id="2410298923485357543">جب آلہ آن لائن ہو تو قدرتی آواز کا استعمال کریں</translation>
 <translation id="2416512023405990736">ایک غیر نشان زد چیک باکس</translation>
@@ -331,7 +328,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="309749186376891736">کرسر منتقل کریں</translation>
 <translation id="3103579948980282461">میڈیم وائلیٹ سرخ</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">پچھلا لفظ نمایاں کریں</translation>
 <translation id="3109724472072898302">سکیڑا گیا</translation>
 <translation id="311015743332597320">چار انگلیوں سے دائیں طرف سوائپ کریں</translation>
 <translation id="3112457281078985179">‏ChromeVox کو آن یا آف کرنے کیلئے، Control+Alt+Z استعمال کریں۔</translation>
@@ -360,7 +356,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="3241052487511142956">پچھلا ملاحظہ کردہ لنک</translation>
 <translation id="3241638166094654466">ہر لائن میں سیلز:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">آخر میں منتقل کریں</translation>
 <translation id="3260949043575829030">گزشتہ مماثل آئٹم</translation>
 <translation id="3270069636408109001">کوئی اگلا ٹیبل نہیں ہے</translation>
 <translation id="3273791280096244679">لیبل محفوظ کریں</translation>
@@ -425,7 +420,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ڈالر}other{# ڈالر کے نشانات}}</translation>
 <translation id="3659787053479271466">الرٹ</translation>
-<translation id="3661265561216135784">دہرائیں</translation>
 <translation id="366419593095697301">‏تجویز: اگر آپ اس ٹیوٹوریل سے باہر نکلنا چاہتے ہیں تو Escape دبائیں۔</translation>
 <translation id="3676062394766691318">‏اپنے آلے کو سیٹ اپ کرنے کے بعد، آپ O + Search پھر T دبا کر واپس آ سکتے ہیں اور مزید ٹیوٹوریلز ملاحظہ کر سکتے ہیں۔</translation>
 <translation id="3681531118904532409">بھورا مائل ہلکا نارنجی</translation>
@@ -954,13 +948,11 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="743783356331413498">مثال</translation>
 <translation id="7439060726180460871">ڈائریکٹری</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">اگلا لفظ نمایاں کریں</translation>
 <translation id="7465123027577412805">قدرتی آواز کا استعمال کریں؟</translation>
 <translation id="7491962110804786152">ٹیب</translation>
 <translation id="7492497529767769458">اگلے سیکشن پر جائیں۔ مثالوں میں اسٹیٹس ٹرے اور لانچر شامل ہیں۔</translation>
 <translation id="7505149250476994901">حرف سے پہلے "بڑا حرف" بولیں</translation>
 <translation id="7533226154149229506">ہلکا گولڈن راڈ نما پیلا</translation>
-<translation id="7541021454094606506">سبھی حذف کریں</translation>
 <translation id="7543255924852002459">لیبل مسترد کریں</translation>
 <translation id="7552432549459840808">‏Chrome کے مفید شارٹ کٹس</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> سے پہلے <ph name="INSERT_PHRASE" /> داخل کریں</translation>

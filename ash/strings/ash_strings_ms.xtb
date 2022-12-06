@@ -31,7 +31,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1148499908455722006">Buka dialog maklumat untuk <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendar</translation>
 <translation id="1153356358378277386">Peranti digandingkan</translation>
-<translation id="1165712434476988950">Peranti perlu dimulakan semula untuk memasang kemaskinian.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Kabel USB-C anda mungkin tidak bersambung ke paparan dengan betul</translation>
 <translation id="1175572348579024023">Tatal</translation>
@@ -669,6 +668,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4666082839192943839">Matikan akses kamera pada peranti ini untuk menyekat semua kamera pada setiap masa.</translation>
 <translation id="4666911709726371538">Lagi apl</translation>
 <translation id="4667099493359681081">Memuat turun <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Apl daripada telefon anda</translation>
 <translation id="4690510401873698237">Rak di bahagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci peranti menggunakan kod ibu bapa</translation>
 <translation id="4702647871202761252">Skrin privasi dimatikan</translation>
@@ -1291,6 +1291,7 @@ Pemasangan baharu</translation>
 <translation id="8142441511840089262">Klik dua kali</translation>
 <translation id="8142699993796781067">Rangkaian persendirian</translation>
 <translation id="8144760705599030999">Simpan <ph name="NAME" /> anda pada <ph name="EMAIL" /> untuk penggandingan yang lebih pantas dengan peranti anda yang lain</translation>
+<translation id="8144914663975476336">Pilih format rakaman</translation>
 <translation id="8149413265954228307">Tunjukkan tetapan Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Tekan Ctrl + W untuk tutup.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Autolengkap</translation>
@@ -1464,7 +1465,6 @@ Pemasangan baharu</translation>
 <translation id="9089416786594320554">Kaedah input</translation>
 <translation id="9091626656156419976">Paparan <ph name="DISPLAY_NAME" /> dialih keluar</translation>
 <translation id="9098969848082897657">Senyapkan telefon</translation>
-<translation id="9099154003160514616">Kemaskinian Lacros tersedia</translation>
 <translation id="9100887602489003640">Menambah profil. Tunggu beberapa minit.</translation>
 <translation id="9105450214093926548">Log masuk pengguna kedua tidak disokong semasa penyemak imbas Lacros dijalankan. Sila gunakan profil penyemak imbas kedua dalam Lacros atau tutup Lacros dan cuba lagi.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> atau <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

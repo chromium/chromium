@@ -803,7 +803,6 @@
 <translation id="1719312230114180055">గమనిక: శక్తివంతమైన పాస్‌వర్డ్ లేదా PIN కంటే మీ వేలిముద్ర తక్కువ సురక్షితంగా ఉండవచ్చు.</translation>
 <translation id="1720318856472900922">TLS WWW సర్వర్ ప్రామాణీకరణ</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />‌ ఇమేజ్ సెర్చ్</translation>
-<translation id="1721312023322545264">ఈ సైట్‌ని సందర్శించడానికి మీకు <ph name="NAME" /> నుండి అనుమతి అవసరం</translation>
 <translation id="1722460139690167654">మీ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> నిర్వహణ<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> ద్వారా చేయబడుతోంది</translation>
 <translation id="1723824996674794290">&amp;కొత్త విండో</translation>
 <translation id="1724801751621173132">ఇన్‌పుట్ మోడ్</translation>
@@ -1971,6 +1970,7 @@
 <translation id="275662540872599901">స్క్రీన్ ఆఫ్‌లో ఉంది</translation>
 <translation id="2757161511365746634">ప్రింటర్‌ను చూడండి</translation>
 <translation id="2757338480560142065">మీరు సేవ్ చేస్తున్న పాస్‌వర్డ్ మీ <ph name="WEBSITE" /> యొక్క పాస్‌వర్డ్‌తో సరిపోలుతుందని నిర్ధారించుకోండి</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> కోసం సెర్చ్ ఫలితాలు ఏవీ అందించబడలేదు</translation>
 <translation id="2762441749940182211">కెమెరా బ్లాక్ చేయబడింది</translation>
 <translation id="2764786626780673772">VPN వివరాలు</translation>
 <translation id="2764920001292228569">ఒక ప్రొఫైల్ పేరును ఎంటర్ చేయండి</translation>
@@ -5282,6 +5282,7 @@
 <translation id="5886112770923972514">సమీపంలోని ఉన్న ఫాస్ట్ పెయిర్ పరికరాలకు త్వరితంగా కనెక్ట్ అయి, వాటిని సెటప్ చేయండి</translation>
 <translation id="5886384907280980632">ఇప్పుడే ఆఫ్ చేయండి</translation>
 <translation id="5889282057229379085">ఇంటర్మీడియట్ CAల అత్యధిక సంఖ్య: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">మీ స్వంత <ph name="BEGIN_LINK" />సింక్ రహస్య పదబంధం<ph name="END_LINK" />తో సింక్ చేయబడిన డేటాను ఎన్‌క్రిప్ట్ చేయండి. Google Pay నుండి పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఎన్‌క్రిప్ట్ చేయబడవు. Chrome నుండి బ్రౌజింగ్ హిస్టరీ సింక్ చేయబడదు.</translation>
 <translation id="5891688036610113830">ప్రాధాన్య Wi-Fi నెట్‌వర్క్‌లు</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించు</translation>
 <translation id="5895335062901455404">మీరు మీ Google ఖాతాతో సైన్ ఇన్ చేసినప్పుడు, ఏ ChromeOS Flex పరికరంలోనైనా మీరు సేవ్ చేసిన ప్రాధాన్యతలు, యాక్టివిటీ సిద్ధంగా ఉంటాయి. ఏది సింక్ చేయాలనే దాన్ని, మీరు సెట్టింగ్‌లలో ఎంచుకోవచ్చు.</translation>
@@ -5927,6 +5928,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" />కు సంబంధించినది</translation>
 <translation id="6508261954199872201">యాప్: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">మీడియా లైసెన్స్</translation>
+<translation id="6511279028091289182">సెక్యూర్ కనెక్షన్ ద్వారా వెబ్‌సైట్‌లకు ఎలా కనెక్ట్ కావాలో నిర్ణయిస్తుంది. ఇది <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> లింక్‌లో మేనేజ్ చేసే సర్వీస్ ప్రొవైడర్‌ను ఉపయోగిస్తుంది</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" />‌ను తొలగించడం గురించి ఆలోచించండి, తద్వారా ఈ పరికరాన్ని ఉపయోగించే ఇతర వ్యక్తులు మీ పాస్‌వర్డ్‌లను చూడలేరు</translation>
 <translation id="6512808201725371249">ఈ ఖాతా కోసం పాస్‌వర్డ్ ఇప్పటికే మీ Google Password Managerలో సేవ్ చేయబడింది (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">మీరు మరొక నెట్‌వర్క్‌కు కనెక్ట్ అయ్యి ఉండకపోతే, Google Chrome మొబైల్ డేటాను ఉపయోగిస్తుంది.</translation>
@@ -5996,6 +5998,7 @@
 <translation id="6568283005472142698">ట్యాబ్ సెర్చ్</translation>
 <translation id="65711204837946324">దీనిని డౌన్‌లోడ్ చేయడానికి అనుమతి కావాలి</translation>
 <translation id="6571772921213691236">సైన్-ఇన్ డేటాను ఎడిట్ చేయండి</translation>
+<translation id="657229725818377235">ప్రమాదకరమైన వెబ్‌సైట్‌లు, డౌన్‌లోడ్‌ల నుండి మరింత రక్షణ పొందండి</translation>
 <translation id="6573096386450695060">ఎల్లప్పుడూ అనుమతించండి</translation>
 <translation id="6573497332121198392">షార్ట్‌కట్‌ను తీసివేయడం సాధ్యపడలేదు</translation>
 <translation id="657402800789773160">ఈ పేజీని &amp;రీలోడ్ చేయి</translation>
@@ -6940,6 +6943,7 @@
 <translation id="7465635034594602553">ఏదో తప్పు జరిగింది. దయచేసి కొద్ది నిమిషాలు వేచి ఉండి, <ph name="APP_NAME" />ను మళ్లీ రన్ చేయండి.</translation>
 <translation id="7465778193084373987">Netscape సర్టిఫికెట్ రద్దు URL</translation>
 <translation id="7466431077154602932">సంక్షిప్త వీక్షణ</translation>
+<translation id="7466556884531675354">గమనికలు ఏవీ సేవ్ చేయబడలేదు</translation>
 <translation id="746861123368584540">ఎక్స్‌టెన్షన్ లోడ్ అయ్యింది</translation>
 <translation id="7470424110735398630">మీ క్లిప్‌బోర్డ్ చూడటానికి అనుమతించబడింది</translation>
 <translation id="747114903913869239">ఎర్రర్: ఎక్స్‌టెన్షన్‌లను డీకోడ్ చేయడం సాధ్యం కాలేదు</translation>
@@ -7915,6 +7919,7 @@
 <translation id="8351316842353540018">ఎల్లప్పుడూ a11y ఆప్షన్‌లను చూపించు</translation>
 <translation id="8351419472474436977">ఈ ఎక్సటెన్షన్ మీ ప్రాక్సీ సెట్టింగ్‌లను దాని నియంత్రణలోకి తీసుకుంది, అది మీరు ఆన్‌లైన్‌లో ఏదైనా చేస్తుంటే దాన్ని మార్చడం, అంతరాయం కలిగించడం లేదా రహస్యంగా గమనించడం వంటివి చేయగలదని దీనర్థం. ఈ మార్పు ఎందుకు సంభవించిందో మీకు ఖచ్చితంగా తెలియలేదంటే బహుశా మీరు దాన్ని కోరుకొని ఉండకపోవచ్చు.</translation>
 <translation id="8351630282875799764">బ్యాటరీ ఛార్జ్ కావడం లేదు</translation>
+<translation id="8352287103893778223">ట్యాబ్ గ్రూప్ టైటిల్</translation>
 <translation id="835238322900896202">అన్ఇన్‌స్టాల్ సమయంలో ఎర్రర్ ఏర్పడింది. దయచేసి టెర్మినల్ ద్వారా అన్ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="8353683614194668312">ఇది వీటిని చేయగలదు:</translation>
 <translation id="8354034204605718473">మీ చిన్నారి PIN జోడించబడింది</translation>

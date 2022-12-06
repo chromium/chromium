@@ -793,7 +793,6 @@
 <translation id="1719312230114180055">შენიშვნა: თქვენი თითის ანაბეჭდი შეიძლება ძლიერ პაროლზე ან PIN-კოდზე ნაკლებად საიმედო იყოს.</translation>
 <translation id="1720318856472900922">TLS WWW სერვერის ავთენტიფიკაცია</translation>
 <translation id="172123215662733643">მოიძიეთ სურათები <ph name="VISUAL_SEARCH_PROVIDER" />-ით</translation>
-<translation id="1721312023322545264">ამ საიტის მოსანახულებლად, <ph name="NAME" />-ის ნებართვა გჭირდებათ</translation>
 <translation id="1722460139690167654">თქვენი <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> იმართება<ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" />-ის მიერ</translation>
 <translation id="1723824996674794290">&amp;ახალი ფანჯარა</translation>
 <translation id="1724801751621173132">შეყვანის რეჟიმი</translation>
@@ -1957,6 +1956,7 @@
 <translation id="275662540872599901">ეკრანი გამორთულია</translation>
 <translation id="2757161511365746634">პრინტერის ნახვა</translation>
 <translation id="2757338480560142065">დარწმუნდით, რომ პაროლი, რომლის შენახვასაც აპირებთ, ემთხვევა <ph name="WEBSITE" />-ის პაროლს</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> ვერაფერი მოიძებნა მოთხოვნაზე „<ph name="SEARCH_QUERY" />“</translation>
 <translation id="2762441749940182211">კამერა დაბლოკილია</translation>
 <translation id="2764786626780673772">VPN-ის დეტალები</translation>
 <translation id="2764920001292228569">შეიყვანეთ პროფილის სახელი</translation>
@@ -5912,6 +5912,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" />-თან დაკავშირებული</translation>
 <translation id="6508261954199872201">პროგრამა: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">მედია-ლიცენზია</translation>
+<translation id="6511279028091289182">განსაზღვრავს დაცული კავშირით ვებსაიტებთან დაკავშირების ხერხს. აღნიშნული იყენებს სერვისის მართულ პროვაიდერს <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />-ზე</translation>
 <translation id="6511827214781912955">გირჩევთ, წაშალოთ <ph name="FILENAME" />, რათა ამ მოწყობილობის სხვა მომხმარებლებმა თქვენი პაროლები ვერ ნახონ</translation>
 <translation id="6512808201725371249">ამ ანგარიშის პაროლი უკვე შენახულია თქვენს Google პაროლების მმართველში (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">თუ თქვენ არ ხართ დაკავშირებული სხვა ქსელთან, Google Chrome გამოიყენებს მობილურ მონაცემებს.</translation>
@@ -5981,6 +5982,7 @@
 <translation id="6568283005472142698">ჩანართებში ძიება</translation>
 <translation id="65711204837946324">ჩამოსატვირთად საჭიროა ნებართვა</translation>
 <translation id="6571772921213691236">დაარედაქტირეთ სისტემაში შესვლის მონაცემები</translation>
+<translation id="657229725818377235">ისარგებლეთ სახიფათო ვებსაიტებისა და ჩამოტვირთვებისგან დაცვის უფრო ძლიერი საშუალებებით</translation>
 <translation id="6573096386450695060">ყოველთვის დაშვება</translation>
 <translation id="6573497332121198392">მალსახმობი ვერ ამოიშალა</translation>
 <translation id="657402800789773160">&amp;ამ გვერდის ხელახლა ჩატვირთვა</translation>
@@ -6925,6 +6927,7 @@
 <translation id="7465635034594602553">წარმოიქმნა შეფერხება. ცადეთ <ph name="APP_NAME" />-ის ხელახლა გაშვება რამდენიმე წუთის შემდეგ.</translation>
 <translation id="7465778193084373987">Netscape სერტიფიკატის გაუქმების URL</translation>
 <translation id="7466431077154602932">კომპაქტური ხედი</translation>
+<translation id="7466556884531675354">შენახული ჩანიშვნები არ არის</translation>
 <translation id="746861123368584540">გაფართოება ჩაიტვირთა</translation>
 <translation id="7470424110735398630">თქვენი გაცვლის ბუფერის ნახვა დაშვებულია</translation>
 <translation id="747114903913869239">შეცდომა: გაფართოება ვერ გაიშიფრა</translation>
@@ -7903,6 +7906,7 @@
 <translation id="8351316842353540018">a11y-ის ვარიანტების ყოველთვის ჩვენება</translation>
 <translation id="8351419472474436977">ეს გაფართოება აკონტროლებს თქვენი პროქსის პარამეტრებს, რაც იმას ნიშნავს, რომ მას შეუძლია შეცვალოს, გაშიფროს და ხელში ჩაიგდოს ინფორმაცია იმის შესახებ, თუ რას აკეთებთ ონლაინში. თუ ცვლილება გაურკვეველი ხასიათისაა, შესაძლოა, ის თქვენს უნებართვოდ განხორციელდა.</translation>
 <translation id="8351630282875799764">ბატარეა არ იტენება</translation>
+<translation id="8352287103893778223">ჩანართების ჯგუფის სათაური</translation>
 <translation id="835238322900896202">დეინსტალაცია ვერ მოხერხდა შეცდომის გამო. გთხოვთ, დეინსტალაციისთვის გამოიყენოთ ტერმინალი.</translation>
 <translation id="8353683614194668312">მას შეუძლია:</translation>
 <translation id="8354034204605718473">თქვენი ბავშვის PIN-კოდი დამატებულია</translation>

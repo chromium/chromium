@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Vous pouvez utiliser les commandes d'accès direct pour naviguer efficacement au sein d'une page Web.</translation>
 <translation id="116896278675803795">Changer automatiquement de langue pour correspondre au contenu sélectionné</translation>
 <translation id="1175914831232945926">des chiffres</translation>
-<translation id="1181003590763099524">déplacer vers le début</translation>
 <translation id="1188858454923323853">complémentaire</translation>
 <translation id="1189258430971676908">Section d'entraînement : listes déroulantes</translation>
 <translation id="1195238899008218998">Postface</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Taille <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Accord <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Orchidée moyen</translation>
-<translation id="1928535370180099152">mettre en surbrillance le caractère précédent</translation>
 <translation id="1928932365747995741">Aucun champ de texte modifiable précédent</translation>
 <translation id="1964135212174907577">Objet suivant</translation>
 <translation id="1966649499058910679">Mettre en évidence les mots à mesure qu'ils sont énoncés</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Activer/Désactiver la voix</translation>
 <translation id="2390264819538553347">Pour avancer, appuyez sur Entrée. Pour revenir en arrière, appuyez sur Retour arrière.</translation>
 <translation id="2398579267367951220">Saisissez le texte à rechercher dans la page. Appuyez sur Entrée pour accéder au résultat. Appuyez sur les flèches vers le haut et vers le bas pour passer d'un résultat à l'autre. Continuez de saisir du texte pour modifier votre recherche, ou appuyez sur Échap pour l'annuler.</translation>
-<translation id="2407047351320112166">mettre en surbrillance le caractère suivant</translation>
 <translation id="240709722712693803">Bleu-violet</translation>
 <translation id="2410298923485357543">Utiliser une voix naturelle lorsque l'appareil est en ligne</translation>
 <translation id="2416512023405990736">Une case décochée</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Curseur de déplacement</translation>
 <translation id="3103579948980282461">Pourpre</translation>
 <translation id="3104705064753753826">boîte dialogue alerte</translation>
-<translation id="3105857328626674463">mettre en surbrillance le mot précédent</translation>
 <translation id="3109724472072898302">Réduit</translation>
 <translation id="311015743332597320">Balayer l'écran vers la droite avec quatre doigts</translation>
 <translation id="3112457281078985179">Pour activer ou désactiver ChromeVox, appuyez sur Ctrl+Alt+Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Lien consulté précédent</translation>
 <translation id="3241638166094654466">Cellules sur chaque ligne :</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" /> : <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">déplacer vers la fin</translation>
 <translation id="3260949043575829030">Élément similaire précédent</translation>
 <translation id="3270069636408109001">Aucun tableau suivant</translation>
 <translation id="3273791280096244679">Libellé d'enregistrement</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollar}one{# dollar}other{# dollars}}</translation>
 <translation id="3659787053479271466">alerte</translation>
-<translation id="3661265561216135784">répéter</translation>
 <translation id="366419593095697301">Indice : Appuyez sur Échap lorsque vous souhaitez quitter ce tutoriel.</translation>
 <translation id="3676062394766691318">Après avoir configuré votre appareil, vous pourrez revenir pour consulter d'autres tutoriels en appuyant sur Recherche+O, puis sur T.</translation>
 <translation id="3681531118904532409">Chair clair</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Exemple</translation>
 <translation id="7439060726180460871">Répertoire</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">mettre en surbrillance le mot suivant</translation>
 <translation id="7465123027577412805">Utiliser une voix naturelle ?</translation>
 <translation id="7491962110804786152">tabulation</translation>
 <translation id="7492497529767769458">Passer à la section suivante. Exemples : barre d'état et Lanceur d'applications.</translation>
 <translation id="7505149250476994901">Dire "maj" après la lettre</translation>
 <translation id="7533226154149229506">Jaune paille clair</translation>
-<translation id="7541021454094606506">tout supprimer</translation>
 <translation id="7543255924852002459">Libellé d'annulation</translation>
 <translation id="7552432549459840808">Raccourcis Chrome utiles</translation>
 <translation id="7553679324939294712">insérer <ph name="INSERT_PHRASE" /> avant <ph name="BEFORE_PHRASE" /></translation>

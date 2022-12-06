@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Selamat datang ke Google Drive!</translation>
 <translation id="1379911846207762492">Anda boleh menjadikan fail tersedia di luar talian untuk diakses semasa anda tidak mempunyai sambungan Internet.</translation>
 <translation id="1383876407941801731">Carian</translation>
+<translation id="1388045380422025115">Semua jenis</translation>
 <translation id="1395262318152388157">Peluncur cari</translation>
 <translation id="1399511500114202393">Tiada sijil pengguna</translation>
 <translation id="1403008701842173542">Di mana-mana</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">Entri padanan nama alternatif subjek tidak sah</translation>
 <translation id="1838709767668011582">Tapak Google</translation>
 <translation id="1853795129690976061">Folder ini dikongsi dengan Linux</translation>
+<translation id="1859422890169495746">Chromebook ini</translation>
 <translation id="1864756863218646478">Fail tidak dapat dijumpai.</translation>
 <translation id="1884013283844450420">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Sambung</translation>
 <translation id="1920670151694390848">Alih Huruf Malayalam</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">Konfigurasikan rangkaian</translation>
 <translation id="2325650632570794183">Jenis fail ini tidak disokong. Sila lawati Kedai Web Chrome untuk mendapatkan apl yang boleh membuka jenis fail ini.</translation>
 <translation id="2326539130272988168">Bulgaria</translation>
+<translation id="2337715497728194187">Kongsi dengan Bruschetta</translation>
 <translation id="23721837607121582">Muat turun profil mudah alih, Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Tukar kepada paparan senarai</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dikongsi dengan Linux</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">Sijil pengesahan ditolak oleh rangkaian</translation>
 <translation id="255937426064304553">Antarabangsa AS</translation>
 <translation id="2563185590376525700">Katak</translation>
+<translation id="2574327434504608656">1 folder dikongsi dengan Bruschetta</translation>
 <translation id="2578394532502990878">Fonetik Tamil</translation>
 <translation id="2579959351793446050">Odia</translation>
 <translation id="2602810353103180630">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Disekat oleh Pentadbir anda, Butiran</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">Aktifkan, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Jerman (Jerman) dengan papan kekunci Neo 2</translation>
 <translation id="3414856743105198592">Memformat media mudah alih akan memadamkan semua data. Adakah anda ingin teruskan?</translation>
+<translation id="3435143625481187092">Beri Bruschetta kebenaran untuk mengakses fail dalam folder <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Masa dibuat</translation>
 <translation id="343907260260897561">Kamera Segera</translation>
 <translation id="3455931012307786678">Estonia</translation>
@@ -321,6 +326,7 @@
 <translation id="3801082500826908679">Bahasa Faroese</translation>
 <translation id="3809272675881623365">Arnab</translation>
 <translation id="3810973564298564668">Urus</translation>
+<translation id="3811408895933919563">Bahasa Inggeris (Pakistan)</translation>
 <translation id="3811494700605067549">1 fail dipilih</translation>
 <translation id="3817579325494460411">Tidak diberikan</translation>
 <translation id="3819448694985509187">PIN salah. Anda mempunyai 1 percubaan lagi.</translation>
@@ -355,6 +361,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> dialihkan.</translation>
 <translation id="4176286497474237543">Kosongkan sampah sekarang</translation>
 <translation id="4179621117429069925">Item ini berada dalam folder sampah anda</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> folder dikongsi dengan Bruschetta</translation>
 <translation id="4186579485882418952">Dayakan Luar Talian</translation>
 <translation id="4193154014135846272">Dokumen Google</translation>
 <translation id="4197674956721858839">Pemilihan zip</translation>
@@ -416,6 +423,7 @@
 <translation id="4646813851450205600">Czech dengan papan kekunci Qwerty</translation>
 <translation id="4656777537938206294">Jadikan fail tersedia di luar talian</translation>
 <translation id="4658782175094886150">Orang dalam salji</translation>
+<translation id="466782788172479199">Beri Bruschetta kebenaran untuk mengakses fail dalam Google Drive anda. Perubahan akan disegerakkan ke peranti anda yang lain.</translation>
 <translation id="4669606053856530811">Ahli '<ph name="SOURCE_NAME" />' akan kehilangan akses melainkan item ini dikongsi dengan mereka.</translation>
 <translation id="467809019005607715">Slaid Google</translation>
 <translation id="4690246192099372265">Sweden</translation>
@@ -449,6 +457,7 @@
 <translation id="4850886885716139402">Lihat</translation>
 <translation id="485316830061041779">Bahasa Jerman</translation>
 <translation id="4867079195717347957">Klik untuk mengisih lajur dalam tertib menurun.</translation>
+<translation id="4867297348137739678">Minggu lalu</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bait</translation>
 <translation id="4874569719830985133">Padam selamanya</translation>
 <translation id="4880214202172289027">Peluncur kelantangan</translation>
@@ -522,6 +531,7 @@
 <translation id="5330145655348521461">Fail ini dibuka pada desktop yang berbeza. Alihkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihat fail.</translation>
 <translation id="5330512191124428349">Dapatkan maklumat</translation>
 <translation id="5337538975554986899">Akses fail oleh semua url kecuali <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">Urus perkongsian Bruschetta</translation>
 <translation id="535792325654997756">Orang dengan kucing</translation>
 <translation id="5358764674931277">Kadar bingkai</translation>
 <translation id="5363339716524495120">Bahasa input ialah bahasa Cina</translation>
@@ -567,6 +577,7 @@
 <translation id="5700087501958648444">Maklumat audio</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> dialihkan ke folder sampah</translation>
 <translation id="5724172041621205163">Thai dengan papan kekunci Pattachote</translation>
+<translation id="57383366388012121">Bulan lalu</translation>
 <translation id="5756666464756035725">QWERTY Hungary</translation>
 <translation id="5763377084591234761">Jerman (Switzerland)</translation>
 <translation id="5769519078756170258">Hos atau domain yang hendak dikecualikan</translation>
@@ -676,6 +687,7 @@
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6732801395666424405">Sijil tidak dimuatkan</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Kongsi folder dengan Bruschetta</translation>
 <translation id="6751256176799620176">1 folder dipilih</translation>
 <translation id="6755827872271341378">Peranti Chrome OS Flex</translation>
 <translation id="6790428901817661496">Mainkan</translation>
@@ -704,6 +716,7 @@
 <translation id="6935521024859866267">Terbalik</translation>
 <translation id="6943836128787782965">HTTP gagal</translation>
 <translation id="6949408524333579394">Alih Huruf Serbia</translation>
+<translation id="69548399407432279">Tahun lalu</translation>
 <translation id="6960565108681981554">Tidak diaktifkan. Hubungi pembawa anda.</translation>
 <translation id="696203921837389374">Dayakan penyegerakan melalui data mudah alih</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -847,6 +860,7 @@
 <translation id="8042602468072383151">Audio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Bahasa Romania</translation>
 <translation id="8049184478152619004">Masukkan Kunci Penyahsekat Peribadi (PUK)</translation>
+<translation id="8055538340801153769">Folder ini</translation>
 <translation id="807187749540895545">Mengekstrak <ph name="FILE_NAME" />...</translation>
 <translation id="8087576439476816834">Muat turun, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Dikongsi dengan saya</translation>

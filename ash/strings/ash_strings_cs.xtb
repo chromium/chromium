@@ -31,7 +31,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1148499908455722006">Otevřít dialogové okno s informacemi o účtu <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalendář</translation>
 <translation id="1153356358378277386">Spárovaná zařízení</translation>
-<translation id="1165712434476988950">K použití aktualizace je potřeba restartovat zařízení.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Váš kabel USB-C se možná nedokáže správně připojit k displejům</translation>
 <translation id="1175572348579024023">Posunout</translation>
@@ -1462,7 +1461,6 @@ Nová instalace</translation>
 <translation id="9089416786594320554">Metody zadávání</translation>
 <translation id="9091626656156419976">Obrazovka <ph name="DISPLAY_NAME" /> byla odebrána</translation>
 <translation id="9098969848082897657">Ztlumit telefon</translation>
-<translation id="9099154003160514616">Je k dispozici aktualizace prohlížeče Lacros</translation>
 <translation id="9100887602489003640">Přidávání profilu. Několik minut počkejte.</translation>
 <translation id="9105450214093926548">Když běží prohlížeč Lacros, přihlašení druhého uživatele není podporováno. Použijte druhý profil v prohlížeči Lacros nebo Lacros zavřete.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> nebo <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

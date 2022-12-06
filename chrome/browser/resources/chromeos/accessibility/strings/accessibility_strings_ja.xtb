@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">ジャンプ コマンドを使用すると、ウェブページ間をすばやく移動できます。</translation>
 <translation id="116896278675803795">選択したコンテンツに合わせて言語を自動的に変更する</translation>
 <translation id="1175914831232945926">1 桁ずつ</translation>
-<translation id="1181003590763099524">先頭に移動</translation>
 <translation id="1188858454923323853">捕捉</translation>
 <translation id="1189258430971676908">練習エリア: プルダウン リスト</translation>
 <translation id="1195238899008218998">後書き</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">サイズ: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> コード</translation>
 <translation id="1923956950274750765">ミディアム オーキッド</translation>
-<translation id="1928535370180099152">前の文字を選択</translation>
 <translation id="1928932365747995741">前の編集可能テキスト フィールドはありません</translation>
 <translation id="1964135212174907577">次のオブジェクト</translation>
 <translation id="1966649499058910679">話されている単語を強調表示する</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">読み上げの有効と無効を切り替えます</translation>
 <translation id="2390264819538553347">次に進むには Enter キー、前に戻るには Backspace キーを押します。</translation>
 <translation id="2398579267367951220">ページ内を検索するには入力してください。見つかった結果に移動するには、Enter キーを押します。結果を 1 つずつ確認するには、上矢印または下矢印キーを押します。違う語句を検索する場合は、その語句を入力します。キャンセルする場合は、Esc キーを押します。</translation>
-<translation id="2407047351320112166">次の文字を選択</translation>
 <translation id="240709722712693803">ブルー バイオレット</translation>
 <translation id="2410298923485357543">デバイスがオンラインのときは自然な音声を使用する</translation>
 <translation id="2416512023405990736">チェックボックスがオフ</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">カーソルを移動</translation>
 <translation id="3103579948980282461">ミディアム バイオレット レッド</translation>
 <translation id="3104705064753753826">アラート ダイアログ</translation>
-<translation id="3105857328626674463">前の単語を選択</translation>
 <translation id="3109724472072898302">折りたたみ表示中</translation>
 <translation id="311015743332597320">4 本の指で右にスワイプします</translation>
 <translation id="3112457281078985179">ChromeVox をオンまたはオフにするには、Ctrl+Alt+Z キーを使用します。</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">前にアクセスしたリンク</translation>
 <translation id="3241638166094654466">各行のセル数:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">最後に移動</translation>
 <translation id="3260949043575829030">前の同様の項目</translation>
 <translation id="3270069636408109001">次の表はありません</translation>
 <translation id="3273791280096244679">ラベルを保存</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">メニュー項目のチェックボックス</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ドル}other{# 個のドル記号}}</translation>
 <translation id="3659787053479271466">アラート</translation>
-<translation id="3661265561216135784">繰り返す</translation>
 <translation id="366419593095697301">ヒント: このチュートリアルを終了する場合は Esc キーを押してください。</translation>
 <translation id="3676062394766691318">デバイスを設定した後で、このチュートリアルにアクセスして詳細を確認するには、検索+O キーを押してから T キーを押してください。</translation>
 <translation id="3681531118904532409">パパイヤ ウィップ</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">例</translation>
 <translation id="7439060726180460871">ディレクトリ</translation>
 <translation id="744163271241493234">パスワードを編集</translation>
-<translation id="7443479558101073378">次の単語を選択</translation>
 <translation id="7465123027577412805">自然な音声を使用しますか？</translation>
 <translation id="7491962110804786152">タブ</translation>
 <translation id="7492497529767769458">次のセクションに移動します。たとえばステータス トレイやランチャーなどです。</translation>
 <translation id="7505149250476994901">「大文字の」と言ってから文字を読み上げる</translation>
 <translation id="7533226154149229506">ライト ゴールデン ロッドイエロー</translation>
-<translation id="7541021454094606506">すべて削除</translation>
 <translation id="7543255924852002459">ラベルを破棄</translation>
 <translation id="7552432549459840808">Chrome の便利なショートカット</translation>
 <translation id="7553679324939294712"><ph name="INSERT_PHRASE" /> を <ph name="BEFORE_PHRASE" /> の前に挿入</translation>

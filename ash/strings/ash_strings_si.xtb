@@ -31,7 +31,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> සඳහා තතු සංවාදය විවෘත කරන්න</translation>
 <translation id="1150989369772528668">දින දර්ශනය</translation>
 <translation id="1153356358378277386">යුගලිත උපාංග</translation>
-<translation id="1165712434476988950">යාවත්කාලීනය යෙදීම සඳහා උපාංග නැවත ආරම්භ කිරීම අවශ්‍ය වේ.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">ඔබගේ USB-C කේබලය සංදර්ශකවලට නිසි ලෙස සම්බන්ධ නොවිය හැකිය</translation>
 <translation id="1175572348579024023">අනුචලන කරන්න</translation>
@@ -1463,7 +1462,6 @@
 <translation id="9089416786594320554">ආදාන ක්‍රම</translation>
 <translation id="9091626656156419976">සංදර්ශකය <ph name="DISPLAY_NAME" /> ඉවත් කරන්න</translation>
 <translation id="9098969848082897657">දුරකථනය නිහඬ කරන්න</translation>
-<translation id="9099154003160514616">Lacros යාවත්කාලීනය ලබා ගත හැකිය</translation>
 <translation id="9100887602489003640">පැතිකඩ එක් කිරීම. මිනිත්තු කිහිපයක් රැඳී සිටින්න.</translation>
 <translation id="9105450214093926548">Lacros බ්‍රව්සරය ධාවනය වන විට දෙවන පරිශීලකයෙකු පිරීමට සහාය නොදක්වයි. කරුණාකර ඒ වෙනුවට Lacros හි දෙවන බ්‍රව්සර පැතිකඩක් භාවිත කරන්න හෝ Lacros වසා නැවත උත්සාහ කරන්න.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> හෝ <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

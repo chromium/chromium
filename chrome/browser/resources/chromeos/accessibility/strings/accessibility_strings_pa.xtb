@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">ਜੰਪ ਆਦੇਸ਼ ਵੈੱਬ ਪੰਨੇ ਵਿੱਚ ਕੁਸ਼ਲਤਾ ਨਾਲ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਵਰਤੇ ਜਾ ਸਕਦੇ ਹਨ।</translation>
 <translation id="116896278675803795">ਚੁਣੀ ਗਈ ਸਮੱਗਰੀ ਨਾਲ ਮੇਲ ਕਰਨ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਭਾਸ਼ਾ ਬਦਲੋ</translation>
 <translation id="1175914831232945926">ਅੰਕ</translation>
-<translation id="1181003590763099524">ਕਰਸਰ ਨੂੰ ਸ਼ੁਰੂਆਤ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="1188858454923323853">ਪੂਰਕ</translation>
 <translation id="1189258430971676908">ਅਭਿਆਸ ਖੇਤਰ: ਡ੍ਰੌਪ-ਡਾਊਨ ਸੂਚੀਆਂ</translation>
 <translation id="1195238899008218998">ਅੰਤ-ਕਥਨ</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">ਆਕਾਰ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ਕੋਰਡ</translation>
 <translation id="1923956950274750765">ਮੱਧਮ ਜਾਮਨੀ</translation>
-<translation id="1928535370180099152">ਪਿਛਲੇ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="1928932365747995741">ਕੋਈ ਪਿਛਲਾ ਸੰਪਾਦਨਯੋਗ ਲਿਖਤ ਖੇਤਰ ਨਹੀਂ</translation>
 <translation id="1964135212174907577">ਅਗਲਾ ਔਬਜੈਕਟ</translation>
 <translation id="1966649499058910679">ਹਰੇਕ ਬੋਲੇ ਗਏ ਸ਼ਬਦ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">ਬੋਲੀ ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰਨ ਲਈ ਟੌਗਲ ਕਰੋ</translation>
 <translation id="2390264819538553347">ਅੱਗੇ ਵਧਣ ਲਈ, ਐਂਟਰ ਕੁੰਜੀ ਦਬਾਓ; ਵਾਪਸ ਜਾਣ ਲਈ, ਬੈਕਸਪੇਸ ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="2398579267367951220">ਪੰਨਾ ਖੋਜਣ ਲਈ ਟਾਈਪ ਕਰੋ। ਨਤੀਜੇ 'ਤੇ ਜਾਣ ਲਈ Enter ਦਬਾਓ, ਨਤੀਜਿਆਂ ਨੂੰ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਉੱਪਰ ਜਾਂ ਹੇਠਾਂ ਵੱਲ ਦੀਆਂ ਤੀਰ ਕੁੰਜੀਆਂ ਦਬਾਓ, ਆਪਣੀ ਖੋਜ ਨੂੰ ਬਦਲਣ ਲਈ ਟਾਈਪ ਕਰਦੇ ਰਹੋ, ਜਾਂ ਰੱਦਕਰਨ ਲਈ Escape ਦਬਾਓ।</translation>
-<translation id="2407047351320112166">ਅਗਲੇ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="240709722712693803">ਨੀਲ ਜਾਮਨੀ</translation>
 <translation id="2410298923485357543">ਡੀਵਾਈਸ ਆਨਲਾਈਨ ਹੋਣ 'ਤੇ ਕੁਦਰਤੀ ਅਵਾਜ਼ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="2416512023405990736">ਬਿਨਾਂ ਸਹੀ ਦੇ ਨਿਸ਼ਾਨ ਤੋਂ ਚੈੱਕ-ਬਾਕਸ</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">ਕਰਸਰ ਹਿਲਾਓ</translation>
 <translation id="3103579948980282461">ਗੁਲਾਨਾਰੀ</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">ਪਿਛਲੇ ਸ਼ਬਦ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="3109724472072898302">ਨਸ਼ਟ ਹੋਇਆ</translation>
 <translation id="311015743332597320">ਚਾਰ ਉਂਗਲਾਂ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="3112457281078985179">ChromeVox ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰਨ ਲਈ, ਕੰਟਰੋਲ+Alt+Z ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">ਪਿਛਲਾ ਵਿਜਿਟ ਕੀਤਾ ਲਿੰਕ</translation>
 <translation id="3241638166094654466">ਹਰੇਕ ਲਾਈਨ ਵਿੱਚ ਸੈੱਲਾਂ ਦੀ ਗਿਣਤੀ:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">ਅੰਤ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="3260949043575829030">ਪਿਛਲੀ ਮਿਲਦੀ-ਜੁਲਦੀ ਆਈਟਮ</translation>
 <translation id="3270069636408109001">ਕੋਈ ਅਗਲੀ ਸਾਰਨੀ ਨਹੀਂ</translation>
 <translation id="3273791280096244679">ਲੇਬਲ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ਡਾਲਰ}one{# ਡਾਲਰ ਚਿੰਨ੍ਹ}other{# ਡਾਲਰ ਚਿੰਨ੍ਹ}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">ਦੁਹਰਾਓ</translation>
 <translation id="366419593095697301">ਸੰਕੇਤ: ਜੇ ਤੁਸੀਂ ਇਸ ਟਿਊਟੋਰੀਅਲ ਤੋਂ ਬਾਹਰ ਨਿਕਲਣਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ Escape ਦਬਾਓ।</translation>
 <translation id="3676062394766691318">ਆਪਣੇ ਡੀਵਾਈਸ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਸੀਂ ਵਾਪਸ ਆ ਕੇ Search + O, ਅਤੇ ਫਿਰ T ਦਬਾ ਕੇ ਹੋਰ ਟਿਊਟੋਰੀਅਲ ਦੇਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="3681531118904532409">ਬਡਮੋਤੀਆ</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">ਉਦਾਹਰਨ</translation>
 <translation id="7439060726180460871">ਡਾਇਰੈਕਟਰੀ</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">ਅਗਲੇ ਸ਼ਬਦ ਨੂੰ ਉਜਾਗਰ ਕਰੋ</translation>
 <translation id="7465123027577412805">ਕੀ ਕੁਦਰਤੀ ਅਵਾਜ਼ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ?</translation>
 <translation id="7491962110804786152">ਟੈਬ</translation>
 <translation id="7492497529767769458">ਅਗਲੇ ਸੈਕਸ਼ਨ 'ਤੇ ਜਾਓ। ਉਦਾਹਰਨਾਂ ਵਿੱਚ ਸਥਿਤੀ ਟ੍ਰੇ ਅਤੇ ਲਾਂਚਰ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="7505149250476994901">ਅੱਖਰ ਤੋਂ ਪਹਿਲਾਂ "ਵੱਡਾ" ਬੋਲੋ</translation>
 <translation id="7533226154149229506">ਹਲਕਾ ਸੁਨਿਹਰੀ ਪੀਲਾ</translation>
-<translation id="7541021454094606506">ਸਭ ਮਿਟਾਓ</translation>
 <translation id="7543255924852002459">ਲੇਬਲ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="7552432549459840808">ਲਾਭਕਾਰੀ Chrome ਸ਼ਾਰਟਕੱਟ</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> ਤੋਂ ਪਹਿਲਾਂ <ph name="INSERT_PHRASE" /> ਸ਼ਾਮਲ ਕਰੋ</translation>

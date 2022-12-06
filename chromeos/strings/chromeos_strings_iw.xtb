@@ -164,6 +164,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">שליחת דוח המשוב</translation>
 <translation id="2407209115954268704">‏סטטוס נעילת ה-SIM</translation>
+<translation id="241419523391571119">צריך לפתוח את המכסה כדי לבצע את הבדיקה</translation>
 <translation id="2414886740292270097">כהה</translation>
 <translation id="2418150275289244458">פתיחה בהגדרות</translation>
 <translation id="2421798028054665193">תמונה <ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
@@ -204,6 +205,7 @@
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="2902312830803030883">פעולות נוספות</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
+<translation id="2940811910881150316">לא ניתן לבדוק את המכשיר. צריך לפתוח את המכסה כדי לבצע את הבדיקה.</translation>
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
 <translation id="3017079585324758401">רקע</translation>
@@ -284,6 +286,7 @@
 <translation id="3820172043799983114">‏PIN לא חוקי.</translation>
 <translation id="3824259034819781947">צירוף קבצים</translation>
 <translation id="3838338534323494292">סיסמה חדשה</translation>
+<translation id="3845880861638660475">‏כדי לסגור את תיבת הדו-שיח, מקישים על <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> +‏ <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" />.</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3858860766373142691">שם</translation>
 <translation id="3862598938296403232">יש להזין תיאור</translation>
@@ -291,6 +294,7 @@
 <translation id="3866249974567520381">תיאור</translation>
 <translation id="387301095347517405">מספר הפעמים שבהן הסוללה נטענה במלואה</translation>
 <translation id="3885327323343477505">החלפת שומר המסך</translation>
+<translation id="391412459402535266">לא ניתן לבדוק את המכשיר. צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה.</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
@@ -303,6 +307,7 @@
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="3993704782688964914">עכשיו המכשיר <ph name="DEVICE_NAME" /> מעודכן</translation>
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
+<translation id="4021031199988160623">צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה</translation>
 <translation id="4034824040120875894">מדפסת</translation>
 <translation id="4044093238444069296">לא ניתן ליצור קשר עם השער</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>

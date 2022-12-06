@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Magagamit ang mga jump command para mahusay na mag-navigate sa isang web page.</translation>
 <translation id="116896278675803795">Awtomatikong baguhin ang wika para tumugma sa napiling content</translation>
 <translation id="1175914831232945926">Mga Digit</translation>
-<translation id="1181003590763099524">ilipat sa simula</translation>
 <translation id="1188858454923323853">complementary</translation>
 <translation id="1189258430971676908">Lugar ng pagsasanay: Mga drop-down na listahan</translation>
 <translation id="1195238899008218998">Afterword</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Laki <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> chord</translation>
 <translation id="1923956950274750765">Medium Orchid</translation>
-<translation id="1928535370180099152">i-highlight ang nakaraang character</translation>
 <translation id="1928932365747995741">Walang nakaraang na-e-edit na field ng text</translation>
 <translation id="1964135212174907577">Susunod na Bagay</translation>
 <translation id="1966649499058910679">I-highlight ang bawat salita habang binibigkas ito</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">I-toggle pa-on o pa-off ang pananalita</translation>
 <translation id="2390264819538553347">Upang magpatuloy, pindutin ang enter; upang bumalik, pindutin ang backspace.</translation>
 <translation id="2398579267367951220">Mag-type para maghanap sa page. Pindutin ang enter para pumunta sa resulta, pataas o pababang arrow para i-browse ang mga resulta, patuloy na mag-type para baguhin ang iyong paghahanap, o lumabas para kanselahin.</translation>
-<translation id="2407047351320112166">i-highlight ang nakaraang character</translation>
 <translation id="240709722712693803">Blue Violet</translation>
 <translation id="2410298923485357543">Gamitin ang natural na boses kapag online ang device</translation>
 <translation id="2416512023405990736">Isang checkbox na walang check</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Ilipat ang cursor</translation>
 <translation id="3103579948980282461">Medium Violet Red</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">i-highlight ang nakaraang salita</translation>
 <translation id="3109724472072898302">Naka-collapse</translation>
 <translation id="311015743332597320">Mag-swipe pakanan gamit ang apat na daliri</translation>
 <translation id="3112457281078985179">Upang i-on o i-off ang ChromeVox, gamitin ang Control+Alt+Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Nakaraang binisitang link</translation>
 <translation id="3241638166094654466">Mga cell sa bawat linya:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">ilipat sa dulo</translation>
 <translation id="3260949043575829030">Nakaraang katulad na item</translation>
 <translation id="3270069636408109001">Walang susunod na talahanayan</translation>
 <translation id="3273791280096244679">I-save ang label</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollar}one{# dollar sign}other{# na dollar sign}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">ulitin</translation>
 <translation id="366419593095697301">Hint: Pindutin ang Escape kung gusto mong lumabas sa tutorial na ito.</translation>
 <translation id="3676062394766691318">Pagkatapos mong i-set up ang iyong device, puwede kang bumalik at tumingin ng higit pang tutorial sa pamamagitan ng pagpindot sa Search + O, pagkatapos ay T.</translation>
 <translation id="3681531118904532409">Papaya Whip</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Halimbawa</translation>
 <translation id="7439060726180460871">Direktoryo</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">i-highlight ang susunod na salita</translation>
 <translation id="7465123027577412805">Gumamit ng natural na boses?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Lumipat sa susunod na seksyon. Kasama sa mga halimbawa ang Status Tray at Launcher.</translation>
 <translation id="7505149250476994901">Sabihin ang "cap" bago ang titik</translation>
 <translation id="7533226154149229506">Light Golden Rod Yellow</translation>
-<translation id="7541021454094606506">i-delete lahat</translation>
 <translation id="7543255924852002459">I-discard ang label</translation>
 <translation id="7552432549459840808">Mga Kapaki-pakinabang na Shortcut sa Chrome</translation>
 <translation id="7553679324939294712">ilagay ang <ph name="INSERT_PHRASE" /> bago ang <ph name="BEFORE_PHRASE" /></translation>

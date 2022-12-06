@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Bạn có thể dùng các lệnh chuyển để thao tác hiệu quả trên một trang web.</translation>
 <translation id="116896278675803795">Tự động thay đổi ngôn ngữ để khớp với nội dung đã chọn</translation>
 <translation id="1175914831232945926">Chữ số</translation>
-<translation id="1181003590763099524">di chuyển lên đầu</translation>
 <translation id="1188858454923323853">bổ sung</translation>
 <translation id="1189258430971676908">Khu vực thực hành: Danh sách thả xuống</translation>
 <translation id="1195238899008218998">Lời bạt</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Cỡ chữ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Tổ hợp phím <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Màu phong lan hài hòa</translation>
-<translation id="1928535370180099152">đánh dấu ký tự trước</translation>
 <translation id="1928932365747995741">Không có trường văn bản có thể chỉnh sửa nào trước đó</translation>
 <translation id="1964135212174907577">Đối tượng tiếp theo</translation>
 <translation id="1966649499058910679">Làm nổi bật từng từ khi từ được đọc</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Bật hoặc tắt giọng nói</translation>
 <translation id="2390264819538553347">Để chuyển tới trang tiếp theo, nhấn enter; để quay lại trang trước, nhấn phím xóa lùi.</translation>
 <translation id="2398579267367951220">Nhập để tìm kiếm trang. Nhấn phím Enter để xem kết quả, phím mũi tên lên hoặc xuống để duyệt qua kết quả, tiếp tục nhập để thay đổi nội dung tìm kiếm hoặc nhấn phím Escape để hủy.</translation>
-<translation id="2407047351320112166">đánh dấu ký tự tiếp theo</translation>
 <translation id="240709722712693803">Màu lam tím</translation>
 <translation id="2410298923485357543">Sử dụng giọng nói tự nhiên khi thiết bị có kết nối mạng</translation>
 <translation id="2416512023405990736">Hộp kiểm được bỏ chọn</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Di con trỏ</translation>
 <translation id="3103579948980282461">Màu đỏ tím hài hòa</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">đánh dấu từ trước</translation>
 <translation id="3109724472072898302">Đã thu gọn</translation>
 <translation id="311015743332597320">Vuốt sang phải bằng 4 ngón tay</translation>
 <translation id="3112457281078985179">Để bật hoặc tắt ChromeVox, sử dụng phím Control+Alt+Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Liên kết đã truy cập trước đó</translation>
 <translation id="3241638166094654466">Số ô mỗi dòng:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">di chuyển xuống cuối</translation>
 <translation id="3260949043575829030">Mục tương tự trước</translation>
 <translation id="3270069636408109001">Không có bảng nào tiếp theo</translation>
 <translation id="3273791280096244679">Nhãn lưu</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dấu đô la}other{# dấu đô la}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">lặp lại</translation>
 <translation id="366419593095697301">Gợi ý: Nhấn phím Escape nếu bạn muốn thoát khỏi tài liệu hướng dẫn này.</translation>
 <translation id="3676062394766691318">Sau khi thiết lập thiết bị, bạn có thể quay lại và xem các hướng dẫn khác bằng cách nhấn tổ hợp phím Tìm kiếm + O rồi nhấn phím T.</translation>
 <translation id="3681531118904532409">Màu đu đủ</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Ví dụ</translation>
 <translation id="7439060726180460871">Thư mục</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">đánh dấu từ tiếp theo</translation>
 <translation id="7465123027577412805">Bạn có muốn dùng giọng nói tự nhiên?</translation>
 <translation id="7491962110804786152">thẻ</translation>
 <translation id="7492497529767769458">Chuyển đến phần tiếp theo. Các ví dụ bao gồm Khay trạng thái và Trình chạy.</translation>
 <translation id="7505149250476994901">Nói "hoa" sau chữ cái</translation>
 <translation id="7533226154149229506">Màu vàng nghệ nhạt</translation>
-<translation id="7541021454094606506">xoá tất cả</translation>
 <translation id="7543255924852002459">Nhãn hủy</translation>
 <translation id="7552432549459840808">Phím tắt hữu ích của Chrome</translation>
 <translation id="7553679324939294712">chèn <ph name="INSERT_PHRASE" /> trước <ph name="BEFORE_PHRASE" /></translation>

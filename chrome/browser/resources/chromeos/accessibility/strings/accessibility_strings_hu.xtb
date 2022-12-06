@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Az ugrási parancsokkal hatékonyan navigálhat a weboldalakon.</translation>
 <translation id="116896278675803795">A nyelv automatikus módosítása, hogy igazodjon a kijelölt tartalomhoz</translation>
 <translation id="1175914831232945926">Számjegyekként</translation>
-<translation id="1181003590763099524">áthelyezés az elejére</translation>
 <translation id="1188858454923323853">kiegészítő</translation>
 <translation id="1189258430971676908">Gyakorlóterület: Legördülő listák</translation>
 <translation id="1195238899008218998">Utószó</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Méret: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> billentyűkombináció</translation>
 <translation id="1923956950274750765">Középorchidea</translation>
-<translation id="1928535370180099152">az előző karakter kiemelése</translation>
 <translation id="1928932365747995741">Nincs előző szerkeszthető szövegmező</translation>
 <translation id="1964135212174907577">Következő objektum</translation>
 <translation id="1966649499058910679">Szavak kiemelése a beszédtempóval egyező ütemben</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Szövegfelolvasás be- és kikapcsolása</translation>
 <translation id="2390264819538553347">Továbblépéshez nyomja le az Enter, visszalépéshez a Backspace billentyűt.</translation>
 <translation id="2398579267367951220">Kezdjen el gépelni az oldalon való kereséshez. Az Enter billentyű megnyomásával a találathoz ugorhat, a felfelé és lefelé mutató nyilakkal váltogathat a találatok között, a keresést módosíthatja további karakterek beírásával, az Esc billentyűvel pedig megszakíthatja a keresést.</translation>
-<translation id="2407047351320112166">a következő karakter kiemelése</translation>
 <translation id="240709722712693803">Kékeslila</translation>
 <translation id="2410298923485357543">Természetes hang használata, amikor az eszköz csatlakozik az internethez</translation>
 <translation id="2416512023405990736">Nem bejelölt négyzet</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Kurzor mozgatása</translation>
 <translation id="3103579948980282461">Közepes lilásvörös</translation>
 <translation id="3104705064753753826">riaszt pnl</translation>
-<translation id="3105857328626674463">az előző szó kiemelése</translation>
 <translation id="3109724472072898302">Összecsukott</translation>
 <translation id="311015743332597320">Csúsztasson négy ujjal jobbra</translation>
 <translation id="3112457281078985179">A ChromeVox be- vagy kikapcsolásához használja a Control + Alt + Z billentyűparancsot.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Előző felkeresett link</translation>
 <translation id="3241638166094654466">Az egyes sorokban található cellák száma:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">áthelyezés a végére</translation>
 <translation id="3260949043575829030">Előző hasonló elem</translation>
 <translation id="3270069636408109001">Nincs következő táblázat</translation>
 <translation id="3273791280096244679">Címke mentése</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">jelölőnégyzet menüelem</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollárjel}other{# dollárjel}}</translation>
 <translation id="3659787053479271466">riaszt</translation>
-<translation id="3661265561216135784">ismétlés</translation>
 <translation id="366419593095697301">Tipp: Az útmutatóból az Escape gomb lenyomásával léphet ki.</translation>
 <translation id="3676062394766691318">Eszköze beállítása után visszatérhet, és további útmutatókat nézhet meg a Keresés + O, majd T billentyűparancs lenyomásával.</translation>
 <translation id="3681531118904532409">Papajahab</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">Példa</translation>
 <translation id="7439060726180460871">Címtár</translation>
 <translation id="744163271241493234">jelszóbevitel</translation>
-<translation id="7443479558101073378">a következő szó kiemelése</translation>
 <translation id="7465123027577412805">Természetes hangot használ?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Ugrás a következő szakaszra. A példákban szerepel az Állapotsor és az Indító.</translation>
 <translation id="7505149250476994901">A betű előtt mondja, hogy „nagy”</translation>
 <translation id="7533226154149229506">Világos aranyvesszősárga</translation>
-<translation id="7541021454094606506">összes törlése</translation>
 <translation id="7543255924852002459">Címke elvetése</translation>
 <translation id="7552432549459840808">Hasznos Chrome-billentyűparancsok</translation>
 <translation id="7553679324939294712"><ph name="INSERT_PHRASE" /> beszúrása a következő elé: <ph name="BEFORE_PHRASE" /></translation>

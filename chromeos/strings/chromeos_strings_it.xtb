@@ -685,6 +685,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7415801143053185905">Latenza HTTP molto elevata</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata.}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate.}}</translation>
+<translation id="7458970041932198923">Connettiti a una rete e ricarica la pagina per visualizzare e impostare gli avatar.</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7481312909269577407">Avanti</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
@@ -839,6 +840,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scansiona}=1{Scansiona pagina {NUMBER_OF_PAGES}}other{Scansiona pagina {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Percentuale di batteria del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998289560386111590">Non disponibile sul tuo dispositivo</translation>
 <translation id="9003704114456258138">Frequenza</translation>
 <translation id="9025198690966128418">Utilizza come dispositivo personale</translation>
 <translation id="9028832514430399253">Usa l'opzione di attivazione/disattivazione per selezionare le opzioni per il salvaschermo</translation>

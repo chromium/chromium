@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">লিগেল</translation>
 <translation id="2391082728065870591">মতামত বিষয়ক ৰিপ’ৰ্টটো পঠিয়াওক</translation>
 <translation id="2407209115954268704">ছিম লকৰ স্থিতি</translation>
+<translation id="241419523391571119">পৰীক্ষা কৰিবলৈ ঢাকনীখন পুনৰ খোলক</translation>
 <translation id="2414886740292270097">গাঢ়</translation>
 <translation id="2418150275289244458">ছেটিঙত খোলক</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />ৰ <ph name="CURRENT_PAGE" /> খন প্ৰতিচ্ছবি</translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ খৰচ হৈছে।</translation>
 <translation id="2902312830803030883">অধিক কাৰ্য</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
+<translation id="2940811910881150316">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ ঢাকনীখন পুনৰ খোলক।</translation>
 <translation id="3008341117444806826">ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="3009958530611748826">ছেভ কৰিবলৈ এটা ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="3017079585324758401">নেপথ্য</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">অমান্য পিন।</translation>
 <translation id="3824259034819781947">ফাইল সংলগ্ন কৰক</translation>
 <translation id="3838338534323494292">নতুন পাছৱৰ্ড</translation>
+<translation id="3845880861638660475">ডায়লগটো বন্ধ কৰিবলৈ <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> টিপক।</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3862598938296403232">বিৱৰণৰ আৱশ্যক</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">বিৱৰণ</translation>
 <translation id="387301095347517405">আপোনাৰ বেটাৰীটোৱে এটা সম্পূৰ্ণ চাৰ্জিং চক্ৰৰ মাজেৰে যোৱাৰ সংখ্যা</translation>
 <translation id="3885327323343477505">স্ক্ৰীন ছেভাৰ সলনি কৰক</translation>
+<translation id="391412459402535266">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ লেপটপ ম’ডলৈ সলনি কৰক।</translation>
 <translation id="3923184630988645767">ডেটাৰ ব্যৱহাৰ</translation>
 <translation id="3932043219784172185">কোনো ডিভাইচ সংযোগ কৰি থোৱা নাই</translation>
 <translation id="3941014780699102620">হ’ষ্ট সম্পৰ্কীয় সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনতকৈ পুৰণি প্ৰিণ্টৰ কামসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="3993704782688964914">আপোনাৰ <ph name="DEVICE_NAME" />টো এতিয়া আপ টু ডে’ট হৈ আছে</translation>
 <translation id="4003384961948020559">বিফল হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
+<translation id="4021031199988160623">পৰীক্ষা কৰিবলৈ লেপটপ ম’ডলৈ সলনি কৰক</translation>
 <translation id="4034824040120875894">প্ৰিণ্টাৰ</translation>
 <translation id="4044093238444069296">গে’টৱে’ সংযোগ কৰিব নোৱাৰি</translation>
 <translation id="4046123991198612571">পৰৱৰ্তী ট্ৰেক</translation>
@@ -769,6 +774,7 @@
 <translation id="8372477600026034341">অতিৰিক্ত হ’ষ্ট</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" />টো এণ্টাৰপ্ৰাইজে পৰিচালনা কৰে</translation>
 <translation id="8398927464629426868">বৰ্তমান ডিভাইচটো চাৰ্জ অথবা ডিছচাৰ্জ হৈ থকাৰ হাৰ</translation>
+<translation id="8410244574650205435">স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা হৈছে</translation>
 <translation id="8420955526972171689">হাৰ্ডৱেৰ সম্পৰ্কীয় সমস্যাৰ বাবে পৰীক্ষা কৰাৰ আৰু সমস্যা নিবাৰণৰ সুবিধা চলাওক</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8431300646573772016">ChromeOSত নতুন কি আছে</translation>

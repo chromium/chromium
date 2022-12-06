@@ -31,7 +31,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> साठी माहिती डायलॉग उघडा</translation>
 <translation id="1150989369772528668">कॅलेंडर</translation>
 <translation id="1153356358378277386">जोडलेली डिव्हाइस</translation>
-<translation id="1165712434476988950">अपडेट लागू करण्यासाठी डिव्हाइस रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">तुमची USB-C केबल ही कदाचित डिस्प्लेना योग्यरीत्या कनेक्ट होणार नाही</translation>
 <translation id="1175572348579024023">स्क्रोल करा</translation>
@@ -1290,6 +1289,7 @@
 <translation id="8142441511840089262">डबल क्लिक करा</translation>
 <translation id="8142699993796781067">खाजगी नेटवर्क</translation>
 <translation id="8144760705599030999">तुमच्या इतर डिव्हाइसशी आणखी जलद पेअरिंग करण्यासाठी तुमचे <ph name="NAME" /> हे <ph name="EMAIL" /> वर सेव्ह करा</translation>
+<translation id="8144914663975476336">रेकॉर्डिंग फॉरमॅट निवडा</translation>
 <translation id="8149413265954228307">ब्लूटूथ सेटिंग्ज दाखवा. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">बंद करण्यासाठी Ctrl + W दाबा.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ऑटोकंप्लीट</translation>
@@ -1463,7 +1463,6 @@
 <translation id="9089416786594320554">इनपुट पद्धती</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> डिस्प्ले काढले</translation>
 <translation id="9098969848082897657">फोन सायलंट करा</translation>
-<translation id="9099154003160514616">Lacros अपडेट उपलब्ध</translation>
 <translation id="9100887602489003640">प्रोफाइल जोडत आहे. काही मिनिटे प्रतीक्षा करा.</translation>
 <translation id="9105450214093926548">Lacros ब्राउझर रन होत असताना दुसऱ्या
 वापरकर्त्याला साइन इन करण्यास सपोर्ट नाही. त्याऐवजी कृपया Lacros मध्ये दुसरी ब्राउझर प्रोफाइल वापरा किंवा Lacros बंद करा आणि पुन्हा प्रयत्न करा.</translation>

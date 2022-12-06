@@ -43,6 +43,7 @@
 <translation id="1378727793141957596">Us donem la benvinguda a Google Drive.</translation>
 <translation id="1379911846207762492">Pots fer que els fitxers estiguin disponibles sense connexió per accedir-hi quan no tinguis Internet.</translation>
 <translation id="1383876407941801731">Cerca</translation>
+<translation id="1388045380422025115">Tots els tipus</translation>
 <translation id="1395262318152388157">Control lliscant de cerca</translation>
 <translation id="1399511500114202393">Sense certificat d'usuari</translation>
 <translation id="1403008701842173542">A tot arreu</translation>
@@ -103,6 +104,7 @@
 <translation id="1834290891154666894">Entrada no vàlida de nom alternatiu d'assumpte coincident</translation>
 <translation id="1838709767668011582">Lloc de Google</translation>
 <translation id="1853795129690976061">Aquesta carpeta es comparteix amb Linux</translation>
+<translation id="1859422890169495746">Aquest Chromebook</translation>
 <translation id="1864756863218646478">No s'ha pogut trobar el fitxer.</translation>
 <translation id="1884013283844450420">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, connecta</translation>
 <translation id="1920670151694390848">Malaiàlam (transliteració)</translation>
@@ -154,6 +156,7 @@
 <translation id="2307462900900812319">Configura la xarxa</translation>
 <translation id="2325650632570794183">Aquest tipus de fitxer no és compatible. Visiteu Chrome Web Store per trobar una aplicació que pugui obrir aquest tipus de fitxer.</translation>
 <translation id="2326539130272988168">Búlgar</translation>
+<translation id="2337715497728194187">Comparteix amb Bruschetta</translation>
 <translation id="23721837607121582">Baixa el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Canvia a la visualització de llista</translation>
 <translation id="2377590462528165447">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Linux</translation>
@@ -183,6 +186,7 @@
 <translation id="2544853746127077729">La xarxa ha rebutjat el certificat d'autenticació</translation>
 <translation id="255937426064304553">Teclat internacional d'Estats Units</translation>
 <translation id="2563185590376525700">Granota</translation>
+<translation id="2574327434504608656">S'ha compartit 1 carpeta amb Bruschetta</translation>
 <translation id="2578394532502990878">Tàmil fonètic</translation>
 <translation id="2579959351793446050">Oriya</translation>
 <translation id="2602810353103180630">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, bloquejada per l'administrador, detalls</translation>
@@ -276,6 +280,7 @@
 <translation id="3408072735282270043">Activa, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Alemany (Alemanya) amb teclat Neo 2</translation>
 <translation id="3414856743105198592">Si formateu els suports extraïbles esborrareu totes les dades. Voleu continuar?</translation>
+<translation id="3435143625481187092">Dona permís a Bruschetta per accedir als fitxers que hi ha a la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="3437801641691368414">Hora de creació</translation>
 <translation id="343907260260897561">Càmera instantània</translation>
 <translation id="3455931012307786678">Estonià</translation>
@@ -355,6 +360,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> s'ha mogut.</translation>
 <translation id="4176286497474237543">Buida la paperera ara</translation>
 <translation id="4179621117429069925">Aquest element és a la paperera</translation>
+<translation id="4181839429935094755">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Bruschetta</translation>
 <translation id="4186579485882418952">Activa el mode sense connexió</translation>
 <translation id="4193154014135846272">Document de Google</translation>
 <translation id="4197674956721858839">Selecció de ZIP</translation>
@@ -416,6 +422,7 @@
 <translation id="4646813851450205600">Txec amb teclat QWERTY</translation>
 <translation id="4656777537938206294">Fes que els fitxers estiguin disponibles sense connexió</translation>
 <translation id="4658782175094886150">Persona a la neu</translation>
+<translation id="466782788172479199">Dona permís a Bruschetta per accedir als fitxers que hi ha al teu Google Drive. Els canvis se sincronitzaran amb els altres dispositius que tinguis.</translation>
 <translation id="4669606053856530811">Els membres de l'equip <ph name="SOURCE_NAME" /> ja no podran accedir a aquests elements, tret que es comparteixin amb ells.</translation>
 <translation id="467809019005607715">Presentacions de Google</translation>
 <translation id="4690246192099372265">Suec</translation>
@@ -437,7 +444,7 @@
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">Presentació de PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
-<translation id="4789067489790477934">Dona permís a Parallels Desktop per accedir als teus fitxers de Google Drive. Els canvis se sincronitzaran amb els altres dispositius.</translation>
+<translation id="4789067489790477934">Dona permís a Parallels Desktop per accedir als fitxers que hi ha al teu Google Drive. Els canvis se sincronitzaran amb els altres dispositius que tinguis.</translation>
 <translation id="4790766916287588578">Hindi amb teclat InScript</translation>
 <translation id="4801956050125744859">Mantén-les totes dues</translation>
 <translation id="4804827417948292437">Alvocat</translation>
@@ -523,6 +530,7 @@
 <translation id="5330145655348521461">Aquests fitxers s'han obert en un altre escriptori. Aneu a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) per veure'l.</translation>
 <translation id="5330512191124428349">Mostra la informació</translation>
 <translation id="5337538975554986899">Tots els URL poden accedir al fitxer, excepte <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
+<translation id="5344246330454251646">Gestiona la compartició amb Bruschetta</translation>
 <translation id="535792325654997756">Persona amb gats</translation>
 <translation id="5358764674931277">Fotogrames per segon</translation>
 <translation id="5363339716524495120">L'idioma d'introducció és el xinès</translation>
@@ -568,6 +576,7 @@
 <translation id="5700087501958648444">Informació de l'àudio</translation>
 <translation id="5720028165859493293">S'ha mogut <ph name="FILE_NAME" /> a la paperera</translation>
 <translation id="5724172041621205163">Tai amb teclat pattachote</translation>
+<translation id="57383366388012121">Darrer mes</translation>
 <translation id="5756666464756035725">QWERTY hongarès</translation>
 <translation id="5763377084591234761">Alemany (Suïssa)</translation>
 <translation id="5769519078756170258">Amfitrió o domini que vols excloure</translation>
@@ -677,6 +686,7 @@
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6732801395666424405">Els certificats no s'han carregat.</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Comparteix la carpeta amb Bruschetta</translation>
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
 <translation id="6755827872271341378">Dispositiu ChromeOS Flex</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
@@ -705,6 +715,7 @@
 <translation id="6935521024859866267">Cap per avall</translation>
 <translation id="6943836128787782965">La sol·licitud HTTP ha fallat</translation>
 <translation id="6949408524333579394">Serbi (transliteració)</translation>
+<translation id="69548399407432279">Darrer any</translation>
 <translation id="6960565108681981554">No està activada. Contacta amb l'operador.</translation>
 <translation id="696203921837389374">Activa la sincronització mitjançant dades mòbils</translation>
 <translation id="6965382102122355670">D'acord</translation>
@@ -776,7 +787,7 @@
 <translation id="751507702149411736">Bielorús</translation>
 <translation id="7521790570754130607">Es requereix un PIN per utilitzar dades mòbils</translation>
 <translation id="7532029025027028521">Persa (transliteració)</translation>
-<translation id="7544830582642184299">Dona permís a les aplicacions de Linux per accedir als teus fitxers de Google Drive. Els canvis se sincronitzaran amb els altres dispositius.</translation>
+<translation id="7544830582642184299">Dona permís a les aplicacions de Linux per accedir als fitxers que hi ha al teu Google Drive. Els canvis se sincronitzaran amb els altres dispositius que tinguis.</translation>
 <translation id="7547009467130558110">Vamba</translation>
 <translation id="7547780573915868306">Lituà</translation>
 <translation id="7547811415869834682">Neerlandès</translation>
@@ -848,6 +859,7 @@
 <translation id="8042602468072383151">Àudio <ph name="AUDIO_TYPE" /></translation>
 <translation id="8045462269890919536">Romanès</translation>
 <translation id="8049184478152619004">Introdueix el número personal de desbloqueig (PUK)</translation>
+<translation id="8055538340801153769">Aquesta carpeta</translation>
 <translation id="807187749540895545">S'està extraient <ph name="FILE_NAME" />...</translation>
 <translation id="8087576439476816834">Baixa, <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Compartit amb mi</translation>

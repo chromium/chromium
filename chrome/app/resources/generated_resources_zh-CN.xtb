@@ -71,6 +71,7 @@
 <translation id="1067048845568873861">创建时间</translation>
 <translation id="1067661089446014701">为了提高安全性，您可以先在设备上对密码进行加密，然后再将其保存到您的 Google 帐号</translation>
 <translation id="1067922213147265141">其他 Google 服务</translation>
+<translation id="106814709658156573">若要设置指纹，请让您的孩子轻触键盘左下角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="1069104208554708737">这个通行密钥只会保存在此设备上</translation>
 <translation id="1069355737714877171">移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>
 <translation id="1069814191880976658">选择一个不同的屏幕</translation>
@@ -768,7 +769,7 @@
 <translation id="1700079447639026019">始终无法使用 Cookie 的网站</translation>
 <translation id="1700201317341192482">移除您的虚拟卡</translation>
 <translation id="1703331064825191675">再也不必费心记住您的密码</translation>
-<translation id="1703666494654169921">不允许网站使用虚拟实境设备或数据</translation>
+<translation id="1703666494654169921">不允许网站使用虚拟现实设备或数据</translation>
 <translation id="1704097193565924901">大写</translation>
 <translation id="1704230497453185209">不允许网站播放声音</translation>
 <translation id="1704970325597567340"><ph name="DATE" />运行过安全检查</translation>
@@ -787,7 +788,6 @@
 <translation id="1719312230114180055">请注意：指纹识别的安全性可能不及安全系数高的密码或 PIN 码。</translation>
 <translation id="1720318856472900922">TLS WWW 服务器身份验证</translation>
 <translation id="172123215662733643">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索图片</translation>
-<translation id="1721312023322545264">您需要获得<ph name="NAME" />的许可，然后才能访问此网站</translation>
 <translation id="1722460139690167654">您的<ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" />由 <ph name="ENROLLMENT_DOMAIN" /> 管理</translation>
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
 <translation id="1724801751621173132">输入法</translation>
@@ -991,6 +991,7 @@
 <translation id="1892341345406963517"><ph name="PARENT_NAME" />，您好！</translation>
 <translation id="189358972401248634">其他语言</translation>
 <translation id="1895658205118569222">关机</translation>
+<translation id="1896043844785689584">若要设置指纹，请让您的孩子轻触键盘右下角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="1897120393475391208">使用安全系数高的密码</translation>
 <translation id="1900305421498694955">Google Play 中的应用可能需要获得完整的文件系统访问权限，才能在外部存储设备上读取和写入文件。任何使用外部驱动器的人员都能看到在此设备上创建的文件和文件夹。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1901303067676059328">全选(&amp;A)</translation>
@@ -2215,6 +2216,7 @@
 <translation id="3000378525979847272">授予了“<ph name="PERMISSION_1" />”和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="3000461861112256445">单声道音频</translation>
 <translation id="3001144475369593262">儿童帐号</translation>
+<translation id="3001835006423291524">轻触键盘右下角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="3003144360685731741">首选网络</translation>
 <translation id="3003623123441819449">CSS 缓存</translation>
 <translation id="3003828226041301643">无法将此设备加入到该网域中。请检查您的帐号以确保您有权添加设备。</translation>
@@ -2296,6 +2298,7 @@
 <translation id="3071624960923923138">只需点击此处，即可打开一个新标签页</translation>
 <translation id="3072775339180057696">允许此网站查看“<ph name="FILE_NAME" />”？</translation>
 <translation id="3074499504015191586">翻译整页内容</translation>
+<translation id="3075144191779656260">轻触 <ph name="DEVICE_TYPE" /> 左侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="3075874217500066906">必须重启才能开始 Powerwash 操作。重启后，系统将提示您确认是否要继续。</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">仅保存到此设备上</translation>
@@ -2614,9 +2617,10 @@
 <translation id="3404065873681873169">未保存任何用于登录此网站的密码</translation>
 <translation id="3405664148539009465">自定义字体</translation>
 <translation id="3405763860805964263">…</translation>
-<translation id="3406290648907941085">允许使用虚拟实境设备和数据</translation>
+<translation id="3406290648907941085">允许使用虚拟现实设备和数据</translation>
 <translation id="3406396172897554194">按语言或输入法名称搜索</translation>
 <translation id="3406605057700382950">显示书签栏(&amp;S)</translation>
+<translation id="3407967630066378878">若要设置指纹，请让您的孩子轻触此 <ph name="DEVICE_TYPE" /> 左侧的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="3408849592677950451">{NUM_PASSWORDS,plural, =1{已将 1 个密码导入 <ph name="USER_EMAIL" /> 的 Google 密码管理工具}other{已将 {NUM_PASSWORDS} 个密码导入 <ph name="USER_EMAIL" /> 的 Google 密码管理工具}}</translation>
 <translation id="3409785640040772790">地图</translation>
 <translation id="3412265149091626468">跳到所选部分</translation>
@@ -2714,7 +2718,7 @@
 <translation id="3487007233252413104">匿名函数</translation>
 <translation id="3490695139702884919">正在下载…<ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">您孩子的帐号尚未设置 Family Link 家长控制功能。完成设置后，即可添加家长控制功能。您可在“探索”应用内找到与此功能相关的信息。</translation>
-<translation id="3491678231052507920">网站通常会使用您的虚拟实境设备和数据以让您进入 VR 会话</translation>
+<translation id="3491678231052507920">网站通常会使用您的虚拟现实设备和数据以让您进入 VR 会话</translation>
 <translation id="3493486281776271508">需要互联网连接</translation>
 <translation id="3493881266323043047">有效期</translation>
 <translation id="3494769164076977169">当网站下载第一个文件后要自动下载更多文件时询问您（推荐）</translation>
@@ -3283,7 +3287,7 @@
 <translation id="4002440992267487163">PIN 码设置</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
 <translation id="4007856537951125667">隐藏快捷方式</translation>
-<translation id="4008291085758151621">虚拟实境中不提供网站信息</translation>
+<translation id="4008291085758151621">虚拟现实中不提供网站信息</translation>
 <translation id="4010917659463429001">要在移动设备上获取书签，请<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4014432863917027322">要修复“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="4015163439792426608">安装了扩展程序？在一个位置轻松<ph name="BEGIN_LINK" />管理您的扩展程序<ph name="END_LINK" />。</translation>
@@ -3738,6 +3742,7 @@
 <translation id="4451479197788154834">您的密码已保存到此设备上和您的 Google 帐号中</translation>
 <translation id="4451757071857432900">已禁止会展示侵扰性或误导性广告的网站显示广告（推荐）</translation>
 <translation id="4452898361839215358">或选择 PPD。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="4453430595102511050">轻触键盘右上角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="4453946976636652378">在<ph name="SEARCH_ENGINE_NAME" />中搜索，或者输入一个网址</translation>
 <translation id="4458535500699390320">当此标签页处于闲置状态时，省内存模式会释放一些内存以用于执行其他任务。您随时可在“设置”中更改此设置。</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前曾有活动</translation>
@@ -4294,7 +4299,7 @@
 <translation id="4971735654804503942">为您提供更快速主动的保护措施，免受危险网站、下载内容或扩展程序的威胁。系统会在密码遭泄露时向您发出警告。您需要向 Google 发送浏览数据。</translation>
 <translation id="4972129977812092092">修改打印机</translation>
 <translation id="4972164225939028131">密码错误</translation>
-<translation id="4972737347717125191">网站可以请求使用虚拟实境设备和数据</translation>
+<translation id="4972737347717125191">网站可以请求使用虚拟现实设备和数据</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
 <translation id="497403230787583386">已完成安全检查。即将打印您的文档。</translation>
 <translation id="4975543297921324897">等宽字体</translation>
@@ -5354,7 +5359,7 @@
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您重新开启了 1 个可能有害的扩展程序}other{您重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
 <translation id="5979353814339191480">此选项适用于以下类型的 Chromebook：具有流量套餐或移动网络加密狗，或者已通过“网络共享”功能连接到便携式热点</translation>
-<translation id="5979421442488174909">翻成<ph name="LANGUAGE" />(&amp;T)</translation>
+<translation id="5979421442488174909">翻译成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">要为网页添加书签，请点击地址栏中的星形图标</translation>
 <translation id="5981362776161841923">若要允许使用某款扩展程序，请在下方更改您的默认设置。</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
@@ -5698,7 +5703,7 @@
 <translation id="6311220991371174222">打开您的个人资料时出了点问题，无法启动 Chrome。请尝试重新启动 Chrome。</translation>
 <translation id="6312567056350025599">{NUM_DAYS,plural, =1{1 天前运行过安全检查}other{{NUM_DAYS} 天前运行过安全检查}}</translation>
 <translation id="6312638141433622592">询问是否使用阅读器模式（若支持）显示文章</translation>
-<translation id="6313641880021325787">退出虚拟实境</translation>
+<translation id="6313641880021325787">退出虚拟现实</translation>
 <translation id="6313950457058510656">关闭“即时网络共享”</translation>
 <translation id="6314819609899340042">已在此<ph name="IDS_SHORT_PRODUCT_NAME" />设备上成功启用调试功能。</translation>
 <translation id="6315493146179903667">前置全部窗口</translation>
@@ -5892,6 +5897,7 @@
 <translation id="6508248480704296122">已与“<ph name="NAME_PH" />”关联</translation>
 <translation id="6508261954199872201">应用：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒体许可</translation>
+<translation id="6511279028091289182">确定如何通过安全连接来连接到网站。此操作需要使用 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 上的代管式服务提供商</translation>
 <translation id="6511827214781912955">不妨考虑删除“<ph name="FILENAME" />”，让使用此设备的他人看不到您的密码</translation>
 <translation id="6512808201725371249">此帐号的密码已经保存到您的 Google 密码管理工具 (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">如果您没有连接到其他网络，则 Google Chrome 会使用移动数据网络。</translation>
@@ -5961,6 +5967,7 @@
 <translation id="6568283005472142698">标签页搜索</translation>
 <translation id="65711204837946324">需有下载权限</translation>
 <translation id="6571772921213691236">修改登录数据</translation>
+<translation id="657229725818377235">进一步防范危险的网站和下载内容</translation>
 <translation id="6573096386450695060">一律允许</translation>
 <translation id="6573497332121198392">无法移除快捷方式</translation>
 <translation id="657402800789773160">重新加载此页(&amp;R)</translation>
@@ -6006,6 +6013,7 @@
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 已由 <ph name="DOMAIN" /> 管理。若要通过另一 Google 帐号使用家长控制功能，请在完成设置后退出登录，然后在登录屏幕上选择“添加用户”。</translation>
 <translation id="6608166463665411119">重置 eSIM 卡</translation>
+<translation id="6608773371844092260">若要设置指纹，请让您的孩子轻触此 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="6609478180749378879">当您退出无痕模式后，登录数据会存储在此设备中。日后您将能够使用此设备重新登录该网站。</translation>
 <translation id="6610002944194042868">翻译选项</translation>
 <translation id="6611907964265870728">请确保您的设备已连接到互联网</translation>
@@ -6272,7 +6280,7 @@
 <translation id="6853388645642883916">更新程序处于休眠模式</translation>
 <translation id="68541483639528434">关闭其他标签页</translation>
 <translation id="6855892664589459354">Crostini 备份和恢复</translation>
-<translation id="6856348640027512653">不得使用虚拟实境设备或数据</translation>
+<translation id="6856348640027512653">不得使用虚拟现实设备或数据</translation>
 <translation id="6856623341093082836">设置和调整您的触摸屏的精确度</translation>
 <translation id="6856850379840757744">开启此设置会将所有通知静音</translation>
 <translation id="6857145580237920905">在执行 Powerwash 前先移除 eSIM 卡配置文件</translation>
@@ -6651,6 +6659,7 @@
 <translation id="7225082563376899794">填充密码时使用 Windows Hello</translation>
 <translation id="7225179976675429563">缺少网络类型</translation>
 <translation id="7227458944009118910">下列应用也能处理协议链接。其他应用会请求授权。</translation>
+<translation id="7228056665272655255">若要设置指纹，请让您的孩子轻触键盘右上角的指纹传感器。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7228523857728654909">屏幕锁定和登录</translation>
 <translation id="7230222852462421043">恢复窗口(&amp;R)</translation>
 <translation id="7231260028442989757">查看、关闭和回复手机中收到的通知</translation>
@@ -6778,6 +6787,7 @@
 <translation id="7360233684753165754">通过“<ph name="PRINTER_NAME" />”打印 <ph name="PAGE_NUMBER" /> 个页面</translation>
 <translation id="7360257054721917104">正在查看已保存的桌面和模板。按 Tab 键即可导航。</translation>
 <translation id="7361297102842600584">右键点击即可运行 <ph name="PLUGIN_NAME" /></translation>
+<translation id="7361914392989692067">用手指轻触电源按钮。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="7362387053578559123">网站可以请求连接到蓝牙设备</translation>
 <translation id="7363349185727752629">隐私控制选项指南</translation>
 <translation id="7364591875953874521">已请求访问权限</translation>
@@ -7134,7 +7144,7 @@
 <translation id="7679171213002716280">有 <ph name="PRINTER_COUNT" /> 台受管理的打印机。</translation>
 <translation id="7680416688940118410">触摸屏校准</translation>
 <translation id="7681095912841365527">该网站可能会使用蓝牙</translation>
-<translation id="7681597159868843240">网站通常会使用您设备的移动传感器以实现某些功能（例如虚拟实境或健身跟踪）</translation>
+<translation id="7681597159868843240">网站通常会使用您设备的移动传感器以实现某些功能（例如虚拟现实或健身跟踪）</translation>
 <translation id="7683373461016844951">要想继续，请点击“确定”，然后点击“添加用户”为您位于 <ph name="DOMAIN" /> 中的电子邮件地址创建一份新个人资料。</translation>
 <translation id="7683834360226457448">弱视显示工具</translation>
 <translation id="7684212569183643648">安装者：您的管理员</translation>
@@ -7829,6 +7839,7 @@
 <translation id="8299319456683969623">您目前处于离线状态。</translation>
 <translation id="8300011035382349091">为此标签页修改书签</translation>
 <translation id="8300374739238450534">深夜蓝</translation>
+<translation id="8301242268274839723">轻触键盘左下角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="8303616404642252802">{COUNT,plural, =1{地址}other{# 个地址}}</translation>
 <translation id="8304383784961451596">您无权使用此设备。请与管理员联系以获取登录权限，或者使用受 Family Link 监管的 Google 帐号登录。</translation>
 <translation id="8306885873692337975">获取最新的功能和安全性方面的改进。</translation>
@@ -8429,7 +8440,7 @@
 <translation id="8871974300055371298">内容设置</translation>
 <translation id="8872155268274985541">发现无效的自助服务终端外部更新清单文件，未能成功更新自助服务终端应用。请拔下 U 盘。</translation>
 <translation id="8872506776304248286">在应用中打开</translation>
-<translation id="8872777911145321141">在网站想使用您的虚拟实境设备和数据时询问您（推荐）</translation>
+<translation id="8872777911145321141">在网站想使用您的虚拟现实设备和数据时询问您（推荐）</translation>
 <translation id="887292602123626481">详细了解默认搜索引擎</translation>
 <translation id="8874341931345877644">投放到设备：</translation>
 <translation id="8875520811099717934">Linux 升级</translation>
@@ -8555,10 +8566,12 @@
 <translation id="8993059306046735527">如果您忘记了 <ph name="DEVICE_TYPE" /> 密码，您仍然可以恢复本地数据。您需要登录自己的 Google 帐号或使用帐号恢复功能。</translation>
 <translation id="8993737615451556423">提供用于加快语速、减慢语速和暂停朗读的控件</translation>
 <translation id="899384117894244799">移除受限用户</translation>
+<translation id="8993945059918628059">用手指轻触指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>
 <translation id="899657321862108550">您的“专属”Chrome 浏览器，走到哪带到哪</translation>
 <translation id="8998078711690114234">这种文件可能有安全隐患。请仅在您信任“<ph name="ORIGIN" />”的情况下保存此文件</translation>
 <translation id="8999560016882908256">区段语法错误：<ph name="ERROR_LINE" /></translation>
+<translation id="9000185763019430629">轻触 <ph name="DEVICE_TYPE" /> 右侧的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
 <translation id="9003185744423389627">未能成功连接到设备管理服务器，状态为“<ph name="STATUS_TEXT" />”，失败时间为 <ph name="FAILURE_TIME" /></translation>
 <translation id="9003647077635673607">允许在所有网站上运行脚本</translation>
 <translation id="9003677638446136377">再次检查</translation>
@@ -8863,7 +8876,7 @@
 <translation id="97905529126098460">此窗口将在取消安装完成后关闭。</translation>
 <translation id="980731642137034229">操作菜单按钮</translation>
 <translation id="981121421437150478">离线</translation>
-<translation id="983511809958454316">此功能在虚拟实境中不受支持</translation>
+<translation id="983511809958454316">此功能在虚拟现实中不受支持</translation>
 <translation id="984275831282074731">付款方式</translation>
 <translation id="984705303330760860">添加拼写检查语言</translation>
 <translation id="98515147261107953">横向</translation>

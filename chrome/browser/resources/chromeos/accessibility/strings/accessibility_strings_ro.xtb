@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Comenzile de navigare pot fi folosite pentru a naviga eficient într-o pagină web.</translation>
 <translation id="116896278675803795">Setează schimbarea automată a limbii, astfel încât să corespundă conținutului selectat</translation>
 <translation id="1175914831232945926">Cifre</translation>
-<translation id="1181003590763099524">mută la început</translation>
 <translation id="1188858454923323853">complementar</translation>
 <translation id="1189258430971676908">Zonă pentru exersare: listele drop-down</translation>
 <translation id="1195238899008218998">Postfață</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Dimensiune: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Combinația de taste <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Orhidee</translation>
-<translation id="1928535370180099152">evidențiază caracterul anterior</translation>
 <translation id="1928932365747995741">Nu există un câmp de text editabil anterior</translation>
 <translation id="1964135212174907577">Obiectul următor</translation>
 <translation id="1966649499058910679">Evidențiază fiecare cuvânt când este rostit</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Activează sau dezactivează vorbirea</translation>
 <translation id="2390264819538553347">Pentru a avansa, apasă tasta Enter; pentru a reveni, apasă tasta Backspace.</translation>
 <translation id="2398579267367951220">Tastează pentru a căuta pagina. Apasă pe Enter pentru a accesa rezultatul, apasă tastele săgeată în sus sau în jos pentru a răsfoi rezultatele, continuă să tastezi pentru a căuta altceva și apasă pe Escape pentru a anula.</translation>
-<translation id="2407047351320112166">evidențiază caracterul următor</translation>
 <translation id="240709722712693803">Mov albăstrui</translation>
 <translation id="2410298923485357543">Folosește o voce naturală când dispozitivul este offline</translation>
 <translation id="2416512023405990736">O casetă de selectare nebifată</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Mută cursorul</translation>
 <translation id="3103579948980282461">Roșu violet mediu</translation>
 <translation id="3104705064753753826">casetă de dialog alertă</translation>
-<translation id="3105857328626674463">evidențiază cuvântul anterior</translation>
 <translation id="3109724472072898302">Restrâns</translation>
 <translation id="311015743332597320">Glisează cu patru degete la dreapta</translation>
 <translation id="3112457281078985179">Pentru a activa sau a dezactiva ChromeVox, folosește Ctrl + Alt + Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Link accesat anterior</translation>
 <translation id="3241638166094654466">Celule pe fiecare rând:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">mută la sfârșit</translation>
 <translation id="3260949043575829030">Elementul similar anterior</translation>
 <translation id="3270069636408109001">Nu există un tabel următor</translation>
 <translation id="3273791280096244679">Salvează eticheta</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">casetă de selectare element meniu</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dolar}few{# semne dolar}other{# de semne dolar}}</translation>
 <translation id="3659787053479271466">alertă</translation>
-<translation id="3661265561216135784">repetă</translation>
 <translation id="366419593095697301">Sfat: apasă Escape dacă vrei să închizi tutorialul.</translation>
 <translation id="3676062394766691318">După ce configurezi dispozitivul, poți să revii și să urmărești mai multe tutoriale dacă apeși tasta de căutare + O, apoi T.</translation>
 <translation id="3681531118904532409">Roz deschis</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Exemplu</translation>
 <translation id="7439060726180460871">Catalog</translation>
 <translation id="744163271241493234">parolă</translation>
-<translation id="7443479558101073378">evidențiază cuvântul următor</translation>
 <translation id="7465123027577412805">Folosești o voce naturală?</translation>
 <translation id="7491962110804786152">filă</translation>
 <translation id="7492497529767769458">Treci la secțiunea următoare. Printre exemple se numără Bara de stare și Lansatorul.</translation>
 <translation id="7505149250476994901">Rostește „majusculă” înaintea literei</translation>
 <translation id="7533226154149229506">Galben auriu</translation>
-<translation id="7541021454094606506">șterge-le pe toate</translation>
 <translation id="7543255924852002459">Etichetă de renunțare</translation>
 <translation id="7552432549459840808">Comenzi rapide utile pentru Chrome</translation>
 <translation id="7553679324939294712">inserează <ph name="INSERT_PHRASE" /> înainte de <ph name="BEFORE_PHRASE" /></translation>

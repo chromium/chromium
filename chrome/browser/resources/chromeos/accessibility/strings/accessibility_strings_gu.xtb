@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">જમ્પ આદેશોનો ઉપયોગ વેેબ પેજ પર વધુ કાર્યક્ષમતાથી નૅવિગેટ કરવા માટે થઈ શકે છે.</translation>
 <translation id="116896278675803795">પસંદ કરેલા કન્ટેન્ટ સાથે મેળ કરવા માટે ઑટોમૅટિક રીતે ભાષા બદલો</translation>
 <translation id="1175914831232945926">અંકો</translation>
-<translation id="1181003590763099524">પ્રારંભ પર ખસેડો</translation>
 <translation id="1188858454923323853">પૂરક</translation>
 <translation id="1189258430971676908">અભ્યાસ ક્ષેત્ર: ડ્રૉપ-ડાઉન સૂચિ</translation>
 <translation id="1195238899008218998">સમાપન ભાષણ</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">કદ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ચાપકર્ણ</translation>
 <translation id="1923956950274750765">મધ્યમ ઑર્કિડ</translation>
-<translation id="1928535370180099152">પાછળનો અક્ષર હાઇલાઇટ કરો</translation>
 <translation id="1928932365747995741">ફેરફાર કરી શકાય તેવી કોઈ પાછલી ટેક્સ્ટ ફીલ્ડ નથી</translation>
 <translation id="1964135212174907577">આગલો ઑબ્જેક્ટ</translation>
 <translation id="1966649499058910679">દરેક શબ્દને બોલવાની રીત પ્રમાણે હાઇલાઇટ કરો</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">વાણી ચાલુ અથવા બંધ કરવાનું ટૉગલ કરો</translation>
 <translation id="2390264819538553347">આગળ જવા માટે, enter દબાવો, પાછળ જવા માટે backspace દબાવો.</translation>
 <translation id="2398579267367951220">પેજ શોધવા માટે ટાઇપ કરો. પરિણામ પર જવા માટે Enter, પરિણામો બ્રાઉઝ કરવા માટે ઉપર અથવા નીચેનો ઍરો દબાવો, તમારી શોધમાં ફેરફાર કરવા માટે ટાઇપ કરવાનું ચાલુ રાખો અથવા રદ કરવા માટે Escape દબાવો.</translation>
-<translation id="2407047351320112166">આગળનો અક્ષર હાઇલાઇટ કરો</translation>
 <translation id="240709722712693803">ભૂરો જાંબલી</translation>
 <translation id="2410298923485357543">જ્યારે ડિવાઇસ ઑનલાઇન હોય, ત્યારે સાહજિક અવાજનો ઉપયોગ કરો</translation>
 <translation id="2416512023405990736">અનચેક કરેલુંં ચેકબોક્સ</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">કર્સર ખસેડો</translation>
 <translation id="3103579948980282461">મધ્યમ જાંબુડિયો લાલ</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">પાછલા શબ્દને હાઇલાઇટ કરો</translation>
 <translation id="3109724472072898302">સંકુચિત</translation>
 <translation id="311015743332597320">ચાર આંગળીઓ વડે જમણે સ્વાઇપ કરો</translation>
 <translation id="3112457281078985179">ChromeVox ને ચાલુ કે બંધ કરવા માટે, Control+Alt+Z નો ઉપયોગ કરો.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">પાછલી મુલાકાત લીધેલી લિંક</translation>
 <translation id="3241638166094654466">દરેક લાઇનમાંનાં કોષોની સંખ્યા:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">અંતમાં ખસેડો</translation>
 <translation id="3260949043575829030">આના જેવી જ અગાઉની આઇટમ</translation>
 <translation id="3270069636408109001">કોઈ આગલું કોષ્ટક નથી</translation>
 <translation id="3273791280096244679">લેબલ સાચવો</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ડૉલર}one{# ડૉલરની નિશાની}other{# ડૉલરની નિશાની}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">રિપીટ</translation>
 <translation id="366419593095697301">હિન્ટ: જો તમે આ ટ્યૂટૉરિઅલમાંથી બહાર નીકળવા માગો, તો Escape દબાવો.</translation>
 <translation id="3676062394766691318">તમે તમારા ડિવાઇસનું સેટઅપ કરી લો તે પછી તમે પાછા આવીને Search + O અને ત્યાર બાદ T દબાવીને વધુ ટ્યૂટૉરિઅલ જોઈ શકો છો.</translation>
 <translation id="3681531118904532409">પપાયા વ્હિપ</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">ઉદાહરણ</translation>
 <translation id="7439060726180460871">ડિરેક્ટરી</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">આગલા શબ્દને હાઇલાઇટ કરો</translation>
 <translation id="7465123027577412805">સાહજિક અવાજનો ઉપયોગ કરીએ?</translation>
 <translation id="7491962110804786152">ટેબ</translation>
 <translation id="7492497529767769458">આગળના વિભાગ પર ખસેડો. ઉદાહરણોમાં સ્ટેટસ ટ્રે અને લૉન્ચર શામેલ છે.</translation>
 <translation id="7505149250476994901">અક્ષર પહેલાં "કૅપિટલ" બોલો</translation>
 <translation id="7533226154149229506">આછો સોનેરી રૉડ પીળો</translation>
-<translation id="7541021454094606506">બધું ડિલીટ કરો</translation>
 <translation id="7543255924852002459">લેબલ કાઢી નાખો</translation>
 <translation id="7552432549459840808">સહાયરૂપ Chrome શૉર્ટકટ્સ</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> પહેલાં <ph name="INSERT_PHRASE" /> શામેલ કરો</translation>

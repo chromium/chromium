@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">የዝላይ ትዕዛዞች አንድ ድረ-ገጽን በቅልጥፍና ለመዳሰስ ስራ ላይ ሊውሉ ይችላሉ።</translation>
 <translation id="116896278675803795">የተመረጠውን ይዘት እንዲመሳሰል በራስ-ሰር ቋንቋን ይለውጡ</translation>
 <translation id="1175914831232945926">አኃዞች</translation>
-<translation id="1181003590763099524">ወደ መጀመሪያው ውሰድ</translation>
 <translation id="1188858454923323853">ማሟያ</translation>
 <translation id="1189258430971676908">የመለማመቻ ቦታ፦ ተቆልቋይ ዝርዝሮች</translation>
 <translation id="1195238899008218998">ድሕረ ቃል</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">መጠን <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> ኮርድ</translation>
 <translation id="1923956950274750765">መካከለኛ ግራጫ</translation>
-<translation id="1928535370180099152">ቀዳሚውን ቁምፊ አድምቅ</translation>
 <translation id="1928932365747995741">ምንም ቀዳሚ አርትዖት ሊደረግበት የሚችል የጽሑፍ መስክ የለም</translation>
 <translation id="1964135212174907577">ቀጣይ ነገር</translation>
 <translation id="1966649499058910679">እያንዳንዱ ቃል ሲነገር ማድመቅ</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">ንግግርን አብራ ወይም አጥፋ</translation>
 <translation id="2390264819538553347">ለመቀጠል አስገባን ይጫኑ፣ ወደኋላ ይመለሱ፣ የኋሊት ደምሳሽን ይጫኑ።</translation>
 <translation id="2398579267367951220">ገጹን ለመፈለግ ይተይቡ። ወደ ውጤቱ ለመዝለል enter፣ ውጤቶችን ለማሰስ የላይ ወይም የታች ቀስቶች ይጫኑ፣ የእርስዎን ፍለጋ ለመለወጥ መተየብ ይቀጥሉ ወይም ለመሰረዝ escape ይጫኑ።</translation>
-<translation id="2407047351320112166">ቀጣዩን ቁምፊ አድምቅ</translation>
 <translation id="240709722712693803">ሰማያዊ ወይን ጠጅ</translation>
 <translation id="2410298923485357543">መሣሪያው መስመር ላይ በሚሆንበት ጊዜ የተፈጥሮ ድምፅን ይጠቀሙ</translation>
 <translation id="2416512023405990736">ምልክት ያልተደረገለት አመልካች ሳጥን</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">ጠቋሚን አንቀሳቅስ</translation>
 <translation id="3103579948980282461">መካከለኛ ሐምራዊ ቀይ</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">ቀዳሚውን ቃል አድምቅ</translation>
 <translation id="3109724472072898302">ተሰብስቧል</translation>
 <translation id="311015743332597320">አራት ጣቶችን ወደ ቀኝ ያንሸራትቱ</translation>
 <translation id="3112457281078985179">ChromeVoxን ለማብራት ወይም ለማጥፋት Control+Alt+Z ይጠቀሙ።</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">ቀዳሚ የተጎበኘ አገናኝ</translation>
 <translation id="3241638166094654466">በእያንዳንዱ መስመር ላይ ያሉ ሕዋሶች፦</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">ወደ መጨረሻ ውሰድ</translation>
 <translation id="3260949043575829030">ቀዳሚው ተመሳሳይ ንጥል</translation>
 <translation id="3270069636408109001">ምንም ቀጣይ ሠንጠረዥ የለም</translation>
 <translation id="3273791280096244679">መሰየሚያን አስቀምጥ</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ዶላር}one{# የዶላር ምልክቶች}other{# የዶላር ምልክቶች}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">ድገም</translation>
 <translation id="366419593095697301">ፍንጭ፦ ከዚህ አጋዥ ስልጠና መውጣት ከፈለጉ Escapeን ይጫኑ።</translation>
 <translation id="3676062394766691318">መሣሪያዎን ካቀናበሩት በኋላ Search + O፣ ከዚያ T በመጫን ተመልሰው መጥተው ተጨማሪ አጋዥ ስልጠናዎችን ማየት ይችላሉ።</translation>
 <translation id="3681531118904532409">ፓፓያ ዊፕ</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">ምሳሌ</translation>
 <translation id="7439060726180460871">ማውጫ</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">ቀጣዩን ቃል አድምቅ</translation>
 <translation id="7465123027577412805">ተፈጥሯዊ ድምፅ ይጠቀሙ?</translation>
 <translation id="7491962110804786152">TAB</translation>
 <translation id="7492497529767769458">ወደ ቀጣይ ክፍል ውሰድ። ምሳሌዎች የሁኔታ መሳቢያውን እና ማስጀመሪያውን ያካትታሉ።</translation>
 <translation id="7505149250476994901">ከፊደል በፊት «cap» ይበሉ</translation>
 <translation id="7533226154149229506">ፈዛዛ ወርቃማ በትር ቢጫ</translation>
-<translation id="7541021454094606506">ሁሉንም ሰርዝ</translation>
 <translation id="7543255924852002459">መሰየሚያን አስወግድ</translation>
 <translation id="7552432549459840808">አጋዥ የChrome አቋራጮች</translation>
 <translation id="7553679324939294712">ከ<ph name="BEFORE_PHRASE" /> በፊት <ph name="INSERT_PHRASE" />ን አስገባ</translation>

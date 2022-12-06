@@ -685,6 +685,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7415801143053185905">HTTP kechikishi juda yuqori</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanerlandi. 1 ta sahifa skanerlandi}other{Skanerlandi. {NUMBER_OF_PAGES} ta sahifa skanerlandi}}</translation>
+<translation id="7458970041932198923">Avatarlarni koʻrish va sozlash uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="7469648432129124067">Portal aniqlandi</translation>
 <translation id="7481312909269577407">Oldinga</translation>
 <translation id="7487067081878637334">Texnologiya</translation>
@@ -839,6 +840,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanerlash}=1{{NUMBER_OF_PAGES} sahifani skanerlash}other{{NUMBER_OF_PAGES} sahifani skanerlash}}</translation>
 <translation id="8997710128084572139">Qurilma batareyasi quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="8998289560386111590">Qurilmangizda ishlamaydi.</translation>
 <translation id="9003704114456258138">Chastotasi</translation>
 <translation id="9025198690966128418">Shaxsiy qurilma sifatida foydalaning</translation>
 <translation id="9028832514430399253">Tugmani bosib, ekran lavhasi parametrlarini tanlang</translation>

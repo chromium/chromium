@@ -31,7 +31,6 @@
 <translation id="1148499908455722006">開啟「<ph name="USER_NAME" />」的資訊對話方塊</translation>
 <translation id="1150989369772528668">日曆</translation>
 <translation id="1153356358378277386">配對裝置</translation>
-<translation id="1165712434476988950">必須重新啟動裝置才能套用更新。</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />，<ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">你的 USB-C 連接線可能未妥善連接螢幕</translation>
 <translation id="1175572348579024023">捲動</translation>
@@ -1289,6 +1288,7 @@
 <translation id="8142441511840089262">按兩下</translation>
 <translation id="8142699993796781067">私人網路</translation>
 <translation id="8144760705599030999">將 <ph name="NAME" /> 儲存到 <ph name="EMAIL" /> 即可與其他裝置快速配對</translation>
+<translation id="8144914663975476336">選取錄影格式</translation>
 <translation id="8149413265954228307">顯示藍牙設定。<ph name="STATE_TEXT" />。</translation>
 <translation id="8152092012181020186">按下 Ctrl + W 即可關閉。</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />，自動完成</translation>
@@ -1461,7 +1461,6 @@
 <translation id="9089416786594320554">輸入法</translation>
 <translation id="9091626656156419976">「<ph name="DISPLAY_NAME" />」螢幕已移除</translation>
 <translation id="9098969848082897657">將手機設為靜音</translation>
-<translation id="9099154003160514616">有 Lacros 更新</translation>
 <translation id="9100887602489003640">正在新增設定檔，請稍後片刻。</translation>
 <translation id="9105450214093926548">Lacros 瀏覽器執行期間不支援登入第二個使用者帳戶。請改為在 Lacros 中使用第二個瀏覽器設定檔，或者關閉 Lacros 後再試一次。</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> 或 <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

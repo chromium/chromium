@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
 <translation id="2407209115954268704">ဆင်းမ်လော့ခ် အခြေအနေ</translation>
+<translation id="241419523391571119">စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
 <translation id="2418150275289244458">ဆက်တင်များတွင် ဖွင့်ရန်</translation>
 <translation id="2421798028054665193">ပုံ <ph name="TOTAL_PAGES" /> အနက် <ph name="CURRENT_PAGE" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> စက္ကန့်အတွင်း <ph name="RATE" /> အားလျော့သွားသည်။</translation>
 <translation id="2902312830803030883">နောက်ထပ် လုပ်ဆောင်ချက်များ</translation>
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
+<translation id="2940811910881150316">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ။</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="3017079585324758401">နောက်ခံ</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">ပင်နံပါတ် မမှန်ကန်ပါ။</translation>
 <translation id="3824259034819781947">ဖိုင်များပူးတွဲရန်</translation>
 <translation id="3838338534323494292">စကားဝှက်အသစ်</translation>
+<translation id="3845880861638660475">ဒိုင်ယာလော့ပိတ်ရန် <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> နှိပ်ပါ။</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3858860766373142691">အမည်</translation>
 <translation id="3862598938296403232">ဖော်ပြချက် လိုအပ်သည်</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">ဖေါ်ပြချက်</translation>
 <translation id="387301095347517405">သင့်ဘက်ထရီကို အားအပြည့်သွင်းထားသည့် အကြိမ်အရေအတွက်</translation>
 <translation id="3885327323343477505">စကရင်နားချိန်ပုံ ပြောင်းရန်</translation>
+<translation id="391412459402535266">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် လက်ပ်တော့မုဒ်သို့ ပြောင်းပါ။</translation>
 <translation id="3923184630988645767">ဒေတာသုံးစွဲမှု</translation>
 <translation id="3932043219784172185">ချိတ်ဆက်ထားသော စက်မရှိပါ</translation>
 <translation id="3941014780699102620">ဆာဗာပင်ရင်းကို မဖြေရှင်းနိုင်ပါ</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3993704782688964914">ယခု သင့် <ph name="DEVICE_NAME" /> အပ်ဒိတ်ဖြစ်နေပါပြီ</translation>
 <translation id="4003384961948020559">မအောင်မြင်ပါ - စာရွက်ထုတ်သည့်နေရာ ပြည့်နေသည်</translation>
+<translation id="4021031199988160623">စမ်းသပ်ရန် လက်ပ်တော့မုဒ်သို့ ပြောင်းပါ</translation>
 <translation id="4034824040120875894">ပရင်တာ</translation>
 <translation id="4044093238444069296">ဂိတ်ဝကို ဆက်သွယ်၍မရပါ</translation>
 <translation id="4046123991198612571">နောက်တစ်ပုဒ်</translation>

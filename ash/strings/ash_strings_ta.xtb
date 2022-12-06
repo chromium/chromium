@@ -31,7 +31,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> கணக்கிற்கான தகவலைக் காட்டும் உரையாடலைத் திறக்கும்</translation>
 <translation id="1150989369772528668">கேலெண்டர்</translation>
 <translation id="1153356358378277386">இணைத்த சாதனங்கள்</translation>
-<translation id="1165712434476988950">புதுப்பிப்பை நிறுவ சாதனத்தை மீண்டும் தொடங்க வேண்டும்.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">டிஸ்ப்ளேக்களில் உங்கள் USB-C கேபிள் சரியாக இணைக்கப்படாமல் இருக்கக்கூடும்</translation>
 <translation id="1175572348579024023">நகர்த்து</translation>
@@ -1463,7 +1462,6 @@
 <translation id="9089416786594320554">உள்ளீட்டு முறைகள்</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> டிஸ்ப்ளே அகற்றப்பட்டது</translation>
 <translation id="9098969848082897657">மொபைலை நிசப்தமாக்குதல்</translation>
-<translation id="9099154003160514616">Lacros புதுப்பிப்பு உள்ளது</translation>
 <translation id="9100887602489003640">நெட்வொர்க் சுயவிவரத்தைச் சேர்க்கிறது. சில நிமிடங்கள் காத்திருக்கவும்.</translation>
 <translation id="9105450214093926548">Lacros உலாவியைப் பயன்படுத்திக் கொண்டிருக்கும்போது இரண்டாவது பயனராக உள்நுழைய முடியாது. இதற்குப் பதிலாக Lacros உலாவியில் இரண்டாவது உலாவி சுயவிவரத்தைப் பயன்படுத்தவும் அல்லது Lacros உலாவியை மூடிவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> அல்லது <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

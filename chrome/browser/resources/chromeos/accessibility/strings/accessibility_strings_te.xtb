@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">వెబ్ పేజీ ద్వారా సమర్థవంతంగా నావిగేట్ చేయడానికి దాటవేసే కమాండ్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="116896278675803795">ఎంచుకున్న కంటెంట్‌కు మ్యాచ్ అయ్యేలా భాష ఆటోమేటిక్‌గా మారుతుంది</translation>
 <translation id="1175914831232945926">అంకెలు</translation>
-<translation id="1181003590763099524">ప్రారంభానికి తరలించండి</translation>
 <translation id="1188858454923323853">బహుమానపూర్వకం</translation>
 <translation id="1189258430971676908">సాధన ప్రాంతం: డ్రాప్-డౌన్ లిస్ట్‌లు</translation>
 <translation id="1195238899008218998">చివరిమాట</translation>
@@ -152,7 +151,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1914424852593176649"><ph name="FONT_SIZE" /> సైజ్‌</translation>
 <translation id="1914635379910604678"><ph name="DOT" /> కీల కలయిక</translation>
 <translation id="1923956950274750765">మధ్యస్థ ఊదా రంగు</translation>
-<translation id="1928535370180099152">మునుపటి అక్షరాన్ని హైలైట్ చేయండి</translation>
 <translation id="1928932365747995741">మునుపటి ఎడిట్ చేయగల వచన ఫీల్డ్ లేదు</translation>
 <translation id="1964135212174907577">తరువాత ఆబ్జెక్ట్</translation>
 <translation id="1966649499058910679">ప్రతి పదాన్ని చదివినప్పుడు దానిని హైలైట్ చేయి</translation>
@@ -207,7 +205,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="2390264819538553347">ముందుకు వెళ్లడానికి, enter నొక్కండి; వెనుకకు వెళ్లడానికి, backspace నొక్కండి.</translation>
 <translation id="2398579267367951220">పేజీని వెతకడానికి టైప్ చేయండి. ఫలితానికి వెంటనే వెళ్లడానికి enterను నొక్కండి, 
 ఫలితాలను బ్రౌజ్ చేయడానికి పైకి లేదా కిందికి ఉన్న బాణం గుర్తులు వాడండి, మీ శోధనను మార్చడానికి టైప్ చేస్తూ ఉండండి లేదా రద్దు చేసేందుకు escapeను నొక్కండి.</translation>
-<translation id="2407047351320112166">తర్వాతి అక్షరాన్ని హైలైట్ చేయండి</translation>
 <translation id="240709722712693803">నీలలోహిత రంగు</translation>
 <translation id="2410298923485357543">పరికరం ఆన్‌లైన్‌లో ఉన్నప్పుడు సహజ వాయిస్‌ను ఉపయోగించండి</translation>
 <translation id="2416512023405990736">ఎంచుకున్నట్లు గుర్తు పెట్టని చెక్‌బాక్స్‌</translation>
@@ -331,7 +328,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="309749186376891736">కర్సర్‌ను జరపండి</translation>
 <translation id="3103579948980282461">మధ్యస్థ ఊదా ఎరుపు</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">మునుపటి పదాన్ని హైలైట్ చేయండి</translation>
 <translation id="3109724472072898302">కుదించబడింది</translation>
 <translation id="311015743332597320">నాలుగు వేళ్లతో కుడివైపునకు స్వైప్ చేయండి</translation>
 <translation id="3112457281078985179">ChromeVoxని ఆన్ లేదా ఆఫ్ చేయడానికి, Control+Alt+Z ఉపయోగించండి.</translation>
@@ -360,7 +356,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3241052487511142956">మునుపు సందర్శించిన లింక్</translation>
 <translation id="3241638166094654466">ప్రతి పంక్తిలో గడులు:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">చివరకు తరలించండి</translation>
 <translation id="3260949043575829030">ఇలాంటి మునుపటి అంశం</translation>
 <translation id="3270069636408109001">తర్వాత టేబుల్ లేదు</translation>
 <translation id="3273791280096244679">లేబుల్‌ను సేవ్ చేయి</translation>
@@ -425,7 +420,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{డాలర్ గుర్తు}other{# డాలర్ గుర్తులు}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">రిపీట్ చేయి</translation>
 <translation id="366419593095697301">సూచన: మీరు ట్యుటోరియల్‌ను నిష్క్రమించాలనుకుంటే ఎస్కేప్‌ను నొక్కండి.</translation>
 <translation id="3676062394766691318">మీరు పరికరాన్ని సెటప్ చేసిన తర్వాత, సెర్చ్ + O, ఆపై Tని నొక్కడం ద్వారా మీరు తిరిగి వచ్చి మరిన్ని ట్యుటోరియల్‌లను చూడవచ్చు.</translation>
 <translation id="3681531118904532409">బొప్పాయి పసుపు రంగు</translation>
@@ -954,13 +948,11 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="743783356331413498">ఉదాహరణ</translation>
 <translation id="7439060726180460871">డైరెక్టరీ</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">తర్వాతి పదాన్ని హైలైట్ చేయండి</translation>
 <translation id="7465123027577412805">సహజ వాయిస్‌ను ఉపయోగించమంటారా?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">తర్వాతి విభాగానికి వెళ్లండి. ఉదాహరణలలో స్టేటస్ ట్రే, లాంచర్ ఉంటాయి.</translation>
 <translation id="7505149250476994901">క్యాపిటల్ అక్షరాన్ని పలికే ముందు "క్యాపిటల్" అని అనండి</translation>
 <translation id="7533226154149229506">లేత బంగారం కడ్డీ పసుపు</translation>
-<translation id="7541021454094606506">టెక్స్ట్ మొత్తాన్ని తొలగించండి</translation>
 <translation id="7543255924852002459">లేబుల్‌ను విస్మరించండి</translation>
 <translation id="7552432549459840808">సహాయకరమైన Chrome షార్ట్‌కట్‌లు</translation>
 <translation id="7553679324939294712">'<ph name="BEFORE_PHRASE" />'కు ముందు '<ph name="INSERT_PHRASE" />'ను చేర్చండి</translation>

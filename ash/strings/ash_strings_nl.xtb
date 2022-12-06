@@ -31,7 +31,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1148499908455722006">Dialoogvenster met informatie openen voor <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
-<translation id="1165712434476988950">Start het apparaat opnieuw op om de update toe te passen.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Je USB-C-kabel sluit misschien niet goed aan op schermen</translation>
 <translation id="1175572348579024023">Scrollen</translation>
@@ -668,6 +667,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4666082839192943839">Zet de cameratoegang op dit apparaat uit om alle camera's altijd te blokkeren.</translation>
 <translation id="4666911709726371538">Meer apps</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> downloaden</translation>
+<translation id="468293128311738995">Apps op je telefoon</translation>
 <translation id="4690510401873698237">Plank aan onderkant</translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
 <translation id="4702647871202761252">Privacyscherm staat uit</translation>
@@ -1287,6 +1287,7 @@ Nieuwe installatie</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>
 <translation id="8142699993796781067">Privénetwerk</translation>
 <translation id="8144760705599030999">Sla je <ph name="NAME" /> op in <ph name="EMAIL" /> voor sneller koppelen met je andere apparaten</translation>
+<translation id="8144914663975476336">Opname-indeling selecteren</translation>
 <translation id="8149413265954228307">Bluetooth-instellingen tonen. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Druk op Ctrl + W om te sluiten.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatisch aanvullen</translation>
@@ -1460,7 +1461,6 @@ Nieuwe installatie</translation>
 <translation id="9089416786594320554">Invoermethoden</translation>
 <translation id="9091626656156419976">Scherm <ph name="DISPLAY_NAME" /> is verwijderd</translation>
 <translation id="9098969848082897657">Telefoon dempen</translation>
-<translation id="9099154003160514616">Lacros-update beschikbaar</translation>
 <translation id="9100887602489003640">Profiel toevoegen. Wacht een paar minuten.</translation>
 <translation id="9105450214093926548">Een tweede gebruiker inloggen wordt niet ondersteund als de Lacros-browser actief is. Gebruik in plaats daarvan een tweede browserprofiel in Lacros of sluit Lacros en probeer het opnieuw.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> of <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

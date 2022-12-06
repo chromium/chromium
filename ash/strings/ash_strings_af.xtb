@@ -31,7 +31,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1148499908455722006">Maak inligtingdialoog oop vir <ph name="USER_NAME" /></translation>
 <translation id="1150989369772528668">Kalender</translation>
 <translation id="1153356358378277386">Saamgebinde toestelle</translation>
-<translation id="1165712434476988950">Die toestel moet herbegin word om die opdatering toe te pas.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Jou USB-C-kabel koppel dalk nie behoorlik aan skerms nie</translation>
 <translation id="1175572348579024023">Rollees</translation>
@@ -1292,6 +1291,7 @@ Nuwe installasie</translation>
 <translation id="8142441511840089262">Dubbelklik</translation>
 <translation id="8142699993796781067">Privaat netwerk</translation>
 <translation id="8144760705599030999">Stoor jou <ph name="NAME" /> in <ph name="EMAIL" /> om vinniger met jou ander toestelle saamgebind te word</translation>
+<translation id="8144914663975476336">Kies opnameformaat</translation>
 <translation id="8149413265954228307">Wys Bluetooth-instellings. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Druk Ctrl + W om toe te maak.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, outovoltooi</translation>
@@ -1465,7 +1465,6 @@ Nuwe installasie</translation>
 <translation id="9089416786594320554">Invoermetodes</translation>
 <translation id="9091626656156419976">Het skerm <ph name="DISPLAY_NAME" /> verwyder</translation>
 <translation id="9098969848082897657">Maak foon stil</translation>
-<translation id="9099154003160514616">Lacros-opdatering is beskikbaar</translation>
 <translation id="9100887602489003640">Voeg tans profiel by. Wag 'n paar minute.</translation>
 <translation id="9105450214093926548">'n Tweede gebruiker kan nie aangemeld word terwyl die Lacros-blaaier gebruik word nie. Gebruik asseblief eerder 'n tweede blaaierprofiel in Lacros, of maak Lacros toe en probeer weer.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> of <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

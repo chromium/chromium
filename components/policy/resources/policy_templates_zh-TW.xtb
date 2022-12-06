@@ -2237,6 +2237,7 @@
 <translation id="3144173889708944482">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLOCKLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="3146711617256415776">禁止在使用隨選朗讀時使用加強型網路文字轉語音功能</translation>
 <translation id="3150351525324499342">預設不在工具列顯示 <ph name="PRODUCT_NAME" /> 圖示，但允許使用者選擇</translation>
+<translation id="3152135410085709340">允許這些網站在 PDF 檢視器中存取本機的 file:// 網址</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3157857846231611820">指定要套用至 <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR" /> Enterprise 連接器的 Chrome Enterprise 連接器服務設定清單，這份清單會在檔案附加至 Chrome 時觸發。
 
@@ -4640,6 +4641,10 @@
       如果不設定這項政策，在預設情況下，受企業管理的使用者將無法使用即時網路共用功能，其他一般使用者則可使用這項功能。</translation>
 <translation id="5584132346604748282">控制 Android Google 定位服務</translation>
 <translation id="5584609869321980122">第一個使用者活動開始時，才啟動電源管理延遲和工作階段長度限制</translation>
+<translation id="5585298198686067735">設定這項政策可讓所列網域透過 PDF 檢視器存取 file:// 網址。
+加入這項政策後，該網域即可透過 PDF 檢視器存取 file:// 網址。
+從這項政策中移除後，該網域就無法透過 PDF 檢視器存取 file:// 網址。
+如果不設定這項政策，系統會禁止所有網域透過 PDF 檢視器存取 file:// 網址。</translation>
 <translation id="5586942249556966598">不要處理</translation>
 <translation id="5598417829613725146">畫布 (自 90 版開始支援)</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理設定</translation>

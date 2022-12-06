@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">কোনও ওয়েব পৃষ্ঠার মধ্যে দ্রুত নেভিগেট করতে জাম্প কমান্ড ব্যবহার করা হতে পারে।</translation>
 <translation id="116896278675803795">বেছে নেওয়া কন্টেন্টের সাথে মেলানোর জন্য ভাষা অটোমেটিক পরিবর্তন করুন</translation>
 <translation id="1175914831232945926">ডিজিট</translation>
-<translation id="1181003590763099524">চালু করতে সরান</translation>
 <translation id="1188858454923323853">পরিপূরক</translation>
 <translation id="1189258430971676908">অনুশীলন ক্ষেত্র: ড্রপ-ডাউন তালিকা</translation>
 <translation id="1195238899008218998">পরিশিষ্ট</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">ফন্টের সাইজ <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> কিয়ের সেট</translation>
 <translation id="1923956950274750765">মাঝারি অর্কিড</translation>
-<translation id="1928535370180099152">আগের অক্ষরটি হাইলাইট করুন</translation>
 <translation id="1928932365747995741">কোনও পূর্ববর্তী এডিট করার মতো টেক্সট ফিল্ড নেই</translation>
 <translation id="1964135212174907577">পরবর্তী বস্তু</translation>
 <translation id="1966649499058910679">প্রতিটি শব্দ যেভাবে উচ্চারণ করা হয় সেইভাবে হাইলাইট করুন</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">ভাষ্য চালু বা বন্ধ করুন</translation>
 <translation id="2390264819538553347">এগিয়ে যাওয়ার জন্য, enter টিপুন; ফিরে যেতে, backspace টিপুন।</translation>
 <translation id="2398579267367951220">পৃষ্ঠাতে সার্চ করতে টাইপ করুন। সার্চ ফলাফলে সরাসরি যেতে কীবোর্ড থেকে 'Enter' কী এবং ফলাফল ব্রাউজ করার জন্য 'Up' বা 'Down Arrow' কী প্রেস করুন। নতুন কোনও কিছু সার্চ করার জন্য টাইপ করতে থাকুন অথবা বাতিল করতে 'Escape' কী প্রেস করুন।</translation>
-<translation id="2407047351320112166">পরের অক্ষরটি হাইলাইট করুন</translation>
 <translation id="240709722712693803">নীলাভ বেগুনী</translation>
 <translation id="2410298923485357543">ডিভাইস অনলাইন থাকার সময় খুব ভাল কোয়ালিটির ভয়েস ব্যবহার করুন</translation>
 <translation id="2416512023405990736">একটি টিকচিহ্ন উঠানো চেকবাক্স</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">কার্সর সরান</translation>
 <translation id="3103579948980282461">মাঝারি লালচে বেগুনী</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">আগের শব্দটি হাইলাইট করুন</translation>
 <translation id="3109724472072898302">সঙ্কুচিত</translation>
 <translation id="311015743332597320">চারটি আঙুল দিয়ে ডানদিকে সোয়াইপ করুন</translation>
 <translation id="3112457281078985179">ChromeVox চালু বা বন্ধ করার জন্য, Control+Alt+Z ব্যবহার করুন।</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">আগে ঘুরে দেখা লিঙ্ক</translation>
 <translation id="3241638166094654466">প্রতিটি লাইনে কক্ষের সংখ্যা:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">একদম শেষের দিকে যান</translation>
 <translation id="3260949043575829030">এই রকমের আগের আইটেম</translation>
 <translation id="3270069636408109001">কোনও পরবর্তী সারণী নেই</translation>
 <translation id="3273791280096244679">লেবেল সেভ করুন</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{ডলার}one{#টি ডলার চিহ্ন}other{#টি ডলার চিহ্ন}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">পুনরাবৃত্তি</translation>
 <translation id="366419593095697301">ইঙ্গিত: আপনি এই টিউটোরিয়াল থেকে বেরিয়ে আসতে চাইলে, Escape কী প্রেস করুন।</translation>
 <translation id="3676062394766691318">আপনার ডিভাইস সেট আপ করার পরে, আপনি ফিরে এসে Search + O কী তারপরে T কী প্রেস করে আরও টিউটোরিয়াল দেখতে পারেন।</translation>
 <translation id="3681531118904532409">পাপায়া হুইপ</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">উদাহরণ</translation>
 <translation id="7439060726180460871">ডিরেক্টরি</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">পরের শব্দটি হাইলাইট করুন</translation>
 <translation id="7465123027577412805">স্বাভাবিক ভয়েস ব্যবহার করবেন?</translation>
 <translation id="7491962110804786152">ট্যাব</translation>
 <translation id="7492497529767769458">পরের বিভাগে যান। যেমন স্ট্যাটাস ট্রে ও লঞ্চার।</translation>
 <translation id="7505149250476994901">অক্ষর লেখার আগে "বড় হাতের অক্ষর" বলুন</translation>
 <translation id="7533226154149229506">হালকা সোনালী রড হলুদ</translation>
-<translation id="7541021454094606506">সব মুছুন</translation>
 <translation id="7543255924852002459">লেবেল বাতিল করুন</translation>
 <translation id="7552432549459840808">সহায়ক Chrome শর্টকাটগুলি</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" />-এর আগে <ph name="INSERT_PHRASE" /> যোগ করুন</translation>

@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Magpadala ng Ulat ng Feedback</translation>
 <translation id="2407209115954268704">Status ng Lock ng SIM</translation>
+<translation id="241419523391571119">Buksan ulit ang takip para subukan</translation>
 <translation id="2414886740292270097">Madilim</translation>
 <translation id="2418150275289244458">Buksan sa mga setting</translation>
 <translation id="2421798028054665193">Larawan <ph name="CURRENT_PAGE" /> sa <ph name="TOTAL_PAGES" /></translation>
@@ -205,6 +206,7 @@
 <translation id="2878387241690264070">Nag-discharge nang <ph name="RATE" /> sa loob ng <ph name="NUM_SECONDS" /> (na) segundo.</translation>
 <translation id="2902312830803030883">Higit pang pagkilos</translation>
 <translation id="2926057806159140518">Ilagay ang iyong username at password o i-scan ang iyong QR code</translation>
+<translation id="2940811910881150316">Hindi masuri ang device. Buksang ulit ang takip para suriin.</translation>
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3017079585324758401">Background</translation>
@@ -285,6 +287,7 @@
 <translation id="3820172043799983114">Di-wasto ang PIN.</translation>
 <translation id="3824259034819781947">Mag-attach ng mga file</translation>
 <translation id="3838338534323494292">Bagong password</translation>
+<translation id="3845880861638660475">Pindutin ang <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> para isara ang dialog.</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3862598938296403232">Kinakailangan ang paglalarawan</translation>
@@ -292,6 +295,7 @@
 <translation id="3866249974567520381">Paglalarawan</translation>
 <translation id="387301095347517405">Ang dami ng beses na na-full charge ang iyong baterya</translation>
 <translation id="3885327323343477505">Palitan ang screen saver</translation>
+<translation id="391412459402535266">Hindi masuri ang device. Lumipat sa laptop mode para suriin.</translation>
 <translation id="3923184630988645767">Paggamit ng data</translation>
 <translation id="3932043219784172185">Walang nakakonektang device</translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
@@ -304,6 +308,7 @@
 <translation id="39823212440917567">Aalisin ang mga pag-print na lampas <ph name="NUMBER_OF_DAYS" /> (na) araw na</translation>
 <translation id="3993704782688964914">Up to date na ngayon ang iyong <ph name="DEVICE_NAME" /></translation>
 <translation id="4003384961948020559">Hindi na-print - Puno ang output</translation>
+<translation id="4021031199988160623">Lumipat sa laptop mode para suriin</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4044093238444069296">Hindi makaugnayan ang gateway</translation>
 <translation id="4046123991198612571">Susunod na track</translation>

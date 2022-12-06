@@ -31,7 +31,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> аккаунты туралы ақпарат диалогтік терезесін ашу</translation>
 <translation id="1150989369772528668">Күнтізбе</translation>
 <translation id="1153356358378277386">Жұпталған құрылғылар</translation>
-<translation id="1165712434476988950">Жаңарту күшіне енуі үшін, құрылғыны қайта іске қосу қажет.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">USB-C кабелі дисплейлерге дұрыс жалғанбауы мүмкін.</translation>
 <translation id="1175572348579024023">Айналдыру</translation>
@@ -1463,7 +1462,6 @@
 <translation id="9089416786594320554">Енгізу әдістері</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> экраны өшірілді</translation>
 <translation id="9098969848082897657">Телефон дыбысын өшіру</translation>
-<translation id="9099154003160514616">Lacros-тың жаңа нұсқасы қолжетімді</translation>
 <translation id="9100887602489003640">Профиль қосылуда. Бірнеше минут күтіңіз.</translation>
 <translation id="9105450214093926548">Lacros браузері жұмыс істеп тұрғанда, екінші пайдаланушы аккаунтқа кіре алмайды. Lacros-та екінші браузер профилін пайдаланыңыз немесе Lacros браузерін жауып, әрекетті қайталап көріңіз.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> немесе <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

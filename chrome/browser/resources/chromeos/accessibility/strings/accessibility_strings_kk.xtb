@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Өту пәрмендерін пайдаланып, веб-бетте тиімді өтіңіз.</translation>
 <translation id="116896278675803795">Таңдалған мазмұнға сәйкестендіру үшін тілді автоматты түрде өзгерту</translation>
 <translation id="1175914831232945926">Цифрлар</translation>
-<translation id="1181003590763099524">басына өту</translation>
 <translation id="1188858454923323853">қосымша</translation>
 <translation id="1189258430971676908">Тәжірибе аймағы: ашылмалы тізімдер</translation>
 <translation id="1195238899008218998">Соңғы сөз</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Өлшемі: <ph name="FONT_SIZE" />.</translation>
 <translation id="1914635379910604678"><ph name="DOT" /> тіркесімі</translation>
 <translation id="1923956950274750765">Орташа күлгін</translation>
-<translation id="1928535370180099152">алдыңғы таңбаны ерекшелеу</translation>
 <translation id="1928932365747995741">Алдыңғы өзгертілетін мəтін өрісі жоқ.</translation>
 <translation id="1964135212174907577">Келесі нысан</translation>
 <translation id="1966649499058910679">Айтылған әр сөзді ерекшелеу</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Дауыстап оқуды қосу немесе өшіру</translation>
 <translation id="2390264819538553347">Келесі бетке өту үшін Enter пернесін, ал кері қайту үшін Backspace пернесін басыңыз.</translation>
 <translation id="2398579267367951220">Беттен ізделетін мәтінді теріңіз. Нәтижелерге өту үшін Enter пернесін, ал оларды шолып шығу үшін жоғары не төмен көрсеткі пернесін басыңыз. Іздеу сұрауын өзгерту үшін мәтін теріңіз, ал бас тарту үшін Escape пернесін басыңыз.</translation>
-<translation id="2407047351320112166">келесі таңбаны ерекшелеу</translation>
 <translation id="240709722712693803">Көкшіл күлгін</translation>
 <translation id="2410298923485357543">Құрылғы желіде болғанда табиғи дауысты пайдалану</translation>
 <translation id="2416512023405990736">Белгіленбеген құсбелгі ұяшығы</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Курсорды жылжыту</translation>
 <translation id="3103579948980282461">Орташа қызыл күлгін</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">алдыңғы сөзді ерекшелеу</translation>
 <translation id="3109724472072898302">Жиылған</translation>
 <translation id="311015743332597320">Төрт саусақпен оңға сырғыту</translation>
 <translation id="3112457281078985179">ChromeVox функциясын қосу не өшіру үшін Control+Alt+Z пернелер тіркесімін пайдаланыңыз.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Алдыңғы қаралған сілтеме</translation>
 <translation id="3241638166094654466">Әр жолдағы ұяшықтар:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">соңына өту</translation>
 <translation id="3260949043575829030">Алдыңғы ұқсас элемент</translation>
 <translation id="3270069636408109001">Келесі кесте жоқ.</translation>
 <translation id="3273791280096244679">Белгіні сақтау</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{доллар}other{# доллар белгісі}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">қайталау</translation>
 <translation id="366419593095697301">Сөзкөмек: осы оқулықтан шыққыңыз келсе, Esc пернесін басыңыз.</translation>
 <translation id="3676062394766691318">Құрылғыны реттеп болғаннан кейін, "Іздеу + O", сонан соң T пернелерін басу арқылы оқулыққа оралып, басқа сабақтарды көре аласыз.</translation>
 <translation id="3681531118904532409">Қауын түстес сары</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">Мысал</translation>
 <translation id="7439060726180460871">Каталог</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">келесі сөзді ерекшелеу</translation>
 <translation id="7465123027577412805">Табиғи дауыс қолданылсын ба?</translation>
 <translation id="7491962110804786152">қойынды</translation>
 <translation id="7492497529767769458">Келесі бөлімге өту. Мысалдар: күй панелі немесе Launcher.</translation>
 <translation id="7505149250476994901">Әріп енгізілер алдында, "бас әріп" деп айту</translation>
 <translation id="7533226154149229506">Ақшыл алтын сары</translation>
-<translation id="7541021454094606506">Барлығын жою</translation>
 <translation id="7543255924852002459">Белгіні алып тастау</translation>
 <translation id="7552432549459840808">Chrome браузерінің пайдалы пернелер тіркесімдері</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> бұрын <ph name="INSERT_PHRASE" /> енгізу</translation>

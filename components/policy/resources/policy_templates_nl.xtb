@@ -4362,6 +4362,7 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 
       Als je het beleid niet instelt, kunnen gebruikers de game niet spelen op ingeschreven <ph name="PRODUCT_OS_NAME" />, maar wel onder andere omstandigheden.</translation>
 <translation id="5293285950307241933">Alle lokale gebruikersgegevens wissen</translation>
+<translation id="5293875928467750789">Stel het beleid in op de waarde die wordt gebruikt als standaard helderheidspercentage voor het toetsenbord van het apparaat als de gebruiker inlogt.</translation>
 <translation id="529457411593078576">Servicevoorwaarden aanzetten tijdens eerste uitvoering voor CCT</translation>
 <translation id="5297948043665200363">Toestaan dat de gebruiker ingelogd blijft nadat de verificatie van het account is ingetrokken</translation>
 <translation id="5298949392804966105">Geen beperkingen voor beheerde accounts</translation>
@@ -6480,6 +6481,7 @@ Als je dit beleid instelt op False, wordt de functionaliteit uitgezet.</translat
       Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</translation>
 <translation id="7403217961820363141">Trajecten tonen op de Chrome-geschiedenispagina</translation>
 <translation id="7406039009275722824">Als je <ph name="CHROME_SYNC_NAME" /> uitzet, werkt de Android-functie 'Back-up maken en resetten' niet meer naar behoren.</translation>
+<translation id="7406276857470642718">Bepaalt instellingen voor gebruikers die zijn geverifieerd via SAML met een externe IdP</translation>
 <translation id="7407441173422042771">Met dit beleid wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> beheerd. Hiermee worden DNS-prefetching, het vooraf verbinden met TCP en SSL en het vooraf renderen van webpagina's beheerd.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, wordt netwerkvoorspelling aangezet, maar kan de gebruiker dit wijzigen.</translation>
@@ -6897,6 +6899,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7832225468415136704">Chrome Cleanup niet toestaan om het systeem periodiek te scannen, en handmatige scans uitzetten</translation>
 <translation id="7833148823006528332">Android-app-ID, bijvoorbeeld 'com.google.android.gm' voor Gmail</translation>
 <translation id="7835218570504220753">Automatisch klikken uitzetten</translation>
+<translation id="7837834961221899821">Standaardhelderheid van toetsenbord</translation>
 <translation id="7839180815400079700">Als je <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> aanzet en <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> instelt, wordt de dagconfiguratie voor stroom voor piekuren ingesteld.
 
       Als je het beleid niet instelt, blijft stroom voor piekuren uit.

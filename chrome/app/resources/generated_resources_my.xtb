@@ -802,7 +802,6 @@
 <translation id="1719312230114180055">မှတ်ချက်− သင့်လက်ဗွေသည် ခိုင်မာသည့် စကားဝှက် သို့မဟုတ် ပင်နံပါတ်ထက် လုံခြုံရေး ပိုအားနည်းနိုင်ပါသည်။</translation>
 <translation id="1720318856472900922">TLS WWW ဆာဗာ စစ်မှန်ကြောင်း အတည်ပြုခြင်း</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" /> ဖြင့် ပုံများရှာရန်</translation>
-<translation id="1721312023322545264">ဤဆိုက်သို့ သွားရန် <ph name="NAME" /> မှ ခွင့်ပြုချက် လိုအပ်ပါသည်</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" /> က သင်၏ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ကို စီမံခန့်ခွဲပါသည်<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;ဝင်ဒိုး အသစ်</translation>
 <translation id="1724801751621173132">လက်ကွက်ထည့်သွင်းနည်း</translation>
@@ -5919,6 +5918,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" /> နှင့် ဆက်စပ်သည်</translation>
 <translation id="6508261954199872201">အက်ပ်: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">မီဒီယာလိုင်စင်</translation>
+<translation id="6511279028091289182">လုံခြုံသည့်ချိတ်ဆက်မှုဖြင့် ဝဘ်ဆိုက်များသို့ ချိတ်ဆက်နည်းကို သတ်မှတ်ပေးသည်။ ၎င်းက <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ရှိ စီမံထားသော ဝန်ဆောင်မှုပေးသူကို သုံးသည်</translation>
 <translation id="6511827214781912955">ဤစက်သုံးသော အခြားသူများက သင့်စကားဝှက်ကို မမြင်စေရန်အတွက် <ph name="FILENAME" /> ကို ဖျက်ရန် သတိပြုပါ</translation>
 <translation id="6512808201725371249">ဤအကောင့်အတွက် စကားဝှက်ကို သင်၏ ‘Google စကားဝှက်မန်နေဂျာ’ (<ph name="USER_EMAIL" />) တွင် သိမ်းထားပြီးပြီ</translation>
 <translation id="6513247462497316522">သင်အခြားကွန်ရက်သို့ ချိတ်ဆက်ထားမှု မရှိလျှင် Google Chrome မိုဘိုင်းအချက်လက်ကို အသုံးပြုပါမည်။</translation>
@@ -5986,6 +5986,7 @@
 <translation id="6568283005472142698">တဘ်ရှာဖွေမှု</translation>
 <translation id="65711204837946324">ဒေါင်းလုဒ်လုပ်ရန် ခွင့်ပြုချက်များ လိုသည်</translation>
 <translation id="6571772921213691236">လက်မှတ်ထိုးဝင်ခြင်းဆိုင်ရာ ဒေတာကို ပြင်ဆင်ရန်</translation>
+<translation id="657229725818377235">အန္တရာယ်ဝဘ်ဆိုက်နှင့် ဒေါင်းလုဒ်မှ နောက်ထပ်ကာကွယ်မှု ရယူနိုင်သည်</translation>
 <translation id="6573096386450695060">အမြဲခွင့်ပြုရန်</translation>
 <translation id="6573497332121198392">ဖြတ်လမ်းလင့်ခ်ကို ဖယ်ရှား၍မရပါ</translation>
 <translation id="657402800789773160">&amp;ဒီစာမျက်နှာကို ပြန်တင်ရန်</translation>

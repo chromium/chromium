@@ -31,7 +31,6 @@
 <translation id="1148499908455722006"><ph name="USER_NAME" /> के लिए, जानकारी वाला डायलॉग खोलें</translation>
 <translation id="1150989369772528668">कैलेंडर</translation>
 <translation id="1153356358378277386">युग्‍मित डिवाइस</translation>
-<translation id="1165712434476988950">अपडेट लागू करने के लिए डिवाइस को रीस्टार्ट करना ज़रूरी है.</translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">हो सकता है कि आपकी यूएसबी-सी केबल, डिसप्ले के साथ ठीक तरह से कनेक्ट न हो पाए</translation>
 <translation id="1175572348579024023">स्क्रोल करें</translation>
@@ -667,6 +666,7 @@
 <translation id="4666082839192943839">अगर आपको सभी कैमरे हमेशा के लिए ब्लॉक करने हैं, तो इस डिवाइस पर कैमरे को ऐक्सेस करने की सुविधा बंद करें.</translation>
 <translation id="4666911709726371538">और ऐप्लिकेशन</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> डाउनलोड हो रही है</translation>
+<translation id="468293128311738995">आपके फ़ोन में इंस्टॉल किए गए ऐप्लिकेशन</translation>
 <translation id="4690510401873698237">शेल्फ़, स्क्रीन पर सबसे नीचे है</translation>
 <translation id="4696813013609194136">माता-पिता के कोड से डिवाइस अनलॉक करें</translation>
 <translation id="4702647871202761252">निजता स्क्रीन बंद है</translation>
@@ -1285,6 +1285,7 @@
 <translation id="8142441511840089262">दो बार क्लिक करें</translation>
 <translation id="8142699993796781067">निजी नेटवर्क</translation>
 <translation id="8144760705599030999">अपने दूसरे डिवाइसों के साथ तेज़ी से जोड़ने के लिए, <ph name="NAME" /> को <ph name="EMAIL" /> पर सेव करें</translation>
+<translation id="8144914663975476336">रिकॉर्डिंग का फ़ॉर्मैट चुनें</translation>
 <translation id="8149413265954228307">ब्लूटूथ सेटिंग दिखाएं. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">बंद करने के लिए Ctrl + W दबाएं.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, अपने आप पूरा</translation>
@@ -1458,7 +1459,6 @@
 <translation id="9089416786594320554">इनपुट के तरीके</translation>
 <translation id="9091626656156419976">डिसप्ले <ph name="DISPLAY_NAME" /> हटा दिया गया</translation>
 <translation id="9098969848082897657">फ़ोन को साइलेंट करें</translation>
-<translation id="9099154003160514616">Lacros का अपडेट उपलब्ध है</translation>
 <translation id="9100887602489003640">प्रोफ़ाइल जोड़ी जा रही है. थोड़ा इंतज़ार करें.</translation>
 <translation id="9105450214093926548">जब Lacros ब्राउज़र काम कर रहा हो, तब दूसरा उपयोगकर्ता साइन इन नहीं कर सकता. इसके बजाय, कृपया Lacros में कोई दूसरी ब्राउज़र प्रोफ़ाइल इस्तेमाल करें या Lacros को बंद करके, फिर से कोशिश करें.</translation>
 <translation id="9121941381564890244"><ph name="SNIP" /> या <ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT" /><ph name="SEPARATOR2" /><ph name="OVERVIEW" /></translation>

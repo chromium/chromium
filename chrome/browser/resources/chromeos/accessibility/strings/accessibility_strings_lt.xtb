@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Naudojant perėjimo komandas galima efektyviai naršyti tinklalapį.</translation>
 <translation id="116896278675803795">Automatiškai keisti kalbą, kad atitiktų pasirinktą turinį</translation>
 <translation id="1175914831232945926">Skaitmenys</translation>
-<translation id="1181003590763099524">perkelti į pradžią</translation>
 <translation id="1188858454923323853">papildomas</translation>
 <translation id="1189258430971676908">Praktinių užduočių sritis: išskleidžiamieji sąrašai</translation>
 <translation id="1195238899008218998">Baigiamasis žodis</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Dydis: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> akordas</translation>
 <translation id="1923956950274750765">Vidutinio ryškumo violetinė spalva</translation>
-<translation id="1928535370180099152">paryškinti ankstesnį simbolį</translation>
 <translation id="1928932365747995741">Nėra ankstesnio redaguotino teksto lauko</translation>
 <translation id="1964135212174907577">Kitas objektas</translation>
 <translation id="1966649499058910679">Paryškinti kiekvieną sakomą žodį</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Įjungti arba išjungti kalbėjimą</translation>
 <translation id="2390264819538553347">Jei norite eiti pirmyn, paspauskite „Enter“; jei norite grįžti, paspauskite naikinimo klavišą.</translation>
 <translation id="2398579267367951220">Įveskite, jei norite ieškoti puslapio. Paspaudę klavišą „Enter“ pereisite prie rezultatų, rodyklėmis aukštyn ir žemyn juos naršysite, vesdami tekstą toliau pakeisite paiešką, o paspaudę klavišą „Escape“ atšauksite.</translation>
-<translation id="2407047351320112166">paryškinti kitą simbolį</translation>
 <translation id="240709722712693803">Violetinė spalva</translation>
 <translation id="2410298923485357543">Naudokite natūralų balsą, kai įrenginys prijungtas prie interneto</translation>
 <translation id="2416512023405990736">Nepažymėtas žymimasis laukelis</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Perkelti žymeklį</translation>
 <translation id="3103579948980282461">Vidutinio ryškumo violetinio atspalvio raudona spalva</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">paryškinti ankstesnį žodį</translation>
 <translation id="3109724472072898302">Suskleista</translation>
 <translation id="311015743332597320">Perbraukite keturiais pirštais dešinėn</translation>
 <translation id="3112457281078985179">Jei norite įjungti arba išjungti „ChromeVox“, naudokite klavišus „Control“ + „Alt“ + Z.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Ankstesnė aplankyta nuoroda</translation>
 <translation id="3241638166094654466">Langelių kiekvienoje eilutėje:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">perkelti į pabaigą</translation>
 <translation id="3260949043575829030">Ankstesnis panašus elementas</translation>
 <translation id="3270069636408109001">Nėra kitos lentelės</translation>
 <translation id="3273791280096244679">Išsaugoti etiketę</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dolerio ženklas}one{# dolerio ženklas}few{# dolerio ženklai}many{# dollar signs}other{# dolerio ženklų}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">kartoti</translation>
 <translation id="366419593095697301">Užuomina: jei norite išeiti iš šios mokymo programos, paspauskite klavišą „Escape“.</translation>
 <translation id="3676062394766691318">Nustatę įrenginį galėsite grįžti ir peržiūrėti daugiau mokymo programų paspaudę paieškos klavišą ir O, tada T.</translation>
 <translation id="3681531118904532409">Švelni persikų spalva</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Pavyzdys</translation>
 <translation id="7439060726180460871">Katalogas</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">paryškinti kitą žodį</translation>
 <translation id="7465123027577412805">Naudoti natūralų balsą?</translation>
 <translation id="7491962110804786152">Tabuliavimo klavišas</translation>
 <translation id="7492497529767769458">Pereiti į kitą skiltį. Pavyzdžiai apima būsenos dėklą ir paleidimo priemonę.</translation>
 <translation id="7505149250476994901">Prieš raidę pasakykite „cap“ (didžioji raidė)</translation>
 <translation id="7533226154149229506">Blyški gelsva spalva</translation>
-<translation id="7541021454094606506">trinti viską</translation>
 <translation id="7543255924852002459">Atmesti etiketę</translation>
 <translation id="7552432549459840808">Naudingi „Chrome“ spartieji klavišai</translation>
 <translation id="7553679324939294712">įterpti „<ph name="INSERT_PHRASE" />“ prieš „<ph name="BEFORE_PHRASE" />“</translation>

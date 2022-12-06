@@ -685,6 +685,7 @@
 <translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скенирањето е завршено. Скенирана е 1 страница}one{Скенирањето е завршено. Скенирана е {NUMBER_OF_PAGES} страница}other{Скенирањето е завршено. Скенирани се {NUMBER_OF_PAGES} страници}}</translation>
+<translation id="7458970041932198923">Поврзете се на мрежа и повторно вчитајте ја страницата за да ги прегледате и поставите аватарите.</translation>
 <translation id="7469648432129124067">Откриен е портал</translation>
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7487067081878637334">Технологија</translation>
@@ -839,6 +840,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES} страница}one{Скенирај {NUMBER_OF_PAGES} страница}other{Скенирај {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="8997710128084572139">Нивото на батерија на уредот е <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998289560386111590">Не е достапен на вашиот уред</translation>
 <translation id="9003704114456258138">Зачестеност</translation>
 <translation id="9025198690966128418">Користете го како личен уред</translation>
 <translation id="9028832514430399253">Вклучете го копчето за да ги изберете опциите за заштитникот на екранот</translation>

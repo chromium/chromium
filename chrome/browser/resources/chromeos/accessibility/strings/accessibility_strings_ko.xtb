@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">점프 명령어를 사용하면 웹페이지를 효율적으로 탐색할 수 있습니다.</translation>
 <translation id="116896278675803795">선택한 콘텐츠와 일치하도록 언어를 자동으로 변경합니다.</translation>
 <translation id="1175914831232945926">숫자</translation>
-<translation id="1181003590763099524">시작으로 이동</translation>
 <translation id="1188858454923323853">상호 보완</translation>
 <translation id="1189258430971676908">연습 영역: 드롭다운 목록</translation>
 <translation id="1195238899008218998">후기</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">크기: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" />코드</translation>
 <translation id="1923956950274750765">미디엄 오키드</translation>
-<translation id="1928535370180099152">이전 문자 강조표시</translation>
 <translation id="1928932365747995741">이전 수정 가능한 텍스트 입력란이 없습니다</translation>
 <translation id="1964135212174907577">다음 객체</translation>
 <translation id="1966649499058910679">각 단어를 읽을 때 강조표시</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">음성을 사용 또는 사용 중지로 전환</translation>
 <translation id="2390264819538553347">계속하려면 Enter를 누릅니다. 뒤로 돌아가려면 Backspace를 누릅니다.</translation>
 <translation id="2398579267367951220">페이지를 검색하려면 입력하세요. Enter를 눌러 결과로 바로 이동하거나 위쪽 또는 아래쪽 화살표를 사용하여 결과를 탐색할 수 있습니다. 검색어를 변경하려면 계속 입력하세요. 취소하려면 Esc를 누릅니다.</translation>
-<translation id="2407047351320112166">다음 문자 강조표시</translation>
 <translation id="240709722712693803">블루 바이올렛</translation>
 <translation id="2410298923485357543">기기가 온라인일 때 자연 음성 사용</translation>
 <translation id="2416512023405990736">선택 취소된 체크박스</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">커서 이동</translation>
 <translation id="3103579948980282461">미디엄 바이올렛 레드</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">이전 단어 강조표시</translation>
 <translation id="3109724472072898302">접힘</translation>
 <translation id="311015743332597320">손가락 네 개를 사용하여 오른쪽으로 스와이프</translation>
 <translation id="3112457281078985179">ChromeVox를 사용 또는 사용 중지하려면 Control+Alt+Z를 사용합니다.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">이전 방문한 링크</translation>
 <translation id="3241638166094654466">각 행의 셀 수:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">끝으로 이동</translation>
 <translation id="3260949043575829030">이전 유사한 항목</translation>
 <translation id="3270069636408109001">다음 표가 없습니다</translation>
 <translation id="3273791280096244679">라벨 저장</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{달러 기호}other{달러 기호 #개}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">반복</translation>
 <translation id="366419593095697301">힌트: 이 가이드를 종료하려면 Esc 키를 누르세요.</translation>
 <translation id="3676062394766691318">기기를 설정한 후 다시 돌아와 검색 키 + O 키를 누를 다음 T 키를 눌러 더 많은 가이드를 볼 수 있습니다.</translation>
 <translation id="3681531118904532409">파파야 윕</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">예시</translation>
 <translation id="7439060726180460871">디렉터리</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">다음 단어 강조표시</translation>
 <translation id="7465123027577412805">자연 음성을 사용하시겠습니까?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">다음 섹션으로 이동합니다. 섹션으로는 상태 표시줄, 런처 등이 있습니다.</translation>
 <translation id="7505149250476994901">문자 전에 "대문자"라고 말하기</translation>
 <translation id="7533226154149229506">라이트 골든로드 옐로우</translation>
-<translation id="7541021454094606506">전체 삭제</translation>
 <translation id="7543255924852002459">라벨 삭제하기</translation>
 <translation id="7552432549459840808">유용한 Chrome 단축키</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> 앞에 <ph name="INSERT_PHRASE" /> 삽입</translation>

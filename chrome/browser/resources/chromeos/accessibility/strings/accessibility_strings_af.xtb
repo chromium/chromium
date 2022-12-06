@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Springopdragte kan gebruik word om doeltreffend deur 'n webbladsy te navigeer.</translation>
 <translation id="116896278675803795">Verander taal outomaties om by gekose inhoud te pas</translation>
 <translation id="1175914831232945926">Syfers</translation>
-<translation id="1181003590763099524">skuif na die begin</translation>
 <translation id="1188858454923323853">aanvullend</translation>
 <translation id="1189258430971676908">Oefenarea: aftreklyste</translation>
 <translation id="1195238899008218998">Nawoord</translation>
@@ -152,7 +151,6 @@
 <translation id="1914424852593176649">Grootte <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" />-koordlyn</translation>
 <translation id="1923956950274750765">Medium-orgidee</translation>
-<translation id="1928535370180099152">kleurmerk die vorige karakter</translation>
 <translation id="1928932365747995741">Geen vorige redigeerbare teksveld nie</translation>
 <translation id="1964135212174907577">Volgende voorwerp</translation>
 <translation id="1966649499058910679">Kleurmerk elke woord wanneer dit gesê word</translation>
@@ -206,7 +204,6 @@
 <translation id="2381733276052567791">Wissel spraak aan of af</translation>
 <translation id="2390264819538553347">Druk Enter om verder te gaan; druk Backspace om terug te gaan.</translation>
 <translation id="2398579267367951220">Tik om op die bladsy te soek. Druk Enter om na die resultaat te spring, op- en afpyl om deur resultate te blaai, hou aan tik om jou soektog te verander, of druk Escape om te kanselleer.</translation>
-<translation id="2407047351320112166">kleurmerk die volgende karakter</translation>
 <translation id="240709722712693803">Bloupers</translation>
 <translation id="2410298923485357543">Gebruik natuurlike stem wanneer toestel aanlyn is</translation>
 <translation id="2416512023405990736">'n Ongemerkte merkblokkie</translation>
@@ -330,7 +327,6 @@
 <translation id="309749186376891736">Beweeg merker</translation>
 <translation id="3103579948980282461">Medium persrooi</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">kleurmerk die vorige woord</translation>
 <translation id="3109724472072898302">Ingevou</translation>
 <translation id="311015743332597320">Swiep vier vingers na regs</translation>
 <translation id="3112457281078985179">Gebruik Control+Alt+Z om ChromeVox aan of af te skakel.</translation>
@@ -359,7 +355,6 @@
 <translation id="3241052487511142956">Skakel wat voorheen besoek is</translation>
 <translation id="3241638166094654466">Selle in elke lyn:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">skuif na die einde</translation>
 <translation id="3260949043575829030">Vorige soortgelyke item</translation>
 <translation id="3270069636408109001">Geen volgende tabel nie</translation>
 <translation id="3273791280096244679">Stoor etiket</translation>
@@ -424,7 +419,6 @@
 <translation id="3650317109285159359">kieslysitemmerkblokkie</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollar}other{# dollartekens}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">herhaal</translation>
 <translation id="366419593095697301">Wenk: Druk Escape as jy hierdie tutoriaal wil verlaat.</translation>
 <translation id="3676062394766691318">Nadat jy jou toestel opgestel het, kan jy hierheen terugkom en nog tutoriale kyk deur Search + O en dan T te druk.</translation>
 <translation id="3681531118904532409">Papajaklits</translation>
@@ -953,13 +947,11 @@
 <translation id="743783356331413498">Voorbeeld</translation>
 <translation id="7439060726180460871">Gids</translation>
 <translation id="744163271241493234">wagwoord</translation>
-<translation id="7443479558101073378">kleurmerk die volgende woord</translation>
 <translation id="7465123027577412805">Gebruik natuurlike stem?</translation>
 <translation id="7491962110804786152">oortjie</translation>
 <translation id="7492497529767769458">Gaan na volgende afdeling. Voorbeelde sluit die Statuslaai en Lanseerder in.</translation>
 <translation id="7505149250476994901">Sê "cap" (hoofletter) voor letter</translation>
 <translation id="7533226154149229506">Ligte ougoud</translation>
-<translation id="7541021454094606506">vee alles uit</translation>
 <translation id="7543255924852002459">Gooi etiket weg</translation>
 <translation id="7552432549459840808">Nuttige Chrome-kortpaaie</translation>
 <translation id="7553679324939294712">voeg <ph name="INSERT_PHRASE" /> voor <ph name="BEFORE_PHRASE" /> in</translation>

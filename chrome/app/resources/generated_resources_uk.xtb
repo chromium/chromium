@@ -807,7 +807,6 @@
 <translation id="1719312230114180055">Примітка. Відбиток пальця може бути менш надійним, ніж пароль чи PIN-код.</translation>
 <translation id="1720318856472900922">Автентифікація сервера TLS WWW</translation>
 <translation id="172123215662733643">Пошук через <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="1721312023322545264">Вам потрібен дозвіл адміністратора <ph name="NAME" />, щоб перейти на цей сайт</translation>
 <translation id="1722460139690167654">Вашим пристроєм <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /><ph name="END_LINK" /> керує домен <ph name="ENROLLMENT_DOMAIN" /></translation>
 <translation id="1723824996674794290">&amp;Нове вікно</translation>
 <translation id="1724801751621173132">Режим введення</translation>
@@ -5928,6 +5927,7 @@
 <translation id="6508248480704296122">Стосується <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Додаток: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Ліцензія на медіафайли</translation>
+<translation id="6511279028091289182">Визначає, як безпечно підключатися до веб-сайтів. Для цього використовується керований постачальник послуг (<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />).</translation>
 <translation id="6511827214781912955">Радимо видалити файл "<ph name="FILENAME" />", щоб інші користувачі цього пристрою не бачили ваші паролі</translation>
 <translation id="6512808201725371249">Пароль для цього облікового запису вже збережено в Google Менеджері паролів (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome використовуватиме мобільне передавання даних, якщо ви не підключені до іншої мережі.</translation>
@@ -5997,6 +5997,7 @@
 <translation id="6568283005472142698">Пошук вкладок</translation>
 <translation id="65711204837946324">Потрібен дозвіл, щоб завантажити</translation>
 <translation id="6571772921213691236">Змінити дані для входу</translation>
+<translation id="657229725818377235">Посильте захист від небезпечних веб-сайтів і завантажень</translation>
 <translation id="6573096386450695060">Завжди дозволяти</translation>
 <translation id="6573497332121198392">Не вдалося видалити ярлик</translation>
 <translation id="657402800789773160">&amp;Перезавантажити цю сторінку</translation>

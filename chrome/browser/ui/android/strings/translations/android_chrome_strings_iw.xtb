@@ -325,7 +325,6 @@
 <translation id="2840810876587895427">{TAB_COUNT,plural, =1{כרטיסיית מצב אנונימי אחת (<ph name="TAB_COUNT_ONE" />) תיסגר}two{<ph name="TAB_COUNT_MANY" /> כרטיסיות מצב אנונימי ייסגרו}many{<ph name="TAB_COUNT_MANY" /> כרטיסיות מצב אנונימי ייסגרו}other{<ph name="TAB_COUNT_MANY" /> כרטיסיות מצב אנונימי ייסגרו}}</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{התבצעה בדיקה לפני יום אחד}two{התבצעה בדיקה לפני יומיים}many{התבצעה בדיקה לפני # ימים}other{התבצעה בדיקה לפני # ימים}}</translation>
 <translation id="2842985007712546952">תיקיית אב</translation>
-<translation id="2851291081585704741">אין חיבור לאינטרנט</translation>
 <translation id="2856503607207334158">הכניסה נכשלה</translation>
 <translation id="2860954141821109167">יש לוודא שמופעלת במכשיר הזה אפליקציית טלפון</translation>
 <translation id="2861923151411510142">‏חלק מהתכונות של Chrome לא יהיו זמינות יותר</translation>
@@ -1094,6 +1093,7 @@
 <translation id="6903907808598579934">הפעלת הסנכרון</translation>
 <translation id="6908998565271542516">אפשרות לאשר או לא לאשר אתר שמוצגת בגובה מלא</translation>
 <translation id="6909589135458168665">טעינה מראש של דפים</translation>
+<translation id="692924882724759447">כאן יוצגו האתרים שבמעקב</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
 <translation id="694267552845942083">מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון. כדי להשלים את הפעלת הסנכרון יש להקיש על הלחצן 'אישור', קרוב לתחתית המסך. ניווט למעלה</translation>
 <translation id="6945221475159498467">בחירה</translation>

@@ -27,7 +27,6 @@
 <translation id="1164857107703583584">Oʻtish buyruqlaridan veb-sahifalarga oson oʻtishda foydalanish mumkin.</translation>
 <translation id="116896278675803795">Tanlangan kontentga moslash uchun tilni avtomatik almashtirish</translation>
 <translation id="1175914831232945926">Raqamlar</translation>
-<translation id="1181003590763099524">boshiga surish</translation>
 <translation id="1188858454923323853">qo‘shimcha</translation>
 <translation id="1189258430971676908">Mashq hududi: Pastga ochiladigan roʻyxatlar</translation>
 <translation id="1195238899008218998">Xotima</translation>
@@ -151,7 +150,6 @@
 <translation id="1914424852593176649">Hajmi: <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">kombinatsiya: <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Oʻrtacha orxideyarang</translation>
-<translation id="1928535370180099152">avvalgi belgini ajratib belgilash</translation>
 <translation id="1928932365747995741">Avvalgi tahrirlanadigan matn maydonchasi mavjud emas</translation>
 <translation id="1964135212174907577">Keyingi obyekt</translation>
 <translation id="1966649499058910679">Har bir so‘z o‘qilganda ajratib belgilansin</translation>
@@ -205,7 +203,6 @@
 <translation id="2381733276052567791">Ovozli bildirgilarni yoqish yoki o‘chirib qo‘yish</translation>
 <translation id="2390264819538553347">Davom etish uchun “Enter” tugmasini, ortga qaytish uchun esa “Backspace” tugmasini bosing.</translation>
 <translation id="2398579267367951220">Sahifada qidirish uchun soʻrovni kiriting. Natijaga sakrash uchun Enter tugmasini, natijalarni qarab chiqish uchun yuqoriga yoki pastga strelkalarini bosing. Qidiruvni oʻzgartirish uchun soʻrovni kiritishda davom eting yoki bekor qilish uchun escape tugmasini bosing.</translation>
-<translation id="2407047351320112166">keyingi belgini ajratib belgilash</translation>
 <translation id="240709722712693803">Koʻkimtir siyohrang</translation>
 <translation id="2410298923485357543">Qurilma onlayn boʻlganda tabiiy ovoz ishlatilsin</translation>
 <translation id="2416512023405990736">Belgilanmagan katakcha</translation>
@@ -329,7 +326,6 @@
 <translation id="309749186376891736">Kursorni surish</translation>
 <translation id="3103579948980282461">Toʻq pushti</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">avvalgi soʻzni tanlash</translation>
 <translation id="3109724472072898302">Yig‘ilgan</translation>
 <translation id="311015743332597320">Toʻrtta barmoq bilan oʻngga suring</translation>
 <translation id="3112457281078985179">ChromeVox funksiyasini yoqish yoki o‘chirib qo‘yish uchun “Control + Alt + Z” tugmalar birikmasidan foydalaning.</translation>
@@ -358,7 +354,6 @@
 <translation id="3241052487511142956">Avvalgi tashrif buyurilgan havola</translation>
 <translation id="3241638166094654466">Har bir qatordagi katakchalar soni:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">oxiriga surish</translation>
 <translation id="3260949043575829030">Avvalgi oʻxshash obyekt</translation>
 <translation id="3270069636408109001">Bundan keyin boshqa jadval mavjud emas</translation>
 <translation id="3273791280096244679">Yorliqni saqlash</translation>
@@ -423,7 +418,6 @@
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{dollar belgisi}other{# ta dollar belgisi}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">takrorlash</translation>
 <translation id="366419593095697301">Maslahat: Bu qoʻllanmadan chiqish uchun Esc tugmasini bosing.</translation>
 <translation id="3676062394766691318">Qurilmani sozlaganingizdan keyin qaytishingiz va avval Qidiruv + O, keyin esa T tugmasini bosish orqali yana qoʻllanmalarni koʻrish mumkin.</translation>
 <translation id="3681531118904532409">Pardozrang</translation>
@@ -952,13 +946,11 @@
 <translation id="743783356331413498">Namuna</translation>
 <translation id="7439060726180460871">Katalog</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">keyingi soʻzni tanlash</translation>
 <translation id="7465123027577412805">Tabiiy ovoz ishlatilsinmi?</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Keyingi boʻlimga oʻtish. Masalan holat qatori yoki launcherga.</translation>
 <translation id="7505149250476994901">Harfdan oldin “katta” deb ayting</translation>
 <translation id="7533226154149229506">Oqimtir sariq</translation>
-<translation id="7541021454094606506">hammasini tozalash</translation>
 <translation id="7543255924852002459">“Bekor qilish” tugmasi</translation>
 <translation id="7552432549459840808">Foydali Chrome tezkor tugmalari</translation>
 <translation id="7553679324939294712"><ph name="INSERT_PHRASE" /> iborasini <ph name="BEFORE_PHRASE" /> dan avval joylash</translation>

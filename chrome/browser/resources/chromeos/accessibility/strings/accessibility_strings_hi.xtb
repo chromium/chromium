@@ -26,7 +26,6 @@
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">किसी वेब पेज पर एक से दूसरी जगह जाने के लिए, आप जंप कमांड का इस्तेमाल कर सकते हैं. यह बेहतर तरीका है.</translation>
 <translation id="1175914831232945926">अंक</translation>
-<translation id="1181003590763099524">शुरुआत पर ले जाएं</translation>
 <translation id="1188858454923323853">पूरक</translation>
 <translation id="1189258430971676908">प्रैक्टिस करने की जगह: ड्रॉप-डाउन सूचियां</translation>
 <translation id="1195238899008218998">उपसंहार</translation>
@@ -151,7 +150,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="1914424852593176649">आकार <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678"><ph name="DOT" /> कॉर्ड</translation>
 <translation id="1923956950274750765">मध्यम जामुनी</translation>
-<translation id="1928535370180099152">पिछला वर्ण हाइलाइट करें</translation>
 <translation id="1928932365747995741">बदलाव करने लायक पहले से कोई टेक्स्ट फ़ील्ड नहीं है</translation>
 <translation id="1964135212174907577">अगला ऑब्जेक्ट</translation>
 <translation id="1966649499058910679">जैसे-जैसे हर शब्द बोला जाए, उसे हाइलाइट करें</translation>
@@ -205,7 +203,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="2381733276052567791">बोली को चालू या बंद पर टॉगल करें</translation>
 <translation id="2390264819538553347">आगे जाने के लिए, enter दबाएं, वापस जाने के लिए, backspace दबाएं.</translation>
 <translation id="2398579267367951220">पेज खाेजने के लिए टाइप करें. नतीजे पर जाने के लिए Enter दबाएं, नतीजाें को ब्राउज़ करने के लिए, अप या डाउन ऐराे (नीचे या ऊपर की ओर तीर के निशान वाले बटन) बटन दबाएं. साथ ही, दूसरी चीज़ें खाेजने के लिए टाइप करते रहें या रद्द करने के लिए Escape दबाएं.</translation>
-<translation id="2407047351320112166">अगला वर्ण हाइलाइट करें</translation>
 <translation id="240709722712693803">नीला बैंगनी</translation>
 <translation id="2410298923485357543">डिवाइस इंटरनेट से कनेक्ट होने पर, अच्छी क्वालिटी वाली आवाज़ का इस्तेमाल करें</translation>
 <translation id="2416512023405990736">अनचेक किया गया चेकबॉक्स</translation>
@@ -329,7 +326,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="309749186376891736">कर्सर घुमाएं</translation>
 <translation id="3103579948980282461">मध्यम बैंगनी लाल</translation>
 <translation id="3104705064753753826">alrt dlg</translation>
-<translation id="3105857328626674463">पिछला शब्द हाइलाइट करें</translation>
 <translation id="3109724472072898302">संक्षिप्त</translation>
 <translation id="311015743332597320">चार उंगलियों से दाईं ओर स्वाइप करें</translation>
 <translation id="3112457281078985179">ChromeVox को चालू या बंद करने के लिए, Control+Alt+Z का उपयोग करें.</translation>
@@ -358,7 +354,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3241052487511142956">पहले देखा गया लिंक</translation>
 <translation id="3241638166094654466">हर एक पंक्ति में सेल:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
-<translation id="3247621388192105674">आखिर में ले जाएं</translation>
 <translation id="3260949043575829030">पिछला मिलता-जुलता आइटम</translation>
 <translation id="3270069636408109001">आगे कोई टेबल नहीं है</translation>
 <translation id="3273791280096244679">लेबल सेव करें</translation>
@@ -423,7 +418,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="3650317109285159359">chkmnuitm</translation>
 <translation id="3655855170848725876">{COUNT,plural, =1{डॉलर}one{# डॉलर चिह्न}other{# डॉलर चिह्न}}</translation>
 <translation id="3659787053479271466">alrt</translation>
-<translation id="3661265561216135784">दोहराएं</translation>
 <translation id="366419593095697301">ध्यान दें: अगर आप यह ट्यूटोरियल बंद करना चाहते हैं, तो Escape बटन दबाएं.</translation>
 <translation id="3676062394766691318">अपना डिवाइस सेट अप करने के बाद, आप वापस आकर और ट्यूटोरियल देख सकते हैं. इसके लिए, आपको खोज बटन और O और फिर T दबाना होगा.</translation>
 <translation id="3681531118904532409">पपाया विप जैसा रंग</translation>
@@ -951,13 +945,11 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="743783356331413498">उदाहरण</translation>
 <translation id="7439060726180460871">निर्देशिका</translation>
 <translation id="744163271241493234">pwded</translation>
-<translation id="7443479558101073378">अगला शब्द हाइलाइट करें</translation>
 <translation id="7465123027577412805">क्या आप अच्छी क्वालिटी वाली आवाज़ इस्तेमाल करना चाहते हैं?</translation>
 <translation id="7491962110804786152">टैब</translation>
 <translation id="7492497529767769458">अगले सेक्शन पर जाएं. जैसे कि स्टेटस ट्रे और लॉन्चर.</translation>
 <translation id="7505149250476994901">अक्षर से पहले "बड़ा" कहें</translation>
 <translation id="7533226154149229506">गोल्डन रॉड जैसा हल्का पीला रंग</translation>
-<translation id="7541021454094606506">सभी मिटाएं</translation>
 <translation id="7543255924852002459">लेबल खारिज करें</translation>
 <translation id="7552432549459840808">उपयोगी Chrome शॉर्टकट</translation>
 <translation id="7553679324939294712"><ph name="BEFORE_PHRASE" /> से पहले <ph name="INSERT_PHRASE" /> डालें</translation>

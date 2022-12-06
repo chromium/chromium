@@ -800,7 +800,6 @@
 <translation id="1719312230114180055">Санамж: Таны хурууны хээ нь хүчтэй нууц үг болон ПИН-ээс хамгаалалт муутай байж болзошгүй.</translation>
 <translation id="1720318856472900922">TLS WWW Сервер таниулах</translation>
 <translation id="172123215662733643"><ph name="VISUAL_SEARCH_PROVIDER" />-р зураг хайх</translation>
-<translation id="1721312023322545264">Та энэ сайтад зочлохын тулд <ph name="NAME" />-с зөвшөөрөл авах шаардлагатай</translation>
 <translation id="1722460139690167654"><ph name="ENROLLMENT_DOMAIN" />-с таны <ph name="BEGIN_LINK" /> <ph name="DEVICE_TYPE" />-г удирдаж байна<ph name="END_LINK" /></translation>
 <translation id="1723824996674794290">&amp;Шинэ цонх</translation>
 <translation id="1724801751621173132">Орох горим</translation>
@@ -1968,6 +1967,7 @@
 <translation id="275662540872599901">дэлгэц унтраалттай</translation>
 <translation id="2757161511365746634">Хэвлэгчийг харах</translation>
 <translation id="2757338480560142065">Таны хадгалж буй нууц үг <ph name="WEBSITE" />-н нууц үгтэй таарч байгаа эсэхийг шалгана уу</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /><ph name="SEARCH_QUERY" />-д ямар ч хайлтын илэрц гарсангүй</translation>
 <translation id="2762441749940182211">Камерыг блоклосон</translation>
 <translation id="2764786626780673772">VPN-н дэлгэрэнгүй</translation>
 <translation id="2764920001292228569">Профайлын нэр оруулна уу</translation>
@@ -5279,6 +5279,7 @@
 <translation id="5886112770923972514">Ойролцоох Хурдан холбох төхөөрөмжүүдэд холбогдож, шуурхай тохируулах</translation>
 <translation id="5886384907280980632">Одоо унтраах</translation>
 <translation id="5889282057229379085">Завсрын Cas-ийн хамгийн их тоо: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">Синк хийсэн өгөгдлийг өөрийн <ph name="BEGIN_LINK" />синкийн нэвтрэх үгээр<ph name="END_LINK" /> шифрлээрэй. Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.</translation>
 <translation id="5891688036610113830">Сонгосон Wi-Fi сүлжээнүүд</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5895335062901455404">Таныг Google Бүртгэлээрээ нэвтрэх үед хадгалсан сонголт болон үйл ажиллагаа тань аливаа ChromeOS Flex төхөөрөмж дээр бэлэн байх болно. Та Тохиргоо хэсэгт синк хийх зүйлээ сонгох боломжтой.</translation>
@@ -5923,6 +5924,7 @@
 <translation id="6508248480704296122"><ph name="NAME_PH" />-тай холбоотой</translation>
 <translation id="6508261954199872201">Аппликейшн: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Медиа лиценз</translation>
+<translation id="6511279028091289182">Аюулгүй холболтоор вебсайтуудтай хэрхэн холбогдохыг тодорхойлдог. Энэ нь <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> дээр удирдлагатай үйлчилгээ үзүүлэгчийг ашигладаг</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" />-г устгах талаар бодож үзээрэй. Ингэснээр энэ төхөөрөмжийг ашигладаг бусад хүн таны нууц үгийг харах боломжгүй болно</translation>
 <translation id="6512808201725371249">Энэ бүртгэлийн нууц үгийг таны Google Password Manager (<ph name="USER_EMAIL" />)-т аль хэдийн хадгалсан байна</translation>
 <translation id="6513247462497316522">Хэрэв та өөр сүлжээнд холбогдоогүй байгаа тохиолдолд Google Chrome нь таны гар утасны дата эрхийг ашиглах болно.</translation>
@@ -5992,6 +5994,7 @@
 <translation id="6568283005472142698">Таб хайлт</translation>
 <translation id="65711204837946324">Татах зөвшөөрөл шаардана</translation>
 <translation id="6571772921213691236">Нэвтрэх өгөгдлийг засна уу</translation>
+<translation id="657229725818377235">Аюултай вебсайтууд болон татаж авах файлуудын эсрэг илүү их хамгаалалт аваарай</translation>
 <translation id="6573096386450695060">Байнга зөвшөөрөх</translation>
 <translation id="6573497332121198392">Товчлолыг хасах боломжгүй</translation>
 <translation id="657402800789773160">Энэ хуудсыг дахин ачаалах</translation>
@@ -6936,6 +6939,7 @@
 <translation id="7465635034594602553">Алдаа гарлаа. Хэдэн минут хүлээгээд <ph name="APP_NAME" />-г дахин ажиллуулна уу.</translation>
 <translation id="7465778193084373987">Нэтскейп-ийн Гэрчилгээг Хүчингүй болгох холбоос</translation>
 <translation id="7466431077154602932">Товч тодорхой харагдах байдал</translation>
+<translation id="7466556884531675354">Хадгалсан тэмдэглэл байхгүй</translation>
 <translation id="746861123368584540">Өргөтгөлийг ачаалсан</translation>
 <translation id="7470424110735398630">Таны түр санах ойг харахыг зөвшөөрсөн</translation>
 <translation id="747114903913869239">Алдаа: өргөтгөлийн кодыг тайлах боломжгүй байна</translation>
@@ -7912,6 +7916,7 @@
 <translation id="8351316842353540018">a11y-н сонголтыг байнга харуулах</translation>
 <translation id="8351419472474436977">Өргөлтгөл нь таны прокси тохиргоог хяналтандаа оруулсан байна. Энэ нь таны онлайнаар хийсэн юуг ч өөрчлөх, гэмтээх, бүр таны яриаг ч чагнаж байж болох юм. Хэрэв та энэ өөрчлөлтийг хийгээгүй бол үүнийг хүсэхгүй л болов уу.</translation>
 <translation id="8351630282875799764">Батарей цэнэглэгдэхгүй байна</translation>
+<translation id="8352287103893778223">Табын бүлгийн гарчиг</translation>
 <translation id="835238322900896202">Устгах явцад алдаа гарлаа. Терминалаар устгана уу.</translation>
 <translation id="8353683614194668312">Энэ нь:</translation>
 <translation id="8354034204605718473">Таны хүүхдийн ПИН-г нэмсэн байна</translation>

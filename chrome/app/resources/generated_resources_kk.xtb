@@ -789,7 +789,6 @@
 <translation id="1719312230114180055">Ескертпе: саусақ ізінің қауіпсіздік деңгейі күрделі өрнек не PIN кодына қарағанда төменірек болуы мүмкін.</translation>
 <translation id="1720318856472900922">TLS WWW сервер аутентификациясы</translation>
 <translation id="172123215662733643">Суреттерді <ph name="VISUAL_SEARCH_PROVIDER" /> арқылы іздеу</translation>
-<translation id="1721312023322545264">Бұл сайтқа кіру үшін <ph name="NAME" /> сізге рұқсат беруі керек</translation>
 <translation id="1722460139690167654"><ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="END_LINK" /> <ph name="ENROLLMENT_DOMAIN" /> басқарады.</translation>
 <translation id="1723824996674794290">&amp;Жаңа терезе</translation>
 <translation id="1724801751621173132">Енгізу режимі</translation>
@@ -5900,6 +5899,7 @@
 <translation id="6508248480704296122">Келесіге қатысты: <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Қолданба: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Медиафайл лицензиясы</translation>
+<translation id="6511279028091289182">Қорғалған байланыс арқылы веб-сайттарға қосылу әдісін анықтайды. Бұл <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> серверіндегі басқарылатын қызмет көрсетушіні пайдаланады.</translation>
 <translation id="6511827214781912955"><ph name="FILENAME" /> файлын жойып көріңіз, мұндайда осы құрылғыны пайдаланатын басқа адамдар құпия сөздеріңізді көре алмайды.</translation>
 <translation id="6512808201725371249">Бұл аккаунттың құпия сөзі Google Құпия сөз менеджерінде сақталып қойылған (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Басқа желіге қосылмаған болсаңыз, Google Chrome ұялы деректерді пайдаланады.</translation>
@@ -5969,6 +5969,7 @@
 <translation id="6568283005472142698">Қойындыны іздеу</translation>
 <translation id="65711204837946324">Жүктеп алу үшін рұқсат керек.</translation>
 <translation id="6571772921213691236">Кіру деректерін өзгерту</translation>
+<translation id="657229725818377235">Қауіпті веб-сайттар мен жүктеп алынғандардан көбірек қорғаныс алыңыз</translation>
 <translation id="6573096386450695060">Әрқашан рұқсат беру</translation>
 <translation id="6573497332121198392">Таңбашаны өшіру мүмкін емес.</translation>
 <translation id="657402800789773160">&amp;Бұл бетті қайта жүктеу</translation>
