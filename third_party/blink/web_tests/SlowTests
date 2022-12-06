@@ -579,7 +579,6 @@ crbug.com/1142023 [ Win10.20h2 ] http/tests/security/document-domain-canonicaliz
 
 # crbug.com/1095379: These were all added here in an attempt to reduce flakiness.
 crbug.com/983788 http/tests/cookies/same-site/popup-cross-site.https.html [ Slow ]
-crbug.com/1081237 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/events/overscroll-event-fired-to-element-with-overscroll-behavior.html [ Slow ]
 crbug.com/1049641 http/tests/devtools/sources/debugger/debugger-disable-enable.js [ Slow ]
 crbug.com/947951 [ Win ] external/wpt/pointerevents/pointerevent_touch-action-inherit_child-auto-child-none_touch.html [ Slow ]
 crbug.com/626703 [ Mac ] external/wpt/preload/preload-with-type.html [ Slow ]
