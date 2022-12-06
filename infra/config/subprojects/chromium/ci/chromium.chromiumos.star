@@ -402,40 +402,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "chromeos-kevin-rel",
-    branch_selector = branches.CROS_LTS_MILESTONE,
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "arm",
-                "chromeos",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 32,
-            target_cros_boards = [
-                "kevin",
-            ],
-            target_platform = builder_config.target_platform.CHROMEOS,
-        ),
-        build_gs_bucket = "chromium-chromiumos-archive",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "simple|release",
-        short_name = "kvn",
-    ),
-    main_console_view = "main",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-)
-
-ci.builder(
     name = "chromeos-octopus-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
     builder_spec = builder_config.builder_spec(

@@ -102,15 +102,6 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-kevin-rel": {
-    "args_file": "//build/args/chromeos/kevin.gni",
-    "gn_args": {
-      "dcheck_always_on": true,
-      "is_chromeos_device": true,
-      "ozone_platform_headless": true,
-      "use_remoteexec": true
-    }
-  },
   "chromeos-octopus-rel": {
     "args_file": "//build/args/chromeos/octopus.gni",
     "gn_args": {

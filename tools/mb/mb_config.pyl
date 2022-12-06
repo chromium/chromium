@@ -156,7 +156,6 @@
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_reclient',
       'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
       'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks_reclient',
-      'chromeos-kevin-rel': 'chromeos_kevin_dchecks_reclient',
       'chromeos-octopus-rel': 'chromeos_octopus_dchecks_reclient',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
@@ -1065,8 +1064,6 @@
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on',
       'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks',
       'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks',
-      'chromeos-kevin-compile-rel': 'chromeos_kevin_dchecks',
-      'chromeos-kevin-rel': 'chromeos_kevin_dchecks',
       'chromeos-octopus-rel': 'chromeos_octopus_dchecks',
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-try-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
@@ -2212,14 +2209,6 @@
       # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
       # display-orientation DCHECK failures are resolved.
       # 'dcheck_always_on',
-    ],
-
-    'chromeos_kevin_dchecks': [
-      'chromeos_kevin', 'dcheck_always_on',
-    ],
-
-    'chromeos_kevin_dchecks_reclient': [
-      'chromeos_kevin_reclient', 'dcheck_always_on',
     ],
 
     'chromeos_kevin_include_unwind_tables_official': [
