@@ -380,6 +380,14 @@
           </settings-subpage>
         </template>
       </template>
+      <template is="dom-if" if="[[isPrivacySandboxSettings4_]]">
+        <template is="dom-if" route-path="/content/siteData" no-search>
+          <!-- TODO(crbug/1378703): Update title. -->
+          <settings-subpage page-title="$i18n{privacyPageTitle}">
+            <settings-site-data prefs="{{prefs}}"></settings-site-data>
+          </settings-subpage>
+        </template>
+      </template>
       <template is="dom-if" route-path="/content/location" no-search>
         <settings-subpage page-title="$i18n{siteSettingsCategoryLocation}"
             search-label="$i18n{siteSettingsAllSitesSearch}"

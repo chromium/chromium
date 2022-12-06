@@ -97,6 +97,9 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_FEDERATED_IDENTITY_API =
         r.SITE_SETTINGS.createChild('federatedIdentityApi');
   }
+  if (loadTimeData.getBoolean('isPrivacySandboxSettings4')) {
+    r.SITE_SETTINGS_SITE_DATA = r.SITE_SETTINGS.createChild('siteData');
+  }
   r.SITE_SETTINGS_VR = r.SITE_SETTINGS.createChild('vr');
   if (loadTimeData.getBoolean('enableExperimentalWebPlatformFeatures')) {
     r.SITE_SETTINGS_BLUETOOTH_SCANNING =

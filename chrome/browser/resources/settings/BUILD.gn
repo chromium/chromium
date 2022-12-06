@@ -245,6 +245,7 @@ build_webui("build") {
     "site_settings/pdf_documents.ts",
     "site_settings/protocol_handlers.ts",
     "site_settings/settings_category_default_radio_group.ts",
+    "site_settings/site_data.ts",
     "site_settings/site_details_permission.ts",
     "site_settings/site_details.ts",
     "site_settings/site_entry.ts",

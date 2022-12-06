@@ -277,7 +277,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsSerialPortsBlocked',
     },
     {
-      route: routes.PRIVACY,
+      route: routes.SITE_SETTINGS_SITE_DATA,
       id: Id.SITE_DATA,
       // TODO(crbug/1378703): Replace label.
       label: 'privacyPageTitle',
