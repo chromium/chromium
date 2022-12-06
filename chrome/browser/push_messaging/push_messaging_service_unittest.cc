@@ -563,7 +563,7 @@ TEST_F(FCMRevocationTest, ResetPrefs) {
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   histogram_tester.ExpectBucketCount(
-      "Permission.FCM.Revocation",
+      "Permissions.FCM.Revocation",
       static_cast<int>(FcmTokenRevocation::kResetGracePeriod), 1);
 }
 
@@ -653,7 +653,7 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionRevocationTest) {
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::ASK);
 
   histogram_tester.ExpectBucketCount(
-      "Permission.FCM.Revocation",
+      "Permissions.FCM.Revocation",
       static_cast<int>(FcmTokenRevocation::kRevokePermission), 1);
 }
 
@@ -704,7 +704,7 @@ TEST_F(FCMRevocationTest, NoAppLevelPermissionIgnoreTest) {
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   histogram_tester.ExpectBucketCount(
-      "Permission.FCM.Revocation",
+      "Permissions.FCM.Revocation",
       static_cast<int>(FcmTokenRevocation::kGracePeriodIsNotOver), 1);
 }
 
@@ -754,7 +754,7 @@ TEST_F(FCMRevocationTest, ResetAndRecordGracePeriodTest) {
   EXPECT_EQ(result.status, blink::mojom::PermissionStatus::GRANTED);
 
   histogram_tester.ExpectTimeBucketCount(
-      "Permission.FCM.Revocation.ResetGracePeriod", base::Days(2), 1);
+      "Permissions.FCM.Revocation.ResetGracePeriod", base::Days(2), 1);
 }
 
 #endif
