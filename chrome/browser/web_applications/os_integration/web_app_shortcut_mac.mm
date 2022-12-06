@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #import "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
-#include "base/logging.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
@@ -22,10 +20,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
@@ -54,6 +50,7 @@
 #import "chrome/browser/mac/dock.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/os_integration/icns_encoder.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -136,7 +133,7 @@
 // callback that returns a NSRunningApplication, rather than separate launch and
 // termination callbacks.
 void RunAppLaunchCallbacks(
-    NSRunningApplication* app,
+    base::scoped_nsobject<NSRunningApplication> app,
     base::OnceCallback<void(base::Process)> launch_callback,
     base::OnceClosure termination_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -144,8 +141,8 @@ void RunAppLaunchCallbacks(
 
   // If the app doesn't have a valid pid, or if the application has been
   // terminated, then indicate failure in |launch_callback|.
-  base::Process process(app.processIdentifier);
-  if (!process.IsValid() || app.terminated) {
+  base::Process process([app processIdentifier]);
+  if (!process.IsValid() || [app isTerminated]) {
     LOG(ERROR) << "Application has already been terminated.";
     std::move(launch_callback).Run(base::Process());
     return;
@@ -402,73 +399,6 @@ base::CommandLine BuildCommandLineForShimLaunch() {
   return command_line;
 }
 
-void LaunchTheFirstShimThatWorksOnFileThread(
-    std::vector<base::FilePath> shim_paths,
-    bool launched_after_rebuild,
-    ShimLaunchedCallback launched_callback,
-    ShimTerminatedCallback terminated_callback) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  while (!shim_paths.empty() && !base::PathExists(shim_paths.front())) {
-    shim_paths.erase(shim_paths.begin());
-  }
-
-  if (shim_paths.empty()) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(launched_callback), base::Process()));
-    return;
-  }
-
-  base::FilePath shim_path = shim_paths.front();
-  shim_paths.erase(shim_paths.begin());
-
-  base::CommandLine command_line = BuildCommandLineForShimLaunch();
-
-  if (launched_after_rebuild) {
-    command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
-  }
-
-  // The shim must use the same Mojo implementation as this browser. Since
-  // feature parameters and field trials are otherwise not passed to shim
-  // processes, we use feature override switches to ensure Mojo parity.
-  if (mojo::core::IsMojoIpczEnabled()) {
-    command_line.AppendSwitchASCII(switches::kEnableFeatures,
-                                   mojo::core::kMojoIpcz.name);
-  } else {
-    command_line.AppendSwitchASCII(switches::kDisableFeatures,
-                                   mojo::core::kMojoIpcz.name);
-  }
-
-  base::mac::OpenApplication(
-      shim_path, command_line, {}, {.activate = false},
-      base::BindOnce(
-          [](base::FilePath shim_path,
-             std::vector<base::FilePath> remaining_shim_paths,
-             bool launched_after_rebuild,
-             ShimLaunchedCallback launched_callback,
-             ShimTerminatedCallback terminated_callback,
-             NSRunningApplication* app, NSError* error) {
-            if (app) {
-              RunAppLaunchCallbacks(app, std::move(launched_callback),
-                                    std::move(terminated_callback));
-              return;
-            }
-
-            LOG(ERROR) << "Failed to open application with path: " << shim_path;
-
-            internals::GetShortcutIOTaskRunner()->PostTask(
-                FROM_HERE,
-                base::BindOnce(&LaunchTheFirstShimThatWorksOnFileThread,
-                               remaining_shim_paths, launched_after_rebuild,
-                               std::move(launched_callback),
-                               std::move(terminated_callback)));
-          },
-          shim_path, shim_paths, launched_after_rebuild,
-          std::move(launched_callback), std::move(terminated_callback)));
-}
-
 void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
                             ShimLaunchedCallback launched_callback,
                             ShimTerminatedCallback terminated_callback,
@@ -504,9 +434,45 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
   }
   LOG_IF(ERROR, !shortcuts_updated) << "Could not write shortcut for app shim.";
 
-  LaunchTheFirstShimThatWorksOnFileThread(shim_paths, launched_after_rebuild,
-                                          std::move(launched_callback),
-                                          std::move(terminated_callback));
+  // Attempt to launch the shim.
+  for (const auto& shim_path : shim_paths) {
+    if (!base::PathExists(shim_path))
+      continue;
+
+    base::CommandLine command_line = BuildCommandLineForShimLaunch();
+
+    if (launched_after_rebuild)
+      command_line.AppendSwitch(app_mode::kLaunchedAfterRebuild);
+
+    // The shim must use the same Mojo implementation as this browser. Since
+    // feature parameters and field trials are otherwise not passed to shim
+    // processes, we use feature override switches to ensure Mojo parity.
+    if (mojo::core::IsMojoIpczEnabled()) {
+      command_line.AppendSwitchASCII(switches::kEnableFeatures,
+                                     mojo::core::kMojoIpcz.name);
+    } else {
+      command_line.AppendSwitchASCII(switches::kDisableFeatures,
+                                     mojo::core::kMojoIpcz.name);
+    }
+
+    // Launch without activating (NSWorkspaceLaunchWithoutActivation).
+    base::scoped_nsobject<NSRunningApplication> app(
+        base::mac::OpenApplicationWithPath(
+            shim_path, command_line,
+            NSWorkspaceLaunchDefault | NSWorkspaceLaunchWithoutActivation),
+        base::scoped_policy::RETAIN);
+    if (app) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&RunAppLaunchCallbacks, app,
+                                    std::move(launched_callback),
+                                    std::move(terminated_callback)));
+      return;
+    }
+    LOG(ERROR) << "Failed to open application with path: " << shim_path;
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(launched_callback), base::Process()));
 }
 
 base::FilePath GetLocalizableAppShortcutsSubdirName() {
@@ -527,14 +493,14 @@ base::FilePath GetLocalizableAppShortcutsSubdirName() {
 }
 
 // Creates a canvas the same size as |overlay|, copies the appropriate
-// representation from |background| into it (according to Cocoa), then draws
+// representation from |backgound| into it (according to Cocoa), then draws
 // |overlay| over it using NSCompositingOperationSourceOver.
 NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
   DCHECK(background);
   NSInteger dimension = [overlay pixelsWide];
   DCHECK_EQ(dimension, [overlay pixelsHigh]);
   base::scoped_nsobject<NSBitmapImageRep> canvas([[NSBitmapImageRep alloc]
-      initWithBitmapDataPlanes:nullptr
+      initWithBitmapDataPlanes:NULL
                     pixelsWide:dimension
                     pixelsHigh:dimension
                  bitsPerSample:8
@@ -566,7 +532,7 @@ NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
             operation:NSCompositingOperationSourceOver
              fraction:1.0
        respectFlipped:NO
-                hints:nil];
+                hints:0];
   [NSGraphicsContext restoreGraphicsState];
   return canvas.autorelease();
 }
@@ -820,7 +786,7 @@ WebAppShortcutCreator::WebAppShortcutCreator(const base::FilePath& app_data_dir,
   DCHECK(shortcut_info);
 }
 
-WebAppShortcutCreator::~WebAppShortcutCreator() = default;
+WebAppShortcutCreator::~WebAppShortcutCreator() {}
 
 base::FilePath WebAppShortcutCreator::GetApplicationsShortcutPath(
     bool avoid_conflicts) const {
@@ -1440,25 +1406,31 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
     url_specs.push_back(url.spec());
   }
 
-  base::mac::OpenApplication(
-      shim_path, command_line, url_specs, {.activate = false},
-      base::BindOnce(
-          [](const base::FilePath& shim_path,
-             ShimLaunchedCallback launched_callback,
-             ShimTerminatedCallback terminated_callback,
-             NSRunningApplication* app, NSError* error) {
-            if (error) {
-              LOG(ERROR) << "Failed to open application with path: "
-                         << shim_path;
+  base::scoped_nsobject<NSRunningApplication> app;
+  if (urls.empty()) {
+    app.reset(
+        base::mac::OpenApplicationWithPath(
+            shim_path, command_line,
+            NSWorkspaceLaunchDefault | NSWorkspaceLaunchWithoutActivation),
+        base::scoped_policy::RETAIN);
+  } else {
+    app.reset(
+        base::mac::OpenApplicationWithPathAndURLs(
+            shim_path, command_line, url_specs,
+            NSWorkspaceLaunchDefault | NSWorkspaceLaunchWithoutActivation),
+        base::scoped_policy::RETAIN);
+  }
+  if (app) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&RunAppLaunchCallbacks, app,
+                                  std::move(launched_callback),
+                                  std::move(terminated_callback)));
+    return;
+  }
+  LOG(ERROR) << "Failed to open application with path: " << shim_path;
 
-              std::move(launched_callback).Run(base::Process());
-              return;
-            }
-            RunAppLaunchCallbacks(app, std::move(launched_callback),
-                                  std::move(terminated_callback));
-          },
-          shim_path, std::move(launched_callback),
-          std::move(terminated_callback)));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(launched_callback), base::Process()));
 }
 
 void WaitForShimToQuitForTesting(const base::FilePath& shim_path,  // IN-TEST

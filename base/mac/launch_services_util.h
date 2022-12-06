@@ -10,35 +10,30 @@
 #include "base/base_export.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 
 namespace base::mac {
 
-struct OpenApplicationOptions {
-  bool activate = true;
-  bool create_new_instance = false;
-};
+// Launches the application bundle at |bundle_path|, passing argv[1..] from
+// |command_line| as command line arguments if the app isn't already running.
+// |launch_options| are passed directly to
+// -[NSWorkspace launchApplicationAtURL:options:configuration:error:].
+// Returns a non-nil NSRunningApplication if the app was successfully launched.
+BASE_EXPORT NSRunningApplication* OpenApplicationWithPath(
+    const FilePath& bundle_path,
+    const CommandLine& command_line,
+    NSWorkspaceLaunchOptions launch_options);
 
-using ApplicationOpenedCallback =
-    base::OnceCallback<void(NSRunningApplication*, NSError*)>;
-
-// Launches the specified application bundle.
-//   - `app_bundle_path`: the location of the application to launch
-//   - `command_line`: the arguments (argv[1..]) to pass to the application as
-//      command line arguments if the app isn't already running
-//   - `url_specs`: the URLs for the application to open (an empty vector is OK)
-//   - `options`: options to modify the launch
-//   - `callback`: the result callback
-//
-// When the launch is complete, `callback` is called on the main thread. If the
-// launch succeeded, it will be called with a non-nil `NSRunningApplication*`
-// and nil `NSError*`. If the launch failed, it will be called with a nil
-// `NSRunningApplication*` and non-nil `NSError*`.
-BASE_EXPORT void OpenApplication(const FilePath& app_bundle_path,
-                                 const CommandLine& command_line,
-                                 const std::vector<std::string>& url_specs,
-                                 OpenApplicationOptions options,
-                                 ApplicationOpenedCallback callback);
+// Launches the application bundle at |bundle_path|, passing argv[1..] from
+// |command_line| as command line arguments if the app isn't already running,
+// and passing |urls| to the application as URLs to open.
+// |launch_options| are passed directly to
+// -[NSWorkspace openURLs:withApplicationAtURL:options:configuration:error:].
+// Returns a non-nil NSRunningApplication if the app was successfully launched.
+BASE_EXPORT NSRunningApplication* OpenApplicationWithPathAndURLs(
+    const FilePath& bundle_path,
+    const CommandLine& command_line,
+    const std::vector<std::string>& url_specs,
+    NSWorkspaceLaunchOptions launch_options);
 
 }  // namespace base::mac
 
