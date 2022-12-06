@@ -2188,8 +2188,11 @@ TEST_F(ShellSurfaceTest, UpdateBoundsWhenDraggedToAnotherDisplay) {
 // Make sure that resize shadow does not update until commit when the window
 // property |aura::client::kUseWindowBoundsForShadow| is false.
 TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
+  constexpr gfx::Point kOrigin(10, 10);
   std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({64, 64}).BuildShellSurface();
+      test::ShellSurfaceBuilder({64, 64})
+          .SetOrigin(kOrigin)
+          .BuildShellSurface();
   shell_surface->OnSetServerStartResize();
   shell_surface->root_surface()->Commit();
   ASSERT_TRUE(shell_surface->GetWidget());
@@ -2218,14 +2221,13 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
   ASSERT_TRUE(normal_shadow);
 
   // ash::ResizeShadow::InitParams set the default |thickness| to 8.
-  const int kResizeShadowThickness = 8;
+  constexpr int kResizeShadowThickness = 8;
 
   EXPECT_EQ(gfx::Size(size.width() + kResizeShadowThickness, size.height()),
             resize_shadow->GetLayerForTest()->bounds().size());
   EXPECT_EQ(size, normal_shadow->content_bounds().size());
 
-  gfx::Size new_size(100, 100);
-  gfx::Rect new_bounds(new_size);
+  constexpr gfx::Rect kNewBounds(kOrigin, {100, 100});
   uint32_t serial = 0;
   auto configure_callback = base::BindRepeating(
       [](uint32_t* const serial_ptr, const gfx::Rect& bounds,
@@ -2237,8 +2239,8 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
 
   // Resize the widget and set geometry.
   shell_surface->StartResize(HTBOTTOMRIGHT);
-  shell_surface->SetWidgetBounds(new_bounds, /*adjusted_by_server=*/false);
-  shell_surface->SetGeometry(new_bounds);
+  shell_surface->SetWidgetBounds(kNewBounds, /*adjusted by server=*/false);
+  shell_surface->SetGeometry(gfx::Rect(kNewBounds.size()));
 
   // Client acknowledge configure for resizing. Shadow sizes should not be
   // updated yet until commit.
@@ -2249,10 +2251,66 @@ TEST_F(ShellSurfaceTest, ResizeShadowIndependentBounds) {
 
   // Normal and resize shadow sizes are updated after commit.
   shell_surface->root_surface()->Commit();
-  EXPECT_EQ(
-      gfx::Size(new_size.width() + kResizeShadowThickness, new_size.height()),
-      resize_shadow->GetLayerForTest()->bounds().size());
-  EXPECT_EQ(new_size, normal_shadow->content_bounds().size());
+  EXPECT_EQ(gfx::Size(kNewBounds.width() + kResizeShadowThickness,
+                      kNewBounds.height()),
+            resize_shadow->GetLayerForTest()->bounds().size());
+  EXPECT_EQ(kNewBounds.size(), normal_shadow->content_bounds().size());
+
+  // Explicitly ends the drag here.
+  ash::Shell::Get()->toplevel_window_event_handler()->CompleteDragForTesting(
+      ash::ToplevelWindowEventHandler::DragResult::SUCCESS);
+  // Hide Shadow
+  event_generator->MoveMouseTo({0, 0});
+
+  EXPECT_FALSE(resize_shadow->visible());
+
+  // Move
+  UpdateDisplay("800x600,1200x1000");
+  shell_surface->GetWidget()->SetBounds({{1000, 100}, kNewBounds.size()});
+
+  shell_surface->AcknowledgeConfigure(serial);
+  shell_surface->root_surface()->Commit();
+
+  auto* screen = display::Screen::GetScreen();
+  int64_t secondary_id =
+      display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
+          .GetSecondaryDisplay()
+          .id();
+  ASSERT_EQ(secondary_id, screen
+                              ->GetDisplayNearestWindow(
+                                  shell_surface->GetWidget()->GetNativeWindow())
+                              .id());
+
+  // Use outside to start drag because exo consumes events inside.
+  event_generator->MoveMouseTo({999, 99});
+
+  gfx::Rect bounds = shell_surface->GetWidget()->GetNativeWindow()->bounds();
+
+  EXPECT_TRUE(resize_shadow->visible());
+  gfx::Rect expected_shadow_on_secondary(
+      bounds.x() - kResizeShadowThickness, bounds.y() - kResizeShadowThickness,
+      bounds.width() + kResizeShadowThickness,
+      bounds.height() + kResizeShadowThickness);
+  EXPECT_EQ(expected_shadow_on_secondary,
+            resize_shadow->GetLayerForTest()->bounds());
+
+  constexpr gfx::Rect kResizedBoundsOn2nd{950, 50, 150, 150};
+  shell_surface->StartResize(HTTOPLEFT);
+  shell_surface->GetWidget()->SetBounds(kResizedBoundsOn2nd);
+  shell_surface->SetGeometry(gfx::Rect(kResizedBoundsOn2nd.size()));
+  shell_surface->AcknowledgeConfigure(serial);
+
+  EXPECT_EQ(expected_shadow_on_secondary,
+            resize_shadow->GetLayerForTest()->bounds());
+
+  shell_surface->root_surface()->Commit();
+  constexpr gfx::Rect kExpectedShadowBoundsOn2nd(
+      150 - kResizeShadowThickness, 50 - kResizeShadowThickness,
+      kResizedBoundsOn2nd.width() + kResizeShadowThickness,
+      kResizedBoundsOn2nd.height() + kResizeShadowThickness);
+
+  EXPECT_EQ(kExpectedShadowBoundsOn2nd,
+            resize_shadow->GetLayerForTest()->bounds());
 }
 
 // Make sure that resize shadow updates as soon as widget bounds change when

@@ -1616,10 +1616,11 @@ void ShellSurfaceBase::UpdateShadow() {
       if (origin.x() != 0 || origin.y() != 0) {
         shadow_bounds.set_origin(origin);
         if (widget_) {
-          gfx::Point widget_origin =
-              widget_->GetWindowBoundsInScreen().origin();
+          gfx::Point widget_origin_in_root =
+              widget_->GetNativeWindow()->bounds().origin();
           origin += ToFlooredVector2d(
-              ScaleVector2d(gfx::Vector2d(widget_origin.x(), widget_origin.y()),
+              ScaleVector2d(gfx::Vector2d(widget_origin_in_root.x(),
+                                          widget_origin_in_root.y()),
                             1.f / GetScale()));
           gfx::Rect bounds = geometry_;
           bounds.set_origin(origin);
