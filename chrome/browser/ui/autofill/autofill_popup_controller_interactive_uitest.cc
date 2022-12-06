@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -23,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,6 +55,27 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest,
 
     disable_animation_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+    // The test cases mock the entire forms by directly calling
+    // ContentAutofillDriver functions. Nonetheless we set up an HTTP server and
+    // open an empty page. Otherwise, the FormData::url would be about:blank and
+    // FormStructure::ShouldBeParsed() would be false, so the form wouldn't be
+    // even parsed by AutofillManager.
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html;charset=utf-8");
+          response->set_content("");
+          return response;
+        }));
+    embedded_test_server()->StartAcceptingConnections();
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/test.html")));
   }
 
   // Normally the WebContents will automatically delete the delegate, but here

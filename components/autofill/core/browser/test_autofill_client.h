@@ -204,7 +204,7 @@ class TestAutofillClient : public AutofillClient {
       base::OnceCallback<void(const std::string&)> callback) override;
 
 #if BUILDFLAG(IS_IOS)
-  bool IsQueryIDRelevant(int query_id) override;
+  bool IsLastQueriedField(FieldGlobalId field_id) override;
 #endif
 
   // Initializes UKM source from form_origin_. This needs to be called

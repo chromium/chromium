@@ -25,11 +25,10 @@ class SingleFieldFormFiller {
     virtual ~SuggestionsHandler() = default;
 
     // Will be called-back once SingleFieldFormFiller gets the corresponding
-    // response from the DB. |query_id| is the value given by the implementor
-    // when OnGetSingleFieldSuggestions was called (it is not the DB query ID).
-    // |suggestions| is the list of fetched suggestions.
+    // response from the DB. `field_id` identifies the field the query refers
+    // to. `suggestions` is the list of fetched suggestions.
     virtual void OnSuggestionsReturned(
-        int query_id,
+        FieldGlobalId field_id,
         AutoselectFirstSuggestion autoselect_first_suggestion,
         const std::vector<Suggestion>& suggestions) = 0;
   };
@@ -95,7 +94,7 @@ class SingleFieldFormFiller {
   // Internal data object used to keep a request's context to associate it
   // with the appropriate response.
   struct QueryHandler {
-    QueryHandler(int client_query_id,
+    QueryHandler(FieldGlobalId field_id,
                  AutoselectFirstSuggestion autoselect_first_suggestion,
                  std::u16string prefix,
                  base::WeakPtr<SuggestionsHandler> handler);
@@ -105,6 +104,9 @@ class SingleFieldFormFiller {
     // Query ID living in the handler's scope, which is NOT the same as the
     // database query ID. This ID is unique per frame, but not per profile.
     int client_query_id_;
+
+    // The queried field ID.
+    FieldGlobalId field_id_;
 
     // Determines whether we should auto-select the first suggestion when
     // returning. This value was given by the handler when requesting

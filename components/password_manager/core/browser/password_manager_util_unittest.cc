@@ -284,7 +284,7 @@ class MockAutofillClient : public autofill::AutofillClient {
               (),
               (const, override));
 #if BUILDFLAG(IS_IOS)
-  MOCK_METHOD(bool, IsQueryIDRelevant, (int), (override));
+  MOCK_METHOD(bool, IsLastQueriedField, (autofill::FieldGlobalId), (override));
 #endif
   MOCK_METHOD(void,
               LoadRiskData,

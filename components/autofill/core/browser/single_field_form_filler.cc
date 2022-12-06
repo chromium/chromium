@@ -11,11 +11,11 @@ SingleFieldFormFiller::SingleFieldFormFiller() = default;
 SingleFieldFormFiller::~SingleFieldFormFiller() = default;
 
 SingleFieldFormFiller::QueryHandler::QueryHandler(
-    int client_query_id,
+    FieldGlobalId field_id,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     std::u16string prefix,
     base::WeakPtr<SuggestionsHandler> handler)
-    : client_query_id_(client_query_id),
+    : field_id_(field_id),
       autoselect_first_suggestion_(autoselect_first_suggestion),
       prefix_(prefix),
       handler_(std::move(handler)) {}

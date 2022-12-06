@@ -1040,6 +1040,10 @@ void GenerateTestAutofillPopup(
   int query_id = 1;
   FormData form;
   FormFieldData field;
+  form.host_frame = MakeLocalFrameToken();
+  form.unique_renderer_id = MakeFormRendererId();
+  field.host_frame = MakeLocalFrameToken();
+  field.unique_renderer_id = MakeFieldRendererId();
   field.is_focusable = true;
   field.should_autocomplete = true;
   gfx::RectF bounds(100.f, 100.f);
@@ -1048,7 +1052,7 @@ void GenerateTestAutofillPopup(
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(u"Test suggestion"));
   autofill_external_delegate->OnSuggestionsReturned(
-      query_id, suggestions, AutoselectFirstSuggestion(false));
+      field.global_id(), suggestions, AutoselectFirstSuggestion(false));
 }
 
 std::string ObfuscatedCardDigitsAsUTF8(const std::string& str,

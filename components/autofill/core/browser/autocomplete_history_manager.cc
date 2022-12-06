@@ -95,8 +95,9 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
   if (!IsMeaningfulFieldName(field.name) || !client.IsAutocompleteEnabled() ||
       field.form_control_type == "textarea" ||
       IsInAutofillSuggestionsDisabledExperiment()) {
-    SendSuggestions({}, QueryHandler(query_id, autoselect_first_suggestion,
-                                     field.value, handler));
+    SendSuggestions({},
+                    QueryHandler(field.global_id(), autoselect_first_suggestion,
+                                 field.value, handler));
     return true;
   }
 
@@ -106,8 +107,9 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
-        {query_handle, QueryHandler(query_id, autoselect_first_suggestion,
-                                    field.value, handler)});
+        {query_handle,
+         QueryHandler(field.global_id(), autoselect_first_suggestion,
+                      field.value, handler)});
     return true;
   }
 
@@ -257,8 +259,8 @@ void AutocompleteHistoryManager::SendSuggestions(
   }
 
   query_handler.handler_->OnSuggestionsReturned(
-      query_handler.client_query_id_,
-      query_handler.autoselect_first_suggestion_, suggestions);
+      query_handler.field_id_, query_handler.autoselect_first_suggestion_,
+      suggestions);
 }
 
 void AutocompleteHistoryManager::CancelAllPendingQueries() {

@@ -30,7 +30,7 @@ class MockSuggestionsHandler : public IBANManager::SuggestionsHandler {
 
   MOCK_METHOD(void,
               OnSuggestionsReturned,
-              (int query_id,
+              (FieldGlobalId field_id,
                AutoselectFirstSuggestion autoselect_first_suggestion,
                const std::vector<Suggestion>& suggestions),
               (override));
@@ -92,7 +92,7 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
   EXPECT_CALL(
       suggestions_handler_,
       OnSuggestionsReturned(
-          test_query_id, AutoselectFirstSuggestion(false),
+          test_field.global_id(), AutoselectFirstSuggestion(false),
           UnorderedElementsAre(
               Field(&Suggestion::main_text, iban_suggestion_0.main_text),
               Field(&Suggestion::main_text, iban_suggestion_1.main_text))))

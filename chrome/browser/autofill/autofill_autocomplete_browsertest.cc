@@ -56,10 +56,10 @@ const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
 class MockSuggestionsHandler
     : public AutocompleteHistoryManager::SuggestionsHandler {
  public:
-  MockSuggestionsHandler() {}
+  MockSuggestionsHandler() = default;
 
   void OnSuggestionsReturned(
-      int query_id,
+      FieldGlobalId field_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       const std::vector<Suggestion>& suggestions) override {
     last_suggestions_ = suggestions;

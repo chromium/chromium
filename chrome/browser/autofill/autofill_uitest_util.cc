@@ -139,18 +139,23 @@ void GenerateTestAutofillPopup(
 
   ContentAutofillDriver* driver = static_cast<ContentAutofillDriver*>(
       absl::get<AutofillDriver*>(autofill_external_delegate->GetDriver()));
+  AutofillManager* manager = driver->autofill_manager();
   mojom::AutofillDriver* mojo_driver = driver;
   TestAutofillManagerWaiter waiter(
-      *driver->autofill_manager(),
-      {&AutofillManager::Observer::OnAfterAskForValuesToFill});
+      *manager, {&AutofillManager::Observer::OnAfterAskForValuesToFill});
   mojo_driver->AskForValuesToFill(form, form.fields.front(), bounds, query_id,
                                   AutoselectFirstSuggestion(false),
                                   FormElementWasClicked(false));
   ASSERT_TRUE(waiter.Wait());
+  ASSERT_EQ(1u, manager->form_structures().size());
+  // `form.host_frame` and `form.url` have only been set by
+  // ContentAutofillDriver::AskForValuesToFill().
+  form = manager->form_structures().begin()->second->ToFormData();
 
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
   autofill_external_delegate->OnSuggestionsReturned(
-      query_id, suggestions, AutoselectFirstSuggestion(false));
+      form.fields.front().global_id(), suggestions,
+      AutoselectFirstSuggestion(false));
 }
 
 }  // namespace autofill

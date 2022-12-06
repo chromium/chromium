@@ -179,6 +179,9 @@ void GetFormField(autofill::FormFieldData* field,
   scoped_refptr<FieldDataManager> _fieldDataManager;
 
   // ID of the last Autofill query made. Used to discard outdated suggestions.
+  autofill::FieldGlobalId _lastQueriedFieldID;
+
+  // ID of the last Autofill query made. Used to discard outdated suggestions.
   int _lastQueryID;
 }
 
@@ -333,6 +336,7 @@ void GetFormField(autofill::FormFieldData* field,
 
   // Query the BrowserAutofillManager for suggestions. Results will arrive in
   // -showAutofillPopup:popupDelegate:.
+  _lastQueriedFieldID = field.global_id();
   autofillManager->OnAskForValuesToFill(
       form, field, gfx::RectF(), ++_lastQueryID,
       autofill::AutoselectFirstSuggestion(false),
@@ -635,8 +639,8 @@ void GetFormField(autofill::FormFieldData* field,
              popupDelegate:base::WeakPtr<autofill::AutofillPopupDelegate>()];
 }
 
-- (bool)isQueryIDRelevant:(int)queryID {
-  return queryID == _lastQueryID;
+- (bool)isLastQueriedField:(autofill::FieldGlobalId)fieldID {
+  return fieldID == _lastQueriedFieldID;
 }
 
 #pragma mark - CRWWebStateObserver

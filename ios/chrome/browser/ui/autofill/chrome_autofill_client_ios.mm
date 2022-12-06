@@ -246,7 +246,7 @@ void ChromeAutofillClientIOS::ShowUnmaskPrompt(
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
   unmask_controller_.ShowPrompt(
-      base::BindOnce(&autofill::CreateCardUnmaskPromptViewBridge,
+      base::BindOnce(&CreateCardUnmaskPromptViewBridge,
                      base::Unretained(&unmask_controller_),
                      base::Unretained(base_view_controller_)),
       card, card_unmask_prompt_options, delegate);
@@ -338,8 +338,8 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
   // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
   for (size_t i = 0; i < infobar_manager_->infobar_count(); ++i) {
     AutofillSaveUpdateAddressProfileDelegateIOS* existing_delegate =
-        autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
-            FromInfobarDelegate(infobar_manager_->infobar_at(i)->delegate());
+        AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
+            infobar_manager_->infobar_at(i)->delegate());
 
     if (existing_delegate) {
       if (existing_delegate->is_infobar_visible()) {
@@ -406,7 +406,7 @@ bool ChromeAutofillClientIOS::IsTouchToFillCreditCardSupported() {
 
 bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
-    base::span<const autofill::CreditCard* const> cards_to_suggest) {
+    base::span<const CreditCard* const> cards_to_suggest) {
   NOTREACHED();
   return false;
 }
@@ -504,25 +504,25 @@ void ChromeAutofillClientIOS::OpenPromoCodeOfferDetailsURL(const GURL& url) {
       /*is_renderer_initiated=*/false));
 }
 
-autofill::FormInteractionsFlowId
+FormInteractionsFlowId
 ChromeAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
   // Currently not in use here. See `ChromeAutofillClient` for a proper
   // implementation.
   return {};
 }
 
-void ChromeAutofillClientIOS::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run(
-      base::SysNSStringToUTF8(ios::provider::GetRiskData()));
-}
-
 LogManager* ChromeAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
 }
 
-bool ChromeAutofillClientIOS::IsQueryIDRelevant(int query_id) {
-  return [bridge_ isQueryIDRelevant:query_id];
+bool ChromeAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
+  return [bridge_ isLastQueriedField:field_id];
+}
+
+void ChromeAutofillClientIOS::LoadRiskData(
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run(
+      base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
 }  // namespace autofill

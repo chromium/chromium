@@ -81,14 +81,14 @@ void AutofillExternalDelegate::OnQuery(int query_id,
 }
 
 void AutofillExternalDelegate::OnSuggestionsReturned(
-    int query_id,
+    FieldGlobalId field_id,
     const std::vector<Suggestion>& input_suggestions,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     bool is_all_server_suggestions) {
-  if (query_id != query_id_)
+  if (field_id != query_field_.global_id())
     return;
 #if BUILDFLAG(IS_IOS)
-  if (!manager_->client()->IsQueryIDRelevant(query_id))
+  if (!manager_->client()->IsLastQueriedField(field_id))
     return;
 #endif
 

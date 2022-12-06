@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
@@ -750,8 +751,9 @@ class AutofillClient : public RiskDataLoader {
   virtual const AutofillAblationStudy& GetAblationStudy() const;
 
 #if BUILDFLAG(IS_IOS)
-  // Checks whether the current query is the most recent one.
-  virtual bool IsQueryIDRelevant(int query_id) = 0;
+  // Checks whether `field_id` is the last field that for which
+  // AutofillAgent::queryAutofillForForm() was called. See crbug.com/1097015.
+  virtual bool IsLastQueriedField(FieldGlobalId field_id) = 0;
 #endif
 
   // Navigates to |url| in a new tab. |url| links to the promo code offer

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 class AutofillPopupDelegate;
@@ -24,7 +25,7 @@ struct Suggestion;
 - (void)hideAutofillPopup;
 
 // Checks whether the qurrent query is the most recent one.
-- (bool)isQueryIDRelevant:(int)queryID;
+- (bool)isLastQueriedField:(autofill::FieldGlobalId)fieldId;
 
 @end
 

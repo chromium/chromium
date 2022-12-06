@@ -573,15 +573,15 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
 
   void AutocompleteSuggestionsReturned(
-      const std::vector<std::u16string>& results,
-      int query_id = kDefaultPageID) {
+      FieldGlobalId field_id,
+      const std::vector<std::u16string>& results) {
     std::vector<Suggestion> suggestions;
     std::transform(results.begin(), results.end(),
                    std::back_inserter(suggestions),
                    [](auto result) { return Suggestion(result); });
 
     browser_autofill_manager_->OnSuggestionsReturned(
-        query_id, AutoselectFirstSuggestion(false), suggestions);
+        field_id, AutoselectFirstSuggestion(false), suggestions);
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
@@ -769,22 +769,20 @@ class BrowserAutofillManagerTest : public testing::Test {
 
   // Wrappers around the TestAutofillExternalDelegate::GetSuggestions call that
   // take a hardcoded number of expected results so callsites are cleaner.
-  void CheckSuggestions(int expected_page_id, const Suggestion& suggestion0) {
+  void CheckSuggestions(FieldGlobalId field_id, const Suggestion& suggestion0) {
     std::vector<Suggestion> suggestion_vector;
     suggestion_vector.push_back(suggestion0);
-    external_delegate_->CheckSuggestions(expected_page_id, 1,
-                                         &suggestion_vector[0]);
+    external_delegate_->CheckSuggestions(field_id, 1, &suggestion_vector[0]);
   }
-  void CheckSuggestions(int expected_page_id,
+  void CheckSuggestions(FieldGlobalId field_id,
                         const Suggestion& suggestion0,
                         const Suggestion& suggestion1) {
     std::vector<Suggestion> suggestion_vector;
     suggestion_vector.push_back(suggestion0);
     suggestion_vector.push_back(suggestion1);
-    external_delegate_->CheckSuggestions(expected_page_id, 2,
-                                         &suggestion_vector[0]);
+    external_delegate_->CheckSuggestions(field_id, 2, &suggestion_vector[0]);
   }
-  void CheckSuggestions(int expected_page_id,
+  void CheckSuggestions(FieldGlobalId field_id,
                         const Suggestion& suggestion0,
                         const Suggestion& suggestion1,
                         const Suggestion& suggestion2) {
@@ -792,8 +790,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     suggestion_vector.push_back(suggestion0);
     suggestion_vector.push_back(suggestion1);
     suggestion_vector.push_back(suggestion2);
-    external_delegate_->CheckSuggestions(expected_page_id, 3,
-                                         &suggestion_vector[0]);
+    external_delegate_->CheckSuggestions(field_id, 3, &suggestion_vector[0]);
   }
 
   void ResetBrowserAutofillManager(TestAutofillClient* client) {
@@ -1131,14 +1128,14 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Suggestions should be returned for the first two fields.
   GetAutofillSuggestions(form, form.fields[0]);
-  external_delegate_->CheckSuggestionCount(kDefaultPageID, 2);
+  external_delegate_->CheckSuggestionCount(form.fields[0].global_id(), 2);
   GetAutofillSuggestions(form, form.fields[1]);
-  external_delegate_->CheckSuggestionCount(kDefaultPageID, 2);
+  external_delegate_->CheckSuggestionCount(form.fields[1].global_id(), 2);
 
   // No suggestions should not be provided for the third field because of its
   // unrecognized autocomplete attribute.
   GetAutofillSuggestions(form, form.fields[2]);
-  external_delegate_->CheckNoSuggestions(kDefaultPageID);
+  external_delegate_->CheckNoSuggestions(form.fields[2].global_id());
 }
 
 // Test that when small forms are disabled (min required fields enforced) no
@@ -1192,7 +1189,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Check that suggestions are made for the field that has the autocomplete
   // attribute.
   GetAutofillSuggestions(form, form.fields[0]);
-  CheckSuggestions(kDefaultPageID, Suggestion("Charles", "", "", 1),
+  CheckSuggestions(form.fields[0].global_id(), Suggestion("Charles", "", "", 1),
                    Suggestion("Elvis", "", "", 2));
 
   // Check that there are no suggestions for the field without the autocomplete
@@ -1223,13 +1220,13 @@ TEST_F(BrowserAutofillManagerTest,
 
   GetAutofillSuggestions(form, form.fields[0]);
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[0].global_id(),
       Suggestion("Charles", "Charles Hardin Holley", kAddressEntryIcon, 1),
       Suggestion("Elvis", "Elvis Aaron Presley", kAddressEntryIcon, 2));
 
   GetAutofillSuggestions(form, form.fields[1]);
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion("Holley", "Charles Hardin Holley", kAddressEntryIcon, 1),
       Suggestion("Presley", "Elvis Aaron Presley", kAddressEntryIcon, 2));
 }
@@ -1307,7 +1304,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_EmptyValue) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(form.fields[0].global_id(),
                    Suggestion("Charles", label1, kAddressEntryIcon, 1),
                    Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 }
@@ -1336,7 +1333,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_MatchCharacter) {
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(field.global_id(),
                    Suggestion("Elvis", label, kAddressEntryIcon, 1));
 }
 
@@ -1385,7 +1382,7 @@ TEST_P(SuggestionMatchingTest,
     case EnabledFeature::kMobileShowAll:
     case EnabledFeature::kMobileShowOne:
       CheckSuggestions(
-          kDefaultPageID,
+          field.global_id(),
           Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon, 1),
           Suggestion("Grimes", "1234 Smith Blvd.", kAddressEntryIcon, 2));
       break;
@@ -1393,7 +1390,7 @@ TEST_P(SuggestionMatchingTest,
       // Test that we sent the right values to the external delegate. No labels
       // with duplicate values "Grimes" merged.
       CheckSuggestions(
-          kDefaultPageID,
+          field.global_id(),
           Suggestion("Googler", "1600 Amphitheater pkwy", kAddressEntryIcon, 1),
           Suggestion("Grimes", "1234 Smith Blvd., Carl Grimes",
                      kAddressEntryIcon, 2),
@@ -1431,7 +1428,7 @@ TEST_P(SuggestionMatchingTest,
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(field.global_id(),
                    Suggestion("Elvis", label, kAddressEntryIcon, 1));
 }
 
@@ -1500,7 +1497,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(form.fields[0].global_id(),
                    Suggestion("Charles", label1, kAddressEntryIcon, 1),
                    Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 }
@@ -1523,23 +1520,24 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        OnSuggestionsReturned_CallsExternalDelegate) {
+  FieldGlobalId field_id = test::MakeFieldGlobalId();
   std::vector<Suggestion> suggestions = {
       Suggestion("Charles", "123 Apple St.", "", 1),
       Suggestion("Elvis", "3734 Elvis Presley Blvd.", "", 2)};
 
   {
     browser_autofill_manager_->OnSuggestionsReturned(
-        kDefaultPageID, AutoselectFirstSuggestion(false), suggestions);
+        field_id, AutoselectFirstSuggestion(false), suggestions);
 
     EXPECT_FALSE(external_delegate_->autoselect_first_suggestion());
-    CheckSuggestions(kDefaultPageID, suggestions[0], suggestions[1]);
+    CheckSuggestions(field_id, suggestions[0], suggestions[1]);
   }
   {
     browser_autofill_manager_->OnSuggestionsReturned(
-        kDefaultPageID, AutoselectFirstSuggestion(true), suggestions);
+        field_id, AutoselectFirstSuggestion(true), suggestions);
 
     EXPECT_TRUE(external_delegate_->autoselect_first_suggestion());
-    CheckSuggestions(kDefaultPageID, suggestions[0], suggestions[1]);
+    CheckSuggestions(field_id, suggestions[0], suggestions[1]);
   }
 }
 
@@ -1562,7 +1560,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_EmptyValue) {
 
   // Test that we sent the credit card suggestions to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -1594,7 +1592,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_Whitespace) {
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      field.global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -1626,7 +1624,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_StopCharsOnly) {
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      field.global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -1659,7 +1657,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      field.global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -1698,7 +1696,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that we sent the right value to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      field.global_id(),
       Suggestion(std::string("Mastercard  ") +
                      test::ObfuscatedCardDigitsAsUTF8("3123"),
                  master_card_label, kMasterCard,
@@ -1724,7 +1722,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_MatchCharacter) {
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      field.global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -1762,7 +1760,7 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      credit_card_number_field.global_id(),
       Suggestion(visa_value, visa_label, kVisaCard,
                  browser_autofill_manager_->GetPackedCreditCardID(4)),
       Suggestion(master_card_value, master_card_label, kMasterCard,
@@ -1820,7 +1818,7 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      cardholder_name_field.global_id(),
       Suggestion("Elvis Presley", visa_label, kVisaCard,
                  browser_autofill_manager_->GetPackedCreditCardID(4)),
       Suggestion("Buddy Holly", master_card_label, kMasterCard,
@@ -1852,7 +1850,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_OnlySigninPromo) {
 
   // Test that we sent no values to the external delegate. It will add the promo
   // before passing along the results.
-  external_delegate_->CheckNoSuggestions(kDefaultPageID);
+  external_delegate_->CheckNoSuggestions(field.global_id());
 
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 }
@@ -1872,7 +1870,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[0].global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
                  "", -26));
 
@@ -1881,7 +1879,7 @@ TEST_F(BrowserAutofillManagerTest,
   personal_data().ClearCreditCards();
   GetAutofillSuggestions(form, form.fields[0]);
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[0].global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
                  "", -26));
 }
@@ -1908,7 +1906,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -1941,7 +1939,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -1984,7 +1982,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -2023,7 +2021,7 @@ TEST_F(BrowserAutofillManagerTest,
   field.value = u"12345678";
   GetAutofillSuggestions(form, field);
 
-  external_delegate_->CheckNoSuggestions(kDefaultPageID);
+  external_delegate_->CheckNoSuggestions(field.global_id());
 }
 
 // Test that expired cards are ordered by their ranking score and are always
@@ -2079,7 +2077,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_ExpiredCards) {
 #endif
 
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion(std::string("Mastercard  ") +
                      test::ObfuscatedCardDigitsAsUTF8("5100"),
                  master_card_label, kMasterCard,
@@ -2158,7 +2156,7 @@ TEST_F(BrowserAutofillManagerTest,
 #endif
 
     CheckSuggestions(
-        kDefaultPageID,
+        form.fields[0].global_id(),
         Suggestion("Bonnie Parker", mastercard_label, kMasterCard,
                    browser_autofill_manager_->GetPackedCreditCardID(0)),
         Suggestion("Clyde Barrow", visa_label, kVisaCard,
@@ -2184,7 +2182,7 @@ TEST_F(BrowserAutofillManagerTest,
 #endif
 
     CheckSuggestions(
-        kDefaultPageID,
+        form.fields[0].global_id(),
         Suggestion("Bonnie Parker", mastercard_label, kMasterCard,
                    browser_autofill_manager_->GetPackedCreditCardID(0)));
   }
@@ -2207,7 +2205,7 @@ TEST_F(BrowserAutofillManagerTest,
 #endif
 
     CheckSuggestions(
-        kDefaultPageID,
+        form.fields[0].global_id(),
         Suggestion("Clyde Barrow", visa_label, kVisaCard,
                    browser_autofill_manager_->GetPackedCreditCardID(1)));
   }
@@ -2230,7 +2228,7 @@ TEST_F(BrowserAutofillManagerTest,
 #endif
 
     CheckSuggestions(
-        kDefaultPageID,
+        form.fields[0].global_id(),
         Suggestion("John Dillinger", amex_label, kAmericanExpressCard,
                    browser_autofill_manager_->GetPackedCreditCardID(2)));
   }
@@ -2278,7 +2276,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_NumberMissing) {
 #endif
 
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion(
           std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8("0005"),
           amex_card_exp_label, kAmericanExpressCard,
@@ -2299,7 +2297,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_NumberMissing) {
 #endif
 
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[0].global_id(),
       Suggestion("John Dillinger", "", kGenericCard,
                  browser_autofill_manager_->GetPackedCreditCardID(2)),
       Suggestion("Clyde Barrow", amex_card_label, kAmericanExpressCard,
@@ -2361,7 +2359,7 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(form.fields[0].global_id(),
                    Suggestion("Charles", label1, kAddressEntryIcon, 1),
                    Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 
@@ -2380,7 +2378,7 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
 
   // Test that we sent the credit card suggestions to the external delegate.
   CheckSuggestions(
-      kPageID2,
+      field.global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -2413,7 +2411,7 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   GetAutofillSuggestions(kPageID2, form, field);
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kPageID2,
+  CheckSuggestions(field.global_id(),
                    Suggestion(l10n_util::GetStringUTF8(
                                   IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
                               "", "", -1));
@@ -2421,7 +2419,7 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
   // Clear the test credit cards and try again -- we shouldn't return a warning.
   personal_data().ClearCreditCards();
   GetAutofillSuggestions(form, field);
-  external_delegate_->CheckNoSuggestions(kDefaultPageID);
+  external_delegate_->CheckNoSuggestions(field.global_id());
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2612,7 +2610,7 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, form.fields[0]);
 
   // Check that credit card suggestions will not be available.
-  external_delegate_->CheckNoSuggestions(kDefaultPageID);
+  external_delegate_->CheckNoSuggestions(form.fields[0].global_id());
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2629,7 +2627,7 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, form.fields[0]);
 
   // Check that credit card suggestions will not be available.
-  external_delegate_->CheckNoSuggestions(kDefaultPageID);
+  external_delegate_->CheckNoSuggestions(form.fields[0].global_id());
 }
 
 struct LogAblationTestParams {
@@ -2979,7 +2977,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWhenFormIsAutofilled) {
       label2 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(form.fields[0].global_id(),
                    Suggestion("Charles", label1, kAddressEntryIcon, 1),
                    Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 }
@@ -3003,10 +3001,10 @@ TEST_F(BrowserAutofillManagerTest,
   std::vector<std::u16string> suggestions;
   suggestions.push_back(u"one");
   suggestions.push_back(u"two");
-  AutocompleteSuggestionsReturned(suggestions);
+  AutocompleteSuggestionsReturned(field.global_id(), suggestions);
 
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("one", "", "", 0),
+  CheckSuggestions(field.global_id(), Suggestion("one", "", "", 0),
                    Suggestion("two", "", "", 0));
 }
 
@@ -3042,7 +3040,7 @@ TEST_P(SuggestionMatchingTest, GetFieldSuggestionsWithDuplicateValues) {
       label = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(field.global_id(),
                    Suggestion("Elvis", label, kAddressEntryIcon, 1));
 }
 
@@ -3107,7 +3105,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_FancyPhone) {
       label3 = "3734 Elvis Presley Blvd.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(form.fields[9].global_id(),
                    Suggestion(value1, label1, kAddressEntryIcon, 1),
                    Suggestion(value2, label2, kAddressEntryIcon, 2),
                    Suggestion(value3, label3, kAddressEntryIcon, 3));
@@ -3151,14 +3149,14 @@ TEST_F(BrowserAutofillManagerTest,
   GetAutofillSuggestions(form, phone_prefix);
 
   // Test that we sent the right prefix values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(form.fields[2].global_id(),
                    Suggestion("356", "1800FLOWERS", kAddressEntryIcon, 1));
 
   const FormFieldData& phone_suffix = form.fields[3];
   GetAutofillSuggestions(form, phone_suffix);
 
   // Test that we sent the right suffix values to the external delegate.
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(form.fields[3].global_id(),
                    Suggestion("9377", "1800FLOWERS", kAddressEntryIcon, 1));
 }
 
@@ -3180,8 +3178,9 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_ForPhoneField) {
 
   GetAutofillSuggestions(form, form.fields[9]);
 
-  CheckSuggestions(kDefaultPageID, Suggestion("123456789", "Natty Bumppo",
-                                              kAddressEntryIcon, 1));
+  CheckSuggestions(
+      form.fields[9].global_id(),
+      Suggestion("123456789", "Natty Bumppo", kAddressEntryIcon, 1));
 }
 
 // Tests that we return email profile suggestions values
@@ -3225,7 +3224,7 @@ TEST_F(BrowserAutofillManagerTest,
 
   GetAutofillSuggestions(form, form.fields[2]);
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[2].global_id(),
       Suggestion("test@example.com", "Natty Bumppo", kAddressEntryIcon, 1));
 }
 
@@ -7110,7 +7109,7 @@ TEST_F(BrowserAutofillManagerTest,
 #endif
 
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[3].global_id(),
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           visa_label, kVisaCard,
@@ -7310,7 +7309,7 @@ TEST_P(SuggestionMatchingTest, DisplaySuggestionsWithMatchingTokens) {
   }
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      field.global_id(),
       Suggestion("buddy@gmail.com", label1, kAddressEntryIcon, 1),
       Suggestion("theking@gmail.com", label2, kAddressEntryIcon, 2));
 }
@@ -7347,8 +7346,8 @@ TEST_P(SuggestionMatchingTest,
       label = "123 Apple St.";
   }
   // Test that we sent the right values to the external delegate.
-  CheckSuggestions(kDefaultPageID, Suggestion("123 Apple St., unit 6", label,
-                                              kAddressEntryIcon, 1));
+  CheckSuggestions(field.global_id(), Suggestion("123 Apple St., unit 6", label,
+                                                 kAddressEntryIcon, 1));
 }
 
 // Verify that typing "mail" will not match any of the "@gmail.com" email
@@ -7415,7 +7414,7 @@ TEST_P(CreditCardSuggestionTest,
 #endif
 
   GetAutofillSuggestions(form, field);
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(field.global_id(),
                    Suggestion("Nancy Drew", visa_label, kVisaCard,
                               MakeFrontendId({.credit_card_id = guid})));
 }
@@ -7670,7 +7669,7 @@ TEST_P(SuggestionMatchingTest,
       label1 = "1234 Smith Blvd., Carl Shawn Smith Grimes";
       label2 = "1234 Smith Blvd., Robin Adam Smith Grimes";
   }
-  CheckSuggestions(kDefaultPageID,
+  CheckSuggestions(field.global_id(),
                    Suggestion("Shawn Smith", label1, kAddressEntryIcon, 1),
                    Suggestion("Adam Smith", label2, kAddressEntryIcon, 2));
 }
@@ -7976,7 +7975,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
       label, kVisaCard, autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
 
   CheckSuggestions(
-      kDefaultPageID, virtual_card_suggestion,
+      form.fields[1].global_id(), virtual_card_suggestion,
       Suggestion(
           std::string("nickname  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           label, kVisaCard,
@@ -7999,7 +7998,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
                  autofill::POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY);
 
   CheckSuggestions(
-      kDefaultPageID, virtual_card_suggestion,
+      form.fields[0].global_id(), virtual_card_suggestion,
       Suggestion("Elvis Presley", label, kVisaCard,
                  browser_autofill_manager_->GetPackedCreditCardID(7)));
 
@@ -8007,7 +8006,7 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   GetAutofillSuggestions(form, form.fields[0]);
 
   CheckSuggestions(
-      kDefaultPageID, virtual_card_suggestion,
+      form.fields[0].global_id(), virtual_card_suggestion,
       Suggestion("Elvis Presley", label, kVisaCard,
                  browser_autofill_manager_->GetPackedCreditCardID(7)));
 }
@@ -9044,7 +9043,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedForm) {
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      field.global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
                  "", POPUP_ITEM_ID_MIXED_FORM_MESSAGE));
 }
@@ -9085,7 +9084,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(
-      kDefaultPageID,
+      field.global_id(),
       Suggestion(l10n_util::GetStringUTF8(IDS_AUTOFILL_WARNING_MIXED_FORM), "",
                  "", POPUP_ITEM_ID_MIXED_FORM_MESSAGE));
 
@@ -9093,7 +9092,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
   form.fields[0].value = u"Michael";
   form.fields[0].properties_mask |= kUserTyped;
   GetAutofillSuggestions(form, form.fields[0]);
-  external_delegate_->CheckNoSuggestions(kDefaultPageID);
+  external_delegate_->CheckNoSuggestions(form.fields[0].global_id());
 }
 
 // Test that we don't treat javascript scheme target URLs as mixed forms.
@@ -9364,12 +9363,13 @@ class BrowserAutofillManagerTestForVirtualCardOption
     personal_data().AddServerCreditCard(masked_server_card);
   }
 
-  void CreateCompleteFormAndGetSuggestions() {
+  FieldGlobalId CreateCompleteFormAndGetSuggestions() {
     FormData form;
     CreateTestCreditCardFormData(&form, /*is_https=*/true,
                                  /*use_month_type=*/false);
     FormsSeen({form});
     GetAutofillSuggestions(form, form.fields[1]);  // Card number field.
+    return form.fields[1].global_id();
   }
 
   // Adds a CreditCardCloudTokenData to PersonalDataManager. This needs to be
@@ -9381,12 +9381,12 @@ class BrowserAutofillManagerTestForVirtualCardOption
     personal_data().AddCloudTokenData(data1);
   }
 
-  void VerifyNoVirtualCardSuggestions() {
-    external_delegate_->CheckSuggestionCount(kDefaultPageID, 1);
+  void VerifyNoVirtualCardSuggestions(FieldGlobalId field_id) {
+    external_delegate_->CheckSuggestionCount(field_id, 1);
     // Suggestion details need to match the credit card added in the SetUp()
     // above.
     CheckSuggestions(
-        kDefaultPageID,
+        field_id,
         Suggestion(
             std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
             "Expires on 04/99", kVisaCard,
@@ -9404,9 +9404,8 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       features::kAutofillEnableVirtualCard);
-  CreateCompleteFormAndGetSuggestions();
-
-  VerifyNoVirtualCardSuggestions();
+  FieldGlobalId field_id = CreateCompleteFormAndGetSuggestions();
+  VerifyNoVirtualCardSuggestions(field_id);
 }
 
 // Ensures the "Use a virtual card number" option should not be shown when the
@@ -9414,9 +9413,8 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
 TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
        ShouldNotShowDueToCreditCardUploadPrefDisabled) {
   browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
-  CreateCompleteFormAndGetSuggestions();
-
-  external_delegate_->CheckSuggestionCount(kDefaultPageID, 0);
+  FieldGlobalId field_id = CreateCompleteFormAndGetSuggestions();
+  external_delegate_->CheckSuggestionCount(field_id, 0);
 }
 
 // Ensures the "Use a virtual card number" option should not be shown when
@@ -9426,9 +9424,8 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   // Adds a different URL in the allowlist.
   autofill_client_.set_allowed_merchants(
       {"https://myform.anotherallowlist.com/form.html"});
-  CreateCompleteFormAndGetSuggestions();
-
-  VerifyNoVirtualCardSuggestions();
+  FieldGlobalId field_id = CreateCompleteFormAndGetSuggestions();
+  VerifyNoVirtualCardSuggestions(field_id);
 }
 
 // Ensures the "Use a virtual card number" option should not be shown when card
@@ -9455,13 +9452,13 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   FormsSeen({form});
   GetAutofillSuggestions(form, form.fields[0]);  // Cardholder name field.
 
-  external_delegate_->CheckSuggestionCount(kDefaultPageID, 1);
+  external_delegate_->CheckSuggestionCount(form.fields[0].global_id(), 1);
   const std::string visa_label =
       base::JoinString({"Visa  ", test::ObfuscatedCardDigitsAsUTF8("3456"),
                         ", expires on 04/99"},
                        "");
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[0].global_id(),
       Suggestion("Elvis Presley", visa_label, kVisaCard,
                  browser_autofill_manager_->GetPackedCreditCardID(7)));
 }
@@ -9470,9 +9467,8 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
 // is no cloud token data for the card.
 TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
        ShouldNotShowDueToNoCloudTokenData) {
-  CreateCompleteFormAndGetSuggestions();
-
-  VerifyNoVirtualCardSuggestions();
+  FieldGlobalId field_id = CreateCompleteFormAndGetSuggestions();
+  VerifyNoVirtualCardSuggestions(field_id);
 }
 
 // Ensures the "Use a virtual card number" option should not be shown when there
@@ -9483,9 +9479,8 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   CreditCardCloudTokenData data2 = test::GetCreditCardCloudTokenData2();
   data2.masked_card_id = "a123";
   personal_data().AddCloudTokenData(data2);
-  CreateCompleteFormAndGetSuggestions();
-
-  VerifyNoVirtualCardSuggestions();
+  FieldGlobalId field_id = CreateCompleteFormAndGetSuggestions();
+  VerifyNoVirtualCardSuggestions(field_id);
 }
 
 // Ensures the "Use a virtual card number" option should not be shown when card
@@ -9510,7 +9505,7 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   FormsSeen({form});
   GetAutofillSuggestions(form, form.fields[1]);  // Card number field.
 
-  VerifyNoVirtualCardSuggestions();
+  VerifyNoVirtualCardSuggestions(form.fields[1].global_id());
 }
 
 // Ensures the "Use a virtual card number" option should not be shown when card
@@ -9537,7 +9532,7 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   FormsSeen({form});
   GetAutofillSuggestions(form, form.fields[1]);  // Card number field.
 
-  VerifyNoVirtualCardSuggestions();
+  VerifyNoVirtualCardSuggestions(form.fields[1].global_id());
 }
 
 // Ensures the "Use a virtual card number" option should be shown when all
@@ -9545,12 +9540,12 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
 TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
        ShouldShowVirtualCardOption_OneCard) {
   CreateCloudTokenDataForDefaultCard();
-  CreateCompleteFormAndGetSuggestions();
+  FieldGlobalId field_id = CreateCompleteFormAndGetSuggestions();
 
   // Ensures the card suggestion and the virtual card suggestion are shown.
-  external_delegate_->CheckSuggestionCount(kDefaultPageID, 2);
+  external_delegate_->CheckSuggestionCount(field_id, 2);
   CheckSuggestions(
-      kDefaultPageID,
+      field_id,
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456"),
           "Expires on 04/99", kVisaCard,
@@ -9585,12 +9580,12 @@ TEST_F(BrowserAutofillManagerTestForVirtualCardOption,
   data2.masked_card_id = "a456";
   personal_data().AddCloudTokenData(data2);
 
-  CreateCompleteFormAndGetSuggestions();
+  FieldGlobalId field_id = CreateCompleteFormAndGetSuggestions();
 
   // Ensures the card suggestion and the virtual card suggestion are shown.
-  external_delegate_->CheckSuggestionCount(kDefaultPageID, 3);
+  external_delegate_->CheckSuggestionCount(field_id, 3);
   CheckSuggestions(
-      kDefaultPageID,
+      field_id,
       Suggestion(
           std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("1111"),
           "Expires on 04/99", kVisaCard,
@@ -9854,7 +9849,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 #endif
 
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion((expected_nickname_.empty() ? std::string("Amex")
                                              : expected_nickname_) +
                      "  " + test::ObfuscatedCardDigitsAsUTF8("0005"),
@@ -9891,7 +9886,7 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
 #endif
 
   CheckSuggestions(
-      kDefaultPageID,
+      form.fields[1].global_id(),
       Suggestion(
           (local_nickname_.empty() ? std::string("Amex") : local_nickname_) +
               "  " + test::ObfuscatedCardDigitsAsUTF8("0005"),

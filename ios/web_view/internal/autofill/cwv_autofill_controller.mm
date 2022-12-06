@@ -326,8 +326,8 @@ using UserDecision =
   [_autofillAgent hideAutofillPopup];
 }
 
-- (bool)isQueryIDRelevant:(int)queryID {
-  return [_autofillAgent isQueryIDRelevant:queryID];
+- (bool)isLastQueriedField:(autofill::FieldGlobalId)fieldId {
+  return [_autofillAgent isLastQueriedField:fieldId];
 }
 
 - (void)

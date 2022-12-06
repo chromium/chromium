@@ -673,7 +673,7 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
   auto cards =
       GetCreditCardSuggestions(field_data, type, should_display_gpay_logo);
   DCHECK(!cards.empty());
-  external_delegate_->OnSuggestionsReturned(query_id, cards,
+  external_delegate_->OnSuggestionsReturned(field_data.global_id(), cards,
                                             AutoselectFirstSuggestion(false),
                                             should_display_gpay_logo);
 }
@@ -1082,8 +1082,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
       case SuppressReason::kAblation:
         single_field_form_fill_router_->CancelPendingQueries(this);
-        external_delegate_->OnSuggestionsReturned(query_id, suggestions,
-                                                  autoselect_first_suggestion);
+        external_delegate_->OnSuggestionsReturned(
+            field.global_id(), suggestions, autoselect_first_suggestion);
         LOG_AF(log_manager())
             << LoggingScope::kFilling << LogMessage::kSuggestionSuppressed
             << " Reason: Ablation experiment";
@@ -1198,7 +1198,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   // Send Autofill suggestions (could be an empty list).
-  external_delegate_->OnSuggestionsReturned(query_id, suggestions,
+  external_delegate_->OnSuggestionsReturned(field.global_id(), suggestions,
                                             autoselect_first_suggestion,
                                             context.should_display_gpay_logo);
 }
@@ -1845,10 +1845,10 @@ bool BrowserAutofillManager::ShouldUploadForm(const FormStructure& form) {
 
 // AutocompleteHistoryManager::SuggestionsHandler implementation
 void BrowserAutofillManager::OnSuggestionsReturned(
-    int query_id,
+    FieldGlobalId field_id,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     const std::vector<Suggestion>& suggestions) {
-  external_delegate_->OnSuggestionsReturned(query_id, suggestions,
+  external_delegate_->OnSuggestionsReturned(field_id, suggestions,
                                             autoselect_first_suggestion);
 }
 

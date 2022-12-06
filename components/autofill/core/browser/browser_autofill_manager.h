@@ -264,7 +264,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // SingleFieldFormFiller::SuggestionsHandler:
   void OnSuggestionsReturned(
-      int query_id,
+      FieldGlobalId field_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       const std::vector<Suggestion>& suggestions) override;
 

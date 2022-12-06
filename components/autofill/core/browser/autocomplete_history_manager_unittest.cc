@@ -71,7 +71,7 @@ class MockSuggestionsHandler
 
   MOCK_METHOD(void,
               OnSuggestionsReturned,
-              (int query_id,
+              (FieldGlobalId field_id,
                AutoselectFirstSuggestion autoselect_first_suggestion,
                const std::vector<Suggestion>& suggestions),
               (override));
@@ -103,6 +103,9 @@ class AutocompleteHistoryManagerTest : public testing::Test {
     autocomplete_manager_->Init(web_data_service_, prefs_.get(), false);
     test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
                               "Some Type", &test_field_);
+    test::CreateTestFormField(/*label=*/"", "Another Field Name",
+                              "AnotherPrefix", "Another Type",
+                              &second_test_field_);
   }
 
   void TearDown() override {
@@ -149,6 +152,7 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   std::unique_ptr<AutocompleteHistoryManager> autocomplete_manager_;
   std::unique_ptr<PrefService> prefs_;
   FormFieldData test_field_;
+  FormFieldData second_test_field_;
   TestAutofillClock test_clock;
 };
 
@@ -507,10 +511,10 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   // OnSuggestionsReturned
-  EXPECT_CALL(
-      *suggestions_handler.get(),
-      OnSuggestionsReturned(test_query_id, AutoselectFirstSuggestion(false),
-                            testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_field_.global_id(),
+                                    AutoselectFirstSuggestion(false),
+                                    testing::Truly(IsEmptySuggestionVector)));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -540,9 +544,9 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
-  EXPECT_CALL(
-      *suggestions_handler.get(),
-      OnSuggestionsReturned(test_query_id, AutoselectFirstSuggestion(false), _))
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_field_.global_id(),
+                                    AutoselectFirstSuggestion(false), _))
       .Times(0);
 }
 
@@ -569,9 +573,9 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Setting up mock to verify that DB response does not trigger a call to the
   // handler's OnSuggestionsReturned.
-  EXPECT_CALL(
-      *suggestions_handler.get(),
-      OnSuggestionsReturned(test_query_id, AutoselectFirstSuggestion(false), _))
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_field_.global_id(),
+                                    AutoselectFirstSuggestion(false), _))
       .Times(0);
 }
 
@@ -604,7 +608,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
-              OnSuggestionsReturned(test_query_id,
+              OnSuggestionsReturned(test_field_.global_id(),
                                     AutoselectFirstSuggestion(false), _));
 
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -639,7 +643,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
-              OnSuggestionsReturned(test_query_id,
+              OnSuggestionsReturned(test_field_.global_id(),
                                     AutoselectFirstSuggestion(false), _));
 
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -673,7 +677,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(
-                  test_query_id, AutoselectFirstSuggestion(false),
+                  test_field_.global_id(), AutoselectFirstSuggestion(false),
                   UnorderedElementsAre(Field(
                       &Suggestion::main_text,
                       Suggestion::Text(expected_values[0].key().value(),
@@ -713,7 +717,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(
-                  test_query_id, AutoselectFirstSuggestion(true),
+                  test_field_.global_id(), AutoselectFirstSuggestion(true),
                   UnorderedElementsAre(Field(
                       &Suggestion::main_text,
                       Suggestion::Text(expected_values[0].key().value(),
@@ -751,10 +755,10 @@ TEST_F(AutocompleteHistoryManagerTest,
       SuggestionsContext()));
 
   // Setting up mock to verify that DB response triggers a call to the handler's
-  EXPECT_CALL(
-      *suggestions_handler.get(),
-      OnSuggestionsReturned(test_query_id, AutoselectFirstSuggestion(false),
-                            testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(*suggestions_handler.get(),
+              OnSuggestionsReturned(test_field_.global_id(),
+                                    AutoselectFirstSuggestion(false),
+                                    testing::Truly(IsEmptySuggestionVector)));
 
   // Simulate response from DB.
   autocomplete_manager_->OnWebDataServiceRequestDone(mocked_db_query_id,
@@ -790,7 +794,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that DB response triggers a call to the handler's
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(
-                  test_query_id, AutoselectFirstSuggestion(false),
+                  test_field_.global_id(), AutoselectFirstSuggestion(false),
                   UnorderedElementsAre(Field(
                       &Suggestion::main_text,
                       Suggestion::Text(expected_values[0].key().value(),
@@ -897,7 +901,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that we can get the second response first.
   EXPECT_CALL(*suggestions_handler.get(),
               OnSuggestionsReturned(
-                  test_query_id_second, AutoselectFirstSuggestion(false),
+                  test_field_.global_id(), AutoselectFirstSuggestion(false),
                   UnorderedElementsAre(Field(
                       &Suggestion::main_text,
                       Suggestion::Text(expected_values_second[0].key().value(),
@@ -910,7 +914,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that the handler doesn't get called for the first
   // request, which was cancelled.
   EXPECT_CALL(*suggestions_handler.get(),
-              OnSuggestionsReturned(test_query_id_first,
+              OnSuggestionsReturned(test_field_.global_id(),
                                     AutoselectFirstSuggestion(false), _))
       .Times(0);
 
@@ -962,7 +966,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that we get the second response first.
   EXPECT_CALL(*suggestions_handler_second.get(),
               OnSuggestionsReturned(
-                  test_query_id_second, AutoselectFirstSuggestion(false),
+                  test_field_.global_id(), AutoselectFirstSuggestion(false),
                   UnorderedElementsAre(Field(
                       &Suggestion::main_text,
                       Suggestion::Text(expected_values_second[0].key().value(),
@@ -975,7 +979,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Setting up mock to verify that we get the first response second.
   EXPECT_CALL(*suggestions_handler_first.get(),
               OnSuggestionsReturned(
-                  test_query_id_first, AutoselectFirstSuggestion(false),
+                  test_field_.global_id(), AutoselectFirstSuggestion(false),
                   UnorderedElementsAre(Field(
                       &Suggestion::main_text,
                       Suggestion::Text(expected_values_first[0].key().value(),
@@ -1033,7 +1037,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   // Simulate second handler receiving the suggestions.
   EXPECT_CALL(*suggestions_handler_two.get(),
               OnSuggestionsReturned(
-                  test_query_id_two, AutoselectFirstSuggestion(false),
+                  test_field_.global_id(), AutoselectFirstSuggestion(false),
                   UnorderedElementsAre(Field(
                       &Suggestion::main_text,
                       Suggestion::Text(expected_values_two[0].key().value(),
@@ -1043,7 +1047,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   // Make sure first handler is not called when the DB responds.
   EXPECT_CALL(*suggestions_handler_one.get(),
-              OnSuggestionsReturned(test_query_id_one,
+              OnSuggestionsReturned(test_field_.global_id(),
                                     AutoselectFirstSuggestion(false), _))
       .Times(0);
   autocomplete_manager_->OnWebDataServiceRequestDone(
@@ -1061,9 +1065,10 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   test::CreateTestFormField("Address", "address", "", "textarea", &field);
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
-  EXPECT_CALL(*suggestions_handler.get(),
-              OnSuggestionsReturned(0, AutoselectFirstSuggestion(false),
-                                    testing::Truly(IsEmptySuggestionVector)));
+  EXPECT_CALL(
+      *suggestions_handler.get(),
+      OnSuggestionsReturned(field.global_id(), AutoselectFirstSuggestion(false),
+                            testing::Truly(IsEmptySuggestionVector)));
 
   EXPECT_TRUE(autocomplete_manager_->OnGetSingleFieldSuggestions(
       0, AutoselectFirstSuggestion(false), field, autofill_client_,

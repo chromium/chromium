@@ -39,7 +39,7 @@ class MockSuggestionsHandler
 
   MOCK_METHOD(void,
               OnSuggestionsReturned,
-              (int query_id,
+              (FieldGlobalId field_id,
                AutoselectFirstSuggestion autoselect_first_suggestion,
                const std::vector<Suggestion>& suggestions),
               (override));
@@ -123,7 +123,7 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   EXPECT_CALL(
       *suggestions_handler.get(),
       OnSuggestionsReturned(
-          test_query_id, autoselect_first_suggestion,
+          _, autoselect_first_suggestion,
           UnorderedElementsAre(
               Field(&Suggestion::main_text, promo_code_suggestion.main_text),
               Field(&Suggestion::frontend_id, POPUP_ITEM_ID_SEPARATOR),

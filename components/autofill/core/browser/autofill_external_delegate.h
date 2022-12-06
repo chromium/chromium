@@ -84,7 +84,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // Records query results and correctly formats them before sending them off
   // to be displayed.  Called when an Autofill query result is available.
   virtual void OnSuggestionsReturned(
-      int query_id,
+      FieldGlobalId field_id,
       const std::vector<Suggestion>& suggestions,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       bool is_all_server_suggestions = false);

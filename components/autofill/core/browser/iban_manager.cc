@@ -36,9 +36,9 @@ bool IBANManager::OnGetSingleFieldSuggestions(
           ibans, [comparison_time](const IBAN* iban0, const IBAN* iban1) {
             return iban0->HasGreaterRankingThan(iban1, comparison_time);
           });
-      SendIBANSuggestions(ibans,
-                          QueryHandler(query_id, autoselect_first_suggestion,
-                                       field.value, handler));
+      SendIBANSuggestions(
+          ibans, QueryHandler(field.global_id(), autoselect_first_suggestion,
+                              field.value, handler));
       return true;
     }
   }
@@ -66,15 +66,14 @@ void IBANManager::SendIBANSuggestions(const std::vector<IBAN*>& ibans,
     // Return empty suggestions to query handler. This will result in no
     // suggestions being displayed.
     query_handler.handler_->OnSuggestionsReturned(
-        query_handler.client_query_id_,
-        query_handler.autoselect_first_suggestion_, {});
+        query_handler.field_id_, query_handler.autoselect_first_suggestion_,
+        {});
     return;
   }
 
   // Return suggestions to query handler.
   query_handler.handler_->OnSuggestionsReturned(
-      query_handler.client_query_id_,
-      query_handler.autoselect_first_suggestion_,
+      query_handler.field_id_, query_handler.autoselect_first_suggestion_,
       AutofillSuggestionGenerator::GetSuggestionsForIBANs(ibans));
 }
 
