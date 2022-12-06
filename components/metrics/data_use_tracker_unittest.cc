@@ -5,6 +5,7 @@
 #include "components/metrics/data_use_tracker.h"
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -63,37 +64,37 @@ class FakeDataUseTracker : public DataUseTracker {
 // Sets up data usage prefs with mock values so that UMA traffic is above the
 // allowed ratio.
 void SetPrefTestValuesOverRatio(PrefService* local_state) {
-  base::DictionaryValue user_pref_dict;
-  user_pref_dict.SetInteger(kTodayStr, 2 * 100);
-  user_pref_dict.SetInteger(kYesterdayStr, 2 * 100);
-  user_pref_dict.SetInteger(kExpiredDateStr1, 2 * 100);
-  user_pref_dict.SetInteger(kExpiredDateStr2, 2 * 100);
-  local_state->Set(prefs::kUserCellDataUse, user_pref_dict);
+  base::Value::Dict user_pref_dict;
+  user_pref_dict.Set(kTodayStr, 2 * 100);
+  user_pref_dict.Set(kYesterdayStr, 2 * 100);
+  user_pref_dict.Set(kExpiredDateStr1, 2 * 100);
+  user_pref_dict.Set(kExpiredDateStr2, 2 * 100);
+  local_state->SetDict(prefs::kUserCellDataUse, std::move(user_pref_dict));
 
-  base::DictionaryValue uma_pref_dict;
-  uma_pref_dict.SetInteger(kTodayStr, 50);
-  uma_pref_dict.SetInteger(kYesterdayStr, 50);
-  uma_pref_dict.SetInteger(kExpiredDateStr1, 50);
-  uma_pref_dict.SetInteger(kExpiredDateStr2, 50);
-  local_state->Set(prefs::kUmaCellDataUse, uma_pref_dict);
+  base::Value::Dict uma_pref_dict;
+  uma_pref_dict.Set(kTodayStr, 50);
+  uma_pref_dict.Set(kYesterdayStr, 50);
+  uma_pref_dict.Set(kExpiredDateStr1, 50);
+  uma_pref_dict.Set(kExpiredDateStr2, 50);
+  local_state->SetDict(prefs::kUmaCellDataUse, std::move(uma_pref_dict));
 }
 
 // Sets up data usage prefs with mock values which can be valid.
 void SetPrefTestValuesValidRatio(PrefService* local_state) {
-  base::DictionaryValue user_pref_dict;
-  user_pref_dict.SetInteger(kTodayStr, 100 * 100);
-  user_pref_dict.SetInteger(kYesterdayStr, 100 * 100);
-  user_pref_dict.SetInteger(kExpiredDateStr1, 100 * 100);
-  user_pref_dict.SetInteger(kExpiredDateStr2, 100 * 100);
-  local_state->Set(prefs::kUserCellDataUse, user_pref_dict);
+  base::Value::Dict user_pref_dict;
+  user_pref_dict.Set(kTodayStr, 100 * 100);
+  user_pref_dict.Set(kYesterdayStr, 100 * 100);
+  user_pref_dict.Set(kExpiredDateStr1, 100 * 100);
+  user_pref_dict.Set(kExpiredDateStr2, 100 * 100);
+  local_state->SetDict(prefs::kUserCellDataUse, std::move(user_pref_dict));
 
   // Should be 4% of user traffic
-  base::DictionaryValue uma_pref_dict;
-  uma_pref_dict.SetInteger(kTodayStr, 4 * 100);
-  uma_pref_dict.SetInteger(kYesterdayStr, 4 * 100);
-  uma_pref_dict.SetInteger(kExpiredDateStr1, 4 * 100);
-  uma_pref_dict.SetInteger(kExpiredDateStr2, 4 * 100);
-  local_state->Set(prefs::kUmaCellDataUse, uma_pref_dict);
+  base::Value::Dict uma_pref_dict;
+  uma_pref_dict.Set(kTodayStr, 4 * 100);
+  uma_pref_dict.Set(kYesterdayStr, 4 * 100);
+  uma_pref_dict.Set(kExpiredDateStr1, 4 * 100);
+  uma_pref_dict.Set(kExpiredDateStr2, 4 * 100);
+  local_state->SetDict(prefs::kUmaCellDataUse, std::move(uma_pref_dict));
 }
 
 }  // namespace

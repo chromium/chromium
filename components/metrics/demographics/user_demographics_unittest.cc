@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
@@ -78,10 +79,10 @@ class UserDemographicsPrefsTest : public testing::Test {
   void SetDemographicsImpl(const std::string& pref_name,
                            int birth_year,
                            UserDemographicsProto::Gender gender) {
-    base::DictionaryValue dict;
-    dict.SetIntPath(kSyncDemographicsBirthYearPath, birth_year);
-    dict.SetIntPath(kSyncDemographicsGenderPath, static_cast<int>(gender));
-    GetProfilePrefs()->Set(pref_name, dict);
+    base::Value::Dict dict;
+    dict.Set(kSyncDemographicsBirthYearPath, birth_year);
+    dict.Set(kSyncDemographicsGenderPath, static_cast<int>(gender));
+    GetProfilePrefs()->SetDict(pref_name, std::move(dict));
   }
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;

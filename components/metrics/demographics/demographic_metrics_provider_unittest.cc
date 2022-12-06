@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -114,10 +115,10 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
   void SetDemographicsInPrefs(int birth_year,
                               metrics::UserDemographicsProto_Gender gender) {
-    base::DictionaryValue dict;
-    dict.SetIntPath(kSyncDemographicsBirthYearPath, birth_year);
-    dict.SetIntPath(kSyncDemographicsGenderPath, static_cast<int>(gender));
-    pref_service_.Set(kSyncDemographicsPrefName, dict);
+    base::Value::Dict dict;
+    dict.Set(kSyncDemographicsBirthYearPath, birth_year);
+    dict.Set(kSyncDemographicsGenderPath, static_cast<int>(gender));
+    pref_service_.SetDict(kSyncDemographicsPrefName, std::move(dict));
   }
 
  private:
