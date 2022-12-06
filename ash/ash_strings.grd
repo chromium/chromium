@@ -4213,6 +4213,14 @@ Connect your device to power.
         Up next
       </message>
 
+      <message name="IDS_ASH_CALENDAR_UP_NEXT_SCROLL_LEFT_BUTTON" desc="The accessible/tooltip description of the calendar up next scroll left button.">
+        Scroll left
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_UP_NEXT_SCROLL_RIGHT_BUTTON" desc="The accessible/tooltip description of the calendar up next scroll right button.">
+        Scroll right
+      </message>
+
       <message name="IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME" desc="The accessible name for the progress bar shown in the status tray.">
         Loading
       </message>

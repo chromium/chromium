@@ -1795,27 +1795,30 @@ void CalendarView::SetEventListViewBounds() {
 }
 
 void CalendarView::MaybeShowUpNextView() {
-  if (features::IsCalendarJellyEnabled() && EventsFetchComplete() &&
-      !calendar_view_controller_->UpcomingEvents().empty()) {
-    if (up_next_view_)
-      return;
-
-    up_next_view_ = AddChildView(
-        std::make_unique<CalendarUpNextView>(calendar_view_controller_.get()));
-  } else {
+  if (!features::IsCalendarJellyEnabled() || !EventsFetchComplete() ||
+      calendar_view_controller_->UpcomingEvents().empty()) {
     RemoveUpNextView();
+    return;
   }
+
+  if (up_next_view_)
+    return;
+
+  up_next_view_ = AddChildView(
+      std::make_unique<CalendarUpNextView>(calendar_view_controller_.get()));
+  InvalidateLayout();
 }
 
 void CalendarView::RemoveUpNextView() {
-  if (up_next_view_) {
-    RemoveChildViewT(up_next_view_);
-    up_next_view_ = nullptr;
-    // If the up next view is deleted whilst the calendar is still open, e.g.
-    // time has passed and an event no longer meets 'upcoming' criteria, then
-    // the calendar view needs to relayout after removing the upnext view.
-    InvalidateLayout();
-  }
+  if (!up_next_view_)
+    return;
+
+  RemoveChildViewT(up_next_view_);
+  up_next_view_ = nullptr;
+  // If the up next view is deleted whilst the calendar is still open, e.g.
+  // time has passed and an event no longer meets 'upcoming' criteria, then
+  // the calendar view needs to relayout after removing the upnext view.
+  InvalidateLayout();
 }
 
 BEGIN_METADATA(CalendarView, views::View)

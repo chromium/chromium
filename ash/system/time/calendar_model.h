@@ -141,12 +141,13 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   friend class CalendarModelTest;
   friend class CalendarMonthViewFetchTest;
   friend class CalendarMonthViewTest;
+  friend class CalendarUpNextViewAnimationTest;
+  friend class CalendarUpNextViewPixelTest;
+  friend class CalendarUpNextViewTest;
   friend class CalendarViewAnimationTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
   friend class CalendarViewWithJellyEnabledTest;
-  friend class CalendarUpNextViewPixelTest;
-  friend class CalendarUpNextViewTest;
   friend class GlanceablesTest;
 
   // Checks if the event has allowed statuses and is eligible for insertion.

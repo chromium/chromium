@@ -21,9 +21,10 @@ namespace {
 std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const base::Time start_time,
     const base::Time end_time,
+    const char* summary = "Event with long name that should ellipsis",
     bool all_day_event = false) {
   return calendar_test_utils::CreateEvent(
-      "id_0", "Event with long name that should ellipsis", start_time, end_time,
+      "id_0", summary, start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
       all_day_event);
@@ -73,15 +74,39 @@ class CalendarUpNextViewPixelTest : public AshTestBase {
 
   views::Widget* Widget() { return widget_.get(); }
 
+  const views::View* GetHeaderView() { return up_next_view_->header_view_; }
+
+  const views::View* GetHeaderButtonContainerView() {
+    return GetHeaderView()->children()[1];
+  }
+
+  const views::View* GetScrollRightButton() {
+    return GetHeaderButtonContainerView()->children()[1];
+  }
+
+  void PressScrollRightButton() { PressScrollButton(GetScrollRightButton()); }
+
+  // End the scrolling animation.
+  void EndScrollingAnimation() { up_next_view_->scrolling_animation_->End(); }
+
  private:
+  void PressScrollButton(const views::View* button) {
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
+    // End the scrolling animation immediately so the pixel test images aren't
+    // in an animating state. If we don't do this, the test images are taken
+    // almost immediately and are incorrect.
+    EndScrollingAnimation();
+  }
+
   std::unique_ptr<views::Widget> widget_;
   CalendarUpNextView* up_next_view_ = nullptr;
   std::unique_ptr<CalendarViewController> controller_;
 };
 
-TEST_F(
-    CalendarUpNextViewPixelTest,
-    GivenASingleUpcomingEvent_WhenUpNextViewIsCreated_ThenShouldDisplaySingleUpcomingEvent) {
+TEST_F(CalendarUpNextViewPixelTest,
+       ShouldShowSingleEventTakingUpFullWidthOfParentView) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -98,12 +123,11 @@ TEST_F(
   CreateCalendarUpNextView(std::move(events));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "calendar_up_next_single_upcoming_event.rev_0", Widget()));
+      "calendar_up_next_single_upcoming_event.rev_1", Widget()));
 }
 
-TEST_F(
-    CalendarUpNextViewPixelTest,
-    GivenThreeUpcomingEvents_WhenUpNextViewIsCreated_ThenShouldDisplayMultipleEventsInScrollView) {
+TEST_F(CalendarUpNextViewPixelTest,
+       ShouldShowMultipleEventsInHorizontalScrollView) {
   // Set time override.
   base::subtle::ScopedTimeClockOverrides time_override(
       []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
@@ -122,7 +146,36 @@ TEST_F(
   CreateCalendarUpNextView(std::move(events));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "calendar_up_next_multiple_upcoming_events.rev_0", Widget()));
+      "calendar_up_next_multiple_upcoming_events.rev_1", Widget()));
+}
+
+TEST_F(
+    CalendarUpNextViewPixelTest,
+    ShouldMakeSecondEventFullyVisibleAndLeftAligned_WhenScrollRightButtonIsPressed) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Add 3 events starting in 10 mins.
+  std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
+  auto start_time = base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
+                    base::Minutes(10);
+  auto end_time =
+      base::subtle::TimeNowIgnoringOverride().LocalMidnight() + base::Hours(1);
+  events.push_back(CreateEvent(start_time, end_time, "First event"));
+  events.push_back(CreateEvent(start_time, end_time, "Second event"));
+  events.push_back(CreateEvent(start_time, end_time, "Third event"));
+  events.push_back(CreateEvent(start_time, end_time, "Fourth event"));
+
+  CreateCalendarUpNextView(std::move(events));
+
+  PressScrollRightButton();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "calendar_up_next_multiple_upcoming_events_press_scroll_right_button.rev_"
+      "0",
+      Widget()));
 }
 
 }  // namespace ash

@@ -83,6 +83,9 @@ constexpr int kMaxNumNonPrunableMonths = 2 * kNumSurroundingMonthsCached + 1;
 // kMaxNumNonPrunableMonths is the total maximum number of cached months.
 constexpr int kMaxNumPrunableMonths = 20;
 
+// Between child spacing for `CalendarUpNextView`.
+constexpr int kUpNextBetweenChildSpacing = 8;
+
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time selected_date);
 
