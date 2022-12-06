@@ -133,9 +133,9 @@ declare_args() {
   # recognizable in the debugger, and crashes on memory accesses through
   # uninitialized pointers.
   #
-  # TODO(crbug.com/1131993): Enabling this when 'is_android' is true breaks
-  # content_shell_test_apk on both ARM and x86.
-  init_stack_vars = !is_android
+  # TODO(crbug.com/1131993): This regresses binary size by ~1MB on Android and
+  # needs to be evaluated before enabling it there as well.
+  init_stack_vars = !(is_android && is_official_build)
 
   # This argument is to control whether enabling text section splitting in the
   # final binary. When enabled, the separated text sections with prefix
