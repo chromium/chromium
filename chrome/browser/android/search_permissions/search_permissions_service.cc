@@ -310,10 +310,10 @@ void SearchPermissionsService::RecordEffectiveDSEOriginPermissions() {
 void SearchPermissionsService::SetDSEPrefForTesting(
     ContentSetting geolocation_setting_to_restore,
     ContentSetting notifications_setting_to_restore) {
-  base::DictionaryValue dict;
-  dict.SetStringKey(kDSENameKey, delegate_->GetDSEName());
-  dict.SetStringKey(kDSEOriginKey, delegate_->GetDSEOrigin().GetURL().spec());
-  dict.SetIntKey(kDSEGeolocationSettingKey, geolocation_setting_to_restore);
-  dict.SetIntKey(kDSENotificationsSettingKey, notifications_setting_to_restore);
-  pref_service_->Set(prefs::kDSEPermissionsSettings, dict);
+  base::Value::Dict dict;
+  dict.Set(kDSENameKey, delegate_->GetDSEName());
+  dict.Set(kDSEOriginKey, delegate_->GetDSEOrigin().GetURL().spec());
+  dict.Set(kDSEGeolocationSettingKey, geolocation_setting_to_restore);
+  dict.Set(kDSENotificationsSettingKey, notifications_setting_to_restore);
+  pref_service_->SetDict(prefs::kDSEPermissionsSettings, std::move(dict));
 }
