@@ -82,6 +82,11 @@ void MergeDuplicateVisitIntoCanonicalVisit(
       {duplicate_visit.annotated_visit.visit_row.visit_id,
        duplicate_visit.annotated_visit.url_row.url(),
        duplicate_visit.annotated_visit.visit_row.visit_time});
+
+  // If duplicate visit is 0, make sure that it is maintained.
+  if (duplicate_visit.score == 0.0) {
+    canonical_visit.score = 0.0;
+  }
 }
 
 bool IsNoisyVisit(const history::ClusterVisit& visit) {

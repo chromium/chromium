@@ -122,6 +122,27 @@ TEST_F(OnDeviceClusteringUtilTest, MergeDuplicateVisitIntoCanonicalVisit) {
           .entities[0]
           .weight,
       20);
+
+  EXPECT_FLOAT_EQ(canonical_visit.score, 1.0f);
+}
+
+TEST_F(OnDeviceClusteringUtilTest,
+       MergeDuplicateVisitIntoCanonicalVisitMaintainsZeroScore) {
+  // canonical_visit has the same normalized URL as duplicated_visit.
+  history::ClusterVisit duplicate_visit = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(
+          1, GURL("https://example.com/normalized?q=whatever")),
+      GURL("https://example.com/normalized"));
+  duplicate_visit.score = 0.0;
+
+  history::ClusterVisit canonical_visit =
+      testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
+          2, GURL("https://example.com/normalized")));
+
+  MergeDuplicateVisitIntoCanonicalVisit(std::move(duplicate_visit),
+                                        canonical_visit);
+
+  EXPECT_FLOAT_EQ(canonical_visit.score, 0.0f);
 }
 
 TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitSearchHighEngagementVisit) {

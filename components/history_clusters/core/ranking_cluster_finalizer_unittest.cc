@@ -64,6 +64,22 @@ TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsDifferentURLs) {
                                       testing::VisitResult(2, 1.0))));
 }
 
+TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsRespectsInitialZeroScore) {
+  history::ClusterVisit visit = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://bar.com/")));
+  visit.score = 0.0f;
+
+  history::ClusterVisit visit2 = testing::CreateClusterVisit(
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://foo.com/")));
+
+  history::Cluster cluster;
+  cluster.visits = {visit, visit2};
+  FinalizeCluster(cluster);
+  EXPECT_THAT(testing::ToVisitResults({cluster}),
+              ElementsAre(ElementsAre(testing::VisitResult(1, 0.0),
+                                      testing::VisitResult(2, 1.0))));
+}
+
 TEST_F(RankingClusterFinalizerTest, ScoreTwoVisitsSimilarURL) {
   // Visit2 has the same normalized URL as Visit1.
   history::ClusterVisit visit = testing::CreateClusterVisit(

@@ -31,7 +31,7 @@ float Smoothstep(float low, float high, float value) {
 
 // Returns whether |visit| should be shown in the UI.
 bool IsShownVisitCandidate(const history::ClusterVisit& visit) {
-  return !visit.annotated_visit.url_row.title().empty();
+  return visit.score > 0.0f && !visit.annotated_visit.url_row.title().empty();
 }
 
 }  // namespace
