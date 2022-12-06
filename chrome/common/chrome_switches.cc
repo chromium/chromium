@@ -301,6 +301,23 @@ const char kExtensionsInstallVerification[] = "extensions-install-verification";
 // be treated as not from the webstore when doing install verification.
 const char kExtensionsNotWebstore[] = "extensions-not-webstore";
 
+// Specifies a proxy server for origins specified in
+// kIPAnonymizationProxyAllowList. This proxy will be used on a best-effort
+// basis when normal proxy resolution would result in trying direct connections
+// (possibly after trying some other proxy server).
+const char kIPAnonymizationProxyServer[] = "ip-anonymization-proxy-server";
+
+// Specifies a list of origins on which to use the server specified by
+// `kIPAnonymizationProxyServer`. if `kIPAnonymizationProxyServer` is empty this
+// list will be ignored. This is intended as a reverse bypass rules list.
+const char kIPAnonymizationProxyAllowList[] =
+    "ip-anonymization-proxy-allow-list";
+
+// Specifies a value for the "password" header to be passed to the proxy
+// specified by `kIPAnonymizationProxyServer`. if `kIPAnonymizationProxyServer`
+// is empty this list will be ignored.
+const char kIPAnonymizationProxyPassword[] = "ip-anonymization-proxy-password";
+
 // Forces application mode. This hides certain system UI elements and forces
 // the app to be installed if it hasn't been already.
 const char kForceAppMode[] = "force-app-mode";

@@ -126,6 +126,9 @@ enum class NetworkSandboxState {
   kMaxValue = kDisabledBecauseOfFailedLaunch
 };
 
+// The temporary header name expected by the envoy proxy configuration.
+const char kIPAnonymizationProxyPassword[] = "password";
+
 // The global instance of the SystemNetworkContextManager.
 SystemNetworkContextManager* g_system_network_context_manager = nullptr;
 
@@ -770,6 +773,33 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
   if (IsCertificateTransparencyEnabled()) {
     network_context_params->enforce_chrome_ct_policy = true;
+  }
+
+  // If a custom proxy is specified, set the proxy rules
+  if (command_line.HasSwitch(::switches::kIPAnonymizationProxyServer)) {
+    auto proxy_config = network::mojom::CustomProxyConfig::New();
+    proxy_config->rules.type =
+        net::ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME;
+    proxy_config->rules.ParseFromString(command_line.GetSwitchValueASCII(
+        ::switches::kIPAnonymizationProxyServer));
+
+    // Get allowlist hosts
+    std::string proxy_allow_list = command_line.GetSwitchValueASCII(
+        ::switches::kIPAnonymizationProxyAllowList);
+    proxy_config->rules.reverse_bypass = true;
+    proxy_config->rules.bypass_rules.ParseFromString(proxy_allow_list);
+
+    proxy_config->should_replace_direct = true;
+    proxy_config->should_override_existing_config = false;
+    proxy_config->allow_non_idempotent_methods = true;
+    proxy_config->connect_tunnel_headers.SetHeader(
+        kIPAnonymizationProxyPassword,
+        command_line.GetSwitchValueASCII(
+            ::switches::kIPAnonymizationProxyPassword));
+
+    // Set initial custom proxy configuration
+    network_context_params->initial_custom_proxy_config =
+        std::move(proxy_config);
   }
 }
 
