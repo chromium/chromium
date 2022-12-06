@@ -103,6 +103,7 @@ class BaseSymbol {
   virtual std::string_view ContainerName() const = 0;
   virtual const char* ObjectPath() const = 0;
   virtual const char* SourcePath() const = 0;
+  virtual const char* GroupingPath() const = 0;
   virtual const char* SectionName() const = 0;
   virtual const char* Component() const = 0;
   virtual std::string* Disassembly() const = 0;
@@ -193,6 +194,7 @@ class Symbol : public BaseSymbol {
   std::string_view ContainerName() const override;
   const char* ObjectPath() const override;
   const char* SourcePath() const override;
+  const char* GroupingPath() const override;
   const char* SectionName() const override;
   const char* Component() const override;
   std::string* Disassembly() const override;
@@ -251,6 +253,7 @@ class DeltaSymbol : public BaseSymbol {
   std::string_view ContainerName() const override;
   const char* ObjectPath() const override;
   const char* SourcePath() const override;
+  const char* GroupingPath() const override;
   const char* SectionName() const override;
   const char* Component() const override;
   std::string* Disassembly() const override;

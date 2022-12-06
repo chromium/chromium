@@ -158,4 +158,23 @@ TEST(TreeBuilderTest, TestJoinDexMethodClasses) {
   EXPECT_EQ("foo", ShortName(method_symbol));
   EXPECT_EQ(0u, method_symbol["children"].size());
 }
+
+TEST(TreeBuilderTest, TestJoinDexMethodClassesStringLiteral) {
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
+  MakeSymbol(size_info.get(), SectionId::kDex, 30, "a/b/c", "",
+             "\"start x.y.z end\"");
+
+  TreeBuilder builder(size_info.get());
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '>', false, filters);
+  CheckAllTreeNodesFindable(builder, builder.Open(""));
+
+  Json::Value class_symbol = builder.Open("a/b/c");
+  EXPECT_EQ(1u, class_symbol["children"].size());
+
+  Json::Value string_literal_symbol = class_symbol["children"][0];
+  EXPECT_EQ("\"start x.y.z end\"", ShortName(string_literal_symbol));
+  EXPECT_EQ(0u, string_literal_symbol["children"].size());
+}
+
 }  // namespace caspian

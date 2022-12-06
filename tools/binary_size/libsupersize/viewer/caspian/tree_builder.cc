@@ -15,7 +15,6 @@ namespace {
 /** Name used by a directory created to hold symbols with no name. */
 constexpr const char kComponentSep = '>';
 constexpr const char kPathSep = '/';
-constexpr const char kNoPath[] = "(No path)";
 }  // namespace
 
 TreeBuilder::TreeBuilder(SizeInfo* size_info) : diff_mode_(false) {
@@ -53,9 +52,7 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
   std::unordered_map<GroupedPath, std::vector<const BaseSymbol*>>
       symbols_by_grouped_path;
   for (const BaseSymbol* sym : symbols_) {
-    const char* path = *sym->SourcePath()   ? sym->SourcePath()
-                       : *sym->ObjectPath() ? sym->ObjectPath()
-                                            : kNoPath;
+    const char* path = sym->GroupingPath();
     GroupedPath key = GroupedPath{lens_->ParentName(*sym), path};
     if (ShouldIncludeSymbol(key, *sym)) {
       symbols_by_grouped_path[key].push_back(sym);
@@ -279,11 +276,15 @@ void TreeBuilder::JoinDexMethodClasses(TreeNode* node) {
 
   // Bucket dex symbols by their class.
   for (TreeNode* child : node->children) {
-    const size_t split_index = child->id_path.path.find_first_of('#');
+    bool is_string_literal = child->id_path.path.starts_with("\"");
+    const size_t split_index = is_string_literal
+                                   ? std::string_view::npos
+                                   : child->id_path.path.find_first_of('#');
     // No return type / field type means it's a class node.
     const bool is_class_node =
-        child->id_path.path.find_first_of(' ', child->short_name_index) ==
-        std::string_view::npos;
+        !is_string_literal &&
+        (child->id_path.path.find_first_of(' ', child->short_name_index) ==
+         std::string_view::npos);
     const bool has_class_prefix =
         is_class_node || split_index != std::string_view::npos;
 

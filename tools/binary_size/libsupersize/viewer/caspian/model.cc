@@ -17,6 +17,10 @@
 
 namespace caspian {
 
+namespace {
+constexpr const char kNoPath[] = "(No path)";
+}  // namespace
+
 Container::Container(const std::string& name_in) : name(name_in) {}
 Container::~Container() = default;
 Container::Container(const Container& other) = default;
@@ -51,14 +55,14 @@ void Symbol::DeriveNames() const {
              IsOther()) {
     template_name_ = full_name_;
     name_ = full_name_;
+  } else if (IsStringLiteral()) {
+    template_name_ = full_name_;
+    name_ = full_name_;
   } else if (IsDex()) {
     std::tuple<std::string_view, std::string_view, std::string_view>
         parsed_names = ParseJava(full_name_, &size_info_->owned_strings);
     template_name_ = std::get<1>(parsed_names);
     name_ = std::get<2>(parsed_names);
-  } else if (IsStringLiteral()) {
-    template_name_ = full_name_;
-    name_ = full_name_;
   } else if (IsNative()) {
     std::tuple<std::string_view, std::string_view, std::string_view>
         parsed_names = ParseCpp(full_name_, &size_info_->owned_strings);
@@ -110,6 +114,13 @@ const char* Symbol::ObjectPath() const {
 }
 const char* Symbol::SourcePath() const {
   return source_path_;
+}
+const char* Symbol::GroupingPath() const {
+  if (*source_path_)
+    return source_path_;
+  if (*object_path_)
+    return object_path_;
+  return kNoPath;
 }
 const char* Symbol::SectionName() const {
   return section_name_;
@@ -228,6 +239,10 @@ const char* DeltaSymbol::ObjectPath() const {
 
 const char* DeltaSymbol::SourcePath() const {
   return (after_ ? after_ : before_)->SourcePath();
+}
+
+const char* DeltaSymbol::GroupingPath() const {
+  return (after_ ? after_ : before_)->GroupingPath();
 }
 
 const char* DeltaSymbol::SectionName() const {
