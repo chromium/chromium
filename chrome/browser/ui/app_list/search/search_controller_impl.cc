@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/search/app_search_data_source.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
@@ -402,7 +401,7 @@ void SearchControllerImpl::Train(LaunchData&& launch_data) {
 
     // Only record the last launched app if the hashed logging feature flag is
     // enabled, because it is only used by hashed logging.
-    if (IsResultTypeApp(launch_data.result_type)) {
+    if (IsAppListSearchResultAnApp(launch_data.result_type)) {
       last_launched_app_id_ = NormalizeId(launch_data.id);
     } else if (launch_data.result_type ==
                ash::AppListSearchResultType::kArcAppShortcut) {

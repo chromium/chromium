@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/app_list/app_list_notifier_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_watcher.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
@@ -219,7 +219,7 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   const size_t last_query_length = search_controller_->get_query().size();
   if (launch_type == ash::AppListLaunchType::kAppSearchResult &&
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox &&
-      app_list::IsResultTypeApp(launch_data.result_type) &&
+      ash::IsAppListSearchResultAnApp(launch_data.result_type) &&
       last_query_length != 0) {
     ash::RecordSuccessfulAppLaunchUsingSearch(launched_from, last_query_length);
   }

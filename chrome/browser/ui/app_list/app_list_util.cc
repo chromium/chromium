@@ -40,35 +40,4 @@ std::unique_ptr<ash::AppListItemMetadata> GenerateItemMetadataFromSyncItem(
 }
 #endif
 
-bool IsResultTypeApp(ash::AppListSearchResultType result_type) {
-  switch (result_type) {
-    case ash::AppListSearchResultType::kInstalledApp:
-    case ash::AppListSearchResultType::kZeroStateApp:
-    case ash::AppListSearchResultType::kInternalApp:
-    case ash::AppListSearchResultType::kGames:
-      return true;
-    case ash::AppListSearchResultType::kOmnibox:
-    case ash::AppListSearchResultType::kLauncher:
-    case ash::AppListSearchResultType::kFileSearch:
-    case ash::AppListSearchResultType::kDriveSearch:
-    case ash::AppListSearchResultType::kUnknown:
-    case ash::AppListSearchResultType::kPlayStoreApp:
-    case ash::AppListSearchResultType::kInstantApp:
-    case ash::AppListSearchResultType::kAnswerCard:
-    case ash::AppListSearchResultType::kPlayStoreReinstallApp:
-    case ash::AppListSearchResultType::kOsSettings:
-    case ash::AppListSearchResultType::kInternalPrivacyInfo:
-    case ash::AppListSearchResultType::kAssistantText:
-    case ash::AppListSearchResultType::kPersonalization:
-    case ash::AppListSearchResultType::kHelpApp:
-    case ash::AppListSearchResultType::kZeroStateHelpApp:
-    case ash::AppListSearchResultType::kKeyboardShortcut:
-    case ash::AppListSearchResultType::kOpenTab:
-    case ash::AppListSearchResultType::kArcAppShortcut:
-    case ash::AppListSearchResultType::kZeroStateFile:
-    case ash::AppListSearchResultType::kZeroStateDrive:
-      return false;
-  }
-}
-
 }  // namespace app_list

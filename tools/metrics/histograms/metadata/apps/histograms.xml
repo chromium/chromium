@@ -951,7 +951,8 @@ chromium-metrics-reviews@google.com.
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
-    The number of app launches from the search box with non-empty queries.
+    The number of app launches from the search box with non-empty queries. This
+    was updated in 12/2022 to include more result types that were apps.
   </summary>
 </histogram>
 

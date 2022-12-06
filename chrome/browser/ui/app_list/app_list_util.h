@@ -29,9 +29,6 @@ std::unique_ptr<ash::AppListItemMetadata> GenerateItemMetadataFromSyncItem(
     const app_list::AppListSyncableService::SyncItem& sync_item);
 #endif
 
-// Check if `result_type` is app.
-bool IsResultTypeApp(ash::AppListSearchResultType result_type);
-
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_UTIL_H_
