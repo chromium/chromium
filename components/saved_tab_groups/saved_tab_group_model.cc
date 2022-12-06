@@ -268,11 +268,13 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
   DCHECK(Contains(group_id));
   DCHECK(Get(group_id)->ContainsTab(tab_id));
 
-  SavedTabGroupTab* tab = Get(group_id)->GetTab(tab_id);
+  absl::optional<SavedTabGroupTab*> maybe_tab = Get(group_id)->GetTab(tab_id);
+  SavedTabGroupTab* tab = maybe_tab.value();
+
   tab->MergeTab(std::move(sync_specific));
 
   for (auto& observer : observers_)
-    observer.SavedTabGroupUpdatedFromSync(tab->group_guid());
+    observer.SavedTabGroupUpdatedFromSync(tab->saved_group_guid());
 
   return tab->ToSpecifics();
 }
@@ -312,11 +314,11 @@ SavedTabGroupModel::LoadStoredEntries(
   }
 
   for (const SavedTabGroupTab& tab : tabs) {
-    absl::optional<int> index = GetIndexOf(tab.group_guid());
+    absl::optional<int> index = GetIndexOf(tab.saved_group_guid());
     if (!index.has_value()) {
       tabs_missing_groups.emplace_back(std::move(*tab.ToSpecifics()));
     } else {
-      base::GUID group_id = tab.group_guid();
+      base::GUID group_id = tab.saved_group_guid();
       AddTabToGroup(group_id, std::move(tab), 0);
     }
   }

@@ -54,13 +54,19 @@ class SavedTabGroup {
     return saved_tabs_;
   }
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
-  SavedTabGroupTab* GetTab(const base::GUID& tab_id);
+
+  // Accessors for Tabs based on id.
+  SavedTabGroupTab* GetTab(const base::GUID& saved_tab_guid);
+  SavedTabGroupTab* GetTab(const base::Token& local_tab_id);
+
   // Returns the index for `tab_id` in `saved_tabs_` if it exists. Otherwise,
   // returns absl::nullopt.
-  absl::optional<int> GetIndexOfTab(const base::GUID& tab_id) const;
+  absl::optional<int> GetIndexOfTab(const base::GUID& saved_tab_guid) const;
+  absl::optional<int> GetIndexOfTab(const base::Token& local_tab_id) const;
 
   // Returns true if the `tab_id` was found in `saved_tabs_`.
-  bool ContainsTab(const base::GUID& tab_id) const;
+  bool ContainsTab(const base::GUID& saved_tab_guid) const;
+  bool ContainsTab(const base::Token& tab_id) const;
 
   // Metadata mutators.
   SavedTabGroup& SetTitle(std::u16string title);
@@ -76,13 +82,14 @@ class SavedTabGroup {
   SavedTabGroup& AddTab(size_t index, SavedTabGroupTab tab);
   // Removes the tab denoted by `tab_id` from `saved_tabs_`. This function will
   // remove the last tab: crbug/1371959.
-  SavedTabGroup& RemoveTab(const base::GUID& tab_id);
+  SavedTabGroup& RemoveTab(const base::GUID& saved_tab_guid);
   // Replaces that tab denoted by `tab_id` with value of `tab` unless the
   // replacement tab already exists. In this case we CHECK.
-  SavedTabGroup& ReplaceTabAt(const base::GUID& tab_id, SavedTabGroupTab tab);
+  SavedTabGroup& ReplaceTabAt(const base::GUID& saved_tab_guid,
+                              SavedTabGroupTab tab);
   // Moves the tab denoted by `tab_id` from its current index to the
   // `new_index`.
-  SavedTabGroup& MoveTab(const base::GUID& tab_id, size_t new_index);
+  SavedTabGroup& MoveTab(const base::GUID& saved_tab_guid, size_t new_index);
 
   // Merges this groups data with a specific from sync and returns the newly
   // merged specific. Side effect: Updates the values of this group.

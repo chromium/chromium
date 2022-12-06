@@ -378,17 +378,17 @@ TEST_F(SavedTabGroupModelTest, AddTabToGroup) {
 
   saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab1, 0);
   EXPECT_EQ(group->saved_tabs().size(), size_t(2));
-  EXPECT_EQ(0, group->GetIndexOfTab(tab1.guid()));
-  EXPECT_TRUE(group->ContainsTab(tab1.guid()));
-  ASSERT_TRUE(group->GetTab(tab1.guid()));
-  CompareSavedTabGroupTabs({*group->GetTab(tab1.guid())}, {tab1});
+  EXPECT_EQ(0, group->GetIndexOfTab(tab1.saved_tab_guid()));
+  EXPECT_TRUE(group->ContainsTab(tab1.saved_tab_guid()));
+  ASSERT_TRUE(group->GetTab(tab1.saved_tab_guid()));
+  CompareSavedTabGroupTabs({*group->GetTab(tab1.saved_tab_guid())}, {tab1});
 
   saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2, 2);
   EXPECT_EQ(group->saved_tabs().size(), size_t(3));
-  EXPECT_EQ(2, group->GetIndexOfTab(tab2.guid()));
-  EXPECT_TRUE(group->ContainsTab(tab2.guid()));
-  ASSERT_TRUE(group->GetTab(tab2.guid()));
-  CompareSavedTabGroupTabs({*group->GetTab(tab2.guid())}, {tab2});
+  EXPECT_EQ(2, group->GetIndexOfTab(tab2.saved_tab_guid()));
+  EXPECT_TRUE(group->ContainsTab(tab2.saved_tab_guid()));
+  ASSERT_TRUE(group->GetTab(tab2.saved_tab_guid()));
+  CompareSavedTabGroupTabs({*group->GetTab(tab2.saved_tab_guid())}, {tab2});
   CompareSavedTabGroupTabs(group->saved_tabs(),
                            {tab1, group->saved_tabs()[1], tab2});
 }
@@ -407,11 +407,13 @@ TEST_F(SavedTabGroupModelTest, RemoveTabFromGroup) {
   saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2, 2);
   EXPECT_EQ(group->saved_tabs().size(), size_t(3));
 
-  saved_tab_group_model_->RemoveTabFromGroup(group->saved_guid(), tab1.guid());
+  saved_tab_group_model_->RemoveTabFromGroup(group->saved_guid(),
+                                             tab1.saved_tab_guid());
   EXPECT_EQ(group->saved_tabs().size(), size_t(2));
   CompareSavedTabGroupTabs(group->saved_tabs(), {group->saved_tabs()[0], tab2});
 
-  saved_tab_group_model_->RemoveTabFromGroup(group->saved_guid(), tab2.guid());
+  saved_tab_group_model_->RemoveTabFromGroup(group->saved_guid(),
+                                             tab2.saved_tab_guid());
   EXPECT_EQ(group->saved_tabs().size(), size_t(1));
   CompareSavedTabGroupTabs(group->saved_tabs(), {group->saved_tabs()[0]});
 }
@@ -430,18 +432,18 @@ TEST_F(SavedTabGroupModelTest, ReplaceTabInGroup) {
   saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2, 2);
   EXPECT_EQ(group->saved_tabs().size(), size_t(3));
 
-  saved_tab_group_model_->ReplaceTabInGroupAt(group->saved_guid(), tab1.guid(),
-                                              tab3);
+  saved_tab_group_model_->ReplaceTabInGroupAt(group->saved_guid(),
+                                              tab1.saved_tab_guid(), tab3);
   CompareSavedTabGroupTabs(group->saved_tabs(),
                            {tab3, group->saved_tabs()[1], tab2});
 
-  saved_tab_group_model_->ReplaceTabInGroupAt(group->saved_guid(), tab2.guid(),
-                                              tab1);
+  saved_tab_group_model_->ReplaceTabInGroupAt(group->saved_guid(),
+                                              tab2.saved_tab_guid(), tab1);
   CompareSavedTabGroupTabs(group->saved_tabs(),
                            {tab3, group->saved_tabs()[1], tab1});
 
   saved_tab_group_model_->ReplaceTabInGroupAt(
-      group->saved_guid(), group->saved_tabs()[1].guid(), tab2);
+      group->saved_guid(), group->saved_tabs()[1].saved_tab_guid(), tab2);
   CompareSavedTabGroupTabs(group->saved_tabs(), {tab3, tab2, tab1});
 }
 
@@ -459,11 +461,13 @@ TEST_F(SavedTabGroupModelTest, MoveTabInGroup) {
   saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2, 2);
   EXPECT_EQ(group->saved_tabs().size(), size_t(3));
 
-  saved_tab_group_model_->MoveTabInGroupTo(group->saved_guid(), tab1.guid(), 2);
+  saved_tab_group_model_->MoveTabInGroupTo(group->saved_guid(),
+                                           tab1.saved_tab_guid(), 2);
   CompareSavedTabGroupTabs(group->saved_tabs(),
                            {group->saved_tabs()[0], tab2, tab1});
 
-  saved_tab_group_model_->MoveTabInGroupTo(group->saved_guid(), tab1.guid(), 1);
+  saved_tab_group_model_->MoveTabInGroupTo(group->saved_guid(),
+                                           tab1.saved_tab_guid(), 1);
   CompareSavedTabGroupTabs(group->saved_tabs(),
                            {group->saved_tabs()[0], tab1, tab2});
 }
@@ -535,8 +539,8 @@ TEST_F(SavedTabGroupModelTest, MergeTabsFromModel) {
       *saved_tab_group_model_->MergeTab(*tab2.ToSpecifics()));
 
   EXPECT_EQ(tab2.url(), merged_tab.url());
-  EXPECT_EQ(tab2.guid(), merged_tab.guid());
-  EXPECT_EQ(tab2.group_guid(), merged_tab.group_guid());
+  EXPECT_EQ(tab2.saved_tab_guid(), merged_tab.saved_tab_guid());
+  EXPECT_EQ(tab2.saved_group_guid(), merged_tab.saved_group_guid());
   EXPECT_EQ(tab2.creation_time_windows_epoch_micros(),
             merged_tab.creation_time_windows_epoch_micros());
   EXPECT_EQ(tab2.update_time_windows_epoch_micros(),

@@ -85,7 +85,7 @@ absl::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeSyncData(
   // Update sync with any locally stored data not currently stored in sync.
   for (const SavedTabGroup& group : model_->saved_tab_groups()) {
     for (const SavedTabGroupTab& tab : group.saved_tabs()) {
-      if (synced_items.count(tab.guid().AsLowercaseString()))
+      if (synced_items.count(tab.saved_tab_guid().AsLowercaseString()))
         continue;
       SendToSync(tab.ToSpecifics(), metadata_change_list.get());
     }
@@ -209,7 +209,7 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
 
   RemoveEntitySpecific(removed_group->saved_guid(), write_batch.get());
   for (const SavedTabGroupTab& tab : removed_group->saved_tabs())
-    RemoveEntitySpecific(tab.guid(), write_batch.get());
+    RemoveEntitySpecific(tab.saved_tab_guid(), write_batch.get());
 
   store_->CommitWriteBatch(
       std::move(write_batch),

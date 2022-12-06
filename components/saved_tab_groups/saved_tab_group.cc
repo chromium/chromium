@@ -47,23 +47,48 @@ SavedTabGroup::SavedTabGroup(const SavedTabGroup& other) = default;
 
 SavedTabGroup::~SavedTabGroup() = default;
 
-SavedTabGroupTab* SavedTabGroup::GetTab(const base::GUID& tab_id) {
-  absl::optional<int> index = GetIndexOfTab(tab_id);
+SavedTabGroupTab* SavedTabGroup::GetTab(const base::GUID& saved_tab_guid) {
+  absl::optional<int> index = GetIndexOfTab(saved_tab_guid);
   if (!index.has_value())
     return nullptr;
   return &saved_tabs()[index.value()];
 }
 
-bool SavedTabGroup::ContainsTab(const base::GUID& tab_id) const {
-  absl::optional<int> index = GetIndexOfTab(tab_id);
+SavedTabGroupTab* SavedTabGroup::GetTab(const base::Token& local_tab_id) {
+  absl::optional<int> index = GetIndexOfTab(local_tab_id);
+  if (!index.has_value())
+    return nullptr;
+
+  return &saved_tabs()[index.value()];
+}
+
+bool SavedTabGroup::ContainsTab(const base::GUID& saved_tab_guid) const {
+  absl::optional<int> index = GetIndexOfTab(saved_tab_guid);
+  return index.has_value();
+}
+
+bool SavedTabGroup::ContainsTab(const base::Token& local_tab_id) const {
+  absl::optional<int> index = GetIndexOfTab(local_tab_id);
   return index.has_value();
 }
 
 absl::optional<int> SavedTabGroup::GetIndexOfTab(
-    const base::GUID& tab_id) const {
+    const base::GUID& saved_tab_guid) const {
   auto it = base::ranges::find_if(
-      saved_tabs(),
-      [tab_id](const SavedTabGroupTab& tab) { return tab.guid() == tab_id; });
+      saved_tabs(), [saved_tab_guid](const SavedTabGroupTab& tab) {
+        return tab.saved_tab_guid() == saved_tab_guid;
+      });
+  if (it != saved_tabs().end())
+    return it - saved_tabs().begin();
+  return absl::nullopt;
+}
+
+absl::optional<int> SavedTabGroup::GetIndexOfTab(
+    const base::Token& local_tab_id) const {
+  auto it = base::ranges::find_if(saved_tabs(),
+                                  [local_tab_id](const SavedTabGroupTab& tab) {
+                                    return tab.local_tab_id() == local_tab_id;
+                                  });
   if (it != saved_tabs().end())
     return it - saved_tabs().begin();
   return absl::nullopt;
@@ -97,14 +122,14 @@ SavedTabGroup& SavedTabGroup::SetUpdateTimeWindowsEpochMicros(
 SavedTabGroup& SavedTabGroup::AddTab(size_t index, SavedTabGroupTab tab) {
   CHECK_GE(index, 0u);
   CHECK_LE(index, saved_tabs_.size());
-  CHECK(!ContainsTab(tab.guid()));
+  CHECK(!ContainsTab(tab.saved_tab_guid()));
   saved_tabs_.emplace(saved_tabs_.begin() + index, std::move(tab));
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::RemoveTab(const base::GUID& tab_id) {
-  absl::optional<size_t> index = GetIndexOfTab(tab_id);
+SavedTabGroup& SavedTabGroup::RemoveTab(const base::GUID& saved_tab_guid) {
+  absl::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
   CHECK_LT(index.value(), saved_tabs_.size());
@@ -113,22 +138,22 @@ SavedTabGroup& SavedTabGroup::RemoveTab(const base::GUID& tab_id) {
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::ReplaceTabAt(const base::GUID& tab_id,
+SavedTabGroup& SavedTabGroup::ReplaceTabAt(const base::GUID& saved_tab_guid,
                                            SavedTabGroupTab tab) {
-  absl::optional<size_t> index = GetIndexOfTab(tab_id);
+  absl::optional<size_t> index = GetIndexOfTab(saved_tab_guid);
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
   CHECK_LT(index.value(), saved_tabs_.size());
-  CHECK(!ContainsTab(tab.guid()));
+  CHECK(!ContainsTab(tab.saved_tab_guid()));
   saved_tabs_.erase(saved_tabs_.begin() + index.value());
   saved_tabs_.insert(saved_tabs_.begin() + index.value(), std::move(tab));
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::MoveTab(const base::GUID& tab_id,
+SavedTabGroup& SavedTabGroup::MoveTab(const base::GUID& saved_tab_guid,
                                       size_t new_index) {
-  absl::optional<size_t> curr_index = GetIndexOfTab(tab_id);
+  absl::optional<size_t> curr_index = GetIndexOfTab(saved_tab_guid);
   CHECK(curr_index.has_value());
   CHECK_GE(curr_index.value(), 0u);
   CHECK_LT(curr_index.value(), saved_tabs_.size());

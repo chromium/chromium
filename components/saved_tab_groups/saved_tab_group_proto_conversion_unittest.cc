@@ -55,9 +55,9 @@ class SavedTabGroupConversionTest : public testing::Test {
 
   void CompareTabs(SavedTabGroupTab tab1, SavedTabGroupTab tab2) {
     EXPECT_EQ(tab1.url(), tab2.url());
-    EXPECT_EQ(tab1.guid(), tab2.guid());
+    EXPECT_EQ(tab1.saved_tab_guid(), tab2.saved_tab_guid());
     EXPECT_EQ(tab1.title(), tab2.title());
-    EXPECT_EQ(tab1.group_guid(), tab2.group_guid());
+    EXPECT_EQ(tab1.saved_group_guid(), tab2.saved_group_guid());
     EXPECT_EQ(tab1.creation_time_windows_epoch_micros(),
               tab2.creation_time_windows_epoch_micros());
     EXPECT_EQ(tab1.update_time_windows_epoch_micros(),
