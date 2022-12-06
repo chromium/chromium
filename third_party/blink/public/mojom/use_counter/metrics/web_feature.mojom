@@ -3757,6 +3757,7 @@ enum WebFeature {
   kCSSValueAppearanceNonStandard = 4416,
   kCSSGetComputedAnimationDelayZero = 4417,
   kGetEffectTimingDelayZero = 4418,
+  kScrollend = 4419,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

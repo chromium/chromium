@@ -533,6 +533,8 @@ void EventTarget::AddedEventListener(
         UseCounter::Count(
             *document,
             WebFeature::kContentVisibilityAutoStateChangeHandlerRegistered);
+      } else if (event_type == event_type_names::kScrollend) {
+        UseCounter::Count(*document, WebFeature::kScrollend);
       }
     }
   }

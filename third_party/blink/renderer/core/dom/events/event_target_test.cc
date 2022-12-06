@@ -85,6 +85,17 @@ TEST_F(EventTargetTest, UseCountAbortSignal) {
       GetDocument().IsUseCounted(WebFeature::kAddEventListenerWithAbortSignal));
 }
 
+TEST_F(EventTargetTest, UseCountScrollend) {
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kScrollend));
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(R"HTML(
+                       const element = document.createElement('div');
+                       element.addEventListener('scrollend', () => {});
+                       )HTML")
+      ->RunScript(GetDocument().domWindow());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kScrollend));
+}
+
 // See https://crbug.com/1357453.
 // Tests that we don't crash when adding a unload event handler to a target
 // that has no ExecutionContext.
