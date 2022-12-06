@@ -49,9 +49,10 @@ const ExtensionIconSet* SystemIndicatorHandler::GetSystemIndicatorIcon(
 
 bool SystemIndicatorHandler::Parse(Extension* extension,
                                    std::u16string* error) {
-  const base::DictionaryValue* system_indicator_value = nullptr;
-  if (!extension->manifest()->GetDictionary(
-          manifest_keys::kSystemIndicator, &system_indicator_value)) {
+  const base::Value::Dict* system_indicator_dict =
+      extension->manifest()->available_values_dict().FindDict(
+          manifest_keys::kSystemIndicator);
+  if (!system_indicator_dict) {
     *error = manifest_errors::kInvalidSystemIndicator;
     return false;
   }
@@ -64,7 +65,7 @@ bool SystemIndicatorHandler::Parse(Extension* extension,
   };
 
   const base::Value* icon_value =
-      system_indicator_value->FindKey(manifest_keys::kActionDefaultIcon);
+      system_indicator_dict->Find(manifest_keys::kActionDefaultIcon);
   if (!icon_value) {
     // Empty icon set.
     set_manifest_data(ExtensionIconSet());
@@ -76,8 +77,7 @@ bool SystemIndicatorHandler::Parse(Extension* extension,
   ExtensionIconSet icons;
   if (icon_value->is_dict()) {
     if (!manifest_handler_helpers::LoadIconsFromDictionary(
-            static_cast<const base::DictionaryValue*>(icon_value), &icons,
-            error)) {
+            icon_value->GetDict(), &icons, error)) {
       return false;
     }
     set_manifest_data(icons);

@@ -69,8 +69,9 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
     return true;
   }
 
-  const base::DictionaryValue* dict = nullptr;
-  if (!extension->manifest()->GetDictionary(keys::kCommands, &dict)) {
+  const base::Value::Dict* dict =
+      extension->manifest()->available_values_dict().FindDict(keys::kCommands);
+  if (!dict) {
     *error = manifest_errors::kInvalidCommandsKey;
     return false;
   }
@@ -80,7 +81,7 @@ bool CommandsHandler::Parse(Extension* extension, std::u16string* error) {
   bool invalid_action_command_specified = false;
   int command_index = 0;
   int keybindings_found = 0;
-  for (const auto item : dict->GetDict()) {
+  for (const auto item : *dict) {
     ++command_index;
 
     const base::Value::Dict* command = item.second.GetIfDict();

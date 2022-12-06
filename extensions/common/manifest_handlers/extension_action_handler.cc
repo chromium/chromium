@@ -81,15 +81,16 @@ bool ExtensionActionHandler::Parse(Extension* extension,
   }
 
   if (key) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!extension->manifest()->GetDictionary(key, &dict)) {
+    const base::Value::Dict* dict =
+        extension->manifest()->available_values_dict().FindDict(key);
+    if (!dict) {
       *error = base::ASCIIToUTF16(error_key);
       return false;
     }
 
     std::vector<InstallWarning> install_warnings;
     std::unique_ptr<ActionInfo> action_info =
-        ActionInfo::Load(extension, type, dict, &install_warnings, error);
+        ActionInfo::Load(extension, type, *dict, &install_warnings, error);
     extension->AddInstallWarnings(std::move(install_warnings));
     if (!action_info)
       return false;  // Failed to parse extension action definition.

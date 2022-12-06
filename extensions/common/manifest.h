@@ -197,6 +197,11 @@ class Manifest final {
     return base::Value::AsDictionaryValue(available_values_);
   }
 
+  // Same as previous but returns `base::Value::Dict`.
+  const base::Value::Dict& available_values_dict() const {
+    return available_values_.GetDict();
+  }
+
  private:
   Manifest(mojom::ManifestLocation location,
            base::Value::Dict value,

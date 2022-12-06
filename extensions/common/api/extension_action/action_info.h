@@ -12,10 +12,6 @@
 #include "extensions/common/extension_icon_set.h"
 #include "url/gurl.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace extensions {
 
 class Extension;
@@ -37,12 +33,12 @@ struct ActionInfo {
   ActionInfo(const ActionInfo& other);
   ~ActionInfo();
 
-  // Loads an ActionInfo from the given DictionaryValue. Populating
+  // Loads an ActionInfo from the given Dict. Populating
   // `install_warnings` if issues are encountered when parsing the manifest.
   static std::unique_ptr<ActionInfo> Load(
       const Extension* extension,
       Type type,
-      const base::DictionaryValue* dict,
+      const base::Value::Dict& dict,
       std::vector<InstallWarning>* install_warnings,
       std::u16string* error);
 

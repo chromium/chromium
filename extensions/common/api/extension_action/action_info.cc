@@ -61,7 +61,7 @@ ActionInfo::~ActionInfo() {}
 std::unique_ptr<ActionInfo> ActionInfo::Load(
     const Extension* extension,
     Type type,
-    const base::DictionaryValue* dict,
+    const base::Value::Dict& dict,
     std::vector<InstallWarning>* install_warnings,
     std::u16string* error) {
   auto result = std::make_unique<ActionInfo>(type);
@@ -69,15 +69,14 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
   // Read the page action |default_icon| (optional).
   // The |default_icon| value can be either dictionary {icon size -> icon path}
   // or non empty string value.
-  if (const base::Value* default_icon =
-          dict->FindKey(keys::kActionDefaultIcon)) {
+  if (const base::Value* default_icon = dict.Find(keys::kActionDefaultIcon)) {
     std::string default_icon_str;
     if (default_icon->is_string())
       default_icon_str = default_icon->GetString();
 
     if (default_icon->is_dict()) {
       if (!manifest_handler_helpers::LoadIconsFromDictionary(
-              default_icon, &result->default_icon, error)) {
+              default_icon->GetDict(), &result->default_icon, error)) {
         return nullptr;
       }
     } else if (default_icon->is_string() &&
@@ -96,8 +95,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
 
   // Read the page action title from |default_title| if present, |name| if not
   // (both optional).
-  if (const base::Value* default_title =
-          dict->FindKey(keys::kActionDefaultTitle)) {
+  if (const base::Value* default_title = dict.Find(keys::kActionDefaultTitle)) {
     if (!default_title->is_string()) {
       *error = errors::kInvalidActionDefaultTitle;
       return nullptr;
@@ -106,8 +104,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
   }
 
   // Read the action's default popup (optional).
-  if (const base::Value* default_popup =
-          dict->FindKey(keys::kActionDefaultPopup)) {
+  if (const base::Value* default_popup = dict.Find(keys::kActionDefaultPopup)) {
     const std::string* url_str = default_popup->GetIfString();
     if (!url_str) {
       *error = errors::kInvalidActionDefaultPopup;
@@ -137,8 +134,7 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
     }
   }
 
-  if (const base::Value* default_state =
-          dict->FindKey(keys::kActionDefaultState)) {
+  if (const base::Value* default_state = dict.Find(keys::kActionDefaultState)) {
     // The default_state key is only valid for TYPE_ACTION; throw an error for
     // others.
     if (type != TYPE_ACTION) {

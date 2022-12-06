@@ -179,15 +179,16 @@ bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
     return FileHandlersParserMV3().Parse(extension, error);
 
   std::unique_ptr<FileHandlers> info(new FileHandlers);
-  const base::Value* all_handlers = nullptr;
-  if (!extension->manifest()->GetDictionary(keys::kFileHandlers,
-                                            &all_handlers)) {
+  const base::Value::Dict* all_handlers =
+      extension->manifest()->available_values_dict().FindDict(
+          keys::kFileHandlers);
+  if (!all_handlers) {
     *error = errors::kInvalidFileHandlers;
     return false;
   }
 
   std::vector<InstallWarning> install_warnings;
-  for (auto entry : all_handlers->DictItems()) {
+  for (auto entry : *all_handlers) {
     if (!entry.second.is_dict()) {
       *error = errors::kInvalidFileHandlers;
       return false;

@@ -10,12 +10,9 @@
 #include <vector>
 
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 
 class ExtensionIconSet;
-
-namespace base {
-class Value;
-}
 
 namespace extensions {
 namespace manifest_handler_helpers {
@@ -32,7 +29,7 @@ bool NormalizeAndValidatePath(const std::string& path,
 // Loads icon paths defined in dictionary |icons_value| into ExtensionIconSet
 // |icons|. |icons_value| is a dictionary value {icon size -> icon path}.
 // Returns success. If load fails, |error| will be set.
-bool LoadIconsFromDictionary(const base::Value* icons_value,
+bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
                              ExtensionIconSet* icons,
                              std::u16string* error);
 
