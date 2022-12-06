@@ -339,20 +339,19 @@
                                      kContentSuggestionsReset];
   }
 
-  // Configures the feed header in the view hierarchy if it is visible.
-  if (self.feedHeaderViewController) {
-    // Ensure that sticky header is not covered by omnibox.
-    if ([self.ntpContentDelegate isContentHeaderSticky]) {
-      self.feedHeaderViewController.view.layer.zPosition = FLT_MAX;
-    }
-    [self addViewControllerAboveFeed:self.feedHeaderViewController];
-  }
   [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
 
   // Adds the feed top section to the view hierarchy if it exists.
   if (IsDiscoverFeedTopSyncPromoEnabled() &&
       self.feedTopSectionViewController) {
     [self addViewControllerAboveFeed:self.feedTopSectionViewController];
+  }
+
+  // Configures the feed header in the view hierarchy if it is visible. Add it
+  // in the order that guarantees it is behind `headerController` and in front
+  // of all other views.
+  if (self.feedHeaderViewController) {
+    [self addViewControllerAboveFeed:self.feedHeaderViewController];
   }
 
   [self addViewControllerAboveFeed:self.headerController];
