@@ -2132,9 +2132,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PrintButton) {
-  content::WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* frame = GetPluginFrame(guest);
   ASSERT_TRUE(frame);
 
   PrintObserver print_observer(frame);
@@ -2143,7 +2143,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PrintButton) {
         .shadowRoot.querySelector('#print')
         .click();
   )";
-  EXPECT_TRUE(ExecuteScript(guest_contents, kClickPrintButtonScript));
+  EXPECT_TRUE(
+      ExecuteScript(guest->GetGuestMainFrame(), kClickPrintButtonScript));
   print_observer.WaitForPrintPreview();
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
