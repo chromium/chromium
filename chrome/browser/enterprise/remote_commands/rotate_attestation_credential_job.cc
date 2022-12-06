@@ -38,8 +38,8 @@ std::string ResultToString(KeyRotationResult result) {
 RotateAttestationCredentialJob::ResultPayload::ResultPayload(
     KeyRotationResult result)
     : result_(result) {
-  base::DictionaryValue root_dict;
-  root_dict.SetString(kResultFieldName, ResultToString(result_));
+  base::Value::Dict root_dict;
+  root_dict.Set(kResultFieldName, ResultToString(result_));
   base::JSONWriter::Write(root_dict, &payload_);
 }
 
@@ -71,7 +71,7 @@ bool RotateAttestationCredentialJob::ParseCommandPayload(
   if (!root->is_dict())
     return false;
 
-  std::string* nonce_ptr = root->FindStringKey(kNoncePathField);
+  std::string* nonce_ptr = root->GetDict().FindString(kNoncePathField);
 
   if (nonce_ptr && !nonce_ptr->empty()) {
     nonce_ = *nonce_ptr;

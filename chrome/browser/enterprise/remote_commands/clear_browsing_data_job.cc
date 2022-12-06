@@ -29,8 +29,8 @@ ClearBrowsingDataJob::ResultPayload::ResultPayload(uint64_t failed_data_types)
 ClearBrowsingDataJob::ResultPayload::~ResultPayload() = default;
 
 std::unique_ptr<std::string> ClearBrowsingDataJob::ResultPayload::Serialize() {
-  base::Value root(base::Value::Type::DICTIONARY);
-  base::Value failed_types_list(base::Value::Type::LIST);
+  base::Value::Dict root;
+  base::Value::List failed_types_list;
 
   if (failed_data_types_ & content::BrowsingDataRemover::DATA_TYPE_CACHE)
     failed_types_list.Append(static_cast<int>(CACHE));
@@ -38,7 +38,7 @@ std::unique_ptr<std::string> ClearBrowsingDataJob::ResultPayload::Serialize() {
   if (failed_data_types_ & content::BrowsingDataRemover::DATA_TYPE_COOKIES)
     failed_types_list.Append(static_cast<int>(COOKIES));
 
-  root.SetPath(kFailedTypesPath, std::move(failed_types_list));
+  root.SetByDottedPath(kFailedTypesPath, std::move(failed_types_list));
 
   std::string payload;
   base::JSONWriter::Write(root, &payload);
@@ -63,8 +63,9 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
 
   if (!root->is_dict())
     return false;
+  const base::Value::Dict& dict = root->GetDict();
 
-  std::string* path = root->FindStringKey(kProfilePathField);
+  const std::string* path = dict.FindString(kProfilePathField);
   if (!path)
     return false;
 
@@ -101,8 +102,8 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
 #endif
 
   // Not specifying these fields is equivalent to setting them to false.
-  clear_cache_ = root->FindBoolKey(kClearCacheField).value_or(false);
-  clear_cookies_ = root->FindBoolKey(kClearCookiesField).value_or(false);
+  clear_cache_ = dict.FindBool(kClearCacheField).value_or(false);
+  clear_cookies_ = dict.FindBool(kClearCookiesField).value_or(false);
 
   return true;
 }
