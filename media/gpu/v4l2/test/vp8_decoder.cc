@@ -319,7 +319,7 @@ struct v4l2_ctrl_vp8_frame Vp8Decoder::SetupFrameHeaders(
   v4l2_frame_headers.prob_gf = frame_hdr.prob_gf;
   v4l2_frame_headers.num_dct_parts = frame_hdr.num_of_dct_partitions;
 
-  v4l2_frame_headers.first_part_size = frame_hdr.num_of_dct_partitions;
+  v4l2_frame_headers.first_part_size = frame_hdr.first_part_size;
   // https://lwn.net/Articles/793069/: macroblock_bit_offset is renamed to
   // first_part_header_bits
   v4l2_frame_headers.first_part_header_bits = frame_hdr.macroblock_bit_offset;
