@@ -86,7 +86,7 @@ class RTC_EXPORT IceConnection {
   int64_t last_ping_response_received_;
   int num_pings_sent_;
 
-  std::vector<const RttSample> rtt_samples_;
+  std::vector<RttSample> rtt_samples_;
 };
 
 }  // namespace blink

@@ -36,7 +36,7 @@ class RTC_EXPORT IcePruneProposal : public IceProposal {
   }
 
  private:
-  std::vector<const IceConnection> connections_to_prune_;
+  std::vector<IceConnection> connections_to_prune_;
 };
 
 }  // namespace blink

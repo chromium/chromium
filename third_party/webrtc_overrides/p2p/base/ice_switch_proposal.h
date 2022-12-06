@@ -74,7 +74,7 @@ class RTC_EXPORT IceSwitchProposal : public IceProposal {
   IceSwitchReason reason_;
   absl::optional<IceConnection> connection_;
   absl::optional<IceRecheckEvent> recheck_event_;
-  std::vector<const IceConnection> connections_to_forget_state_on_;
+  std::vector<IceConnection> connections_to_forget_state_on_;
 };
 
 }  // namespace blink
