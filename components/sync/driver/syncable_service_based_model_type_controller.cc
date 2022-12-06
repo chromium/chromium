@@ -26,7 +26,8 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
       : type_(type), dump_stack_(dump_stack) {
     DCHECK(store_factory);
 
-    // The |syncable_service| can be null in tests.
+    // The |syncable_service| can be null in some cases (e.g. when the
+    // underlying service failed to initialize), and in tests.
     if (syncable_service) {
       bridge_ = std::make_unique<SyncableServiceBasedBridge>(
           type_, std::move(store_factory),
@@ -43,24 +44,43 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
 
   void OnSyncStarting(const DataTypeActivationRequest& request,
                       StartCallback callback) override {
+    if (!bridge_) {
+      // TODO(crbug.com/1394815): Consider running `callback` here to avoid
+      // blocking the Sync machinery.
+      return;
+    }
     GetBridgeDelegate()->OnSyncStarting(request, std::move(callback));
   }
 
   void OnSyncStopping(SyncStopMetadataFate metadata_fate) override {
+    if (!bridge_) {
+      return;
+    }
     GetBridgeDelegate()->OnSyncStopping(metadata_fate);
   }
 
   void GetAllNodesForDebugging(AllNodesCallback callback) override {
+    if (!bridge_) {
+      // TODO(crbug.com/1394815): Consider running `callback` here.
+      return;
+    }
     GetBridgeDelegate()->GetAllNodesForDebugging(std::move(callback));
   }
 
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback)
       const override {
+    if (!bridge_) {
+      // TODO(crbug.com/1394815): Consider running `callback` here.
+      return;
+    }
     GetBridgeDelegate()->GetTypeEntitiesCountForDebugging(std::move(callback));
   }
 
   void RecordMemoryUsageAndCountsHistograms() override {
+    if (!bridge_) {
+      return;
+    }
     GetBridgeDelegate()->RecordMemoryUsageAndCountsHistograms();
   }
 
