@@ -887,6 +887,7 @@ void WebAppPublisherHelper::UninstallWebApp(
                              },
                              base::Unretained(profile())),
                          origin, kClearCookies, kClearStorage, kClearCache,
+                         /*storage_buckets_to_remove=*/{},
                          kAvoidClosingConnections,
                          /*cookie_partition_key=*/absl::nullopt,
                          /*storage_key=*/absl::nullopt, base::DoNothing());

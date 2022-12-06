@@ -19,8 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/storage_service.mojom-forward.h"
 #include "content/browser/background_sync/background_sync_context_impl.h"
@@ -209,6 +207,9 @@ class CONTENT_EXPORT StoragePartitionImpl
                           uint32_t quota_storage_remove_mask,
                           const GURL& storage_origin,
                           base::OnceClosure callback) override;
+  void ClearDataForBuckets(const blink::StorageKey& storage_key,
+                           const std::set<std::string>& storage_buckets,
+                           base::OnceClosure callback) override;
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
                  const blink::StorageKey& storage_key,
@@ -574,6 +575,12 @@ class CONTENT_EXPORT StoragePartitionImpl
       const base::Time begin,
       const base::Time end,
       base::OnceClosure callback);
+
+  void ClearDataForBucketsDone(
+      const blink::StorageKey& storage_key,
+      const std::set<std::string>& storage_buckets,
+      base::OnceClosure callback,
+      const std::vector<blink::mojom::QuotaStatusCode>& status_codes);
 
   void DeletionHelperDone(base::OnceClosure callback);
 

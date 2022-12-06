@@ -5,7 +5,6 @@
 #include "content/browser/buckets/bucket_manager_host.h"
 
 #include "base/containers/contains.h"
-#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"

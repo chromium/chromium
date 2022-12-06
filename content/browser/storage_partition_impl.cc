@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -19,6 +20,8 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -131,6 +134,7 @@
 #include "storage/browser/database/database_tracker.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -2693,6 +2697,56 @@ void StoragePartitionImpl::ClearDataForOrigin(
                 /*filter_builder=*/nullptr, StorageKeyPolicyMatcherFunction(),
                 std::move(deletion_filter), false, base::Time(),
                 base::Time::Max(), std::move(callback));
+}
+
+void StoragePartitionImpl::ClearDataForBuckets(
+    const blink::StorageKey& storage_key,
+    const std::set<std::string>& storage_buckets,
+    base::OnceClosure callback) {
+  DCHECK(initialized_);
+
+  const auto remove_buckets_done =
+      base::BarrierCallback<blink::mojom::QuotaStatusCode>(
+          storage_buckets.size(),
+          BindPostTask(
+              base::SequencedTaskRunnerHandle::Get(),
+              base::BindOnce(&StoragePartitionImpl::ClearDataForBucketsDone,
+                             base::Unretained(this), storage_key,
+                             storage_buckets, std::move(callback))));
+
+  storage::QuotaManagerProxy* quota_manager_proxy = GetQuotaManagerProxy();
+
+  for (const auto& bucket : storage_buckets) {
+    quota_manager_proxy->DeleteBucket(storage_key, bucket,
+                                      base::SequencedTaskRunnerHandle::Get(),
+                                      remove_buckets_done);
+  }
+}
+
+void StoragePartitionImpl::ClearDataForBucketsDone(
+    const blink::StorageKey& storage_key,
+    const std::set<std::string>& storage_buckets,
+    base::OnceClosure callback,
+    const std::vector<blink::mojom::QuotaStatusCode>& status_codes) {
+  auto bucket_iterator = storage_buckets.begin();
+
+  for (const auto status_code : status_codes) {
+    if (bucket_iterator == storage_buckets.end()) {
+      break;
+    }
+
+    const std::string bucket_name = *bucket_iterator;
+
+    if (status_code != blink::mojom::QuotaStatusCode::kOk) {
+      DLOG(ERROR) << "Couldn't remove bucket with name" << bucket_name
+                  << " with storage key " << storage_key.GetDebugString()
+                  << ". Status: " << static_cast<int>(status_code);
+    }
+
+    ++bucket_iterator;
+  }
+
+  std::move(callback).Run();
 }
 
 void StoragePartitionImpl::ClearData(uint32_t remove_mask,

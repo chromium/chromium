@@ -33,6 +33,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_context_impl.h"
+#include "content/browser/browsing_data/browsing_data_remover_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/media/browser_feature_provider.h"
 #include "content/browser/push_messaging/push_messaging_router.h"

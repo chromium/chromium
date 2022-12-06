@@ -3304,3 +3304,9 @@ fuzzer_test("content_sms_parser_fuzzer") {
     "//content/public/browser:browser_sources",
   ]
 }
+
+fuzzer_test("clear_site_data_handler_fuzzer") {
+  sources = [ "browsing_data/clear_site_data_handler_fuzzer.cc" ]
+  deps = [ "//content/test:test_support" ]
+  seed_corpus = "//content/test/data/fuzzer_corpus/clear_site_data/"
+}

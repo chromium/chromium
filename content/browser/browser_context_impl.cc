@@ -164,7 +164,7 @@ StoragePartitionImplMap* BrowserContextImpl::GetOrCreateStoragePartitionMap() {
   return storage_partition_map_.get();
 }
 
-BrowsingDataRemover* BrowserContextImpl::GetBrowsingDataRemover() {
+BrowsingDataRemoverImpl* BrowserContextImpl::GetBrowsingDataRemover() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!browsing_data_remover_) {

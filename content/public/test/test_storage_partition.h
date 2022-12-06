@@ -186,7 +186,9 @@ class TestStoragePartition : public StoragePartition {
                           uint32_t quota_storage_remove_mask,
                           const GURL& storage_origin,
                           base::OnceClosure callback) override;
-
+  void ClearDataForBuckets(const blink::StorageKey& storage_key,
+                           const std::set<std::string>& buckets,
+                           base::OnceClosure callback) override;
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
                  const blink::StorageKey& storage_key,

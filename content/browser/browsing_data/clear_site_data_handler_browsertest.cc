@@ -4,10 +4,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +23,7 @@
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/browsing_data/shared_storage_clear_site_data_tester.h"
+#include "content/browser/browsing_data/storage_bucket_clear_site_data_tester.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -35,6 +39,7 @@
 #include "content/public/test/mock_browsing_data_remover_delegate.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_result.h"
@@ -45,6 +50,8 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -882,6 +889,95 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
 
   // Notify crbug.com/912313 if the test fails here again.
   EXPECT_FALSE(RunScriptAndGetBool("hasServiceWorker()"));
+}
+
+enum TestScenario {
+  NoFeaturesActivated,
+  StorageBucketsActivated,
+  ThirdPartyStoragePartitioningActivated,
+  AllFeaturesActivated,
+};
+
+class ClearSiteDataHandlerStorageBucketsBrowserTest
+    : public ClearSiteDataHandlerBrowserTest,
+      public testing::WithParamInterface<TestScenario> {
+ public:
+  explicit ClearSiteDataHandlerStorageBucketsBrowserTest() {
+    enum TestScenario test_scenario = GetParam();
+    std::vector<base::test::FeatureRef> activated_features = {};
+
+    switch (test_scenario) {
+      case NoFeaturesActivated:
+        break;
+
+      case StorageBucketsActivated:
+        activated_features.push_back(blink::features::kStorageBuckets);
+        break;
+
+      case ThirdPartyStoragePartitioningActivated:
+        activated_features.push_back(
+            net::features::kThirdPartyStoragePartitioning);
+        break;
+
+      case AllFeaturesActivated:
+        activated_features.push_back(blink::features::kStorageBuckets);
+        activated_features.push_back(
+            net::features::kThirdPartyStoragePartitioning);
+        break;
+    }
+
+    feature_list_.InitWithFeatures(activated_features, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(StorageBucketsIntegrationTestSuite,
+                         ClearSiteDataHandlerStorageBucketsBrowserTest,
+                         testing::Values(NoFeaturesActivated,
+                                         StorageBucketsActivated,
+                                         ThirdPartyStoragePartitioningActivated,
+                                         AllFeaturesActivated));
+
+// Integration test for the deletion of storage buckets.
+IN_PROC_BROWSER_TEST_P(ClearSiteDataHandlerStorageBucketsBrowserTest,
+                       StorageBucketsIntegrationTest) {
+  GURL url = https_server()->GetURL("127.0.0.1", "/");
+
+  auto storage_key = blink::StorageKey(url::Origin::Create(url));
+
+  StorageBucketClearSiteDataTester tester(storage_partition());
+  tester.CreateBucketForTesting(
+      storage_key, "drafts",
+      base::BindOnce(
+          [](storage::QuotaErrorOr<storage::BucketInfo> error_or_bucket_info) {
+          }));
+  tester.CreateBucketForTesting(
+      storage_key, "inbox",
+      base::BindOnce(
+          [](storage::QuotaErrorOr<storage::BucketInfo> error_or_bucket_info) {
+          }));
+  tester.CreateBucketForTesting(
+      storage_key, "attachments",
+      base::BindOnce(
+          [](storage::QuotaErrorOr<storage::BucketInfo> error_or_bucket_info) {
+          }));
+
+  AddQuery(&url, "header", "\"storage:drafts\", \"storage:attachments\"");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  tester.GetBucketsForStorageKey(
+      storage_key,
+      base::BindOnce([](storage::QuotaErrorOr<std::set<storage::BucketInfo>>
+                            error_or_buckets) {
+        EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kStorageBuckets)
+                      ? 1u
+                      : 3u,
+                  error_or_buckets.value().size());
+      }));
+
+  delegate()->VerifyAndClearExpectations();
 }
 
 class ClearSiteDataHandlerSharedStorageBrowserTest

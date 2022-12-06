@@ -86,12 +86,14 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       base::OnceClosure callback);
 
   // Exposes ParseHeader() publicly for testing.
-  static bool ParseHeaderForTesting(const std::string& header,
-                                    bool* clear_cookies,
-                                    bool* clear_storage,
-                                    bool* clear_cache,
-                                    ConsoleMessagesDelegate* delegate,
-                                    const GURL& current_url);
+  static bool ParseHeaderForTesting(
+      const std::string& header,
+      bool* clear_cookies,
+      bool* clear_storage,
+      bool* clear_cache,
+      std::set<std::string>* storage_buckets_to_remove,
+      ConsoleMessagesDelegate* delegate,
+      const GURL& current_url);
 
  protected:
   ClearSiteDataHandler(
@@ -122,15 +124,18 @@ class CONTENT_EXPORT ClearSiteDataHandler {
                           bool* clear_cookies,
                           bool* clear_storage,
                           bool* clear_cache,
+                          std::set<std::string>* storage_buckets_to_remove,
                           ConsoleMessagesDelegate* delegate,
                           const GURL& current_url);
 
   // Executes the clearing task. Can be overridden for testing.
-  virtual void ExecuteClearingTask(const url::Origin& origin,
-                                   bool clear_cookies,
-                                   bool clear_storage,
-                                   bool clear_cache,
-                                   base::OnceClosure callback);
+  virtual void ExecuteClearingTask(
+      const url::Origin& origin,
+      bool clear_cookies,
+      bool clear_storage,
+      bool clear_cache,
+      const std::set<std::string>& storage_buckets_to_remove,
+      base::OnceClosure callback);
 
   // Signals that a parsing and deletion task was finished.
   // |clearing_started| is the time when the last clearing operation started.

@@ -229,6 +229,12 @@ class CONTENT_EXPORT StoragePartition {
                                   const GURL& storage_origin,
                                   base::OnceClosure callback) = 0;
 
+  // Starts a task that will clear the data of each bucket name for the
+  // specified storage key.
+  virtual void ClearDataForBuckets(const blink::StorageKey& storage_key,
+                                   const std::set<std::string>& storage_buckets,
+                                   base::OnceClosure callback) = 0;
+
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
   // match. Returns true if the given StorageKey matches the storage policy,

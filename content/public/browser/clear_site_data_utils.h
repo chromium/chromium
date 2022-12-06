@@ -27,6 +27,7 @@ CONTENT_EXPORT void ClearSiteData(
     bool clear_cookies,
     bool clear_storage,
     bool clear_cache,
+    const std::set<std::string>& storage_buckets_to_remove,
     bool avoid_closing_connections,
     const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     const absl::optional<blink::StorageKey>& storage_key,

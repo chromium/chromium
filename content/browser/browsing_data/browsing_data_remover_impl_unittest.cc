@@ -63,6 +63,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using base::test::RunOnceClosure;
@@ -217,6 +218,12 @@ class StoragePartitionRemovalTestStoragePartition
 
   std::vector<StoragePartitionRemovalData> GetStoragePartitionRemovalData() {
     return std::move(storage_partition_removal_data_);
+  }
+
+  void ClearDataForBuckets(const blink::StorageKey& storage_key,
+                           const std::set<std::string>& buckets,
+                           base::OnceClosure callback) override {
+    std::move(callback).Run();
   }
 
  private:
@@ -1813,6 +1820,38 @@ TEST_F(BrowsingDataRemoverImplTest, FailedDataTypes) {
 
   // Reset delegate.
   remover->SetEmbedderDelegate(nullptr);
+}
+
+TEST_F(BrowsingDataRemoverImplTest, RemoveStorageBucketsAndReply) {
+  class TestObserver : public BrowsingDataRemover::Observer {
+    void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
+      EXPECT_EQ(failed_data_types, 0U);
+    }
+
+   public:
+    void RemoveBuckets() {
+      auto storage_key =
+          blink::StorageKey::CreateFromStringForTesting("https://example.com");
+
+      std::set<std::string> buckets{"drafts"};
+      StoragePartitionRemovalTestStoragePartition storage_partition;
+      TestBrowserContext browser_context;
+      BrowsingDataRemoverImpl remover =
+          BrowsingDataRemoverImpl(&browser_context);
+
+      remover.OverrideStoragePartitionForTesting(&storage_partition);
+      remover.RemoveStorageBucketsAndReply(
+          storage_key, buckets,
+          base::BindOnce(&TestObserver::OnBrowsingDataRemoverDone,
+                         base::Unretained(this), 0));
+    }
+
+   public:
+    ~TestObserver() override = default;
+  };
+
+  TestObserver observer;
+  observer.RemoveBuckets();
 }
 
 class BrowsingDataRemoverImplSharedStorageTest

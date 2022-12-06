@@ -924,6 +924,8 @@ static_library("browsertest_support") {
     "../browser/browsing_data/browsing_data_browsertest_utils.h",
     "../browser/browsing_data/shared_storage_clear_site_data_tester.cc",
     "../browser/browsing_data/shared_storage_clear_site_data_tester.h",
+    "../browser/browsing_data/storage_bucket_clear_site_data_tester.cc",
+    "../browser/browsing_data/storage_bucket_clear_site_data_tester.h",
     "../public/test/content_browser_test.cc",
     "../public/test/content_browser_test.h",
     "../public/test/content_browser_test_shell_main_delegate.cc",
