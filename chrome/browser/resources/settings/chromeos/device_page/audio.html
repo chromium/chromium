@@ -80,7 +80,8 @@
         <div class="audio-output-options-container">
           <div class="audio-mute-button-container">
             <cr-icon-button class="audio-mute-button"
-                id="audioOutputMuteButton" iron-icon="settings:volume-up-off">
+                id="audioOutputMuteButton" iron-icon="settings:volume-up-off"
+                on-click="onOutputMuteButtonClicked">
             </cr-icon-button>
           </div>
           <div class="audio-slider-wrapper" id="audioOutputSliderWrapper">

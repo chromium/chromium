@@ -8,6 +8,7 @@
  * settings.
  */
 
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import '../../icons.html.js';
 import '../../settings_shared.css.js';
@@ -140,9 +141,6 @@ class SettingsAudioElement extends SettingsAudioElementBase {
     this.crosAudioConfig_.setOutputVolumePercent(sliderValue);
   }
 
-  // TODO(crbug.com/1092970): Create onOutputMuteTap_ method for setting output
-  // mute state.
-
   /** Handles updating active output device. */
   protected onOutputDeviceChanged(): void {
     // TODO(b/260277007): Remove condition when setActiveDevice added to mojo
@@ -159,6 +157,16 @@ class SettingsAudioElement extends SettingsAudioElementBase {
             device.id === BigInt(outputDeviceSelect.value));
     assert(!!nextActiveDevice);
     this.crosAudioConfig_.setActiveDevice(nextActiveDevice);
+  }
+
+  /** Handles updating outputMuteState. */
+  protected onOutputMuteButtonClicked(): void {
+    // TODO(b/260277007): Remove condition when setOutputMuted added to mojo
+    // definition.
+    if (!this.crosAudioConfig_.setOutputMuted) {
+      return;
+    }
+    this.crosAudioConfig_.setOutputMuted(!this.isOutputMuted_);
   }
 
   override currentRouteChanged(route: Route) {

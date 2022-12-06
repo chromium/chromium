@@ -725,7 +725,7 @@ suite('SettingsDevicePage', function() {
       );
     });
 
-    test('output mute mojo test', async function() {
+    test('output mute state changes slider disabled state', async function() {
       const outputVolumeSlider =
           audioPage.shadowRoot.querySelector('#outputVolumeSlider');
 
@@ -851,6 +851,32 @@ suite('SettingsDevicePage', function() {
           audioPage.audioSystemProperties_.inputDevices.find(
               device => device.id === fakeCrosAudioConfig.fakeBluetoothMic.id);
       assertTrue(nextActiveDevice.isActive);
+    });
+
+    test('simulate mute output', async function() {
+      assertEquals(
+          crosAudioConfigMojomWebui.MuteState.kNotMuted,
+          audioPage.audioSystemProperties_.outputMuteState);
+      assertFalse(audioPage.isOutputMuted_);
+
+      const outputMuteButton =
+          audioPage.shadowRoot.querySelector('#audioOutputMuteButton');
+      assertTrue(isVisible(outputMuteButton));
+      outputMuteButton.click();
+      await flushTasks();
+
+      assertEquals(
+          crosAudioConfigMojomWebui.MuteState.kMutedByUser,
+          audioPage.audioSystemProperties_.outputMuteState);
+      assertTrue(audioPage.isOutputMuted_);
+
+      outputMuteButton.click();
+      await flushTasks();
+
+      assertEquals(
+          crosAudioConfigMojomWebui.MuteState.kNotMuted,
+          audioPage.audioSystemProperties_.outputMuteState);
+      assertFalse(audioPage.isOutputMuted_);
     });
   });
 
