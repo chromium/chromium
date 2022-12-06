@@ -100,15 +100,16 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
       extensions::Extension::FROM_WEBSTORE:
       extensions::Extension::NO_FLAGS;
 
-  base::DictionaryValue manifest;
-  manifest.SetStringKey("name", "NaCl Extension");
-  manifest.SetStringKey("version", "1");
-  manifest.SetIntKey("manifest_version", 2);
+  base::Value::Dict manifest;
+  manifest.Set("name", "NaCl Extension");
+  manifest.Set("version", "1");
+  manifest.Set("manifest_version", 2);
   if (is_hosted_app) {
-    base::ListValue url_list;
+    base::Value::List url_list;
     url_list.Append(app_url);
-    manifest.SetPath(extensions::manifest_keys::kWebURLs, std::move(url_list));
-    manifest.SetStringPath(extensions::manifest_keys::kLaunchWebURL, app_url);
+    manifest.SetByDottedPath(extensions::manifest_keys::kWebURLs,
+                             std::move(url_list));
+    manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL, app_url);
   }
   std::string error;
   return extensions::Extension::Create(base::FilePath(), location, manifest,
