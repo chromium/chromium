@@ -2042,22 +2042,21 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PrintCommand) {
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        ContextMenuPrintCommandExtensionMainFrame) {
-  content::WebContents* guest_contents =
-      LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
   ASSERT_TRUE(plugin_frame);
 
+  content::RenderFrameHost* guest_main_frame = guest->GetGuestMainFrame();
   // Makes sure that the correct frame invoked the context menu.
-  content::ContextMenuInterceptor menu_interceptor(
-      guest_contents->GetPrimaryMainFrame());
+  content::ContextMenuInterceptor menu_interceptor(guest_main_frame);
 
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   PrintObserver print_observer(plugin_frame);
-  guest_contents->GetPrimaryMainFrame()
-      ->GetRenderWidgetHost()
-      ->ShowContextMenuAtPoint({1, 1}, ui::MENU_SOURCE_MOUSE);
+  guest_main_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+      {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
   menu_interceptor.Wait();
 }
