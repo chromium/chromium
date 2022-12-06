@@ -11,6 +11,10 @@
 
 namespace base {
 
+// Get the maximum number of inotify watches can be used by a FilePathWatcher
+// instance. This is based on /proc/sys/fs/inotify/max_user_watches entry.
+BASE_EXPORT size_t GetMaxNumberOfInotifyWatches();
+
 // Overrides max inotify watcher counter for test.
 class BASE_EXPORT ScopedMaxNumberOfInotifyWatchesOverrideForTest {
  public:

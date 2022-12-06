@@ -71,28 +71,6 @@ class InotifyReader;
 // Used by test to override inotify watcher limit.
 size_t g_override_max_inotify_watches = 0u;
 
-// Get the maximum number of inotify watches can be used by a FilePathWatcher
-// instance. This is based on /proc/sys/fs/inotify/max_user_watches entry.
-size_t GetMaxNumberOfInotifyWatches() {
-#if BUILDFLAG(IS_FUCHSIA)
-  // Fuchsia has no limit on the number of watches.
-  return std::numeric_limits<int>::max();
-#else
-  static const size_t max = []() {
-    size_t max_number_of_inotify_watches = 0u;
-
-    std::ifstream in(kInotifyMaxUserWatchesPath);
-    if (!in.is_open() || !(in >> max_number_of_inotify_watches)) {
-      LOG(ERROR) << "Failed to read " << kInotifyMaxUserWatchesPath;
-      return kDefaultInotifyMaxUserWatches / kExpectedFilePathWatchers;
-    }
-
-    return max_number_of_inotify_watches / kExpectedFilePathWatchers;
-  }();
-  return g_override_max_inotify_watches ? g_override_max_inotify_watches : max;
-#endif  // if BUILDFLAG(IS_FUCHSIA)
-}
-
 class InotifyReaderThreadDelegate final : public PlatformThread::Delegate {
  public:
   explicit InotifyReaderThreadDelegate(int inotify_fd)
@@ -831,6 +809,26 @@ bool FilePathWatcherImpl::HasValidWatchVector() const {
 }
 
 }  // namespace
+
+size_t GetMaxNumberOfInotifyWatches() {
+#if BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia has no limit on the number of watches.
+  return std::numeric_limits<int>::max();
+#else
+  static const size_t max = []() {
+    size_t max_number_of_inotify_watches = 0u;
+
+    std::ifstream in(kInotifyMaxUserWatchesPath);
+    if (!in.is_open() || !(in >> max_number_of_inotify_watches)) {
+      LOG(ERROR) << "Failed to read " << kInotifyMaxUserWatchesPath;
+      return kDefaultInotifyMaxUserWatches / kExpectedFilePathWatchers;
+    }
+
+    return max_number_of_inotify_watches / kExpectedFilePathWatchers;
+  }();
+  return g_override_max_inotify_watches ? g_override_max_inotify_watches : max;
+#endif  // if BUILDFLAG(IS_FUCHSIA)
+}
 
 ScopedMaxNumberOfInotifyWatchesOverrideForTest::
     ScopedMaxNumberOfInotifyWatchesOverrideForTest(size_t override_max) {
