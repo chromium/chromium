@@ -739,14 +739,8 @@ deps = {
   },
 
   'src/chrome/test/data/autofill/captured_sites': {
-    'packages': [
-      {
-        'package': 'chromium/chrome/test/data/autofill/captured_sites',
-        'version': '9irVgwFBxE4NZ2CLPRDV_-kx70oN-BhhTAWqdFFBD3oC',
-      }
-    ],
+    'url': 'https://chrome-internal.googlesource.com/chrome/test/captured_sites/autofill.git' + '@' + '921fcd595f78fbf62ddcb6df3bae293144156f9a',
     'condition': 'checkout_chromium_autofill_test_dependencies',
-    'dep_type': 'cipd',
   },
 
   'src/chrome/test/data/password/captured_sites': {
