@@ -4547,8 +4547,10 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
                                                 IA2TextSelection* selections) {
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
-  COM_OBJECT_VALIDATE_1_ARG(selections);
-  if (nSelections != 1)
+  COM_OBJECT_VALIDATE();
+
+  // Chromium does not currently support more than one selection.
+  if (nSelections != 1 || !selections)
     return E_INVALIDARG;
 
   if (!selections->startObj || !selections->endObj)
@@ -4575,7 +4577,7 @@ IFACEMETHODIMP AXPlatformNodeWin::setSelections(LONG nSelections,
   AXPosition end_position =
       end_node->HypertextOffsetToEndpoint(selections->endOffset)
           ->AsDomSelectionPosition();
-  if (!start_position->IsNullPosition() || end_position->IsNullPosition())
+  if (start_position->IsNullPosition() || end_position->IsNullPosition())
     return E_INVALIDARG;
 
   AXActionData action_data;
