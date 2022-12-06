@@ -3832,9 +3832,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, Metrics) {
   base::HistogramTester histograms;
   base::UserActionTester actions;
 
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/combobox_form.pdf"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
