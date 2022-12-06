@@ -19,7 +19,6 @@ class ClipboardHistoryLabel : public views::Label {
 
   // views::Label:
   const char* GetClassName() const override;
-  void OnThemeChanged() override;
 };
 
 }  // namespace ash

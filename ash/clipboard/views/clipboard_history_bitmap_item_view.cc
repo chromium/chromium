@@ -9,14 +9,13 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
-#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -166,10 +165,10 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     // `border_container_view_` should be above `image_view_`.
     border_container_view_ = AddChildView(std::make_unique<views::View>());
 
-    border_container_view_->SetBorder(views::CreateRoundedRectBorder(
+    border_container_view_->SetBorder(views::CreateThemedRoundedRectBorder(
         ClipboardHistoryViews::kImageBorderThickness,
         ClipboardHistoryViews::kImageRoundedCornerRadius,
-        gfx::kPlaceholderColor));
+        kColorAshHairlineBorderColor));
 
     InstallDeleteButton();
   }
@@ -214,19 +213,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
     SetClipPath(SkPath::RRect(local_bounds, radius, radius));
 
     UpdateImageViewSize();
-  }
-
-  void OnThemeChanged() override {
-    // Use the light mode as default because the light mode is the default mode
-    // of the native theme which decides the context menu's background color.
-    // TODO(andrewxu): remove this line after https://crbug.com/1143009 is
-    // fixed.
-    ScopedLightModeAsDefault scoped_light_mode_as_default;
-
-    ContentsView::OnThemeChanged();
-    border_container_view_->GetBorder()->set_color(
-        AshColorProvider::Get()->GetControlsLayerColor(
-            AshColorProvider::ControlsLayerType::kHairlineBorderColor));
   }
 
   std::unique_ptr<views::ImageView> BuildImageView() {
