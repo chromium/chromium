@@ -14,7 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/password_entry_edit/android/jni_headers/CredentialEditBridge_jni.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"

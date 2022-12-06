@@ -17,7 +17,7 @@
 #include "chrome/browser/touch_to_fill/touch_to_fill_view_factory.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_webauthn_credential.h"
 #include "components/device_reauth/biometric_authenticator.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"

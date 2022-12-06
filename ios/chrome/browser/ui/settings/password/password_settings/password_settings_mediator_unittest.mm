@@ -6,8 +6,8 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"

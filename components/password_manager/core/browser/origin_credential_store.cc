@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "url/gurl.h"
 #include "url/origin.h"

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 
 #import "base/containers/cxx20_erase.h"
-#import "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_list_sorter.h"
 #import "components/password_manager/core/browser/password_store_consumer.h"

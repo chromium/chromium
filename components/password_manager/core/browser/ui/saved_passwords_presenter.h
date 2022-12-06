@@ -16,13 +16,13 @@
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/password_grouping_util.h"
 
 namespace password_manager {
 
+class AffiliationService;
 class PasswordUndoHelper;
 
 // This interface provides a way for clients to obtain a list of all saved

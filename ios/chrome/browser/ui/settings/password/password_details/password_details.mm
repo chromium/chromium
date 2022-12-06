@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#import "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/well_known_change_password_util.h"

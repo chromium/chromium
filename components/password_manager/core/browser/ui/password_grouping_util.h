@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORD_GROUPING_UTIL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_PASSWORD_GROUPING_UTIL_H_
 
-#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/ui/affiliated_group.h"
 
 namespace password_manager {

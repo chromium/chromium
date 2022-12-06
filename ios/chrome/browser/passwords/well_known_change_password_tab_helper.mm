@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/logging.h"
-#import "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
+#import "components/password_manager/core/browser/affiliation/affiliation_service.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"

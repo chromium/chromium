@@ -19,23 +19,35 @@ config("password_reuse_detection_config") {
 
 static_library("browser") {
   sources = [
-    "android_affiliation/affiliated_match_helper.cc",
-    "android_affiliation/affiliated_match_helper.h",
-    "android_affiliation/affiliation_backend.cc",
-    "android_affiliation/affiliation_backend.h",
-    "android_affiliation/affiliation_database.cc",
-    "android_affiliation/affiliation_database.h",
-    "android_affiliation/affiliation_fetch_throttler.cc",
-    "android_affiliation/affiliation_fetch_throttler.h",
-    "android_affiliation/affiliation_fetch_throttler_delegate.h",
-    "android_affiliation/affiliation_fetcher_delegate.cc",
-    "android_affiliation/affiliation_fetcher_delegate.h",
-    "android_affiliation/affiliation_fetcher_interface.h",
-    "android_affiliation/facet_manager.cc",
-    "android_affiliation/facet_manager.h",
-    "android_affiliation/facet_manager_host.h",
-    "android_affiliation/lookup_affiliation_response_parser.cc",
-    "android_affiliation/lookup_affiliation_response_parser.h",
+    "affiliation/affiliated_match_helper.cc",
+    "affiliation/affiliated_match_helper.h",
+    "affiliation/affiliation_backend.cc",
+    "affiliation/affiliation_backend.h",
+    "affiliation/affiliation_database.cc",
+    "affiliation/affiliation_database.h",
+    "affiliation/affiliation_fetch_throttler.cc",
+    "affiliation/affiliation_fetch_throttler.h",
+    "affiliation/affiliation_fetch_throttler_delegate.h",
+    "affiliation/affiliation_fetcher_base.cc",
+    "affiliation/affiliation_fetcher_base.h",
+    "affiliation/affiliation_fetcher_delegate.cc",
+    "affiliation/affiliation_fetcher_delegate.h",
+    "affiliation/affiliation_fetcher_factory.h",
+    "affiliation/affiliation_fetcher_factory_impl.cc",
+    "affiliation/affiliation_fetcher_factory_impl.h",
+    "affiliation/affiliation_fetcher_interface.h",
+    "affiliation/affiliation_service.h",
+    "affiliation/affiliation_service_impl.cc",
+    "affiliation/affiliation_service_impl.h",
+    "affiliation/asset_link_data.cc",
+    "affiliation/asset_link_data.h",
+    "affiliation/facet_manager.cc",
+    "affiliation/facet_manager.h",
+    "affiliation/facet_manager_host.h",
+    "affiliation/hash_affiliation_fetcher.cc",
+    "affiliation/hash_affiliation_fetcher.h",
+    "affiliation/lookup_affiliation_response_parser.cc",
+    "affiliation/lookup_affiliation_response_parser.h",
     "android_backend_error.cc",
     "android_backend_error.h",
     "browser_save_password_progress_logger.cc",
@@ -217,18 +229,6 @@ static_library("browser") {
     "psl_matching_helper.cc",
     "psl_matching_helper.h",
     "reauth_purpose.h",
-    "site_affiliation/affiliation_fetcher_base.cc",
-    "site_affiliation/affiliation_fetcher_base.h",
-    "site_affiliation/affiliation_fetcher_factory.h",
-    "site_affiliation/affiliation_fetcher_factory_impl.cc",
-    "site_affiliation/affiliation_fetcher_factory_impl.h",
-    "site_affiliation/affiliation_service.h",
-    "site_affiliation/affiliation_service_impl.cc",
-    "site_affiliation/affiliation_service_impl.h",
-    "site_affiliation/asset_link_data.cc",
-    "site_affiliation/asset_link_data.h",
-    "site_affiliation/hash_affiliation_fetcher.cc",
-    "site_affiliation/hash_affiliation_fetcher.h",
     "smart_bubble_stats_store.h",
     "sql_table_builder.cc",
     "sql_table_builder.h",
@@ -471,7 +471,7 @@ if (is_android) {
 }
 
 fuzzable_proto_library("affiliation_proto") {
-  sources = [ "android_affiliation/affiliation_api.proto" ]
+  sources = [ "affiliation/affiliation_api.proto" ]
 }
 
 static_library("password_hash_data") {
@@ -503,18 +503,24 @@ static_library("hash_password_manager") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "android_affiliation/fake_affiliation_api.cc",
-    "android_affiliation/fake_affiliation_api.h",
-    "android_affiliation/fake_affiliation_fetcher.cc",
-    "android_affiliation/fake_affiliation_fetcher.h",
-    "android_affiliation/mock_affiliated_match_helper.cc",
-    "android_affiliation/mock_affiliated_match_helper.h",
-    "android_affiliation/mock_affiliation_consumer.cc",
-    "android_affiliation/mock_affiliation_consumer.h",
-    "android_affiliation/mock_affiliation_fetcher.cc",
-    "android_affiliation/mock_affiliation_fetcher.h",
-    "android_affiliation/mock_affiliation_fetcher_delegate.cc",
-    "android_affiliation/mock_affiliation_fetcher_delegate.h",
+    "affiliation/fake_affiliation_api.cc",
+    "affiliation/fake_affiliation_api.h",
+    "affiliation/fake_affiliation_fetcher.cc",
+    "affiliation/fake_affiliation_fetcher.h",
+    "affiliation/fake_affiliation_service.cc",
+    "affiliation/fake_affiliation_service.h",
+    "affiliation/mock_affiliated_match_helper.cc",
+    "affiliation/mock_affiliated_match_helper.h",
+    "affiliation/mock_affiliation_consumer.cc",
+    "affiliation/mock_affiliation_consumer.h",
+    "affiliation/mock_affiliation_fetcher.cc",
+    "affiliation/mock_affiliation_fetcher.h",
+    "affiliation/mock_affiliation_fetcher_delegate.cc",
+    "affiliation/mock_affiliation_fetcher_delegate.h",
+    "affiliation/mock_affiliation_fetcher_factory.cc",
+    "affiliation/mock_affiliation_fetcher_factory.h",
+    "affiliation/mock_affiliation_service.cc",
+    "affiliation/mock_affiliation_service.h",
     "fake_form_fetcher.cc",
     "fake_form_fetcher.h",
     "fake_password_store_backend.cc",
@@ -549,12 +555,6 @@ static_library("test_support") {
     "mock_webauthn_credentials_delegate.h",
     "password_manager_test_utils.cc",
     "password_manager_test_utils.h",
-    "site_affiliation/fake_affiliation_service.cc",
-    "site_affiliation/fake_affiliation_service.h",
-    "site_affiliation/mock_affiliation_fetcher_factory.cc",
-    "site_affiliation/mock_affiliation_fetcher_factory.h",
-    "site_affiliation/mock_affiliation_service.cc",
-    "site_affiliation/mock_affiliation_service.h",
     "stub_credentials_filter.cc",
     "stub_credentials_filter.h",
     "stub_form_saver.cc",
@@ -649,11 +649,15 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "android_affiliation/affiliated_match_helper_unittest.cc",
-    "android_affiliation/affiliation_backend_unittest.cc",
-    "android_affiliation/affiliation_database_unittest.cc",
-    "android_affiliation/affiliation_fetch_throttler_unittest.cc",
-    "android_affiliation/facet_manager_unittest.cc",
+    "affiliation/affiliated_match_helper_unittest.cc",
+    "affiliation/affiliation_backend_unittest.cc",
+    "affiliation/affiliation_database_unittest.cc",
+    "affiliation/affiliation_fetch_throttler_unittest.cc",
+    "affiliation/affiliation_fetcher_factory_impl_unittest.cc",
+    "affiliation/affiliation_service_impl_unittest.cc",
+    "affiliation/asset_link_data_unittest.cc",
+    "affiliation/facet_manager_unittest.cc",
+    "affiliation/hash_affiliation_fetcher_unittest.cc",
     "browser_save_password_progress_logger_unittest.cc",
     "bulk_leak_check_service_unittest.cc",
     "credential_cache_unittest.cc",
@@ -719,10 +723,6 @@ source_set("unit_tests") {
     "password_ui_utils_unittest.cc",
     "possible_username_data_unittest.cc",
     "psl_matching_helper_unittest.cc",
-    "site_affiliation/affiliation_fetcher_factory_impl_unittest.cc",
-    "site_affiliation/affiliation_service_impl_unittest.cc",
-    "site_affiliation/asset_link_data_unittest.cc",
-    "site_affiliation/hash_affiliation_fetcher_unittest.cc",
     "sql_table_builder_unittest.cc",
     "statistics_table_unittest.cc",
     "store_metrics_reporter_unittest.cc",
@@ -849,8 +849,7 @@ source_set("unit_tests") {
 
 if (use_libfuzzer) {
   fuzzer_test("lookup_affiliation_response_parser_fuzzer") {
-    sources =
-        [ "android_affiliation/lookup_affiliation_response_parser_fuzzer.cc" ]
+    sources = [ "affiliation/lookup_affiliation_response_parser_fuzzer.cc" ]
     deps = [
       ":affiliation_proto",
       ":browser",
@@ -870,16 +869,16 @@ if (use_libfuzzer) {
   }
 }
 
-# TODO(crbug.com/974822): Ideally, all of the "android_affiliation/"
+# TODO(crbug.com/974822): Ideally, all of the "affiliation/"
 # subdirectory would be in a separate BUILD.gn file inside that subdirectory.
 # However, this requires the big "browser" target here to be split in multiple
 # sub-targets to avoid circular dependencies. For now, at least the files from
-# "android_affiliation" which can be easily separated are made so, to limit the
+# "affiliation" which can be easily separated are made so, to limit the
 # growth of this technical debt.
 static_library("affiliation") {
   sources = [
-    "android_affiliation/affiliation_utils.cc",
-    "android_affiliation/affiliation_utils.h",
+    "affiliation/affiliation_utils.cc",
+    "affiliation/affiliation_utils.h",
   ]
   deps = [
     "//base",
@@ -891,7 +890,7 @@ static_library("affiliation") {
 
 source_set("affiliation_unittests") {
   testonly = true
-  sources = [ "android_affiliation/affiliation_utils_unittest.cc" ]
+  sources = [ "affiliation/affiliation_utils_unittest.cc" ]
   deps = [
     ":affiliation",
     ":password_form",
