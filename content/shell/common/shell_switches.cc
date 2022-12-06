@@ -35,6 +35,10 @@ const char kContentShellHideToolbar[] = "content-shell-hide-toolbar";
 const char kContentShellDevToolsTabTarget[] =
     "content-shell-devtools-tab-target";
 
+// Enables APIs guarded with the [IsolatedContext] IDL attribute for the given
+// comma-separated list of origins.
+const char kIsolatedContextOrigins[] = "isolated-context-origins";
+
 // Runs Content Shell in web test mode, injecting test-only behaviour for
 // blink web tests.
 const char kRunWebTests[] = "run-web-tests";

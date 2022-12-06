@@ -545,9 +545,8 @@
     "bases": ["external/wpt/direct-sockets",
     	      "wpt_internal/direct-sockets"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=IsolatedWebApps",
-             "--isolated-app-origins=https://web-platform.test"],
-    "expires": "Jul 1, 2023"
+    "args": ["--isolated-context-origins=https://web-platform.test"],
+    "expires": "never"
   },
   {
     "prefix": "display-compositor-pixel-dump",

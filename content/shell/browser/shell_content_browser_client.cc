@@ -7,15 +7,21 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "build/build_config.h"
@@ -203,6 +209,26 @@ void BindNetworkHintsHandler(
                                                        std::move(receiver));
 }
 
+base::flat_set<url::Origin> GetIsolatedContextOriginSetFromFlag() {
+  std::string cmdline_origins(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kIsolatedContextOrigins));
+
+  std::vector<base::StringPiece> origin_strings = base::SplitStringPiece(
+      cmdline_origins, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  base::flat_set<url::Origin> origin_set;
+  for (const base::StringPiece& origin_string : origin_strings) {
+    url::Origin allowed_origin = url::Origin::Create(GURL(origin_string));
+    if (!allowed_origin.opaque()) {
+      origin_set.insert(allowed_origin);
+    } else {
+      LOG(ERROR) << "Error parsing IsolatedContext origin: " << origin_string;
+    }
+  }
+  return origin_set;
+}
+
 }  // namespace
 
 std::string GetShellUserAgent() {
@@ -371,14 +397,12 @@ ShellContentBrowserClient::GetWebContentsViewDelegate(
   return CreateShellWebContentsViewDelegate(web_contents);
 }
 
-bool ShellContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
+bool ShellContentBrowserClient::IsIsolatedContextAllowedForUrl(
     BrowserContext* browser_context,
-    const GURL& url,
-    bool origin_matches_flag) {
-  // Enable application isolation level to allow restricted APIs in WPT.  Note
-  // that will only turn on application isolation for URLs which pass the
-  // content layer checks, as specified by `origin_matches_flag`.
-  return origin_matches_flag;
+    const GURL& lock_url) {
+  static base::flat_set<url::Origin> isolated_context_origins =
+      GetIsolatedContextOriginSetFromFlag();
+  return isolated_context_origins.contains(url::Origin::Create(lock_url));
 }
 
 GeneratedCodeCacheSettings
