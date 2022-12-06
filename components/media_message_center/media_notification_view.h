@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationView
   virtual void UpdateWithFavicon(const gfx::ImageSkia& icon) = 0;
   // Sets the icon to be displayed in the notification's header section.
   // |vector_icon| must outlive the MediaNotificationView.
-  virtual void UpdateWithVectorIcon(const gfx::VectorIcon& vector_icon) = 0;
+  virtual void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) = 0;
   virtual void UpdateDeviceSelectorAvailability(bool availability) = 0;
   // Called by MediaNotificationItem to update mute state.
   virtual void UpdateWithMuteStatus(bool mute) = 0;

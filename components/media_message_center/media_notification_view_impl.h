@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
       const media_session::MediaPosition& position) override {}
   void UpdateWithMediaArtwork(const gfx::ImageSkia& image) override;
   void UpdateWithFavicon(const gfx::ImageSkia& icon) override;
-  void UpdateWithVectorIcon(const gfx::VectorIcon& vector_icon) override;
+  void UpdateWithVectorIcon(const gfx::VectorIcon* vector_icon) override;
   void UpdateDeviceSelectorAvailability(bool availability) override;
   void UpdateWithMuteStatus(bool mute) override {}
   void UpdateWithVolume(float volume) override {}

@@ -490,12 +490,12 @@ void MediaNotificationViewImpl::UpdateWithFavicon(const gfx::ImageSkia& icon) {
 }
 
 void MediaNotificationViewImpl::UpdateWithVectorIcon(
-    const gfx::VectorIcon& vector_icon) {
+    const gfx::VectorIcon* vector_icon) {
   if (!header_row_)
     return;
 
-  vector_header_icon_ = &vector_icon;
-  header_row_->SetAppIconVisible(true);
+  vector_header_icon_ = vector_icon;
+  header_row_->SetAppIconVisible(vector_header_icon_ != nullptr);
   header_row_->SetProperty(views::kMarginsKey,
                            kIconMediaNotificationHeaderInsets);
   if (GetWidget())

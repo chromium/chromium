@@ -132,7 +132,14 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   void FlushForTesting();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
+                           GetSessionMetadata);
+  FRIEND_TEST_ALL_PREFIXES(MediaSessionNotificationItemTest,
+                           GetMediaSessionActions);
+
   media_session::MediaMetadata GetSessionMetadata() const;
+  base::flat_set<media_session::mojom::MediaSessionAction>
+  GetMediaSessionActions() const;
 
   bool ShouldShowNotification() const;
 

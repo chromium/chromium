@@ -4895,7 +4895,8 @@ void HTMLMediaElement::OnRemotePlaybackMetadataChange() {
         media_session::mojom::blink::RemotePlaybackMetadata::New(
             WTF::String(media::GetCodecName(video_codec_)),
             WTF::String(media::GetCodecName(audio_codec_)),
-            is_remote_playback_disabled_));
+            is_remote_playback_disabled_, is_remote_rendering_,
+            WTF::String(remote_device_friendly_name_)));
   }
 }
 

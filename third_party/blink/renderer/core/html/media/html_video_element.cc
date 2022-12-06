@@ -616,6 +616,9 @@ ScriptPromise HTMLVideoElement::CreateImageBitmap(
 
 void HTMLVideoElement::MediaRemotingStarted(
     const WebString& remote_device_friendly_name) {
+  is_remote_rendering_ = true;
+  remote_device_friendly_name_ = remote_device_friendly_name;
+  OnRemotePlaybackMetadataChange();
   if (!remoting_interstitial_) {
     remoting_interstitial_ =
         MakeGarbageCollected<MediaRemotingInterstitial>(*this);
@@ -627,6 +630,9 @@ void HTMLVideoElement::MediaRemotingStarted(
 }
 
 void HTMLVideoElement::MediaRemotingStopped(int error_code) {
+  is_remote_rendering_ = false;
+  remote_device_friendly_name_.Reset();
+  OnRemotePlaybackMetadataChange();
   if (remoting_interstitial_)
     remoting_interstitial_->Hide(error_code);
 }

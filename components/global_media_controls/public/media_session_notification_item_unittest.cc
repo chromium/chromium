@@ -433,4 +433,38 @@ TEST_F(MediaSessionNotificationItemTest, RequestMediaRemoting) {
   EXPECT_EQ(1, controller().request_media_remoting_count());
 }
 
+TEST_F(MediaSessionNotificationItemTest, GetMediaSessionActions) {
+  item().MediaSessionActionsChanged(
+      {MediaSessionAction::kPlay, MediaSessionAction::kPause,
+       MediaSessionAction::kEnterPictureInPicture});
+  EXPECT_TRUE(item().GetMediaSessionActions().contains(
+      MediaSessionAction::kEnterPictureInPicture));
+
+  auto session_info = media_session::mojom::MediaSessionInfo::New();
+  auto remote_playback_metadata =
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec", false, true, "device_friendly_name");
+  session_info->remote_playback_metadata = std::move(remote_playback_metadata);
+  item().MediaSessionInfoChanged(std::move(session_info));
+  EXPECT_FALSE(item().GetMediaSessionActions().contains(
+      MediaSessionAction::kEnterPictureInPicture));
+}
+
+TEST_F(MediaSessionNotificationItemTest, GetSessionMetadata) {
+  media_session::MediaMetadata metadata;
+  metadata.source_title = u"source_title";
+  item().MediaSessionMetadataChanged(metadata);
+  EXPECT_EQ(u"source_title", item().GetSessionMetadata().source_title);
+
+  auto session_info = media_session::mojom::MediaSessionInfo::New();
+  auto remote_playback_metadata =
+      media_session::mojom::RemotePlaybackMetadata::New(
+          "video_codec", "audio_codec", false, true, "device_friendly_name");
+  session_info->remote_playback_metadata = std::move(remote_playback_metadata);
+  item().MediaSessionInfoChanged(std::move(session_info));
+
+  EXPECT_EQ(u"source_title \xB7 device_friendly_name",
+            item().GetSessionMetadata().source_title);
+}
+
 }  // namespace global_media_controls

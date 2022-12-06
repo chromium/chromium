@@ -854,6 +854,9 @@ class CORE_EXPORT HTMLMediaElement
 
   // Whether the player disables the Remote Playback feature.
   bool is_remote_playback_disabled_ = false;
+  // Whether the player is rendering remotely.
+  bool is_remote_rendering_ = false;
+  WebString remote_device_friendly_name_;
   media::AudioCodec audio_codec_ = media::AudioCodec::kUnknown;
   media::VideoCodec video_codec_ = media::VideoCodec::kUnknown;
 

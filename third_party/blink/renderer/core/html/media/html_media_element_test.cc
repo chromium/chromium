@@ -1198,7 +1198,8 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
           WTF::String(media::GetCodecName(video_codec)),
-          WTF::String(media::GetCodecName(audio_codec)), false)));
+          WTF::String(media::GetCodecName(audio_codec)), false, false,
+          WTF::String())));
 }
 
 TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {
@@ -1214,6 +1215,7 @@ TEST_P(HTMLMediaElementTest, SendRemotePlaybackMetadataChangeToObserver) {
   media::VideoCodec video_codec = media::VideoCodec::kH264;
   media::AudioCodec audio_codec = media::AudioCodec::kAAC;
   bool is_remote_playback_disabled = true;
+  bool is_remote_playback_started = false;
   NotifyMediaMetadataChanged(true, true, audio_codec, video_codec,
                              media::MediaContentType::Transient);
   NotifyRemotePlaybackDisabled(is_remote_playback_disabled);
@@ -1221,7 +1223,8 @@ TEST_P(HTMLMediaElementTest, SendRemotePlaybackMetadataChangeToObserver) {
       media_session::mojom::blink::RemotePlaybackMetadata::New(
           WTF::String(media::GetCodecName(video_codec)),
           WTF::String(media::GetCodecName(audio_codec)),
-          is_remote_playback_disabled)));
+          is_remote_playback_disabled, is_remote_playback_started,
+          WTF::String())));
 }
 
 TEST_P(HTMLMediaElementTest, SendUseAudioServiceChangedToObserver) {
