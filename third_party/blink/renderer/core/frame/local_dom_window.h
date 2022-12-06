@@ -634,7 +634,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   HistoryUserActivationState history_user_activation_state_;
 
   // If set, this window is a Document Picture in Picture window.
-  // https://github.com/steimelchrome/document-pip-explainer/blob/main/explainer.md
+  // https://wicg.github.io/document-picture-in-picture/
   bool is_picture_in_picture_window_ = false;
 
   // The navigation id of a document is to identify navigation of special types

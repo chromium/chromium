@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://steimelchrome.github.io/draft_spec.html#dictdef-documentpictureinpictureoptions
+// https://wicg.github.io/document-picture-in-picture/#dictdef-documentpictureinpictureoptions
 
 dictionary DocumentPictureInPictureOptions {
   float initialAspectRatio = 0.0;
