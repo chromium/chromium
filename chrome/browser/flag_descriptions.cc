@@ -3211,6 +3211,13 @@ const char kWebRtcAllowInputVolumeAdjustmentDescription[] =
     "are observed when the browser is running and used for a real-time call. "
     "This flag is experimental and may be removed at any time.";
 
+const char kWebRtcApmDownmixCaptureAudioMethodName[] =
+    "WebRTC downmix capture audio method.";
+const char kWebRtcApmDownmixCaptureAudioMethodDescription[] =
+    "Override the method that the Audio Processing Module in WebRTC uses to "
+    "downmix the captured audio to mono (when needed) during a real-time call. "
+    "This flag is experimental and may be removed at any time.";
+
 const char kWebrtcHwDecodingName[] = "WebRTC hardware video decoding";
 const char kWebrtcHwDecodingDescription[] =
     "Support in WebRTC for decoding video streams using platform hardware.";

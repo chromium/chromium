@@ -5,7 +5,9 @@
 #include "media/webrtc/webrtc_features.h"
 
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
 namespace features {
 
@@ -21,5 +23,12 @@ BASE_FEATURE(kWebRtcAllowWgcDesktopCapturer,
 BASE_FEATURE(kWebRtcAllowInputVolumeAdjustment,
              "WebRtcAllowInputVolumeAdjustment",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, overrides the Audio Processing Module parameter that controls
+// how multi-channel capture audio is downmixed to mono (when downmixing is
+// needed).
+BASE_FEATURE(kWebRtcApmDownmixCaptureAudioMethod,
+             "WebRtcApmDownmixCaptureAudioMethod",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

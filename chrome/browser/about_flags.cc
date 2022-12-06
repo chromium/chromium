@@ -3355,6 +3355,16 @@ const FeatureEntry::FeatureVariation
          std::size(kOsIntegrationSubManagersExecuteAndWriteConfig), nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam kWebRtcApmDownmixMethodAverage[] = {
+    {"method", "average"}};
+const FeatureEntry::FeatureParam kWebRtcApmDownmixMethodFirstChannel[] = {
+    {"method", "first"}};
+const FeatureEntry::FeatureVariation kWebRtcApmDownmixMethodVariations[] = {
+    {"- Average all the input channels", kWebRtcApmDownmixMethodAverage,
+     std::size(kWebRtcApmDownmixMethodAverage), nullptr},
+    {"- Use first channel", kWebRtcApmDownmixMethodFirstChannel,
+     std::size(kWebRtcApmDownmixMethodFirstChannel), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -3450,6 +3460,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebRtcAllowInputVolumeAdjustmentDescription,
      kOsWin | kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(features::kWebRtcAllowInputVolumeAdjustment)},
+    {"enable-webrtc-apm-downmix-capture-audio-method",
+     flag_descriptions::kWebRtcApmDownmixCaptureAudioMethodName,
+     flag_descriptions::kWebRtcApmDownmixCaptureAudioMethodDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kWebRtcApmDownmixCaptureAudioMethod,
+         kWebRtcApmDownmixMethodVariations,
+         "WebRtcApmDownmixCaptureAudioMethod")},
     {"enable-webrtc-hide-local-ips-with-mdns",
      flag_descriptions::kWebrtcHideLocalIpsWithMdnsName,
      flag_descriptions::kWebrtcHideLocalIpsWithMdnsDecription, kOsDesktop,

@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
 namespace features {
 
@@ -17,6 +19,14 @@ BASE_DECLARE_FEATURE(kWebRtcAllowWgcDesktopCapturer);
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 BASE_DECLARE_FEATURE(kWebRtcAllowInputVolumeAdjustment);
+
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+BASE_DECLARE_FEATURE(kWebRtcApmDownmixCaptureAudioMethod);
+
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+extern const base::FeatureParam<
+    ::webrtc::AudioProcessing::Config::Pipeline::DownmixMethod>
+    kWebRtcApmDownmixMethodParam;
 
 }  // namespace features
 

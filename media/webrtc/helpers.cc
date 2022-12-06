@@ -4,6 +4,8 @@
 
 #include "media/webrtc/helpers.h"
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -18,6 +20,17 @@ namespace media {
 namespace {
 
 using Agc1Mode = webrtc::AudioProcessing::Config::GainController1::Mode;
+
+using DownmixMethod =
+    ::webrtc::AudioProcessing::Config::Pipeline::DownmixMethod;
+const base::FeatureParam<DownmixMethod>::Option kDownmixMethodOptions[] = {
+    {DownmixMethod::kAverageChannels, "average"},
+    {DownmixMethod::kUseFirstChannel, "first"}};
+constexpr DownmixMethod kDefaultDownmixMethod =
+    webrtc::AudioProcessing::Config::Pipeline{}.capture_downmix_method;
+const base::FeatureParam<DownmixMethod> kWebRtcApmDownmixMethodParam = {
+    &::features::kWebRtcApmDownmixCaptureAudioMethod, "method",
+    kDefaultDownmixMethod, &kDownmixMethodOptions};
 
 void ConfigAutomaticGainControl(const AudioProcessingSettings& settings,
                                 webrtc::AudioProcessing::Config& apm_config) {
@@ -142,6 +155,8 @@ rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
   apm_config.pipeline.multi_channel_render = true;
   apm_config.pipeline.multi_channel_capture =
       settings.multi_channel_capture_processing;
+  apm_config.pipeline.capture_downmix_method =
+      kWebRtcApmDownmixMethodParam.Get();
   apm_config.high_pass_filter.enabled = settings.high_pass_filter;
   apm_config.noise_suppression.enabled = settings.noise_suppression;
   apm_config.noise_suppression.level =

@@ -1825,6 +1825,9 @@ extern const char kWebrtcHideLocalIpsWithMdnsDecription[];
 extern const char kWebRtcAllowInputVolumeAdjustmentName[];
 extern const char kWebRtcAllowInputVolumeAdjustmentDescription[];
 
+extern const char kWebRtcApmDownmixCaptureAudioMethodName[];
+extern const char kWebRtcApmDownmixCaptureAudioMethodDescription[];
+
 extern const char kWebrtcHwDecodingName[];
 extern const char kWebrtcHwDecodingDescription[];
 
