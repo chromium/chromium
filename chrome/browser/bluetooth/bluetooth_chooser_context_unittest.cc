@@ -213,20 +213,19 @@ TEST_F(BluetoothChooserContextTest, CheckGrantAndRevokePermission) {
         context->IsAllowedToAccessService(foo_origin_, device_id, service));
   }
 
-  base::Value expected_object(base::Value::Type::DICTIONARY);
-  expected_object.SetStringKey(kDeviceAddressKey, kDeviceAddress1);
-  expected_object.SetStringKey(kDeviceNameKey,
-                               fake_device1_->GetNameForDisplay());
-  expected_object.SetStringKey(kWebBluetoothDeviceIdKey, device_id.str());
-  base::Value expected_services(base::Value::Type::DICTIONARY);
-  expected_services.SetBoolKey(kGlucoseUUIDString, /*val=*/true);
-  expected_services.SetBoolKey(kBloodPressureUUIDString, /*val=*/true);
-  expected_object.SetKey(kServicesKey, std::move(expected_services));
-  base::Value expected_manufacturer_data(base::Value::Type::LIST);
+  base::Value::Dict expected_object;
+  expected_object.Set(kDeviceAddressKey, kDeviceAddress1);
+  expected_object.Set(kDeviceNameKey, fake_device1_->GetNameForDisplay());
+  expected_object.Set(kWebBluetoothDeviceIdKey, device_id.str());
+  base::Value::Dict expected_services;
+  expected_services.Set(kGlucoseUUIDString, /*value=*/true);
+  expected_services.Set(kBloodPressureUUIDString, /*value=*/true);
+  expected_object.Set(kServicesKey, std::move(expected_services));
+  base::Value::List expected_manufacturer_data;
   expected_manufacturer_data.Append(0x01);
   expected_manufacturer_data.Append(0x02);
-  expected_object.SetKey(kManufacturerDataKey,
-                         std::move(expected_manufacturer_data));
+  expected_object.Set(kManufacturerDataKey,
+                      std::move(expected_manufacturer_data));
 
   std::vector<std::unique_ptr<BluetoothChooserContext::Object>> origin_objects =
       context->GetGrantedObjects(foo_origin_);
