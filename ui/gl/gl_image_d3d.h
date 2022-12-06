@@ -62,6 +62,8 @@ class GL_EXPORT GLImageD3D : public GLImage {
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
 
+  const gfx::ColorSpace& color_space() const { return color_space_; }
+
   const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture() const {
     return texture_;
   }

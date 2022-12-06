@@ -31,8 +31,17 @@ class ProcessMemoryDump;
 
 namespace gpu {
 class DawnEGLImageRepresentation;
+class D3DImageBacking;
 class TestOverlayImageRepresentation;
 }  // namespace gpu
+
+namespace gpu::gles2 {
+class Texture;
+}
+
+namespace media {
+class VTVideoDecodeAccelerator;
+}
 
 namespace ui {
 class SurfacelessGlRenderer;
@@ -91,13 +100,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // BT.709, or BT.2020) and range (limited or null), and |color_space| conveys
   // this.
   virtual void SetColorSpace(const gfx::ColorSpace& color_space);
-  const gfx::ColorSpace& color_space() const { return color_space_; }
-
-  // Dumps information about the memory backing the GLImage to a dump named
-  // |dump_name|.
-  virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                            uint64_t process_tracing_id,
-                            const std::string& dump_name);
 
   // An identifier for subclasses. Necessary for safe downcasting.
   enum class Type {
@@ -121,6 +123,12 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
 
   virtual ~GLImage() = default;
 
+  // Dumps information about the memory backing the GLImage to a dump named
+  // |dump_name|.
+  virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                            uint64_t process_tracing_id,
+                            const std::string& dump_name);
+
   // Returns the NativePixmap backing the GLImage. If not backed by a
   // NativePixmap, returns null.
   virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();
@@ -131,7 +139,10 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
 
  private:
   friend class gpu::DawnEGLImageRepresentation;
+  friend class gpu::D3DImageBacking;
   friend class gpu::TestOverlayImageRepresentation;
+  friend class gpu::gles2::Texture;
+  friend class media::VTVideoDecodeAccelerator;
   friend class ui::SurfacelessGlRenderer;
   friend class ui::SurfacelessSkiaGlRenderer;
 
