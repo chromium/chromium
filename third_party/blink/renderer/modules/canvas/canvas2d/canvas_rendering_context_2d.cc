@@ -418,8 +418,17 @@ void CanvasRenderingContext2D::SnapshotStateForFilter() {
 cc::PaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   if (UNLIKELY(isContextLost()))
     return nullptr;
-  if (LIKELY(canvas()->GetOrCreateCanvas2DLayerBridge()))
+  if (LIKELY(canvas()->GetOrCreateCanvas2DLayerBridge())) {
+    if (LIKELY(!layer_count_) &&
+        LIKELY(canvas()->GetCanvas2DLayerBridge()->ResourceProvider())) {
+      // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
+      canvas()
+          ->GetCanvas2DLayerBridge()
+          ->ResourceProvider()
+          ->FlushIfRecordingLimitExceeded();
+    }
     return canvas()->GetCanvas2DLayerBridge()->GetPaintCanvas();
+  }
   return nullptr;
 }
 
