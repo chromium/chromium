@@ -24,13 +24,11 @@ class Event;
 }  // namespace ui
 
 namespace views {
-class ImageView;
 class Widget;
 }  // namespace views
 
 namespace ash {
 
-class IconButton;
 class Shelf;
 class TrayBubbleView;
 class TrayBubbleWrapper;
@@ -79,27 +77,28 @@ class ASH_EXPORT VideoConferenceTray
 
   // TrayBackgroundView:
   void CloseBubble() override;
-  void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   std::u16string GetAccessibleNameForTray() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   void HandleLocaleChange() override;
-  void UpdateLayout() override;
-  void OnThemeChanged() override;
   void UpdateAfterLoginStatusChange() override;
 
   // VideoConferenceTrayController::Observer:
   void OnCameraCapturingStateChange(bool is_capturing) override;
   void OnMicrophoneCapturingStateChange(bool is_capturing) override;
 
+  // The expand indicator of the toggle bubble button needs to rotate according
+  // to shelf alignment and whether the bubble is opened. This function will
+  // calculate that rotation value.
+  SkScalar GetRotationValueForToggleBubbleButton();
+
  private:
   friend class VideoConferenceTrayTest;
 
-  // Updates the orientation of the expand indicator, based on shelf alignment
-  // and whether the bubble is opened.
-  void UpdateExpandIndicator();
+  // Callback function for `toggle_bubble_button_`.
+  void ToggleBubble(const ui::Event& event);
 
   // Callback functions for the icons when being clicked.
   void OnCameraButtonClicked(const ui::Event& event);
@@ -110,7 +109,7 @@ class ASH_EXPORT VideoConferenceTray
   VideoConferenceTrayButton* audio_icon_ = nullptr;
   VideoConferenceTrayButton* camera_icon_ = nullptr;
   VideoConferenceTrayButton* screen_share_icon_ = nullptr;
-  views::ImageView* expand_indicator_ = nullptr;
+  IconButton* toggle_bubble_button_ = nullptr;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

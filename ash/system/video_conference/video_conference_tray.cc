@@ -25,9 +25,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/skbitmap_operations.h"
-#include "ui/views/controls/image_view.h"
+#include "ui/gfx/scoped_canvas.h"
 
 namespace ash {
 
@@ -35,6 +33,47 @@ namespace {
 
 constexpr float kPrivacyIndicatorRadius = 4;
 constexpr float kIndicatorBorderWidth = 1;
+
+// A customized toggle button for the VC tray's toggle bubble button.
+class ToggleBubbleButton : public IconButton {
+ public:
+  ToggleBubbleButton(VideoConferenceTray* tray, PressedCallback callback)
+      : IconButton(std::move(callback),
+                   IconButton::Type::kMedium,
+                   &kUnifiedMenuExpandIcon,
+                   IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE,
+                   /*is_togglable=*/true,
+                   /*has_border=*/true),
+        tray_(tray) {}
+  ToggleBubbleButton(const ToggleBubbleButton&) = delete;
+  ToggleBubbleButton& operator=(const ToggleBubbleButton&) = delete;
+  ~ToggleBubbleButton() override = default;
+
+  // IconButton:
+  void PaintButtonContents(gfx::Canvas* canvas) override {
+    const gfx::Rect rect(GetContentsBounds());
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(GetBackgroundColor());
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2,
+                       flags);
+
+    // Rotate the canvas to rotate the expand indicator according to toggle
+    // state and shelf alignment. Note that when shelf alignment changes,
+    // TrayBackgroundView::UpdateLayout() will be triggered and this button will
+    // be automatically repainted, so we don't need to manually handle it.
+    gfx::ScopedCanvas scoped(canvas);
+    canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() / 2));
+    canvas->sk_canvas()->rotate(tray_->GetRotationValueForToggleBubbleButton());
+    gfx::ImageSkia image = GetImageToPaint();
+    canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
+  }
+
+ private:
+  // Parent view of this button. Owned by the views hierarchy.
+  VideoConferenceTray* const tray_;
+};
 
 }  // namespace
 
@@ -111,8 +150,10 @@ VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
                               weak_ptr_factory_.GetWeakPtr()),
           &kPrivacyIndicatorsScreenShareIcon,
           IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE));
-  expand_indicator_ =
-      tray_container()->AddChildView(std::make_unique<views::ImageView>());
+  toggle_bubble_button_ =
+      tray_container()->AddChildView(std::make_unique<ToggleBubbleButton>(
+          this, base::BindRepeating(&VideoConferenceTray::ToggleBubble,
+                                    weak_ptr_factory_.GetWeakPtr())));
 
   VideoConferenceTrayController::Get()->AddObserver(this);
 }
@@ -121,30 +162,9 @@ VideoConferenceTray::~VideoConferenceTray() {
   VideoConferenceTrayController::Get()->RemoveObserver(this);
 }
 
-void VideoConferenceTray::ShowBubble() {
-  TrayBubbleView::InitParams init_params;
-  init_params.delegate = GetWeakPtr();
-  init_params.parent_window = GetBubbleWindowContainer();
-  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
-  init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
-  init_params.insets = GetTrayBubbleInsets();
-  init_params.shelf_alignment = shelf()->alignment();
-  init_params.preferred_width = kTrayMenuWidth;
-  init_params.close_on_deactivate = true;
-  init_params.translucent = true;
-
-  // Create top-level bubble.
-  auto bubble_view = std::make_unique<VideoConferenceBubbleView>(init_params);
-  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
-  bubble_->ShowBubble(std::move(bubble_view));
-
-  SetIsActive(true);
-  UpdateExpandIndicator();
-}
-
 void VideoConferenceTray::CloseBubble() {
   SetIsActive(false);
-  UpdateExpandIndicator();
+  toggle_bubble_button_->SetToggled(false);
 
   bubble_.reset();
   shelf()->UpdateAutoHideState();
@@ -177,19 +197,6 @@ void VideoConferenceTray::HandleLocaleChange() {
   // TODO(b/253646076): Finish this function.
 }
 
-void VideoConferenceTray::UpdateLayout() {
-  TrayBackgroundView::UpdateLayout();
-
-  // Updates expand indicator for shelf alignment change.
-  UpdateExpandIndicator();
-}
-
-void VideoConferenceTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-
-  UpdateExpandIndicator();
-}
-
 void VideoConferenceTray::UpdateAfterLoginStatusChange() {
   SetVisiblePreferred(true);
 }
@@ -202,35 +209,42 @@ void VideoConferenceTray::OnMicrophoneCapturingStateChange(bool is_capturing) {
   audio_icon_->SetShowPrivacyIndicator(/*show=*/is_capturing);
 }
 
-void VideoConferenceTray::UpdateExpandIndicator() {
-  auto image = gfx::CreateVectorIcon(
-      kUnifiedMenuExpandIcon,
-      GetColorProvider()->GetColor(kColorAshIconColorPrimary));
-
-  SkBitmapOperations::RotationAmount rotation;
+SkScalar VideoConferenceTray::GetRotationValueForToggleBubbleButton() {
   switch (shelf()->alignment()) {
     case ShelfAlignment::kBottom:
     case ShelfAlignment::kBottomLocked:
-      if (!is_active()) {
-        // When bubble is not showing in horizontal shelf, no need to rotate and
-        // return early.
-        expand_indicator_->SetImage(image);
-        return;
-      }
-      rotation = SkBitmapOperations::ROTATION_180_CW;
-      break;
+      return is_active() ? 180 : 0;
     case ShelfAlignment::kLeft:
-      rotation = is_active() ? SkBitmapOperations::ROTATION_270_CW
-                             : SkBitmapOperations::ROTATION_90_CW;
-      break;
+      return is_active() ? 270 : 90;
     case ShelfAlignment::kRight:
-      rotation = is_active() ? SkBitmapOperations::ROTATION_90_CW
-                             : SkBitmapOperations::ROTATION_270_CW;
-      break;
+      return is_active() ? 90 : 270;
+  }
+}
+
+void VideoConferenceTray::ToggleBubble(const ui::Event& event) {
+  if (GetBubbleWidget()) {
+    CloseBubble();
+    return;
   }
 
-  expand_indicator_->SetImage(
-      gfx::ImageSkiaOperations::CreateRotatedImage(image, rotation));
+  TrayBubbleView::InitParams init_params;
+  init_params.delegate = GetWeakPtr();
+  init_params.parent_window = GetBubbleWindowContainer();
+  init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
+  init_params.anchor_rect = shelf()->GetSystemTrayAnchorRect();
+  init_params.insets = GetTrayBubbleInsets();
+  init_params.shelf_alignment = shelf()->alignment();
+  init_params.preferred_width = kTrayMenuWidth;
+  init_params.close_on_deactivate = true;
+  init_params.translucent = true;
+
+  // Create top-level bubble.
+  auto bubble_view = std::make_unique<VideoConferenceBubbleView>(init_params);
+  bubble_ = std::make_unique<TrayBubbleWrapper>(this);
+  bubble_->ShowBubble(std::move(bubble_view));
+
+  SetIsActive(true);
+  toggle_bubble_button_->SetToggled(true);
 }
 
 void VideoConferenceTray::OnCameraButtonClicked(const ui::Event& event) {
