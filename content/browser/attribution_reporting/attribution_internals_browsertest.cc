@@ -748,15 +748,24 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#reportTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver((_, obs) => {
+
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 2 &&
           table.children[0].children[6].innerText === "7" &&
           table.children[1].children[2].innerText === "Sent: HTTP 200") {
-        obs.disconnect();
+        if (obs) {
+          obs.disconnect();
+        }
         document.title = $1;
+        return true;
       }
-    });
-    obs.observe(table, {'childList': true});)";
+      return false;
+    };
+
+    if (!setTitleIfDone()) {
+      let obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {childList: true, characterData: true});
+    })";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   // Wait for the table to rendered.
