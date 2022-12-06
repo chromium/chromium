@@ -36,6 +36,9 @@ suite('AppListTest', () => {
             url:
                 'chrome://extension-icon/ahfgeienlihckogmohjhadlkjgocpleb/128/1',
           },
+          mayShowRunOnOsLoginMode: false,
+          mayToggleRunOnOsLoginMode: false,
+          runOnOsLoginMode: 0 /*kNotRun*/,
         },
         {
           id: 'ahfgeienlihckogmotestdlkjgocpleb',
@@ -45,6 +48,9 @@ suite('AppListTest', () => {
             url:
                 'chrome://extension-icon/ahfgeienlihckogmotestdlkjgocpleb/128/1',
           },
+          mayShowRunOnOsLoginMode: false,
+          mayToggleRunOnOsLoginMode: false,
+          runOnOsLoginMode: 0 /*kNotRun*/,
         },
       ],
     };
@@ -56,6 +62,9 @@ suite('AppListTest', () => {
       iconUrl: {
         url: 'chrome://extension-icon/mmfbcljfglbokpmkimbfghdkjmjhdgbg/128/1',
       },
+      mayShowRunOnOsLoginMode: false,
+      mayToggleRunOnOsLoginMode: false,
+      runOnOsLoginMode: 0 /*kNotRun*/,
     };
     testBrowserProxy = new TestAppHomeBrowserProxy(apps);
     callbackRouterRemote = testBrowserProxy.callbackRouterRemote;

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -41,7 +42,8 @@ class AppHomePageHandler
       public web_app::WebAppInstallManagerObserver,
       public extensions::ExtensionRegistryObserver,
       public extensions::ExtensionUninstallDialog::Delegate,
-      public ExtensionEnableFlowDelegate {
+      public ExtensionEnableFlowDelegate,
+      public web_app::AppRegistrarObserver {
  public:
   AppHomePageHandler(
       content::WebUI*,
@@ -66,6 +68,12 @@ class AppHomePageHandler
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
+  // web_app::AppRegistrarObserver:
+  void OnWebAppRunOnOsLoginModeChanged(
+      const web_app::AppId& app_id,
+      web_app::RunOnOsLoginMode run_on_os_login_mode) override;
+  void OnAppRegistrarDestroyed() override;
+
   // app_home::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;
   void UninstallApp(const std::string& app_id) override;
@@ -75,6 +83,9 @@ class AppHomePageHandler
   void LaunchApp(const std::string& app_id,
                  int source,
                  app_home::mojom::ClickEventPtr click_event) override;
+  void SetRunOnOsLoginMode(
+      const std::string& app_id,
+      web_app::RunOnOsLoginMode run_on_os_login_mode) override;
 
  private:
   Browser* GetCurrentBrowser();
@@ -126,6 +137,10 @@ class AppHomePageHandler
   // The apps are represented in the extensions model, which
   // outlives this class since it's owned by |profile_|.
   const raw_ptr<extensions::ExtensionService> extension_service_;
+
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::AppRegistrarObserver>
+      web_app_registrar_observation_{this};
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

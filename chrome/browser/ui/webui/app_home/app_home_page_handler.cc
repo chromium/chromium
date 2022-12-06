@@ -27,9 +27,12 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -71,6 +74,7 @@ AppHomePageHandler::AppHomePageHandler(
       web_app_provider_(web_app::WebAppProvider::GetForWebApps(profile)),
       extension_service_(
           extensions::ExtensionSystem::Get(profile)->extension_service()) {
+  web_app_registrar_observation_.Observe(&web_app_provider_->registrar());
   install_manager_observation_.Observe(&web_app_provider_->install_manager());
   ExtensionRegistry::Get(profile)->AddObserver(this);
 }
@@ -145,6 +149,16 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   app_info->icon_url =
       apps::AppIconSource::GetIconURL(app_id, kWebAppLargeIconSize);
 
+  bool is_locally_installed = registrar.IsLocallyInstalled(app_id);
+
+  const auto login_mode = registrar.GetAppRunOnOsLoginMode(app_id);
+  // Only show the Run on OS Login menu item for locally installed web apps
+  app_info->may_show_run_on_os_login_mode =
+      base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
+      is_locally_installed;
+  app_info->may_toggle_run_on_os_login_mode = login_mode.user_controllable;
+  app_info->run_on_os_login_mode = login_mode.value;
+
   return app_info;
 }
 
@@ -162,6 +176,9 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromExtension(
   app_info->icon_url = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_LARGE,
       ExtensionIconSet::MATCH_BIGGER, false /*grayscale*/);
+
+  app_info->may_show_run_on_os_login_mode = false;
+  app_info->may_toggle_run_on_os_login_mode = false;
 
   return app_info;
 }
@@ -325,6 +342,16 @@ void AppHomePageHandler::GetApps(GetAppsCallback callback) {
   std::move(callback).Run(std::move(result));
 }
 
+void AppHomePageHandler::OnWebAppRunOnOsLoginModeChanged(
+    const web_app::AppId& app_id,
+    web_app::RunOnOsLoginMode run_on_os_login_mode) {
+  page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
+}
+
+void AppHomePageHandler::OnAppRegistrarDestroyed() {
+  web_app_registrar_observation_.Reset();
+}
+
 void AppHomePageHandler::UninstallApp(const std::string& app_id) {
   if (extension_dialog_prompting_)
     return;
@@ -484,6 +511,21 @@ void AppHomePageHandler::LaunchApp(const std::string& app_id,
                 },
                 browser_ptr, old_contents_ptr));
   }
+}
+
+void AppHomePageHandler::SetRunOnOsLoginMode(
+    const std::string& app_id,
+    web_app::RunOnOsLoginMode run_on_os_login_mode) {
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin))
+    return;
+
+  if (run_on_os_login_mode != web_app::RunOnOsLoginMode::kNotRun &&
+      run_on_os_login_mode != web_app::RunOnOsLoginMode::kWindowed) {
+    return;  // Other login mode is not supported;
+  }
+
+  web_app_provider_->scheduler().SetRunOnOsLoginMode(
+      app_id, run_on_os_login_mode, base::DoNothing());
 }
 
 }  // namespace webapps

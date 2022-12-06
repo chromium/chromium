@@ -7,5 +7,28 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojo_bindings") {
   sources = [ "app_home.mojom" ]
   webui_module_path = "/"
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "app_home.mojom.RunOnOsLoginMode"
+          cpp = "::web_app::RunOnOsLoginMode"
+        },
+      ]
+      traits_headers = [
+        "//chrome/browser/ui/webui/app_home/app_home_mojom_traits.h",
+        "//chrome/browser/web_applications/web_app_constants.h",
+      ]
+      traits_sources =
+          [ "//chrome/browser/ui/webui/app_home/app_home_mojom_traits.cc" ]
+      traits_public_deps =
+          [ "//chrome/browser/web_applications:web_applications" ]
+    },
+  ]
 }

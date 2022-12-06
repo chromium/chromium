@@ -6,6 +6,19 @@ module app_home.mojom;
 
 import "url/mojom/url.mojom";
 
+// The RunOnOsLoginModes must be kept in sync with RunOnOsLoginMode in
+// chrome/browser/web_applications/web_app_constants.h
+enum RunOnOsLoginMode {
+  // kNotRun: The web app will not run during OS login.
+  kNotRun = 0,
+  // kWindowed: The web app will run during OS login and will be launched as
+  // normal window. This is also the default launch mode for web apps.
+  kWindowed = 1,
+  // kMinimized: The web app will run during OS login and will be launched as a
+  // minimized window.
+  kMinimized = 2,
+};
+
 struct AppInfo {
   // The app id.
   string id;
@@ -15,6 +28,13 @@ struct AppInfo {
   string name;
   // The app's icon url showing on `chrome://apps`.
   url.mojom.Url icon_url;
+  // Whether need to show `RunOnOsLoginMode` menu item or not.
+  bool may_show_run_on_os_login_mode;
+  // Whether need to show `RunOnOsLoginMode` menu item checked or not.
+  bool may_toggle_run_on_os_login_mode;
+  // The app's `RunOnOsLoginMode`, including `RunOnOsLoginModeNotRun` and
+  // `RunOnOsLoginModeWindowed`.
+  RunOnOsLoginMode run_on_os_login_mode;
 };
 
 struct ClickEvent {
@@ -45,6 +65,8 @@ interface PageHandler {
   // see `AppLaunchBucket` in extension_constants.h for more detail.
   // `click_event` is used for determining launch container for apps.
   LaunchApp(string app_id, int32 source, ClickEvent? click_event);
+  // Used to set the Run On OS Login Modes from the frontend of an app.
+  SetRunOnOsLoginMode(string app_id, RunOnOsLoginMode run_on_os_login_mode);
 };
 
 // The `Page` interface is used for sending mojom action messsage

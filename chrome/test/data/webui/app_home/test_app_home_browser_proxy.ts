@@ -1,7 +1,7 @@
 // Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {AppInfo, ClickEvent, PageCallbackRouter, PageHandlerInterface, PageRemote} from 'chrome://apps/app_home.mojom-webui.js';
+import {AppInfo, ClickEvent, PageCallbackRouter, PageHandlerInterface, PageRemote, RunOnOsLoginMode} from 'chrome://apps/app_home.mojom-webui.js';
 import {BrowserProxy} from 'chrome://apps/browser_proxy.js';
 
 interface AppList {
@@ -28,6 +28,8 @@ export class FakePageHandler implements PageHandlerInterface {
   }
 
   launchApp(_appId: string, _source: number, _clickEvent: ClickEvent) {}
+
+  setRunOnOsLoginMode(_appId: string, _runOnOsLoginMode: RunOnOsLoginMode) {}
 }
 
 export class TestAppHomeBrowserProxy implements BrowserProxy {
