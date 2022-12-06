@@ -2484,6 +2484,12 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // using GL_RGBA and glColorMask.
   bool ChromiumImageNeedsRGBEmulation();
 
+  bool SupportsCreateAnonymousImage();
+  scoped_refptr<gl::GLImage> CreateAnonymousImage(const gfx::Size& size,
+                                                  gfx::BufferFormat format,
+                                                  bool* is_cleared);
+  unsigned int RequiredTextureTypeForAnonymousImage();
+
   // Helper method to call glClear workaround.
   void ClearFramebufferForWorkaround(GLbitfield mask);
 
@@ -3178,18 +3184,14 @@ void BackTexture::Invalidate() {
 
 GLenum BackTexture::Target() {
   return decoder_->should_use_native_gmb_for_backbuffer_
-             ? decoder_->GetContextGroup()
-                   ->image_factory()
-                   ->RequiredTextureType()
+             ? decoder_->RequiredTextureTypeForAnonymousImage()
              : GL_TEXTURE_2D;
 }
 
 bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
                                                 GLenum format,
                                                 bool zero) {
-  if (!decoder_->GetContextGroup()
-           ->image_factory()
-           ->SupportsCreateAnonymousImage())
+  if (!decoder_->SupportsCreateAnonymousImage())
     return false;
 
   DCHECK(format == GL_RGB || format == GL_RGBA);
@@ -3206,9 +3208,7 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
 #endif
   }
   scoped_refptr<gl::GLImage> image =
-      decoder_->GetContextGroup()->image_factory()->CreateAnonymousImage(
-          size, buffer_format, gfx::BufferUsage::SCANOUT,
-          gpu::kNullSurfaceHandle, &is_cleared);
+      decoder_->CreateAnonymousImage(size, buffer_format, &is_cleared);
   if (!image)
     return false;
   DCHECK_EQ(format, image->GetDataFormat());
@@ -19529,6 +19529,24 @@ error::Error GLES2DecoderImpl::HandleSetActiveURLCHROMIUM(
   GURL url(base::StringPiece(url_str, size));
   client()->SetActiveURL(std::move(url));
   return error::kNoError;
+}
+
+bool GLES2DecoderImpl::SupportsCreateAnonymousImage() {
+  return GetContextGroup()->image_factory()->SupportsCreateAnonymousImage();
+}
+
+scoped_refptr<gl::GLImage> GLES2DecoderImpl::CreateAnonymousImage(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    bool* is_cleared) {
+  return GetContextGroup()->image_factory()->CreateAnonymousImage(
+      size, format, gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle,
+      is_cleared);
+}
+
+// An image can only be bound to a texture with the appropriate type.
+unsigned int GLES2DecoderImpl::RequiredTextureTypeForAnonymousImage() {
+  return GetContextGroup()->image_factory()->RequiredTextureType();
 }
 
 // Include the auto-generated part of this file. We split this because it means
