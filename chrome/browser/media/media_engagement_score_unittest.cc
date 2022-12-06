@@ -314,12 +314,12 @@ TEST_F(MediaEngagementScoreTest, HighScoreLegacy_High) {
       HostContentSettingsMapFactory::GetForProfile(profile());
 
   {
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
-    dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 6);
+    base::Value::Dict dict;
+    dict.Set(MediaEngagementScore::kVisitsKey, 20);
+    dict.Set(MediaEngagementScore::kMediaPlaybacksKey, 6);
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-        base::Value::FromUniquePtrValue(std::move(dict)));
+        base::Value(std::move(dict)));
   }
 
   {
@@ -336,12 +336,12 @@ TEST_F(MediaEngagementScoreTest, HighScoreLegacy_Low) {
       HostContentSettingsMapFactory::GetForProfile(profile());
 
   {
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
-    dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 4);
+    base::Value::Dict dict;
+    dict.Set(MediaEngagementScore::kVisitsKey, 20);
+    dict.Set(MediaEngagementScore::kMediaPlaybacksKey, 4);
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-        base::Value::FromUniquePtrValue(std::move(dict)));
+        base::Value(std::move(dict)));
   }
 
   {
@@ -359,16 +359,16 @@ TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
       HostContentSettingsMapFactory::GetForProfile(profile());
 
   {
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-    dict->SetInteger(MediaEngagementScore::kVisitsKey, 10);
-    dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 1);
-    dict->SetDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                       test_clock.Now().ToInternalValue());
-    dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
+    base::Value::Dict dict;
+    dict.Set(MediaEngagementScore::kVisitsKey, 10);
+    dict.Set(MediaEngagementScore::kMediaPlaybacksKey, 1);
+    dict.Set(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+             static_cast<double>(test_clock.Now().ToInternalValue()));
+    dict.Set(MediaEngagementScore::kHasHighScoreKey, true);
 
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-        base::Value::FromUniquePtrValue((std::move(dict))));
+        base::Value(std::move(dict)));
   }
 
   {
@@ -477,27 +477,26 @@ TEST_F(MediaEngagementScoreTest, DoNotStoreDeprecatedFields) {
   url::Origin origin = url::Origin::Create(GURL("https://www.google.com"));
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  std::unique_ptr<base::DictionaryValue> score_dict =
-      std::make_unique<base::DictionaryValue>();
+  base::Value::Dict score_dict;
 
   // Store data with deprecated fields in content settings.
-  score_dict->SetInteger(kVisitsWithMediaTag, 10);
-  score_dict->SetInteger(kAudiblePlaybacks, 10);
-  score_dict->SetInteger(kSignificantPlaybacks, 10);
-  score_dict->SetInteger(kHighScoreChanges, 10);
-  score_dict->SetInteger(kMediaElementPlaybacks, 10);
-  score_dict->SetInteger(kAudioContextPlaybacks, 10);
+  score_dict.Set(kVisitsWithMediaTag, 10);
+  score_dict.Set(kAudiblePlaybacks, 10);
+  score_dict.Set(kSignificantPlaybacks, 10);
+  score_dict.Set(kHighScoreChanges, 10);
+  score_dict.Set(kMediaElementPlaybacks, 10);
+  score_dict.Set(kAudioContextPlaybacks, 10);
 
   // These fields are not deprecated and should not be removed.
-  score_dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
-  score_dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 12);
-  score_dict->SetDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                           test_clock.Now().ToInternalValue());
-  score_dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
-  score_dict->SetInteger(kNotDeprectedUnknown, 10);
+  score_dict.Set(MediaEngagementScore::kVisitsKey, 20);
+  score_dict.Set(MediaEngagementScore::kMediaPlaybacksKey, 12);
+  score_dict.Set(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+                 static_cast<double>(test_clock.Now().ToInternalValue()));
+  score_dict.Set(MediaEngagementScore::kHasHighScoreKey, true);
+  score_dict.Set(kNotDeprectedUnknown, 10);
   settings_map->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      base::Value::FromUniquePtrValue(std::move(score_dict)));
+      base::Value(std::move(score_dict)));
 
   // Run the data through media engagement score.
   MediaEngagementScore score(&test_clock, origin, settings_map);
