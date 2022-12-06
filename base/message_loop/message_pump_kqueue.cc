@@ -6,6 +6,8 @@
 
 #include <sys/errno.h>
 
+#include <atomic>
+
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -25,6 +27,9 @@ namespace {
 BASE_FEATURE(kUseSimplifiedMessagePumpKqueueLoop,
              "UseSimplifiedMessagePumpKqueueLoop",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Caches the state of the "UseSimplifiedMessagePumpKqueueLoop".
+std::atomic_bool g_use_simplified_version = false;
 
 #if DCHECK_IS_ON()
 // Prior to macOS 10.14, kqueue timers may spuriously wake up, because earlier
@@ -144,10 +149,16 @@ MessagePumpKqueue::MessagePumpKqueue()
 
 MessagePumpKqueue::~MessagePumpKqueue() {}
 
+void MessagePumpKqueue::InitializeFeatures() {
+  g_use_simplified_version.store(
+      base::FeatureList::IsEnabled(kUseSimplifiedMessagePumpKqueueLoop),
+      std::memory_order_relaxed);
+}
+
 void MessagePumpKqueue::Run(Delegate* delegate) {
   AutoReset<bool> reset_keep_running(&keep_running_, true);
 
-  if (base::FeatureList::IsEnabled(kUseSimplifiedMessagePumpKqueueLoop)) {
+  if (g_use_simplified_version.load(std::memory_order_relaxed)) {
     RunSimplified(delegate);
   } else {
     while (keep_running_) {
