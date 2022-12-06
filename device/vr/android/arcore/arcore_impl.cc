@@ -1842,10 +1842,14 @@ void ArCoreImpl::DetachAnchor(uint64_t anchor_id) {
 mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
   DVLOG(3) << __func__;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  // TODO(https://crbug.com/1394735): Switch to ArFrame_acquireDepthImage16Bits.
   internal::ScopedArCoreObject<ArImage*> ar_image;
   ArStatus status = ArFrame_acquireDepthImage(
       arcore_session_.get(), arcore_frame_.get(),
       internal::ScopedArCoreObject<ArImage*>::Receiver(ar_image).get());
+#pragma GCC diagnostic pop
 
   if (status != AR_SUCCESS) {
     DVLOG(2) << __func__

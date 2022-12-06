@@ -8,7 +8,7 @@ declare_args() {
   # Allow individual projects to remove the warning suppression
   # by overriding this in their .gn file or through custom args.gn
   # TODO(crbug.com/983223): Set this to false on all platforms, then remove it.
-  jsoncpp_no_deprecated_declarations = is_android || (is_win && is_clang)
+  jsoncpp_no_deprecated_declarations = is_win && is_clang
 }
 
 config("jsoncpp_config") {
