@@ -12,6 +12,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_long_press_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
@@ -50,6 +51,10 @@ class AdaptiveToolbarViewControllerTest : public PlatformTest {
 };
 
 TEST_F(AdaptiveToolbarViewControllerTest, DetectForceTouch) {
+  if (UseSymbols()) {
+    // With SF Symbols, another popup menu is displayed.
+    return;
+  }
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     // IPad doesn't have force touch.
     return;

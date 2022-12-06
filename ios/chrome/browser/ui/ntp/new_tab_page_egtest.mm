@@ -366,8 +366,15 @@ BOOL WaitForHistoryToDisappear() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
 
-  id<GREYMatcher> menuNewTabButtonMatcher =
-      grey_accessibilityID(kToolsMenuNewTabId);
+  id<GREYMatcher> menuNewTabButtonMatcher;
+  if ([ChromeEarlGrey isSFSymbolEnabled]) {
+    menuNewTabButtonMatcher = grey_allOf(
+        chrome_test_util::ButtonWithAccessibilityLabelId(
+            IDS_IOS_TOOLS_MENU_NEW_TAB),
+        grey_ancestor(grey_kindOfClassName(@"UICollectionView")), nil);
+  } else {
+    menuNewTabButtonMatcher = grey_accessibilityID(kToolsMenuNewTabId);
+  }
   [[EarlGrey selectElementWithMatcher:menuNewTabButtonMatcher]
       performAction:grey_tap()];
 

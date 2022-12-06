@@ -544,6 +544,9 @@
 // Returns whether the Web Channels feature is enabled.
 + (BOOL)isWebChannelsEnabled;
 
+// Returns whether SF Symbols are used.
++ (BOOL)isSFSymbolEnabled;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

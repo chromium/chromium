@@ -125,6 +125,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/table_view:test_support",

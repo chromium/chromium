@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -1117,6 +1118,10 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isWebChannelsEnabled {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
+}
+
++ (BOOL)isSFSymbolEnabled {
+  return UseSymbols();
 }
 
 #pragma mark - ContentSettings

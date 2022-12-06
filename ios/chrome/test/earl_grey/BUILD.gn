@@ -121,6 +121,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/first_run:eg_app_support+eg2",
     "//ios/chrome/browser/ui/fullscreen/test:eg_app_support+eg2",
     "//ios/chrome/browser/ui/history:constants",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/incognito_interstitial:constants",
     "//ios/chrome/browser/ui/infobars:eg_app_support+eg2",
     "//ios/chrome/browser/ui/location_bar:constants",

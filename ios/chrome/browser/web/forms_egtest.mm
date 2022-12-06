@@ -356,12 +356,22 @@ id<GREYMatcher> ResendPostButtonMatcher() {
   // Go to a new page and go back to destination through back history.
   [ChromeEarlGrey loadURL:GetGenericUrl()];
   [self openBackHistory];
-  [self waitForTabHistoryView];
 
   // Mimic `web::GetDisplayTitleForUrl` behavior which uses FormatUrl
   // internally. It can't be called directly from the EarlGrey 2 test process.
-  std::u16string title = url_formatter::FormatUrl(destinationURL);
-  id<GREYMatcher> historyItem = grey_text(base::SysUTF16ToNSString(title));
+  NSString* title =
+      base::SysUTF16ToNSString(url_formatter::FormatUrl(destinationURL));
+  id<GREYMatcher> historyItem;
+
+  if ([ChromeEarlGrey isSFSymbolEnabled]) {
+    historyItem = chrome_test_util::ButtonWithAccessibilityLabel(title);
+    [[EarlGrey selectElementWithMatcher:historyItem]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    historyItem = grey_text(title);
+    [self waitForTabHistoryView];
+  }
+
   [[EarlGrey selectElementWithMatcher:historyItem] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
 

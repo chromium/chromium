@@ -1022,7 +1022,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   }
 
   [ChromeEarlGreyUI openNewTabMenu];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kToolsMenuSearch)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_TOOLS_MENU_NEW_SEARCH)]
       performAction:grey_tap()];
   GREYWaitForAppToIdle(@"App failed to idle");
 
@@ -1055,7 +1057,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [self hideFeedFromNTPMenu];
 
   [ChromeEarlGreyUI openNewTabMenu];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kToolsMenuSearch)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_TOOLS_MENU_NEW_SEARCH)]
       performAction:grey_tap()];
   GREYWaitForAppToIdle(@"App failed to idle");
 

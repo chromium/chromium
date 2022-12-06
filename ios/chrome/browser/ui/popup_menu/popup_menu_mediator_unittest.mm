@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_text_item.h"
 #import "ios/chrome/browser/ui/popup_menu/cells/popup_menu_tools_item.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
@@ -352,6 +353,10 @@ TEST_F(PopupMenuMediatorTest, TestToolsMenuItemsCount) {
 // Tests that the mediator is returning the right number of items and sections
 // for the Tab Grid type, in non-incognito.
 TEST_F(PopupMenuMediatorTest, TestTabGridMenuNonIncognito) {
+  // With symbols this is handled in the ToolbarMediator.
+  if (UseSymbols())
+    return;
+
   CreateMediator(PopupMenuTypeTabGrid, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/NO);
   CheckMediatorSetItems(@[
@@ -365,6 +370,10 @@ TEST_F(PopupMenuMediatorTest, TestTabGridMenuNonIncognito) {
 // Tests that the mediator is returning the right number of items and sections
 // for the Tab Grid type, in incognito.
 TEST_F(PopupMenuMediatorTest, TestTabGridMenuIncognito) {
+  // With symbols this is handled in the ToolbarMediator.
+  if (UseSymbols())
+    return;
+
   CreateMediator(PopupMenuTypeTabGrid, /*is_incognito=*/YES,
                  /*trigger_incognito_hint=*/NO);
   CheckMediatorSetItems(@[
@@ -398,6 +407,9 @@ TEST_F(PopupMenuMediatorTest, TestNewIncognitoNoHint) {
 
 // Tests that the mediator is asking for an item to be highlighted when asked.
 TEST_F(PopupMenuMediatorTest, TestNewIncognitoHintTabGrid) {
+  if (UseSymbols())
+    return;
+
   CreateMediator(PopupMenuTypeTabGrid, /*is_incognito=*/NO,
                  /*trigger_incognito_hint=*/YES);
   OCMExpect([popup_menu_ setItemToHighlight:[OCMArg isNotNil]]);

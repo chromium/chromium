@@ -1305,6 +1305,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isWebChannelsEnabled];
 }
 
+- (BOOL)isSFSymbolEnabled {
+  return [ChromeEarlGreyAppInterface isSFSymbolEnabled];
+}
+
 #pragma mark - ContentSettings
 
 - (ContentSetting)popupPrefValue {

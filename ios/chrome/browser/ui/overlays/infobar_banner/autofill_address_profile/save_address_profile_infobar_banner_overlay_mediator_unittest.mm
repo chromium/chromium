@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -74,7 +75,13 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.buttonText);
   EXPECT_NSEQ(base::SysUTF16ToNSString(delegate->GetDescription()),
               consumer.subtitleText);
-  EXPECT_NSEQ([UIImage imageNamed:@"ic_place"], consumer.iconImage);
+  if (UseSymbols()) {
+    EXPECT_NSEQ(
+        DefaultSymbolWithPointSize(kPinFillSymbol, kInfobarSymbolPointSize),
+        consumer.iconImage);
+  } else {
+    EXPECT_NSEQ([UIImage imageNamed:@"ic_place"], consumer.iconImage);
+  }
 }
 
 // Tests that the modal is shown when infobar button is pressed.

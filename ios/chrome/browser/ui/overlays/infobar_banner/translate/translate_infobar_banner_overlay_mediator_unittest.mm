@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/infobars/banners/test/fake_infobar_banner_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
@@ -60,6 +61,12 @@ TEST_F(TranslateInfobarBannerOverlayMediatorTest, SetUpConsumer) {
       l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_ACTION),
       consumer.buttonText);
   EXPECT_NSEQ(subtitle, consumer.subtitleText);
-  EXPECT_NSEQ([UIImage imageNamed:@"infobar_translate_icon"],
-              consumer.iconImage);
+  if (UseSymbols()) {
+    EXPECT_NSEQ(CustomSymbolTemplateWithPointSize(kTranslateSymbol,
+                                                  kInfobarSymbolPointSize),
+                consumer.iconImage);
+  } else {
+    EXPECT_NSEQ([UIImage imageNamed:@"infobar_translate_icon"],
+                consumer.iconImage);
+  }
 }

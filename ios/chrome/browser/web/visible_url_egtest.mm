@@ -234,8 +234,14 @@ class PausableResponseProvider : public HtmlResponseProvider {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
       performAction:grey_longPress()];
   NSString* URL1Title = base::SysUTF8ToNSString(kTestPage1);
-  [[EarlGrey selectElementWithMatcher:ContextMenuMatcherForText(URL1Title)]
-      performAction:grey_tap()];
+  if ([ChromeEarlGrey isSFSymbolEnabled]) {
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                     URL1Title)] performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:ContextMenuMatcherForText(URL1Title)]
+        performAction:grey_tap()];
+  }
 
   {
     // Disables EG synchronization.
