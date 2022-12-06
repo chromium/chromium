@@ -138,18 +138,6 @@ BackgroundPageType GetBackgroundPageType(const Extension* extension) {
   return EVENT_PAGE;
 }
 
-// Records the creation flags of an extension grouped by
-// Extension::InitFromValueFlags.
-void RecordCreationFlags(const Extension* extension) {
-  for (int i = 0; i < Extension::kInitFromValueFlagBits; ++i) {
-    int flag = 1 << i;
-    if (extension->creation_flags() & flag) {
-      UMA_HISTOGRAM_EXACT_LINEAR("Extensions.LoadCreationFlags", i,
-                                 Extension::kInitFromValueFlagBits);
-    }
-  }
-}
-
 // Helper to record a single disable reason histogram value (see
 // RecordDisableReasons below).
 void RecordDisbleReasonHistogram(int reason) {
@@ -365,7 +353,6 @@ void InstalledLoader::LoadAllExtensions() {
   std::unique_ptr<ExtensionPrefs::ExtensionsInfo> extensions_info(
       extension_prefs_->GetInstalledExtensionsInfo());
 
-  std::vector<int> reload_reason_counts(NUM_MANIFEST_RELOAD_REASONS, 0);
   bool should_write_prefs = false;
 
   for (size_t i = 0; i < extensions_info->size(); ++i) {
@@ -376,10 +363,7 @@ void InstalledLoader::LoadAllExtensions() {
     if (info->extension_location == mojom::ManifestLocation::kCommandLine)
       continue;
 
-    ManifestReloadReason reload_reason = ShouldReloadExtensionManifest(*info);
-    ++reload_reason_counts[reload_reason];
-
-    if (reload_reason != NOT_NEEDED) {
+    if (ShouldReloadExtensionManifest(*info) != NOT_NEEDED) {
       // Reloading an extension reads files from disk.  We do this on the
       // UI thread because reloads should be very rare, and the complexity
       // added by delaying the time when the extensions service knows about
@@ -413,15 +397,6 @@ void InstalledLoader::LoadAllExtensions() {
         mojom::ManifestLocation::kCommandLine)
       Load(*extensions_info->at(i), should_write_prefs);
   }
-
-  // The histograms Extensions.ManifestReload* allow us to validate
-  // the assumption that reloading manifest is a rare event.
-  UMA_HISTOGRAM_COUNTS_100("Extensions.ManifestReloadNotNeeded",
-                           reload_reason_counts[NOT_NEEDED]);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.ManifestReloadUnpackedDir",
-                           reload_reason_counts[UNPACKED_DIR]);
-  UMA_HISTOGRAM_COUNTS_100("Extensions.ManifestReloadNeedsRelocalization",
-                           reload_reason_counts[NEEDS_RELOCALIZATION]);
 
   UMA_HISTOGRAM_COUNTS_100("Extensions.LoadAll",
                            extension_registry_->enabled_extensions().size());
@@ -638,8 +613,6 @@ void InstalledLoader::RecordExtensionsMetrics() {
     else
       ++no_action_count;
 
-    RecordCreationFlags(extension);
-
     ExtensionService::RecordPermissionMessagesHistogram(extension, "Load");
 
     // For incognito and file access, skip anything that doesn't appear in
@@ -760,7 +733,6 @@ void InstalledLoader::RecordExtensionsMetrics() {
                               no_action_count);
   base::UmaHistogramCounts100("Extensions.DisabledForPermissions",
                               disabled_for_permissions_count);
-  // TODO(kelvinjiang): Remove this histogram if it's not used anymore.
   base::UmaHistogramCounts100("Extensions.NonWebStoreNewTabPageOverrides",
                               non_webstore_ntp_override_count);
   base::UmaHistogramCounts100("Extensions.NewTabPageOverrides",

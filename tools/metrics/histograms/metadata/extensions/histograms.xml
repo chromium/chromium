@@ -1218,8 +1218,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.ExternalItemState" enum="ExternalItemState"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+    expires_after="2023-06-05">
+  <owner>anunoy@chromium.org</owner>
   <summary>
     The number of sideloaded apps/extensions loaded on startup grouped by
     enabled/disabled state.
@@ -1256,7 +1256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.FileAccessAllowed" units="units"
-    expires_after="2018-08-30">
+    expires_after="2023-06-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions (and friends) that could have been given access to
@@ -1269,7 +1269,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.FileAccessNotAllowed" units="units"
-    expires_after="2018-08-30">
+    expires_after="2023-06-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions (and friends) that could have been given access to
@@ -1694,8 +1694,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.FromWebstoreInconsistency"
-    enum="ExtensionFromWebstoreInconcistencyEnum" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+    enum="ExtensionFromWebstoreInconcistencyEnum" expires_after="2023-06-05">
+  <owner>anunoy@chromium.org</owner>
   <summary>
     Number of apps/extensions loaded on startup with an inconsistent &quot;from
     webstore&quot; state. This means an item that is flagged as from_webstore,
@@ -2051,7 +2051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.IncognitoNotAllowed" units="units"
-    expires_after="2018-08-30">
+    expires_after="2023-06-05">
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The number of extensions (and friends) that could have been allowed in
@@ -2330,15 +2330,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.LoadCreationFlags" enum="ExtensionCreationFlags"
-    expires_after="2020-06-01">
-  <owner>calamity@chromium.org</owner>
-  <summary>
-    The creation flags of all extensions loaded at profile open grouped by
-    Extension::InitFromValueFlags.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.LoadExtension" units="units" expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->
 
@@ -2529,33 +2520,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.ManifestReloadNeedsRelocalization" units="units"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of extension loads on startup where it is necessary to reload the
-    mainfest because the locale has changed.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestReloadNotNeeded" units="units"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of extension loads on startup where it is not necessary to reload the
-    extension's manifest.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ManifestReloadUnpackedDir" units="units"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Number of extension loads on startup where it is necessary to reload the
-    manifest because the extension is unpacked.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ManifestVersion" units="units"
     expires_after="never">
 <!-- expires-never: Monitoring extension usage. -->
@@ -2672,8 +2636,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.NonWebStoreNewTabPageOverrides" units="units"
-    expires_after="M81">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+    expires_after="2023-06-05">
+  <owner>anunoy@chromium.org</owner>
   <summary>
     Number of non-WebStore extensions on startup that override the new tab page.
   </summary>
