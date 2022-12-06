@@ -152,6 +152,14 @@ assert(
     !enable_hevc_parser_and_hw_decoder || enable_platform_hevc,
     "enable_platform_hevc=true is required for enable_hevc_parser_and_hw_decoder=true.")
 
+# Most DolbyVision profiles (4, 5, 7, 8, not 9) require HEVC support. It's very
+# unlikely that we support DolbyVision on a new platform without requiring HEVC
+# support. See for details:
+# https://professionalsupport.dolby.com/s/article/What-is-Dolby-Vision-Profile
+assert(
+    !enable_platform_dolby_vision || enable_platform_hevc,
+    "enable_platform_hevc=true is required for enable_platform_dolby_vision=true.")
+
 # Use another declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {
   # Enables runtime selection of PulseAudio library.
