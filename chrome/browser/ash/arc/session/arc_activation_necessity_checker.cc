@@ -10,9 +10,9 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/adb_sideloading_availability_delegate.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {

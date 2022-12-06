@@ -53,7 +53,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/mojom/intent_common.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom-shared.h"
-#include "chrome/browser/ui/app_list/arc/intent.h"
+#include "chrome/browser/ash/app_list/arc/intent.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"

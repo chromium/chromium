@@ -44,8 +44,8 @@
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #endif
 
 namespace {

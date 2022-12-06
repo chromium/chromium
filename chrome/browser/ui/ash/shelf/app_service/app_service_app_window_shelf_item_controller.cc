@@ -6,9 +6,9 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/pip/arc_pip_bridge.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"

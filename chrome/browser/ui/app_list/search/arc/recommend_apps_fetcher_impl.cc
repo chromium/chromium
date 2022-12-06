@@ -14,7 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher_delegate.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"

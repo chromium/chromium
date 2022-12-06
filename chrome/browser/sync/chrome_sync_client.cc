@@ -138,6 +138,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
+#include "chrome/browser/ash/app_list/arc/arc_package_sync_model_type_controller.h"
+#include "chrome/browser/ash/app_list/arc/arc_package_syncable_service.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
@@ -152,8 +154,6 @@
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ui/app_list/arc/arc_package_sync_model_type_controller.h"
-#include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
 #include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

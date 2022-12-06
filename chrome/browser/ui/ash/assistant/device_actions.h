@@ -11,7 +11,7 @@
 
 #include "ash/public/cpp/android_intent_helper.h"
 #include "base/scoped_multi_source_observation.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/ash/services/assistant/public/cpp/device_actions.h"

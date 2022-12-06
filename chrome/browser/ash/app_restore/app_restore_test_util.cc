@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 
 #include "ash/shell.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/shell_surface_util.h"

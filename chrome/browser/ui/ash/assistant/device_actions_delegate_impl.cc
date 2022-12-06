@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/ash/assistant/device_actions_delegate_impl.h"
 
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 
 using ::ash::assistant::AppStatus;
 

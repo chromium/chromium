@@ -36,7 +36,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #endif

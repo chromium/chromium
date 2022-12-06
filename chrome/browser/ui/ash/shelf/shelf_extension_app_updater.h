@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_SHELF_EXTENSION_APP_UPDATER_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_SHELF_EXTENSION_APP_UPDATER_H_
 
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/shelf_app_updater.h"
 #include "extensions/browser/extension_registry_observer.h"
 

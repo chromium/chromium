@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/app_restore/arc_ghost_window_shell_surface.h"
 
 #include "ash/wm/desks/desks_util.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_delegate.h"
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "components/app_restore/app_restore_data.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"

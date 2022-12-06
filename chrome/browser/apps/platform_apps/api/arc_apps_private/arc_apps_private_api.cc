@@ -9,9 +9,9 @@
 
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/common/apps/platform_apps/api/arc_apps_private.h"
 #include "ui/events/event_constants.h"
 

@@ -10,8 +10,8 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
 class FakeAppListModelUpdater;

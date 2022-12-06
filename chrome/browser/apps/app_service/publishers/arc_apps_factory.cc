@@ -7,8 +7,8 @@
 #include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 
 namespace apps {

@@ -11,12 +11,12 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/reporting/android_app_info_generator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

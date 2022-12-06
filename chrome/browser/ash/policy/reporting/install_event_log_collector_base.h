@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOG_COLLECTOR_BASE_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_INSTALL_EVENT_LOG_COLLECTOR_BASE_H_
 
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 

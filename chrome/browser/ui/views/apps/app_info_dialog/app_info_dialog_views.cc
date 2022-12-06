@@ -46,9 +46,9 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/arc_app_info_links_panel.h"
 #endif
 

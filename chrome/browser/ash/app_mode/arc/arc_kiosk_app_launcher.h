@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_LAUNCHER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_LAUNCHER_H_
 
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"

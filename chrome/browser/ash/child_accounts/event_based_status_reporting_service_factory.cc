@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/child_accounts/event_based_status_reporting_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/event_based_status_reporting_service.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 
 namespace ash {
 

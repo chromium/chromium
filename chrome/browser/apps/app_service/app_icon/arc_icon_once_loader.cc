@@ -6,8 +6,8 @@
 
 #include <vector>
 
+#include "chrome/browser/ash/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
 
 namespace apps {
 

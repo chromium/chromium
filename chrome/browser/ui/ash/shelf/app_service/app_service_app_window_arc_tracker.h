@@ -13,8 +13,8 @@
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 
 namespace arc {
 class ArcAppShelfId;

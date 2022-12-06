@@ -8,9 +8,9 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/extension_system_provider.h"

@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"

@@ -19,7 +19,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace apps_util {

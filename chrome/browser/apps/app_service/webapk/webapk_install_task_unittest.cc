@@ -19,7 +19,7 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/apps/app_service/webapk/webapk_test_server.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"

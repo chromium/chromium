@@ -9,11 +9,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_discovery_service/play_extras.h"
+#include "chrome/browser/ash/app_list/arc/arc_fast_app_reinstall_starter.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "components/user_manager/user_manager.h"
 

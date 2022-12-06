@@ -7,7 +7,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/app_list/arc/intent.h"
+#include "chrome/browser/ash/app_list/arc/intent.h"
 #include "components/crx_file/id_util.h"
 
 namespace arc {

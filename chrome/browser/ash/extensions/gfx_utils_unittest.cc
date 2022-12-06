@@ -6,10 +6,10 @@
 
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"

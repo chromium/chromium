@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/arc/arc_app_dialog.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_dialog.h"
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/test/arc_util_test_support.h"
@@ -15,13 +15,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"

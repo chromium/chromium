@@ -31,9 +31,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shelf_model.h"  // nogncheck
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_item_factory.h"
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"

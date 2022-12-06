@@ -17,9 +17,9 @@
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/input_method/component_extension_ime_manager_delegate_impl.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -9,7 +9,7 @@
 
 #include "ash/components/arc/mojom/app_permissions.mojom.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace em = enterprise_management;

@@ -51,7 +51,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/session/connection_holder.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

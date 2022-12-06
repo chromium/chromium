@@ -58,9 +58,9 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/chrome_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

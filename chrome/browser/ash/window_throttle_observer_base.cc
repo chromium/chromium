@@ -46,7 +46,7 @@ bool ShouldIgnoreWindowActivation(
   //
   // - When an Android app icon is clicked the instance is unthrottled. This
   // logic resides in |LaunchAppWithIntent| in
-  // src/chrome/browser/ui/app_list/arc/arc_app_utils.cc.
+  // src/chrome/browser/ash/app_list/arc/arc_app_utils.cc.
   //
   // - Between the time the app opens there is a narrow slice of time where
   // this callback is triggered with |lost_active| equal to the app list

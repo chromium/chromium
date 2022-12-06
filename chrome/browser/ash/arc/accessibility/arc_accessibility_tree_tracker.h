@@ -12,9 +12,9 @@
 #include <tuple>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"

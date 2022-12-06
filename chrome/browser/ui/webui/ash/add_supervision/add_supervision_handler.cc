@@ -10,12 +10,12 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"

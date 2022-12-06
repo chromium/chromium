@@ -12,9 +12,9 @@
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_icon_descriptor.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_icon_factory.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_icon_descriptor.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_icon_factory.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 
 class ArcAppIcon;

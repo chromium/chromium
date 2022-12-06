@@ -7,8 +7,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/app_list/arc/arc_vpn_provider_manager.h"
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
-#include "chrome/browser/ui/app_list/arc/arc_vpn_provider_manager.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 
 #include "components/user_manager/user_manager.h"

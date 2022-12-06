@@ -11,10 +11,10 @@
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "ui/views/widget/widget.h"
 

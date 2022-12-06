@@ -11,11 +11,11 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 
 namespace mojo {
 

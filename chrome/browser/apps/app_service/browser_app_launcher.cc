@@ -23,7 +23,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"

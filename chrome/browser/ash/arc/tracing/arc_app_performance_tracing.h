@@ -15,7 +15,7 @@
 #include "ash/components/arc/mojom/metrics.mojom.h"
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "components/exo/surface_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/window_observer.h"

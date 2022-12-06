@@ -10,8 +10,8 @@
 #include "base/files/file_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 
 namespace em = enterprise_management;
 

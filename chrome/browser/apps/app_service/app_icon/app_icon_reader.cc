@@ -9,8 +9,8 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/grit/component_extension_resources.h"
 
 namespace {

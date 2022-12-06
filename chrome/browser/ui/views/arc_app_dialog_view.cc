@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/arc/arc_app_dialog.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_dialog.h"
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_icon_loader.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
