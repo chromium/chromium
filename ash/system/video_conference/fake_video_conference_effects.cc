@@ -4,17 +4,21 @@
 
 #include "ash/system/video_conference/fake_video_conference_effects.h"
 
+#include "ash/strings/grit/ash_strings.h"
+
 namespace ash::fake_video_conference {
 
 SimpleToggleEffect::SimpleToggleEffect(
+    const gfx::VectorIcon* icon,
     const std::u16string& label_text,
+    int accessible_name_id,
     views::Button::PressedCallback button_callback)
     : effect_(VcEffectType::kToggle),
       state_(VcEffectState(
           /*value=*/VcEffectState::kUnusedId,
-          /*icon=*/nullptr,
+          /*icon=*/icon,
           /*label_text=*/label_text,
-          /*accessible_name_id=*/-1,
+          /*accessible_name_id=*/accessible_name_id,
           /*button_callback=*/button_callback)) {
   effect_.AddState(&state_);
   AddEffect(&effect_);
@@ -22,7 +26,9 @@ SimpleToggleEffect::SimpleToggleEffect(
 
 CatEarsEffect::CatEarsEffect()
     : SimpleToggleEffect(
+          /*icon=*/nullptr,
           /*label_text=*/u"Cat Ears",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&CatEarsEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -37,7 +43,9 @@ void CatEarsEffect::OnEffectControlActivated(int effect_id, int value) {}
 
 DogFurEffect::DogFurEffect()
     : SimpleToggleEffect(
+          /*icon=*/nullptr,
           /*label_text=*/u"Dog Fur",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&DogFurEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -52,7 +60,9 @@ void DogFurEffect::OnEffectControlActivated(int effect_id, int value) {}
 
 SpaceshipEffect::SpaceshipEffect()
     : SimpleToggleEffect(
+          /*icon=*/nullptr,
           /*label_text=*/u"Spaceship",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&SpaceshipEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -67,7 +77,9 @@ void SpaceshipEffect::OnEffectControlActivated(int effect_id, int value) {}
 
 OfficeBunnyEffect::OfficeBunnyEffect()
     : SimpleToggleEffect(
+          /*icon=*/nullptr,
           /*label_text=*/u"Office Bunny",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&OfficeBunnyEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -82,7 +94,9 @@ void OfficeBunnyEffect::OnEffectControlActivated(int effect_id, int value) {}
 
 CalmForestEffect::CalmForestEffect()
     : SimpleToggleEffect(
+          /*icon=*/nullptr,
           /*label_text=*/u"Calm Forest",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&CalmForestEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -97,7 +111,9 @@ void CalmForestEffect::OnEffectControlActivated(int effect_id, int value) {}
 
 StylishKitchenEffect::StylishKitchenEffect()
     : SimpleToggleEffect(
+          /*icon=*/nullptr,
           /*label_text=*/u"Stylish Kitchen",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&StylishKitchenEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -111,7 +127,9 @@ void StylishKitchenEffect::OnEffectControlActivated(int effect_id, int value) {}
 
 GreenhouseEffect::GreenhouseEffect()
     : SimpleToggleEffect(
+          /*icon=*/nullptr,
           /*label_text=*/u"Greenhouse",
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&GreenhouseEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -132,7 +150,7 @@ ShaggyFurEffect::ShaggyFurEffect()
           /*value=*/static_cast<int>(FurShagginess::kBald),
           /*icon=*/nullptr,
           /*label_text=*/u"Bald",
-          /*accessible_name_id=*/-1,
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&ShaggyFurEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -142,7 +160,7 @@ ShaggyFurEffect::ShaggyFurEffect()
           /*value=*/static_cast<int>(FurShagginess::kBuzzcut),
           /*icon=*/nullptr,
           /*label_text=*/u"Buzzcut",
-          /*accessible_name_id=*/-1,
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&ShaggyFurEffect::OnEffectControlActivated,
                               base::Unretained(this),
@@ -152,7 +170,7 @@ ShaggyFurEffect::ShaggyFurEffect()
           /*value=*/static_cast<int>(FurShagginess::kThick),
           /*icon=*/nullptr,
           /*label_text=*/u"Thick",
-          /*accessible_name_id=*/-1,
+          /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
           /*button_callback=*/
           base::BindRepeating(&ShaggyFurEffect::OnEffectControlActivated,
                               base::Unretained(this),

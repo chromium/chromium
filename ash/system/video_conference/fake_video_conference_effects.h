@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_VIDEO_CONFERENCE_FAKE_VIDEO_CONFERENCE_EFFECTS_H_
 
 #include "ash/ash_export.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/video_conference/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/video_conference_tray_effects_manager_types.h"
 #include "ui/views/controls/button/button.h"
@@ -16,7 +17,9 @@ namespace ash::fake_video_conference {
 // type of effect there is i.e. a toggle with only one state.
 class SimpleToggleEffect : public VcEffectsDelegate {
  public:
-  SimpleToggleEffect(const std::u16string& label_text,
+  SimpleToggleEffect(const gfx::VectorIcon* icon,
+                     const std::u16string& label_text,
+                     int accessible_name_id,
                      views::Button::PressedCallback button_callback);
 
   SimpleToggleEffect(const SimpleToggleEffect&) = delete;
