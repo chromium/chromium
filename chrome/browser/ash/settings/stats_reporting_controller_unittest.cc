@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
@@ -22,6 +23,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -42,7 +44,8 @@ TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
 
 class StatsReportingControllerTest : public testing::Test {
  protected:
-  StatsReportingControllerTest() {}
+  StatsReportingControllerTest()
+      : user_manager_enabler_(std::make_unique<ash::FakeChromeUserManager>()) {}
   ~StatsReportingControllerTest() override {}
 
   void SetUp() override {
@@ -134,6 +137,7 @@ class StatsReportingControllerTest : public testing::Test {
       base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};
   scoped_refptr<ownership::MockOwnerKeyUtil> no_keys{
       base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};
+  user_manager::ScopedUserManager user_manager_enabler_;
 };
 
 TEST_F(StatsReportingControllerTest, GetAndSet_OwnershipUnknown) {
