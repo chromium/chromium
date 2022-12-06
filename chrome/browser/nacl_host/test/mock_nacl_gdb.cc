@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstring>
 #include <memory>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
