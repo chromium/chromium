@@ -5325,7 +5325,7 @@
 <translation id="5979084224081478209">檢查密碼</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{你已重新開啟 1 個可能有害的擴充功能}other{你已重新開啟 {NUM_EXTENSIONS} 個可能有害的擴充功能}}</translation>
 <translation id="5979353814339191480">這個選項適用於符合下列任一條件的 Chromebook：使用數據方案、行動網路連接器，或透過網路共用功能使用可攜式無線基地台</translation>
-<translation id="5979421442488174909">翻譯成<ph name="LANGUAGE" />(&amp;T)</translation>
+<translation id="5979421442488174909">翻譯成<ph name="LANGUAGE" /> (&amp;T)</translation>
 <translation id="5979469435153841984">如要將網頁加入書籤，請按一下網址列的星號</translation>
 <translation id="5981362776161841923">如要允許擴充功能，請變更下方的預設設定。</translation>
 <translation id="5984222099446776634">最近造訪的網站</translation>

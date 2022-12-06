@@ -906,7 +906,7 @@
 <translation id="3360103848165129075">付款处理程序工作表</translation>
 <translation id="3360313521703038580">生态与环境</translation>
 <translation id="3362968246557010467">此政策的值是系统从已弃用的 <ph name="OLD_POLICY" /> 政策中自动复制而来的。您应改用此政策。</translation>
-<translation id="3364869320075768271"><ph name="URL" /> 想使用您的虚拟实境设备和数据</translation>
+<translation id="3364869320075768271"><ph name="URL" /> 想使用您的虚拟现实设备和数据</translation>
 <translation id="3366477098757335611">查看您的卡</translation>
 <translation id="3369192424181595722">时钟错误</translation>
 <translation id="3369459162151165748">车辆零部件与配件</translation>
@@ -1218,7 +1218,7 @@
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />检查防火墙和防病毒配置<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">大</translation>
 <translation id="4210602799576081649">验证码已失效，请申请新的验证码</translation>
-<translation id="421066178035138955">使用虚拟实境设备和数据</translation>
+<translation id="421066178035138955">使用虚拟现实设备和数据</translation>
 <translation id="4213305257324635756">动画片</translation>
 <translation id="4213500579045346575">健美</translation>
 <translation id="4214357935346142455">登录屏幕个人资料</translation>
@@ -1399,7 +1399,7 @@
 <translation id="4663373278480897665">已允许使用摄像头</translation>
 <translation id="4666114623408286498">制药与生物科技</translation>
 <translation id="4668929960204016307">,</translation>
-<translation id="4670064810192446073">虚拟实境</translation>
+<translation id="4670064810192446073">虚拟现实</translation>
 <translation id="4671339777629075741">DL 信封</translation>
 <translation id="4673460618347856347">恐龙游戏，玩</translation>
 <translation id="467662567472608290">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书有误。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
@@ -1582,7 +1582,7 @@
 <translation id="5109892411553231226">管理付款方式</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5114288597538800140">纸匣 18</translation>
-<translation id="5114987907971894280">虚拟实境</translation>
+<translation id="5114987907971894280">虚拟现实</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">受限受管理访客会话的替换设置</translation>
 <translation id="5115563688576182185">（64 位）</translation>
@@ -2660,7 +2660,7 @@
 <translation id="7977538094055660992">输出设备</translation>
 <translation id="7977894662897852582">Edp</translation>
 <translation id="7981129096182302364">舞曲与电子音乐</translation>
-<translation id="798134797138789862">可以询问能否使用虚拟实境设备和数据</translation>
+<translation id="798134797138789862">可以询问能否使用虚拟现实设备和数据</translation>
 <translation id="7983008347525536475">SUV</translation>
 <translation id="7984945080620862648">您目前无法访问<ph name="SITE" />，因为此网站发送了Chrome无法处理的杂乱凭据。网络错误和攻击通常是暂时的，因此，此网页稍后可能会恢复正常。</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>

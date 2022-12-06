@@ -875,7 +875,7 @@
 <translation id="1800502858278951817">Ни одно расширение не запрашивало разрешение на чтение и изменение данных сайта <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Перейти в спящий режим, когда обложка закрыта</translation>
 <translation id="1802687198411089702">Страница не отвечает. Вы можете закрыть ее или дождаться ответа сервера.</translation>
-<translation id="1803531841600994172">Язык перевода</translation>
+<translation id="1803531841600994172">На какой язык перевести</translation>
 <translation id="1803545009660609783">Перезаписать образец голоса</translation>
 <translation id="1805738995123446102">На фоновой вкладке используется микрофон.</translation>
 <translation id="1805822111539868586">Отладка страниц</translation>
@@ -4128,7 +4128,7 @@
 <translation id="4838170306476614339">Просмотр фотографий, медиафайлов и уведомлений с телефона</translation>
 <translation id="4838836835474292213">Доступ к буферу обмена открыт</translation>
 <translation id="4838907349371614303">Пароль обновлен</translation>
-<translation id="4838958829619609362">Выбранный элемент недоступен на следующем языке: <ph name="LANGUAGE" /></translation>
+<translation id="4838958829619609362">Выделенный текст не на этом языке: <ph name="LANGUAGE" /></translation>
 <translation id="4839303808932127586">Со&amp;хранить видео как...</translation>
 <translation id="4839910546484524995">Проверьте устройство</translation>
 <translation id="4840096453115567876">Вы действительно хотите выйти из режима инкогнито?</translation>
@@ -6739,7 +6739,7 @@
 <translation id="7343372807593926528">Прежде чем отправить отзыв, опишите проблему.</translation>
 <translation id="7344585835349671209">Управление сертификатами HTTPS/SSL на устройстве</translation>
 <translation id="7345706641791090287">Подтвердите пароль</translation>
-<translation id="7345919885156673810">Выбранный элемент недоступен на следующем языке: <ph name="LANGUAGE" /></translation>
+<translation id="7345919885156673810">Выделенный текст не на этом языке: <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7347751611463936647">Чтобы использовать это расширение, введите "<ph name="EXTENSION_KEYWORD" />", нажмите клавишу табуляции, а затем введите команду или поисковый запрос.</translation>
 <translation id="7347943691222276892">Нажмите, чтобы покинуть подстраницу "<ph name="SUBPAGE_TITLE" />".</translation>
@@ -8822,7 +8822,7 @@
 <translation id="972996901592717370">Коснитесь кнопки питания. Данные отпечатков пальцев хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Выйти</translation>
 <translation id="973558314812359997">Размер курсора</translation>
-<translation id="975893173032473675">Язык перевода</translation>
+<translation id="975893173032473675">На какой язык перевести</translation>
 <translation id="976499800099896273">Показана кнопка, позволяющая отменить автозамену слова "<ph name="TYPED_WORD" />" на слово "<ph name="CORRECTED_WORD" />".  Чтобы выделить кнопку, нажмите на стрелку вверх. Чтобы пропустить, нажмите клавишу Escape.</translation>
 <translation id="978146274692397928">Первоначальная ширина знаков пунктуации – полная</translation>
 <translation id="97905529126098460">Это окно закроется, когда отмена установки будет завершена.</translation>
