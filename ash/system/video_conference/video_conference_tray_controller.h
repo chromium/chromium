@@ -12,6 +12,8 @@
 
 namespace ash {
 
+class VideoConferenceTrayEffectsManager;
+
 // Controller that will act as a "bridge" between VC apps management and the VC
 // UI layers. The singleton instance is constructed immediately before and
 // destructed immediately after the UI, so any code that keeps a reference to
@@ -56,10 +58,17 @@ class ASH_EXPORT VideoConferenceTrayController
   void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
 
+  VideoConferenceTrayEffectsManager* effects_manager() {
+    return effects_manager_.get();
+  }
+
  private:
   // This keeps track the current VC media state. The state is being updated by
   // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.
   VideoConferenceMediaState state_;
+
+  // Used by the views to construct and lay out effects in the bubble.
+  std::unique_ptr<VideoConferenceTrayEffectsManager> effects_manager_;
 
   // Registered observers.
   base::ObserverList<Observer> observer_list_;
