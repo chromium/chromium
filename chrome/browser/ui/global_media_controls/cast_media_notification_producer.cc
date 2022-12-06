@@ -98,23 +98,18 @@ CastMediaNotificationProducer::GetActiveControllableItemIds() const {
     if (!item.second.is_active())
       continue;
 
-// kMediaRouterShowCastSessionsStartedByOtherDevices is not registered on
-// Android nor ChromeOS.
-// // TODO(crbug.com/1308053): Enable it on ChromeOS once Cast+GMC ships.
-#if !BUILDFLAG(IS_CHROMEOS)
     // The non-local Cast session filter should not be put in
     // |ShouldHideNotification()| because it's used to determine if an item
     // should be created. It's possible that users later change the pref to
     // show all Cast sessions.
-    if (media_router::GlobalMediaControlsCastStartStopEnabled(profile_) &&
-        !this->profile_->GetPrefs()->GetBoolean(
+    // TODO(crbug.com/726823): Ash currently considers Lacros routes non-local
+    // and hides them if the pref is set to false.
+    if (!this->profile_->GetPrefs()->GetBoolean(
             media_router::prefs::
                 kMediaRouterShowCastSessionsStartedByOtherDevices) &&
         !item.second.route_is_local()) {
       continue;
     }
-#endif
-
     ids.insert(item.first);
   }
   return ids;

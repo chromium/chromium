@@ -73,6 +73,21 @@ bool MediaToolbarButtonContextualMenu::IsCommandIdChecked(
   }
 }
 
+bool MediaToolbarButtonContextualMenu::IsCommandIdEnabled(
+    int command_id) const {
+  PrefService* pref_service = browser_->profile()->GetPrefs();
+  switch (command_id) {
+    case IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS:
+      // The pref may be managed by an enterprise policy and not modifiable by
+      // the user, in which case we disable the menu item.
+      return pref_service->IsUserModifiablePreference(
+          media_router::prefs::
+              kMediaRouterShowCastSessionsStartedByOtherDevices);
+    default:
+      return true;
+  }
+}
+
 void MediaToolbarButtonContextualMenu::ExecuteCommand(int command_id,
                                                       int event_flags) {
   switch (command_id) {

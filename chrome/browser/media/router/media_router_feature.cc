@@ -122,19 +122,13 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kMediaRouterReceiverIdHashToken, "",
                                PrefRegistry::PUBLIC);
-
   registry->RegisterBooleanPref(
       media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
   registry->RegisterListPref(
       media_router::prefs::kMediaRouterTabMirroringSources);
-
-// TODO(crbug.com/1308053): Register it on ChromeOS after Cast+GMC ships on
-// ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(
       media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
       true);
-#endif
 }
 
 bool GetCastAllowAllIPsPref(PrefService* pref_service) {
