@@ -365,10 +365,28 @@ authorization from the authors.
   <enum name="ClientDisconnectFlags">
     <item name="Default"><value>0</value></item>
     <item name="Terminate"><bit>0</bit></item>
+    <doc>
+      <field name="Default"><![CDATA[
+The default behavior for regular clients: the X11 server won't terminate as long
+as such clients are still connected, and should this client disconnect, the
+server will continue running so long as other clients (that have not set
+XFixesClientDisconnectFlagTerminate) are connected.
+      ]]></field>
+      <field name="Terminate"><![CDATA[
+Indicates to the X11 server that it can ignore the client and terminate itself
+even though the client is still connected to the X11 server.
+      ]]></field>
+    </doc>
   </enum>
 
   <request name="SetClientDisconnectMode" opcode="33">
     <field type="CARD32" name="disconnect_mode" mask="ClientDisconnectFlags" />
+    <doc>
+      <brief>Sets the disconnect mode for the client.</brief>
+      <field name="disconnect_mode"><![CDATA[
+The new disconnect mode.
+      ]]></field>
+    </doc>
   </request>
 
   <request name="GetClientDisconnectMode" opcode="34">
@@ -376,7 +394,12 @@ authorization from the authors.
       <pad bytes="1" />
       <field type="CARD32" name="disconnect_mode" mask="ClientDisconnectFlags" />
       <pad bytes="20" />
+      <doc>
+        <brief>Gets the disconnect mode for the client.</brief>
+        <field name="disconnect_mode"><![CDATA[
+The current disconnect mode.
+        ]]></field>
+      </doc>
     </reply>
   </request>
-
 </xcb>

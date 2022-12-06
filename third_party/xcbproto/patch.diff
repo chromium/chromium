@@ -1,6 +1,6 @@
 diff -ru xcbproto/src/glx.xml src/src/glx.xml
---- xcbproto/src/glx.xml	2022-03-25 16:30:06.066425385 -0700
-+++ src/src/glx.xml	2022-03-25 16:29:28.146096207 -0700
+--- xcbproto/src/glx.xml	2022-11-01 01:47:35.625960781 +0000
++++ src/src/glx.xml	2022-03-29 00:22:36.930613681 +0000
 @@ -62,8 +62,6 @@
              <type>glx:WINDOW</type>
          </xidunion>
@@ -59,7 +59,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  	</enum>
  
  	<request name="SwapBuffers" opcode="11">
-@@ -578,7 +576,7 @@
+@@ -580,7 +578,7 @@
  		<field type="CARD32" name="mode" />
  		<!--
  		This reply is only if RM was previously feedback/selection.
@@ -68,7 +68,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  		If previously in render mode there is no reply.
  		-->
  		<reply>
-@@ -594,9 +592,9 @@
+@@ -596,9 +594,9 @@
  	</request>
  
  	<enum name="RM">
@@ -81,7 +81,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  	</enum>
  
  	<request name="Finish" opcode="108">
-@@ -609,7 +607,7 @@
+@@ -611,7 +609,7 @@
  	<request name="PixelStoref" opcode="109">
  		<field type="CONTEXT_TAG" name="context_tag" />
  		<field type="CARD32" name="pname" />
@@ -90,7 +90,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  	</request>
  
  	<request name="PixelStorei" opcode="110">
-@@ -668,7 +666,7 @@
+@@ -670,7 +668,7 @@
  			<required_start_align align="8" />
  			<pad bytes="1" />
  			<pad bytes="24" />
@@ -99,7 +99,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<op op="/">
  					<fieldref>length</fieldref>
  					<value>2</value>
-@@ -685,9 +683,9 @@
+@@ -687,9 +685,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -111,7 +111,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -708,9 +706,9 @@
+@@ -710,9 +708,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -123,7 +123,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -739,9 +737,9 @@
+@@ -741,9 +739,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -135,7 +135,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -772,9 +770,9 @@
+@@ -774,9 +772,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -147,7 +147,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -788,9 +786,9 @@
+@@ -790,9 +788,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -159,7 +159,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -820,9 +818,9 @@
+@@ -822,9 +820,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -171,7 +171,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -851,9 +849,9 @@
+@@ -853,9 +851,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -183,7 +183,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -927,9 +925,9 @@
+@@ -929,9 +927,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -195,7 +195,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -960,9 +958,9 @@
+@@ -962,9 +960,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -207,7 +207,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -976,9 +974,9 @@
+@@ -978,9 +976,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -219,7 +219,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -1032,9 +1030,9 @@
+@@ -1034,9 +1032,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -231,7 +231,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -1065,9 +1063,9 @@
+@@ -1067,9 +1065,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -243,7 +243,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -1188,9 +1186,9 @@
+@@ -1190,9 +1188,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -255,7 +255,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -1242,9 +1240,9 @@
+@@ -1244,9 +1242,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -267,7 +267,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -1317,9 +1315,9 @@
+@@ -1319,9 +1317,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -279,7 +279,7 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  				<fieldref>n</fieldref>
  			</list>
  		</reply>
-@@ -1368,9 +1366,9 @@
+@@ -1370,9 +1368,9 @@
  			<pad bytes="1" />
  			<pad bytes="4" />
  			<field type="CARD32" name="n" />
@@ -292,8 +292,8 @@ diff -ru xcbproto/src/glx.xml src/src/glx.xml
  			</list>
  		</reply>
 diff -ru xcbproto/src/present.xml src/src/present.xml
---- xcbproto/src/present.xml	2022-03-25 16:30:06.050425246 -0700
-+++ src/src/present.xml	2022-03-25 16:27:47.661223477 -0700
+--- xcbproto/src/present.xml	2022-11-01 01:47:35.625960781 +0000
++++ src/src/present.xml	2022-03-25 23:30:06.382428128 +0000
 @@ -89,7 +89,7 @@
      </reply>
    </request>
@@ -304,8 +304,8 @@ diff -ru xcbproto/src/present.xml src/src/present.xml
      <field type="WINDOW" name="window" />
      <field type="PIXMAP" name="pixmap" />
 diff -ru xcbproto/src/randr.xml src/src/randr.xml
---- xcbproto/src/randr.xml	2022-03-25 16:30:06.050425246 -0700
-+++ src/src/randr.xml	2022-03-25 16:27:47.661223477 -0700
+--- xcbproto/src/randr.xml	2022-11-01 01:47:35.625960781 +0000
++++ src/src/randr.xml	2022-03-25 23:30:06.382428128 +0000
 @@ -803,64 +803,6 @@
  		<item name="Lease">           <value>6</value></item>
  	</enum>
@@ -479,8 +479,8 @@ diff -ru xcbproto/src/randr.xml src/src/randr.xml
  	</event>
  </xcb>
 diff -ru xcbproto/src/shm.xml src/src/shm.xml
---- xcbproto/src/shm.xml	2022-03-25 16:30:06.050425246 -0700
-+++ src/src/shm.xml	2022-03-25 16:27:47.661223477 -0700
+--- xcbproto/src/shm.xml	2022-11-01 01:47:35.641960747 +0000
++++ src/src/shm.xml	2022-03-25 23:30:06.382428128 +0000
 @@ -78,7 +78,7 @@
      <field type="INT16" name="dst_x" />
      <field type="INT16" name="dst_y" />
@@ -491,8 +491,8 @@ diff -ru xcbproto/src/shm.xml src/src/shm.xml
      <pad bytes="1" />
      <field type="SEG" name="shmseg" />
 diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
---- xcbproto/src/xinput.xml	2022-03-25 16:30:06.066425385 -0700
-+++ src/src/xinput.xml	2022-03-25 16:29:28.146096207 -0700
+--- xcbproto/src/xinput.xml	2022-11-01 01:47:35.625960781 +0000
++++ src/src/xinput.xml	2022-03-29 00:22:36.930613681 +0000
 @@ -200,7 +200,12 @@
              <list type="STR" name="names">
                  <fieldref>devices_len</fieldref>
@@ -517,7 +517,7 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
          <item name="All">       <value>0</value> </item>
          <item name="AllMaster"> <value>1</value> </item>
      </enum>
-@@ -2278,43 +2284,9 @@
+@@ -2300,43 +2306,9 @@
          <item name="PointerEmulated"> <bit>16</bit> </item>
      </enum>
  
@@ -564,7 +564,7 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
  
      <enum name="NotifyMode">
          <item name="Normal">        <value>0</value> </item>
-@@ -2445,39 +2417,10 @@
+@@ -2467,39 +2439,10 @@
          </list>
      </event>
  
@@ -608,7 +608,7 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
  
      <!-- ⋅⋅⋅ Events (v2.2) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
  
-@@ -2486,41 +2429,7 @@
+@@ -2508,41 +2451,7 @@
          <item name="TouchEmulatingPointer"> <bit>17</bit> </item>
      </enum>
  
@@ -651,7 +651,7 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
      <eventcopy name="TouchUpdate" number="19" ref="TouchBegin" />
      <eventcopy name="TouchEnd"    number="20" ref="TouchBegin" />
  
-@@ -2544,37 +2453,9 @@
+@@ -2566,37 +2475,9 @@
          <pad bytes="8" />
      </event>
  
@@ -693,8 +693,8 @@ diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
      <!-- ⋅⋅⋅ Events (v2.3) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
  
 diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
---- xcbproto/src/xproto.xml	2022-03-25 16:30:06.070425420 -0700
-+++ src/src/xproto.xml	2022-03-25 16:29:28.150096242 -0700
+--- xcbproto/src/xproto.xml	2022-11-01 01:47:35.629960773 +0000
++++ src/src/xproto.xml	2022-03-29 00:22:36.930613681 +0000
 @@ -963,6 +963,7 @@
      <item name="CAP_HEIGHT">           <value>66</value> </item>
      <item name="WM_CLASS">             <value>67</value> </item>
@@ -703,7 +703,7 @@ diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
    </enum>
  
    <event name="SelectionRequest" number="30">
-@@ -4686,7 +4687,7 @@
+@@ -4683,7 +4684,7 @@
      <field type="CARD8" name="left_pad" />
      <field type="CARD8" name="depth" />
      <pad bytes="2" />
@@ -712,7 +712,7 @@ diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
    </request>
  
    <!-- FIXME: data array in reply will include padding, but ought not to. -->
-@@ -4702,7 +4703,7 @@
+@@ -4699,7 +4700,7 @@
        <field type="CARD8" name="depth" />
        <field type="VISUALID" name="visual" />
        <pad bytes="20" />
@@ -721,7 +721,7 @@ diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
          <op op="*">
            <fieldref>length</fieldref>
            <value>4</value>
-@@ -5537,13 +5538,13 @@
+@@ -5534,13 +5535,13 @@
      </list>
    </request>
  
@@ -739,9 +739,9 @@ diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
    <!-- Reply from SetPointerMapping or SetModifierMapping -->
 Only in src/xcbgen: __pycache__
 diff -ru xcbproto/xcbgen/xtypes.py src/xcbgen/xtypes.py
---- xcbproto/xcbgen/xtypes.py	2022-03-25 16:30:06.070425420 -0700
-+++ src/xcbgen/xtypes.py	2022-03-25 16:29:28.150096242 -0700
-@@ -226,7 +226,7 @@
+--- xcbproto/xcbgen/xtypes.py	2022-11-01 01:47:35.629960773 +0000
++++ src/xcbgen/xtypes.py	2022-03-29 00:22:36.930613681 +0000
+@@ -233,7 +233,7 @@
      Derived class which represents a file descriptor.
      '''
      def __init__(self):

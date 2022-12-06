@@ -33,6 +33,20 @@ authorization from the authors.
     <reply>
       <pad bytes="1" />
       <field type="CARD32" name="maximum_request_length" />
+      <doc>
+	<field name="maximum_request_length">
+The maximum length of requests supported by the server, in 4-byte units.
+	</field>
+      </doc>
     </reply>
+    <doc>
+      <brief>Enable the BIG-REQUESTS extension</brief>
+      <description>
+This enables the BIG-REQUESTS extension, which allows for requests larger than
+262140 bytes in length.  When enabled, if the 16-bit length field is zero, it
+is immediately followed by a 32-bit length field specifying the length of the
+request in 4-byte units.
+      </description>
+    </doc>
   </request>
 </xcb>

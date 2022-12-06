@@ -23,7 +23,7 @@ OF THIS SOFTWARE.
 -->
 
 <xcb header="dri3" extension-xname="DRI3" extension-name="DRI3"
-  major-version="1" minor-version="2">
+  major-version="1" minor-version="3">
   <import>xproto</import>
 
   <!-- Types -->
@@ -162,5 +162,12 @@ OF THIS SOFTWARE.
         <fieldref>nfd</fieldref>
       </list>
     </reply>
+  </request>
+
+  <!-- v1.3 -->
+  <request name="SetDRMDeviceInUse" opcode="9">
+    <field type="WINDOW" name="window" />
+    <field type="CARD32" name="drmMajor" />
+    <field type="CARD32" name="drmMinor" />
   </request>
 </xcb>

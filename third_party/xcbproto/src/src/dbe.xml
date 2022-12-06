@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (c) 2022 Mike Sharov <msharov@users.sourceforge.net>
+This file is free software, distributed under the license in ../COPYING
+-->
+
+<xcb header="dbe" extension-xname="DOUBLE-BUFFER" extension-name="Dbe"
+    major-version="1" minor-version="0">
+    <import>xproto</import>
+
+    <!-- Types -->
+    <typedef oldname="DRAWABLE" newname="BackBuffer" />
+
+    <enum name="SwapAction">
+	<item name="Undefined">	<value>0</value></item>
+	<item name="Background"><value>1</value></item>
+	<item name="Untouched">	<value>2</value></item>
+	<item name="Copied">	<value>3</value></item>
+	<doc>
+	    <description><![CDATA[Specifies what to do with the front buffer after it is swapped with the back buffer.]]></description>
+	    <field name="Undefined"><![CDATA[Discard the buffer. The buffer may be reallocated and end up with random VRAM content.]]></field>
+	    <field name="Background"><![CDATA[Erase with window background.]]></field>
+	    <field name="Untouched"><![CDATA[Leave untouched.]]></field>
+	    <field name="Copied"><![CDATA[Copy the newly displayed front buffer.]]></field>
+	</doc>
+    </enum>
+
+    <struct name="SwapInfo">
+	<field type="WINDOW" name="window" />
+	<field type="CARD8" name="swap_action" enum="SwapAction" />
+	<pad bytes="3"/>
+    </struct>
+
+    <struct name="BufferAttributes">
+	<field type="WINDOW" name="window" />
+    </struct>
+
+    <struct name="VisualInfo">
+	<field type="VISUALID" name="visual_id" />
+	<field type="CARD8" name="depth" />
+	<field type="CARD8" name="perf_level" />
+	<pad bytes="2"/>
+    </struct>
+
+    <struct name="VisualInfos">
+	<field type="CARD32" name="n_infos" />
+	<list type="VisualInfo" name="infos">
+	    <fieldref>n_infos</fieldref>
+	</list>
+    </struct>
+
+    <!-- Errors -->
+    <error name="BadBuffer" number="0">
+	<field type="BackBuffer" name="bad_buffer" />
+    </error>
+
+    <!-- Requests -->
+    <request name="QueryVersion" opcode="0">
+	<field type="CARD8" name="major_version" />
+	<field type="CARD8" name="minor_version" />
+	<pad bytes="2"/>
+	<reply>
+	    <pad bytes="1"/>
+	    <field type="CARD8" name="major_version" />
+	    <field type="CARD8" name="minor_version" />
+	    <pad bytes="22"/>
+	</reply>
+	<doc>
+	    <brief>Queries the version of this extension</brief>
+	    <description><![CDATA[Queries the version of this extension. You must do this before using any functionality it provides.]]></description>
+	    <field name="major_version"><![CDATA[The major version of the extension. Check that it is compatible with the XCB_DBE_MAJOR_VERSION that your code is compiled with.]]></field>
+	    <field name="minor_version"><![CDATA[The minor version of the extension. Check that it is compatible with the XCB_DBE_MINOR_VERSION that your code is compiled with.]]></field>
+	</doc>
+    </request>
+
+    <request name="AllocateBackBuffer" opcode="1">
+	<field type="WINDOW" name="window" />
+	<field type="BackBuffer" name="buffer" />
+	<field type="CARD8" name="swap_action" />
+	<pad bytes="3"/>
+	<doc>
+	    <brief>Allocates a back buffer</brief>
+	    <description><![CDATA[Associates `buffer` with the back buffer of `window`. Multiple ids may be associated with the back buffer, which is created by the first allocate call and destroyed by the last deallocate.]]></description>
+	    <field name="window"><![CDATA[The window to which to add the back buffer.]]></field>
+	    <field name="buffer"><![CDATA[The buffer id to associate with the back buffer.]]></field>
+	    <field name="swap_action"><![CDATA[The swap action most likely to be used to present this back buffer. This is only a hint, and does not preclude the use of other swap actions.]]></field>
+	</doc>
+    </request>
+
+    <request name="DeallocateBackBuffer" opcode="2">
+	<field type="BackBuffer" name="buffer" />
+	<doc>
+	    <brief>Deallocates a back buffer</brief>
+	    <description><![CDATA[Deallocates the given `buffer`. If `buffer` is an invalid id, a `BadBuffer` error is returned. Because a window may have allocated multiple back buffer ids, the back buffer itself is not deleted until all these ids are deallocated by this call.]]></description>
+	    <field name="buffer"><![CDATA[The back buffer to deallocate.]]></field>
+	</doc>
+    </request>
+
+    <request name="SwapBuffers" opcode="3">
+	<field type="CARD32" name="n_actions" />
+	<list type="SwapInfo" name="actions">
+	    <fieldref>n_actions</fieldref>
+	</list>
+	<doc>
+	    <brief>Swaps front and back buffers</brief>
+	    <description><![CDATA[ Swaps the front and back buffers on the specified windows. The front and back buffers retain their ids, so that the window id continues to refer to the front buffer, while the back buffer id created by this extension continues to refer to the back buffer. Back buffer contents is moved to the front buffer. Back buffer contents after the operation depends on the given swap action. The optimal swap action depends on how each frame is rendered. For example, if the buffer is cleared and fully overwritten on every frame, the "untouched" action, which throws away the buffer contents, would provide the best performance. To eliminate visual artifacts, the swap will occure during the monitor VSync, if the X server supports detecting it.]]></description>
+	    <field name="n_actions"><![CDATA[Number of swap actions in `actions`.]]></field>
+	    <field name="actions"><![CDATA[List of windows on which to swap buffers.]]></field>
+	</doc>
+    </request>
+
+    <request name="BeginIdiom" opcode="4">
+	<doc>
+	    <brief>Begins a logical swap block</brief>
+	    <description><![CDATA[ Creates a block of operations intended to occur together. This may be needed if window presentation requires changing buffers unknown to this extension, such as depth or stencil buffers.]]></description>
+	</doc>
+    </request>
+    <request name="EndIdiom" opcode="5">
+	<doc><brief>Ends a logical swap block</brief></doc>
+    </request>
+
+    <request name="GetVisualInfo" opcode="6">
+	<field type="CARD32" name="n_drawables" />
+	<list type="DRAWABLE" name="drawables">
+	    <fieldref>n_drawables</fieldref>
+	</list>
+	<reply>
+	    <pad bytes="1"/>
+	    <field type="CARD32" name="n_supported_visuals" />
+	    <pad bytes="20"/>
+	    <list type="VisualInfos" name="supported_visuals">
+		<fieldref>n_supported_visuals</fieldref>
+	    </list>
+	</reply>
+	<doc><brief>Requests visuals that support double buffering</brief></doc>
+    </request>
+
+    <request name="GetBackBufferAttributes" opcode="7">
+	<field type="BackBuffer" name="buffer" />
+	<reply>
+	    <pad bytes="1"/>
+	    <field type="BufferAttributes" name="attributes" />
+	    <pad bytes="20"/>
+	</reply>
+	<doc>
+	    <brief>Gets back buffer attributes</brief>
+	    <description><![CDATA[Returns the attributes of the specified `buffer`.]]></description>
+	    <field name="buffer"><![CDATA[The back buffer to query.]]></field>
+	    <field name="attributes"><![CDATA[The attributes of `buffer`.]]></field>
+	</doc>
+    </request>
+</xcb>
