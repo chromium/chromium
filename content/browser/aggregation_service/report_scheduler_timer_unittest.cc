@@ -166,6 +166,50 @@ TEST_F(ReportSchedulerTimerTest, NetworkChange) {
   task_environment_.RunUntilIdle();
 }
 
+// TODO(apaseltiner): Figure out how to test the case in which the network
+// connection tracker is uninitialized.
+TEST(ReportSchedulerTimer, Constructor_AdjustsOfflineReportTimes) {
+  constexpr struct {
+    network::mojom::ConnectionType connection_type;
+    bool call_expected;
+  } kTestCases[] = {
+      // Call is skipped because the browser is offline.
+      {
+          network::mojom::ConnectionType::CONNECTION_NONE,
+          false,
+      },
+      // Call is made because the browser is online.
+      {
+          network::mojom::ConnectionType::CONNECTION_ETHERNET,
+          true,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    for (bool synchronous : {true, false}) {
+      base::test::TaskEnvironment task_environment{
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+      auto* tracker = network::TestNetworkConnectionTracker::GetInstance();
+      tracker->SetRespondSynchronously(synchronous);
+      tracker->SetConnectionType(test_case.connection_type);
+
+      auto timer_delegate =
+          std::make_unique<MockReportSchedulerTimerDelegate>();
+
+      EXPECT_CALL(*timer_delegate, AdjustOfflineReportTimes)
+          .Times(test_case.call_expected);
+
+      ReportSchedulerTimer timer(std::move(timer_delegate));
+
+      // Flush the async call.
+      if (!synchronous) {
+        task_environment.RunUntilIdle();
+      }
+    }
+  }
+}
+
 }  // namespace
 
 }  // namespace content

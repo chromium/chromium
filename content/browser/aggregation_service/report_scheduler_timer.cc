@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "content/public/browser/network_service_instance.h"
@@ -19,40 +20,42 @@
 
 namespace content {
 
-namespace {
-
-bool IsOffline() {
-  return GetNetworkConnectionTracker()->IsOffline();
-}
-
-}  // namespace
-
 ReportSchedulerTimer::ReportSchedulerTimer(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
   DCHECK(delegate_);
-  GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
-  OnConnectionChanged(network::mojom::ConnectionType::CONNECTION_UNKNOWN);
+
+  network::NetworkConnectionTracker* tracker = GetNetworkConnectionTracker();
+  obs_.Observe(tracker);
+
+  network::mojom::ConnectionType connection_type;
+  bool synchronous_return = tracker->GetConnectionType(
+      &connection_type,
+      base::BindOnce(&ReportSchedulerTimer::OnConnectionChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
+  if (synchronous_return) {
+    OnConnectionChanged(connection_type);
+  }
 }
 
 ReportSchedulerTimer::~ReportSchedulerTimer() {
-  GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void ReportSchedulerTimer::MaybeSet(absl::optional<base::Time> reporting_time) {
-  if (!reporting_time.has_value() || IsOffline()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!reporting_time.has_value() || offline_) {
     return;
   }
   if (!reporting_time_reached_timer_.IsRunning() ||
       reporting_time_reached_timer_.desired_run_time() > reporting_time) {
-    reporting_time_reached_timer_.Start(
-        FROM_HERE, reporting_time.value(),
-        base::BindOnce(&ReportSchedulerTimer::OnTimerFired,
-                       weak_ptr_factory_.GetWeakPtr()));
+    reporting_time_reached_timer_.Start(FROM_HERE, reporting_time.value(), this,
+                                        &ReportSchedulerTimer::OnTimerFired);
   }
 }
 
 void ReportSchedulerTimer::Refresh(base::Time now) {
-  if (IsOffline()) {
+  if (offline_) {
     return;
   }
 
@@ -62,6 +65,8 @@ void ReportSchedulerTimer::Refresh(base::Time now) {
 }
 
 void ReportSchedulerTimer::OnTimerFired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   base::Time now = base::Time::Now();
   delegate_->OnReportingTimeReached(now);
   Refresh(now);
@@ -69,19 +74,18 @@ void ReportSchedulerTimer::OnTimerFired() {
 
 void ReportSchedulerTimer::OnConnectionChanged(
     network::mojom::ConnectionType connection_type) {
-  if (IsOffline()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  bool was_offline = offline_;
+  offline_ = connection_type == network::mojom::ConnectionType::CONNECTION_NONE;
+
+  if (offline_) {
     reporting_time_reached_timer_.Stop();
-  } else if (!reporting_time_reached_timer_.IsRunning()) {
+  } else if (was_offline) {
     // Add delay to all reports that should have been sent while the browser was
     // offline so they are not temporally joinable. We only need to do this if
     // the connection changes from offline to online, not if an online
-    // connection changes between, e.g., 3G and 4G. Rather than track the
-    // previous connection state, we use the timer's running state: The timer is
-    // running if and only if at least one report has been stored and the
-    // browser is not offline. This results in an extra call to
-    // `AdjustOfflineReportTimes()` when no reports have been stored and the
-    // browser changes online connection types, but storage will have no reports
-    // to adjust in that case, so we don't bother preventing it.
+    // connection changes between, e.g., 3G and 4G.
     delegate_->AdjustOfflineReportTimes(base::BindOnce(
         &ReportSchedulerTimer::MaybeSet, weak_ptr_factory_.GetWeakPtr()));
   }

@@ -9,6 +9,9 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/timer/wall_clock_timer.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -69,16 +72,27 @@ class CONTENT_EXPORT ReportSchedulerTimer
 
  private:
   void OnTimerFired();
-  void Refresh(base::Time now);
+  void Refresh(base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(network::mojom::ConnectionType) override;
 
   // Fires whenever a reporting time is reached for a report. Must be updated
   // whenever the next report time changes.
-  base::WallClockTimer reporting_time_reached_timer_;
+  base::WallClockTimer reporting_time_reached_timer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const std::unique_ptr<Delegate> delegate_;
+  const std::unique_ptr<Delegate> delegate_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  bool offline_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+
+  base::ScopedObservation<
+      network::NetworkConnectionTracker,
+      network::NetworkConnectionTracker::NetworkConnectionObserver>
+      obs_ GUARDED_BY_CONTEXT(sequence_checker_){this};
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ReportSchedulerTimer> weak_ptr_factory_{this};
 };
