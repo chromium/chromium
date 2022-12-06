@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -42,23 +41,10 @@ public class PrivacySandboxDialogController {
             case PromptType.NONE:
                 return false;
             case PromptType.NOTICE:
-                boolean newNotice = showNewNotice();
-                if (launchContext == PrivacySandboxDialogLaunchContext.NEW_TAB_PAGE && newNotice) {
-                    // Invoked in the NTP context and the new notice should be shown; show it.
-                    if (bottomSheetController == null) return false;
-                    new PrivacySandboxBottomSheetNotice(
-                            context, bottomSheetController, settingsLauncher)
-                            .showNotice(/*animate = */ sDisableAnimations == null);
-                } else if (launchContext == PrivacySandboxDialogLaunchContext.BROWSER_START
-                        && !newNotice) {
-                    // Invoked at browser start without the new notice; show it.
-                    dialog = new PrivacySandboxDialogNotice(context, settingsLauncher);
-                    dialog.show();
-                    sDialog = new WeakReference<>(dialog);
-                } else {
-                    // The launch context doesn't match the notice type; do not show anything.
-                    return false;
-                }
+                if (bottomSheetController == null || !showNewNotice()) return false;
+                new PrivacySandboxBottomSheetNotice(
+                        context, bottomSheetController, settingsLauncher)
+                        .showNotice(/*animate = */ sDisableAnimations == null);
                 return true;
             case PromptType.CONSENT:
                 dialog = new PrivacySandboxDialogConsent(context);
@@ -73,15 +59,10 @@ public class PrivacySandboxDialogController {
     }
 
     static boolean showNewNotice() {
-        if (sShowNew != null && sShowNew) return true;
-        // Must match privacy_sandbox::kPrivacySandboxSettings3NewNotice.
-        final String newNoticeParam = "new-notice";
-        // Must match the default value for this param.
-        final boolean newNoticeParamDefault = false;
-
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3, newNoticeParam,
-                newNoticeParamDefault);
+        // Unless overridden for testing, a new notice should always be shown.
+        // TODO(crbug.com/1375230) Remove this code path if the ability to
+        // differentiate notice types is no longer required.
+        return (sShowNew != null) ? sShowNew : true;
     }
 
     @VisibleForTesting
