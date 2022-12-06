@@ -31,7 +31,7 @@ class Profile;
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace drivefs {
 class DriveFsHost;
@@ -71,12 +71,10 @@ struct QuickAccessItem {
 class DriveIntegrationServiceObserver : public base::CheckedObserver {
  public:
   // Triggered when the file system is mounted.
-  virtual void OnFileSystemMounted() {
-  }
+  virtual void OnFileSystemMounted() {}
 
   // Triggered when the file system is being unmounted.
-  virtual void OnFileSystemBeingUnmounted() {
-  }
+  virtual void OnFileSystemBeingUnmounted() {}
 
   // Triggered when mounting the filesystem has failed in a fashion that will
   // not be automatically retried.
@@ -263,7 +261,8 @@ class DriveIntegrationService : public KeyedService,
   void GetSyncingPaths(
       drivefs::mojom::DriveFs::GetSyncingPathsCallback callback);
 
-  drivefs::SyncStatus GetSyncStatusForPath(const base::FilePath& drive_path);
+  drivefs::SyncStatusAndProgress GetSyncStatusForPath(
+      const base::FilePath& drive_path);
 
   // Tells DriveFS to update its cached pin states of hosted files (once).
   void PollHostedFilePinStates();

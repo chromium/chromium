@@ -4,13 +4,16 @@
 
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 
+#include <cmath>
 #include <set>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -29,6 +32,7 @@
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/drive/drive_notification_observer.h"
@@ -54,7 +58,19 @@ using testing::_;
 using MountFailure = DriveFsHost::MountObserver::MountFailure;
 using ChangeLogOptionPair = std::pair<int64_t, std::string>;
 
+using mojom::ItemEvent::State::kCompleted;
+using mojom::ItemEvent::State::kFailed;
+using mojom::ItemEvent::State::kInProgress;
+using mojom::ItemEventReason::kTransfer;
+
 constexpr base::TimeDelta kTokenLifetime = base::Hours(1);
+
+MATCHER_P(MatchesStatusAndProgress, value, "") {
+  *result_listener << "where the progress difference is "
+                   << std::abs(arg.progress - value.progress);
+  return arg.status == value.status &&
+         std::abs(arg.progress - value.progress) < 1e-4;
+}
 
 class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
                     public mojom::SearchQuery {
@@ -316,6 +332,7 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     SendOnMounted();
     run_loop.Run();
     ASSERT_TRUE(host_->IsMounted());
+    mount_path_ = host_->GetMountPath();
   }
 
   void DoUnmount() {
@@ -341,6 +358,10 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
     mojo::FusePipes(std::move(pending_delegate_receiver_), std::move(delegate));
   }
 
+  SyncStatusAndProgress GetSyncStatusForPath(std::string path) {
+    return host_->GetSyncStatusForPath(mount_path_.Append(path));
+  }
+
   base::FilePath profile_path_;
   base::test::TaskEnvironment task_environment_;
   AccountId account_id_;
@@ -362,6 +383,7 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
   mojo::PendingReceiver<mojom::DriveFsDelegate> pending_delegate_receiver_;
   std::string token_;
   absl::optional<std::string> init_access_token_;
+  base::FilePath mount_path_;
 };
 
 TEST_F(DriveFsHostTest, Basic) {
@@ -504,8 +526,8 @@ TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_ForwardToObservers) {
   observation_scoper.Observe(host_.get());
   auto status = mojom::SyncingStatus::New();
   status->item_events.emplace_back(absl::in_place, 12, 34, "filename.txt",
-                                   mojom::ItemEvent::State::kInProgress, 123,
-                                   456, mojom::ItemEventReason::kPin);
+                                   kInProgress, 123, 456,
+                                   mojom::ItemEventReason::kPin);
   mojom::SyncingStatusPtr observed_status;
   EXPECT_CALL(observer, OnSyncingStatusUpdate(_))
       .WillOnce(CloneStruct(&observed_status));
@@ -871,8 +893,8 @@ TEST_F(DriveFsHostTest, OnMirrorSyncingStatusUpdate_ForwardToObservers) {
   observation_scoper.Observe(host_.get());
   auto status = mojom::SyncingStatus::New();
   status->item_events.emplace_back(absl::in_place, 12, 34, "filename.txt",
-                                   mojom::ItemEvent::State::kInProgress, 123,
-                                   456, mojom::ItemEventReason::kPin);
+                                   kInProgress, 123, 456,
+                                   mojom::ItemEventReason::kPin);
   mojom::SyncingStatusPtr observed_status;
   EXPECT_CALL(observer, OnMirrorSyncingStatusUpdate(_))
       .WillOnce(CloneStruct(&observed_status));
@@ -889,66 +911,57 @@ TEST_F(DriveFsHostTest, OnSyncingStatusUpdate_SyncStatusTracksStatus) {
 
   ASSERT_NO_FATAL_FAILURE(DoMount());
   auto first_status = mojom::SyncingStatus::New();
-  first_status->item_events.emplace_back(
-      absl::in_place, 12, 34, "/foo/bar/filename.txt",
-      mojom::ItemEvent::State::kInProgress, 123, 456,
-      mojom::ItemEventReason::kTransfer);
+  first_status->item_events.emplace_back(absl::in_place, 12, 34,
+                                         "/foo/bar/filename.txt", kInProgress,
+                                         100, 400, kTransfer);
   delegate_->OnSyncingStatusUpdate(std::move(first_status));
   delegate_.FlushForTesting();
-  EXPECT_EQ(host_->GetSyncStatusForPath(
-                host_->GetMountPath().Append("foo/bar/filename.txt")),
-            SyncStatus::kInProgress);
+  EXPECT_THAT(GetSyncStatusForPath("foo/bar/filename.txt"),
+              MatchesStatusAndProgress(
+                  SyncStatusAndProgress({SyncStatus::kInProgress, 0.25})));
 
   auto second_status = mojom::SyncingStatus::New();
-  second_status->item_events.emplace_back(
-      absl::in_place, 13, 35, "/foo/bar/filename_error.txt",
-      mojom::ItemEvent::State::kFailed, 123, 456,
-      mojom::ItemEventReason::kTransfer);
+  second_status->item_events.emplace_back(absl::in_place, 13, 35,
+                                          "/foo/bar/filename_error.txt",
+                                          kFailed, 123, 456, kTransfer);
   delegate_->OnSyncingStatusUpdate(std::move(second_status));
   delegate_.FlushForTesting();
-  EXPECT_EQ(host_->GetSyncStatusForPath(
-                host_->GetMountPath().Append("foo/bar/filename_error.txt")),
-            SyncStatus::kError);
-  EXPECT_EQ(host_->GetSyncStatusForPath(
-                host_->GetMountPath().Append("foo/bar/filename.txt")),
-            SyncStatus::kInProgress);
-  EXPECT_EQ(
-      host_->GetSyncStatusForPath(host_->GetMountPath().Append("foo/bar")),
-      SyncStatus::kError);
+  EXPECT_THAT(GetSyncStatusForPath("foo/bar/filename_error.txt"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kError));
+  EXPECT_THAT(GetSyncStatusForPath("foo/bar/filename.txt"),
+              MatchesStatusAndProgress(
+                  SyncStatusAndProgress({SyncStatus::kInProgress, 0.25})));
+  EXPECT_THAT(GetSyncStatusForPath("foo/bar"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kError));
 
   auto third_status = mojom::SyncingStatus::New();
-  third_status->item_events.emplace_back(
-      absl::in_place, 13, 35, "/foo/bar/filename_error.txt",
-      mojom::ItemEvent::State::kCompleted, 123, 456,
-      mojom::ItemEventReason::kTransfer);
+  third_status->item_events.emplace_back(absl::in_place, 13, 35,
+                                         "/foo/bar/filename_error.txt",
+                                         kCompleted, 123, 456, kTransfer);
   delegate_->OnSyncingStatusUpdate(std::move(third_status));
   delegate_.FlushForTesting();
-  EXPECT_EQ(host_->GetSyncStatusForPath(
-                host_->GetMountPath().Append("foo/bar/filename_error.txt")),
-            SyncStatus::kNotFound);
-  EXPECT_EQ(
-      host_->GetSyncStatusForPath(host_->GetMountPath().Append("foo/bar")),
-      SyncStatus::kInProgress);
+  EXPECT_THAT(GetSyncStatusForPath("foo/bar/filename_error.txt"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
+  EXPECT_THAT(GetSyncStatusForPath("foo/bar"),
+              MatchesStatusAndProgress(
+                  SyncStatusAndProgress({SyncStatus::kInProgress, -1})));
 
   delegate_->OnError(
       mojom::DriveError::New(mojom::DriveError::Type::kCantUploadStorageFull,
                              base::FilePath("/foo/bar/filename.txt"), 1));
   delegate_.FlushForTesting();
-  EXPECT_EQ(host_->GetSyncStatusForPath(
-                host_->GetMountPath().Append("foo/bar/filename.txt")),
-            SyncStatus::kError);
+  EXPECT_THAT(GetSyncStatusForPath("foo/bar/filename.txt"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kError));
 
   auto fourth_status = mojom::SyncingStatus::New();
-  fourth_status->item_events.emplace_back(
-      absl::in_place, 14, 36, "relative/path.txt",
-      mojom::ItemEvent::State::kInProgress, 123, 456,
-      mojom::ItemEventReason::kTransfer);
+  fourth_status->item_events.emplace_back(absl::in_place, 14, 36,
+                                          "relative/path.txt", kInProgress, 123,
+                                          456, kTransfer);
   delegate_->OnSyncingStatusUpdate(std::move(fourth_status));
   delegate_.FlushForTesting();
 
-  EXPECT_EQ(host_->GetSyncStatusForPath(
-                host_->GetMountPath().Append("relative/path.txt")),
-            SyncStatus::kNotFound);
+  EXPECT_THAT(GetSyncStatusForPath("relative/path.txt"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
 }
 
 }  // namespace

@@ -250,7 +250,8 @@ enum EntryPropertyName {
   isMachineRoot,
   isExternalMedia,
   isArbitrarySyncFolder,
-  syncStatus
+  syncStatus,
+  progress
 };
 
 // Source of the volume data.
@@ -511,6 +512,11 @@ dictionary EntryProperties {
 
   // Sync status for files tracked by different cloud filesystem providers.
   SyncStatus? syncStatus;
+
+  // Progress representing some ongoing operation with the file.
+  // E.g., pasting, syncing. Note: currently, this is exclusively being used
+  // for Drive syncing.
+  double? progress;
 };
 
 // Information about total and remaining size on the mount point.

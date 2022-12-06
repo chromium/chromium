@@ -109,7 +109,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
 
   mojom::DriveFs* GetDriveFsInterface() const;
 
-  SyncStatus GetSyncStatusForPath(const base::FilePath& drive_path) const;
+  SyncStatusAndProgress GetSyncStatusForPath(
+      const base::FilePath& drive_path) const;
 
   // Starts DriveFs search query and returns whether it will be
   // performed localy or remotely. Assumes DriveFS to be mounted.

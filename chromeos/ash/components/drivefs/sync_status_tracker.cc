@@ -23,7 +23,8 @@ SyncStatusTracker::~SyncStatusTracker() = default;
 // on query.
 void SyncStatusTracker::AddSyncStatusForPath(const int64_t id,
                                              const base::FilePath& path,
-                                             SyncStatus status) {
+                                             SyncStatus status,
+                                             float progress) {
   if (path.empty() || !path.IsAbsolute()) {
     return;
   }
@@ -39,6 +40,7 @@ void SyncStatusTracker::AddSyncStatusForPath(const int64_t id,
     current_node = matching_node.get();
   }
   current_node->status = status;
+  current_node->progress = progress;
 
   // If the entry with the given id has changed its path, this means it has been
   // moved/renamed. Let's delete its old path before proceeding.
@@ -49,38 +51,40 @@ void SyncStatusTracker::AddSyncStatusForPath(const int64_t id,
   id_to_node_[id] = current_node;
 }
 
-SyncStatus SyncStatusTracker::GetSyncStatusForPath(const base::FilePath& path) {
+SyncStatusAndProgress SyncStatusTracker::GetSyncStatusForPath(
+    const base::FilePath& path) {
   if (path.empty() || !path.IsAbsolute()) {
-    return SyncStatus::kNotFound;
+    return SyncStatusAndProgress::kNotFound;
   }
   std::vector<base::FilePath::StringType> path_parts = path.GetComponents();
   TrieNode* current_node = root_.get();
   for (const auto& path_part : path_parts) {
     auto it = current_node->children.find(path_part);
     if (it == current_node->children.end()) {
-      return SyncStatus::kNotFound;
+      return SyncStatusAndProgress::kNotFound;
     }
     current_node = it->second.get();
   }
   if (current_node->status != SyncStatus::kNotFound) {
-    return current_node->status;
+    return {current_node->status, current_node->progress};
   }
-  SyncStatus status = SyncStatus::kNotFound;
+  auto [status, progress] = SyncStatusAndProgress::kNotFound;
   std::deque<TrieNode*> queue = {current_node};
   while (!queue.empty()) {
     TrieNode* node = queue.front();
     queue.pop_front();
     if (node->status == SyncStatus::kError) {
-      return SyncStatus::kError;
+      return SyncStatusAndProgress::kError;
     }
     if (node->status > status) {
       status = node->status;
     }
+    // TODO(b/256931969): Optimize SyncStatusTracker to make reads O(1).
     for (const auto& child : node->children) {
       queue.emplace_back(child.second.get());
     }
   }
-  return status;
+  return {status, progress};
 }
 
 void SyncStatusTracker::RemovePath(const int64_t id,

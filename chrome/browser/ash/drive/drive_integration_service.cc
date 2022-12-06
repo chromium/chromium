@@ -1408,7 +1408,7 @@ void DriveIntegrationService::GetSyncingPaths(
   }
 }
 
-drivefs::SyncStatus DriveIntegrationService::GetSyncStatusForPath(
+drivefs::SyncStatusAndProgress DriveIntegrationService::GetSyncStatusForPath(
     const base::FilePath& drive_path) {
   return drivefs_holder_->drivefs_host()->GetSyncStatusForPath(drive_path);
 }

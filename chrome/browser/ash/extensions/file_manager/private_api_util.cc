@@ -32,6 +32,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/drivefs_util.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_errors.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -313,17 +314,18 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
     drive::DriveIntegrationService* integration_service =
         drive::DriveIntegrationServiceFactory::FindForProfile(running_profile_);
-    auto sync_status = (!integration_service)
-                           ? drivefs::SyncStatus::kNotFound
-                           : integration_service->GetSyncStatusForPath(
-                                 file_system_url_.path());
-    switch (sync_status) {
+    drivefs::SyncStatusAndProgress status_and_progress =
+        (!integration_service) ? drivefs::SyncStatusAndProgress::kNotFound
+                               : integration_service->GetSyncStatusForPath(
+                                     file_system_url_.path());
+    switch (status_and_progress.status) {
       case drivefs::SyncStatus::kQueued:
         properties_->sync_status = file_manager_private::SYNC_STATUS_QUEUED;
         break;
       case drivefs::SyncStatus::kInProgress:
         properties_->sync_status =
             file_manager_private::SYNC_STATUS_IN_PROGRESS;
+        properties_->progress = status_and_progress.progress;
         break;
       case drivefs::SyncStatus::kError:
         properties_->sync_status = file_manager_private::SYNC_STATUS_ERROR;

@@ -10,6 +10,13 @@
 namespace drivefs {
 namespace {
 
+MATCHER_P(MatchesStatusAndProgress, value, "") {
+  *result_listener << "where the progress difference is "
+                   << std::abs(arg.progress - value.progress);
+  return arg.status == value.status &&
+         std::abs(arg.progress - value.progress) < 1e-4;
+}
+
 class SyncStatusTrackerTest : public testing::Test {
  public:
   SyncStatusTrackerTest() = default;
@@ -19,6 +26,11 @@ class SyncStatusTrackerTest : public testing::Test {
 
   SyncStatus GetSyncStatus(SyncStatusTracker& tracker,
                            const std::string& path) {
+    return tracker.GetSyncStatusForPath(base::FilePath(path)).status;
+  }
+
+  SyncStatusAndProgress GetSyncStatusAndProgress(SyncStatusTracker& tracker,
+                                                 const std::string& path) {
     return tracker.GetSyncStatusForPath(base::FilePath(path));
   }
 
@@ -26,7 +38,16 @@ class SyncStatusTrackerTest : public testing::Test {
                      const int64_t id,
                      const std::string& path,
                      SyncStatus status) {
-    return tracker.AddSyncStatusForPath(id, base::FilePath(path), status);
+    return tracker.AddSyncStatusForPath(id, base::FilePath(path), status, 0);
+  }
+
+  void AddSyncStatusAndProgress(SyncStatusTracker& tracker,
+                                const int64_t id,
+                                const std::string& path,
+                                SyncStatus status,
+                                float progress) {
+    return tracker.AddSyncStatusForPath(id, base::FilePath(path), status,
+                                        progress);
   }
 };
 
@@ -131,16 +152,22 @@ TEST_F(SyncStatusTrackerTest, RelativePathsAreNotSupported) {
 TEST_F(SyncStatusTrackerTest, MovingFileRemovesOldPath) {
   SyncStatusTracker tracker;
 
-  AddSyncStatus(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress);
-  AddSyncStatus(tracker, 1, "/a/b/c/e", SyncStatus::kQueued);
+  AddSyncStatusAndProgress(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress,
+                           0.1);
+  AddSyncStatusAndProgress(tracker, 1, "/a/b/c/e", SyncStatus::kQueued, 0);
   // Rename /a/b/c/d to /a/b/c/f.
-  AddSyncStatus(tracker, 0, "/a/b/c/f", SyncStatus::kInProgress);
+  AddSyncStatusAndProgress(tracker, 0, "/a/b/c/f", SyncStatus::kInProgress,
+                           0.5);
 
   // Old path is removed.
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c/d"), SyncStatus::kNotFound);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c/e"), SyncStatus::kQueued);
+  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c/d"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
+  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c/e"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kQueued));
   // New path is tracked.
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c/f"), SyncStatus::kInProgress);
+  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c/f"),
+              MatchesStatusAndProgress(
+                  SyncStatusAndProgress{SyncStatus::kInProgress, 0.5}));
 
   EXPECT_EQ(tracker.LeafCount(), 2u);
 }
@@ -148,17 +175,25 @@ TEST_F(SyncStatusTrackerTest, MovingFileRemovesOldPath) {
 TEST_F(SyncStatusTrackerTest, MovingFileRemovesOldPathAndParents) {
   SyncStatusTracker tracker;
 
-  AddSyncStatus(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress);
+  AddSyncStatusAndProgress(tracker, 0, "/a/b/c/d", SyncStatus::kInProgress,
+                           0.1);
   // Rename /a/b/c/d to /a/d.
-  AddSyncStatus(tracker, 0, "/a/d", SyncStatus::kInProgress);
+  AddSyncStatusAndProgress(tracker, 0, "/a/d", SyncStatus::kInProgress, 0.2);
 
   // Old path is removed along with any childless parents.
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c/d"), SyncStatus::kNotFound);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b/c"), SyncStatus::kNotFound);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/b"), SyncStatus::kNotFound);
+  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c/d"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
+  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b/c"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
+  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/b"),
+              MatchesStatusAndProgress(SyncStatusAndProgress::kNotFound));
   // New path is tracked.
-  EXPECT_EQ(GetSyncStatus(tracker, "/a/d"), SyncStatus::kInProgress);
-  EXPECT_EQ(GetSyncStatus(tracker, "/a"), SyncStatus::kInProgress);
+  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a/d"),
+              MatchesStatusAndProgress(
+                  SyncStatusAndProgress{SyncStatus::kInProgress, 0.2}));
+  EXPECT_THAT(GetSyncStatusAndProgress(tracker, "/a"),
+              MatchesStatusAndProgress(
+                  SyncStatusAndProgress{SyncStatus::kInProgress, -1}));
 
   EXPECT_EQ(tracker.LeafCount(), 1u);
 }

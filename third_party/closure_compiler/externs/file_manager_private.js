@@ -230,6 +230,7 @@ chrome.fileManagerPrivate.EntryPropertyName = {
   IS_EXTERNAL_MEDIA: 'isExternalMedia',
   IS_ARBITRARY_SYNC_FOLDER: 'isArbitrarySyncFolder',
   SYNC_STATUS: 'syncStatus',
+  PROGRESS: 'progress',
 };
 
 /** @enum {string} */
@@ -401,7 +402,9 @@ chrome.fileManagerPrivate.ResultingTasks;
  *   canPin: (boolean|undefined),
  *   isMachineRoot: (boolean|undefined),
  *   isExternalMedia: (boolean|undefined),
- *   isArbitrarySyncFolder: (boolean|undefined)
+ *   isArbitrarySyncFolder: (boolean|undefined),
+ *   syncStatus: (string|undefined),
+ *   progress: (number|undefined)
  * }}
  */
 chrome.fileManagerPrivate.EntryProperties;
