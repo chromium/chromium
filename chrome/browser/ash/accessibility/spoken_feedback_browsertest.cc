@@ -1179,6 +1179,34 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_TouchExploreStatusTray) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowLinksList) {
+  EnableChromeVox();
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+        <button autofocus>Start here</button>
+        <a href="https://google.com/">Google Search Engine</a>
+        <a href="https://docs.google.com/">Google Docs</a>
+        <a href="https://mail.google.com/">Gmail</a>)")));
+  });
+  sm_.ExpectSpeech("Start here");
+  sm_.Call([this]() { SendKeyPressWithSearchAndControl(ui::VKEY_L); });
+  sm_.ExpectSpeech("Link Menu");
+  sm_.ExpectSpeech("Google Search Engine");
+  sm_.ExpectSpeech("1 of 3");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Google Docs");
+  sm_.ExpectSpeech("2 of 3");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Gmail");
+  sm_.ExpectSpeech("3 of 3");
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });
+  sm_.ExpectSpeech("Google Docs");
+  sm_.ExpectSpeech("2 of 3");
+
+  sm_.Replay();
+}
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
                        TouchExploreRightEdgeVolumeSliderOn) {
   EnableChromeVox();
