@@ -67,14 +67,15 @@ class CalculationValueHandleMap {
 
   void DecrementRef(int index) {
     DCHECK(map_.Contains(index));
-    const CalculationValue* value = map_.at(index);
-    if (value->HasOneRef()) {
+    auto iter = map_.find(index);
+    if (iter->value->HasOneRef()) {
       // Force the CalculationValue destructor early to avoid a potential
       // recursive call inside HashMap remove().
-      map_.Set(index, nullptr);
+      iter->value = nullptr;
+      // |iter| may be invalidated during the CalculationValue destructor.
       map_.erase(index);
     } else {
-      value->Release();
+      iter->value->Release();
     }
   }
 
