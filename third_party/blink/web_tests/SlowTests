@@ -724,7 +724,6 @@ crbug.com/1176802 [ Debug ] external/wpt/feature-policy/feature-policy-frame-pol
 crbug.com/1176802 [ Debug ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Slow ]
 crbug.com/1044825 http/tests/devtools/network/resource-priority.js [ Slow ]
 crbug.com/1105270 [ Mac10.15 ] fast/events/open-window-from-another-frame.html [ Slow ]
-crbug.com/1046784 http/tests/devtools/sources/source-frame-toolbar-items.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree-search.js [ Slow ]
 crbug.com/1108423 external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Slow ]
 crbug.com/1135978 [ Linux Release ] fast/dom/css-delete-doc.html [ Slow ]

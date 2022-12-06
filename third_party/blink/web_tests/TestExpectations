@@ -5997,7 +5997,6 @@ crbug.com/1150475 fast/dom/open-and-close-by-DOM.html [ Failure Pass ]
 
 #Sheriff 2020-11-23
 # Sheriff 2021-01-22 added Timeout per crbug.com/1046784:
-crbug.com/1149734 http/tests/devtools/sources/source-frame-toolbar-items.js [ Failure Pass Timeout ]
 crbug.com/1149734 http/tests/devtools/sources/debugger-frameworks/frameworks-sourcemap.js [ Failure Pass ]
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/continue-to-location-markers.js [ Failure Pass Timeout ]
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/inline-scope-variables.js [ Failure Pass Timeout ]
