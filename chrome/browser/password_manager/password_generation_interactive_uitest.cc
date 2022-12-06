@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   std::string submit_script =
       "document.getElementById('input_submit_button').click()";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), submit_script));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 
   WaitForPasswordStore();
   EXPECT_FALSE(password_store->IsEmpty());

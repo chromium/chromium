@@ -85,7 +85,7 @@ void PasswordManagerSigninInterceptTestHelper::NavigateToGaiaSigninPage(
   PasswordsNavigationObserver navigation_observer(contents);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       chrome::FindBrowserWithWebContents(contents), https_url));
-  navigation_observer.Wait();
+  ASSERT_TRUE(navigation_observer.Wait());
 }
 
 // Create another profile with the same Gaia account, so that the profile

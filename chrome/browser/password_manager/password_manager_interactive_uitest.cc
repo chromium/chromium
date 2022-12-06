@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest, UsernameChanged) {
   std::string submit =
       "document.getElementById('input_submit_button').click();";
   ASSERT_TRUE(content::ExecuteScript(WebContents(), submit));
-  navigation_observer.Wait();
+  ASSERT_TRUE(navigation_observer.Wait());
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
   prompt_observer.AcceptSavePrompt();
 
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("password_field", "1234");
   PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("confirmation_password_field", "1234");
   PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_xhr()"));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
 
   PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   FillElementWithValue("confirmation_password_field", "1234");
   PasswordsNavigationObserver observer(WebContents());
   ASSERT_TRUE(content::ExecuteScript(WebContents(), "send_fetch()"));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
   EXPECT_TRUE(BubbleObserver(WebContents()).IsSavePromptShownAutomatically());
 }
 
@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
   // Complete the navigation. The stored password "pw" was overridden with
   // "pwnew", so update prompt is expected.
   BubbleObserver prompt_observer(WebContents());
-  navigation_observer.Wait();
+  ASSERT_TRUE(navigation_observer.Wait());
   EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

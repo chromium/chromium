@@ -311,7 +311,7 @@ class PasswordManagerSyncTest : public SyncTest {
         "document.getElementById('input_submit_button').click()",
         username.c_str(), password.c_str());
     ASSERT_TRUE(content::ExecJs(web_contents, fill_and_submit));
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
 
   net::EmbeddedTestServer* https_test_server() { return &https_test_server_; }
@@ -322,7 +322,7 @@ class PasswordManagerSyncTest : public SyncTest {
               GetBrowser(0)->tab_strip_model()->GetActiveWebContents());
     PasswordsNavigationObserver observer(web_contents);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(0), url));
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
     // After navigation, the password manager retrieves any matching credentials
     // from the store(s). So before doing anything else (like filling and
     // submitting a form), do a roundtrip to the stores to make sure the

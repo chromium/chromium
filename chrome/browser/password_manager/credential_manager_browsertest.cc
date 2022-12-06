@@ -65,7 +65,7 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
     PasswordsNavigationObserver observer(WebContents());
     GURL url = test_server.GetURL(hostname, relative_url);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
 
   // Triggers a call to `navigator.credentials.get` to retrieve passwords, waits
@@ -303,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 
   // Verify that the form's 'skip_zero_click' is updated and not overwritten
   // by the autofill password manager on successful login.
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
 
   {
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
   // Wait for the password store to process the store request.
   WaitForPasswordStore();
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
 
   {
@@ -474,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
 
   // Wait for the password store to process the store request.
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
 
   {
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
     PasswordsNavigationObserver observer(WebContents());
     observer.SetPathToWaitFor("/password/done.html");
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
 
   // Wait for the password store to process the store request.
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 
   // Wait for the password store before checking the prompt because it pops up
   // after the store replies.
@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 
   BubbleObserver prompt_observer(WebContents());
   prompt_observer.WaitForAutomaticSavePrompt();
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest,
 
   PasswordsNavigationObserver observer(WebContents());
   observer.SetPathToWaitFor("/password/done.html");
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 
   BubbleObserver prompt_observer(WebContents());
   // The autofill password manager shouldn't react to the successful login
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, UpdateViaAPIAndAutofill) {
       "document.getElementById('username_field').value = 'user';"
       "document.getElementById('password_field').value = 'autofill';"
       "document.getElementById('input_submit_button').click();"));
-  form_submit_observer.Wait();
+  ASSERT_TRUE(form_submit_observer.Wait());
 
   // Wait for the password store before checking the prompt because it pops up
   // after the store replies.

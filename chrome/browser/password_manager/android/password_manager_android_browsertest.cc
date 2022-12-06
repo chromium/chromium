@@ -66,7 +66,7 @@ class PasswordManagerAndroidBrowserTest
     PasswordsNavigationObserver observer(GetActiveWebContents());
     EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                        https_server_.GetURL(file_path)));
-    observer.Wait();
+    ASSERT_TRUE(observer.Wait());
   }
 
  private:
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(PasswordManagerAndroidBrowserTest,
   driver->FillSuggestion(u"username", u"password");
   driver->TriggerFormSubmission();
 
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 1);

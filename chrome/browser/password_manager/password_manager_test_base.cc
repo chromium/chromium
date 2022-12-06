@@ -522,7 +522,7 @@ void PasswordManagerBrowserTestBase::NavigateToFile(const std::string& path) {
   PasswordsNavigationObserver observer(WebContents());
   GURL url = embedded_test_server()->GetURL(path);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
 }
 
 void PasswordManagerBrowserTestBase::WaitForElementValue(

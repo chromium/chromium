@@ -20,7 +20,7 @@ void PasswordsNavigationObserver::DidFinishNavigation(
     return;
 
   if (quit_on_entry_committed_)
-    run_loop_.Quit();
+    waiter_helper_.OnEvent();
 }
 
 void PasswordsNavigationObserver::DidFinishLoad(
@@ -28,12 +28,12 @@ void PasswordsNavigationObserver::DidFinishLoad(
     const GURL& validated_url) {
   if (!wait_for_path_.empty()) {
     if (validated_url.path() == wait_for_path_)
-      run_loop_.Quit();
+      waiter_helper_.OnEvent();
   } else if (!render_frame_host->GetParent()) {
-    run_loop_.Quit();
+    waiter_helper_.OnEvent();
   }
 }
 
-void PasswordsNavigationObserver::Wait() {
-  run_loop_.Run();
+bool PasswordsNavigationObserver::Wait() {
+  return waiter_helper_.Wait();
 }

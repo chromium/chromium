@@ -115,7 +115,7 @@ void PasswordManagerInteractiveTestBase::VerifyPasswordIsSavedAndFilled(
     FillElementWithValue(username_id, kUsername);
   FillElementWithValue(password_id, kPassword);
   ASSERT_TRUE(content::ExecuteScript(RenderFrameHost(), submission_script));
-  observer.Wait();
+  ASSERT_TRUE(observer.Wait());
   WaitForPasswordStore();
 
   BubbleObserver(WebContents()).AcceptSavePrompt();
