@@ -87,6 +87,7 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source = content::WebUIDataSource::Create(
       chrome::kChromeUIAccountMigrationWelcomeHost);
   webui::SetJSModuleDefaults(html_source);
+  html_source->DisableTrustedTypesCSP();
 
   // Add localized strings.
   html_source->AddLocalizedString("welcomePageTitle",

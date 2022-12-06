@@ -185,6 +185,7 @@ InternetDetailDialogUI::InternetDetailDialogUI(content::WebUI* web_ui)
       base::make_span(kInternetDetailDialogResources,
                       kInternetDetailDialogResourcesSize),
       IDR_INTERNET_DETAIL_DIALOG_INTERNET_DETAIL_DIALOG_CONTAINER_HTML);
+  source->DisableTrustedTypesCSP();
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }
 

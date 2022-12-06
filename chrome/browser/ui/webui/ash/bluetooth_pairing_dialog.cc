@@ -138,6 +138,7 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
       base::make_span(kBluetoothPairingDialogResources,
                       kBluetoothPairingDialogResourcesSize),
       IDR_BLUETOOTH_PAIRING_DIALOG_BLUETOOTH_PAIRING_DIALOG_CONTAINER_HTML);
+  source->DisableTrustedTypesCSP();
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 
   device::RecordUiSurfaceDisplayed(

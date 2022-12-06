@@ -29,6 +29,7 @@ ManageMirrorSyncUI::ManageMirrorSyncUI(content::WebUI* web_ui)
                               base::make_span(kManageMirrorsyncResources,
                                               kManageMirrorsyncResourcesSize),
                               IDR_MANAGE_MIRRORSYNC_INDEX_HTML);
+  source->DisableTrustedTypesCSP();
 
   content::WebUIDataSource::Add(profile, source);
 }

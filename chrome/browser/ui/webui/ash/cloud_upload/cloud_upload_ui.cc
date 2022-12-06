@@ -35,6 +35,7 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kCloudUploadResources, kCloudUploadResourcesSize),
       IDR_CLOUD_UPLOAD_MAIN_HTML);
+  source->DisableTrustedTypesCSP();
 }
 
 CloudUploadUI::~CloudUploadUI() = default;

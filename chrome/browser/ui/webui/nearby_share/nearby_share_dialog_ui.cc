@@ -80,6 +80,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
                               base::make_span(kNearbyShareDialogResources,
                                               kNearbyShareDialogResourcesSize),
                               IDR_NEARBY_SHARE_DIALOG_NEARBY_SHARE_DIALOG_HTML);
+  html_source->DisableTrustedTypesCSP();
 
   // To use lottie, the worker-src CSP needs to be updated for the web ui that
   // is using it. Since as of now there are only a couple of webuis using

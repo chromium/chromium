@@ -58,6 +58,7 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
       IDR_EMOJI_PICKER_INDEX_HTML);
+  source->DisableTrustedTypesCSP();
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);

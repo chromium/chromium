@@ -166,6 +166,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISetTimeHost);
   webui::SetJSModuleDefaults(source);
+  source->DisableTrustedTypesCSP();
   static constexpr webui::LocalizedString kStrings[] = {
       {"setTimeTitle", IDS_SET_TIME_TITLE},
       {"prompt", IDS_SET_TIME_PROMPT},

@@ -40,6 +40,7 @@ OfficeFallbackUI::OfficeFallbackUI(content::WebUI* web_ui)
       source,
       base::make_span(kOfficeFallbackResources, kOfficeFallbackResourcesSize),
       IDR_OFFICE_FALLBACK_MAIN_HTML);
+  source->DisableTrustedTypesCSP();
 }
 
 OfficeFallbackUI::~OfficeFallbackUI() = default;

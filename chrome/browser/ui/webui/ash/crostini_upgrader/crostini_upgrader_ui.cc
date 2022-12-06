@@ -91,6 +91,7 @@ CrostiniUpgraderUI::CrostiniUpgraderUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUICrostiniUpgraderHost);
   webui::SetJSModuleDefaults(source);
+  source->DisableTrustedTypesCSP();
   AddStringResources(source);
 
   source->AddResourcePath("images/linux_illustration.png",

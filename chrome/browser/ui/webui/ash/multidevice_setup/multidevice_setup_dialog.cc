@@ -125,6 +125,7 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
       base::make_span(kMultideviceSetupResources,
                       kMultideviceSetupResourcesSize),
       IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
+  source->DisableTrustedTypesCSP();
 
   web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());

@@ -81,7 +81,6 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
   OsSettingsManager* manager = OsSettingsManagerFactory::GetForProfile(profile);
   manager->AddHandlers(web_ui);
   manager->AddLoadTimeData(html_source);
-  html_source->DisableTrustedTypesCSP();
 
   // TODO(khorimoto): Move to DeviceSection::AddHandler() once |html_source|
   // parameter is removed.
@@ -92,6 +91,7 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
       IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML);
+  html_source->DisableTrustedTypesCSP();
 
   ManagedUIHandler::Initialize(web_ui, html_source);
 

@@ -137,6 +137,7 @@ CrostiniInstallerUI::CrostiniInstallerUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUICrostiniInstallerHost);
   auto* profile = Profile::FromWebUI(web_ui);
   webui::SetJSModuleDefaults(source);
+  source->DisableTrustedTypesCSP();
   AddStringResources(source);
   source->AddString("defaultContainerUsername",
                     crostini::DefaultContainerUserNameForProfile(profile));
