@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "net/base/parse_number.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -169,6 +170,10 @@ bool IPAddressBytes::operator==(const IPAddressBytes& other) const {
 
 bool IPAddressBytes::operator!=(const IPAddressBytes& other) const {
   return !(*this == other);
+}
+
+size_t IPAddressBytes::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(bytes_);
 }
 
 // static
@@ -380,6 +385,10 @@ std::string IPAddress::ToString() const {
 base::Value IPAddress::ToValue() const {
   DCHECK(IsValid());
   return base::Value(ToString());
+}
+
+size_t IPAddress::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(ip_address_);
 }
 
 std::string IPAddressToStringWithPort(const IPAddress& address, uint16_t port) {

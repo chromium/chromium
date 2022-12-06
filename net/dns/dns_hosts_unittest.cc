@@ -4,6 +4,8 @@
 
 #include "net/dns/dns_hosts.h"
 
+#include "base/test/metrics/histogram_tester.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,8 +78,15 @@ TEST(DnsHostsTest, ParseHosts) {
 
   DnsHosts expected_hosts, actual_hosts;
   PopulateExpectedHosts(kEntries, std::size(kEntries), &expected_hosts);
+
+  base::HistogramTester histograms;
   ParseHosts(kContents, &actual_hosts);
   ASSERT_EQ(expected_hosts, actual_hosts);
+  histograms.ExpectUniqueSample("Net.DNS.DnsHosts.Count", std::size(kEntries),
+                                1);
+  histograms.ExpectUniqueSample(
+      "Net.DNS.DnsHosts.EstimateMemoryUsage",
+      base::trace_event::EstimateMemoryUsage(actual_hosts), 1);
 }
 
 TEST(DnsHostsTest, ParseHosts_CommaIsToken) {

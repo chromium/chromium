@@ -846,6 +846,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsHosts.Count" units="count" expires_after="M113">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The number of hosts parsed from a Hosts file. Reported whenever a Hosts file
+    is read and parsed.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsHosts.EstimateMemoryUsage" units="bytes"
+    expires_after="M113">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Estimated memory usage to keep the parsed result of a Hosts file. Reported
+    whenever a Hosts file is read and parsed.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsHosts.FileSize" units="bytes" expires_after="M113">
+  <owner>horo@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The file size of a Hosts file. Reported whenever a Hosts file is read.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Requested"
     enum="UnsolicitedHttpsRecordStatus" expires_after="2023-04-09">
   <owner>awillia@chromium.org</owner>

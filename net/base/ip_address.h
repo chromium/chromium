@@ -89,6 +89,8 @@ class NET_EXPORT IPAddressBytes {
   bool operator!=(const IPAddressBytes& other) const;
   bool operator==(const IPAddressBytes& other) const;
 
+  size_t EstimateMemoryUsage() const;
+
  private:
   // Underlying sequence of bytes
   std::array<uint8_t, 16> bytes_;
@@ -223,6 +225,8 @@ class NET_EXPORT IPAddress {
 
   // Must be a valid address (per IsValid()).
   base::Value ToValue() const;
+
+  size_t EstimateMemoryUsage() const;
 
  private:
   IPAddressBytes ip_address_;
