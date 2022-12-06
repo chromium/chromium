@@ -280,7 +280,8 @@ class CORE_EXPORT SelectorChecker {
   // Does the work of checking whether the simple selector and element pointed
   // to by the context are a match. Delegates most of the work to the Check*
   // methods below.
-  bool CheckOne(const SelectorCheckingContext&, MatchResult&) const;
+  ALWAYS_INLINE bool CheckOne(const SelectorCheckingContext&,
+                              MatchResult&) const;
 
   enum MatchStatus {
     kSelectorMatches,

@@ -600,8 +600,9 @@ static bool AnyAttributeMatches(Element& element,
   return false;
 }
 
-bool SelectorChecker::CheckOne(const SelectorCheckingContext& context,
-                               MatchResult& result) const {
+ALWAYS_INLINE bool SelectorChecker::CheckOne(
+    const SelectorCheckingContext& context,
+    MatchResult& result) const {
   DCHECK(context.element);
   Element& element = *context.element;
   DCHECK(context.selector);
