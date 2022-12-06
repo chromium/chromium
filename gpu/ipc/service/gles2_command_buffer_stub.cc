@@ -165,10 +165,14 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     use_virtualized_gl_context_ = false;
 #endif
 
+  gpu::GpuMemoryBufferFactory* gmb_factory =
+      manager->gpu_memory_buffer_factory();
+
   command_buffer_ = std::make_unique<CommandBufferService>(
       this, context_group_->memory_tracker());
   gles2_decoder_ = gles2::GLES2Decoder::Create(
-      this, command_buffer_.get(), manager->outputter(), context_group_.get());
+      this, command_buffer_.get(), manager->outputter(), context_group_.get(),
+      gmb_factory ? gmb_factory->AsImageFactory() : nullptr);
   set_decoder_context(std::unique_ptr<DecoderContext>(gles2_decoder_));
 
   sync_point_client_state_ =

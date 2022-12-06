@@ -462,7 +462,7 @@ class CommandBufferSetup {
     auto* context = context_.get();
     decoder_.reset(gles2::GLES2Decoder::Create(
         command_buffer_.get(), command_buffer_->service(), &outputter_,
-        context_group.get()));
+        context_group.get(), /*image_factory_for_nacl_swapchain=*/nullptr));
 #endif
 
     decoder_->GetLogger()->set_log_synthesized_gl_errors(false);

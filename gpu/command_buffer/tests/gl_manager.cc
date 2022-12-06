@@ -351,7 +351,7 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   decoder_.reset(::gpu::gles2::GLES2Decoder::Create(
       command_buffer_.get(), command_buffer_->service(), &outputter_,
-      context_group));
+      context_group, options.image_factory));
   if (options.force_shader_name_hashing) {
     decoder_->SetForceShaderNameHashingForTest(true);
   }

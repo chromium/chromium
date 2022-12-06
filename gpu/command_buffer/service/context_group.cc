@@ -118,7 +118,6 @@ ContextGroup::ContextGroup(
       uniform_buffer_offset_alignment_(1u),
       program_cache_(nullptr),
       feature_info_(feature_info),
-      image_factory_(image_factory),
       use_passthrough_cmd_decoder_(false),
       passthrough_resources_(new PassthroughResources),
       passthrough_discardable_manager_(passthrough_discardable_manager),

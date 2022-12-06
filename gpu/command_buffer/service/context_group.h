@@ -164,8 +164,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
     return feature_info_.get();
   }
 
-  gpu::ImageFactory* image_factory() const { return image_factory_; }
-
   const GpuPreferences& gpu_preferences() const {
     return gpu_preferences_;
   }
@@ -308,8 +306,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
   std::unique_ptr<SamplerManager> sampler_manager_;
 
   scoped_refptr<FeatureInfo> feature_info_;
-
-  raw_ptr<gpu::ImageFactory> image_factory_;
 
   std::vector<base::WeakPtr<DecoderContext>> decoders_;
 

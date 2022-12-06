@@ -37,6 +37,7 @@ class Size;
 namespace gpu {
 
 class DecoderClient;
+class ImageFactory;
 struct Mailbox;
 
 namespace gles2 {
@@ -103,7 +104,8 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   static GLES2Decoder* Create(DecoderClient* client,
                               CommandBufferServiceBase* command_buffer_service,
                               Outputter* outputter,
-                              ContextGroup* group);
+                              ContextGroup* group,
+                              ImageFactory* image_factory_for_nacl_swapchain);
 
   GLES2Decoder(const GLES2Decoder&) = delete;
   GLES2Decoder& operator=(const GLES2Decoder&) = delete;
