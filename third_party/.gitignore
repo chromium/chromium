@@ -25,6 +25,7 @@
 /androidx/BUILD.gn
 /androidx/additional_readme_paths.json
 /androidx/libs/
+/androidx_javascriptengine/src/
 /angle
 /angle_dx11
 /apache-mac/LICENSE

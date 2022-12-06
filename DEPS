@@ -972,6 +972,11 @@ deps = {
     'dep_type': 'cipd',
   },
 
+  'src/third_party/androidx_javascriptengine/src': {
+      'url': Var('chromium_git') + '/aosp/platform/frameworks/support/javascriptengine/javascriptengine/src.git' + '@' + '5290c323b804773696e245796954960334d930b3',
+      'condition': 'checkout_android',
+  },
+
   'src/third_party/android_support_test_runner': {
       'packages': [
           {

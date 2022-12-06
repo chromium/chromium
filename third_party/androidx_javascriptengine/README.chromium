@@ -1,0 +1,21 @@
+Name: AndroidX JavaScriptEngine
+Short Name: androidx.javascriptengine
+URL: https://developer.android.com/jetpack/androidx/releases/javascriptengine
+Version: unknown
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+The WebView team is shipping this client library that can be used by Android apps to evaluate JavaScript and WASM.
+The library is a thin interface built and shipped through AndroidX.
+
+The actual service implementation of this library is shipped via the Android WebView APK.
+In order to enable local development and end to end testing,
+we mirror the JavaScriptEngine library into Chromium.
+
+Since we require only a directory from the AndroidX repository, we mirror a git repository
+created to track changes in the subdirectory in AndroidX. This addition repository is
+maintained by the Git Infra team.
+
+Local Modifications: None
