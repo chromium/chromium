@@ -45,13 +45,12 @@ class SandboxCompilerTest
 };
 
 MULTIPROCESS_TEST_MAIN(BasicProfileProcess) {
-  std::string profile =
-      "(version 1)"
-      "(deny default (with no-log))"
-      "(allow file-read* file-write* (literal \"/\"))";
-
   SandboxCompiler compiler(GetParamInChild());
-  compiler.SetProfile(profile);
+  compiler.SetProfile(R"(
+      (version 1)
+      (deny default (with no-log))
+      (allow file-read* file-write* (literal "/"))
+  )");
 
   std::string error;
   CHECK(compiler.CompileAndApplyProfile(&error));
@@ -69,13 +68,12 @@ TEST_P(SandboxCompilerTest, BasicProfileTest) {
 }
 
 MULTIPROCESS_TEST_MAIN(BasicProfileWithParamProcess) {
-  std::string profile =
-      "(version 1)"
-      "(deny default (with no-log))"
-      "(allow file-read* file-write* (literal (param \"DIR\")))";
-
   SandboxCompiler compiler(GetParamInChild());
-  compiler.SetProfile(profile);
+  compiler.SetProfile(R"(
+      (version 1)
+      (deny default (with no-log))
+      (allow file-read* file-write* (literal (param "DIR")))
+  )");
   CHECK(compiler.SetParameter("DIR", "/"));
 
   std::string error;
@@ -94,13 +92,12 @@ TEST_P(SandboxCompilerTest, BasicProfileTestWithParam) {
 }
 
 MULTIPROCESS_TEST_MAIN(ProfileFunctionalProcess) {
-  std::string profile =
-      "(version 1)"
-      "(deny default (with no-log))"
-      "(allow file-read-data file-read-metadata (literal \"/dev/urandom\"))";
-
   SandboxCompiler compiler(GetParamInChild());
-  compiler.SetProfile(profile);
+  compiler.SetProfile(R"(
+      (version 1)
+      (deny default (with no-log))
+      (allow file-read-data file-read-metadata (literal "/dev/urandom"))
+  )");
 
   std::string error;
   CHECK(compiler.CompileAndApplyProfile(&error));
@@ -126,15 +123,14 @@ TEST_P(SandboxCompilerTest, ProfileFunctionalityTest) {
 }
 
 MULTIPROCESS_TEST_MAIN(ProfileFunctionalTestWithParamsProcess) {
-  std::string profile =
-      "(version 1)"
-      "(deny default (with no-log))"
-      "(if (string=? (param \"ALLOW_FILE\") \"TRUE\")"
-      "    (allow file-read-data file-read-metadata (literal (param "
-      "\"URANDOM\"))))";
-
   SandboxCompiler compiler(GetParamInChild());
-  compiler.SetProfile(profile);
+  compiler.SetProfile(R"(
+      (version 1)
+      (deny default (with no-log))
+      (if (string=? (param "ALLOW_FILE") "TRUE")
+          (allow file-read-data file-read-metadata (literal (param "URANDOM")))
+      )
+  )");
 
   CHECK(compiler.SetBooleanParameter("ALLOW_FILE", true));
   CHECK(!compiler.SetParameter("ALLOW_FILE", "duplicate key is not allowed"));
@@ -168,10 +164,8 @@ TEST_P(SandboxCompilerTest, ProfileFunctionalityTestWithParams) {
 }
 
 MULTIPROCESS_TEST_MAIN(ProfileFunctionalityTestErrorProcess) {
-  std::string profile = "(+ 5 a)";
-
   SandboxCompiler compiler(GetParamInChild());
-  compiler.SetProfile(profile);
+  compiler.SetProfile("(+ 5 a)");
 
   // Make sure that this invalid profile results in an error returned.
   std::string error;
@@ -215,20 +209,9 @@ TEST_P(SandboxCompilerTest, DuplicateKeys) {
   }
 }
 
-TEST_F(SandboxCompilerTest, DefaultConstructor) {
-  std::string profile =
-      R"((version 1) (deny default) (allow file-read* (path "/")))";
-  SandboxCompiler compiler(profile);
-  absl::optional<mac::SandboxPolicy> policy =
-      compiler.CompilePolicyToProto(nullptr);
-  ASSERT_TRUE(policy.has_value());
-  EXPECT_FALSE(policy->compiled().data().empty());
-}
-
 INSTANTIATE_TEST_SUITE_P(Target,
                          SandboxCompilerTest,
                          testing::Values(SandboxCompiler::Target::kSource,
-                                         SandboxCompiler::Target::kCompiled,
-                                         SandboxCompiler::Target::kImmediate));
+                                         SandboxCompiler::Target::kCompiled));
 
 }  // namespace sandbox

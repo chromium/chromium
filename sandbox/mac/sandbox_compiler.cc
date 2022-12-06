@@ -19,11 +19,6 @@ SandboxCompiler::SandboxCompiler(Target mode) : mode_(mode) {
   }
 }
 
-SandboxCompiler::SandboxCompiler(const std::string& profile_str)
-    : SandboxCompiler(Target::kImmediate) {
-  SetProfile(profile_str);
-}
-
 SandboxCompiler::~SandboxCompiler() {}
 
 void SandboxCompiler::SetProfile(const std::string& policy) {

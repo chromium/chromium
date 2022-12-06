@@ -90,7 +90,8 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   const std::string profile =
       std::string(sandbox::policy::kSeatbeltPolicyString_common) +
       sandbox::policy::kSeatbeltPolicyString_renderer;
-  sandbox::SandboxCompiler compiler(profile);
+  sandbox::SandboxCompiler compiler;
+  compiler.SetProfile(profile);
 
   // Create the logging file and pass /bin/ls as the executable path.
   base::ScopedTempDir temp_dir;

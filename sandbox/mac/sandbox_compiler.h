@@ -26,10 +26,6 @@ class SEATBELT_EXPORT SandboxCompiler {
     // The result of compilation is a SandboxPolicy proto containing a sealed,
     // compiled, binary sandbox policy that can be applied immediately.
     kCompiled,
-
-    // The result of compilation is to be immediately applied to the current
-    // process using CompileAndApplyProfile().
-    kImmediate = kCompiled,
   };
 
   // Creates a compiler in the default mode, `Target::kSource`.
@@ -37,10 +33,6 @@ class SEATBELT_EXPORT SandboxCompiler {
 
   // Creates a compiler with the specified target mode.
   explicit SandboxCompiler(Target mode);
-
-  // Creates a compiler with the specified policy `profile_str` in
-  // `Target::kImmediate` mode.
-  explicit SandboxCompiler(const std::string& profile_str);
 
   ~SandboxCompiler();
   SandboxCompiler(const SandboxCompiler& other) = delete;

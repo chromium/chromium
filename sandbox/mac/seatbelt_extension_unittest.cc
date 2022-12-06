@@ -78,7 +78,8 @@ TEST_F(SeatbeltExtensionTest, FileReadAccess) {
 }
 
 MULTIPROCESS_TEST_MAIN(FileReadAccess) {
-  sandbox::SandboxCompiler compiler(kSandboxProfile);
+  sandbox::SandboxCompiler compiler;
+  compiler.SetProfile(kSandboxProfile);
   std::string error;
   CHECK(compiler.CompileAndApplyProfile(&error)) << error;
 
@@ -166,7 +167,8 @@ TEST_F(SeatbeltExtensionTest, DirReadWriteAccess) {
 }
 
 MULTIPROCESS_TEST_MAIN(DirReadWriteAccess) {
-  sandbox::SandboxCompiler compiler(kSandboxProfile);
+  sandbox::SandboxCompiler compiler;
+  compiler.SetProfile(kSandboxProfile);
   std::string error;
   CHECK(compiler.CompileAndApplyProfile(&error)) << error;
 
