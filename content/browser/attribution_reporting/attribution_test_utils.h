@@ -1005,6 +1005,8 @@ struct TriggerRegistrationMatcherConfig {
       aggregatable_trigger_data = ::testing::_;
   ::testing::Matcher<const attribution_reporting::AggregatableValues&>
       aggregatable_values = ::testing::_;
+  ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
+      aggregation_coordinator = ::testing::_;
 
   TriggerRegistrationMatcherConfig() = delete;
   explicit TriggerRegistrationMatcherConfig(
@@ -1024,7 +1026,9 @@ struct TriggerRegistrationMatcherConfig {
           const attribution_reporting::AggregatableTriggerDataList&>
           aggregatable_trigger_data = ::testing::_,
       ::testing::Matcher<const attribution_reporting::AggregatableValues&>
-          aggregatable_values = ::testing::_);
+          aggregatable_values = ::testing::_,
+      ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
+          aggregation_coordinator = ::testing::_);
   ~TriggerRegistrationMatcherConfig();
 };
 

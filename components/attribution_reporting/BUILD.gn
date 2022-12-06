@@ -42,6 +42,7 @@ component("attribution_reporting") {
   public_deps = [
     ":mojom",
     "//base",
+    "//components/aggregation_service",
     "//components/aggregation_service:mojom",
     "//url",
   ]

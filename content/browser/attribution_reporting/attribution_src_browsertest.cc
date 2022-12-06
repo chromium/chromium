@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -943,7 +944,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
           /*aggregatable_trigger_data=*/
           attribution_reporting::AggregatableTriggerDataList(),
           /*aggregatable_values=*/
-          attribution_reporting::AggregatableValues()))));
+          attribution_reporting::AggregatableValues(),
+          ::aggregation_service::mojom::AggregationCoordinator::kDefault))));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -1025,8 +1027,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                   /*filters=*/attribution_reporting::Filters(),
                   /*not_filters=*/attribution_reporting::Filters())}),
           /*aggregatable_values=*/
-          *attribution_reporting::AggregatableValues::Create(
-              {{"key", 123}})))));
+          *attribution_reporting::AggregatableValues::Create({{"key", 123}}),
+          ::aggregation_service::mojom::AggregationCoordinator::kAwsCloud))));
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -8,3 +8,28 @@ mojom("mojom") {
   generate_java = true
   sources = [ "aggregation_service.mojom" ]
 }
+
+component("aggregation_service") {
+  sources = [
+    "parsing_utils.cc",
+    "parsing_utils.h",
+  ]
+
+  public_deps = [
+    ":mojom",
+    "//base",
+  ]
+
+  defines = [ "IS_AGGREGATION_SERVICE_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "parsing_utils_unittest.cc" ]
+
+  deps = [
+    ":aggregation_service",
+    "//testing/gtest",
+  ]
+}

@@ -38,4 +38,7 @@ enum TriggerRegistrationError {
 
   kAggregatableTriggerDataListWrongType,
   kAggregatableTriggerDataListTooLong,
+
+  kAggregationCoordinatorWrongType,
+  kAggregationCoordinatorUnknownValue,
 };

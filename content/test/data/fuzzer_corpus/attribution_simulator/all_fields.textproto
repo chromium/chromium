@@ -482,6 +482,14 @@ object_value {
                       }
                     }
                   }
+                  field {
+                    name: "aggregation_coordinator_identifier"
+                    value {
+                      string_value {
+                        value: "aws-cloud"
+                      }
+                    }
+                  }
                 }
               }
             }

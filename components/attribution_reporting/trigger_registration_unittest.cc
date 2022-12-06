@@ -15,6 +15,7 @@
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/constants.h"
@@ -228,6 +229,28 @@ TEST(TriggerRegistrationTest, Parse) {
           "debug_reporting_wrong_type",
           R"json({"debug_reporting":"true"})json",
           TriggerRegistration(reporting_origin),
+      },
+      {
+          "aggregation_coordinator_identifier_valid",
+          R"json({"aggregation_coordinator_identifier":"aws-cloud"})json",
+          TriggerRegistrationWith(reporting_origin,
+                                  [](auto& r) {
+                                    r.aggregation_coordinator =
+                                        aggregation_service::mojom::
+                                            AggregationCoordinator::kAwsCloud;
+                                  }),
+      },
+      {
+          "aggregation_coordinator_identifier_wrong_type",
+          R"json({"aggregation_coordinator_identifier":123})json",
+          base::unexpected(
+              TriggerRegistrationError::kAggregationCoordinatorWrongType),
+      },
+      {
+          "aggregation_coordinator_identifier_invalid_value",
+          R"json({"aggregation_coordinator_identifier":"unknown"})json",
+          base::unexpected(
+              TriggerRegistrationError::kAggregationCoordinatorUnknownValue),
       },
   };
 

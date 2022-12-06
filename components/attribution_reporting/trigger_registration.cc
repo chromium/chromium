@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/aggregation_service/parsing_utils.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/event_trigger_data.h"
@@ -26,6 +27,7 @@ namespace attribution_reporting {
 
 namespace {
 
+using ::aggregation_service::mojom::AggregationCoordinator;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
 // Records the Conversions.AggregatableTriggerDataLength metric.
@@ -40,6 +42,30 @@ void RecordAggregatableTriggerDataPerTrigger(
 
   base::UmaHistogramCounts100("Conversions.AggregatableTriggerDataLength",
                               count);
+}
+
+base::expected<AggregationCoordinator, TriggerRegistrationError>
+ParseAggregationCoordinator(const base::Value* value) {
+  // The default value is used for backward compatibility prior to this
+  // attribute being added, but ideally this would invalidate the registration
+  // if other aggregatable fields were present.
+  if (!value)
+    return AggregationCoordinator::kDefault;
+
+  const std::string* str = value->GetIfString();
+  if (!str) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregationCoordinatorWrongType);
+  }
+
+  absl::optional<AggregationCoordinator> aggregation_coordinator =
+      aggregation_service::ParseAggregationCoordinator(*str);
+  if (!aggregation_coordinator.has_value()) {
+    return base::unexpected(
+        TriggerRegistrationError::kAggregationCoordinatorUnknownValue);
+  }
+
+  return *aggregation_coordinator;
 }
 
 }  // namespace
@@ -80,20 +106,21 @@ TriggerRegistration::Parse(base::Value::Dict registration,
   if (!aggregatable_values.has_value())
     return base::unexpected(aggregatable_values.error());
 
+  auto aggregation_coordinator = ParseAggregationCoordinator(
+      registration.Find("aggregation_coordinator_identifier"));
+  if (!aggregation_coordinator.has_value())
+    return base::unexpected(aggregation_coordinator.error());
+
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
   absl::optional<uint64_t> aggregatable_dedup_key =
       ParseUint64(registration, "aggregatable_deduplication_key");
   bool debug_reporting = ParseDebugReporting(registration);
 
-  // TODO(crbug.com/1394029): Parse aggregation_coordinator_identifier field
-  // from response header.
-
   return TriggerRegistration(
       std::move(reporting_origin), std::move(*filters), std::move(*not_filters),
       debug_key, aggregatable_dedup_key, std::move(*event_triggers),
       std::move(*aggregatable_trigger_data), std::move(*aggregatable_values),
-      debug_reporting,
-      aggregation_service::mojom::AggregationCoordinator::kDefault);
+      debug_reporting, *aggregation_coordinator);
 }
 
 // static

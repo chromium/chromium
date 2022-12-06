@@ -21,6 +21,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
+#include "components/attribution_reporting/aggregatable_trigger_data.h"
+#include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -270,7 +273,10 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                           4, 5, Eq(absl::nullopt), AttributionFilters(),
                           AttributionFilters()))))),
               Optional(123),
-              /*debug_reporting=*/true)),
+              /*debug_reporting=*/true,
+              attribution_reporting::AggregatableTriggerDataList(),
+              attribution_reporting::AggregatableValues(),
+              ::aggregation_service::mojom::AggregationCoordinator::kDefault)),
           destination_origin))));
 
   {

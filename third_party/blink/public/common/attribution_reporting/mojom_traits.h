@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -449,6 +450,12 @@ struct BLINK_COMMON_EXPORT
     return trigger.debug_reporting;
   }
 
+  static aggregation_service::mojom::AggregationCoordinator
+  aggregation_coordinator(
+      const attribution_reporting::TriggerRegistration& trigger) {
+    return trigger.aggregation_coordinator;
+  }
+
   static bool Read(blink::mojom::AttributionTriggerDataDataView data,
                    attribution_reporting::TriggerRegistration* out) {
     if (!data.ReadReportingOrigin(&out->reporting_origin))
@@ -503,6 +510,7 @@ struct BLINK_COMMON_EXPORT
       return false;
 
     out->debug_reporting = data.debug_reporting();
+    out->aggregation_coordinator = data.aggregation_coordinator();
     return true;
   }
 };

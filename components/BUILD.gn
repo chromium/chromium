@@ -111,6 +111,7 @@ test("components_unittests") {
 
   deps = [
     "//base",
+    "//components/aggregation_service:unit_tests",
     "//components/apdu:unit_tests",
     "//components/assist_ranker:unit_tests",
     "//components/attribution_reporting:unit_tests",

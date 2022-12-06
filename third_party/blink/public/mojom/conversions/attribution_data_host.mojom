@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "components/aggregation_service/aggregation_service.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
@@ -161,6 +162,9 @@ struct AttributionTriggerData {
 
   // Specifies whether to enable verbose debug reporting.
   bool debug_reporting = false;
+
+  // Specifies the deployment option for the aggregation service.
+  aggregation_service.mojom.AggregationCoordinator aggregation_coordinator;
 };
 
 struct AttributionOsSource {

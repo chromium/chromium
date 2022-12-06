@@ -1373,7 +1373,9 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
         const attribution_reporting::AggregatableTriggerDataList&>
         aggregatable_trigger_data,
     ::testing::Matcher<const attribution_reporting::AggregatableValues&>
-        aggregatable_values)
+        aggregatable_values,
+    ::testing::Matcher<::aggregation_service::mojom::AggregationCoordinator>
+        aggregation_coordinator)
     : reporting_origin(std::move(reporting_origin)),
       filters(std::move(filters)),
       not_filters(std::move(not_filters)),
@@ -1382,7 +1384,8 @@ TriggerRegistrationMatcherConfig::TriggerRegistrationMatcherConfig(
       aggregatable_dedup_key(std::move(aggregatable_dedup_key)),
       debug_reporting(std::move(debug_reporting)),
       aggregatable_trigger_data(std::move(aggregatable_trigger_data)),
-      aggregatable_values(std::move(aggregatable_values)) {}
+      aggregatable_values(std::move(aggregatable_values)),
+      aggregation_coordinator(std::move(aggregation_coordinator)) {}
 
 TriggerRegistrationMatcherConfig::~TriggerRegistrationMatcherConfig() = default;
 
@@ -1414,7 +1417,11 @@ TriggerRegistrationMatches(const TriggerRegistrationMatcherConfig& cfg) {
             cfg.aggregatable_trigger_data),
       Field("aggregatable_values",
             &attribution_reporting::TriggerRegistration::aggregatable_values,
-            cfg.aggregatable_values));
+            cfg.aggregatable_values),
+      Field(
+          "aggregation_coordinator",
+          &attribution_reporting::TriggerRegistration::aggregation_coordinator,
+          cfg.aggregation_coordinator));
 }
 
 AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
