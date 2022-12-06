@@ -23,12 +23,12 @@ struct MyStruct {
   int (*func_ptr_field)();
   const char* const_char_ptr;
 
-  // Expected rewrite: raw_ref<SomeClass> ref1_;
-  raw_ref<SomeClass> ref1_;
-  // Expected rewrite: raw_ref<SomeClass> ref2_;
-  raw_ref<SomeClass> ref2_;
-  // Expected rewrite: raw_ref<const SomeClass> const_ref_;
-  raw_ref<const SomeClass> const_ref_;
+  // Expected rewrite: const raw_ref<SomeClass> ref1_;
+  const raw_ref<SomeClass> ref1_;
+  // Expected rewrite: const raw_ref<SomeClass> ref2_;
+  const raw_ref<SomeClass> ref2_;
+  // Expected rewrite: const raw_ref<const SomeClass> const_ref_;
+  const raw_ref<const SomeClass> const_ref_;
 };
 
 namespace auto_tests {
@@ -408,7 +408,7 @@ void AffectedFunctionWithDeepT(MyTemplate<T>& blah) {}
 template <typename T>
 struct StructWithPointerToTemplate {
   StructWithPointerToTemplate(MyTemplate<T>& ref) : ref_to_template(ref) {}
-  raw_ref<MyTemplate<T>> ref_to_template;
+  const raw_ref<MyTemplate<T>> ref_to_template;
 };
 
 void foo() {
@@ -597,20 +597,20 @@ namespace affected_implicit_template_specialization_raw_ref_tests {
 
 template <typename T, typename T2>
 struct MyTemplate {
-  raw_ref<T> t_ref;
-  raw_ref<T2> t2_ref;
+  const raw_ref<T> t_ref;
+  const raw_ref<T2> t2_ref;
 
   struct NestedStruct {
-    raw_ref<SomeClass> nested_ref_field;
-    raw_ref<T> nested_t_ref_field;
+    const raw_ref<SomeClass> nested_ref_field;
+    const raw_ref<T> nested_t_ref_field;
   };
   NestedStruct nested_struct_field;
 };
 
 template <typename T3>
 struct MyTemplate<SomeClass, T3> {
-  raw_ref<SomeClass> some_ptr;
-  raw_ref<T3> t3_ptr;
+  const raw_ref<SomeClass> some_ptr;
+  const raw_ref<T3> t3_ptr;
 };
 }  // namespace affected_implicit_template_specialization_raw_ref_tests
 

@@ -3,14 +3,14 @@ include-user-header:::gen-overlapping-actual.cc:::-1:::-1:::base/memory/raw_ptr.
 include-user-header:::gen-overlapping-actual.cc:::-1:::-1:::base/memory/raw_ref.h
 r:::gen-overlapping-actual.cc:::1089:::11:::raw_ptr<SomeClass> 
 r:::gen-overlapping-actual.cc:::1142:::31:::raw_ptr<SomeClass> 
-r:::gen-overlapping-actual.cc:::1334:::11:::raw_ref<SomeClass> 
-r:::gen-overlapping-actual.cc:::1334:::32:::raw_ref<SomeClass> 
-r:::gen-overlapping-actual.cc:::1504:::11:::raw_ref<SomeClass> 
-r:::gen-overlapping-actual.cc:::1557:::31:::raw_ref<SomeClass> 
+r:::gen-overlapping-actual.cc:::1334:::11:::const raw_ref<SomeClass> 
+r:::gen-overlapping-actual.cc:::1334:::32:::const raw_ref<SomeClass> 
+r:::gen-overlapping-actual.cc:::1504:::11:::const raw_ref<SomeClass> 
+r:::gen-overlapping-actual.cc:::1557:::31:::const raw_ref<SomeClass> 
 r:::gen-overlapping-actual.cc:::1810:::54:::raw_ptr<struct NonFreeStandingStruct> 
 r:::gen-overlapping-actual.cc:::2169:::90:::raw_ptr<struct NonFreeStandingStruct2> 
 r:::gen-overlapping-actual.cc:::2205:::11:::raw_ptr<SomeClass> 
-r:::gen-overlapping-actual.cc:::2231:::11:::raw_ref<SomeClass> 
+r:::gen-overlapping-actual.cc:::2231:::11:::const raw_ref<SomeClass> 
 r:::gen-overlapping-actual.cc:::919:::11:::raw_ptr<SomeClass> 
 r:::gen-overlapping-actual.cc:::919:::32:::raw_ptr<SomeClass> 
 ==== END EDITS ====

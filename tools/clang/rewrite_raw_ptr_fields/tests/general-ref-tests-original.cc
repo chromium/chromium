@@ -15,7 +15,7 @@ struct MySubStruct {
 
   struct inner_s {
     inner_s(const inner_s&);
-    // Expected rewrite: raw_ref<int> inner_int;
+    // Expected rewrite: const raw_ref<int> inner_int;
     int& inner_int;
   };
 };
@@ -28,7 +28,7 @@ struct MyStruct {
   MyStruct(MySubStruct& s) : ref(s) {}
 
   const MySubStruct& get() const;
-  // Expected rewrite: raw_ref<MySubStruct> ref;
+  // Expected rewrite: const raw_ref<MySubStruct> ref;
   MySubStruct& ref;
 };
 
@@ -49,7 +49,7 @@ struct MyTemplatedStruct {
   // Expected rewrite: ref->get_member();
   int getInt() { return ref.get_member(); }
 
-  // Expected rewrite: raw_ref<T> ref;
+  // Expected rewrite: const raw_ref<T> ref;
   T& ref;
 };
 

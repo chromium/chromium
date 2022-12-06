@@ -21,7 +21,7 @@ class MyClass {
         NestedStruct(int& n) : ref_field(n) {}
         // Expected rewrite: raw_ptr<int> ptr_field;
         int* ptr_field;
-        // Expected rewrite: raw_ref<int> ref_field;
+        // Expected rewrite: const raw_ref<int> ref_field;
         int& ref_field;
       } var(x);
       var.ptr_field = &x;

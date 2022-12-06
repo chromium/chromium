@@ -11,5 +11,5 @@ struct MyStruct {
   // Rewrite expected - this file is force included in the rewrite using ! in
   // tests/paths-to-ignore.txt file.
   raw_ptr<SomeClass> ptr_field_;
-  raw_ref<SomeClass> ref_field_;
+  const raw_ref<SomeClass> ref_field_;
 };

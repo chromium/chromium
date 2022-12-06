@@ -11,6 +11,6 @@ class MyClass {
   // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field = GetPointer();
   SomeClass* raw_ptr_field = GetPointer();
 
-  // Expected rewrite: raw_ref<SomeClass> raw_ref_field = GetReference();
+  // Expected rewrite: const raw_ref<SomeClass> raw_ref_field = GetReference();
   SomeClass& raw_ref_field = GetReference();
 };

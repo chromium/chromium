@@ -16,8 +16,8 @@ struct MyStruct {
   SomeClass& my_ref_field;
   SomeClass& my_ref_field2;
 
-  // Non-blocklisted - expected rewrite: raw_ref<SomeClass> my_ref_field3;
-  raw_ref<SomeClass> my_ref_field3;
+  // Non-blocklisted - expected rewrite: const raw_ref<SomeClass> my_ref_field3;
+  const raw_ref<SomeClass> my_ref_field3;
   // Non-blocklisted - expected rewrite: raw_ptr<SomeClass> my_ptr_field3;
   raw_ptr<SomeClass> my_ptr_field3;
 };
@@ -30,8 +30,8 @@ class MyTemplate {
   // Blocklisted - no rewrite expected.
   SomeClass& my_ref_field;
 
-  // Non-blocklisted - expected rewrite: raw_ref<SomeClass> my_ref_field2;
-  raw_ref<SomeClass> my_ref_field2;
+  // Non-blocklisted - expected rewrite: const raw_ref<SomeClass> my_ref_field2;
+  const raw_ref<SomeClass> my_ref_field2;
 
   // Non-blocklisted - expected rewrite: raw_ptr<SomeClass> my_ptr_field2;
   raw_ptr<SomeClass> my_ptr_field2;
@@ -47,8 +47,8 @@ struct MyStruct {
   raw_ptr<SomeClass> my_ptr_field;
 
   // Blocklisted in another namespace, but not here.
-  // Expected rewrite: raw_ref<SomeClass> my_ref_field;
-  raw_ref<SomeClass> my_ref_field;
+  // Expected rewrite: const raw_ref<SomeClass> my_ref_field;
+  const raw_ref<SomeClass> my_ref_field;
 };
 
 }  // namespace other_namespace

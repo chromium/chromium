@@ -12,8 +12,8 @@ class MyClass {
   // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field;
   raw_ptr<SomeClass> raw_ptr_field;
 
-  // Expected rewrite: raw_ref<SomeClass> raw_ref_field;
-  raw_ref<SomeClass> raw_ref_field;
+  // Expected rewrite: const raw_ref<SomeClass> raw_ref_field;
+  const raw_ref<SomeClass> raw_ref_field;
 
   // No rewrite expected.
   int int_field;
@@ -25,8 +25,8 @@ struct MyStruct {
   // Expected rewrite: raw_ptr<SomeClass> raw_ptr_field;
   raw_ptr<SomeClass> raw_ptr_field;
 
-  // Expected rewrite: raw_ref<SomeClass> raw_ref_field;
-  raw_ref<SomeClass> raw_ref_field;
+  // Expected rewrite: const raw_ref<SomeClass> raw_ref_field;
+  const raw_ref<SomeClass> raw_ref_field;
 
   // No rewrite expected.
   int int_field;
@@ -44,9 +44,9 @@ struct MyStruct {
   // "clang-format off" is used to make sure |git cl format| won't change this
   // testcase.
   //
-  // Expected rewrite: raw_ref<SomeClass> raw_ref_field;
+  // Expected rewrite: const raw_ref<SomeClass> raw_ref_field;
   // clang-format off
-  raw_ref<SomeClass> raw_ref_field2;
+  const raw_ref<SomeClass> raw_ref_field2;
   // clang-format on
 };
 
@@ -56,8 +56,8 @@ class MyTemplate {
   // Expected rewrite: raw_ptr<T> raw_ptr_field;
   raw_ptr<T> raw_ptr_field;
 
-  // Expected rewrite: raw_ref<T> raw_ref_field;
-  raw_ref<T> raw_ref_field;
+  // Expected rewrite: const raw_ref<T> raw_ref_field;
+  const raw_ref<T> raw_ref_field;
 
   // No rewrite expected.
   int int_field;
@@ -74,6 +74,7 @@ struct DependentNameTest {
   // Expected rewrite: raw_ptr<typename MaybeProvidesType<T>::Type> field;
   raw_ptr<typename MaybeProvidesType<T>::Type> field;
 
-  // Expected rewrite: raw_ref<typename MaybeProvidesType<T>::Type> field2;
-  raw_ref<typename MaybeProvidesType<T>::Type> field2;
+  // Expected rewrite: const raw_ref<typename MaybeProvidesType<T>::Type>
+  // field2;
+  const raw_ref<typename MaybeProvidesType<T>::Type> field2;
 };

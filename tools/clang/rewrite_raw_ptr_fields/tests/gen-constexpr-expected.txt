@@ -4,8 +4,8 @@ include-user-header:::gen-constexpr-actual.cc:::-1:::-1:::base/memory/raw_ref.h
 r:::gen-constexpr-actual.cc:::1105:::5:::raw_ptr<int> 
 r:::gen-constexpr-actual.cc:::1213:::5:::raw_ptr<int> 
 r:::gen-constexpr-actual.cc:::1328:::5:::raw_ptr<int> 
-r:::gen-constexpr-actual.cc:::1551:::5:::raw_ref<int> 
-r:::gen-constexpr-actual.cc:::1659:::5:::raw_ref<int> 
+r:::gen-constexpr-actual.cc:::1551:::5:::const raw_ref<int> 
+r:::gen-constexpr-actual.cc:::1659:::5:::const raw_ref<int> 
 r:::gen-constexpr-actual.cc:::3829:::6:::raw_ptr<void> 
 r:::gen-constexpr-actual.cc:::4092:::12:::raw_ptr<const void> 
 ==== END EDITS ====

@@ -17,8 +17,8 @@ struct MySubStruct {
 
   struct inner_s {
     inner_s(const inner_s&);
-    // Expected rewrite: raw_ref<int> inner_int;
-    raw_ref<int> inner_int;
+    // Expected rewrite: const raw_ref<int> inner_int;
+    const raw_ref<int> inner_int;
   };
 };
 
@@ -30,8 +30,8 @@ struct MyStruct {
   MyStruct(MySubStruct& s) : ref(s) {}
 
   const MySubStruct& get() const;
-  // Expected rewrite: raw_ref<MySubStruct> ref;
-  raw_ref<MySubStruct> ref;
+  // Expected rewrite: const raw_ref<MySubStruct> ref;
+  const raw_ref<MySubStruct> ref;
 };
 
 template <class T>
@@ -51,8 +51,8 @@ struct MyTemplatedStruct {
   // Expected rewrite: ref->get_member();
   int getInt() { return ref->get_member(); }
 
-  // Expected rewrite: raw_ref<T> ref;
-  raw_ref<T> ref;
+  // Expected rewrite: const raw_ref<T> ref;
+  const raw_ref<T> ref;
 };
 
 template <class T>
@@ -128,7 +128,7 @@ struct KeyValueCompare {
   }
 
  private:
-  raw_ref<const key_compare> comp_;
+  const raw_ref<const key_compare> comp_;
 };
 
 struct KeyValueCompare2 {
@@ -142,7 +142,7 @@ struct KeyValueCompare2 {
   }
 
  private:
-  raw_ref<const key_compare> comp_;
+  const raw_ref<const key_compare> comp_;
 };
 
 template <typename T>
@@ -160,5 +160,5 @@ struct VectorMemberRef {
 
   T get_first() { return (*v)[0]; }
 
-  raw_ref<std::vector<T>> v;
+  const raw_ref<std::vector<T>> v;
 };

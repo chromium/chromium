@@ -20,11 +20,11 @@ struct MyStruct {
   int (*func_ptr_field)();
   const char* const_char_ptr;
 
-  // Expected rewrite: raw_ref<SomeClass> ref1_;
+  // Expected rewrite: const raw_ref<SomeClass> ref1_;
   SomeClass& ref1_;
-  // Expected rewrite: raw_ref<SomeClass> ref2_;
+  // Expected rewrite: const raw_ref<SomeClass> ref2_;
   SomeClass& ref2_;
-  // Expected rewrite: raw_ref<const SomeClass> const_ref_;
+  // Expected rewrite: const raw_ref<const SomeClass> const_ref_;
   const SomeClass& const_ref_;
 };
 

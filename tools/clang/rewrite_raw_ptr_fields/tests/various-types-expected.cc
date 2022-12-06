@@ -140,61 +140,61 @@ struct MyStruct {
 };
 
 struct MyStruct2 {
-  // Expected rewrite: raw_ref<bool> bool_ref;
-  raw_ref<bool> bool_ref;
-  // Expected rewrite: raw_ref<const bool> bool_ref;
-  raw_ref<const bool> const_bool_ref;
+  // Expected rewrite: const raw_ref<bool> bool_ref;
+  const raw_ref<bool> bool_ref;
+  // Expected rewrite: const raw_ref<const bool> bool_ref;
+  const raw_ref<const bool> const_bool_ref;
 
-  // Expected rewrite: raw_ref<std::string> string_ref;
-  raw_ref<std::string> string_ref;
-  // Expected rewrite: raw_ref<std::vector<char>> vector_ref;
-  raw_ref<std::vector<char>> vector_ref;
-  // Expected rewrite: raw_ref<SomeTemplate<char>> template_ref;
-  raw_ref<SomeTemplate<char>> template_ref;
+  // Expected rewrite: const raw_ref<std::string> string_ref;
+  const raw_ref<std::string> string_ref;
+  // Expected rewrite: const raw_ref<std::vector<char>> vector_ref;
+  const raw_ref<std::vector<char>> vector_ref;
+  // Expected rewrite: const raw_ref<SomeTemplate<char>> template_ref;
+  const raw_ref<SomeTemplate<char>> template_ref;
 
   // Some types may be spelled in various, alternative ways.  If possible, the
   // rewriter should preserve the original spelling.
   //
   // Spelling of integer types.
   //
-  // Expected rewrite: raw_ref<int> ...
-  raw_ref<int> int_spelling1;
-  // Expected rewrite: raw_ref<signed int> ...
-  // Today this is rewritten into: raw_ref<int> ...
-  raw_ref<int> int_spelling2;
-  // Expected rewrite: raw_ref<long int> ...
-  // Today this is rewritten into: raw_ref<long> ...
-  raw_ref<long> int_spelling3;
-  // Expected rewrite: raw_ref<unsigned> ...
-  // Today this is rewritten into: raw_ref<unsigned int>
-  raw_ref<unsigned int> int_spelling4;
-  // Expected rewrite: raw_ref<int32_t> ...
-  raw_ref<int32_t> int_spelling5;
-  // Expected rewrite: raw_ref<int64_t> ...
-  raw_ref<int64_t> int_spelling6;
-  // Expected rewrite: raw_ref<int_fast32_t> ...
-  raw_ref<int_fast32_t> int_spelling7;
+  // Expected rewrite: const raw_ref<int> ...
+  const raw_ref<int> int_spelling1;
+  // Expected rewrite: const raw_ref<signed int> ...
+  // Today this is rewritten into: const raw_ref<int> ...
+  const raw_ref<int> int_spelling2;
+  // Expected rewrite: const raw_ref<long int> ...
+  // Today this is rewritten into: const raw_ref<long> ...
+  const raw_ref<long> int_spelling3;
+  // Expected rewrite: const raw_ref<unsigned> ...
+  // Today this is rewritten into: const raw_ref<unsigned int>
+  const raw_ref<unsigned int> int_spelling4;
+  // Expected rewrite: const raw_ref<int32_t> ...
+  const raw_ref<int32_t> int_spelling5;
+  // Expected rewrite: const raw_ref<int64_t> ...
+  const raw_ref<int64_t> int_spelling6;
+  // Expected rewrite: const raw_ref<int_fast32_t> ...
+  const raw_ref<int_fast32_t> int_spelling7;
   //
   // Spelling of structs and classes.
   //
-  // Expected rewrite: raw_ref<SomeClass> ...
-  raw_ref<SomeClass> class_spelling1;
-  // Expected rewrite: raw_ref<class SomeClass> ...
-  raw_ref<class SomeClass> class_spelling2;
-  // Expected rewrite: raw_ref<my_namespace::SomeClass> ...
-  raw_ref<my_namespace::SomeClass> class_spelling3;
+  // Expected rewrite: const raw_ref<SomeClass> ...
+  const raw_ref<SomeClass> class_spelling1;
+  // Expected rewrite: const raw_ref<class SomeClass> ...
+  const raw_ref<class SomeClass> class_spelling2;
+  // Expected rewrite: const raw_ref<my_namespace::SomeClass> ...
+  const raw_ref<my_namespace::SomeClass> class_spelling3;
 
   // Typedef-ed or type-aliased pointees should participate in the rewriting. No
   // desugaring of the aliases is expected.
   typedef SomeClass SomeClassTypedef;
   using SomeClassAlias = SomeClass;
   typedef void (*func_ptr_typedef2)(char);
-  // Expected rewrite: raw_ref<SomeClassTypedef> ...
-  raw_ref<SomeClassTypedef> typedef_ref;
-  // Expected rewrite: raw_ref<SomeClassAlias> ...
-  raw_ref<SomeClassAlias> alias_ref;
-  // Expected rewrite: raw_ref<func_ptr_typedef2> ...
-  raw_ref<func_ptr_typedef2> ref_to_function_ptr;
+  // Expected rewrite: const raw_ref<SomeClassTypedef> ...
+  const raw_ref<SomeClassTypedef> typedef_ref;
+  // Expected rewrite: const raw_ref<SomeClassAlias> ...
+  const raw_ref<SomeClassAlias> alias_ref;
+  // Expected rewrite: const raw_ref<func_ptr_typedef2> ...
+  const raw_ref<func_ptr_typedef2> ref_to_function_ptr;
 
   // Typedefs and type alias definitions should not be rewritten.
   //
@@ -206,11 +206,11 @@ struct MyStruct2 {
   // Char pointer fields should be rewritten, unless they are on the
   // --field-filter-file blocklist.
   //
-  // Expected rewrite: raw_ref<char>, etc.
-  raw_ref<char> char_ref;
-  raw_ref<const char> const_char_ref;
-  raw_ref<wchar_t> wide_char_ref;
-  raw_ref<const wchar_t> const_wide_char_ref;
+  // Expected rewrite: const raw_ref<char>, etc.
+  const raw_ref<char> char_ref;
+  const raw_ref<const char> const_char_ref;
+  const raw_ref<wchar_t> wide_char_ref;
+  const raw_ref<const wchar_t> const_wide_char_ref;
 };
 
 extern "C" {

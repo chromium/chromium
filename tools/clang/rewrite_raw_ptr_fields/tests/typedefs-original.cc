@@ -34,8 +34,8 @@ struct MyStruct {
   SomeClassRefTypedef ref_field1;
   SomeClassRefTypeAlias ref_field2;
 
-  // Expected rewrite: raw_ref<SomeClass> ref_field3;
+  // Expected rewrite: const raw_ref<SomeClass> ref_field3;
   SomeClassRefTypedef& ref_field3;
-  // Expected rewrite: raw_ref<SomeClass> ref_field4;
+  // Expected rewrite: const raw_ref<SomeClass> ref_field4;
   SomeClassRefTypeAlias& ref_field4;
 };

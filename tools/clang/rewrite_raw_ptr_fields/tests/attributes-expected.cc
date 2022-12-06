@@ -14,7 +14,7 @@ class MyClass {
   MyClass(SomeClass& s) : ref_field(s), lock(0) {}
   // Expected rewrite: raw_ptr<SomeClass> ptr_field GUARDED_BY(lock);
   raw_ptr<SomeClass> ptr_field GUARDED_BY(lock);
-  // Expected rewrite: raw_ref<SomeClass> ref_field GUARDED_BY(lock);
-  raw_ref<SomeClass> ref_field GUARDED_BY(lock);
+  // Expected rewrite: const raw_ref<SomeClass> ref_field GUARDED_BY(lock);
+  const raw_ref<SomeClass> ref_field GUARDED_BY(lock);
   int lock;
 };

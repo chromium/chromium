@@ -2,19 +2,19 @@
 include-user-header:::gen-global-scope-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
 include-user-header:::gen-global-scope-actual.cc:::-1:::-1:::base/memory/raw_ref.h
 r:::gen-global-scope-actual.cc:::1716:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::1728:::5:::raw_ref<int> 
+r:::gen-global-scope-actual.cc:::1728:::5:::const raw_ref<int> 
 r:::gen-global-scope-actual.cc:::1878:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::1891:::5:::raw_ref<int> 
+r:::gen-global-scope-actual.cc:::1891:::5:::const raw_ref<int> 
 r:::gen-global-scope-actual.cc:::2166:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::2178:::5:::raw_ref<int> 
+r:::gen-global-scope-actual.cc:::2178:::5:::const raw_ref<int> 
 r:::gen-global-scope-actual.cc:::2485:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::2497:::5:::raw_ref<int> 
+r:::gen-global-scope-actual.cc:::2497:::5:::const raw_ref<int> 
 r:::gen-global-scope-actual.cc:::2890:::5:::raw_ptr<int> 
-r:::gen-global-scope-actual.cc:::2903:::5:::raw_ref<int> 
+r:::gen-global-scope-actual.cc:::2903:::5:::const raw_ref<int> 
 r:::gen-global-scope-actual.cc:::3245:::3:::raw_ptr<T> 
 r:::gen-global-scope-actual.cc:::3256:::3:::raw_ptr<T> 
-r:::gen-global-scope-actual.cc:::3268:::3:::raw_ref<T> 
-r:::gen-global-scope-actual.cc:::3279:::3:::raw_ref<T> 
+r:::gen-global-scope-actual.cc:::3268:::3:::const raw_ref<T> 
+r:::gen-global-scope-actual.cc:::3279:::3:::const raw_ref<T> 
 r:::gen-global-scope-actual.cc:::3767:::5:::raw_ptr<int> 
 r:::gen-global-scope-actual.cc:::3909:::10:::raw_ptr<MyStruct> 
 ==== END EDITS ====
