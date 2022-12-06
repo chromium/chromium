@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_METRIC_SAMPLER_H_
 #define CHROME_BROWSER_ASH_POLICY_REPORTING_METRICS_REPORTING_CROS_HEALTHD_METRIC_SAMPLER_H_
 
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/metrics/sampler.h"
 
@@ -14,13 +15,9 @@ namespace reporting {
 // specific probe category and metric type.
 class CrosHealthdMetricSampler : public Sampler {
  public:
-  // MetricType enumerates the potential metric types that can be probed from
-  // healthd.
-  enum class MetricType { kInfo = 0, kTelemetry = 1 };
-
-  explicit CrosHealthdMetricSampler(
-      ash::cros_healthd::mojom::ProbeCategoryEnum probe_category,
-      MetricType metric_type);
+  CrosHealthdMetricSampler(
+      std::unique_ptr<CrosHealthdSamplerHandler> handler,
+      ash::cros_healthd::mojom::ProbeCategoryEnum probe_category);
 
   CrosHealthdMetricSampler(const CrosHealthdMetricSampler&) = delete;
   CrosHealthdMetricSampler& operator=(const CrosHealthdMetricSampler&) = delete;
@@ -31,12 +28,19 @@ class CrosHealthdMetricSampler : public Sampler {
   void MaybeCollect(OptionalMetricCallback callback) override;
 
  private:
+  // OnHealthInfoReceived calls the handling function to transform the result
+  // into MetricData.
+  void OnHealthdInfoReceived(OptionalMetricCallback callback,
+                             cros_healthd::TelemetryInfoPtr result);
+
+  // CrosHealthdSamplerHandler is an interface that can be used to process the
+  // returned result after probing the croshealthd for a particular category.
+  std::unique_ptr<CrosHealthdSamplerHandler> handler_;
+
   // probe_category is the category to probe from the health daemon.
   const ash::cros_healthd::mojom::ProbeCategoryEnum probe_category_;
 
-  // metric_type is the type of data to gather. This is necessary since some
-  // probe categories have both info and telemetry in their result.
-  const MetricType metric_type_;
+  base::WeakPtrFactory<CrosHealthdMetricSampler> weak_ptr_factory_{this};
 };
 }  // namespace reporting
 

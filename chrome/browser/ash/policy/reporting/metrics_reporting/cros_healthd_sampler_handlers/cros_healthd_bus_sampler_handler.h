@@ -18,8 +18,7 @@ namespace cros_healthd = ::ash::cros_healthd::mojom;
 // Bus category.
 class CrosHealthdBusSamplerHandler : public CrosHealthdSamplerHandler {
  public:
-  CrosHealthdBusSamplerHandler(
-      CrosHealthdMetricSampler::MetricType metric_type);
+  explicit CrosHealthdBusSamplerHandler(MetricType metric_type);
 
   CrosHealthdBusSamplerHandler(const CrosHealthdBusSamplerHandler&) = delete;
   CrosHealthdBusSamplerHandler& operator=(const CrosHealthdBusSamplerHandler&) =
@@ -28,13 +27,13 @@ class CrosHealthdBusSamplerHandler : public CrosHealthdSamplerHandler {
   ~CrosHealthdBusSamplerHandler() override;
 
   // HandleResult converts |result_| to MetricData.
-  void HandleResult(cros_healthd::TelemetryInfoPtr result,
-                    OptionalMetricCallback callback) const override;
+  void HandleResult(OptionalMetricCallback callback,
+                    cros_healthd::TelemetryInfoPtr result) const override;
 
  private:
   // Holds the value of the passed in Metric Type to use when processing the
   // |result| parameter.
-  CrosHealthdMetricSampler::MetricType metric_type_;
+  const MetricType metric_type_;
 };
 
 }  // namespace reporting

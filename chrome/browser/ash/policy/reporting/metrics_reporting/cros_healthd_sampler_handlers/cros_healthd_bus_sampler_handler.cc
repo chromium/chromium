@@ -42,14 +42,14 @@ ThunderboltSecurityLevel TranslateThunderboltSecurityLevel(
 }  // namespace
 
 CrosHealthdBusSamplerHandler::CrosHealthdBusSamplerHandler(
-    CrosHealthdMetricSampler::MetricType metric_type)
+    MetricType metric_type)
     : metric_type_(metric_type) {}
 
 CrosHealthdBusSamplerHandler::~CrosHealthdBusSamplerHandler() = default;
 
 void CrosHealthdBusSamplerHandler::HandleResult(
-    cros_healthd::TelemetryInfoPtr result,
-    OptionalMetricCallback callback) const {
+    OptionalMetricCallback callback,
+    cros_healthd::TelemetryInfoPtr result) const {
   absl::optional<MetricData> metric_data;
   const auto& bus_result = result->bus_result;
 
@@ -64,7 +64,7 @@ void CrosHealthdBusSamplerHandler::HandleResult(
       case cros_healthd::BusResult::Tag::kBusDevices: {
         for (const auto& bus_device : bus_result->get_bus_devices()) {
           const auto& bus_info = bus_device->bus_info;
-          if (metric_type_ == CrosHealthdMetricSampler::MetricType::kInfo) {
+          if (metric_type_ == MetricType::kInfo) {
             if (bus_info->is_thunderbolt_bus_info()) {
               if (!metric_data.has_value()) {
                 metric_data = absl::make_optional<MetricData>();
@@ -77,8 +77,7 @@ void CrosHealthdBusSamplerHandler::HandleResult(
                   TranslateThunderboltSecurityLevel(
                       bus_info->get_thunderbolt_bus_info()->security_level));
             }
-          } else if (metric_type_ ==
-                     CrosHealthdMetricSampler::MetricType::kTelemetry) {
+          } else if (metric_type_ == MetricType::kTelemetry) {
             if (bus_info->is_usb_bus_info()) {
               if (!metric_data.has_value()) {
                 metric_data = absl::make_optional<MetricData>();

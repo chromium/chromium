@@ -18,8 +18,8 @@ namespace cros_healthd = ::ash::cros_healthd::mojom;
 CrosHealthdInputSamplerHandler::~CrosHealthdInputSamplerHandler() = default;
 
 void CrosHealthdInputSamplerHandler::HandleResult(
-    cros_healthd::TelemetryInfoPtr result,
-    OptionalMetricCallback callback) const {
+    OptionalMetricCallback callback,
+    cros_healthd::TelemetryInfoPtr result) const {
   absl::optional<MetricData> metric_data;
   const auto& input_result = result->input_result;
 

@@ -27,8 +27,8 @@ class CrosHealthdMemorySamplerHandler : public CrosHealthdSamplerHandler {
   ~CrosHealthdMemorySamplerHandler() override;
 
   // HandleResult converts |result| to MetricData.
-  void HandleResult(cros_healthd::TelemetryInfoPtr result,
-                    OptionalMetricCallback callback) const override;
+  void HandleResult(OptionalMetricCallback callback,
+                    cros_healthd::TelemetryInfoPtr result) const override;
 };
 
 }  // namespace reporting

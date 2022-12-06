@@ -18,14 +18,14 @@ namespace reporting {
 namespace cros_healthd = ::ash::cros_healthd::mojom;
 
 CrosHealthdDisplaySamplerHandler::CrosHealthdDisplaySamplerHandler(
-    CrosHealthdMetricSampler::MetricType metric_type)
+    MetricType metric_type)
     : metric_type_(metric_type) {}
 
 CrosHealthdDisplaySamplerHandler::~CrosHealthdDisplaySamplerHandler() = default;
 
 void CrosHealthdDisplaySamplerHandler::HandleResult(
-    cros_healthd::TelemetryInfoPtr result,
-    OptionalMetricCallback callback) const {
+    OptionalMetricCallback callback,
+    cros_healthd::TelemetryInfoPtr result) const {
   absl::optional<MetricData> metric_data;
   const auto& display_result = result->display_result;
   if (!display_result.is_null()) {
@@ -45,7 +45,7 @@ void CrosHealthdDisplaySamplerHandler::HandleResult(
 
         metric_data = absl::make_optional<MetricData>();
         const auto* const embedded_display_info = display_info->edp_info.get();
-        if (metric_type_ == CrosHealthdMetricSampler::MetricType::kInfo) {
+        if (metric_type_ == MetricType::kInfo) {
           // Gather e-privacy screen info.
           auto* const privacy_screen_info_out =
               metric_data->mutable_info_data()->mutable_privacy_screen_info();
@@ -114,8 +114,7 @@ void CrosHealthdDisplaySamplerHandler::HandleResult(
               }
             }
           }
-        } else if (metric_type_ ==
-                   CrosHealthdMetricSampler::MetricType::kTelemetry) {
+        } else if (metric_type_ == MetricType::kTelemetry) {
           // Gather displays telemetry.
           auto* const internal_dp_out = metric_data->mutable_telemetry_data()
                                             ->mutable_displays_telemetry()

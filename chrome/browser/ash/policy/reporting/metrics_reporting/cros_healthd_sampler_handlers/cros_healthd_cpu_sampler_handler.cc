@@ -18,8 +18,8 @@ namespace cros_healthd = ::ash::cros_healthd::mojom;
 CrosHealthdCpuSamplerHandler::~CrosHealthdCpuSamplerHandler() = default;
 
 void CrosHealthdCpuSamplerHandler::HandleResult(
-    cros_healthd::TelemetryInfoPtr result,
-    OptionalMetricCallback callback) const {
+    OptionalMetricCallback callback,
+    cros_healthd::TelemetryInfoPtr result) const {
   absl::optional<MetricData> metric_data;
   const auto& cpu_result = result->cpu_result;
 

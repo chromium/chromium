@@ -15,6 +15,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
@@ -148,6 +149,7 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void UploadTelemetry();
 
   void CreateCrosHealthdInfoCollector(
+      std::unique_ptr<CrosHealthdSamplerHandler> info_handler,
       ::ash::cros_healthd::mojom::ProbeCategoryEnum probe_category,
       const std::string& setting_path,
       bool default_value);

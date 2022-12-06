@@ -18,8 +18,8 @@ namespace cros_healthd = ::ash::cros_healthd::mojom;
 CrosHealthdAudioSamplerHandler::~CrosHealthdAudioSamplerHandler() = default;
 
 void CrosHealthdAudioSamplerHandler::HandleResult(
-    cros_healthd::TelemetryInfoPtr result,
-    OptionalMetricCallback callback) const {
+    OptionalMetricCallback callback,
+    cros_healthd::TelemetryInfoPtr result) const {
   absl::optional<MetricData> metric_data;
   const auto& audio_result = result->audio_result;
 

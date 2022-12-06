@@ -52,8 +52,8 @@ MemoryEncryptionAlgorithm TranslateMemoryEncryptionAlgorithm(
 CrosHealthdMemorySamplerHandler::~CrosHealthdMemorySamplerHandler() = default;
 
 void CrosHealthdMemorySamplerHandler::HandleResult(
-    cros_healthd::TelemetryInfoPtr result,
-    OptionalMetricCallback callback) const {
+    OptionalMetricCallback callback,
+    cros_healthd::TelemetryInfoPtr result) const {
   absl::optional<MetricData> metric_data;
   const auto& memory_result = result->memory_result;
 

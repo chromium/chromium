@@ -19,8 +19,8 @@ CrosHealthdBootPerformanceSamplerHandler::
     ~CrosHealthdBootPerformanceSamplerHandler() = default;
 
 void CrosHealthdBootPerformanceSamplerHandler::HandleResult(
-    cros_healthd::TelemetryInfoPtr result,
-    OptionalMetricCallback callback) const {
+    OptionalMetricCallback callback,
+    cros_healthd::TelemetryInfoPtr result) const {
   const std::string kShutdownReasonNotApplicable = "N/A";
   absl::optional<MetricData> metric_data;
 

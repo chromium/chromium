@@ -20,6 +20,14 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_audio_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_boot_performance_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_bus_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_cpu_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_display_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_input_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_memory_sampler_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_event_detector.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
@@ -193,22 +201,29 @@ void MetricReportingManager::DelayedInit() {
   }
   // Info collectors init is delayed by default.
   CreateCrosHealthdInfoCollector(
+      std::make_unique<CrosHealthdCpuSamplerHandler>(),
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kCpu,
       ::ash::kReportDeviceCpuInfo,
       /*default_value=*/false);
   CreateCrosHealthdInfoCollector(
+      std::make_unique<CrosHealthdMemorySamplerHandler>(),
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kMemory,
       ::ash::kReportDeviceMemoryInfo,
       /*default_value=*/false);
   CreateCrosHealthdInfoCollector(
+      std::make_unique<CrosHealthdBusSamplerHandler>(
+          CrosHealthdSamplerHandler::MetricType::kInfo),
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBus,
       ::ash::kReportDeviceSecurityStatus,
       /*default_value=*/false);
   CreateCrosHealthdInfoCollector(
+      std::make_unique<CrosHealthdInputSamplerHandler>(),
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kInput,
       ::ash::kReportDeviceGraphicsStatus,
       /*default_value=*/false);
   CreateCrosHealthdInfoCollector(
+      std::make_unique<CrosHealthdDisplaySamplerHandler>(
+          CrosHealthdSamplerHandler::MetricType::kInfo),
       ::ash::cros_healthd::mojom::ProbeCategoryEnum::kDisplay,
       ::ash::kReportDeviceGraphicsStatus,
       /*default_value=*/false);
@@ -222,9 +237,11 @@ void MetricReportingManager::DelayedInit() {
       /*setting_enabled_default_value=*/true);
 
   // Boot performance telemetry collector.
+  auto boot_performance_handler =
+      std::make_unique<CrosHealthdBootPerformanceSamplerHandler>();
   auto boot_performance_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance,
-      CrosHealthdMetricSampler::MetricType::kTelemetry);
+      std::move(boot_performance_handler),
+      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBootPerformance);
   InitOneShotTelemetryCollector(
       /*collector_name=*/kBootPerformance, boot_performance_sampler.get(),
       telemetry_report_queue_.get(),
@@ -383,11 +400,12 @@ void MetricReportingManager::UploadTelemetry() {
 }
 
 void MetricReportingManager::CreateCrosHealthdInfoCollector(
+    std::unique_ptr<CrosHealthdSamplerHandler> info_handler,
     ::ash::cros_healthd::mojom::ProbeCategoryEnum probe_category,
     const std::string& setting_path,
     bool default_value) {
   auto croshealthd_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      probe_category, CrosHealthdMetricSampler::MetricType::kInfo);
+      std::move(info_handler), probe_category);
   InitInfoCollector(std::move(croshealthd_sampler), setting_path,
                     default_value);
 }
@@ -446,9 +464,11 @@ void MetricReportingManager::InitNetworkPeriodicCollector(
 
 void MetricReportingManager::InitAudioCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto audio_telemetry_handler =
+      std::make_unique<CrosHealthdAudioSamplerHandler>();
   auto audio_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kAudio,
-      CrosHealthdMetricSampler::MetricType::kTelemetry);
+      std::move(audio_telemetry_handler),
+      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kAudio);
   InitPeriodicCollector(kAudioTelemetry, audio_telemetry_sampler.get(),
                         user_telemetry_report_queue_.get(),
                         /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
@@ -474,10 +494,13 @@ void MetricReportingManager::InitPeripheralsCollectors() {
       /*collector_pool=*/this));
 
   // Peripheral telemetry
+  auto peripheral_telemetry_handler =
+      std::make_unique<CrosHealthdBusSamplerHandler>(
+          CrosHealthdSamplerHandler::MetricType::kTelemetry);
   auto peripheral_telemetry_sampler =
       std::make_unique<CrosHealthdMetricSampler>(
-          ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBus,
-          CrosHealthdMetricSampler::MetricType::kTelemetry);
+          std::move(peripheral_telemetry_handler),
+          ::ash::cros_healthd::mojom::ProbeCategoryEnum::kBus);
   InitOneShotTelemetryCollector(
       kPeripheralTelemetry, peripheral_telemetry_sampler.get(),
       user_peripheral_events_and_telemetry_report_queue_.get(),
@@ -489,9 +512,12 @@ void MetricReportingManager::InitPeripheralsCollectors() {
 
 void MetricReportingManager::InitDisplayCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto displays_telemetry_handler =
+      std::make_unique<CrosHealthdDisplaySamplerHandler>(
+          CrosHealthdSamplerHandler::MetricType::kTelemetry);
   auto displays_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
-      ash::cros_healthd::mojom::ProbeCategoryEnum::kDisplay,
-      CrosHealthdMetricSampler::MetricType::kTelemetry);
+      std::move(displays_telemetry_handler),
+      ::ash::cros_healthd::mojom::ProbeCategoryEnum::kDisplay);
   InitPeriodicCollector(
       kDisplaysTelemetry, displays_telemetry_sampler.get(),
       telemetry_report_queue_.get(),

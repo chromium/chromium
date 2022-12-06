@@ -18,8 +18,7 @@ namespace cros_healthd = ::ash::cros_healthd::mojom;
 // Display category.
 class CrosHealthdDisplaySamplerHandler : public CrosHealthdSamplerHandler {
  public:
-  CrosHealthdDisplaySamplerHandler(
-      CrosHealthdMetricSampler::MetricType metric_type);
+  explicit CrosHealthdDisplaySamplerHandler(MetricType metric_type);
 
   CrosHealthdDisplaySamplerHandler(const CrosHealthdDisplaySamplerHandler&) =
       delete;
@@ -29,13 +28,13 @@ class CrosHealthdDisplaySamplerHandler : public CrosHealthdSamplerHandler {
   ~CrosHealthdDisplaySamplerHandler() override;
 
   // HandleResult converts |result_| to MetricData.
-  void HandleResult(cros_healthd::TelemetryInfoPtr result,
-                    OptionalMetricCallback callback) const override;
+  void HandleResult(OptionalMetricCallback callback,
+                    cros_healthd::TelemetryInfoPtr result) const override;
 
  private:
   // Holds the value of the passed in Metric Type to use when processing the
   // |result| parameter.
-  CrosHealthdMetricSampler::MetricType metric_type_;
+  const MetricType metric_type_;
 };
 
 }  // namespace reporting

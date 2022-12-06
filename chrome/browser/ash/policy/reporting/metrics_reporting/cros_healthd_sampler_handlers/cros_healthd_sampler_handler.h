@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,16 @@ namespace cros_healthd = ::ash::cros_healthd::mojom;
 // returned result after probing the croshealthd for a particular category.
 class CrosHealthdSamplerHandler {
  public:
+  // MetricType enumerates the potential metric types that can be probed from
+  // healthd.
+  enum class MetricType { kInfo = 0, kTelemetry = 1 };
+
   virtual ~CrosHealthdSamplerHandler() = default;
 
   // Converts |result| to MetricData and passes it to |callback|. This method is
   // used when there's only one possible MetricType for the metric category.
-  virtual void HandleResult(cros_healthd::TelemetryInfoPtr result,
-                            OptionalMetricCallback callback) const = 0;
+  virtual void HandleResult(OptionalMetricCallback callback,
+                            cros_healthd::TelemetryInfoPtr result) const = 0;
 };
 
 }  // namespace reporting
