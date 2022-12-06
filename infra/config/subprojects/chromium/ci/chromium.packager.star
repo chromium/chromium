@@ -156,10 +156,6 @@ ci.builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/build-tools/25.0.2.yaml",
             },
             {
-                "sdk_package_name": "build-tools;31.0.0",
-                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/31.0.0.yaml",
-            },
-            {
                 "sdk_package_name": "build-tools;33.0.0",
                 "cipd_yaml": "third_party/android_sdk/cipd/build-tools/33.0.0.yaml",
             },
@@ -176,12 +172,12 @@ ci.builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/patcher/v4.yaml",
             },
             {
-                "sdk_package_name": "platforms;android-31",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-31.yaml",
-            },
-            {
                 "sdk_package_name": "platforms;android-33",
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-33.yaml",
+            },
+            {
+                "sdk_package_name": "platforms;android-TiramisuPrivacySandbox",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-TiramisuPrivacySandbox.yaml",
             },
             {
                 "sdk_package_name": "platform-tools",
@@ -279,6 +275,10 @@ ci.builder(
             {
                 "sdk_package_name": "system-images;android-33;google_apis_playstore;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-33/google_apis_playstore/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-TiramisuPrivacySandbox;google_apis_playstore;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-TiramisuPrivacySandbox/google_apis_playstore/x86_64.yaml",
             },
         ],
     },
