@@ -18,6 +18,7 @@
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
+
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace {
@@ -269,11 +270,13 @@ FastPairGattServiceClientImpl::GetCharacteristicsByUUIDs(
   if (!gatt_service_)
     return {};
 
+  // Default to V2 device to match Android implementation.
   std::vector<device::BluetoothRemoteGattCharacteristic*> characteristics =
-      gatt_service_->GetCharacteristicsByUUID(uuidV1);
+      gatt_service_->GetCharacteristicsByUUID(uuidV2);
+
   characteristics = characteristics.size()
                         ? characteristics
-                        : gatt_service_->GetCharacteristicsByUUID(uuidV2);
+                        : gatt_service_->GetCharacteristicsByUUID(uuidV1);
   return characteristics;
 }
 
