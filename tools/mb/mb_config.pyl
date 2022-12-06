@@ -4008,8 +4008,7 @@
                   'clang_use_default_sample_profile=false '
                   'media_use_ffmpeg = false'
                   'use_thin_lto=false '  # https://crbug.com/1136963
-                  'enable_resource_allowlist_generation=false '
-                  'enable_jdk_library_desugaring=false'),
+                  'enable_resource_allowlist_generation=false '),
     },
 
     # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py

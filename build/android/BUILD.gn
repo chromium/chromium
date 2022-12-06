@@ -16,13 +16,6 @@ if (enable_java_templates) {
     create_cache = true
   }
 
-  if (enable_jdk_library_desugaring) {
-    dex_jdk_libs("all_jdk_libs") {
-      output = "$target_out_dir/$target_name.l8.dex"
-      min_sdk_version = default_min_sdk_version
-    }
-  }
-
   generate_build_config_srcjar("build_config_gen") {
     use_final_fields = false
   }

@@ -2410,28 +2410,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs',
-              'version': 'version:2@1.1.5.cr1',
-          },
-      ],
-      'condition': 'checkout_android',
-      'dep_type': 'cipd',
-  },
-
-  'src/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration',
-              'version': 'version:2@1.1.5.cr1',
-          },
-      ],
-      'condition': 'checkout_android',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/android_deps/libs/com_android_tools_layoutlib_layoutlib_api': {
       'packages': [
           {

@@ -1908,9 +1908,6 @@ if (enable_java_templates && is_android) {
         # per-target dex steps are emitted here since this is using jar files
         # rather than dex files.
         ignore_desugar_missing_deps = true
-
-        # When trying to build a stand-alone .dex, don't add in jdk_libs_dex.
-        supports_jdk_library_desugaring = false
       } else {
         _rebased_build_config = rebase_path(_build_config, root_build_dir)
         input_dex_filearg =
@@ -3259,14 +3256,6 @@ if (enable_java_templates && is_android) {
         # Need full deps rather than _non_java_deps, because loadable_modules
         # may include .so files extracted by __unpack_aar targets.
         deps = _invoker_deps + [ ":$_build_config_target" ]
-
-        if ((!_proguard_enabled || _incremental_apk) &&
-            enable_jdk_library_desugaring && !_omit_dex) {
-          _all_jdk_libs = "//build/android:all_jdk_libs"
-          deps += [ _all_jdk_libs ]
-          jdk_libs_dex = get_label_info(_all_jdk_libs, "target_out_dir") +
-                         "/all_jdk_libs.l8.dex"
-        }
 
         if (_incremental_apk) {
           _dex_target = "//build/android/incremental_install:apk_dex"
@@ -5068,7 +5057,6 @@ if (enable_java_templates && is_android) {
                                  "is_multi_abi",
                                  "min_sdk_version",
                                  "uncompress_dex",
-                                 "proguard_enabled",
                                ])
         module_name = _module.name
         build_config = _module_build_config

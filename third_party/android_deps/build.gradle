@@ -110,12 +110,6 @@ dependencies {
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'javax.inject:javax.inject:1'
 
-    // Used by R8 to desugar library functions.
-    // See instructions in //third_party/r8/README.chromium for how to
-    // update desugar_jdk_libs.json (needed when changing this version).
-    compile 'com.android.tools:desugar_jdk_libs:1.1.5'
-    compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.5'
-
     compile 'io.grpc:grpc-binder:1.49.0'
     compile 'io.grpc:grpc-protobuf-lite:1.49.0'
     compile 'io.grpc:grpc-stub:1.49.0'

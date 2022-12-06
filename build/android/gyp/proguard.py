@@ -14,7 +14,6 @@ import sys
 import zipfile
 
 import dex
-import dex_jdk_libs
 from util import build_utils
 from util import diff_utils
 
@@ -34,16 +33,10 @@ def _ParseOptions():
   parser.add_argument('--r8-path',
                       required=True,
                       help='Path to the R8.jar to use.')
-  parser.add_argument(
-      '--desugar-jdk-libs-json', help='Path to desugar_jdk_libs.json.')
   parser.add_argument('--input-paths',
                       action='append',
                       required=True,
                       help='GN-list of .jar files to optimize.')
-  parser.add_argument('--desugar-jdk-libs-jar',
-                      help='Path to desugar_jdk_libs.jar.')
-  parser.add_argument('--desugar-jdk-libs-configuration-jar',
-                      help='Path to desugar_jdk_libs_configuration.jar.')
   parser.add_argument('--output-path', help='Path to the generated .jar file.')
   parser.add_argument(
       '--proguard-configs',
@@ -193,18 +186,12 @@ class _SplitContext:
     self.staging_dir = os.path.join(work_dir, name)
     os.mkdir(self.staging_dir)
 
-  def CreateOutput(self, has_imported_lib=False, keep_rule_output=None):
+  def CreateOutput(self):
     found_files = build_utils.FindInDirectory(self.staging_dir)
     if not found_files:
       raise Exception('Missing dex outputs in {}'.format(self.staging_dir))
 
     if self.final_output_path.endswith('.dex'):
-      if has_imported_lib:
-        raise Exception(
-            'Trying to create a single .dex file, but a dependency requires '
-            'JDK Library Desugaring (which necessitates a second file).'
-            'Refer to %s to see what desugaring was required' %
-            keep_rule_output)
       if len(found_files) != 1:
         raise Exception('Expected exactly 1 dex file output, found: {}'.format(
             '\t'.join(found_files)))
@@ -336,14 +323,6 @@ def _OptimizeWithR8(options,
       if not options.warnings_as_errors:
         cmd += ['--map-diagnostics', 'error', 'warning']
 
-    if options.desugar_jdk_libs_json:
-      cmd += [
-          '--desugared-lib',
-          options.desugar_jdk_libs_json,
-          '--desugared-lib-pg-conf-output',
-          options.desugared_library_keep_rule_output,
-      ]
-
     if options.min_api:
       cmd += ['--min-api', options.min_api]
 
@@ -393,39 +372,8 @@ def _OptimizeWithR8(options,
           'https://chromium.googlesource.com/chromium/src/+/HEAD/build/'
           'android/docs/java_optimization.md#Debugging-common-failures') from e
 
-    base_has_imported_lib = False
-    if options.desugar_jdk_libs_json:
-      logging.debug('Running L8')
-      existing_files = build_utils.FindInDirectory(base_context.staging_dir)
-      jdk_dex_output = os.path.join(base_context.staging_dir,
-                                    'classes%d.dex' % (len(existing_files) + 1))
-      # Use -applymapping to avoid name collisions.
-      l8_dynamic_config_path = os.path.join(tmp_dir, 'l8_dynamic_config.flags')
-      with open(l8_dynamic_config_path, 'w') as f:
-        f.write("-applymapping '{}'\n".format(tmp_mapping_path))
-      # Pass the dynamic config so that obfuscation options are picked up.
-      l8_config_paths = [dynamic_config_path, l8_dynamic_config_path]
-      if os.path.exists(options.desugared_library_keep_rule_output):
-        l8_config_paths.append(options.desugared_library_keep_rule_output)
-
-      base_has_imported_lib = dex_jdk_libs.DexJdkLibJar(
-          options.r8_path, options.min_api, options.desugar_jdk_libs_json,
-          options.desugar_jdk_libs_jar,
-          options.desugar_jdk_libs_configuration_jar, jdk_dex_output,
-          options.warnings_as_errors, l8_config_paths)
-      if int(options.min_api) >= 24 and base_has_imported_lib:
-        with open(jdk_dex_output, 'rb') as f:
-          dexfile = dex_parser.DexFile(bytearray(f.read()))
-          for m in dexfile.IterMethodSignatureParts():
-            print('{}#{}'.format(m[0], m[2]))
-        assert False, (
-            'Desugared JDK libs are disabled on Monochrome and newer - see '
-            'crbug.com/1159984 for details, and see above list for desugared '
-            'classes and methods.')
-
     logging.debug('Collecting ouputs')
-    base_context.CreateOutput(base_has_imported_lib,
-                              options.desugared_library_keep_rule_output)
+    base_context.CreateOutput()
     for split_context in split_contexts_by_name.values():
       if split_context is not base_context:
         split_context.CreateOutput()

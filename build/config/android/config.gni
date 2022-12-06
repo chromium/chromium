@@ -286,10 +286,6 @@ if (is_android || is_chromeos) {
     # Enables JNI multiplexing to reduce JNI native methods overhead.
     enable_jni_multiplexing = false
 
-    # Enables Java library desugaring.
-    # This will cause an extra classes.dex file to appear in every apk.
-    enable_jdk_library_desugaring = true
-
     # Enables trace event injection on Android views with bytecode rewriting.
     # This adds an additional step on android_app_bundle_module targets that
     # adds trace events to some methods in android.view.View subclasses.

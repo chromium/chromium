@@ -6,7 +6,6 @@
 ../pylib/dex/__init__.py
 ../pylib/dex/dex_parser.py
 dex.py
-dex_jdk_libs.py
 proguard.py
 util/__init__.py
 util/build_utils.py

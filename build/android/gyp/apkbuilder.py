@@ -55,9 +55,6 @@ def _ParseArgs(args):
                       default='apk', help='Specify output format.')
   parser.add_argument('--dex-file',
                       help='Path to the classes.dex to use')
-  parser.add_argument(
-      '--jdk-libs-dex-file',
-      help='Path to classes.dex created by dex_jdk_libs.py')
   parser.add_argument('--uncompress-dex', action='store_true',
                       help='Store .dex files uncompressed in the APK')
   parser.add_argument('--native-libs',
@@ -445,13 +442,6 @@ def main(args):
                     apk_dex_dir + dex,
                     dex_zip.read(dex),
                     compress=not options.uncompress_dex)
-
-      if options.jdk_libs_dex_file:
-        with open(options.jdk_libs_dex_file, 'rb') as dex_file_obj:
-          add_to_zip(
-              apk_dex_dir + 'classes{}.dex'.format(max_dex_number + 1),
-              dex_file_obj.read(),
-              compress=not options.uncompress_dex)
 
       # 4. Native libraries.
       logging.debug('Adding lib/')

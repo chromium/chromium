@@ -38,8 +38,6 @@
     "libs/com_android_support_versionedparcelable",
     "libs/com_android_support_viewpager",
     "libs/com_android_tools_common",
-    "libs/com_android_tools_desugar_jdk_libs",
-    "libs/com_android_tools_desugar_jdk_libs_configuration",
     "libs/com_android_tools_layoutlib_layoutlib_api",
     "libs/com_android_tools_sdk_common",
     "libs/com_github_ben_manes_caffeine_caffeine",

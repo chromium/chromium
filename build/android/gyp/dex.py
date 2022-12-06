@@ -105,8 +105,6 @@ def _ParseArgs(args):
       '--bootclasspath',
       action='append',
       help='GN-list of bootclasspath. Needed for --desugar')
-  parser.add_argument(
-      '--desugar-jdk-libs-json', help='Path to desugar_jdk_libs.json.')
   parser.add_argument('--show-desugar-default-interface-warnings',
                       action='store_true',
                       help='Enable desugaring warnings.')
@@ -509,9 +507,6 @@ def main(args):
     input_paths += options.bootclasspath
 
 
-  if options.desugar_jdk_libs_json:
-    dex_cmd += ['--desugared-lib', options.desugar_jdk_libs_json]
-    input_paths += [options.desugar_jdk_libs_json]
   if options.assertion_handler:
     dex_cmd += ['--force-assertions-handler:' + options.assertion_handler]
   if options.force_enable_assertions:

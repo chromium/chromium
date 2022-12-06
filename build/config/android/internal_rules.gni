@@ -98,9 +98,6 @@ _r8_path = "//third_party/r8/lib/r8.jar"
 # and unnecessarily slows down all bots.
 _d8_path = "//third_party/r8/d8/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
-_desugar_jdk_libs_json = "//third_party/r8/desugar_jdk_libs.json"
-_desugar_jdk_libs_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs/desugar_jdk_libs-1.1.5.jar"
-_desugar_jdk_libs_configuration_jar = "//third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/desugar_jdk_libs_configuration-1.1.5.jar"
 _robolectric_jar_path =
     "//third_party/robolectric/lib/android-all-12-robolectric-7732740.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/lint.jar"
@@ -1165,12 +1162,6 @@ if (enable_java_templates) {
       _mapping_path = "${invoker.output_path}.mapping"
     }
 
-    _enable_jdk_library_desugaring = enable_jdk_library_desugaring
-    if (defined(invoker.supports_jdk_library_desugaring) &&
-        !invoker.supports_jdk_library_desugaring) {
-      _enable_jdk_library_desugaring = false
-    }
-
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
     _args = [
       "--mapping-output",
@@ -1254,31 +1245,6 @@ if (enable_java_templates) {
       _args += [ "--disable-checks" ]
     }
 
-    if (_enable_jdk_library_desugaring) {
-      _args += [
-        "--desugar-jdk-libs-json",
-        rebase_path(_desugar_jdk_libs_json, root_build_dir),
-      ]
-      _inputs += [ _desugar_jdk_libs_json ]
-
-      _args += [
-        "--desugar-jdk-libs-jar",
-        rebase_path(_desugar_jdk_libs_jar, root_build_dir),
-        "--desugar-jdk-libs-configuration-jar",
-        rebase_path(_desugar_jdk_libs_configuration_jar, root_build_dir),
-      ]
-      _inputs += [
-        _desugar_jdk_libs_jar,
-        _desugar_jdk_libs_configuration_jar,
-      ]
-
-      _desugared_library_keep_rule_output_path =
-          "$target_gen_dir/$target_name.desugared_library_keep_rules.flags"
-      _args += [
-        "--desugared-library-keep-rule-output",
-        rebase_path(_desugared_library_keep_rule_output_path, root_build_dir),
-      ]
-    }
     _ignore_desugar_missing_deps =
         defined(invoker.ignore_desugar_missing_deps) &&
         invoker.ignore_desugar_missing_deps
@@ -1510,7 +1476,6 @@ if (enable_java_templates) {
                                      "proguard_enable_obfuscation",
                                      "proguard_mapping_path",
                                      "proguard_sourcefile_suffix",
-                                     "supports_jdk_library_desugaring",
                                      "top_target_name",
                                    ])
         inputs = []
@@ -1677,14 +1642,6 @@ if (enable_java_templates) {
         if (_enable_desugar) {
           args += [ "--desugar" ]
 
-          # Passing the flag for dex merging causes invalid dex files to be created.
-          if (enable_jdk_library_desugaring && !_is_dex_merging) {
-            inputs += [ _desugar_jdk_libs_json ]
-            args += [
-              "--desugar-jdk-libs-json",
-              rebase_path(_desugar_jdk_libs_json, root_build_dir),
-            ]
-          }
           _ignore_desugar_missing_deps =
               defined(invoker.ignore_desugar_missing_deps) &&
               invoker.ignore_desugar_missing_deps
@@ -1741,38 +1698,6 @@ if (enable_java_templates) {
           # --force-disable-assertions.
           args += [ "--force-enable-assertions" ]
         }
-      }
-    }
-  }
-
-  # Variables
-  #   output: Path to output ".l8.dex".
-  #   min_sdk_version: The minimum Android SDK version this target supports.
-  template("dex_jdk_libs") {
-    action_with_pydeps(target_name) {
-      script = "//build/android/gyp/dex_jdk_libs.py"
-      inputs = [
-        _r8_path,
-        _desugar_jdk_libs_json,
-        _desugar_jdk_libs_jar,
-        _desugar_jdk_libs_configuration_jar,
-      ]
-      outputs = [ invoker.output ]
-      args = [
-        "--r8-path",
-        rebase_path(_r8_path, root_build_dir),
-        "--desugar-jdk-libs-json",
-        rebase_path(_desugar_jdk_libs_json, root_build_dir),
-        "--desugar-jdk-libs-jar",
-        rebase_path(_desugar_jdk_libs_jar, root_build_dir),
-        "--desugar-jdk-libs-configuration-jar",
-        rebase_path(_desugar_jdk_libs_configuration_jar, root_build_dir),
-        "--output",
-        rebase_path(invoker.output, root_build_dir),
-        "--min-api=${invoker.min_sdk_version}",
-      ]
-      if (treat_warnings_as_errors) {
-        args += [ "--warnings-as-errors" ]
       }
     }
   }
@@ -2683,7 +2608,6 @@ if (enable_java_templates) {
   #     and assets is consistent with the given expectation file.
   #   expected_libs_and_assets_base: Treat expected_libs_and_assets as a diff
   #     with this file as the base.
-  #   jdk_libs_dex: Path to classes.dex for desugar_jdk_libs.
   #   packaged_resources_path: Path to .ap_ to use.
   #   output_apk_path: Output path for the generated .apk.
   #   min_sdk_version: The minimum Android SDK version this target supports.
@@ -2790,13 +2714,6 @@ if (enable_java_templates) {
       _args += [
         "--dex-file",
         rebase_path(invoker.dex_path, root_build_dir),
-      ]
-    }
-    if (defined(invoker.jdk_libs_dex)) {
-      _inputs += [ invoker.jdk_libs_dex ]
-      _args += [
-        "--jdk-libs-dex-file",
-        rebase_path(invoker.jdk_libs_dex, root_build_dir),
       ]
     }
     if ((defined(invoker.loadable_modules) && invoker.loadable_modules != []) ||
@@ -4155,8 +4072,6 @@ template("create_android_app_bundle_module") {
   _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
   _rebased_native_libraries_config =
       rebase_path(invoker.native_libraries_config, root_build_dir)
-  _proguard_enabled =
-      defined(invoker.proguard_enabled) && invoker.proguard_enabled
 
   forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _deps = invoker.deps
@@ -4218,20 +4133,6 @@ template("create_android_app_bundle_module") {
     _args += [ "--dex-file=$_rebased_dex_path" ]
   } else {
     _args += [ "--dex-file=@FileArg($_rebased_build_config:final_dex:path)" ]
-  }
-
-  # The library is imported via proguard when proguard is enabled.
-  if (!_proguard_enabled && enable_jdk_library_desugaring &&
-      invoker.module_name == "base") {
-    _all_jdk_libs = "//build/android:all_jdk_libs"
-    _deps += [ _all_jdk_libs ]
-    _jdk_libs_dex =
-        get_label_info(_all_jdk_libs, "target_out_dir") + "/all_jdk_libs.l8.dex"
-    _inputs += [ _jdk_libs_dex ]
-    _args += [
-      "--jdk-libs-dex-file",
-      rebase_path(_jdk_libs_dex, root_build_dir),
-    ]
   }
 
   if (treat_warnings_as_errors) {
