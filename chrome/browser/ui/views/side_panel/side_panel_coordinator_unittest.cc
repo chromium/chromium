@@ -119,19 +119,6 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     return coordinator_->header_combobox_ != nullptr;
   }
 
-  void SetBrowserViewWidth(const int width) {
-    // If browser window is maximized then explicitly restore it, as otherwise
-    // the SetBounds call would be a no-op.
-    // TODO(crbug.com/1393153): Fix this on lacros builds and remove buildflag.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (browser_view()->IsMaximized())
-      browser_view()->Restore();
-#endif
-
-    browser_view()->SetBounds(
-        gfx::Rect(width, browser_view()->GetBounds().height()));
-  }
-
  protected:
   raw_ptr<SidePanelCoordinator> coordinator_;
   raw_ptr<SidePanelRegistry> global_registry_;
@@ -155,22 +142,8 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
   // Set side panel to right-aligned
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, true);
-
-  // The side panel can only be widened when the browser main web contents width
-  // is greater than |BrowserViewLayout::kMainBrowserContentsMinimumWidth|,
-  // which is 500. Therefore the side panel can only be widened when the total
-  // browser view width is greater than the minimum side panel contents width +
-  // 500. The browser view maximum width is constrained by the display maximum,
-  // which is 800 on win32 and ChromeOS.
-  // Therefore, we set the browser view width to be 800 and we reduce the side
-  // panel width to 100 so that it can be widened and shrunk.
-  SetBrowserViewWidth(800);
-  browser_view()
-      ->unified_side_panel()
-      ->SetMinimumSidePanelContentsWidthForTesting(100);
-
   coordinator_->Toggle();
-  const int starting_width = 200;
+  const int starting_width = 500;
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
   views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
@@ -195,21 +168,8 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
-  // The side panel can only be widened when the browser main web contents width
-  // is greater than |BrowserViewLayout::kMainBrowserContentsMinimumWidth|,
-  // which is 500. Therefore the side panel can only be widened when the total
-  // browser view width is greater than the minimum side panel contents width +
-  // 500. The browser view maximum width is constrained by the display maximum,
-  // which is 800 on win32 and ChromeOS.
-  // Therefore, we set the browser view width to be 800 and we reduce the side
-  // panel width to 100 so that it can be widened and shrunk.
-  SetBrowserViewWidth(800);
-  browser_view()
-      ->unified_side_panel()
-      ->SetMinimumSidePanelContentsWidthForTesting(100);
-
   coordinator_->Toggle();
-  const int starting_width = 200;
+  const int starting_width = 500;
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
   views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
@@ -224,32 +184,22 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
 
   browser_view()->unified_side_panel()->OnResize(-large_increment, true);
   views::test::RunScheduledLayout(browser_view());
-  EXPECT_GT(browser_view()->unified_side_panel()->width(), starting_width);
+  BrowserViewLayout* layout_manager =
+      static_cast<BrowserViewLayout*>(browser_view()->GetLayoutManager());
+  const int min_web_contents_width =
+      layout_manager->GetMinWebContentsWidthForTesting();
   EXPECT_EQ(browser_view()->contents_web_view()->width(),
-            BrowserViewLayout::kMainBrowserContentsMinimumWidth);
+            min_web_contents_width);
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
-  // The side panel can only be widened when the browser main web contents width
-  // is greater than |BrowserViewLayout::kMainBrowserContentsMinimumWidth|,
-  // which is 500. Therefore the side panel can only be widened when the total
-  // browser view width is greater than the minimum side panel contents width +
-  // 500. The browser view maximum width is constrained by the display maximum,
-  // which is 800 on win32 and ChromeOS.
-  // Therefore, we set the browser view width to be 800 and we reduce the side
-  // panel width to 100 so that it can be widened and shrunk.
-  SetBrowserViewWidth(800);
-  browser_view()
-      ->unified_side_panel()
-      ->SetMinimumSidePanelContentsWidthForTesting(100);
-
   // Set side panel to right-aligned
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, true);
   // Set UI direction to LTR
   base::i18n::SetRTLForTesting(false);
   coordinator_->Toggle();
-  const int starting_width = 200;
+  const int starting_width = 500;
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
   views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
@@ -273,31 +223,25 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthRTL) {
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthWindowResize) {
-  // The side panel can only be widened when the browser main web contents width
-  // is greater than |BrowserViewLayout::kMainBrowserContentsMinimumWidth|,
-  // which is 500. Therefore the side panel can only be widened when the total
-  // browser view width is greater than the minimum side panel contents width +
-  // 500. The browser view maximum width is constrained by the display maximum,
-  // which is 800 on win32 and ChromeOS.
-  // Therefore, we set the browser view width to be 800 and we reduce the side
-  // panel width to 100 so that it can be widened and shrunk.
-  SetBrowserViewWidth(800);
-  browser_view()
-      ->unified_side_panel()
-      ->SetMinimumSidePanelContentsWidthForTesting(100);
-
   coordinator_->Toggle();
-  const int starting_width = 200;
+  const int starting_width = 500;
   browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
   views::test::RunScheduledLayout(browser_view());
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
 
   // Shrink browser window enough that side panel should also shrink in
   // observance of web contents minimum width.
-  const int original_width = browser_view()->GetBounds().width();
-  SetBrowserViewWidth(starting_width);
-  EXPECT_EQ(browser_view()->unified_side_panel()->width(),
-            browser_view()->unified_side_panel()->GetMinimumSize().width());
+  gfx::Rect original_bounds(browser_view()->GetBounds());
+  gfx::Size new_size(starting_width, starting_width);
+  gfx::Rect new_bounds(original_bounds);
+  new_bounds.set_size(new_size);
+  // Explicitly restore the browser window on ChromeOS, as it would otherwise
+  // be maximized and the SetBounds call would be a no-op.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  browser_view()->Restore();
+#endif
+  browser_view()->SetBounds(new_bounds);
+  EXPECT_LT(browser_view()->unified_side_panel()->width(), starting_width);
   BrowserViewLayout* layout_manager =
       static_cast<BrowserViewLayout*>(browser_view()->GetLayoutManager());
   const int min_web_contents_width =
@@ -307,41 +251,8 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthWindowResize) {
 
   // Return browser window to original size, side panel should also return to
   // size prior to window resize.
-  SetBrowserViewWidth(original_width);
+  browser_view()->SetBounds(original_bounds);
   EXPECT_EQ(browser_view()->unified_side_panel()->width(), starting_width);
-}
-
-TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthSmallWindow) {
-  SetBrowserViewWidth(500);
-  browser_view()
-      ->unified_side_panel()
-      ->SetMinimumSidePanelContentsWidthForTesting(100);
-  coordinator_->Toggle();
-  const int starting_width = 200;
-  const int min_side_panel_width =
-      browser_view()->unified_side_panel()->GetMinimumSize().width();
-  browser_view()->unified_side_panel()->SetPanelWidth(starting_width);
-  views::test::RunScheduledLayout(browser_view());
-  EXPECT_EQ(browser_view()->unified_side_panel()->width(),
-            min_side_panel_width);
-
-  // Attempt to resize the side panel, side panel should not be able to resized.
-  const int increment = 50;
-  browser_view()->unified_side_panel()->OnResize(increment, true);
-  views::test::RunScheduledLayout(browser_view());
-  EXPECT_EQ(browser_view()->unified_side_panel()->width(),
-            min_side_panel_width);
-
-  browser_view()->unified_side_panel()->OnResize(-increment, true);
-  views::test::RunScheduledLayout(browser_view());
-  EXPECT_EQ(browser_view()->unified_side_panel()->width(),
-            min_side_panel_width);
-  BrowserViewLayout* layout_manager =
-      static_cast<BrowserViewLayout*>(browser_view()->GetLayoutManager());
-  const int min_web_contents_width =
-      layout_manager->GetMinWebContentsWidthForTesting();
-  EXPECT_EQ(browser_view()->contents_web_view()->width(),
-            min_web_contents_width);
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
