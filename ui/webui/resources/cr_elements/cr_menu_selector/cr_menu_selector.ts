@@ -98,4 +98,10 @@ export class CrMenuSelector extends CrMenuSelectorBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-menu-selector': CrMenuSelector;
+  }
+}
+
 customElements.define(CrMenuSelector.is, CrMenuSelector);
