@@ -8143,8 +8143,6 @@ crbug.com/1376986 [ Linux ] virtual/compute-pressure/external/wpt/compute-pressu
 crbug.com/1392077 external/wpt/screen-orientation/orientation-reading.html [ Failure Timeout ]
 
 # Sheriff 2022-11-23
-crbug.com/1393013 [ Win11 ] http/tests/persistent-origin-trials/critical-origin-trial.https.php [ Failure Pass ]
-crbug.com/1393013 [ Win11 ] http/tests/persistent-origin-trials/window-origin-trial.https.php [ Failure Pass ]
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/182.html [ Failure Pass ]
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/23-55.html [ Failure Pass ]
 crbug.com/1393067 [ Mac ] virtual/gpu-rasterization/images/55.html [ Failure Pass ]
