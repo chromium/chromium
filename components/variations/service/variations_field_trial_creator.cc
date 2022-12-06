@@ -101,6 +101,7 @@ void RecordSeedFreshness(base::TimeDelta seed_age) {
 
 // Records details about Chrome's attempt to apply a variations seed.
 void RecordVariationsSeedUsage(SeedUsage usage) {
+  VLOG(1) << "VariationsSeedUsage:" << static_cast<int>(usage);
   base::UmaHistogramEnumeration("Variations.SeedUsage", usage);
 }
 
@@ -331,6 +332,8 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   // This must be called after |local_state_| is initialized.
   platform_field_trials->OnVariationsSetupComplete();
 
+  VLOG(1) << "VariationsSetupComplete";
+
   return used_seed;
 }
 
@@ -524,6 +527,7 @@ Study::FormFactor VariationsFieldTrialCreator::GetCurrentFormFactor() {
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
 void VariationsFieldTrialCreator::ApplyFieldTrialTestingConfig(
     base::FeatureList* feature_list) {
+  VLOG(1) << "Applying FieldTrialTestingConfig";
   // Note that passing base::Unretained(this) below is safe because the callback
   // is executed synchronously.
   AssociateDefaultFieldTrialConfig(
@@ -615,22 +619,7 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
       run_in_safe_mode
           ? GetSeedStore()->LoadSafeSeed(&seed, client_filterable_state.get())
           : GetSeedStore()->LoadSeed(&seed, &seed_data, &base64_seed_signature);
-  if (seed_loaded) {
-    if (HasSeedExpired(/*is_safe_seed=*/run_in_safe_mode)) {
-      RecordVariationsSeedUsage(run_in_safe_mode
-                                    ? SeedUsage::kExpiredSafeSeedNotUsed
-                                    : SeedUsage::kExpiredRegularSeedNotUsed);
-      return false;
-    }
-    if (IsSeedForFutureMilestone(/*is_safe_seed=*/run_in_safe_mode)) {
-      RecordVariationsSeedUsage(
-          run_in_safe_mode ? SeedUsage::kSafeSeedForFutureMilestoneNotUsed
-                           : SeedUsage::kRegularSeedForFutureMilestoneNotUsed);
-      return false;
-    }
-    RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
-                                               : SeedUsage::kRegularSeedUsed);
-  } else {
+  if (!seed_loaded) {
     // If Chrome should run in safe mode but the safe seed was not successfully
     // loaded, then do not apply a seed. Fall back to client-side defaults.
     RecordVariationsSeedUsage(run_in_safe_mode
@@ -638,6 +627,20 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
                                   : SeedUsage::kUnloadableRegularSeedNotUsed);
     return false;
   }
+  if (HasSeedExpired(/*is_safe_seed=*/run_in_safe_mode)) {
+    RecordVariationsSeedUsage(run_in_safe_mode
+                                  ? SeedUsage::kExpiredSafeSeedNotUsed
+                                  : SeedUsage::kExpiredRegularSeedNotUsed);
+    return false;
+  }
+  if (IsSeedForFutureMilestone(/*is_safe_seed=*/run_in_safe_mode)) {
+    RecordVariationsSeedUsage(
+        run_in_safe_mode ? SeedUsage::kSafeSeedForFutureMilestoneNotUsed
+                         : SeedUsage::kRegularSeedForFutureMilestoneNotUsed);
+    return false;
+  }
+  RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
+                                             : SeedUsage::kRegularSeedUsed);
 
   // Note that passing base::Unretained(this) below is safe because the callback
   // is executed synchronously. It is not possible to pass UIStringOverrider
@@ -649,6 +652,9 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
       base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
                           base::Unretained(this)),
       entropy_providers, feature_list);
+
+  VLOG(1) << "CreateTrialsFromSeed complete with "
+          << "seed.version='" << seed.version() << "'";
 
   // Store into the |safe_seed_manager| the combined server and client data used
   // to create the field trials. But, as an optimization, skip this step when
@@ -669,6 +675,7 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
 
 void VariationsFieldTrialCreator::LoadSeedFromFile(
     const base::FilePath& seed_path) {
+  VLOG(1) << "Loading seed from file:" << seed_path;
   JSONFileValueDeserializer file_deserializer(seed_path);
   int error_code;
   std::string error_message;
