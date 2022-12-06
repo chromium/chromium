@@ -591,7 +591,7 @@ installer::InstallStatus RenameChromeExecutables(
 
   if (!installer_state->system_install()) {
     install_list->AddDeleteRegValueWorkItem(
-        reg_root, clients_key, KEY_WOW64_32KEY, installer::kRegLegacyRenameCmd);
+        reg_root, clients_key, KEY_WOW64_32KEY, installer::kCmdRenameChromeExe);
   }
 
   // If a channel was specified by policy, update the "channel" registry value

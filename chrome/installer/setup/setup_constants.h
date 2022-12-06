@@ -35,11 +35,6 @@ extern const char kBsdiff[];
 extern const char kZucchini[];
 #endif  // BUILDFLAG(ZUCCHINI)
 
-// Older versions of User Chrome still look for the rename command line REG_SZ
-// "cmd" under the path "Software\Google\Update\Clients\<guid>" where "<guid>"
-// is the current install mode's appguid.
-extern const wchar_t kRegLegacyRenameCmd[];
-
 namespace switches {
 
 extern const char kSetDisplayVersionProduct[];
