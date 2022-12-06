@@ -90,7 +90,7 @@ void BluetoothSocketFloss::Listen(
     return;
   }
 
-  if (socket_type != FlossSocketManager::SocketType::kL2capLe &&
+  if (socket_type != FlossSocketManager::SocketType::kL2cap &&
       socket_type != FlossSocketManager::SocketType::kRfcomm) {
     std::move(error_callback).Run(kInvalidSocketType);
     return;
@@ -110,7 +110,7 @@ void BluetoothSocketFloss::Listen(
       base::BindRepeating(&BluetoothSocketFloss::DoConnectionAccepted,
                           weak_ptr_factory_.GetWeakPtr());
 
-  if (socket_type == FlossSocketManager::SocketType::kL2capLe) {
+  if (socket_type == FlossSocketManager::SocketType::kL2cap) {
     FlossDBusManager::Get()->GetSocketManager()->ListenUsingL2cap(
         security, std::move(callback), state_change, accepted);
   } else if (socket_type == FlossSocketManager::SocketType::kRfcomm) {
