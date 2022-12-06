@@ -38,6 +38,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/test/ax_event_counter.h"
 
 namespace {
 
@@ -218,6 +219,66 @@ IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
 
   view_->AcceptDialog();
   WaitForSetupToFinish();
+
+  CheckSetupIsFinishedSuccessfully();
+}
+
+IN_PROC_BROWSER_TEST_F(PluginVmInstallerViewBrowserTestWithFeatureEnabled,
+                       SetupShouldFireAccessibilityEvents) {
+  views::test::AXEventCounter counter(views::AXEventManager::Get());
+
+  AllowPluginVm();
+  plugin_vm::SetupConciergeForSuccessfulDiskImageImport(fake_concierge_client_);
+  ShowUi("default");
+  EXPECT_NE(nullptr, view_);
+
+  auto* title_view = view_->GetTitleViewForTesting();
+  EXPECT_NE(nullptr, title_view);
+
+  auto* message_view = view_->GetMessageViewForTesting();
+  EXPECT_NE(nullptr, message_view);
+
+  auto* progress_view = view_->GetDownloadProgressMessageViewForTesting();
+  EXPECT_NE(nullptr, progress_view);
+
+  // The message and title labels should each have fired an accessibility event
+  // as a result of the introductory/set-up text being displayed. Because the
+  // download has not started, there should be no event from the download
+  // progress label.
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, title_view));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, message_view));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, progress_view));
+
+  counter.ResetAllCounts();
+  view_->AcceptDialog();
+
+  // Once the installation has been accepted, the message and title labels are
+  // changed to indicate the installation has begun. Each label should have
+  // fired an accessibility event for this change. Because the download has not
+  // started, there should be no event from the download progress label.
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, title_view));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, message_view));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, progress_view));
+
+  counter.ResetAllCounts();
+  WaitForSetupToFinish();
+
+  // During the installation process, the title remains the same until the
+  // installation is complete. There should be an accessibility event for the
+  // title changing to the setup-complete text.
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, title_view));
+
+  // During the installation process, the message changes three times:
+  // downloading, configuring, ready to use. Each time there should be an
+  // accessibility event for the change.
+  EXPECT_EQ(3, counter.GetCount(ax::mojom::Event::kTextChanged, message_view));
+
+  // During the download process, there are periodic updates showing the
+  // amount downloaded thus far. There are six such updates in this test:
+  // the first "0 GB" and the next five "0.0 GB". Each time the text changes,
+  // there should be an accessibility event for the change. Since the text
+  // changed twice, there should be two updates.
+  EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged, progress_view));
 
   CheckSetupIsFinishedSuccessfully();
 }

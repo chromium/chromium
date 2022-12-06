@@ -273,8 +273,6 @@ void PluginVmInstallerView::OnDownloadProgressUpdated(uint64_t bytes_downloaded,
 
   download_progress_message_label_->SetText(
       GetDownloadProgressMessage(bytes_downloaded, content_length));
-  download_progress_message_label_->NotifyAccessibilityEvent(
-      ax::mojom::Event::kTextChanged, true);
 }
 
 void PluginVmInstallerView::OnVmExists() {
@@ -590,14 +588,11 @@ std::u16string PluginVmInstallerView::GetDownloadProgressMessage(
 void PluginVmInstallerView::SetTitleLabel() {
   title_label_->SetText(GetTitle());
   title_label_->SetVisible(true);
-  title_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
 }
 
 void PluginVmInstallerView::SetMessageLabel() {
   message_label_->SetText(GetMessage());
   message_label_->SetVisible(true);
-  message_label_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
-                                           true);
 }
 
 void PluginVmInstallerView::SetBigImage() {

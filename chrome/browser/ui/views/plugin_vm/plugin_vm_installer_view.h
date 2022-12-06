@@ -55,6 +55,11 @@ class PluginVmInstallerView : public views::BubbleDialogDelegateView,
   // Public for testing purposes.
   std::u16string GetTitle() const;
   std::u16string GetMessage() const;
+  views::Label* GetTitleViewForTesting() { return title_label_; }
+  views::Label* GetMessageViewForTesting() { return message_label_; }
+  views::Label* GetDownloadProgressMessageViewForTesting() {
+    return download_progress_message_label_;
+  }
 
   void SetFinishedCallbackForTesting(
       base::OnceCallback<void(bool success)> callback);
