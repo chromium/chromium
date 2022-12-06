@@ -556,12 +556,6 @@ void AutofillAgent::FillOrPreviewForm(int32_t query_id,
   if (element_.IsNull())
     return;
 
-  if (query_id != autofill_query_id_ && query_id != kCrossFrameFill &&
-      (action == mojom::RendererFormDataAction::kPreview ||
-       query_id != kNoQueryId)) {
-    return;
-  }
-
   if (action == mojom::RendererFormDataAction::kPreview) {
     ClearPreviewedForm();
 
