@@ -14257,24 +14257,6 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="Tracing.Background.NetworkConnectionTypeWhenStarted"
-    enum="NetworkConnectionType" expires_after="2021-02-21">
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Connection type of the network used to determine the trace buffer size, when
-    background tracing was triggered. Recorded only on Android.
-  </summary>
-</histogram>
-
-<histogram name="Tracing.Background.NetworkConnectionTypeWhenUploaded"
-    enum="NetworkConnectionType" expires_after="2020-12-20">
-  <owner>ssid@chromium.org</owner>
-  <summary>
-    Connection type of the network used to determine the trace upload limit,
-    when background tracing upload was started. Recorded only on Android.
-  </summary>
-</histogram>
-
 <histogram name="Tracing.Background.ScenarioState"
     enum="BackgroundTracingState" expires_after="2023-04-16">
   <owner>oysteine@chromium.org</owner>
