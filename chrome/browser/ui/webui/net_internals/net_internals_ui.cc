@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/net_internals_resources.h"
 #include "chrome/grit/net_internals_resources_map.h"
@@ -51,19 +52,14 @@ namespace {
 content::WebUIDataSource* CreateNetInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINetInternalsHost);
-  source->UseStringsJs();
   source->AddBoolean("expectCTEnabled", base::FeatureList::IsEnabled(
                                             net::kDynamicExpectCTFeature));
-  source->AddResourcePaths(
-      base::make_span(kNetInternalsResources, kNetInternalsResourcesSize));
-  source->SetDefaultResource(IDR_NET_INTERNALS_INDEX_HTML);
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test chrome://webui-test "
-      "'self';");
-  source->AddResourcePath("test_loader_util.js",
-                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
-  source->DisableTrustedTypesCSP();
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kNetInternalsResources, kNetInternalsResourcesSize),
+      IDR_NET_INTERNALS_INDEX_HTML);
+  webui::EnableTrustedTypesCSP(source);
+
   return source;
 }
 

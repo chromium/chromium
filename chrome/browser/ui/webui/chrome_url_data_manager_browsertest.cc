@@ -305,7 +305,7 @@ static constexpr const char* const kChromeUrls[] = {
     // TODO(crbug.com/1217395): DCHECK failure
     // "chrome://memory-internals",
     "chrome://net-export",
-    // "chrome://net-internals",
+    "chrome://net-internals",
     // "chrome://network-error",
     "chrome://network-errors",
     "chrome://new-tab-page",
