@@ -74,12 +74,11 @@ declare global {
 
       type VoidCallback = () => void;
 
-      export function getExtensionActivities(
-          filter: Filter, callback: (result: ActivityResultSet) => void): void;
-      export function deleteActivities(
-          activityIds: string[], callback?: VoidCallback): void;
-      export function deleteActivitiesByExtension(
-          extensionId: string, callback?: VoidCallback): void;
+      export function getExtensionActivities(filter: Filter):
+          Promise<ActivityResultSet>;
+      export function deleteActivities(activityIds: string[]): Promise<void>;
+      export function deleteActivitiesByExtension(extensionId: string):
+          Promise<void>;
       export function deleteDatabase(): void;
       export function deleteUrls(urls: string[]): void;
 

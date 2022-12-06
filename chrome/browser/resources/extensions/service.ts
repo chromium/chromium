@@ -329,14 +329,12 @@ export class Service implements ServiceInterface {
 
   getExtensionActivityLog(extensionId: string):
       Promise<chrome.activityLogPrivate.ActivityResultSet> {
-    return new Promise(function(resolve) {
-      chrome.activityLogPrivate.getExtensionActivities(
-          {
-            activityType: chrome.activityLogPrivate.ExtensionActivityFilter.ANY,
-            extensionId: extensionId,
-          },
-          resolve);
-    });
+    return chrome.activityLogPrivate.getExtensionActivities(
+        {
+          activityType: chrome.activityLogPrivate.ExtensionActivityFilter.ANY,
+          extensionId: extensionId,
+        },
+    );
   }
 
   getFilteredExtensionActivityLog(extensionId: string, searchTerm: string) {
@@ -366,10 +364,8 @@ export class Service implements ServiceInterface {
     const promises:
         Array<Promise<chrome.activityLogPrivate.ActivityResultSet>> =
             activityLogFilters.map(
-                filter => new Promise(function(resolve) {
-                  chrome.activityLogPrivate.getExtensionActivities(
-                      filter, resolve);
-                }));
+                filter =>
+                    chrome.activityLogPrivate.getExtensionActivities(filter));
 
     return Promise.all(promises).then(results => {
       // We may have results that are present in one or more searches, so
@@ -387,16 +383,11 @@ export class Service implements ServiceInterface {
   }
 
   deleteActivitiesById(activityIds: string[]): Promise<void> {
-    return new Promise(function(resolve) {
-      chrome.activityLogPrivate.deleteActivities(activityIds, resolve);
-    });
+    return chrome.activityLogPrivate.deleteActivities(activityIds);
   }
 
   deleteActivitiesFromExtension(extensionId: string): Promise<void> {
-    return new Promise(function(resolve) {
-      chrome.activityLogPrivate.deleteActivitiesByExtension(
-          extensionId, resolve);
-    });
+    return chrome.activityLogPrivate.deleteActivitiesByExtension(extensionId);
   }
 
   getOnExtensionActivity(): ChromeEvent<
