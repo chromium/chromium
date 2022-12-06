@@ -8175,4 +8175,4 @@ crbug.com/1395450 http/tests/devtools/layers/layer-tree-model.js [ Failure Pass 
 crbug.com/1395744 [ Linux ] external/wpt/css/filter-effects/effect-reference-on-transparent-element.html [ Failure ]
 
 # Sheriff 2022-12-6
-crbug.com/1396127 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-canvas.html [ Failure Pass ]
+crbug.com/1396127 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-canvas.html [ Crash Failure Pass ]
