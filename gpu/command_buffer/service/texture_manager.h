@@ -411,8 +411,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
 
   void ApplyFormatWorkarounds(const FeatureInfo* feature_info);
 
-  bool EmulatingRGB();
-
   // In GLES2 "texture complete" means it has all required mips for filtering
   // down to a 1x1 pixel texture, they are in the correct order, they are all
   // the same format.
@@ -630,10 +628,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // texture.
   void UpdateHasImages();
 
-  // Updates the flag that indicates whether this texture requires RGB
-  // emulation.
-  void UpdateEmulatingRGB();
-
   // Increment the framebuffer state change count in all the managers
   // referencing this texture.
   void IncAllFramebufferStateChangeCount();
@@ -738,8 +732,6 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   bool texture_max_anisotropy_initialized_ = false;
 
   raw_ptr<const CompatibilitySwizzle> compatibility_swizzle_ = nullptr;
-
-  bool emulating_rgb_ = false;
 };
 
 // This class represents a texture in a client context group. It's mostly 1:1

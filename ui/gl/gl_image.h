@@ -91,17 +91,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
                             uint64_t process_tracing_id,
                             const std::string& dump_name);
 
-  // If this returns true, then the command buffer client has requested a
-  // CHROMIUM image with internalformat GL_RGB, but the platform only supports
-  // GL_RGBA. The client is responsible for implementing appropriate
-  // workarounds. The only support that the command buffer provides is format
-  // validation during calls to copyTexImage2D and copySubTexImage2D.
-  //
-  // This is a workaround that is not intended to become a permanent part of the
-  // GLImage API. Theoretically, when Apple fixes their drivers, this can be
-  // removed. https://crbug.com/581777#c36
-  virtual bool EmulatingRGB() const;
-
   // An identifier for subclasses. Necessary for safe downcasting.
   enum class Type {
     NONE,

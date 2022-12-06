@@ -69,9 +69,9 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
     virtual size_t GetSignatureSize(TextureManager* texture_manager) const = 0;
     virtual void AddToSignature(
         TextureManager* texture_manager, std::string* signature) const = 0;
-    virtual bool FormsFeedbackLoop(
-        TextureRef* texture, GLint level, GLint layer) const = 0;
-    virtual bool EmulatingRGB() const = 0;
+    virtual bool FormsFeedbackLoop(TextureRef* texture,
+                                   GLint level,
+                                   GLint layer) const = 0;
 
    protected:
     friend class base::RefCounted<Attachment>;

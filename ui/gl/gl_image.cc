@@ -89,10 +89,6 @@ void GLImage::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
   NOTREACHED();
 }
 
-bool GLImage::EmulatingRGB() const {
-  return false;
-}
-
 GLImage::Type GLImage::GetType() const {
   return Type::NONE;
 }
