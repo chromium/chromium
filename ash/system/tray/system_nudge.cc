@@ -47,7 +47,6 @@ gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
                                 int nudge_height) {
   bool shelf_hidden = shelf->GetVisibilityState() != SHELF_VISIBLE &&
                       shelf->GetAutoHideState() == SHELF_AUTO_HIDE_HIDDEN;
-
   int x;
   if (base::i18n::IsRTL()) {
     x = display_bounds.right() - nudge_width - kNudgeMargin;
@@ -66,9 +65,11 @@ gfx::Rect CalculateWidgetBounds(const gfx::Rect& display_bounds,
     y = hotseat_widget->GetTargetBounds().y() - nudge_height - kNudgeMargin;
   } else {
     y = display_bounds.bottom() - nudge_height - kNudgeMargin;
-    if ((shelf->alignment() == ShelfAlignment::kBottom && !shelf_hidden) ||
-        shelf->alignment() == ShelfAlignment::kBottomLocked)
+    if ((shelf->alignment() == ShelfAlignment::kBottom ||
+         shelf->alignment() == ShelfAlignment::kBottomLocked) &&
+        !shelf_hidden) {
       y -= ShelfConfig::Get()->shelf_size();
+    }
   }
 
   return gfx::Rect(x, y, nudge_width, nudge_height);

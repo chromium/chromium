@@ -369,13 +369,14 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
 
   class UpdateShelfObserver;
   friend class DimShelfLayoutManagerTestBase;
+  friend class NotificationTrayTest;
   friend class PanelLayoutManagerTest;
+  friend class Shelf;
   friend class ShelfLayoutManagerTestBase;
   friend class ShelfLayoutManagerWindowDraggingTest;
-  friend class NotificationTrayTest;
-  friend class UnifiedSystemTrayTest;
+  friend class SystemNudgeTest;
   friend class TrayBackgroundViewTest;
-  friend class Shelf;
+  friend class UnifiedSystemTrayTest;
 
   struct State {
     State();
