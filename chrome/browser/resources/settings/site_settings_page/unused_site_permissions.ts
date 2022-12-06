@@ -5,6 +5,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -15,8 +16,10 @@ import '../i18n_setup.js';
 import './site_review_shared.css.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
@@ -39,7 +42,7 @@ interface UnusedSitePermissionsDisplay extends UnusedSitePermissions {
 }
 
 const SettingsUnusedSitePermissionsElementBase =
-    WebUiListenerMixin(SiteSettingsMixin(PolymerElement));
+    I18nMixin(WebUiListenerMixin(SiteSettingsMixin(PolymerElement)));
 
 export class SettingsUnusedSitePermissionsElement extends
     SettingsUnusedSitePermissionsElementBase {
@@ -81,6 +84,9 @@ export class SettingsUnusedSitePermissionsElement extends
         computed: 'computeShouldShowCompletionInfo_(sites_.*)',
       },
 
+      /** Text below primary header label. */
+      subtitleString_: String,
+
       /* The text that will be shown in the undo toast element. */
       toastText_: String,
 
@@ -98,6 +104,7 @@ export class SettingsUnusedSitePermissionsElement extends
   private lastOrigin_: string;
   private sites_: UnusedSitePermissionsDisplay[]|null;
   private shouldShowCompletionInfo_: boolean;
+  private subtitleString_: string;
   private toastText_: string|null;
   private unusedSitePermissionsReviewListExpanded_: boolean;
 
@@ -116,7 +123,12 @@ export class SettingsUnusedSitePermissionsElement extends
 
   /** Show info that review is completed when there are no permissions left. */
   private computeShouldShowCompletionInfo_(): boolean {
-    return this.sites_ != null && this.sites_.length === 0;
+    return this.sites_ !== null && this.sites_.length === 0;
+  }
+
+  private getAllowAgainAriaLabelForOrigin_(origin: string): string {
+    return this.i18n(
+        'safetyCheckUnusedSitePermissionsAllowAgainAriaLabel', origin);
   }
 
   private getRowClass_(visible: boolean): string {
@@ -178,10 +190,18 @@ export class SettingsUnusedSitePermissionsElement extends
     tooltip.show();
   }
 
-  private onSitesChanged_() {
-    // TODO(crbug.com/1345920): Replace dummy string with i18n string based on
-    // number of sites.
-    this.headerString_ = '';
+  private async onSitesChanged_() {
+    if (this.sites_ === null) {
+      return;
+    }
+
+    this.headerString_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckUnusedSitePermissionsPrimaryLabel', this.sites_.length);
+    this.subtitleString_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckUnusedSitePermissionsSecondaryLabel',
+            this.sites_.length);
   }
 
   private showUndoToast_() {
@@ -193,9 +213,9 @@ export class SettingsUnusedSitePermissionsElement extends
   }
 
   private updateUndoToastText_() {
-    // TODO(crbug.com/1345920): Replace dummy text with i18n string depending on
-    // lastOrigin.
-    this.toastText_ = '';
+    assert(this.lastOrigin_);
+    this.toastText_ = this.i18n(
+        'safetyCheckUnusedSitePermissionsToastLabel', this.lastOrigin_);
   }
 }
 

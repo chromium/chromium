@@ -11,9 +11,7 @@
     <cr-expand-button class="header-group-wrapper" no-hover
         expanded="{{unusedSitePermissionsReviewListExpanded_}}">
       <h2>[[headerString_]]</h2>
-      <div class="secondary">
-        <!-- TODO(crbug.com/1345920): Add secondary string. -->
-      </div>
+      <div class="secondary">[[subtitleString_]]</div>
     </cr-expand-button>
   </div>
   <iron-collapse class="site-list"
@@ -27,32 +25,35 @@
             <!-- TODO(crbug.com/1345920): Add secondary string. -->
           </div>
         </div>
-        <!-- TODO(crbug.com/1345920): Use appropriate icon from design. -->
-        <cr-icon-button iron-icon="cr20:block" on-click="onAllowAgainClick_"
-            actionable on-mouseenter="onShowTooltip_" on-focus="onShowTooltip_">
+        <cr-icon-button iron-icon="settings20:undo" on-focus="onShowTooltip_"
+            actionable on-mouseenter="onShowTooltip_"
+            aria-label="[[getAllowAgainAriaLabelForOrigin_(item.origin)]]"
+            on-click="onAllowAgainClick_">
         </cr-icon-button>
       </div>
     </template>
     <div class="cr-row first">
       <cr-button class="bulk-action-button">
-        <!-- TODO(crbug.com/1345920): Add 'Got it' string. -->
+        $i18n{safetyCheckUnusedSitePermissionsGotItLabel}
       </cr-button>
     </div>
   </iron-collapse>
   <paper-tooltip fit-to-visible-bounds manual-mode position="top" offset="3">
-    <!-- TODO(crbug.com/1345920): Add 'Allow again' string. -->
+    $i18n{safetyCheckUnusedSitePermissionsAllowAgainLabel}
   </paper-tooltip>
 </template>
 <template is="dom-if" if="[[shouldShowCompletionInfo_]]">
   <div class="header-with-icon">
     <iron-icon role="img" icon="cr:check"></iron-icon>
     <div class="header-group-wrapper">
-      <!-- TODO(crbug.com/1345920): Add 'All done for now' string. -->
+      $i18n{safetyCheckUnusedSitePermissionsDoneLabel}
     </div>
   </div>
 </template>
-<cr-toast duration="5000">
-  [[toastText_]]
-  <!-- TODO(crbug.com/1345920): Add 'Undo' string and aria label. -->
-  <cr-button aria-label=""></cr-button>
+<cr-toast id="undoToast" duration="5000">
+  <div>[[toastText_]]</div>
+  <cr-button
+      aria-label="$i18n{safetyCheckUnusedSitePermissionsUndoAllowAgainLabel}">
+    $i18n{safetyCheckUnusedSitePermissionsUndoAllowAgainLabel}
+  </cr-button>
 </cr-toast>
