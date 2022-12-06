@@ -12,36 +12,6 @@
     opacity: 0.3;
   }
 
-  .google-photos .photo-images-container {
-    align-items: flex-start;
-    /* Background color should stay light even in dark mode. */
-    background-color: white;
-  }
-
-  .google-photos[aria-disabled='true'] .photo-images-container {
-    /* Background color should stay light even in dark mode. */
-    background-color: var(--google-grey-200);
-  }
-
-  .google-photos img {
-    flex: none;
-    height: 64px;
-    margin: 12px;
-    min-width: initial;
-    width: 64px;
-  }
-
-  .google-photos[aria-disabled='true'] .photo-images-container img {
-    /* Background color should stay light even in dark mode. */
-    background-color: white;
-    border-radius: 100%;
-    box-sizing: border-box;
-    filter: grayscale(100%);
-    height: 54px;
-    padding: 4px;
-    width: 54px;
-  }
-
   .local.photo-loading-failure .photo-images-container {
     background-color: var(--cros-highlight-color);
   }
@@ -68,14 +38,14 @@
     z-index: 2;
   }
 
-  .google-photos .photo-text-container {
+  wallpaper-grid-item[google-photos-tile] .primary-text {
     align-items: center;
     bottom: calc(8px + var(--cros-annotation-2-line-height));
     display: flex;
     flex-direction: row;
   }
 
-  .photo-text-container iron-icon[icon='personalization:managed'] {
+  wallpaper-grid-item[google-photos-tile] iron-icon[icon='personalization:managed'] {
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
@@ -84,8 +54,10 @@
     margin-inline-end: 8px;
   }
 
-  .google-photos[aria-disabled='true'] iron-icon[icon='personalization:managed'] {
-    /* Icon color should stay light even in dark mode. */
+  wallpaper-grid-item[google-photos-tile][aria-disabled='true'] iron-icon[icon='personalization:managed'] {
+    /* Icon color should stay light even in dark mode.
+     * All of the google photos tile is always light.
+     */
     --iron-icon-fill-color: var(--cros-icon-color-secondary-light);
     display: block;
   }
@@ -108,13 +80,14 @@
     visibility: hidden;
   }
 
-  .photo-text-container iron-icon[icon='personalization:managed']+p,
   .photo-text-container p:first-child {
     font: var(--cros-headline-1-font);
   }
 
-  .google-photos[aria-disabled='true'] .photo-text-container p {
-    /* Text color should stay light even in dark mode. */
+  wallpaper-grid-item[google-photos-tile][aria-disabled='true'] p {
+    /* Text color should stay light even in dark mode.
+     * All of the google photos tile is always light.
+     */
     color: var(--cros-text-color-secondary-light);
     text-shadow: none;
   }
@@ -136,7 +109,6 @@
     z-index: 1;
   }
 
-  .google-photos[aria-disabled='true'] .photo-gradient-mask,
   .local[aria-disabled='true'] .photo-gradient-mask {
     display: none;
   }
@@ -159,6 +131,20 @@
 
   wallpaper-grid-item {
     --wallpaper-grid-item-width: 100%;
+  }
+
+  wallpaper-grid-item[google-photos-tile]:not([aria-disabled='true']):not([placeholder]) {
+    /* Always white, even in dark mode.
+     * All of the google photos tile is always light.
+     */
+    --personalization-app-grid-item-background-color: white;
+  }
+
+  wallpaper-grid-item[google-photos-tile][aria-disabled='true']:not([placeholder]) {
+    /* Disabled background color should stay light even in dark mode.
+     * All of the google photos tile is always light.
+     */
+    --personalization-app-grid-item-background-color: var(--google-grey-200);
   }
 
 </style>
@@ -185,28 +171,25 @@
           </div>
         </template>
         <template is="dom-if" if="[[isGooglePhotosTile_(item)]]">
-          <div class="photo-container">
-            <div aria-disabled$="[[getAriaDisabled_(item)]]"
-                aria-posinset$="[[getAriaIndex_(index)]]"
-                class="photo-inner-container google-photos"
-                on-click="onCollectionSelected_"
-                on-keypress="onCollectionSelected_"
-                role="option"
-                tabindex$="[[tabIndex]]">
-              <div class="photo-images-container photo-images-container-0">
-                <div class="photo-images-border"></div>
-                <img src="//personalization/images/google_photos.svg"
-                    aria-hidden="true">
-              </div>
-              <div class="photo-text-container">
+          <wallpaper-grid-item
+              google-photos-tile
+              aria-posinset$="[[getAriaIndex_(index)]]"
+              disabled="[[!isSelectableTile_(item)]]"
+              index="[[index]]"
+              primary-text="[[item.name]]"
+              on-wallpaper-grid-item-selected="onCollectionSelected_"
+              role="option"
+              src="[[item.preview]]"
+              tabindex$="[[tabIndex]]">
+            <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
+              <div slot="text" class="primary-text">
                 <iron-icon icon="personalization:managed"
                     title$="$i18n{managedSetting}">
                 </iron-icon>
                 <p title$="[[item.name]]">[[item.name]]</p>
               </div>
-              <div class="photo-gradient-mask"></div>
-            </div>
-          </div>
+            </template>
+          </wallpaper-grid-item>
         </template>
         <template is="dom-if" if="[[isLocalTile_(item)]]">
           <wallpaper-grid-item

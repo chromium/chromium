@@ -51,6 +51,7 @@ interface GooglePhotosTile {
   id: typeof kGooglePhotosCollectionId;
   name: string;
   type: TileType.IMAGE_GOOGLE_PHOTOS;
+  preview: [Url];
 }
 
 interface LocalTile {
@@ -109,6 +110,7 @@ function getGooglePhotosTile(enablementState: GooglePhotosEnablementState):
     id: kGooglePhotosCollectionId,
     name: loadTimeData.getString('googlePhotosLabel'),
     type: TileType.IMAGE_GOOGLE_PHOTOS,
+    preview: [{url: 'chrome://personalization/images/google_photos.svg'}],
   };
 }
 

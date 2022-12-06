@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {emptyState, kDefaultImageSymbol, WallpaperActionName, WallpaperCollections, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, GooglePhotosEnablementState, kDefaultImageSymbol, WallpaperActionName, WallpaperCollections, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -187,5 +187,33 @@ suite('WallpaperCollectionsTest', function() {
           {url: 'data:image/png;base64,qwer'},
         ],
         localTile.src, 'all three images are displayed');
+  });
+
+  test('customizes text for managed google photos', async () => {
+    const managedIconSelector = `iron-icon[icon='personalization:managed']`;
+
+    personalizationStore.data.wallpaper.googlePhotos.enabled =
+        GooglePhotosEnablementState.kEnabled;
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const googlePhotosTile =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelector<WallpaperGridItem>(
+                `${WallpaperGridItem.is}[google-photos-tile]`);
+    assertTrue(!!googlePhotosTile, 'google photos tile is present');
+    assertEquals(
+        null, googlePhotosTile.querySelector(managedIconSelector),
+        'no managed icon is shown');
+
+    // Update to managed state.
+    personalizationStore.data.wallpaper.googlePhotos.enabled =
+        GooglePhotosEnablementState.kDisabled;
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    assertTrue(
+        !!googlePhotosTile.querySelector(managedIconSelector),
+        'managed icon now shown');
   });
 });
