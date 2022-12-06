@@ -395,6 +395,11 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   // Sets a callback to bind ServiceWorkerStorageControl for testing.
   void SetStorageControlBinderForTest(StorageControlBinder binder);
 
+  using URLLoaderFactoryInterceptor = base::RepeatingCallback<void(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>* receiver)>;
+  static void SetURLLoaderFactoryInterceptorForTesting(
+      const URLLoaderFactoryInterceptor& interceptor);
+
  private:
   friend class BackgroundSyncManagerTest;
   friend class base::DeleteHelper<ServiceWorkerContextWrapper>;

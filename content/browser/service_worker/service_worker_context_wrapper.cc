@@ -84,6 +84,9 @@ BASE_FEATURE(kServiceWorkerStorageControlOnThreadPool,
              "ServiceWorkerStorageControlOnThreadPool",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+base::LazyInstance<ServiceWorkerContextWrapper::URLLoaderFactoryInterceptor>::
+    Leaky g_loader_factory_interceptor = LAZY_INSTANCE_INITIALIZER;
+
 void DidFindRegistrationForStartActiveWorker(
     ServiceWorkerContextWrapper::StatusCallback callback,
     blink::ServiceWorkerStatusCode status,
@@ -1627,6 +1630,14 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(
       /*version_id=*/absl::nullopt, std::move(client_security_state));
 }
 
+// static
+void ServiceWorkerContextWrapper::SetURLLoaderFactoryInterceptorForTesting(
+    const URLLoaderFactoryInterceptor& interceptor) {
+  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+         BrowserThread::CurrentlyOn(BrowserThread::UI));
+  g_loader_factory_interceptor.Get() = interceptor;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForMainScriptFetch(
     const GURL& scope,
@@ -1691,6 +1702,10 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     DCHECK(storage_partition());
     if (base::FeatureList::IsEnabled(
             features::kPrivateNetworkAccessForWorkers)) {
+      if (g_loader_factory_interceptor.Get()) {
+        g_loader_factory_interceptor.Get().Run(&pending_receiver);
+      }
+
       network::mojom::URLLoaderFactoryParamsPtr params =
           storage_partition_->CreateURLLoaderFactoryParams();
       params->client_security_state = std::move(client_security_state);
