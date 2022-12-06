@@ -287,6 +287,7 @@ src/webgpu/idl/constants/flags.spec.ts
 src/webgpu/shader/types.ts
 src/webgpu/shader/values.ts
 src/webgpu/shader/execution/evaluation_order.spec.ts
+src/webgpu/shader/execution/padding.spec.ts
 src/webgpu/shader/execution/robust_access.spec.ts
 src/webgpu/shader/execution/robust_access_vertex.spec.ts
 src/webgpu/shader/execution/zero_init.spec.ts
