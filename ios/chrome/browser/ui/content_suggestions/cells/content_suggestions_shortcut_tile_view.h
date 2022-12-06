@@ -17,8 +17,8 @@
 - (instancetype)initWithConfiguration:
     (ContentSuggestionsMostVisitedActionItem*)config;
 
-// Update the number shown in badge.
-- (void)updateCount:(NSInteger)count;
+// Updates the configuration for this view to the new `config`.
+- (void)updateConfiguration:(ContentSuggestionsMostVisitedActionItem*)config;
 
 // View for action icon.
 @property(nonatomic, strong, readonly) UIImageView* iconView;

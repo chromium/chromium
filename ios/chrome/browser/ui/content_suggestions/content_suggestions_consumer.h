@@ -41,9 +41,9 @@
 // `configs`.
 - (void)setTrendingQueriesWithConfigs:(NSArray<QuerySuggestionConfig*>*)configs;
 
-// Indicates to the consumer to update the Reading List count badge with
-// `count`.
-- (void)updateReadingListCount:(NSInteger)count;
+// Indicates to the consumer that the given `config` has updated data.
+- (void)updateShortcutTileConfig:
+    (ContentSuggestionsMostVisitedActionItem*)config;
 
 // Indicates to the consumer update the Most Visited tile associated with
 // `config`.

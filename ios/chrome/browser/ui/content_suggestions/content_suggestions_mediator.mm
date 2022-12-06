@@ -686,7 +686,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
   self.readingListUnreadCount = model->unread_size();
   if (self.readingListItem) {
     self.readingListItem.count = self.readingListUnreadCount;
-    [self.consumer updateReadingListCount:self.readingListUnreadCount];
+    [self.consumer updateShortcutTileConfig:self.readingListItem];
   }
 }
 

@@ -525,11 +525,11 @@ CGFloat ModuleVerticalSpacing() {
   }
 }
 
-- (void)updateReadingListCount:(NSInteger)count {
+- (void)updateShortcutTileConfig:
+    (ContentSuggestionsMostVisitedActionItem*)config {
   for (ContentSuggestionsShortcutTileView* view in self.shortcutsViews) {
-    if (view.config.collectionShortcutType ==
-        NTPCollectionShortcutTypeReadingList) {
-      [view updateCount:count];
+    if (view.config == config) {
+      [view updateConfiguration:config];
       return;
     }
   }
