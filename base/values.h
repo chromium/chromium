@@ -1318,10 +1318,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
   // otherwise.
   Value* SetString(StringPiece path, const std::u16string& in_value);
-  // DEPRECATED: prefer `Value::Dict::Set()` (if the path only has one
-  // component, i.e. has no dots), or `Value::Dict::SetByDottedPath()`
-  // otherwise.
-  ListValue* SetList(StringPiece path, std::unique_ptr<ListValue> in_value);
 
   // Gets the Value associated with the given path starting from this object.
   // A path has the form "<key>" or "<key>.<key>.[...]", where "." indexes

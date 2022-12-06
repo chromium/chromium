@@ -1680,11 +1680,6 @@ Value* DictionaryValue::SetString(StringPiece path,
   return Set(path, std::make_unique<Value>(in_value));
 }
 
-ListValue* DictionaryValue::SetList(StringPiece path,
-                                    std::unique_ptr<ListValue> in_value) {
-  return static_cast<ListValue*>(Set(path, std::move(in_value)));
-}
-
 bool DictionaryValue::Get(StringPiece path, const Value** out_value) const {
   DCHECK(IsStringUTF8AllowingNoncharacters(path));
   const Value* value = FindPath(path);

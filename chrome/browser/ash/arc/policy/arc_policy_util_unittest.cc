@@ -46,17 +46,17 @@ class ArcPolicyUtilTest : public testing::Test {
 
 std::string CreatePolicyWithAppInstalls(
     std::map<std::string, std::string> package_map) {
-  base::DictionaryValue arc_policy;
-  auto list = std::make_unique<base::ListValue>();
+  base::Value::Dict arc_policy;
+  base::Value::List list;
 
-  for (auto entry : package_map) {
+  for (const auto& entry : package_map) {
     base::Value::Dict package;
     package.Set("packageName", entry.first);
     package.Set("installType", entry.second);
-    list->Append(base::Value(std::move(package)));
+    list.Append(std::move(package));
   }
 
-  arc_policy.SetList("applications", std::move(list));
+  arc_policy.Set("applications", std::move(list));
   std::string arc_policy_string;
   base::JSONWriter::Write(arc_policy, &arc_policy_string);
   return arc_policy_string;
