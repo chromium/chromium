@@ -13,6 +13,7 @@ namespace gpu {
 // is bound to a texture, storage is allocated for the texture via glTexImage2D.
 class TextureImageFactory : public gpu::ImageFactory {
  public:
+#if BUILDFLAG(IS_MAC)
   scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
       gfx::GpuMemoryBufferHandle handle,
       const gfx::Size& size,
@@ -21,6 +22,8 @@ class TextureImageFactory : public gpu::ImageFactory {
       gfx::BufferPlane plane,
       int client_id,
       SurfaceHandle surface_handle) override;
+#endif
+
   bool SupportsCreateAnonymousImage() const override;
   scoped_refptr<gl::GLImage> CreateAnonymousImage(const gfx::Size& size,
                                                   gfx::BufferFormat format,

@@ -88,10 +88,6 @@ ImageFactory* GpuMemoryBufferFactoryIOSurface::AsImageFactory() {
   return this;
 }
 
-bool GpuMemoryBufferFactoryIOSurface::SupportsCreateAnonymousImage() const {
-  return true;
-}
-
 scoped_refptr<gl::GLImage>
 GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
@@ -157,43 +153,6 @@ GpuMemoryBufferFactoryIOSurface::CreateImageForGpuMemoryBuffer(
   }
 
   return image;
-}
-
-scoped_refptr<gl::GLImage>
-GpuMemoryBufferFactoryIOSurface::CreateAnonymousImage(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    SurfaceHandle surface_handle,
-    bool* is_cleared) {
-  bool should_clear = false;
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      gfx::CreateIOSurface(size, format, should_clear));
-  const uint32_t io_surface_plane = 0;
-  if (!io_surface) {
-    LOG(ERROR) << "Failed to allocate IOSurface.";
-    return nullptr;
-  }
-
-  scoped_refptr<gl::GLImageIOSurface> image(gl::GLImageIOSurface::Create(size));
-  // Use an invalid GMB id so that we can differentiate between anonymous and
-  // shared GMBs by using gfx::GenericSharedMemoryId::is_valid().
-  if (!image->Initialize(io_surface.get(), io_surface_plane,
-                         gfx::GenericSharedMemoryId(), format)) {
-    DLOG(ERROR) << "Failed to initialize anonymous GLImage.";
-    return scoped_refptr<gl::GLImage>();
-  }
-
-  *is_cleared = false;
-  return image;
-}
-
-unsigned GpuMemoryBufferFactoryIOSurface::RequiredTextureType() {
-  return GL_TEXTURE_RECTANGLE_ARB;
-}
-
-bool GpuMemoryBufferFactoryIOSurface::SupportsFormatRGB() {
-  return false;
 }
 
 }  // namespace gpu

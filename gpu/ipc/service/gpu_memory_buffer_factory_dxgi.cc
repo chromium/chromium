@@ -16,7 +16,6 @@
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_dxgi.h"
 
 namespace gpu {
 
@@ -236,36 +235,7 @@ bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
 }
 
 ImageFactory* GpuMemoryBufferFactoryDXGI::AsImageFactory() {
-  return this;
+  return nullptr;
 }
 
-scoped_refptr<gl::GLImage>
-GpuMemoryBufferFactoryDXGI::CreateImageForGpuMemoryBuffer(
-    gfx::GpuMemoryBufferHandle handle,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    const gfx::ColorSpace& color_space,
-    gfx::BufferPlane plane,
-    int client_id,
-    SurfaceHandle surface_handle) {
-  if (handle.type != gfx::DXGI_SHARED_HANDLE)
-    return nullptr;
-  if (plane != gfx::BufferPlane::DEFAULT)
-    return nullptr;
-  // Transfer ownership of handle to GLImageDXGI.
-  auto image = base::MakeRefCounted<gl::GLImageDXGI>(size, nullptr);
-  if (color_space.IsValid())
-    image->SetColorSpace(color_space);
-  if (!image->InitializeHandle(std::move(handle.dxgi_handle), 0, format))
-    return nullptr;
-  return image;
-}
-
-unsigned GpuMemoryBufferFactoryDXGI::RequiredTextureType() {
-  return GL_TEXTURE_2D;
-}
-
-bool GpuMemoryBufferFactoryDXGI::SupportsFormatRGB() {
-  return true;
-}
 }  // namespace gpu

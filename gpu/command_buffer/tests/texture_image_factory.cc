@@ -46,6 +46,7 @@ class TextureImage : public gl::GLImage {
   gfx::Size size_;
 };
 
+#if BUILDFLAG(IS_MAC)
 scoped_refptr<gl::GLImage> TextureImageFactory::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
@@ -56,6 +57,7 @@ scoped_refptr<gl::GLImage> TextureImageFactory::CreateImageForGpuMemoryBuffer(
     SurfaceHandle surface_handle) {
   return nullptr;
 }
+#endif
 
 bool TextureImageFactory::SupportsCreateAnonymousImage() const {
   return true;

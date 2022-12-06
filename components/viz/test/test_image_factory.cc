@@ -10,6 +10,7 @@ TestImageFactory::TestImageFactory() = default;
 
 TestImageFactory::~TestImageFactory() = default;
 
+#if BUILDFLAG(IS_MAC)
 scoped_refptr<gl::GLImage> TestImageFactory::CreateImageForGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
@@ -20,5 +21,6 @@ scoped_refptr<gl::GLImage> TestImageFactory::CreateImageForGpuMemoryBuffer(
     gpu::SurfaceHandle surface_handle) {
   return nullptr;
 }
+#endif
 
 }  // namespace viz

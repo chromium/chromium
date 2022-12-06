@@ -16,7 +16,7 @@ class TestImageFactory : public gpu::ImageFactory {
   ~TestImageFactory() override;
 
   TestImageFactory& operator=(const TestImageFactory&) = delete;
-
+#if BUILDFLAG(IS_MAC)
   // Overridden from gpu::ImageFactory:
   scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
       gfx::GpuMemoryBufferHandle handle,
@@ -26,6 +26,7 @@ class TestImageFactory : public gpu::ImageFactory {
       gfx::BufferPlane plane,
       int client_id,
       gpu::SurfaceHandle surface_handle) override;
+#endif
 };
 
 }  // namespace viz

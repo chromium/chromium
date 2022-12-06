@@ -17,15 +17,10 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace gl {
-class GLImage;
-}
-
 namespace gpu {
 
 class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
-    : public GpuMemoryBufferFactory,
-      public ImageFactory {
+    : public GpuMemoryBufferFactory {
  public:
   // Creates new instance of GpuMemoryBufferFactoryDXGI. `io_runner` is needed
   // in order to create GpuMemoryBuffers on the correct thread. GpuServiceImpl
@@ -56,18 +51,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion shared_memory) override;
   ImageFactory* AsImageFactory() override;
-
-  // Overridden from ImageFactory:
-  scoped_refptr<gl::GLImage> CreateImageForGpuMemoryBuffer(
-      gfx::GpuMemoryBufferHandle handle,
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      const gfx::ColorSpace& color_space,
-      gfx::BufferPlane plane,
-      int client_id,
-      SurfaceHandle surface_handle) override;
-  unsigned RequiredTextureType() override;
-  bool SupportsFormatRGB() override;
 
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
