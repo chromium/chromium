@@ -528,7 +528,8 @@
               "http/tests/workers",
               "inspector-protocol/worker"
             ],
-    "args": ["--enable-features=PlzDedicatedWorker"],
+    "args": ["--enable-features=PlzDedicatedWorker",
+             "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"],
     "expires": "Jul 1, 2023"
   },
   {

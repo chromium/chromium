@@ -101,13 +101,13 @@ std::map<DerivePolicyInput, Policy> DefaultPolicyMap() {
        Policy::kAllow},
       {{kNonSecure, AddressSpace::kPublic,
         PrivateNetworkRequestContext::kWorker},
-       Policy::kBlock},
+       Policy::kWarn},
       {{kNonSecure, AddressSpace::kPrivate,
         PrivateNetworkRequestContext::kWorker},
        Policy::kWarn},
       {{kNonSecure, AddressSpace::kLocal,
         PrivateNetworkRequestContext::kWorker},
-       Policy::kBlock},
+       Policy::kWarn},
       {{kSecure, AddressSpace::kUnknown, PrivateNetworkRequestContext::kWorker},
        Policy::kAllow},
       {{kSecure, AddressSpace::kPublic, PrivateNetworkRequestContext::kWorker},
@@ -135,10 +135,10 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyBlockFromInsecurePrivate) {
       features::kBlockInsecurePrivateNetworkRequestsFromPrivate);
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
+  // Only need to override non-worker case because workers are by default
+  // warnings only.
   expected[{kNonSecure, AddressSpace::kPrivate,
             PrivateNetworkRequestContext::kSubresource}] = Policy::kBlock;
-  expected[{kNonSecure, AddressSpace::kPrivate,
-            PrivateNetworkRequestContext::kWorker}] = Policy::kBlock;
 
   TestPolicyMap(expected);
 }
@@ -179,8 +179,10 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyNoPreflights) {
 }
 
 TEST(PrivateNetworkAccessUtilTest, DerivePolicyRespectPreflightResults) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPrivateNetworkAccessRespectPreflightResults);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kPrivateNetworkAccessRespectPreflightResults},
+      {features::kPrivateNetworkAccessForWorkersWarningOnly});
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
   expected[{kSecure, AddressSpace::kPublic,
@@ -198,6 +200,12 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyRespectPreflightResults) {
             PrivateNetworkRequestContext::kWorker}] = Policy::kPreflightBlock;
   expected[{kSecure, AddressSpace::kLocal,
             PrivateNetworkRequestContext::kWorker}] = Policy::kPreflightBlock;
+
+  // Overriding these because we've disabled warnings only.
+  expected[{kNonSecure, AddressSpace::kPublic,
+            PrivateNetworkRequestContext::kWorker}] = Policy::kBlock;
+  expected[{kNonSecure, AddressSpace::kLocal,
+            PrivateNetworkRequestContext::kWorker}] = Policy::kBlock;
 
   TestPolicyMap(expected);
 }
@@ -210,12 +218,8 @@ TEST(PrivateNetworkAccessUtilTest, DerivePolicyWarningOnlyForWorkers) {
       {});
 
   std::map<DerivePolicyInput, Policy> expected = DefaultPolicyMap();
-  expected[{kNonSecure, AddressSpace::kPublic,
-            PrivateNetworkRequestContext::kWorker}] = Policy::kWarn;
-  expected[{kNonSecure, AddressSpace::kLocal,
-            PrivateNetworkRequestContext::kWorker}] = Policy::kWarn;
-  // Only need to override non-worker case because workers will stay warning
-  // only
+  // Only need to override non-worker case because workers are by default
+  // warnings only.
   expected[{kSecure, AddressSpace::kPublic,
             PrivateNetworkRequestContext::kSubresource}] =
       Policy::kPreflightBlock;

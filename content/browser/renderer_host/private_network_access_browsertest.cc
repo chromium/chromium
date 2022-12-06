@@ -684,7 +684,9 @@ class PrivateNetworkAccessBrowserTestForWorkers
                 features::kPrivateNetworkAccessForWorkers,
                 network::features::kNetworkServiceMemoryCache,
             },
-            {}) {}
+            {
+                features::kPrivateNetworkAccessForWorkersWarningOnly,
+            }) {}
 };
 
 // Test with PNA checks for worker-related fetches enabled and preflight
@@ -700,7 +702,9 @@ class PrivateNetworkAccessBrowserTestRespectPreflightResultsForWorkers
                 features::kPrivateNetworkAccessForWorkers,
                 network::features::kNetworkServiceMemoryCache,
             },
-            {}) {}
+            {
+                features::kPrivateNetworkAccessForWorkersWarningOnly,
+            }) {}
 };
 
 // Test with PNA checks for worker-related fetches enabled in warning-only mode,

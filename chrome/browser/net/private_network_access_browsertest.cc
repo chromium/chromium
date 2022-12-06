@@ -268,13 +268,13 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
                 features::kBlockInsecurePrivateNetworkRequestsDeprecationTrial,
                 features::kPrivateNetworkAccessSendPreflights,
                 features::kPrivateNetworkAccessForWorkers,
-                is_warning_only
-                    ? features::kPrivateNetworkAccessForWorkersWarningOnly
-                    : features::kPrivateNetworkAccessForWorkers,
                 dom_distiller::kReaderMode,
             },
-            {}) {}
-
+            is_warning_only
+                ? std::vector<base::test::FeatureRef>()
+                : std::vector<base::test::FeatureRef>({
+                      features::kPrivateNetworkAccessForWorkersWarningOnly,
+                  })) {}
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PrivateNetworkAccessBrowserTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kEnableDomDistiller);
@@ -313,11 +313,12 @@ class PrivateNetworkAccessRespectPreflightResultsBrowserTest
                 features::kPrivateNetworkAccessSendPreflights,
                 features::kPrivateNetworkAccessRespectPreflightResults,
                 features::kPrivateNetworkAccessForWorkers,
-                GetParam().is_warning_only
-                    ? features::kPrivateNetworkAccessForWorkersWarningOnly
-                    : features::kPrivateNetworkAccessForWorkers,
             },
-            {}) {}
+            GetParam().is_warning_only
+                ? std::vector<base::test::FeatureRef>()
+                : std::vector<base::test::FeatureRef>({
+                      features::kPrivateNetworkAccessForWorkersWarningOnly,
+                  })) {}
 };
 
 // ================
