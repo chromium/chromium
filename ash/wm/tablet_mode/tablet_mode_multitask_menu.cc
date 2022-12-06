@@ -207,6 +207,9 @@ void TabletModeMultitaskMenu::BeginDrag(float initial_y) {
 
 void TabletModeMultitaskMenu::UpdateDrag(float current_y) {
   float transform_y = current_y - menu_view_->bounds().bottom();
+  // Stop translating the menu if the drag moves out of bounds.
+  if (transform_y > 0)
+    return;
   menu_view_->layer()->SetTransform(
       gfx::Transform::MakeTranslation(0, transform_y));
 }
