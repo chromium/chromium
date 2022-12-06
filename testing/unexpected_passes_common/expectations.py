@@ -13,7 +13,7 @@ import os
 import re
 import subprocess
 import sys
-from typing import FrozenSet, Iterable, List, Optional, Set, Tuple, Union
+from typing import Dict, FrozenSet, Iterable, List, Optional, Set, Tuple, Union
 
 import six
 
@@ -27,7 +27,10 @@ FINDER_COMMENT_SUFFIX_GENERAL = '-general'
 FINDER_COMMENT_SUFFIX_STALE = '-stale'
 FINDER_COMMENT_SUFFIX_UNUSED = '-unused'
 
-ALL_FINDER_SUFFIXES = frozenset([
+FINDER_GROUP_COMMENT_START = 'finder:group-start'
+FINDER_GROUP_COMMENT_END = 'finder:group-end'
+
+ALL_FINDER_DISABLE_SUFFIXES = frozenset([
     FINDER_COMMENT_SUFFIX_GENERAL,
     FINDER_COMMENT_SUFFIX_STALE,
     FINDER_COMMENT_SUFFIX_UNUSED,
@@ -57,14 +60,25 @@ FINDER_ENABLE_COMMENTS = frozenset([
     FINDER_ENABLE_COMMENT_UNUSED,
 ])
 
+FINDER_GROUP_COMMENTS = frozenset([
+    FINDER_GROUP_COMMENT_START,
+    FINDER_GROUP_COMMENT_END,
+])
+
 ALL_FINDER_COMMENTS = frozenset(FINDER_DISABLE_COMMENTS
-                                | FINDER_ENABLE_COMMENTS)
+                                | FINDER_ENABLE_COMMENTS
+                                | FINDER_GROUP_COMMENTS)
 
 GIT_BLAME_REGEX = re.compile(
     r'^[\w\s]+\(.+(?P<date>\d\d\d\d-\d\d-\d\d)[^\)]+\)(?P<content>.*)$',
     re.DOTALL)
 EXPECTATION_LINE_REGEX = re.compile(r'^.*\[ .* \] .* \[ \w* \].*$', re.DOTALL)
 TAG_GROUP_REGEX = re.compile(r'# tags: \[([^\]]*)\]', re.MULTILINE | re.DOTALL)
+# Looks for cases of the group start and end comments with nothing but optional
+# whitespace between them.
+STALE_GROUP_COMMENT_REGEX = re.compile(
+    r'# ' + FINDER_GROUP_COMMENT_START + r'[^\n]+\s*# ' +
+    FINDER_GROUP_COMMENT_END + r'\n', re.MULTILINE | re.DOTALL)
 
 # pylint: disable=useless-object-inheritance
 
@@ -235,6 +249,10 @@ class Expectations(object):
     with open(expectation_file) as f:
       input_contents = f.read()
 
+    group_to_expectations, expectation_to_group = (
+        self._GetExpectationGroupsFromFileContent(expectation_file,
+                                                  input_contents))
+
     output_contents = ''
     in_disable_block = False
     disable_block_reason = ''
@@ -286,6 +304,15 @@ class Expectations(object):
               'Would have removed expectation %s, but it has an inline disable '
               'comment with reason %s',
               stripped_line.split('#')[0], _GetDisableReasonFromComment(line))
+        elif _ExpectationPartOfNonRemovableGroup(current_expectation,
+                                                 group_to_expectations,
+                                                 expectation_to_group,
+                                                 expectations):
+          output_contents += line
+          logging.info(
+              'Would have removed expectation %s, but it is part of group "%s" '
+              'whose members are not all removable.', stripped_line,
+              expectation_to_group[current_expectation])
         else:
           bug = current_expectation.bug
           if bug:
@@ -295,10 +322,62 @@ class Expectations(object):
       else:
         output_contents += line
 
+    output_contents = _RemoveStaleComments(output_contents)
+
     with open(expectation_file, 'w') as f:
       f.write(output_contents)
 
     return removed_urls
+
+  def _GetExpectationGroupsFromFileContent(
+      self, expectation_file: str, content: str
+  ) -> Tuple[Dict[str, Set[data_types.Expectation]], Dict[data_types.
+                                                          Expectation, str]]:
+    """Extracts all groups of expectations from an expectationfile.
+
+    Args:
+      expectation_file: A filepath pointing to an expectation file.
+      content: A string containing the contents of |expectation_file|.
+
+    Returns:
+      A tuple (group_to_expectations, expectation_to_group).
+      |group_to_expectations| is a dict of group names to sets of
+      data_type.Expectations that belong to that group. |expectation_to_group|
+      is the same, but mapped the other way from data_type.Expectations to group
+      names.
+    """
+    group_to_expectations = collections.defaultdict(set)
+    expectation_to_group = {}
+    group_name = None
+
+    for line in content.splitlines():
+      stripped_line = line.strip()
+      # Possibly starting/ending a group.
+      if _IsCommentOrBlankLine(stripped_line):
+        if _LineContainsGroupStartComment(stripped_line):
+          # Start of a new group.
+          if group_name:
+            raise RuntimeError(
+                'Invalid expectation file %s - contains a group comment "%s" '
+                'that is inside another group block.' %
+                (expectation_file, stripped_line))
+          group_name = _GetGroupNameFromCommentLine(stripped_line)
+        elif _LineContainsGroupEndComment(stripped_line):
+          # End of current group.
+          if not group_name:
+            raise RuntimeError(
+                'Invalid expectation file %s - contains a group comment "%s" '
+                'without a group start comment.' %
+                (expectation_file, stripped_line))
+          group_name = None
+      elif group_name:
+        # Currently in a group.
+        e = self._CreateExpectationFromExpectationFileLine(
+            stripped_line, expectation_file)
+        group_to_expectations[group_name].add(e)
+        expectation_to_group[e] = group_name
+      # If we aren't in a group, do nothing.
+    return group_to_expectations, expectation_to_group
 
   def _CreateExpectationFromExpectationFileLine(self, line: str,
                                                 expectation_file: str
@@ -703,12 +782,30 @@ def _WaitForUserInputOnModification() -> str:
   return response
 
 
+def _LineContainsGroupStartComment(line: str) -> bool:
+  return FINDER_GROUP_COMMENT_START in line
+
+
+def _LineContainsGroupEndComment(line: str) -> bool:
+  return FINDER_GROUP_COMMENT_END in line
+
+
 def _LineContainsDisableComment(line: str) -> bool:
   return FINDER_DISABLE_COMMENT_BASE in line
 
 
 def _LineContainsEnableComment(line: str) -> bool:
   return FINDER_ENABLE_COMMENT_BASE in line
+
+
+def _GetGroupNameFromCommentLine(line: str) -> str:
+  """Gets the group name from the finder comment on the given line."""
+  assert FINDER_GROUP_COMMENT_START in line
+  uncommented_line = line.lstrip('#').strip()
+  split_line = uncommented_line.split(maxsplit=1)
+  if len(split_line) != 2:
+    raise RuntimeError('Given line %s did not have a group name.' % line)
+  return split_line[1]
 
 
 def _GetFinderCommentSuffix(line: str) -> str:
@@ -728,7 +825,7 @@ def _GetFinderCommentSuffix(line: str) -> str:
   line = line[line.find(target_str):]
   line = line.split()[0]
   suffix = line.replace(target_str, '')
-  assert suffix in ALL_FINDER_SUFFIXES
+  assert suffix in ALL_FINDER_DISABLE_SUFFIXES
   return suffix
 
 
@@ -776,6 +873,52 @@ def _GetDisableReasonFromComment(line: str) -> str:
 
 def _IsCommentOrBlankLine(line: str) -> bool:
   return (not line or line.startswith('#'))
+
+
+def _ExpectationPartOfNonRemovableGroup(
+    current_expectation: data_types.Expectation,
+    group_to_expectations: Dict[str, Set[data_types.Expectation]],
+    expectation_to_group: Dict[data_types.Expectation, str],
+    removable_expectations: List[data_types.Expectation]):
+  """Determines if the given expectation is part of a non-removable group.
+
+  This is the case if the expectation is part of a group, but not all
+  expectations in that group are marked as removable.
+
+  Args:
+    current_expectation: A data_types.Expectation that is being checked.
+    group_to_expectations: A dict mapping group names to sets of expectations
+        contained within that group.
+    expectation_to_group: A dict mapping an expectation to the group name it
+        belongs to.
+    removable_expectations: A list of all expectations that are removable.
+  """
+  # Since we'll only ever be using this to check for inclusion, use a set
+  # for efficiency.
+  removable_expectations = set(removable_expectations)
+
+  group_name = expectation_to_group.get(current_expectation)
+  if not group_name:
+    return False
+
+  all_expectations_in_group = group_to_expectations[group_name]
+  return not (all_expectations_in_group <= removable_expectations)
+
+
+def _RemoveStaleComments(content: str) -> str:
+  """Attempts to remove stale contents from the given expectation file content.
+
+  Args:
+    content: A string containing the contents of an expectation file.
+
+  Returns:
+    A copy of |content| with various stale comments removed, e.g. group blocks
+    if the group has been removed.
+  """
+  for match in STALE_GROUP_COMMENT_REGEX.findall(content):
+    content = content.replace(match, '')
+
+  return content
 
 
 def _get_input(prompt: str) -> str:

@@ -598,6 +598,313 @@ crbug.com/3456 [ win ] unused_disabled [ Failure ]  # finder:disable-unused
             'crbug.com/1234 [ win ] bar/test [ Failure ]  '
             '# finder:disable-general foo'), 'foo')
 
+  def testGroupBlockAllRemovable(self):
+    """Tests that a group with all members removable is removed."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-start some group name
+[ linux ] bar/test [ RetryOnFailure ]
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+    ]
+
+    expected_contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set(['crbug.com/1234']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testGroupBlockNotAllRemovable(self):
+    """Tests that a group with not all members removable is not removed."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-start some group name
+[ linux ] bar/test [ RetryOnFailure ]
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+    ]
+
+    expected_contents = contents
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set())
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testGroupSplitAllRemovable(self):
+    """Tests that a split group with all members removable is removed."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-start some group name
+[ linux ] bar/test [ RetryOnFailure ]
+# finder:group-end
+
+# finder:group-start some group name
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+    ]
+
+    expected_contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set(['crbug.com/1234']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testGroupSplitNotAllRemovable(self):
+    """Tests that a split group without all members removable is not removed."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-start some group name
+[ linux ] bar/test [ RetryOnFailure ]
+# finder:group-end
+
+# finder:group-start some group name
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+    ]
+
+    expected_contents = contents
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set())
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testGroupMultipleGroupsAllRemovable(self):
+    """Tests that multiple groups with all members removable are removed."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-start some group name
+[ linux ] bar/test [ RetryOnFailure ]
+# finder:group-end
+
+# finder:group-start another group name
+crbug.com/1234 [ win ] foo/test [ Failure ]
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+    ]
+
+    expected_contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set(['crbug.com/1234']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testGroupMultipleGroupsSomeRemovable(self):
+    """Tests that multiple groups are handled separately."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-start some group name
+[ linux ] bar/test [ RetryOnFailure ]
+# finder:group-end
+
+# finder:group-start another group name
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('bar/test', ['linux'], ['RetryOnFailure'])
+    ]
+
+    expected_contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+
+# finder:group-start another group name
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/1234 [ linux ] foo/test [ Failure ]
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set())
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
+  def testNestedGroupStart(self):
+    """Tests that nested groups are disallowed."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-start some group name
+[ linux ] bar/test [ RetryOnFailure ]
+# finder:group-start another group name
+# finder:group-end
+# finder:group-end
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    with self.assertRaisesRegex(RuntimeError,
+                                'that is inside another group block'):
+      self.instance.RemoveExpectationsFromFile([], self.filename,
+                                               expectations.RemovalType.STALE)
+
+  def testOrphanedGroupEnd(self):
+    """Tests that orphaned group ends are disallowed."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-end
+[ linux ] bar/test [ RetryOnFailure ]
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    with self.assertRaisesRegex(RuntimeError, 'without a group start comment'):
+      self.instance.RemoveExpectationsFromFile([], self.filename,
+                                               expectations.RemovalType.STALE)
+
+  def testNoGroupName(self):
+    """Tests that unnamed groups are disallowed."""
+    contents = self.header + """
+
+# This is a test comment
+crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
+
+# Another comment
+# finder:group-start
+# finder:group-end
+[ linux ] bar/test [ RetryOnFailure ]
+[ win ] bar/test [ RetryOnFailure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    with self.assertRaisesRegex(RuntimeError, 'did not have a group name'):
+      self.instance.RemoveExpectationsFromFile([], self.filename,
+                                               expectations.RemovalType.STALE)
+
+  def testGroupNameExtraction(self):
+    """Tests that group names are properly extracted."""
+    group_name = expectations._GetGroupNameFromCommentLine(
+        '# finder:group-start group name')
+    self.assertEqual(group_name, 'group name')
+
 
 class GetExpectationLineUnittest(unittest.TestCase):
   def setUp(self) -> None:
