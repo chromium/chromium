@@ -351,7 +351,7 @@ void BluetoothDeviceFloss::ConnectToService(
   socket->Connect(this, FlossSocketManager::Security::kSecure, uuid,
                   base::BindOnce(std::move(callback), socket),
                   base::BindOnce(&BluetoothDeviceFloss::OnConnectToServiceError,
-                                 weak_ptr_factory_.GetWeakPtr(),
+                                 weak_ptr_factory_.GetWeakPtr(), socket,
                                  std::move(error_callback)));
 }
 
@@ -368,7 +368,7 @@ void BluetoothDeviceFloss::ConnectToServiceInsecurely(
   socket->Connect(this, FlossSocketManager::Security::kInsecure, uuid,
                   base::BindOnce(std::move(callback), socket),
                   base::BindOnce(&BluetoothDeviceFloss::OnConnectToServiceError,
-                                 weak_ptr_factory_.GetWeakPtr(),
+                                 weak_ptr_factory_.GetWeakPtr(), socket,
                                  std::move(error_callback)));
 }
 
@@ -630,6 +630,7 @@ void BluetoothDeviceFloss::OnDisconnectAllEnabledProfiles(
 }
 
 void BluetoothDeviceFloss::OnConnectToServiceError(
+    scoped_refptr<BluetoothSocketFloss> socket,
     ConnectToServiceErrorCallback error_callback,
     const std::string& error_message) {
   BLUETOOTH_LOG(ERROR) << address_

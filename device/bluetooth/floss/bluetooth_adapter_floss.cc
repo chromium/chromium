@@ -952,7 +952,9 @@ void BluetoothAdapterFloss::CreateRfcommService(
 
   socket->Listen(this, FlossSocketManager::SocketType::kRfcomm, uuid, options,
                  base::BindOnce(std::move(callback), socket),
-                 std::move(error_callback));
+                 base::BindOnce(&BluetoothAdapterFloss::OnCreateServiceError,
+                                weak_ptr_factory_.GetWeakPtr(), socket,
+                                std::move(error_callback)));
 }
 
 void BluetoothAdapterFloss::CreateL2capService(
@@ -968,7 +970,16 @@ void BluetoothAdapterFloss::CreateL2capService(
 
   socket->Listen(this, FlossSocketManager::SocketType::kL2cap, uuid, options,
                  base::BindOnce(std::move(callback), socket),
-                 std::move(error_callback));
+                 base::BindOnce(&BluetoothAdapterFloss::OnCreateServiceError,
+                                weak_ptr_factory_.GetWeakPtr(), socket,
+                                std::move(error_callback)));
+}
+
+void BluetoothAdapterFloss::OnCreateServiceError(
+    scoped_refptr<BluetoothSocketFloss> socket,
+    CreateServiceErrorCallback error_callback,
+    const std::string& error_message) {
+  std::move(error_callback).Run(error_message);
 }
 
 void BluetoothAdapterFloss::RegisterAdvertisement(

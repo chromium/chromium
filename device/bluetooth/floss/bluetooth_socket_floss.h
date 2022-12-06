@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/task/cancelable_task_tracker.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -148,6 +149,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketFloss
 
   // Socket is ready to accept the next request using callbacks here.
   std::unique_ptr<AcceptRequest> accept_request_;
+
+  // An accepted socket that is pending connection.
+  scoped_refptr<BluetoothSocketFloss> pending_accept_socket_;
+
+  // We need to cancel all socket tasks so that the ui thread both creates and
+  // destroys weak pointers. Otherwise, we run into a DCHECK.
+  base::CancelableTaskTracker socket_task_tracker_;
 
   // After a connection is accepted, store the connection until it's ready to be
   // consumed.

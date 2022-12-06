@@ -15,6 +15,7 @@
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
 #include "device/bluetooth/floss/bluetooth_pairing_floss.h"
+#include "device/bluetooth/floss/bluetooth_socket_floss.h"
 #include "device/bluetooth/floss/floss_adapter_client.h"
 #include "device/bluetooth/floss/floss_gatt_client.h"
 
@@ -162,7 +163,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
                                       ErrorCallback error_callback,
                                       DBusResult<Void> ret);
 
-  void OnConnectToServiceError(ConnectToServiceErrorCallback error_callback,
+  // Intercept errors when connecting to an L2CAP or RFCOMM socket. This keeps
+  // a reference to the |socket| so that it does not go out of scope until after
+  // the error is completed.
+  void OnConnectToServiceError(scoped_refptr<BluetoothSocketFloss> socket,
+                               ConnectToServiceErrorCallback error_callback,
                                const std::string& error_message);
 
   void TriggerInitDevicePropertiesCallback();
