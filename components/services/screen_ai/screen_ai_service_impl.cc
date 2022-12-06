@@ -81,15 +81,13 @@ std::vector<char> LoadModelFile(base::File& model_file) {
 }
 
 NO_SANITIZE("cfi-icall")
-std::string CallGetLibraryVersionFunction(LibraryFunctions* library_functions) {
+void CallGetLibraryVersionFunction(LibraryFunctions* library_functions,
+                                   uint32_t& major,
+                                   uint32_t& minor) {
   DCHECK(library_functions);
   DCHECK(library_functions->get_library_version_);
 
-  char* library_version;
-  library_functions->get_library_version_(library_version);
-  std::string version_string(library_version);
-  delete library_version;
-  return version_string;
+  library_functions->get_library_version_(major, minor);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -147,8 +145,12 @@ std::unique_ptr<LibraryFunctions> LoadAndInitializeLibrary(
   std::unique_ptr<LibraryFunctions> library_functions =
       std::make_unique<LibraryFunctions>(library_path);
 
-  VLOG(2) << "Screen AI library version: "
-          << CallGetLibraryVersionFunction(library_functions.get()) << "\n";
+  uint32_t version_major;
+  uint32_t version_minor;
+  CallGetLibraryVersionFunction(library_functions.get(), version_major,
+                                version_minor);
+  VLOG(2) << "Screen AI library version: " << version_major << "."
+          << version_minor;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   CallSetLoggerFunction(library_functions.get());

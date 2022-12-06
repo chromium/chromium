@@ -101,7 +101,7 @@ class LibraryFunctions {
   SetLoggerFn set_logger_ = nullptr;
 
   // Gets the library version number.
-  typedef void (*GetLibraryVersionFn)(char*& version_string);
+  typedef void (*GetLibraryVersionFn)(uint32_t& major, uint32_t& minor);
   GetLibraryVersionFn get_library_version_ = nullptr;
 
  private:
