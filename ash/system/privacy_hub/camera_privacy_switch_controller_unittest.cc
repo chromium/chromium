@@ -246,9 +246,8 @@ TEST_F(PrivacyHubCameraControllerTests,
   ASSERT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
-  // Emulate camera activity
-  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    true, {"0"});
+  // An application starts accessing the camera.
+  controller_->ActiveApplicationsChanged(/*application_added=*/true);
   // A notification should be fired.
   EXPECT_TRUE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
@@ -281,9 +280,8 @@ TEST_F(PrivacyHubCameraControllerTests,
   ASSERT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
-  // Emulate camera activity
-  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    true, {"0"});
+  // An application starts accessing the camera.
+  controller_->ActiveApplicationsChanged(/*application_added=*/true);
   // A notification should be fired.
   EXPECT_TRUE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
@@ -356,9 +354,8 @@ TEST_F(PrivacyHubCameraControllerTests,
   ASSERT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
-  // Emulate camera activity
-  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    true, {"0"});
+  // An application starts accessing the camera.
+  controller_->ActiveApplicationsChanged(/*application_added=*/true);
   // A notification should be fired.
   EXPECT_TRUE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
@@ -378,9 +375,8 @@ TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
   ASSERT_TRUE(message_center);
   message_center->RemoveNotification(kPrivacyHubCameraOffNotificationId, false);
 
-  // Emulate camera activity
-  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    true, {"0"});
+  // An application starts accessing the camera.
+  controller_->ActiveApplicationsChanged(/*application_added=*/true);
   // Disable camera
   SetUserPref(false);
 
@@ -408,8 +404,9 @@ TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
 }
 
 // Tests if the notification `kPrivacyHubCameraOffNotificationId` is removed
-// when the number of active clients becomes 0.
-TEST_F(PrivacyHubCameraControllerTests, NotificationRemovedWhenNoClient) {
+// when the number of apps accessing the camera becomes 0.
+TEST_F(PrivacyHubCameraControllerTests,
+       NotificationRemovedWhenNoActiveApplication) {
   SetUserPref(true);
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
@@ -419,9 +416,8 @@ TEST_F(PrivacyHubCameraControllerTests, NotificationRemovedWhenNoClient) {
   EXPECT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
-  // A new client started using the camera.
-  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    true, {"0"});
+  // This is the effect of an application starting to access the camera.
+  controller_->ActiveApplicationsChanged(/*application_added=*/true);
 
   // Disabling camera using the software switch.
   SetUserPref(false);
@@ -430,12 +426,11 @@ TEST_F(PrivacyHubCameraControllerTests, NotificationRemovedWhenNoClient) {
   EXPECT_TRUE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
-  // The only active client stops using the camera.
-  controller_->OnActiveClientChange(cros::mojom::CameraClientType::ASH_CHROME,
-                                    false, {});
+  // The only active application stops accessing the camera the camera.
+  controller_->ActiveApplicationsChanged(/*application_added=*/false);
 
   // Existing notification `kPrivacyHubCameraOffNotificationId` should be
-  // removed as the number of active clients is 0 now.
+  // removed as the number of active applications is 0 now.
   EXPECT_FALSE(
       message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
 }

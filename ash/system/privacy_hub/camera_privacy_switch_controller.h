@@ -44,8 +44,7 @@ class CameraPrivacySwitchAPI {
 // preference setting.
 class ASH_EXPORT CameraPrivacySwitchController
     : public SessionObserver,
-      public media::CameraPrivacySwitchObserver,
-      public media::CameraActiveClientObserver {
+      public media::CameraPrivacySwitchObserver {
  public:
   CameraPrivacySwitchController();
 
@@ -64,12 +63,6 @@ class ASH_EXPORT CameraPrivacySwitchController
       cros::mojom::CameraPrivacySwitchState state) override;
   void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
-
-  // media::CameraActiveClientObserver:
-  void OnActiveClientChange(
-      cros::mojom::CameraClientType type,
-      bool is_active,
-      const base::flat_set<std::string>& device_ids) override;
 
   // Handles user toggling the camera switch on Privacy Hub UI.
   void OnPreferenceChanged(const std::string& pref_name);
@@ -92,6 +85,12 @@ class ASH_EXPORT CameraPrivacySwitchController
   // for this.
   static void SetAndLogCameraPreferenceFromNotification(bool enabled);
 
+  // This is called when the set of applications accessing the camera changes.
+  // `application_added` being true means a new applications has started
+  // accessing the camera. `application_added` being false means one of the
+  // active applications has stopped accessing the camera.
+  void ActiveApplicationsChanged(bool application_added);
+
  private:
   // Displays the "Do you want to turn the camera off" notification.
   void ShowHWCameraSwitchOffSWCameraSwitchOnNotification();
@@ -110,7 +109,7 @@ class ASH_EXPORT CameraPrivacySwitchController
   std::unique_ptr<CameraPrivacySwitchAPI> switch_api_;
   cros::mojom::CameraPrivacySwitchState camera_privacy_switch_state_ =
       cros::mojom::CameraPrivacySwitchState::UNKNOWN;
-  int active_camera_client_count_ = 0;
+  int active_applications_using_camera_count_ = 0;
   bool is_camera_observer_added_ = false;
 };
 

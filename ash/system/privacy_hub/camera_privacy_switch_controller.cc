@@ -66,8 +66,6 @@ CameraPrivacySwitchController::CameraPrivacySwitchController()
 
 CameraPrivacySwitchController::~CameraPrivacySwitchController() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  media::CameraHalDispatcherImpl::GetInstance()->RemoveActiveClientObserver(
-      this);
   media::CameraHalDispatcherImpl::GetInstance()
       ->RemoveCameraPrivacySwitchObserver(this);
 }
@@ -100,8 +98,6 @@ void CameraPrivacySwitchController::OnActiveUserPrefServiceChanged(
         camera_privacy_switch_state_ = state;
       }
     }
-    media::CameraHalDispatcherImpl::GetInstance()->AddActiveClientObserver(
-        this);
     is_camera_observer_added_ = true;
   }
 
@@ -115,7 +111,7 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
   const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
   switch_api_->SetCameraSWPrivacySwitch(pref_val);
   ClearSWSwitchNotifications();
-  if (active_camera_client_count_ > 0 &&
+  if (active_applications_using_camera_count_ > 0 &&
       pref_val == CameraSWPrivacySwitchSetting::kDisabled) {
     // Show notification in case we switch off the camera when the camera is
     // used by an app.
@@ -272,20 +268,18 @@ void CameraPrivacySwitchController::ClearSWSwitchNotifications() {
       /*by_user=*/false);
 }
 
-void CameraPrivacySwitchController::OnActiveClientChange(
-    cros::mojom::CameraClientType type,
-    bool is_new_active_client,
-    const base::flat_set<std::string>& active_device_ids) {
-  if (is_new_active_client) {
-    active_camera_client_count_++;
-  } else if (active_device_ids.empty()) {
-    DCHECK(active_camera_client_count_ > 0);
-    active_camera_client_count_--;
+void CameraPrivacySwitchController::ActiveApplicationsChanged(
+    bool application_added) {
+  if (application_added) {
+    active_applications_using_camera_count_++;
+  } else {
+    DCHECK_GT(active_applications_using_camera_count_, 0);
+    active_applications_using_camera_count_--;
   }
 
-  // Notification should pop up when the number of active clients increases but
+  // Notification should pop up when an application starts using the camera but
   // the camera is disabled by the software switch.
-  if (is_new_active_client &&
+  if (application_added &&
       GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kDisabled) {
     Shell::Get()
         ->system_notification_controller()
@@ -294,9 +288,9 @@ void CameraPrivacySwitchController::OnActiveClientChange(
             PrivacyHubNotificationController::Sensor::kCamera);
   }
 
-  // Remove existing software switch notification when the number of active
-  // clients is 0.
-  if (active_camera_client_count_ == 0) {
+  // Remove existing software switch notification when no application is using
+  // the camera anymore.
+  if (active_applications_using_camera_count_ == 0) {
     Shell::Get()
         ->system_notification_controller()
         ->privacy_hub()

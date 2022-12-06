@@ -232,7 +232,9 @@ class AppAccessNotifierBaseTest : public testing::Test {
 
 class AppAccessNotifierParameterizedTest
     : public AppAccessNotifierBaseTest,
-      public testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<
+          std::tuple</*IsPrivacyIndicatorsFeatureEnabled()=*/bool,
+                     /*IsCrosPrivacyHubEnabled()=*/bool>> {
  public:
   AppAccessNotifierParameterizedTest() = default;
   AppAccessNotifierParameterizedTest(
@@ -243,20 +245,26 @@ class AppAccessNotifierParameterizedTest
 
   // AppAccessNotifierBaseTest:
   void SetUp() override {
-    if (IsPrivacyIndicatorsFeatureEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {apps::kAppServiceCapabilityAccessWithoutMojom,
-           ash::features::kPrivacyIndicators},
-          {});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {apps::kAppServiceCapabilityAccessWithoutMojom},
-          {ash::features::kPrivacyIndicators});
-    }
+    std::vector<base::test::FeatureRef> enabled_features{
+        apps::kAppServiceCapabilityAccessWithoutMojom};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    (IsPrivacyIndicatorsFeatureEnabled() ? enabled_features : disabled_features)
+        .push_back(ash::features::kPrivacyIndicators);
+
+    (IsCrosPrivacyHubEnabled() ? enabled_features : disabled_features)
+        .push_back(ash::features::kCrosPrivacyHub);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+
     AppAccessNotifierBaseTest::SetUp();
   }
 
-  bool IsPrivacyIndicatorsFeatureEnabled() const { return GetParam(); }
+  bool IsPrivacyIndicatorsFeatureEnabled() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool IsCrosPrivacyHubEnabled() const { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -287,7 +295,8 @@ class AppAccessNotifierPrivacyIndicatorTest : public AppAccessNotifierBaseTest {
 INSTANTIATE_TEST_SUITE_P(
     All,
     AppAccessNotifierParameterizedTest,
-    /*IsPrivacyIndicatorsFeatureEnabled()=*/::testing::Bool());
+    ::testing::Combine(/*IsPrivacyIndicatorsFeatureEnabled()=*/testing::Bool(),
+                       /*IsCrosPrivacyHubEnabled()=*/testing::Bool()));
 
 TEST_P(AppAccessNotifierParameterizedTest, NoAppsLaunched) {
   // Should return a empty list of application names.

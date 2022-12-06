@@ -93,9 +93,14 @@ class AppAccessNotifier
 
   // Each user has their own list of MRU apps.  It's intended to persist across
   // multiple logouts/logins, and we specifically don't ever clear it. This is
-  // used for the microphone mute notification.
+  // used for the microphone and camera mute notifications.
   using MruAppIdMap = std::map<AccountId, MruAppIdList>;
-  MruAppIdMap mic_using_app_ids;
+
+  // A helper to check if `app_id` can be found in `id_map` for the active user.
+  bool MapContainsAppId(const MruAppIdMap& id_map, const std::string& app_id);
+
+  MruAppIdMap mic_using_app_ids_;
+  MruAppIdMap camera_using_app_ids_;
 
   // Account ID of the last known active user.
   AccountId active_user_account_id_ = EmptyAccountId();
