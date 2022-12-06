@@ -53,8 +53,11 @@ class COMPONENT_EXPORT(ASH_MEMORY) ZramMetrics
   ZramMetrics(const ZramMetrics&) = delete;
   ZramMetrics& operator=(const ZramMetrics&) = delete;
 
-  // Must be called on a background sequence.
-  void CollectEvents();
+  // Must be called on a background sequence. Updates the cached instance of
+  // orig_data_size_mb_. Returns false if there's an error.
+  bool CollectEvents();
+
+  uint32_t orig_data_size_mb() const { return orig_data_size_mb_; }
 
  private:
   // Friend it so it can call our private destructor.
@@ -68,6 +71,10 @@ class COMPONENT_EXPORT(ASH_MEMORY) ZramMetrics
   bool has_old_huge_pages_ = false;
   uint64_t old_huge_pages_ = 0;
   uint64_t old_huge_pages_since_ = 0;
+
+  // A cached instance of OrigDataSizeMB. Only valid if CollectEvents returns
+  // true.
+  uint32_t orig_data_size_mb_ = 0;
 
   // The background task runner where the collection takes place.
   scoped_refptr<base::SequencedTaskRunner> runner_;

@@ -246,19 +246,19 @@ bool GetZramIoStats(ZramIoStat* zram_io_stat) {
 ZramMetrics::ZramMetrics() = default;
 ZramMetrics::~ZramMetrics() = default;
 
-void ZramMetrics::CollectEvents() {
+bool ZramMetrics::CollectEvents() {
   ZramMmStat zram_mm_stat;
 
   if (!GetZramMmStats(&zram_mm_stat)) {
-    return;
+    return false;
   }
 
   const int kTotalPagesSwapped =
       zram_mm_stat.orig_data_size / base::GetPageSize();
 
+  orig_data_size_mb_ = zram_mm_stat.orig_data_size / kMB;
   UMA_HISTOGRAM_MEMORY_LARGE_MB("ChromeOS.Zram.OrigDataSizeMB",
-                                zram_mm_stat.orig_data_size / kMB);
-
+                                orig_data_size_mb_);
   UMA_HISTOGRAM_MEMORY_LARGE_MB("ChromeOS.Zram.ComprDataSizeMB",
                                 zram_mm_stat.compr_data_size / kMB);
 
@@ -325,7 +325,7 @@ void ZramMetrics::CollectEvents() {
   ZramBdStat zram_bd_stat;
 
   if (!GetZramBdStats(&zram_bd_stat)) {
-    return;
+    return false;
   }
 
   UMA_HISTOGRAM_COUNTS_1M("ChromeOS.Zram.BdCount", zram_bd_stat.bd_count);
@@ -337,7 +337,7 @@ void ZramMetrics::CollectEvents() {
   ZramIoStat zram_io_stat;
 
   if (!GetZramIoStats(&zram_io_stat)) {
-    return;
+    return false;
   }
 
   UMA_HISTOGRAM_COUNTS_1000("ChromeOS.Zram.FailedReads",
@@ -350,6 +350,7 @@ void ZramMetrics::CollectEvents() {
 
   UMA_HISTOGRAM_COUNTS_1000("ChromeOS.Zram.NotifyFree",
                             zram_io_stat.notify_free);
+  return true;
 }
 
 }  // namespace memory
