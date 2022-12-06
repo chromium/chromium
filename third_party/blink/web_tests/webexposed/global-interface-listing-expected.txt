@@ -5242,6 +5242,7 @@ interface MLGraphBuilder
     method min
     method mul
     method relu
+    method resample2d
     method reshape
     method softmax
     method sub

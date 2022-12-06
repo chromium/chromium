@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 389 tests; 163 PASS, 226 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 389 tests; 164 PASS, 225 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup assert_unreached: navigator.ml.createContext returned a Promise Reached unreachable code
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -217,7 +217,7 @@ FAIL MLGraphBuilder interface: operation reduceSum(MLOperand, optional MLReduceO
 FAIL MLGraphBuilder interface: operation reduceSumSquare(MLOperand, optional MLReduceOptions) assert_own_property: interface prototype object missing non-static operation expected property "reduceSumSquare" missing
 PASS MLGraphBuilder interface: operation relu(MLOperand)
 PASS MLGraphBuilder interface: operation relu()
-FAIL MLGraphBuilder interface: operation resample2d(MLOperand, optional MLResample2dOptions) assert_own_property: interface prototype object missing non-static operation expected property "resample2d" missing
+PASS MLGraphBuilder interface: operation resample2d(MLOperand, optional MLResample2dOptions)
 PASS MLGraphBuilder interface: operation reshape(MLOperand, sequence<long>)
 FAIL MLGraphBuilder interface: operation sigmoid(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "sigmoid" missing
 FAIL MLGraphBuilder interface: operation sigmoid() assert_own_property: interface prototype object missing non-static operation expected property "sigmoid" missing

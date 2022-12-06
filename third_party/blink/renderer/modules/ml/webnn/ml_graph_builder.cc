@@ -14,7 +14,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/buildflags.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -1056,6 +1059,113 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
     return nullptr;
   }
   reshape->Connect({input}, {output});
+  return output;
+}
+
+MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
+                                      const MLResample2dOptions* options,
+                                      ExceptionState& exception_state) {
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d, the input
+  // must be a 4-D tensor.
+  const auto input_shape = input->Dimensions();
+  if (input_shape.size() != 4) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The input must be a 4-D tensor.");
+    return nullptr;
+  }
+
+  const auto axes = options->getAxesOr({2, 3});
+  if (axes.size() != 2) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The length of axes should be 2.");
+    return nullptr;
+  } else if (!((axes[0] == 0 && axes[1] == 1) ||
+               (axes[0] == 1 && axes[1] == 2) ||
+               (axes[0] == 2 && axes[1] == 3))) {
+    // According to WebNN spec:
+    // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d,
+    // the valid values in the sequence are [0, 1], [1, 2] or [2, 3].
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      "The values of axes are invalid.");
+    return nullptr;
+  }
+
+  Vector<uint32_t> output_shape(input_shape);
+  if (options->hasSizes()) {
+    if (options->hasScales()) {
+      auto* execution_context = GetContext()->GetML()->GetExecutionContext();
+      if (!execution_context) {
+        exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                          "Execution context is invalid.");
+        return nullptr;
+      }
+      execution_context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "When sizes and scales are both specified, scales argument is "
+          "ignored."));
+    }
+    if (options->sizes().size() != 2) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The length of sizes should be 2.");
+      return nullptr;
+    } else if (std::any_of(options->sizes().begin(), options->sizes().end(),
+                           [](int32_t x) { return x <= 0; })) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "All sizes should be greater than 0.");
+      return nullptr;
+    }
+    // The current WebNN spec defines the sizes as signed integer:
+    // https://www.w3.org/TR/webnn/#dom-mlresample2doptions-sizes
+    // And an issue has been filed to track it:
+    // https://github.com/webmachinelearning/webnn/issues/300
+    // Before this issue is fixed, the signed integers are checked_cast to
+    // unsigned integers for output shape.
+    output_shape[axes[0]] = base::checked_cast<uint32_t>(options->sizes()[0]);
+    output_shape[axes[1]] = base::checked_cast<uint32_t>(options->sizes()[1]);
+  } else {
+    const auto scales = options->getScalesOr({1.0f, 1.0f});
+    if (scales.size() != 2) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The length of scales should be 2.");
+      return nullptr;
+    } else if (std::any_of(scales.begin(), scales.end(),
+                           [](float x) { return x <= 0.0f; })) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "All scales should be greater than 0.");
+      return nullptr;
+    }
+    base::CheckedNumeric<uint32_t> checked_output_height =
+        input_shape[axes[0]] * scales[0];
+    if (!checked_output_height.AssignIfValid(&output_shape[axes[0]])) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The scale height is too large.");
+      return nullptr;
+    }
+    base::CheckedNumeric<uint32_t> checked_output_width =
+        input_shape[axes[1]] * scales[1];
+    if (!checked_output_width.AssignIfValid(&output_shape[axes[1]])) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                        "The scale width is too large.");
+      return nullptr;
+    }
+  }
+
+  auto* resample = MakeGarbageCollected<MLOperator>(
+      this, MLOperator::OperatorKind::kResample, options);
+  String error_message;
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d, the output
+  // tensor of resample2d has the same type as its input.
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), std::move(output_shape), resample, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  resample->Connect({input}, {output});
   return output;
 }
 

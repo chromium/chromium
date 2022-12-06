@@ -24,6 +24,7 @@ class MLConv2dOptions;
 class MLGemmOptions;
 class MLGraph;
 class MLPool2dOptions;
+class MLResample2dOptions;
 class MLOperand;
 class MLOperandDescriptor;
 class ScriptPromiseResolver;
@@ -109,6 +110,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* reshape(const MLOperand* input,
                      const Vector<int32_t>& new_shape,
                      ExceptionState& exception_state);
+
+  MLOperand* resample2d(const MLOperand* input,
+                        const MLResample2dOptions* options,
+                        ExceptionState& exception_state);
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
 

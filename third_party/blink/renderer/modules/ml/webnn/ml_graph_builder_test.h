@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -78,6 +79,12 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      const MLOperand* a,
                      const MLOperand* b,
                      const MLGemmOptions* options = MLGemmOptions::Create());
+
+MLOperand* BuildResample2d(
+    V8TestingScope& scope,
+    MLGraphBuilder* builder,
+    const MLOperand* input,
+    const MLResample2dOptions* options = MLResample2dOptions::Create());
 
 enum ExecutionMode { kAsync, kSync };
 
