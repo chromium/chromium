@@ -155,6 +155,19 @@ class PrivacySandboxSettings : public KeyedService {
   bool IsSharedStorageAllowed(const url::Origin& top_frame_origin,
                               const url::Origin& accessing_origin) const;
 
+  // Stubs for updated Shared Storage access controls.
+  // TODO(crbug.com/1378703): These just redirect to the general
+  // IsSharedStorageAllowed(). The implementation needs to be updated to reflect
+  // the M1 preferences when release 4 is enabled. It's also not clear that the
+  // top frame is required, exact details of site data exceptions remain TBD.
+  bool IsSharedStorageWriteAllowed(const url::Origin& top_frame_origin,
+                                   const url::Origin& accessing_origin);
+  bool IsSharedStorageSelectURLAllowed(const url::Origin& top_frame_origin,
+                                       const url::Origin& accessing_origin);
+  bool IsSharedStorageAggregateReportingAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin);
+
   // Determines whether the Private Aggregation API is allowable in a particular
   // context. `top_frame_origin` is the associated top-frame origin of the
   // calling context.

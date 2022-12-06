@@ -324,6 +324,28 @@ bool PrivacySandboxSettings::IsSharedStorageAllowed(
                                            top_frame_origin);
 }
 
+bool PrivacySandboxSettings::IsSharedStorageWriteAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  // TODO(crbug.com/1378703): Respect appropriate M1 pref and site data settings
+  // when release 4 is enabled.
+  return IsSharedStorageAllowed(top_frame_origin, accessing_origin);
+}
+bool PrivacySandboxSettings::IsSharedStorageSelectURLAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  // TODO(crbug.com/1378703): Respect appropriate M1 pref and site data settings
+  // when release 4 is enabled.
+  return IsSharedStorageAllowed(top_frame_origin, accessing_origin);
+}
+bool PrivacySandboxSettings::IsSharedStorageAggregateReportingAllowed(
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  // TODO(crbug.com/1378703): Respect appropriate M1 pref and site data settings
+  // when release 4 is enabled.
+  return IsSharedStorageAllowed(top_frame_origin, accessing_origin);
+}
+
 bool PrivacySandboxSettings::IsPrivateAggregationAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
