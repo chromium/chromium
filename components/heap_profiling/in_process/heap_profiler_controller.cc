@@ -139,6 +139,40 @@ void RecordUmaSnapshotInterval(base::TimeDelta interval,
                                 kMaxHistogramTime, 50);
 }
 
+// Records metrics about the quality of each stack that is sampled. `stack_size`
+// is the number of frames in the stack. `num_missing_modules` is the number of
+// frames that couldn't be mapped to a module using ModuleCache.
+void RecordUmaStackQualityMetrics(ProcessType process_type,
+                                  size_t stack_size,
+                                  size_t num_missing_modules) {
+  // From inspecting reports received on Android, most reports with only 1 to 3
+  // frames are clearly truncated, suggesting a problem with the unwinder, or
+  // contain a JNI base call that directly allocates. (These are not broken but
+  // don't have anything actionable in them.) Reports with 4 frames are more
+  // likely to be useful but still have a large proportion of truncated or
+  // non-actionable stacks. With 5 or more frames the stacks are more likely
+  // than not to be actionable.
+  constexpr size_t kMinFramesForGoodQuality = 5;
+
+  const bool has_few_frames = stack_size < kMinFramesForGoodQuality;
+  base::UmaHistogramBoolean("HeapProfiling.InProcess.ShortStacks",
+                            has_few_frames);
+  base::UmaHistogramBoolean(
+      ProcessHistogramName("HeapProfiling.InProcess.ShortStacks", process_type),
+      has_few_frames);
+
+  if (stack_size > 0) {
+    const double module_coverage =
+        100.0 * (stack_size - num_missing_modules) / stack_size;
+    base::UmaHistogramPercentage("HeapProfiling.InProcess.ModuleCoverage",
+                                 module_coverage);
+    base::UmaHistogramPercentage(
+        ProcessHistogramName("HeapProfiling.InProcess.ModuleCoverage",
+                             process_type),
+        module_coverage);
+  }
+}
+
 }  // namespace
 
 HeapProfilerController::SnapshotParams::SnapshotParams(
@@ -252,14 +286,12 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
   using Sample = base::SamplingHeapProfiler::Sample;
   std::vector<Sample> samples =
       base::SamplingHeapProfiler::Get()->GetSamples(0);
-  constexpr char kSamplesPerSnapshotHistogramName[] =
-      "HeapProfiling.InProcess.SamplesPerSnapshot";
   base::UmaHistogramCounts100000(
       ProcessHistogramName("HeapProfiling.InProcess.SamplesPerSnapshot",
                            process_type),
       samples.size());
   // Also summarize over all process types.
-  base::UmaHistogramCounts100000(kSamplesPerSnapshotHistogramName,
+  base::UmaHistogramCounts100000("HeapProfiling.InProcess.SamplesPerSnapshot",
                                  samples.size());
   if (samples.empty())
     return;
@@ -278,14 +310,22 @@ void HeapProfilerController::RetrieveAndSendSnapshot(
     const Sample& sample = pair.first;
     const SampleValue& value = pair.second;
 
+    const size_t stack_size = sample.stack.size();
     std::vector<base::Frame> frames;
-    frames.reserve(sample.stack.size());
+    frames.reserve(stack_size);
+    size_t num_missing_modules = 0;
     for (const void* frame : sample.stack) {
-      uintptr_t address = reinterpret_cast<uintptr_t>(frame);
+      const uintptr_t address = reinterpret_cast<const uintptr_t>(frame);
       const base::ModuleCache::Module* module =
           module_cache.GetModuleForAddress(address);
+      if (!module) {
+        num_missing_modules += 1;
+      }
       frames.emplace_back(address, module);
     }
+
+    RecordUmaStackQualityMetrics(process_type, stack_size, num_missing_modules);
+
     // Heap "samples" represent allocation stacks aggregated over time so
     // do not have a meaningful timestamp.
     profile_builder.OnSampleCompleted(std::move(frames), base::TimeTicks(),

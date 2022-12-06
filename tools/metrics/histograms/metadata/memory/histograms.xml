@@ -67,6 +67,18 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
+<histogram name="HeapProfiling.InProcess.ModuleCoverage{Process}" units="%"
+    expires_after="2023-06-05">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    For every stack captured by the in-process heap profiler in {Process},
+    records the percentage of stack frames whose address could be mapped to a
+    module using ModuleCache. Emitted at the time a snapshot is taken with an
+    entry for every stack in the snapshot.
+  </summary>
+</histogram>
+
 <histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
     units="samples" expires_after="2022-12-02">
   <owner>joenotcharles@chromium.org</owner>
@@ -76,6 +88,18 @@ chromium-metrics-reviews@google.com.
     per snapshot when the in-process heap profiler is enabled.
   </summary>
   <token key="Process" variants="ProfiledProcess"/>
+</histogram>
+
+<histogram name="HeapProfiling.InProcess.ShortStacks{Process}" units="Boolean"
+    expires_after="2023-06-05">
+  <owner>joenotcharles@chromium.org</owner>
+  <owner>chrome-memory@google.com</owner>
+  <summary>
+    For every stack captured by the in-process heap profiler in {Process},
+    records if it has fewer than 5 frames. Stacks with few frames are
+    low-quality and may indicate a problem with the stack unwinder. Emitted at
+    the time a snapshot is taken with an entry for every stack in the snapshot.
+  </summary>
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.SnapshotInterval" units="ms"
