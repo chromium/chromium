@@ -32,7 +32,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
     ~TimeMarker();
 
     const char* name() const { return name_; }
-    base::Time time() const { return time_; }
+    base::TimeTicks time() const { return time_; }
     const absl::optional<std::string>& url() const { return url_; }
     bool send_to_uma() const { return send_to_uma_; }
     bool write_to_file() const { return write_to_file_; }
@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_METRICS) LoginEventRecorder {
    private:
     friend class std::vector<TimeMarker>;
     const char* name_;
-    base::Time time_ = base::Time::NowFromSystemTime();
+    base::TimeTicks time_ = base::TimeTicks::Now();
     absl::optional<std::string> url_;
     bool send_to_uma_;
     bool write_to_file_;

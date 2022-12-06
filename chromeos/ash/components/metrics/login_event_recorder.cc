@@ -96,8 +96,8 @@ void WriteTimes(const std::string base_name,
   // created (potentially on other threads).
   std::sort(times.begin(), times.end());
 
-  base::Time first = times.front().time();
-  base::Time last = times.back().time();
+  base::TimeTicks first = times.front().time();
+  base::TimeTicks last = times.back().time();
   base::TimeDelta total = last - first;
   base::HistogramBase* total_hist = base::Histogram::FactoryTimeGet(
       uma_name, base::Milliseconds(kMinTimeMillis),
@@ -110,34 +110,28 @@ void WriteTimes(const std::string base_name,
     UMA_HISTOGRAM_CUSTOM_TIMES("Ash.Tast.BootTime.Login2", total,
                                base::Milliseconds(1), base::Seconds(300), 100);
   }
-  base::Time prev = first;
-  // Convert base::Time to base::TimeTicks for tracing.
-  auto time2timeticks = [](const base::Time& ts) {
-    return base::TimeTicks::Now() - (base::Time::Now() - ts);
-  };
+  base::TimeTicks prev = first;
   // Send first event to name the track:
   // "In Chrome, we usually don't bother setting explicit track names. If none
   // is provided, the track is named after the first event on the track."
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), time2timeticks(prev));
+      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
 
   for (unsigned int i = 0; i < times.size(); ++i) {
     const LoginEventRecorder::TimeMarker& tm = times[i];
 
     if (tm.url().has_value()) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes),
-          time2timeticks(prev), "url", *tm.url());
+          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), prev, "url",
+          *tm.url());
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes),
-          time2timeticks(tm.time()), "url", *tm.url());
+          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), tm.time(), "url",
+          *tm.url());
     } else {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes),
-          time2timeticks(prev));
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("startup", tm.name(),
-                                                     TRACE_ID_LOCAL(kBootTimes),
-                                                     time2timeticks(tm.time()));
+          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), prev);
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+          "startup", tm.name(), TRACE_ID_LOCAL(kBootTimes), tm.time());
     }
 
     base::TimeDelta since_first = tm.time() - first;
@@ -166,7 +160,7 @@ void WriteTimes(const std::string base_name,
   }
   output += '\n';
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), time2timeticks(prev));
+      "startup", kBootTimes, TRACE_ID_LOCAL(kBootTimes), prev);
 
   base::WriteFile(log_path.Append(base_name), output.data(), output.size());
 }

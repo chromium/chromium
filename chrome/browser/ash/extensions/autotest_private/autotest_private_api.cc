@@ -6089,7 +6089,7 @@ AutotestPrivateGetLoginEventRecorderLoginEventsFunction::Run() {
     api::autotest_private::LoginEventRecorderData event_data;
     event_data.name = data.name();
     event_data.microsecnods_since_unix_epoch =
-        (data.time() - base::Time::UnixEpoch()).InMicroseconds();
+        (data.time() - base::TimeTicks::UnixEpoch()).InMicroseconds();
     result_data.emplace_back(std::move(event_data));
   }
 
