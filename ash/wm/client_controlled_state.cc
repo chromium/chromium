@@ -73,20 +73,6 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     WindowStateType next_state_type =
         GetStateForTransitionEvent(window_state, event);
     delegate_->HandleWindowStateRequest(window_state, next_state_type);
-    WindowStateType old_state_type = state_type_;
-
-    bool was_pinned = window_state->IsPinned();
-    bool was_trusted_pinned = window_state->IsTrustedPinned();
-
-    set_next_bounds_change_animation_type(
-        WindowState::BoundsChangeAnimationType::kCrossFade);
-    EnterNextState(window_state, next_state_type);
-
-    VLOG(1) << "Processing Pinned Transition: event=" << event_type
-            << ", state=" << old_state_type << "=>" << next_state_type
-            << ", pinned=" << was_pinned << "=>" << window_state->IsPinned()
-            << ", trusted pinned=" << was_trusted_pinned << "=>"
-            << window_state->IsTrustedPinned();
     return;
   }
 
@@ -292,10 +278,11 @@ bool ClientControlledState::EnterNextState(WindowState* window_state,
 
   if (IsPinnedWindowStateType(next_state_type) ||
       IsPinnedWindowStateType(previous_state_type)) {
+    set_next_bounds_change_animation_type(
+        WindowState::BoundsChangeAnimationType::kCrossFade);
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
   }
-
   return true;
 }
 

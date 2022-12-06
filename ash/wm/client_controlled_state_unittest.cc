@@ -16,6 +16,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -435,13 +436,19 @@ TEST_F(ClientControlledStateTest, SnapMinimizeAndUnminimize) {
   EXPECT_EQ(resized_bounds, delegate()->requested_bounds());
 }
 
-// Pin events should be applied immediately.
+// Pin events should not be applied immediately. The request should be sent
+// to delegate.
 TEST_F(ClientControlledStateTest, Pinned) {
   ASSERT_FALSE(window_state()->IsPinned());
   ASSERT_FALSE(GetScreenPinningController()->IsPinned());
 
   const WMEvent pin_event(WM_EVENT_PIN);
   window_state()->OnWMEvent(&pin_event);
+  EXPECT_FALSE(window_state()->IsPinned());
+  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kPinned, delegate()->new_state());
+
+  state()->EnterNextState(window_state(), WindowStateType::kPinned);
   EXPECT_TRUE(window_state()->IsPinned());
   EXPECT_TRUE(GetScreenPinningController()->IsPinned());
   EXPECT_EQ(WindowStateType::kPinned, window_state()->GetStateType());
@@ -473,6 +480,11 @@ TEST_F(ClientControlledStateTest, Pinned) {
   EXPECT_EQ(new_bounds, widget()->GetWindowBoundsInScreen());
 
   widget()->Restore();
+  EXPECT_TRUE(window_state()->IsPinned());
+  EXPECT_EQ(WindowStateType::kPinned, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kNormal, delegate()->new_state());
+  state()->EnterNextState(window_state(), WindowStateType::kNormal);
+
   EXPECT_FALSE(window_state()->IsPinned());
   EXPECT_EQ(WindowStateType::kNormal, window_state()->GetStateType());
   EXPECT_FALSE(GetScreenPinningController()->IsPinned());
@@ -485,8 +497,9 @@ TEST_F(ClientControlledStateTest, Pinned) {
   EXPECT_TRUE(GetScreenPinningController()->IsPinned());
 
   // Pin request should fail.
-  window_state()->OnWMEvent(&pin_event);
   EXPECT_FALSE(window_state()->IsPinned());
+  window_state()->OnWMEvent(&pin_event);
+  EXPECT_NE(WindowStateType::kPinned, delegate()->new_state());
 }
 
 TEST_F(ClientControlledStateTest, TrustedPinnedBasic) {
@@ -495,6 +508,11 @@ TEST_F(ClientControlledStateTest, TrustedPinnedBasic) {
 
   const WMEvent trusted_pin_event(WM_EVENT_TRUSTED_PIN);
   window_state()->OnWMEvent(&trusted_pin_event);
+  EXPECT_FALSE(window_state()->IsPinned());
+  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kTrustedPinned, delegate()->new_state());
+
+  state()->EnterNextState(window_state(), WindowStateType::kTrustedPinned);
   EXPECT_TRUE(window_state()->IsPinned());
   EXPECT_TRUE(GetScreenPinningController()->IsPinned());
 
@@ -527,6 +545,10 @@ TEST_F(ClientControlledStateTest, TrustedPinnedBasic) {
   EXPECT_EQ(new_bounds, widget()->GetWindowBoundsInScreen());
 
   widget()->Restore();
+  EXPECT_TRUE(window_state()->IsPinned());
+  EXPECT_EQ(WindowStateType::kTrustedPinned, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kNormal, delegate()->new_state());
+  state()->EnterNextState(window_state(), WindowStateType::kNormal);
   EXPECT_FALSE(window_state()->IsPinned());
   EXPECT_EQ(WindowStateType::kNormal, window_state()->GetStateType());
   EXPECT_FALSE(GetScreenPinningController()->IsPinned());
@@ -540,7 +562,7 @@ TEST_F(ClientControlledStateTest, TrustedPinnedBasic) {
 
   EXPECT_FALSE(window_state()->IsTrustedPinned());
   window_state()->OnWMEvent(&trusted_pin_event);
-  EXPECT_FALSE(window_state()->IsTrustedPinned());
+  EXPECT_NE(WindowStateType::kTrustedPinned, delegate()->new_state());
   EXPECT_TRUE(window_state_2->IsTrustedPinned());
 }
 
@@ -550,6 +572,11 @@ TEST_F(ClientControlledStateTest, ClosePinned) {
 
   const WMEvent trusted_pin_event(WM_EVENT_TRUSTED_PIN);
   window_state()->OnWMEvent(&trusted_pin_event);
+  EXPECT_FALSE(window_state()->IsPinned());
+  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kTrustedPinned, delegate()->new_state());
+  state()->EnterNextState(window_state(), WindowStateType::kTrustedPinned);
+
   EXPECT_TRUE(window_state()->IsPinned());
   EXPECT_TRUE(GetScreenPinningController()->IsPinned());
   delegate()->mark_as_deleted();

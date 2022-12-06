@@ -55,6 +55,12 @@ void ClientControlledShellSurfaceDelegate::OnStateChanged(
     case chromeos::WindowStateType::kFullscreen:
       shell_surface_->SetFullscreen(true);
       break;
+    case chromeos::WindowStateType::kPinned:
+      shell_surface_->SetPinned(chromeos::WindowPinType::kPinned);
+      break;
+    case chromeos::WindowStateType::kTrustedPinned:
+      shell_surface_->SetPinned(chromeos::WindowPinType::kTrustedPinned);
+      break;
     default:
       NOTIMPLEMENTED();
       break;

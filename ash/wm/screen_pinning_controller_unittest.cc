@@ -204,12 +204,13 @@ TEST_F(ScreenPinningControllerTest, CleanUpObserversAndDimmer) {
   ash::WindowState* ws = ash::WindowState::Get(w.get());
   auto delegate = std::make_unique<TestClientControlledStateDelegate>();
   auto state = std::make_unique<ClientControlledState>(std::move(delegate));
+  auto* state_raw = state.get();
   ws->SetStateObject(std::move(state));
 
   wm::ActivateWindow(w.get());
 
   // Observer should be added to |w|, and |w->parent()|.
-  window_util::PinWindow(w.get(), /* truested */ false);
+  state_raw->EnterNextState(ws, chromeos::WindowStateType::kPinned);
   EXPECT_TRUE(WindowState::Get(w.get())->IsPinned());
 
   const aura::Window* container = w->parent();

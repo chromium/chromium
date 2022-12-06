@@ -131,15 +131,23 @@ TEST_F(ClientControlledShellSurfaceTest, SetPinned) {
                            .BuildClientControlledShellSurface();
 
   shell_surface->SetPinned(chromeos::WindowPinType::kTrustedPinned);
+  EXPECT_FALSE(IsWidgetPinned(shell_surface->GetWidget()));
+  shell_surface->root_surface()->Commit();
   EXPECT_TRUE(IsWidgetPinned(shell_surface->GetWidget()));
 
-  shell_surface->SetPinned(chromeos::WindowPinType::kNone);
+  shell_surface->SetRestored();
+  EXPECT_TRUE(IsWidgetPinned(shell_surface->GetWidget()));
+  shell_surface->root_surface()->Commit();
   EXPECT_FALSE(IsWidgetPinned(shell_surface->GetWidget()));
 
   shell_surface->SetPinned(chromeos::WindowPinType::kPinned);
+  EXPECT_FALSE(IsWidgetPinned(shell_surface->GetWidget()));
+  shell_surface->root_surface()->Commit();
   EXPECT_TRUE(IsWidgetPinned(shell_surface->GetWidget()));
 
-  shell_surface->SetPinned(chromeos::WindowPinType::kNone);
+  shell_surface->SetRestored();
+  EXPECT_TRUE(IsWidgetPinned(shell_surface->GetWidget()));
+  shell_surface->root_surface()->Commit();
   EXPECT_FALSE(IsWidgetPinned(shell_surface->GetWidget()));
 }
 
@@ -2163,20 +2171,30 @@ TEST_F(ClientControlledShellSurfaceTest,
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 }
 
-class NoStateChangeDelegate
+class StateChangeCounterDelegate
     : public test::ClientControlledShellSurfaceDelegate {
  public:
-  explicit NoStateChangeDelegate(ClientControlledShellSurface* shell_surface)
-      : test::ClientControlledShellSurfaceDelegate(shell_surface) {}
-  ~NoStateChangeDelegate() override = default;
-  NoStateChangeDelegate(const NoStateChangeDelegate&) = delete;
-  NoStateChangeDelegate& operator=(const NoStateChangeDelegate&) = delete;
+  explicit StateChangeCounterDelegate(
+      ClientControlledShellSurface* shell_surface,
+      int expected_state_change_count)
+      : test::ClientControlledShellSurfaceDelegate(shell_surface),
+        expected_state_change_count_(expected_state_change_count) {}
+  ~StateChangeCounterDelegate() override {
+    EXPECT_EQ(0, expected_state_change_count_);
+  }
+  StateChangeCounterDelegate(const StateChangeCounterDelegate&) = delete;
+  StateChangeCounterDelegate& operator=(const StateChangeCounterDelegate&) =
+      delete;
 
  private:
+  int expected_state_change_count_ = 0;
+
   // ClientControlledShellSurface::Delegate:
   void OnStateChanged(chromeos::WindowStateType old_state_type,
                       chromeos::WindowStateType new_state_type) override {
-    EXPECT_TRUE(false);
+    ClientControlledShellSurfaceDelegate::OnStateChanged(old_state_type,
+                                                         new_state_type);
+    expected_state_change_count_--;
   }
 };
 
@@ -2188,8 +2206,30 @@ TEST_F(ClientControlledShellSurfaceTest, DoNotReplayWindowStateRequest) {
           .BuildClientControlledShellSurface();
   auto* surface = shell_surface->root_surface();
   shell_surface->set_delegate(
-      std::make_unique<NoStateChangeDelegate>(shell_surface.get()));
+      std::make_unique<StateChangeCounterDelegate>(shell_surface.get(), 0));
   surface->Commit();
+}
+
+TEST_F(ClientControlledShellSurfaceTest, UnPinTriggersStateChangeRequest) {
+  // Only test in tablet mode. Because after restore from pin state, in tablet
+  // mode the window will still be fullscreen.
+  EnableTabletMode(true);
+  auto shell_surface = exo::test::ShellSurfaceBuilder({256, 256})
+                           .BuildClientControlledShellSurface();
+
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  ash::WindowState* window_state = ash::WindowState::Get(window);
+
+  ash::WMEvent pin_event(ash::WM_EVENT_PIN);
+  ash::WindowState::Get(window)->OnWMEvent(&pin_event);
+  EXPECT_TRUE(window_state->IsPinned());
+
+  // Verify maximized->Pinned->Maximized triggers an unpin request to clients.
+  shell_surface->set_delegate(
+      std::make_unique<StateChangeCounterDelegate>(shell_surface.get(), 1));
+  ash::WMEvent restore_event(ash::WM_EVENT_RESTORE);
+  ash::WindowState::Get(window)->OnWMEvent(&restore_event);
+  EXPECT_FALSE(window_state->IsPinned());
 }
 
 TEST_F(ClientControlledShellSurfaceDisplayTest,

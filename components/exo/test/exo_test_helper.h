@@ -40,7 +40,7 @@ class ClientControlledShellSurfaceDelegate
   ClientControlledShellSurfaceDelegate& operator=(
       const ClientControlledShellSurfaceDelegate&) = delete;
 
- private:
+ protected:
   // ClientControlledShellSurface::Delegate:
   void OnGeometryChanged(const gfx::Rect& geometry) override;
   void OnStateChanged(chromeos::WindowStateType old_state_type,
