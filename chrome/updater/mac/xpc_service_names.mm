@@ -19,8 +19,6 @@ namespace updater {
 
 namespace {
 
-const char kUpdateServiceInternalLaunchdPrefix[] =
-    MAC_BUNDLE_IDENTIFIER_STRING ".update-internal.";
 const char kUpdateServiceLaunchdName[] = MAC_BUNDLE_IDENTIFIER_STRING ".update";
 const char kSystemLevelKeyword[] = ".system";
 
@@ -33,12 +31,6 @@ std::string GetNameWithScope(const std::string& name, UpdaterScope scope) {
 
 std::string GetUpdateServiceLaunchdName(UpdaterScope scope) {
   return GetNameWithScope(kUpdateServiceLaunchdName, scope);
-}
-
-std::string GetUpdateServiceInternalLaunchdName(UpdaterScope scope) {
-  return GetNameWithScope(
-      base::StrCat({kUpdateServiceInternalLaunchdPrefix, kUpdaterVersion}),
-      scope);
 }
 
 base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceLaunchdName(
@@ -54,11 +46,6 @@ base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope) {
           : base::StrCat({MAC_BUNDLE_IDENTIFIER_STRING ".wake"}));
 }
 
-base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceInternalLaunchdName(
-    UpdaterScope scope) {
-  return base::SysUTF8ToCFStringRef(GetUpdateServiceInternalLaunchdName(scope));
-}
-
 base::scoped_nsobject<NSString> GetUpdateServiceLaunchdLabel(
     UpdaterScope scope) {
   return base::scoped_nsobject<NSString>(
@@ -70,12 +57,6 @@ base::scoped_nsobject<NSString> GetWakeLaunchdLabel(UpdaterScope scope) {
       base::mac::CFToNSCast(CopyWakeLaunchdName(scope).release()));
 }
 
-base::scoped_nsobject<NSString> GetUpdateServiceInternalLaunchdLabel(
-    UpdaterScope scope) {
-  return base::scoped_nsobject<NSString>(base::mac::CFToNSCast(
-      CopyUpdateServiceInternalLaunchdName(scope).release()));
-}
-
 base::scoped_nsobject<NSString> GetUpdateServiceMachName(
     base::scoped_nsobject<NSString> name) {
   return base::scoped_nsobject<NSString>(
@@ -84,11 +65,6 @@ base::scoped_nsobject<NSString> GetUpdateServiceMachName(
 
 base::scoped_nsobject<NSString> GetUpdateServiceMachName(UpdaterScope scope) {
   return GetUpdateServiceMachName(GetUpdateServiceLaunchdLabel(scope));
-}
-
-base::scoped_nsobject<NSString> GetUpdateServiceInternalMachName(
-    UpdaterScope scope) {
-  return GetUpdateServiceMachName(GetUpdateServiceInternalLaunchdLabel(scope));
 }
 
 }  // namespace updater

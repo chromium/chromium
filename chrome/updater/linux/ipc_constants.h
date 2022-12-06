@@ -10,16 +10,13 @@
 
 namespace base {
 class FilePath;
-class Version;
 }  // namespace base
 
 namespace updater {
 
-absl::optional<base::FilePath> GetActiveDutySocketPath(UpdaterScope scope);
+base::FilePath GetActiveDutySocketPath(UpdaterScope scope);
 
-absl::optional<base::FilePath> GetActiveDutyInternalSocketPath(
-    UpdaterScope scope,
-    const base::Version& version);
+base::FilePath GetActiveDutyInternalSocketPath(UpdaterScope scope);
 
 }  // namespace updater
 

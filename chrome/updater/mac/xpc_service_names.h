@@ -16,21 +16,14 @@
 namespace updater {
 
 std::string GetUpdateServiceLaunchdName(UpdaterScope scope);
-std::string GetUpdateServiceInternalLaunchdName(UpdaterScope scope);
 
 base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceLaunchdName(
     UpdaterScope scope);
 base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope);
-base::ScopedCFTypeRef<CFStringRef> CopyUpdateServiceInternalLaunchdName(
-    UpdaterScope scope);
 base::scoped_nsobject<NSString> GetUpdateServiceLaunchdLabel(
     UpdaterScope scope);
 base::scoped_nsobject<NSString> GetWakeLaunchdLabel(UpdaterScope scope);
-base::scoped_nsobject<NSString> GetUpdateServiceInternalLaunchdLabel(
-    UpdaterScope scope);
 base::scoped_nsobject<NSString> GetUpdateServiceMachName(UpdaterScope scope);
-base::scoped_nsobject<NSString> GetUpdateServiceInternalMachName(
-    UpdaterScope scope);
 
 }  // namespace updater
 

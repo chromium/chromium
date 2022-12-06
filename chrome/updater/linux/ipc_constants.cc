@@ -5,50 +5,37 @@
 #include "chrome/updater/linux/ipc_constants.h"
 
 #include "base/files/file_path.h"
-#include "base/path_service.h"
+#include "base/files/file_util.h"
 #include "base/strings/strcat.h"
-#include "base/version.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace {
 
-constexpr char kUserSocketsRelDir[] =
-    ".local/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING "/";
-constexpr char kSystemSocketsDir[] =
-    "/run/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING "/";
+constexpr base::FilePath::CharType kUserSocketsRelDir[] = FILE_PATH_LITERAL(
+    ".local/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING "/");
+constexpr base::FilePath::CharType kSystemSocketsDir[] = FILE_PATH_LITERAL(
+    "/run/" COMPANY_SHORTNAME_STRING "/" PRODUCT_FULLNAME_STRING "/");
 
-absl::optional<base::FilePath> GetSocketsDir(UpdaterScope scope) {
-  base::FilePath path;
-  switch (scope) {
-    case UpdaterScope::kUser:
-      if (!base::PathService::Get(base::DIR_HOME, &path)) {
-        return absl::nullopt;
-      }
-      return path.AppendASCII(kUserSocketsRelDir);
-    case UpdaterScope::kSystem:
-      return base::FilePath(kSystemSocketsDir);
-  }
+base::FilePath GetSocketsDir(UpdaterScope scope) {
+  return scope == UpdaterScope::kSystem
+             ? base::FilePath(kSystemSocketsDir)
+             : base::GetHomeDir().Append(kUserSocketsRelDir);
 }
 
 }  // namespace
 
-absl::optional<base::FilePath> GetActiveDutySocketPath(UpdaterScope scope) {
-  absl::optional<base::FilePath> path = GetSocketsDir(scope);
-  return path ? absl::make_optional<base::FilePath>(
-                    path->AppendASCII(PRODUCT_FULLNAME_STRING ".sk"))
-              : absl::nullopt;
+base::FilePath GetActiveDutySocketPath(UpdaterScope scope) {
+  return GetSocketsDir(scope).Append(
+      FILE_PATH_LITERAL(PRODUCT_FULLNAME_STRING ".sk"));
 }
 
-absl::optional<base::FilePath> GetActiveDutyInternalSocketPath(
-    UpdaterScope scope,
-    const base::Version& version) {
-  absl::optional<base::FilePath> path = GetSocketsDir(scope);
-  return path ? path->AppendASCII(base::StrCat(
-                    {PRODUCT_FULLNAME_STRING, version.GetString(), ".sk"}))
-              : absl::optional<base::FilePath>();
+base::FilePath GetActiveDutyInternalSocketPath(UpdaterScope scope) {
+  return GetSocketsDir(scope).AppendASCII(
+      base::StrCat({PRODUCT_FULLNAME_STRING, kUpdaterVersion, ".sk"}));
 }
 
 }  // namespace updater

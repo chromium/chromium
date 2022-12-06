@@ -4,16 +4,19 @@
 
 #include "chrome/updater/ipc/ipc_names.h"
 
-#include "base/strings/sys_string_conversions.h"
-#import "chrome/updater/mac/xpc_service_names.h"
+#include "base/strings/strcat.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace updater {
 
 mojo::NamedPlatformChannel::ServerName GetUpdateServiceInternalServerName(
     UpdaterScope scope) {
-  return base::SysNSStringToUTF8(GetUpdateServiceInternalMachName(scope));
+  return base::StrCat(
+      {MAC_BUNDLE_IDENTIFIER_STRING ".update-internal.", kUpdaterVersion,
+       scope == UpdaterScope::kUser ? ".mach" : ".mach.system"});
 }
 
 }  // namespace updater

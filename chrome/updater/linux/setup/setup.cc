@@ -12,7 +12,6 @@
 #include "base/version.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/linux/ipc_constants.h"
-#include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,7 +62,7 @@ int UninstallCandidate(UpdaterScope scope) {
     error = kErrorFailedToDeleteFolder;
 
   absl::optional<base::FilePath> versioned_socket =
-      GetActiveDutyInternalSocketPath(scope, base::Version(kUpdaterVersion));
+      GetActiveDutyInternalSocketPath(scope);
   if (!versioned_socket || !base::DeleteFile(versioned_socket.value()))
     error = kErrorFailedToDeleteSocket;
 

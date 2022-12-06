@@ -105,7 +105,7 @@ static bool IsTrustedIPCEndpoint(base::ProcessId /*caller_pid*/) {
 UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
                                      UpdaterScope scope)
     : server_(
-          GetActiveDutySocketPath(scope)->MaybeAsASCII(),
+          GetActiveDutySocketPath(scope).MaybeAsASCII(),
           named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
           this,
           base::BindRepeating(&IsTrustedIPCEndpoint)),
