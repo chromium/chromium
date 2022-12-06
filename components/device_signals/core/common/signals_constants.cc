@@ -14,7 +14,7 @@ const char kAgentId[] = "agentId";
 
 // Name of the signal for getting information of the AllowScreenLock
 // policy https://chromeenterprise.google/policies/?policy=AllowScreenLock.
-const char kAllowScreenLock[] = "allowSreenLock";
+const char kAllowScreenLock[] = "allowScreenLock";
 
 // Name of the signal for getting information about the browser version.
 const char kBrowserVersion[] = "browserVersion";
@@ -90,7 +90,7 @@ const char kOsVersion[] = "osVersion";
 // Name of the signal for getting information about whether the device
 // has a password reuse protection warning trigger.
 const char kPasswordProtectionWarningTrigger[] =
-    "passwordPotectionWarningTrigger";
+    "passwordProtectionWarningTrigger";
 
 // Customer IDs of organizations that are affiliated with the organization
 // that is currently managing the user who is logged in to the current Chrome
