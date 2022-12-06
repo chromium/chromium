@@ -10,11 +10,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
+
+class StoragePartitionImpl;
 
 class StorageBucketClearSiteDataTester {
  public:

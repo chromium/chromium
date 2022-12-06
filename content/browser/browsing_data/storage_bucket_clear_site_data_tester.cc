@@ -4,6 +4,20 @@
 
 #include "content/browser/browsing_data/storage_bucket_clear_site_data_tester.h"
 
+#include <set>
+#include <string>
+#include <utility>
+
+#include "base/callback.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/storage_partition.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+
 namespace content {
 
 StorageBucketClearSiteDataTester::StorageBucketClearSiteDataTester(
