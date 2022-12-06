@@ -151,6 +151,9 @@ void Clean(UpdaterScope scope) {
       launchd_domain, launchd_type, updater::CopyWakeLaunchdName(scope)));
   EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
       launchd_domain, launchd_type,
+      updater::CopyUpdateServiceInternalLaunchdName(scope)));
+  EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
+      launchd_domain, launchd_type,
       updater::CopyUpdateServiceLaunchdName(scope)));
 
   path = GetDataDirPath(scope);
@@ -168,6 +171,8 @@ void Clean(UpdaterScope scope) {
                          CopyWakeLaunchdName(scope));
     RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
                          CopyUpdateServiceLaunchdName(scope));
+    RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
+                         CopyUpdateServiceInternalLaunchdName(scope));
   }
 
   // Also clean up any other versions of the updater that are around.
@@ -203,6 +208,9 @@ void ExpectClean(UpdaterScope scope) {
       launchd_domain, launchd_type, updater::CopyWakeLaunchdName(scope)));
   EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
       launchd_domain, launchd_type,
+      updater::CopyUpdateServiceInternalLaunchdName(scope)));
+  EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
+      launchd_domain, launchd_type,
       updater::CopyUpdateServiceLaunchdName(scope)));
 
   path = GetDataDirPath(scope);
@@ -221,6 +229,7 @@ void ExpectClean(UpdaterScope scope) {
     EXPECT_FALSE(base::PathExists(*keystone_path));
 
   ExpectServiceAbsent(scope, GetUpdateServiceLaunchdName(scope));
+  ExpectServiceAbsent(scope, GetUpdateServiceInternalLaunchdName(scope));
 }
 
 void ExpectInstalled(UpdaterScope scope) {
@@ -235,6 +244,9 @@ void ExpectInstalled(UpdaterScope scope) {
 
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(launchd_domain, launchd_type,
                                                   CopyWakeLaunchdName(scope)));
+  EXPECT_TRUE(Launchd::GetInstance()->PlistExists(
+      launchd_domain, launchd_type,
+      CopyUpdateServiceInternalLaunchdName(scope)));
 }
 
 void ExpectActiveUpdater(UpdaterScope scope) {
@@ -256,10 +268,18 @@ absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
 }
 
 void ExpectCandidateUninstalled(UpdaterScope scope) {
+  Launchd::Domain launchd_domain = LaunchdDomain(scope);
+  Launchd::Type launchd_type = LaunchdType(scope);
+
   absl::optional<base::FilePath> versioned_folder_path =
       GetVersionedInstallDirectory(scope);
-  ASSERT_TRUE(versioned_folder_path);
-  EXPECT_FALSE(base::PathExists(*versioned_folder_path));
+  EXPECT_TRUE(versioned_folder_path);
+  if (versioned_folder_path)
+    EXPECT_FALSE(base::PathExists(*versioned_folder_path));
+
+  EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
+      launchd_domain, launchd_type,
+      CopyUpdateServiceInternalLaunchdName(scope)));
 }
 
 void Uninstall(UpdaterScope scope) {

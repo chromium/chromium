@@ -11,18 +11,16 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/updater/app/server/linux/mojom/updater_service.mojom.h"
 #include "chrome/updater/app/server/linux/update_service_stub.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
-#include "chrome/updater/app/server/posix/update_service_internal_stub.h"
-#include "chrome/updater/ipc/ipc_support.h"
-#include "chrome/updater/ipc/update_service_internal_proxy_posix.h"
+#include "chrome/updater/ipc/update_service_internal_proxy_linux.h"
 #include "chrome/updater/ipc/update_service_proxy_linux.h"
+#include "chrome/updater/linux/ipc_support.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
@@ -337,8 +335,7 @@ class UpdaterIPCInternalTestCase : public testing::Test {
     scoped_refptr<UpdateServiceInternal> service =
         base::MakeRefCounted<FakeUpdateServiceInternal>();
     service_stub_ = std::make_unique<UpdateServiceInternalStub>(
-        std::move(service), UpdaterScope::kUser, base::DoNothing(),
-        base::DoNothing());
+        std::move(service), UpdaterScope::kUser);
     client_proxy_ = CreateUpdateServiceInternalProxy(UpdaterScope::kUser);
   }
 

@@ -17,11 +17,35 @@
 
 namespace updater {
 
+namespace {
+
+void SetupDone(base::OnceCallback<void(int)> callback,
+               UpdaterScope scope,
+               int result) {
+  if (result != kErrorOk) {
+    std::move(callback).Run(result);
+    return;
+  }
+  PollLaunchctlList(
+      scope, GetUpdateServiceInternalLaunchdName(scope),
+      LaunchctlPresence::kPresent, base::Seconds(kWaitForLaunchctlUpdateSec),
+      base::BindOnce(
+          [](base::OnceCallback<void(int)> callback, bool service_exists) {
+            std::move(callback).Run(
+                service_exists
+                    ? kErrorOk
+                    : kErrorFailedAwaitingLaunchdUpdateServiceInternalJob);
+          },
+          std::move(callback)));
+}
+
+}  // namespace
+
 void InstallCandidate(UpdaterScope scope,
                       base::OnceCallback<void(int)> callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(FROM_HERE, {base::MayBlock()},
-                                               base::BindOnce(&Setup, scope),
-                                               std::move(callback));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&Setup, scope),
+      base::BindOnce(&SetupDone, std::move(callback), scope));
 }
 
 }  // namespace updater

@@ -2,41 +2,135 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/ipc/update_service_internal_proxy_posix.h"
+#include "chrome/updater/ipc/update_service_internal_proxy_mac.h"
 
-#include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/process/launch.h"
-#include "chrome/updater/constants.h"
-#include "chrome/updater/ipc/ipc_names.h"
+#import <Foundation/Foundation.h>
+
+#include "base/callback.h"
+#include "base/logging.h"
+#include "base/mac/scoped_nsobject.h"
+#include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
+#import "chrome/updater/app/server/mac/service_protocol.h"
+#import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/util.h"
-#include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
-#include "mojo/public/cpp/platform/platform_channel.h"
+
+// Interface to communicate with the XPC Update Service Internal.
+@interface CRUUpdateServiceInternalProxyImpl
+    : NSObject <CRUUpdateServicingInternal>
+
+- (instancetype)initWithScope:(updater::UpdaterScope)scope;
+
+@end
+
+@implementation CRUUpdateServiceInternalProxyImpl {
+  base::scoped_nsobject<NSXPCConnection> _xpcConnection;
+}
+
+- (instancetype)initWithScope:(updater::UpdaterScope)scope {
+  switch (scope) {
+    case updater::UpdaterScope::kUser:
+      return [self initWithConnectionOptions:0 withScope:scope];
+    case updater::UpdaterScope::kSystem:
+      return [self initWithConnectionOptions:NSXPCConnectionPrivileged
+                                   withScope:scope];
+  }
+  return nil;
+}
+
+- (instancetype)initWithConnectionOptions:(NSXPCConnectionOptions)options
+                                withScope:(updater::UpdaterScope)scope {
+  if ((self = [super init])) {
+    _xpcConnection.reset([[NSXPCConnection alloc]
+        initWithMachServiceName:updater::GetUpdateServiceInternalMachName(scope)
+                                    .get()
+                        options:options]);
+
+    _xpcConnection.get().remoteObjectInterface =
+        updater::GetXPCUpdateServicingInternalInterface();
+
+    _xpcConnection.get().interruptionHandler = ^{
+      LOG(WARNING) << "CRUUpdateServicingInternal: XPC connection interrupted.";
+    };
+
+    _xpcConnection.get().invalidationHandler = ^{
+      LOG(WARNING) << "CRUUpdateServicingInternal: XPC connection invalidated.";
+    };
+
+    [_xpcConnection resume];
+  }
+
+  return self;
+}
+
+- (void)dealloc {
+  [_xpcConnection invalidate];
+  [super dealloc];
+}
+
+- (void)performTasksWithReply:(void (^)(void))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply();
+  };
+
+  [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      performTasksWithReply:reply];
+}
+
+- (void)performHelloWithReply:(void (^)(void))reply {
+  auto errorHandler = ^(NSError* xpcError) {
+    LOG(ERROR) << "XPC connection failed: "
+               << base::SysNSStringToUTF8([xpcError description]);
+    reply();
+  };
+
+  [[_xpcConnection remoteObjectProxyWithErrorHandler:errorHandler]
+      performHelloWithReply:reply];
+}
+
+@end
 
 namespace updater {
 
-mojo::PlatformChannelEndpoint ConnectMojo(UpdaterScope scope, int retries) {
-  if (retries == 1) {
-    // Launch a server process.
-    absl::optional<base::FilePath> updater = GetUpdaterExecutablePath(scope);
-    if (updater) {
-      base::CommandLine command(*updater);
-      command.AppendSwitch(kServerSwitch);
-      command.AppendSwitchASCII(kServerServiceSwitch,
-                                kServerUpdateServiceInternalSwitchValue);
-      if (scope == UpdaterScope::kSystem) {
-        command.AppendSwitch(kSystemSwitch);
-      }
-      command.AppendSwitch(kEnableLoggingSwitch);
-      command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                kLoggingModuleSwitchValue);
-      base::LaunchProcess(command, {});
-    }
-  }
+scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
+    UpdaterScope updater_scope) {
+  return base::MakeRefCounted<UpdateServiceInternalProxy>(updater_scope);
+}
 
-  return named_mojo_ipc_server::ConnectToServer(
-      GetUpdateServiceInternalServerName(scope));
+UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
+    : callback_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
+  client_.reset(
+      [[CRUUpdateServiceInternalProxyImpl alloc] initWithScope:scope]);
+}
+
+void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+
+  __block base::OnceClosure block_callback = std::move(callback);
+  auto reply = ^() {
+    callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
+  };
+
+  [client_ performTasksWithReply:reply];
+}
+
+void UpdateServiceInternalProxy::Hello(base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__;
+
+  __block base::OnceClosure block_callback = std::move(callback);
+  auto reply = ^() {
+    callback_runner_->PostTask(FROM_HERE, std::move(block_callback));
+  };
+
+  [client_ performHelloWithReply:reply];
+}
+
+UpdateServiceInternalProxy::~UpdateServiceInternalProxy() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 }  // namespace updater
