@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ATK-APIs" enum="AccessibilityATKAPIEnum"
-    expires_after="2022-11-30">
+    expires_after="2023-11-30">
   <owner>jdiggs@chromium.org</owner>
   <owner>jkim@igalia.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -708,7 +708,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.CrosLargeCursorSize" units="dip"
-    expires_after="2022-11-30">
+    expires_after="2023-11-30">
   <owner>sarakato@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
