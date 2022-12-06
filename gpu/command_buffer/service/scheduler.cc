@@ -19,7 +19,9 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "gpu/command_buffer/service/scheduler_dfs.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
@@ -58,10 +60,23 @@ Scheduler::ScopedAddWaitingPriority::ScopedAddWaitingPriority(
     SequenceId sequence_id,
     SchedulingPriority priority)
     : scheduler_(scheduler), sequence_id_(sequence_id), priority_(priority) {
-  scheduler_->AddWaitingPriority(sequence_id_, priority_);
+  if (auto& scheduler_dfs = scheduler_->scheduler_dfs_) {
+    // Similar to RaisePriorityForClientWait, the new scheduler explicitly
+    // relies on SetSequencePriority. Remove ScopedAddWaitingPriority once the
+    // old scheduler is removed.
+    scheduler_dfs->SetSequencePriority(sequence_id, priority);
+  } else {
+    scheduler_->AddWaitingPriority(sequence_id_, priority_);
+  }
 }
 Scheduler::ScopedAddWaitingPriority::~ScopedAddWaitingPriority() {
-  scheduler_->RemoveWaitingPriority(sequence_id_, priority_);
+  if (auto& scheduler_dfs = scheduler_->scheduler_dfs_) {
+    // See comment in constructor.
+    scheduler_dfs->SetSequencePriority(
+        sequence_id_, scheduler_dfs->GetSequenceDefaultPriority(sequence_id_));
+  } else {
+    scheduler_->RemoveWaitingPriority(sequence_id_, priority_);
+  }
 }
 
 void Scheduler::SchedulingState::WriteIntoTrace(
@@ -393,6 +408,11 @@ Scheduler::Scheduler(SyncPointManager* sync_point_manager,
           gpu_preferences.enable_gpu_blocked_time_metric) {
   if (blocked_time_collection_enabled_ && !base::ThreadTicks::IsSupported())
     DLOG(ERROR) << "GPU Blocked time collection is enabled but not supported.";
+
+  if (base::FeatureList::IsEnabled(features::kUseGpuSchedulerDfs)) {
+    scheduler_dfs_ =
+        std::make_unique<SchedulerDfs>(sync_point_manager, gpu_preferences);
+  }
 }
 
 Scheduler::~Scheduler() {
@@ -410,6 +430,9 @@ Scheduler::~Scheduler() {
 SequenceId Scheduler::CreateSequence(
     SchedulingPriority priority,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (scheduler_dfs_) {
+    return scheduler_dfs_->CreateSequence(priority, task_runner);
+  }
   base::AutoLock auto_lock(lock_);
   scoped_refptr<SyncPointOrderData> order_data =
       sync_point_manager_->CreateSyncPointOrderData();
@@ -422,12 +445,19 @@ SequenceId Scheduler::CreateSequence(
 }
 
 SequenceId Scheduler::CreateSequenceForTesting(SchedulingPriority priority) {
+  if (scheduler_dfs_) {
+    return scheduler_dfs_->CreateSequenceForTesting(priority);  // IN-TEST
+  }
   // This will create the sequence on the thread on which this method is called.
   return CreateSequence(priority,
                         base::SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 void Scheduler::DestroySequence(SequenceId sequence_id) {
+  if (scheduler_dfs_) {
+    return scheduler_dfs_->DestroySequence(sequence_id);
+  }
+
   base::circular_deque<Sequence::Task> tasks_to_be_destroyed;
   {
     base::AutoLock auto_lock(lock_);
@@ -445,6 +475,7 @@ void Scheduler::DestroySequence(SequenceId sequence_id) {
 }
 
 Scheduler::Sequence* Scheduler::GetSequence(SequenceId sequence_id) {
+  DCHECK(!scheduler_dfs_);
   lock_.AssertAcquired();
   auto it = sequence_map_.find(sequence_id);
   if (it != sequence_map_.end())
@@ -453,6 +484,9 @@ Scheduler::Sequence* Scheduler::GetSequence(SequenceId sequence_id) {
 }
 
 void Scheduler::EnableSequence(SequenceId sequence_id) {
+  if (scheduler_dfs_) {
+    return scheduler_dfs_->EnableSequence(sequence_id);
+  }
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
@@ -460,6 +494,9 @@ void Scheduler::EnableSequence(SequenceId sequence_id) {
 }
 
 void Scheduler::DisableSequence(SequenceId sequence_id) {
+  if (scheduler_dfs_) {
+    return scheduler_dfs_->DisableSequence(sequence_id);
+  }
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
@@ -468,6 +505,14 @@ void Scheduler::DisableSequence(SequenceId sequence_id) {
 
 void Scheduler::RaisePriorityForClientWait(SequenceId sequence_id,
                                            CommandBufferId command_buffer_id) {
+  // SchedulerDfs does not have Raise/ResetPriorityForClientWait, and instead
+  // relies on explicitly setting sequence priority. After this scheduler is
+  // completely replaced by SchedulerDfs, these functions should be removed and
+  // the implementation switched at the client call-site.
+  if (scheduler_dfs_) {
+    return scheduler_dfs_->SetSequencePriority(sequence_id,
+                                               SchedulingPriority::kHigh);
+  }
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
@@ -476,6 +521,11 @@ void Scheduler::RaisePriorityForClientWait(SequenceId sequence_id,
 
 void Scheduler::ResetPriorityForClientWait(SequenceId sequence_id,
                                            CommandBufferId command_buffer_id) {
+  // See comment in RaisePriorityForClientWait.
+  if (scheduler_dfs_) {
+    return scheduler_dfs_->SetSequencePriority(
+        sequence_id, scheduler_dfs_->GetSequenceDefaultPriority(sequence_id));
+  }
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
@@ -483,11 +533,17 @@ void Scheduler::ResetPriorityForClientWait(SequenceId sequence_id,
 }
 
 void Scheduler::ScheduleTask(Task task) {
+  if (scheduler_dfs_)
+    return scheduler_dfs_->ScheduleTask(std::move(task));
+
   base::AutoLock auto_lock(lock_);
   ScheduleTaskHelper(std::move(task));
 }
 
 void Scheduler::ScheduleTasks(std::vector<Task> tasks) {
+  if (scheduler_dfs_)
+    return scheduler_dfs_->ScheduleTasks(std::move(tasks));
+
   base::AutoLock auto_lock(lock_);
   for (auto& task : tasks)
     ScheduleTaskHelper(std::move(task));
@@ -524,6 +580,8 @@ void Scheduler::ScheduleTaskHelper(Task task) {
 
 void Scheduler::ContinueTask(SequenceId sequence_id,
                              base::OnceClosure closure) {
+  if (scheduler_dfs_)
+    return scheduler_dfs_->ContinueTask(sequence_id, std::move(closure));
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
@@ -532,6 +590,9 @@ void Scheduler::ContinueTask(SequenceId sequence_id,
 }
 
 bool Scheduler::ShouldYield(SequenceId sequence_id) {
+  if (scheduler_dfs_)
+    return scheduler_dfs_->ShouldYield(sequence_id);
+
   base::AutoLock auto_lock(lock_);
 
   Sequence* running_sequence = GetSequence(sequence_id);
@@ -554,6 +615,7 @@ bool Scheduler::ShouldYield(SequenceId sequence_id) {
 
 void Scheduler::AddWaitingPriority(SequenceId sequence_id,
                                    SchedulingPriority priority) {
+  DCHECK(!scheduler_dfs_);
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
   if (sequence)
@@ -562,6 +624,7 @@ void Scheduler::AddWaitingPriority(SequenceId sequence_id,
 
 void Scheduler::RemoveWaitingPriority(SequenceId sequence_id,
                                       SchedulingPriority priority) {
+  DCHECK(!scheduler_dfs_);
   base::AutoLock auto_lock(lock_);
   Sequence* sequence = GetSequence(sequence_id);
   if (sequence)
@@ -764,6 +827,9 @@ void Scheduler::RunNextTask() {
 }
 
 base::TimeDelta Scheduler::TakeTotalBlockingTime() {
+  if (scheduler_dfs_)
+    return scheduler_dfs_->TakeTotalBlockingTime();
+
   if (!blocked_time_collection_enabled_ || !base::ThreadTicks::IsSupported())
     return base::TimeDelta::Min();
   base::AutoLock auto_lock(lock_);
@@ -774,6 +840,9 @@ base::TimeDelta Scheduler::TakeTotalBlockingTime() {
 
 base::SingleThreadTaskRunner* Scheduler::GetTaskRunnerForTesting(
     SequenceId sequence_id) {
+  if (scheduler_dfs_) {
+    return scheduler_dfs_->GetTaskRunnerForTesting(sequence_id);  // IN-TEST
+  }
   base::AutoLock auto_lock(lock_);
   return GetSequence(sequence_id)->task_runner();
 }

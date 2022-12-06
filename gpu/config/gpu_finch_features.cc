@@ -357,6 +357,11 @@ BASE_FEATURE(kForceRestartGpuKillSwitch,
              "ForceRestartGpuKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Using the new SchedulerDfs GPU scheduler.
+BASE_FEATURE(kUseGpuSchedulerDfs,
+             "UseGpuSchedulerDfs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID)
   // GLS3 + passthrough decoder break many tests on Android.

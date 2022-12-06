@@ -1,26 +1,24 @@
-// Copyright 2017 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_H_
-#define GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_DFS_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_DFS_H_
 
 #include <queue>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/gpu_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -33,51 +31,20 @@ namespace gpu {
 class SyncPointManager;
 struct GpuPreferences;
 
-// Forward-decl of the new DFS-based Scheduler.
-class SchedulerDfs;
-
-class GPU_EXPORT Scheduler {
+class GPU_EXPORT SchedulerDfs {
   // A callback to be used for reporting when the task is ready to run (when the
   // dependencies have been solved).
   using ReportingCallback =
       base::OnceCallback<void(base::TimeTicks task_ready)>;
 
  public:
-  struct GPU_EXPORT Task {
-    Task(SequenceId sequence_id,
-         base::OnceClosure closure,
-         std::vector<SyncToken> sync_token_fences,
-         ReportingCallback report_callback = ReportingCallback());
-    Task(Task&& other);
-    ~Task();
-    Task& operator=(Task&& other);
+  SchedulerDfs(SyncPointManager* sync_point_manager,
+               const GpuPreferences& gpu_preferences);
 
-    SequenceId sequence_id;
-    base::OnceClosure closure;
-    std::vector<SyncToken> sync_token_fences;
-    ReportingCallback report_callback;
-  };
+  SchedulerDfs(const SchedulerDfs&) = delete;
+  SchedulerDfs& operator=(const SchedulerDfs&) = delete;
 
-  struct ScopedAddWaitingPriority {
-   public:
-    ScopedAddWaitingPriority(Scheduler* scheduler,
-                             SequenceId sequence_id,
-                             SchedulingPriority priority);
-    ~ScopedAddWaitingPriority();
-
-   private:
-    const raw_ptr<Scheduler> scheduler_;
-    const SequenceId sequence_id_;
-    const SchedulingPriority priority_;
-  };
-
-  Scheduler(SyncPointManager* sync_point_manager,
-            const GpuPreferences& gpu_preferences);
-
-  Scheduler(const Scheduler&) = delete;
-  Scheduler& operator=(const Scheduler&) = delete;
-
-  ~Scheduler();
+  ~SchedulerDfs();
 
   // Create a sequence with given priority. Returns an identifier for the
   // sequence that can be used with SyncPointManager for creating sync point
@@ -100,14 +67,12 @@ class GPU_EXPORT Scheduler {
   // Disables the sequence.
   void DisableSequence(SequenceId sequence_id);
 
-  // Raise priority of sequence for client wait (WaitForGetOffset/TokenInRange)
-  // on given command buffer.
-  void RaisePriorityForClientWait(SequenceId sequence_id,
-                                  CommandBufferId command_buffer_id);
+  // Gets the priority that the sequence was created with.
+  SchedulingPriority GetSequenceDefaultPriority(SequenceId sequence_id);
 
-  // Reset priority of sequence if it was increased for a client wait.
-  void ResetPriorityForClientWait(SequenceId sequence_id,
-                                  CommandBufferId command_buffer_id);
+  // Changes a sequence's priority. Used in WaitForGetOffset/TokenInRange to
+  // temporarily increase a sequence's priority.
+  void SetSequencePriority(SequenceId sequence_id, SchedulingPriority priority);
 
   // Schedules task (closure) to run on the sequence. The task is blocked until
   // the sync token fences are released or determined to be invalid. Tasks are
@@ -130,28 +95,21 @@ class GPU_EXPORT Scheduler {
 
   base::SingleThreadTaskRunner* GetTaskRunnerForTesting(SequenceId sequence_id);
 
-  // Returns pointer to a SchedulerDfs instance if the feature flag
-  // kUseGpuSchedulerDfs is enabled. Otherwise returns null. Used in unit test
-  // to directly test methods that exist only in SchedulerDfs.
-  SchedulerDfs* GetSchedulerDfsForTesting() { return scheduler_dfs_.get(); }
-
  private:
   struct SchedulingState {
-    static bool Comparator(const SchedulingState& lhs,
-                           const SchedulingState& rhs) {
-      return rhs.RunsBefore(lhs);
-    }
-
     SchedulingState();
     SchedulingState(const SchedulingState& other);
     ~SchedulingState();
 
-    bool RunsBefore(const SchedulingState& other) const {
-      return std::tie(priority, order_num) <
-             std::tie(other.priority, other.order_num);
+    static bool RunsBefore(const SchedulingState& lhs,
+                           const SchedulingState& rhs) {
+      return std::tie(lhs.priority, lhs.order_num) <
+             std::tie(rhs.priority, rhs.order_num);
     }
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
+
+    bool operator==(const SchedulingState& rhs) const;
 
     SequenceId sequence_id;
     SchedulingPriority priority = SchedulingPriority::kLow;
@@ -160,7 +118,7 @@ class GPU_EXPORT Scheduler {
 
   class GPU_EXPORT Sequence {
    public:
-    Sequence(Scheduler* scheduler,
+    Sequence(SchedulerDfs* scheduler,
              SequenceId sequence_id,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner,
              SchedulingPriority priority,
@@ -187,13 +145,12 @@ class GPU_EXPORT Scheduler {
 
     bool running() const { return running_state_ == RUNNING; }
 
-    // The sequence is runnable if its enabled and has tasks which are not
-    // blocked by wait fences.
-    bool IsRunnable() const;
+    bool HasTasks() const;
 
-    // Returns true if this sequence's scheduling state changed and it needs to
-    // be reinserted into the scheduling queue.
-    bool NeedsRescheduling() const;
+    // A sequence is runnable if it is enabled, is not already running, and has
+    // tasks in its queue. Note that this does *not* necessarily mean that its
+    // first task unblocked.
+    bool IsRunnable() const { return enabled() && !running() && HasTasks(); }
 
     // Returns true if this sequence should yield to another sequence. Uses the
     // cached scheduling state for comparison.
@@ -221,7 +178,7 @@ class GPU_EXPORT Scheduler {
     uint32_t BeginTask(base::OnceClosure* closure);
 
     // Called after running the closure returned by BeginTask. Sets running
-    // state to IDLE.
+    // state to SCHEDULED.
     void FinishTask();
 
     // Enqueues a task in the sequence and returns the generated order number.
@@ -246,14 +203,10 @@ class GPU_EXPORT Scheduler {
                          uint32_t order_num,
                          SequenceId release_sequence_id);
 
-    void AddClientWait(CommandBufferId command_buffer_id);
-
-    void RemoveClientWait(CommandBufferId command_buffer_id);
-
     SchedulingPriority current_priority() const { return current_priority_; }
 
    private:
-    friend class Scheduler;
+    friend class SchedulerDfs;
 
     enum RunningState { IDLE, SCHEDULED, RUNNING };
 
@@ -298,51 +251,22 @@ class GPU_EXPORT Scheduler {
       base::TimeTicks first_dependency_added;
     };
 
-    // Description of Stream priority propagation: Each Stream has an initial
-    // priority ('default_priority_').  When a Stream has other Streams waiting
-    // on it via a 'WaitFence', it computes it's own priority based on those
-    // fences, by keeping count of the priority of each incoming WaitFence's
-    // priority in 'waiting_priority_counts_'.
-    //
-    // 'wait_fences_' maps each 'WaitFence' to it's current priority.  Initially
-    // WaitFences take the priority of the waiting Stream, and propagate their
-    // priority to the releasing Stream via AddWaitingPriority().
-    //
-    // A higher priority waiting stream or ClientWait, can recursively pass on
-    // it's priority to existing 'ClientWaits' via PropagatePriority(), which
-    // updates the releasing stream via ChangeWaitingPriority().
-    //
-    // When a 'WaitFence' is removed either by the SyncToken being released,
-    // or when the waiting Stream is Destroyed, it removes it's priority from
-    // the releasing stream via RemoveWaitingPriority().
-
-    // Propagate a priority to all wait fences.
-    void PropagatePriority(SchedulingPriority priority);
-
-    // Add a waiting priority.
-    void AddWaitingPriority(SchedulingPriority priority);
-
-    // Remove a waiting priority.
-    void RemoveWaitingPriority(SchedulingPriority priority);
-
-    // Change a waiting priority.
-    void ChangeWaitingPriority(SchedulingPriority old_priority,
-                               SchedulingPriority new_priority);
-
-    // Re-compute current priority.
-    void UpdateSchedulingPriority();
+    // Returns true if the sequence is not empty, and the first task does not
+    // have any pending dependencies.
+    bool IsNextTaskUnblocked() const;
 
     // If the sequence is enabled. Sequences are disabled/enabled based on when
     // the command buffer is descheduled/scheduled.
     bool enabled_ = true;
 
+    // TODO(elgarawany): This is no longer needed. Replace with bool running_.
     RunningState running_state_ = IDLE;
 
     // Cached scheduling state used for comparison with other sequences while
     // running. Updated in |SetScheduled| and |UpdateRunningPriority|.
     SchedulingState scheduling_state_;
 
-    const raw_ptr<Scheduler> scheduler_;
+    const raw_ptr<SchedulerDfs> scheduler_;
     const SequenceId sequence_id_;
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -361,38 +285,60 @@ class GPU_EXPORT Scheduler {
     // blocked if there's a wait fence with order number less than or equal to
     // the task's order number.
     base::flat_map<WaitFence, SchedulingPriority> wait_fences_;
-
-    // Counts of pending releases bucketed by scheduling priority.
-    int waiting_priority_counts_[static_cast<int>(SchedulingPriority::kLast) +
-                                 1] = {};
-
-    base::flat_set<CommandBufferId> client_waits_;
   };
 
-  void AddWaitingPriority(SequenceId sequence_id, SchedulingPriority priority);
-  void RemoveWaitingPriority(SequenceId sequence_id,
-                             SchedulingPriority priority);
+  Sequence* GetSequence(SequenceId sequence_id);
 
   void SyncTokenFenceReleased(const SyncToken& sync_token,
                               uint32_t order_num,
                               SequenceId release_sequence_id,
                               SequenceId waiting_sequence_id);
 
-  void ScheduleTaskHelper(Scheduler::Task task);
+  void ScheduleTaskHelper(Scheduler::Task task) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void TryScheduleSequence(Sequence* sequence);
 
-  // If the scheduling queue needs to be rebuild because a sequence changed
-  // priority.
-  std::vector<SchedulingState>& RebuildSchedulingQueueIfNeeded(
-      base::SingleThreadTaskRunner* task_runner);
+  // Returns a sorted list of runnable sequences.
+  const std::vector<SchedulingState>& GetSortedRunnableSequences(
+      base::SingleThreadTaskRunner* task_runner)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  Sequence* GetSequence(SequenceId sequence_id);
+  // Returns true if there are *any* unblocked tasks in sequences assigned to
+  // |task_runner|. This is used to decide if RunNextTask needs to be
+  // rescheduled.
+  bool HasAnyUnblockedTasksOnRunner(
+      const base::SingleThreadTaskRunner* task_runner) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void RunNextTask();
+  // Finds the sequence of the next task that can be run under |root_sequence|'s
+  // dependency graph. This function will visit sequences that are tied to other
+  // threads in case other threads depends on work on this thread; however, it
+  // will not run any *leaves* that are tied to other threads. nullptr is
+  // returned only if DrDC is enabled and when a sequence's only dependency is a
+  // sequence that is tied to another thread.
+  Sequence* FindNextTaskFromRoot(Sequence* root_sequence)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Calls |FindNextTaskFromRoot| on the ordered list of all sequences, and
+  // returns the first runnable task. Returns nullptr if there is no work to do.
+  Sequence* FindNextTask() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Executes the closure of the first task for |sequence_id|. Assumes that
+  // the sequence has tasks, and that the first task is unblocked.
+  void ExecuteSequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock_);
+
+  // The scheduler's main loop. At each tick, it will call FindNextTask on the
+  // sorted list of sequences to find the highest priority available sequence.
+  // The scheduler then walks the sequence's dependency graph using DFS to find
+  // any unblocked task. If there are multiple choices at any node, the
+  // scheduler picks the dependency with the lowest SchedulingState, effectively
+  // ordering the dependencies by priority and order_num.
+  void RunNextTask() LOCKS_EXCLUDED(lock_);
+
+  mutable base::Lock lock_;
 
   const raw_ptr<SyncPointManager> sync_point_manager_;
-  mutable base::Lock lock_;
+
   base::flat_map<SequenceId, std::unique_ptr<Sequence>> sequence_map_
       GUARDED_BY(lock_);
 
@@ -404,13 +350,10 @@ class GPU_EXPORT Scheduler {
     ~PerThreadState();
     PerThreadState& operator=(PerThreadState&&);
 
-    // Used as a priority queue for scheduling sequences. Min heap of
-    // SchedulingState with highest priority (lowest order) in front.
-    std::vector<SchedulingState> scheduling_queue;
-
-    // Indicates if the scheduling queue for this thread should be rebuilt due
-    // to priority changes, sequences becoming unblocked, etc.
-    bool rebuild_scheduling_queue = false;
+    // Sorted list of SchedulingState that contains sequences that Runnable. Is
+    // only used so that GetSortedRunnableSequences does not have to re-allocate
+    // a vector. It is rebuilt at each call to GetSortedRunnableSequences.
+    std::vector<SchedulingState> sorted_sequences;
 
     // Indicates if the scheduler is actively running tasks on this thread.
     bool running = false;
@@ -425,16 +368,8 @@ class GPU_EXPORT Scheduler {
   base::TimeDelta total_blocked_time_ GUARDED_BY(lock_);
   const bool blocked_time_collection_enabled_;
 
-  // A pointer to a SchedulerDfs instance. If set, all public SchedulerDfs
-  // methods are forwarded to this SchedulerDfs instance. |scheduler_dfs_| is
-  // set depending on a Finch experimental feature.
-  std::unique_ptr<SchedulerDfs> scheduler_dfs_;
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamPriorities);
-  FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamDestroyRemovesPriorities);
-  FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamPriorityChangeWhileReleasing);
-  FRIEND_TEST_ALL_PREFIXES(SchedulerTest, CircularPriorities);
+  FRIEND_TEST_ALL_PREFIXES(SchedulerDfsTest, StreamPriorities);
 };
 
 }  // namespace gpu

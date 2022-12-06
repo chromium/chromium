@@ -423,6 +423,8 @@ void CommandBufferStub::WaitForTokenInRange(int32_t start,
   CheckContextLost();
   if (wait_for_token_)
     LOG(ERROR) << "Got WaitForToken command while currently waiting for token.";
+  // TODO(elgarawany): Replace with SetSequencePriority when Scheduler is
+  // replaced with SchedulerDfs.
   channel_->scheduler()->RaisePriorityForClientWait(sequence_id_,
                                                     command_buffer_id_);
   wait_for_token_ =
@@ -444,6 +446,8 @@ void CommandBufferStub::WaitForGetOffsetInRange(uint32_t set_get_buffer_count,
     LOG(ERROR)
         << "Got WaitForGetOffset command while currently waiting for offset.";
   }
+  // TODO(elgarawany): Replace with SetSequencePriority when Scheduler is
+  // replaced with SchedulerDfs.
   channel_->scheduler()->RaisePriorityForClientWait(sequence_id_,
                                                     command_buffer_id_);
   wait_for_get_offset_ =
@@ -476,6 +480,8 @@ void CommandBufferStub::CheckCompleteWaits() {
     }
   }
   if (has_wait && !(wait_for_token_ || wait_for_get_offset_)) {
+    // TODO(elgarawany): Replace with reset the sequence back to its default
+    // priority when Scheduler is replaced with SchedulerDfs.
     channel_->scheduler()->ResetPriorityForClientWait(sequence_id_,
                                                       command_buffer_id_);
   }

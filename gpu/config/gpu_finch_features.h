@@ -76,6 +76,8 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc);
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kForceRestartGpuKillSwitch);
 
+GPU_EXPORT BASE_DECLARE_FEATURE(kUseGpuSchedulerDfs);
+
 #if BUILDFLAG(IS_ANDROID)
 // This flag is use additionally with kEnableDrDc to enable the feature for
 // vulkan enabled android devices.
