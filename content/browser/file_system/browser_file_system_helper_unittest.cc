@@ -19,6 +19,7 @@
 #include "content/public/test/test_utils.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_options.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/isolated_context.h"

@@ -21,6 +21,7 @@
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/memory_file_stream_writer.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
+#include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"

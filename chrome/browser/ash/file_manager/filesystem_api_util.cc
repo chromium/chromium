@@ -35,6 +35,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/common/task_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "url/gurl.h"
 

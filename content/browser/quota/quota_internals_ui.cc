@@ -16,6 +16,7 @@
 #include "content/public/common/url_constants.h"
 #include "storage/browser/quota/quota_internals.mojom.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 
 namespace content {
 

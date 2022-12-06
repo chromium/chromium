@@ -19,6 +19,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/isolated_context.h"
 #include "url/gurl.h"

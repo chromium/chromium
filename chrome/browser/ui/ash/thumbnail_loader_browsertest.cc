@@ -21,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "url/origin.h"

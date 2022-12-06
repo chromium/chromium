@@ -13,6 +13,7 @@
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/storage_partition.h"
+#include "storage/browser/file_system/file_system_backend.h"
 
 namespace extensions {
 

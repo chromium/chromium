@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/cros_system_api/dbus/fusebox/dbus-constants.h"

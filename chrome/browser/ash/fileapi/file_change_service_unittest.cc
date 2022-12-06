@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/test/async_file_test_helper.h"

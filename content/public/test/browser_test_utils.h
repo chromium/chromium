@@ -40,6 +40,7 @@
 #include "content/public/test/test_utils.h"
 #include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/load_flags.h"

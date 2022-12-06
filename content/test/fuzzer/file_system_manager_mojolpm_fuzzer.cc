@@ -20,6 +20,7 @@
 #include "content/test/fuzzer/file_system_manager_mojolpm_fuzzer.pb.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "mojo/public/tools/fuzzers/mojolpm.h"
+#include "storage/browser/file_system/file_permission_policy.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"

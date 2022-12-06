@@ -18,6 +18,7 @@
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/memory_file_stream_reader.h"
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
+#include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 
 // TODO(kinuko): Remove this temporary namespace hack after we move both
 // blob and fileapi into content namespace.

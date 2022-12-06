@@ -58,6 +58,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/database/database_util.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"

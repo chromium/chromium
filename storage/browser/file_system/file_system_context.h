@@ -28,7 +28,6 @@
 #include "storage/browser/file_system/file_system_request_info.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/open_file_system_mode.h"
-#include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
@@ -45,9 +44,9 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
-namespace leveleb {
+namespace leveldb {
 class Env;
-}  // namespace leveleb
+}  // namespace leveldb
 
 namespace storage {
 
@@ -70,7 +69,9 @@ class QuotaClientCallbackWrapper;
 class QuotaManagerProxy;
 class QuotaReservation;
 class SandboxFileSystemBackend;
+class SandboxFileSystemBackendDelegate;
 class SpecialStoragePolicy;
+class WatcherManager;
 
 struct BucketInfo;
 struct FileSystemInfo;

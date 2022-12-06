@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 
 namespace file_manager::io_task {

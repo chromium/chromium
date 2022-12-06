@@ -56,6 +56,7 @@
 #include "extensions/common/install_warning.h"
 #include "google_apis/common/test_util.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_backend.h"
 
 using ::testing::_;
 using ::testing::ReturnRef;

@@ -20,6 +20,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
