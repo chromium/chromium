@@ -201,8 +201,15 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
   EXPECT_FALSE(GetIntentChip()->GetVisible());
 }
 
+// TODO(crbug.com/1395393): This test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_IconVisibilityAfterTabSwitching \
+  DISABLED_IconVisibilityAfterTabSwitching
+#else
+#define MAYBE_IconVisibilityAfterTabSwitching IconVisibilityAfterTabSwitching
+#endif
 IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
-                       IconVisibilityAfterTabSwitching) {
+                       MAYBE_IconVisibilityAfterTabSwitching) {
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   const GURL out_of_scope_url =
