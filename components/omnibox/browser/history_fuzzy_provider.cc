@@ -487,14 +487,17 @@ HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
     return;
   }
 
-  history_service_observation_.Observe(client->GetHistoryService());
-  client->GetHistoryService()->ScheduleDBTask(
-      FROM_HERE,
-      std::make_unique<fuzzy::LoadSignificantUrls>(
-          &urls_loaded_event_,
-          base::BindOnce(&HistoryFuzzyProvider::OnUrlsLoaded,
-                         weak_ptr_factory_.GetWeakPtr())),
-      &task_tracker_);
+  // In tests, history service is null and doesn't need to be observed.
+  if (client->GetHistoryService()) {
+    history_service_observation_.Observe(client->GetHistoryService());
+    client->GetHistoryService()->ScheduleDBTask(
+        FROM_HERE,
+        std::make_unique<fuzzy::LoadSignificantUrls>(
+            &urls_loaded_event_,
+            base::BindOnce(&HistoryFuzzyProvider::OnUrlsLoaded,
+                           weak_ptr_factory_.GetWeakPtr())),
+        &task_tracker_);
+  }
 }
 
 void HistoryFuzzyProvider::Start(const AutocompleteInput& input,

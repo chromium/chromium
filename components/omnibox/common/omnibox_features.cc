@@ -403,7 +403,7 @@ BASE_FEATURE(kNtpRealboxPedals,
 // Feature used to enable URL suggestions for inputs that may contain typos.
 BASE_FEATURE(kOmniboxFuzzyUrlSuggestions,
              "OmniboxFuzzyUrlSuggestions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Feature used to enable the default browser pedal.
 BASE_FEATURE(kOmniboxDefaultBrowserPedal,
