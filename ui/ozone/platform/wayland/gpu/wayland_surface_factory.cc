@@ -196,8 +196,14 @@ WaylandSurfaceFactory::GetAllowedGLImplementations() {
   if (egl_implementation_) {
     impls.emplace_back(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
+    // Add only supported ANGLE implementations. Otherwise, angle-vulkan might
+    // be requested, which is not supported with this backend yet.
     impls.emplace_back(
         gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader));
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::ANGLEImplementation::kOpenGL));
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::ANGLEImplementation::kOpenGLES));
   }
   return impls;
 }
