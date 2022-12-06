@@ -437,6 +437,7 @@ bool CreateDesktopShortcut(base::Environment* env,
       DeleteShortcutOnDesktop(shortcut_filename);
 
     if (create_shortcut_in_startup)
+      // if (creation_locations.in_startup)
       DeleteShortcutInAutoStart(env, shortcut_filename);
 
     if (applications_menu_location != APP_MENU_LOCATION_NONE) {
@@ -484,14 +485,6 @@ bool CreateDesktopShortcut(base::Environment* env,
         std::move(shortcut_info.actions));
     success =
         CreateShortcutInAutoStart(env, shortcut_filename, contents) && success;
-  }
-
-  if (shortcut_override) {  // IN-TEST
-    std::vector<std::string> protocol_handler(
-        shortcut_info.protocol_handlers.begin(),
-        shortcut_info.protocol_handlers.end());
-    shortcut_override->protocol_scheme_registrations.emplace_back(
-        shortcut_info.extension_id, std::move(protocol_handler));
   }
 
   if (applications_menu_location == APP_MENU_LOCATION_NONE) {

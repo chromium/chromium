@@ -50,7 +50,6 @@
 #import "chrome/browser/mac/dock.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/os_integration/icns_encoder.h"
-#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -1215,15 +1214,6 @@ bool WebAppShortcutCreator::UpdatePlist(const base::FilePath& app_path) const {
           base::SysUTF8ToNSString(GetBundleIdentifier(info_->extension_id)),
       app_mode::kCFBundleURLSchemesKey : handlers
     } ];
-    if (GetShortcutOverrideForTesting()) {  // IN-TEST
-      std::vector<std::string> protocol_handlers_vec;
-      protocol_handlers_vec.insert(protocol_handlers_vec.end(),
-                                   protocol_handlers.begin(),
-                                   protocol_handlers.end());
-      GetShortcutOverrideForTesting()  // IN-TEST
-          ->protocol_scheme_registrations.emplace_back(
-              info_->extension_id, std::move(protocol_handlers_vec));
-    }
   }
 
   // TODO(crbug.com/1273526): If we decide to rename app bundles on app title

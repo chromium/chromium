@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
@@ -19,7 +18,6 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_id.h"
 #include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
@@ -98,12 +96,6 @@ struct ShortcutOverrideForTesting
   // std::string xdg_mime_install_cmd;
   // std::string mime_types_file_contents;
 #endif
-
-  // Records all registration events for a given app id & protocol list. Due to
-  // simplification on the OS-side, unregistrations are not recorded, and
-  // instead this list can be checked for an empty registration.
-  std::vector<std::tuple<AppId, std::vector<std::string>>>
-      protocol_scheme_registrations;
 
  private:
   friend class base::RefCountedThreadSafe<ShortcutOverrideForTesting>;
