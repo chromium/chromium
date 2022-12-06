@@ -40,6 +40,7 @@
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/login_detection/login_detection_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_constants.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
@@ -9606,6 +9607,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSameAppWindowCycleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSameAppWindowCycle)},
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-access-code-cast-tabswitching-ui",
+     flag_descriptions::kAccessCodeCastTabSwitchingUIName,
+     flag_descriptions::kAccessCodeCastTabSwitchingUIDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(::features::kAccessCodeCastTabSwitchingUI)},
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
@@ -9773,6 +9781,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return true;
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Only show the AccessCodeCast tab switching flag if the AccessCodeCast Ui is
+  // displayed.
+  if (!strcmp("enable-access-code-cast-tabswitching-ui", entry.internal_name)) {
+    return !media_router::IsAccessCodeCastEnabled();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (flags::IsFlagExpired(storage, entry.internal_name))
     return true;

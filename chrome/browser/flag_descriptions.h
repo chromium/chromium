@@ -2404,6 +2404,9 @@ extern const char kCormorantDescription[];
 
 #else  // !BUILDFLAG(IS_ANDROID)
 
+extern const char kAccessCodeCastTabSwitchingUIName[];
+extern const char kAccessCodeCastTabSwitchingUIDescription[];
+
 extern const char kAppManagementAppDetailsName[];
 extern const char kAppManagementAppDetailsDescription[];
 

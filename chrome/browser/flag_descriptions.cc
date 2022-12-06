@@ -4434,6 +4434,11 @@ const char kDevToolsTabTargetLiteralName[] = "DevTools using Tab Target";
 const char kDevToolsTabTargetLiteralDescription[] =
     "Makes DevTools use an experimental CDP Tab target.";
 
+const char kAccessCodeCastTabSwitchingUIName[] =
+    "Access Code Cast Tab Switching UI";
+const char kAccessCodeCastTabSwitchingUIDescription[] =
+    "Enables tab switching during an Access Code Casting session.";
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows ---------------------------------------------------------------------
