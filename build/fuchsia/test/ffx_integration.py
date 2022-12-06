@@ -323,7 +323,12 @@ class FfxTestRunner(AbstractContextManager):
             sys.exit(1)
 
         # There should be precisely one suite for the test that ran.
-        suite_summary = run_summary.get('data', {}).get('suites', [{}])[0]
+        suites_list = run_summary.get('data', {}).get('suites')
+        if not suites_list:
+            logging.error('Missing or empty list of suites in %s',
+                          run_summary_path)
+            return
+        suite_summary = suites_list[0]
 
         # Get the top-level directory holding all artifacts for this suite.
         artifact_dir = suite_summary.get('artifact_dir')
