@@ -7435,3 +7435,6 @@ crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-cross-ori
 crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
 crbug.com/1382865 external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
 crbug.com/1382865 virtual/storage-access-api/external/wpt/storage-access-api/requestStorageAccess-nested-cross-origin-iframe.sub.https.window.html [ Failure Pass ]
+
+# Branch sheriff 2022-12-05
+crbug.com/1394927 virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendondiscard.tentative.https.window.html [ Failure Pass Timeout ]
