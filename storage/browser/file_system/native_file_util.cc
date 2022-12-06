@@ -21,6 +21,10 @@
 #include "windows.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include <grp.h>
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace storage {
 
 namespace {
@@ -31,12 +35,18 @@ namespace {
 // TODO(benchan): Find a better place outside webkit to host this function.
 bool SetPlatformSpecificDirectoryPermissions(const base::FilePath& dir_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // System daemons on Chrome OS may run as a user different than the Chrome
+  // System daemons on ChromeOS may run as a user different than the Chrome
   // process but need to access files under the directories created here.
   // Because of that, grant the execute permission on the created directory
-  // to group and other users.
-  if (HANDLE_EINTR(
-          chmod(dir_path.value().c_str(), S_IRWXU | S_IXGRP | S_IXOTH)) != 0) {
+  // to group and other users. Also chronos-access group should have read
+  // access to the directory.
+  if (HANDLE_EINTR(chmod(dir_path.value().c_str(),
+                         S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH)) != 0) {
+    return false;
+  }
+  auto* group = getgrnam("chronos-access");
+  if (!group ||
+      HANDLE_EINTR(chown(dir_path.value().c_str(), -1, group->gr_gid)) != 0) {
     return false;
   }
 #endif
