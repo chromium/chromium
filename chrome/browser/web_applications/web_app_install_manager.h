@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_app_sync_install_delegate.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 
 class Profile;
@@ -48,12 +47,12 @@ class WebAppTranslationManager;
 class WebAppIconManager;
 
 // TODO(loyso): Unify the API and merge similar InstallWebAppZZZZ functions.
-class WebAppInstallManager final : public SyncInstallDelegate {
+class WebAppInstallManager {
  public:
   explicit WebAppInstallManager(Profile* profile);
   WebAppInstallManager(const WebAppInstallManager&) = delete;
   WebAppInstallManager& operator=(const WebAppInstallManager&) = delete;
-  ~WebAppInstallManager() override;
+  virtual ~WebAppInstallManager();
 
   void Start();
   void Shutdown();

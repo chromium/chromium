@@ -16,6 +16,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
