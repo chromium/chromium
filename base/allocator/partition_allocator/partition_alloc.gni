@@ -128,8 +128,7 @@ declare_args() {
   # to go through build_overrides
   enable_dangling_raw_ptr_perf_experiment = false
 
-  backup_ref_ptr_poison_oob_ptr =
-      use_partition_alloc && backup_ref_ptr_poison_oob_ptr_default
+  backup_ref_ptr_poison_oob_ptr = false
 }
 
 declare_args() {
