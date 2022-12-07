@@ -2531,13 +2531,23 @@ void NavigationRequest::StartNavigation() {
     common_params_->should_replace_current_entry = true;
   }
 
-  DCHECK_NE(AssociatedRenderFrameHostType::NONE, associated_rfh_type_);
-  RenderFrameHostImpl* navigating_frame_host =
-      associated_rfh_type_ == AssociatedRenderFrameHostType::SPECULATIVE
-          ? frame_tree_node_->render_manager()->speculative_frame_host()
-          : frame_tree_node_->current_frame_host();
-  DCHECK(navigating_frame_host);
-  SetExpectedProcess(navigating_frame_host->GetProcess());
+  // Set the expected process for this navigation, if we can. The navigation
+  // might not have an associated RenderFrameHost yet, which is possible if it
+  // can't create a speculative RenderFrameHost when there's a pending commit
+  // navigation (when navigation queueing is enabled), or it had an associated
+  // RenderFrameHost when the NavigationRequest was created but another
+  // navigation had committed in between that time and StartNavigation, which
+  // invalidates the `associated_rfh_type_`. It's fine to skip setting the
+  // expected process in this case, as we'll set the expected process again from
+  // ReadyToCommitNavigation(), when we know the final RenderFrameHost for the
+  // navigation.
+  if (associated_rfh_type_ != AssociatedRenderFrameHostType::NONE) {
+    RenderFrameHostImpl* navigating_frame_host =
+        associated_rfh_type_ == AssociatedRenderFrameHostType::SPECULATIVE
+            ? frame_tree_node_->render_manager()->speculative_frame_host()
+            : frame_tree_node_->current_frame_host();
+    SetExpectedProcess(navigating_frame_host->GetProcess());
+  }
 
   DCHECK(!IsNavigationStarted());
   SetState(WILL_START_REQUEST);
@@ -3864,7 +3874,7 @@ void NavigationRequest::OnResponseStarted(
 
     // Update the associated RenderFrameHost type, which could have changed
     // due to redirects during navigation.
-    set_associated_rfh_type(
+    SetAssociatedRFHType(
         render_frame_host_ ==
                 frame_tree_node_->render_manager()->current_frame_host()
             ? AssociatedRenderFrameHostType::CURRENT
@@ -4224,7 +4234,7 @@ void NavigationRequest::OnRequestFailedInternal(
   render_frame_host_ = render_frame_host;
 
   // Update the associated RenderFrameHost type.
-  set_associated_rfh_type(
+  SetAssociatedRFHType(
       render_frame_host_ ==
               frame_tree_node_->render_manager()->current_frame_host()
           ? AssociatedRenderFrameHostType::CURRENT
@@ -7225,6 +7235,25 @@ RenderFrameHostImpl* NavigationRequest::GetRenderFrameHost() const {
   static_assert(WILL_FAIL_REQUEST > WILL_PROCESS_RESPONSE,
                 "WillFailRequest state should come after WillProcessResponse");
   return render_frame_host_;
+}
+
+NavigationRequest::AssociatedRenderFrameHostType
+NavigationRequest::GetAssociatedRFHType() const {
+  CHECK_LT(state_, READY_TO_COMMIT)
+      << "Use GetRenderFrameHost() instead when the final RenderFrameHost for "
+         "the navigation had been picked";
+  return associated_rfh_type_;
+}
+
+void NavigationRequest::SetAssociatedRFHType(
+    AssociatedRenderFrameHostType type) {
+  if (associated_rfh_type_ != AssociatedRenderFrameHostType::NONE &&
+      type == AssociatedRenderFrameHostType::NONE) {
+    // If we're transitioning to "NONE" when the previous state was not "NONE",
+    // we might have called SetExpectedProcess() before, so reset it now.
+    ResetExpectedProcess();
+  }
+  associated_rfh_type_ = type;
 }
 
 const net::HttpRequestHeaders& NavigationRequest::GetRequestHeaders() {

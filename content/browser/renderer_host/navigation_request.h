@@ -480,12 +480,9 @@ class CONTENT_EXPORT NavigationRequest
 
   bool from_begin_navigation() const { return from_begin_navigation_; }
 
-  AssociatedRenderFrameHostType associated_rfh_type() const {
-    return associated_rfh_type_;
-  }
-  void set_associated_rfh_type(AssociatedRenderFrameHostType type) {
-    associated_rfh_type_ = type;
-  }
+  AssociatedRenderFrameHostType GetAssociatedRFHType() const;
+
+  void SetAssociatedRFHType(AssociatedRenderFrameHostType type);
 
   void set_was_discarded() { commit_params_->was_discarded = true; }
 

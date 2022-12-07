@@ -396,15 +396,15 @@ TEST_F(NavigatorTest,
   // RFHI that navigation2 depends on.
   navigation2->Redirect(kUrl2);
   EXPECT_FALSE(GetSpeculativeRenderFrameHost(node));
-  EXPECT_TRUE(node->navigation_request()->associated_rfh_type() ==
+  EXPECT_TRUE(node->navigation_request()->GetAssociatedRFHType() ==
               NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
 
   navigation2->ReadyToCommit();
   EXPECT_EQ(1u, raw_runner->NumPendingTasks());
   EXPECT_TRUE(navigation2->IsDeferred());
   EXPECT_TRUE(GetSpeculativeRenderFrameHost(node));
-  EXPECT_EQ(node->navigation_request()->associated_rfh_type(),
-            NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+  EXPECT_EQ(node->navigation_request()->GetRenderFrameHost(),
+            GetSpeculativeRenderFrameHost(node));
 
   // Abort the initial navigation.
   navigation1->AbortFromRenderer();

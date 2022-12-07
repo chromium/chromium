@@ -632,24 +632,42 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
 
   if (render_frame_host == speculative_render_frame_host_.get()) {
     // A cross-RenderFrameHost navigation completed, so show the new renderer.
-    // If there are same-RenderFrameHost navigations that are ongoing, they will
-    // be canceled by the call to ResetNavigationRequest() below (if not
-    // pending-commit) or when the speculative RenderFrameHost replaces the
-    // current one during the CommitPending() call.
-    // TODO(https://crbug.com/1220337): Ensure that pending-commit navigations
-    // won't get deleted, which will be guaranteed when we only allow one
-    // cross-document navigation per FrameTreeNode to be pending commit at any
-    // given moment. Also, don't cancel non-pending-commit navigation requests
-    // too, so that navigations that are queued to wait for pending commit
-    // navigations won't end up just getting canceled after the pending commit
-    // navigation got to this point. Currently we need to cancel these
-    // navigations still, because the navigations can't handle a change from
-    // being a "same-RFH" navigation to a "speculative-RFH" navigation yet
-    // (outside of redirects).
     CommitPending(std::move(speculative_render_frame_host_),
                   std::move(stored_page_to_restore_), clear_proxies_on_commit);
-    frame_tree_node_->ResetNavigationRequest(
-        NavigationDiscardReason::kCommittedNavigation);
+
+    if (base::FeatureList::IsEnabled(
+            kAvoidUnnecessaryNavigationCancellations)) {
+      // When kAvoidUnnecessaryNavigationCancellations is enabled, if there are
+      // other navigation requests that are ongoing, set their "associated
+      // RenderFrameHost type" NONE, as the old type may no longer be accurate:
+      // - If it was previously set to CURRENT, the current RenderFrameHost
+      // had already changed to the previously-speculative RenderFrameHost. It
+      // most likely will commit to a new speculative RenderFrameHost, but that
+      // doesn't exist yet and so we shouldn't change the type to SPECULATIVE.
+      // - If it was previously set to SPECULATIVE, the previously-speculative
+      // RenderFrameHost is no longer speculative. However we can't just set the
+      // type to CURRENT, as the navigation might actually want to create a new
+      // speculative RenderFrameHost too and not reuse the now-current RFH
+      // (e.g., with RenderDocument).
+      // A new "associated RenderFrameHost" type value will be recalculated when
+      // the navigation recalculates its RenderFrameHost either at
+      // StartNavigation (if it hasn't reached that stage yet) or ReadyToCommit
+      // time. Note that we don't update this value for pending commit
+      // navigations (and hence we only check the FrameTreeNode's
+      // NavigationRequest), as the value is only used until before the
+      // navigation gets to the "pending commit" stage.
+      if (frame_tree_node_->navigation_request()) {
+        frame_tree_node_->navigation_request()->SetAssociatedRFHType(
+            NavigationRequest::AssociatedRenderFrameHostType::NONE);
+      }
+    } else {
+      // When kAvoidUnnecessaryNavigationCancellations is disabled, if there are
+      // other navigations that are ongoing, cancel them if they're not pending
+      // commit. Note that the pending commit navigations that are in the old
+      // RFH will get deleted when the old RFH gets unloaded.
+      frame_tree_node_->ResetNavigationRequest(
+          NavigationDiscardReason::kCommittedNavigation);
+    }
     return;
   }
 
@@ -1093,12 +1111,12 @@ void RenderFrameHostManager::DidCreateNavigationRequest(
     // TODO(https://crbug.com/1220337): Don't delete the speculative
     // RenderFrameHost when it is pending commit.
     DiscardSpeculativeRFH(NavigationDiscardReason::kNewNavigation);
-    request->set_associated_rfh_type(
+    request->SetAssociatedRFHType(
         NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
   } else {
     RenderFrameHostImpl* dest_rfh = GetFrameHostForNavigation(request);
     DCHECK(dest_rfh);
-    request->set_associated_rfh_type(
+    request->SetAssociatedRFHType(
         dest_rfh == render_frame_host_.get()
             ? NavigationRequest::AssociatedRenderFrameHostType::CURRENT
             : NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
@@ -1444,7 +1462,7 @@ void RenderFrameHostManager::DiscardSpeculativeRFHIfUnused(
   NavigationRequest* navigation_request =
       frame_tree_node_->navigation_request();
   if (navigation_request &&
-      navigation_request->associated_rfh_type() ==
+      navigation_request->GetAssociatedRFHType() ==
           NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE) {
     return;
   }
