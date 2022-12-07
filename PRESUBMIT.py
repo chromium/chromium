@@ -2836,6 +2836,7 @@ def CheckSpamLogging(input_api, output_api):
     files_to_skip = (
         _EXCLUDED_PATHS + _TEST_CODE_EXCLUDED_PATHS +
         input_api.DEFAULT_FILES_TO_SKIP + (
+            r"^base/fuchsia/scoped_fx_logger\.cc$",
             r"^base/logging\.h$",
             r"^base/logging\.cc$",
             r"^base/task/thread_pool/task_tracker\.cc$",
