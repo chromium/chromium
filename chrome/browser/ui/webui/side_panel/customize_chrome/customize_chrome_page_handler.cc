@@ -21,13 +21,16 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
         pending_page_handler,
     mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
+    NtpCustomBackgroundService* ntp_custom_background_service,
     content::WebContents* web_contents)
-    : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+    : ntp_custom_background_service_(ntp_custom_background_service),
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
       ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile_)),
       page_(std::move(pending_page)),
       receiver_(this, std::move(pending_page_handler)) {
+  CHECK(ntp_custom_background_service_);
   CHECK(ntp_background_service_);
   ntp_background_service_->AddObserver(this);
 }
@@ -77,6 +80,22 @@ void CustomizeChromePageHandler::GetBackgroundCollections(
   background_collections_request_start_time_ = base::TimeTicks::Now();
   background_collections_callback_ = std::move(callback);
   ntp_background_service_->FetchCollectionInfo();
+}
+
+void CustomizeChromePageHandler::UpdateTheme() {
+  auto theme = side_panel::mojom::Theme::New();
+  auto custom_background =
+      ntp_custom_background_service_
+          ? ntp_custom_background_service_->GetCustomBackground()
+          : absl::nullopt;
+  auto background_image = side_panel::mojom::BackgroundImage::New();
+  if (custom_background.has_value()) {
+    background_image->url = custom_background->custom_background_url;
+  } else {
+    background_image = nullptr;
+  }
+  theme->background_image = std::move(background_image);
+  page_->SetTheme(std::move(theme));
 }
 
 bool CustomizeChromePageHandler::IsCustomLinksEnabled() const {

@@ -10,6 +10,7 @@
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
@@ -44,7 +45,16 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
 
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
+  MOCK_METHOD1(SetTheme, void(side_panel::mojom::ThemePtr));
+
   mojo::Receiver<side_panel::mojom::CustomizeChromePage> receiver_{this};
+};
+
+class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
+ public:
+  explicit MockNtpCustomBackgroundService(Profile* profile)
+      : NtpCustomBackgroundService(profile) {}
+  MOCK_METHOD0(GetCustomBackground, absl::optional<CustomBackground>());
 };
 
 class MockNtpBackgroundService : public NtpBackgroundService {
@@ -84,6 +94,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
       : profile_(MakeTestingProfile(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_))),
+        mock_ntp_custom_background_service_(profile_.get()),
         mock_ntp_background_service_(static_cast<MockNtpBackgroundService*>(
             NtpBackgroundServiceFactory::GetForProfile(profile_.get()))) {}
 
@@ -93,7 +104,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
         .WillOnce(testing::SaveArg<0>(&ntp_background_service_observer_));
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
-        mock_page_.BindAndGetRemote(),
+        mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
         web_contents_factory_.CreateWebContents(profile_.get()));
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
@@ -108,10 +119,12 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     return *ntp_background_service_observer_;
   }
 
- private:
+ protected:
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  testing::NiceMock<MockNtpCustomBackgroundService>
+      mock_ntp_custom_background_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   content::TestWebContentsFactory web_contents_factory_;
@@ -178,6 +191,26 @@ TEST_F(CustomizeChromePageHandlerTest, GetChromeColors) {
                   .frame_color,
               colors[i]->foreground);
   }
+}
+
+TEST_F(CustomizeChromePageHandlerTest, SetTheme) {
+  side_panel::mojom::ThemePtr theme;
+  EXPECT_CALL(mock_page_, SetTheme)
+      .Times(1)
+      .WillOnce(testing::Invoke([&theme](side_panel::mojom::ThemePtr arg) {
+        theme = std::move(arg);
+      }));
+  CustomBackground custom_background;
+  custom_background.custom_background_url = GURL("https://foo.com/img.png");
+  ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
+      .WillByDefault(testing::Return(absl::make_optional(custom_background)));
+
+  handler().UpdateTheme();
+  mock_page_.FlushForTesting();
+
+  ASSERT_TRUE(theme);
+  ASSERT_TRUE(theme->background_image);
+  EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
 }
 
 TEST_F(CustomizeChromePageHandlerTest, GetBackgroundCollections) {

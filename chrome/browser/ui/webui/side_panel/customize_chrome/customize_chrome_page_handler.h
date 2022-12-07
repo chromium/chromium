@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/search/background/ntp_background_service.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
+#include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -27,6 +28,7 @@ class CustomizeChromePageHandler
       mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>
           pending_page_handler,
       mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
+      NtpCustomBackgroundService* ntp_custom_background_service,
       content::WebContents* web_contents);
 
   CustomizeChromePageHandler(const CustomizeChromePageHandler&) = delete;
@@ -41,6 +43,7 @@ class CustomizeChromePageHandler
   void GetChromeColors(GetChromeColorsCallback callback) override;
   void GetBackgroundCollections(
       GetBackgroundCollectionsCallback callback) override;
+  void UpdateTheme() override;
 
  private:
   bool IsCustomLinksEnabled() const;
@@ -52,6 +55,7 @@ class CustomizeChromePageHandler
   void OnNextCollectionImageAvailable() override;
   void OnNtpBackgroundServiceShuttingDown() override;
 
+  raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;

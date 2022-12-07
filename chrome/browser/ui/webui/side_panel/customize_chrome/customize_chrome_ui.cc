@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -69,5 +70,7 @@ void CustomizeChromeUI::CreatePageHandler(
         pending_page_handler) {
   DCHECK(pending_page.is_valid());
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
-      std::move(pending_page_handler), std::move(pending_page), web_contents_);
+      std::move(pending_page_handler), std::move(pending_page),
+      NtpCustomBackgroundServiceFactory::GetForProfile(profile_),
+      web_contents_);
 }

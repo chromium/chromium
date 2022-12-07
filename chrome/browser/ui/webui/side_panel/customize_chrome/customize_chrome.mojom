@@ -7,6 +7,18 @@ module side_panel.mojom;
 import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
 
+// The background image URL and styling.
+struct BackgroundImage {
+  // URL to the background image. Can point to untrusted content.
+  url.mojom.Url url;
+};
+
+// A generic theme.
+struct Theme {
+  // The background image.
+  BackgroundImage? background_image;
+};
+
 struct ChromeColor {
   // Localized string of the color name.
   string name;
@@ -47,8 +59,12 @@ interface CustomizeChromePageHandler {
 
   // Returns the collections of background images.
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
+  // Triggers a call to |CustomizeChromePage.SetTheme()|.
+  UpdateTheme();
 };
 
 // WebUI-side handler for requests from the browser.
 interface CustomizeChromePage {
+   // Sets the current theme.
+   SetTheme(Theme theme);
 };
