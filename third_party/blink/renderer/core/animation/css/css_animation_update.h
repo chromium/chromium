@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -233,10 +234,11 @@ class CORE_EXPORT CSSAnimationUpdate final {
     return changed_scroll_timeline_.Get();
   }
   absl::optional<CSSViewTimeline*> ChangedViewTimeline(
-      const AtomicString& name) const {
-    auto i = changed_view_timelines_.find(name);
-    if (i == changed_view_timelines_.end())
+      const ScopedCSSName& name) const {
+    auto i = changed_view_timelines_.find(&name);
+    if (i == changed_view_timelines_.end()) {
       return absl::nullopt;
+    }
     return i->value.Get();
   }
   const CSSViewTimelineMap& ChangedViewTimelines() const {

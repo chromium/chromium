@@ -495,10 +495,7 @@ void CSSAnimations::CalculateScrollTimelineUpdate(
     const ComputedStyleBuilder& style_builder) {
   Document& document = animating_element.GetDocument();
 
-  // TODO(crbug.com/1382876): Handle TreeScope.
-  const AtomicString& name = style_builder.ScrollTimelineName()
-                                 ? style_builder.ScrollTimelineName()->GetName()
-                                 : g_null_atom;
+  const ScopedCSSName* name = style_builder.ScrollTimelineName();
   TimelineAxis axis = style_builder.ScrollTimelineAxis();
 
   const CSSAnimations::TimelineData* timeline_data =
@@ -508,13 +505,13 @@ void CSSAnimations::CalculateScrollTimelineUpdate(
       timeline_data ? timeline_data->GetScrollTimeline() : nullptr;
   CSSScrollTimeline* new_timeline = nullptr;
 
-  if (!name.empty()) {
+  if (name) {
     // If the computed values of scroll-timeline-* would produce a
     // CSSScrollTimeline identical to the existing one, we reuse the existing
     // one instead.
     CSSScrollTimeline::Options options(document,
                                        ScrollTimeline::ReferenceType::kSource,
-                                       &animating_element, name, axis);
+                                       &animating_element, *name, axis);
     // No need to change the timeline if it would be the same as the previous.
     if (existing_timeline && existing_timeline->Matches(document, options))
       return;
@@ -550,7 +547,8 @@ void CSSAnimations::CalculateViewTimelineUpdate(
   // We initially assume that all timelines will be removed, and then un-remove
   // for matching timelines in the for-loop below.
   if (timeline_data) {
-    for (const AtomicString& name : timeline_data->GetViewTimelines().Keys()) {
+    for (const Member<const ScopedCSSName>& name :
+         timeline_data->GetViewTimelines().Keys()) {
       changed_timelines.Set(name, nullptr);
     }
   }
@@ -567,8 +565,7 @@ void CSSAnimations::CalculateViewTimelineUpdate(
       // A value of nullptr means "none".
       continue;
     }
-    // TODO(crbug.com/1382876): Handle TreeScopes.
-    const AtomicString& name = names[i]->GetName();
+    const ScopedCSSName& name = *names[i];
     TimelineAxis axis = axes.empty() ? TimelineAxis::kBlock
                                      : axes[std::min(i, axes.size() - 1)];
     const TimelineInset& inset = insets.empty()
@@ -579,13 +576,13 @@ void CSSAnimations::CalculateViewTimelineUpdate(
     CSSViewTimeline::Options options(&animating_element, axis, inset);
     if (existing_timeline && existing_timeline->Matches(options)) {
       // Don't clear this timeline after all.
-      changed_timelines.erase(name);
+      changed_timelines.erase(&name);
       continue;
     }
     CSSViewTimeline* new_timeline = MakeGarbageCollected<CSSViewTimeline>(
         &animating_element.GetDocument(), std::move(options));
     new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
-    changed_timelines.Set(name, new_timeline);
+    changed_timelines.Set(&name, new_timeline);
   }
 
   update.SetChangedViewTimelines(std::move(changed_timelines));
@@ -599,8 +596,50 @@ const CSSAnimations::TimelineData* CSSAnimations::GetTimelineData(
              : nullptr;
 }
 
+namespace {
+
+// Assuming that `inner` is an inclusive descendant of `outer`, returns
+// the distance (in the number of TreeScopes) between `inner` and `outer`.
+//
+// Returns std::numeric_limits::max() if `inner` is not an inclusive
+// descendant of `outer`.
+size_t TreeScopeDistance(const TreeScope* outer, const TreeScope* inner) {
+  size_t distance = 0;
+
+  const TreeScope* current = inner;
+
+  do {
+    if (current == outer) {
+      return distance;
+    }
+    ++distance;
+  } while (current && (current = current->ParentTreeScope()));
+
+  return std::numeric_limits<size_t>::max();
+}
+
+// Update the matching timeline if the candidate is a more proximate match
+// than the existing match.
+void UpdateMatchingTimeline(const ScopedCSSName& target_name,
+                            const ScopedCSSName& candidate_name,
+                            CSSViewTimeline* candidate,
+                            CSSViewTimeline*& matching_timeline,
+                            size_t& matching_distance) {
+  if (target_name.GetName() != candidate_name.GetName()) {
+    return;
+  }
+  size_t distance = TreeScopeDistance(candidate_name.GetTreeScope(),
+                                      target_name.GetTreeScope());
+  if (distance < matching_distance) {
+    matching_timeline = candidate;
+    matching_distance = distance;
+  }
+}
+
+}  // namespace
+
 ScrollTimeline* CSSAnimations::FindTimelineForNode(
-    const AtomicString& name,
+    const ScopedCSSName& name,
     Node* node,
     const CSSAnimationUpdate* update) {
   Element* element = DynamicTo<Element>(node);
@@ -608,15 +647,14 @@ ScrollTimeline* CSSAnimations::FindTimelineForNode(
     return nullptr;
   const TimelineData* timeline_data = GetTimelineData(*element);
   if (CSSViewTimeline* timeline =
-          FindViewTimelineForElement(name, *element, update, timeline_data)) {
+          FindViewTimelineForElement(name, update, timeline_data)) {
     return timeline;
   }
-  return FindScrollTimelineForElement(name, *element, update, timeline_data);
+  return FindScrollTimelineForElement(name, update, timeline_data);
 }
 
 CSSScrollTimeline* CSSAnimations::FindScrollTimelineForElement(
-    const AtomicString& name,
-    Element& element,
+    const ScopedCSSName& target_name,
     const CSSAnimationUpdate* update,
     const TimelineData* timeline_data) {
   CSSScrollTimeline* existing_scroll_timeline =
@@ -628,24 +666,55 @@ CSSScrollTimeline* CSSAnimations::FindScrollTimelineForElement(
              : absl::optional<CSSScrollTimeline*>();
   CSSScrollTimeline* pending_aware_timeline =
       pending_timeline.value_or(existing_scroll_timeline);
-  if (pending_aware_timeline && pending_aware_timeline->Name() == name)
-    return pending_aware_timeline;
-  return nullptr;
+  if (!pending_aware_timeline) {
+    return nullptr;
+  }
+  if (pending_aware_timeline->Name().GetName() != target_name.GetName()) {
+    return nullptr;
+  }
+
+  if (TreeScopeDistance(pending_aware_timeline->Name().GetTreeScope(),
+                        target_name.GetTreeScope()) ==
+      std::numeric_limits<size_t>::max()) {
+    return nullptr;
+  }
+  return pending_aware_timeline;
 }
 
 CSSViewTimeline* CSSAnimations::FindViewTimelineForElement(
-    const AtomicString& name,
-    Element& element,
+    const ScopedCSSName& target_name,
     const CSSAnimationUpdate* update,
     const TimelineData* timeline_data) {
-  CSSViewTimeline* existing_timeline =
-      timeline_data ? timeline_data->GetViewTimeline(name) : nullptr;
-  // The pending CSSViewTimeline (if any) takes precedence over the
-  // timeline stored on CSSAnimations::TimelineData.
-  absl::optional<CSSViewTimeline*> pending_timeline =
-      update ? update->ChangedViewTimeline(name)
-             : absl::optional<CSSViewTimeline*>();
-  return pending_timeline.value_or(existing_timeline);
+  CSSViewTimeline* matching_timeline = nullptr;
+  size_t matching_distance = std::numeric_limits<size_t>::max();
+
+  // First, search through existing named timelines.
+  if (timeline_data) {
+    for (auto [name, value] : timeline_data->GetViewTimelines()) {
+      // Skip timelines affected by the current CSSAnimationUpdate:
+      // they will be handled by the next for-loop.
+      if (update && update->ChangedViewTimeline(*name)) {
+        continue;
+      }
+      UpdateMatchingTimeline(target_name, *name, value.Get(), matching_timeline,
+                             matching_distance);
+    }
+  }
+
+  // Search through timelines created or modified this CSSAnimationUpdate.
+  if (update) {
+    for (auto [name, value] : update->ChangedViewTimelines()) {
+      if (!value) {
+        // A value of nullptr means that a currently existing timeline
+        // was removed.
+        continue;
+      }
+      UpdateMatchingTimeline(target_name, *name, value.Get(), matching_timeline,
+                             matching_distance);
+    }
+  }
+
+  return matching_timeline;
 }
 
 // Find a ScrollTimeline in the inclusive sibling-ancestors.
@@ -654,7 +723,7 @@ CSSViewTimeline* CSSAnimations::FindViewTimelineForElement(
 // it from ElementAnimations, is that for the current node we're resolving style
 // for, the update hasn't actually been stored on ElementAnimations yet.
 ScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
-    const AtomicString& name,
+    const ScopedCSSName& name,
     Node* node,
     const CSSAnimationUpdate* update) {
   DCHECK(node);
@@ -673,7 +742,7 @@ ScrollTimeline* CSSAnimations::FindPreviousSiblingAncestorTimeline(
     }
   }
 
-  Node* parent = node->ParentOrShadowHostNode();
+  Node* parent = node->ParentOrShadowHostElement();
   if (!parent)
     return nullptr;
   return FindPreviousSiblingAncestorTimeline(
@@ -705,8 +774,10 @@ CSSScrollTimeline* ComputeScrollFunctionTimeline(
 
   auto [reference_type, reference_element] =
       ComputeReference(element, scroll_data.GetScroller());
+  auto* name =
+      MakeGarbageCollected<ScopedCSSName>("", /* tree_scope */ nullptr);
   CSSScrollTimeline::Options options(document, reference_type,
-                                     reference_element, g_null_atom /* name */,
+                                     reference_element, *name,
                                      scroll_data.GetAxis());
   if (auto* scroll_timeline = DynamicTo<CSSScrollTimeline>(existing_timeline);
       scroll_timeline && scroll_timeline->Matches(document, options)) {
@@ -731,10 +802,8 @@ AnimationTimeline* CSSAnimations::ComputeTimeline(
     return nullptr;
   }
   if (style_timeline.IsName()) {
-    const ScopedCSSName& scoped_name = style_timeline.GetName();
-    // TODO(crbug.com/1382876): Handle TreeScope.
-    return FindPreviousSiblingAncestorTimeline(scoped_name.GetName(), element,
-                                               &update);
+    return FindPreviousSiblingAncestorTimeline(style_timeline.GetName(),
+                                               element, &update);
   }
   DCHECK(style_timeline.IsScroll());
   return ComputeScrollFunctionTimeline(element, style_timeline.GetScroll(),
@@ -1378,7 +1447,7 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     timeline_data_.SetScrollTimeline(*changed_timeline);
   }
   for (auto [name, value] : pending_update_.ChangedViewTimelines()) {
-    timeline_data_.SetViewTimeline(name, value.Get());
+    timeline_data_.SetViewTimeline(*name, value.Get());
   }
 
   for (wtf_size_t paused_index :
@@ -1990,18 +2059,18 @@ void CSSAnimations::Cancel() {
   pending_update_.Clear();
 }
 
-void CSSAnimations::TimelineData::SetViewTimeline(const AtomicString& name,
+void CSSAnimations::TimelineData::SetViewTimeline(const ScopedCSSName& name,
                                                   CSSViewTimeline* timeline) {
   if (timeline == nullptr) {
-    view_timelines_.erase(name);
+    view_timelines_.erase(&name);
   } else {
-    view_timelines_.Set(name, timeline);
+    view_timelines_.Set(&name, timeline);
   }
 }
 
 CSSViewTimeline* CSSAnimations::TimelineData::GetViewTimeline(
-    const AtomicString& name) const {
-  auto i = view_timelines_.find(name);
+    const ScopedCSSName& name) const {
+  auto i = view_timelines_.find(&name);
   return i != view_timelines_.end() ? i->value.Get() : nullptr;
 }
 

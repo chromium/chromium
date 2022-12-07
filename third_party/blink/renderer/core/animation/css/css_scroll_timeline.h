@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 
 namespace blink {
 
@@ -26,7 +27,7 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
     Options(Document&,
             ScrollTimeline::ReferenceType reference_type,
             absl::optional<Element*> reference_element,
-            const AtomicString& name,
+            const ScopedCSSName& name,
             TimelineAxis axis);
 
     static ScrollAxis ComputeAxis(TimelineAxis);
@@ -37,12 +38,14 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
     ScrollTimeline::ReferenceType reference_type_;
     absl::optional<Element*> reference_element_;
     ScrollAxis axis_;
-    AtomicString name_;
+    const ScopedCSSName& name_;
   };
 
   CSSScrollTimeline(Document*, Options&&);
 
-  const AtomicString& Name() const { return name_; }
+  void Trace(Visitor*) const override;
+
+  const ScopedCSSName& Name() const { return *name_; }
 
   bool Matches(Document&, const Options&) const;
 
@@ -50,7 +53,7 @@ class CORE_EXPORT CSSScrollTimeline : public ScrollTimeline {
   bool IsCSSScrollTimeline() const override { return true; }
 
  private:
-  AtomicString name_;
+  Member<const ScopedCSSName> name_;
 };
 
 template <>

@@ -207,8 +207,8 @@ class CORE_EXPORT CSSAnimations final {
     CSSScrollTimeline* GetScrollTimeline() const {
       return scroll_timeline_.Get();
     }
-    void SetViewTimeline(const AtomicString& name, CSSViewTimeline*);
-    CSSViewTimeline* GetViewTimeline(const AtomicString& name) const;
+    void SetViewTimeline(const ScopedCSSName& name, CSSViewTimeline*);
+    CSSViewTimeline* GetViewTimeline(const ScopedCSSName& name) const;
     const CSSViewTimelineMap& GetViewTimelines() const {
       return view_timelines_;
     }
@@ -298,21 +298,19 @@ class CORE_EXPORT CSSAnimations final {
 
   static const TimelineData* GetTimelineData(const Element&);
 
-  static ScrollTimeline* FindTimelineForNode(const AtomicString& name,
+  static ScrollTimeline* FindTimelineForNode(const ScopedCSSName& name,
                                              Node*,
                                              const CSSAnimationUpdate*);
   static CSSScrollTimeline* FindScrollTimelineForElement(
-      const AtomicString& name,
-      Element&,
+      const ScopedCSSName&,
       const CSSAnimationUpdate*,
       const TimelineData*);
-  static CSSViewTimeline* FindViewTimelineForElement(const AtomicString& name,
-                                                     Element&,
+  static CSSViewTimeline* FindViewTimelineForElement(const ScopedCSSName& name,
                                                      const CSSAnimationUpdate*,
                                                      const TimelineData*);
 
   static ScrollTimeline* FindPreviousSiblingAncestorTimeline(
-      const AtomicString& name,
+      const ScopedCSSName& name,
       Node*,
       const CSSAnimationUpdate*);
 

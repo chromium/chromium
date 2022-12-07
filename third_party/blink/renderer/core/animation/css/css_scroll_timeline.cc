@@ -23,7 +23,7 @@ CSSScrollTimeline::Options::Options(
     Document& document,
     ScrollTimeline::ReferenceType reference_type,
     absl::optional<Element*> reference_element,
-    const AtomicString& name,
+    const ScopedCSSName& name,
     TimelineAxis axis)
     : reference_type_(reference_type),
       reference_element_(reference_element),
@@ -53,14 +53,19 @@ CSSScrollTimeline::CSSScrollTimeline(Document* document, Options&& options)
           options.reference_type_,
           ResolveReferenceElement(*document, options.reference_element_),
           options.axis_),
-      name_(options.name_) {}
+      name_(&options.name_) {}
+
+void CSSScrollTimeline::Trace(Visitor* visitor) const {
+  ScrollTimeline::Trace(visitor);
+  visitor->Trace(name_);
+}
 
 bool CSSScrollTimeline::Matches(Document& document,
                                 const Options& options) const {
   return (GetReferenceType() == options.reference_type_) &&
          (ReferenceElement() ==
           ResolveReferenceElement(document, options.reference_element_)) &&
-         (GetAxis() == options.axis_) && (name_ == options.name_);
+         (GetAxis() == options.axis_) && (*name_ == options.name_);
 }
 
 }  // namespace blink
