@@ -918,6 +918,7 @@ TEST_P(WaylandSurfaceFactoryTest, Canvas) {
     });
 
     canvas->PresentCanvas(gfx::Rect(5, 10, 20, 15));
+    canvas->OnSwapBuffers(base::DoNothing(), gl::FrameData());
 
     // Wait until the mojo calls are done.
     base::RunLoop().RunUntilIdle();
@@ -965,6 +966,7 @@ TEST_P(WaylandSurfaceFactoryTest, CanvasResize) {
   });
 
   canvas->PresentCanvas(gfx::Rect(0, 0, 100, 50));
+  canvas->OnSwapBuffers(base::DoNothing(), gl::FrameData());
 
   base::RunLoop().RunUntilIdle();
 

@@ -138,7 +138,8 @@ SoftwareOutputDeviceWinProxy::SoftwareOutputDeviceWinProxy(
 SoftwareOutputDeviceWinProxy::~SoftwareOutputDeviceWinProxy() = default;
 
 void SoftwareOutputDeviceWinProxy::OnSwapBuffers(
-    SwapBuffersCallback swap_ack_callback) {
+    SwapBuffersCallback swap_ack_callback,
+    gl::FrameData data) {
   DCHECK(swap_ack_callback_.is_null());
 
   // We aren't waiting on DrawAck() and can immediately run the callback.

@@ -67,7 +67,8 @@ void SoftwareOutputSurface::SwapBuffers(OutputSurfaceFrame frame) {
 
   software_device()->OnSwapBuffers(
       base::BindOnce(&SoftwareOutputSurface::SwapBuffersCallback,
-                     weak_factory_.GetWeakPtr(), swap_time));
+                     weak_factory_.GetWeakPtr(), swap_time),
+      std::move(frame.data));
 
   gfx::VSyncProvider* vsync_provider = software_device()->GetVSyncProvider();
   if (vsync_provider && update_vsync_parameters_callback_) {

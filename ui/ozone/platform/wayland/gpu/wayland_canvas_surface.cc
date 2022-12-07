@@ -267,10 +267,22 @@ void WaylandCanvasSurface::PresentCanvas(const gfx::Rect& damage) {
     return;
 
   pending_buffer_->set_pending_damage_region(damage);
-  unsubmitted_buffers_.push_back(pending_buffer_);
-  pending_buffer_ = nullptr;
+}
+
+bool WaylandCanvasSurface::SupportsAsyncBufferSwap() const {
+  return true;
+}
+
+void WaylandCanvasSurface::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
+                                         gl::FrameData data) {
+  if (pending_buffer_) {
+    unsubmitted_buffers_.push_back(pending_buffer_);
+    pending_buffer_ = nullptr;
+  }
 
   ProcessUnsubmittedBuffers();
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(swap_ack_callback), size_));
 }
 
 std::unique_ptr<gfx::VSyncProvider>

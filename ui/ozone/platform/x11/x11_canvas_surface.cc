@@ -40,7 +40,8 @@ bool X11CanvasSurface::SupportsAsyncBufferSwap() const {
   return true;
 }
 
-void X11CanvasSurface::OnSwapBuffers(SwapBuffersCallback swap_ack_callback) {
+void X11CanvasSurface::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
+                                     gl::FrameData data) {
   x11_software_bitmap_presenter_.OnSwapBuffers(std::move(swap_ack_callback));
 }
 

@@ -54,8 +54,8 @@ gfx::VSyncProvider* SoftwareOutputDevice::GetVSyncProvider() {
   return vsync_provider_.get();
 }
 
-void SoftwareOutputDevice::OnSwapBuffers(
-    SwapBuffersCallback swap_ack_callback) {
+void SoftwareOutputDevice::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
+                                         gl::FrameData data) {
   task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(swap_ack_callback),
                                                    viewport_pixel_size_));
 }
