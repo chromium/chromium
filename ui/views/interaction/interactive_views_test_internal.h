@@ -31,12 +31,12 @@ class InteractiveViewsTestPrivate
   // base::test::internal::InteractiveTestPrivate:
   void DoTestTearDown() override;
   void OnSequenceComplete() override;
-  void OnSequenceAborted(
-      int active_step,
-      ui::TrackedElement* last_element,
-      ui::ElementIdentifier last_id,
-      ui::InteractionSequence::StepType last_step_type,
-      ui::InteractionSequence::AbortedReason aborted_reason) override;
+  void OnSequenceAborted(int active_step,
+                         ui::TrackedElement* last_element,
+                         ui::ElementIdentifier last_id,
+                         ui::InteractionSequence::StepType last_step_type,
+                         ui::InteractionSequence::AbortedReason aborted_reason,
+                         std::string description) override;
 
   InteractionTestUtilMouse& mouse_util() { return *mouse_util_; }
 

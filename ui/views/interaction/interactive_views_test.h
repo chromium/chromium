@@ -12,12 +12,14 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
@@ -279,7 +281,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   }
 
   // Creates the follow-up step for a mouse action.
-  StepBuilder CreateMouseFollowUpStep();
+  StepBuilder CreateMouseFollowUpStep(const base::StringPiece& description);
 
   base::raw_ptr<Widget, DanglingUntriaged> context_widget_ = nullptr;
 };
@@ -336,6 +338,8 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameViewRelative(
     base::StringPiece name,
     FindViewCallback<V, C> find_callback) {
   StepBuilder builder;
+  builder.SetDescription(
+      base::StringPrintf("NameViewRelative( \"%s\" )", name.data()));
   ui::test::internal::SpecifyElement(builder, relative_to);
   builder.SetMustBeVisibleAtStart(true);
   builder.SetStartCallback(base::BindOnce(
@@ -386,6 +390,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::WithView(
     ElementSpecifier view,
     C<void(V*)> function) {
   StepBuilder builder;
+  builder.SetDescription("WithView()");
   ui::test::internal::SpecifyElement(builder, view);
   builder.SetMustBeVisibleAtStart(true);
   builder.SetStartCallback(base::BindOnce(
@@ -401,17 +406,22 @@ ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::NameChildViewByType(ElementSpecifier parent,
                                              base::StringPiece name,
                                              size_t index) {
-  return NameChildView(parent, name,
-                       base::BindRepeating(
-                           [](size_t& index, const View* view) {
-                             if (IsViewClass<V>(view)) {
-                               if (index == 0)
-                                 return true;
-                               --index;
-                             }
-                             return false;
-                           },
-                           base::OwnedRef(index)));
+  return std::move(
+      NameChildView(parent, name,
+                    base::BindRepeating(
+                        [](size_t& index, const View* view) {
+                          if (IsViewClass<V>(view)) {
+                            if (index == 0) {
+                              return true;
+                            }
+                            --index;
+                          }
+                          return false;
+                        },
+                        base::OwnedRef(index)))
+          .SetDescription(base::StringPrintf(
+              "NameChildViewByType<%s>( \"%s\" %zu )",
+              V::MetaData()->type_name().c_str(), name.data(), index)));
 }
 
 // static
@@ -420,17 +430,22 @@ ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::NameDescendantViewByType(ElementSpecifier ancestor,
                                                   base::StringPiece name,
                                                   size_t index) {
-  return NameDescendantView(ancestor, name,
-                            base::BindRepeating(
-                                [](size_t& index, const View* view) {
-                                  if (IsViewClass<V>(view)) {
-                                    if (index == 0)
-                                      return true;
-                                    --index;
-                                  }
-                                  return false;
-                                },
-                                base::OwnedRef(index)));
+  return std::move(
+      NameDescendantView(ancestor, name,
+                         base::BindRepeating(
+                             [](size_t& index, const View* view) {
+                               if (IsViewClass<V>(view)) {
+                                 if (index == 0) {
+                                   return true;
+                                 }
+                                 --index;
+                               }
+                               return false;
+                             },
+                             base::OwnedRef(index)))
+          .SetDescription(base::StringPrintf(
+              "NameDescendantViewByType<%s>( \"%s\" %zu )",
+              V::MetaData()->type_name().c_str(), name.data(), index)));
 }
 
 // static
@@ -448,6 +463,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckView(
     C<T(V*)> function,
     U&& matcher) {
   StepBuilder builder;
+  builder.SetDescription("CheckView()");
   ui::test::internal::SpecifyElement(builder, view);
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<T(V*)> function, testing::Matcher<T> matcher,
@@ -470,6 +486,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::CheckViewProperty(
     T (V::*property)() const,
     U&& matcher) {
   StepBuilder builder;
+  builder.SetDescription("CheckViewProperty()");
   ui::test::internal::SpecifyElement(builder, view);
   builder.SetStartCallback(base::BindOnce(
       [](T (V::*property)() const, testing::Matcher<T> matcher,

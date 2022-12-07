@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -308,6 +309,21 @@ InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetEndCallback(
     base::OnceClosure end_callback) {
   step_->end_callback = PushUnusedArg<TrackedElement*>(std::move(end_callback));
+  return *this;
+}
+
+InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::SetDescription(
+    const base::StringPiece& description) {
+  step_->description = std::string(description);
+  return *this;
+}
+
+InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::FormatDescription(
+    const base::StringPiece& format_string) {
+  step_->description =
+      base::StringPrintf(format_string.data(), step_->description.c_str());
   return *this;
 }
 
@@ -881,6 +897,7 @@ void InteractionSequence::Abort(AbortedReason reason) {
   ElementIdentifier target_id;
   // The element could go away independently of the sequence.
   SafeElementReference target_element;
+  std::string description;
   if (reason == AbortedReason::kElementNotVisibleAtStartOfStep ||
       reason == AbortedReason::kElementHiddenBeforeSequenceStart ||
       reason == AbortedReason::kSequenceDestroyed) {
@@ -888,11 +905,13 @@ void InteractionSequence::Abort(AbortedReason reason) {
     if (next_step()) {
       target_step_type = next_step()->type;
       target_id = next_step()->id;
+      description = next_step()->description;
     }
   } else if (current_step) {
     target_step_type = current_step->type;
     target_id = current_step->id;
     target_element = SafeElementReference(current_step->element);
+    description = current_step->description;
   }
   configuration_->steps.clear();
 
@@ -905,7 +924,8 @@ void InteractionSequence::Abort(AbortedReason reason) {
     RunIfValid(std::move(current_step->end_callback), current_step->element);
   }
   RunIfValid(std::move(aborted_callback), active_step_index,
-             target_element.get(), target_id, target_step_type, reason);
+             target_element.get(), target_id, target_step_type, reason,
+             description);
   RunIfValid(std::move(quit_closure));
 }
 

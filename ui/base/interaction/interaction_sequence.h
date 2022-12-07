@@ -130,12 +130,12 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // each step transition after the previous step's end callback is called, or
   // if the next step's precondition fails (so that it refers to the correct
   // step).
-  using AbortedCallback =
-      base::OnceCallback<void(int active_step,
-                              TrackedElement* last_element,
-                              ElementIdentifier last_id,
-                              StepType last_step_type,
-                              AbortedReason aborted_reason)>;
+  using AbortedCallback = base::OnceCallback<void(int active_step,
+                                                  TrackedElement* last_element,
+                                                  ElementIdentifier last_id,
+                                                  StepType last_step_type,
+                                                  AbortedReason aborted_reason,
+                                                  std::string description)>;
 
   using CompletedCallback = base::OnceClosure;
 
@@ -172,6 +172,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // additional processing if this element goes away, so we'll add the
     // listeners manually instead.
     raw_ptr<TrackedElement, DanglingUntriaged> element = nullptr;
+
+    // Provides a useful description for debugging that can be read or passed
+    // to the abort callback on failure.
+    std::string description;
   };
 
   // Use a Builder to specify parameters when creating an InteractionSequence.
@@ -294,6 +298,14 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Sets the callback called at the end of the step. Convenience method if
     // you don't need the parameter.
     StepBuilder& SetEndCallback(base::OnceClosure end_callback);
+
+    // Sets the description of the step.
+    StepBuilder& SetDescription(const base::StringPiece& description);
+
+    // Formats the existing description into a new string; allows for adding
+    // modifiers to an existing description. `format_string` should contain
+    // exactly one "%s".
+    StepBuilder& FormatDescription(const base::StringPiece& format_string);
 
     // Builds the step. The builder will not be valid after calling Build().
     std::unique_ptr<Step> Build();

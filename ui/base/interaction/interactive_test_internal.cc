@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -77,16 +78,18 @@ void InteractiveTestPrivate::OnSequenceAborted(
     TrackedElement* last_element,
     ElementIdentifier last_id,
     InteractionSequence::StepType last_step_type,
-    InteractionSequence::AbortedReason aborted_reason) {
+    InteractionSequence::AbortedReason aborted_reason,
+    std::string description) {
   if (aborted_callback_for_testing_) {
     std::move(aborted_callback_for_testing_)
-        .Run(active_step, last_element, last_id, last_step_type,
-             aborted_reason);
+        .Run(active_step, last_element, last_id, last_step_type, aborted_reason,
+             description);
     return;
   }
   GTEST_FAIL() << "Interactive test failed on step " << active_step
                << " for reason " << aborted_reason << ". Step type was "
-               << last_step_type << " with element " << last_id;
+               << last_step_type << " with element " << last_id
+               << " description: " << description;
 }
 
 void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
@@ -97,6 +100,15 @@ void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
     CHECK(absl::holds_alternative<base::StringPiece>(element));
     builder.SetElementName(absl::get<base::StringPiece>(element));
   }
+}
+
+std::string DescribeElement(ElementSpecifier element) {
+  if (auto* id = absl::get_if<ElementIdentifier>(&element)) {
+    return id->GetName();
+  }
+  CHECK(absl::holds_alternative<base::StringPiece>(element));
+  return base::StringPrintf("\"%s\"",
+                            absl::get<base::StringPiece>(element).data());
 }
 
 }  // namespace ui::test::internal

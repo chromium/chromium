@@ -5,6 +5,7 @@
 #include "chrome/test/interaction/interactive_browser_test_internal.h"
 
 #include <memory>
+#include <sstream>
 
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 
@@ -31,6 +32,20 @@ void InteractiveBrowserTestPrivate::AddInstrumentedWebContents(
   }
   instrumented_web_contents_.emplace_back(std::move(instrumented_web_contents))
       .get();
+}
+
+std::string InteractiveBrowserTestPrivate::DeepQueryToString(
+    const WebContentsInteractionTestUtil::DeepQuery& deep_query) {
+  std::ostringstream oss;
+  oss << "{";
+  for (size_t i = 0; i < deep_query.size(); ++i) {
+    if (i) {
+      oss << ", ";
+    }
+    oss << "\"" << deep_query[i] << "\"";
+  }
+  oss << "}";
+  return oss.str();
 }
 
 }  // namespace internal

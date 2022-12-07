@@ -4,6 +4,7 @@
 
 #include "ui/views/interaction/interactive_views_test.h"
 
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -58,7 +59,10 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameChildView(
     ElementSpecifier parent,
     base::StringPiece name,
     ChildViewSpecifier spec) {
-  return NameViewRelative(parent, name, GetFindViewCallback(std::move(spec)));
+  return std::move(
+      NameViewRelative(parent, name, GetFindViewCallback(std::move(spec)))
+          .SetDescription(
+              base::StringPrintf("NameChildView( \"%s\" )", name.data())));
 }
 
 // static
@@ -66,24 +70,29 @@ ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::NameDescendantView(ElementSpecifier parent,
                                             base::StringPiece name,
                                             ViewMatcher matcher) {
-  return NameViewRelative(
-      parent, name,
-      base::BindOnce(
-          [](ViewMatcher matcher, View* ancestor) -> View* {
-            auto* const result =
-                FindMatchingView(ancestor, matcher, /* recursive =*/true);
-            if (!result)
-              LOG(ERROR)
-                  << "NameDescendantView(): No descendant matches matcher.";
-            return result;
-          },
-          matcher));
+  return std::move(
+      NameViewRelative(
+          parent, name,
+          base::BindOnce(
+              [](ViewMatcher matcher, View* ancestor) -> View* {
+                auto* const result =
+                    FindMatchingView(ancestor, matcher, /* recursive =*/true);
+                if (!result) {
+                  LOG(ERROR)
+                      << "NameDescendantView(): No descendant matches matcher.";
+                }
+                return result;
+              },
+              matcher))
+          .SetDescription(
+              base::StringPrintf("NameDescendantView( \"%s\" )", name.data())));
 }
 
 InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
     ElementSpecifier reference,
     RelativePositionSpecifier position) {
   StepBuilder step;
+  step.SetDescription("MoveMouseTo()");
   SpecifyElement(step, reference);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
@@ -109,6 +118,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ClickMouse(
     ui_controls::MouseButton button,
     bool release) {
   StepBuilder step;
+  step.SetDescription("ClickMouse()");
   step.SetElementID(kInteractiveTestPivotElementId);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
@@ -130,6 +140,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
     RelativePositionSpecifier position,
     bool release) {
   StepBuilder step;
+  step.SetDescription("DragMouseTo()");
   SpecifyElement(step, reference);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
@@ -157,6 +168,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
 InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
     ui_controls::MouseButton button) {
   StepBuilder step;
+  step.SetDescription("ReleaseMouse()");
   step.SetElementID(kInteractiveTestPivotElementId);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,

@@ -31,10 +31,12 @@ void InteractiveViewsTestPrivate::OnSequenceAborted(
     ui::TrackedElement* last_element,
     ui::ElementIdentifier last_id,
     ui::InteractionSequence::StepType last_step_type,
-    ui::InteractionSequence::AbortedReason aborted_reason) {
+    ui::InteractionSequence::AbortedReason aborted_reason,
+    std::string description) {
   mouse_util_->CancelAllGestures();
   InteractiveTestPrivate::OnSequenceAborted(active_step, last_element, last_id,
-                                            last_step_type, aborted_reason);
+                                            last_step_type, aborted_reason,
+                                            description);
 }
 
 }  // namespace views::test::internal

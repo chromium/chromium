@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/stringprintf.h"
 #include "base/template_util.h"
 #include "base/values.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
@@ -38,6 +39,9 @@ class InteractiveBrowserTestPrivate
   void AddInstrumentedWebContents(
       std::unique_ptr<WebContentsInteractionTestUtil>
           instrumented_web_contents);
+
+  static std::string DeepQueryToString(
+      const WebContentsInteractionTestUtil::DeepQuery& deep_query);
 
  private:
   friend InteractiveBrowserTestApi;
@@ -151,6 +155,8 @@ struct JsResultChecker<M<T>> {
       const std::string& function,
       M<T> matcher) {
     ui::InteractionSequence::StepBuilder builder;
+    builder.SetDescription(
+        base::StringPrintf("CheckJsResult(\"\n%s\n\")", function.c_str()));
     builder.SetElementID(webcontents_id);
     builder.SetStartCallback(base::BindOnce(
         [](std::string function, testing::Matcher<T> matcher,
@@ -172,6 +178,10 @@ struct JsResultChecker<M<T>> {
       const std::string& function,
       M<T> matcher) {
     ui::InteractionSequence::StepBuilder builder;
+    builder.SetDescription(base::StringPrintf(
+        "CheckJsResultAt( %s, \"\n%s\n\")",
+        InteractiveBrowserTestPrivate::DeepQueryToString(where).c_str(),
+        function.c_str()));
     builder.SetElementID(webcontents_id);
     builder.SetStartCallback(base::BindOnce(
         [](WebContentsInteractionTestUtil::DeepQuery where,
@@ -181,7 +191,8 @@ struct JsResultChecker<M<T>> {
               el->AsA<TrackedElementWebContents>()->owner()->EvaluateAt(
                   where, function);
           if (!ui::test::internal::MatchAndExplain(
-                  "CheckJsResult()", matcher, E::Extract(std::move(result)))) {
+                  "CheckJsResultAt()", matcher,
+                  E::Extract(std::move(result)))) {
             seq->FailForTesting();
           }
         },

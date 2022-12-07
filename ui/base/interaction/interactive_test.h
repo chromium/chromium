@@ -9,6 +9,8 @@
 #include <sstream>
 #include <vector>
 
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/rectify_callback.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -314,6 +316,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::AfterShow(
     ElementSpecifier element,
     T&& step_callback) {
   StepBuilder builder;
+  builder.SetDescription("AfterShow()");
   internal::SpecifyElement(builder, element);
   builder.SetStartCallback(
       base::RectifyCallback<InteractionSequence::StepStartCallback>(
@@ -327,6 +330,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::AfterActivate(
     ElementSpecifier element,
     T&& step_callback) {
   StepBuilder builder;
+  builder.SetDescription("AfterActivate()");
   internal::SpecifyElement(builder, element);
   builder.SetType(InteractionSequence::StepType::kActivated);
   builder.SetStartCallback(
@@ -342,6 +346,8 @@ InteractionSequence::StepBuilder InteractiveTestApi::AfterEvent(
     CustomElementEventType event_type,
     T&& step_callback) {
   StepBuilder builder;
+  builder.SetDescription(
+      base::StrCat({"AfterEvent( ", event_type.GetName(), " )"}));
   internal::SpecifyElement(builder, element);
   builder.SetType(InteractionSequence::StepType::kCustomEvent, event_type);
   builder.SetStartCallback(
@@ -356,6 +362,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::AfterHide(
     ElementSpecifier element,
     T&& step_callback) {
   StepBuilder builder;
+  builder.SetDescription("AfterHide()");
   internal::SpecifyElement(builder, element);
   builder.SetType(InteractionSequence::StepType::kHidden);
   builder.SetStartCallback(
@@ -370,6 +377,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WithElement(
     ElementSpecifier element,
     T&& step_callback) {
   StepBuilder builder;
+  builder.SetDescription("WithElement()");
   internal::SpecifyElement(builder, element);
   builder.SetStartCallback(
       base::RectifyCallback<InteractionSequence::StepStartCallback>(
@@ -381,21 +389,25 @@ InteractionSequence::StepBuilder InteractiveTestApi::WithElement(
 // static
 template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InAnyContext(T&& step) {
-  return std::move(step.SetContext(InteractionSequence::ContextMode::kAny));
+  return std::move(step.SetContext(InteractionSequence::ContextMode::kAny)
+                       .FormatDescription("InAnyContext( %s )"));
 }
 
 // static
 template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InSameContext(T&& step) {
   return std::move(
-      step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep));
+      step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
+          .FormatDescription("InSameContext( %s )"));
 }
 
 template <typename T>
 InteractionSequence::StepBuilder InteractiveTestApi::InContext(
     ElementContext context,
     T&& step) {
-  return std::move(step.SetContext(context));
+  const auto fmt = base::StringPrintf("InContext( %p, %%s )",
+                                      static_cast<const void*>(context));
+  return std::move(step.SetContext(context).FormatDescription(fmt));
 }
 
 // static
@@ -403,13 +415,16 @@ template <template <typename...> typename C, typename T, typename U>
 InteractionSequence::StepBuilder InteractiveTestApi::CheckResult(
     C<T()> function,
     U&& matcher) {
-  return Check(base::BindOnce(
-      [](base::OnceCallback<T()> function, testing::Matcher<T> matcher) {
-        return internal::MatchAndExplain("CheckResult()", matcher,
-                                         std::move(function).Run());
-      },
-      base::OnceCallback<T()>(std::move(function)),
-      testing::Matcher<T>(std::forward<U>(matcher))));
+  return std::move(Check(base::BindOnce(
+                             [](base::OnceCallback<T()> function,
+                                testing::Matcher<T> matcher) {
+                               return internal::MatchAndExplain(
+                                   "CheckResult()", matcher,
+                                   std::move(function).Run());
+                             },
+                             base::OnceCallback<T()>(std::move(function)),
+                             testing::Matcher<T>(std::forward<U>(matcher))))
+                       .SetDescription("CheckResult"));
 }
 
 // static
@@ -419,6 +434,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::CheckElement(
     C<T(TrackedElement*)> function,
     U&& matcher) {
   StepBuilder builder;
+  builder.SetDescription("CheckElement()");
   internal::SpecifyElement(builder, element);
   builder.SetStartCallback(base::BindOnce(
       [](base::OnceCallback<T(TrackedElement*)> function,

@@ -309,7 +309,8 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
       [](int step_number, TutorialService* tutorial_service, int sequence_step,
          ui::TrackedElement* last_element, ui::ElementIdentifier last_id,
          ui::InteractionSequence::StepType last_step_type,
-         ui::InteractionSequence::AbortedReason aborted_reason) {
+         ui::InteractionSequence::AbortedReason aborted_reason,
+         std::string description) {
         tutorial_service->AbortTutorial(step_number);
       },
       current_step, tutorial_service));

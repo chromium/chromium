@@ -24,8 +24,9 @@ namespace ui {
 
 namespace {
 
-const char kElementName1[] = "Element1";
-const char kElementName2[] = "Element2";
+constexpr char kElementName1[] = "Element1";
+constexpr char kElementName2[] = "Element2";
+constexpr char kStepDescription[] = "Step description.";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier3);
@@ -139,8 +140,8 @@ TEST(InteractionSequenceTest, AbortIfWithInitialElementHiddenBeforeStart) {
   EXPECT_CALL_IN_SCOPE(
       aborted,
       Run(1, nullptr, kTestIdentifier1, InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::
-              kElementHiddenBeforeSequenceStart),
+          InteractionSequence::AbortedReason::kElementHiddenBeforeSequenceStart,
+          std::string()),
       sequence->Start());
 }
 
@@ -481,7 +482,8 @@ TEST(InteractionSeuenceTest, TransitionOnCustomEventFailsIfMustBeVisible) {
       aborted,
       Run(2, nullptr, element2.identifier(),
           InteractionSequence::StepType::kCustomEvent,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
+          std::string()),
       sequence->Start());
 }
 
@@ -522,6 +524,7 @@ TEST(InteractionSequenceTest, TransitionFailsOnElementShownIfMustBeVisible) {
           .SetCompletedCallback(completed.Get())
           .AddStep(InteractionSequence::WithInitialElement(&element1))
           .AddStep(InteractionSequence::StepBuilder()
+                       .SetDescription(kStepDescription)
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kShown)
                        .SetStartCallback(step.Get())
@@ -532,7 +535,8 @@ TEST(InteractionSequenceTest, TransitionFailsOnElementShownIfMustBeVisible) {
       aborted,
       Run(2, nullptr, element2.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep))
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
+          std::string(kStepDescription)))
       .Times(1);
   sequence->Start();
 }
@@ -638,7 +642,8 @@ TEST(InteractionSequenceTest, FailOnOtherElementAlreadyHiddenIfMustBeVisible) {
       aborted,
       Run(2, nullptr, element2.identifier(),
           InteractionSequence::StepType::kHidden,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep))
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
+          std::string()))
       .Times(1);
   sequence->Start();
 }
@@ -940,6 +945,7 @@ TEST(InteractionSequenceTest, CancelMidSequenceWhenViewHidden) {
                        .SetEndCallback(step1_end.Get())
                        .Build())
           .AddStep(InteractionSequence::StepBuilder()
+                       .SetDescription(kStepDescription)
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kActivated)
                        // Specify that this element must remain visible:
@@ -964,7 +970,8 @@ TEST(InteractionSequenceTest, CancelMidSequenceWhenViewHidden) {
       step2_end, Run, aborted,
       Run(3, testing::_, element2.identifier(),
           InteractionSequence::StepType::kActivated,
-          InteractionSequence::AbortedReason::kElementHiddenDuringStep),
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
+          std::string(kStepDescription)),
       element2.Hide());
 }
 
@@ -1688,6 +1695,7 @@ TEST(InteractionSequenceTest, ElementHiddenDuringStepEndDuringAbort) {
                        .SetEndCallback(base::BindLambdaForTesting(callback))
                        .Build())
           .AddStep(InteractionSequence::StepBuilder()
+                       .SetDescription(kStepDescription)
                        .SetElementID(element2.identifier())
                        .SetType(InteractionSequence::StepType::kActivated)
                        .Build())
@@ -1703,7 +1711,8 @@ TEST(InteractionSequenceTest, ElementHiddenDuringStepEndDuringAbort) {
       aborted,
       Run(3, nullptr, element2.identifier(),
           InteractionSequence::StepType::kActivated,
-          InteractionSequence::AbortedReason::kSequenceDestroyed),
+          InteractionSequence::AbortedReason::kSequenceDestroyed,
+          std::string(kStepDescription)),
       sequence.reset());
 }
 
@@ -1774,7 +1783,8 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringInitialStepAbort) {
   std::unique_ptr<InteractionSequence> sequence;
   auto callback = [&](int, TrackedElement*, ElementIdentifier,
                       InteractionSequence::StepType,
-                      InteractionSequence::AbortedReason) { sequence.reset(); };
+                      InteractionSequence::AbortedReason,
+                      std::string) { sequence.reset(); };
   sequence =
       InteractionSequence::Builder()
           .SetAbortedCallback(base::BindLambdaForTesting(callback))
@@ -1882,7 +1892,8 @@ TEST(InteractionSequenceTest, SequenceDestroyedDuringMidSequenceAbort) {
   std::unique_ptr<InteractionSequence> sequence;
   auto callback = [&](int, TrackedElement*, ElementIdentifier,
                       InteractionSequence::StepType,
-                      InteractionSequence::AbortedReason) { sequence.reset(); };
+                      InteractionSequence::AbortedReason,
+                      std::string) { sequence.reset(); };
   sequence =
       InteractionSequence::Builder()
           .SetAbortedCallback(base::BindLambdaForTesting(callback))
@@ -2017,7 +2028,8 @@ TEST(InteractionSequenceTest, SimulateTestTimeout) {
   EXPECT_CALL_IN_SCOPE(
       aborted,
       Run(2, nullptr, kTestIdentifier2, InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kSequenceDestroyed),
+          InteractionSequence::AbortedReason::kSequenceDestroyed,
+          std::string()),
       sequence->RunSynchronouslyForTesting());
 }
 
@@ -2684,7 +2696,8 @@ TEST(InteractionSequenceTest, MustBeVisibleAtStart_DefaultsToTrueForActivated) {
       step1_end, Run, step2_end, Run, aborted,
       Run(3, nullptr, element3.identifier(),
           InteractionSequence::StepType::kActivated,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
+          std::string()),
       element1.Show());
 }
 
@@ -2724,7 +2737,8 @@ TEST(InteractionSequenceTest,
       step1_end, Run, step2_end, Run, aborted,
       Run(3, nullptr, element3.identifier(),
           InteractionSequence::StepType::kCustomEvent,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
+          std::string()),
       element1.Show());
 }
 
@@ -2819,7 +2833,8 @@ TEST(InteractionSequenceTest,
       aborted,
       Run(4, &element3, element3.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementHiddenDuringStep),
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
+          std::string()),
       element3.Hide());
 }
 
@@ -2879,7 +2894,8 @@ TEST(InteractionSequenceTest,
       aborted,
       Run(4, &element3, element3.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementHiddenDuringStep),
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
+          std::string()),
       element3.Hide());
 }
 
@@ -2926,7 +2942,8 @@ TEST(InteractionSequenceTest,
       aborted,
       Run(3, testing::_, element1.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementHiddenDuringStep),
+          InteractionSequence::AbortedReason::kElementHiddenDuringStep,
+          std::string()),
       element1.Hide());
 }
 
@@ -3178,7 +3195,8 @@ TEST(InteractionSequenceTest,
       aborted,
       Run(1, nullptr, element1.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
+          std::string()),
       sequence->Start());
 }
 
@@ -3212,7 +3230,8 @@ TEST(InteractionSequenceTest,
       aborted,
       Run(3, nullptr, element2.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep,
+          std::string()),
       element1.Activate());
 }
 
@@ -4470,7 +4489,7 @@ TEST(InteractionSequenceTest, FailForTestingBetweenSteps) {
       aborted,
       Run(1, &element, element.identifier(),
           InteractionSequence::StepType::kShown,
-          InteractionSequence::AbortedReason::kFailedForTesting),
+          InteractionSequence::AbortedReason::kFailedForTesting, std::string()),
       sequence->FailForTesting());
 }
 
@@ -4502,7 +4521,7 @@ TEST(InteractionSequenceTest, FailForTestingOnLastStepCallback) {
       aborted,
       Run(2, &element, element.identifier(),
           InteractionSequence::StepType::kActivated,
-          InteractionSequence::AbortedReason::kFailedForTesting),
+          InteractionSequence::AbortedReason::kFailedForTesting, std::string()),
       element.Activate());
 }
 

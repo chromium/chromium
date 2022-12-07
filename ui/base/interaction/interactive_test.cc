@@ -9,6 +9,8 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
@@ -29,6 +31,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::PressButton(
     ElementSpecifier button,
     InputType input_type) {
   StepBuilder builder;
+  builder.SetDescription("PressButton()");
   internal::SpecifyElement(builder, button);
   builder.SetMustRemainVisible(false);
   builder.SetStartCallback(base::BindOnce(
@@ -42,6 +45,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectMenuItem(
     ElementSpecifier menu_item,
     InputType input_type) {
   StepBuilder builder;
+  builder.SetDescription("SelectMenuItem()");
   internal::SpecifyElement(builder, menu_item);
   builder.SetMustRemainVisible(false);
   builder.SetStartCallback(base::BindOnce(
@@ -57,6 +61,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::DoDefaultAction(
     ElementSpecifier element,
     InputType input_type) {
   StepBuilder builder;
+  builder.SetDescription("DoDefaultAction()");
   internal::SpecifyElement(builder, element);
   builder.SetMustRemainVisible(false);
   builder.SetStartCallback(base::BindOnce(
@@ -73,6 +78,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectTab(
     size_t tab_index,
     InputType input_type) {
   StepBuilder builder;
+  builder.SetDescription(base::StringPrintf("SelectTab( %zu )", tab_index));
   internal::SpecifyElement(builder, tab_collection);
   builder.SetStartCallback(base::BindOnce(
       [](size_t index, InputType input_type, InteractiveTestApi* test,
@@ -88,6 +94,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectDropdownItem(
     size_t item,
     InputType input_type) {
   StepBuilder builder;
+  builder.SetDescription(base::StringPrintf("SelectDropdownItem( %zu )", item));
   internal::SpecifyElement(builder, collection);
   builder.SetStartCallback(base::BindOnce(
       [](size_t item, InputType input_type, InteractiveTestApi* test,
@@ -103,6 +110,8 @@ InteractionSequence::StepBuilder InteractiveTestApi::EnterText(
     std::u16string text,
     TextEntryMode mode) {
   StepBuilder builder;
+  builder.SetDescription(base::StringPrintf("EnterText( \"%s\" )",
+                                            base::UTF16ToUTF8(text).c_str()));
   internal::SpecifyElement(builder, element);
   builder.SetStartCallback(base::BindOnce(
       [](std::u16string text, TextEntryMode mode, InteractiveTestApi* test,
@@ -116,6 +125,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::EnterText(
 InteractionSequence::StepBuilder InteractiveTestApi::ActivateSurface(
     ElementSpecifier element) {
   StepBuilder builder;
+  builder.SetDescription("ActivateSurface()");
   internal::SpecifyElement(builder, element);
   builder.SetStartCallback(base::BindOnce(
       [](InteractiveTestApi* test, InteractionSequence*, TrackedElement* el) {
@@ -130,6 +140,9 @@ InteractionSequence::StepBuilder InteractiveTestApi::SendAccelerator(
     ElementSpecifier element,
     Accelerator accelerator) {
   StepBuilder builder;
+  builder.SetDescription(base::StringPrintf(
+      "SendAccelerator( %s )",
+      base::UTF16ToUTF8(accelerator.GetShortcutText()).c_str()));
   internal::SpecifyElement(builder, element);
   builder.SetStartCallback(base::BindOnce(
       [](Accelerator accelerator, InteractiveTestApi* test,
@@ -144,6 +157,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::SendAccelerator(
 InteractionSequence::StepBuilder InteractiveTestApi::Confirm(
     ElementSpecifier element) {
   StepBuilder builder;
+  builder.SetDescription("Confirm()");
   internal::SpecifyElement(builder, element);
   builder.SetStartCallback(
       base::BindOnce([](InteractiveTestApi* test, InteractionSequence*,
@@ -155,6 +169,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::Confirm(
 InteractiveTestApi::StepBuilder InteractiveTestApi::Check(
     CheckCallback check_callback) {
   StepBuilder builder;
+  builder.SetDescription("Check()");
   builder.SetElementID(kInteractiveTestPivotElementId);
   builder.SetStartCallback(base::BindOnce(
       [](CheckCallback check_callback, InteractionSequence* seq,
@@ -171,6 +186,7 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::Check(
 InteractiveTestApi::StepBuilder InteractiveTestApi::Do(
     base::OnceClosure action) {
   StepBuilder builder;
+  builder.SetDescription("Do()");
   builder.SetElementID(kInteractiveTestPivotElementId);
   builder.SetStartCallback(std::move(action));
   return builder;
@@ -188,6 +204,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForShow(
     ElementSpecifier element,
     bool transition_only_on_event) {
   StepBuilder step;
+  step.SetDescription("WaitForShow()");
   internal::SpecifyElement(step, element);
   step.SetTransitionOnlyOnEvent(transition_only_on_event);
   return step;
@@ -198,6 +215,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForHide(
     ElementSpecifier element,
     bool transition_only_on_event) {
   StepBuilder step;
+  step.SetDescription("WaitForHide()");
   internal::SpecifyElement(step, element);
   step.SetType(InteractionSequence::StepType::kHidden);
   step.SetTransitionOnlyOnEvent(transition_only_on_event);
@@ -208,6 +226,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForHide(
 InteractionSequence::StepBuilder InteractiveTestApi::WaitForActivate(
     ElementSpecifier element) {
   StepBuilder step;
+  step.SetDescription("WaitForActivate()");
   internal::SpecifyElement(step, element);
   step.SetType(InteractionSequence::StepType::kActivated);
   return step;
@@ -218,6 +237,8 @@ InteractionSequence::StepBuilder InteractiveTestApi::WaitForEvent(
     ElementSpecifier element,
     CustomElementEventType event) {
   StepBuilder step;
+  step.SetDescription(
+      base::StringPrintf("WaitForEvent( %s )", event.GetName().c_str()));
   internal::SpecifyElement(step, element);
   step.SetType(InteractionSequence::StepType::kCustomEvent, event);
   return step;
@@ -228,6 +249,8 @@ InteractiveTestApi::MultiStep InteractiveTestApi::EnsureNotPresent(
     ElementIdentifier element_to_check,
     bool in_any_context) {
   return internal::InteractiveTestPrivate::PostTask(
+      base::StringPrintf("EnsureNotPresent( %s, %d )",
+                         element_to_check.GetName().c_str(), in_any_context),
       base::BindOnce(
           [](ElementIdentifier element_to_check, bool in_any_context,
              InteractionSequence* seq, TrackedElement* reference) {
@@ -255,6 +278,10 @@ InteractiveTestApi::MultiStep InteractiveTestApi::EnsurePresent(
       FlushEvents(),
       std::move(
           WithElement(element_to_check, base::DoNothing())
+              .SetDescription(base::StringPrintf(
+                  "EnsurePresent( %s, %d )",
+                  internal::DescribeElement(element_to_check).c_str(),
+                  in_any_context))
               .SetContext(in_any_context
                               ? InteractionSequence::ContextMode::kAny
                               : InteractionSequence::ContextMode::kInitial)));
@@ -262,22 +289,27 @@ InteractiveTestApi::MultiStep InteractiveTestApi::EnsurePresent(
 
 // static
 InteractiveTestApi::MultiStep InteractiveTestApi::FlushEvents() {
-  return internal::InteractiveTestPrivate::PostTask(base::DoNothing());
+  return internal::InteractiveTestPrivate::PostTask("FlushEvents()",
+                                                    base::DoNothing());
 }
 
 // static
 InteractiveTestApi::MultiStep InteractiveTestApi::InAnyContext(
     MultiStep steps) {
-  for (auto& step : steps)
-    step.SetContext(InteractionSequence::ContextMode::kAny);
+  for (auto& step : steps) {
+    step.SetContext(InteractionSequence::ContextMode::kAny)
+        .FormatDescription("InAnyContext( %s )");
+  }
   return steps;
 }
 
 // static
 InteractiveTestApi::MultiStep InteractiveTestApi::InSameContext(
     MultiStep steps) {
-  for (auto& step : steps)
-    step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep);
+  for (auto& step : steps) {
+    step.SetContext(InteractionSequence::ContextMode::kFromPreviousStep)
+        .FormatDescription("InSameContext( %s )");
+  }
   return steps;
 }
 
@@ -287,8 +319,12 @@ InteractiveTestApi::MultiStep InteractiveTestApi::InContext(
     MultiStep steps) {
   // This context may not yet exist, but we want the pivot element to exist.
   private_test_impl_->MaybeAddPivotElement(context);
-  for (auto& step : steps)
-    step.SetContext(context);
+  const auto fmt = base::StringPrintf("InContext( %p, %%s )",
+                                      static_cast<const void*>(context));
+  for (auto& step : steps) {
+    step.SetContext(context).FormatDescription(fmt);
+  }
+
   return steps;
 }
 
