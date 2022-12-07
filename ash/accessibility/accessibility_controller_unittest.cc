@@ -70,6 +70,24 @@ class AccessibilityControllerTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(AccessibilityControllerTest, ChangingCursorSizePrefChangesCursorSize) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  prefs->SetBoolean(prefs::kAccessibilityLargeCursorEnabled, true);
+
+  CursorWindowController* cursor_window_controller =
+      Shell::Get()->window_tree_host_manager()->cursor_window_controller();
+
+  // Test all possible sizes
+  for (int size = 25; size <= 64; ++size) {
+    prefs->SetInteger(prefs::kAccessibilityLargeCursorDipSize, size);
+    auto bounds = cursor_window_controller->GetBoundsForTest();
+    EXPECT_EQ(bounds.height(), size);
+    EXPECT_EQ(bounds.width(), size);
+  }
+}
+
 TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();

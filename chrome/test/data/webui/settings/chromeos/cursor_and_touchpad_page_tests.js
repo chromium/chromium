@@ -242,4 +242,24 @@ suite('CursorAndTouchpadPageTests', function() {
     const subpageLinks = page.root.querySelectorAll('cr-link-row');
     subpageLinks.forEach(subpageLink => assertFalse(isVisible(subpageLink)));
   });
+
+  test('large cursor options appear when large cursor enabled', async () => {
+    await initPage();
+    const largeCursorToggle =
+        page.shadowRoot.querySelector('#largeCursorEnabledControl');
+    const largeCursorSizeSlider =
+        page.shadowRoot.querySelector('#largeCursorSizeSlider');
+    assertFalse(isVisible(largeCursorSizeSlider));
+    assertTrue(isVisible(largeCursorToggle));
+    assertFalse(largeCursorToggle.checked);
+    assertFalse(page.prefs.settings.a11y.large_cursor_enabled.value);
+    largeCursorToggle.click();
+
+    await waitBeforeNextRender(page);
+    flush();
+    assertTrue(largeCursorToggle.checked);
+    assertTrue(page.prefs.settings.a11y.large_cursor_enabled.value);
+    assertTrue(isVisible(largeCursorSizeSlider));
+  });
+
 });

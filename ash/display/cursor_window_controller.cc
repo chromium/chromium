@@ -313,6 +313,10 @@ SkColor CursorWindowController::GetCursorColorForTest() const {
   return cursor_color_;
 }
 
+gfx::Rect CursorWindowController::GetBoundsForTest() const {
+  return cursor_window_->GetBoundsInScreen();
+}
+
 void CursorWindowController::SetContainer(aura::Window* container) {
   if (container_ == container)
     return;
