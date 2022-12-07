@@ -38,6 +38,8 @@ export class XfTreeItem extends XfBase {
   @property({type: Boolean, reflect: true}) selected = false;
   /** Indicate if a tree item has been expanded or not. */
   @property({type: Boolean, reflect: true}) expanded = false;
+  /** Indicate if a tree item is in editing mode (rename) or not. */
+  @property({type: Boolean, reflect: true}) editing = false;
 
   /**
    * A tree item will have children if the child tree items have been inserted
@@ -60,6 +62,8 @@ export class XfTreeItem extends XfBase {
       TREE_ITEM_EXPANDED: 'tree_item_expanded',
       /** Triggers when a tree item has been collapsed. */
       TREE_ITEM_COLLAPSED: 'tree_item_collapsed',
+      /** Triggers when a tree item's label has been renamed. */
+      TREE_ITEM_RENAMED: 'tree_item_renamed',
     } as const;
   }
 
@@ -159,10 +163,14 @@ export class XfTreeItem extends XfBase {
   @state() private level_ = 1;
 
   @query('li') private $treeItem_!: HTMLLIElement;
+  @query('.rename') private $renameInput_?: HTMLInputElement;
   @query('slot:not([name])') private $childrenSlot_!: HTMLSlotElement;
 
   /** The child tree items. */
   private items_: XfTreeItem[] = [];
+
+  /** Indicate if we should commit the rename on input blur or not. */
+  private shouldRenameOnBlur_ = true;
 
   override render() {
     const showExpandIcon = this.hasChildren() && !this.disabled;
@@ -191,10 +199,7 @@ export class XfTreeItem extends XfBase {
             class="tree-label-icon"
             tree-icon-type=${this.icon}
           ></span>
-          <span
-            class="tree-label"
-            id="tree-label"
-          >${this.label || ''}</span>
+          ${this.renderTreeLabel()}
           <slot name="trailingIcon"></slot>
         </div>
         <ul
@@ -205,6 +210,32 @@ export class XfTreeItem extends XfBase {
         </ul>
       </li>
     `;
+  }
+
+  private renderTreeLabel() {
+    if (this.editing) {
+      // Stop propagation of some events to prevent them being captured by
+      // tree when the tree item is in editing mode.
+      return html`
+        <input
+          class="rename"
+          type="text"
+          spellcheck="false"
+          .value=${this.label}
+          @click=${(e: MouseEvent) => e.stopPropagation()}
+          @dblclick=${(e: MouseEvent) => e.stopPropagation()}
+          @mouseup=${(e: MouseEvent) => e.stopPropagation()}
+          @mousedown=${(e: MouseEvent) => e.stopPropagation()}
+          @blur=${this.onRenameInputBlur_}
+          @keydown=${this.onRenameInputKeydown_}
+        />
+      `;
+    }
+    return html`
+    <span
+      class="tree-label"
+      id="tree-label"
+    >${this.label || ''}</span>`;
   }
 
   override connectedCallback() {
@@ -259,6 +290,9 @@ export class XfTreeItem extends XfBase {
     if (changedProperties.has('selected')) {
       this.onSelectedChanged_();
     }
+    if (changedProperties.has('editing')) {
+      this.onEditingChanged_();
+    }
   }
 
   private onExpandChanged_() {
@@ -293,6 +327,68 @@ export class XfTreeItem extends XfBase {
         tree.selectedItem = null;
       }
     }
+  }
+
+  private onEditingChanged_() {
+    this.draggable = !this.editing;
+    if (this.editing) {
+      this.$renameInput_?.focus();
+      this.$renameInput_?.select();
+    }
+  }
+
+  private onRenameInputKeydown_(e: KeyboardEvent) {
+    // Make sure that the tree does not handle the key.
+    e.stopPropagation();
+
+    if (e.repeat) {
+      return;
+    }
+
+    // Calling this.focus blurs the input which will make the tree item
+    // non editable.
+    switch (e.key) {
+      case 'Escape':
+        // By default blur() will trigger the rename, but when ESC is pressed
+        // we don't want the blur() (triggered by focus() below) to commit
+        // the rename.
+        this.shouldRenameOnBlur_ = false;
+        this.focus();
+        e.preventDefault();
+        break;
+      case 'Enter':
+        // focus() will trigger blur() for the rename input which will commit
+        // the rename.
+        this.focus();
+        e.preventDefault();
+        break;
+    }
+  }
+
+  private onRenameInputBlur_() {
+    this.editing = false;
+    if (this.shouldRenameOnBlur_) {
+      this.commitRename_(this.$renameInput_?.value || '');
+    } else {
+      this.shouldRenameOnBlur_ = true;
+    }
+  }
+
+  private commitRename_(newName: string) {
+    const isEmpty = newName.trim() === '';
+    const isChanged = newName !== this.label;
+    if (isEmpty || !isChanged) {
+      return;
+    }
+    const oldLabel = this.label;
+    this.label = newName;
+    const renameEvent: TreeItemRenamedEvent =
+        new CustomEvent(XfTreeItem.events.TREE_ITEM_RENAMED, {
+          bubbles: true,
+          composed: true,
+          detail: {item: this, oldLabel, newLabel: newName},
+        });
+    this.dispatchEvent(renameEvent);
   }
 
   /** Update the level of the tree item by traversing upwards. */
@@ -402,6 +498,12 @@ function getCSS() {
       white-space: pre;
     }
 
+    .rename {
+      border: none;
+      margin: 0 10px;
+      overflow: hidden;
+    }
+
     /* We need to ensure that even empty labels take up space */
     .tree-label:empty::after {
       content: ' ';
@@ -441,7 +543,7 @@ function getCSS() {
       border-radius: 20px 0 0 20px;
     }
 
-    :host(:not([selected]):not([disabled])) .tree-row:hover {
+    :host(:not([selected]):not([disabled]):not([editing])) .tree-row:hover {
       background-color: var(--cros-ripple-color);
     }
 
@@ -471,6 +573,14 @@ function getCSS() {
       margin: 0 12px;
     }
 
+    .rename {
+      background-color: var(--cros-bg-color);
+      border-radius: 2px;
+      caret-color: var(--cros-textfield-cursor-color-focus);
+      color: var(--cros-text-color-primary);
+      outline: 2px solid var(--cros-focus-ring-color);
+    }
+
     paper-ripple {
       display: none;
     }
@@ -484,7 +594,7 @@ function getCSS() {
       margin: 8px 0;
     }
 
-    :host(:not([selected]):not([disabled])) .tree-row:hover {
+    :host(:not([selected]):not([disabled]):not([editing])) .tree-row:hover {
       background-color: var(--cros-sys-hover_on_subtle);
     }
 
@@ -510,6 +620,23 @@ function getCSS() {
       margin-inline-start: 8px;
     }
 
+    .rename {
+      background-color: var(--cros-sys-app_base);
+      border-radius: 4px;
+      color: var(--cros-sys-on_surface);
+      height: 20px;
+      padding: 1px 8px;
+      outline: 2px solid var(--cros-sys-focus_ring);
+    }
+
+    :host([selected]) .rename {
+      outline: 2px solid var(--cros-sys-inverse_primary);
+    }
+
+    .rename::selection {
+      background-color: var(--cros-sys-highlight_text)
+    }
+
     paper-ripple {
       color: var(--cros-sys-ripple_primary);
     }
@@ -532,11 +659,21 @@ export type TreeItemCollapsedEvent = CustomEvent<{
   /** The tree item which has been collapsed. */
   item: XfTreeItem,
 }>;
+/** Type of the tree item collapsed custom event. */
+export type TreeItemRenamedEvent = CustomEvent<{
+  /** The tree item which has been renamed. */
+  item: XfTreeItem,
+  /** The label before rename. */
+  oldLabel: string,
+  /** The label after rename. */
+  newLabel: string,
+}>;
 
 declare global {
   interface HTMLElementEventMap {
     [XfTreeItem.events.TREE_ITEM_EXPANDED]: TreeItemExpandedEvent;
     [XfTreeItem.events.TREE_ITEM_COLLAPSED]: TreeItemCollapsedEvent;
+    [XfTreeItem.events.TREE_ITEM_RENAMED]: TreeItemRenamedEvent;
   }
 
   interface HTMLElementTagNameMap {

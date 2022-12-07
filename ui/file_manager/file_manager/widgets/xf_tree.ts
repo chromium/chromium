@@ -184,7 +184,7 @@ export class XfTree extends XfBase {
    * and the selection with the keyboard.
    */
   private onTreeKeyDown_(e: KeyboardEvent) {
-    if (e.ctrlKey) {
+    if (e.ctrlKey || e.repeat) {
       return;
     }
 
