@@ -80,9 +80,11 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
    private:
     int render_process_id_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+    raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged>
+        extension_registry_;
 #endif
-    raw_ptr<const HostContentSettingsMap> host_content_settings_map_;
+    raw_ptr<const HostContentSettingsMap, DanglingUntriaged>
+        host_content_settings_map_;
     scoped_refptr<PluginPrefs> plugin_prefs_;
 
     BooleanPrefMember allow_outdated_plugins_;
