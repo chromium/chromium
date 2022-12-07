@@ -111,7 +111,15 @@ TEST(PrintSettingsConversionTest, Conversion) {
   EXPECT_FALSE(settings);
 }
 
-TEST(PrintSettingsConversionTest, ConversionTestWithValidImageableArea) {
+TEST(PrintSettingsConversionTest, WithValidImageableArea) {
+#if BUILDFLAG(IS_MAC)
+  static constexpr gfx::Size kExpectedSize{595, 842};
+  static constexpr gfx::Rect kExpectedPrintableArea{0, 0, 510, 839};
+#else
+  static constexpr gfx::Size kExpectedSize{2480, 3508};
+  static constexpr gfx::Rect kExpectedPrintableArea{0, 0, 2126, 3496};
+#endif
+
   base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
   ASSERT_TRUE(value.is_dict());
   auto& dict = value.GetDict();
@@ -119,26 +127,32 @@ TEST(PrintSettingsConversionTest, ConversionTestWithValidImageableArea) {
   ASSERT_TRUE(settings);
   EXPECT_EQ(settings->dpi_horizontal(), 300);
   EXPECT_EQ(settings->dpi_vertical(), 300);
-  EXPECT_EQ(settings->page_setup_device_units().physical_size(),
-            gfx::Size(2480, 3508));
+  EXPECT_EQ(settings->page_setup_device_units().physical_size(), kExpectedSize);
   EXPECT_EQ(settings->page_setup_device_units().printable_area(),
-            gfx::Rect(0, 0, 2126, 3496));
+            kExpectedPrintableArea);
 }
 
-TEST(PrintSettingsConversionTest, ConversionTestWithValidFlippedImageableArea) {
+TEST(PrintSettingsConversionTest, WithValidFlippedImageableArea) {
+#if BUILDFLAG(IS_MAC)
+  static constexpr gfx::Size kExpectedSize{842, 595};
+  static constexpr gfx::Rect kExpectedPrintableArea{0, 85, 839, 510};
+#else
+  static constexpr gfx::Size kExpectedSize{3508, 2480};
+  static constexpr gfx::Rect kExpectedPrintableArea{0, 354, 3496, 2126};
+#endif
+
   base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
   ASSERT_TRUE(value.is_dict());
   auto& dict = value.GetDict();
   dict.Set("landscape", true);
   std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
   ASSERT_TRUE(settings);
-  EXPECT_EQ(settings->page_setup_device_units().physical_size(),
-            gfx::Size(3508, 2480));
+  EXPECT_EQ(settings->page_setup_device_units().physical_size(), kExpectedSize);
   EXPECT_EQ(settings->page_setup_device_units().printable_area(),
-            gfx::Rect(0, 354, 3496, 2126));
+            kExpectedPrintableArea);
 }
 
-TEST(PrintSettingsConversionTest, ConversionTestWithOutOfBoundsImageableArea) {
+TEST(PrintSettingsConversionTest, WithOutOfBoundsImageableArea) {
   base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
   ASSERT_TRUE(value.is_dict());
   auto& dict = value.GetDict();
@@ -151,7 +165,7 @@ TEST(PrintSettingsConversionTest, ConversionTestWithOutOfBoundsImageableArea) {
   EXPECT_TRUE(settings->page_setup_device_units().printable_area().IsEmpty());
 }
 
-TEST(PrintSettingsConversionTest, ConversionTestWithMissingImageableAreaValue) {
+TEST(PrintSettingsConversionTest, WithMissingImageableAreaValue) {
   base::Value value = base::test::ParseJson(kPrinterSettingsWithImageableArea);
   ASSERT_TRUE(value.is_dict());
   auto& dict = value.GetDict();

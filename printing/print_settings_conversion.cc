@@ -95,8 +95,11 @@ void SetPrintableAreaIfValid(PrintSettings& settings,
 
   // Scale the page size and printable area to device units.
   float x_scale =
-      static_cast<float>(settings.dpi_horizontal()) / kMicronsPerInch;
-  float y_scale = static_cast<float>(settings.dpi_vertical()) / kMicronsPerInch;
+      static_cast<float>(settings.device_units_per_inch_size().width()) /
+      kMicronsPerInch;
+  float y_scale =
+      static_cast<float>(settings.device_units_per_inch_size().height()) /
+      kMicronsPerInch;
   gfx::Size page_size = gfx::ScaleToRoundedSize(size_microns, x_scale, y_scale);
   // Flip the y-axis since the imageable area origin is at the bottom-left,
   // while the gfx::Rect origin is at the top-left.
