@@ -47,6 +47,16 @@ TEST(SourceRegistrationTest, Parse) {
     base::expected<SourceRegistration, SourceRegistrationError> expected;
   } kTestCases[] = {
       {
+          "invalid_json",
+          "!",
+          base::unexpected(SourceRegistrationError::kInvalidJson),
+      },
+      {
+          "root_wrong_type",
+          "3",
+          base::unexpected(SourceRegistrationError::kRootWrongType),
+      },
+      {
           "required_fields_only",
           R"json({"destination":"https://d.example"})json",
           SourceRegistration(destination_origin, reporting_origin),
@@ -227,12 +237,8 @@ TEST(SourceRegistrationTest, Parse) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::Value value = base::test::ParseJson(test_case.json);
-    ASSERT_TRUE(value.is_dict()) << test_case.desc;
-
     EXPECT_EQ(test_case.expected,
-              SourceRegistration::Parse(std::move(*value.GetIfDict()),
-                                        reporting_origin))
+              SourceRegistration::Parse(test_case.json, reporting_origin))
         << test_case.desc;
   }
 }

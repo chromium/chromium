@@ -72,6 +72,16 @@ TEST(TriggerRegistrationTest, Parse) {
     base::expected<TriggerRegistration, TriggerRegistrationError> expected;
   } kTestCases[] = {
       {
+          "invalid_json",
+          "!",
+          base::unexpected(TriggerRegistrationError::kInvalidJson),
+      },
+      {
+          "root_wrong_type",
+          "3",
+          base::unexpected(TriggerRegistrationError::kRootWrongType),
+      },
+      {
           "empty",
           R"json({})json",
           TriggerRegistration(reporting_origin),
@@ -255,9 +265,7 @@ TEST(TriggerRegistrationTest, Parse) {
   };
 
   for (const auto& test_case : kTestCases) {
-    base::Value value = base::test::ParseJson(test_case.json);
-    EXPECT_EQ(TriggerRegistration::Parse(std::move(value.GetDict()),
-                                         reporting_origin),
+    EXPECT_EQ(TriggerRegistration::Parse(test_case.json, reporting_origin),
               test_case.expected)
         << test_case.description;
   }
