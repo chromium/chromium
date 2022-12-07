@@ -63,7 +63,7 @@ struct common_policy_traits {
   //                UNINITIALIZED
   template <class Alloc>
   static void transfer(Alloc* alloc, slot_type* new_slot, slot_type* old_slot) {
-    transfer_impl(alloc, new_slot, old_slot, 0);
+    transfer_impl(alloc, new_slot, old_slot, Rank0{});
   }
 
   // PRECONDITION: `slot` is INITIALIZED
@@ -80,29 +80,46 @@ struct common_policy_traits {
     return P::element(slot);
   }
 
+  static constexpr bool transfer_uses_memcpy() {
+    return std::is_same<decltype(transfer_impl<std::allocator<char>>(
+                            nullptr, nullptr, nullptr, Rank0{})),
+                        std::true_type>::value;
+  }
+
  private:
+  // To rank the overloads below for overload resoltion. Rank0 is preferred.
+  struct Rank2 {};
+  struct Rank1 : Rank2 {};
+  struct Rank0 : Rank1 {};
+
   // Use auto -> decltype as an enabler.
   template <class Alloc, class P = Policy>
   static auto transfer_impl(Alloc* alloc, slot_type* new_slot,
-                            slot_type* old_slot, int)
+                            slot_type* old_slot, Rank0)
       -> decltype((void)P::transfer(alloc, new_slot, old_slot)) {
     P::transfer(alloc, new_slot, old_slot);
   }
-  template <class Alloc>
-  static void transfer_impl(Alloc* alloc, slot_type* new_slot,
-                            slot_type* old_slot, char) {
 #if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
-    if (absl::is_trivially_relocatable<value_type>()) {
-      // TODO(b/247130232,b/251814870): remove casts after fixing warnings.
-      std::memcpy(static_cast<void*>(
-                      std::launder(const_cast<std::remove_const_t<value_type>*>(
-                          &element(new_slot)))),
-                  static_cast<const void*>(&element(old_slot)),
-                  sizeof(value_type));
-      return;
-    }
+  // This overload returns true_type for the trait below.
+  // The conditional_t is to make the enabler type dependent.
+  template <class Alloc,
+            typename = std::enable_if_t<absl::is_trivially_relocatable<
+                std::conditional_t<false, Alloc, value_type>>::value>>
+  static std::true_type transfer_impl(Alloc*, slot_type* new_slot,
+                                      slot_type* old_slot, Rank1) {
+    // TODO(b/247130232): remove casts after fixing warnings.
+    // TODO(b/251814870): remove casts after fixing warnings.
+    std::memcpy(
+        static_cast<void*>(std::launder(
+            const_cast<std::remove_const_t<value_type>*>(&element(new_slot)))),
+        static_cast<const void*>(&element(old_slot)), sizeof(value_type));
+    return {};
+  }
 #endif
 
+  template <class Alloc>
+  static void transfer_impl(Alloc* alloc, slot_type* new_slot,
+                            slot_type* old_slot, Rank2) {
     construct(alloc, new_slot, std::move(element(old_slot)));
     destroy(alloc, old_slot);
   }

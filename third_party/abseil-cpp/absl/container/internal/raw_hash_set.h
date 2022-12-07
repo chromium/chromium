@@ -1058,7 +1058,6 @@ ABSL_ATTRIBUTE_NOINLINE void InitializeSlots(CommonFields& c,
 // work.
 struct PolicyFunctions {
   size_t slot_size;
-  size_t slot_align;
 
   // Return the hash of the pointed-to slot.
   size_t (*hash_slot)(void* set, void* slot);
@@ -1096,6 +1095,14 @@ ABSL_ATTRIBUTE_NOINLINE void DeallocateStandard(void*,
   std::allocator<char> alloc;
   Deallocate<AlignOfSlot>(&alloc, ctrl,
                           AllocSize(n, policy.slot_size, AlignOfSlot));
+}
+
+// For trivially relocatable types we use memcpy directly. This allows us to
+// share the same function body for raw_hash_set instantiations that have the
+// same slot size as long as they are relocatable.
+template <size_t SizeOfSlot>
+ABSL_ATTRIBUTE_NOINLINE void TransferRelocatable(void*, void* dst, void* src) {
+  memcpy(dst, src, SizeOfSlot);
 }
 
 // Type-erased version of raw_hash_set::drop_deletes_without_resize.
@@ -1538,7 +1545,7 @@ class raw_hash_set : private CommonFields {
       // Already guaranteed to be empty; so nothing to do.
     } else {
       destroy_slots();
-      ClearBackingArray(common(), growth_left(), kPolicyFunctions,
+      ClearBackingArray(common(), growth_left(), GetPolicyFunctions(),
                         /*reuse=*/cap < 128);
     }
   }
@@ -1846,7 +1853,7 @@ class raw_hash_set : private CommonFields {
   void rehash(size_t n) {
     if (n == 0 && capacity() == 0) return;
     if (n == 0 && size() == 0) {
-      ClearBackingArray(common(), growth_left(), kPolicyFunctions,
+      ClearBackingArray(common(), growth_left(), GetPolicyFunctions(),
                         /*reuse=*/false);
       return;
     }
@@ -2127,7 +2134,8 @@ class raw_hash_set : private CommonFields {
   inline void drop_deletes_without_resize() {
     // Stack-allocate space for swapping elements.
     alignas(slot_type) unsigned char tmp[sizeof(slot_type)];
-    DropDeletesWithoutResize(common(), growth_left(), kPolicyFunctions, tmp);
+    DropDeletesWithoutResize(common(), growth_left(), GetPolicyFunctions(),
+                             tmp);
   }
 
   // Called whenever the table *might* need to conditionally grow.
@@ -2347,15 +2355,19 @@ class raw_hash_set : private CommonFields {
         AllocSize(n, sizeof(slot_type), alignof(slot_type)));
   }
 
-  static constexpr PolicyFunctions kPolicyFunctions = {
-      sizeof(slot_type),
-      alignof(slot_type),
-      &raw_hash_set::hash_slot_fn,
-      &raw_hash_set::transfer_slot_fn,
-      (std::is_same<SlotAlloc, std::allocator<slot_type>>::value
-           ? &DeallocateStandard<alignof(slot_type)>
-           : &raw_hash_set::dealloc_fn),
-  };
+  static const PolicyFunctions& GetPolicyFunctions() {
+    static constexpr PolicyFunctions value = {
+        sizeof(slot_type),
+        &raw_hash_set::hash_slot_fn,
+        PolicyTraits::transfer_uses_memcpy()
+            ? TransferRelocatable<sizeof(slot_type)>
+            : &raw_hash_set::transfer_slot_fn,
+        (std::is_same<SlotAlloc, std::allocator<slot_type>>::value
+             ? &DeallocateStandard<alignof(slot_type)>
+             : &raw_hash_set::dealloc_fn),
+    };
+    return value;
+  }
 
   // Bundle together growth_left (number of slots that can be filled without
   // rehashing) plus other objects which might be empty. CompressedTuple will
@@ -2365,12 +2377,6 @@ class raw_hash_set : private CommonFields {
                                             key_equal, allocator_type>
       settings_{0u, hasher{}, key_equal{}, allocator_type{}};
 };
-
-#ifdef ABSL_INTERNAL_NEED_REDUNDANT_CONSTEXPR_DECL
-template <class Policy, class Hash, class Eq, class Alloc>
-constexpr PolicyFunctions
-    raw_hash_set<Policy, Hash, Eq, Alloc>::kPolicyFunctions;
-#endif
 
 // Erases all elements that satisfy the predicate `pred` from the container `c`.
 template <typename P, typename H, typename E, typename A, typename Predicate>

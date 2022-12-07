@@ -34,7 +34,7 @@
 #ifndef ABSL_LOG_CHECK_H_
 #define ABSL_LOG_CHECK_H_
 
-#include "absl/base/optimization.h"
+#include "absl/log/internal/check_impl.h"
 #include "absl/log/internal/check_op.h"     // IWYU pragma: export
 #include "absl/log/internal/conditions.h"   // IWYU pragma: export
 #include "absl/log/internal/log_message.h"  // IWYU pragma: export
@@ -54,10 +54,7 @@
 // Might produce a message like:
 //
 //   Check failed: !cheese.empty() Out of Cheese
-#define CHECK(condition)                                              \
-  ABSL_LOG_INTERNAL_CONDITION_FATAL(STATELESS,                        \
-                                    ABSL_PREDICT_FALSE(!(condition))) \
-  ABSL_LOG_INTERNAL_CHECK(#condition).InternalStream()
+#define CHECK(condition) ABSL_CHECK_IMPL(condition)
 
 // QCHECK()
 //
@@ -65,10 +62,7 @@
 // not run registered error handlers (as `QFATAL`).  It is useful when the
 // problem is definitely unrelated to program flow, e.g. when validating user
 // input.
-#define QCHECK(condition)                                              \
-  ABSL_LOG_INTERNAL_CONDITION_QFATAL(STATELESS,                        \
-                                     ABSL_PREDICT_FALSE(!(condition))) \
-  ABSL_LOG_INTERNAL_QCHECK(#condition).InternalStream()
+#define QCHECK(condition) ABSL_QCHECK_IMPL(condition)
 
 // PCHECK()
 //
@@ -83,7 +77,7 @@
 // Might produce a message like:
 //
 //   Check failed: fd != -1 posix is difficult: No such file or directory [2]
-#define PCHECK(condition) CHECK(condition).WithPerror()
+#define PCHECK(condition) ABSL_PCHECK_IMPL(condition)
 
 // DCHECK()
 //
@@ -91,11 +85,7 @@
 // `DLOG`).  Unlike with `CHECK` (but as with `assert`), it is not safe to rely
 // on evaluation of `condition`: when `NDEBUG` is enabled, DCHECK does not
 // evaluate the condition.
-#ifndef NDEBUG
-#define DCHECK(condition) CHECK(condition)
-#else
-#define DCHECK(condition) CHECK(true || (condition))
-#endif
+#define DCHECK(condition) ABSL_DCHECK_IMPL(condition)
 
 // `CHECK_EQ` and friends are syntactic sugar for `CHECK(x == y)` that
 // automatically output the expression being tested and the evaluated values on
@@ -123,43 +113,24 @@
 //
 // WARNING: Passing `NULL` as an argument to `CHECK_EQ` and similar macros does
 // not compile.  Use `nullptr` instead.
-#define CHECK_EQ(val1, val2) \
-  ABSL_LOG_INTERNAL_CHECK_OP(Check_EQ, ==, val1, val2)
-#define CHECK_NE(val1, val2) \
-  ABSL_LOG_INTERNAL_CHECK_OP(Check_NE, !=, val1, val2)
-#define CHECK_LE(val1, val2) \
-  ABSL_LOG_INTERNAL_CHECK_OP(Check_LE, <=, val1, val2)
-#define CHECK_LT(val1, val2) ABSL_LOG_INTERNAL_CHECK_OP(Check_LT, <, val1, val2)
-#define CHECK_GE(val1, val2) \
-  ABSL_LOG_INTERNAL_CHECK_OP(Check_GE, >=, val1, val2)
-#define CHECK_GT(val1, val2) ABSL_LOG_INTERNAL_CHECK_OP(Check_GT, >, val1, val2)
-#define QCHECK_EQ(val1, val2) \
-  ABSL_LOG_INTERNAL_QCHECK_OP(Check_EQ, ==, val1, val2)
-#define QCHECK_NE(val1, val2) \
-  ABSL_LOG_INTERNAL_QCHECK_OP(Check_NE, !=, val1, val2)
-#define QCHECK_LE(val1, val2) \
-  ABSL_LOG_INTERNAL_QCHECK_OP(Check_LE, <=, val1, val2)
-#define QCHECK_LT(val1, val2) \
-  ABSL_LOG_INTERNAL_QCHECK_OP(Check_LT, <, val1, val2)
-#define QCHECK_GE(val1, val2) \
-  ABSL_LOG_INTERNAL_QCHECK_OP(Check_GE, >=, val1, val2)
-#define QCHECK_GT(val1, val2) \
-  ABSL_LOG_INTERNAL_QCHECK_OP(Check_GT, >, val1, val2)
-#ifndef NDEBUG
-#define DCHECK_EQ(val1, val2) CHECK_EQ(val1, val2)
-#define DCHECK_NE(val1, val2) CHECK_NE(val1, val2)
-#define DCHECK_LE(val1, val2) CHECK_LE(val1, val2)
-#define DCHECK_LT(val1, val2) CHECK_LT(val1, val2)
-#define DCHECK_GE(val1, val2) CHECK_GE(val1, val2)
-#define DCHECK_GT(val1, val2) CHECK_GT(val1, val2)
-#else  // ndef NDEBUG
-#define DCHECK_EQ(val1, val2) ABSL_LOG_INTERNAL_DCHECK_NOP(val1, val2)
-#define DCHECK_NE(val1, val2) ABSL_LOG_INTERNAL_DCHECK_NOP(val1, val2)
-#define DCHECK_LE(val1, val2) ABSL_LOG_INTERNAL_DCHECK_NOP(val1, val2)
-#define DCHECK_LT(val1, val2) ABSL_LOG_INTERNAL_DCHECK_NOP(val1, val2)
-#define DCHECK_GE(val1, val2) ABSL_LOG_INTERNAL_DCHECK_NOP(val1, val2)
-#define DCHECK_GT(val1, val2) ABSL_LOG_INTERNAL_DCHECK_NOP(val1, val2)
-#endif  // def NDEBUG
+#define CHECK_EQ(val1, val2) ABSL_CHECK_EQ_IMPL(val1, val2)
+#define CHECK_NE(val1, val2) ABSL_CHECK_NE_IMPL(val1, val2)
+#define CHECK_LE(val1, val2) ABSL_CHECK_LE_IMPL(val1, val2)
+#define CHECK_LT(val1, val2) ABSL_CHECK_LT_IMPL(val1, val2)
+#define CHECK_GE(val1, val2) ABSL_CHECK_GE_IMPL(val1, val2)
+#define CHECK_GT(val1, val2) ABSL_CHECK_GT_IMPL(val1, val2)
+#define QCHECK_EQ(val1, val2) ABSL_QCHECK_EQ_IMPL(val1, val2)
+#define QCHECK_NE(val1, val2) ABSL_QCHECK_NE_IMPL(val1, val2)
+#define QCHECK_LE(val1, val2) ABSL_QCHECK_LE_IMPL(val1, val2)
+#define QCHECK_LT(val1, val2) ABSL_QCHECK_LT_IMPL(val1, val2)
+#define QCHECK_GE(val1, val2) ABSL_QCHECK_GE_IMPL(val1, val2)
+#define QCHECK_GT(val1, val2) ABSL_QCHECK_GT_IMPL(val1, val2)
+#define DCHECK_EQ(val1, val2) ABSL_DCHECK_EQ_IMPL(val1, val2)
+#define DCHECK_NE(val1, val2) ABSL_DCHECK_NE_IMPL(val1, val2)
+#define DCHECK_LE(val1, val2) ABSL_DCHECK_LE_IMPL(val1, val2)
+#define DCHECK_LT(val1, val2) ABSL_DCHECK_LT_IMPL(val1, val2)
+#define DCHECK_GE(val1, val2) ABSL_DCHECK_GE_IMPL(val1, val2)
+#define DCHECK_GT(val1, val2) ABSL_DCHECK_GT_IMPL(val1, val2)
 
 // `CHECK_OK` and friends validate that the provided `absl::Status` or
 // `absl::StatusOr<T>` is OK.  If it isn't, they print a failure message that
@@ -175,13 +146,9 @@
 // Might produce a message like:
 //
 //   Check failed: FunctionReturnsStatus(x, y, z) is OK (ABORTED: timeout) oops!
-#define CHECK_OK(status) ABSL_LOG_INTERNAL_CHECK_OK(status)
-#define QCHECK_OK(status) ABSL_LOG_INTERNAL_QCHECK_OK(status)
-#ifndef NDEBUG
-#define DCHECK_OK(status) ABSL_LOG_INTERNAL_CHECK_OK(status)
-#else
-#define DCHECK_OK(status) ABSL_LOG_INTERNAL_DCHECK_NOP(status, nullptr)
-#endif
+#define CHECK_OK(status) ABSL_CHECK_OK_IMPL(status)
+#define QCHECK_OK(status) ABSL_QCHECK_OK_IMPL(status)
+#define DCHECK_OK(status) ABSL_DCHECK_OK_IMPL(status)
 
 // `CHECK_STREQ` and friends provide `CHECK_EQ` functionality for C strings,
 // i.e., nul-terminated char arrays.  The `CASE` versions are case-insensitive.
@@ -196,32 +163,17 @@
 // Example:
 //
 //   CHECK_STREQ(Foo().c_str(), Bar().c_str());
-#define CHECK_STREQ(s1, s2) \
-  ABSL_LOG_INTERNAL_CHECK_STROP(strcmp, ==, true, s1, s2)
-#define CHECK_STRNE(s1, s2) \
-  ABSL_LOG_INTERNAL_CHECK_STROP(strcmp, !=, false, s1, s2)
-#define CHECK_STRCASEEQ(s1, s2) \
-  ABSL_LOG_INTERNAL_CHECK_STROP(strcasecmp, ==, true, s1, s2)
-#define CHECK_STRCASENE(s1, s2) \
-  ABSL_LOG_INTERNAL_CHECK_STROP(strcasecmp, !=, false, s1, s2)
-#define QCHECK_STREQ(s1, s2) \
-  ABSL_LOG_INTERNAL_QCHECK_STROP(strcmp, ==, true, s1, s2)
-#define QCHECK_STRNE(s1, s2) \
-  ABSL_LOG_INTERNAL_QCHECK_STROP(strcmp, !=, false, s1, s2)
-#define QCHECK_STRCASEEQ(s1, s2) \
-  ABSL_LOG_INTERNAL_QCHECK_STROP(strcasecmp, ==, true, s1, s2)
-#define QCHECK_STRCASENE(s1, s2) \
-  ABSL_LOG_INTERNAL_QCHECK_STROP(strcasecmp, !=, false, s1, s2)
-#ifndef NDEBUG
-#define DCHECK_STREQ(s1, s2) CHECK_STREQ(s1, s2)
-#define DCHECK_STRCASEEQ(s1, s2) CHECK_STRCASEEQ(s1, s2)
-#define DCHECK_STRNE(s1, s2) CHECK_STRNE(s1, s2)
-#define DCHECK_STRCASENE(s1, s2) CHECK_STRCASENE(s1, s2)
-#else  // ndef NDEBUG
-#define DCHECK_STREQ(s1, s2) ABSL_LOG_INTERNAL_DCHECK_NOP(s1, s2)
-#define DCHECK_STRCASEEQ(s1, s2) ABSL_LOG_INTERNAL_DCHECK_NOP(s1, s2)
-#define DCHECK_STRNE(s1, s2) ABSL_LOG_INTERNAL_DCHECK_NOP(s1, s2)
-#define DCHECK_STRCASENE(s1, s2) ABSL_LOG_INTERNAL_DCHECK_NOP(s1, s2)
-#endif  // def NDEBUG
+#define CHECK_STREQ(s1, s2) ABSL_CHECK_STREQ_IMPL(s1, s2)
+#define CHECK_STRNE(s1, s2) ABSL_CHECK_STRNE_IMPL(s1, s2)
+#define CHECK_STRCASEEQ(s1, s2) ABSL_CHECK_STRCASEEQ_IMPL(s1, s2)
+#define CHECK_STRCASENE(s1, s2) ABSL_CHECK_STRCASENE_IMPL(s1, s2)
+#define QCHECK_STREQ(s1, s2) ABSL_QCHECK_STREQ_IMPL(s1, s2)
+#define QCHECK_STRNE(s1, s2) ABSL_QCHECK_STRNE_IMPL(s1, s2)
+#define QCHECK_STRCASEEQ(s1, s2) ABSL_QCHECK_STRCASEEQ_IMPL(s1, s2)
+#define QCHECK_STRCASENE(s1, s2) ABSL_QCHECK_STRCASENE_IMPL(s1, s2)
+#define DCHECK_STREQ(s1, s2) ABSL_DCHECK_STREQ_IMPL(s1, s2)
+#define DCHECK_STRNE(s1, s2) ABSL_DCHECK_STRNE_IMPL(s1, s2)
+#define DCHECK_STRCASEEQ(s1, s2) ABSL_DCHECK_STRCASEEQ_IMPL(s1, s2)
+#define DCHECK_STRCASENE(s1, s2) ABSL_DCHECK_STRCASENE_IMPL(s1, s2)
 
 #endif  // ABSL_LOG_CHECK_H_

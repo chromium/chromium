@@ -16,6 +16,15 @@
 // The testcases in this file are expected to pass or be skipped with any value
 // of ABSL_MIN_LOG_LEVEL
 
+#ifndef ABSL_LOG_LOG_BASIC_TEST_IMPL_H_
+#define ABSL_LOG_LOG_BASIC_TEST_IMPL_H_
+
+// Verify that both sets of macros behave identically by parameterizing the
+// entire test file.
+#ifndef ABSL_TEST_LOG
+#error ABSL_TEST_LOG must be defined for these tests to work.
+#endif
+
 #include <cerrno>
 #include <sstream>
 #include <string>
@@ -28,11 +37,10 @@
 #include "absl/log/internal/test_actions.h"
 #include "absl/log/internal/test_helpers.h"
 #include "absl/log/internal/test_matchers.h"
-#include "absl/log/log.h"
 #include "absl/log/log_entry.h"
 #include "absl/log/scoped_mock_log.h"
 
-namespace {
+namespace absl_log_internal {
 #if GTEST_HAS_DEATH_TEST
 using ::absl::log_internal::DeathTestExpectedLogging;
 using ::absl::log_internal::DeathTestUnexpectedLogging;
@@ -80,13 +88,13 @@ TEST_P(BasicLogTest, Info) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   const int log_line = __LINE__ + 1;
-  auto do_log = [] { LOG(INFO) << "hello world"; };
+  auto do_log = [] { ABSL_TEST_LOG(INFO) << "hello world"; };
 
   if (LoggingEnabledAt(absl::LogSeverity::kInfo)) {
     EXPECT_CALL(
         test_sink,
         Send(AllOf(SourceFilename(Eq(__FILE__)),
-                   SourceBasename(Eq("basic_log_test.cc")),
+                   SourceBasename(Eq("log_basic_test_impl.h")),
                    SourceLine(Eq(log_line)), Prefix(IsTrue()),
                    LogSeverity(Eq(absl::LogSeverity::kInfo)),
                    TimestampInMatchWindow(),
@@ -109,13 +117,13 @@ TEST_P(BasicLogTest, Warning) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   const int log_line = __LINE__ + 1;
-  auto do_log = [] { LOG(WARNING) << "hello world"; };
+  auto do_log = [] { ABSL_TEST_LOG(WARNING) << "hello world"; };
 
   if (LoggingEnabledAt(absl::LogSeverity::kWarning)) {
     EXPECT_CALL(
         test_sink,
         Send(AllOf(SourceFilename(Eq(__FILE__)),
-                   SourceBasename(Eq("basic_log_test.cc")),
+                   SourceBasename(Eq("log_basic_test_impl.h")),
                    SourceLine(Eq(log_line)), Prefix(IsTrue()),
                    LogSeverity(Eq(absl::LogSeverity::kWarning)),
                    TimestampInMatchWindow(),
@@ -138,13 +146,13 @@ TEST_P(BasicLogTest, Error) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
   const int log_line = __LINE__ + 1;
-  auto do_log = [] { LOG(ERROR) << "hello world"; };
+  auto do_log = [] { ABSL_TEST_LOG(ERROR) << "hello world"; };
 
   if (LoggingEnabledAt(absl::LogSeverity::kError)) {
     EXPECT_CALL(
         test_sink,
         Send(AllOf(SourceFilename(Eq(__FILE__)),
-                   SourceBasename(Eq("basic_log_test.cc")),
+                   SourceBasename(Eq("log_basic_test_impl.h")),
                    SourceLine(Eq(log_line)), Prefix(IsTrue()),
                    LogSeverity(Eq(absl::LogSeverity::kError)),
                    TimestampInMatchWindow(),
@@ -174,7 +182,7 @@ TEST_P(BasicLogDeathTest, Fatal) {
   absl::log_internal::ScopedMinLogLevel scoped_min_log_level(GetParam());
 
   const int log_line = __LINE__ + 1;
-  auto do_log = [] { LOG(FATAL) << "hello world"; };
+  auto do_log = [] { ABSL_TEST_LOG(FATAL) << "hello world"; };
 
   EXPECT_EXIT(
       {
@@ -195,7 +203,7 @@ TEST_P(BasicLogDeathTest, Fatal) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("basic_log_test.cc")),
+                         SourceBasename(Eq("log_basic_test_impl.h")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -211,7 +219,7 @@ TEST_P(BasicLogDeathTest, Fatal) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("basic_log_test.cc")),
+                         SourceBasename(Eq("log_basic_test_impl.h")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -234,7 +242,7 @@ TEST_P(BasicLogDeathTest, QFatal) {
   absl::log_internal::ScopedMinLogLevel scoped_min_log_level(GetParam());
 
   const int log_line = __LINE__ + 1;
-  auto do_log = [] { LOG(QFATAL) << "hello world"; };
+  auto do_log = [] { ABSL_TEST_LOG(QFATAL) << "hello world"; };
 
   EXPECT_EXIT(
       {
@@ -249,7 +257,7 @@ TEST_P(BasicLogDeathTest, QFatal) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("basic_log_test.cc")),
+                         SourceBasename(Eq("log_basic_test_impl.h")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -276,14 +284,16 @@ TEST_P(BasicLogTest, Level) {
                         absl::LogSeverity::kError}) {
     absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
-    const int log_line = __LINE__ + 1;
-    auto do_log = [severity] { LOG(LEVEL(severity)) << "hello world"; };
+    const int log_line = __LINE__ + 2;
+    auto do_log = [severity] {
+      ABSL_TEST_LOG(LEVEL(severity)) << "hello world";
+    };
 
     if (LoggingEnabledAt(severity)) {
       EXPECT_CALL(
           test_sink,
           Send(AllOf(SourceFilename(Eq(__FILE__)),
-                     SourceBasename(Eq("basic_log_test.cc")),
+                     SourceBasename(Eq("log_basic_test_impl.h")),
                      SourceLine(Eq(log_line)), Prefix(IsTrue()),
                      LogSeverity(Eq(severity)), TimestampInMatchWindow(),
                      ThreadID(Eq(absl::base_internal::GetTID())),
@@ -309,7 +319,7 @@ TEST_P(BasicLogDeathTest, Level) {
   auto volatile severity = absl::LogSeverity::kFatal;
 
   const int log_line = __LINE__ + 1;
-  auto do_log = [severity] { LOG(LEVEL(severity)) << "hello world"; };
+  auto do_log = [severity] { ABSL_TEST_LOG(LEVEL(severity)) << "hello world"; };
 
   EXPECT_EXIT(
       {
@@ -326,7 +336,7 @@ TEST_P(BasicLogDeathTest, Level) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("basic_log_test.cc")),
+                         SourceBasename(Eq("log_basic_test_impl.h")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -341,7 +351,7 @@ TEST_P(BasicLogDeathTest, Level) {
           EXPECT_CALL(
               test_sink,
               Send(AllOf(SourceFilename(Eq(__FILE__)),
-                         SourceBasename(Eq("basic_log_test.cc")),
+                         SourceBasename(Eq("log_basic_test_impl.h")),
                          SourceLine(Eq(log_line)), Prefix(IsTrue()),
                          LogSeverity(Eq(absl::LogSeverity::kFatal)),
                          TimestampInMatchWindow(),
@@ -374,7 +384,7 @@ TEST_P(BasicLogTest, LevelClampsNegativeValues) {
   EXPECT_CALL(test_sink, Send(LogSeverity(Eq(absl::LogSeverity::kInfo))));
 
   test_sink.StartCapturingLogs();
-  LOG(LEVEL(-1)) << "hello world";
+  ABSL_TEST_LOG(LEVEL(-1)) << "hello world";
 }
 
 TEST_P(BasicLogTest, LevelClampsLargeValues) {
@@ -390,13 +400,14 @@ TEST_P(BasicLogTest, LevelClampsLargeValues) {
   EXPECT_CALL(test_sink, Send(LogSeverity(Eq(absl::LogSeverity::kError))));
 
   test_sink.StartCapturingLogs();
-  LOG(LEVEL(static_cast<int>(absl::LogSeverity::kFatal) + 1)) << "hello world";
+  ABSL_TEST_LOG(LEVEL(static_cast<int>(absl::LogSeverity::kFatal) + 1))
+      << "hello world";
 }
 
 TEST(ErrnoPreservationTest, InSeverityExpression) {
   errno = 77;
   int saved_errno;
-  LOG(LEVEL((saved_errno = errno, absl::LogSeverity::kInfo)));
+  ABSL_TEST_LOG(LEVEL((saved_errno = errno, absl::LogSeverity::kInfo)));
   EXPECT_THAT(saved_errno, Eq(77));
 }
 
@@ -408,13 +419,13 @@ TEST(ErrnoPreservationTest, InStreamedExpression) {
 
   errno = 77;
   int saved_errno = 0;
-  LOG(INFO) << (saved_errno = errno, "hello world");
+  ABSL_TEST_LOG(INFO) << (saved_errno = errno, "hello world");
   EXPECT_THAT(saved_errno, Eq(77));
 }
 
 TEST(ErrnoPreservationTest, AfterStatement) {
   errno = 77;
-  LOG(INFO);
+  ABSL_TEST_LOG(INFO);
   const int saved_errno = errno;
   EXPECT_THAT(saved_errno, Eq(77));
 }
@@ -427,14 +438,18 @@ class UnusedVariableWarningCompileTest {
   // `kInfo`.
   static void LoggedVariable() {
     const int x = 0;
-    LOG(INFO) << x;
+    ABSL_TEST_LOG(INFO) << x;
   }
-  static void LoggedParameter(const int x) { LOG(INFO) << x; }
+  static void LoggedParameter(const int x) { ABSL_TEST_LOG(INFO) << x; }
   static void SeverityVariable() {
     const int x = 0;
-    LOG(LEVEL(x)) << "hello world";
+    ABSL_TEST_LOG(LEVEL(x)) << "hello world";
   }
-  static void SeverityParameter(const int x) { LOG(LEVEL(x)) << "hello world"; }
+  static void SeverityParameter(const int x) {
+    ABSL_TEST_LOG(LEVEL(x)) << "hello world";
+  }
 };
 
-}  // namespace
+}  // namespace absl_log_internal
+
+#endif  // ABSL_LOG_LOG_BASIC_TEST_IMPL_H_

@@ -253,6 +253,18 @@ TEST(SubstituteTest, Enums) {
                                         ScopedEnumUInt16::kEnum1));
 }
 
+enum class EnumWithStringify { Many = 0, Choices = 1 };
+
+template <typename Sink>
+void AbslStringify(Sink& sink, EnumWithStringify e) {
+  sink.Append(e == EnumWithStringify::Many ? "Many" : "Choices");
+}
+
+TEST(SubstituteTest, AbslStringifyWithEnum) {
+  const auto e = EnumWithStringify::Choices;
+  EXPECT_EQ(absl::Substitute("$0", e), "Choices");
+}
+
 #ifdef GTEST_HAS_DEATH_TEST
 
 TEST(SubstituteDeathTest, SubstituteDeath) {

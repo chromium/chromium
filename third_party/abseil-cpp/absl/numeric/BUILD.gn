@@ -29,6 +29,19 @@ absl_source_set("int128") {
   ]
 }
 
+absl_test("int128_test") {
+  sources = [
+    "int128_stream_test.cc",
+    "int128_test.cc",
+  ]
+  deps = [
+    ":int128",
+    "//third_party/abseil-cpp/absl/base",
+    "//third_party/abseil-cpp/absl/hash:hash_testing",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+  ]
+}
+
 absl_source_set("representation") {
   public = [ "internal/representation.h" ]
   deps = [ "//third_party/abseil-cpp/absl/base:config" ]

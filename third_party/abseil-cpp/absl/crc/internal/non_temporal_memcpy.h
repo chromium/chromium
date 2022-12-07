@@ -41,8 +41,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstdint>
 #include <cstring>
-#include <iostream>
 
 #include "absl/base/config.h"
 #include "absl/base/optimization.h"
@@ -60,7 +60,7 @@ constexpr size_t kCacheLineSize = ABSL_CACHELINE_SIZE;
 // If the objects overlap, the behavior is undefined.
 inline void *non_temporal_store_memcpy(void *__restrict dst,
                                        const void *__restrict src, size_t len) {
-#if defined(__SSE3__) || defined(__aarch64__) ||        \
+#if defined(__SSE3__) || defined(__aarch64__) || \
     (defined(_MSC_VER) && defined(__AVX__))
   // This implementation requires SSE3.
   // MSVC cannot target SSE3 directly, but when MSVC targets AVX,

@@ -4,6 +4,17 @@
 
 import("//third_party/abseil-cpp/absl.gni")
 
+absl_source_set("check_impl") {
+  public = [ "check_impl.h" ]
+  deps = [
+    ":check_op",
+    ":conditions",
+    ":log_message",
+    ":strip",
+    "//third_party/abseil-cpp/absl/base:core_headers",
+  ]
+}
+
 absl_source_set("check_op") {
   sources = [ "check_op.cc" ]
   public = [ "check_op.h" ]
@@ -68,6 +79,15 @@ absl_source_set("globals") {
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/time",
+  ]
+}
+
+absl_source_set("log_impl") {
+  public = [ "log_impl.h" ]
+  deps = [
+    ":conditions",
+    ":log_message",
+    ":strip",
   ]
 }
 

@@ -28,6 +28,20 @@ package(default_visibility = [
 licenses(["notice"])
 
 cc_library(
+    name = "check_impl",
+    hdrs = ["check_impl.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":check_op",
+        ":conditions",
+        ":log_message",
+        ":strip",
+        "//absl/base:core_headers",
+    ],
+)
+
+cc_library(
     name = "check_op",
     srcs = ["check_op.cc"],
     hdrs = ["check_op.h"],
@@ -120,6 +134,18 @@ cc_library(
         "//absl/base:raw_logging_internal",
         "//absl/strings",
         "//absl/time",
+    ],
+)
+
+cc_library(
+    name = "log_impl",
+    hdrs = ["log_impl.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":conditions",
+        ":log_message",
+        ":strip",
     ],
 )
 

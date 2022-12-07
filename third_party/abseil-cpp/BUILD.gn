@@ -76,6 +76,8 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/functional:bind_front",
     "//third_party/abseil-cpp/absl/functional:function_ref",
     "//third_party/abseil-cpp/absl/hash",
+    "//third_party/abseil-cpp/absl/log:absl_check",
+    "//third_party/abseil-cpp/absl/log:absl_log",
     "//third_party/abseil-cpp/absl/log:die_if_null",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
@@ -179,6 +181,7 @@ config("absl_test_config") {
   if (is_clang) {
     cflags_cc += [
       "-Wno-deprecated-declarations",
+      "-Wno-implicit-const-int-float-conversion",
       "-Wno-unused-private-field",
       "-Wno-unused-function",
     ]
@@ -207,8 +210,8 @@ if (build_with_chromium) {
         "absl/functional:any_invocable_test",
         "absl/hash:hash_test",
         "absl/hash:low_level_hash_test",
-        "absl/log:basic_log_test",
-        "absl/log:check_test",
+        "absl/log:absl_check_test",
+        "absl/log:absl_log_basic_test",
         "absl/log:die_if_null_test",
         "absl/log:flags_test",
         "absl/log:globals_test",
@@ -223,6 +226,7 @@ if (build_with_chromium) {
         "absl/log/internal:stderr_log_sink_test",
         "absl/memory:memory_test",
         "absl/meta:type_traits_test",
+        "absl/numeric:int128_test",
         "absl/profiling:exponential_biased_test",
         "absl/profiling:periodic_sampler_test",
         "absl/status:statusor_test",

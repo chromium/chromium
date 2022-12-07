@@ -26,13 +26,34 @@ package(default_visibility = ["//visibility:public"])
 licenses(["notice"])
 
 # Public targets
+
+cc_library(
+    name = "absl_check",
+    hdrs = ["absl_check.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/log/internal:check_impl",
+    ],
+)
+
+cc_library(
+    name = "absl_log",
+    hdrs = ["absl_log.h"],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/log/internal:log_impl",
+    ],
+)
+
 cc_library(
     name = "check",
     hdrs = ["check.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        "//absl/base:core_headers",
+        "//absl/log/internal:check_impl",
         "//absl/log/internal:check_op",
         "//absl/log/internal:conditions",
         "//absl/log/internal:log_message",
@@ -114,9 +135,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        "//absl/log/internal:conditions",
-        "//absl/log/internal:log_message",
-        "//absl/log/internal:strip",
+        "//absl/log/internal:log_impl",
     ],
 )
 
@@ -209,22 +228,34 @@ cc_library(
 )
 
 # Test targets
+
 cc_test(
-    name = "basic_log_test",
+    name = "absl_check_test",
     size = "small",
-    srcs = ["basic_log_test.cc"],
+    srcs = ["absl_check_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test:os:ios",
+        "no_test_ios",
+        "no_test_wasm",
+    ],
+    deps = [
+        ":absl_check",
+        ":check_test_impl",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "absl_log_basic_test",
+    size = "small",
+    srcs = ["absl_log_basic_test.cc"],
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
-        ":globals",
-        ":log",
-        ":log_entry",
-        ":scoped_mock_log",
-        "//absl/base",
-        "//absl/base:log_severity",
-        "//absl/log/internal:test_actions",
-        "//absl/log/internal:test_helpers",
-        "//absl/log/internal:test_matchers",
+        ":absl_log",
+        ":log_basic_test_impl",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -242,10 +273,28 @@ cc_test(
     ],
     deps = [
         ":check",
+        ":check_test_impl",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "check_test_impl",
+    testonly = True,
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    tags = [
+        "no_test:os:ios",
+        "no_test_ios",
+        "no_test_wasm",
+    ],
+    textual_hdrs = ["check_test_impl.h"],
+    visibility = ["//visibility:private"],
+    deps = [
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/log/internal:test_helpers",
-        "@com_google_googletest//:gtest_main",
+        "@com_google_googletest//:gtest",
     ],
 )
 
@@ -301,6 +350,39 @@ cc_test(
         "//absl/log/internal:globals",
         "//absl/log/internal:test_helpers",
         "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "log_basic_test",
+    size = "small",
+    srcs = ["log_basic_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":log",
+        ":log_basic_test_impl",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_library(
+    name = "log_basic_test_impl",
+    testonly = True,
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    textual_hdrs = ["log_basic_test_impl.h"],
+    visibility = ["//visibility:private"],
+    deps = [
+        "//absl/base",
+        "//absl/base:log_severity",
+        "//absl/log:globals",
+        "//absl/log:log_entry",
+        "//absl/log:scoped_mock_log",
+        "//absl/log/internal:test_actions",
+        "//absl/log/internal:test_helpers",
+        "//absl/log/internal:test_matchers",
+        "@com_google_googletest//:gtest",
     ],
 )
 

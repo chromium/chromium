@@ -139,6 +139,22 @@ TEST(LogHygieneTest, WorksWithINFODefined) {
 
 #undef INFO
 
+#define _INFO Bogus
+TEST(LogHygieneTest, WorksWithUnderscoreINFODefined) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  EXPECT_CALL(test_sink, Log(absl::LogSeverity::kInfo, _, "Hello world"))
+      .Times(2 + (IsOptimized ? 2 : 0));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << "Hello world";
+  LOG_IF(INFO, true) << "Hello world";
+
+  DLOG(INFO) << "Hello world";
+  DLOG_IF(INFO, true) << "Hello world";
+}
+#undef _INFO
+
 TEST(LogHygieneTest, ExpressionEvaluationInLEVELSeverity) {
   auto i = static_cast<int>(absl::LogSeverity::kInfo);
   LOG(LEVEL(++i)) << "hello world";  // NOLINT

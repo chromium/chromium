@@ -272,6 +272,14 @@ TEST(NodeHashMap, NodeHandleMutableKeyAccess) {
 }
 #endif
 
+TEST(NodeHashMap, RecursiveTypeCompiles) {
+  struct RecursiveType {
+    node_hash_map<int, RecursiveType> m;
+  };
+  RecursiveType t;
+  t.m[0] = RecursiveType{};
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

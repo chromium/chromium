@@ -73,10 +73,10 @@ class Charmap {
   }
 
   // Containing all the chars in the C-string 's'.
-  // Note that this is expensively recursive because of the C++11 constexpr
-  // formulation. Use only in constexpr initializers.
   static constexpr Charmap FromString(const char* s) {
-    return *s == 0 ? Charmap() : (Char(*s) | FromString(s + 1));
+    Charmap ret;
+    while (*s) ret = ret | Char(*s++);
+    return ret;
   }
 
   // Containing all the chars in the closed interval [lo,hi].

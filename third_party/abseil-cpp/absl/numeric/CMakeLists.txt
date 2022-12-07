@@ -70,7 +70,6 @@ absl_cc_test(
   DEPS
     absl::int128
     absl::base
-    absl::core_headers
     absl::hash_testing
     absl::type_traits
     GTest::gmock_main

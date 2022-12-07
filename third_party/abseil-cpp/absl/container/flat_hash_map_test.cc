@@ -311,6 +311,14 @@ TEST(FlatHashMap, Reserve) {
   }
 }
 
+TEST(FlatHashMap, RecursiveTypeCompiles) {
+  struct RecursiveType {
+    flat_hash_map<int, RecursiveType> m;
+  };
+  RecursiveType t;
+  t.m[0] = RecursiveType{};
+}
+
 }  // namespace
 }  // namespace container_internal
 ABSL_NAMESPACE_END

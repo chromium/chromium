@@ -17,6 +17,24 @@
 # Internal targets
 absl_cc_library(
   NAME
+    log_internal_check_impl
+  SRCS
+  HDRS
+    "internal/check_impl.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::core_headers
+    absl::log_internal_check_op
+    absl::log_internal_conditions
+    absl::log_internal_message
+    absl::log_internal_strip
+)
+
+absl_cc_library(
+  NAME
     log_internal_check_op
   SRCS
     "internal/check_op.cc"
@@ -124,6 +142,22 @@ absl_cc_library(
     absl::raw_logging_internal
     absl::strings
     absl::time
+)
+
+absl_cc_library(
+  NAME
+    log_internal_log_impl
+  SRCS
+  HDRS
+    "internal/log_impl.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::log_internal_conditions
+    absl::log_internal_message
+    absl::log_internal_strip
 )
 
 absl_cc_library(
@@ -357,6 +391,36 @@ absl_cc_library(
 # Public targets
 absl_cc_library(
   NAME
+    absl_check
+  SRCS
+  HDRS
+    "absl_check.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::log_internal_check_impl
+  PUBLIC
+)
+
+absl_cc_library(
+  NAME
+    absl_log
+  SRCS
+  HDRS
+    "absl_log.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::log_internal_log_impl
+  PUBLIC
+)
+
+absl_cc_library(
+  NAME
     check
   SRCS
   HDRS
@@ -366,6 +430,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::log_internal_check_impl
     absl::core_headers
     absl::log_internal_check_op
     absl::log_internal_conditions
@@ -467,9 +532,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::log_internal_conditions
-    absl::log_internal_message
-    absl::log_internal_strip
+    absl::log_internal_log_impl
   PUBLIC
 )
 
@@ -607,18 +670,39 @@ absl_cc_library(
 )
 
 # Test targets
+
 absl_cc_test(
   NAME
-    basic_log_test
+    absl_check_test
   SRCS
-    "basic_log_test.cc"
+    "absl_check_test.cc"
+    "check_test_impl.h"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::absl_check
+    absl::config
+    absl::core_headers
+    absl::log_internal_test_helpers
+    GTest::gmock
+    GTest::gtest_main
+)
+
+absl_cc_test(
+  NAME
+    absl_log_basic_test
+  SRCS
+    "log_basic_test.cc"
+    "log_basic_test_impl.h"
   COPTS
     ${ABSL_TEST_COPTS}
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
     absl::base
-    absl::log
+    absl::absl_log
     absl::log_entry
     absl::log_globals
     absl::log_severity
@@ -635,6 +719,7 @@ absl_cc_test(
     check_test
   SRCS
     "check_test.cc"
+    "check_test_impl.h"
   COPTS
     ${ABSL_TEST_COPTS}
   LINKOPTS
@@ -666,26 +751,24 @@ absl_cc_test(
 
 absl_cc_test(
   NAME
-    log_flags_test
+    log_basic_test
   SRCS
-    "flags_test.cc"
+    "log_basic_test.cc"
+    "log_basic_test_impl.h"
   COPTS
     ${ABSL_TEST_COPTS}
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
-    absl::core_headers
+    absl::base
     absl::log
-    absl::log_flags
+    absl::log_entry
     absl::log_globals
-    absl::log_internal_flags
+    absl::log_severity
+    absl::log_internal_test_actions
     absl::log_internal_test_helpers
     absl::log_internal_test_matchers
-    absl::log_severity
-    absl::flags
-    absl::flags_reflection
     absl::scoped_mock_log
-    absl::strings
     GTest::gmock
     GTest::gtest_main
 )
@@ -711,6 +794,32 @@ absl_cc_test(
     absl::span
     absl::strings
     absl::time
+    GTest::gmock
+    GTest::gtest_main
+)
+
+absl_cc_test(
+  NAME
+    log_flags_test
+  SRCS
+    "flags_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  LINKOPTS
+    ${ABSL_DEFAULT_LINKOPTS}
+  DEPS
+    absl::core_headers
+    absl::log
+    absl::log_flags
+    absl::log_globals
+    absl::log_internal_flags
+    absl::log_internal_test_helpers
+    absl::log_internal_test_matchers
+    absl::log_severity
+    absl::flags
+    absl::flags_reflection
+    absl::scoped_mock_log
+    absl::strings
     GTest::gmock
     GTest::gtest_main
 )
