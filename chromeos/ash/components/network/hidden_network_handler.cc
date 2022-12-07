@@ -8,6 +8,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -21,8 +22,8 @@ namespace {
 constexpr char kRemoveAttemptResultHistogram[] =
     "Network.Ash.WiFi.Hidden.RemovalAttempt.Result";
 
+constexpr base::TimeDelta kDefaultForcedInterval = base::Seconds(5);
 constexpr base::TimeDelta kOneDay = base::Days(1);
-constexpr base::TimeDelta kOneMinute = base::Minutes(1);
 
 void OnRemoveConfigurationSuccess(const std::string guid) {
   base::UmaHistogramBoolean(kRemoveAttemptResultHistogram, true);
@@ -36,9 +37,22 @@ void OnRemoveConfigurationFailure(const std::string guid,
                  << ", error: " << error_name;
 }
 
-bool ShouldForceMigration() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kForceHiddenNetworkMigration);
+base::TimeDelta ComputeMigrationInterval() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (!command_line->HasSwitch(switches::kForceHiddenNetworkMigration)) {
+    return kOneDay;
+  }
+
+  int interval_in_seconds = -1;
+  const std::string ascii =
+      command_line->GetSwitchValueASCII(switches::kForceHiddenNetworkMigration);
+
+  if (ascii.empty() || !base::StringToInt(ascii, &interval_in_seconds) ||
+      interval_in_seconds < 1) {
+    return kDefaultForcedInterval;
+  }
+  return base::Seconds(interval_in_seconds);
 }
 
 }  // namespace
@@ -68,7 +82,7 @@ void HiddenNetworkHandler::SetNetworkMetadataStore(
   CleanHiddenNetworks();
 
   daily_event_timer_.Start(
-      FROM_HERE, ShouldForceMigration() ? kOneMinute : kOneDay,
+      FROM_HERE, ComputeMigrationInterval(),
       base::BindRepeating(&HiddenNetworkHandler::CleanHiddenNetworks,
                           base::Unretained(this)));
 }
@@ -96,8 +110,10 @@ void HiddenNetworkHandler::CleanHiddenNetworks() {
     // existed for more than two weeks.
     if (network_metadata_store_->UpdateAndRetrieveWiFiTimestamp(
             state->guid()) != base::Time::UnixEpoch()) {
-      if (!ShouldForceMigration())
+      if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kForceHiddenNetworkMigration)) {
         continue;
+      }
     }
 
     NET_LOG(EVENT) << "Attempting to remove network configuration with GUID: "

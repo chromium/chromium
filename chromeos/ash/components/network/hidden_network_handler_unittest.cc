@@ -35,7 +35,8 @@ namespace {
 // initialized until the next time the timer fires, e.g. the next day.
 constexpr base::TimeDelta kTwoWeeks = base::Days(15);
 constexpr base::TimeDelta kArbitraryTime = base::Days(11686);
-constexpr base::TimeDelta kForcedMigrationTime = base::Minutes(2);
+constexpr base::TimeDelta kForcedMigrationTime = base::Seconds(20);
+constexpr char kForcedMigrationTimeASCII[] = "10";
 const char* kWiFiGuid1 = "wifi_guid1";
 const char* kWiFiGuid2 = "wifi_guid2";
 const char* kWiFiGuid3 = "wifi_guid3";
@@ -223,8 +224,8 @@ TEST_F(HiddenNetworkHandlerTest, MeetsAllCriteriaToRemove) {
 }
 
 TEST_F(HiddenNetworkHandlerTest, MeetsAllCriteriaToRemoveForcedMigration) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kForceHiddenNetworkMigration);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kForceHiddenNetworkMigration, kForcedMigrationTimeASCII);
 
   MaybeRegisterAndInitializePrefs();
 
