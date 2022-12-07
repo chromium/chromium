@@ -404,7 +404,7 @@ public final class PrivacySandboxDialogTest {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
 
         // Accept the consent and verify the spinner it's shown.
-        onView(withId(R.id.ack_button)).perform(click());
+        onViewWaiting(withId(R.id.ack_button)).perform(click());
         onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(matches(not(isDisplayed())));
         onView(withId(R.id.progress_bar_container)).check(matches(isDisplayed()));
 
@@ -420,7 +420,7 @@ public final class PrivacySandboxDialogTest {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_EEA);
 
         // Decline the consent and verify the spinner it's shown.
-        onView(withId(R.id.no_button)).perform(click());
+        onViewWaiting(withId(R.id.no_button)).perform(click());
         onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(matches(not(isDisplayed())));
         onView(withId(R.id.progress_bar_container)).check(matches(isDisplayed()));
 
