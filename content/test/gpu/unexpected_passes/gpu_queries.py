@@ -31,7 +31,8 @@ RESULTS_SUBQUERY = """\
       `chrome-luci-data.{{builder_project}}.gpu_{builder_type}_test_results` tr,
       builds b
     WHERE
-      exported.id = build_inv_id
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.id = build_inv_id
       AND status != "SKIP"
       {{test_filter_clause}}
   )"""
@@ -56,7 +57,8 @@ WITH
     FROM
       `chrome-luci-data.{{builder_project}}.gpu_ci_test_results` tr
     WHERE
-      exported.realm = "{{builder_project}}:ci"
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.realm = "{{builder_project}}:ci"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT @num_builds
@@ -90,7 +92,8 @@ WITH
       `chrome-luci-data.{{builder_project}}.gpu_try_test_results` tr,
       submitted_builds sb
     WHERE
-      exported.realm = "{{builder_project}}:try"
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.realm = "{{builder_project}}:try"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
       AND exported.id = sb.id
     ORDER BY partition_time DESC
@@ -113,7 +116,8 @@ WITH
       partition_time
     FROM `chrome-luci-data.{builder_project}.gpu_{builder_type}_test_results` tr
     WHERE
-      exported.realm = "{builder_project}:{builder_type}"
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.realm = "{builder_project}:{builder_type}"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT 50
@@ -134,7 +138,8 @@ WITH
       `chrome-luci-data.{builder_project}.gpu_{builder_type}_test_results` tr,
       builds b
     WHERE
-      exported.id = build_inv_id
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.id = build_inv_id
       AND status != "SKIP"
       AND REGEXP_CONTAINS(
         test_id,
@@ -155,7 +160,9 @@ ALL_BUILDERS_FROM_TABLE_SUBQUERY = """\
         FROM tr.variant
         WHERE key = "builder") as builder_name
     FROM
-      `chrome-luci-data.{builder_project}.gpu_{builder_type}_test_results` tr"""
+      `chrome-luci-data.{builder_project}.gpu_{builder_type}_test_results` tr
+    WHERE
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)"""
 
 ACTIVE_BUILDER_QUERY_TEMPLATE = """\
 WITH

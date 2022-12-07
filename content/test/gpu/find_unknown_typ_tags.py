@@ -33,6 +33,7 @@ WITH
             )
         ) AS typ_tags
         FROM `{table}` tr
+        WHERE DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
     )
 SELECT DISTINCT typ_tags
 FROM tags

@@ -142,6 +142,8 @@ WITH
         WHERE key = "builder") as builder_name
     FROM
       `chrome-luci-data.chromium.gpu_ci_test_results` tr
+    WHERE
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
 
   )
 SELECT DISTINCT builder_name
@@ -163,6 +165,8 @@ WITH
         WHERE key = "builder") as builder_name
     FROM
       `chrome-luci-data.chromium.gpu_ci_test_results` tr
+    WHERE
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
     UNION ALL
     SELECT
       (
@@ -171,6 +175,8 @@ WITH
         WHERE key = "builder") as builder_name
     FROM
       `chrome-luci-data.chrome.gpu_ci_test_results` tr
+    WHERE
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
   )
 SELECT DISTINCT builder_name
 FROM builders
@@ -191,6 +197,8 @@ WITH
         WHERE key = "builder") as builder_name
     FROM
       `chrome-luci-data.chromium.gpu_try_test_results` tr
+    WHERE
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
 
   )
 SELECT DISTINCT builder_name
@@ -212,6 +220,8 @@ WITH
         WHERE key = "builder") as builder_name
     FROM
       `chrome-luci-data.chromium.gpu_try_test_results` tr
+    WHERE
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
     UNION ALL
     SELECT
       (
@@ -220,6 +230,8 @@ WITH
         WHERE key = "builder") as builder_name
     FROM
       `chrome-luci-data.chrome.gpu_try_test_results` tr
+    WHERE
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
   )
 SELECT DISTINCT builder_name
 FROM builders
@@ -243,7 +255,8 @@ WITH
     FROM
       `chrome-luci-data.chromium.gpu_ci_test_results` tr
     WHERE
-      exported.realm = "chromium:ci"
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.realm = "chromium:ci"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT @num_builds
@@ -269,7 +282,8 @@ WITH
       `chrome-luci-data.chromium.gpu_ci_test_results` tr,
       builds b
     WHERE
-      exported.id = build_inv_id
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.id = build_inv_id
       AND status != "SKIP"
       tfc
   )
@@ -295,7 +309,8 @@ WITH
     FROM
       `chrome-luci-data.chrome.gpu_ci_test_results` tr
     WHERE
-      exported.realm = "chrome:ci"
+      DATE(partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.realm = "chrome:ci"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
     ORDER BY partition_time DESC
     LIMIT @num_builds
@@ -321,7 +336,8 @@ WITH
       `chrome-luci-data.chrome.gpu_ci_test_results` tr,
       builds b
     WHERE
-      exported.id = build_inv_id
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.id = build_inv_id
       AND status != "SKIP"
       tfc
   )
@@ -373,7 +389,8 @@ WITH
       `chrome-luci-data.chromium.gpu_try_test_results` tr,
       submitted_builds sb
     WHERE
-      exported.realm = "chromium:try"
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.realm = "chromium:try"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
       AND exported.id = sb.id
     ORDER BY partition_time DESC
@@ -400,7 +417,8 @@ WITH
       `chrome-luci-data.chromium.gpu_try_test_results` tr,
       builds b
     WHERE
-      exported.id = build_inv_id
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.id = build_inv_id
       AND status != "SKIP"
       tfc
   )
@@ -452,7 +470,8 @@ WITH
       `chrome-luci-data.chrome.gpu_try_test_results` tr,
       submitted_builds sb
     WHERE
-      exported.realm = "chrome:try"
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.realm = "chrome:try"
       AND STRUCT("builder", @builder_name) IN UNNEST(variant)
       AND exported.id = sb.id
     ORDER BY partition_time DESC
@@ -479,7 +498,8 @@ WITH
       `chrome-luci-data.chrome.gpu_try_test_results` tr,
       builds b
     WHERE
-      exported.id = build_inv_id
+      DATE(tr.partition_time) > DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+      AND exported.id = build_inv_id
       AND status != "SKIP"
       tfc
   )
