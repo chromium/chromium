@@ -18,6 +18,7 @@ static_library("storage") {
   deps = [
     "//base",
     "//components/power_bookmarks/core:powers",
+    "//components/power_bookmarks/metrics",
     "//components/sync/model",
     "//components/sync/protocol",
     "//sql",
@@ -37,11 +38,13 @@ source_set("unit_tests") {
   deps = [
     ":storage",
     "//base",
+    "//base/test:test_support",
     "//components/power_bookmarks/core:powers",
     "//components/sync/model",
     "//components/sync/protocol",
     "//sql",
     "//sql:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]

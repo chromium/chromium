@@ -100,9 +100,8 @@ class PowerBookmarkService : public KeyedService,
       const sync_pb::PowerBookmarkSpecifics::PowerType& power_type,
       SuccessCallback callback);
 
-  // Captures storage changes to forward along to observers. Returns the
-  // result of the call to `callback` and notifies observers after.
-  void NotifyPowersChanged(SuccessCallback callback, bool success);
+  // Captures storage changes to forward along to observers.
+  void NotifyPowersChanged(bool success);
 
   // Registration methods for observers.
   void AddObserver(Observer* observer);
@@ -122,6 +121,20 @@ class PowerBookmarkService : public KeyedService,
   void BookmarkModelChanged() override {}
 
  private:
+  void NotifyAndRecordPowerCreated(
+      sync_pb::PowerBookmarkSpecifics::PowerType power_type,
+      SuccessCallback callback,
+      bool success);
+  void NotifyAndRecordPowerUpdated(
+      sync_pb::PowerBookmarkSpecifics::PowerType power_type,
+      SuccessCallback callback,
+      bool success);
+  void NotifyAndRecordPowerDeleted(SuccessCallback callback, bool success);
+  void NotifyAndRecordPowersDeletedForURL(
+      sync_pb::PowerBookmarkSpecifics::PowerType power_type,
+      SuccessCallback callback,
+      bool success);
+
   raw_ptr<bookmarks::BookmarkModel> model_;
   base::SequenceBound<PowerBookmarkBackend> backend_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

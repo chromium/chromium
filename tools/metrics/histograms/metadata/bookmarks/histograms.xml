@@ -1003,6 +1003,75 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PowerBookmarks.BookmarkManager.PriceTrackingEnabled"
+    enum="PriceTrackingState" expires_after="2023-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Tracks the interactions with the price-tracking toggle present when viewing
+    previously saved products.
+  </summary>
+</histogram>
+
+<histogram name="PowerBookmarks.BookmarkSaveFlow.PriceTrackingEnabled"
+    enum="PriceTrackingState" expires_after="2023-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Tracks the interactions with the price-tracking toggle present when
+    initially saving products.
+  </summary>
+</histogram>
+
+<histogram name="PowerBookmarks.Storage.DatabaseDirSizeAtStartup" units="KB"
+    expires_after="2023-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Size of the power bookmarks database directory, recorded when the database
+    is loaded.
+  </summary>
+</histogram>
+
+<histogram name="PowerBookmarks.Storage.DatabaseError" enum="SqliteErrorCode"
+    expires_after="2023-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Errors that occur in Power Bookmarks database. Recorded by
+    SharedStorageDatabase::DatabaseErrorCallback() just before the SQLite
+    database determines whether the error is catastrophic and handles it
+    accordingly.
+  </summary>
+</histogram>
+
+<histogram name="PowerBookmarks.{Function}.PowerType" enum="PowerBookmarkType"
+    expires_after="2023-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Tracks the PowerType of a successful power bookmark api call.
+  </summary>
+  <token key="Function">
+    <variant name="PowerCreated"/>
+    <variant name="PowersDeletedForURL"/>
+    <variant name="PowerUpdated"/>
+  </token>
+</histogram>
+
+<histogram name="PowerBookmarks.{Function}.Success" enum="BooleanSuccess"
+    expires_after="2023-01-24">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>Tracks the success of a power bookmark api call.</summary>
+  <token key="Function">
+    <variant name="PowerCreated"/>
+    <variant name="PowerDeleted"/>
+    <variant name="PowersDeletedForURL"/>
+    <variant name="PowerUpdated"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

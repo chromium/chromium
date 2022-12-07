@@ -30,6 +30,7 @@ static_library("core") {
     "//components/bookmarks/browser",
     "//components/commerce/core:proto",
     "//components/keyed_service/core:core",
+    "//components/power_bookmarks/metrics",
     "//components/power_bookmarks/storage",
     "//ui/base",
     "//url",

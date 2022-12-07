@@ -14,6 +14,7 @@
 #include "components/power_bookmarks/core/powers/power_overview.h"
 #include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
+#include "components/power_bookmarks/metrics/power_bookmark_metrics.h"
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 
@@ -78,30 +79,57 @@ void PowerBookmarkService::CreatePower(std::unique_ptr<Power> power,
     power->set_time_added(now);
   if (power->time_modified().is_null())
     power->set_time_modified(now);
+  sync_pb::PowerBookmarkSpecifics::PowerType power_type = power->power_type();
   backend_.AsyncCall(&PowerBookmarkBackend::CreatePower)
       .WithArgs(std::move(power))
-      .Then(base::BindOnce(&PowerBookmarkService::NotifyPowersChanged,
-                           weak_ptr_factory_.GetWeakPtr(),
+      .Then(base::BindOnce(&PowerBookmarkService::NotifyAndRecordPowerCreated,
+                           weak_ptr_factory_.GetWeakPtr(), power_type,
                            std::move(callback)));
+}
+
+void PowerBookmarkService::NotifyAndRecordPowerCreated(
+    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
+    SuccessCallback callback,
+    bool success) {
+  std::move(callback).Run(success);
+  NotifyPowersChanged(success);
+  metrics::RecordPowerCreated(power_type, success);
 }
 
 void PowerBookmarkService::UpdatePower(std::unique_ptr<Power> power,
                                        SuccessCallback callback) {
   power->set_time_modified(base::Time::Now());
+  sync_pb::PowerBookmarkSpecifics::PowerType power_type = power->power_type();
   backend_.AsyncCall(&PowerBookmarkBackend::UpdatePower)
       .WithArgs(std::move(power))
-      .Then(base::BindOnce(&PowerBookmarkService::NotifyPowersChanged,
-                           weak_ptr_factory_.GetWeakPtr(),
+      .Then(base::BindOnce(&PowerBookmarkService::NotifyAndRecordPowerUpdated,
+                           weak_ptr_factory_.GetWeakPtr(), power_type,
                            std::move(callback)));
+}
+
+void PowerBookmarkService::NotifyAndRecordPowerUpdated(
+    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
+    SuccessCallback callback,
+    bool success) {
+  std::move(callback).Run(success);
+  NotifyPowersChanged(success);
+  metrics::RecordPowerUpdated(power_type, success);
 }
 
 void PowerBookmarkService::DeletePower(const base::GUID& guid,
                                        SuccessCallback callback) {
   backend_.AsyncCall(&PowerBookmarkBackend::DeletePower)
       .WithArgs(guid)
-      .Then(base::BindOnce(&PowerBookmarkService::NotifyPowersChanged,
+      .Then(base::BindOnce(&PowerBookmarkService::NotifyAndRecordPowerDeleted,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(callback)));
+}
+
+void PowerBookmarkService::NotifyAndRecordPowerDeleted(SuccessCallback callback,
+                                                       bool success) {
+  std::move(callback).Run(success);
+  NotifyPowersChanged(success);
+  metrics::RecordPowerDeleted(success);
 }
 
 void PowerBookmarkService::DeletePowersForURL(
@@ -110,15 +138,21 @@ void PowerBookmarkService::DeletePowersForURL(
     SuccessCallback callback) {
   backend_.AsyncCall(&PowerBookmarkBackend::DeletePowersForURL)
       .WithArgs(url, power_type)
-      .Then(base::BindOnce(&PowerBookmarkService::NotifyPowersChanged,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(callback)));
+      .Then(base::BindOnce(
+          &PowerBookmarkService::NotifyAndRecordPowersDeletedForURL,
+          weak_ptr_factory_.GetWeakPtr(), power_type, std::move(callback)));
 }
 
-void PowerBookmarkService::NotifyPowersChanged(SuccessCallback callback,
-                                               bool success) {
+void PowerBookmarkService::NotifyAndRecordPowersDeletedForURL(
+    sync_pb::PowerBookmarkSpecifics::PowerType power_type,
+    SuccessCallback callback,
+    bool success) {
   std::move(callback).Run(success);
+  NotifyPowersChanged(success);
+  metrics::RecordPowersDeletedForURL(power_type, success);
+}
 
+void PowerBookmarkService::NotifyPowersChanged(bool success) {
   // If the create/update/delete call wasn't successful, then there was no
   // functional change to the backend. In this case, skip notifying observers.
   if (!success)

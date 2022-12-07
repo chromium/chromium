@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -86,6 +87,8 @@ class PowerBookmarkServiceTest : public testing::Test {
 
   bookmarks::BookmarkModel* model() { return model_.get(); }
 
+  base::HistogramTester* histogram() { return &histogram_; }
+
  private:
   base::test::ScopedFeatureList test_features_;
 
@@ -95,6 +98,7 @@ class PowerBookmarkServiceTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_;
 };
 
 class MockDataProvider : public PowerBookmarkDataProvider {
@@ -266,6 +270,14 @@ TEST_F(PowerBookmarkServiceTest, CreatePower) {
       cb.Get());
   RunUntilIdle();
 
+  histogram()->ExpectBucketCount("PowerBookmarks.PowerCreated.Success", true,
+                                 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowerCreated.Success", 1);
+  histogram()->ExpectBucketCount(
+      "PowerBookmarks.PowerCreated.PowerType",
+      sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK, 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowerCreated.PowerType", 1);
+
   PowersCallback powers_cb = base::BindLambdaForTesting(
       [&](std::vector<std::unique_ptr<Power>> powers) {
         ASSERT_EQ(1u, powers.size());
@@ -292,6 +304,10 @@ TEST_F(PowerBookmarkServiceTest, ShouldNotCreatePowerIfPresent) {
   EXPECT_CALL(cb, Run(IsFalse()));
   service()->CreatePower(std::move(power2), cb.Get());
   RunUntilIdle();
+
+  histogram()->ExpectBucketCount("PowerBookmarks.PowerCreated.Success", false,
+                                 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowerCreated.Success", 2);
 
   PowersCallback powers_cb = base::BindLambdaForTesting(
       [&](std::vector<std::unique_ptr<Power>> powers) {
@@ -344,6 +360,14 @@ TEST_F(PowerBookmarkServiceTest, UpdatePower) {
   service()->UpdatePower(std::move(power2), cb.Get());
   RunUntilIdle();
 
+  histogram()->ExpectBucketCount("PowerBookmarks.PowerUpdated.Success", true,
+                                 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowerUpdated.Success", 1);
+  histogram()->ExpectBucketCount(
+      "PowerBookmarks.PowerUpdated.PowerType",
+      sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK, 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowerUpdated.PowerType", 1);
+
   PowersCallback powers_cb = base::BindLambdaForTesting(
       [&](std::vector<std::unique_ptr<Power>> powers) {
         ASSERT_EQ(1u, powers.size());
@@ -364,6 +388,10 @@ TEST_F(PowerBookmarkServiceTest, ShouldNotUpdatePowerIfNotPresent) {
                 sync_pb::PowerBookmarkSpecifics::POWER_TYPE_MOCK),
       cb.Get());
   RunUntilIdle();
+
+  histogram()->ExpectBucketCount("PowerBookmarks.PowerUpdated.Success", false,
+                                 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowerUpdated.Success", 1);
 
   PowersCallback powers_cb = base::BindLambdaForTesting(
       [&](std::vector<std::unique_ptr<Power>> powers) {
@@ -397,6 +425,9 @@ TEST_F(PowerBookmarkServiceTest, DeletePower) {
   EXPECT_CALL(success_cb, Run(IsTrue()));
   service()->DeletePower(guid, success_cb.Get());
   RunUntilIdle();
+  histogram()->ExpectBucketCount("PowerBookmarks.PowerDeleted.Success", true,
+                                 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowerDeleted.Success", 1);
 
   EXPECT_CALL(powers_cb, Run(SizeIs(0)));
   service()->GetPowersForURL(
@@ -436,6 +467,15 @@ TEST_F(PowerBookmarkServiceTest, DeletePowersForURL) {
       sync_pb::PowerBookmarkSpecifics::POWER_TYPE_UNSPECIFIED,
       success_cb.Get());
   RunUntilIdle();
+  histogram()->ExpectBucketCount("PowerBookmarks.PowersDeletedForURL.Success",
+                                 true, 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowersDeletedForURL.Success",
+                                1);
+  histogram()->ExpectBucketCount(
+      "PowerBookmarks.PowersDeletedForURL.PowerType",
+      sync_pb::PowerBookmarkSpecifics::POWER_TYPE_UNSPECIFIED, 1);
+  histogram()->ExpectTotalCount("PowerBookmarks.PowersDeletedForURL.PowerType",
+                                1);
 
   EXPECT_CALL(powers_cb, Run(SizeIs(0)));
   service()->GetPowersForURL(

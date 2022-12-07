@@ -80431,6 +80431,16 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1" label="Different domain"/>
 </enum>
 
+<enum name="PowerBookmarkType">
+  <int value="0" label="Unspecified">
+    Unspecified power type, shouldn't be used.
+  </int>
+  <int value="1" label="Mock">Mock power type, used for testing.</int>
+  <int value="2" label="Note">
+    Note power type, used to take notes on webpages.
+  </int>
+</enum>
+
 <enum name="PowerBrightnessAdjust">
   <int value="0" label="Brightness Down"/>
   <int value="1" label="Brightness Up"/>

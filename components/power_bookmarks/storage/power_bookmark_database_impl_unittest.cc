@@ -9,6 +9,9 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
+#include "base/ranges/algorithm.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/power_bookmarks/core/powers/search_params.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
@@ -68,6 +71,8 @@ class PowerBookmarkDatabaseImplTest : public testing::Test {
     return temp_directory_.GetPath().Append(kDatabaseName);
   }
 
+  base::HistogramTester* histogram() { return &histogram_; }
+
   void InsertBadlyFormattedProtoToDB() {
     sql::Database db;
     EXPECT_TRUE(db.Open(db_file_path()));
@@ -115,6 +120,7 @@ class PowerBookmarkDatabaseImplTest : public testing::Test {
  private:
   base::ScopedTempDir temp_directory_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
+  base::HistogramTester histogram_;
 };
 
 TEST_F(PowerBookmarkDatabaseImplTest, InitDatabaseWithErrorCallback) {
@@ -131,9 +137,13 @@ TEST_F(PowerBookmarkDatabaseImplTest, InitDatabaseWithErrorCallback) {
   pbdb->DatabaseErrorCallback(
       static_cast<int>(sql::SqliteResultCode::kCantOpen), nullptr);
   EXPECT_FALSE(pbdb->IsOpen());
+
+  histogram()->ExpectTotalCount("PowerBookmarks.Storage.DatabaseError", 1);
+  histogram()->ExpectBucketCount("PowerBookmarks.Storage.DatabaseError",
+                                 sql::SqliteResultCode::kCantOpen, 1);
 }
 
-TEST_F(PowerBookmarkDatabaseImplTest, InitDatabaseError) {
+TEST_F(PowerBookmarkDatabaseImplTest, InitDatabase) {
   EXPECT_FALSE(base::PathExists(db_file_path()));
   {
     std::unique_ptr<PowerBookmarkDatabaseImpl> pbdb =
@@ -143,6 +153,9 @@ TEST_F(PowerBookmarkDatabaseImplTest, InitDatabaseError) {
 
     EXPECT_TRUE(pbdb->Init());
     EXPECT_TRUE(base::PathExists(db_file_path()));
+
+    histogram()->ExpectTotalCount(
+        "PowerBookmarks.Storage.DatabaseDirSizeAtStartup", 1);
   }
 
   {
@@ -167,6 +180,9 @@ TEST_F(PowerBookmarkDatabaseImplTest, InitDatabaseTwice) {
 
   // The 2nd Init should return true since the db is already open.
   EXPECT_TRUE(pbdb->Init());
+
+  histogram()->ExpectTotalCount(
+      "PowerBookmarks.Storage.DatabaseDirSizeAtStartup", 1);
 }
 
 TEST_F(PowerBookmarkDatabaseImplTest, DatabaseNewVersion) {

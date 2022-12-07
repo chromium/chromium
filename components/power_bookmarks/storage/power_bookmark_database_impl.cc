@@ -9,6 +9,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
 #include "components/power_bookmarks/core/powers/search_params.h"
+#include "components/power_bookmarks/metrics/power_bookmark_metrics.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "sql/error_delegate_util.h"
@@ -119,7 +120,8 @@ bool PowerBookmarkDatabaseImpl::Init() {
   db_.set_histogram_tag("PowerBookmarks");
 
   const base::FilePath dir = database_path_.DirName();
-  if (!base::DirectoryExists(dir) && !base::CreateDirectory(dir)) {
+  bool dir_exists = base::DirectoryExists(dir);
+  if (!dir_exists && !base::CreateDirectory(dir)) {
     DLOG(ERROR) << "Failed to create directory for power bookmarks database";
     return false;
   }
@@ -144,6 +146,12 @@ bool PowerBookmarkDatabaseImpl::Init() {
     return false;
   }
 
+  // Directory will always exist here, but check to be safe.
+  if (dir_exists) {
+    int64_t file_size_bytes = base::ComputeDirectorySize(dir);
+    metrics::RecordDatabaseSizeAtStartup(file_size_bytes);
+  }
+
   return true;
 }
 
@@ -155,6 +163,8 @@ bool PowerBookmarkDatabaseImpl::IsOpen() {
 void PowerBookmarkDatabaseImpl::DatabaseErrorCallback(int error,
                                                       sql::Statement* stmt) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  metrics::RecordDatabaseError(error);
+
   if (!sql::IsErrorCatastrophic(error))
     return;
 
