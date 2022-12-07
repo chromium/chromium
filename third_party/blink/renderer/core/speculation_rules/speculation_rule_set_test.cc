@@ -1920,6 +1920,12 @@ TEST_F(DocumentRulesTest, ReferrerPolicy) {
 // Tests that a link's referrer-policy value is used if one is not specified
 // in the document rule.
 TEST_F(DocumentRulesTest, LinkReferrerPolicy) {
+  // This test does not use the "referrer_policy" key itself. This is used to
+  // disable a temporary workaround related to the use of a lax policy. See
+  // https://crbug.com/1398772.
+  ScopedSpeculationRulesReferrerPolicyKeyForTest enable_referrer_policy_key{
+      true};
+
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
   Document& document = page_holder.GetDocument();

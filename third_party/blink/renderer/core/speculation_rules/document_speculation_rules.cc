@@ -111,6 +111,19 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
   Referrer referrer =
       SecurityPolicy::GenerateReferrer(referrer_policy, url, outgoing_referrer);
 
+  // TODO(mcnee): Speculation rules initially shipped with a bug where a policy
+  // of "no-referrer" would be assumed and the referrer policy restriction was
+  // not enforced. We emulate that behaviour here as sites don't currently have
+  // a means of specifying a suitable policy. Once
+  // SpeculationRulesReferrerPolicyKey ships, this workaround should be removed.
+  // See https://crbug.com/1398772.
+  if (!RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled() &&
+      !AcceptableReferrerPolicy(referrer, is_initially_same_site)) {
+    referrer = SecurityPolicy::GenerateReferrer(
+        network::mojom::ReferrerPolicy::kNever, url, outgoing_referrer);
+    DCHECK(AcceptableReferrerPolicy(referrer, is_initially_same_site));
+  }
+
   if (!AcceptableReferrerPolicy(referrer, is_initially_same_site)) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
