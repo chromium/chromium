@@ -61,10 +61,7 @@ component("url") {
 
   public_deps = [ "//base" ]
 
-  deps = [
-    "//base/third_party/dynamic_annotations",
-    "//ipc:param_traits",
-  ]
+  deps = [ "//base/third_party/dynamic_annotations" ]
 
   if (is_win) {
     # Don't conflict with Windows' "url.dll".
