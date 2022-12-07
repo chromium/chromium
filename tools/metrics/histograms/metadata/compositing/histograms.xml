@@ -534,6 +534,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Renderer.AnimationUpdateOnMissingPropertyNode"
+    units="boolean" expires_after="2023-12-02">
+  <owner>awogbemila@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Records when we attempt to update an animation with a missing property node.
+    See crbug.com/1307498. We safely handle this case but until we find and fix
+    the root cause, this histogram allows us to keep track of the frequency at
+    this occurs.
+  </summary>
+</histogram>
+
 <histogram
     name="Compositing.Renderer.CALayer.ChangedIOSurfacesPercentagePerFrame"
     units="%" expires_after="2023-04-23">
