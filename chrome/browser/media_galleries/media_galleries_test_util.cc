@@ -43,14 +43,15 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
     const std::string& name,
     const std::vector<std::string>& media_galleries_permissions,
     Profile* profile) {
-  auto manifest = std::make_unique<base::DictionaryValue>();
-  manifest->SetString(extensions::manifest_keys::kName, name);
-  manifest->SetString(extensions::manifest_keys::kVersion, "0.1");
-  manifest->SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-  auto background_script_list = std::make_unique<base::ListValue>();
-  background_script_list->Append("background.js");
-  manifest->Set(extensions::manifest_keys::kPlatformAppBackgroundScripts,
-                std::move(background_script_list));
+  base::Value::Dict manifest;
+  manifest.Set(extensions::manifest_keys::kName, name);
+  manifest.Set(extensions::manifest_keys::kVersion, "0.1");
+  manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+  base::Value::List background_script_list;
+  background_script_list.Append("background.js");
+  manifest.SetByDottedPath(
+      extensions::manifest_keys::kPlatformAppBackgroundScripts,
+      std::move(background_script_list));
 
   base::Value::List permission_detail_list;
   for (const auto& permission : media_galleries_permissions)
@@ -60,8 +61,8 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
                                  std::move(permission_detail_list));
   base::Value::List permission_list;
   permission_list.Append(std::move(media_galleries_permission));
-  manifest->GetDict().Set(extensions::manifest_keys::kPermissions,
-                          std::move(permission_list));
+  manifest.Set(extensions::manifest_keys::kPermissions,
+               std::move(permission_list));
 
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile);
@@ -69,7 +70,7 @@ scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
   std::string errors;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
-          path, extensions::mojom::ManifestLocation::kInternal, *manifest.get(),
+          path, extensions::mojom::ManifestLocation::kInternal, manifest,
           extensions::Extension::NO_FLAGS, &errors);
   EXPECT_TRUE(extension.get() != nullptr) << errors;
   EXPECT_TRUE(crx_file::id_util::IdIsValid(extension->id()));
