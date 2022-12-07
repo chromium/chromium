@@ -298,11 +298,6 @@ BASE_FEATURE(kEnableTabMuting,
              "EnableTabMuting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable Picture-in-Picture.
-BASE_FEATURE(kPictureInPicture,
-             "PictureInPicture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // Enables HEVC hardware accelerated decoding.
 BASE_FEATURE(kPlatformHEVCDecoderSupport,

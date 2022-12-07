@@ -2117,11 +2117,6 @@
       status: "experimental",
     },
     {
-      name: "PictureInPicture",
-      public: true,
-      settable_from_internals: true,
-    },
-    {
       name: "PictureInPictureAPI",
       public: true,
       status: "stable"

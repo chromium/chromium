@@ -35,8 +35,6 @@ function runSizingTest(t, num) {
 }
 
 async_test((t) => {
-  enablePictureInPictureForTest(t);
-
   video.addEventListener('loadedmetadata', t.step_func(() => {
     video.addEventListener('enterpictureinpicture', t.step_func(() => {
       t.step(runSizingTest.bind(null, t, 0));

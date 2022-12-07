@@ -560,8 +560,7 @@ void MediaControlsImpl::InitializeControls() {
   if (PreferHiddenVolumeControls(GetDocument()))
     volume_slider_->SetIsWanted(false);
 
-  if (RuntimeEnabledFeatures::PictureInPictureEnabled() &&
-      GetDocument().GetSettings() &&
+  if (GetDocument().GetSettings() &&
       GetDocument().GetSettings()->GetPictureInPictureEnabled() &&
       IsA<HTMLVideoElement>(MediaElement())) {
     picture_in_picture_button_ =

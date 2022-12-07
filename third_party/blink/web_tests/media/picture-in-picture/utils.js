@@ -34,18 +34,6 @@ function pictureInPictureInterstitial(video)
   return interstitial;
 }
 
-function enablePictureInPictureForTest(t)
-{
-  var pictureInPictureEnabledValue =
-      internals.runtimeFlags.pictureInPictureEnabled;
-  internals.runtimeFlags.pictureInPictureEnabled = true;
-
-  t.add_cleanup(() => {
-    internals.runtimeFlags.pictureInPictureEnabled =
-        pictureInPictureEnabledValue;
-  });
-}
-
 function pictureInPictureInterstitialMessage(video) {
   var elementId = '-internal-picture-in-picture-interstitial-message';
   var interstitial = mediaControlsElement(

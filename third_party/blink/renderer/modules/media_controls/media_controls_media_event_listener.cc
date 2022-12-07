@@ -69,8 +69,7 @@ void MediaControlsMediaEventListener::Attach() {
       event_type_names::kFullscreenchange, this, false);
 
   // Picture-in-Picture events.
-  if (RuntimeEnabledFeatures::PictureInPictureEnabled() &&
-      media_controls_->GetDocument().GetSettings() &&
+  if (media_controls_->GetDocument().GetSettings() &&
       media_controls_->GetDocument()
           .GetSettings()
           ->GetPictureInPictureEnabled() &&

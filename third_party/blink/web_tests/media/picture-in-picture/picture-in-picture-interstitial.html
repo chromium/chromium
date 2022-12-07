@@ -9,8 +9,6 @@
 <video controls></video>
 <script>
 async_test(t => {
-  enablePictureInPictureForTest(t);
-
   var video = document.querySelector("video");
   video.src = "../content/test.ogv";
   enableTestMode(video);

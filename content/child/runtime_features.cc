@@ -251,7 +251,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnablePaymentRequest, features::kWebPayments},
     {wf::EnablePercentBasedScrolling, features::kWindowsScrollingPersonality},
     {wf::EnablePeriodicBackgroundSync, features::kPeriodicBackgroundSync},
-    {wf::EnablePictureInPicture, media::kPictureInPicture},
     {wf::EnablePointerLockOptions, features::kPointerLockOptions},
     {wf::EnablePushMessagingSubscriptionChange,
      features::kPushSubscriptionChangeEvent},

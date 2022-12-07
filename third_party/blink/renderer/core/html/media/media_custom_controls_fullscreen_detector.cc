@@ -157,11 +157,8 @@ void MediaCustomControlsFullscreenDetector::ReportEffectivelyFullscreen(
     return;
   }
 
-  // Picture-in-Picture can be disabled by the website when the API is enabled.
-  bool picture_in_picture_allowed =
-      !RuntimeEnabledFeatures::PictureInPictureEnabled() ||
-      !VideoElement().FastHasAttribute(
-          html_names::kDisablepictureinpictureAttr);
+  bool picture_in_picture_allowed = !VideoElement().FastHasAttribute(
+      html_names::kDisablepictureinpictureAttr);
 
   if (picture_in_picture_allowed) {
     VideoElement().SetIsEffectivelyFullscreen(

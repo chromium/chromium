@@ -263,7 +263,6 @@ class RenderViewContextMenu
   void AppendSearchWebForImageItems();
   void AppendProtocolHandlerSubMenu();
   void AppendPasswordItems();
-  void AppendPictureInPictureItem();
   void AppendSharingItems();
 #if !BUILDFLAG(IS_FUCHSIA)
   void AppendClickToCallItem();
