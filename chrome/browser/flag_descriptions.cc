@@ -6573,6 +6573,11 @@ const char kDisableLacrosTtsSupportName[] = "Disable lacros tts support";
 const char kDisableLacrosTtsSupportDescription[] =
     "Disable lacros support for text to speech.";
 
+const char kPromiseIconsName[] = "Promise Icons";
+const char kPromiseIconsDescription[] =
+    "Enables promise icons in the Launcher and Shelf (if the app is pinned) "
+    "for app installations.";
+
 const char kVcControlsUiName[] = "Video conferencing controls UI";
 const char kVcControlsUiDescription[] =
     "Enables the built-in video conference controls UI";

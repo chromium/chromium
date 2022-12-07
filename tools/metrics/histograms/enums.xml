@@ -60980,6 +60980,7 @@ from previous Chrome versions.
   <int value="103560544" label="ViewportHeightClientHintHeader:disabled"/>
   <int value="103932290" label="show-autofill-type-predictions"/>
   <int value="105046382" label="ParallelDownloading:disabled"/>
+  <int value="105284154" label="PromiseIcons:enabled"/>
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>
   <int value="106840653" label="mus"/>
   <int value="107358678" label="GalleryAppPdfEditNotification:enabled"/>
@@ -61320,6 +61321,7 @@ from previous Chrome versions.
   <int value="313112736" label="HandwritingLegacyRecognitionAllLang:enabled"/>
   <int value="313253630" label="AutofillRefreshStyleAndroid:enabled"/>
   <int value="313303258" label="WebPaymentsModifiers:disabled"/>
+  <int value="313332551" label="PromiseIcons:disabled"/>
   <int value="314629342" label="HiddenNetworkMigration:enabled"/>
   <int value="315602034" label="LauncherQueryHighlighting:disabled"/>
   <int value="316182183" label="MediaDocumentDownloadButton:disabled"/>

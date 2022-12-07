@@ -3823,6 +3823,10 @@ extern const char kWebKioskEnableLacrosDescription[];
 
 extern const char kDisableLacrosTtsSupportName[];
 extern const char kDisableLacrosTtsSupportDescription[];
+
+extern const char kPromiseIconsName[];
+extern const char kPromiseIconsDescription[];
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kVcControlsUiName[];

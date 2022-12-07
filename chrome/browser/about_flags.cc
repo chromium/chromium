@@ -9614,6 +9614,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessCodeCastTabSwitchingUIDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(::features::kAccessCodeCastTabSwitchingUI)},
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"promise-icons", flag_descriptions::kPromiseIconsName,
+     flag_descriptions::kPromiseIconsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPromiseIcons)},
+#endif
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

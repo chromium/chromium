@@ -5705,6 +5705,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "promise-icons",
+    "owners": ["vpao", "chromeos-apps-foundation-team@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "pull-to-refresh",
     "owners": [ "afakhry", "tclaiborne" ],
     "expiry_milestone": 99
