@@ -425,7 +425,6 @@ component("base") {
     "memory/platform_shared_memory_region.cc",
     "memory/platform_shared_memory_region.h",
     "memory/ptr_util.h",
-    "memory/raw_ptr.cc",
     "memory/raw_ptr.h",
     "memory/raw_ptr_asan_bound_arg_tracker.cc",
     "memory/raw_ptr_asan_bound_arg_tracker.h",
@@ -1471,13 +1470,7 @@ component("base") {
   }
 
   all_dependent_configs = []
-  defines = [
-    "BASE_IMPLEMENTATION",
-
-    # Temporary placement for `raw_ptr` using PA's `component_export.h`;
-    # will be moved: crbug.com/1371729
-    "IS_RAW_PTR_IMPL",
-  ]
+  defines = [ "BASE_IMPLEMENTATION" ]
   data = []
   data_deps = []
   libs = []
@@ -1526,6 +1519,7 @@ component("base") {
     ":synchronization_buildflags",
     ":tracing_buildflags",
     "//base/allocator/partition_allocator:buildflags",
+    "//base/allocator/partition_allocator:raw_ptr",
     "//base/numerics:base_numerics",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
