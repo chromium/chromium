@@ -75,6 +75,19 @@ def _ValidateDelta(root, delta):
     except Exception as e:
       raise ParseError('encountered exception {0} while parsing {1}'.format(
           e, mojom))
+
+    # Files which are generated at compile time can't be checked by this script
+    # (at the moment) since they may not exist in the output directory.
+    generated_files_to_skip = {
+        ('third_party/blink/public/mojom/runtime_feature_state/'
+         'runtime_feature_state.mojom'),
+    }
+
+    ast.import_list.items = [
+        x for x in ast.import_list.items
+        if x.import_filename not in generated_files_to_skip
+    ]
+
     for imp in ast.import_list:
       if (not file_overrides.get(imp.import_filename)
           and not os.path.exists(os.path.join(root, imp.import_filename))):
