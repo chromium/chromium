@@ -13,16 +13,11 @@
 <body>
   <div id="a">div a</div>
   <div id="b">div b</div>
+  <div id="c" draggable="true">div c</div>
 </body>
 
 <script>
   'use strict';
-
-  const a = document.getElementById("a");
-  const b = document.getElementById("b");
-
-  const expected_events = ["mousemove", "mousedown", "selectionchange",
-      "mousemove", "selectionchange"];
 
   let event_log = [];
 
@@ -32,7 +27,7 @@
 
   // Deliberately avoiding mouseup here because the last selectionchange
   // may be fired before or after the mouseup.
-  ["mousedown", "mousemove", "selectionchange"].forEach(ename => {
+  ["mousedown", "mousemove", "selectionchange", "dragstart"].forEach(ename => {
     document.addEventListener(ename, logEvents);
   });
   document.addEventListener("mousemove", e => e.preventDefault());
@@ -40,7 +35,10 @@
   promise_test(async () => {
     event_log = [];
 
-   let mouseup_promise = getEvent("mouseup", document);
+    const a = document.getElementById("a");
+    const b = document.getElementById("b");
+
+    let mouseup_promise = getEvent("mouseup", document);
 
     await new test_driver.Actions()
         .pointerMove(0, 0, {origin: a})
@@ -55,7 +53,41 @@
 
     await mouseup_promise;
 
+    const expected_events = ["mousemove", "mousedown", "selectionchange",
+        "mousemove", "selectionchange"];
+
     assert_equals(event_log.toString(), expected_events.toString(),
         "received events");
   }, "selectionchange event firing when mousemove event is prevented");
+
+  promise_test(async () => {
+    event_log = [];
+
+    const b = document.getElementById("b");
+    const c = document.getElementById("c");
+
+    let dragstart_promise = getEvent("dragstart", document);
+
+    // A mouseup event is not expected.  This avoids timing out when the
+    // dragstart event is missing.
+    let mouseup_promise = getEvent("mouseup", document);
+
+    await new test_driver.Actions()
+        .pointerMove(0, 0, {origin: c})
+        .pointerDown()
+        .addTick()
+        .addTick()
+        .pointerMove(0, 0, {origin: b})
+        .addTick()
+        .addTick()
+        .pointerUp()
+        .send();
+
+    await Promise.race([dragstart_promise, mouseup_promise]);
+
+    const expected_events = ["mousemove", "mousedown", "mousemove", "dragstart"];
+
+    assert_equals(event_log.toString(), expected_events.toString(),
+        "received events");
+  }, "dragstart event firing when mousemove event is prevented");
 </script>
