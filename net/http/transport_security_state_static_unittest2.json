@@ -35,19 +35,12 @@
       "include_subdomains_for_pinning": true,
       "pins": "test1"
     }, {
-      "name": "expect-ct.example.com",
-      "policy": "test",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://report.example.com/ct-upload"
-    }, {
       "name": "mix.example.com",
       "policy": "test",
       "mode": "force-https",
       "include_subdomains": false,
       "pins": "test2",
-      "include_subdomains_for_pinning": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://report.example.com/ct-upload-alt"
+      "include_subdomains_for_pinning": true
     }
   ]
 }

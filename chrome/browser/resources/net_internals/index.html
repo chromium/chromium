@@ -67,7 +67,7 @@ found in the LICENSE file.
 
       <div id=domain-security-policy-view-tab-content class=content-box>
         <!-- This UI allows a user to query and update the browser's list of
-             HSTS/PKP/Expect-CT domains. -->
+             HSTS/PKP domains. -->
 
         <h3>HSTS/PKP</h3>
 
@@ -102,82 +102,11 @@ found in the LICENSE file.
             id=hsts-view-query-output>
         </div>
 
-        <div id="expect-ct">
-          <h3>Expect-CT</h3>
-
-          <div class=deindent-header>
-            Expect-CT allows sites to elect to always require valid Certificate
-            Transparency information. See
-            <a href="https://tools.ietf.org/html/draft-ietf-httpbis-expect-ct"
-               target=_blank>
-              https://tools.ietf.org/html/draft-ietf-httpbis-expect-ct</a>.
-          </div>
-
-          <p>To protect against cross-site tracking, Expect-CT data will soon be
-            keyed on the site of the main frame and innermost frame when an
-            Expect-CT header is encountered. When that behavior is enabled,
-            both adding and querying an Expect-CT domain use the eTLD+1 of the
-            provided domain as the site for both frames. Deleting policies
-            affects information stored for that domain in the context of all
-            sites, however.</p>
-
-          <h4>Add Expect-CT domain</h4>
-
-          <p>Input a domain name to add it to the Expect-CT set. Leave Enforce
-            unchecked to configure Expect-CT in report-only mode.</p>
-          <form id=expect-ct-view-add-form>
-            <div><label>Domain: <input type=text
-                                       id=expect-ct-view-add-input type="url"
-                                       placeholder="example.com"></label></div>
-            <div>
-              <label>Report URI (optional):
-                <input type=text id=expect-ct-view-add-report-uri-input
-                       type="url"
-                       placeholder="https://reporting.example.com/expect-ct">
-              </label>
-            </div>
-            <div>
-              <label>Enforce:
-                <input type="checkbox" id=expect-ct-view-check-enforce-input>
-              </label>
-            </div>
-            <input type=submit value="Add" id=expect-ct-view-add-submit>
-          </form>
-
-          <h4>Query Expect-CT domain</h4>
-
-          <p>Input a domain name to query the current Expect-CT set:</p>
-          <form id=expect-ct-view-query-form>
-            <label>Domain: <input type=text id=expect-ct-view-query-input
-                                  type="url" placeholder="example.com"></label>
-            <input type=submit value="Query" id=expect-ct-view-query-submit>
-          </form>
-          <div style="margin-top: 1em; margin-left: 2em;"
-               id=expect-ct-view-query-output>
-          </div>
-
-          <h4>Send test Expect-CT report</h4>
-
-          <p>Trigger a test report to the given report URI. The report will
-            contain a hostname of "expect-ct-report.test" and dummy data in
-            other fields.</p>
-          <form id=expect-ct-view-test-report-form>
-            <label>Report URI: <input type=text
-                                      id=expect-ct-view-test-report-uri
-                                      type="url"></label>
-            <input type=submit value="Send"
-                   id=expect-ct-view-test-report-submit>
-          </form>
-          <div style="margin-top: 1em; margin-left: 2em;"
-               id=expect-ct-view-test-report-output>
-          </div>
-        </div>
-
         <h3>Delete domain security policies</h3>
 
         <p>
-          Input a domain name to delete its dynamic domain security policies
-          (HSTS and Expect-CT). (<i>You cannot delete preloaded entries.</i>):
+          Input a domain name to delete its dynamic HSTS policy.
+          (<i>You cannot delete preloaded entries.</i>):
         </p>
         <form id=domain-security-policy-view-delete-form>
           <label>Domain: <input type=text

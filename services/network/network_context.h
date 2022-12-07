@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <queue>
 #include <set>
 #include <string>
 #include <utility>
@@ -105,7 +104,6 @@ class URLMatcher;
 namespace network {
 class CertVerifierWithTrustAnchors;
 class CookieManager;
-class ExpectCTReporter;
 class HostResolver;
 class MdnsResponderManager;
 class MojoBackendFileOperationsFactory;
@@ -309,19 +307,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void SetCTPolicy(mojom::CTPolicyPtr ct_policy) override;
-  void AddExpectCT(
-      const std::string& domain,
-      base::Time expiry,
-      bool enforce,
-      const GURL& report_uri,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      AddExpectCTCallback callback) override;
-  void SetExpectCTTestReport(const GURL& report_uri,
-                             SetExpectCTTestReportCallback callback) override;
-  void GetExpectCTState(
-      const std::string& domain,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      GetExpectCTStateCallback callback) override;
   void MaybeEnqueueSCTReport(
       const net::HostPortPair& host_port_pair,
       const net::X509Certificate* validated_certificate_chain,
@@ -681,12 +666,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  void OnSetExpectCTTestReportSuccess();
-
-  void LazyCreateExpectCTReporter(net::URLRequestContext* url_request_context);
-
-  void OnSetExpectCTTestReportFailure();
-
   // Checks the Certificate Transparency policy compliance for a given
   // certificate and SCTs in `cert_verify_result`, and updates
   // `cert_verify_result.cert_status` and
@@ -820,13 +799,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::unique_ptr<net::ReportSender> certificate_report_sender_;
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  std::unique_ptr<ExpectCTReporter> expect_ct_reporter_;
-
   std::unique_ptr<certificate_transparency::ChromeRequireCTDelegate>
       require_ct_delegate_;
-
-  std::queue<SetExpectCTTestReportCallback>
-      outstanding_set_expect_ct_callbacks_;
 
   // Owned by the URLRequestContext.
   raw_ptr<certificate_transparency::ChromeCTPolicyEnforcer>

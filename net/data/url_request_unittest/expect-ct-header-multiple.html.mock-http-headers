@@ -1,6 +1,0 @@
-HTTP/1.1 200 OK
-Cache-Control: private
-Content-Type: text/html; charset=ISO-8859-1
-Expect-CT: max-age=100
-Expect-CT: enforce
-Expect-CT: report-uri=https://example.test

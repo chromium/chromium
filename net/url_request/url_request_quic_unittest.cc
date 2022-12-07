@@ -11,13 +11,11 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/base/network_delegate.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
@@ -25,7 +23,6 @@
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/test_net_log_util.h"
 #include "net/quic/crypto_test_utils_chromium.h"
@@ -87,40 +84,6 @@ class MockCTPolicyEnforcerNonCompliant : public CTPolicyEnforcer {
   }
 };
 
-// An ExpectCTReporter that records the number of times OnExpectCTFailed() was
-// called.
-class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
- public:
-  MockExpectCTReporter() = default;
-  ~MockExpectCTReporter() override = default;
-
-  void OnExpectCTFailed(
-      const HostPortPair& host_port_pair,
-      const GURL& report_uri,
-      base::Time expiration,
-      const X509Certificate* validated_certificate_chain,
-      const X509Certificate* served_certificate_chain,
-      const SignedCertificateTimestampAndStatusList&
-          signed_certificate_timestamps,
-      const NetworkAnonymizationKey& network_anonymization_key) override {
-    num_failures_++;
-    report_uri_ = report_uri;
-    network_anonymization_key_ = network_anonymization_key;
-  }
-
-  int num_failures() const { return num_failures_; }
-  const GURL& report_uri() const { return report_uri_; }
-  const NetworkAnonymizationKey& network_anonymization_key() const {
-    return network_anonymization_key_;
-  }
-
- private:
-  int num_failures_ = 0;
-
-  GURL report_uri_;
-  NetworkAnonymizationKey network_anonymization_key_;
-};
-
 class URLRequestQuicTest
     : public TestWithTaskEnvironment,
       public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
@@ -150,8 +113,6 @@ class URLRequestQuicTest
     context_builder_->set_http_network_session_params(params);
     context_builder_->SetCertVerifier(std::move(cert_verifier));
     context_builder_->set_net_log(NetLog::Get());
-
-    scoped_feature_list_.InitAndEnableFeature(kDynamicExpectCTFeature);
   }
 
   void TearDown() override {
@@ -165,9 +126,6 @@ class URLRequestQuicTest
 
   std::unique_ptr<URLRequestContext> BuildContext() {
     auto context = context_builder_->Build();
-
-    context->transport_security_state()->SetExpectCTReporter(
-        &expect_ct_reporter_);
     return context;
   }
 
@@ -214,8 +172,6 @@ class URLRequestQuicTest
   }
 
   quic::ParsedQuicVersion version() { return GetParam(); }
-
-  MockExpectCTReporter* expect_ct_reporter() { return &expect_ct_reporter_; }
 
  protected:
   // Returns a fully-qualified URL for |path| on the test server.
@@ -280,14 +236,11 @@ class URLRequestQuicTest
     return path.MaybeAsASCII();
   }
 
-  MockExpectCTReporter expect_ct_reporter_;
-
   std::unique_ptr<MappedHostResolver> host_resolver_;
   std::unique_ptr<QuicSimpleServer> server_;
   quic::QuicMemoryCacheBackend memory_cache_backend_;
   std::unique_ptr<URLRequestContextBuilder> context_builder_;
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A URLRequest::Delegate that checks LoadTimingInfo when response headers are
@@ -480,44 +433,6 @@ TEST_P(URLRequestQuicTest, DelayedResponseStart) {
   EXPECT_EQ(OK, delegate.request_status());
   EXPECT_GE((timing_info.receive_headers_start - timing_info.request_start),
             delay);
-}
-
-// Tests that if there's an Expect-CT failure at the QUIC layer, a report is
-// generated.
-TEST_P(URLRequestQuicTest, ExpectCT) {
-  TransportSecurityState::SetRequireCTForTesting(true);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {features::kPartitionConnectionsByNetworkIsolationKey,
-       features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       features::kPartitionSSLSessionsByNetworkIsolationKey},
-      // disabled_features
-      {});
-
-  context_builder()->set_ct_policy_enforcer(
-      std::make_unique<MockCTPolicyEnforcerNonCompliant>());
-  auto context = BuildContext();
-
-  GURL report_uri("https://report.test/");
-  IsolationInfo isolation_info = IsolationInfo::CreateTransient();
-  context->transport_security_state()->AddExpectCT(
-      kTestServerHost, base::Time::Now() + base::Days(1), true /* enforce */,
-      report_uri, isolation_info.network_anonymization_key());
-
-  base::RunLoop run_loop;
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      CreateRequest(context.get(), GURL(UrlFromPath(kHelloPath)), &delegate);
-  request->set_isolation_info(isolation_info);
-  request->Start();
-  delegate.RunUntilComplete();
-
-  EXPECT_EQ(ERR_QUIC_PROTOCOL_ERROR, delegate.request_status());
-  ASSERT_EQ(1, expect_ct_reporter()->num_failures());
-  EXPECT_EQ(report_uri, expect_ct_reporter()->report_uri());
-  EXPECT_EQ(isolation_info.network_anonymization_key(),
-            expect_ct_reporter()->network_anonymization_key());
 }
 
 }  // namespace net

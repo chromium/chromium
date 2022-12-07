@@ -2116,7 +2116,6 @@ if (!is_android) {
       "../browser/ssl/certificate_reporting_test_utils.cc",
       "../browser/ssl/certificate_reporting_test_utils.h",
       "../browser/ssl/certificate_transparency_browsertest.cc",
-      "../browser/ssl/chrome_expect_ct_reporter_browsertest.cc",
       "../browser/ssl/connection_help_tab_helper_browsertest.cc",
       "../browser/ssl/crlset_browsertest.cc",
       "../browser/ssl/https_only_mode_browsertest.cc",

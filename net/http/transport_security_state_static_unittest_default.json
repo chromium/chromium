@@ -43,15 +43,6 @@
 
     { "name": "hsts-hpkp-preloaded.test", "policy": "test", "mode": "force-https", "pins": "withoutRejectedPins" },
 
-    { "name": "expect-ct.preloaded.test", "policy": "test", "expect_ct": true, "expect_ct_report_uri": "http://report-uri.preloaded.test/expect-ct" },
-
-    {
-      "name": "pkp-expect-ct.preloaded.test", "policy": "test",
-      "expect_ct": true,
-      "expect_ct_report_uri": "http://report-uri.preloaded.test/expect-ct",
-      "pins": "withoutRejectedPins"
-    },
-
     { "name": "www.example.org", "policy": "test", "pins": "withoutRejectedPins" },
     { "name": "test.example.org", "policy": "test", "pins": "withoutRejectedPins" },
     { "name": "mail.example.org", "policy": "test", "pins": "withoutRejectedPins" },

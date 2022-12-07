@@ -54,18 +54,6 @@ using content::WebUIMessageHandler;
 
 namespace {
 
-std::unique_ptr<net::test_server::HttpResponse> HandleExpectCTReportPreflight(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      new net::test_server::BasicHttpResponse());
-  http_response->set_code(net::HTTP_OK);
-  http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-  http_response->AddCustomHeader("Access-Control-Allow-Methods", "POST");
-  http_response->AddCustomHeader("Access-Control-Allow-Headers",
-                                 "Content-Type");
-  return http_response;
-}
-
 // Notifies the NetInternalsTest.Task JS object of the DNS lookup result once
 // it's complete. Owns itself.
 class DnsLookupClient : public network::mojom::ResolveHostClient {
@@ -210,10 +198,6 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
   // which must already have been started.
   void GetTestServerURL(const base::Value::List& list);
 
-  // Sets up the test server to receive test Expect-CT reports. Calls the
-  // Javascript callback to return the test server URI.
-  void SetUpTestReportURI(const base::Value::List& list);
-
   // Performs a DNS lookup. Calls the Javascript callback with the host's IP
   // address or an error string.
   void DnsLookup(const base::Value::List& list);
@@ -244,10 +228,6 @@ void NetInternalsTest::MessageHandler::RegisterMessages() {
   RegisterMessage(
       "getTestServerURL",
       base::BindRepeating(&NetInternalsTest::MessageHandler::GetTestServerURL,
-                          weak_factory_.GetWeakPtr()));
-  RegisterMessage(
-      "setUpTestReportURI",
-      base::BindRepeating(&NetInternalsTest::MessageHandler::SetUpTestReportURI,
                           weak_factory_.GetWeakPtr()));
   RegisterMessage("dnsLookup", base::BindRepeating(
                                    &NetInternalsTest::MessageHandler::DnsLookup,
@@ -291,16 +271,6 @@ void NetInternalsTest::MessageHandler::GetTestServerURL(
   GURL url = net_internals_test_->embedded_test_server()->GetURL(path);
   base::Value url_value(url.spec());
   RunJavascriptCallback(&url_value);
-}
-
-void NetInternalsTest::MessageHandler::SetUpTestReportURI(
-    const base::Value::List& list) {
-  net_internals_test_->embedded_test_server()->RegisterRequestHandler(
-      base::BindRepeating(&HandleExpectCTReportPreflight));
-  ASSERT_TRUE(net_internals_test_->embedded_test_server()->Start());
-  base::Value report_uri_value(
-      net_internals_test_->embedded_test_server()->GetURL("/").spec());
-  RunJavascriptCallback(&report_uri_value);
 }
 
 void NetInternalsTest::MessageHandler::DnsLookup(
@@ -347,7 +317,6 @@ void NetInternalsTest::MessageHandler::ResetNetworkContextForTesting(
 NetInternalsTest::NetInternalsTest()
     : test_server_started_(false) {
   message_handler_ = std::make_unique<MessageHandler>(this);
-  scoped_feature_list_.InitAndEnableFeature(net::kDynamicExpectCTFeature);
 }
 
 NetInternalsTest::~NetInternalsTest() {

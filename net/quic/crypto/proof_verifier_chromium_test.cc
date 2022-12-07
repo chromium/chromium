@@ -45,7 +45,7 @@ namespace net::test {
 
 namespace {
 
-const char kCTAndPKPHost[] = "pkp-expect-ct.preloaded.test";
+const char kCTAndPKPHost[] = "hsts-hpkp-preloaded.test";
 
 // CertVerifier that will fail the test if it is ever called.
 class FailsTestCertVerifier : public CertVerifier {

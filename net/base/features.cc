@@ -105,10 +105,6 @@ BASE_FEATURE(kPartitionSSLSessionsByNetworkIsolationKey,
              "PartitionSSLSessionsByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPartitionExpectCTStateByNetworkIsolationKey,
-             "PartitionExpectCTStateByNetworkIsolationKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey,
              "PartitionNelAndReportingByNetworkIsolationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -120,25 +116,6 @@ BASE_FEATURE(kEnableDoubleKeyNetworkAnonymizationKey,
 BASE_FEATURE(kEnableCrossSiteFlagNetworkAnonymizationKey,
              "EnableCrossSiteFlagNetworkAnonymizationKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExpectCTPruning,
-             "ExpectCTPruning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-NET_EXPORT extern const base::FeatureParam<int>
-    kExpectCTPruneMax(&kExpectCTPruning, "ExpectCTPruneMax", 2000);
-NET_EXPORT extern const base::FeatureParam<int>
-    kExpectCTPruneMin(&kExpectCTPruning, "ExpectCTPruneMin", 1800);
-NET_EXPORT extern const base::FeatureParam<int> kExpectCTSafeFromPruneDays(
-    &kExpectCTPruning,
-    "ExpectCTSafeFromPruneDays",
-    40);
-NET_EXPORT extern const base::FeatureParam<int> kExpectCTMaxEntriesPerNik(
-    &kExpectCTPruning,
-    "ExpectCTMaxEntriesPerNik",
-    20);
-NET_EXPORT extern const base::FeatureParam<int>
-    kExpectCTPruneDelaySecs(&kExpectCTPruning, "ExpectCTPruneDelaySecs", 60);
 
 BASE_FEATURE(kTLS13KeyUpdate,
              "TLS13KeyUpdate",

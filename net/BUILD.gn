@@ -3272,12 +3272,6 @@ bundle_data("net_unittests_bundle_data") {
     "data/url_request_unittest/BullRunSpeech.txt.deflate",
     "data/url_request_unittest/content-type-normalization.html",
     "data/url_request_unittest/content-type-normalization.html.mock-http-headers",
-    "data/url_request_unittest/expect-ct-header-multiple.html",
-    "data/url_request_unittest/expect-ct-header-multiple.html.mock-http-headers",
-    "data/url_request_unittest/expect-ct-header-preload.html",
-    "data/url_request_unittest/expect-ct-header-preload.html.mock-http-headers",
-    "data/url_request_unittest/expect-ct-header.html",
-    "data/url_request_unittest/expect-ct-header.html.mock-http-headers",
     "data/url_request_unittest/gzip-encoded",
     "data/url_request_unittest/gzip-encoded.mock-http-headers",
     "data/url_request_unittest/hsts-headers.html",
@@ -5660,18 +5654,6 @@ fuzzer_test("net_auth_challenge_tokenizer_fuzzer") {
     "//base",
     "//net",
   ]
-}
-
-fuzzer_test("net_http_security_headers_expect_ct_fuzzer") {
-  sources = [ "http/http_security_headers_expect_ct_fuzzer.cc" ]
-  deps = [
-    ":net_fuzzer_test_support",
-    "//base",
-    "//net",
-    "//url",
-  ]
-  dict = "data/fuzzer_dictionaries/net_http_security_headers_fuzzer.dict"
-  seed_corpus = "data/fuzzer_data/http_security_headers/"
 }
 
 fuzzer_test("net_http_security_headers_hsts_fuzzer") {

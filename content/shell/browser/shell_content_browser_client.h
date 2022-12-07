@@ -135,8 +135,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
   bool HasErrorPage(int http_status_code) override;
-  void OnNetworkServiceCreated(
-      network::mojom::NetworkService* network_service) override;
 
   // Turns on features via permissions policy for Isolated App
   // Web Platform Tests.
@@ -190,13 +188,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
           callback) {
     override_web_preferences_callback_ = std::move(callback);
   }
-
-  // Sets a global that enables certificate transparency. Uses a global because
-  // test fixtures don't otherwise have a chance to set this between when the
-  // ShellContentBrowserClient is created and when the StoragePartition creates
-  // the NetworkContext.
-  static void set_enable_expect_ct_for_testing(
-      bool enable_expect_ct_for_testing);
 
  protected:
   // Call this if CreateBrowserMainParts() is overridden in a subclass.

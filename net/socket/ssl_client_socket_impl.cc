@@ -1340,7 +1340,6 @@ int SSLClientSocketImpl::CheckCTCompliance() {
           server_cert_verify_result_.public_key_hashes,
           server_cert_verify_result_.verified_cert.get(), server_cert_.get(),
           server_cert_verify_result_.scts,
-          TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
           server_cert_verify_result_.policy_compliance,
           ssl_config_.network_anonymization_key);
 

@@ -145,19 +145,6 @@ class TestNetworkContext : public mojom::NetworkContext {
 #endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void SetCTPolicy(mojom::CTPolicyPtr ct_policy) override {}
-  void AddExpectCT(
-      const std::string& domain,
-      base::Time expiry,
-      bool enforce,
-      const GURL& report_uri,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      AddExpectCTCallback callback) override {}
-  void SetExpectCTTestReport(const GURL& report_uri,
-                             SetExpectCTTestReportCallback callback) override {}
-  void GetExpectCTState(
-      const std::string& domain,
-      const net::NetworkAnonymizationKey& network_anonymization_key,
-      GetExpectCTStateCallback callback) override {}
   void SetCTLogListAlwaysTimelyForTesting() override {}
   void SetSCTAuditingMode(mojom::SCTAuditingMode mode) override {}
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)

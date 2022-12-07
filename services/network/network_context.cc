@@ -142,7 +142,6 @@
 #include "net/cert/ct_log_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "services/network/ct_log_list_distributor.h"
-#include "services/network/expect_ct_reporter.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
@@ -179,33 +178,6 @@
 namespace network {
 
 namespace {
-
-#if BUILDFLAG(IS_CT_SUPPORTED)
-// A Base-64 encoded DER certificate for use in test Expect-CT reports. The
-// contents of the certificate don't matter.
-const char kTestReportCert[] =
-    "MIIDvzCCAqegAwIBAgIBAzANBgkqhkiG9w0BAQsFADBjMQswCQYDVQQGEwJVUzET"
-    "MBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNTW91bnRhaW4gVmlldzEQMA4G"
-    "A1UECgwHVGVzdCBDQTEVMBMGA1UEAwwMVGVzdCBSb290IENBMB4XDTE3MDYwNTE3"
-    "MTA0NloXDTI3MDYwMzE3MTA0NlowYDELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNh"
-    "bGlmb3JuaWExFjAUBgNVBAcMDU1vdW50YWluIFZpZXcxEDAOBgNVBAoMB1Rlc3Qg"
-    "Q0ExEjAQBgNVBAMMCTEyNy4wLjAuMTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCC"
-    "AQoCggEBALS/0pcz5RNbd2W9cxp1KJtHWea3MOhGM21YW9ofCv/k5C3yHfiJ6GQu"
-    "9sPN16OO1/fN59gOEMPnVtL85ebTTuL/gk0YY4ewo97a7wo3e6y1t0PO8gc53xTp"
-    "w6RBPn5oRzSbe2HEGOYTzrO0puC6A+7k6+eq9G2+l1uqBpdQAdB4uNaSsOTiuUOI"
-    "ta4UZH1ScNQFHAkl1eJPyaiC20Exw75EbwvU/b/B7tlivzuPtQDI0d9dShOtceRL"
-    "X9HZckyD2JNAv2zNL2YOBNa5QygkySX9WXD+PfKpCk7Cm8TenldeXRYl5ni2REkp"
-    "nfa/dPuF1g3xZVjyK9aPEEnIAC2I4i0CAwEAAaOBgDB+MAwGA1UdEwEB/wQCMAAw"
-    "HQYDVR0OBBYEFODc4C8HiHQ6n9Mwo3GK+dal5aZTMB8GA1UdIwQYMBaAFJsmC4qY"
-    "qbsduR8c4xpAM+2OF4irMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjAP"
-    "BgNVHREECDAGhwR/AAABMA0GCSqGSIb3DQEBCwUAA4IBAQB6FEQuUDRcC5jkX3aZ"
-    "uuTeZEqMVL7JXgvgFqzXsPb8zIdmxr/tEDfwXx2qDf2Dpxts7Fq4vqUwimK4qV3K"
-    "7heLnWV2+FBvV1eeSfZ7AQj+SURkdlyo42r41+t13QUf+Z0ftR9266LSWLKrukeI"
-    "Mxk73hOkm/u8enhTd00dy/FN9dOFBFHseVMspWNxIkdRILgOmiyfQNRgxNYdOf0e"
-    "EfELR8Hn6WjZ8wAbvO4p7RTrzu1c/RZ0M+NLkID56Brbl70GC2h5681LPwAOaZ7/"
-    "mWQ5kekSyJjmLfF12b+h9RVAt5MrXZgk2vNujssgGf4nbWh4KZyQ6qrs778ZdDLm"
-    "yfUn";
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 net::CertVerifier* g_cert_verifier_for_testing = nullptr;
 
@@ -656,12 +628,6 @@ NetworkContext::~NetworkContext() {
     }
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-    if (expect_ct_reporter_) {
-      url_request_context_->transport_security_state()->SetExpectCTReporter(
-          nullptr);
-      expect_ct_reporter_.reset();
-    }
-
     if (require_ct_delegate_) {
       url_request_context_->transport_security_state()->SetRequireCTDelegate(
           nullptr);
@@ -1373,84 +1339,6 @@ void NetworkContext::SetCTPolicy(mojom::CTPolicyPtr ct_policy) {
       ct_policy->excluded_spkis, ct_policy->excluded_legacy_spkis);
 }
 
-void NetworkContext::AddExpectCT(
-    const std::string& domain,
-    base::Time expiry,
-    bool enforce,
-    const GURL& report_uri,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
-    AddExpectCTCallback callback) {
-  net::TransportSecurityState* transport_security_state =
-      url_request_context()->transport_security_state();
-  if (!transport_security_state) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  transport_security_state->AddExpectCT(domain, expiry, enforce, report_uri,
-                                        network_anonymization_key);
-  std::move(callback).Run(true);
-}
-
-void NetworkContext::SetExpectCTTestReport(
-    const GURL& report_uri,
-    SetExpectCTTestReportCallback callback) {
-  std::string decoded_dummy_cert;
-  bool decoded = base::Base64Decode(kTestReportCert, &decoded_dummy_cert);
-  DCHECK(decoded);
-  scoped_refptr<net::X509Certificate> dummy_cert =
-      net::X509Certificate::CreateFromBytes(
-          base::as_bytes(base::make_span(decoded_dummy_cert)));
-
-  LazyCreateExpectCTReporter(url_request_context());
-
-  // We need to save |callback| into a queue because this implementation is
-  // relying on the success/failed observer methods of network::ExpectCTReporter
-  // which can be called at any time, and for other reasons. It's unlikely
-  // but it is possible that |callback| could be called for some other event
-  // other than the one initiated below when calling OnExpectCTFailed.
-  outstanding_set_expect_ct_callbacks_.push(std::move(callback));
-
-  // Send a test report with dummy data.
-  net::SignedCertificateTimestampAndStatusList dummy_sct_list;
-  expect_ct_reporter_->OnExpectCTFailed(
-      net::HostPortPair("expect-ct-report.test", 443), report_uri,
-      base::Time::Now(), dummy_cert.get(), dummy_cert.get(), dummy_sct_list,
-      // No need for a shared NetworkAnonymizationKey here, as this is test-only
-      // code and none
-      // of the tests that call it care about the NetworkAnonymizationKey.
-      net::NetworkAnonymizationKey::CreateTransient());
-}
-
-void NetworkContext::LazyCreateExpectCTReporter(
-    net::URLRequestContext* url_request_context) {
-  if (expect_ct_reporter_)
-    return;
-
-  // This instance owns owns and outlives expect_ct_reporter_, so safe to
-  // pass |this|.
-  expect_ct_reporter_ = std::make_unique<network::ExpectCTReporter>(
-      url_request_context,
-      base::BindRepeating(&NetworkContext::OnSetExpectCTTestReportSuccess,
-                          base::Unretained(this)),
-      base::BindRepeating(&NetworkContext::OnSetExpectCTTestReportFailure,
-                          base::Unretained(this)));
-}
-
-void NetworkContext::OnSetExpectCTTestReportSuccess() {
-  if (outstanding_set_expect_ct_callbacks_.empty())
-    return;
-  std::move(outstanding_set_expect_ct_callbacks_.front()).Run(true);
-  outstanding_set_expect_ct_callbacks_.pop();
-}
-
-void NetworkContext::OnSetExpectCTTestReportFailure() {
-  if (outstanding_set_expect_ct_callbacks_.empty())
-    return;
-  std::move(outstanding_set_expect_ct_callbacks_.front()).Run(false);
-  outstanding_set_expect_ct_callbacks_.pop();
-}
-
 int NetworkContext::CheckCTComplianceForSignedExchange(
     net::CertVerifyResult& cert_verify_result,
     const net::X509Certificate& certificate,
@@ -1485,9 +1373,8 @@ int NetworkContext::CheckCTComplianceForSignedExchange(
       url_request_context_->transport_security_state()->CheckCTRequirements(
           host_port_pair, cert_verify_result.is_issued_by_known_root,
           cert_verify_result.public_key_hashes, verified_cert, &certificate,
-          cert_verify_result.scts,
-          net::TransportSecurityState::ENABLE_EXPECT_CT_REPORTS,
-          cert_verify_result.policy_compliance, network_anonymization_key);
+          cert_verify_result.scts, cert_verify_result.policy_compliance,
+          network_anonymization_key);
 
   if (url_request_context_->sct_auditing_delegate()) {
     url_request_context_->sct_auditing_delegate()->MaybeEnqueueReport(
@@ -1520,43 +1407,6 @@ int NetworkContext::CheckCTComplianceForSignedExchange(
       // ERR_CERTIFICATE_TRANSPARENCY_REQUIRED.
       return net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED;
   }
-}
-
-void NetworkContext::GetExpectCTState(
-    const std::string& domain,
-    const net::NetworkAnonymizationKey& network_anonymization_key,
-    GetExpectCTStateCallback callback) {
-  base::Value::Dict result;
-  if (base::IsStringASCII(domain)) {
-    net::TransportSecurityState* transport_security_state =
-        url_request_context()->transport_security_state();
-    if (transport_security_state) {
-      net::TransportSecurityState::ExpectCTState dynamic_expect_ct_state;
-      bool found = transport_security_state->GetDynamicExpectCTState(
-          domain, network_anonymization_key, &dynamic_expect_ct_state);
-
-      // TODO(estark): query static Expect-CT state as well.
-      if (found) {
-        result.Set("dynamic_expect_ct_domain", domain);
-        result.Set("dynamic_expect_ct_observed",
-                   dynamic_expect_ct_state.last_observed.ToDoubleT());
-        result.Set("dynamic_expect_ct_expiry",
-                   dynamic_expect_ct_state.expiry.ToDoubleT());
-        result.Set("dynamic_expect_ct_enforce",
-                   dynamic_expect_ct_state.enforce);
-        result.Set("dynamic_expect_ct_report_uri",
-                   dynamic_expect_ct_state.report_uri.spec());
-      }
-
-      result.Set("result", found);
-    } else {
-      result.Set("error", "no Expect-CT state active");
-    }
-  } else {
-    result.Set("error", "non-ASCII domain name");
-  }
-
-  std::move(callback).Run(std::move(result));
 }
 
 void NetworkContext::MaybeEnqueueSCTReport(
@@ -2628,8 +2478,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       base::FeatureList::IsEnabled(
           net::features::kPartitionConnectionsByNetworkIsolationKey) &&
       base::FeatureList::IsEnabled(
-          net::features::kPartitionExpectCTStateByNetworkIsolationKey) &&
-      base::FeatureList::IsEnabled(
           net::features::kPartitionHttpServerPropertiesByNetworkIsolationKey) &&
       base::FeatureList::IsEnabled(
           net::features::kPartitionNelAndReportingByNetworkIsolationKey) &&
@@ -2705,12 +2553,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   }
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  if (params_->enable_expect_ct_reporting) {
-    LazyCreateExpectCTReporter(result.url_request_context.get());
-    result.url_request_context->transport_security_state()->SetExpectCTReporter(
-        expect_ct_reporter_.get());
-  }
-
   if (params_->enforce_chrome_ct_policy) {
     require_ct_delegate_ =
         std::make_unique<certificate_transparency::ChromeRequireCTDelegate>();

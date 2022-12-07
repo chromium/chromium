@@ -126,14 +126,14 @@ bool CheckDuplicateEntries(const TransportSecurityStateEntries& entries) {
 // Checks for entries which have no effect.
 bool CheckNoopEntries(const TransportSecurityStateEntries& entries) {
   for (const auto& entry : entries) {
-    if (!entry->force_https && entry->pinset.empty() && !entry->expect_ct) {
+    if (!entry->force_https && entry->pinset.empty()) {
       if (entry->hostname == "learn.doubleclick.net") {
         // This entry is deliberately used as an exclusion.
         continue;
       }
 
       LOG(ERROR) << "Entry for " << entry->hostname
-                 << " has no mode, no pins and is not expect-CT";
+                 << " has no mode and no pins";
       return false;
     }
   }

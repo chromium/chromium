@@ -756,9 +756,6 @@ void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
     ct_log_list_distributor_->OnNewCtConfig(log_list_);
     for (auto* context : network_contexts_) {
       context->OnCTLogListUpdated(log_list_, update_time);
-      context->url_request_context()
-          ->transport_security_state()
-          ->SetCTLogListUpdateTime(update_time);
     }
   }
   std::move(callback).Run();

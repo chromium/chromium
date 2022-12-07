@@ -19,8 +19,6 @@ per-file sec_header_helpers*=creis@chromium.org
 per-file sec_header_helpers*=lukasza@chromium.org
 per-file sec_header_helpers*=mkwst@chromium.org
 
-per-file expect_ct_reporter*=estark@chromium.org
-
 per-file cert_verifier_with_trust_anchors*=file://chromeos/ash/components/policy/OWNERS
 
 per-file *_type_converter*.*=set noparent

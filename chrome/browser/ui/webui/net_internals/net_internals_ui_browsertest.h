@@ -35,8 +35,6 @@ class NetInternalsTest : public WebUIBrowserTest {
 
   // True if the test server has already been successfully started.
   bool test_server_started_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NET_INTERNALS_NET_INTERNALS_UI_BROWSERTEST_H_

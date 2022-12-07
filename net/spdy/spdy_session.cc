@@ -878,12 +878,10 @@ bool SpdySession::CanPool(
     return false;
   }
 
-  // As with CheckPublicKeyPins above, disable Expect-CT reports.
   switch (transport_security_state->CheckCTRequirements(
       HostPortPair(new_hostname, 0), ssl_info.is_issued_by_known_root,
       ssl_info.public_key_hashes, ssl_info.cert.get(),
       ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
-      TransportSecurityState::DISABLE_EXPECT_CT_REPORTS,
       ssl_info.ct_policy_compliance, network_anonymization_key)) {
     case TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
       return false;

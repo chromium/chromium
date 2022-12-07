@@ -225,7 +225,6 @@ after discussions on the right group.
       <annotation id="stream_message_pipe_adapter"/>
       <annotation id="stream_packet_socket"/>
       <annotation id="certificate_verifier_url_loader"/>
-      <annotation id="expect_ct_reporter"/>
       <annotation id="domain_security_policy"/>
       <annotation id="services_http_server_error_response"/>
       <annotation id="webrtc_peer_connection"/>

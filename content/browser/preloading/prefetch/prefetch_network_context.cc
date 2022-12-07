@@ -143,7 +143,6 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory() {
   // Explicitly disallow network service features which could cause a privacy
   // leak.
   context_params->enable_certificate_reporting = false;
-  context_params->enable_expect_ct_reporting = false;
   context_params->enable_domain_reliability = false;
 
   CreateNetworkContextInNetworkService(

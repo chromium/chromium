@@ -871,7 +871,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params);
 
   network_context_params->enable_certificate_reporting = true;
-  network_context_params->enable_expect_ct_reporting = true;
 
   SCTReportingService* sct_reporting_service =
       SCTReportingServiceFactory::GetForBrowserContext(profile_);

@@ -72,39 +72,6 @@ constexpr char kTestSxgInnerURL[] = "https://test.example.org/test/";
 // "wildcard_example.org.public.pem.cbor" has dummy data in its "ocsp" field.
 constexpr base::StringPiece kDummyOCSPDer = "OCSP";
 
-// ExpectCTReporter implementation that logs a single report.
-class MockExpectCTReporter
-    : public net::TransportSecurityState::ExpectCTReporter {
- public:
-  MockExpectCTReporter() = default;
-  ~MockExpectCTReporter() override = default;
-
-  void OnExpectCTFailed(
-      const net::HostPortPair& host_port_pair,
-      const GURL& report_uri,
-      base::Time expiration,
-      const net::X509Certificate* validated_certificate_chain,
-      const net::X509Certificate* served_certificate_chain,
-      const net::SignedCertificateTimestampAndStatusList&
-          signed_certificate_timestamps,
-      const net::NetworkAnonymizationKey& network_anonymization_key) override {
-    num_failures_++;
-    report_uri_ = report_uri;
-    network_anonymization_key_ = network_anonymization_key;
-  }
-
-  int num_failures() const { return num_failures_; }
-  const GURL& report_uri() const { return report_uri_; }
-  const net::NetworkAnonymizationKey& network_anonymization_key() const {
-    return network_anonymization_key_;
-  }
-
- private:
-  int num_failures_ = 0;
-  GURL report_uri_;
-  net::NetworkAnonymizationKey network_anonymization_key_;
-};
-
 class TestBrowserClient : public ContentBrowserClient {
   bool CanAcceptUntrustedExchangesIfNeeded() override { return true; }
 };
@@ -914,14 +881,6 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
 
   set_network_anonymization_key(kNetworkIsolationKey);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      // enabled_features
-      {net::kDynamicExpectCTFeature,
-       net::features::kPartitionExpectCTStateByNetworkIsolationKey},
-      // disabled_features
-      {});
-
   mock_cert_fetcher_factory_->ExpectFetch(
       GURL("https://cert.example.org/cert.msg"),
       GetTestFileContents("test.example.org.public.pem.cbor"));
@@ -938,13 +897,6 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
 
   std::unique_ptr<net::URLRequestContext> url_request_context =
       CreateTestURLRequestContext();
-  url_request_context->transport_security_state()->AddExpectCT(
-      "test.example.org", base::Time::Now() + base::Days(1) /* expiry */,
-      false /* include_subdomains */, kReportUri, kNetworkIsolationKey);
-  MockExpectCTReporter expect_ct_reporter;
-  url_request_context->transport_security_state()->SetExpectCTReporter(
-      &expect_ct_reporter);
-
   CreateSignedExchangeHandler(std::move(url_request_context));
   WaitForHeader();
 
@@ -959,11 +911,6 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
                         absl::nullopt /* ocsp_revocation_status */);
   // Drain the MockSourceStream, otherwise its destructer causes DCHECK failure.
   ReadStream(source_, nullptr);
-
-  ASSERT_EQ(1, expect_ct_reporter.num_failures());
-  EXPECT_EQ(kReportUri, expect_ct_reporter.report_uri());
-  EXPECT_EQ(kNetworkIsolationKey,
-            expect_ct_reporter.network_anonymization_key());
 }
 
 TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {

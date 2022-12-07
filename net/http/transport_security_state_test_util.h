@@ -37,8 +37,6 @@ class ScopedTransportSecurityStateSource {
   // use a different reporting port number.
   std::string pkp_report_uri_;
   std::vector<TransportSecurityStateSource::Pinset> pinsets_;
-  std::vector<std::string> expect_ct_report_uri_strings_;
-  std::vector<const char*> expect_ct_report_uris_;
 };
 
 }  // namespace net

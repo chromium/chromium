@@ -128,11 +128,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // Processes the Strict-Transport-Security header, if one exists.
   void ProcessStrictTransportSecurityHeader();
 
-  // Processes the Expect-CT header, if one exists. This header
-  // indicates that the server wants the user agent to send a report
-  // when a connection violates the Expect CT policy.
-  void ProcessExpectCTHeader();
-
   // |result| should be OK, or the request is canceled.
   void OnHeadersReceivedCallback(int result);
   void OnStartCompleted(int result);

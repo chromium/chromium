@@ -27,7 +27,7 @@
 //       preload list. This field is used for list maintenance.
 //         - test: test domains.
 //         - google: Google-owned sites.
-//         - custom: entries without includeSubdomains or with HPKP/Expect-CT.
+//         - custom: entries without includeSubdomains or with HPKP.
 //         - bulk-legacy: bulk entries preloaded before Chrome 50.
 //         - bulk-18-weeks: bulk entries with max-age >= 18 weeks (Chrome 50-63).
 //         - bulk-1-year: bulk entries with max-age >= 1 year (after Chrome 63).
@@ -46,12 +46,6 @@
 //   mode: (optional string) "force-https" iff covered names should require
 //       HTTPS.
 //   pins: (optional string) the |name| member of an object in |pinsets|.
-//
-//   expect_ct: (optional boolean) true if the site expects Certificate
-//       Transparency information to be present on requests to |name|.
-//   expect_ct_report_uri: (optional string) if |expect_ct| is true, the
-//       URI to which reports should be sent when valid Certificate
-//       Transparency information is not present.
 //
 
 {
@@ -222,15 +216,10 @@
   ],
 
   "entries": [
-    // Dummy entries to test certificate pinning and expect-CT.
+    // Dummy entries to test certificate pinning.
     { "name": "pinningtest.appspot.com", "policy": "test", "include_subdomains": true, "pins": "test" },
     { "name": "pinning-test.badssl.com", "policy": "test", "include_subdomains": true, "pins": "test" },
     { "name": "example.test", "policy": "test", "include_subdomains": true, "pins": "test" },
-    {
-      "name": "preloaded-expect-ct.badssl.com", "policy": "test",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
-    },
 
     // gTLDs and eTLDs are welcome to preload if they are interested.
     { "name": "android", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
@@ -279,33 +268,23 @@
     { "name": "cnpy.gdn", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
     { "name": "gentapps.com", "policy": "public-suffix", "mode": "force-https", "include_subdomains": true },
 
-    // Google domains using Expect-CT.
-    {
+    // Now we force HTTPS for subtrees of google.com.
+          {
       "name": "mail.google.com", "policy": "google",
-      "mode": "force-https", "include_subdomains": true, "pins": "google",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
+      "mode": "force-https", "include_subdomains": true, "pins": "google"
     },
     {
       "name": "plus.sandbox.google.com", "policy": "google",
-      "mode": "force-https", "include_subdomains": true, "pins": "google",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
+      "mode": "force-https", "include_subdomains": true, "pins": "google"
     },
     {
       "name": "remotedesktop.corp.google.com", "policy": "google",
-      "mode": "force-https", "include_subdomains": true, "pins": "google",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
+      "mode": "force-https", "include_subdomains": true, "pins": "google"
     },
     {
       "name": "corp.goog", "policy": "google",
-      "mode": "force-https", "include_subdomains": true, "pins": "google",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
+      "mode": "force-https", "include_subdomains": true, "pins": "google"
     },
-
-    // Now we force HTTPS for subtrees of google.com.
     { "name": "accounts.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "admin.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
     { "name": "apis.google.com", "policy": "google", "mode": "force-https", "include_subdomains": true, "pins": "google" },
@@ -566,9 +545,7 @@
     { "name": "google.gr", "policy": "google", "include_subdomains": true, "pins": "google" },
     {
       "name": "googlegroups.com", "policy": "google",
-      "include_subdomains": true, "pins": "google",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
+      "include_subdomains": true, "pins": "google"
     },
     { "name": "google.gy", "policy": "google", "include_subdomains": true, "pins": "google" },
     { "name": "google.hk", "policy": "google", "include_subdomains": true, "pins": "google" },
@@ -659,9 +636,7 @@
     { "name": "urchin.com", "policy": "google", "include_subdomains": true, "pins": "google" },
     {
       "name": "www.googlegroups.com", "policy": "google",
-      "include_subdomains": true, "pins": "google",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
+      "include_subdomains": true, "pins": "google"
     },
     { "name": "youtu.be", "policy": "google", "include_subdomains": true, "pins": "google" },
     { "name": "youtube-nocookie.com", "policy": "google", "include_subdomains": true, "pins": "google" },
@@ -915,9 +890,7 @@
     { "name": "www.capitainetrain.com", "policy": "custom", "mode": "force-https" },
     {
       "name": "dropbox.com", "policy": "custom",
-      "mode": "force-https", "include_subdomains": true, "pins": "dropbox",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://log.getdropbox.com/log/expectct"
+      "mode": "force-https", "include_subdomains": true, "pins": "dropbox"
     },
     {
       "name": "www.dropbox.com", "policy": "custom",
@@ -925,9 +898,7 @@
     },
     {
       "name": "dropboxstatic.com", "policy": "custom",
-      "pins": "dropbox", "include_subdomains_for_pinning": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://log.getdropbox.com/log/expectct"
+      "pins": "dropbox", "include_subdomains_for_pinning": true
     },
     {
       "name": "dropboxusercontent.com", "policy": "custom",
@@ -185675,72 +185646,49 @@
     { "name": "vensl.org", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "aaron-schaal.de", "policy": "custom", "mode": "force-https", "include_subdomains": true },
     { "name": "as204982.net", "policy": "custom", "mode": "force-https", "include_subdomains": true },
-    // Expect-CT
+
     {
       "name": "crt.sh", "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
+      "mode": "force-https", "include_subdomains": true
     },
     {
       "name": "crypto.is", "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
-    },
-    {
-      "name": "ritter.vg", "policy": "custom",
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://clients3.google.com/ct_upload"
+      "mode": "force-https", "include_subdomains": true
     },
     {
       "name": "scotthelme.co.uk",
       "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://scotthelme.report-uri.com/r/d/ct/reportOnly"
+      "mode": "force-https", "include_subdomains": true
     },
     {
       "name": "matteomarescotti.it",
       "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://matteomarescotti.report-uri.com/r/d/ct/reportOnly"
+      "mode": "force-https", "include_subdomains": true
     },
     {
       "name": "tobiassachs.de",
       "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://tobiassachs.report-uri.com/r/d/ct/reportOnly"
+      "mode": "force-https", "include_subdomains": true
     },
     {
       "name": "gc-mc.de",
       "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://tobiassachs.report-uri.com/r/d/ct/reportOnly"
+      "mode": "force-https", "include_subdomains": true
     },
     {
       "name": "knightsblog.de",
       "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://tobiassachs.report-uri.com/r/d/ct/reportOnly"
+      "mode": "force-https", "include_subdomains": true
     },
     {
       "name": "cloudflare.com",
       "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      "mode": "force-https", "include_subdomains": true
     },
     {
       "name": "history.pe",
       "policy": "custom",
-      "mode": "force-https", "include_subdomains": true,
-      "expect_ct": true,
-      "expect_ct_report_uri": "https://history.report-uri.com/r/d/ct/reportOnly"
+      "mode": "force-https", "include_subdomains": true
     },
     // END OF MANUAL CUSTOM ENTRIES
 

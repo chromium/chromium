@@ -118,8 +118,6 @@ namespace {
 
 ShellContentBrowserClient* g_browser_client = nullptr;
 
-bool g_enable_expect_ct_for_testing = false;
-
 #if BUILDFLAG(IS_ANDROID)
 int GetCrashSignalFD(const base::CommandLine& command_line) {
   return crashpad::CrashHandlerHost::Get()->GetDeathSignalSocket();
@@ -630,11 +628,6 @@ ShellContentBrowserClient::off_the_record_browser_context() {
   return shell_browser_main_parts_->off_the_record_browser_context();
 }
 
-void ShellContentBrowserClient::set_enable_expect_ct_for_testing(
-    bool enable_expect_ct_for_testing) {
-  g_enable_expect_ct_for_testing = enable_expect_ct_for_testing;
-}
-
 void ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
     BrowserContext* context,
     network::mojom::NetworkContextParams* context_params,
@@ -649,11 +642,6 @@ void ShellContentBrowserClient::ConfigureNetworkContextParamsForShell(
           "cors_exempt_header_list");
   if (!exempt_header.empty())
     context_params->cors_exempt_header_list.push_back(exempt_header);
-
-  if (g_enable_expect_ct_for_testing) {
-    context_params->enforce_chrome_ct_policy = true;
-    context_params->enable_expect_ct_reporting = true;
-  }
 }
 
 void ShellContentBrowserClient::GetHyphenationDictionary(
@@ -749,24 +737,6 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
       std::move(feature_list), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
       /*low_entropy_source_value=*/absl::nullopt);
-}
-
-void ShellContentBrowserClient::OnNetworkServiceCreated(
-    network::mojom::NetworkService* network_service) {
-  // Explicitly configure Certificate Transparency with no logs, but with
-  // a fresh enough log update time that policy enforcement will still be
-  // run. This does not use base::GetBuildTime(), as that may cause certain
-  // checks to be disabled if too far in the past. Callers that set
-  // `g_enable_expect_ct_reporting` are expected to simulate CT verification
-  // using `MockCertVerifier` (otherwise CT validation would fail due to the
-  // empty log list).
-  if (g_enable_expect_ct_for_testing) {
-    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-    network_service->UpdateCtLogList(
-        std::vector<network::mojom::CTLogInfoPtr>(), base::Time::Now(),
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
 }
 
 absl::optional<blink::ParsedPermissionsPolicy>

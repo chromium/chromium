@@ -290,8 +290,6 @@ component("network_service") {
     sources += [
       "ct_log_list_distributor.cc",
       "ct_log_list_distributor.h",
-      "expect_ct_reporter.cc",
-      "expect_ct_reporter.h",
       "sct_auditing/sct_auditing_cache.cc",
       "sct_auditing/sct_auditing_cache.h",
       "sct_auditing/sct_auditing_handler.cc",
@@ -490,7 +488,6 @@ source_set("tests") {
   if (is_ct_supported) {
     sources += [
       "ct_log_list_distributor_unittest.cc",
-      "expect_ct_reporter_unittest.cc",
       "sct_auditing/sct_auditing_cache_unittest.cc",
       "sct_auditing/sct_auditing_handler_unittest.cc",
       "sct_auditing/sct_auditing_reporter_unittest.cc",

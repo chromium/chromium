@@ -12,8 +12,6 @@
 
 [[SPKI_HASHES]]
 
-static const char* const kExpectCTReportURIs[] = [[EXPECT_CT_REPORT_URIS]];
-
 static const char* const kNoRejectedPublicKeys[] = {
     nullptr,
 };
@@ -35,7 +33,6 @@ static const net::TransportSecurityStateSource kHSTSSource = {
   kPreloadedHSTSData,
   kPreloadedHSTSBits,
   kHSTSRootPosition,
-  kExpectCTReportURIs,
   kPinsets,
   std::size(kPinsets)
 };

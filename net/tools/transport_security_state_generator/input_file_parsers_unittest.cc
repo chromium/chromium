@@ -45,11 +45,6 @@ TEST(InputFileParsersTest, ParseJSON) {
       "      \"policy\": \"test\","
       "      \"pins\": \"thepinset2\", "
       "      \"include_subdomains_for_pinning\": false"
-      "    }, {"
-      "      \"name\": \"expect-ct.example.com\","
-      "      \"policy\": \"test\","
-      "      \"expect_ct\": true,"
-      "      \"expect_ct_report_uri\": \"https://expect-ct-log.example.com\""
       "    }"
       "  ]"
       "}";
@@ -71,15 +66,13 @@ TEST(InputFileParsersTest, ParseJSON) {
   ASSERT_EQ(1U, pinset->second->bad_static_spki_hashes().size());
   EXPECT_EQ("BadTestSPKI", pinset->second->bad_static_spki_hashes()[0]);
 
-  ASSERT_EQ(5U, entries.size());
+  ASSERT_EQ(4U, entries.size());
   TransportSecurityStateEntry* entry = entries[0].get();
   EXPECT_EQ("hsts.example.com", entry->hostname);
   EXPECT_TRUE(entry->force_https);
   EXPECT_TRUE(entry->include_subdomains);
   EXPECT_FALSE(entry->hpkp_include_subdomains);
   EXPECT_EQ("", entry->pinset);
-  EXPECT_FALSE(entry->expect_ct);
-  EXPECT_EQ("", entry->expect_ct_report_uri);
 
   entry = entries[1].get();
   EXPECT_EQ("hsts-no-subdomains.example.com", entry->hostname);
@@ -87,8 +80,6 @@ TEST(InputFileParsersTest, ParseJSON) {
   EXPECT_FALSE(entry->include_subdomains);
   EXPECT_FALSE(entry->hpkp_include_subdomains);
   EXPECT_EQ("", entry->pinset);
-  EXPECT_FALSE(entry->expect_ct);
-  EXPECT_EQ("", entry->expect_ct_report_uri);
 
   entry = entries[2].get();
   EXPECT_EQ("hpkp.example.com", entry->hostname);
@@ -96,8 +87,6 @@ TEST(InputFileParsersTest, ParseJSON) {
   EXPECT_FALSE(entry->include_subdomains);
   EXPECT_TRUE(entry->hpkp_include_subdomains);
   EXPECT_EQ("thepinset", entry->pinset);
-  EXPECT_FALSE(entry->expect_ct);
-  EXPECT_EQ("", entry->expect_ct_report_uri);
 
   entry = entries[3].get();
   EXPECT_EQ("hpkp-no-subdomains.example.com", entry->hostname);
@@ -105,17 +94,6 @@ TEST(InputFileParsersTest, ParseJSON) {
   EXPECT_FALSE(entry->include_subdomains);
   EXPECT_FALSE(entry->hpkp_include_subdomains);
   EXPECT_EQ("thepinset2", entry->pinset);
-  EXPECT_FALSE(entry->expect_ct);
-  EXPECT_EQ("", entry->expect_ct_report_uri);
-
-  entry = entries[4].get();
-  EXPECT_EQ("expect-ct.example.com", entry->hostname);
-  EXPECT_FALSE(entry->force_https);
-  EXPECT_FALSE(entry->include_subdomains);
-  EXPECT_FALSE(entry->hpkp_include_subdomains);
-  EXPECT_EQ("", entry->pinset);
-  EXPECT_TRUE(entry->expect_ct);
-  EXPECT_EQ("https://expect-ct-log.example.com", entry->expect_ct_report_uri);
 }
 
 // Test that parsing valid JSON with missing keys fails.

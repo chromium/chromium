@@ -444,9 +444,7 @@ void URLRequestHttpJob::NotifyHeadersComplete() {
   if (!response_info_->was_cached && throttling_entry_.get())
     throttling_entry_->UpdateWithResponse(GetResponseCode());
 
-  // The ordering of these calls is not important.
   ProcessStrictTransportSecurityHeader();
-  ProcessExpectCTHeader();
 
   // Clear |set_cookie_access_result_list_| after any processing in case
   // SaveCookiesAndNotifyHeadersComplete is called again.
@@ -979,31 +977,6 @@ void URLRequestHttpJob::ProcessStrictTransportSecurityHeader() {
   std::string value;
   if (headers->EnumerateHeader(nullptr, "Strict-Transport-Security", &value))
     security_state->AddHSTSHeader(request_info_.url.host(), value);
-}
-
-void URLRequestHttpJob::ProcessExpectCTHeader() {
-  DCHECK(response_info_);
-  TransportSecurityState* security_state =
-      request_->context()->transport_security_state();
-  const SSLInfo& ssl_info = response_info_->ssl_info;
-
-  // Only accept Expect CT headers on HTTPS connections that have no
-  // certificate errors.
-  if (!ssl_info.is_valid() || IsCertStatusError(ssl_info.cert_status) ||
-      !security_state) {
-    return;
-  }
-
-  HttpResponseHeaders* headers = GetResponseHeaders();
-  std::string value;
-  bool has_expect_ct_header = headers->GetNormalizedHeader("Expect-CT", &value);
-  base::UmaHistogramBoolean("Net.ExpectCT.HeaderPresentOnResponse",
-                            has_expect_ct_header);
-  if (has_expect_ct_header) {
-    security_state->ProcessExpectCTHeader(
-        value, HostPortPair::FromURL(request_info_.url), ssl_info,
-        request_->isolation_info().network_anonymization_key());
-  }
 }
 
 void URLRequestHttpJob::OnStartCompleted(int result) {

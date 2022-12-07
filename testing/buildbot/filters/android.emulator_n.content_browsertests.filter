@@ -52,7 +52,3 @@
 
 # TODO(crbug.com/1376152)
 -PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginDocumentNotReusedAsNestedFrameNavigation/*
-
-# TODO(crbug.com/1381560)
--All/SignedExchangeExpectCTReportBrowserTest.CTFailureSendsExpectCTReport/*
--All/SignedExchangeExpectCTReportBrowserTest.CrossOriginPrefetch/*

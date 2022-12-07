@@ -38,12 +38,7 @@ enum class CTPolicyCompliance;
 
 class HostPortPair;
 class NetworkAnonymizationKey;
-class SSLInfo;
 class X509Certificate;
-
-// Feature that controls whether Expect-CT HTTP headers are parsed, processed,
-// and stored.
-NET_EXPORT BASE_DECLARE_FEATURE(kDynamicExpectCTFeature);
 
 // Feature that controls whether Certificate Transparency is enforced. This
 // feature is default enabled and meant only as an emergency killswitch. It
@@ -239,69 +234,6 @@ class NET_EXPORT TransportSecurityState {
     bool HasPublicKeyPins() const;
   };
 
-  // An ExpectCTState describes a site that expects valid Certificate
-  // Transparency information to be supplied on every connection to it.
-  class NET_EXPORT ExpectCTState {
-   public:
-    ExpectCTState();
-    ~ExpectCTState();
-
-    // The URI to which reports should be sent if valid CT info is not
-    // provided.
-    GURL report_uri;
-    // True if connections should be closed if they do not comply with the CT
-    // policy. If false, noncompliant connections will be allowed but reports
-    // will be sent about the violation.
-    bool enforce = false;
-    // The absolute time (UTC) when the Expect-CT state was last observed.
-    base::Time last_observed;
-    // The absolute time (UTC) when the Expect-CT state expires.
-    base::Time expiry;
-  };
-
-  // Unlike other data, Expect-CT information is indexed by
-  // NetworkAnonymizationKey in addition to domain hash, to prevent leaking user
-  // IDs across different first party contexts. Public only because
-  // ExpectCTStateIterator is public and depends on it.
-  struct ExpectCTStateIndex {
-    // Creates an ExpectCTStateIndex. Uses an empty NetworkAnonymizationKey
-    // instead of the passed in one, depending on
-    // |respect_network_anonymization_key|. The value of
-    // features::kPartitionExpectCTStateByNetworkIsolationKey is cached on
-    // creation of the TransportSecurityState, and then passed in to this method
-    // whenever an ExpectCTStateIndex() is created, to avoid constantly querying
-    // the field trial.
-    ExpectCTStateIndex(const HashedHost& hashed_host,
-                       const NetworkAnonymizationKey& network_anonymization_key,
-                       bool respect_network_anonymization_key);
-
-    bool operator<(const ExpectCTStateIndex& other) const {
-      return std::tie(hashed_host, network_anonymization_key) <
-             std::tie(other.hashed_host, other.network_anonymization_key);
-    }
-
-    HashedHost hashed_host;
-    NetworkAnonymizationKey network_anonymization_key;
-  };
-
-  class NET_EXPORT ExpectCTStateIterator {
-   public:
-    explicit ExpectCTStateIterator(const TransportSecurityState& state);
-    ~ExpectCTStateIterator();
-
-    bool HasNext() const { return iterator_ != end_; }
-    void Advance() { ++iterator_; }
-    const HashedHost& hostname() const { return iterator_->first.hashed_host; }
-    const NetworkAnonymizationKey& network_anonymization_key() const {
-      return iterator_->first.network_anonymization_key;
-    }
-    const ExpectCTState& domain_state() const { return iterator_->second; }
-
-   private:
-    std::map<ExpectCTStateIndex, ExpectCTState>::const_iterator iterator_;
-    std::map<ExpectCTStateIndex, ExpectCTState>::const_iterator end_;
-  };
-
   // An interface for asynchronously sending HPKP violation reports.
   class NET_EXPORT ReportSenderInterface {
    public:
@@ -325,28 +257,6 @@ class NET_EXPORT TransportSecurityState {
 
    protected:
     virtual ~ReportSenderInterface() = default;
-  };
-
-  // An interface for building and asynchronously sending reports when a
-  // site expects valid Certificate Transparency information but it
-  // wasn't supplied.
-  class NET_EXPORT ExpectCTReporter {
-   public:
-    // Called when the host in |host_port_pair| has opted in to have
-    // reports about Expect CT policy violations sent to |report_uri|,
-    // and such a violation has occurred.
-    virtual void OnExpectCTFailed(
-        const net::HostPortPair& host_port_pair,
-        const GURL& report_uri,
-        base::Time expiration,
-        const X509Certificate* validated_certificate_chain,
-        const X509Certificate* served_certificate_chain,
-        const SignedCertificateTimestampAndStatusList&
-            signed_certificate_timestamps,
-        const NetworkAnonymizationKey& network_anonymization_key) = 0;
-
-   protected:
-    virtual ~ExpectCTReporter() = default;
   };
 
   class NET_EXPORT PinSet {
@@ -387,13 +297,6 @@ class NET_EXPORT TransportSecurityState {
   // Indicates whether or not a public key pin check should send a
   // report if a violation is detected.
   enum PublicKeyPinReportStatus { ENABLE_PIN_REPORTS, DISABLE_PIN_REPORTS };
-
-  // Indicates whether or not an Expect-CT check should send a report if a
-  // violation is detected.
-  enum ExpectCTReportStatus {
-    ENABLE_EXPECT_CT_REPORTS,
-    DISABLE_EXPECT_CT_REPORTS
-  };
 
   // Indicates whether a connection met CT requirements.
   enum CTRequirementsStatus {
@@ -447,11 +350,6 @@ class NET_EXPORT TransportSecurityState {
   //
   // The behavior may be further be altered by setting a RequireCTDelegate
   // via |SetRequireCTDelegate()|.
-  //
-  // This method checks Expect-CT state for |host| if |issued_by_known_root| is
-  // true. If Expect-CT is configured for |host| and the connection is not
-  // compliant and |report_status| is ENABLE_EXPECT_CT_REPORTS, then a report
-  // will be sent.
   CTRequirementsStatus CheckCTRequirements(
       const net::HostPortPair& host_port_pair,
       bool is_issued_by_known_root,
@@ -460,7 +358,6 @@ class NET_EXPORT TransportSecurityState {
       const X509Certificate* served_certificate_chain,
       const SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps,
-      const ExpectCTReportStatus report_status,
       ct::CTPolicyCompliance policy_compliance,
       const NetworkAnonymizationKey& network_anonymization_key);
 
@@ -472,8 +369,6 @@ class NET_EXPORT TransportSecurityState {
   void SetDelegate(Delegate* delegate);
 
   void SetReportSender(ReportSenderInterface* report_sender);
-
-  void SetExpectCTReporter(ExpectCTReporter* expect_ct_reporter);
 
   // Assigns a delegate responsible for determining whether or not a
   // connection to a given host should require Certificate Transparency
@@ -496,8 +391,6 @@ class NET_EXPORT TransportSecurityState {
     return ct_emergency_disable_;
   }
 
-  void SetCTLogListUpdateTime(base::Time update_time);
-
   // |pinsets| should include all known pinsets, |host_pins| the information
   // related to each hostname's pin, and |update_time| the time at which this
   // list was known to be up to date.
@@ -519,15 +412,6 @@ class NET_EXPORT TransportSecurityState {
   // TransportSecurityState.
   void AddOrUpdateEnabledSTSHosts(const HashedHost& hashed_host,
                                   const STSState& state);
-
-  // Inserts |state| into |enabled_expect_ct_hosts_| under the key
-  // |hashed_host|. |hashed_host| is already in the internal representation.
-  // Note: This is only used for serializing/deserializing the
-  // TransportSecurityState.
-  void AddOrUpdateEnabledExpectCTHosts(
-      const HashedHost& hashed_host,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      const ExpectCTState& state);
 
   // Deletes all dynamic data (e.g. HSTS or HPKP data) created between a time
   // period  [|start_time|, |end_time|).
@@ -565,17 +449,13 @@ class NET_EXPORT TransportSecurityState {
   bool GetStaticPKPState(const std::string& host, PKPState* pkp_result) const;
 
   // Returns true and updates |*result| iff |host| has dynamic
-  // HSTS/HPKP/Expect-CT (respectively) state. If multiple entries match |host|,
+  // HSTS/HPKP (respectively) state. If multiple entries match |host|,
   // the most specific match determines the return value.
   //
   // Note that these methods are not const because they opportunistically remove
   // entries that have expired.
   bool GetDynamicSTSState(const std::string& host, STSState* result);
   bool GetDynamicPKPState(const std::string& host, PKPState* result);
-  bool GetDynamicExpectCTState(
-      const std::string& host,
-      const NetworkAnonymizationKey& network_anonymization_key,
-      ExpectCTState* result);
 
   // Processes an HSTS header value from the host, adding entries to
   // dynamic state if necessary.
@@ -595,17 +475,6 @@ class NET_EXPORT TransportSecurityState {
                const HashValueVector& hashes,
                const GURL& report_uri);
 
-  // Adds explicitly-specified data as if it was processed from an Expect-CT
-  // header.
-  // Note: This method will persist the Expect-CT data if a Delegate is present.
-  //       Make sure that the delegate is nullptr if the persistence is not
-  //       desired. See |SetDelegate| method for more details.
-  void AddExpectCT(const std::string& host,
-                   const base::Time& expiry,
-                   bool enforce,
-                   const GURL& report_uri,
-                   const NetworkAnonymizationKey& network_anonymization_key);
-
   // Enables or disables public key pinning bypass for local trust anchors.
   // Disabling the bypass for local trust anchors is highly discouraged.
   // This method is used by Cronet only and *** MUST NOT *** be used by any
@@ -613,22 +482,6 @@ class NET_EXPORT TransportSecurityState {
   // with local proxies and filters?" at
   // https://www.chromium.org/Home/chromium-security/security-faq
   void SetEnablePublicKeyPinningBypassForLocalTrustAnchors(bool value);
-
-  // Parses |value| as a Expect CT header value. If valid and served on a
-  // CT-compliant connection, adds an entry to the dynamic state. If valid but
-  // not served on a CT-compliant connection, a report is sent to alert the site
-  // owner of the misconfiguration (provided that a reporter has been set via
-  // SetExpectCTReporter).
-  //
-  // The header can also have the value "preload", indicating that the site
-  // wants to opt-in to the static report-only version of Expect-CT. If the
-  // given host is present on the preload list and the build is timely and the
-  // connection is not CT-compliant, then a report will be sent.
-  void ProcessExpectCTHeader(
-      const std::string& value,
-      const HostPortPair& host_port_pair,
-      const SSLInfo& ssl_info,
-      const NetworkAnonymizationKey& network_anonymization_key);
 
   void AssertCalledOnValidThread() const {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -638,16 +491,12 @@ class NET_EXPORT TransportSecurityState {
   // check compliance.
   static void SetRequireCTForTesting(bool required);
 
-  // For unit tests only. Clears the caches that deduplicate sent PKP and
-  // Expect-CT reports.
+  // For unit tests only. Clears the caches that deduplicate sent PKP reports.
   void ClearReportCachesForTesting();
 
   // For unit tests only.
   void EnableStaticPinsForTesting() { enable_static_pins_ = true; }
   bool has_dynamic_pkp_state() const { return !enabled_pkp_hosts_.empty(); }
-
-  // The number of cached ExpectCTState entries.
-  size_t num_expect_ct_entries_for_testing() const;
 
   // Sets whether pinning list timestamp freshness should be ignored for
   // testing.
@@ -662,11 +511,9 @@ class NET_EXPORT TransportSecurityState {
   friend class TransportSecurityStateTest;
   friend class TransportSecurityStateStaticFuzzer;
   FRIEND_TEST_ALL_PREFIXES(HttpSecurityHeadersTest, NoClobberPins);
-  FRIEND_TEST_ALL_PREFIXES(URLRequestTestHTTP, PreloadExpectCTHeader);
 
   typedef std::map<HashedHost, STSState> STSStateMap;
   typedef std::map<HashedHost, PKPState> PKPStateMap;
-  typedef std::map<ExpectCTStateIndex, ExpectCTState> ExpectCTStateMap;
   typedef ExpiringCache<std::string, bool, base::TimeTicks, std::less<>>
       ReportCache;
 
@@ -692,7 +539,7 @@ class NET_EXPORT TransportSecurityState {
   // changed.
   void DirtyNotify();
 
-  // Adds HSTS, HPKP, and Expect-CT state for |host|. The new state supercedes
+  // Adds HSTS and HPKP state for |host|. The new state supercedes
   // any previous state for the |host|, including static entries.
   //
   // The new state for |host| is persisted using the Delegate (if any).
@@ -706,13 +553,6 @@ class NET_EXPORT TransportSecurityState {
                        bool include_subdomains,
                        const HashValueVector& hashes,
                        const GURL& report_uri);
-  void AddExpectCTInternal(
-      const std::string& host,
-      const base::Time& last_observed,
-      const base::Time& expiry,
-      bool enforce,
-      const GURL& report_uri,
-      const NetworkAnonymizationKey& network_anonymization_key);
 
   // Returns true if a request to |host_port_pair| with the given
   // SubjectPublicKeyInfo |hashes| satisfies the pins in |pkp_state|,
@@ -732,52 +572,16 @@ class NET_EXPORT TransportSecurityState {
       const net::NetworkAnonymizationKey& network_anonymization_key,
       std::string* failure_log);
 
-  // Returns true and updates |*expect_ct_result| iff there is a static
-  // (built-in) state for |host| with expect_ct=true.
-  bool GetStaticExpectCTState(const std::string& host,
-                              ExpectCTState* expect_ct_result) const;
-
-  void MaybeNotifyExpectCTFailed(
-      const HostPortPair& host_port_pair,
-      const GURL& report_uri,
-      base::Time expiration,
-      const X509Certificate* validated_certificate_chain,
-      const X509Certificate* served_certificate_chain,
-      const SignedCertificateTimestampAndStatusList&
-          signed_certificate_timestamps,
-      const NetworkAnonymizationKey& network_anonymization_key);
-
-  // Convenience method to create ExpectCTStateIndex, taking into account
-  // |key_expect_ct_by_nik_|.
-  ExpectCTStateIndex CreateExpectCTStateIndex(
-      const HashedHost& hashed_host,
-      const NetworkAnonymizationKey& network_anonymization_key);
-
-  // Checks if Expect-CT entries should be pruned, based on number of them and
-  // when entries were last pruned, and then performs pruning if necessary.
-  void MaybePruneExpectCTState();
-
-  // Sort ExpectCTState based on retention priority, with earlier entries to be
-  // removed first. Transient entries put in the front, then report-only
-  // entries, then entries are sorted by age, oldest first.
-  static bool ExpectCTPruningSorter(const ExpectCTStateMap::iterator& it1,
-                                    const ExpectCTStateMap::iterator& it2);
-
-  // Returns true if the CT log list has been updated in the last 10 weeks.
-  bool IsCTLogListTimely() const;
-
   // Returns true if the static key pinning list has been updated in the last 10
   // weeks.
   bool IsStaticPKPListTimely() const;
 
   // The sets of hosts that have enabled TransportSecurity. |domain| will always
-  // be empty for a STSState, PKPState, or ExpectCTState in these maps; the
-  // domain comes from the map keys instead. In addition, |upgrade_mode| in the
-  // STSState is never MODE_DEFAULT and |HasPublicKeyPins| in the PKPState
-  // always returns true.
+  // be empty for a STSState or PKPState in these maps; the domain comes from
+  // the map keys instead. In addition, |upgrade_mode| in the STSState is never
+  // MODE_DEFAULT and |HasPublicKeyPins| in the PKPState always returns true.
   STSStateMap enabled_sts_hosts_;
   PKPStateMap enabled_pkp_hosts_;
-  ExpectCTStateMap enabled_expect_ct_hosts_;
 
   raw_ptr<Delegate> delegate_ = nullptr;
 
@@ -786,36 +590,18 @@ class NET_EXPORT TransportSecurityState {
   // True if static pins should be used.
   bool enable_static_pins_ = true;
 
-  // True if static expect-CT state should be used.
-  bool enable_static_expect_ct_ = true;
-
   // True if public key pinning bypass is enabled for local trust anchors.
   bool enable_pkp_bypass_for_local_trust_anchors_ = true;
-
-  raw_ptr<ExpectCTReporter> expect_ct_reporter_ = nullptr;
 
   raw_ptr<RequireCTDelegate> require_ct_delegate_ = nullptr;
 
   // Keeps track of reports that have been sent recently for
   // rate-limiting.
   ReportCache sent_hpkp_reports_cache_;
-  ReportCache sent_expect_ct_reports_cache_;
-
-  // Whether Expect-CT data should keyed by a NetworkAnonymizationKey. When
-  // false, ExpectCTStateIndex is always created with an empty
-  // NetworkAnonymizationKey. Populated based on
-  // features::kPartitionExpectCTStateByNetworkIsolationKey on construction of
-  // the TransportSecurityStateObject to avoid repeatedly querying the feature.
-  bool key_expect_ct_by_nik_;
-
-  // The earliest possible time for the next pruning of Expect-CT state.
-  base::Time earliest_next_prune_expect_ct_time_;
 
   std::set<std::string> hsts_host_bypass_list_;
 
   bool ct_emergency_disable_ = false;
-
-  base::Time ct_log_list_last_update_time_;
 
   // The values in host_pins_ maps are references to PinSet objects in the
   // pinsets_ vector.

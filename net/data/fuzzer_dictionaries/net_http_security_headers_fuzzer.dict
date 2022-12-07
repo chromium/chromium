@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# HSTS, HPKP, Expect-CT header parts
+# HSTS, HPKP header parts
 "max-age"
 "pin-"
 "sha256"
@@ -10,7 +10,6 @@
 "report-uri"
 "includeSubdomains"
 "pin"
-"enforce"
 "="
 ";"
 "\""

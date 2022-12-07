@@ -14,12 +14,6 @@
 
 namespace network::features {
 
-// Enables Expect CT reporting, which sends reports for opted-in sites
-// that don't serve sufficient Certificate Transparency information.
-BASE_FEATURE(kExpectCTReporting,
-             "ExpectCTReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNetworkErrorLogging,
              "NetworkErrorLogging",
              base::FEATURE_ENABLED_BY_DEFAULT);

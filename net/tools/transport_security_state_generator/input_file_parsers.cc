@@ -171,8 +171,6 @@ static const char kIncludeSubdomainsForPinningJSONKey[] =
     "include_subdomains_for_pinning";
 static const char kModeJSONKey[] = "mode";
 static const char kPinsJSONKey[] = "pins";
-static const char kExpectCTJSONKey[] = "expect_ct";
-static const char kExpectCTReportURIJSONKey[] = "expect_ct_report_uri";
 static const char kTimestampName[] = "PinsListTimestamp";
 
 // Additional valid keys for entries in the input JSON that will not be included
@@ -319,14 +317,14 @@ bool ParseCertificatesFile(base::StringPiece certs_input,
 bool ParseJSON(base::StringPiece json,
                TransportSecurityStateEntries* entries,
                Pinsets* pinsets) {
-  std::set<std::string> valid_keys = {kNameJSONKey,
-                                      kPolicyJSONKey,
-                                      kIncludeSubdomainsJSONKey,
-                                      kIncludeSubdomainsForPinningJSONKey,
-                                      kModeJSONKey,
-                                      kPinsJSONKey,
-                                      kExpectCTJSONKey,
-                                      kExpectCTReportURIJSONKey};
+  std::set<std::string> valid_keys = {
+      kNameJSONKey,
+      kPolicyJSONKey,
+      kIncludeSubdomainsJSONKey,
+      kIncludeSubdomainsForPinningJSONKey,
+      kModeJSONKey,
+      kPinsJSONKey,
+  };
 
   // See the comments in net/http/transport_security_state_static.json for more
   // info on these policies.
@@ -402,11 +400,6 @@ bool ParseJSON(base::StringPiece json,
     const std::string* maybe_pinset = parsed.FindStringKey(kPinsJSONKey);
     if (maybe_pinset)
       entry->pinset = *maybe_pinset;
-    entry->expect_ct = parsed.FindBoolKey(kExpectCTJSONKey).value_or(false);
-    const std::string* maybe_expect_ct_report_uri =
-        parsed.FindStringKey(kExpectCTReportURIJSONKey);
-    if (maybe_expect_ct_report_uri)
-      entry->expect_ct_report_uri = *maybe_expect_ct_report_uri;
 
     entries->push_back(std::move(entry));
   }

@@ -586,58 +586,6 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
   raw_ptr<StreamSocket> socket_;
 };
 
-// A mock ExpectCTReporter that remembers the latest violation that was
-// reported and the number of violations reported.
-class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
- public:
-  MockExpectCTReporter() = default;
-  ~MockExpectCTReporter() override = default;
-
-  void OnExpectCTFailed(
-      const HostPortPair& host_port_pair,
-      const GURL& report_uri,
-      base::Time expiration,
-      const X509Certificate* validated_certificate_chain,
-      const X509Certificate* served_certificate_chain,
-      const SignedCertificateTimestampAndStatusList&
-          signed_certificate_timestamps,
-      const NetworkAnonymizationKey& network_anonymization_key) override {
-    num_failures_++;
-    host_port_pair_ = host_port_pair;
-    report_uri_ = report_uri;
-    served_certificate_chain_ = served_certificate_chain;
-    validated_certificate_chain_ = validated_certificate_chain;
-    signed_certificate_timestamps_ = signed_certificate_timestamps;
-    network_anonymization_key_ = network_anonymization_key;
-  }
-
-  const HostPortPair& host_port_pair() const { return host_port_pair_; }
-  const GURL& report_uri() const { return report_uri_; }
-  uint32_t num_failures() const { return num_failures_; }
-  const X509Certificate* served_certificate_chain() const {
-    return served_certificate_chain_;
-  }
-  const X509Certificate* validated_certificate_chain() const {
-    return validated_certificate_chain_;
-  }
-  const SignedCertificateTimestampAndStatusList& signed_certificate_timestamps()
-      const {
-    return signed_certificate_timestamps_;
-  }
-  const NetworkAnonymizationKey network_anonymization_key() const {
-    return network_anonymization_key_;
-  }
-
- private:
-  HostPortPair host_port_pair_;
-  GURL report_uri_;
-  uint32_t num_failures_ = 0;
-  raw_ptr<const X509Certificate> served_certificate_chain_;
-  raw_ptr<const X509Certificate> validated_certificate_chain_;
-  SignedCertificateTimestampAndStatusList signed_certificate_timestamps_;
-  NetworkAnonymizationKey network_anonymization_key_;
-};
-
 // A mock CTVerifier that records every call to Verify but doesn't verify
 // anything.
 class MockCTVerifier : public CTVerifier {
@@ -4067,107 +4015,6 @@ TEST_P(SSLClientSocketVersionTest, IgnoreCertificateErrorsBypassesRequiredCT) {
   EXPECT_TRUE(sock_->IsConnected());
 }
 
-// Test that when CT is required (in this case, by an Expect-CT opt-in), the
-// absence of CT information is a socket error.
-TEST_P(SSLClientSocketVersionTest, CTIsRequiredByExpectCT) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
-
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
-  scoped_refptr<X509Certificate> server_cert =
-      embedded_test_server()->GetCertificate();
-
-  // Certificate is trusted and chains to a public root.
-  CertVerifyResult verify_result;
-  verify_result.is_issued_by_known_root = true;
-  verify_result.verified_cert = server_cert;
-  verify_result.public_key_hashes =
-      MakeHashValueVector(kGoodHashValueVectorInput);
-  cert_verifier_->AddResultForCert(server_cert.get(), verify_result, OK);
-
-  // Set up the Expect-CT opt-in.
-  NetworkAnonymizationKey network_anonymization_key =
-      NetworkAnonymizationKey::CreateTransient();
-  const base::Time current_time(base::Time::Now());
-  const base::Time expiry = current_time + base::Seconds(1000);
-  transport_security_state_->AddExpectCT(
-      host_port_pair().host(), expiry, true /* enforce */,
-      GURL("https://example-report.test"), network_anonymization_key);
-  MockExpectCTReporter reporter;
-  transport_security_state_->SetExpectCTReporter(&reporter);
-
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS));
-
-  SSLConfig ssl_config;
-  ssl_config.network_anonymization_key = network_anonymization_key;
-  int rv;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  SSLInfo ssl_info;
-  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
-
-  EXPECT_THAT(rv, IsError(ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  EXPECT_TRUE(ssl_info.cert_status &
-              CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(sock_->IsConnected());
-
-  EXPECT_EQ(1u, reporter.num_failures());
-  EXPECT_EQ(GURL("https://example-report.test"), reporter.report_uri());
-  EXPECT_EQ(ssl_info.unverified_cert.get(),
-            reporter.served_certificate_chain());
-  EXPECT_EQ(ssl_info.cert.get(), reporter.validated_certificate_chain());
-  EXPECT_EQ(0u, reporter.signed_certificate_timestamps().size());
-  EXPECT_EQ(network_anonymization_key, reporter.network_anonymization_key());
-
-  transport_security_state_->ClearReportCachesForTesting();
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS));
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
-
-  EXPECT_THAT(rv, IsError(ERR_CERTIFICATE_TRANSPARENCY_REQUIRED));
-  EXPECT_TRUE(ssl_info.cert_status &
-              CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_FALSE(sock_->IsConnected());
-
-  EXPECT_EQ(2u, reporter.num_failures());
-  EXPECT_EQ(GURL("https://example-report.test"), reporter.report_uri());
-  EXPECT_EQ(ssl_info.unverified_cert.get(),
-            reporter.served_certificate_chain());
-  EXPECT_EQ(ssl_info.cert.get(), reporter.validated_certificate_chain());
-  EXPECT_EQ(0u, reporter.signed_certificate_timestamps().size());
-  EXPECT_EQ(network_anonymization_key, reporter.network_anonymization_key());
-
-  // If the connection is CT compliant, then there should be no socket error nor
-  // a report.
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS));
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
-
-  EXPECT_EQ(net::OK, rv);
-  EXPECT_FALSE(ssl_info.cert_status &
-               CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_TRUE(sock_->IsConnected());
-  EXPECT_EQ(2u, reporter.num_failures());
-
-  EXPECT_CALL(*ct_policy_enforcer_, CheckCompliance(server_cert.get(), _, _))
-      .WillRepeatedly(
-          Return(ct::CTPolicyCompliance::CT_POLICY_BUILD_NOT_TIMELY));
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
-  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
-
-  EXPECT_EQ(net::OK, rv);
-  EXPECT_FALSE(ssl_info.cert_status &
-               CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED);
-  EXPECT_TRUE(sock_->IsConnected());
-  EXPECT_EQ(2u, reporter.num_failures());
-}
-
 // When both PKP and CT are required for a host, and both fail, the more
 // serious error is that the pin validation failed.
 TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
@@ -4192,7 +4039,7 @@ TEST_P(SSLClientSocketVersionTest, PKPMoreImportantThanCT) {
   transport_security_state_->SetPinningListAlwaysTimelyForTesting(true);
   ScopedTransportSecurityStateSource scoped_security_state_source;
 
-  const char kCTHost[] = "pkp-expect-ct.preloaded.test";
+  const char kCTHost[] = "hsts-hpkp-preloaded.test";
 
   // Set up CT.
   MockRequireCTDelegate require_ct_delegate;

@@ -37,7 +37,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
-#include "services/network/expect_ct_reporter.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -52,8 +51,6 @@ namespace {
 content::WebUIDataSource* CreateNetInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINetInternalsHost);
-  source->AddBoolean("expectCTEnabled", base::FeatureList::IsEnabled(
-                                            net::kDynamicExpectCTFeature));
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kNetInternalsResources, kNetInternalsResourcesSize),
@@ -197,9 +194,6 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   void ResolveCallbackWithResult(const std::string& callback_id,
                                  base::Value::Dict result);
 
-  void OnExpectCTTestReportCallback(const std::string& callback_id,
-                                    bool success);
-
   //--------------------------------
   // Javascript message handlers:
   //--------------------------------
@@ -211,9 +205,6 @@ class NetInternalsMessageHandler : public content::WebUIMessageHandler {
   void OnDomainSecurityPolicyDelete(const base::Value::List& list);
   void OnHSTSQuery(const base::Value::List& list);
   void OnHSTSAdd(const base::Value::List& list);
-  void OnExpectCTQuery(const base::Value::List& list);
-  void OnExpectCTAdd(const base::Value::List& list);
-  void OnExpectCTTestReport(const base::Value::List& list);
   void OnCloseIdleSockets(const base::Value::List& list);
   void OnFlushSocketPools(const base::Value::List& list);
   void OnResolveHostDone(
@@ -263,18 +254,6 @@ void NetInternalsMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "hstsAdd", base::BindRepeating(&NetInternalsMessageHandler::OnHSTSAdd,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "expectCTQuery",
-      base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTQuery,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "expectCTAdd",
-      base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTAdd,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "expectCTTestReport",
-      base::BindRepeating(&NetInternalsMessageHandler::OnExpectCTTestReport,
-                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "closeIdleSockets",
       base::BindRepeating(&NetInternalsMessageHandler::OnCloseIdleSockets,
@@ -378,71 +357,6 @@ void NetInternalsMessageHandler::OnHSTSAdd(const base::Value::List& list) {
   base::Time expiry = base::Time::Now() + base::Days(1000);
   GetNetworkContext()->AddHSTS(*domain, expiry, sts_include_subdomains,
                                base::DoNothing());
-}
-
-void NetInternalsMessageHandler::OnExpectCTQuery(
-    const base::Value::List& list) {
-  const std::string* callback_id = list[0].GetIfString();
-  const std::string* domain = list[1].GetIfString();
-  DCHECK(callback_id && domain);
-
-  net::SchemefulSite site = net::SchemefulSite(GURL("https://" + *domain));
-
-  AllowJavascript();
-
-  GetNetworkContext()->GetExpectCTState(
-      *domain, net::NetworkAnonymizationKey(site, site),
-      base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
-                     weak_factory_.GetWeakPtr(), *callback_id));
-}
-
-void NetInternalsMessageHandler::OnExpectCTAdd(const base::Value::List& list) {
-  // |list| should be: [<domain to add>, <report URI>, <enforce>].
-  const std::string* domain = list[0].GetIfString();
-  DCHECK(domain);
-  if (!base::IsStringASCII(*domain)) {
-    // Silently fail. The user will get a helpful error if they query for the
-    // name.
-    return;
-  }
-
-  const std::string* report_uri_str = list[1].GetIfString();
-  absl::optional<bool> enforce = list[2].GetIfBool();
-  DCHECK(report_uri_str && enforce);
-
-  net::SchemefulSite site = net::SchemefulSite(GURL("https://" + *domain));
-
-  base::Time expiry = base::Time::Now() + base::Days(1000);
-  GetNetworkContext()->AddExpectCT(
-      *domain, expiry, *enforce, GURL(*report_uri_str),
-      net::NetworkAnonymizationKey(site, site), base::DoNothing());
-}
-
-void NetInternalsMessageHandler::OnExpectCTTestReport(
-    const base::Value::List& list) {
-  const std::string* callback_id = list[0].GetIfString();
-  const std::string* report_uri_str = list[1].GetIfString();
-  DCHECK(callback_id && report_uri_str);
-  GURL report_uri(*report_uri_str);
-  AllowJavascript();
-  if (!report_uri.is_valid()) {
-    ResolveJavascriptCallback(base::Value(*callback_id),
-                              base::Value("invalid"));
-    return;
-  }
-
-  GetNetworkContext()->SetExpectCTTestReport(
-      report_uri,
-      base::BindOnce(&NetInternalsMessageHandler::OnExpectCTTestReportCallback,
-                     weak_factory_.GetWeakPtr(), *callback_id));
-}
-
-void NetInternalsMessageHandler::OnExpectCTTestReportCallback(
-    const std::string& callback_id,
-    bool success) {
-  ResolveJavascriptCallback(
-      base::Value(callback_id),
-      success ? base::Value("success") : base::Value("failure"));
 }
 
 void NetInternalsMessageHandler::OnFlushSocketPools(

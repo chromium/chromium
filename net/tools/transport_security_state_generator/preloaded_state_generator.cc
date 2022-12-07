@@ -135,9 +135,6 @@ std::string PreloadedStateGenerator::Generate(
 
   ProcessSPKIHashes(pinsets, &output);
 
-  NameIDMap expect_ct_report_uri_map;
-  ProcessExpectCTURIs(entries, &expect_ct_report_uri_map, &output);
-
   NameIDMap pinsets_map;
   ProcessPinsets(pinsets, &pinsets_map, &output);
 
@@ -145,7 +142,7 @@ std::string PreloadedStateGenerator::Generate(
   std::vector<huffman_trie::TrieEntry*> raw_trie_entries;
   for (const auto& entry : entries) {
     auto trie_entry = std::make_unique<TransportSecurityStateTrieEntry>(
-        expect_ct_report_uri_map, pinsets_map, entry.get());
+        pinsets_map, entry.get());
     raw_trie_entries.push_back(trie_entry.get());
     trie_entries.push_back(std::move(trie_entry));
   }
@@ -220,38 +217,6 @@ void PreloadedStateGenerator::ProcessSPKIHashes(const Pinsets& pinset,
 
   base::TrimString(output, kNewLine, &output);
   ReplaceTag("SPKI_HASHES", output, tpl);
-}
-
-void PreloadedStateGenerator::ProcessExpectCTURIs(
-    const TransportSecurityStateEntries& entries,
-    NameIDMap* expect_ct_report_uri_map,
-    std::string* tpl) {
-  std::string output = "{";
-  output.append(kNewLine);
-
-  for (const auto& entry : entries) {
-    const std::string& url = entry->expect_ct_report_uri;
-    if (entry->expect_ct && url.size() &&
-        expect_ct_report_uri_map->find(url) ==
-            expect_ct_report_uri_map->cend()) {
-      output.append(kIndent);
-      output.append(kIndent);
-      output.append("\"" + entry->expect_ct_report_uri + "\",");
-      output.append(kNewLine);
-
-      expect_ct_report_uri_map->insert(
-          NameIDPair(entry->expect_ct_report_uri,
-                     static_cast<uint32_t>(expect_ct_report_uri_map->size())));
-    }
-  }
-
-  output.append(kIndent);
-  output.append(kIndent);
-  output.append("nullptr,");
-  output.append(kNewLine);
-
-  output.append("}");
-  ReplaceTag("EXPECT_CT_REPORT_URIS", output, tpl);
 }
 
 void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,

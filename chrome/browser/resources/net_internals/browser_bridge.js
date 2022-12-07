@@ -45,18 +45,6 @@ export class BrowserBridge {
     chrome.send('domainSecurityPolicyDelete', [domain]);
   }
 
-  sendExpectCTQuery(domain) {
-    return sendWithPromise('expectCTQuery', domain);
-  }
-
-  sendExpectCTAdd(domain, report_uri, enforce) {
-    chrome.send('expectCTAdd', [domain, report_uri, enforce]);
-  }
-
-  sendExpectCTTestReport(report_uri) {
-    return sendWithPromise('expectCTTestReport', report_uri);
-  }
-
   sendCloseIdleSockets() {
     chrome.send('closeIdleSockets');
   }

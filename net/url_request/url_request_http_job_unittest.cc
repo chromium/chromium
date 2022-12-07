@@ -25,7 +25,6 @@
 #include "net/base/auth.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
@@ -383,14 +382,10 @@ class URLRequestHttpJobWithMockSocketsTest : public TestWithTaskEnvironment {
     auto context_builder = CreateTestURLRequestContextBuilder();
     context_builder->set_client_socket_factory_for_testing(&socket_factory_);
     context_ = context_builder->Build();
-    scoped_feature_list_.InitAndEnableFeature(kDynamicExpectCTFeature);
   }
 
   MockClientSocketFactory socket_factory_;
   std::unique_ptr<URLRequestContext> context_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
@@ -904,82 +899,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   histograms.ExpectTotalCount(kTrustAnchorRequestHistogram, 1);
   histograms.ExpectUniqueSample(kTrustAnchorRequestHistogram,
                                 kGTSRootR3HistogramID, 1);
-}
-
-namespace {
-
-// An ExpectCTReporter that records the number of times OnExpectCTFailed() was
-// called.
-class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
- public:
-  MockExpectCTReporter() = default;
-  ~MockExpectCTReporter() override = default;
-
-  void OnExpectCTFailed(
-      const HostPortPair& host_port_pair,
-      const GURL& report_uri,
-      base::Time expiration,
-      const X509Certificate* validated_certificate_chain,
-      const X509Certificate* served_certificate_chain,
-      const SignedCertificateTimestampAndStatusList&
-          signed_certificate_timestamps,
-      const NetworkAnonymizationKey& network_anonymization_key) override {
-    num_failures_++;
-    network_anonymization_key_ = network_anonymization_key;
-  }
-
-  int num_failures() const { return num_failures_; }
-  const NetworkAnonymizationKey& network_anonymization_key() const {
-    return network_anonymization_key_;
-  }
-
- private:
-  int num_failures_ = 0;
-  NetworkAnonymizationKey network_anonymization_key_;
-};
-
-}  // namespace
-
-TEST_F(URLRequestHttpJobWithMockSocketsTest,
-       TestHttpJobSendsNetworkAnonymizationKeyWhenProcessingExpectCTHeader) {
-  SSLSocketDataProvider ssl_socket_data(net::ASYNC, net::OK);
-  ssl_socket_data.ssl_info.cert =
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
-  ssl_socket_data.ssl_info.is_issued_by_known_root = true;
-  ssl_socket_data.ssl_info.ct_policy_compliance =
-      ct::CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
-
-  socket_factory_.AddSSLSocketDataProvider(&ssl_socket_data);
-
-  MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
-  MockRead reads[] = {
-      MockRead(
-          "HTTP/1.1 200 OK\r\n"
-          "Expect-CT: max-age=100, enforce, report-uri=https://example.test\r\n"
-          "Content-Length: 12\r\n\r\n"),
-      MockRead("Test Content")};
-  StaticSocketDataProvider socket_data(reads, writes);
-  socket_factory_.AddSocketDataProvider(&socket_data);
-
-  base::HistogramTester histograms;
-
-  MockExpectCTReporter reporter;
-  TransportSecurityState transport_security_state;
-  context_->transport_security_state()->SetExpectCTReporter(&reporter);
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      GURL("https://www.example.com/"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
-  IsolationInfo isolation_info = IsolationInfo::CreateTransient();
-  request->set_isolation_info(isolation_info);
-  request->Start();
-  delegate.RunUntilComplete();
-  EXPECT_THAT(delegate.request_status(), IsOk());
-
-  ASSERT_EQ(1, reporter.num_failures());
-  EXPECT_EQ(isolation_info.network_anonymization_key(),
-            reporter.network_anonymization_key());
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest, EncodingAdvertisementOnRange) {
