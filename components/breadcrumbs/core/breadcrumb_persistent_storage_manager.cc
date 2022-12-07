@@ -184,14 +184,14 @@ void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
     // Reduce saved events to only the amount that can be included in a crash
     // report. This allows future events to be appended up to
     // |kPersistedFilesizeInBytes|, reducing the number of resizes needed.
-    const int event_with_seperator_size =
+    const int event_with_separator_size =
         event.size() + strlen(kEventSeparator);
-    if (event_with_seperator_size + file_position_.value() >= kMaxDataLength)
+    if (event_with_separator_size + file_position_.value() >= kMaxDataLength)
       break;
 
     breadcrumbs.push_back(kEventSeparator);
     breadcrumbs.push_back(event);
-    file_position_ = file_position_.value() + event_with_seperator_size;
+    file_position_ = file_position_.value() + event_with_separator_size;
   }
 
   std::reverse(breadcrumbs.begin(), breadcrumbs.end());
