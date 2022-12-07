@@ -882,6 +882,87 @@ void WebContentsImpl::WebContentsObserverList::RemoveObserver(
 
 // WebContentsImpl -------------------------------------------------------------
 
+namespace {
+
+// A helper for ensuring that WebContents are closed (or otherwise destroyed)
+// *before* their BrowserContext is destroyed.
+class WebContentsOfBrowserContext : public base::SupportsUserData::Data {
+ public:
+  static void Attach(WebContentsImpl& web_contents) {
+    WebContentsOfBrowserContext* self =
+        GetOrCreate(*web_contents.GetBrowserContext());
+    self->web_contents_set_.insert(&web_contents);
+  }
+
+  static void Detach(WebContentsImpl& web_contents) {
+    WebContentsOfBrowserContext* self =
+        GetOrCreate(*web_contents.GetBrowserContext());
+    self->web_contents_set_.erase(&web_contents);
+  }
+
+  ~WebContentsOfBrowserContext() override {
+    // The ~WebContentsOfBrowserContext destructor is called when the
+    // BrowserContext (and its UserData) gets destroyed.  At this point
+    // in time all the WebContents of this BrowserContext should have been
+    // already closed (i.e. we expect the `web_contents_set_` set to be empty at
+    // this point - emptied by calls to the `Detach` method above).
+    if (web_contents_set_.empty())
+      return;  // Everything is okay - nothing to warn about.
+
+    // Any remaining WebContents contain dangling pointers to the
+    // BrowserContext being destroyed.  Such WebContents (and their
+    // RenderFrameHosts, SiteInstances, etc.) risk causing
+    // use-after-free bugs.  For more discussion about managing the
+    // lifetime of WebContents please see https://crbug.com/1376879#c44.
+    for (WebContents* web_contents_with_dangling_ptr_to_browser_context :
+         web_contents_set_) {
+      std::string creator = web_contents_with_dangling_ptr_to_browser_context
+                                ->GetCreatorLocation()
+                                .ToString();
+      SCOPED_CRASH_KEY_STRING256("shutdown", "web_contents/creator", creator);
+
+      NOTREACHED()
+          << "BrowserContext is getting destroyed without first closing all "
+             "WebContents (for more info see https://crbug.com/1376879#c44)";
+      base::debug::DumpWithoutCrashing();
+    }
+  }
+
+  std::unique_ptr<Data> Clone() override {
+    // Indicate to `SupportsUserData` / `BrowserContext` that cloning is not
+    // supported.
+    return nullptr;
+  }
+
+ private:
+  WebContentsOfBrowserContext() = default;
+
+  // Gets WebContentsOfBrowserContext associated with the given
+  // `browser_context` (creating a new WebContentsOfBrowserContext if
+  // necessary - if one hasn't been created yet).
+  static WebContentsOfBrowserContext* GetOrCreate(
+      BrowserContext& browser_context) {
+    static const char* kUserDataKey = "WebContentsOfBrowserContext/UserDataKey";
+    WebContentsOfBrowserContext* result =
+        static_cast<WebContentsOfBrowserContext*>(
+            browser_context.GetUserData(kUserDataKey));
+    if (!result) {
+      result = new WebContentsOfBrowserContext();
+      browser_context.SetUserData(kUserDataKey, base::WrapUnique(result));
+    }
+    return result;
+  }
+
+  // Set of all `WebContents` within the tracked `BrowserContext`.
+  //
+  // Usage of `raw_ptr` below is okay (i.e. it shouldn't dangle), because
+  // when `WebContentsImpl`'s destructor runs, then it removes the set entry
+  // (by calling `Detach`).
+  std::set<raw_ptr<WebContents>> web_contents_set_;
+};
+
+}  // namespace
+
 WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     : delegate_(nullptr),
       render_view_host_delegate_view_(nullptr),
@@ -929,6 +1010,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
               "PowerModeVoter.Audible")) {
   TRACE_EVENT0("content", "WebContentsImpl::WebContentsImpl");
+  WebContentsOfBrowserContext::Attach(*this);
 #if BUILDFLAG(ENABLE_PPAPI)
   pepper_playback_observer_ = std::make_unique<PepperPlaybackObserver>(this);
 #endif
@@ -969,6 +1051,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 
 WebContentsImpl::~WebContentsImpl() {
   TRACE_EVENT0("content", "WebContentsImpl::~WebContentsImpl");
+  WebContentsOfBrowserContext::Detach(*this);
 
   // Imperfect sanity check against double free, given some crashes unexpectedly
   // observed in the wild.

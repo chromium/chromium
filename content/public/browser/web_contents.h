@@ -120,6 +120,10 @@ class PreloadingAttempt;
 // https://www.chromium.org/developers/design-documents/multi-process-architecture
 // .
 //
+// The owner of `std::unique_ptr<content::WebContents> web_contents` is
+// responsible for ensuring that `web_contents` are destroyed (e.g. closed)
+// *before* the corresponding `browser_context` is destroyed.
+//
 // Each WebContents has a `NavigationController`, which can be obtained from
 // `GetController()`, and is used to load URLs into the WebContents, navigate
 // it backwards/forwards, etc.
@@ -264,6 +268,13 @@ class WebContents : public PageNavigator,
   };
 
   // Creates a new WebContents.
+  //
+  // The caller is responsible for ensuring that the returned WebContents is
+  // destroyed (e.g. closed) *before* the BrowserContext associated with
+  // `params` is destroyed.  It is a bug if WebContents haven't been destroyed
+  // when the destructor of BrowserContext starts running.  It is not
+  // necessarily a bug if WebContents haven't been destroyed when
+  // BrowserContext::NotifyWillBeDestroyed starts running.
   CONTENT_EXPORT static std::unique_ptr<WebContents> Create(
       const CreateParams& params);
 
