@@ -34,6 +34,7 @@ class UIBrokerImpl final : public UIBroker {
   void ShowAssociateAccount(scoped_refptr<Device> device) override;
   void ShowCompanionApp(scoped_refptr<Device> device) override;
   void RemoveNotifications() override;
+  void ExtendNotification() override;
 
  private:
   void NotifyDiscoveryAction(scoped_refptr<Device> device,

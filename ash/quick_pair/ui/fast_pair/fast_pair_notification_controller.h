@@ -86,6 +86,7 @@ class FastPairNotificationController {
       base::RepeatingClosure on_learn_more_clicked,
       base::OnceCallback<void(FastPairNotificationDismissReason)> on_close);
   void RemoveNotifications();
+  void ExtendNotification();
 
  private:
   void RemoveNotificationsByTimeout(

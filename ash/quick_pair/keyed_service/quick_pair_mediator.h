@@ -121,6 +121,8 @@ class Mediator final
   void BindToCrosBluetoothConfig();
   void CancelPairing();
 
+  bool IsDeviceCurrentlyShowingNotification(scoped_refptr<Device> device);
+
   bool has_at_least_one_discovery_session_ = false;
 
   // |device_currently_showing_notification_| can be null if there is no

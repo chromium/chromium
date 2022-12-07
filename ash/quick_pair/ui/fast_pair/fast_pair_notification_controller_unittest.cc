@@ -40,6 +40,7 @@ const char kFastPairAssociateAccountNotificationId[] =
 const char kFastPairDiscoverySubsequentNotificationId[] =
     "cros_fast_pair_discovery_subsequent_notification_id";
 
+constexpr base::TimeDelta kNotificationShortTimeDuration = base::Seconds(5);
 constexpr base::TimeDelta kNotificationTimeout = base::Seconds(12);
 
 class TestMessageCenter : public message_center::FakeMessageCenter {
@@ -304,6 +305,35 @@ TEST_F(FastPairNotificationControllerTest,
 }
 
 TEST_F(FastPairNotificationControllerTest,
+       ShowUserDiscoveryNotification_ExtendTimeout) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryUserNotificationId));
+
+  base::MockCallback<
+      base::OnceCallback<void(FastPairNotificationDismissReason)>>
+      on_close;
+  base::MockCallback<base::RepeatingClosure> on_connect_clicked;
+  base::MockCallback<base::RepeatingClosure> on_learn_more_clicked;
+  fast_pair_notification_controller_->ShowUserDiscoveryNotification(
+      kTestDeviceName, kTestEmail,
+      /*device_image=*/gfx::Image(), on_connect_clicked.Get(),
+      on_learn_more_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryUserNotificationId));
+  task_environment()->FastForwardBy(kNotificationShortTimeDuration);
+
+  // Extend the notification to simulate the same device being found again. We
+  // expect the notification to still be shown after the initial 12 second
+  // timeout since the timeout should have been reset.
+  fast_pair_notification_controller_->ExtendNotification();
+  task_environment()->FastForwardBy(kNotificationTimeout);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryUserNotificationId));
+}
+
+TEST_F(FastPairNotificationControllerTest,
        ShowUserDiscoveryNotification_RemovedByOS) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoveryUserNotificationId));
@@ -465,6 +495,36 @@ TEST_F(FastPairNotificationControllerTest,
       .Times(1);
   task_environment()->FastForwardBy(kNotificationTimeout);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowGuestDiscoveryNotification_ExtendTimeout) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryGuestNotificationId));
+
+  base::MockCallback<
+      base::OnceCallback<void(FastPairNotificationDismissReason)>>
+      on_close;
+  base::MockCallback<base::RepeatingClosure> on_connect_clicked;
+  base::MockCallback<base::RepeatingClosure> on_learn_more_clicked;
+  fast_pair_notification_controller_->ShowGuestDiscoveryNotification(
+      kTestDeviceName,
+      /*device_image=*/gfx::Image(), on_connect_clicked.Get(),
+      on_learn_more_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryGuestNotificationId));
+  task_environment()->FastForwardBy(kNotificationShortTimeDuration);
+
+  // Extend the notification to simulate the same device being found again. We
+  // expect the notification to still be shown after the initial 12 second
+  // timeout since the timeout should have been reset.
+  fast_pair_notification_controller_->ExtendNotification();
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kNotificationTimeout);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryGuestNotificationId));
 }
 
 TEST_F(FastPairNotificationControllerTest,
@@ -771,6 +831,35 @@ TEST_F(FastPairNotificationControllerTest,
 }
 
 TEST_F(FastPairNotificationControllerTest,
+       ShowAssociateAccountNotification_ExtendTimeout) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairAssociateAccountNotificationId));
+
+  base::MockCallback<
+      base::OnceCallback<void(FastPairNotificationDismissReason)>>
+      on_close;
+  base::MockCallback<base::RepeatingClosure> on_save_clicked;
+  base::MockCallback<base::RepeatingClosure> on_learn_more_clicked;
+  fast_pair_notification_controller_->ShowAssociateAccount(
+      kTestDeviceName, kTestEmail,
+      /*device_image=*/gfx::Image(), on_save_clicked.Get(),
+      on_learn_more_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairAssociateAccountNotificationId));
+  task_environment()->FastForwardBy(kNotificationShortTimeDuration);
+
+  // Extend the notification to simulate the same device being found again. We
+  // expect the notification to still be shown after the initial 12 second
+  // timeout since the timeout should have been reset.
+  fast_pair_notification_controller_->ExtendNotification();
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(kNotificationTimeout);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairAssociateAccountNotificationId));
+}
+TEST_F(FastPairNotificationControllerTest,
        ShowSubsequentDiscoveryNotification_ConnectClicked) {
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairDiscoverySubsequentNotificationId));
@@ -904,6 +993,35 @@ TEST_F(FastPairNotificationControllerTest,
       .Times(1);
   task_environment()->FastForwardBy(kNotificationTimeout);
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowSubsequentDiscoveryNotification_ExtendTimeout) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  base::MockCallback<
+      base::OnceCallback<void(FastPairNotificationDismissReason)>>
+      on_close;
+  base::MockCallback<base::RepeatingClosure> on_connect_clicked;
+  base::MockCallback<base::RepeatingClosure> on_learn_more_clicked;
+  fast_pair_notification_controller_->ShowSubsequentDiscoveryNotification(
+      kTestDeviceName, kTestEmail,
+      /*device_image=*/gfx::Image(), on_connect_clicked.Get(),
+      on_learn_more_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  task_environment()->FastForwardBy(kNotificationShortTimeDuration);
+
+  // Extend the notification to simulate the same device being found again. We
+  // expect the notification to still be shown after the initial 12 second
+  // timeout since the timeout should have been reset.
+  fast_pair_notification_controller_->ExtendNotification();
+  task_environment()->FastForwardBy(kNotificationTimeout);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
 }
 
 }  // namespace quick_pair

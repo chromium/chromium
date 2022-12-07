@@ -16,6 +16,8 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
+#include "ash/quick_pair/common/logging.h"
+
 using message_center::MessageCenter;
 using message_center::Notification;
 
@@ -127,8 +129,11 @@ class NotificationDelegate : public message_center::NotificationDelegate {
     // If there is an expire notification timer, stop the timer if the user
     // dismisses the notification to prevent the timer firing and removing
     // notifications that might come up later.
-    if (expire_notification_timer_)
+    if (expire_notification_timer_) {
+      QP_LOG(VERBOSE) << __func__
+                      << ": stopping expiration timer on notification close";
       expire_notification_timer_->Stop();
+    }
 
     if (dismissed_by_timeout_) {
       std::move(on_close_).Run(
@@ -191,6 +196,19 @@ void FastPairNotificationController::ShowErrorNotification(
   error_notification->set_image(device_image);
 
   message_center_->AddNotification(std::move(error_notification));
+}
+
+void FastPairNotificationController::ExtendNotification() {
+  // If the timer is already running, it implies that there is already a
+  // notification being shown for this device. Since the Mediator keeps track
+  // of the device for the currently shown notification, we can only get to this
+  // point if the notification is for the same device, which means we reset the
+  // timeout.
+  if (expire_notification_timer_.IsRunning()) {
+    QP_LOG(INFO) << __func__
+                 << " extending notification for re-discovered device";
+    expire_notification_timer_.Reset();
+  }
 }
 
 void FastPairNotificationController::ShowUserDiscoveryNotification(

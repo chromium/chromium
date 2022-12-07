@@ -160,11 +160,34 @@ void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
   }
 }
 
+bool Mediator::IsDeviceCurrentlyShowingNotification(
+    scoped_refptr<Device> device) {
+  // BLE addresses could have rotated, causing this check to return false for
+  // the same device. Fast Pair considers a device different if they have
+  // different BLE addresses. Similarly, the this check will fail if it is the
+  // same physical device under different scenarios: for example, if a device
+  // is found via the initial scenario and via the subsequent scenario, Fast
+  // Pair does not consider them the same device.
+  return device_currently_showing_notification_ &&
+         device_currently_showing_notification_->metadata_id ==
+             device->metadata_id &&
+         device_currently_showing_notification_->ble_address ==
+             device->ble_address &&
+         device_currently_showing_notification_->protocol == device->protocol;
+}
+
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
 
-  if (device_currently_showing_notification_) {
-    QP_LOG(INFO) << __func__ << ": already showing notification for "
+  if (IsDeviceCurrentlyShowingNotification(device)) {
+    QP_LOG(INFO) << __func__
+                 << ": Extending notification for re-discovered device="
+                 << device_currently_showing_notification_;
+    ui_broker_->ExtendNotification();
+    return;
+  } else if (device_currently_showing_notification_) {
+    QP_LOG(INFO) << __func__
+                 << ": Already showing a notification for a different device="
                  << device_currently_showing_notification_;
     return;
   }
@@ -193,8 +216,11 @@ void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
 void Mediator::OnRetroactivePairFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
 
-  if (device_currently_showing_notification_) {
-    QP_LOG(INFO) << __func__ << ": already showing notification for "
+  if (device_currently_showing_notification_ &&
+      !IsDeviceCurrentlyShowingNotification(device)) {
+    QP_LOG(INFO) << __func__
+                 << ": first come first serve: already showing notification "
+                    "for different device="
                  << device_currently_showing_notification_;
     return;
   }

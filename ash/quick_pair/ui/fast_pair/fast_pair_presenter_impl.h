@@ -64,6 +64,7 @@ class FastPairPresenterImpl : public FastPairPresenter {
   void ShowCompanionApp(scoped_refptr<Device> device,
                         CompanionAppCallback callback) override;
   void RemoveNotifications() override;
+  void ExtendNotification() override;
 
  private:
   FastPairPresenterImpl(const FastPairPresenterImpl&) = delete;

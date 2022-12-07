@@ -37,6 +37,7 @@ class FastPairPresenter {
   virtual void ShowCompanionApp(scoped_refptr<Device> device,
                                 CompanionAppCallback callback) = 0;
   virtual void RemoveNotifications() = 0;
+  virtual void ExtendNotification() = 0;
 
   virtual ~FastPairPresenter() = default;
 };

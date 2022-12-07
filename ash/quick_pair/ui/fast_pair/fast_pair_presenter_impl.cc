@@ -444,5 +444,9 @@ void FastPairPresenterImpl::RemoveNotifications() {
   notification_controller_->RemoveNotifications();
 }
 
+void FastPairPresenterImpl::ExtendNotification() {
+  notification_controller_->ExtendNotification();
+}
+
 }  // namespace quick_pair
 }  // namespace ash

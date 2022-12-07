@@ -105,6 +105,10 @@ void UIBrokerImpl::RemoveNotifications() {
   fast_pair_presenter_->RemoveNotifications();
 }
 
+void UIBrokerImpl::ExtendNotification() {
+  fast_pair_presenter_->ExtendNotification();
+}
+
 void UIBrokerImpl::NotifyDiscoveryAction(scoped_refptr<Device> device,
                                          DiscoveryAction action) {
   for (auto& observer : observers_)
