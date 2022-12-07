@@ -10,7 +10,7 @@ import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {$} from 'chrome://resources/js/util_ts.js';
 
 const detectionLogs = [];
