@@ -358,6 +358,45 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
   tabs->CloseWebContentsAt(tabs->active_index(), 0);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    WebAuthFlowWithBrowserTabBrowserTest,
+    InteractiveNewTabCreatedWithAuthURL_ThenChangeURLBeforeAuthResult) {
+  TabStripModel* tabs = browser()->tab_strip_model();
+  int initial_tab_count = tabs->count();
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
+                   WebAuthFlow::Mode::INTERACTIVE);
+
+  navigation_observer.Wait();
+
+  //---------------------------------------------------------------------
+  // Browser-initiated URL change in the opened tab before completing the auth
+  // flow should trigger an auth flow failure.
+  //---------------------------------------------------------------------
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  GURL new_url = embedded_test_server()->GetURL("a.com", "/new.html");
+  EXPECT_CALL(mock(),
+              OnAuthFlowFailure(WebAuthFlow::Failure::USER_NAVIGATED_AWAY));
+
+  content::TestNavigationObserver web_contents_observer(web_contents());
+  content::NavigationController::LoadURLParams load_params(new_url);
+  load_params.is_renderer_initiated = false;
+  web_contents()->GetController().LoadURLWithParams(load_params);
+  web_contents_observer.Wait();
+
+  // New tab is not execpted to be closed, it is now used for navigation and not
+  // part of the flow anymore.
+  EXPECT_EQ(web_contents(), nullptr);
+  EXPECT_EQ(tabs->count(), initial_tab_count + 1);
+  EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), new_url);
+}
+
 IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
                        InteractiveNoBrowser_WebAuthCreatesBrowserWithTab) {
   Profile* profile = browser()->profile();

@@ -73,6 +73,7 @@ void IdentityLaunchWebAuthFlowFunction::OnAuthFlowFailure(
   std::string error;
   switch (failure) {
     case WebAuthFlow::WINDOW_CLOSED:
+    case WebAuthFlow::USER_NAVIGATED_AWAY:
       error = identity_constants::kUserRejected;
       break;
     case WebAuthFlow::INTERACTION_REQUIRED:

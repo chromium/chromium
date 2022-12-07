@@ -63,9 +63,10 @@ class WebAuthFlow : public content::WebContentsObserver,
   };
 
   enum Failure {
-    WINDOW_CLOSED,  // Window closed by user.
+    WINDOW_CLOSED,         // Window closed by user (app or tab).
     INTERACTION_REQUIRED,  // Non-redirect page load in silent mode.
-    LOAD_FAILED
+    LOAD_FAILED,
+    USER_NAVIGATED_AWAY  // The user navigated away from the auth page.
   };
 
   class Delegate {

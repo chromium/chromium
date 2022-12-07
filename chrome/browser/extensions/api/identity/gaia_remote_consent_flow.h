@@ -34,7 +34,8 @@ class GaiaRemoteConsentFlow
     SET_ACCOUNTS_IN_COOKIE_FAILED = 3,
     INVALID_CONSENT_RESULT = 4,
     NO_GRANT = 5,
-    kMaxValue = NO_GRANT
+    USER_NAVIGATED_AWAY = 6,
+    kMaxValue = USER_NAVIGATED_AWAY
   };
 
   class Delegate {

@@ -306,6 +306,16 @@ void WebAuthFlow::DidStopLoading() {
 
 void WebAuthFlow::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+  // If web_contents_ is nullptr, then the auth page tab is opened.
+  // If the navigation is initiated by the user, the tab will exit the auth
+  // flow screen, this should result in a declined authentication.
+  if (using_auth_with_browser_tab_ && !web_contents_ &&
+      !navigation_handle->IsRendererInitiated()) {
+    // Stop observing the web contents since it is not part of the flow anymore.
+    WebContentsObserver::Observe(nullptr);
+    delegate_->OnAuthFlowFailure(Failure::USER_NAVIGATED_AWAY);
+  }
+
   if (navigation_handle->IsInPrimaryMainFrame())
     BeforeUrlLoaded(navigation_handle->GetURL());
 }
