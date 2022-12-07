@@ -33,58 +33,11 @@ const char kScannerCallbackInterfaceName[] =
 // TODO(b/217274013): Update structs to support filtering
 class ScanSettings {};
 
-struct DEVICE_BLUETOOTH_EXPORT ScanFilterPattern {
-  // Specifies the starting byte position of the pattern immediately following
-  // AD Type.
-  uint8_t start_position;
+class ScanFilterPattern {};
 
-  // Advertising Data type (https://www.bluetooth.com/specifications/assigned-numbers/).
-  uint8_t ad_type;
+enum ScanFilterCondition {};
 
-  // The pattern to be matched for the specified AD Type within the
-  // advertisement packet from the specified starting byte.
-  std::vector<uint8_t> content;
-
-  ScanFilterPattern();
-  ScanFilterPattern(const ScanFilterPattern&);
-  ~ScanFilterPattern();
-};
-
-struct DEVICE_BLUETOOTH_EXPORT ScanFilterCondition {
-  // Match by pattern anywhere in the advertisement data. Multiple patterns are
-  // "OR"-ed.
-  std::vector<ScanFilterPattern> patterns;
-
-  ScanFilterCondition();
-  ScanFilterCondition(const ScanFilterCondition&);
-  ~ScanFilterCondition();
-};
-
-// Modeled based on MSFT HCI extension spec:
-// https://learn.microsoft.com/en-us/windows-hardware/drivers/bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#command_parameters-1
-struct DEVICE_BLUETOOTH_EXPORT ScanFilter {
-  // Advertisements with RSSI above or equal this value is considered "found".
-  uint8_t rssi_high_threshold;
-
-  // Advertisements with RSSI below or equal this value (for a period of
-  // rssi_low_timeout) is considered "lost".
-  uint8_t rssi_low_threshold;
-
-  // Time in seconds over which the RSSI value should be below
-  // rssi_low_threshold before being considered "lost".
-  uint8_t rssi_low_timeout;
-
-  // Sampling interval in 100 milliseconds.
-  // i.e. The real sampling period in ms = rssi_sampling_period * 100.
-  uint8_t rssi_sampling_period;
-
-  //The condition to match advertisements with.
-  ScanFilterCondition condition;
-
-  ScanFilter();
-  ScanFilter(const ScanFilter&);
-  ~ScanFilter();
-};
+class ScanFilter {};
 
 struct DEVICE_BLUETOOTH_EXPORT ScanResult {
   std::string name;
