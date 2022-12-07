@@ -1,17 +1,17 @@
 <style>
   :host {
     --background-image-width: 17vw;
+    --cr-button-height: 36px;
     --btn-container-height: calc(2 * var(--btn-margin) + var(--cr-button-height));
     --btn-margin: 24px;
     --card-background-color: var(--google-grey-50);
-    --card-bottom-padding: 24px;
+    --card-bottom-padding: 28px;
     --card-description-color: var(--cr-secondary-text-color);
     --card-description-font-size: 1.08em;
-    --card-height: 172px;
     --card-horizontal-padding: 24px;
     --card-title-font-size: 1.25em;
-    --card-top-padding: 27px;
-    --card-width: 236px;
+    --card-top-padding: 24px;
+    --card-width: 188px;
     --gap-between-cards: 12px;
     --icon-color: var(--google-blue-600);
     --left-background-image-url: url(images/left_background.svg);
@@ -27,7 +27,7 @@
     --title-font-size: 3em;
     --title-line-height: 44px;
     color: var(--cr-primary-text-color);
-    font-family: 'Google Sans', Roboto, sans-serif;
+    font-family: 'Google Sans', arial, sans-serif;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -44,9 +44,8 @@
   @media screen and ((max-width: 780px) or (max-height: 600px)) {
     :host {
       --card-description-font-size: 1em;
-      --card-height: 164px;
       --card-title-font-size: 1.08em;
-      --card-width: 200px;
+      --card-width: 152px;
       --title-font-size: 2em;
       --title-line-height: 32px;
       --subtitle-font-size: 1.25em;
@@ -162,7 +161,6 @@
     border-radius: 24px;
     display: flex;
     flex-direction: column;
-    min-height: var(--card-height);
     padding: var(--card-top-padding) var(--card-horizontal-padding) var(--card-bottom-padding);
     width: var(--card-width);
   }
@@ -178,7 +176,7 @@
     bottom: 0;
     display: flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 12px;
     height: var(--btn-container-height);
     justify-content: flex-end;
     position: fixed;
@@ -200,7 +198,7 @@
     font-size: var(--subtitle-font-size);
     font-weight: 400;
     line-height: 24px;
-    margin: 0 0 24px;
+    margin: 0 0 32px;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
