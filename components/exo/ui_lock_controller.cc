@@ -186,6 +186,7 @@ class ExitNotifier : public ui::EventHandler,
   ExitNotifier& operator=(const ExitNotifier&) = delete;
 
   ~ExitNotifier() override {
+    want_pointer_capture_notification_ = false;
     OnExitFullscreen();
     ClosePointerCaptureNotification();
   }
