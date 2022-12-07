@@ -394,7 +394,6 @@ void BackgroundLoaderOffliner::StartSnapshot() {
   params.client_id = request.client_id();
   params.proposed_offline_id = request.request_id();
   params.is_background = true;
-  params.use_page_problem_detectors = true;
   params.request_origin = request.request_origin();
 
   // Pass in the original URL if it's different from last committed

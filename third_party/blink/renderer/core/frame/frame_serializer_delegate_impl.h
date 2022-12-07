@@ -44,7 +44,6 @@ class FrameSerializerDelegateImpl final : public FrameSerializer::Delegate {
   bool ShouldSkipResourceWithURL(const KURL&) override;
   Vector<Attribute> GetCustomAttributes(const Element&) override;
   std::pair<Node*, Element*> GetAuxiliaryDOMTree(const Element&) const override;
-  bool ShouldCollectProblemMetric() override;
 
  private:
   bool ShouldIgnoreHiddenElement(const Element&);

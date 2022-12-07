@@ -99,8 +99,6 @@ void OfflinePageMHTMLArchiver::GenerateMHTML(
   content::MHTMLGenerationParams params(file_path);
   params.use_binary_encoding = true;
   params.remove_popup_overlay = create_archive_params.remove_popup_overlay;
-  params.use_page_problem_detectors =
-      create_archive_params.use_page_problem_detectors;
 
   web_contents->GenerateMHTMLWithResult(
       params,

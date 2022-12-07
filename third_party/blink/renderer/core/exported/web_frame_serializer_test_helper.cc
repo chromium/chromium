@@ -33,7 +33,6 @@ class SimpleMHTMLPartsGenerationDelegate
 
   bool UseBinaryEncoding() final { return false; }
   bool RemovePopupOverlay() final { return remove_popup_overlay_; }
-  bool UsePageProblemDetectors() final { return false; }
 
   bool remove_popup_overlay_;
 };

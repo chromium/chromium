@@ -232,10 +232,6 @@ Vector<Attribute> FrameSerializerDelegateImpl::GetCustomAttributes(
   return attributes;
 }
 
-bool FrameSerializerDelegateImpl::ShouldCollectProblemMetric() {
-  return web_delegate_.UsePageProblemDetectors();
-}
-
 void FrameSerializerDelegateImpl::GetCustomAttributesForImageElement(
     const HTMLImageElement& element,
     Vector<Attribute>* attributes) {

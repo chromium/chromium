@@ -114,7 +114,6 @@ class WebBundleGenerationDelegate
   bool ShouldSkipResource(const WebURL& url) override { return false; }
   bool UseBinaryEncoding() override { return false; }
   bool RemovePopupOverlay() override { return false; }
-  bool UsePageProblemDetectors() override { return false; }
 };
 
 class ResourceSnapshotForWebBundleImpl

@@ -117,8 +117,6 @@ class CORE_EXPORT FrameSerializer : public FrameSerializerResourceDelegate {
         const Element&) const {
       return std::pair<Node*, Element*>();
     }
-
-    virtual bool ShouldCollectProblemMetric() { return false; }
   };
 
   // Constructs a serializer that will write output to the given deque of

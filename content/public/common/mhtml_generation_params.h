@@ -27,9 +27,6 @@ struct CONTENT_EXPORT MHTMLGenerationParams {
 
   // Removes popups that could obstruct the user's view of normal content.
   bool remove_popup_overlay = false;
-
-  // Run page problem detectors while generating MTHML if true.
-  bool use_page_problem_detectors = false;
 };
 
 }  // namespace content

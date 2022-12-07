@@ -61,9 +61,6 @@ struct SerializeAsMHTMLParams {
   // Whether to remove popup overlay while serializing.
   bool mhtml_popup_overlay_removal;
 
-  // Whether to detect problems while serializing.
-  bool mhtml_problem_detection;
-
   // To avoid duplicating MHTML parts across frames, |digests_of_uris_to_skip|
   // contains digests of parts that have already been serialized and should
   // be skipped.

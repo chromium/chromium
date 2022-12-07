@@ -722,7 +722,6 @@ TEST_F(OfflinePageModelTaskifiedTest, SavePageOnBackground) {
   save_page_params.client_id = kTestClientId1;
   save_page_params.original_url = GURL("http://other.page.com");
   save_page_params.is_background = true;
-  save_page_params.use_page_problem_detectors = false;
 
   base::MockCallback<SavePageCallback> callback;
   EXPECT_CALL(callback, Run(Eq(SavePageResult::SUCCESS), A<int64_t>()));

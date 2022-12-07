@@ -758,10 +758,6 @@ class MHTMLPartsGenerationDelegate
     return params_.mhtml_popup_overlay_removal;
   }
 
-  bool UsePageProblemDetectors() override {
-    return params_.mhtml_problem_detection;
-  }
-
  private:
   const mojom::SerializeAsMHTMLParams& params_;
   std::unordered_set<std::string>* serialized_resources_uri_digests_;

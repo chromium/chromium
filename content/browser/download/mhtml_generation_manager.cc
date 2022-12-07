@@ -366,7 +366,6 @@ MHTMLGenerationManager::Job::CreateMojoParams() {
   mojo_params->mhtml_boundary_marker = mhtml_boundary_marker_;
   mojo_params->mhtml_binary_encoding = params_.use_binary_encoding;
   mojo_params->mhtml_popup_overlay_removal = params_.remove_popup_overlay;
-  mojo_params->mhtml_problem_detection = params_.use_page_problem_detectors;
 
   // Tell the renderer to skip (= deduplicate) already covered MHTML parts.
   mojo_params->salt = salt_;

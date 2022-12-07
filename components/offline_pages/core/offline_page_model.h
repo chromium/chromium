@@ -54,9 +54,6 @@ class OfflinePageModel : public base::SupportsUserData, public KeyedService {
     // Whether the page is being saved in the background.
     bool is_background;
 
-    // Run page problem detectors while generating MTHML if true.
-    bool use_page_problem_detectors;
-
     // The app package that the request originated from.
     std::string request_origin;
   };

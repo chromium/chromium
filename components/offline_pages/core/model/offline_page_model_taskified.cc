@@ -228,8 +228,6 @@ void OfflinePageModelTaskified::SavePage(
   // If the page is being saved in the background, we should try to remove the
   // popup overlay that obstructs viewing the normal content.
   create_archive_params.remove_popup_overlay = save_page_params.is_background;
-  create_archive_params.use_page_problem_detectors =
-      save_page_params.use_page_problem_detectors;
 
   // Save directly to public location if on-the-fly enabled.
   //
