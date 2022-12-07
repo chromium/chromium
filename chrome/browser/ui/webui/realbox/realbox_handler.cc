@@ -38,7 +38,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_result.h"
-#include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -503,7 +502,10 @@ RealboxHandler::RealboxHandler(
     content::WebContents* web_contents)
     : profile_(profile),
       web_contents_(web_contents),
-      page_handler_(this, std::move(pending_page_handler)) {}
+      page_handler_(this, std::move(pending_page_handler)) {
+  controller_emitter_observation_.Observe(
+      OmniboxControllerEmitter::GetForBrowserContext(profile_));
+}
 
 RealboxHandler::~RealboxHandler() = default;
 
@@ -518,12 +520,12 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
     autocomplete_controller_ = std::make_unique<AutocompleteController>(
         std::make_unique<ChromeAutocompleteProviderClient>(profile_),
         AutocompleteClassifier::DefaultOmniboxProviders());
-    autocomplete_controller_->AddObserver(this);
 
     OmniboxControllerEmitter* emitter =
         OmniboxControllerEmitter::GetForBrowserContext(profile_);
-    if (emitter)
+    if (emitter) {
       autocomplete_controller_->AddObserver(emitter);
+    }
   }
 
   // TODO(tommycli): We use the input being empty as a signal we are requesting
@@ -789,7 +791,11 @@ void RealboxHandler::ExecuteAction(uint8_t line,
 
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
                                      bool default_match_changed) {
-  DCHECK(controller == autocomplete_controller_.get());
+  // Ignore updates if the controller does not belong to the realbox.
+  if (!autocomplete_controller_ ||
+      autocomplete_controller_.get() != controller) {
+    return;
+  }
 
   page_->AutocompleteResultChanged(CreateAutocompleteResult(
       autocomplete_controller_->input().text(),
