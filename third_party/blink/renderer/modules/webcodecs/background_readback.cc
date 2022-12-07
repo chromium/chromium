@@ -57,7 +57,7 @@ gpu::raster::RasterInterface* GetSharedGpuRasterInterface() {
 // Disabled - simply call sync readback on a separate thread.
 BASE_FEATURE(kTrullyAsyncRgbVideoFrameCopyTo,
              "TrullyAsyncRgbVideoFrameCopyTo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

@@ -82,7 +82,7 @@ namespace {
 // Controls if VideoFrame.copyTo() reads GPU frames asynchronously
 BASE_FEATURE(kVideoFrameAsyncCopyTo,
              "VideoFrameAsyncCopyTo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   switch (fmt) {
