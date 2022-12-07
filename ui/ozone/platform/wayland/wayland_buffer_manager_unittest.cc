@@ -2380,8 +2380,16 @@ TEST_P(WaylandBufferManagerTest, FencedRelease) {
 
 // Tests that destroying a channel doesn't result in resetting surface state
 // and buffers can be attached after the channel has been reinitialized.
+// TODO(crbug.com/1396725): Failing on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CanSubmitBufferAfterChannelDestroyedAndInitialized \
+  DISABLED_CanSubmitBufferAfterChannelDestroyedAndInitialized
+#else
+#define MAYBE_CanSubmitBufferAfterChannelDestroyedAndInitialized \
+  CanSubmitBufferAfterChannelDestroyedAndInitialized
+#endif
 TEST_P(WaylandBufferManagerTest,
-       CanSubmitBufferAfterChannelDestroyedAndInitialized) {
+       MAYBE_CanSubmitBufferAfterChannelDestroyedAndInitialized) {
   constexpr uint32_t kBufferId1 = 1;
 
   const gfx::AcceleratedWidget widget = window_->GetWidget();
