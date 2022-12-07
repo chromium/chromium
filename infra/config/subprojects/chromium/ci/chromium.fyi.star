@@ -2048,7 +2048,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "win11",
     ),
-    os = os.WINDOWS_11,
+    os = os.WINDOWS_ANY,
     goma_backend = None,
     experimental = True,
     reclient_jobs = reclient.jobs.DEFAULT,
