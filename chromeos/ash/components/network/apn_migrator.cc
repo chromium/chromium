@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/network/managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "components/device_event_log/device_event_log.h"
@@ -29,12 +30,15 @@ void OnSetShillUserApnListFailure(const std::string& guid,
 ApnMigrator::ApnMigrator(
     ManagedCellularPrefHandler* managed_cellular_pref_handler,
     ManagedNetworkConfigurationHandler* network_configuration_handler,
-    NetworkStateHandler* network_state_handler)
+    NetworkStateHandler* network_state_handler,
+    NetworkMetadataStore* network_metadata_store)
     : managed_cellular_pref_handler_(managed_cellular_pref_handler),
       network_configuration_handler_(network_configuration_handler),
-      network_state_handler_(network_state_handler) {
-  if (!NetworkHandler::IsInitialized())
+      network_state_handler_(network_state_handler),
+      network_metadata_store_(network_metadata_store) {
+  if (!NetworkHandler::IsInitialized()) {
     return;
+  }
   network_state_handler_observer_.Observe(network_state_handler_);
 }
 
@@ -51,27 +55,33 @@ void ApnMigrator::SetShillUserApnListForNetwork(
       base::BindOnce(&OnSetShillUserApnListFailure, network.guid()));
 }
 
-void ApnMigrator::ClearUserApnListForMigratedNetworks() {
+void ApnMigrator::NetworkListChanged() {
   NetworkStateHandler::NetworkStateList network_list;
   network_state_handler_->GetVisibleNetworkListByType(
       NetworkTypePattern::Cellular(), &network_list);
   for (const NetworkState* network : network_list) {
-    if (managed_cellular_pref_handler_->ContainsApnMigratedIccid(
+    // TODO(b/162365553): Ignore stub cellular networks
+    if (!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
             network->iccid())) {
+      // TODO(b/162365553): Implement this case: Network needs to be migrated
+      continue;
+    }
+
+    if (!ash::features::IsApnRevampEnabled()) {
       // Clear UserApnList so that Shill knows to use legacy APN selection
       // logic.
-      base::Value::List empty_user_apn_list;
       SetShillUserApnListForNetwork(*network, /*apn_list=*/nullptr);
+      continue;
     }
-  }
-}
+    if (const base::Value::List* custom_apn_list =
+            network_metadata_store_->GetCustomApnList(network->guid())) {
+      SetShillUserApnListForNetwork(*network, custom_apn_list);
+      continue;
+    }
 
-void ApnMigrator::NetworkListChanged() {
-  if (ash::features::IsApnRevampEnabled()) {
-    // TODO(b/162365553): Implement this case: APN revamp enabled
-    return;
+    base::Value::List empty_user_apn_list;
+    SetShillUserApnListForNetwork(*network, &empty_user_apn_list);
   }
-  ClearUserApnListForMigratedNetworks();
 }
 
 }  // namespace ash

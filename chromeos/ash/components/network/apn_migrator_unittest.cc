@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/mock_managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
+#include "chromeos/ash/components/network/mock_network_metadata_store.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -19,6 +20,7 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
+#include "components/onc/onc_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -70,12 +72,14 @@ class ApnMigratorTest : public testing::Test {
         base::WrapUnique(new testing::NiceMock<MockManagedCellularPrefHandler>);
     managed_network_configuration_handler_ = base::WrapUnique(
         new testing::NiceMock<MockManagedNetworkConfigurationHandler>);
+    network_metadata_store_ =
+        base::WrapUnique(new testing::NiceMock<MockNetworkMetadataStore>());
 
     apn_migrator_ = std::make_unique<ApnMigrator>(
         managed_cellular_pref_handler_.get(),
         managed_network_configuration_handler_.get(),
-        network_state_helper_.network_state_handler());
-
+        network_state_helper_.network_state_handler(),
+        network_metadata_store_.get());
     SetupNetworks();
   }
 
@@ -98,6 +102,9 @@ class ApnMigratorTest : public testing::Test {
   managed_network_configuration_handler() const {
     return managed_network_configuration_handler_.get();
   }
+  MockNetworkMetadataStore* network_metadata_store() const {
+    return network_metadata_store_.get();
+  }
 
   const std::string& cellular_service_path_1() const {
     return cellular_service_path_1_;
@@ -119,6 +126,7 @@ class ApnMigratorTest : public testing::Test {
       managed_cellular_pref_handler_;
   std::unique_ptr<MockManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_;
+  std::unique_ptr<MockNetworkMetadataStore> network_metadata_store_;
 
   std::string cellular_service_path_1_;
   std::string cellular_service_path_2_;
@@ -203,7 +211,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
                             _, _))
       .Times(1);
 
-  // Ensure that the function does not modify the non-migrated network
+  // Ensure that the function does not modify the non-migrated network.
   EXPECT_CALL(*managed_network_configuration_handler(),
               SetProperties(cellular_service_path_2(), _, _, _))
       .Times(0);
@@ -211,4 +219,81 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
   // Function under test
   TriggerNetworkListChanged();
 }
+
+TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigratedNetworks) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  // Every network should be evaluated, pretend that all network have been
+  // migrated.
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid2)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
+      .Times(1)
+      .WillOnce(Return(true));
+
+  // Return nullptr and empty list for the first two networks.
+  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
+      .Times(1)
+      .WillOnce(Return(nullptr));
+  base::Value::List empty_apn_list;
+  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid2))
+      .Times(1)
+      .WillOnce(Return(&empty_apn_list));
+
+  // For the third network, simulate a populated custom APN list.
+  base::Value::Dict custom_apn_1;
+  custom_apn_1.Set(::onc::cellular_apn::kAccessPointName, "apn_1");
+  base::Value::Dict custom_apn_2;
+  custom_apn_2.Set(::onc::cellular_apn::kAccessPointName, "apn_2");
+  base::Value::List populated_apn_list;
+  populated_apn_list.Append(std::move(custom_apn_1));
+  populated_apn_list.Append(std::move(custom_apn_2));
+  EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid3))
+      .Times(1)
+      .WillOnce(Return(&populated_apn_list));
+
+  // For the first and second networks, the function should update Shill with
+  // empty user APN lists.
+  base::Value::Dict expected_onc_1 = chromeos::network_config::UserApnListToOnc(
+      kTestCellularGuid1, &empty_apn_list);
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_1(),
+                            Truly([&expected_onc_1](const base::Value& value) {
+                              return expected_onc_1 == value.GetDict();
+                            }),
+                            _, _))
+      .Times(1);
+  base::Value::Dict expected_onc_2 = chromeos::network_config::UserApnListToOnc(
+      kTestCellularGuid2, &empty_apn_list);
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_2(),
+                            Truly([&expected_onc_2](const base::Value& value) {
+                              return expected_onc_2 == value.GetDict();
+                            }),
+                            _, _))
+      .Times(1);
+
+  // Verify that Shill receives the user APNs for the third list.
+  base::Value::Dict expected_onc_3 = chromeos::network_config::UserApnListToOnc(
+      kTestCellularGuid3, &populated_apn_list);
+  EXPECT_CALL(*managed_network_configuration_handler(),
+              SetProperties(cellular_service_path_3(),
+                            Truly([&expected_onc_3](const base::Value& value) {
+                              return expected_onc_3 == value.GetDict();
+                            }),
+                            _, _))
+      .Times(1);
+
+  // Function under test.
+  TriggerNetworkListChanged();
+}
+
 }  // namespace ash

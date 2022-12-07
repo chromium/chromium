@@ -12,6 +12,7 @@ namespace ash {
 
 class ManagedCellularPrefHandler;
 class ManagedNetworkConfigurationHandler;
+class NetworkMetadataStore;
 class NetworkStateHandler;
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
@@ -20,7 +21,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   ApnMigrator(
       ManagedCellularPrefHandler* managed_cellular_pref_handler,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
-      NetworkStateHandler* network_state_handler);
+      NetworkStateHandler* network_state_handler,
+      NetworkMetadataStore* network_metadata_store);
   ApnMigrator() = delete;
   ApnMigrator(const ApnMigrator&) = delete;
   ApnMigrator& operator=(const ApnMigrator&) = delete;
@@ -35,14 +37,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   void SetShillUserApnListForNetwork(const NetworkState& network,
                                      const base::Value::List* apn_list);
 
-  // Iterates the registered cellular networks, and clears the Shill property
-  // user_apn_list for networks that have been migrated to the APN Revamp
-  // feature.
-  void ClearUserApnListForMigratedNetworks();
-
   ManagedCellularPrefHandler* managed_cellular_pref_handler_ = nullptr;
   ManagedNetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
+  NetworkMetadataStore* network_metadata_store_ = nullptr;
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
