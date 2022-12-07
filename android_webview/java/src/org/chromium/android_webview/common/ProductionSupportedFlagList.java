@@ -351,6 +351,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.PERSISTENT_ORIGIN_TRIALS,
                     "If enabled, servers will be able to use persistent origin trials "
                             + "on this device."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_IMAGE_DRAG,
+                    "If enabled, images can be dragged out from Webview"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

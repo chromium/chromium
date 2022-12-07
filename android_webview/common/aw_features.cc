@@ -141,5 +141,10 @@ BASE_FEATURE(kWebViewClientHintsControllerDelegate,
              "WebViewClientHintsControllerDelegate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This enables image drage out for Webview.
+BASE_FEATURE(kWebViewImageDrag,
+             "WebViewImageDrag",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace android_webview
