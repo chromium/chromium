@@ -15,6 +15,7 @@
 #include "ash/quick_pair/ui/ui_broker.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -117,17 +118,57 @@ class Mediator final
       bool has_at_least_one_discovery_session) override;
 
  private:
+  // Represents a device's most recent state when its found for a discovery
+  // notification (initial and subsequent pairing scenarios). This is used
+  // to determine if a device can have a notification shown again in the
+  // `discovery_notification_block-list_` block-list.
+  enum class DiscoveryNotificationDismissalState {
+    // If the notification is dismissed, do not show again for 2 seconds.
+    kDismissed,
+    // If notification is dismissed again, do not show again for 5 minutes.
+    kShortBan,
+    // If notification is dismissed again, do not show until the block-list is
+    // reset, which happens when the user session ends or when the Bluetooth
+    // or Fast Pair toggle is toggled off.
+    kLongBan,
+  };
+
   void SetFastPairState(bool is_enabled);
   void BindToCrosBluetoothConfig();
   void CancelPairing();
 
   bool IsDeviceCurrentlyShowingNotification(scoped_refptr<Device> device);
+  bool IsDeviceBlockedForDiscoveryNotifications(scoped_refptr<Device> device);
+  void UpdateDiscoveryBlockList(scoped_refptr<Device> device);
 
   bool has_at_least_one_discovery_session_ = false;
 
   // |device_currently_showing_notification_| can be null if there is no
   // notification currently displayed to user.
   scoped_refptr<Device> device_currently_showing_notification_;
+
+  // The discovery notification block-list, where
+  // std::pair<std::string, Protocol> represents the block-list key of the
+  // device’s model ID and the pairing protocol corresponding (either initial
+  // or subsequent), and the value is
+  // std::pair<DiscoveryNotificationDismissalState, absl::optional<base::Time>
+  // representing the current state of the device and the timestamp of when it
+  // is set to expire. It is optional because `kLongBan` does not have an expire
+  // timeout. This block-list bans a device model (by model ID), which means
+  // that if a user has two of the same device, or two devices are pairing in
+  // the same range, both will be blocked for discovery notifications. This is a
+  // rare edge case that we consider in order to align with Android by banning
+  // by model id. We don’t expect many users to have two of the same device, or
+  // two of the same device pairing in the same range at the same time, and
+  // users can pair via Bluetooth settings if needed. We cannot use the BLE
+  // address as a unique identifier for a device because it rotates, and when
+  // Fast Pair shows the discovery notifications, it does not yet have the
+  // classic mac address to unique identify a device (this is given as part of
+  // the FastPairHandshake).
+  base::flat_map<std::pair<std::string, Protocol>,
+                 std::pair<DiscoveryNotificationDismissalState,
+                           absl::optional<base::Time>>>
+      discovery_notification_block_list_;
 
   std::unique_ptr<FeatureStatusTracker> feature_status_tracker_;
   std::unique_ptr<ScannerBroker> scanner_broker_;

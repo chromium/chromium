@@ -36,6 +36,7 @@
 #include "ash/test/ash_test_helper.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chromeos/ash/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_discovery_session_manager.h"
@@ -55,8 +56,19 @@ namespace {
 
 using testing::Return;
 
-constexpr char kTestMetadataId[] = "test_metadata_id";
+constexpr char kTestMetadataId[] = "718C17";
+constexpr char kTestMetadataId2[] = "FF1B63";
 constexpr char kTestAddress[] = "test_address";
+
+constexpr base::TimeDelta kDismissedDiscoveryNotificationBanTime =
+    base::Seconds(2);
+constexpr base::TimeDelta kShortBanDiscoveryNotificationBanTime =
+    base::Minutes(5);
+
+// Represents an arbitrary length ban time to demonstrate that the long ban
+// is until the state is reset.
+constexpr base::TimeDelta kLongBanDiscoveryNotificationBanTime =
+    base::Minutes(15);
 
 }  // namespace
 
@@ -65,6 +77,9 @@ namespace quick_pair {
 
 class MediatorTest : public AshTestBase {
  public:
+  MediatorTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   void SetUp() override {
     AshTestBase::SetUp();
     adapter_ =
@@ -120,10 +135,12 @@ class MediatorTest : public AshTestBase {
         std::move(ui_broker), std::move(fast_pair_repository),
         std::make_unique<QuickPairProcessManagerImpl>());
 
-    device_ = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
-                                           Protocol::kFastPairInitial);
-    device2_ = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
-                                            Protocol::kFastPairSubsequent);
+    initial_device_ = base::MakeRefCounted<Device>(
+        kTestMetadataId, kTestAddress, Protocol::kFastPairInitial);
+    initial_device2_ = base::MakeRefCounted<Device>(
+        kTestMetadataId2, kTestAddress, Protocol::kFastPairInitial);
+    subsequent_device_ = base::MakeRefCounted<Device>(
+        kTestMetadataId, kTestAddress, Protocol::kFastPairSubsequent);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -151,8 +168,9 @@ class MediatorTest : public AshTestBase {
         ->fake_discovery_session_manager();
   }
 
-  scoped_refptr<Device> device_;
-  scoped_refptr<Device> device2_;
+  scoped_refptr<Device> initial_device_;
+  scoped_refptr<Device> initial_device2_;
+  scoped_refptr<Device> subsequent_device_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
   FakeFeatureStatusTracker* feature_status_tracker_;
   MockScannerBroker* mock_scanner_broker_;
@@ -180,9 +198,9 @@ TEST_F(MediatorTest, TogglesScanningWhenFastPairEnabledChanges) {
 TEST_F(MediatorTest, CancelsPairingsWhenFastPairDisabled) {
   // Start with fast pair enabled and one handshake in progress.
   feature_status_tracker_->SetIsFastPairEnabled(true);
-  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+  FastPairHandshakeLookup::GetInstance()->Create(adapter_, initial_device_,
                                                  base::DoNothing());
-  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(initial_device_));
 
   // When Fast Pair becomes disabled, stop scanning, dismiss
   // notifications, and dismiss all handshakes.
@@ -190,7 +208,7 @@ TEST_F(MediatorTest, CancelsPairingsWhenFastPairDisabled) {
   EXPECT_CALL(*mock_pairer_broker_, StopPairing);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
   feature_status_tracker_->SetIsFastPairEnabled(false);
-  EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+  EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(initial_device_));
 
   // When Fast Pair becomes enabled, resume scanning.
   EXPECT_CALL(*mock_scanner_broker_, StartScanning);
@@ -200,75 +218,76 @@ TEST_F(MediatorTest, CancelsPairingsWhenFastPairDisabled) {
 TEST_F(MediatorTest, InvokesShowDiscoveryWhenDeviceFound) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery);
-  mock_scanner_broker_->NotifyDeviceFound(device_);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
 }
 
 TEST_F(MediatorTest,
-       InvokesShowDiscovery_OnlyOneDevice_DeviceFound_DifferentDevice) {
+       InvokesShowDiscovery_OnlyOneinitial_Device_DeviceFound_DifferentDevice) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   EXPECT_CALL(*mock_ui_broker_, ExtendNotification).Times(0);
-  mock_scanner_broker_->NotifyDeviceFound(device_);
-  mock_scanner_broker_->NotifyDeviceFound(device2_);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device2_);
 }
 
 TEST_F(MediatorTest,
-       InvokesShowDiscovery_OnlyOneDevice_DeviceFound_SameDevice) {
+       InvokesShowDiscovery_OnlyOneinitial_Device_DeviceFound_SameDevice) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
   EXPECT_CALL(*mock_ui_broker_, ExtendNotification).Times(1);
-  mock_scanner_broker_->NotifyDeviceFound(device_);
-  mock_scanner_broker_->NotifyDeviceFound(device_);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
 }
 
 TEST_F(MediatorTest, InvokesShowPairing_V1) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   auto device = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
                                              Protocol::kFastPairInitial);
-  device_->set_version(DeviceFastPairVersion::kV1);
+  initial_device_->set_version(DeviceFastPairVersion::kV1);
   EXPECT_CALL(*mock_ui_broker_, ShowPairing).Times(0);
-  mock_ui_broker_->NotifyDiscoveryAction(device_,
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
                                          DiscoveryAction::kPairToDevice);
 }
 
 TEST_F(MediatorTest, DoesNotInvokeShowPairing_DismissedByUser) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairing).Times(0);
-  mock_ui_broker_->NotifyDiscoveryAction(device_,
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
                                          DiscoveryAction::kDismissedByUser);
 }
 
 TEST_F(MediatorTest, DoesNotInvokeShowPairing_Dismissed) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairing).Times(0);
-  mock_ui_broker_->NotifyDiscoveryAction(device_,
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
                                          DiscoveryAction::kDismissedByOs);
 }
 
 TEST_F(MediatorTest, DoesNotInvokeShowPairing_LearnMore) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairing).Times(0);
-  mock_ui_broker_->NotifyDiscoveryAction(device_, DiscoveryAction::kLearnMore);
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kLearnMore);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_KeyBasedPairingCharacteristicDiscovery) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kKeyBasedPairingCharacteristicDiscovery);
+      initial_device_, PairFailure::kKeyBasedPairingCharacteristicDiscovery);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_CreateGattConnection) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_,
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
                                          PairFailure::kCreateGattConnection);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_GattServiceDiscovery) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_,
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
                                          PairFailure::kGattServiceDiscovery);
 }
 
@@ -276,13 +295,13 @@ TEST_F(MediatorTest, NotifyPairFailure_GattServiceDiscoveryTimeout) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kGattServiceDiscoveryTimeout);
+      initial_device_, PairFailure::kGattServiceDiscoveryTimeout);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_DataEncryptorRetrieval) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_,
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
                                          PairFailure::kDataEncryptorRetrieval);
 }
 
@@ -290,14 +309,14 @@ TEST_F(MediatorTest, NotifyPairFailure_PasskeyCharacteristicDiscovery) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kPasskeyCharacteristicDiscovery);
+      initial_device_, PairFailure::kPasskeyCharacteristicDiscovery);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_AccountKeyCharacteristicDiscovery) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kAccountKeyCharacteristicDiscovery);
+      initial_device_, PairFailure::kAccountKeyCharacteristicDiscovery);
 }
 
 TEST_F(MediatorTest,
@@ -305,14 +324,15 @@ TEST_F(MediatorTest,
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kKeyBasedPairingCharacteristicNotifySession);
+      initial_device_,
+      PairFailure::kKeyBasedPairingCharacteristicNotifySession);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_PasskeyCharacteristicNotifySession) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kPasskeyCharacteristicNotifySession);
+      initial_device_, PairFailure::kPasskeyCharacteristicNotifySession);
 }
 
 TEST_F(MediatorTest,
@@ -320,7 +340,8 @@ TEST_F(MediatorTest,
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout);
+      initial_device_,
+      PairFailure::kKeyBasedPairingCharacteristicNotifySessionTimeout);
 }
 
 TEST_F(MediatorTest,
@@ -328,34 +349,34 @@ TEST_F(MediatorTest,
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kPasskeyCharacteristicNotifySessionTimeout);
+      initial_device_, PairFailure::kPasskeyCharacteristicNotifySessionTimeout);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_KeyBasedPairingCharacteristicWrite) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kKeyBasedPairingCharacteristicWrite);
+      initial_device_, PairFailure::kKeyBasedPairingCharacteristicWrite);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_PasskeyPairingCharacteristicWrite) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kPasskeyPairingCharacteristicWrite);
+      initial_device_, PairFailure::kPasskeyPairingCharacteristicWrite);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_KeyBasedPairingResponseTimeout) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kKeyBasedPairingResponseTimeout);
+      initial_device_, PairFailure::kKeyBasedPairingResponseTimeout);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_PasskeyResponseTimeout) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_,
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
                                          PairFailure::kPasskeyResponseTimeout);
 }
 
@@ -363,20 +384,20 @@ TEST_F(MediatorTest, NotifyPairFailure_KeybasedPairingResponseDecryptFailure) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kKeybasedPairingResponseDecryptFailure);
+      initial_device_, PairFailure::kKeybasedPairingResponseDecryptFailure);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_IncorrectKeyBasedPairingResponseType) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kIncorrectKeyBasedPairingResponseType);
+      initial_device_, PairFailure::kIncorrectKeyBasedPairingResponseType);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_PasskeyDecryptFailure) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_,
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
                                          PairFailure::kPasskeyDecryptFailure);
 }
 
@@ -384,61 +405,80 @@ TEST_F(MediatorTest, NotifyPairFailure_IncorrectPasskeyResponseType) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
   mock_pairer_broker_->NotifyPairFailure(
-      device_, PairFailure::kIncorrectPasskeyResponseType);
+      initial_device_, PairFailure::kIncorrectPasskeyResponseType);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_PasskeyMismatch) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_,
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
                                          PairFailure::kPasskeyMismatch);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_PairingDeviceLost) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_,
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
                                          PairFailure::kPairingDeviceLost);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_PairingConnect) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_, PairFailure::kPairingConnect);
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
+                                         PairFailure::kPairingConnect);
 }
 
 TEST_F(MediatorTest, NotifyPairFailure_AddressConnect) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed);
-  mock_pairer_broker_->NotifyPairFailure(device_, PairFailure::kAddressConnect);
+  mock_pairer_broker_->NotifyPairFailure(initial_device_,
+                                         PairFailure::kAddressConnect);
 }
 
 TEST_F(MediatorTest, InvokesShowAssociateAccount) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount);
-  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device_);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      initial_device_);
+}
+
+TEST_F(
+    MediatorTest,
+    InvokesShowAssociateAccount_OnlyOneNotification_DifferentDeviceProtocols) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount).Times(1);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      initial_device_);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      subsequent_device_);
 }
 
 TEST_F(MediatorTest,
        InvokesShowAssociateAccount_OnlyOneNotification_DifferentDevice) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount).Times(1);
-  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device_);
-  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device2_);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      initial_device_);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      initial_device2_);
 }
 
 TEST_F(MediatorTest,
        InvokesShowAssociateAccount_OnlyOneNotification_SameDevice) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount).Times(2);
-  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device_);
-  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device_);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      initial_device_);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      initial_device_);
 }
 
 TEST_F(MediatorTest, DoesntInvokeShowAssociateAccount_FastPairDisabled) {
   feature_status_tracker_->SetIsFastPairEnabled(false);
   EXPECT_CALL(*mock_ui_broker_, ShowAssociateAccount).Times(0);
-  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(device_);
+  fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(
+      initial_device_);
 }
 
 TEST_F(
@@ -447,7 +487,7 @@ TEST_F(
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed).Times(0);
   mock_pairer_broker_->NotifyAccountKeyWrite(
-      device_, AccountKeyFailure::kAccountKeyCharacteristicDiscovery);
+      initial_device_, AccountKeyFailure::kAccountKeyCharacteristicDiscovery);
 }
 
 TEST_F(MediatorTest,
@@ -455,7 +495,7 @@ TEST_F(MediatorTest,
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_ui_broker_, ShowPairingFailed).Times(0);
   mock_pairer_broker_->NotifyAccountKeyWrite(
-      device_, AccountKeyFailure::kAccountKeyCharacteristicDiscovery);
+      initial_device_, AccountKeyFailure::kAccountKeyCharacteristicDiscovery);
 }
 
 TEST_F(MediatorTest, AssociateAccountKeyAction_AssociateAccount) {
@@ -463,7 +503,7 @@ TEST_F(MediatorTest, AssociateAccountKeyAction_AssociateAccount) {
   EXPECT_CALL(*mock_pairer_broker_, PairDevice);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
   mock_ui_broker_->NotifyAssociateAccountAction(
-      device_, AssociateAccountAction::kAssoicateAccount);
+      initial_device_, AssociateAccountAction::kAssoicateAccount);
 }
 
 TEST_F(MediatorTest, AssociateAccountKeyAction_LearnMore) {
@@ -471,34 +511,34 @@ TEST_F(MediatorTest, AssociateAccountKeyAction_LearnMore) {
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications).Times(0);
   mock_ui_broker_->NotifyAssociateAccountAction(
-      device_, AssociateAccountAction::kLearnMore);
+      initial_device_, AssociateAccountAction::kLearnMore);
 }
 
 TEST_F(MediatorTest, AssociateAccountKeyAction_DismissedByUser) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   mock_ui_broker_->NotifyAssociateAccountAction(
-      device_, AssociateAccountAction::kDismissedByUser);
+      initial_device_, AssociateAccountAction::kDismissedByUser);
 }
 
 TEST_F(MediatorTest, AssociateAccountKeyAction_Dismissed) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   mock_ui_broker_->NotifyAssociateAccountAction(
-      device_, AssociateAccountAction::kDismissedByUser);
+      initial_device_, AssociateAccountAction::kDismissedByUser);
 }
 
 TEST_F(MediatorTest, CompanionAppAction_DownloadApp) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   mock_ui_broker_->NotifyCompanionAppAction(
-      device_, CompanionAppAction::kDownloadAndLaunchApp);
+      initial_device_, CompanionAppAction::kDownloadAndLaunchApp);
 }
 
 TEST_F(MediatorTest, CompanionAppAction_LaunchApp) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
-  mock_ui_broker_->NotifyCompanionAppAction(device_,
+  mock_ui_broker_->NotifyCompanionAppAction(initial_device_,
                                             CompanionAppAction::kLaunchApp);
 }
 
@@ -506,13 +546,13 @@ TEST_F(MediatorTest, CompanionAppAction_DismissedByUser) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   mock_ui_broker_->NotifyCompanionAppAction(
-      device_, CompanionAppAction::kDismissedByUser);
+      initial_device_, CompanionAppAction::kDismissedByUser);
 }
 
 TEST_F(MediatorTest, CompanionAppAction_Dismissed) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
-  mock_ui_broker_->NotifyCompanionAppAction(device_,
+  mock_ui_broker_->NotifyCompanionAppAction(initial_device_,
                                             CompanionAppAction::kDismissed);
 }
 
@@ -520,20 +560,20 @@ TEST_F(MediatorTest, PairingFailedAction_NavigateToSettings) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   mock_ui_broker_->NotifyPairingFailedAction(
-      device_, PairingFailedAction::kNavigateToSettings);
+      initial_device_, PairingFailedAction::kNavigateToSettings);
 }
 
 TEST_F(MediatorTest, PairingFailedAction_DismissedByUser) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
   mock_ui_broker_->NotifyPairingFailedAction(
-      device_, PairingFailedAction::kDismissedByUser);
+      initial_device_, PairingFailedAction::kDismissedByUser);
 }
 
 TEST_F(MediatorTest, PairingFailedAction_Dismissed) {
   feature_status_tracker_->SetIsFastPairEnabled(true);
   EXPECT_CALL(*mock_pairer_broker_, PairDevice).Times(0);
-  mock_ui_broker_->NotifyPairingFailedAction(device_,
+  mock_ui_broker_->NotifyPairingFailedAction(initial_device_,
                                              PairingFailedAction::kDismissed);
 }
 
@@ -551,7 +591,7 @@ TEST_F(MediatorTest,
        FastPairBluetoothConfigDelegateNotifiesAdapterStateChanges) {
   EXPECT_CALL(*mock_scanner_broker_, StartScanning);
   feature_status_tracker_->SetIsFastPairEnabled(true);
-  FastPairHandshakeLookup::GetInstance()->Create(adapter_, device_,
+  FastPairHandshakeLookup::GetInstance()->Create(adapter_, initial_device_,
                                                  base::DoNothing());
 
   bluetooth_config::FastPairDelegate* delegate =
@@ -562,10 +602,10 @@ TEST_F(MediatorTest,
   // AdapterStateController is set and the observation is created.
   fake_adapter_state_controller_.SetSystemState(
       bluetooth_config::mojom::BluetoothSystemState::kDisabling);
-  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(initial_device_));
   fake_adapter_state_controller_.SetSystemState(
       bluetooth_config::mojom::BluetoothSystemState::kEnabled);
-  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+  EXPECT_TRUE(FastPairHandshakeLookup::GetInstance()->Get(initial_device_));
 
   // After the AdapterStateController is set, we should be notified and
   // create an observation.
@@ -579,9 +619,157 @@ TEST_F(MediatorTest,
   EXPECT_CALL(*mock_ui_broker_, RemoveNotifications);
   fake_adapter_state_controller_.SetSystemState(
       bluetooth_config::mojom::BluetoothSystemState::kDisabling);
-  EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(device_));
+  EXPECT_FALSE(FastPairHandshakeLookup::GetInstance()->Get(initial_device_));
 
   delegate->SetAdapterStateController(nullptr);
+}
+
+TEST_F(MediatorTest, DiscoveryBanLogic_InitialParing) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+
+  // Simulate the device first found. When the user dismissed the notification,
+  // if the device is found again, we do not expect the notification to be
+  // shown.
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // After the 2 second timeout, when the device is found again, expect
+  // the notification to be shown.
+  task_environment()->FastForwardBy(kDismissedDiscoveryNotificationBanTime);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // When the device is found again, we expect the notification to not be shown
+  // since it's within the 5 minute short ban timeout period after it has been
+  // dismissed by user again.
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // After the 5 minute timeout, when the device is found again, expect
+  // the notification to be shown.
+  task_environment()->FastForwardBy(kShortBanDiscoveryNotificationBanTime);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // When the device is found again, we expect the notification to not be shown
+  // again since it's in the long ban state.
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // Even after a long timeout period, we do not expect the notification to be
+  // shown again under the long ban period.
+  task_environment()->FastForwardBy(kLongBanDiscoveryNotificationBanTime);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // We only expect the notification to be shown again when the Fast Pair
+  // state is reset. Simulate the Fast Pair toggle being turned off then on
+  // again.
+  feature_status_tracker_->SetIsFastPairEnabled(false);
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+}
+
+TEST_F(MediatorTest, DiscoveryBan_SubsequentParing) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+
+  // Simulate the device first found. When the user dismissed the notification,
+  // if the device is found again, we do not expect the notification to be
+  // shown.
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+  mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+
+  // After the 2 second timeout, when the device is found again, expect
+  // the notification to be shown.
+  task_environment()->FastForwardBy(kDismissedDiscoveryNotificationBanTime);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+
+  // When the device is found again, we expect the notification to not be shown
+  // since it's within the 5 minute short ban timeout period after it has been
+  // dismissed by user again.
+  mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+
+  // After the 5 minute timeout, when the device is found again, expect
+  // the notification to be shown.
+  task_environment()->FastForwardBy(kShortBanDiscoveryNotificationBanTime);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+
+  // When the device is found again, we expect the notification to not be shown
+  // again since it's in the long ban state.
+  mock_ui_broker_->NotifyDiscoveryAction(subsequent_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+
+  // Even after a long timeout period, we do not expect the notification to be
+  // shown again under the long ban period.
+  task_environment()->FastForwardBy(kLongBanDiscoveryNotificationBanTime);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+
+  // We only expect the notification to be shown again when the Fast Pair
+  // state is reset. Simulate the Fast Pair toggle being turned off then on
+  // again.
+  feature_status_tracker_->SetIsFastPairEnabled(false);
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(subsequent_device_);
+}
+
+TEST_F(MediatorTest, DiscoveryBan_MultipleDevices) {
+  feature_status_tracker_->SetIsFastPairEnabled(true);
+
+  // Simulate the device first found. When the user dismissed the notification,
+  // if the device is found again, we do not expect the notification to be
+  // shown.
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // However, at this point, a different device is able to be shown
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device2_);
+
+  // After the 2 second timeout, when the device is found again, don't expect
+  // the notification to be shown since the second device is currently
+  // being shown.
+  task_environment()->FastForwardBy(kDismissedDiscoveryNotificationBanTime);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
+
+  // When the second device is dismissed, do not expect it be to shown
+  // again since it is blocked.
+  mock_ui_broker_->NotifyDiscoveryAction(initial_device2_,
+                                         DiscoveryAction::kDismissedByUser);
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(0);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device2_);
+
+  // Now the first device can be shown again since first come first serve
+  // notifications no longer apply and it is no longer blocked.
+  EXPECT_CALL(*mock_ui_broker_, ShowDiscovery).Times(1);
+  mock_scanner_broker_->NotifyDeviceFound(initial_device_);
 }
 
 }  // namespace quick_pair

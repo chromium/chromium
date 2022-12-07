@@ -43,7 +43,12 @@ namespace {
 
 Mediator::Factory* g_test_factory = nullptr;
 
-}
+constexpr base::TimeDelta kDismissedDiscoveryNotificationBanTime =
+    base::Seconds(2);
+constexpr base::TimeDelta kShortBanDiscoveryNotificationBanTime =
+    base::Minutes(5);
+
+}  // namespace
 
 // static
 std::unique_ptr<Mediator> Mediator::Factory::Create() {
@@ -176,6 +181,23 @@ bool Mediator::IsDeviceCurrentlyShowingNotification(
          device_currently_showing_notification_->protocol == device->protocol;
 }
 
+bool Mediator::IsDeviceBlockedForDiscoveryNotifications(
+    scoped_refptr<Device> device) {
+  auto it = discovery_notification_block_list_.find(
+      std::make_pair(device->metadata_id, device->protocol));
+  if (it == discovery_notification_block_list_.end())
+    return false;
+
+  DiscoveryNotificationDismissalState notification_state = it->second.first;
+
+  // We can reference |ban_expire_time|'s value' directly since we check for
+  // `kLongBan` beforehand, and |ban_expire_time| is expected to have a value in
+  // all cases except `kLongBan`.
+  absl::optional<base::Time> ban_expire_time = it->second.second;
+  return (notification_state == DiscoveryNotificationDismissalState::kLongBan ||
+          base::Time::Now() < ban_expire_time.value());
+}
+
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
 
@@ -189,6 +211,18 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
     QP_LOG(INFO) << __func__
                  << ": Already showing a notification for a different device="
                  << device_currently_showing_notification_;
+    return;
+  }
+
+  // Because we expect advertisements to be emitted 100ms for discoverable
+  // advertisements and 250ms for not discoverable advertisements according to
+  // the Fast Pair spec
+  // (https://developers.google.com/nearby/fast-pair/specifications/service/provider#advertising_interval_when_discoverable),
+  // this means we expect the Mediator’s `OnDeviceFound` event to be triggered
+  // frequently for the same device.
+  if (IsDeviceBlockedForDiscoveryNotifications(device)) {
+    QP_LOG(INFO) << __func__
+                 << ": device is currently blocked for discovery notifications";
     return;
   }
 
@@ -244,6 +278,8 @@ void Mediator::SetFastPairState(bool is_enabled) {
 
   scanner_broker_->StopScanning(Protocol::kFastPairInitial);
   ui_broker_->RemoveNotifications();
+  discovery_notification_block_list_.clear();
+  device_currently_showing_notification_ = nullptr;
 }
 
 void Mediator::CancelPairing() {
@@ -279,6 +315,47 @@ void Mediator::OnAccountKeyWrite(scoped_refptr<Device> device,
                << ",Error=" << error.value();
 }
 
+void Mediator::UpdateDiscoveryBlockList(scoped_refptr<Device> device) {
+  auto it = discovery_notification_block_list_.find(
+      std::make_pair(device->metadata_id, device->protocol));
+
+  // If this is the first time we are seeing this device, create a new value in
+  // the block-list.
+  if (it == discovery_notification_block_list_.end()) {
+    discovery_notification_block_list_[std::make_pair(device->metadata_id,
+                                                      device->protocol)] =
+        std::make_pair(
+            DiscoveryNotificationDismissalState::kDismissed,
+            absl::make_optional(base::Time::Now() +
+                                kDismissedDiscoveryNotificationBanTime));
+    return;
+  }
+
+  // If the device is already in the block-list, update the state and the
+  // expire timestamp.
+  DiscoveryNotificationDismissalState dismissal_state = it->second.first;
+  switch (dismissal_state) {
+    case DiscoveryNotificationDismissalState::kDismissed:
+      it->second = std::make_pair(
+          DiscoveryNotificationDismissalState::kShortBan,
+          absl::make_optional(base::Time::Now() +
+                              kShortBanDiscoveryNotificationBanTime));
+      return;
+    case DiscoveryNotificationDismissalState::kShortBan:
+      // Since `IsDeviceBlockedForDiscoveryNotifications` has an explicit
+      // check for `kLongBan`, the timestamp is absl::nullopt. The `kLongBan`
+      // does not have an expiration timeout.
+      it->second = std::make_pair(DiscoveryNotificationDismissalState::kLongBan,
+                                  absl::nullopt);
+      return;
+    case DiscoveryNotificationDismissalState::kLongBan:
+      // If the device had the state `kLongBan`, it should have never been
+      // shown again, so we are expected to never get to this state when a
+      // `kLongBan` was shown, and then dismissed by user.
+      NOTREACHED();
+  }
+}
+
 void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
                                  DiscoveryAction action) {
   QP_LOG(INFO) << __func__ << ": Device=" << device << ", Action=" << action;
@@ -295,8 +372,12 @@ void Mediator::OnDiscoveryAction(scoped_refptr<Device> device,
     } break;
     case DiscoveryAction::kDismissedByOs:
       break;
-    case DiscoveryAction::kDismissedByTimeout:
     case DiscoveryAction::kDismissedByUser:
+      // When the user explicitly dismisses the discovery notification, update
+      // the device's block-list value accordingly.
+      UpdateDiscoveryBlockList(device);
+      [[fallthrough]];
+    case DiscoveryAction::kDismissedByTimeout:
       // When the notification is dismissed by timeout or dismissed by user,
       // there will be no more notifications for |device|. We reset
       // |device_currently_showing_notification_| to enforce the first come,
