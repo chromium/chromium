@@ -782,6 +782,8 @@ bool AccessibilityManager::PlaySpokenFeedbackToggleCountdown(int tick_count) {
 void AccessibilityManager::HandleAccessibilityGesture(
     ax::mojom::Gesture gesture,
     gfx::PointF location) {
+  if (!profile_)
+    return;
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
 
