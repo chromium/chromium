@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-package: chromium/third_party/android_sdk/public/platforms/android-TiramisuPrivacySandbox
+package: chromium/third_party/android_sdk/public/platforms/android-tiramisuprivacysandbox
 description: platforms Android SDK Platforms library
 root: ../../public/
 data:
