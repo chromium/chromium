@@ -149,8 +149,9 @@ NetTrustStore::~NetTrustStore() = default;
 
 void NetTrustStore::AddAnchor(base::span<const uint8_t> data) {
   net::CertErrors errors;
-  scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
-      net::x509_util::CreateCryptoBuffer(data), {}, &errors);
+  std::shared_ptr<const net::ParsedCertificate> cert =
+      net::ParsedCertificate::Create(net::x509_util::CreateCryptoBuffer(data),
+                                     {}, &errors);
   CHECK(cert) << errors.ToDebugString();
   // Enforce pathlen constraints and policies defined on the root certificate.
   store_.AddTrustAnchorWithConstraints(std::move(cert));
@@ -159,12 +160,13 @@ void NetTrustStore::AddAnchor(base::span<const uint8_t> data) {
 openscreen::ErrorOr<NetTrustStore::CertificatePathResult>
 NetTrustStore::FindCertificatePath(const std::vector<std::string>& der_certs,
                                    const openscreen::cast::DateTime& time) {
-  scoped_refptr<net::ParsedCertificate> leaf_cert;
+  std::shared_ptr<const net::ParsedCertificate> leaf_cert;
   net::CertIssuerSourceStatic intermediate_cert_issuer_source;
   for (const std::string& der_cert : der_certs) {
-    scoped_refptr<net::ParsedCertificate> cert(net::ParsedCertificate::Create(
-        net::x509_util::CreateCryptoBuffer(der_cert), GetCertParsingOptions(),
-        nullptr));
+    std::shared_ptr<const net::ParsedCertificate> cert(
+        net::ParsedCertificate::Create(
+            net::x509_util::CreateCryptoBuffer(der_cert),
+            GetCertParsingOptions(), nullptr));
     if (!cert) {
       return openscreen::Error::Code::kErrCertsParse;
     }

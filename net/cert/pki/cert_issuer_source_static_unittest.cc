@@ -14,7 +14,7 @@ namespace {
 
 class CertIssuerSourceStaticTestDelegate {
  public:
-  void AddCert(scoped_refptr<ParsedCertificate> cert) {
+  void AddCert(std::shared_ptr<const ParsedCertificate> cert) {
     source_.AddCert(std::move(cert));
   }
 

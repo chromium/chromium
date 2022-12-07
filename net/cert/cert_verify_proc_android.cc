@@ -55,15 +55,15 @@ const unsigned int kMaxAIAFetches = 5;
 // TODO(estark): when searching for an issuer, this always uses the first
 // encountered issuer in |certs|, and does not handle the situation where
 // |certs| contains more than one issuer for a given certificate.
-scoped_refptr<ParsedCertificate> FindLastCertWithUnknownIssuer(
+std::shared_ptr<const ParsedCertificate> FindLastCertWithUnknownIssuer(
     const ParsedCertificateList& certs,
-    const scoped_refptr<ParsedCertificate>& start) {
+    const std::shared_ptr<const ParsedCertificate>& start) {
   DCHECK_GE(certs.size(), 1u);
-  std::set<scoped_refptr<ParsedCertificate>> used_in_path;
-  scoped_refptr<ParsedCertificate> last = start;
+  std::set<std::shared_ptr<const ParsedCertificate>> used_in_path;
+  std::shared_ptr<const ParsedCertificate> last = start;
   while (true) {
     used_in_path.insert(last);
-    scoped_refptr<ParsedCertificate> last_issuer;
+    std::shared_ptr<const ParsedCertificate> last_issuer;
     // Find an issuer for |last| (which might be |last| itself if self-signed).
     for (const auto& cert : certs) {
       if (cert->normalized_subject() == last->normalized_issuer()) {
@@ -181,8 +181,8 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
 
   // Build a chain as far as possible from the target certificate at index 0,
   // using the initially provided certificates.
-  scoped_refptr<ParsedCertificate> last_cert_with_unknown_issuer =
-      FindLastCertWithUnknownIssuer(certs, certs[0].get());
+  std::shared_ptr<const ParsedCertificate> last_cert_with_unknown_issuer =
+      FindLastCertWithUnknownIssuer(certs, certs[0]);
   if (!last_cert_with_unknown_issuer) {
     // |certs| either contains a loop, or contains a full chain to a self-signed
     // certificate. Do not attempt AIA fetches for such a chain.
@@ -218,7 +218,7 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
 
     // If verification still failed but the path expanded, continue to attempt
     // AIA fetches.
-    scoped_refptr<ParsedCertificate> new_last_cert_with_unknown_issuer =
+    std::shared_ptr<const ParsedCertificate> new_last_cert_with_unknown_issuer =
         FindLastCertWithUnknownIssuer(certs, last_cert_with_unknown_issuer);
     if (!new_last_cert_with_unknown_issuer ||
         new_last_cert_with_unknown_issuer == last_cert_with_unknown_issuer) {

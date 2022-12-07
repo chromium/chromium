@@ -157,7 +157,7 @@ class PathBuilderPkitsTestDelegate {
     for (size_t i = 1; i < cert_ders.size() - 1; ++i)
       cert_issuer_source.AddCert(certs[i]);
 
-    scoped_refptr<ParsedCertificate> target_cert(certs.back());
+    std::shared_ptr<const ParsedCertificate> target_cert(certs.back());
 
     int64_t verify_time;
     ASSERT_TRUE(der::GeneralizedTimeToPosixTime(info.time, &verify_time));

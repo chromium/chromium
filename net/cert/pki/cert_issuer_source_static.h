@@ -24,7 +24,7 @@ class NET_EXPORT CertIssuerSourceStatic : public CertIssuerSource {
 
   // Adds |cert| to the set of certificates that this CertIssuerSource will
   // provide.
-  void AddCert(scoped_refptr<ParsedCertificate> cert);
+  void AddCert(std::shared_ptr<const ParsedCertificate> cert);
 
   // Clears the set of certificates.
   void Clear();
@@ -40,7 +40,8 @@ class NET_EXPORT CertIssuerSourceStatic : public CertIssuerSource {
  private:
   // The certificates that the CertIssuerSourceStatic can return, keyed on the
   // normalized subject value.
-  std::unordered_multimap<std::string_view, scoped_refptr<ParsedCertificate>>
+  std::unordered_multimap<std::string_view,
+                          std::shared_ptr<const ParsedCertificate>>
       intermediates_;
 };
 

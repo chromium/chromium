@@ -170,7 +170,7 @@ class NET_EXPORT CertPathBuilder {
   //               path building to verify specific parts of certificates or the
   //               final chain. See CertPathBuilderDelegate and
   //               VerifyCertificateChainDelegate for more information.
-  CertPathBuilder(scoped_refptr<ParsedCertificate> cert,
+  CertPathBuilder(std::shared_ptr<const ParsedCertificate> cert,
                   TrustStore* trust_store,
                   CertPathBuilderDelegate* delegate,
                   const der::GeneralizedTime& time,

@@ -40,7 +40,7 @@ using ::testing::_;
 
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
-    scoped_refptr<ParsedCertificate>* result) {
+    std::shared_ptr<const ParsedCertificate>* result) {
   std::string der;
   ::testing::AssertionResult r =
       ReadTestPem("net/data/cert_issuer_source_aia_unittest/" + file_name,
@@ -60,7 +60,7 @@ using ::testing::_;
 
 // CertIssuerSourceAia does not return results for SyncGetIssuersOf.
 TEST(CertIssuerSourceAiaTest, NoSyncResults) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
 
   // No methods on |mock_fetcher| should be called.
@@ -74,7 +74,7 @@ TEST(CertIssuerSourceAiaTest, NoSyncResults) {
 // If the AuthorityInfoAccess extension is not present, AsyncGetIssuersOf should
 // synchronously indicate no results.
 TEST(CertIssuerSourceAiaTest, NoAia) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_no_aia.pem", &cert));
 
   // No methods on |mock_fetcher| should be called.
@@ -91,7 +91,7 @@ TEST(CertIssuerSourceAiaTest, NoAia) {
 // ERR_DISALLOWED_URL_SCHEME properly. If FetchCaIssuers is modified to fail
 // synchronously in that case, this test will be more interesting.
 TEST(CertIssuerSourceAiaTest, FileAia) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_file_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -113,7 +113,7 @@ TEST(CertIssuerSourceAiaTest, FileAia) {
 // If the AuthorityInfoAccess extension contains an invalid URL,
 // AsyncGetIssuersOf should synchronously indicate no results.
 TEST(CertIssuerSourceAiaTest, OneInvalidURL) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_invalid_url_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -125,9 +125,9 @@ TEST(CertIssuerSourceAiaTest, OneInvalidURL) {
 
 // AuthorityInfoAccess with a single HTTP url pointing to a single DER cert.
 TEST(CertIssuerSourceAiaTest, OneAia) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
-  scoped_refptr<ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i.pem", &intermediate_cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -157,9 +157,9 @@ TEST(CertIssuerSourceAiaTest, OneAia) {
 // modified to synchronously reject disallowed schemes, this test will be more
 // interesting.
 TEST(CertIssuerSourceAiaTest, OneFileOneHttpAia) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_file_and_http_aia.pem", &cert));
-  scoped_refptr<ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -189,9 +189,9 @@ TEST(CertIssuerSourceAiaTest, OneFileOneHttpAia) {
 
 // AuthorityInfoAccess with two URIs, one is invalid, the other HTTP.
 TEST(CertIssuerSourceAiaTest, OneInvalidOneHttpAia) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_invalid_and_http_aia.pem", &cert));
-  scoped_refptr<ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -221,11 +221,11 @@ TEST(CertIssuerSourceAiaTest, OneInvalidOneHttpAia) {
 // One request completes, results are retrieved, then the next request completes
 // and the results are retrieved.
 TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeries) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
-  scoped_refptr<ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i.pem", &intermediate_cert));
-  scoped_refptr<ParsedCertificate> intermediate_cert2;
+  std::shared_ptr<const ParsedCertificate> intermediate_cert2;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert2));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -266,7 +266,7 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeries) {
 // AuthorityInfoAccess with a single HTTP url pointing to a single DER cert,
 // CertNetFetcher request fails.
 TEST(CertIssuerSourceAiaTest, OneAiaHttpError) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -290,7 +290,7 @@ TEST(CertIssuerSourceAiaTest, OneAiaHttpError) {
 // AuthorityInfoAccess with a single HTTP url pointing to a single DER cert,
 // CertNetFetcher request completes, but the DER cert fails to parse.
 TEST(CertIssuerSourceAiaTest, OneAiaParseError) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -315,9 +315,9 @@ TEST(CertIssuerSourceAiaTest, OneAiaParseError) {
 // AuthorityInfoAccess with two HTTP urls, each pointing to a single DER cert.
 // One request fails.
 TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesFirstFails) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
-  scoped_refptr<ParsedCertificate> intermediate_cert2;
+  std::shared_ptr<const ParsedCertificate> intermediate_cert2;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert2));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -354,9 +354,9 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesFirstFails) {
 // AuthorityInfoAccess with two HTTP urls, each pointing to a single DER cert.
 // First request completes, result is retrieved, then the second request fails.
 TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesSecondFails) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
-  scoped_refptr<ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i.pem", &intermediate_cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -393,7 +393,7 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesSecondFails) {
 // AuthorityInfoAccess with six HTTP URLs.  kMaxFetchesPerCert is 5, so the
 // sixth URL should be ignored.
 TEST(CertIssuerSourceAiaTest, MaxFetchesPerCert) {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_six_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -442,7 +442,7 @@ TEST(CertIssuerSourceAiaTest, CertsOnlyCmsMessage) {
   std::string cert_data;
   ASSERT_TRUE(base::ReadFileToString(cert_path, &cert_data));
 
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();

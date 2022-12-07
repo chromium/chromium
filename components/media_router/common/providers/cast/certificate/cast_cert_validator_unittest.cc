@@ -83,7 +83,7 @@ void RunTest(CastCertError expected_result,
 
       // Parse the root certificate of the chain.
       net::CertErrors errors;
-      scoped_refptr<net::ParsedCertificate> root =
+      std::shared_ptr<const net::ParsedCertificate> root =
           net::ParsedCertificate::Create(
               net::x509_util::CreateCryptoBuffer(certs.back()), {}, &errors);
       ASSERT_TRUE(root) << errors.ToDebugString();

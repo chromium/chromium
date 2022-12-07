@@ -32,24 +32,27 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
 
   // Adds a certificate as a trust anchor (only the SPKI and subject will be
   // used during verification).
-  void AddTrustAnchor(scoped_refptr<ParsedCertificate> cert);
+  void AddTrustAnchor(std::shared_ptr<const ParsedCertificate> cert);
 
   // Adds a certificate as a trust anchor which will have expiration enforced.
   // See VerifyCertificateChain for details.
-  void AddTrustAnchorWithExpiration(scoped_refptr<ParsedCertificate> cert);
+  void AddTrustAnchorWithExpiration(
+      std::shared_ptr<const ParsedCertificate> cert);
 
   // Adds a certificate as a trust anchor and extracts anchor constraints from
   // the certificate. See VerifyCertificateChain for details.
-  void AddTrustAnchorWithConstraints(scoped_refptr<ParsedCertificate> cert);
+  void AddTrustAnchorWithConstraints(
+      std::shared_ptr<const ParsedCertificate> cert);
 
   // TODO(eroman): This is marked "ForTest" as the current implementation
   // requires an exact match on the certificate DER (a wider match by say
   // issuer/serial is probably what we would want for a real implementation).
-  void AddDistrustedCertificateForTest(scoped_refptr<ParsedCertificate> cert);
+  void AddDistrustedCertificateForTest(
+      std::shared_ptr<const ParsedCertificate> cert);
 
   // Adds a certificate to the store, that is neither trusted nor untrusted.
   void AddCertificateWithUnspecifiedTrust(
-      scoped_refptr<ParsedCertificate> cert);
+      std::shared_ptr<const ParsedCertificate> cert);
 
   // TrustStore implementation:
   void SyncGetIssuersOf(const ParsedCertificate* cert,
@@ -67,7 +70,7 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
     Entry(const Entry& other);
     ~Entry();
 
-    scoped_refptr<ParsedCertificate> cert;
+    std::shared_ptr<const ParsedCertificate> cert;
     CertificateTrust trust;
   };
 
@@ -76,7 +79,7 @@ class NET_EXPORT TrustStoreInMemory : public TrustStore {
 
   // Adds a certificate with the specified trust settings. Both trusted and
   // distrusted certificates require a full DER match.
-  void AddCertificate(scoped_refptr<ParsedCertificate> cert,
+  void AddCertificate(std::shared_ptr<const ParsedCertificate> cert,
                       const CertificateTrust& trust);
 
   // Returns the `Entry` matching `cert`, or `nullptr` if not in the trust

@@ -9,7 +9,8 @@ namespace net {
 CertIssuerSourceStatic::CertIssuerSourceStatic() = default;
 CertIssuerSourceStatic::~CertIssuerSourceStatic() = default;
 
-void CertIssuerSourceStatic::AddCert(scoped_refptr<ParsedCertificate> cert) {
+void CertIssuerSourceStatic::AddCert(
+    std::shared_ptr<const ParsedCertificate> cert) {
   intermediates_.insert(std::make_pair(
       cert->normalized_subject().AsStringView(), std::move(cert)));
 }

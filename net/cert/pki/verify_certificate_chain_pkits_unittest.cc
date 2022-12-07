@@ -33,7 +33,7 @@ class VerifyCertificateChainPkitsTestDelegate {
     // PKITS lists chains from trust anchor to target, whereas
     // VerifyCertificateChain takes them starting with the target and ending
     // with the trust anchor.
-    std::vector<scoped_refptr<ParsedCertificate>> input_chain;
+    std::vector<std::shared_ptr<const ParsedCertificate>> input_chain;
     CertErrors parsing_errors;
     for (auto i = cert_ders.rbegin(); i != cert_ders.rend(); ++i) {
       ASSERT_TRUE(ParsedCertificate::CreateAndAddToVector(

@@ -76,7 +76,7 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-std::string GetName(scoped_refptr<net::ParsedCertificate> cert) {
+std::string GetName(std::shared_ptr<const net::ParsedCertificate> cert) {
   net::RDNSequence subject_rdn;
   if (!net::ParseName(cert->subject_tlv(), &subject_rdn)) {
     return "UNKNOWN";
@@ -88,7 +88,7 @@ std::string GetName(scoped_refptr<net::ParsedCertificate> cert) {
   return subject_string;
 }
 
-std::string GetHash(scoped_refptr<net::ParsedCertificate> cert) {
+std::string GetHash(std::shared_ptr<const net::ParsedCertificate> cert) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert->cert_buffer());
   return base::HexEncode(hash.data, std::size(hash.data));

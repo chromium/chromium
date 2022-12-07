@@ -17,29 +17,30 @@ void TrustStoreInMemory::Clear() {
   entries_.clear();
 }
 
-void TrustStoreInMemory::AddTrustAnchor(scoped_refptr<ParsedCertificate> cert) {
+void TrustStoreInMemory::AddTrustAnchor(
+    std::shared_ptr<const ParsedCertificate> cert) {
   AddCertificate(std::move(cert), CertificateTrust::ForTrustAnchor());
 }
 
 void TrustStoreInMemory::AddTrustAnchorWithExpiration(
-    scoped_refptr<ParsedCertificate> cert) {
+    std::shared_ptr<const ParsedCertificate> cert) {
   AddCertificate(std::move(cert),
                  CertificateTrust::ForTrustAnchorEnforcingExpiration());
 }
 
 void TrustStoreInMemory::AddTrustAnchorWithConstraints(
-    scoped_refptr<ParsedCertificate> cert) {
+    std::shared_ptr<const ParsedCertificate> cert) {
   AddCertificate(std::move(cert),
                  CertificateTrust::ForTrustAnchorEnforcingConstraints());
 }
 
 void TrustStoreInMemory::AddDistrustedCertificateForTest(
-    scoped_refptr<ParsedCertificate> cert) {
+    std::shared_ptr<const ParsedCertificate> cert) {
   AddCertificate(std::move(cert), CertificateTrust::ForDistrusted());
 }
 
 void TrustStoreInMemory::AddCertificateWithUnspecifiedTrust(
-    scoped_refptr<ParsedCertificate> cert) {
+    std::shared_ptr<const ParsedCertificate> cert) {
   AddCertificate(std::move(cert), CertificateTrust::ForUnspecified());
 }
 
@@ -65,8 +66,9 @@ TrustStoreInMemory::Entry::Entry() = default;
 TrustStoreInMemory::Entry::Entry(const Entry& other) = default;
 TrustStoreInMemory::Entry::~Entry() = default;
 
-void TrustStoreInMemory::AddCertificate(scoped_refptr<ParsedCertificate> cert,
-                                        const CertificateTrust& trust) {
+void TrustStoreInMemory::AddCertificate(
+    std::shared_ptr<const ParsedCertificate> cert,
+    const CertificateTrust& trust) {
   Entry entry;
   entry.cert = std::move(cert);
   entry.trust = trust;

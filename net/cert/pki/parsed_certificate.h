@@ -25,7 +25,8 @@ class NameConstraints;
 class ParsedCertificate;
 class CertErrors;
 
-using ParsedCertificateList = std::vector<scoped_refptr<ParsedCertificate>>;
+using ParsedCertificateList =
+    std::vector<std::shared_ptr<const ParsedCertificate>>;
 
 // Represents an X.509 certificate, including Certificate, TBSCertificate, and
 // standard extensions.
@@ -34,8 +35,7 @@ using ParsedCertificateList = std::vector<scoped_refptr<ParsedCertificate>>;
 // parsed successfully to that level, but does not imply the contents of that
 // member are valid, unless otherwise specified. See the documentation for each
 // member or the documentation of the type it returns.
-class NET_EXPORT ParsedCertificate
-    : public base::RefCountedThreadSafe<ParsedCertificate> {
+class NET_EXPORT ParsedCertificate {
  public:
   // Map from OID to ParsedExtension.
   using ExtensionsMap = std::map<der::Input, ParsedExtension>;
@@ -45,7 +45,7 @@ class NET_EXPORT ParsedCertificate
   // and supported extensions cannot be parsed.
   // On either success or failure, if |errors| is non-null it may have error
   // information added to it.
-  static scoped_refptr<ParsedCertificate> Create(
+  static std::shared_ptr<const ParsedCertificate> Create(
       bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
       const ParseCertificateOptions& options,
       CertErrors* errors);
@@ -59,7 +59,7 @@ class NET_EXPORT ParsedCertificate
   static bool CreateAndAddToVector(
       bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
       const ParseCertificateOptions& options,
-      std::vector<scoped_refptr<net::ParsedCertificate>>* chain,
+      std::vector<std::shared_ptr<const net::ParsedCertificate>>* chain,
       CertErrors* errors);
 
   ParsedCertificate(const ParsedCertificate&) = delete;
@@ -244,9 +244,13 @@ class NET_EXPORT ParsedCertificate
                     ParsedExtension* parsed_extension) const;
 
  private:
-  friend class base::RefCountedThreadSafe<ParsedCertificate>;
   ParsedCertificate();
   ~ParsedCertificate();
+
+  class ParsedCertificateDeleter {
+   public:
+    void operator()(ParsedCertificate* p) { delete p; }
+  };
 
   // The backing store for the certificate data.
   bssl::UniquePtr<CRYPTO_BUFFER> cert_data_;

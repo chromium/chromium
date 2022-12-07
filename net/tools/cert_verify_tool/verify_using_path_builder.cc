@@ -109,10 +109,12 @@ void PrintResultPath(const net::CertPathBuilderResultPath* result_path,
   }
 }
 
-scoped_refptr<net::ParsedCertificate> ParseCertificate(const CertInput& input) {
+std::shared_ptr<const net::ParsedCertificate> ParseCertificate(
+    const CertInput& input) {
   net::CertErrors errors;
-  scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
-      net::x509_util::CreateCryptoBuffer(input.der_cert), {}, &errors);
+  std::shared_ptr<const net::ParsedCertificate> cert =
+      net::ParsedCertificate::Create(
+          net::x509_util::CreateCryptoBuffer(input.der_cert), {}, &errors);
   if (!cert) {
     PrintCertError("ERROR: ParsedCertificate failed:", input);
     std::cout << errors.ToDebugString() << "\n";
@@ -141,7 +143,8 @@ bool VerifyUsingPathBuilder(
 
   net::TrustStoreInMemory additional_roots;
   for (const auto& der_cert : root_der_certs) {
-    scoped_refptr<net::ParsedCertificate> cert = ParseCertificate(der_cert);
+    std::shared_ptr<const net::ParsedCertificate> cert =
+        ParseCertificate(der_cert);
     if (cert) {
       additional_roots.AddTrustAnchor(std::move(cert));
     }
@@ -156,12 +159,13 @@ bool VerifyUsingPathBuilder(
   }
   net::CertIssuerSourceStatic intermediate_cert_issuer_source;
   for (const auto& der_cert : intermediate_der_certs) {
-    scoped_refptr<net::ParsedCertificate> cert = ParseCertificate(der_cert);
+    std::shared_ptr<const net::ParsedCertificate> cert =
+        ParseCertificate(der_cert);
     if (cert)
       intermediate_cert_issuer_source.AddCert(cert);
   }
 
-  scoped_refptr<net::ParsedCertificate> target_cert =
+  std::shared_ptr<const net::ParsedCertificate> target_cert =
       ParseCertificate(target_der_cert);
   if (!target_cert)
     return false;

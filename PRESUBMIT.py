@@ -754,6 +754,13 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
        '^chrome/services/sharing/nearby/',
        # Needed for interop with third-party library libunwindstack.
        '^base/profiler/libunwindstack_unwinder_android\.(cc|h)',
+       # Needed for interop with third-party boringssl cert verifier
+       '^third_party/boringssl/',
+       '^net/cert/',
+       '^net/tools/cert_verify_tool/',
+       '^services/cert_verifier/',
+       '^components/certificate_transparency/',
+       '^components/media_router/common/providers/cast/certificate/',
        # gRPC provides some C++ libraries that use std::shared_ptr<>.
        '^chromeos/ash/services/libassistant/grpc/',
        '^chromecast/cast_core/grpc',

@@ -27,7 +27,7 @@ TEST(SystemTrustStoreChrome, SystemDistrustOverridesChromeTrust) {
       "test_store.certs", X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
   ASSERT_GE(certs.size(), 1u);
 
-  scoped_refptr<ParsedCertificate> root = ParsedCertificate::Create(
+  std::shared_ptr<const ParsedCertificate> root = ParsedCertificate::Create(
       bssl::UpRef(certs[0]->cert_buffer()),
       x509_util::DefaultParseCertificateOptions(), nullptr);
   ASSERT_TRUE(root);

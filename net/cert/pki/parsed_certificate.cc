@@ -75,7 +75,7 @@ ParsedCertificate::ParsedCertificate() = default;
 ParsedCertificate::~ParsedCertificate() = default;
 
 // static
-scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
+std::shared_ptr<const ParsedCertificate> ParsedCertificate::Create(
     bssl::UniquePtr<CRYPTO_BUFFER> backing_data,
     const ParseCertificateOptions& options,
     CertErrors* errors) {
@@ -85,7 +85,8 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
   if (!errors)
     errors = &unused_errors;
 
-  auto result = base::WrapRefCounted(new ParsedCertificate);
+  std::shared_ptr<ParsedCertificate> result(
+      new ParsedCertificate, ParsedCertificate::ParsedCertificateDeleter());
   result->cert_data_ = std::move(backing_data);
   result->cert_ = der::Input(CRYPTO_BUFFER_data(result->cert_data_.get()),
                              CRYPTO_BUFFER_len(result->cert_data_.get()));
@@ -282,9 +283,9 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
 bool ParsedCertificate::CreateAndAddToVector(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_data,
     const ParseCertificateOptions& options,
-    std::vector<scoped_refptr<net::ParsedCertificate>>* chain,
+    std::vector<std::shared_ptr<const net::ParsedCertificate>>* chain,
     CertErrors* errors) {
-  scoped_refptr<ParsedCertificate> cert(
+  std::shared_ptr<const ParsedCertificate> cert(
       Create(std::move(cert_data), options, errors));
   if (!cert)
     return false;

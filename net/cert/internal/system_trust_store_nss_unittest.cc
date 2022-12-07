@@ -33,7 +33,7 @@ namespace {
 // *|out_parsed_cert|. Wrap in ASSERT_NO_FATAL_FAILURE on callsites.
 ::testing::AssertionResult ParseX509Certificate(
     const scoped_refptr<X509Certificate>& x509_cert,
-    scoped_refptr<ParsedCertificate>* out_parsed_cert) {
+    std::shared_ptr<const ParsedCertificate>* out_parsed_cert) {
   CertErrors parsing_errors;
   *out_parsed_cert = ParsedCertificate::Create(
       bssl::UpRef(x509_cert->cert_buffer()),
@@ -93,7 +93,7 @@ class SystemTrustStoreNSSTest : public ::testing::Test {
   raw_ptr<TestRootCerts> test_root_certs_;
 
   scoped_refptr<X509Certificate> root_cert_;
-  scoped_refptr<ParsedCertificate> parsed_root_cert_;
+  std::shared_ptr<const ParsedCertificate> parsed_root_cert_;
   ScopedCERTCertificate nss_root_cert_;
 };
 

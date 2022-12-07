@@ -19,9 +19,11 @@ namespace openscreen::cast {
 // static
 ErrorOr<std::unique_ptr<ParsedCertificate>> ParsedCertificate::ParseFromDER(
     const std::vector<uint8_t>& der_cert) {
-  scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
-      net::x509_util::CreateCryptoBuffer(base::span<const uint8_t>(der_cert)),
-      cast_certificate::GetCertParsingOptions(), nullptr);
+  std::shared_ptr<const net::ParsedCertificate> cert =
+      net::ParsedCertificate::Create(net::x509_util::CreateCryptoBuffer(
+                                         base::span<const uint8_t>(der_cert)),
+                                     cast_certificate::GetCertParsingOptions(),
+                                     nullptr);
   if (!cert) {
     return Error::Code::kErrCertsParse;
   }
@@ -82,7 +84,7 @@ net::ParseCertificateOptions GetCertParsingOptions() {
 }
 
 NetParsedCertificate::NetParsedCertificate(
-    scoped_refptr<net::ParsedCertificate> cert)
+    std::shared_ptr<const net::ParsedCertificate> cert)
     : cert_(std::move(cert)) {}
 
 NetParsedCertificate::~NetParsedCertificate() = default;

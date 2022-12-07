@@ -669,7 +669,7 @@ class ParseCrlDistributionPointsTest : public ::testing::Test {
 
     // Extract the CRLDP from the test Certificate.
     CertErrors errors;
-    scoped_refptr<ParsedCertificate> cert = ParsedCertificate::Create(
+    std::shared_ptr<const ParsedCertificate> cert = ParsedCertificate::Create(
         bssl::UniquePtr<CRYPTO_BUFFER>(CRYPTO_BUFFER_new(
             reinterpret_cast<const uint8_t*>(cert_bytes.data()),
             cert_bytes.size(), nullptr)),

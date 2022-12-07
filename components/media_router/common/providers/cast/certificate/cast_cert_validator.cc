@@ -128,9 +128,10 @@ class CastTrustStore {
   template <size_t N>
   void AddAnchor(const uint8_t (&data)[N]) {
     net::CertErrors errors;
-    scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
-        net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(data), {},
-        &errors);
+    std::shared_ptr<const net::ParsedCertificate> cert =
+        net::ParsedCertificate::Create(
+            net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(data), {},
+            &errors);
     CHECK(cert) << errors.ToDebugString();
     // Enforce pathlen constraints and policies defined on the root certificate.
     base::AutoLock guard(lock_);
@@ -364,12 +365,13 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
     return CastCertError::ERR_CRL_INVALID;
 
   net::CertErrors errors;
-  scoped_refptr<net::ParsedCertificate> target_cert;
+  std::shared_ptr<const net::ParsedCertificate> target_cert;
   net::CertIssuerSourceStatic intermediate_cert_issuer_source;
   for (size_t i = 0; i < certs.size(); ++i) {
-    scoped_refptr<net::ParsedCertificate> cert(net::ParsedCertificate::Create(
-        net::x509_util::CreateCryptoBuffer(certs[i]), GetCertParsingOptions(),
-        &errors));
+    std::shared_ptr<const net::ParsedCertificate> cert(
+        net::ParsedCertificate::Create(
+            net::x509_util::CreateCryptoBuffer(certs[i]),
+            GetCertParsingOptions(), &errors));
     if (!cert)
       return CastCertError::ERR_CERTS_PARSE;
 
@@ -387,7 +389,7 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   if (!net::der::EncodeTimeAsGeneralizedTime(time, &verification_time))
     return CastCertError::ERR_UNEXPECTED;
   net::CertPathBuilder path_builder(
-      target_cert.get(), trust_store, &path_builder_delegate, verification_time,
+      target_cert, trust_store, &path_builder_delegate, verification_time,
       net::KeyPurpose::CLIENT_AUTH, net::InitialExplicitPolicy::kFalse,
       {net::der::Input(net::kAnyPolicyOid)},
       net::InitialPolicyMappingInhibit::kFalse,

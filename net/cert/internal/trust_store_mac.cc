@@ -332,7 +332,7 @@ void UpdateUserData(int debug_info,
 // chain. It's not intended to exhaustively test everything that
 // VerifyCertificateChain does, just to filter out some of the most obviously
 // unusable certs.
-bool IsNotAcceptableIntermediate(ParsedCertificate* cert,
+bool IsNotAcceptableIntermediate(const ParsedCertificate* cert,
                                  const CFStringRef policy_oid) {
   if (!cert->has_basic_constraints() || !cert->basic_constraints().is_ca) {
     return true;
@@ -404,7 +404,7 @@ class TrustDomainCacheFullCerts {
       CertErrors errors;
       ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;
-      scoped_refptr<ParsedCertificate> parsed_cert =
+      std::shared_ptr<const ParsedCertificate> parsed_cert =
           ParsedCertificate::Create(std::move(buffer), options, &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
@@ -832,7 +832,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       CertErrors errors;
       ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;
-      scoped_refptr<ParsedCertificate> parsed_cert =
+      std::shared_ptr<const ParsedCertificate> parsed_cert =
           ParsedCertificate::Create(std::move(buffer), options, &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
@@ -1004,7 +1004,7 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
       CertErrors errors;
       ParseCertificateOptions options;
       options.allow_invalid_serial_numbers = true;
-      scoped_refptr<ParsedCertificate> parsed_cert =
+      std::shared_ptr<const ParsedCertificate> parsed_cert =
           ParsedCertificate::Create(std::move(buffer), options, &errors);
       if (!parsed_cert) {
         LOG(ERROR) << "Error parsing certificate:\n" << errors.ToDebugString();
@@ -1137,7 +1137,7 @@ void TrustStoreMac::SyncGetIssuersOf(const ParsedCertificate* cert,
     CertErrors errors;
     ParseCertificateOptions options;
     options.allow_invalid_serial_numbers = true;
-    scoped_refptr<ParsedCertificate> anchor_cert =
+    std::shared_ptr<const ParsedCertificate> anchor_cert =
         ParsedCertificate::Create(std::move(buffer), options, &errors);
     if (!anchor_cert) {
       // TODO(crbug.com/634443): return errors better.

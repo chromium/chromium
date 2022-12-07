@@ -14,7 +14,8 @@ net::ParseCertificateOptions GetCertParsingOptions();
 
 class NetParsedCertificate final : public openscreen::cast::ParsedCertificate {
  public:
-  explicit NetParsedCertificate(scoped_refptr<net::ParsedCertificate> cert);
+  explicit NetParsedCertificate(
+      std::shared_ptr<const net::ParsedCertificate> cert);
   ~NetParsedCertificate() override;
 
   // openscreen::cast::ParsedCertificate implementation:
@@ -43,7 +44,7 @@ class NetParsedCertificate final : public openscreen::cast::ParsedCertificate {
   void SetNotAfterTimeForTesting(time_t not_after) override;
 
  private:
-  scoped_refptr<net::ParsedCertificate> cert_;
+  std::shared_ptr<const net::ParsedCertificate> cert_;
 };
 
 }  // namespace cast_certificate

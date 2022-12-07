@@ -43,13 +43,13 @@ class TrustStoreCollectionTest : public testing::Test {
   }
 
  protected:
-  scoped_refptr<ParsedCertificate> oldroot_;
-  scoped_refptr<ParsedCertificate> newroot_;
-  scoped_refptr<ParsedCertificate> newrootrollover_;
+  std::shared_ptr<const ParsedCertificate> oldroot_;
+  std::shared_ptr<const ParsedCertificate> newroot_;
+  std::shared_ptr<const ParsedCertificate> newrootrollover_;
 
-  scoped_refptr<ParsedCertificate> target_;
-  scoped_refptr<ParsedCertificate> oldintermediate_;
-  scoped_refptr<ParsedCertificate> newintermediate_;
+  std::shared_ptr<const ParsedCertificate> target_;
+  std::shared_ptr<const ParsedCertificate> oldintermediate_;
+  std::shared_ptr<const ParsedCertificate> newintermediate_;
 };
 
 // Collection contains no stores, should return no results.

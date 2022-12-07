@@ -526,7 +526,8 @@ bool CheckCertIDMatchesCertificate(
 // TODO(eroman): Revisit how certificate parsing is used by this file. Ideally
 // would either pass in the parsed bits, or have a better abstraction for lazily
 // parsing.
-scoped_refptr<ParsedCertificate> OCSPParseCertificate(std::string_view der) {
+std::shared_ptr<const ParsedCertificate> OCSPParseCertificate(
+    std::string_view der) {
   ParseCertificateOptions parse_options;
   parse_options.allow_invalid_serial_numbers = true;
 
@@ -634,7 +635,7 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(std::string_view der) {
   //  (2) Has been given authority for OCSP signing by |issuer_certificate|.
   //  (3) Has signed the OCSP response using its public key.
   for (const auto& responder_cert_tlv : response.certs) {
-    scoped_refptr<ParsedCertificate> cur_responder_certificate =
+    std::shared_ptr<const ParsedCertificate> cur_responder_certificate =
         OCSPParseCertificate(responder_cert_tlv.AsStringView());
 
     // If failed parsing the certificate, keep looking.
@@ -851,8 +852,8 @@ OCSPRevocationStatus CheckOCSP(
     return OCSPRevocationStatus::UNKNOWN;
   }
 
-  scoped_refptr<ParsedCertificate> parsed_certificate;
-  scoped_refptr<ParsedCertificate> parsed_issuer_certificate;
+  std::shared_ptr<const ParsedCertificate> parsed_certificate;
+  std::shared_ptr<const ParsedCertificate> parsed_issuer_certificate;
   if (!certificate) {
     parsed_certificate = OCSPParseCertificate(certificate_der);
     certificate = parsed_certificate.get();

@@ -25,7 +25,7 @@ std::string GetFilePath(const std::string& file_name) {
 //
 // Returns nullptr if the certificate parsing failed, and verifies that any
 // errors match the ERRORS block in the .pem file.
-scoped_refptr<ParsedCertificate> ParseCertificateFromFile(
+std::shared_ptr<const ParsedCertificate> ParseCertificateFromFile(
     const std::string& file_name,
     const ParseCertificateOptions& options) {
   std::string data;
@@ -40,7 +40,7 @@ scoped_refptr<ParsedCertificate> ParseCertificateFromFile(
   EXPECT_TRUE(ReadTestDataFromPemFile(test_file_path, mappings));
 
   CertErrors errors;
-  scoped_refptr<ParsedCertificate> cert = ParsedCertificate::Create(
+  std::shared_ptr<const ParsedCertificate> cert = ParsedCertificate::Create(
       bssl::UniquePtr<CRYPTO_BUFFER>(CRYPTO_BUFFER_new(
           reinterpret_cast<const uint8_t*>(data.data()), data.size(), nullptr)),
       options, &errors);
@@ -68,7 +68,7 @@ der::Input DavidBenOid() {
 
 // Parses an Extension whose critical field is true (255).
 TEST(ParsedCertificateTest, ExtensionCritical) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("extension_critical.pem", {});
   ASSERT_TRUE(cert);
 
@@ -84,7 +84,7 @@ TEST(ParsedCertificateTest, ExtensionCritical) {
 
 // Parses an Extension whose critical field is false (omitted).
 TEST(ParsedCertificateTest, ExtensionNotCritical) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("extension_not_critical.pem", {});
   ASSERT_TRUE(cert);
 
@@ -148,7 +148,7 @@ TEST(ParsedCertificateTest, BadPolicyQualifiers) {
 
 // Parses a certificate that uses an unknown signature algorithm OID (00).
 TEST(ParsedCertificateTest, BadSignatureAlgorithmOid) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("bad_signature_algorithm_oid.pem", {});
   ASSERT_TRUE(cert);
   ASSERT_FALSE(cert->signature_algorithm());
@@ -162,7 +162,7 @@ TEST(ParsedCertificateTest, BadValidity) {
 
 // The signature algorithm contains an unexpected parameters field.
 TEST(ParsedCertificateTest, FailedSignatureAlgorithm) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("failed_signature_algorithm.pem", {});
   ASSERT_TRUE(cert);
   ASSERT_FALSE(cert->signature_algorithm());
@@ -220,7 +220,7 @@ TEST(ParsedCertificateTest, V1ExplicitVersion) {
 
 // Parses an Extensions that contains an extended key usages.
 TEST(ParsedCertificateTest, ExtendedKeyUsage) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("extended_key_usage.pem", {});
   ASSERT_TRUE(cert);
 
@@ -238,7 +238,7 @@ TEST(ParsedCertificateTest, ExtendedKeyUsage) {
 
 // Parses an Extensions that contains a key usage.
 TEST(ParsedCertificateTest, KeyUsage) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("key_usage.pem", {});
   ASSERT_TRUE(cert);
 
@@ -255,7 +255,7 @@ TEST(ParsedCertificateTest, KeyUsage) {
 
 // Parses an Extensions that contains a policies extension.
 TEST(ParsedCertificateTest, Policies) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("policies.pem", {});
   ASSERT_TRUE(cert);
 
@@ -274,7 +274,7 @@ TEST(ParsedCertificateTest, Policies) {
 
 // Parses an Extensions that contains a subjectaltname extension.
 TEST(ParsedCertificateTest, SubjectAltName) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("subject_alt_name.pem", {});
   ASSERT_TRUE(cert);
 
@@ -284,7 +284,7 @@ TEST(ParsedCertificateTest, SubjectAltName) {
 // Parses an Extensions that contains multiple extensions, sourced from a
 // real-world certificate.
 TEST(ParsedCertificateTest, ExtensionsReal) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("extensions_real.pem", {});
   ASSERT_TRUE(cert);
 
@@ -325,7 +325,7 @@ TEST(ParsedCertificateTest, ExtensionsReal) {
 
 // Parses a BasicConstraints with no CA or pathlen.
 TEST(ParsedCertificateTest, BasicConstraintsNotCa) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("basic_constraints_not_ca.pem", {});
   ASSERT_TRUE(cert);
 
@@ -336,7 +336,7 @@ TEST(ParsedCertificateTest, BasicConstraintsNotCa) {
 
 // Parses a BasicConstraints with CA but no pathlen.
 TEST(ParsedCertificateTest, BasicConstraintsCaNoPath) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("basic_constraints_ca_no_path.pem", {});
   ASSERT_TRUE(cert);
 
@@ -347,7 +347,7 @@ TEST(ParsedCertificateTest, BasicConstraintsCaNoPath) {
 
 // Parses a BasicConstraints with CA and pathlen of 9.
 TEST(ParsedCertificateTest, BasicConstraintsCaPath9) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("basic_constraints_ca_path_9.pem", {});
   ASSERT_TRUE(cert);
 
@@ -359,7 +359,7 @@ TEST(ParsedCertificateTest, BasicConstraintsCaPath9) {
 
 // Parses a BasicConstraints with CA and pathlen of 255 (largest allowed size).
 TEST(ParsedCertificateTest, BasicConstraintsPathlen255) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("basic_constraints_pathlen_255.pem", {});
   ASSERT_TRUE(cert);
 
@@ -391,7 +391,7 @@ TEST(ParsedCertificateTest, BasicConstraintsPathTooLarge) {
 // Parses a BasicConstraints with CA explicitly set to false. This violates
 // DER-encoding rules, however is commonly used, so it is accepted.
 TEST(ParsedCertificateTest, BasicConstraintsCaFalse) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("basic_constraints_ca_false.pem", {});
   ASSERT_TRUE(cert);
 
@@ -411,7 +411,7 @@ TEST(ParsedCertificateTest, BasicConstraintsUnconsumedData) {
 // This is valid DER for the ASN.1, however is not valid when interpreting the
 // BasicConstraints at a higher level.
 TEST(ParsedCertificateTest, BasicConstraintsPathLenButNotCa) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("basic_constraints_pathlen_not_ca.pem", {});
   ASSERT_TRUE(cert);
 
@@ -424,7 +424,7 @@ TEST(ParsedCertificateTest, BasicConstraintsPathLenButNotCa) {
 // Tests parsing a certificate that contains a policyConstraints
 // extension having requireExplicitPolicy:3.
 TEST(ParsedCertificateTest, PolicyConstraintsRequire) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("policy_constraints_require.pem", {});
   ASSERT_TRUE(cert);
 
@@ -437,7 +437,7 @@ TEST(ParsedCertificateTest, PolicyConstraintsRequire) {
 // Tests parsing a certificate that contains a policyConstraints
 // extension having inhibitPolicyMapping:1.
 TEST(ParsedCertificateTest, PolicyConstraintsInhibit) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("policy_constraints_inhibit.pem", {});
   ASSERT_TRUE(cert);
 
@@ -450,7 +450,7 @@ TEST(ParsedCertificateTest, PolicyConstraintsInhibit) {
 // Tests parsing a certificate that contains a policyConstraints
 // extension having requireExplicitPolicy:5,inhibitPolicyMapping:2.
 TEST(ParsedCertificateTest, PolicyConstraintsInhibitRequire) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("policy_constraints_inhibit_require.pem", {});
   ASSERT_TRUE(cert);
 
@@ -464,7 +464,7 @@ TEST(ParsedCertificateTest, PolicyConstraintsInhibitRequire) {
 // Tests parsing a certificate that has a policyConstraints
 // extension with an empty sequence.
 TEST(ParsedCertificateTest, PolicyConstraintsEmpty) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("policy_constraints_empty.pem", {});
   ASSERT_FALSE(cert);
 }
@@ -472,7 +472,7 @@ TEST(ParsedCertificateTest, PolicyConstraintsEmpty) {
 // Tests a certificate with a serial number with a leading 0 padding byte in
 // the encoding since it is not negative.
 TEST(ParsedCertificateTest, SerialNumberZeroPadded) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_zero_padded.pem", {});
   ASSERT_TRUE(cert);
 
@@ -484,7 +484,7 @@ TEST(ParsedCertificateTest, SerialNumberZeroPadded) {
 // length to be 21 bytes long. This is an error, as RFC 5280 specifies a
 // maximum of 20 bytes.
 TEST(ParsedCertificateTest, SerialNumberZeroPadded21BytesLong) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_zero_padded_21_bytes.pem", {});
   ASSERT_FALSE(cert);
 
@@ -504,7 +504,7 @@ TEST(ParsedCertificateTest, SerialNumberZeroPadded21BytesLong) {
 // negative serial numbers, however RFC 5280 expects consumers to deal with it
 // anyway.
 TEST(ParsedCertificateTest, SerialNumberNegative) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_negative.pem", {});
   ASSERT_TRUE(cert);
 
@@ -515,7 +515,7 @@ TEST(ParsedCertificateTest, SerialNumberNegative) {
 // Tests a serial number which is very long. RFC 5280 specifies a maximum of 20
 // bytes.
 TEST(ParsedCertificateTest, SerialNumber37BytesLong) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_37_bytes.pem", {});
   ASSERT_FALSE(cert);
 
@@ -537,7 +537,7 @@ TEST(ParsedCertificateTest, SerialNumber37BytesLong) {
 // however also recommends supporting non-positive ones, so parsing here
 // is expected to succeed.
 TEST(ParsedCertificateTest, SerialNumberZero) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_zero.pem", {});
   ASSERT_TRUE(cert);
 
@@ -547,21 +547,21 @@ TEST(ParsedCertificateTest, SerialNumberZero) {
 
 // Tests a serial number which not a number (NULL).
 TEST(ParsedCertificateTest, SerialNotNumber) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_not_number.pem", {});
   ASSERT_FALSE(cert);
 }
 
 // Tests a serial number which uses a non-minimal INTEGER encoding
 TEST(ParsedCertificateTest, SerialNotMinimal) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("serial_not_minimal.pem", {});
   ASSERT_FALSE(cert);
 }
 
 // Tests parsing a certificate that has an inhibitAnyPolicy extension.
 TEST(ParsedCertificateTest, InhibitAnyPolicy) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("inhibit_any_policy.pem", {});
   ASSERT_TRUE(cert);
 
@@ -575,14 +575,14 @@ TEST(ParsedCertificateTest, InhibitAnyPolicy) {
 
 // Tests a subjectKeyIdentifier that is not an OCTET_STRING.
 TEST(ParsedCertificateTest, SubjectKeyIdentifierNotOctetString) {
-  scoped_refptr<ParsedCertificate> cert = ParseCertificateFromFile(
+  std::shared_ptr<const ParsedCertificate> cert = ParseCertificateFromFile(
       "subject_key_identifier_not_octet_string.pem", {});
   ASSERT_FALSE(cert);
 }
 
 // Tests an authorityKeyIdentifier that is not a SEQUENCE.
 TEST(ParsedCertificateTest, AuthourityKeyIdentifierNotSequence) {
-  scoped_refptr<ParsedCertificate> cert =
+  std::shared_ptr<const ParsedCertificate> cert =
       ParseCertificateFromFile("authority_key_identifier_not_sequence.pem", {});
   ASSERT_FALSE(cert);
 }

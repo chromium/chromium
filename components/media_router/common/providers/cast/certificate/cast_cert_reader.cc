@@ -19,8 +19,9 @@ bool PopulateStoreWithCertsFromPath(net::TrustStoreInMemory* store,
 
   for (const auto& trusted_root : trusted_roots) {
     net::CertErrors errors;
-    scoped_refptr<net::ParsedCertificate> cert(net::ParsedCertificate::Create(
-        net::x509_util::CreateCryptoBuffer(trusted_root), {}, &errors));
+    std::shared_ptr<const net::ParsedCertificate> cert(
+        net::ParsedCertificate::Create(
+            net::x509_util::CreateCryptoBuffer(trusted_root), {}, &errors));
 
     if (errors.ContainsAnyErrorWithSeverity(
             net::CertError::Severity::SEVERITY_HIGH)) {

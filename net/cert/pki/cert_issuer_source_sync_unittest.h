@@ -29,7 +29,7 @@ namespace {
 
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
-    scoped_refptr<ParsedCertificate>* result) {
+    std::shared_ptr<const ParsedCertificate>* result) {
   std::string der;
   ::testing::AssertionResult r =
       ReadTestPem("net/data/cert_issuer_source_static_unittest/" + file_name,
@@ -68,7 +68,7 @@ class CertIssuerSourceSyncTest : public ::testing::Test {
     ASSERT_TRUE(ReadTestCert("e2.pem", &e2_));
   }
 
-  void AddCert(scoped_refptr<ParsedCertificate> cert) {
+  void AddCert(std::shared_ptr<const ParsedCertificate> cert) {
     delegate_.AddCert(std::move(cert));
   }
 
@@ -89,7 +89,7 @@ class CertIssuerSourceSyncTest : public ::testing::Test {
   CertIssuerSource& source() { return delegate_.source(); }
 
  protected:
-  bool IssuersMatch(scoped_refptr<ParsedCertificate> cert,
+  bool IssuersMatch(std::shared_ptr<const ParsedCertificate> cert,
                     ParsedCertificateList expected_matches) {
     ParsedCertificateList matches;
     source().SyncGetIssuersOf(cert.get(), &matches);
@@ -113,17 +113,17 @@ class CertIssuerSourceSyncTest : public ::testing::Test {
   }
 
   TestDelegate delegate_;
-  scoped_refptr<ParsedCertificate> root_;
-  scoped_refptr<ParsedCertificate> i1_1_;
-  scoped_refptr<ParsedCertificate> i1_2_;
-  scoped_refptr<ParsedCertificate> i2_;
-  scoped_refptr<ParsedCertificate> i3_1_;
-  scoped_refptr<ParsedCertificate> i3_2_;
-  scoped_refptr<ParsedCertificate> c1_;
-  scoped_refptr<ParsedCertificate> c2_;
-  scoped_refptr<ParsedCertificate> d_;
-  scoped_refptr<ParsedCertificate> e1_;
-  scoped_refptr<ParsedCertificate> e2_;
+  std::shared_ptr<const ParsedCertificate> root_;
+  std::shared_ptr<const ParsedCertificate> i1_1_;
+  std::shared_ptr<const ParsedCertificate> i1_2_;
+  std::shared_ptr<const ParsedCertificate> i2_;
+  std::shared_ptr<const ParsedCertificate> i3_1_;
+  std::shared_ptr<const ParsedCertificate> i3_2_;
+  std::shared_ptr<const ParsedCertificate> c1_;
+  std::shared_ptr<const ParsedCertificate> c2_;
+  std::shared_ptr<const ParsedCertificate> d_;
+  std::shared_ptr<const ParsedCertificate> e1_;
+  std::shared_ptr<const ParsedCertificate> e2_;
 };
 
 TYPED_TEST_SUITE_P(CertIssuerSourceSyncTest);

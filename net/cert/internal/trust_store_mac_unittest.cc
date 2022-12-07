@@ -44,7 +44,7 @@ const char kCertificateHeader[] = "CERTIFICATE";
 // Parses a PEM encoded certificate from |file_name| and stores in |result|.
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
-    scoped_refptr<ParsedCertificate>* result) {
+    std::shared_ptr<const ParsedCertificate>* result) {
   std::string der;
   const PemBlockMapping mappings[] = {
       {kCertificateHeader, &der},
@@ -150,8 +150,8 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
   const TrustStoreMac::TrustImplType trust_impl = GetParam();
   TrustStoreMac trust_store(kSecPolicyAppleSSL, trust_impl);
 
-  scoped_refptr<ParsedCertificate> a_by_b, b_by_c, b_by_f, c_by_d, c_by_e,
-      f_by_e, d_by_d, e_by_e;
+  std::shared_ptr<const ParsedCertificate> a_by_b, b_by_c, b_by_f, c_by_d,
+      c_by_e, f_by_e, d_by_d, e_by_e;
   ASSERT_TRUE(ReadTestCert("multi-root-A-by-B.pem", &a_by_b));
   ASSERT_TRUE(ReadTestCert("multi-root-B-by-C.pem", &b_by_c));
   ASSERT_TRUE(ReadTestCert("multi-root-B-by-F.pem", &b_by_f));
@@ -277,7 +277,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     ParseCertificateOptions options;
     // For https://crt.sh/?q=D3EEFBCBBCF49867838626E23BB59CA01E305DB7:
     options.allow_invalid_serial_numbers = true;
-    scoped_refptr<ParsedCertificate> cert = ParsedCertificate::Create(
+    std::shared_ptr<const ParsedCertificate> cert = ParsedCertificate::Create(
         x509_util::CreateCryptoBuffer(cert_der), options, &errors);
     if (!cert) {
       LOG(WARNING) << "ParseCertificate::Create " << hash_text << " failed:\n"

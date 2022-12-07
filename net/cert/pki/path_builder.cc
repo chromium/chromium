@@ -65,7 +65,7 @@ void RecordIterationCountHistogram(uint32_t iteration_count) {
 // This structure describes a certificate and its trust level. Note that |cert|
 // may be null to indicate an "empty" entry.
 struct IssuerEntry {
-  scoped_refptr<ParsedCertificate> cert;
+  std::shared_ptr<const ParsedCertificate> cert;
   CertificateTrust trust;
   int trust_and_key_id_match_ordering;
 };
@@ -165,7 +165,7 @@ class CertIssuersIter {
  public:
   // Constructs the CertIssuersIter. |*cert_issuer_sources|, |*trust_store|,
   // and |*debug_data| must be valid for the lifetime of the CertIssuersIter.
-  CertIssuersIter(scoped_refptr<ParsedCertificate> cert,
+  CertIssuersIter(std::shared_ptr<const ParsedCertificate> cert,
                   CertIssuerSources* cert_issuer_sources,
                   const TrustStore* trust_store,
                   base::SupportsUserData* debug_data);
@@ -186,7 +186,9 @@ class CertIssuersIter {
 
   // Returns the |cert| for which issuers are being retrieved.
   const ParsedCertificate* cert() const { return cert_.get(); }
-  scoped_refptr<ParsedCertificate> reference_cert() const { return cert_; }
+  std::shared_ptr<const ParsedCertificate> reference_cert() const {
+    return cert_;
+  }
 
  private:
   void AddIssuers(ParsedCertificateList issuers);
@@ -199,7 +201,7 @@ class CertIssuersIter {
   // explore. Does not change the ordering for indices before cur_issuer_.
   void SortRemainingIssuers();
 
-  scoped_refptr<ParsedCertificate> cert_;
+  std::shared_ptr<const ParsedCertificate> cert_;
   CertIssuerSources* cert_issuer_sources_;
   const TrustStore* trust_store_;
 
@@ -238,10 +240,11 @@ class CertIssuersIter {
   base::SupportsUserData* debug_data_;
 };
 
-CertIssuersIter::CertIssuersIter(scoped_refptr<ParsedCertificate> in_cert,
-                                 CertIssuerSources* cert_issuer_sources,
-                                 const TrustStore* trust_store,
-                                 base::SupportsUserData* debug_data)
+CertIssuersIter::CertIssuersIter(
+    std::shared_ptr<const ParsedCertificate> in_cert,
+    CertIssuerSources* cert_issuer_sources,
+    const TrustStore* trust_store,
+    base::SupportsUserData* debug_data)
     : cert_(in_cert),
       cert_issuer_sources_(cert_issuer_sources),
       trust_store_(trust_store),
@@ -301,7 +304,7 @@ void CertIssuersIter::GetNextIssuer(IssuerEntry* out) {
 }
 
 void CertIssuersIter::AddIssuers(ParsedCertificateList new_issuers) {
-  for (scoped_refptr<ParsedCertificate>& issuer : new_issuers) {
+  for (std::shared_ptr<const ParsedCertificate>& issuer : new_issuers) {
     if (present_issuers_.find(issuer->der_cert().AsStringView()) !=
         present_issuers_.end())
       continue;
@@ -464,7 +467,7 @@ const ParsedCertificate* CertPathBuilderResultPath::GetTrustedCert() const {
 // necessary.
 class CertPathIter {
  public:
-  CertPathIter(scoped_refptr<ParsedCertificate> cert,
+  CertPathIter(std::shared_ptr<const ParsedCertificate> cert,
                const TrustStore* trust_store,
                base::SupportsUserData* debug_data);
 
@@ -509,7 +512,7 @@ class CertPathIter {
   base::SupportsUserData* debug_data_;
 };
 
-CertPathIter::CertPathIter(scoped_refptr<ParsedCertificate> cert,
+CertPathIter::CertPathIter(std::shared_ptr<const ParsedCertificate> cert,
                            const TrustStore* trust_store,
                            base::SupportsUserData* debug_data)
     : trust_store_(trust_store), debug_data_(debug_data) {
@@ -703,7 +706,7 @@ CertPathBuilder::Result::GetBestPathPossiblyInvalid() const {
 }
 
 CertPathBuilder::CertPathBuilder(
-    scoped_refptr<ParsedCertificate> cert,
+    std::shared_ptr<const ParsedCertificate> cert,
     TrustStore* trust_store,
     CertPathBuilderDelegate* delegate,
     const der::GeneralizedTime& time,

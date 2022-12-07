@@ -18,10 +18,10 @@ namespace {
 
 #include "net/data/ssl/chrome_root_store/chrome-root-store-test-data-inc.cc"
 
-scoped_refptr<ParsedCertificate> ToParsedCertificate(
+std::shared_ptr<const ParsedCertificate> ToParsedCertificate(
     const X509Certificate& cert) {
   CertErrors errors;
-  scoped_refptr<ParsedCertificate> parsed = ParsedCertificate::Create(
+  std::shared_ptr<const ParsedCertificate> parsed = ParsedCertificate::Create(
       bssl::UpRef(cert.cert_buffer()),
       x509_util::DefaultParseCertificateOptions(), &errors);
   EXPECT_TRUE(parsed) << errors.ToDebugString();
@@ -41,7 +41,8 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   ASSERT_EQ(certs.size(), 2u);
 
   for (const auto& cert : certs) {
-    scoped_refptr<ParsedCertificate> parsed = ToParsedCertificate(*cert);
+    std::shared_ptr<const ParsedCertificate> parsed =
+        ToParsedCertificate(*cert);
     ASSERT_TRUE(trust_store_chrome->Contains(parsed.get()));
     CertificateTrust trust =
         trust_store_chrome->GetTrust(parsed.get(), /*debug_data=*/nullptr);
@@ -54,7 +55,7 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   scoped_refptr<X509Certificate> other_cert =
       ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
   ASSERT_TRUE(other_cert);
-  scoped_refptr<ParsedCertificate> other_parsed =
+  std::shared_ptr<const ParsedCertificate> other_parsed =
       ToParsedCertificate(*other_cert);
   ASSERT_FALSE(trust_store_chrome->Contains(other_parsed.get()));
   CertificateTrust trust = trust_store_chrome->GetTrust(other_parsed.get(),

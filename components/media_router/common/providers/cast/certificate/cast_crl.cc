@@ -82,10 +82,11 @@ class CastCRLTrustStore {
   CastCRLTrustStore() {
     // Initialize the trust store with the root certificate.
     net::CertErrors errors;
-    scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
-        net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(
-            kCastCRLRootCaDer),
-        {}, &errors);
+    std::shared_ptr<const net::ParsedCertificate> cert =
+        net::ParsedCertificate::Create(
+            net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(
+                kCastCRLRootCaDer),
+            {}, &errors);
     CHECK(cert) << errors.ToDebugString();
     // Enforce pathlen constraints and policies defined on the root certificate.
     store_.AddTrustAnchorWithConstraints(std::move(cert));
@@ -121,7 +122,7 @@ bool VerifyCRL(const Crl& crl,
   }
 
   net::CertErrors parse_errors;
-  scoped_refptr<net::ParsedCertificate> parsed_cert =
+  std::shared_ptr<const net::ParsedCertificate> parsed_cert =
       net::ParsedCertificate::Create(
           net::x509_util::CreateCryptoBuffer(crl.signer_cert()), {},
           &parse_errors);
@@ -173,7 +174,7 @@ bool VerifyCRL(const Crl& crl,
 
   // Verify the trust of the CRL authority.
   net::CertPathBuilder path_builder(
-      parsed_cert.get(), trust_store, &path_builder_delegate, verification_time,
+      parsed_cert, trust_store, &path_builder_delegate, verification_time,
       net::KeyPurpose::ANY_EKU, net::InitialExplicitPolicy::kFalse,
       {net::der::Input(net::kAnyPolicyOid)},
       net::InitialPolicyMappingInhibit::kFalse,

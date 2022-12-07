@@ -34,7 +34,7 @@ bool TestRootCerts::HasInstance() {
 
 bool TestRootCerts::Add(X509Certificate* certificate) {
   CertErrors errors;
-  scoped_refptr<ParsedCertificate> parsed = ParsedCertificate::Create(
+  std::shared_ptr<const ParsedCertificate> parsed = ParsedCertificate::Create(
       bssl::UpRef(certificate->cert_buffer()),
       x509_util::DefaultParseCertificateOptions(), &errors);
   if (!parsed) {

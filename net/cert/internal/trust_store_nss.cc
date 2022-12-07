@@ -50,10 +50,11 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
   for (CERTCertListNode* node = CERT_LIST_HEAD(found_certs);
        !CERT_LIST_END(node, found_certs); node = CERT_LIST_NEXT(node)) {
     CertErrors parse_errors;
-    scoped_refptr<ParsedCertificate> cur_cert = ParsedCertificate::Create(
-        x509_util::CreateCryptoBuffer(
-            base::make_span(node->cert->derCert.data, node->cert->derCert.len)),
-        {}, &parse_errors);
+    std::shared_ptr<const ParsedCertificate> cur_cert =
+        ParsedCertificate::Create(
+            x509_util::CreateCryptoBuffer(base::make_span(
+                node->cert->derCert.data, node->cert->derCert.len)),
+            {}, &parse_errors);
 
     if (!cur_cert) {
       // TODO(crbug.com/634443): return errors better.

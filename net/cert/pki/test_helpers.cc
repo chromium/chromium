@@ -169,7 +169,7 @@ bool ReadCertChainFromFile(const std::string& file_path_ascii,
   return true;
 }
 
-scoped_refptr<ParsedCertificate> ReadCertFromFile(
+std::shared_ptr<const ParsedCertificate> ReadCertFromFile(
     const std::string& file_path_ascii) {
   ParsedCertificateList chain;
   if (!ReadCertChainFromFile(file_path_ascii, &chain))
