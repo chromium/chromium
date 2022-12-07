@@ -295,7 +295,14 @@ void InitLogging(UpdaterScope updater_scope) {
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
-  VLOG(1) << "Log file: " << settings.log_file_path;
+  VLOG(1) << "Log initialized for " <<
+      []() {
+        base::FilePath file_exe;
+        return base::PathService::Get(base::FILE_EXE, &file_exe)
+                   ? file_exe
+                   : base::FilePath();
+      }() << " -> "
+          << settings.log_file_path;
 }
 
 // This function and the helper functions are copied from net/base/url_util.cc

@@ -29,6 +29,7 @@
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/test/integration_tests_impl.h"
+#include "chrome/updater/unittest_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -381,12 +382,10 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
   base::PlatformThread::SetName("IntegrationTestsHelperMain");
   base::CommandLine::Init(argc, argv);
 
-  // `test_suite` must be defined before setting log items.
+  // Use the ${ISOLATED_OUTDIR} as a log destination. `test_suite` must be
+  // defined before setting log items.
   base::TestSuite test_suite(argc, argv);
-  logging::SetLogItems(/*enable_process_id=*/true,
-                       /*enable_thread_id=*/true,
-                       /*enable_timestamp=*/true,
-                       /*enable_tickcount=*/false);
+  updater::test::InitLoggingForUnitTest();
 #if BUILDFLAG(IS_WIN)
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(

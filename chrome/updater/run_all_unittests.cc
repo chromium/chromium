@@ -195,14 +195,12 @@ int main(int argc, char** argv) {
   ScopedSymbolPath scoped_symbol_path_user(/*is_system=*/false);
 #endif
 
+  // Use the {ISOLATED_OUTDIR} as a log destination for the test suite.
   base::TestSuite test_suite(argc, argv);
+  updater::test::InitLoggingForUnitTest();
   chrome::RegisterPathProvider();
   return base::LaunchUnitTestsWithOptions(
       argc, argv, 1, 10, true, base::BindRepeating([]() {
-        logging::SetLogItems(true,    // enable_process_id
-                             true,    // enable_thread_id
-                             true,    // enable_timestamp
-                             false);  // enable_tickcount
         LOG(ERROR) << "A test timeout has occured in "
                    << updater::test::GetTestName();
         updater::test::CreateIntegrationTestCommands()->PrintLog();

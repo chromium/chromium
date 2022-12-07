@@ -62,6 +62,13 @@ bool DeleteFileAndEmptyParentDirectories(
 // ResultDB reads logs and test artifacts info from there.
 base::FilePath GetLogDestinationDir();
 
+// Initializes the logging for the unit test and redirects the log output to
+// ${ISOLATED_OUTDIR} if the directory is available. The unit tests can't log
+// into the updater directory because that directory is touched by the
+// integration tests. This function must be called after the `base::TestSuite`
+// instance is created, because `base::TestSuite` initializes logging too.
+void InitLoggingForUnitTest();
+
 #if BUILDFLAG(IS_WIN)
 // Change Windows Defender settings to skip scanning the paths used by the
 // updater if test runs with the flag `exclude-paths-from-win-defender`.

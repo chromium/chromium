@@ -111,6 +111,21 @@ Running `ninja` with `t clean` cleans the build out directory. For example:
 ninja -C out\Default chrome/updater:all -t clean
 ```
 
+### How to generate the cross-compilation IDL COM headers and TLB files
+
+6 different build flavors need to be built in sequence. If you see errors
+similar to the following:
+```
+midl.exe output different from files in gen/chrome/updater/app/server/win, see C:\src\temp\tmppbfwi0ds
+To rebaseline:
+  copy /y C:\src\temp\tmppbfwi0ds\* c:\src\chromium\src\third_party\win_build_output\midl\chrome\updater\app\server\win\x64
+ninja: build stopped: subcommand failed.
+```
+
+You can then run the following command to update IDL COM files for all flavors:
+```
+python3 chrome/updater/tools/update_idl.py
+```
 
 ## Debugging
 ### Debug into Windows update service
@@ -131,19 +146,14 @@ Start another debugger and attach the server process. Then set a server-side
 breakpoint at the place you want to debug.
 * Continue the client process.
 
-### How to generate the cross-compilation IDL COM headers and TLB files
+### Logging
 
-6 different build flavors need to be built in sequence. If you see errors
-similar to the following:
-```
-midl.exe output different from files in gen/chrome/updater/app/server/win, see C:\src\temp\tmppbfwi0ds
-To rebaseline:
-  copy /y C:\src\temp\tmppbfwi0ds\* c:\src\chromium\src\third_party\win_build_output\midl\chrome\updater\app\server\win\x64
-ninja: build stopped: subcommand failed.
-```
+Both the updater and the unit tests can create program logs. The log destination
+is different: the updater logs in the product directory, while the unit tests
+log into a directory defined by the environment variable `${ISOLATED_OUTDIR}`.
+When run by Swarming, the updater logs are copied into `${ISOLATED_OUTDIR}` too,
+so that after the swarming task has completed, both types of logs are
+available as CAS outputs.
 
-You can then run the following command to update IDL COM files for all flavors:
-```
-python3 chrome/updater/tools/update_idl.py
-```
-
+Non-bot systems can set up this environment variable to collect logs for
+debugging when the tests are run locally.

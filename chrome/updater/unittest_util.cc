@@ -99,6 +99,33 @@ base::FilePath GetLogDestinationDir() {
   return var ? base::FilePath::FromUTF8Unsafe(var) : base::FilePath();
 }
 
+void InitLoggingForUnitTest() {
+  base::FilePath file_exe;
+  if (!base::PathService::Get(base::FILE_EXE, &file_exe)) {
+    return;
+  }
+  const absl::optional<base::FilePath> log_file_path =
+      [](const base::FilePath& file_exe) {
+        const base::FilePath dest_dir = GetLogDestinationDir();
+        return dest_dir.empty() ? absl::nullopt
+                                : absl::make_optional(dest_dir.Append(
+                                      file_exe.BaseName().ReplaceExtension(
+                                          FILE_PATH_LITERAL("log"))));
+      }(file_exe);
+  if (log_file_path) {
+    logging::LoggingSettings settings;
+    settings.log_file_path = (*log_file_path).value().c_str();
+    settings.logging_dest = logging::LOG_TO_ALL;
+    logging::InitLogging(settings);
+    VLOG(0) << "Log initialized for " << file_exe.value() << " -> "
+            << settings.log_file_path;
+  }
+  logging::SetLogItems(/*enable_process_id=*/true,
+                       /*enable_thread_id=*/true,
+                       /*enable_timestamp=*/true,
+                       /*enable_tickcount=*/false);
+}
+
 #if BUILDFLAG(IS_WIN)
 namespace {
 const wchar_t kProcmonPath[] = L"C:\\tools\\Procmon.exe";

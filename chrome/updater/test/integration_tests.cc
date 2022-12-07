@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/launch.h"
@@ -94,10 +93,6 @@ class IntegrationTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    logging::SetLogItems(true,    // enable_process_id
-                         true,    // enable_thread_id
-                         true,    // enable_timestamp
-                         false);  // enable_tickcount
     ASSERT_NO_FATAL_FAILURE(CleanProcesses());
     ASSERT_TRUE(WaitForUpdaterExit());
     ASSERT_NO_FATAL_FAILURE(Clean());
