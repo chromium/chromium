@@ -540,6 +540,9 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
   }
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+      !snapshotting_for_content_analysis_ &&
+#endif
       !service_manager_client_id_.has_value()) {
     // Renderer process has requested settings outside of the expected setup.
     GetDefaultPrintSettingsReply(std::move(callback),

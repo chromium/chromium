@@ -3599,9 +3599,14 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+struct ContentAnalysisTestCase {
+  bool content_analysis_allows_print = false;
+  bool oop_enabled = false;
+};
+
 class ContentAnalysisPrintBrowserTest
     : public PrintBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<ContentAnalysisTestCase> {
  public:
   ContentAnalysisPrintBrowserTest() {
     policy::SetDMTokenForTesting(
@@ -3616,11 +3621,21 @@ class ContentAnalysisPrintBrowserTest
             kFakeDmToken));
     enterprise_connectors::ContentAnalysisDialog::SetShowDialogDelayForTesting(
         base::Milliseconds(0));
-
-    feature_list_.InitAndEnableFeature(features::kEnablePrintContentAnalysis);
   }
 
   void SetUp() override {
+    if (oop_enabled()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          {
+              {features::kEnableOopPrintDrivers,
+               {{features::kEnableOopPrintDriversJobPrint.name, "true"}}},
+              {features::kEnablePrintContentAnalysis, {}},
+          },
+          {});
+    } else {
+      feature_list_.InitAndEnableFeature(features::kEnablePrintContentAnalysis);
+    }
+
     test_printing_context_factory()->SetPrinterNameForSubsequentContexts(
         "printer_name");
     PrintBrowserTest::SetUp();
@@ -3639,7 +3654,10 @@ class ContentAnalysisPrintBrowserTest
     PrintBrowserTest::SetUpOnMainThread();
   }
 
-  bool content_analysis_allows_print() const { return GetParam(); }
+  bool content_analysis_allows_print() const {
+    return GetParam().content_analysis_allows_print;
+  }
+  bool oop_enabled() { return GetParam().oop_enabled; }
 
   enterprise_connectors::ContentAnalysisResponse ScanningResponse(
       const std::string& contents,
@@ -3702,6 +3720,12 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1396386): Remove this when tests are fixed.
+  if (oop_enabled())
+    return;
+#endif
+
   AddPrinter("printer_name");
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/test1.html"));
@@ -3802,12 +3826,30 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-INSTANTIATE_TEST_SUITE_P(All, ContentAnalysisPrintBrowserTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContentAnalysisPrintBrowserTest,
+    testing::Values(
+        ContentAnalysisTestCase{/*content_analysis_allows_print=*/true,
+                                /*oop_enabled=*/true},
+        ContentAnalysisTestCase{/*content_analysis_allows_print=*/true,
+                                /*oop_enabled=*/false},
+        ContentAnalysisTestCase{/*content_analysis_allows_print=*/false,
+                                /*oop_enabled=*/true},
+        ContentAnalysisTestCase{/*content_analysis_allows_print=*/false,
+                                /*oop_enabled=*/false}));
 
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
-INSTANTIATE_TEST_SUITE_P(All,
-                         ContentAnalysisScriptedPreviewlessPrintBrowserTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContentAnalysisScriptedPreviewlessPrintBrowserTest,
+    // TODO(crbug.com/1396386): Add back oop_enabled=true values when tests are
+    // fixed.
+    testing::Values(
+        ContentAnalysisTestCase{/*content_analysis_allows_print=*/true,
+                                /*oop_enabled=*/false},
+        ContentAnalysisTestCase{/*content_analysis_allows_print=*/false,
+                                /*oop_enabled=*/false}));
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
 #endif  // BUILDFLAG(ENABLE_PRINT_SCANNING)
