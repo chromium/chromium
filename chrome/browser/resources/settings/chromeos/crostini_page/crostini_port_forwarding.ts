@@ -17,7 +17,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './crostini_port_forwarding_add_port_dialog.js';
 import '../../controls/settings_toggle_button.js';
 import '../os_settings_page/os_settings_section.js';
-import '../../settings_page_styles.css.js';
+import '../os_settings_page_styles.css.js';
 import '../../settings_shared.css.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
