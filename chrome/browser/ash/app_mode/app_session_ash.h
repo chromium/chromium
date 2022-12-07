@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_APP_SESSION_ASH_H_
 
 #include "chrome/browser/ash/app_mode/metrics/low_disk_metrics_service.h"
+#include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 
 namespace ash {
@@ -41,6 +42,8 @@ class AppSessionAsh : public chromeos::AppSession {
   // Tracks network connectivity drops.
   // Init in ctor and destroyed while ShuttingDown.
   std::unique_ptr<NetworkConnectivityMetricsService> network_metrics_service_;
+
+  const std::unique_ptr<PeriodicMetricsService> periodic_metrics_service_;
 
   // Tracks low disk notifications.
   LowDiskMetricsService low_disk_metrics_service_;

@@ -123,8 +123,7 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
     ChromeOS only. Records the number of processes on the machine that are
-    running from chrome during Kiosk session. Recorded once per hour. Kiosk
-    sessions shorter than one hour will have no emits.
+    running from chrome during Kiosk session. Recorded once per hour.
   </summary>
 </histogram>
 
@@ -134,8 +133,7 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
     ChromeOS only. Records the percentage of disk space in use during Kiosk
-    session. Recorded once per hour. Kiosk sessions shorter than one hour will
-    have no emits.
+    session. Recorded once per hour.
   </summary>
 </histogram>
 
@@ -229,8 +227,7 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
     ChromeOS only. Records the percentage of RAM in use during Kiosk session. Is
-    recorded once per hour. Kiosk sessions shorter than one hour will have no
-    emits.
+    recorded once per hour.
   </summary>
 </histogram>
 
@@ -367,8 +364,7 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>
     ChromeOS only. Records the percentage of swap memory in use during Kiosk
-    session. Recorded once per hour. Kiosk sessions shorter than one hour will
-    have no emits.
+    session. Recorded once per hour.
   </summary>
 </histogram>
 

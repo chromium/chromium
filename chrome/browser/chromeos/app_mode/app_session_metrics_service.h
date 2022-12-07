@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_service.h"
 
@@ -24,19 +23,12 @@ extern const char kKioskSessionDurationNormalHistogram[];
 extern const char kKioskSessionDurationInDaysNormalHistogram[];
 extern const char kKioskSessionDurationCrashedHistogram[];
 extern const char kKioskSessionDurationInDaysCrashedHistogram[];
-extern const char kKioskRamUsagePercentageHistogram[];
-extern const char kKioskSwapUsagePercentageHistogram[];
-extern const char kKioskDiskUsagePercentageHistogram[];
-extern const char kKioskChromeProcessCountHistogram[];
 extern const char kKioskSessionRestartReasonHistogram[];
 extern const char kKioskSessionLastDayList[];
 extern const char kKioskSessionStartTime[];
 extern const char kKioskSessionEndReason[];
 
 extern const base::TimeDelta kKioskSessionDurationHistogramLimit;
-extern const base::TimeDelta kPeriodicMetricsInterval;
-
-class DiskSpaceCalculator;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -118,21 +110,6 @@ class AppSessionMetricsService : public chromeos::PowerManagerClient::Observer {
 
   void RecordKioskSessionStarted(KioskSessionState started_state);
 
-  void StartMetricsTimer();
-
-  void RecordPeriodicMetrics();
-
-  void RecordRamUsage() const;
-
-  // Not recorded if Chrome fails to return the SystemMemoryInfo.
-  // This can happen, for example, if it fails to open /proc/meminfo
-  // on Linux.
-  void RecordSwapUsage() const;
-
-  void RecordDiskSpaceUsage() const;
-
-  void RecordChromeProcessCount() const;
-
   void RecordKioskSessionState(KioskSessionState state) const;
 
   void RecordKioskSessionCountPerDay();
@@ -171,12 +148,6 @@ class AppSessionMetricsService : public chromeos::PowerManagerClient::Observer {
   // either the session is successfully finished or crashed or on the next
   // session startup.
   base::Time start_time_;
-
-  // Invokes callback to record continuously monitored metrics. Starts when
-  // the kiosk session is started.
-  base::RepeatingTimer metrics_timer_;
-
-  const std::unique_ptr<DiskSpaceCalculator> disk_space_calculator_;
 
   const std::vector<std::string> crash_dirs_;
 

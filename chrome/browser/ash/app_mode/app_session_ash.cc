@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
+#include <memory>
 
 #include "ash/public/cpp/accessibility_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
+#include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -29,10 +31,11 @@ void StartFloatingAccessibilityMenu() {
 
 }  // namespace
 
-AppSessionAsh::AppSessionAsh(Profile* profile) : AppSession(profile) {
-  network_metrics_service_ =
-      std::make_unique<NetworkConnectivityMetricsService>();
-}
+AppSessionAsh::AppSessionAsh(Profile* profile)
+    : AppSession(profile),
+      network_metrics_service_(
+          std::make_unique<NetworkConnectivityMetricsService>()),
+      periodic_metrics_service_(std::make_unique<PeriodicMetricsService>()) {}
 
 AppSessionAsh::~AppSessionAsh() = default;
 
@@ -41,12 +44,14 @@ void AppSessionAsh::Init(const std::string& app_id) {
   StartFloatingAccessibilityMenu();
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
+  periodic_metrics_service_->StartRecordingPeriodicMetrics();
 }
 
 void AppSessionAsh::InitForWebKiosk(
     const absl::optional<std::string>& web_app_name) {
   chromeos::AppSession::InitForWebKiosk(web_app_name);
   StartFloatingAccessibilityMenu();
+  periodic_metrics_service_->StartRecordingPeriodicMetrics();
 }
 
 void AppSessionAsh::ShuttingDown() {

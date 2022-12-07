@@ -296,12 +296,6 @@ class AppSessionTest
 
 using AppSessionRestartReasonTest = AppSessionTest;
 
-class AppSessionTestMockTime : public AppSessionTest {
- public:
-  AppSessionTestMockTime()
-      : AppSessionTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-};
-
 TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
   {
     base::Value::Dict value;
@@ -438,23 +432,6 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
   EXPECT_EQ(3u, histogram()->GetAllSamples(kKioskSessionStateHistogram).size());
   histogram()->ExpectTotalCount(kKioskSessionDurationNormalHistogram, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationInDaysNormalHistogram, 0);
-}
-
-TEST_F(AppSessionTestMockTime, PeriodicMetrics) {
-  const char* const kPeriodicMetrics[] = {
-      kKioskRamUsagePercentageHistogram, kKioskSwapUsagePercentageHistogram,
-      kKioskDiskUsagePercentageHistogram, kKioskChromeProcessCountHistogram};
-  StartWebKioskSession();
-
-  task_environment()->FastForwardBy(kPeriodicMetricsInterval / 2);
-  for (const char* metric : kPeriodicMetrics) {
-    histogram()->ExpectTotalCount(metric, 0);
-  }
-
-  task_environment()->FastForwardBy(kPeriodicMetricsInterval / 2);
-  for (const char* metric : kPeriodicMetrics) {
-    histogram()->ExpectTotalCount(metric, 1);
-  }
 }
 
 TEST_F(AppSessionTest, DoNotOpenSecondBrowserInWebKiosk) {
