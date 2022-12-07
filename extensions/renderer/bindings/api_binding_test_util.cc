@@ -98,11 +98,6 @@ std::unique_ptr<base::Value> DeprecatedValueFromString(base::StringPiece str) {
   return value;
 }
 
-std::unique_ptr<base::ListValue> DeprecatedListValueFromString(
-    base::StringPiece str) {
-  return base::ListValue::From(DeprecatedValueFromString(str));
-}
-
 std::unique_ptr<base::DictionaryValue> DeprecatedDictionaryValueFromString(
     base::StringPiece str) {
   return base::DictionaryValue::From(DeprecatedValueFromString(str));
