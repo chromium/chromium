@@ -219,6 +219,23 @@ DeviceConnectErrorCodeToStatus(BluetoothDevice::ConnectErrorCode error_code) {
     case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
       return extensions::BluetoothLowEnergyEventRouter::
           kStatusErrorUnsupportedDevice;
+    case BluetoothDevice::ERROR_DEVICE_NOT_READY:
+      return extensions::BluetoothLowEnergyEventRouter::kStatusErrorNotReady;
+    case BluetoothDevice::ERROR_ALREADY_CONNECTED:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorAlreadyConnected;
+    case BluetoothDevice::ERROR_DEVICE_ALREADY_EXISTS:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorAlreadyExists;
+    case BluetoothDevice::ERROR_DEVICE_UNCONNECTED:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorNotConnected;
+    case BluetoothDevice::ERROR_DOES_NOT_EXIST:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorDoesNotExist;
+    case BluetoothDevice::ERROR_INVALID_ARGS:
+      return extensions::BluetoothLowEnergyEventRouter::
+          kStatusErrorInvalidArguments;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED();
       return extensions::BluetoothLowEnergyEventRouter::

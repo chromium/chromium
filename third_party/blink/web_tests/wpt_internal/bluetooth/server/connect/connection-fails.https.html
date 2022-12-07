@@ -41,7 +41,7 @@ bluetooth_test(() => {
   }, {
     testName: 'Connection failed.',
     uuid: errorUUID(0x4),
-    error: new DOMException('Connection failed for unknown reason.',
+    error: new DOMException('Connection Error: Connection attempt failed.',
                             'NetworkError')
   }, {
     testName: 'Connection was already in progress.',

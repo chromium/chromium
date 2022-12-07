@@ -1162,7 +1162,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothLowEnergyApiTest, GattConnection) {
   EXPECT_CALL(*mock_adapter_, GetDevice(kTestLeDeviceAddress1))
       .WillRepeatedly(Return(device1_.get()));
   static_assert(
-      BluetoothDevice::NUM_CONNECT_ERROR_CODES == 8,
+      BluetoothDevice::NUM_CONNECT_ERROR_CODES == 14,
       "Update required if the number of BluetoothDevice enums changes.");
   EXPECT_CALL(*device0_, CreateGattConnection(_, _))
       .Times(9)

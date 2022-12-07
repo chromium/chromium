@@ -216,7 +216,7 @@ WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
       return blink::mojom::WebBluetoothResult::CONNECT_ALREADY_IN_PROGRESS;
     case BluetoothDevice::ERROR_FAILED:
       RecordConnectGATTOutcome(UMAConnectGATTOutcome::FAILED);
-      return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;
+      return blink::mojom::WebBluetoothResult::CONNECT_CONN_FAILED;
     case BluetoothDevice::ERROR_AUTH_FAILED:
       RecordConnectGATTOutcome(UMAConnectGATTOutcome::AUTH_FAILED);
       return blink::mojom::WebBluetoothResult::CONNECT_AUTH_FAILED;
@@ -232,6 +232,24 @@ WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
     case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
       RecordConnectGATTOutcome(UMAConnectGATTOutcome::UNSUPPORTED_DEVICE);
       return blink::mojom::WebBluetoothResult::CONNECT_UNSUPPORTED_DEVICE;
+    case BluetoothDevice::ERROR_DEVICE_NOT_READY:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::NOT_READY);
+      return blink::mojom::WebBluetoothResult::CONNECT_NOT_READY;
+    case BluetoothDevice::ERROR_ALREADY_CONNECTED:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::ALREADY_CONNECTED);
+      return blink::mojom::WebBluetoothResult::CONNECT_ALREADY_CONNECTED;
+    case BluetoothDevice::ERROR_DEVICE_ALREADY_EXISTS:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::ALREADY_EXISTS);
+      return blink::mojom::WebBluetoothResult::CONNECT_ALREADY_EXISTS;
+    case BluetoothDevice::ERROR_DEVICE_UNCONNECTED:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::NOT_CONNECTED);
+      return blink::mojom::WebBluetoothResult::CONNECT_NOT_CONNECTED;
+    case BluetoothDevice::ERROR_DOES_NOT_EXIST:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::DOES_NOT_EXIST);
+      return blink::mojom::WebBluetoothResult::CONNECT_DOES_NOT_EXIST;
+    case BluetoothDevice::ERROR_INVALID_ARGS:
+      RecordConnectGATTOutcome(UMAConnectGATTOutcome::INVALID_ARGS);
+      return blink::mojom::WebBluetoothResult::CONNECT_INVALID_ARGS;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED();
       return blink::mojom::WebBluetoothResult::CONNECT_UNKNOWN_FAILURE;

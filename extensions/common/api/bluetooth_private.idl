@@ -53,7 +53,12 @@ namespace bluetoothPrivate {
     inProgress,
     success,
     unknownError,
-    unsupportedDevice
+    unsupportedDevice,
+    notReady,
+    alreadyExists,
+    notConnected,
+    doesNotExist,
+    invalidArgs
   };
 
   // Valid pairing responses.

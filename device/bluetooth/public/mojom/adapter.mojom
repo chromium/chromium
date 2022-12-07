@@ -20,6 +20,12 @@ enum ConnectResult {
   UNKNOWN,
   UNSUPPORTED_DEVICE,
   DEVICE_NO_LONGER_IN_RANGE,
+  NOT_READY,
+  ALREADY_CONNECTED,
+  ALREADY_EXISTS,
+  NOT_CONNECTED,
+  DOES_NOT_EXIST,
+  INVALID_ARGS,
 };
 
 // The results of a successful connection via ConnectToServiceInsecurely().

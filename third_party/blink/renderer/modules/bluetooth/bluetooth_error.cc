@@ -95,6 +95,9 @@ DOMException* BluetoothError::CreateDOMException(
       MAP_ERROR(GATT_INVALID_ATTRIBUTE_LENGTH,
                 DOMExceptionCode::kInvalidModificationError,
                 "GATT Error: invalid attribute length.");
+      MAP_ERROR(CONNECT_INVALID_ARGS,
+                DOMExceptionCode::kInvalidModificationError,
+                "Connection Error: invalid arguments.");
 
       // InvalidStateErrors:
       MAP_ERROR(SERVICE_NO_LONGER_EXISTS, DOMExceptionCode::kInvalidStateError,
@@ -107,6 +110,14 @@ DOMException* BluetoothError::CreateDOMException(
                 "GATT Descriptor no longer exists.");
       MAP_ERROR(PROMPT_CANCELED, DOMExceptionCode::kInvalidStateError,
                 "User canceled the permission prompt.");
+      MAP_ERROR(CONNECT_NOT_READY, DOMExceptionCode::kInvalidStateError,
+                "Connection Error: Not ready.");
+      MAP_ERROR(CONNECT_ALREADY_CONNECTED, DOMExceptionCode::kInvalidStateError,
+                "Connection Error: Already connected.");
+      MAP_ERROR(CONNECT_ALREADY_EXISTS, DOMExceptionCode::kInvalidStateError,
+                "Connection Error: Already exists.");
+      MAP_ERROR(CONNECT_NOT_CONNECTED, DOMExceptionCode::kInvalidStateError,
+                "Connection Error: Not connected.");
 
       // NetworkErrors:
       MAP_ERROR(CONNECT_ALREADY_IN_PROGRESS, DOMExceptionCode::kNetworkError,
@@ -131,6 +142,8 @@ DOMException* BluetoothError::CreateDOMException(
                 "GATT Error: Not paired.");
       MAP_ERROR(GATT_OPERATION_IN_PROGRESS, DOMExceptionCode::kNetworkError,
                 "GATT operation already in progress.");
+      MAP_ERROR(CONNECT_CONN_FAILED, DOMExceptionCode::kNetworkError,
+                "Connection Error: Connection attempt failed.");
 
       // NotFoundErrors:
       MAP_ERROR(WEB_BLUETOOTH_NOT_SUPPORTED, DOMExceptionCode::kNotFoundError,
@@ -161,6 +174,8 @@ DOMException* BluetoothError::CreateDOMException(
       MAP_ERROR(BLUETOOTH_LOW_ENERGY_NOT_AVAILABLE,
                 DOMExceptionCode::kNotFoundError,
                 "Bluetooth Low Energy not available.");
+      MAP_ERROR(CONNECT_DOES_NOT_EXIST, DOMExceptionCode::kNotFoundError,
+                "Does not exist.");
 
       // NotSupportedErrors:
       MAP_ERROR(GATT_UNKNOWN_ERROR, DOMExceptionCode::kNotSupportedError,

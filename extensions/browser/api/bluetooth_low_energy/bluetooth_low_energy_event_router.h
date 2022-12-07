@@ -110,6 +110,9 @@ class BluetoothLowEnergyEventRouter
     kStatusErrorTimeout,
     kStatusErrorUnsupportedDevice,
     kStatusErrorInvalidServiceId,
+    kStatusErrorNotReady,
+    kStatusErrorAlreadyExists,
+    kStatusErrorDoesNotExist,
   };
 
   // Error callback is used by asynchronous methods to report failures.

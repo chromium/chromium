@@ -11051,6 +11051,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="In Progress"/>
   <int value="6" label="Unknown"/>
   <int value="7" label="Unsupported Device"/>
+  <int value="8" label="Not Ready"/>
+  <int value="9" label="Already Connected"/>
+  <int value="10" label="Already Exists"/>
+  <int value="11" label="Not Connected"/>
+  <int value="12" label="Does Not Exist"/>
+  <int value="13" label="Invalid Arguments"/>
 </enum>
 
 <enum name="BluetoothDeviceConnectToServiceFailureReason">
@@ -105619,6 +105625,12 @@ others/histograms.xml -->
   <int value="7" label="Auth Rejected"/>
   <int value="8" label="Auth Timeout"/>
   <int value="9" label="Unsupported Device"/>
+  <int value="10" label="Not Ready"/>
+  <int value="11" label="Already Connected"/>
+  <int value="12" label="Already Exists"/>
+  <int value="13" label="Not Connected"/>
+  <int value="14" label="Does Not Exist"/>
+  <int value="15" label="Invalid Arguments"/>
 </enum>
 
 <enum name="WebBluetoothFunction">

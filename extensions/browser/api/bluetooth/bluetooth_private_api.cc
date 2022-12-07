@@ -119,6 +119,18 @@ bt_private::ConnectResultType DeviceConnectErrorToConnectResult(
       return bt_private::CONNECT_RESULT_TYPE_UNKNOWNERROR;
     case device::BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
       return bt_private::CONNECT_RESULT_TYPE_UNSUPPORTEDDEVICE;
+    case device::BluetoothDevice::ERROR_DEVICE_NOT_READY:
+      return bt_private::CONNECT_RESULT_TYPE_NOTREADY;
+    case device::BluetoothDevice::ERROR_ALREADY_CONNECTED:
+      return bt_private::CONNECT_RESULT_TYPE_ALREADYCONNECTED;
+    case device::BluetoothDevice::ERROR_DEVICE_ALREADY_EXISTS:
+      return bt_private::CONNECT_RESULT_TYPE_ALREADYEXISTS;
+    case device::BluetoothDevice::ERROR_DEVICE_UNCONNECTED:
+      return bt_private::CONNECT_RESULT_TYPE_NOTCONNECTED;
+    case device::BluetoothDevice::ERROR_DOES_NOT_EXIST:
+      return bt_private::CONNECT_RESULT_TYPE_DOESNOTEXIST;
+    case device::BluetoothDevice::ERROR_INVALID_ARGS:
+      return bt_private::CONNECT_RESULT_TYPE_INVALIDARGS;
     case device::BluetoothDevice::NUM_CONNECT_ERROR_CODES:
       NOTREACHED();
       break;

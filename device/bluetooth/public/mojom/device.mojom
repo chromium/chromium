@@ -53,7 +53,7 @@ enum GattResult {
   NOT_SUPPORTED,
   SERVICE_NOT_FOUND,
   CHARACTERISTIC_NOT_FOUND,
-  DESCRIPTOR_NOT_FOUND
+  DESCRIPTOR_NOT_FOUND,
 };
 
 // TODO(crbug.com/657632): Remove when numerical values can be optional.
