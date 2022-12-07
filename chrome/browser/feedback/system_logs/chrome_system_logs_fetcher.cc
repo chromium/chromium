@@ -11,6 +11,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/crash_ids_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
+#include "chrome/browser/feedback/system_logs/log_sources/performance_log_source.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 
@@ -56,6 +57,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   fetcher->AddSource(std::make_unique<ChromeInternalLogSource>());
   fetcher->AddSource(std::make_unique<CrashIdsSource>());
   fetcher->AddSource(std::make_unique<MemoryDetailsLogSource>());
+  fetcher->AddSource(std::make_unique<PerformanceLogSource>());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // These sources rely on scrubbing in SystemLogsFetcher.

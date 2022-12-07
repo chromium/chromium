@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_TEST_SUPPORT_TEST_USER_PERFORMANCE_TUNING_MANAGER_ENVIRONMENT_H_
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#include "chrome/browser/performance_manager/test_support/fake_power_monitor_source.h"
 
 class PrefService;
 
@@ -30,7 +31,10 @@ class TestUserPerformanceTuningManagerEnvironment {
   base::test::TestSamplingEventSource* sampling_source();
   base::test::TestBatteryLevelProvider* battery_level_provider();
 
+  FakePowerMonitorSource* power_monitor_source();
+
  private:
+  raw_ptr<FakePowerMonitorSource> power_monitor_source_;
   raw_ptr<base::test::TestSamplingEventSource> sampling_source_;
   raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;

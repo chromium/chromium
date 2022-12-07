@@ -142,6 +142,13 @@ class UserPerformanceTuningManager
   // decisions based on the most up-to-date state.
   bool IsBatterySaverActive() const;
 
+  // Returns true if the device is unplugged and using battery power.
+  bool IsUsingBatteryPower() const;
+
+  // Returns the last sampled device battery percentage. A percentage of -1
+  // indicates that the battery state has not been sampled yet.
+  int SampledBatteryPercentage() const;
+
  private:
   friend class ::ChromeBrowserMainExtraPartsPerformanceManager;
   friend class ::PerformanceManagerMetricsProviderTest;
@@ -197,6 +204,7 @@ class UserPerformanceTuningManager
   bool force_has_battery_ = false;
   bool on_battery_power_ = false;
   bool is_below_low_battery_threshold_ = false;
+  int battery_percentage_ = -1;
 
   base::ScopedObservation<base::BatteryStateSampler,
                           base::BatteryStateSampler::Observer>

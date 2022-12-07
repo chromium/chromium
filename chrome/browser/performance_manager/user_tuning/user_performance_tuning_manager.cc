@@ -142,6 +142,14 @@ bool UserPerformanceTuningManager::IsBatterySaverActive() const {
   return battery_saver_mode_enabled_;
 }
 
+bool UserPerformanceTuningManager::IsUsingBatteryPower() const {
+  return on_battery_power_;
+}
+
+int UserPerformanceTuningManager::SampledBatteryPercentage() const {
+  return battery_percentage_;
+}
+
 UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
     ~UserPerformanceTuningReceiverImpl() = default;
 
@@ -362,6 +370,9 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
     return;
   }
 
+  battery_percentage_ = *(battery_state->current_capacity) * 100 /
+                        *(battery_state->full_charged_capacity);
+
   bool was_below_threshold = is_below_low_battery_threshold_;
 
   // A battery is below the threshold if it's under 20% charge. On some
@@ -373,9 +384,8 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
       kLowBatteryThresholdPercent +
       performance_manager::features::
           kBatterySaverModeThresholdAdjustmentForDisplayLevel.Get();
-  is_below_low_battery_threshold_ = *(battery_state->current_capacity) <
-                                    (*(battery_state->full_charged_capacity) *
-                                     adjusted_low_battery_threshold / 100);
+  is_below_low_battery_threshold_ =
+      battery_percentage_ < static_cast<int>(adjusted_low_battery_threshold);
 
   if (is_below_low_battery_threshold_ && !was_below_threshold) {
     for (auto& obs : observers_) {

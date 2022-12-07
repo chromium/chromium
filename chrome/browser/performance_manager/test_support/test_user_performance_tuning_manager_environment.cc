@@ -24,6 +24,7 @@ TestUserPerformanceTuningManagerEnvironment::
 void TestUserPerformanceTuningManagerEnvironment::SetUp(
     PrefService* local_state) {
   auto source = std::make_unique<FakePowerMonitorSource>();
+  power_monitor_source_ = source.get();
   base::PowerMonitor::Initialize(std::move(source));
 
   auto test_sampling_event_source =
@@ -61,6 +62,11 @@ TestUserPerformanceTuningManagerEnvironment::sampling_source() {
 base::test::TestBatteryLevelProvider*
 TestUserPerformanceTuningManagerEnvironment::battery_level_provider() {
   return battery_level_provider_;
+}
+
+FakePowerMonitorSource*
+TestUserPerformanceTuningManagerEnvironment::power_monitor_source() {
+  return power_monitor_source_;
 }
 
 }  // namespace performance_manager::user_tuning
