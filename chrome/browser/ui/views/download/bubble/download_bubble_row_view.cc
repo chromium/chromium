@@ -726,6 +726,13 @@ views::ImageButton* DownloadBubbleRowView::AddQuickAction(
       views::CreateEmptyBorder(GetLayoutInsets(DOWNLOAD_ICON)));
   quick_action->SetProperty(views::kMarginsKey, kRowInterElementPadding);
   quick_action->SetVisible(false);
+  views::InkDrop::Get(quick_action)
+      ->SetBaseColorCallback(base::BindRepeating(
+          [](views::View* host) {
+            return views::style::GetColor(*host, views::style::CONTEXT_BUTTON,
+                                          views::style::STYLE_SECONDARY);
+          },
+          quick_action));
   return quick_action;
 }
 
