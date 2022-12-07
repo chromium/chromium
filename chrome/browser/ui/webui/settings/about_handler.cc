@@ -53,6 +53,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
@@ -77,9 +78,6 @@
 #include "ui/chromeos/devicetype_utils.h"
 #endif
 
-using base::ListValue;
-using content::BrowserThread;
-
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -103,20 +101,18 @@ struct RegulatoryLabel {
 // Returns message that informs user that for update it's better to
 // connect to a network of one of the allowed types.
 std::u16string GetAllowedConnectionTypesMessage() {
-  if (help_utils_chromeos::IsUpdateOverCellularAllowed(
+  if (!help_utils_chromeos::IsUpdateOverCellularAllowed(
           /*interactive=*/true)) {
-    const bool metered = ash::NetworkHandler::Get()
-                             ->network_state_handler()
-                             ->default_network_is_metered();
-    return metered
-               ? l10n_util::GetStringUTF16(
-                     IDS_UPGRADE_NETWORK_LIST_CELLULAR_ALLOWED_NOT_AUTOMATIC)
-               : l10n_util::GetStringUTF16(
-                     IDS_UPGRADE_NETWORK_LIST_CELLULAR_ALLOWED);
-  } else {
     return l10n_util::GetStringUTF16(
         IDS_UPGRADE_NETWORK_LIST_CELLULAR_DISALLOWED);
   }
+
+  const bool metered = ash::NetworkHandler::Get()
+                           ->network_state_handler()
+                           ->default_network_is_metered();
+  return l10n_util::GetStringUTF16(
+      metered ? IDS_UPGRADE_NETWORK_LIST_CELLULAR_ALLOWED_NOT_AUTOMATIC
+              : IDS_UPGRADE_NETWORK_LIST_CELLULAR_ALLOWED);
 }
 
 // Returns true if current user can change channel, false otherwise.
@@ -260,9 +256,7 @@ std::string UpdateStatusToString(VersionUpdater::Status status) {
 namespace settings {
 
 AboutHandler::AboutHandler(Profile* profile)
-    : profile_(profile),
-      apply_changes_from_upgrade_observer_(false),
-      clock_(base::DefaultClock::GetInstance()) {
+    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
   UpgradeDetector::GetInstance()->AddObserver(this);
 }
 
@@ -462,7 +456,7 @@ void AboutHandler::HandleOpenFeedbackDialog(const base::Value::List& args) {
   if (args.empty()) {
     OpenFeedbackDialogWrapper(/*description_template =*/std::string());
   } else {
-    DCHECK(args.size() == 1 && args.front().is_string());
+    DCHECK_EQ(args.size(), 1U);
     OpenFeedbackDialogWrapper(args.front().GetString());
   }
 }
@@ -768,16 +762,16 @@ void AboutHandler::SetUpdateStatus(VersionUpdater::Status status,
   // `base::Value::Dict` does not support int64_t, so convert to string.
   event.Set("size", base::NumberToString(size));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::u16string types_msg;
   if (status == VersionUpdater::FAILED_OFFLINE ||
       status == VersionUpdater::FAILED_CONNECTION_TYPE_DISALLOWED) {
-    std::u16string types_msg = GetAllowedConnectionTypesMessage();
-    if (!types_msg.empty())
-      event.Set("connectionTypes", types_msg);
-    else
-      event.Set("connectionTypes", base::Value());
-  } else {
-    event.Set("connectionTypes", base::Value());
+    types_msg = GetAllowedConnectionTypesMessage();
   }
+  base::Value types_value;
+  if (!types_msg.empty()) {
+    types_value = base::Value(std::move(types_msg));
+  }
+  event.Set("connectionTypes", std::move(types_value));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   FireWebUIListener("update-status-changed", event);
@@ -794,7 +788,7 @@ void AboutHandler::SetPromotionState(VersionUpdater::PromotionState state) {
   bool actionable = state == VersionUpdater::PROMOTE_DISABLED ||
                     state == VersionUpdater::PROMOTE_ENABLED;
 
-  std::u16string text = std::u16string();
+  std::u16string text;
   if (actionable)
     text = l10n_util::GetStringUTF16(IDS_ABOUT_CHROME_AUTOUPDATE_ALL);
   else if (state == VersionUpdater::PROMOTED)
@@ -838,7 +832,7 @@ void AboutHandler::OnRegulatoryLabelTextRead(
   std::string image_path =
       label_dir_path.AppendASCII(kRegulatoryLabelImageFilename).MaybeAsASCII();
   std::string url =
-      std::string("chrome://") + chrome::kChromeOSAssetHost + "/" + image_path;
+      base::StrCat({"chrome://", chrome::kChromeOSAssetHost, "/", image_path});
   regulatory_info.Set("url", url);
 
   ResolveJavascriptCallback(base::Value(callback_id), regulatory_info);

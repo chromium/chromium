@@ -204,7 +204,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   void HandleSetConsumerAutoUpdate(const base::Value::List& args);
 #endif
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Specialized instance of the VersionUpdater used to update the browser.
   std::unique_ptr<VersionUpdater> version_updater_;
@@ -213,7 +213,7 @@ class AboutHandler : public settings::SettingsPageUIHandler,
   std::unique_ptr<policy::PolicyChangeRegistrar> policy_registrar_;
 
   // If true changes to UpgradeObserver are applied, if false they are ignored.
-  bool apply_changes_from_upgrade_observer_;
+  bool apply_changes_from_upgrade_observer_ = false;
 
   // Override to test the EOL string displayed in the About details page.
   raw_ptr<base::Clock> clock_;
