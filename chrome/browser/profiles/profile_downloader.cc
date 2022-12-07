@@ -180,9 +180,9 @@ void ProfileDownloader::FetchImageData() {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("signed_in_profile_avatar", R"(
         semantics {
-          sender: "Profile G+ Image Downloader"
+          sender: "Profile Google Image Downloader"
           description:
-            "Signed in users use their G+ profile image as their Chrome "
+            "Signed in users use their Google account image as their Chrome "
             "profile image, unless they explicitly select otherwise. This "
             "fetcher uses the sign-in token and the image URL provided by GAIA "
             "to fetch the image."
@@ -195,8 +195,8 @@ void ProfileDownloader::FetchImageData() {
           setting: "This feature cannot be disabled by settings."
           policy_exception_justification:
             "Not implemented, considered not useful as no content is being "
-            "uploaded or saved; this request merely downloads the user's G+ "
-            "profile image."
+            "uploaded or saved; this request merely downloads the user's "
+            "Google account image."
         })");
 
   VLOG(1) << "Loading profile image from " << image_url_to_fetch;
