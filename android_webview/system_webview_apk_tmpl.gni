@@ -265,7 +265,10 @@ template("system_webview_apk_or_module_tmpl") {
       # expensive tasks (eg: proguarding, resource optimization) to be run in
       # parallel by adding dependencies between them (adds around 10-20
       # seconds on my machine).
-      strip_unused_resources = is_official_build
+      # TODO(https://crbug.com/1396192): remove '_use_trichrome_library'
+      # condition once we understand why some necessary resources are being
+      # stripped incorrectly.
+      strip_unused_resources = _use_trichrome_library && is_official_build
     }
 
     if (!_is_bundle_module) {
