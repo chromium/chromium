@@ -350,9 +350,13 @@ void ToolbarView::Init() {
   avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
   bool show_avatar_toolbar_button = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // ChromeOS only badges Incognito and Guest icons in the browser window.
-  show_avatar_toolbar_button = browser_->profile()->IsIncognitoProfile() ||
-                               browser_->profile()->IsGuestSession();
+  // ChromeOS only badges Incognito, Guest, and captive portal signin icons in
+  // the browser window.
+  show_avatar_toolbar_button =
+      browser_->profile()->IsIncognitoProfile() ||
+      browser_->profile()->IsGuestSession() ||
+      (browser_->profile()->IsOffTheRecord() &&
+       browser_->profile()->GetOTRProfileID().IsCaptivePortal());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   show_avatar_toolbar_button = !profiles::IsPublicSession();
 #endif

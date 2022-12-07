@@ -63,12 +63,18 @@ AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On CrOS this button should only show as badging for Incognito and Guest
-  // sessions. It's only enabled for Incognito where a menu is available for
-  // closing all Incognito windows.
+  // On CrOS this button should only show as badging for Incognito, Guest and
+  // captivie portal signin. It's only enabled for non captive portal Incognito
+  // where a menu is available for closing all Incognito windows.
   avatar_toolbar_button_->SetEnabled(
-      state == AvatarToolbarButton::State::kIncognitoProfile);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+      state == AvatarToolbarButton::State::kIncognitoProfile &&
+      !profile_->GetOTRProfileID().IsCaptivePortal());
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // On Lacros we need to disable the button for captivie portal signin.
+  avatar_toolbar_button_->SetEnabled(
+      state != AvatarToolbarButton::State::kIncognitoProfile ||
+      !profile_->GetOTRProfileID().IsCaptivePortal());
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 AvatarToolbarButtonDelegate::~AvatarToolbarButtonDelegate() {

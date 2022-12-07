@@ -127,6 +127,11 @@ class Profile : public content::BrowserContext {
 
     bool AllowsBrowserWindows() const;
 
+#if BUILDFLAG(IS_CHROMEOS)
+    // Returns true if the OTR Profile was created for captive portal signin.
+    bool IsCaptivePortal() const;
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
     // Constructs a Java OTRProfileID from the provided C++ OTRProfileID
     base::android::ScopedJavaLocalRef<jobject> ConvertToJavaOTRProfileID(

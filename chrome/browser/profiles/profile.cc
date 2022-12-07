@@ -119,6 +119,13 @@ bool Profile::OTRProfileID::AllowsBrowserWindows() const {
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool Profile::OTRProfileID::IsCaptivePortal() const {
+  return base::StartsWith(profile_id_, kCaptivePortalOTRProfileIDPrefix,
+                          base::CompareCase::SENSITIVE);
+}
+#endif
+
 // static
 const Profile::OTRProfileID Profile::OTRProfileID::PrimaryID() {
   // OTRProfileID value should be same as
