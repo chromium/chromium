@@ -5,7 +5,10 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("state") {
-  deps = [ "..:files_app_entry_interfaces" ]
+  deps = [
+    "..:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_item",
+  ]
 }
 
 js_library("store") {

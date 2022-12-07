@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FileType} from '../../common/js/file_type.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -87,6 +88,8 @@ function appendEntry(state: State, entry: Entry|FilesAppEntry) {
   allEntries[key] = {
     ...entryData,
     entry,
+    iconName:
+        FileType.getIcon(entry as Entry, undefined, locationInfo?.rootType),
     type: getEntryType(entry),
     isDirectory: entry.isDirectory,
     label,

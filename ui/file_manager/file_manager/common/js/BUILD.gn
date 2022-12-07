@@ -183,6 +183,7 @@ js_library("file_type") {
     ":files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/externs/ts:state",
     "//ui/webui/resources/js:assert",
   ]
 }

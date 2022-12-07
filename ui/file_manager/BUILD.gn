@@ -239,6 +239,14 @@ copy("copy_fmp") {
   outputs = [ "$preprocess_folder/file_manager/externs/{{source_file_part}}" ]
 }
 
+copy("for_image_loader") {
+  sources = [
+    "file_manager/externs/ts/state.js",
+    "file_manager/foreground/js/metadata/metadata_item.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+}
+
 js_library("js_from_ts") {
   sources = []
   foreach(_t, ts_files) {
@@ -276,7 +284,10 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/metadata_dispatcher.rollup.js",
       "file_manager/foreground/js/shared.rollup.js",
 
+      # For Image Loader unittests:
       "file_manager/common/js/file_types_data.js",
+      "file_manager/externs/ts/state.js",
+      "file_manager/foreground/js/metadata/metadata_item.js",
     ]
 
     resource_path_rewrites += [
@@ -286,6 +297,7 @@ generate_grd("build_grd") {
     ]
 
     deps += [
+      ":for_image_loader",
       "//ui/file_manager/file_manager/foreground/elements:elements",
       "//ui/file_manager/file_manager/foreground/js:build",
       "//ui/file_manager/file_manager/foreground/js:build_worker",

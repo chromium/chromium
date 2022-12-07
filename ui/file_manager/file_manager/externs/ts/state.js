@@ -34,6 +34,7 @@ export const EntryType = {
  * The data for each individual file/entry.
  * @typedef {{
  *   entry: (Entry|FilesAppEntry),
+ *   iconName: (string|undefined),
  *   label: string,
  *   volumeType: (VolumeManagerCommon.VolumeType|null),
  *   metadata: !MetadataItem,

@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FileData} from '../../externs/ts/state.js';
 
 import {EXTENSION_TO_TYPE, FileExtensionType, MIME_TO_TYPE} from './file_types_data.js';
 import {VolumeEntry} from './files_app_entry_types.js';
@@ -231,7 +232,7 @@ FileType.isHosted = (entry, opt_mimeType) => {
 };
 
 /**
- * @param {Entry|VolumeEntry} entry Reference to the file.
+ * @param {Entry|VolumeEntry|FileData} entry Reference to the file.
  * @param {string=} opt_mimeType Optional mime type for the file.
  * @param {VolumeManagerCommon.RootType=} opt_rootType The root type of the
  *     entry.
@@ -240,10 +241,16 @@ FileType.isHosted = (entry, opt_mimeType) => {
  */
 FileType.getIcon = (entry, opt_mimeType, opt_rootType) => {
   let icon;
+  // Handles the FileData and FilesAppEntry types.
+  if (entry && entry.iconName) {
+    return entry.iconName;
+  }
+  // Handles other types of entries.
   if (entry) {
+    entry = /** @type {!Entry|!VolumeEntry} */ (entry);
     const fileType = FileType.getType(entry, opt_mimeType);
     const overridenIcon = FileType.getIconOverrides(entry, opt_rootType);
-    icon = entry.iconName || overridenIcon || fileType.icon || fileType.type;
+    icon = overridenIcon || fileType.icon || fileType.type;
   }
   return icon || 'unknown';
 };
