@@ -46,10 +46,6 @@
         {
           "builder": "android-arm64-all-targets-dbg",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_compile_dbg",
-          "group": "tryserver.chromium.android"
         }
       ]
     }
