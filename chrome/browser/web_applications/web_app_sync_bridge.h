@@ -117,12 +117,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void SetUserLaunchOrdinal(const AppId& app_id,
                             syncer::StringOrdinal user_launch_ordinal);
 
-  // These methods are used by web apps to add or remove allowed
-  // protocol schemes based on user approval or withdrawal of that approval.
-  // Allowed protocol schemes will allow web apps to handle launches from
-  // urls that start with that scheme without asking the user.
-  void AddAllowedLaunchProtocol(const AppId& app_id,
-                                const std::string& protocol_scheme);
+  // This method is used by web apps to remove allowed protocol schemes based
+  // on user withdrawal of that approval. Allowed protocol schemes will allow
+  // web apps to handle launches from urls that start with that scheme without
+  // asking the user.
   void RemoveAllowedLaunchProtocol(const AppId& app_id,
                                    const std::string& protocol_scheme);
 
@@ -130,12 +128,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void SetAppFileHandlerApprovalState(const AppId& app_id,
                                       ApiApprovalState state);
 
-  // These methods are used by web apps to add or remove disallowed
-  // protocol schemes based on user preference or withdrawal of that preference.
-  // Disallowed protocol schemes will never allow web apps to handle launches
-  // from urls that start with that scheme.
-  void AddDisallowedLaunchProtocol(const AppId& app_id,
-                                   const std::string& protocol_scheme);
+  // This method are used by web apps to remove disallowed protocol schemes
+  // based on user withdrawal of that preference. Disallowed protocol schemes
+  // will never allow web apps to handle launches from urls that start with that
+  // scheme.
   void RemoveDisallowedLaunchProtocol(const AppId& app_id,
                                       const std::string& protocol_scheme);
 

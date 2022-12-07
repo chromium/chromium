@@ -188,8 +188,11 @@ enum class WebappUninstallSource {
   // profile.
   kExternalLockScreen = 18,
 
+  // Tests often need a way of fully installing apps to clean up OS integration.
+  kTestCleanup = 19,
+
   // Add any new values above this one.
-  kMaxValue = kExternalLockScreen,
+  kMaxValue = kTestCleanup,
 };
 
 // This is the result of the promotability check that is recorded in the

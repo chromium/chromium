@@ -126,15 +126,14 @@ void UserChoiceDialogCompleted(
                      file_launches, profile, allowed);
 
   if (remember_user_choice) {
+    WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
     if (protocol_url) {
-      PersistProtocolHandlersUserChoice(profile, app_id, *protocol_url, allowed,
-                                        std::move(persist_done));
+      provider->scheduler().UpdateProtocolHandlerUserApproval(
+          app_id, protocol_url->scheme(), allowed, std::move(persist_done));
     } else {
       DCHECK(is_file_launch);
-      WebAppProvider::GetForWebApps(profile)
-          ->scheduler()
-          .PersistFileHandlersUserChoice(app_id, allowed,
-                                         std::move(persist_done));
+      provider->scheduler().PersistFileHandlersUserChoice(
+          app_id, allowed, std::move(persist_done));
     }
   } else {
     std::move(persist_done).Run();

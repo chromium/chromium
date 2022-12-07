@@ -120,15 +120,6 @@ GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
 std::vector<std::u16string> TransformFileExtensionsForDisplay(
     const std::set<std::string>& extensions);
 
-// Updates the approved or disallowed protocol list for the given app. If
-// necessary, it also updates the protocol registration with the OS.
-void PersistProtocolHandlersUserChoice(
-    Profile* profile,
-    const AppId& app_id,
-    const GURL& protocol_url,
-    bool allowed,
-    base::OnceClosure update_finished_callback);
-
 // Check if only |specified_sources| exist in the |sources|
 bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
                                              WebAppSources specified_sources);
