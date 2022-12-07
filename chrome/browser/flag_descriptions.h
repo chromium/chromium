@@ -436,9 +436,6 @@ extern const char kExperimentalAccessibilityLanguageDetectionDynamicName[];
 extern const char
     kExperimentalAccessibilityLanguageDetectionDynamicDescription[];
 
-extern const char kFontAccessAPIName[];
-extern const char kFontAccessAPIDescription[];
-
 extern const char kForceColorProfileSRGB[];
 extern const char kForceColorProfileP3[];
 extern const char kForceColorProfileRec2020[];

@@ -741,11 +741,6 @@ const char kMerchantWidePromotionsDescription[] =
 const char kCodeBasedRBDName[] = "Code-based RBD";
 const char kCodeBasedRBDDescription[] = "Enables the Code-based RBD.";
 
-const char kFontAccessAPIName[] = "Font Access APIs";
-const char kFontAccessAPIDescription[] =
-    "Enables the experimental Font Access APIs, giving websites access "
-    "to enumerate local fonts and access their table data.";
-
 const char kForceColorProfileSRGB[] = "sRGB";
 const char kForceColorProfileP3[] = "Display P3 D65";
 const char kForceColorProfileRec2020[] = "ITU-R BT.2020";

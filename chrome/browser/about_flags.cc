@@ -7028,10 +7028,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEvDetailsInPageInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEvDetailsInPageInfo)},
 
-    {"font-access", flag_descriptions::kFontAccessAPIName,
-     flag_descriptions::kFontAccessAPIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kFontAccess)},
-
     {"mouse-subframe-no-implicit-capture",
      flag_descriptions::kMouseSubframeNoImplicitCaptureName,
      flag_descriptions::kMouseSubframeNoImplicitCaptureDescription, kOsAll,
