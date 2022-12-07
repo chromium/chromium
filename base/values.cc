@@ -1601,12 +1601,12 @@ const Value::Dict& DictAdapterForMigration::dict_for_test() const {
 // static
 std::unique_ptr<DictionaryValue> DictionaryValue::From(
     std::unique_ptr<Value> value) {
-  DictionaryValue* out;
-  if (value && value->GetAsDictionary(&out)) {
-    std::ignore = value.release();
-    return WrapUnique(out);
+  if (!value || !value->is_dict()) {
+    return nullptr;
   }
-  return nullptr;
+
+  DictionaryValue* out = static_cast<DictionaryValue*>(value.release());
+  return WrapUnique(out);
 }
 
 DictionaryValue::DictionaryValue() : Value(Type::DICTIONARY) {}
