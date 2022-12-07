@@ -69,8 +69,12 @@ void PassthroughAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
   if (decoder_managed_image_) {
     gl::GLImage* current_image =
         texture_passthrough_->GetLevelImage(target, level);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     // TODO(sandersd): This isn't correct if CopyTexImage() was used.
     bool is_bound = !texture_passthrough_->is_bind_pending();
+#else
+    bool is_bound = true;
+#endif
     if (current_image && is_bound)
       current_image->ReleaseTexImage(target);
   }
@@ -85,7 +89,9 @@ void PassthroughAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
     texture_passthrough_->clear_bind_pending();
 #else
   CHECK(client_managed);
+#if BUILDFLAG(IS_ANDROID)
   texture_passthrough_->clear_bind_pending();
+#endif
 #endif
   texture_passthrough_->SetLevelImage(target, level, image);
 }

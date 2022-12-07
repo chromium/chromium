@@ -2107,7 +2107,9 @@ void GLES2DecoderPassthroughImpl::BindImageInternal(uint32_t client_texture_id,
   passthrough_texture->set_bind_pending();
 #else
   CHECK(can_bind_to_sampler);
+#if BUILDFLAG(IS_ANDROID)
   passthrough_texture->clear_bind_pending();
+#endif
 #endif
 
   GLenum bind_target = GLES2Util::GLFaceTargetToTextureTarget(texture_target);
@@ -2119,6 +2121,7 @@ void GLES2DecoderPassthroughImpl::BindImageInternal(uint32_t client_texture_id,
   passthrough_texture->SetLevelImage(texture_target, 0, image);
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void GLES2DecoderPassthroughImpl::BindOnePendingImage(
     GLenum target,
     TexturePassthrough* texture) {
@@ -2191,6 +2194,7 @@ void GLES2DecoderPassthroughImpl::BindPendingImagesForSamplers() {
   // them around.
   textures_pending_binding_.clear();
 }
+#endif
 
 void GLES2DecoderPassthroughImpl::OnDebugMessage(GLenum source,
                                                  GLenum type,

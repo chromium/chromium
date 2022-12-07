@@ -535,9 +535,11 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
   DCHECK(GLenumToTextureTarget(target) != TextureTarget::kUnkown);
   scoped_refptr<TexturePassthrough> texture_passthrough;
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // If there was anything bound that required an image bind / copy,
   // forget it since it's no longer bound to a sampler.
   RemovePendingBindingTexture(target, active_texture_unit_);
+#endif
 
   if (service_id != 0) {
     // Label the texture with additional context info
@@ -558,12 +560,14 @@ error::Error GLES2DecoderPassthroughImpl::DoBindTexture(GLenum target,
 
     DCHECK(texture_passthrough);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     // If |texture_passthrough| has a bound image that requires processing
     // before a draw, then keep track of it.
     if (texture_passthrough->is_bind_pending()) {
       textures_pending_binding_.emplace_back(target, active_texture_unit_,
                                              texture_passthrough->AsWeakPtr());
     }
+#endif
   }
 
   BoundTexture* bound_texture =
@@ -1200,14 +1204,18 @@ error::Error GLES2DecoderPassthroughImpl::DoDispatchCompute(
     GLuint num_groups_x,
     GLuint num_groups_y,
     GLuint num_groups_z) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   api()->glDispatchComputeFn(num_groups_x, num_groups_y, num_groups_z);
   return error::kNoError;
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoDispatchComputeIndirect(
     GLintptr offset) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   // TODO(jiajie.hu@intel.com): Use glDispatchComputeIndirectRobustANGLEFn()
   // when it's ready in ANGLE.
   api()->glDispatchComputeIndirectFn(offset);
@@ -1217,7 +1225,9 @@ error::Error GLES2DecoderPassthroughImpl::DoDispatchComputeIndirect(
 error::Error GLES2DecoderPassthroughImpl::DoDrawArrays(GLenum mode,
                                                        GLint first,
                                                        GLsizei count) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   api()->glDrawArraysFn(mode, first, count);
   return error::kNoError;
 }
@@ -1225,7 +1235,9 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawArrays(GLenum mode,
 error::Error GLES2DecoderPassthroughImpl::DoDrawArraysIndirect(
     GLenum mode,
     const void* offset) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   // TODO(jiajie.hu@intel.com): Use glDrawArraysIndirectRobustANGLEFn() when
   // it's ready in ANGLE.
   api()->glDrawArraysIndirectFn(mode, offset);
@@ -1236,7 +1248,9 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawElements(GLenum mode,
                                                          GLsizei count,
                                                          GLenum type,
                                                          const void* indices) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   api()->glDrawElementsFn(mode, count, type, indices);
   return error::kNoError;
 }
@@ -1245,7 +1259,9 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawElementsIndirect(
     GLenum mode,
     GLenum type,
     const void* offset) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   // TODO(jiajie.hu@intel.com): Use glDrawElementsIndirectRobustANGLEFn() when
   // it's ready in ANGLE.
   api()->glDrawElementsIndirectFn(mode, type, offset);
@@ -1402,7 +1418,9 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2D(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImageForClientIDIfNeeded(texture);
+#endif
   api()->glFramebufferTexture2DEXTFn(
       target, attachment, textarget,
       GetTextureServiceID(api(), texture, resources_, false), level);
@@ -3420,7 +3438,9 @@ error::Error GLES2DecoderPassthroughImpl::DoFramebufferTexture2DMultisampleEXT(
                 "Cannot change the attachments of the default framebuffer.");
     return error::kNoError;
   }
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImageForClientIDIfNeeded(texture);
+#endif
   api()->glFramebufferTexture2DMultisampleEXTFn(
       target, attachment, textarget,
       GetTextureServiceID(api(), texture, resources_, false), level, samples);
@@ -4415,7 +4435,9 @@ error::Error GLES2DecoderPassthroughImpl::DoCopyTextureCHROMIUM(
     GLboolean unpack_unmultiply_alpha) {
   gl::ScopedEnableTextureRectangleInShaderCompiler enable(
       feature_info_->IsWebGLContext() ? api() : nullptr);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImageForClientIDIfNeeded(source_id);
+#endif
   api()->glCopyTextureCHROMIUMFn(
       GetTextureServiceID(api(), source_id, resources_, false), source_level,
       dest_target, GetTextureServiceID(api(), dest_id, resources_, false),
@@ -4444,7 +4466,9 @@ error::Error GLES2DecoderPassthroughImpl::DoCopySubTextureCHROMIUM(
     GLboolean unpack_unmultiply_alpha) {
   gl::ScopedEnableTextureRectangleInShaderCompiler enable(
       feature_info_->IsWebGLContext() ? api() : nullptr);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImageForClientIDIfNeeded(source_id);
+#endif
   api()->glCopySubTextureCHROMIUMFn(
       GetTextureServiceID(api(), source_id, resources_, false), source_level,
       dest_target, GetTextureServiceID(api(), dest_id, resources_, false),
@@ -4458,7 +4482,9 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawArraysInstancedANGLE(
     GLint first,
     GLsizei count,
     GLsizei primcount) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   api()->glDrawArraysInstancedANGLEFn(mode, first, count, primcount);
   return error::kNoError;
 }
@@ -4470,7 +4496,9 @@ GLES2DecoderPassthroughImpl::DoDrawArraysInstancedBaseInstanceANGLE(
     GLsizei count,
     GLsizei primcount,
     GLuint baseinstance) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   api()->glDrawArraysInstancedBaseInstanceANGLEFn(mode, first, count, primcount,
                                                   baseinstance);
   return error::kNoError;
@@ -4482,7 +4510,9 @@ error::Error GLES2DecoderPassthroughImpl::DoDrawElementsInstancedANGLE(
     GLenum type,
     const void* indices,
     GLsizei primcount) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   api()->glDrawElementsInstancedANGLEFn(mode, count, type, indices, primcount);
   return error::kNoError;
 }
@@ -4496,7 +4526,9 @@ GLES2DecoderPassthroughImpl::DoDrawElementsInstancedBaseVertexBaseInstanceANGLE(
     GLsizei primcount,
     GLint basevertex,
     GLuint baseinstance) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   BindPendingImagesForSamplersIfNeeded();
+#endif
   api()->glDrawElementsInstancedBaseVertexBaseInstanceANGLEFn(
       mode, count, type, indices, primcount, basevertex, baseinstance);
   return error::kNoError;
