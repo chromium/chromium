@@ -304,7 +304,8 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   // TODO(manukh): Also consider URL hosts. Otherwise, 'stacko' won't expand to
   //  'stackoverflow.com' since the page title is 'stack overflow...'.
   const auto& match_text =
-      match.provider->type() == AutocompleteProvider::Type::TYPE_BUILTIN
+      match.provider &&
+              match.provider->type() == AutocompleteProvider::Type::TYPE_BUILTIN
           ? match.contents
           : GetDescription(match);
   const auto expanded_text = OmniboxFieldTrial::IsShortcutExpandingEnabled()
