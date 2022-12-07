@@ -43,7 +43,7 @@ class GLOzoneImageRepresentationShared {
 
     bool context_lost_ = false;
     std::unique_ptr<ui::NativePixmapGLBinding> binding_;
-    raw_ptr<gles2::Texture> texture_ = nullptr;
+    raw_ptr<gles2::Texture, DanglingUntriaged> texture_ = nullptr;
     scoped_refptr<gles2::TexturePassthrough> texture_passthrough_;
   };
 
