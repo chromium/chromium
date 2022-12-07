@@ -14,6 +14,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.creator.CreatorCoordinator;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -49,7 +50,8 @@ public class CreatorActivity extends SnackbarActivity {
                         Profile.getLastUsedRegularProfile(), mTitle, mUrl);
 
         mCreatorActionDelegate = new CreatorActionDelegateImpl();
-        coordinator.initFeedStream(mCreatorActionDelegate);
+        coordinator.initFeedStream(
+                mCreatorActionDelegate, HelpAndFeedbackLauncherImpl.getInstance());
 
         setContentView(coordinator.getView());
         Toolbar actionBar = findViewById(R.id.action_bar);

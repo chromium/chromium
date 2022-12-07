@@ -22,6 +22,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/feed/android:feed_java_resources",
     "//chrome/browser/feed/android:java",
+    "//chrome/browser/feedback/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/xsurface:java",
