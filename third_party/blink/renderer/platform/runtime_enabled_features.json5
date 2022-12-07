@@ -1337,7 +1337,7 @@
     },
     {
       name: "FontVariantAlternates",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "FontVariantPosition",
