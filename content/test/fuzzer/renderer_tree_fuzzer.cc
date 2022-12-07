@@ -371,23 +371,23 @@ std::unique_ptr<Node> Node::CreateRandom(Random* rnd) {
 }
 
 std::unique_ptr<Node> Node::ParseJson(const base::Value& value) {
-  const base::DictionaryValue* dict;
-  if (!value.GetAsDictionary(&dict)) {
+  const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
+  if (!value.is_dict()) {
     return nullptr;
   }
 
   std::unique_ptr<Node> node;
 
-  if (dict->FindKey("t")) {
+  if (dict.FindKey("t")) {
     node.reset(new Text());
-  } else if (dict->FindKey("e")) {
+  } else if (dict.FindKey("e")) {
     node.reset(new Element());
   } else {
     LOG(ERROR) << "Bad node";
   }
 
   if (node)
-    node->ParseJson(*dict);
+    node->ParseJson(dict);
 
   return node;
 }
