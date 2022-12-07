@@ -109,7 +109,8 @@ bool ShouldBlockNavigationToPlatformAppResource(
          view_type == mojom::ViewType::kComponent ||
          view_type == mojom::ViewType::kExtensionPopup ||
          view_type == mojom::ViewType::kTabContents ||
-         view_type == mojom::ViewType::kOffscreenDocument)
+         view_type == mojom::ViewType::kOffscreenDocument ||
+         view_type == mojom::ViewType::kExtensionSidePanel)
       << "Unhandled view type: " << view_type;
 
   return true;

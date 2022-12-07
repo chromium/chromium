@@ -166,7 +166,8 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
       view_type == extensions::mojom::ViewType::kAppWindow ||
       view_type == extensions::mojom::ViewType::kComponent ||
       view_type == extensions::mojom::ViewType::kExtensionPopup ||
-      view_type == extensions::mojom::ViewType::kExtensionBackgroundPage) {
+      view_type == extensions::mojom::ViewType::kExtensionBackgroundPage ||
+      view_type == extensions::mojom::ViewType::kExtensionSidePanel) {
     // If it is a tab, we can check for permission. For apps, this means
     // manifest would be checked for permission.
     allowed = true;

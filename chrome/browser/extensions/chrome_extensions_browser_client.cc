@@ -497,6 +497,7 @@ void ChromeExtensionsBrowserClient::AttachExtensionTaskManagerTag(
     case mojom::ViewType::kExtensionDialog:
     case mojom::ViewType::kExtensionPopup:
     case mojom::ViewType::kOffscreenDocument:
+    case mojom::ViewType::kExtensionSidePanel:
       // These are the only types that are tracked by the ExtensionTag.
       task_manager::WebContentsTags::CreateForExtension(web_contents,
                                                         view_type);

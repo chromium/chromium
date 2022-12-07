@@ -70,6 +70,10 @@ api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
       developer_private_type =
           api::developer_private::VIEW_TYPE_OFFSCREEN_DOCUMENT;
       break;
+    case mojom::ViewType::kExtensionSidePanel:
+      developer_private_type =
+          api::developer_private::VIEW_TYPE_EXTENSION_SIDE_PANEL;
+      break;
     default:
       developer_private_type = api::developer_private::VIEW_TYPE_NONE;
       NOTREACHED();

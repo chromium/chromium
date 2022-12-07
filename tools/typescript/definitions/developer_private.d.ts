@@ -59,6 +59,7 @@ declare global {
         EXTENSION_SERVICE_WORKER_BACKGROUND =
             'EXTENSION_SERVICE_WORKER_BACKGROUND',
         TAB_CONTENTS = 'TAB_CONTENTS',
+        EXTENSION_SIDE_PANEL = 'EXTENSION_SIDE_PANEL',
       }
 
       export enum ErrorType {

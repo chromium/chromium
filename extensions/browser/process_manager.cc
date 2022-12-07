@@ -192,6 +192,7 @@ struct ProcessManager::ExtensionRenderFrameData {
       case extensions::mojom::ViewType::kInvalid:
       case extensions::mojom::ViewType::kExtensionBackgroundPage:
       case extensions::mojom::ViewType::kOffscreenDocument:
+      case extensions::mojom::ViewType::kExtensionSidePanel:
         return false;
     }
     NOTREACHED();

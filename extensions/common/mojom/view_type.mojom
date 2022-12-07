@@ -33,4 +33,6 @@ enum ViewType {
   kTabContents = 9,
 
   kOffscreenDocument = 10,
+
+  kExtensionSidePanel = 11,
 };
