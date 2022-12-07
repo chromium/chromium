@@ -144,6 +144,7 @@
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_launcher_android.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
+#include "chrome/browser/touch_to_fill/touch_to_fill_controller_autofill_delegate.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "ui/base/ui_base_features.h"
@@ -492,7 +493,10 @@ void ChromePasswordManagerClient::ShowTouchToFill(
           .GetCredentialStore(url::Origin::Create(
               driver->GetLastCommittedURL().DeprecatedGetOriginAsURL()))
           .GetCredentials(),
-      webauthn_credentials, driver->AsWeakPtr(), submission_readiness);
+      webauthn_credentials,
+      std::make_unique<TouchToFillControllerAutofillDelegate>(
+          this, GetBiometricAuthenticator(), driver->AsWeakPtr(),
+          submission_readiness));
 }
 
 void ChromePasswordManagerClient::OnPasswordSelected(
@@ -1390,8 +1394,7 @@ ChromePasswordManagerClient::GetOrCreatePasswordAccessory() {
 TouchToFillController*
 ChromePasswordManagerClient::GetOrCreateTouchToFillController() {
   if (!touch_to_fill_controller_) {
-    touch_to_fill_controller_ = std::make_unique<TouchToFillController>(
-        this, GetBiometricAuthenticator());
+    touch_to_fill_controller_ = std::make_unique<TouchToFillController>();
   }
   return touch_to_fill_controller_.get();
 }
