@@ -149,19 +149,42 @@ void RemoveImpliedDevice(std::wstring* path) {
     *path = path->substr(kNTDotPrefixLen);
 }
 
-bool QueryObjectInformation(HANDLE handle,
-                            OBJECT_INFORMATION_CLASS info_class,
-                            std::vector<char>& buffer) {
+NTSTATUS WrapQueryObject(HANDLE handle,
+                         OBJECT_INFORMATION_CLASS info_class,
+                         std::vector<uint8_t>& buffer,
+                         PULONG reqd) {
+  if (handle == nullptr || handle == INVALID_HANDLE_VALUE)
+    return NTSTATUS_INVALID_PARAMETER;
   NtQueryObjectFunction NtQueryObject = sandbox::GetNtExports()->QueryObject;
   ULONG size = static_cast<ULONG>(buffer.size());
   __try {
-    return NT_SUCCESS(
-        NtQueryObject(handle, info_class, buffer.data(), size, &size));
+    return NtQueryObject(handle, info_class, buffer.data(), size, reqd);
   } __except (GetExceptionCode() == STATUS_INVALID_HANDLE
                   ? EXCEPTION_EXECUTE_HANDLER
                   : EXCEPTION_CONTINUE_SEARCH) {
-    return false;
+    return NTSTATUS_INVALID_PARAMETER;
   }
+}
+
+// `hint` is used for the initial call to NtQueryObject. Note that some data
+// in the returned vector might be unused.
+std::unique_ptr<std::vector<uint8_t>> QueryObjectInformation(
+    HANDLE handle,
+    OBJECT_INFORMATION_CLASS info_class,
+    ULONG hint) {
+  // Internal pointers in this buffer cannot move about so cannot just return
+  // the vector.
+  auto data = std::make_unique<std::vector<uint8_t>>(hint);
+  ULONG req = 0;
+  NTSTATUS ret = WrapQueryObject(handle, info_class, *data, &req);
+  if (ret == STATUS_INFO_LENGTH_MISMATCH || ret == STATUS_BUFFER_TOO_SMALL ||
+      ret == STATUS_BUFFER_OVERFLOW) {
+    data->resize(req);
+    ret = WrapQueryObject(handle, info_class, *data, nullptr);
+  }
+  if (!NT_SUCCESS(ret))
+    return nullptr;
+  return data;
 }
 
 }  // namespace
@@ -418,19 +441,6 @@ bool ConvertToLongPath(std::wstring* native_path,
   return false;
 }
 
-absl::optional<std::wstring> GetPathFromHandle(HANDLE handle) {
-  using LengthType = decltype(OBJECT_NAME_INFORMATION::ObjectName.Length);
-  std::vector<char> buffer(sizeof(OBJECT_NAME_INFORMATION) +
-                           std::numeric_limits<LengthType>::max());
-  if (!QueryObjectInformation(handle, ObjectNameInformation, buffer))
-    return absl::nullopt;
-  OBJECT_NAME_INFORMATION* name =
-      reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer.data());
-  return std::wstring(
-      name->ObjectName.Buffer,
-      name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
-}
-
 absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
   base::win::ScopedHandle file(::CreateFileW(
       path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -440,15 +450,25 @@ absl::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
   return GetPathFromHandle(file.Get());
 }
 
+absl::optional<std::wstring> GetPathFromHandle(HANDLE handle) {
+  auto buffer = QueryObjectInformation(handle, ObjectNameInformation, 512);
+  if (!buffer)
+    return absl::nullopt;
+  OBJECT_NAME_INFORMATION* name =
+      reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer->data());
+  return std::wstring(
+      name->ObjectName.Buffer,
+      name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
+}
+
 absl::optional<std::wstring> GetTypeNameFromHandle(HANDLE handle) {
-  // No typename is currently longer than 32 characters on Windows 11, so use an
-  // upper bound of 128 characters.
-  std::vector<char> buffer(sizeof(OBJECT_TYPE_INFORMATION) +
-                           128 * sizeof(WCHAR));
-  if (!QueryObjectInformation(handle, ObjectTypeInformation, buffer))
+  // No typename is currently longer than 32 characters on Windows 11, so use a
+  // hint of 128 bytes.
+  auto buffer = QueryObjectInformation(handle, ObjectTypeInformation, 128);
+  if (!buffer)
     return absl::nullopt;
   OBJECT_TYPE_INFORMATION* name =
-      reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer.data());
+      reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer->data());
   return std::wstring(name->Name.Buffer,
                       name->Name.Length / sizeof(name->Name.Buffer[0]));
 }
