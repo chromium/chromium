@@ -408,6 +408,9 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HideMultitaskMenuInOverview) {
 
 // Tests that the multitask menu gets updated after a button is pressed.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
+  // Create a test window wide enough to show the menu even after it is split in
+  // half.
+  UpdateDisplay("1600x1000");
   auto window = CreateTestWindow();
 
   ShowMultitaskMenu(*window);
@@ -441,8 +444,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HalfButtonFunctionality) {
   auto* multitask_menu = GetMultitaskMenu();
   ASSERT_TRUE(multitask_menu);
   EXPECT_EQ(window->GetBoundsInScreen().CenterPoint().x(),
-            multitask_menu->widget()
-                ->GetContentsView()
+            GetMultitaskMenuView(multitask_menu)
                 ->GetBoundsInScreen()
                 .CenterPoint()
                 .x());

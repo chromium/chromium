@@ -7,6 +7,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/system_shadow.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
 #include "ash/wm/window_state.h"
@@ -29,14 +30,17 @@ namespace {
 // coordinates.
 constexpr int kVerticalPosition = 8;
 
+// The outset around the menu needed to show the menu shadow.
+constexpr int kShadowOutset = 12;
+
+// Menu layout values.
 constexpr int kBetweenButtonSpacing = 12;
 constexpr int kCornerRadius = 8;
 constexpr gfx::Insets kInsideBorderInsets(16);
 
-// The duration of the menu position animation.
+// Menu animation values.
 constexpr base::TimeDelta kPositionAnimationDurationMs =
     base::Milliseconds(250);
-
 constexpr base::TimeDelta kOpacityAnimationDurationMs = base::Milliseconds(150);
 
 }  // namespace
@@ -86,6 +90,11 @@ class TabletModeMultitaskMenuView : public views::View {
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
+
+    shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
+        SystemShadow::Type::kElevation12);
+    shadow_->SetRoundedCornerRadius(kCornerRadius);
+    layer()->Add(shadow_->GetLayer());
   }
 
   TabletModeMultitaskMenuView(const TabletModeMultitaskMenuView&) = delete;
@@ -93,12 +102,16 @@ class TabletModeMultitaskMenuView : public views::View {
       delete;
   ~TabletModeMultitaskMenuView() override = default;
 
+  SystemShadow* shadow() { return shadow_.get(); }
+
   chromeos::MultitaskMenuView* menu_view_for_testing() {
     return menu_view_for_testing_;
   }
 
  private:
   raw_ptr<chromeos::MultitaskMenuView> menu_view_for_testing_ = nullptr;
+
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 BEGIN_METADATA(TabletModeMultitaskMenuView, View)
@@ -137,22 +150,26 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
           window_, base::BindRepeating(&TabletModeMultitaskMenu::Reset,
                                        weak_factory_.GetWeakPtr())));
 
-  const gfx::Size menu_size = menu_view_->GetPreferredSize();
-  const gfx::Size widget_size(menu_size.width(),
-                              menu_size.height() + kVerticalPosition);
-  const gfx::Point widget_origin(
-      window_->bounds().CenterPoint().x() - widget_size.width() / 2,
-      window_->bounds().y());
-  widget_->SetBounds(gfx::Rect(widget_origin, widget_size));
+  // Set the widget on the top center of the window.
+  const gfx::Size menu_size(menu_view_->GetPreferredSize());
+  const gfx::Rect window_bounds(window_->GetBoundsInScreen());
+  gfx::Rect widget_bounds(window_bounds);
+  // The invisible widget needs to be big enough to include both the menu and
+  // shadow otherwise it would mask parts out.
+  widget_bounds.ClampToCenteredSize(
+      gfx::Size(menu_size.width() + kShadowOutset * 2,
+                menu_size.height() + kShadowOutset * 2));
+  widget_bounds.set_y(window_bounds.y());
+  widget_->SetBounds(widget_bounds);
   widget_->Show();
 
   // Set the menu bounds and apply a transform offscreen.
-  const gfx::Point menu_origin(0, kVerticalPosition);
-  menu_view_->SetBoundsRect(gfx::Rect(menu_origin, menu_size));
-  menu_view_->layer()->SetTransform(gfx::Transform::MakeTranslation(
-      0, -menu_view_->GetPreferredSize().height() - kVerticalPosition));
-
-  // TODO(sophiewen): Add shadows on `menu_view_`.
+  menu_view_->SetBounds(kShadowOutset, kVerticalPosition, menu_size.width(),
+                        menu_size.height());
+  const gfx::Transform initial_transform = gfx::Transform::MakeTranslation(
+      0, -menu_size.height() - kVerticalPosition);
+  menu_view_->layer()->SetTransform(initial_transform);
+  menu_view_->shadow()->SetContentBounds(gfx::Rect(menu_size));
 
   widget_observation_.Observe(widget_.get());
 }
@@ -161,8 +178,7 @@ TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
 
 void TabletModeMultitaskMenu::Animate(bool show) {
   ui::Layer* view_layer = menu_view_->layer();
-  auto* animator = view_layer->GetAnimator();
-  if (animator->is_animating())
+  if (view_layer->GetAnimator()->is_animating())
     return;
   views::AnimationBuilder()
       .OnEnded(show ? base::DoNothing()
@@ -177,14 +193,12 @@ void TabletModeMultitaskMenu::Animate(bool show) {
                          : gfx::Transform::MakeTranslation(
                                0, -menu_view_->GetPreferredSize().height() -
                                       kVerticalPosition),
-                    gfx::Tween::ACCEL_20_DECEL_100)
-      .SetOpacity(view_layer, show ? 1.f : 0.f, gfx::Tween::LINEAR);
+                    gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 void TabletModeMultitaskMenu::AnimateFadeOut() {
   ui::Layer* view_layer = menu_view_->layer();
-  auto* animator = view_layer->GetAnimator();
-  if (animator->is_animating())
+  if (view_layer->GetAnimator()->is_animating())
     return;
   views::AnimationBuilder()
       .OnEnded(base::BindOnce(&TabletModeMultitaskMenu::Reset,
@@ -223,7 +237,6 @@ void TabletModeMultitaskMenu::EndDrag() {
       -menu_view_->GetPreferredSize().height() - kVerticalPosition;
   const float translated_ratio =
       base::clamp(current_translation_y / max_translation_y, 0.f, 1.f);
-
   Animate(/*show=*/translated_ratio < 0.5f);
 }
 
