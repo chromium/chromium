@@ -172,13 +172,14 @@ bool IsMachineHWIDCorrect() {
   if (stats->IsRunningOnVm())
     return true;
 
-  std::string hwid;
-  if (!stats->GetMachineStatistic(chromeos::system::kHardwareClassKey, &hwid)) {
+  const absl::optional<base::StringPiece> hwid =
+      stats->GetMachineStatistic(chromeos::system::kHardwareClassKey);
+  if (!hwid) {
     LOG(ERROR) << "Couldn't get machine statistic 'hardware_class'.";
     return false;
   }
-  if (!IsHWIDCorrect(hwid)) {
-    LOG(ERROR) << "Machine has malformed HWID '" << hwid << "'. ";
+  if (!IsHWIDCorrect(std::string(hwid.value()))) {
+    LOG(ERROR) << "Machine has malformed HWID '" << hwid.value() << "'. ";
     return false;
   }
 #endif
