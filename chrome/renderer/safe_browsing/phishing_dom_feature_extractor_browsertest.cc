@@ -461,8 +461,6 @@ TEST_F(PhishingDOMFeatureExtractorTest, Continuation) {
       .WillOnce(Return(now + base::Milliseconds(12)))
       // Time check at the start of the second chunk of work.
       .WillOnce(Return(now + base::Milliseconds(22)))
-      // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::Milliseconds(24)))
       // Time check after the next 10 elements.
       .WillOnce(Return(now + base::Milliseconds(30)))
       // Time check after the next 10 elements.  This will trigger another
@@ -470,12 +468,8 @@ TEST_F(PhishingDOMFeatureExtractorTest, Continuation) {
       .WillOnce(Return(now + base::Milliseconds(36)))
       // Time check at the start of the third chunk of work.
       .WillOnce(Return(now + base::Milliseconds(46)))
-      // Time check after resuming iteration for the third chunk.
-      .WillOnce(Return(now + base::Milliseconds(48)))
       // Time check after the last 10 elements.
-      .WillOnce(Return(now + base::Milliseconds(54)))
-      // A final time check for the histograms.
-      .WillOnce(Return(now + base::Milliseconds(56)));
+      .WillOnce(Return(now + base::Milliseconds(54)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
@@ -505,12 +499,8 @@ TEST_F(PhishingDOMFeatureExtractorTest, Continuation) {
       .WillOnce(Return(now + base::Milliseconds(300)))
       // Time check at the start of the second chunk of work.
       .WillOnce(Return(now + base::Milliseconds(350)))
-      // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::Milliseconds(360)))
       // Time check after the next 10 elements.  This is over the limit.
-      .WillOnce(Return(now + base::Milliseconds(600)))
-      // A final time check for the histograms.
-      .WillOnce(Return(now + base::Milliseconds(620)));
+      .WillOnce(Return(now + base::Milliseconds(600)));
 
   features.Clear();
   ResetTest();
@@ -543,11 +533,7 @@ TEST_F(PhishingDOMFeatureExtractorTest, SubframeRemoval) {
           Invoke(this, &PhishingDOMFeatureExtractorTest::ScheduleRemoveIframe),
           Return(now + base::Milliseconds(21))))
       // Time check at the start of the second chunk of work.
-      .WillOnce(Return(now + base::Milliseconds(25)))
-      // Time check after resuming iteration for the second chunk.
-      .WillOnce(Return(now + base::Milliseconds(27)))
-      // A final time check for the histograms.
-      .WillOnce(Return(now + base::Milliseconds(33)));
+      .WillOnce(Return(now + base::Milliseconds(25)));
   extractor_->SetTickClockForTesting(&tick_clock);
 
   FeatureMap expected_features;
