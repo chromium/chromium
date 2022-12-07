@@ -273,7 +273,8 @@ void WebsiteMetrics::OnTwoHours() {
 
   std::map<GURL, UrlInfo> url_infos;
   for (const auto& it : webcontents_to_ukm_key_) {
-    if (!base::Contains(url_infos, it.second)) {
+    if (!base::Contains(url_infos, it.second) && !it.second.is_empty() &&
+        it.second.SchemeIsHTTPOrHTTPS()) {
       url_infos[it.second] = std::move(url_infos_[it.second]);
     }
   }
@@ -430,9 +431,10 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   // When the primary page of `web_contents` is changed called by
   // contents::WebContentsObserver::PrimaryPageChanged(), set the visible url as
   // default value for the ukm key url.
-  webcontents_to_ukm_key_[web_contents] = web_contents->GetVisibleURL();
+  auto url = web_contents->GetVisibleURL();
+  webcontents_to_ukm_key_[web_contents] = url;
 
-  if (web_contents->GetVisibleURL().is_empty()) {
+  if (url.is_empty() || !url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
 
@@ -511,6 +513,10 @@ void WebsiteMetrics::UpdateUrlInfo(const GURL& old_url,
     running_time_in_two_hours = it->second.running_time_in_two_hours;
     start_time = it->second.start_time;
     url_infos_.erase(old_url);
+  }
+
+  if (new_url.is_empty() || !new_url.SchemeIsHTTPOrHTTPS()) {
+    return;
   }
 
   AddUrlInfo(new_url, start_time, url_content, is_activated, promotable);
@@ -613,13 +619,17 @@ void WebsiteMetrics::RecordUsageTimeFromPref() {
   const base::Value::Dict& usage_time =
       profile_->GetPrefs()->GetDict(kWebsiteUsageTime);
 
-  for (const auto [url, url_info_value] : usage_time) {
-    if (url.empty()) {
+  for (const auto [urlstr, url_info_value] : usage_time) {
+    if (urlstr.empty()) {
+      continue;
+    }
+    auto url = GURL(urlstr);
+    if (!url.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
     auto url_info = std::make_unique<UrlInfo>(url_info_value);
     if (!url_info->running_time_in_two_hours.is_zero()) {
-      EmitUkm(GURL(url), url_info->running_time_in_two_hours.InMilliseconds(),
+      EmitUkm(url, url_info->running_time_in_two_hours.InMilliseconds(),
               url_info->url_content, url_info->promotable,
               /*is_from_last_login=*/true);
     }
@@ -633,8 +643,9 @@ void WebsiteMetrics::EmitUkm(const GURL& url,
                              bool is_from_last_login) {
   auto source_id = ukm::UkmRecorder::GetSourceIdForWebsiteUrl(
       base::PassKey<WebsiteMetrics>(), url);
-  if (url.is_empty() || ukm::SourceIdObj::FromInt64(source_id).GetType() !=
-                            ukm::SourceIdType::DESKTOP_WEB_APP_ID) {
+  if (url.is_empty() || !url.SchemeIsHTTPOrHTTPS() ||
+      ukm::SourceIdObj::FromInt64(source_id).GetType() !=
+          ukm::SourceIdType::DESKTOP_WEB_APP_ID) {
     LOG(ERROR) << "WebsiteMetrics::EmitUkm url is " << url.spec()
                << ", source id type is "
                << (int)ukm::SourceIdObj::FromInt64(source_id).GetType();
