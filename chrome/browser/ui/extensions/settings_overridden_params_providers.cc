@@ -20,7 +20,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/url_formatter/url_formatter.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "extensions/browser/extension_registry.h"
@@ -256,13 +256,9 @@ GetSearchOverriddenParams(Profile* profile) {
   }
 
   // Format the URL for display.
-  const url_formatter::FormatUrlTypes kFormatRules =
-      url_formatter::kFormatUrlOmitTrivialSubdomains |
-      url_formatter::kFormatUrlTrimAfterHost |
-      url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS;
-  std::u16string formatted_search_url = url_formatter::FormatUrl(
-      search_url, kFormatRules, base::UnescapeRule::SPACES, nullptr, nullptr,
-      nullptr);
+  std::u16string formatted_search_url =
+      url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+          search_url);
 
   constexpr char kGenericDialogHistogramName[] =
       "Extensions.SettingsOverridden.GenericSearchOverriddenDialogResult";
