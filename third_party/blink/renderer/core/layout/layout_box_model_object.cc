@@ -186,9 +186,8 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   bool had_layer = HasLayer();
   bool layer_was_self_painting = had_layer && Layer()->IsSelfPaintingLayer();
   bool was_horizontal_writing_mode = IsHorizontalWritingMode();
-  bool could_contain_fixed = ComputeIsFixedContainer(old_style);
-  bool could_contain_absolute =
-      could_contain_fixed || ComputeIsAbsoluteContainer(old_style);
+  bool could_contain_fixed = CanContainFixedPositionObjects();
+  bool could_contain_absolute = CanContainAbsolutePositionObjects();
 
   LayoutObject::StyleDidChange(diff, old_style);
   UpdateFromStyle();

@@ -2092,6 +2092,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns true if style would make this object an absolute container. This
   // value gets cached by bitfields_.can_contain_absolute_position_objects_.
+  //
+  // `style` should be the current :first-line style or the current normal
+  // style. This function doesn't work for old_style in StyleDidChange().
+  // Use CanContainAbsolutePositionObjects() for old_style.
   bool ComputeIsAbsoluteContainer(const ComputedStyle* style) const;
 
   // Returns true if style would make this object a fixed container.
