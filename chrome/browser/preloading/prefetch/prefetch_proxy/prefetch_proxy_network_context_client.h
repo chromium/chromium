@@ -42,6 +42,9 @@ class PrefetchProxyNetworkContextClient
 #if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed() override;
 #endif
+  void OnTrustTokenIssuanceDivertedToSystem(
+      network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+      OnTrustTokenIssuanceDivertedToSystemCallback callback) override;
   void OnCanSendSCTAuditingReport(
       OnCanSendSCTAuditingReportCallback callback) override;
   void OnNewSCTAuditingReportSent() override;

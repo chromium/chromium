@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.content_public.browser.trusttokens.TrustTokenFulfillerManager;
 
 /**
  * This class manages platform-specific services. (i.e. Google Services) The platform
@@ -105,6 +106,11 @@ public abstract class PlatformServiceBridge {
         // TODO(crbug.com/1248039): remove this once downstream implementation lands.
         logMetrics(data);
         return 0;
+    }
+
+    // Returns a TrustTokenFulfillerManager.Factory if appropriate, else returns null.
+    public TrustTokenFulfillerManager.Factory getLocalTrustTokenFulfillerFactory() {
+        return null;
     }
 
     /**

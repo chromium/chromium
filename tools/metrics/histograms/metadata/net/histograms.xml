@@ -5115,7 +5115,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.TrustTokens.Operation{TimeSpan}Time.{Outcome}.{Type}"
+<histogram
+    name="Net.TrustTokens.Operation{TimeSpan}Time.{Outcome}.{Type}{OptionalPlatformProvided}"
     units="ms" expires_after="2022-01-15">
   <owner>davidvc@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -5146,6 +5147,10 @@ chromium-metrics-reviews@google.com.
     <variant name="Issuance"/>
     <variant name="Redemption"/>
     <variant name="Signing"/>
+  </token>
+  <token key="OptionalPlatformProvided">
+    <variant name=""/>
+    <variant name=".PlatformProvided"/>
   </token>
 </histogram>
 

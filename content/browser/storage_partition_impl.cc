@@ -2169,6 +2169,50 @@ void StoragePartitionImpl::OnTrustAnchorUsed() {
 }
 #endif
 
+void StoragePartitionImpl::OnTrustTokenIssuanceDivertedToSystem(
+    network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
+    OnTrustTokenIssuanceDivertedToSystemCallback callback) {
+  if (!local_trust_token_fulfiller_ &&
+      !attempted_to_bind_local_trust_token_fulfiller_) {
+    attempted_to_bind_local_trust_token_fulfiller_ = true;
+    ProvisionallyBindUnboundLocalTrustTokenFulfillerIfSupportedBySystem();
+  }
+
+  if (!local_trust_token_fulfiller_) {
+    auto response = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
+    response->status =
+        network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
+    std::move(callback).Run(std::move(response));
+    return;
+  }
+
+  int callback_key = next_pending_trust_token_issuance_callback_key_++;
+  pending_trust_token_issuance_callbacks_.emplace(callback_key,
+                                                  std::move(callback));
+
+  local_trust_token_fulfiller_->FulfillTrustTokenIssuance(
+      std::move(request),
+      base::BindOnce(
+          [](int callback_key, base::WeakPtr<StoragePartitionImpl> partition,
+             network::mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
+            if (!partition)
+              return;
+
+            if (!base::Contains(
+                    partition->pending_trust_token_issuance_callbacks_,
+                    callback_key)) {
+              return;
+            }
+            auto callback =
+                std::move(partition->pending_trust_token_issuance_callbacks_.at(
+                    callback_key));
+            partition->pending_trust_token_issuance_callbacks_.erase(
+                callback_key);
+            std::move(callback).Run(std::move(answer));
+          },
+          callback_key, weak_factory_.GetWeakPtr()));
+}
+
 void StoragePartitionImpl::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {
   bool allowed =
@@ -3083,6 +3127,19 @@ StoragePartitionImpl::CreateCookieAccessObserverForServiceWorker() {
   return remote;
 }
 
+void StoragePartitionImpl::OnLocalTrustTokenFulfillerConnectionError() {
+  auto not_found_answer =
+      network::mojom::FulfillTrustTokenIssuanceAnswer::New();
+  // kNotFound represents a case where the local system was unable to provide an
+  // answer to the request.
+  not_found_answer->status =
+      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
+
+  for (auto& key_and_callback : pending_trust_token_issuance_callbacks_)
+    std::move(key_and_callback.second).Run(not_found_answer.Clone());
+  pending_trust_token_issuance_callbacks_.clear();
+}
+
 void StoragePartitionImpl::OpenLocalStorageForProcess(
     int process_id,
     const blink::StorageKey& storage_key,
@@ -3106,6 +3163,23 @@ void StoragePartitionImpl::BindSessionStorageAreaForProcess(
   dom_storage_context_->BindStorageArea(storage_key, absl::nullopt,
                                         namespace_id, std::move(receiver),
                                         std::move(handle), base::DoNothing());
+}
+
+void StoragePartitionImpl::
+    ProvisionallyBindUnboundLocalTrustTokenFulfillerIfSupportedBySystem() {
+  if (local_trust_token_fulfiller_)
+    return;
+
+#if BUILDFLAG(IS_ANDROID)
+  GetGlobalJavaInterfaces()->GetInterface(
+      local_trust_token_fulfiller_.BindNewPipeAndPassReceiver());
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  if (local_trust_token_fulfiller_) {
+    local_trust_token_fulfiller_.set_disconnect_handler(base::BindOnce(
+        &StoragePartitionImpl::OnLocalTrustTokenFulfillerConnectionError,
+        weak_factory_.GetWeakPtr()));
+  }
 }
 
 absl::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(

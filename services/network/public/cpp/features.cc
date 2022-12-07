@@ -179,6 +179,15 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>
         TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
         &kTrustTokenOriginTrialParamOptions};
 
+// Determines whether Trust Tokens issuance requests should be diverted, at the
+// corresponding issuers' request, to the operating system instead of sent
+// to the issuers' servers.
+//
+// WARNING: If you rename this param, you must update the corresponding flag
+// entry in about_flags.cc.
+const base::FeatureParam<bool> kPlatformProvidedTrustTokenIssuance{
+    &kPrivateStateTokens, "PlatformProvidedTrustTokenIssuance", false};
+
 BASE_FEATURE(kWebSocketReassembleShortMessages,
              "WebSocketReassembleShortMessages",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -825,6 +825,15 @@ interface NetworkContextClient {
   [EnableIf=is_chromeos]
   OnTrustAnchorUsed();
 
+  // If it's supported by the implementation, attempts to provide a response to
+  // the given Trust Tokens issuance request through some kind of local
+  // mediation---i.e., probably by a method other than sending a web request
+  // directly to the issuer's server. In situations where it's not possible to
+  // answer the request, returns a status of kNotFound (see the request and
+  // response structs' comments for more information).
+  OnTrustTokenIssuanceDivertedToSystem(FulfillTrustTokenIssuanceRequest request)
+    => (FulfillTrustTokenIssuanceAnswer response);
+
   // Checks if a new SCT Auditing report can be sent. The browser maintains a
   // maximum report count cap for Hashdance clients -- this returns whether the
   // cap has been exceeded or not (i.e., whether another report can be sent from

@@ -19,6 +19,8 @@
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/boringssl_trust_token_issuance_cryptographer.h"
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
+#include "services/network/trust_tokens/local_trust_token_operation_delegate.h"
+#include "services/network/trust_tokens/local_trust_token_operation_delegate_impl.h"
 #include "services/network/trust_tokens/operating_system_matching.h"
 #include "services/network/trust_tokens/operation_timing_request_helper_wrapper.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
@@ -145,7 +147,10 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
           std::move(top_frame_origin), store, key_commitment_getter_,
           params->custom_key_commitment, params->custom_issuer,
           std::make_unique<BoringsslTrustTokenIssuanceCryptographer>(),
-          std::move(net_log));
+          std::make_unique<LocalTrustTokenOperationDelegateImpl>(
+              context_client_provider_),
+          base::BindRepeating(&IsCurrentOperatingSystem),
+          metrics_recorder.get(), std::move(net_log));
       std::move(done).Run(TrustTokenStatusOrRequestHelper(
           std::make_unique<OperationTimingRequestHelperWrapper>(
               std::move(metrics_recorder), std::move(helper))));

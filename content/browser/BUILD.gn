@@ -147,6 +147,7 @@ source_set("browser") {
     "//content/public/browser:proto",
     "//content/public/common:common_sources",
     "//content/public/common:content_descriptor_keys",
+    "//content/public/common:trust_tokens_mojo_bindings",
     "//content/public/common/zygote:buildflags",
     "//content/services/auction_worklet/public/mojom",
     "//crypto",

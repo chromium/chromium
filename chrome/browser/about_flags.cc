@@ -2845,6 +2845,15 @@ const FeatureEntry::FeatureVariation kLauncherItemSuggestVariations[] = {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+constexpr FeatureEntry::FeatureParam kPlatformProvidedTrustTokenIssuance[] = {
+    {"PlatformProvidedTrustTokenIssuance", "true"}};
+
+constexpr FeatureEntry::FeatureVariation
+    kPlatformProvidedTrustTokensVariations[] = {
+        {"with platform-provided trust token issuance",
+         kPlatformProvidedTrustTokenIssuance,
+         std::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperFullScreenPreviewInternalName[] =
@@ -7512,7 +7521,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"private-state-tokens", flag_descriptions::kPrivateStateTokensName,
      flag_descriptions::kPrivateStateTokensDescription, kOsAll,
-     FEATURE_VALUE_TYPE(network::features::kPrivateStateTokens)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(network::features::kPrivateStateTokens,
+                                    kPlatformProvidedTrustTokensVariations,
+                                    "TrustTokenOriginTrial")},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"copy-link-to-text", flag_descriptions::kCopyLinkToTextName,
