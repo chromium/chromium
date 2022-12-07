@@ -1104,6 +1104,11 @@ bool OverviewSession::IsShowingDesksTemplatesGrid() const {
                             : grid_list_.front()->IsShowingDesksTemplatesGrid();
 }
 
+bool OverviewSession::WillShowDesksTemplatesGrid() const {
+  return grid_list_.empty() ? false
+                            : grid_list_.front()->WillShowDesksTemplatesGrid();
+}
+
 void OverviewSession::UpdateAccessibilityFocus() {
   if (is_shutting_down())
     return;
@@ -1529,10 +1534,7 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   // When the saved desk grid is on, do not switch focus to avoid unexpected
   // name commit.
   bool saved_desk_grid_should_keep_focus =
-      IsShowingDesksTemplatesGrid() && grid_list_.front()
-                                               ->saved_desk_library_widget()
-                                               ->GetLayer()
-                                               ->GetTargetOpacity() != 0.f;
+      IsShowingDesksTemplatesGrid() || WillShowDesksTemplatesGrid();
   if (saved_desk_grid_should_keep_focus)
     overview_focus_widget_->ShowInactive();
   else

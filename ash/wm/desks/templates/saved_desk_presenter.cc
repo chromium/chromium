@@ -108,8 +108,14 @@ class WindowCloseObserver : public aura::WindowObserver {
     has_arc_app_ = base::ranges::any_of(windows, &IsArcWindow);
 
     // Observe the windows that we are going to close.
-    for (aura::Window* window : windows)
+    for (aura::Window* window : windows) {
+      // Save desk for later would not close all desk windows, thus no need to
+      // observe here.
+      if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
+        continue;
+
       window_observer_.AddObservation(window);
+    }
 
     OverviewController* overview_controller =
         Shell::Get()->overview_controller();
@@ -692,6 +698,10 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
 
       // Go through windows and attempt to close them.
       for (aura::Window* window : windows) {
+        // Save desk for later would not close all desk windows, thus skip here.
+        if (desks_util::IsWindowVisibleOnAllWorkspaces(window))
+          continue;
+
         if (views::Widget* widget =
                 views::Widget::GetWidgetForNativeView(window)) {
           widget->Close();

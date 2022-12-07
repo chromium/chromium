@@ -25,6 +25,7 @@
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
 #include "ash/wm/desks/templates/saved_desk_grid_view.h"
@@ -4269,6 +4270,48 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithSingleDesk) {
   // different from before).
   EXPECT_EQ(1ul, desks_controller->desks().size());
   EXPECT_NE(kDeskName, desks_controller->active_desk()->name());
+}
+
+// Tests that all desk window is not closed nor saved by clicking save desk for
+// later button.
+TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithAllDeskWindow) {
+  DesksController* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+
+  // Create an all desk window.
+  auto all_desk_window = CreateAppWindow(gfx::Rect(300, 300));
+  auto* all_desk_widget =
+      views::Widget::GetWidgetForNativeWindow(all_desk_window.get());
+  all_desk_widget->SetVisibleOnAllWorkspaces(true);
+  ASSERT_TRUE(
+      desks_util::IsWindowVisibleOnAllWorkspaces(all_desk_window.get()));
+
+  // Create two test windows.
+  auto test_window1 = CreateAppWindow(gfx::Rect(400, 400));
+  auto test_window2 = CreateAppWindow(gfx::Rect(500, 500));
+
+  // When saving the desk, the windows will be closed automatically. To verify
+  // that this happens we create a WindowTracker. The unique_ptrs have to be
+  // released since they would otherwise end up with dangling pointers.
+  aura::WindowTracker tracker({all_desk_window.release(),
+                               test_window1.release(), test_window2.release()});
+
+  // Open overview and save the desk.
+  OpenOverviewAndSaveDeskForLater(Shell::Get()->GetPrimaryRootWindow());
+  std::vector<const DeskTemplate*> entries = GetAllEntries();
+  ASSERT_EQ(1u, entries.size());
+
+  // Verify that saving the desk has closed the two test windows but not all
+  // desk window.
+  ASSERT_EQ(1u, tracker.windows().size());
+  EXPECT_TRUE(
+      desks_util::IsWindowVisibleOnAllWorkspaces(tracker.windows().front()));
+
+  // Verify the overview item window for all desk window is not visible since
+  // it's still in the library view.
+  OverviewItem* all_desk_window_overview_item =
+      GetOverviewItemForWindow(tracker.windows().front());
+  EXPECT_FALSE(all_desk_window_overview_item->item_widget()->IsVisible());
 }
 
 TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {

@@ -333,16 +333,19 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Commits any on-going name changes if any.
   void CommitNameChanges();
 
-  // Shows the grid of the desks templates. Creates the widget if needed. The
+  // Shows the grid of the saved desks. Creates the widget if needed. The
   // desks bar will be expanded if it isn't already.
   void ShowDesksTemplatesGrid();
 
-  // Hides the grid of desks templates and reshow the overview items. Updates
-  // the templates button if we are not exiting overview.
+  // Hides the grid of the saved desks and reshows the overview items. Updates
+  // the save desk button if we are not exiting overview.
   void HideDesksTemplatesGrid(bool exit_overview);
 
   // True if the grid of desks templates is shown.
   bool IsShowingDesksTemplatesGrid() const;
+
+  // True if the grid of desks templates will be shown shortly.
+  bool WillShowDesksTemplatesGrid() const;
 
   // Returns true if any template name is being modified in its item view on
   // this grid.
@@ -624,11 +627,11 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // later when pressed.
   std::unique_ptr<views::Widget> save_desk_button_container_widget_;
 
-  // The number of incognito windows in this grid. Used by Desk Templates to
+  // The number of incognito windows in this grid. Used by saved desks to
   // identify the unsupported window type to the user.
   int num_incognito_windows_ = 0;
 
-  // The number of unsupported windows in this grid. Used by Desk Templates to
+  // The number of unsupported windows in this grid. Used by saved desks to
   // identify the unsupported window type to the user.
   int num_unsupported_windows_ = 0;
 

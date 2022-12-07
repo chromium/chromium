@@ -290,15 +290,22 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // |active_window_before_overview_|.
   bool IsWindowActiveWindowBeforeOverview(aura::Window* window) const;
 
-  // Shows the desks templates grids on all displays. This will expand desk bars
-  // if they are not already expanded. Focuses the item which matches
-  // `item_to_focus` on the display associated with `root_window`.
+  // Shows the grid of the saved desks. Creates the widget if needed. The
+  // desks bar will be expanded if it isn't already. Focuses the item which
+  // matches `item_to_focus` on the display associated with `root_window`.
   void ShowDesksTemplatesGrids(const base::GUID& item_to_focus,
                                const std::u16string& saved_desk_name,
                                aura::Window* const root_window);
 
+  // Hides the grid of the saved desks and reshows the overview items. Updates
+  // the save desk button if we are not exiting overview.
   void HideDesksTemplatesGrids();
+
+  // True if the grid of desks templates is shown.
   bool IsShowingDesksTemplatesGrid() const;
+
+  // True if the grid of desks templates will be shown shortly.
+  bool WillShowDesksTemplatesGrid() const;
 
   // Updates the focusable overview widgets so that they point to the correct
   // next and previous widgets for a11y purposes. Needs to be updated when a

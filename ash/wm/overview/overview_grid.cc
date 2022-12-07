@@ -682,7 +682,7 @@ void OverviewGrid::AddItem(aura::Window* window,
   if (reposition)
     PositionWindows(should_animate, ignored_items);
 
-  if (IsShowingDesksTemplatesGrid())
+  if (IsShowingDesksTemplatesGrid() || WillShowDesksTemplatesGrid())
     item->HideForDesksTemplatesGrid(/*animate=*/false);
 }
 
@@ -1818,6 +1818,11 @@ void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
   return saved_desk_library_widget_ && saved_desk_library_widget_->IsVisible();
+}
+
+bool OverviewGrid::WillShowDesksTemplatesGrid() const {
+  return saved_desk_library_widget_ && saved_desk_library_widget_->GetLayer() &&
+         saved_desk_library_widget_->GetLayer()->GetTargetVisibility() != 0.f;
 }
 
 bool OverviewGrid::IsTemplateNameBeingModified() const {
