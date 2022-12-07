@@ -208,7 +208,7 @@ void CellularSetupNotifier::ShowCellularSetupNotification() {
   }
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kCellularSetupNotificationId,
           l10n_util::GetStringUTF16(

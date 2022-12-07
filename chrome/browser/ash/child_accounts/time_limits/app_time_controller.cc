@@ -561,7 +561,7 @@ void AppTimeController::ShowNotificationForApp(
   option_fields.fullscreen_visibility =
       message_center::FullscreenVisibility::OVER_USER;
 
-  std::unique_ptr<message_center::Notification> message_center_notification =
+  message_center::Notification message_center_notification =
       CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
           message, notification_source, GURL(),
@@ -579,7 +579,7 @@ void AppTimeController::ShowNotificationForApp(
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   if (icon.has_value()) {
-    message_center_notification->set_icon(
+    message_center_notification.set_icon(
         ui::ImageModel::FromImageSkia(icon.value()));
   }
 
@@ -593,7 +593,7 @@ void AppTimeController::ShowNotificationForApp(
                                       notification_id);
 
   notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
-                                        *message_center_notification,
+                                        message_center_notification,
                                         /*metadata=*/nullptr);
 }
 

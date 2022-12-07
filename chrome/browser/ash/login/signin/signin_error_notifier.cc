@@ -111,7 +111,7 @@ CreateDeviceAccountErrorNotification(
   notifier_id.profile_id = email;
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           device_account_notification_id,
           l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE),
@@ -329,26 +329,23 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
           : l10n_util::GetStringUTF16(
                 IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_MIGRATION_BUBBLE_VIEW_MESSAGE);
 
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          secondary_account_notification_id_, message_title, message_body,
-          l10n_util::GetStringUTF16(
-              IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE),
-          GURL(secondary_account_notification_id_), notifier_id,
-          message_center::RichNotificationData(),
-          new message_center::HandleNotificationClickDelegate(
-              base::BindRepeating(
-                  &SigninErrorNotifier::
-                      HandleSecondaryAccountReauthNotificationClick,
-                  weak_factory_.GetWeakPtr())),
-          vector_icons::kSettingsIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->SetSystemPriority();
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      secondary_account_notification_id_, message_title, message_body,
+      l10n_util::GetStringUTF16(
+          IDS_SIGNIN_ERROR_SECONDARY_ACCOUNT_DISPLAY_SOURCE),
+      GURL(secondary_account_notification_id_), notifier_id,
+      message_center::RichNotificationData(),
+      new message_center::HandleNotificationClickDelegate(base::BindRepeating(
+          &SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick,
+          weak_factory_.GetWeakPtr())),
+      vector_icons::kSettingsIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  notification.SetSystemPriority();
 
   // Update or add the notification.
   NotificationDisplayService::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }
 

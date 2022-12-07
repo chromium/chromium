@@ -179,7 +179,7 @@ void ManagedSimLockNotifier::Click(
 
 void ManagedSimLockNotifier::ShowNotification() {
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kManagedSimLockNotificationId,
           l10n_util::GetStringUTF16(

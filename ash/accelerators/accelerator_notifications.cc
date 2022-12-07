@@ -84,7 +84,7 @@ std::unique_ptr<Notification> CreateNotification(
     const VectorIcon& icon,
     scoped_refptr<NotificationDelegate> click_handler = nullptr,
     const RichNotificationData& rich_data = RichNotificationData()) {
-  return CreateSystemNotification(
+  return CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       std::u16string() /* display source */, GURL(),
       NotifierId(NotifierType::SYSTEM_COMPONENT, kNotifierAccelerator,

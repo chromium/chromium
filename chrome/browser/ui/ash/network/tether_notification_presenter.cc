@@ -217,7 +217,7 @@ void TetherNotificationPresenter::NotifyConnectionToHostFailed() {
   PA_LOG(VERBOSE) << "Displaying \"connection attempt failed\" notification. "
                   << "Notification ID = " << id;
 
-  ShowNotification(CreateSystemNotification(
+  ShowNotification(CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id,
       l10n_util::GetStringUTF16(
           IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE),

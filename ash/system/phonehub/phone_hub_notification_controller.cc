@@ -506,7 +506,7 @@ void PhoneHubNotificationController::OnAttemptConnectionScanFailed() {
             }
           }));
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kPhoneHubInstantTetherNotificationId,
           l10n_util::GetStringUTF16(
@@ -570,7 +570,7 @@ PhoneHubNotificationController::CreateCameraRollGenericNotification(
   button.title = l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_GENERIC_ACTION);
   optional_fields.buttons.push_back(button);
-  return CreateSystemNotification(
+  return CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       kPhoneHubCameraRollNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_TITLE),
@@ -614,7 +614,7 @@ PhoneHubNotificationController::CreateCameraRollStorageNotification(
   button.title = l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_STORAGE_ACTION);
   optional_fields.buttons.push_back(button);
-  return CreateSystemNotification(
+  return CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       kPhoneHubCameraRollNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_TITLE),
@@ -656,7 +656,7 @@ PhoneHubNotificationController::CreateCameraRollNetworkNotification(
   button.title = l10n_util::GetStringUTF16(
       IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_NETWORK_ACTION);
   optional_fields.buttons.push_back(button);
-  return CreateSystemNotification(
+  return CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       kPhoneHubCameraRollNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_CAMERA_ROLL_ERROR_TITLE),

@@ -134,7 +134,7 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
     const std::u16string& title,
     const std::u16string& message,
     const scoped_refptr<message_center::NotificationDelegate>& delegate) {
-  return ash::CreateSystemNotification(
+  return ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
       l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME), GURL(),
       message_center::NotifierId(), message_center::RichNotificationData(),
@@ -220,7 +220,7 @@ SystemNotificationManager::CreateProgressNotification(
   rich_data.progress = progress;
   rich_data.progress_status = message;
 
-  return ash::CreateSystemNotification(
+  return ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
       message, app_name_, GURL(), message_center::NotifierId(), rich_data,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
@@ -240,7 +240,7 @@ SystemNotificationManager::CreateIOTaskProgressNotification(
   rich_data.progress = progress;
   rich_data.progress_status = message;
 
-  auto notification = ash::CreateSystemNotification(
+  auto notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_PROGRESS, notification_id, title,
       message, app_name_, GURL(), message_center::NotifierId(), rich_data,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(

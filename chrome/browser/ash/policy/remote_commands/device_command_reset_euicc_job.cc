@@ -113,24 +113,21 @@ void DeviceCommandResetEuiccJob::RunResultCallback(
 }
 
 void DeviceCommandResetEuiccJob::ShowResetEuiccNotification() {
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kResetEuiccNotificationId,
-          l10n_util::GetStringUTF16(
-              IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_TITLE),
-          l10n_util::GetStringUTF16(
-              IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_MESSAGE),
-          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierESimPolicy,
-              ash::NotificationCatalogName::kDeviceCommandReset),
-          message_center::RichNotificationData(),
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::DoNothingAs<void()>()),
-          /*small_image=*/gfx::VectorIcon(),
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kResetEuiccNotificationId,
+      l10n_util::GetStringUTF16(IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_TITLE),
+      l10n_util::GetStringUTF16(
+          IDS_ASH_NETWORK_RESET_EUICC_NOTIFICATION_MESSAGE),
+      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierESimPolicy,
+          ash::NotificationCatalogName::kDeviceCommandReset),
+      message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::DoNothingAs<void()>()),
+      /*small_image=*/gfx::VectorIcon(),
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 }  // namespace policy

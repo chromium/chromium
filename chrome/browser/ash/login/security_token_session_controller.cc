@@ -99,24 +99,21 @@ bool SanitizeDomain(const std::string& domain, std::string& sanitized_domain) {
 
 void DisplayNotification(const std::u16string& title,
                          const std::u16string& text) {
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
-          text,
-          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierSecurityTokenSession,
-              NotificationCatalogName::kSecurityToken),
-          /*optional_fields=*/{},
-          new message_center::HandleNotificationClickDelegate(
-              base::DoNothingAs<void()>()),
-          chromeos::kEnterpriseIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->set_fullscreen_visibility(
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title, text,
+      /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierSecurityTokenSession,
+                                 NotificationCatalogName::kSecurityToken),
+      /*optional_fields=*/{},
+      new message_center::HandleNotificationClickDelegate(
+          base::DoNothingAs<void()>()),
+      chromeos::kEnterpriseIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  notification.set_fullscreen_visibility(
       message_center::FullscreenVisibility::OVER_USER);
-  notification->SetSystemPriority();
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  notification.SetSystemPriority();
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 // Loads the persistently stored information about the challenge-response keys

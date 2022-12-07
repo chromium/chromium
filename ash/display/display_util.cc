@@ -160,7 +160,7 @@ void ShowDisplayErrorNotification(const std::u16string& message,
   }
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kDisplayErrorNotificationId,
           std::u16string(),  // title
           message,

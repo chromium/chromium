@@ -240,7 +240,7 @@ void PeripheralBatteryNotifier::ShowOrUpdateNotification(
       },
       params));
 
-  auto notification = CreateSystemNotification(
+  auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, params.id, params.title,
       params.message, std::u16string(), params.url,
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,

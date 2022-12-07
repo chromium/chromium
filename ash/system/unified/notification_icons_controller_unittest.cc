@@ -62,7 +62,7 @@ class NotificationIconsControllerTest
     rich_notification_data.pinned = is_pinned;
 
     message_center::MessageCenter::Get()->AddNotification(
-        CreateSystemNotification(
+        CreateSystemNotificationPtr(
             message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test_title",
             u"test message", std::u16string() /*display_source */,
             GURL() /* origin_url */,

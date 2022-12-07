@@ -69,7 +69,7 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
   std::string message = "Moving to " + cloud_provider_name_ +
                         ". Your file will open automatically when completed.";
 
-  return ash::CreateSystemNotification(
+  return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message), /*display_source=*/std::u16string(),
@@ -90,7 +90,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
   std::string message =
       "1 item moved to \"from Chromebook\" folder. Opening in " +
       target_app_name_;
-  return ash::CreateSystemNotification(
+  return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
@@ -111,7 +111,7 @@ std::unique_ptr<message_center::Notification>
 CloudUploadNotificationManager::CreateUploadErrorNotification(
     std::string message) {
   std::string title = "Failed to move " + file_name_;
-  return ash::CreateSystemNotification(
+  return ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
       /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),

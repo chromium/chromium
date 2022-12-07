@@ -47,7 +47,7 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
     data.buttons.emplace_back(base::UTF8ToUTF16(button.label));
 
   std::unique_ptr<message_center::Notification> system_notification =
-      ash::CreateSystemNotification(
+      ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification.client_id,
           title, message, display_source, GURL(), notifier_id, data,
           /*delegate=*/nullptr, chromeos::kNotificationAssistantIcon,

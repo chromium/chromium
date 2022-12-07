@@ -61,7 +61,7 @@ void ReleaseNotesNotification::ShowReleaseNotesNotification() {
   std::u16string message =
       l10n_util::GetStringUTF16(IDS_RELEASE_NOTES_NOTIFICATION_MESSAGE);
 
-  release_notes_available_notification_ = ash::CreateSystemNotification(
+  release_notes_available_notification_ = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kShowNotificationID,
       std::move(title), std::move(message),
       l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE), GURL(),

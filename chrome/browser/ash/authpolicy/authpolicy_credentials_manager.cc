@@ -277,20 +277,19 @@ void AuthPolicyCredentialsManager::ShowNotification(int message_id) {
             chrome::AttemptUserExit();
           }));
 
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE),
-          l10n_util::GetStringUTF16(message_id),
-          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
-          GURL(notification_id), notifier_id, data, std::move(delegate),
-          vector_icons::kNotificationWarningIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
-  notification->SetSystemPriority();
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_BUBBLE_VIEW_TITLE),
+      l10n_util::GetStringUTF16(message_id),
+      l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DISPLAY_SOURCE),
+      GURL(notification_id), notifier_id, data, std::move(delegate),
+      vector_icons::kNotificationWarningIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
+  notification.SetSystemPriority();
 
   // Add the notification.
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
   shown_notifications_.insert(message_id);
 }

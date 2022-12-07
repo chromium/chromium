@@ -39,7 +39,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
   }
 
   // TODO(crbug.com/1356101): Add "Don't show again" for managed sessions.
-  return ash::CreateSystemNotification(
+  return ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       base::StrCat({kMultiCaptureId, ":", host}),
       /*title=*/u"",

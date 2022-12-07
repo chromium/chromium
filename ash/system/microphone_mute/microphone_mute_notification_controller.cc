@@ -147,7 +147,7 @@ MicrophoneMuteNotificationController::GenerateMicrophoneMuteNotification(
   }
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           GetNotificationTitle(), GetNotificationMessage(app_names),
           /*display_source=*/std::u16string(), GURL(),

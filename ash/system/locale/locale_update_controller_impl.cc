@@ -114,7 +114,7 @@ void LocaleUpdateControllerImpl::ConfirmLocaleChange(
   for (auto& observer : observers_)
     observer.OnLocaleChanged();
 
-  std::unique_ptr<Notification> notification = CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kLocaleChangeNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOCALE_CHANGE_TITLE),
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_LOCALE_CHANGE_MESSAGE,

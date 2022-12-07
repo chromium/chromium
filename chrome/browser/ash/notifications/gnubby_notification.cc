@@ -46,7 +46,7 @@ void GnubbyNotification::CreateNotification() {
   const message_center::SystemNotificationWarningLevel colorType =
       message_center::SystemNotificationWarningLevel::NORMAL;
 
-  GnubbyNotification::notification_prompt_ = ash::CreateSystemNotification(
+  GnubbyNotification::notification_prompt_ = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       GnubbyNotification::kNotificationID, title, message, std::u16string(),
       GURL(), message_center::NotifierId(),

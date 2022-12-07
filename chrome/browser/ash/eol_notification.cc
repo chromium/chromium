@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/eol_notification.h"
 
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system_notification_builder.h"
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/time/default_clock.h"
@@ -116,52 +116,42 @@ void EolNotification::CreateNotification(base::Time eol_date, base::Time now) {
   CHECK(!now.is_null());
 
   message_center::RichNotificationData data;
-  std::unique_ptr<message_center::Notification> notification;
+  ash::SystemNotificationBuilder notification_builder;
 
   DCHECK_EQ(BUTTON_MORE_INFO, data.buttons.size());
   data.buttons.emplace_back(GetStringUTF16(IDS_LEARN_MORE));
 
   if (now < eol_date) {
     // Notifies user that updates will stop occurring at a month and year.
-    notification = CreateSystemNotification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, kEolNotificationId,
-        l10n_util::GetStringFUTF16(IDS_PENDING_EOL_NOTIFICATION_TITLE,
-                                   TimeFormatMonthAndYearForTimeZone(
-                                       eol_date, icu::TimeZone::getGMT())),
-        l10n_util::GetStringFUTF16(IDS_PENDING_EOL_NOTIFICATION_MESSAGE,
-                                   ui::GetChromeOSDeviceName()),
-        std::u16string() /* display_source */, GURL(kEolNotificationId),
-        message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId,
-            NotificationCatalogName::kPendingEOL),
-        data,
-        base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-            weak_ptr_factory_.GetWeakPtr()),
-        vector_icons::kBusinessIcon,
-        message_center::SystemNotificationWarningLevel::NORMAL);
+    notification_builder
+        .SetTitleWithArgs(IDS_PENDING_EOL_NOTIFICATION_TITLE,
+                          {TimeFormatMonthAndYearForTimeZone(
+                              eol_date, icu::TimeZone::getGMT())})
+        .SetMessageWithArgs(IDS_PENDING_EOL_NOTIFICATION_MESSAGE,
+                            {ui::GetChromeOSDeviceName()})
+        .SetCatalogName(NotificationCatalogName::kPendingEOL)
+        .SetSmallImage(vector_icons::kBusinessIcon);
   } else {
     DCHECK_EQ(BUTTON_DISMISS, data.buttons.size());
     data.buttons.emplace_back(GetStringUTF16(IDS_EOL_DISMISS_BUTTON));
 
     // Notifies user that updates will no longer occur after this final update.
-    notification = CreateSystemNotification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, kEolNotificationId,
-        GetStringUTF16(IDS_EOL_NOTIFICATION_TITLE),
-        l10n_util::GetStringFUTF16(IDS_EOL_NOTIFICATION_EOL,
-                                   ui::GetChromeOSDeviceName()),
-        std::u16string() /* display_source */, GURL(kEolNotificationId),
-        message_center::NotifierId(
-            message_center::NotifierType::SYSTEM_COMPONENT, kEolNotificationId,
-            NotificationCatalogName::kEOL),
-        data,
-        base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-            weak_ptr_factory_.GetWeakPtr()),
-        kNotificationEndOfSupportIcon,
-        message_center::SystemNotificationWarningLevel::NORMAL);
+    notification_builder.SetTitleId(IDS_EOL_NOTIFICATION_TITLE)
+        .SetMessageWithArgs(IDS_EOL_NOTIFICATION_EOL,
+                            {ui::GetChromeOSDeviceName()})
+        .SetCatalogName(NotificationCatalogName::kEOL)
+        .SetSmallImage(kNotificationEndOfSupportIcon);
   }
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT,
+      notification_builder.SetId(kEolNotificationId)
+          .SetOriginUrl(GURL(kEolNotificationId))
+          .SetOptionalFields(data)
+          .SetDelegate(
+              base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+                  weak_ptr_factory_.GetWeakPtr()))
+          .Build(),
       /*metadata=*/nullptr);
 }
 

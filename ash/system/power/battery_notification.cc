@@ -111,7 +111,7 @@ std::unique_ptr<Notification> CreateNotification(
     }
   }
 
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+  std::unique_ptr<Notification> notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       BatteryNotification::kNotificationId, title, message, std::u16string(),
       GURL(),

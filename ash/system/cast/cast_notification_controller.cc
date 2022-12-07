@@ -94,7 +94,7 @@ void CastNotificationController::OnDevicesUpdated(
     data.buttons.push_back(message_center::ButtonInfo(
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP)));
 
-    std::unique_ptr<Notification> notification = CreateSystemNotification(
+    std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
         message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
         GetNotificationTitle(sink, route), GetNotificationMessage(route),
         std::u16string() /* display_source */, GURL(),

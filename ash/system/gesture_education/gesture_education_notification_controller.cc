@@ -86,7 +86,7 @@ void GestureEducationNotificationController::RegisterProfilePrefs(
 void GestureEducationNotificationController::
     GenerateGestureEducationNotification() {
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           GetNotificationTitle(), GetNotificationMessage(),
           std::u16string() /* display_source */, GURL(),

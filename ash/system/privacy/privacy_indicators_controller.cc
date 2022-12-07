@@ -88,7 +88,7 @@ CreatePrivacyIndicatorsNotification(
   optional_fields.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS));
 
-  auto notification = CreateSystemNotification(
+  auto notification = CreateSystemNotificationPtr(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       GetPrivacyIndicatorsNotificationId(app_id), title, message,
       /*display_source=*/std::u16string(),

@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/system_notification_builder.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -121,17 +122,17 @@ SystemNotificationBuilder& SystemNotificationBuilder::SetWarningLevel(
 }
 
 message_center::Notification SystemNotificationBuilder::Build() const {
-  return *BuildPtr();
-}
-
-std::unique_ptr<message_center::Notification>
-SystemNotificationBuilder::BuildPtr() const {
   DCHECK(!id_.empty());
   const message_center::NotifierId notifier_id = GetNotifierId();
   DCHECK(notifier_id.type == message_center::NotifierType::SYSTEM_COMPONENT);
   return CreateSystemNotification(type_, id_, title_, message_, display_source_,
                                   origin_url_, notifier_id, optional_fields_,
                                   delegate_, *small_image_, warning_level_);
+}
+
+std::unique_ptr<message_center::Notification>
+SystemNotificationBuilder::BuildPtr() const {
+  return std::make_unique<message_center::Notification>(Build());
 }
 
 message_center::NotifierId SystemNotificationBuilder::GetNotifierId() const {

@@ -73,31 +73,29 @@ void ArcVmDataMigrationNotifier::OnArcSessionStopped(ArcStopReason reason) {
 void ArcVmDataMigrationNotifier::ShowNotification() {
   // TODO(b/258278176): Replace strings with l10n ones.
   // TODO(b/258278176): Replace icons once the final design decision is made.
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
-          u"Update ChromeOS" /* title */,
-          u"Up to 10 minutes needed" /* message */,
-          u"ChromeOS" /* display_source */, GURL() /* origin_url */,
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
-              ash::NotificationCatalogName::kArcVmDataMigration),
-          message_center::RichNotificationData() /* optional_fields */,
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(
-                  &ArcVmDataMigrationNotifier::OnNotificationClicked,
-                  weak_ptr_factory_.GetWeakPtr())),
-          ash::kSystemMenuUpdateIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->set_buttons({message_center::ButtonInfo(u"Update")});
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
+      u"Update ChromeOS" /* title */, u"Up to 10 minutes needed" /* message */,
+      u"ChromeOS" /* display_source */, GURL() /* origin_url */,
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
+          ash::NotificationCatalogName::kArcVmDataMigration),
+      message_center::RichNotificationData() /* optional_fields */,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(
+              &ArcVmDataMigrationNotifier::OnNotificationClicked,
+              weak_ptr_factory_.GetWeakPtr())),
+      ash::kSystemMenuUpdateIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  notification.set_buttons({message_center::ButtonInfo(u"Update")});
 
   // Make the notification persist.
   // TODO(b/259278176): Check and decide what is an appropriate behavior here.
-  notification->set_never_timeout(true);
-  notification->set_pinned(true);
+  notification.set_never_timeout(true);
+  notification.set_pinned(true);
 
   NotificationDisplayService::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT, notification,
       nullptr /* metadata */);
 }
 

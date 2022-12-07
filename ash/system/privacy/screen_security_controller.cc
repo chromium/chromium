@@ -95,7 +95,7 @@ void ScreenSecurityController::CreateNotification(const std::u16string& message,
           ? NotificationCatalogName::kPrivacyIndicators
           : NotificationCatalogName::kScreenSecurity;
 
-  std::unique_ptr<Notification> notification = CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       is_capture ? kScreenCaptureNotificationId : kScreenShareNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE),

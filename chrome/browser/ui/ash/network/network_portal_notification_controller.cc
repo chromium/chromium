@@ -78,7 +78,7 @@ std::unique_ptr<message_center::Notification> CreatePost2022Notification(
   }
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           NetworkPortalNotificationController::kNotificationId,
           l10n_util::GetStringUTF16(
@@ -100,7 +100,7 @@ std::unique_ptr<message_center::Notification> CreatePre2022Notification(
     message_center::NotifierId notifier_id,
     bool is_wifi) {
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           NetworkPortalNotificationController::kNotificationId,
           l10n_util::GetStringUTF16(

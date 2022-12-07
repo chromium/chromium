@@ -116,12 +116,11 @@ void RebootNotificationController::ShowNotification(
     const message_center::RichNotificationData& data,
     scoped_refptr<message_center::NotificationDelegate> delegate) const {
   // Create notification.
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
-          std::u16string(), GURL(), message_center::NotifierId(), data,
-          delegate, vector_icons::kBusinessIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, id, title, message,
+      std::u16string(), GURL(), message_center::NotifierId(), data, delegate,
+      vector_icons::kBusinessIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
 
   NotificationDisplayService* notification_display_service =
       NotificationDisplayService::GetForProfile(
@@ -130,7 +129,7 @@ void RebootNotificationController::ShowNotification(
   notification_display_service->Close(NotificationHandler::Type::TRANSIENT, id);
   // Display new notification.
   notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
-                                        *notification,
+                                        notification,
                                         /*metadata=*/nullptr);
 }
 

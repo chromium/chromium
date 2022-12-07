@@ -182,26 +182,24 @@ void WilcoDtcSupportdNotificationController::DisplayNotification(
     const HelpAppLauncher::HelpTopic topic) const {
   message_center::RichNotificationData rich_data;
   rich_data.pinned = (priority == message_center::SYSTEM_PRIORITY);
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-          l10n_util::GetStringUTF16(title_id),
-          l10n_util::GetStringUTF16(message_id),
-          std::u16string() /* display_source */, GURL() /* origin_url */,
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierWilco,
-              catalog_name),
-          rich_data,
-          base::MakeRefCounted<WilcoDtcSupportdNotificationDelegate>(topic),
-          small_image, color_type);
-  notification->set_buttons({message_center::ButtonInfo(
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      l10n_util::GetStringUTF16(title_id),
+      l10n_util::GetStringUTF16(message_id),
+      std::u16string() /* display_source */, GURL() /* origin_url */,
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierWilco, catalog_name),
+      rich_data,
+      base::MakeRefCounted<WilcoDtcSupportdNotificationDelegate>(topic),
+      small_image, color_type);
+  notification.set_buttons({message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_WILCO_NOTIFICATION_LEARN_MORE))});
   if (priority == message_center::SYSTEM_PRIORITY) {
-    notification->SetSystemPriority();
+    notification.SetSystemPriority();
   }
   NotificationDisplayService::GetForProfile(
       profile_manager_->GetLastUsedProfile())
-      ->Display(NotificationHandler::Type::TRANSIENT, *notification,
+      ->Display(NotificationHandler::Type::TRANSIENT, notification,
                 nullptr /* metadata */);
 }
 

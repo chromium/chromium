@@ -149,22 +149,19 @@ void UpdateRequiredNotification::DisplayNotification(
   message_center::RichNotificationData data;
   data.buttons.push_back(message_center::ButtonInfo(button_text));
 
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          kUpdateRequiredNotificationId, title, message,
-          std::u16string() /*display_source*/, GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kUpdateRequiredNotificationId,
-              NotificationCatalogName::kUpdateRequired),
-          data,
-          base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-              weak_factory_.GetWeakPtr()),
-          vector_icons::kBusinessIcon, color_type);
-  notification->set_priority(priority);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kUpdateRequiredNotificationId,
+      title, message, std::u16string() /*display_source*/, GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kUpdateRequiredNotificationId,
+                                 NotificationCatalogName::kUpdateRequired),
+      data,
+      base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
+          weak_factory_.GetWeakPtr()),
+      vector_icons::kBusinessIcon, color_type);
+  notification.set_priority(priority);
 
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void UpdateRequiredNotification::Hide() {

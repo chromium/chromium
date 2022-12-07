@@ -87,7 +87,7 @@ void SessionLimitNotificationController::UpdateNotification() {
   data.should_make_spoken_feedback_for_popup_updates =
       (model_->limit_state() != last_limit_state_);
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           ComposeNotificationTitle(),
           l10n_util::GetStringUTF16(

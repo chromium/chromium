@@ -61,7 +61,7 @@ std::unique_ptr<Notification> DebugdNotificationHandler::CreateNotification() {
           base::BindRepeating(&DebugdNotificationHandler::OnButtonClick,
                               weak_ptr_factory_.GetWeakPtr());
 
-  std::unique_ptr<Notification> notification = CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kPacketCaptureNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_DEBUG_PACKET_CAPTURE_STARTED),
       l10n_util::GetStringUTF16(IDS_ASH_DEBUG_PACKET_CAPTURE_DESCRIPTION),

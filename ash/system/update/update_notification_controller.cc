@@ -88,7 +88,7 @@ void UpdateNotificationController::GenerateUpdateNotification(
     slow_boot_file_path_exists_ = slow_boot_file_path_exists.value();
   }
 
-  std::unique_ptr<Notification> notification = CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, GetTitle(),
       GetMessage(), std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,

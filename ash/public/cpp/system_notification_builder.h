@@ -27,13 +27,13 @@ class NotificationDelegate;
 
 namespace ash {
 
-// Builder class for when the `CreateSystemNotification` factory method doesn't
-// provide enough flexibility. This class can be useful when you're emitting
-// multiple notifications in your component but they only differ in very few
-// fields like Id, message and title or when some/many arguments are just
-// default constructed. The first instinct may be to create a component specific
-// factory method but that may not provide enough flexibility either, see the
-// second example below.
+// Builder class for when the `CreateSystemNotification` factory method
+// doesn't provide enough flexibility. This class can be useful when you're
+// emitting multiple notifications in your component but they only differ in
+// very few fields like Id, message and title or when some/many arguments are
+// just default constructed. The first instinct may be to create a component
+// specific factory method but that may not provide enough flexibility either,
+// see the second example below.
 //
 // Example to reduce code duplication:
 // void Foo::ShowNotification1() {
@@ -41,7 +41,7 @@ namespace ash {
 //   optional_data.buttons.push_back(message_center::ButtonInfo(
 //       l10n_util::GetStringUTF16(IDS_SOME_BUTTON)));
 //
-//    CreateSystemNotification(
+//    CreateSystemNotificationPtr(
 //          message_center::NOTIFICATION_TYPE_SIMPLE,
 //          kNotificationId1,
 //          l10n_util::GetStringUTF16(
@@ -68,7 +68,7 @@ namespace ash {
 //   optional_data.buttons.push_back(message_center::ButtonInfo(
 //       l10n_util::GetStringUTF16(IDS_SOME_BUTTON)));
 //
-//    CreateSystemNotification(
+//    CreateSystemNotificationPtr(
 //          message_center::NOTIFICATION_TYPE_SIMPLE,
 //          kNotificationId2,
 //          l10n_util::GetStringUTF16(
@@ -140,7 +140,7 @@ namespace ash {
 //     message = l10n_util::GetStringUTF16(IDS_MESSAGE_NO_ARGS);
 //   }
 //
-//   AddNotification(CreateSystemNotification(
+//   AddNotification(CreateSystemNotificationPtr(
 //     message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
 //     kNotificationId,
 //     l10n_util::GetStringUTF16(IDS_TITLE),

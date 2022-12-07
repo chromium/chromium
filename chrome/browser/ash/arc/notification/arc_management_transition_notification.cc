@@ -109,18 +109,17 @@ void ShowManagementTransitionNotification(Profile* profile) {
   notifier_id.profile_id =
       multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail();
 
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          kManagementTransitionNotificationId,
-          l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_TITLE),
-          l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_MESSAGE),
-          l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE),
-          GURL(), notifier_id, message_center::RichNotificationData(),
-          new NotificationDelegate(profile), GetNotificationIcon(transition),
-          message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      kManagementTransitionNotificationId,
+      l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_TITLE),
+      l10n_util::GetStringUTF16(IDS_ARC_CHILD_TRANSITION_MESSAGE),
+      l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE), GURL(),
+      notifier_id, message_center::RichNotificationData(),
+      new NotificationDelegate(profile), GetNotificationIcon(transition),
+      message_center::SystemNotificationWarningLevel::NORMAL);
   NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }
 

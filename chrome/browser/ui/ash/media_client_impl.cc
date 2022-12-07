@@ -661,22 +661,21 @@ void MediaClientImpl::ShowCameraOffNotification(const std::string& device_name,
         message_center::NotificationPriority::LOW_PRIORITY;
   }
 
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-          l10n_util::GetStringFUTF16(
-              IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE, device_name_u16),
-          message, std::u16string(), GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kCameraPrivacySwitchNotifierId,
-              ash::NotificationCatalogName::kCameraPrivacySwitch),
-          rich_notification_data,
-          new message_center::HandleNotificationClickDelegate(
-              base::DoNothingAs<void()>()),
-          vector_icons::kSettingsIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      l10n_util::GetStringFUTF16(
+          IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_TITLE, device_name_u16),
+      message, std::u16string(), GURL(),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT,
+          kCameraPrivacySwitchNotifierId,
+          ash::NotificationCatalogName::kCameraPrivacySwitch),
+      rich_notification_data,
+      new message_center::HandleNotificationClickDelegate(
+          base::DoNothingAs<void()>()),
+      vector_icons::kSettingsIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void MediaClientImpl::OnGetSourceInfosByPrivacySwitchStateChanged(

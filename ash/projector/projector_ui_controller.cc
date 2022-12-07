@@ -100,7 +100,7 @@ void ShowNotification(
     scoped_refptr<message_center::NotificationDelegate> delegate = nullptr,
     const gfx::VectorIcon& notification_icon = kPaletteTrayIconProjectorIcon) {
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
           l10n_util::GetStringUTF16(title_id),
           l10n_util::GetStringUTF16(message_id),

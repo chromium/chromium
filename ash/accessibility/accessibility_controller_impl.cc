@@ -385,7 +385,7 @@ void ShowAccessibilityNotification(
   message_center::RichNotificationData options;
   options.should_make_spoken_feedback_for_popup_updates = false;
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
           text, display_source, GURL(),
           message_center::NotifierId(

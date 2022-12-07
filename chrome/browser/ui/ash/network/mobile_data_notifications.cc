@@ -134,23 +134,22 @@ void MobileDataNotifications::ShowOptionalMobileDataNotificationImpl(
   one_shot_notification_check_delay_.Stop();
 
   // Display a one-time notification on first use of Mobile Data connection.
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kMobileDataNotificationId,
-          l10n_util::GetStringUTF16(IDS_MOBILE_DATA_NOTIFICATION_TITLE),
-          l10n_util::GetStringUTF16(IDS_3G_NOTIFICATION_MESSAGE),
-          std::u16string() /* display_source */, GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierMobileData, ash::NotificationCatalogName::kMobileData),
-          message_center::RichNotificationData(),
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&MobileDataNotificationClicked,
-                                  first_active_network->guid())),
-          kNotificationMobileDataIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kMobileDataNotificationId,
+      l10n_util::GetStringUTF16(IDS_MOBILE_DATA_NOTIFICATION_TITLE),
+      l10n_util::GetStringUTF16(IDS_3G_NOTIFICATION_MESSAGE),
+      std::u16string() /* display_source */, GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierMobileData,
+                                 ash::NotificationCatalogName::kMobileData),
+      message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&MobileDataNotificationClicked,
+                              first_active_network->guid())),
+      kNotificationMobileDataIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
 
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void MobileDataNotifications::DelayedShowOptionalMobileDataNotification() {

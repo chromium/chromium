@@ -90,7 +90,7 @@ void Show(Profile* profile,
   HandleNotificationClickDelegate::ButtonClickCallback callback_wrapper =
       base::BindRepeating(&OnClick, click_callback, principal_name);
 
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+  Notification notification = ash::CreateSystemNotification(
       kNotificationType, kNotificationId, kTitle, kBody, kEmptyDisplaySource,
       kEmptyOriginUrl, kNotifierId, notification_data,
       base::MakeRefCounted<HandleNotificationClickDelegate>(callback_wrapper),
@@ -101,7 +101,7 @@ void Show(Profile* profile,
   // Calling close before display ensures that the notification pops up again
   // even if it is already shown.
   nds->Close(kNotificationHandlerType, kNotificationId);
-  nds->Display(kNotificationHandlerType, *notification, nullptr /* metadata */);
+  nds->Display(kNotificationHandlerType, notification, nullptr /* metadata */);
 }
 
 void Close(Profile* profile) {

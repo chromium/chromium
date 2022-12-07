@@ -239,7 +239,7 @@ void CameraPrivacySwitchController::ShowNotification(
   message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
                                                            /*by_user=*/false);
   message_center::MessageCenter::Get()->AddNotification(
-      ash::CreateSystemNotification(
+      ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           l10n_util::GetStringUTF16(notification_title_id),
           l10n_util::GetStringUTF16(notification_message_id),

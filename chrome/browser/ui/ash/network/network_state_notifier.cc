@@ -102,19 +102,16 @@ void ShowErrorNotification(const std::string& identifier,
                            base::RepeatingClosure callback) {
   NET_LOG(ERROR) << "ShowErrorNotification: " << identifier << ": "
                  << base::UTF16ToUTF8(title);
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          message, std::u16string() /* display_source */, GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierNetworkError, catalog_name),
-          message_center::RichNotificationData(),
-          new message_center::HandleNotificationClickDelegate(
-              std::move(callback)),
-          GetErrorNotificationVectorIcon(network_type),
-          message_center::SystemNotificationWarningLevel::WARNING);
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, message,
+      std::u16string() /* display_source */, GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierNetworkError, catalog_name),
+      message_center::RichNotificationData(),
+      new message_center::HandleNotificationClickDelegate(std::move(callback)),
+      GetErrorNotificationVectorIcon(network_type),
+      message_center::SystemNotificationWarningLevel::WARNING);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 bool ShouldConnectFailedNotificationBeShown(const std::string& error_name,
@@ -384,25 +381,22 @@ void NetworkStateNotifier::UpdateCellularActivating(
   }
 
   cellular_activating_guids_.erase(cellular_guid);
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          kNetworkActivateNotificationId,
-          l10n_util::GetStringUTF16(IDS_NETWORK_CELLULAR_ACTIVATED_TITLE),
-          l10n_util::GetStringFUTF16(IDS_NETWORK_CELLULAR_ACTIVATED,
-                                     base::UTF8ToUTF16((cellular->name()))),
-          std::u16string() /* display_source */, GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetwork,
-              NotificationCatalogName::kNetworkCellularActivated),
-          {},
-          new message_center::HandleNotificationClickDelegate(
-              base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  cellular_guid)),
-          kNotificationMobileDataIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kNetworkActivateNotificationId,
+      l10n_util::GetStringUTF16(IDS_NETWORK_CELLULAR_ACTIVATED_TITLE),
+      l10n_util::GetStringFUTF16(IDS_NETWORK_CELLULAR_ACTIVATED,
+                                 base::UTF8ToUTF16((cellular->name()))),
+      std::u16string() /* display_source */, GURL(),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetwork,
+          NotificationCatalogName::kNetworkCellularActivated),
+      {},
+      new message_center::HandleNotificationClickDelegate(
+          base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
+                              weak_ptr_factory_.GetWeakPtr(), cellular_guid)),
+      kNotificationMobileDataIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void NetworkStateNotifier::ShowNetworkConnectErrorForGuid(
@@ -430,26 +424,22 @@ void NetworkStateNotifier::ShowMobileActivationErrorForGuid(
                    << guid;
     return;
   }
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          kNetworkActivateNotificationId,
-          l10n_util::GetStringUTF16(IDS_NETWORK_ACTIVATION_ERROR_TITLE),
-          l10n_util::GetStringFUTF16(IDS_NETWORK_ACTIVATION_NEEDS_CONNECTION,
-                                     base::UTF8ToUTF16((cellular->name()))),
-          std::u16string() /* display_source */, GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierNetworkError,
-              NotificationCatalogName::kNetworkActivationError),
-          {},
-          new message_center::HandleNotificationClickDelegate(
-              base::BindRepeating(&NetworkStateNotifier::ShowNetworkSettings,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  cellular->guid())),
-          kNotificationMobileDataOffIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kNetworkActivateNotificationId,
+      l10n_util::GetStringUTF16(IDS_NETWORK_ACTIVATION_ERROR_TITLE),
+      l10n_util::GetStringFUTF16(IDS_NETWORK_ACTIVATION_NEEDS_CONNECTION,
+                                 base::UTF8ToUTF16((cellular->name()))),
+      std::u16string() /* display_source */, GURL(),
+      message_center::NotifierId(
+          message_center::NotifierType::SYSTEM_COMPONENT, kNotifierNetworkError,
+          NotificationCatalogName::kNetworkActivationError),
+      {},
+      new message_center::HandleNotificationClickDelegate(base::BindRepeating(
+          &NetworkStateNotifier::ShowNetworkSettings,
+          weak_ptr_factory_.GetWeakPtr(), cellular->guid())),
+      kNotificationMobileDataOffIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void NetworkStateNotifier::RemoveConnectNotification() {

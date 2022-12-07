@@ -315,7 +315,7 @@ void HatsNotificationController::PortalStateChanged(
   if (portal_state == NetworkState::PortalState::kOnline) {
     // Create and display the notification for the user.
     if (!notification_) {
-      notification_ = CreateSystemNotification(
+      notification_ = CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_TITLE),
           l10n_util::GetStringUTF16(IDS_HATS_NOTIFICATION_BODY),

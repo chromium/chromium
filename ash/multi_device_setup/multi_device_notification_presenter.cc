@@ -311,7 +311,7 @@ void MultiDeviceNotificationPresenter::ShowNotification(
     return;
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE, id, title,
           message, std::u16string() /* display_source */,
           GURL() /* origin_url */,

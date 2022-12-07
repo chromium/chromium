@@ -139,7 +139,7 @@ bool PowerNotificationController::MaybeShowUsbChargerNotification() {
   // Check if the notification needs to be created.
   if (show && !usb_charger_was_connected_ && !usb_notification_dismissed_) {
     bool on_battery = PowerStatus::Get()->IsBatteryPresent();
-    std::unique_ptr<Notification> notification = CreateSystemNotification(
+    std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
         message_center::NOTIFICATION_TYPE_SIMPLE, kUsbNotificationId,
         l10n_util::GetStringUTF16(
             on_battery ? IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE

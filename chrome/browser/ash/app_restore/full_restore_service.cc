@@ -468,7 +468,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   else
     message_id = IDS_RESTORE_NOTIFICATION_MESSAGE;
 
-  notification_ = CreateSystemNotification(
+  notification_ = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, id, title,
       l10n_util::GetStringUTF16(message_id),
       l10n_util::GetStringUTF16(IDS_RESTORE_NOTIFICATION_DISPLAY_SOURCE),

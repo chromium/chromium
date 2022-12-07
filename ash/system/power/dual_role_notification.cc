@@ -133,7 +133,7 @@ std::unique_ptr<Notification> DualRoleNotification::CreateNotification() {
             Shell::Get()->system_tray_model()->client()->ShowPowerSettings();
           }));
 
-  std::unique_ptr<Notification> notification = CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kDualRoleNotificationId, title,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DUAL_ROLE_MESSAGE),
       std::u16string(), GURL(),

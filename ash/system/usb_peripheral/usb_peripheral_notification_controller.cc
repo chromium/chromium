@@ -111,7 +111,7 @@ void UsbPeripheralNotificationController::OnInvalidDpCableWarning() {
       l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralInvalidDpCableNotificationId,
           l10n_util::GetStringUTF16(
@@ -144,7 +144,7 @@ void UsbPeripheralNotificationController::OnInvalidUSB4ValidTBTCableWarning() {
       l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralInvalidUSB4ValidTBTCableNotificationId,
           l10n_util::GetStringUTF16(
@@ -179,7 +179,7 @@ void UsbPeripheralNotificationController::OnInvalidUSB4CableWarning() {
       l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralInvalidUSB4CableNotificationId,
           l10n_util::GetStringUTF16(
@@ -213,7 +213,7 @@ void UsbPeripheralNotificationController::OnInvalidTBTCableWarning() {
       l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralInvalidTBTCableNotificationId,
           l10n_util::GetStringUTF16(
@@ -246,7 +246,7 @@ void UsbPeripheralNotificationController::OnSpeedLimitingCableWarning() {
       l10n_util::GetStringUTF16(IDS_ASH_USB_NOTIFICATION_V2_LEARN_MORE)));
 
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kUsbPeripheralSpeedLimitingCableNotificationId,
           l10n_util::GetStringUTF16(

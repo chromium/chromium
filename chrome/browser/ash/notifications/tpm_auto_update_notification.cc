@@ -53,20 +53,17 @@ void ShowAutoUpdateNotification(
       break;
   }
 
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-          text, std::u16string() /*display_source*/, GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, notification_id,
-              catalog_name),
-          message_center::RichNotificationData(),
-          new message_center::NotificationDelegate(),
-          vector_icons::kBusinessIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->set_priority(message_center::SYSTEM_PRIORITY);
-  notification->set_pinned(pinned);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title, text,
+      std::u16string() /*display_source*/, GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 notification_id, catalog_name),
+      message_center::RichNotificationData(),
+      new message_center::NotificationDelegate(), vector_icons::kBusinessIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  notification.set_priority(message_center::SYSTEM_PRIORITY);
+  notification.set_pinned(pinned);
 
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 }  // namespace ash

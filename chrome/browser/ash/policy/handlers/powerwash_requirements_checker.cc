@@ -215,7 +215,7 @@ void PowerwashRequirementsChecker::ShowNotification() {
   NotificationDisplayService::GetForProfile(profile_)->Close(
       kNotificationHandlerType, notification_id);
   NotificationDisplayService::GetForProfile(profile_)->Display(
-      kNotificationHandlerType, *notification,
+      kNotificationHandlerType, notification,
       /*metadata=*/nullptr);
 }
 
@@ -250,7 +250,7 @@ void PowerwashRequirementsChecker::ShowCryptohomeErrorNotification() {
   NotificationDisplayService::GetForProfile(profile_)->Close(
       kNotificationHandlerType, notification_id);
   NotificationDisplayService::GetForProfile(profile_)->Display(
-      kNotificationHandlerType, *notification,
+      kNotificationHandlerType, notification,
       /*metadata=*/nullptr);
 }
 

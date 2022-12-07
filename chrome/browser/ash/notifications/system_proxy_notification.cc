@@ -52,22 +52,21 @@ void SystemProxyNotification::Show() {
       IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_BODY,
       base::ASCIIToUTF16(protection_space_.origin()));
 
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title,
-          body, std::u16string() /*display_source=*/, GURL() /*origin_url=*/,
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT, kNotifierId,
-              NotificationCatalogName::kSystemProxy),
-          message_center::RichNotificationData(),
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&SystemProxyNotification::OnClick,
-                                  weak_ptr_factory_.GetWeakPtr())),
-          kNotificationWifiIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, title, body,
+      std::u16string() /*display_source=*/, GURL() /*origin_url=*/,
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kNotifierId,
+                                 NotificationCatalogName::kSystemProxy),
+      message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&SystemProxyNotification::OnClick,
+                              weak_ptr_factory_.GetWeakPtr())),
+      kNotificationWifiIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
 
-  notification->set_pinned(true);
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  notification.set_pinned(true);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void SystemProxyNotification::SystemProxyNotification::OnClick() {

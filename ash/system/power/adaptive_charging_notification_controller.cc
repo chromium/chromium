@@ -62,7 +62,7 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
   notification_data.buttons.push_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
           IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_FULLY_CHARGE_NOW_BUTTON_TEXT)));
-  auto notification = CreateSystemNotification(
+  auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kInfoNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_ADAPTIVE_CHARGING_NOTIFICATION_TITLE),
       notification_message,

@@ -64,7 +64,7 @@ std::unique_ptr<message_center::Notification> CreateNotification(
   message_center->RemoveNotificationsForNotifierId(kNotifierFastPair);
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      ash::CreateSystemNotificationPtr(
           /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
           /*id=*/id,
           /*title=*/std::u16string(),

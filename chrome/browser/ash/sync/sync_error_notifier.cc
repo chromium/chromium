@@ -186,19 +186,18 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
       GetBubbleViewParameters(profile_, sync_service_);
 
   // Add a new notification.
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
-          l10n_util::GetStringUTF16(parameters.title_id),
-          l10n_util::GetStringUTF16(parameters.message_id), std::u16string(),
-          GURL(notification_id_), notifier_id,
-          message_center::RichNotificationData(),
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              parameters.click_action),
-          vector_icons::kNotificationWarningIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id_,
+      l10n_util::GetStringUTF16(parameters.title_id),
+      l10n_util::GetStringUTF16(parameters.message_id), std::u16string(),
+      GURL(notification_id_), notifier_id,
+      message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          parameters.click_action),
+      vector_icons::kNotificationWarningIcon,
+      message_center::SystemNotificationWarningLevel::WARNING);
 
-  display_service->Display(NotificationHandler::Type::TRANSIENT, *notification,
+  display_service->Display(NotificationHandler::Type::TRANSIENT, notification,
                            /*metadata=*/nullptr);
   notification_displayed_ = true;
 }

@@ -103,7 +103,7 @@ void FirmwareUpdateNotificationController::NotifyFirmwareUpdateAvailable() {
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
           IDS_ASH_FIRMWARE_UPDATE_NOTIFICATION_UPDATE_BUTTON_TEXT)));
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE,
           kFirmwareUpdateNotificationId,
           l10n_util::GetStringUTF16(

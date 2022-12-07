@@ -125,25 +125,23 @@ void ArcDiskSpaceMonitor::MaybeShowNotification(bool is_pre_stop) {
       is_pre_stop ? IDS_ARC_LOW_DISK_SPACE_PRE_STOP_NOTIFICATION_MESSAGE
                   : IDS_ARC_LOW_DISK_SPACE_POST_STOP_NOTIFICATION_MESSAGE;
 
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
-          l10n_util::GetStringUTF16(title_id),
-          l10n_util::GetStringUTF16(message_id),
-          l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE),
-          /*origin_url=*/GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kDiskSpaceMonitorNotifierId, catalog_name),
-          /*optional_fields=*/message_center::RichNotificationData(),
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating([](absl::optional<int> button_index) {})),
-          kNotificationStorageFullIcon,
-          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+      l10n_util::GetStringUTF16(title_id),
+      l10n_util::GetStringUTF16(message_id),
+      l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE),
+      /*origin_url=*/GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kDiskSpaceMonitorNotifierId, catalog_name),
+      /*optional_fields=*/message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating([](absl::optional<int> button_index) {})),
+      kNotificationStorageFullIcon,
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 
   Profile* profile = arc::ArcSessionManager::Get()->profile();
   NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }
 

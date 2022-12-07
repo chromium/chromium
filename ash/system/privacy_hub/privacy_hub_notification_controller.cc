@@ -82,7 +82,7 @@ void PrivacyHubNotificationController::
   notification_data.remove_on_click = true;
 
   message_center::MessageCenter::Get()->AddNotification(
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kCombinedNotificationId,
           l10n_util::GetStringUTF16(
               IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_TITLE),

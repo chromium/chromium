@@ -102,26 +102,24 @@ void U2FNotification::ShowNotification() {
   data.buttons.emplace_back(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
   data.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_RESET));
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kU2FNotificationId,
-          l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_TITLE),
-          l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_MESSAGE),
-          std::u16string(), GURL(kU2FNotificationId),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kU2FNotificationId, NotificationCatalogName::kU2F),
-          data,
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&U2FNotification::OnNotificationClick,
-                                  weak_factory_.GetWeakPtr())),
-          gfx::kNoneIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
-  notification->SetSystemPriority();
-  notification->set_pinned(false);
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kU2FNotificationId,
+      l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_TITLE),
+      l10n_util::GetStringUTF16(IDS_U2F_INSECURE_NOTIFICATION_MESSAGE),
+      std::u16string(), GURL(kU2FNotificationId),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kU2FNotificationId,
+                                 NotificationCatalogName::kU2F),
+      data,
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&U2FNotification::OnNotificationClick,
+                              weak_factory_.GetWeakPtr())),
+      gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::WARNING);
+  notification.SetSystemPriority();
+  notification.set_pinned(false);
 
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT, notification,
       nullptr /* metadata */);
 }
 

@@ -30,21 +30,20 @@ void HelpAppDiscoverTabNotification::Show() {
   std::u16string message =
       l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_NOTIFICATION_MESSAGE);
 
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          kShowHelpAppDiscoverTabNotificationId, std::move(title),
-          std::move(message), l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE),
-          GURL(), message_center::NotifierId(),
-          message_center::RichNotificationData(),
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      kShowHelpAppDiscoverTabNotificationId, std::move(title),
+      std::move(message), l10n_util::GetStringUTF16(IDS_HELP_APP_EXPLORE),
+      GURL(), message_center::NotifierId(),
+      message_center::RichNotificationData(),
 
-          base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating(&HelpAppDiscoverTabNotification::OnClick,
-                                  weak_ptr_factory_.GetWeakPtr())),
-          kNotificationHelpAppIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&HelpAppDiscoverTabNotification::OnClick,
+                              weak_ptr_factory_.GetWeakPtr())),
+      kNotificationHelpAppIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
 
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 
   base::RecordAction(
       base::UserMetricsAction("Discover.DiscoverTabNotification.Shown"));

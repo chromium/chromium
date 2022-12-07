@@ -61,7 +61,7 @@ void ArcSnapshotRebootNotificationImpl::Show() {
                               weak_ptr_factory_.GetWeakPtr())),
       vector_icons::kBusinessIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void ArcSnapshotRebootNotificationImpl::Hide() {

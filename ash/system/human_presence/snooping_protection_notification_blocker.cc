@@ -308,7 +308,7 @@ SnoopingProtectionNotificationBlocker::CreateInfoNotification() const {
   notification_data.buttons.push_back(
       message_center::ButtonInfo(l10n_util::GetStringUTF16(
           IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_SETTINGS_BUTTON_TEXT)));
-  auto notification = CreateSystemNotification(
+  auto notification = CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE, kInfoNotificationId,
       l10n_util::GetStringUTF16(
           IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_TITLE),

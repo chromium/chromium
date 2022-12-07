@@ -39,8 +39,23 @@ constexpr SkColor kSystemNotificationColorCriticalWarning = gfx::kGoogleRed700;
 // |small_image| is a small icon show on the upper left header to illustrate
 // |display_source| of the notification.
 // One specified in the |optional_fields| is overridden.
+ASH_PUBLIC_EXPORT message_center::Notification CreateSystemNotification(
+    message_center::NotificationType type,
+    const std::string& id,
+    const std::u16string& title,
+    const std::u16string& message,
+    const std::u16string& display_source,
+    const GURL& origin_url,
+    const message_center::NotifierId& notifier_id,
+    const message_center::RichNotificationData& optional_fields,
+    scoped_refptr<message_center::NotificationDelegate> delegate,
+    const gfx::VectorIcon& small_image,
+    message_center::SystemNotificationWarningLevel warning_level);
+
+// Utility function wrapping `CreateSystemNotification()` directly returning a
+// pointer.
 ASH_PUBLIC_EXPORT std::unique_ptr<message_center::Notification>
-CreateSystemNotification(
+CreateSystemNotificationPtr(
     message_center::NotificationType type,
     const std::string& id,
     const std::u16string& title,

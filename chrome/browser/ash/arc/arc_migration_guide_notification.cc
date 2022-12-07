@@ -61,19 +61,17 @@ void ShowArcMigrationGuideNotification(Profile* profile) {
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&chrome::AttemptUserExit));
 
-  std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kSuggestNotificationId,
-          l10n_util::GetStringUTF16(
-              IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_TITLE),
-          message, std::u16string(), GURL(), notifier_id,
-          message_center::RichNotificationData(), std::move(delegate),
-          vector_icons::kSettingsIcon,
-          message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
-  notification->set_renotify(true);
+  message_center::Notification notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kSuggestNotificationId,
+      l10n_util::GetStringUTF16(IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_TITLE),
+      message, std::u16string(), GURL(), notifier_id,
+      message_center::RichNotificationData(), std::move(delegate),
+      vector_icons::kSettingsIcon,
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+  notification.set_renotify(true);
 
   NotificationDisplayService::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }
 

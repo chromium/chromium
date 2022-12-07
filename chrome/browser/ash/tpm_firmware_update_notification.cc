@@ -74,26 +74,22 @@ void OnAvailableUpdateModes(Profile* profile,
     return;
   }
 
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE,
-          kTPMFirmwareUpdateNotificationId,
-          l10n_util::GetStringUTF16(IDS_TPM_FIRMWARE_UPDATE_NOTIFICATION_TITLE),
-          l10n_util::GetStringFUTF16(
-              IDS_TPM_FIRMWARE_UPDATE_NOTIFICATION_MESSAGE,
-              ui::GetChromeOSDeviceName()),
-          std::u16string(), GURL(kTPMFirmwareUpdateNotificationId),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kTPMFirmwareUpdateNotificationId,
-              NotificationCatalogName::kTPMFirmwareUpdate),
-          message_center::RichNotificationData(),
-          base::MakeRefCounted<TPMFirmwareUpdateNotificationDelegate>(profile),
-          gfx::kNoneIcon,
-          message_center::SystemNotificationWarningLevel::WARNING);
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      kTPMFirmwareUpdateNotificationId,
+      l10n_util::GetStringUTF16(IDS_TPM_FIRMWARE_UPDATE_NOTIFICATION_TITLE),
+      l10n_util::GetStringFUTF16(IDS_TPM_FIRMWARE_UPDATE_NOTIFICATION_MESSAGE,
+                                 ui::GetChromeOSDeviceName()),
+      std::u16string(), GURL(kTPMFirmwareUpdateNotificationId),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kTPMFirmwareUpdateNotificationId,
+                                 NotificationCatalogName::kTPMFirmwareUpdate),
+      message_center::RichNotificationData(),
+      base::MakeRefCounted<TPMFirmwareUpdateNotificationDelegate>(profile),
+      gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::WARNING);
 
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification,
+      NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }
 

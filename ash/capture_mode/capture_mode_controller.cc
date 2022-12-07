@@ -217,7 +217,7 @@ void ShowNotification(
                         ? message_center::NOTIFICATION_TYPE_SIMPLE
                         : message_center::NOTIFICATION_TYPE_CUSTOM;
   std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
+      CreateSystemNotificationPtr(
           type, notification_id, l10n_util::GetStringUTF16(title_id),
           l10n_util::GetStringUTF16(message_id),
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),

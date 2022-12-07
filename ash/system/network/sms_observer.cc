@@ -40,7 +40,7 @@ void ShowNotification(const base::Value* message,
   std::unique_ptr<message_center::Notification> notification;
 
   // TODO(estade): should SMS notifications really be shown to all users?
-  notification = ash::CreateSystemNotification(
+  notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
       SmsObserver::kNotificationPrefix + std::to_string(message_id),
       base::ASCIIToUTF16(message_number),

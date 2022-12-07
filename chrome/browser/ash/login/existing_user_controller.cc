@@ -993,18 +993,17 @@ void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
             DCHECK(button_index);
             SystemTrayClientImpl::Get()->ShowEnterpriseInfo();
           }));
-  std::unique_ptr<message_center::Notification> notification =
-      CreateSystemNotification(
-          message_center::NOTIFICATION_TYPE_SIMPLE, kAutoLaunchNotificationId,
-          title, message, std::u16string(), GURL(),
-          message_center::NotifierId(
-              message_center::NotifierType::SYSTEM_COMPONENT,
-              kAutoLaunchNotifierId, NotificationCatalogName::kAutoLaunch),
-          data, std::move(delegate), vector_icons::kBusinessIcon,
-          message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->SetSystemPriority();
-  notification->set_pinned(true);
-  SystemNotificationHelper::GetInstance()->Display(*notification);
+  message_center::Notification notification = CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kAutoLaunchNotificationId,
+      title, message, std::u16string(), GURL(),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kAutoLaunchNotifierId,
+                                 NotificationCatalogName::kAutoLaunch),
+      data, std::move(delegate), vector_icons::kBusinessIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+  notification.SetSystemPriority();
+  notification.set_pinned(true);
+  SystemNotificationHelper::GetInstance()->Display(notification);
 }
 
 void ExistingUserController::OnProfilePrepared(Profile* profile,
