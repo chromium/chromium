@@ -850,23 +850,23 @@ class MenuManagerStorageTest : public MenuManagerTest,
  protected:
   scoped_refptr<const Extension> AddEventPageExtension(
       const std::string& name) {
-    base::DictionaryValue dictionary;
-    TestExtensionPrefs::AddDefaultManifestKeys(name, &dictionary);
-    base::Value value(base::Value::Type::LIST);
+    base::Value::Dict dictionary;
+    TestExtensionPrefs::AddDefaultManifestKeys(name, dictionary);
+    base::Value::List value;
     value.Append("background.js");
-    dictionary.SetPath(manifest_keys::kBackgroundScripts, std::move(value));
-    dictionary.SetPath(manifest_keys::kBackgroundPersistent,
-                       base::Value(false));
+    dictionary.SetByDottedPath(manifest_keys::kBackgroundScripts,
+                               std::move(value));
+    dictionary.SetByDottedPath(manifest_keys::kBackgroundPersistent, false);
     return prefs_.AddExtensionWithManifest(dictionary,
                                            mojom::ManifestLocation::kInternal);
   }
 
   scoped_refptr<const Extension> AddServiceWorkerExtension(
       const std::string& name) {
-    base::DictionaryValue dictionary;
-    TestExtensionPrefs::AddDefaultManifestKeys(name, &dictionary);
-    dictionary.SetStringPath(manifest_keys::kBackgroundServiceWorkerScript,
-                             "background.js");
+    base::Value::Dict dictionary;
+    TestExtensionPrefs::AddDefaultManifestKeys(name, dictionary);
+    dictionary.SetByDottedPath(manifest_keys::kBackgroundServiceWorkerScript,
+                               "background.js");
     return prefs_.AddExtensionWithManifest(dictionary,
                                            mojom::ManifestLocation::kInternal);
   }

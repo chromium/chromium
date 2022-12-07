@@ -586,24 +586,26 @@ TEST_F(ExtensionPrefsDelayedInstallInfo, DelayedInstallInfo) {}
 class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
  public:
   void Initialize() override {
-    base::DictionaryValue dictionary;
-    dictionary.SetStringPath(manifest_keys::kName, "test");
-    dictionary.SetStringPath(manifest_keys::kVersion, "0.1");
-    dictionary.SetIntPath(manifest_keys::kManifestVersion, 2);
-    dictionary.SetStringPath(manifest_keys::kBackgroundPage, "background.html");
+    base::Value::Dict dictionary;
+    dictionary.Set(manifest_keys::kName, "test");
+    dictionary.Set(manifest_keys::kVersion, "0.1");
+    dictionary.Set(manifest_keys::kManifestVersion, 2);
+    dictionary.SetByDottedPath(manifest_keys::kBackgroundPage,
+                               "background.html");
     scoped_refptr<Extension> extension = prefs_.AddExtensionWithManifest(
         dictionary, ManifestLocation::kInternal);
     id_ = extension->id();
 
 
     // Set idle info
-    base::DictionaryValue manifest;
-    manifest.SetStringPath(manifest_keys::kName, "test");
-    manifest.SetStringPath(manifest_keys::kVersion, "0.2");
-    manifest.SetIntPath(manifest_keys::kManifestVersion, 2);
-    std::unique_ptr<base::ListValue> scripts(new base::ListValue);
-    scripts->Append("test.js");
-    manifest.Set(manifest_keys::kBackgroundScripts, std::move(scripts));
+    base::Value::Dict manifest;
+    manifest.Set(manifest_keys::kName, "test");
+    manifest.Set(manifest_keys::kVersion, "0.2");
+    manifest.Set(manifest_keys::kManifestVersion, 2);
+    base::Value::List scripts;
+    scripts.Append("test.js");
+    manifest.SetByDottedPath(manifest_keys::kBackgroundScripts,
+                             std::move(scripts));
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII("test_0.2");
     std::string errors;
@@ -792,30 +794,29 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
  public:
   void Initialize() override {
     {
-      base::DictionaryValue dictionary;
-      dictionary.SetStringPath(manifest_keys::kName, "from_webstore");
-      dictionary.SetStringPath(manifest_keys::kVersion, "0.1");
-      dictionary.SetIntPath(manifest_keys::kManifestVersion, 2);
+      base::Value::Dict dictionary;
+      dictionary.Set(manifest_keys::kName, "from_webstore");
+      dictionary.Set(manifest_keys::kVersion, "0.1");
+      dictionary.Set(manifest_keys::kManifestVersion, 2);
       webstore_extension_ = prefs_.AddExtensionWithManifestAndFlags(
           dictionary, ManifestLocation::kInternal, Extension::FROM_WEBSTORE);
     }
 
     {
-      base::DictionaryValue dictionary;
-      dictionary.SetStringPath(manifest_keys::kName,
-                               "was_installed_by_default");
-      dictionary.SetStringPath(manifest_keys::kVersion, "0.1");
-      dictionary.SetIntPath(manifest_keys::kManifestVersion, 2);
+      base::Value::Dict dictionary;
+      dictionary.Set(manifest_keys::kName, "was_installed_by_default");
+      dictionary.Set(manifest_keys::kVersion, "0.1");
+      dictionary.Set(manifest_keys::kManifestVersion, 2);
       default_extension_ = prefs_.AddExtensionWithManifestAndFlags(
           dictionary, ManifestLocation::kInternal,
           Extension::WAS_INSTALLED_BY_DEFAULT);
     }
 
     {
-      base::DictionaryValue dictionary;
-      dictionary.SetStringPath(manifest_keys::kName, "was_installed_by_oem");
-      dictionary.SetStringPath(manifest_keys::kVersion, "0.1");
-      dictionary.SetIntPath(manifest_keys::kManifestVersion, 2);
+      base::Value::Dict dictionary;
+      dictionary.Set(manifest_keys::kName, "was_installed_by_oem");
+      dictionary.Set(manifest_keys::kVersion, "0.1");
+      dictionary.Set(manifest_keys::kManifestVersion, 2);
       oem_extension_ = prefs_.AddExtensionWithManifestAndFlags(
           dictionary, ManifestLocation::kInternal,
           Extension::WAS_INSTALLED_BY_OEM);

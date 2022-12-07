@@ -292,14 +292,13 @@ class MockService : public TestExtensionService {
                             const std::string* update_url,
                             ManifestLocation location) {
     for (int i = 1; i <= count; i++) {
-      base::DictionaryValue manifest;
-      manifest.SetStringPath(manifest_keys::kVersion,
-                             base::StringPrintf("%d.0.0.0", i));
-      manifest.SetStringPath(manifest_keys::kName,
-                             base::StringPrintf("Extension %d.%d", id, i));
-      manifest.SetIntPath(manifest_keys::kManifestVersion, 2);
+      base::Value::Dict manifest;
+      manifest.Set(manifest_keys::kVersion, base::StringPrintf("%d.0.0.0", i));
+      manifest.Set(manifest_keys::kName,
+                   base::StringPrintf("Extension %d.%d", id, i));
+      manifest.Set(manifest_keys::kManifestVersion, 2);
       if (update_url)
-        manifest.SetStringPath(manifest_keys::kUpdateURL, *update_url);
+        manifest.Set(manifest_keys::kUpdateURL, *update_url);
       scoped_refptr<Extension> e =
           prefs_->AddExtensionWithManifest(manifest, location);
       ASSERT_TRUE(e.get() != nullptr);
