@@ -3949,16 +3949,17 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
 
     // Enable accessibility and load the test file.
     content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-    WebContents* guest_contents =
-        LoadPdfGetGuestContents(embedded_test_server()->GetURL(
+    MimeHandlerViewGuest* guest =
+        LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
             "/" + std::string(file_dir) + "/" +
             test_file_path.BaseName().MaybeAsASCII()));
-    ASSERT_TRUE(guest_contents);
-    WaitForAccessibilityTreeToContainNodeWithName(guest_contents, "Page 1");
+    ASSERT_TRUE(guest);
+    WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
+                                                  "Page 1");
 
     // Extract the text content.
     ui::AXTreeUpdate ax_tree =
-        GetAccessibilityTreeSnapshotForPdf(guest_contents);
+        GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
     auto actual_lines = CollectLines(ax_tree);
 
     // Aborts if CollectLines() had a failure.
