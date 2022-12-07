@@ -235,6 +235,13 @@ int GetOffset(int offset, const char* pref_name) {
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   return prefs->GetBoolean(pref_name) ? -offset : offset;
 }
+
+// Converts the offset to a relative value based on the allowed direction of
+// the swipe for a visible/hidden app list.
+int GetScrollOffsetInAllowedDirection(int offset, bool app_list_visible) {
+  return app_list_visible ? -offset : offset;
+}
+
 // Returns the window that can be dragged from shelf into home screen or
 // overview at |location_in_screen|. Returns nullptr if there is no such
 // window.
@@ -890,8 +897,12 @@ void ShelfLayoutManager::ProcessGestureEventFromShelfWidget(
 
 void ShelfLayoutManager::ProcessScrollOffset(int offset,
                                              const ui::LocatedEvent& event) {
-  if (offset <= ShelfConfig::Get()->mousewheel_scroll_offset_threshold())
+  const int adjusted_offset = GetScrollOffsetInAllowedDirection(
+      offset, Shell::Get()->app_list_controller()->IsVisible(display_.id()));
+  if (adjusted_offset <=
+      ShelfConfig::Get()->mousewheel_scroll_offset_threshold()) {
     return;
+  }
 
   if (app_list_features::IsQuickActionShowBubbleLauncherEnabled() &&
       !IsLocationInBubbleLauncherShowBounds(event.root_location())) {
@@ -928,8 +939,7 @@ bool ShelfLayoutManager::IsBubbleLauncherShowOnGestureScrollAvailable() {
   if (Shell::Get()->IsInTabletMode())
     return false;
 
-  return Shell::Get()->app_list_controller() &&
-         !Shell::Get()->app_list_controller()->IsVisible(display_.id());
+  return Shell::Get()->app_list_controller();
 }
 
 bool ShelfLayoutManager::MaybeHandleShelfFling(
@@ -941,7 +951,10 @@ bool ShelfLayoutManager::MaybeHandleShelfFling(
       -event_in_screen.AsGestureEvent()->details().velocity_x(),
       event_in_screen.AsGestureEvent()->details().velocity_x());
 
-  if (velocity > -kShelfFlingVelocityThresehold)
+  const int adjusted_velocity = GetScrollOffsetInAllowedDirection(
+      velocity, Shell::Get()->app_list_controller()->IsVisible(display_.id()));
+
+  if (adjusted_velocity > -kShelfFlingVelocityThresehold)
     return false;
 
   if (!IsLocationInBubbleLauncherShowBounds(drag_start_point_in_screen_))
@@ -2417,8 +2430,10 @@ bool ShelfLayoutManager::StartGestureDrag(
     return true;
   }
 
-  if (Shell::Get()->app_list_controller()->IsVisible(display_.id()))
+  if (Shell::Get()->IsInTabletMode() &&
+      Shell::Get()->app_list_controller()->IsVisible(display_.id())) {
     return true;
+  }
 
   if (StartShelfDrag(gesture_in_screen,
                      gfx::Vector2dF(gesture_in_screen.details().scroll_x_hint(),

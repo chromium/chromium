@@ -610,11 +610,6 @@ void Shelf::ProcessScrollEvent(ui::ScrollEvent* event) {
 
   auto* app_list_controller = Shell::Get()->app_list_controller();
   DCHECK(app_list_controller);
-  // |shelf_layout_manager_| handles scroll events to toggle the App List. If
-  // the AppList is already showing, the event must not be handled since hiding
-  // the app list is not in scope for this action.
-  if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id()))
-    return;
 
   shelf_layout_manager_->ProcessScrollEventFromShelf(event);
   event->SetHandled();
@@ -631,11 +626,6 @@ void Shelf::ProcessMouseWheelEvent(ui::MouseWheelEvent* event) {
 
   auto* app_list_controller = Shell::Get()->app_list_controller();
   DCHECK(app_list_controller);
-  // |shelf_layout_manager_| handles mousewheel events to toggle the App List.
-  // If the AppList is already showing, the event must not be handled since
-  // hiding the app list is not in scope for this action.
-  if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id()))
-    return;
 
   shelf_layout_manager_->ProcessMouseWheelEventFromShelf(event);
   event->SetHandled();
