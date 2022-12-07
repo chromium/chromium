@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 
+#include "v8/third_party/inspector_protocol/crdtp/json.h"
+
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -13,12 +15,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
-#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
-#include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/resolve_node.h"
-// #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
-// #include "third_party/blink/renderer/core/inspector/inspector_dom_snapshot_agent.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
@@ -82,19 +80,22 @@ const {
   setClearPauseDataCallback,
   addNewScriptHandler,
   getCurrentError,
+  fromJsMakeDebuggeeValue,
+  fromJsGetObjectByCdpId,
 
   // network
   getCurrentNetworkRequestEvent,
   getCurrentNetworkStreamData,
 
   // Blink, DOM and more
-  jsGetObjectIdForAnyObject,
-  jsPreviewBlinkObjectForObjectId
+  // ?
 } = __RECORD_REPLAY_ARGUMENTS__;
 
 const gSourceMapData = new Map();
 
 try {
+
+
 
 // Save these before page code potentially overwrites them.
 const JSON_stringify = JSON.stringify;
@@ -109,7 +110,7 @@ const JSON_parse = JSON.parse;
 
 function assert(v, msg = "") {
   if (!v) {
-    log(`Error: Assertion failed ${msg} ${Error().stack}`);
+    log(`[RuntimeError] Assertion failed ${msg} ${Error().stack}`);
     throw new Error("Assertion failed!");
   }
 }
@@ -182,6 +183,7 @@ function addEventListener(method, callback) {
   gEventListeners.set(method, callback);
 }
 
+// TODO: rename all these CDP-related symbols to also have CDP in the name
 function messageCallback(message) {
   try {
     message = JSON_parse(message);
@@ -225,29 +227,25 @@ const CommandCallbacks = {
   "Pause.getObjectPreview": Pause_getObjectPreview,
   "Pause.getObjectProperty": Pause_getObjectProperty,
   "Pause.getScope": Pause_getScope,
-  // bring back after id look up has been fixed
-  // "DOM.getDocument": DOM_getDocument,
+  "DOM.getDocument": DOM_getDocument,
   "DOM.getAllBoundingClientRects": DOM_getAllBoundingClientRects,
   "DOM.getBoxModel": DOM_getBoxModel
 };
 
-let gLastCommandErrors = [];
 
 function commandCallback(method, params) {
   if (!CommandCallbacks[method]) {
-    log(`[Command ${method}] Missing command callback: ${method}`);
+    log(`[RuntimeError][Command ${method}] Missing command callback: ${method}`);
     return {};
   }
 
   try {
-    VerboseCommands && log(`[Command ${method}] Handling command...`);
+    VerboseCommands && log(`[Command ${method}] Handling command, params=${JSON.stringify(params)}...`);
     const result = CommandCallbacks[method](params);
-    VerboseCommands && log(`[Command ${method}] Handled command: result=${JSON.stringify(result)}`);
+    VerboseCommands && log(`[Command ${method}] Handled command, result=${JSON.stringify(result)}`);
     return result;
   } catch (e) {
-    const msg = `[Command ${method}] Error: ${e?.stack || e}`;
-    gLastCommandErrors.push(msg);
-    log(msg);
+    log(`[RuntimeError][Command ${method}] ${e?.stack || e}`);
     return {};
   }
 }
@@ -283,7 +281,7 @@ function Target_getCurrentMessageContents() {
   // Get the protocol representation of the message arguments.
   const argumentValues = [];
   for (const arg of gLastConsoleAPICall.args || []) {
-    argumentValues.push(remoteObjectToProtocolValue(arg));
+    argumentValues.push(cdpToRrpObject(arg));
   }
 
   let level = "info";
@@ -369,60 +367,23 @@ function Target_topFrameLocation() {
   return { location: createProtocolLocation(location)[0] };
 }
 
-// Get the raw call frames on the stack, eliding ones in scripts we are ignoring.
+/**
+ * Get the raw call frames on the stack, eliding ones in scripts we are ignoring.
+ * @return {{ callFrames: CDP.Debugger.CallFrame[] }}
+ * 
+ * @see https://chromedevtools.github.io/devtools-protocol/v8/Debugger/#type-CallFrame
+ * @see https://github.com/replayio/chromium-v8/blob/37d50784b68747e7b2d5ebc16305cb9b3227741a/src/inspector/v8-debugger-agent-impl.cc#L1412
+ */
 function getStackFrames() {
+  // NOTE: this is a custom command we added
   const { callFrames } = sendMessage("Debugger.getCallFrames");
   return callFrames;
 }
 
 
-window.DevOnly = {
-  // NOTE: commented out until we have a safe/reliably way of dealing with it
-  // tryEvalDev(expression, frameId = 0) {
-  //   // log(`[CHROMDEBUG] eval - expression: "${expression}"`);
-
-  //   // NOTE: expression sometimes gets wrapped in parentheses, and its value must be a string
-  //   const prefixes = ['("dev:', '"dev:'];
-  //   const prefix = prefixes.find(p => expression.startsWith(p));
-  //   if (prefix) {
-  //     // hackfix: evaluate straight-up in our dev context
-  //     // TODO: unsafe. Must be behind DEV-ONLY flag.
-
-  //     let cmd = expression;
-  //     if (cmd.startsWith('(')) {
-  //       // strip '()'
-  //       cmd = cmd.substring(1, expression.length - 1);
-  //     }
-  //     if (cmd.endsWith(';')) {
-  //       // strip trailing ';'
-  //       cmd = cmd.substring(0, expression.length - 1);
-  //     }
-
-  //     // parse JSON (used for serialization)
-  //     cmd = JSON.parse(cmd);
-
-  //     // strip "dev:" and wrap in ()
-  //     cmd = `(${cmd.substring(4)})`;
-
-  //     // run
-  //     const res = eval(cmd);
-  //     const resJson = JSON.stringify(res);
-
-  //     const t = res !== undefined ? ` (type: ${typeof res})` : '';
-  //     // log(`[CHROMDEBUG] eval (dev) - cmd: "${cmd}", res:${t} "${resJson}"`);
-
-  //     return { result: { data: {}, returned: { value: resJson } } };
-  //   }
-  // },
-
-  // popCommandError() {
-  //   return gLastCommandErrors.shift();
-  // }
-};
-
 // Build a protocol Result object from a result/exceptionDetails CDP rval.
-function buildProtocolResult({ result, exceptionDetails }) {
-  const value = remoteObjectToProtocolValue(result);
+function buildRrpObjectResult({ result, exceptionDetails }) {
+  const value = cdpToRrpObject(result);
   const protocolResult = { data: {} };
 
   if (exceptionDetails) {
@@ -435,63 +396,39 @@ function buildProtocolResult({ result, exceptionDetails }) {
 
 
 function Pause_evaluateInFrame({ frameId, expression }) {
-  try {
-    const result = window.DevOnly?.tryEvalDev(expression, frameId);
-    if (result) {
-      return result;
-    }
+  const frames = getStackFrames();
+  const index = +frameId;
+  assert(index < frames.length);
+  const frame = frames[index];
 
-    const frames = getStackFrames();
-    const index = +frameId;
-    assert(index < frames.length);
-    const frame = frames[index];
+  const rv = doEvaluation();
+  return buildRrpObjectResult(rv);
 
-    const rv = doEvaluation();
-    return buildProtocolResult(rv);
-
-    function doEvaluation() {
-      // In order to do the evaluation in the right frame, the same number of
-      // frames need to be on V8's stack when we do the evaluation as when we got
-      // the stack frames in the first place. The debugger agent extracts a frame
-      // index from the ID it is given and uses that to walk the stack to the
-      // frame where it will do the evaluation (see DebugStackTraceIterator).
-      return sendMessage(
-        "Debugger.evaluateOnCallFrame",
-        {
-          callFrameId: frame.callFrameId,
-          expression,
-        }
-      );
-    }
-  }
-  catch (err) {
-    return { result: { data: {}, exception: { value: err.stack } } };
+  function doEvaluation() {
+    // In order to do the evaluation in the right frame, the same number of
+    // frames need to be on V8's stack when we do the evaluation as when we got
+    // the stack frames in the first place. The debugger agent extracts a frame
+    // index from the ID it is given and uses that to walk the stack to the
+    // frame where it will do the evaluation (see DebugStackTraceIterator).
+    return sendMessage(
+      "Debugger.evaluateOnCallFrame",
+      {
+        callFrameId: frame.callFrameId,
+        expression,
+      }
+    );
   }
 }
 
 function Pause_evaluateInGlobal({ expression }) {
-  try {
-    const result = window.DevOnly?.tryEvalDev(expression);
-    if (result) {
-      return result;
-    }
-
-    const rv = sendMessage("Runtime.evaluate", { expression });
-    return buildProtocolResult(rv);
-  }
-  catch (err) {
-    return { result: { data: {}, exception: { value: err.stack } } };
-  }
+  const rv = sendMessage("Runtime.evaluate", { expression });
+  return buildRrpObjectResult(rv);
 }
 
 // function onMaybeNewPause() {
 // }
 
 function Pause_getAllFrames() {
-  // // we don't currently have an event for `Pause.createPause`, so we use this instead.
-  // //  (→ this is called first from `Pause.createPause`, but also from other places)
-  // onMaybeNewPause();
-
   const frames = getStackFrames().map((frame, index) => {
     // Use our own IDs for frames.
     const id = (index++).toString();
@@ -506,29 +443,28 @@ function Pause_getAllFrames() {
 
 function Pause_getExceptionValue() {
   const rv = sendMessage("Debugger.getPendingException", {});
-  return { exception: remoteObjectToProtocolValue(rv.exception), data: {} };
+  return { exception: cdpToRrpObject(rv.exception), data: {} };
 }
 
 function Pause_getObjectPreview({ object, level = "full" }) {
-  log(`DDBG getObjectPreview: ${JSON.stringify({ object })}`);
-  const objectData = createProtocolObject(object, level);
+  const objectData = createPauseObject(object, level);
   return { data: { objects: [objectData] } };
 }
 
 function Pause_getObjectProperty({ object, name }) {
-  const obj = getRemoteObjectById(object);
+  const cdpObj = getCdpObjectByRrpId(object);
   const rv = sendMessage(
     "Runtime.callFunctionOn",
     {
       functionDeclaration: `function() { return this["${name}"] }`,
-      objectId: obj.objectId,
+      objectId: cdpObj.objectId,
     }
   );
-  return buildProtocolResult(rv);
+  return buildRrpObjectResult(rv);
 }
 
 function Pause_getScope({ scope }) {
-  const scopeData = createProtocolScope(scope);
+  const scopeData = createRrpScope(scope);
   return { data: { scopes: [scopeData] } };
 }
 
@@ -539,95 +475,214 @@ function Graphics_getDevicePixelRatio() {
 
 ///////////////////////////////////////////////////////////////////////////////
 // object.js
+// Manage association between remote objects and protocol object IDs.
 ///////////////////////////////////////////////////////////////////////////////
 
-// Manage association between remote objects and protocol object IDs.
 
 // Map protocol ObjectId => RemoteObject
-const gRemoteObjectsById = new Map();
+/**
+ * @type {Map<CDP.Runtime.RemoteObject, string>}
+ */
+const gCdpObjectsByRrpId = new Map();
+
+/**
+ * @type {Map<string, string>}
+ */
+const gRrpIdByCdpId = new Map();
+/**
+ * @type {Map<Object, string>}
+ */
+const gObjectsByRrpId = new Map();
+/**
+ * @type {Map<Object, string>}
+ */
+const gRrpIdByPlainObject = new Map();
+/**
+ * @type {Map<string, Object>}
+ */
+const gPlainObjectByRrpId = new Map();
+
+let gLastRrpId = 0;
 
 // Map protocol ObjectId => Debugger.Scope
-const gScopesById = new Map();
-
-let gNextObjectId = 1;
+const gCdpScopesByRrpId = new Map();
 
 function clearPauseDataCallback() {
   try {
-    gRemoteObjectsById.clear();
-    gScopesById.clear();
+    gCdpObjectsByRrpId.clear();
+    gRrpIdByCdpId.clear();
+    gObjectsByRrpId.clear();
+    gRrpIdByPlainObject.clear();
+    gPlainObjectByRrpId.clear();
+    gCdpScopesByRrpId.clear();
     gLastBoundingClientRectsByObjectId.clear();
-    gLastCommandErrors = [];
-    gNextObjectId = 1;
+    gLastRrpId = 0;
   } catch (e) {
     log(`Error: clearPauseDataCallback exception: ${e}`);
   }
 }
 
-function registerRemoteObject(remoteObject) {
+/**
+ * Creates and returns a new `RemoteObject` for given JS object.
+ * 
+ * @return {CDP.Runtime.RemoteObject}
+ * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject
+ */
+function makeDebuggeeValue(plainObject) {
+  assert(!plainObject.objectId);
+  const remoteObjectStr = fromJsMakeDebuggeeValue(plainObject);
+  const remoteObject = JSON.parse(remoteObjectStr);
   assert(remoteObject.objectId);
-
-  const existing = gRemoteObjectsById.get(remoteObject.objectId);
-  if (existing) {
-    return existing;
-  }
-
-  gRemoteObjectsById.set(remoteObject.objectId, remoteObject);
-  return remoteObject.objectId;
+  return remoteObject;
 }
 
-function getRemoteObjectById(objectId) {
-  const remoteObject = gRemoteObjectsById.get(objectId);
-  assert(remoteObject);
-  return remoteObject;
+/**
+ * @param {Object} plainObject
+ * @return {number}
+ */
+function registerPlainObject(plainObject) {
+  let rrpId = gRrpIdByPlainObject.get(plainObject);
+  if (!rrpId) {
+    // → ask V8InspectorSession to wrap plainObject (gets CDP.RemoteObject)
+    const cdpObject = makeDebuggeeValue(plainObject);
+    if (cdpObject) {
+      rrpId = registerCdpObject(cdpObject);
+      gRrpIdByPlainObject.set(plainObject, rrpId);
+      gPlainObjectByRrpId.set(rrpId, plainObject);
+    }
+  }
+  return rrpId;
+}
+
+function getPlainObjectByCdpId(cdpId) {
+  const rrpId = gRrpIdByCdpId.get(cdpId);
+  assert(rrpId);
+  return getPlainObjectByRrpId(rrpId);
+}
+
+/**
+ * @param {number} rrpId 
+ * @return {Object}
+ */
+function getPlainObjectByRrpId(rrpId) {
+  rrpId += '';
+  let plainObject = gRrpIdByPlainObject.get(rrpId);
+  if (!plainObject) {
+    // (if this was a ref type, registration would already have been handled in `registerCdpObject` ↓)
+    // → ask V8InspectorSession to unwrap cdpObject (gets plainObject)
+    const cdpObject = getCdpObjectByRrpId(rrpId);
+    // → NOTE if we have an rrpId, it means, we already should have registered the cdpObject
+    assert(cdpObject);
+    const cdpId = cdpObject.objectId;
+    plainObject = fromJsGetObjectByCdpId(cdpId);
+    gRrpIdByPlainObject.set(plainObject, rrpId);
+    gPlainObjectByRrpId.set(rrpId, plainObject);
+  }
+  return plainObject;
+}
+
+/**
+ * @param {CDP.Runtime.RemoteObject}
+ * @return {number} rrpId
+ */
+function registerCdpObject(cdpObject) {
+  const cdpId = cdpObject.objectId;
+  assert(cdpId);
+
+  let rrpId = gRrpIdByCdpId.get(cdpId);
+  if (rrpId) {
+    return rrpId;
+  }
+
+  let plainObject;
+  if (isCdpRefType(cdpObject)) {
+    // NOTE: the same object might generate multiple cdpIds
+    plainObject = fromJsGetObjectByCdpId(cdpId);
+    if (plainObject) {
+      rrpId = gRrpIdByPlainObject.get(plainObject);
+    }
+  }
+
+  // new RrpId
+  const existingRrpId = rrpId;
+  rrpId ||= ++gLastRrpId + '';  // coerce to string
+  gCdpObjectsByRrpId.set(rrpId, cdpObject);
+  gRrpIdByCdpId.set(cdpId, rrpId);
+  if (plainObject && !existingRrpId) {
+    gRrpIdByPlainObject.set(plainObject, rrpId);
+    gPlainObjectByRrpId.set(rrpId, plainObject);
+  }
+
+  const { className, description, type } = gCdpObjectsByRrpId.get(rrpId) || {};
+  return rrpId;
+}
+
+/**
+ * 
+ * @return {CDP.Runtime.RemoteObject}
+ */
+function getCdpObjectByRrpId(rrpId) {
+  const cdpObject = gCdpObjectsByRrpId.get(rrpId);
+  assert(cdpObject);
+  return cdpObject;
 }
 
 // Strings longer than this will be truncated when creating protocol values.
 const MaxStringLength = 10000;
 
-function remoteObjectToProtocolValue(obj) {
-  switch (obj.type) {
+const cdpRefTypes = ['object', 'function'];
+function isCdpRefType(cdpObject) {
+  return cdpRefTypes.includes(cdpObject.type);
+}
+
+function cdpToRrpObject(cdpObject) {
+  switch (cdpObject.type) {
     case "undefined":
       return {};
     case "string":
     case "number":
     case "boolean":
-      if (obj.unserializableValue) {
-        assert(obj.type == "number");
-        return { unserializableNumber: obj.unserializableValue };
+      if (cdpObject.unserializableValue) {
+        assert(cdpObject.type == "number");
+        return { unserializableNumber: cdpObject.unserializableValue };
       }
-      if (typeof obj.value == "string" && obj.value.length > MaxStringLength) {
-        return { value: obj.value.substring(0, MaxStringLength) + "…" };
+      if (typeof cdpObject.value == "string" && cdpObject.value.length > MaxStringLength) {
+        return { value: cdpObject.value.substring(0, MaxStringLength) + "…" };
       }
-      return { value: obj.value };
+      return { value: cdpObject.value };
     case "bigint": {
-      const str = obj.unserializableValue;
+      const str = cdpObject.unserializableValue;
       assert(str);
       return { bigint: str.substring(0, str.length - 1) };
     }
     case "object":
     case "function": {
-      if (!obj.objectId) {
+      if (!cdpObject.objectId) {    // TODO: how can this happen?
         return { value: null };
       }
 
-      const object = registerRemoteObject(obj);
-      return { object };
+      const rrpId = registerCdpObject(cdpObject);
+      return { object: rrpId };
     }
     case "symbol":
-      return { symbol: obj.description };
+      return { symbol: cdpObject.description };
     default:
       return { unavailable: true };
   }
 }
 
-function registerScope(scope) {
-  const id = registerRemoteObject(scope.object);
-  gScopesById.set(id, scope);
-  return id;
+/**
+ * 
+ * @param {CDP.Runtime.Scope} scope 
+ */
+function registerCdpScope(scope) {
+  const rrpId = registerCdpObject(scope.object);
+  gCdpScopesByRrpId.set(rrpId, scope);
+  return rrpId;
 }
 
-function getScopeById(scopeId) {
-  const scope = gScopesById.get(scopeId);
+function getCdpScopeByRrpId(rrpScopeId) {
+  const scope = gCdpScopesByRrpId.get(rrpScopeId);
   assert(scope);
   return scope;
 }
@@ -638,20 +693,24 @@ function getScopeById(scopeId) {
 
 // Logic for creating object previews for the record/replay protocol.
 
-function createProtocolObject(objectId, level) {
-  const obj = getRemoteObjectById(objectId);
-  // NOTE: `subtype` often won't be available, due to divergence
-  const className = obj.subtype == "proxy" ? "Proxy" : (obj.className || "Function");
+/**
+ * @return {RRP.Pause.Object}
+ * @see https://static.replay.io/protocol/tot/Pause/#type-Object
+ */
+function createPauseObject(rrpId, level) {
+  const cdpObj = getCdpObjectByRrpId(rrpId);
+  // NOTE: `subtype` is not reliably available, due to a divergence check in V8 → `value-mirror.cc`
+  const className = cdpObj.subtype == "proxy" ? "Proxy" : (cdpObj.className || "Function");
 
-  // NOTE: `persistentId` is added via V8 → `injected-script.cc`
-  const { persistentId } = obj;
+  // NOTE: `persistentId` is added in V8 → `injected-script.cc`
+  const { persistentId } = cdpObj;
 
   let preview;
   if (level != "none") {
-    preview = new ProtocolObjectPreview(obj, level).fill();
+    preview = new ProtocolObjectPreview(cdpObj, level).fill();
   }
 
-  return { objectId, persistentId, className, preview };
+  return { objectId: rrpId, persistentId, className, preview };
 }
 
 // Target limit for the number of items (properties etc.) to include in object
@@ -668,7 +727,7 @@ const MaxItems = {
 };
 
 function ProtocolObjectPreview(obj, level) {
-  this.obj = obj;
+  this.cdpObj = obj;
   this.level = level;
   this.overflow = false;
   this.numItems = 0;
@@ -708,17 +767,17 @@ ProtocolObjectPreview.prototype = {
   fill() {
     // NOTE: we could also use "Runtime.evaluate" with `{ generatePreview: true }`
     const allProperties = sendMessage("Runtime.getProperties", {
-      objectId: this.obj.objectId,
+      objectId: this.cdpObj.objectId,
       ownProperties: true,
       generatePreview: false,
     });
     const properties = allProperties.result;
 
     // Add data for DOM/CSS objects
-    this.extra = jsPreviewBlinkObjectForObjectId(this.obj.objectId) || {};
+    this.extra = previewBlinkObject(this.cdpObj, allProperties) || {};
 
     // Add class-specific data.
-    const previewer = CustomPreviewers[this.obj.className];
+    const previewer = CustomPreviewers[this.cdpObj.className];
     const requiredProperties = [];
     if (previewer) {
       for (const entry of previewer) {
@@ -741,13 +800,13 @@ ProtocolObjectPreview.prototype = {
       }
     }
 
-    let prototypeId;
+    let prototypeRrpId;
     if (prototype && prototype.value && prototype.value.objectId) {
-      prototypeId = registerRemoteObject(prototype.value);
+      prototypeRrpId = registerCdpObject(prototype.value);
       // TODO: in gecko-dev, we also `addPrototypeGetterValues` - should we do this here, too?
     }
     return {
-      prototypeId,
+      prototypeId: prototypeRrpId,
       overflow: (this.overflow && this.level != "full") ? true : undefined,
       properties: this.properties,
       containerEntries: this.containerEntries,
@@ -762,6 +821,89 @@ function getDescriptionCount(description) {
   if (match) {
     return +match[1];
   }
+}
+
+function previewBlinkObject(cdpObject, allProperties) {
+  const cdpId = cdpObject.objectId;
+  const rrpId = gRrpIdByCdpId.get(cdpId);
+  assert(rrpId);
+  const plainObject = getPlainObjectByRrpId(rrpId);
+
+  /**
+   * @see https://github.com/replayio/gecko-dev/blob/592992ff7e15cb8ad1dd6fb109f19bd3523cd452/devtools/server/actors/replay/module.js#L1937
+   */
+  if (plainObject instanceof Node) {
+    return {
+      node: previewBlinkNode(plainObject)
+    }
+  }
+
+  // TODO: preview other blink objects
+  // Issue: https://linear.app/replay/issue/RUN-861/add-dom-related-props-to-pausegetobjectpreview-and-fix-objectid
+  
+}
+
+function previewBlinkNode(node) {
+  let attributes, pseudoType;
+  if (node instanceof Element) {
+    attributes = [];
+    for (const { name, value } of node.attributes) {
+      attributes.push({ name, value });
+    }
+    // TODO: We cannot access pseudo elements using the JS DOM API.
+    // Issue: https://linear.app/replay/issue/RUN-953/dom-feature-add-pseudo-elements
+    // pseudoType = node.localName;
+  }
+
+  let style;
+  if (node.style) {
+    style = registerPlainObject(node.style);
+  }
+
+  let parentNode;
+  if (node.parentNode) {
+    parentNode = registerPlainObject(node.parentNode);
+  } else if (node.defaultView && node.defaultView.parent != node.defaultView) {
+    /**
+     * Nested documents use the parent element instead of null.
+     * 
+     * TODO: will need more work here to support multi-CSP iframes
+     * Issue: https://linear.app/replay/issue/RUN-954/dom-feature-support-multi-cspcross-origin-iframes
+     */
+    const iframes = node.defaultView.parent.document.getElementsByTagName(
+      "iframe"
+    );
+    const iframe = [...iframes].find((f) => f.contentDocument == node);
+    if (iframe) {
+      parentNode = registerPlainObject(iframe);
+    }
+  }
+
+  let childNodes;
+  if (node.nodeName == "IFRAME") {
+    // Treat an iframe's content document as one of its child nodes.
+    childNodes = [registerPlainObject(node.contentDocument)];
+  } else if (node.childNodes.length) {
+    childNodes = [...node.childNodes].map((n) => registerPlainObject(n));
+  }
+
+  let documentURL;
+  if (node.nodeType == Node.DOCUMENT_NODE) {
+    documentURL = node.URL;
+  }
+
+  return {
+    nodeType: node.nodeType,
+    nodeName: node.nodeName,
+    nodeValue: typeof node.nodeValue === "string" ? node.nodeValue : undefined,
+    isConnected: node.isConnected,
+    attributes,
+    pseudoType,
+    style,
+    parentNode,
+    childNodes,
+    documentURL,
+  };
 }
 
 function previewTypedArray() {
@@ -809,8 +951,8 @@ function previewSetMap(allProperties) {
       const value = entryProperties.find(eprop => eprop.name == "value");
       if (value) {
         this.addContainerEntry({
-          key: key ? remoteObjectToProtocolValue(key.value) : undefined,
-          value: remoteObjectToProtocolValue(value.value),
+          key: key ? cdpToRrpObject(key.value) : undefined,
+          value: cdpToRrpObject(value.value),
         });
       }
     }
@@ -889,7 +1031,7 @@ const CustomPreviewers = {
 function createProtocolPropertyDescriptor(desc) {
   const { name, value, writable, get, set, configurable, enumerable, symbol } = desc;
 
-  const rv = value ? remoteObjectToProtocolValue(value) : {};
+  const rv = value ? cdpToRrpObject(value) : {};
   rv.name = name;
 
   let flags = 0;
@@ -907,10 +1049,10 @@ function createProtocolPropertyDescriptor(desc) {
   }
 
   if (get && get.objectId) {
-    rv.get = registerRemoteObject(get);
+    rv.get = registerCdpObject(get);
   }
   if (set && set.objectId) {
-    rv.set = registerRemoteObject(set);
+    rv.set = registerCdpObject(set);
   }
 
   if (symbol) {
@@ -933,26 +1075,26 @@ function createProtocolLocation(location) {
   }];
 }
 
-function createProtocolFrame(frameId, frame) {
+function createProtocolFrame(frameId, cdpFrame) {
   // CDP call frames don't provide detailed type information.
-  const type = frame.functionName ? "call" : "global";
+  const type = cdpFrame.functionName ? "call" : "global";
 
   return {
     frameId,
     type,
-    functionName: frame.functionName || undefined,
-    functionLocation: createProtocolLocation(frame.functionLocation),
-    location: createProtocolLocation(frame.location),
-    scopeChain: frame.scopeChain.map(registerScope),
-    this: remoteObjectToProtocolValue(frame.this),
+    functionName: cdpFrame.functionName || undefined,
+    functionLocation: createProtocolLocation(cdpFrame.functionLocation),
+    location: createProtocolLocation(cdpFrame.location),
+    scopeChain: cdpFrame.scopeChain.map(registerCdpScope),
+    this: cdpToRrpObject(cdpFrame.this),
   };
 }
 
-function createProtocolScope(scopeId) {
-  const scope = getScopeById(scopeId);
+function createRrpScope(scopeId) {
+  const cdpScope = getCdpScopeByRrpId(scopeId);
 
   let type;
-  switch (scope.type) {
+  switch (cdpScope.type) {
     case "global":
       type = "global";
       break;
@@ -960,35 +1102,36 @@ function createProtocolScope(scopeId) {
       type = "with";
       break;
     default:
-      type = scope.name ? "function" : "block";
+      type = cdpScope.name ? "function" : "block";
       break;
   }
 
-  let object, bindings;
+  let rrpId, bindings;
   if (type == "global" || type == "with") {
-    object = registerRemoteObject(scope.object);
+    rrpId = registerCdpObject(cdpScope.object);
   } else {
     bindings = [];
 
     const properties = sendMessage("Runtime.getProperties", {
-      objectId: scope.object.objectId,
+      objectId: cdpScope.object.objectId,
       ownProperties: true,
       generatePreview: false,
     }).result;
-    for (const { name, value } of properties) {
-      const converted = remoteObjectToProtocolValue(value);
-      bindings.push({ ...converted, name });
+    for (const { name, value: cdpProp } of properties) {
+      const rrpProp = cdpToRrpObject(cdpProp);
+      bindings.push({ ...rrpProp, name });
     }
   }
 
   return {
     scopeId,
     type,
-    object,
-    functionName: scope.name || undefined,
+    object: rrpId,
+    functionName: cdpScope.name || undefined,
     bindings,
   };
 }
+
 
 
 
@@ -1389,22 +1532,14 @@ function createProtocolScope(scopeId) {
 
 
   /** ###########################################################################
-   * API, Blink and DOM bookkeeping
-   * ##########################################################################*/
-
-  function getObjectIdForObject(obj) {
-    return jsGetObjectIdForAnyObject(obj);
-  }
-
-  /** ###########################################################################
    * {@link DOM_getDocument}
    * ##########################################################################*/
   function DOM_getDocument() {
-    const apiId = getAPIObjectId(window.document);
+    const rrpId = registerPlainObject(window.document);
 
     return {
       data: {},
-      document: apiId
+      document: rrpId
     };
   }
 
@@ -1431,7 +1566,7 @@ function createProtocolScope(scopeId) {
 
     const elements = entries
       .map((elem, i) => {
-        const id = getObjectIdForObject(elem.raw) || i;
+        const id = registerPlainObject(elem.raw) || i;
 
         const { left, top, right, bottom } = shiftRect(elem.raw.getBoundingClientRect(), elem.offset);
 
@@ -1526,14 +1661,16 @@ function createProtocolScope(scopeId) {
    */
   function DOM_getBoxModel({ node }) {
 
-    // TODO: use domAgent->getContentQuads for this instead?
+    // TODO: consider using domAgent->getContentQuads for this instead. Should allow for better accuracy
+    //   Issue: https://linear.app/replay/issue/RUN-886/nodepicker-improve-highlight-on-hover
 
     if (!gLastBoundingClientRectsByObjectId.size) {
       // compute all basic bounding client rect sizes
       DOM_getAllBoundingClientRects();
     }
     const rectInfo = getLastBoundingClientRect(node)
-    const rects = rectInfo?.rects || (rectInfo?.rect ? [rectInfo.rect] : [[0, 0, 20, 20]]);
+    const rects = rectInfo?.rects || 
+      (rectInfo?.rect ? [rectInfo.rect] : [[0, 0, 20, 20]]);
 
     // hackfix: simply use the normal (not tight) bounding rects for all for now
     const model = { node };
@@ -1573,6 +1710,10 @@ function createProtocolScope(scopeId) {
 })();
 
 )"""";
+
+/** ###########################################################################
+ * gSourceMapScript
+ * ##########################################################################*/
 
 // Script which sets a handler for collecting source maps from scripts in the
 // recording. Runs when recording/replaying if source map collection is enabled.
@@ -1940,7 +2081,7 @@ void RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
 /**
  * This only supports V8 CDP commands.
  * That is because we do not have access to a complete DevToolsSession
- * (The session in turn uses the UberDispatcher to distribute
+ * (A fully connected session in turn would use the UberDispatcher to distribute
  * arbitrary commands to all parts of Chromium.)
  * That is because a full session (i) might add a lot of overhead, and/or
  * (ii) cause many more types of divergences.
@@ -2080,17 +2221,6 @@ static void SetDataProperty(v8::Isolate* isolate,
   obj->Set(context, ToV8String(isolate, property), value).Check();
 }
 
-// // Set `obj[property] = impl`
-// // NOTE: this should theoretically work
-// static void SetDataProperty(ScriptWrappable* impl,
-//                             v8::Local<v8::Object> obj,
-//                             const char* property) {
-//   ScriptState* scriptState = ToScriptStateForMainWorld(gLocalFrame);
-//   auto value = impl->WrapV2(scriptState).ToLocalChecked();
-//   auto isolate = scriptState->GetIsolate();
-//   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-//   obj->Set(context, ToV8String(isolate, property), value).Check();
-// }
 
 /** ###########################################################################
  * Networking
@@ -2356,281 +2486,78 @@ static void HandleNetworkDidReceiveDataEvent(const base::DictionaryValue& info) 
  * ##########################################################################*/
 
 static LocalFrame* gLocalFrame;
-// NOTE: the InspectorDOMAgent is not as helpful as we would like, since it is
-// not fully hooked up to `DevToolsSession` + `UberDispatcher`
-// static InspectorDOMAgent* gInspectorDOMAgent;
 
-// InspectorDOMAgent* getOrCreateInspectorDOMAgent(LocalFrame* frame,
-//                                                 v8::Isolate* isolate) {
-//   if (!gInspectorDOMAgent) {
-//     // NOTE: based on WebDevToolsAgentImpl::AttachSession
-//     InspectedFrames* inspected_frames =
-//         MakeGarbageCollected<InspectedFrames>(frame);
-//     gInspectorDOMAgent = MakeGarbageCollected<InspectorDOMAgent>(
-//         isolate, inspected_frames, gInspectorSession);
-//     gInspectorDOMAgent->enable();
-//   }
-//   return gInspectorDOMAgent;
-// }
-
-// static void DOM_AssertNode(const v8::FunctionCallbackInfo<v8::Value>& args) {
-//   v8::Isolate* isolate = args.GetIsolate();
-//   auto domAgent = getOrCreateInspectorDOMAgent(gLocalFrame, isolate);
-
-//   // ...
-// }
-
-// // Set `obj[property] = impl`
-// // NOTE: this should theoretically work
-// static void SetDataProperty(ScriptWrappable* impl,
-//                             v8::Local<v8::Object> obj,
-//                             const char* property) {
-//   ScriptState* scriptState = ToScriptStateForMainWorld(gLocalFrame);
-//   auto value = impl->WrapV2(scriptState).ToLocalChecked();
-//   auto isolate = scriptState->GetIsolate();
-//   v8::Local<v8::Context> context = isolate->GetCurrentContext();
-//   obj->Set(context, ToV8String(isolate, property), value).Check();
-// }
-
-
-static RemoteObjectIdType GetObjectIdForAnyObject(v8::Isolate* isolate,
-                                                  const v8::Local<v8::Value>& obj) {
-  // NOTE: adapted from ResolveNode
-  //    (third_party/blink/renderer/core/inspector/resolve_node.cc)
-  v8::HandleScope handle_scope(isolate);
-
-  ScriptState* script_state = ToScriptStateForMainWorld(gLocalFrame);
-  if (!script_state) {
-    recordreplay::Print("GetObjectIdForBlinkObject, but script_state is gone");
-    return "";
-  }
-  auto context = script_state->GetContext();
-  v8::Context::Scope scope(context);
-  const String object_group("console"); // NOTE: object_group is used for cleaning up
-
-  // NOTE: This always creates (and deletes) a new `RemoteObject` and binds it to a new id.
-  // RemoteObjectIdTypeRaw remoteObjectId =
-  // v8_inspector::StringView result =
-  RemoteObjectIdTypeRaw result = gInspectorSession->wrapObjectGetObjectId(
-      context, obj, ToV8InspectorStringView(object_group), false);
-
-  auto converted = String(result.c_str(), result.length());
-  // recordreplay::Print("GetObjectIdForAnyObject -> '%s'",
-  //                     converted.Ascii().c_str());
-
-  return converted;
-
-  // Consider: we can call the serialized object in JS to access its contents
-  //    (partially based on
-  //    https://source.chromium.org/chromium/chromium/src/+/main:out/Debug/gen/third_party/blink/renderer/core/inspector/protocol/dom.cc;l=2026?q=resolveNode&ss=chromium%2Fchromium%2Fsrc)
-  // crdtp::ObjectSerializer serializer;
-  // serializer.AddField(crdtp::MakeSpan("object"), out_object);
-  // serializer.Finish();
-  //  (there is probably an easier way, but not sure how)
-  // v8::Local<v8::Function> callback = gCDPMessageCallback->Get(isolate);
-  // v8::MaybeLocal<v8::Value> rv =
-  //     callback->Call(context, v8::Undefined(isolate), 1, &arg);
-
-  // TODO: return objectId
-}
-
-static RemoteObjectIdType GetObjectIdForBlinkObject(v8::Isolate* isolate,
-                                                    ScriptWrappable* blinkObject) {
-    // InspectorDOMAgent* domAgent =
-    //     getOrCreateInspectorDOMAgent(gLocalFrame, isolate);
-
-    v8::HandleScope handle_scope(isolate);
-    auto context = isolate->GetCurrentContext();
-
-    auto blinkObjectV8 = ToV8(blinkObject, context->Global(), isolate);
-    return GetObjectIdForAnyObject(isolate, blinkObjectV8);
-}
-
-static ScriptWrappable* GetBlinkObjectForObjectId(v8::Isolate* isolate,
-                                                  RemoteObjectIdType objectId) {
-  v8::HandleScope handles(isolate);
-  v8::Local<v8::Value> object;
-  v8::Local<v8::Context> context;
-  std::unique_ptr<v8_inspector::StringBuffer> error;
-  if (!gInspectorSession->unwrapObject(&error,
-                                       ToV8InspectorStringView(objectId),
-                                       &object, &context, nullptr)) {
-    recordreplay::Print("ERROR: GetBlinkObjectForObjectId unwrapObject failed: %s",
-                        ToCoreString(std::move(error)).Ascii().c_str());
-    return nullptr;
-  }
-
-  //   return Response::ServerError(ToCoreString(std::move(error)).Utf8());
-  // if (!V8Node::HasInstance(value, isolate))
-  //   return Response::ServerError("Object id doesn't reference a Node");
-  // node = V8Node::ToImpl(v8::Local<v8::Object>::Cast(value));
-
-  const WrapperTypeInfo* infos[] = {
-      // ScriptWrappable itself doesn't have wrapper type info, so check
-      // subclasses.
-      Node::GetStaticWrapperTypeInfo(),
-      Event::GetStaticWrapperTypeInfo(),
-      CSSStyleDeclaration::GetStaticWrapperTypeInfo()
-  };
-  for (const WrapperTypeInfo* info : infos) {
-    if (V8PerIsolateData::From(isolate)->HasInstance(info, object)) {
-      ScriptWrappable* wrappable = ToScriptWrappable(object.As<v8::Object>());
-      return wrappable;
-    }
-  }
-  return nullptr;
-}
-
-/** ###########################################################################
- * // DOM, blink js functions
- * ##########################################################################*/
-
-// Used for Pause.getObjectPreview
-// see https://static.replay.io/protocol/tot/Pause/#type-ObjectPreview
-static void jsPreviewBlinkObjectForObjectId(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(args.Length() == 1 && args[0]->IsString() && "must be called with a single string");
-
-  v8::Isolate* isolate = args.GetIsolate();
-  auto context = isolate->GetCurrentContext();
-  auto objectIdLocal = args[0].As<v8::String>();
-
-  // InspectorDOMAgent* domAgent = getOrCreateInspectorDOMAgent(gLocalFrame, isolate);
-
-  ScriptWrappable* obj = GetBlinkObjectForObjectId(isolate, ToCoreString(objectIdLocal));
-  // Node* node = DynamicTo<Node>(obj);
-  Node* node = static_cast<Node*>(obj);
-  if (node) {
-    // set `node` props
-
-    v8::Local<v8::Object> extra = v8::Object::New(isolate);
-    v8::Local<v8::Object> nodeInfo = v8::Object::New(isolate);
-    // see https://static.replay.io/protocol/tot/DOM/#type-Node
-    SetDataProperty(isolate, nodeInfo, "nodeType",
-                    v8::Number::New(isolate, node->getNodeType()));
-    SetDataProperty(isolate, nodeInfo, "nodeName", V8String(isolate, node->nodeName()));
-    SetDataProperty(isolate, nodeInfo, "nodeValue", V8String(isolate, node->nodeValue()));
-    SetDataProperty(isolate, nodeInfo, "isConnected", v8::Boolean::New(isolate, node->isConnected()));
-
-    auto* parent = node->parentNode();
-    auto parentObjectId = GetObjectIdForBlinkObject(isolate, parent);
-    SetDataProperty(isolate, nodeInfo, "parentNode", V8String(isolate, parentObjectId));
-
-    auto* children = node->childNodes();
-    v8::Local<v8::Array> childNodesArray =
-        v8::Array::New(isolate, children->length());
-    for (size_t i = 0; i < children->length(); ++i) {
-      auto childObjectId = GetObjectIdForBlinkObject(isolate, children->item(i));
-      childNodesArray->Set(context, i, V8String(isolate, childObjectId)).Check();
-    }
-    SetDataProperty(isolate, nodeInfo, "childNodes", childNodesArray);
-
-    auto* element = DynamicTo<Element>(node);
-    if (element) {
-      CSSStyleDeclaration* style = element->style();
-      auto styleObjectId = GetObjectIdForBlinkObject(isolate, (ScriptWrappable*)style);
-      SetDataProperty(isolate, nodeInfo, "style", V8String(isolate, styleObjectId));
-
-      auto attributes = element->Attributes();
-      v8::Local<v8::Array> attributesArray = v8::Array::New(isolate, attributes.size());
-      for (auto* it = attributes.begin(); it != attributes.end(); ++it) {
-        v8::Local<v8::Object> attribute = v8::Object::New(isolate);
-        SetDataProperty(isolate, attribute, "name",
-                        V8String(isolate, it->GetName().ToString()));
-        SetDataProperty(isolate, attribute, "value",
-                        V8String(isolate, it->Value().GetString()));
-        auto i = std::distance(attributes.begin(), it);
-        attributesArray->Set(context, i, attribute).Check();
-      }
-      SetDataProperty(isolate, nodeInfo, "attributes", attributesArray);
-
-      auto* pseudoElement = DynamicTo<PseudoElement>(element);
-      if (pseudoElement) {
-        auto pseudoType = PseudoElementTagName(pseudoElement->GetPseudoId())
-                                  .LocalName();
-        SetDataProperty(isolate, nodeInfo, "pseudoType", V8String(isolate, pseudoType));
-      }
-    }
-
-    auto* document = DynamicTo<Document>(node);
-    if (document) {
-      SetDataProperty(isolate, nodeInfo, "documentURL",
-                      V8String(isolate, document->urlForBinding().GetString()));
-    }
-
-    // TODO: if `node` is present, `devtools` will send `getObjectPreview` for each child
-    //    (which are not supported yet, resulting in an infinite "Loading..." message)
-    // SetDataProperty(isolate, extra, "node", nodeInfo);
-    args.GetReturnValue().Set(extra);
-  }
-  else {
-    // TODO:
-    // else if (CSSRule.(this.raw)) {
-    //   this.extra.rule = previewRuleContents(this.raw);
-    // } else if (CSSStyleDeclaration.isInstance(this.raw)) {
-    //   this.extra.style = previewStyleContents(this.raw);
-    // } else if (StyleSheet.isInstance(this.raw)) {
-    //   this.extra.styleSheet = previewStyleSheetContents(this.raw);
-    // }
-    // v8::String::Utf8Value objectIdStr(isolate, objectIdLocal);
-    // recordreplay::Print(
-    //     "[previewBlinkObjectForObjectId] failed to look up node (%s): %s",
-    //     *objectIdStr, response.Message().c_str());
-    args.GetReturnValue().SetNull();
-  }
-
-  // const String object_group("console");
-  // protocol::Maybe<int> v8_execution_context_id;
-  // ResolveNode(gInspectorSession, node, object_group, v8_execution_context_id);
-}
-
-static void jsGetObjectIdForAnyObject(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+/**
+ * NOTE: Since the `RemoteObject` type is not publicly exposed, we cannot easily access it in CPP space.
+ * We thus only use it in JS.
+ * This basically emulates gecko's `makeDebuggeeValue` (but requires an extra parse).
+ */
+static void fromJsMakeDebuggeeValue(const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsObject() &&
         "must be called with a single object");
   v8::Isolate* isolate = args.GetIsolate();
   auto context = isolate->GetCurrentContext();
-
   auto obj = args[0]->ToObject(context).ToLocalChecked();
-  auto objectId = GetObjectIdForAnyObject(isolate, obj);
-  args.GetReturnValue().Set(V8String(isolate, objectId));
+
+  const String object_group("console"); // NOTE: object_group is used for cleaning up
+  auto generatePreview = false;
+
+  // NOTE: This always creates (and deletes) a new `RemoteObject` and binds it
+  // to a new id. RemoteObjectIdTypeRaw remoteObjectId =
+  // v8_inspector::StringView result =
+  // RemoteObjectIdTypeRaw result = gInspectorSession->wrapObjectGetObjectId(
+  //     context, obj, ToV8InspectorStringView(object_group), false);
+  // auto converted = String(result.c_str(), result.length());
+  auto result = gInspectorSession->wrapObject(
+      context, obj, ToV8InspectorStringView(object_group), generatePreview);
+
+  // deserialize + send to JS
+  std::vector<uint8_t> cbor;
+  result->AppendSerialized(&cbor);
+
+  if (cbor.size() > 1) {
+    /**
+     * This is based on other code that uses `wrapObject` and sends the result to JS.
+     * @see
+     * https://github.com/replayio/chromium-v8/blob/b38bf5b0b1f149f7af3fd90a2ce12344e7191d03/src/inspector/custom-preview.cc#L123
+     */
+    std::vector<uint8_t> json;
+    v8_crdtp::json::ConvertCBORToJSON(v8_crdtp::SpanFrom(cbor), &json);
+    auto remoteObjectStr =
+        v8::String::NewFromOneByte(isolate, json.data(),
+                                  v8::NewStringType::kNormal, json.size())
+            .ToLocalChecked();
+    args.GetReturnValue().Set(remoteObjectStr);
+  }
+  else {
+    args.GetReturnValue().SetNull();
+  }
 }
 
-// static void DOM_requestNode(
-//     const v8::FunctionCallbackInfo<v8::Value>& args) {
-//   v8::Isolate* isolate = args.GetIsolate();
-//   InspectorDOMAgent* domAgent =
-//       getOrCreateInspectorDOMAgent(gLocalFrame, isolate);
+static void fromJsGetObjectByCdpId(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() && "[RuntimeError] must be called with a single string");
 
-//   // CHECK(args[0]->IsFunction());
-//   // v8::Local<v8::Function> callback = args[0].As<v8::Function>();
-//   // CHECK(args.Length() == 1 && args[0]->IsString() &&
-//   //       "must be called with a single string");
-//   // v8::String::Utf8Value text(args.GetIsolate(), args[0]);
+  v8::Isolate* isolate = args.GetIsolate();
+  auto context = isolate->GetCurrentContext();
 
-//   auto context = isolate->GetCurrentContext();
-//   auto params =
-//     // args[0].As<v8::Object>();
-//     args[0]->ToObject(context).ToLocalChecked();
-//   auto objectIdVal = params->Get(context, ToV8String(isolate, "objectId"))
-//                       .ToLocalChecked()
-//                       .As<v8::String>();
-//   auto objectId = ToCoreString(objectIdVal);
+  // convert v8::String → v8::String::Utf8Value → v8_inspector::StringView
+  // TODO: can this be improved?
+  v8::String::Utf8Value cdpId(isolate, args[0]);
+  const uint8_t* cdpIdPtr = reinterpret_cast<const uint8_t*>(*cdpId);
+  v8_inspector::StringView cdpIdV8(cdpIdPtr, cdpId.length());
 
-//   int nodeId;
-//   auto requestResult = domAgent->requestNode(objectId, &nodeId);
-
-//   v8::Local<v8::Object> rv = v8::Object::New(isolate);
-//   if (requestResult.IsSuccess()) {
-//     SetDataProperty(isolate, rv, "nodeId", v8::Number::New(isolate, nodeId));
-//     args.GetReturnValue().Set(rv);
-//   } else {
-//     v8::Local<v8::Object> err = v8::Object::New(isolate);
-//     SetDataProperty(isolate, err, "message", ToV8String(isolate, requestResult.Message().c_str()));
-//     SetDataProperty(isolate, rv, "error", err);
-//     args.GetReturnValue().Set(rv);
-//   }
-// }
+  v8::Local<v8::Value> plainObject;
+  std::unique_ptr<v8_inspector::StringBuffer> error;
+  if (!gInspectorSession->unwrapObject(&error, cdpIdV8, &plainObject, &context,
+                                       nullptr)) {
+    recordreplay::Print("[RuntimError] could not lookup cdpId: %s",
+                        ToCoreString(error->string()).Ascii().c_str());
+    args.GetReturnValue().SetNull();
+  } else {
+    args.GetReturnValue().Set(plainObject);
+  }
+}
 
 /** ###########################################################################
  * misc
@@ -2694,6 +2621,8 @@ static void RunScript(v8::Isolate* isolate, v8::Local<v8::Context> context, cons
   v8::Local<v8::String> source = ToV8String(isolate, script);
 
   // TODO: check for errors after `Compile` and `Run`
+  // Issue:
+  // https://linear.app/replay/issue/RUN-955/chromium-should-not-diverge-and-crash-if-greplayscript-does-not
   v8::Local<v8::Script> compiled = v8::Script::Compile(context, source, &origin).ToLocalChecked();
   compiled->Run(context).ToLocalChecked();
 }
@@ -2742,13 +2671,18 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
                       GetCurrentNetworkStreamData);
 
   // DOM, blink, API stuff
-  SetFunctionProperty(isolate, args, "jsGetObjectIdForAnyObject",
-                      jsGetObjectIdForAnyObject);
-  SetFunctionProperty(isolate, args, "jsPreviewBlinkObjectForObjectId", jsPreviewBlinkObjectForObjectId);
+  // SetFunctionProperty(isolate, args, "jsGetObjectIdForAnyObject",
+  //                     jsGetObjectIdForAnyObject);
+  // SetFunctionProperty(isolate, args, "jsPreviewBlinkObjectForObjectId", jsPreviewBlinkObjectForObjectId);
+  SetFunctionProperty(isolate, args, "fromJsMakeDebuggeeValue",
+                      fromJsMakeDebuggeeValue);
+  SetFunctionProperty(isolate, args, "fromJsGetObjectByCdpId",
+                      fromJsGetObjectByCdpId);
 
   // unsorted RR stuff
-  SetFunctionProperty(isolate, args, "setClearPauseDataCallback",
-                      v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
+  SetFunctionProperty(
+      isolate, args, "setClearPauseDataCallback",
+      v8::FunctionCallbackRecordReplaySetClearPauseDataCallback);
   SetFunctionProperty(isolate, args, "getCurrentError",
                       GetCurrentError);
   SetFunctionProperty(isolate, args, "getRecordingId",
