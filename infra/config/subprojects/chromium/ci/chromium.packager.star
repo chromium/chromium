@@ -298,7 +298,7 @@ ci.builder(
     ),
     cores = None,
     executable = "recipe:chromium_rts/create_model",
-    execution_timeout = 8 * time.hour,
+    execution_timeout = 10 * time.hour,
     notifies = [
         luci.notifier(
             name = "rts-model-packager-notifier",
