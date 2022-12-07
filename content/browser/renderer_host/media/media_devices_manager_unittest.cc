@@ -1424,4 +1424,125 @@ TEST_F(MediaDevicesManagerTest,
   }
 }
 
+TEST_F(MediaDevicesManagerTest, EnumerateCacheVideoErrorFirstCall) {
+  EXPECT_CALL(*audio_manager_, MockGetAudioInputDeviceNames(_))
+      .Times(kNumCalls);
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo()).Times(1);
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::MEDIA_AUDIO_INPUT, _));
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::MEDIA_VIDEO_INPUT, _));
+
+  // Inject an UnknownError when attempting to fetch initial state after
+  // enabling caching.
+  EXPECT_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
+      .WillOnce(Invoke(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
+            std::move(result_callback)
+                .Run(DeviceEnumerationResult::kUnknownError, {});
+          }));
+
+  EnableCache(MediaDeviceType::MEDIA_VIDEO_INPUT);
+
+  // Inject one error and one success when media_devices_manager attempts
+  // re-enumerating using the lower level APIs. Further calls to
+  // media_devices_manager_->EnumerateDevices() should use the cache instead of
+  // triggering this API.
+  EXPECT_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
+      .WillOnce(Invoke(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
+            std::move(result_callback)
+                .Run(DeviceEnumerationResult::kUnknownError, {});
+          }))
+      .WillOnce(Invoke(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
+            in_process_video_capture_provider_->GetDeviceInfosAsync(
+                std::move(result_callback));
+          }));
+
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::MEDIA_AUDIO_INPUT)] = true;
+  for (int i = 0; i < kNumCalls; i++) {
+    base::RunLoop run_loop;
+    media_devices_manager_->EnumerateDevices(
+        -1, -1, devices_to_enumerate, true, true,
+        base::BindOnce(
+            [](bool expect_success, base::RunLoop* run_loop,
+               EnumerationResponsePtr response) {
+              EXPECT_EQ(response->result_code,
+                        expect_success
+                            ? DeviceEnumerationResult::kSuccess
+                            : DeviceEnumerationResult::kUnknownError);
+              run_loop->Quit();
+            },
+            /*expect_success=*/i > 0, &run_loop));
+    run_loop.Run();
+  }
+}
+
+TEST_F(MediaDevicesManagerTest, EnumerateCacheVideoErrorAfterChange) {
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo()).Times(2);
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::MEDIA_AUDIO_INPUT, _));
+  EXPECT_CALL(media_devices_manager_client_,
+              InputDevicesChangedUI(MediaDeviceType::MEDIA_VIDEO_INPUT, _));
+  EXPECT_CALL(*audio_manager_, MockGetAudioInputDeviceNames(_)).Times(2);
+  // Insert a success (for the first enumeration in EnableCache()), a failure
+  // (for the re-enumeration on device change event) and finally a success (when
+  // we actually call EnumerateDevices)
+  EXPECT_CALL(*mock_video_capture_provider_, GetDeviceInfosAsync(_))
+      .WillOnce(Invoke(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
+            in_process_video_capture_provider_->GetDeviceInfosAsync(
+                std::move(result_callback));
+          }))
+      .WillOnce(Invoke(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
+            std::move(result_callback)
+                .Run(DeviceEnumerationResult::kUnknownError, {});
+          }))
+      .WillOnce(Invoke(
+          [&](VideoCaptureProvider::GetDeviceInfosCallback result_callback) {
+            in_process_video_capture_provider_->GetDeviceInfosAsync(
+                std::move(result_callback));
+          }));
+
+  EnableCache(MediaDeviceType::MEDIA_VIDEO_INPUT);
+  // Perform an initial enumerate devices to wait for the initial enumeration
+  // triggered by EnableCache to finish.
+  EXPECT_CALL(*this, MockCallback(DeviceEnumerationResult::kSuccess, _));
+  RunEnumerateDevices();
+
+  // Invalidate the cache of video devices, triggering a re-enumeration against
+  // the mock_video_capture_provider_ which will fail, but not be cached.
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+
+  // Calling EnumerateDevices should trigger a re-enumeration against the
+  // mock_video_capture_provider_ which succeeds and returns the full result.
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::MEDIA_AUDIO_INPUT)] = true;
+  base::RunLoop run_loop;
+  media_devices_manager_->EnumerateDevices(
+      -1, -1, devices_to_enumerate, true, true,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, EnumerationResponsePtr response) {
+            EXPECT_EQ(response->result_code, DeviceEnumerationResult::kSuccess);
+            EXPECT_GT(response
+                          ->enumeration[static_cast<size_t>(
+                              MediaDeviceType::MEDIA_VIDEO_INPUT)]
+                          .size(),
+                      size_t(0));
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
 }  // namespace content
