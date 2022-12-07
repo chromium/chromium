@@ -110,7 +110,7 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
 
   void DestroyInputStream(InputStream* stream);
   void DestroyOutputStream(OutputStream* stream);
-  void DestroyMuter(LocalMuter* muter);
+  void DestroyMuter(base::WeakPtr<LocalMuter> muter);
   void DestroyLoopbackStream(LoopbackStream* stream);
 
   SEQUENCE_CHECKER(owning_sequence_);
