@@ -125,8 +125,7 @@ class SaveCardInfobarModalOverlayMediatorTest : public PlatformTest {
 
 // Tests that a SaveCardInfobarModalOverlayMediator correctly sets up its
 // consumer.
-// TODO(crbug.com/1098117): Re-enable test.
-TEST_F(SaveCardInfobarModalOverlayMediatorTest, DISABLED_SetUpConsumer) {
+TEST_F(SaveCardInfobarModalOverlayMediatorTest, SetUpConsumer) {
   FakeSaveCardModalConsumer* consumer =
       [[FakeSaveCardModalConsumer alloc] init];
   mediator_.consumer = consumer;
