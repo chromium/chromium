@@ -204,7 +204,7 @@ class ServiceManager : public Service {
 
   // Always points to the ServiceManager's own Instance. Note that this
   // ServiceInstance still has an entry in |instances_|.
-  raw_ptr<ServiceInstance> service_manager_instance_;
+  raw_ptr<ServiceInstance, DanglingUntriaged> service_manager_instance_;
 
   mojo::RemoteSet<mojom::ServiceManagerListener> listeners_;
 };
