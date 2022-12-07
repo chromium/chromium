@@ -36,7 +36,7 @@
     width: 40px;
   }
 </style>
-<settings-animated-pages id="pages" section="osPeople"
+<os-settings-animated-pages id="pages" section="osPeople"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
     <div class="settings-box first two-line">
@@ -83,7 +83,7 @@
     </template>
   </div>
   <template is="dom-if" route-path="/osSyncSetup">
-    <settings-subpage
+    <os-settings-subpage
         page-title="$i18n{syncPageTitle}"
         learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
       <settings-sync-page
@@ -91,22 +91,22 @@
           page-visibility="[[pageVisibility.privacy]]"
           focus-config="[[focusConfig_]]">
       </settings-sync-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/osSync">
-    <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
+    <os-settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
         learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
       <os-sync-controls>
       </os-sync-controls>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/accountManager">
-    <settings-subpage page-title="$i18n{accountManagerPageTitle}">
+    <os-settings-subpage page-title="$i18n{accountManagerPageTitle}">
       <settings-account-manager prefs="[[prefs]]">
       </settings-account-manager>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
-</settings-animated-pages>
+</os-settings-animated-pages>
 <template is="dom-if" if="[[showSignoutDialog_]]" restamp>
   <settings-signout-dialog sync-status="[[syncStatus]]"
       on-close="onDisconnectDialogClosed_">

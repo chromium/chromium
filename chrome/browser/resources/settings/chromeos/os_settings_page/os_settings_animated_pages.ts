@@ -4,42 +4,43 @@
 
 /**
  * @fileoverview
- * 'settings-animated-pages' is a container for a page and animated subpages.
+ * 'os-settings-animated-pages' is a container for a page and animated subpages.
  * It provides a set of common behaviors and animations.
  *
  * Example:
  *
- *    <settings-animated-pages section="privacy">
+ *    <os-settings-animated-pages section="privacy">
  *      <!-- Insert your section controls here -->
- *    </settings-animated-pages>
+ *    </os-settings-animated-pages>
  */
 
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {assert} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-
 import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from '../focus_config.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {FocusConfig} from '../../focus_config.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {getSettingIdParameter} from '../setting_id_param_util.js';
 
-import {getTemplate} from './settings_animated_pages.html.js';
-import {SettingsSubpageElement} from './settings_subpage.js';
+import {getTemplate} from './os_settings_animated_pages.html.js';
+import {OsSettingsSubpageElement} from './os_settings_subpage.js';
 
-interface SettingsAnimatedPagesElement {
+interface OsSettingsAnimatedPagesElement {
   $: {
     animatedPages: IronPagesElement,
   };
 }
 
-const SettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement) as
+const OsSettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement) as
     {new (): PolymerElement & RouteObserverMixinInterface};
 
-class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
+class OsSettingsAnimatedPagesElement extends
+    OsSettingsAnimatedPagesElementBase {
   static get is() {
-    return 'settings-animated-pages';
+    return 'os-settings-animated-pages';
   }
 
   static get template() {
@@ -95,14 +96,20 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
       return;
     }
 
+    // If the setting ID parameter is present, don't focus anything since
+    // a setting element will be deep linked and focused.
+    if (getSettingIdParameter()) {
+      return;
+    }
+
     // Call focusBackButton() on the selected subpage, only if:
     //  1) Not a direct navigation (such that the search box stays focused), and
     //  2) Not a "back" navigation, in which case the anchor element should be
     //     focused (further below in this function).
     if (this.previousRoute_ &&
         !Router.getInstance().lastRouteChangeWasPopstate()) {
-      const subpage = this.querySelector<SettingsSubpageElement>(
-          'settings-subpage.iron-selected');
+      const subpage = this.querySelector<OsSettingsSubpageElement>(
+          'os-settings-subpage.iron-selected');
       if (subpage) {
         subpage.focusBackButton();
         return;
@@ -218,7 +225,7 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
     // Set the subpage's id for use by neon-animated-pages.
     const content = DomIf._contentForTemplate(
         domIf.firstElementChild as HTMLTemplateElement);
-    const subpage = content!.querySelector('settings-subpage')!;
+    const subpage = content!.querySelector('os-settings-subpage')!;
     subpage.setAttribute('route-path', routePath);
 
     // Carry over the
@@ -253,9 +260,9 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-animated-pages': SettingsAnimatedPagesElement;
+    'os-settings-animated-pages': OsSettingsAnimatedPagesElement;
   }
 }
 
 customElements.define(
-    SettingsAnimatedPagesElement.is, SettingsAnimatedPagesElement);
+    OsSettingsAnimatedPagesElement.is, OsSettingsAnimatedPagesElement);

@@ -6,7 +6,7 @@
 </settings-languages>
 
 <!-- Top-level settings section. -->
-<settings-animated-pages id="pages" section="osLanguages"
+<os-settings-animated-pages id="pages" section="osLanguages"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
     <cr-link-row
@@ -39,56 +39,56 @@
 
   <!-- "Languages" page. -->
   <template is="dom-if" route-path="/osLanguages/languages">
-    <settings-subpage page-title="$i18n{languagesPageTitle}">
+    <os-settings-subpage page-title="$i18n{languagesPageTitle}">
       <os-settings-languages-page-v2
           language-helper="[[languageHelper]]"
           languages="[[languages]]"
           prefs="{{prefs}}">
       </os-settings-languages-page-v2>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <!-- "Input" page. -->
   <template is="dom-if" route-path="/osLanguages/input">
-    <settings-subpage page-title="[[inputPageTitle_]]">
+    <os-settings-subpage page-title="[[inputPageTitle_]]">
       <os-settings-input-page language-helper="[[languageHelper]]"
           languages="[[languages]]" prefs="{{prefs}}"
           focus-config="[[focusConfig_]]">
       </os-settings-input-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <!-- "Smart inputs" sub-page. -->
   <template is="dom-if" route-path="/osLanguages/smartInputs">
-    <settings-subpage page-title="$i18n{smartInputsTitle}">
+    <os-settings-subpage page-title="$i18n{smartInputsTitle}">
       <os-settings-smart-inputs-page prefs="{{prefs}}">
       </os-settings-smart-inputs-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <!-- "Input method settings" sub-sub-page. -->
   <template is="dom-if" route-path="/osLanguages/inputMethodOptions">
-    <settings-subpage>
+    <os-settings-subpage>
       <settings-input-method-options-page
           language-helper="[[languageHelper]]"
           prefs="{{prefs}}">
       </settings-input-method-options-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <!-- "Customize spell check" sub-sub-page. -->
   <template is="dom-if" route-path="/osLanguages/editDictionary">
-    <settings-subpage page-title="$i18n{editDictionaryLabel}">
+    <os-settings-subpage page-title="$i18n{editDictionaryLabel}">
       <os-settings-edit-dictionary-page></os-settings-edit-dictionary-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <!-- "Japanese Manage User dictionary" sub-sub-page. -->
   <template is="dom-if" route-path="/osLanguages/japaneseManageUserDictionary">
-    <settings-subpage page-title="$i18n{japaneseManageUserDictionaryLabel}">
+    <os-settings-subpage page-title="$i18n{japaneseManageUserDictionaryLabel}">
       <os-settings-japanese-manage-user-dictionary-page>
       </os-settings-japanese-manage-user-dictionary-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
-</settings-animated-pages>
+</os-settings-animated-pages>

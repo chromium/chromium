@@ -12,7 +12,7 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {getSettingIdParameter} from '../setting_id_param_util.js';
+import {getSettingIdParameter} from './setting_id_param_util.js';
 
 /** @type {string} */
 const kDeepLinkFocusId = 'deep-link-focus-id';

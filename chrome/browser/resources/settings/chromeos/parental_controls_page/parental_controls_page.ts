@@ -8,8 +8,8 @@
  */
 
 import 'chrome://resources/cr_elements/icons.html.js';
-import '../../settings_page/settings_animated_pages.js';
-import '../../settings_page/settings_subpage.js';
+import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 

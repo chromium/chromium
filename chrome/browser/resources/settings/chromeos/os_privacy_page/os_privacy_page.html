@@ -15,7 +15,7 @@
     --cr-subsequent-anchors-of-span-margin: 0;
   }
 </style>
-<settings-animated-pages id="pages" section="osPrivacy"
+<os-settings-animated-pages id="pages" section="osPrivacy"
     focus-config="[[focusConfig_]]">
 
   <div route-path="default">
@@ -138,44 +138,44 @@
 
   <template is="dom-if" if="[[!isGuestMode_]]" restamp>
     <template is="dom-if" route-path="/osPrivacy/lockScreen">
-      <settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
+      <os-settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
         <settings-lock-screen id="lockScreen" set-modes="[[setModes_]]"
             prefs="{{prefs}}" auth-token="[[authToken_]]"
             on-invalidate-auth-token-requested="onInvalidateTokenRequested_"
             on-password-requested="onPasswordRequested_">
         </settings-lock-screen>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
     <template is="dom-if" route-path="/osPrivacy/lockScreen/fingerprint">
-      <settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
+      <os-settings-subpage page-title="$i18n{lockScreenFingerprintTitle}">
         <settings-fingerprint-list id="fingerprint-list"
             auth-token="[[authToken_.token]]"
             set-modes="[[setModes_]]"
             on-password-requested="onPasswordRequested_">
         </settings-fingerprint-list>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
     <template is="dom-if" route-path="/osPrivacy/accounts">
-      <settings-subpage page-title="$i18n{manageOtherPeople}">
+      <os-settings-subpage page-title="$i18n{manageOtherPeople}">
         <settings-users-page prefs="{{prefs}}">
         </settings-users-page>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
     <template is="dom-if" route-path="/osPrivacy/smartPrivacy">
-      <settings-subpage page-title="$i18n{smartPrivacyTitle}">
+      <os-settings-subpage page-title="$i18n{smartPrivacyTitle}">
         <settings-smart-privacy-page prefs="{{prefs}}">
         </settings-smart-privacy-page>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
     <template is="dom-if" route-path="/osPrivacy/privacyHub">
-      <settings-subpage page-title="$i18n{privacyHubTitle}">
+      <os-settings-subpage page-title="$i18n{privacyHubTitle}">
         <settings-privacy-hub-page prefs="{{prefs}}">
         </settings-privacy-hub-page>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
   </template>
 
-</settings-animated-pages>
+</os-settings-animated-pages>
 
 <template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
   <settings-lock-screen-password-prompt-dialog

@@ -276,7 +276,7 @@ suite('SettingsDevicePage', function() {
     DevicePageBrowserProxyImpl.setInstanceForTesting(
         new TestDevicePageBrowserProxy());
 
-    // Allow the light DOM to be distributed to settings-animated-pages.
+    // Allow the light DOM to be distributed to os-settings-animated-pages.
     setTimeout(done);
   });
 
@@ -286,7 +286,7 @@ suite('SettingsDevicePage', function() {
     devicePage = document.createElement('settings-device-page');
     devicePage.prefs = getFakePrefs();
 
-    // settings-animated-pages expects a parent with data-page set.
+    // os-settings-animated-pages expects a parent with data-page set.
     const basicPage = document.createElement('div');
     basicPage.dataset.page = 'basic';
     basicPage.appendChild(devicePage);

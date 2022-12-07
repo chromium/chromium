@@ -24,7 +24,7 @@
     top: -22px;
   }
 </style>
-<settings-animated-pages id="pages" section="internet"
+<os-settings-animated-pages id="pages" section="internet"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
     <network-summary default-network="{{defaultNetwork}}"
@@ -99,7 +99,7 @@
   </div>
 
   <template is="dom-if" route-path="/networkDetail" restamp>
-    <settings-subpage page-title="$i18n{internetDetailPageTitle}">
+    <os-settings-subpage page-title="$i18n{internetDetailPageTitle}">
       <settings-internet-detail-menu
           slot="subpage-title-extra"
           device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
@@ -109,19 +109,19 @@
           global-policy="[[globalPolicy_]]"
           managed-network-available="[[managedNetworkAvailable]]">
       </settings-internet-detail-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <template is="dom-if" route-path="/knownNetworks" restamp>
-    <settings-subpage page-title="$i18n{internetKnownNetworksPageTitle}">
+    <os-settings-subpage page-title="$i18n{internetKnownNetworksPageTitle}">
       <settings-internet-known-networks-page
           network-type="[[knownNetworksType_]]">
       </settings-internet-known-networks-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <template is="dom-if" route-path="/apn" restamp>
-    <settings-subpage page-title="$i18n{internetApnPageTitle}">
+    <os-settings-subpage page-title="$i18n{internetApnPageTitle}">
       <div slot="subpage-title-extra">
         <cr-button id="createCustomApnButton"
             on-click="onCreateCustomApnClicked_"
@@ -132,11 +132,11 @@
       </div>
       <apn-subpage on-show-apn-detail-dialog="onShowApnDetailDialog_">
       </apn-subpage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <template is="dom-if" route-path="/networks" restamp>
-    <settings-subpage page-title="[[getNetworksPageTitle_(subpageType_)]]"
+    <os-settings-subpage page-title="[[getNetworksPageTitle_(subpageType_)]]"
         show-spinner="[[showSpinner_]]"
         spinner-title="$i18n{networkScanningLabel}">
       <settings-internet-subpage
@@ -149,21 +149,21 @@
           is-connected-to-non-cellular-network="[[isConnectedToNonCellularNetwork_]]"
           is-cellular-setup-active="[[showCellularSetupDialog_]]">
       </settings-internet-subpage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <template is="dom-if" route-path="/hotspotDetail" restamp>
-    <settings-subpage page-title="$i18n{hotspotPageTitle}">
+    <os-settings-subpage page-title="$i18n{hotspotPageTitle}">
         <div id="hotspotSubtitle">
           <localized-link
               localized-string="[[i18nAdvanced('hotspotSubpageSubtitle')]]">
           </localized-link>
         </div>
       <settings-hotspot-subpage></settings-hotspot-subpage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
-</settings-animated-pages>
+</os-settings-animated-pages>
 
 <template is="dom-if" if="[[showInternetConfig_]]" restamp>
   <internet-config id="configDialog" on-close="onInternetConfigClose_">

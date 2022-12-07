@@ -19,7 +19,7 @@ import '../os_privacy_page/os_privacy_page.js';
 import '../os_printing_page/os_printing_page.js';
 import '../os_search_page/os_search_page.js';
 import '../personalization_page/personalization_page.js';
-import '../../settings_page/settings_section.js';
+import '../os_settings_page/os_settings_section.js';
 import '../../settings_page_styles.css.js';
 import '../device_page/device_page.js';
 import '../internet_page/internet_page.js';

@@ -1,5 +1,5 @@
 <style include="settings-shared"></style>
-<settings-animated-pages id="pages" section="device"
+<os-settings-animated-pages id="pages" section="device"
     focus-config="[[focusConfig_]]">
   <div id="main" route-path="default">
     <cr-link-row id="pointersRow"
@@ -45,7 +45,7 @@
     </cr-link-row>
   </div>
   <template is="dom-if" route-path="/pointer-overlay">
-    <settings-subpage
+    <os-settings-subpage
         page-title="[[getPointersTitle_(hasMouse_, hasPointingStick_,
                                         hasTouchpad_)]]">
       <settings-pointers prefs="{{prefs}}"
@@ -54,50 +54,50 @@
           has-touchpad="[[hasTouchpad_]]"
           has-haptic-touchpad="[[hasHapticTouchpad_]]">
       </settings-pointers>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/keyboard-overlay">
-    <settings-subpage page-title="$i18n{keyboardTitle}">
+    <os-settings-subpage page-title="$i18n{keyboardTitle}">
       <settings-keyboard prefs="{{prefs}}" focus-config="[[focusConfig_]]">
       </settings-keyboard>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/stylus">
-    <settings-subpage page-title="$i18n{stylusTitle}">
+    <os-settings-subpage page-title="$i18n{stylusTitle}">
       <settings-stylus prefs="{{prefs}}"></settings-stylus>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/display">
-    <settings-subpage page-title="$i18n{displayTitle}">
+    <os-settings-subpage page-title="$i18n{displayTitle}">
       <settings-display prefs="{{prefs}}"></settings-display>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/audio">
-    <settings-subpage page-title="$i18n{audioTitle}">
+    <os-settings-subpage page-title="$i18n{audioTitle}">
       <settings-audio show-audio-info="[[showAudioInfo_]]"></settings-audio>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/storage">
-    <settings-subpage page-title="$i18n{storageTitle}">
+    <os-settings-subpage page-title="$i18n{storageTitle}">
       <settings-storage prefs="{{prefs}}"
           show-crostini="[[showCrostini]]"
           android-enabled="[[androidEnabled_]]">
       </settings-storage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" if="[[androidEnabled_]]">
     <template is="dom-if" route-path="/storage/externalStoragePreferences">
-      <settings-subpage
+      <os-settings-subpage
           page-title="$i18n{storageExternal}">
         <settings-storage-external prefs="{{prefs}}">
         </settings-storage-external>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
   </template>
   <template is="dom-if" route-path="/power">
-    <settings-subpage
+    <os-settings-subpage
         page-title="$i18n{powerTitle}">
       <settings-power></settings-power>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
-</settings-animated-pages>
+</os-settings-animated-pages>

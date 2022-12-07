@@ -361,7 +361,6 @@ build_webui("build") {
     "safety_check_page/safety_check_browser_proxy.ts",
     "search_engines_page/search_engines_browser_proxy.ts",
     "search_settings.ts",
-    "setting_id_param_util.ts",
     "settings.ts",
     "settings_page/main_page_mixin.ts",
     "settings_routes.ts",

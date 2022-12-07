@@ -1,5 +1,5 @@
 <style include="settings-shared"></style>
-<settings-animated-pages id="pages" current-route="{{currentRoute}}"
+<os-settings-animated-pages id="pages" current-route="{{currentRoute}}"
     section="osAccessibility" focus-config="[[focusConfig_]]">
   <div route-path="default">
     <template is="dom-if" if="[[showAccessibilityLabelsSetting_]]">
@@ -66,66 +66,66 @@
   </div>
 
   <template is="dom-if" route-path="/manageAccessibility">
-    <settings-subpage page-title="$i18n{manageAccessibilityFeatures}"
+    <os-settings-subpage page-title="$i18n{manageAccessibilityFeatures}"
         hide-close-button="[[isKioskModeActive_]]">
       <settings-manage-a11y-page prefs="{{prefs}}">
       </settings-manage-a11y-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/textToSpeech">
-    <settings-subpage page-title="$i18n{textToSpeechLinkTitle}">
+    <os-settings-subpage page-title="$i18n{textToSpeechLinkTitle}">
       <settings-text-to-speech-page prefs="{{prefs}}">
       </settings-text-to-speech-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if"
       if="[[isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
     <template is="dom-if" route-path="/textToSpeech/selectToSpeak">
-      <settings-subpage page-title="$i18n{selectToSpeakLinkTitle}">
+      <os-settings-subpage page-title="$i18n{selectToSpeakLinkTitle}">
         <settings-select-to-speak-subpage prefs="{{prefs}}">
         </settings-select-to-speak-subpage>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
   </template>
   <template is="dom-if" route-path="/displayAndMagnification">
-    <settings-subpage page-title="$i18n{displayAndMagnificationLinkTitle}">
+    <os-settings-subpage page-title="$i18n{displayAndMagnificationLinkTitle}">
       <settings-display-and-magnification-page prefs="{{prefs}}">
       </settings-display-and-magnification-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/keyboardAndTextInput">
-    <settings-subpage page-title="$i18n{keyboardAndTextInputLinkTitle}">
+    <os-settings-subpage page-title="$i18n{keyboardAndTextInputLinkTitle}">
       <settings-keyboard-and-text-input-page prefs="{{prefs}}">
       </settings-keyboard-and-text-input-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/cursorAndTouchpad">
-    <settings-subpage page-title="$i18n{cursorAndTouchpadLinkTitle}">
+    <os-settings-subpage page-title="$i18n{cursorAndTouchpadLinkTitle}">
       <settings-cursor-and-touchpad-page prefs="{{prefs}}">
       </settings-cursor-and-touchpad-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/audioAndCaptions">
-    <settings-subpage page-title="$i18n{audioAndCaptionsLinkTitle}">
+    <os-settings-subpage page-title="$i18n{audioAndCaptionsLinkTitle}">
       <settings-audio-and-captions-page prefs="{{prefs}}">
       </settings-audio-and-captions-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/manageAccessibility/tts">
-    <settings-subpage page-title="$i18n{manageTtsSettings}">
+    <os-settings-subpage page-title="$i18n{manageTtsSettings}">
       <settings-tts-subpage prefs="{{prefs}}">
       </settings-tts-subpage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/manageAccessibility/captions">
-    <settings-subpage page-title="$i18n{captionsTitle}">
+    <os-settings-subpage page-title="$i18n{captionsTitle}">
       <settings-captions prefs="{{prefs}}"></settings-captions>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" route-path="/manageAccessibility/switchAccess">
-    <settings-subpage page-title="$i18n{manageSwitchAccessSettings}">
+    <os-settings-subpage page-title="$i18n{manageSwitchAccessSettings}">
       <settings-switch-access-subpage prefs="{{prefs}}">
       </settings-switch-access-subpage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
-</settings-animated-pages>
+</os-settings-animated-pages>

@@ -75,8 +75,8 @@
 <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
 </iron-media-query>
-<settings-section page-title="$i18n{aboutOsPageTitle}" section="about">
-  <settings-animated-pages id="pages" section="about"
+<os-settings-section page-title="$i18n{aboutOsPageTitle}" section="about">
+  <os-settings-animated-pages id="pages" section="about"
       focus-config="[[focusConfig_]]">
     <div route-path="default">
       <div class="settings-box two-line first">
@@ -222,18 +222,18 @@
       </cr-link-row>
     </div>
     <template is="dom-if" route-path="/help/details">
-      <settings-subpage page-title="$i18n{aboutDetailedBuildInfo}">
+      <os-settings-subpage page-title="$i18n{aboutDetailedBuildInfo}">
         <settings-detailed-build-info
             eol-message-with-month-and-year=
                 "[[eolMessageWithMonthAndYear_]]"
             prefs="{{prefs}}">
         </settings-detailed-build-info>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
-  </settings-animated-pages>
-</settings-section>
+  </os-settings-animated-pages>
+</os-settings-section>
 
-<settings-section>
+<os-settings-section>
   <div class="settings-box padded block first">
     <div class="info-section">
       <div class="secondary">$i18n{aboutOsProductTitle}</div>
@@ -268,7 +268,7 @@
     <img src="[[regulatoryInfo_.url]]" alt="[[regulatoryInfo_.text]]"
         hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]">
   </div>
-</settings-section>
+</os-settings-section>
 <template is="dom-if" if="[[showUpdateWarningDialog_]]" restamp>
   <settings-update-warning-dialog update-info="[[updateInfo_]]"
       on-close="onUpdateWarningDialogClose_">

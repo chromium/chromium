@@ -1,5 +1,5 @@
 <style include="settings-shared"></style>
-<settings-animated-pages id="pages" section="osPrinting"
+<os-settings-animated-pages id="pages" section="osPrinting"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
     <cr-link-row id="cupsPrinters" label="$i18n{cupsPrintersTitle}"
@@ -20,13 +20,13 @@
     </cr-link-row>
   </div>
   <template is="dom-if" route-path="/cupsPrinters">
-    <settings-subpage
+    <os-settings-subpage
         page-title="$i18n{cupsPrintersTitle}"
         search-label="$i18n{searchLabel}"
         search-term="{{searchTerm}}">
       <settings-cups-printers search-term="{{searchTerm}}"
           prefs="[[prefs]]">
       </settings-cups-printers>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
-</settings-animated-pages>
+</os-settings-animated-pages>

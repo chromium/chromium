@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * 'settings-subpage' shows a subpage beneath a subheader. The header contains
- * the subpage title, a search field and a back icon.
+ * 'os-settings-subpage' shows a subpage beneath a subheader. The header
+ * contains the subpage title, a search field and a back icon.
  */
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -13,43 +13,32 @@ import '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../settings_shared.css.js';
-import '../site_favicon.js';
+import '../../settings_shared.css.js';
+import '../../site_favicon.js';
 
 import {CrSearchFieldElement} from '//resources/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixin, FindShortcutMixinInterface} from '//resources/cr_elements/find_shortcut_mixin.js';
+import {I18nMixin, I18nMixinInterface} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {I18nMixin, I18nMixinInterface} from '//resources/cr_elements/i18n_mixin.js';
 import {listenOnce} from '//resources/js/util_ts.js';
 import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
-import {loadTimeData} from '../i18n_setup.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {getSettingIdParameter} from '../setting_id_param_util.js';
 
-import {getTemplate} from './settings_subpage.html.js';
+import {getTemplate} from './os_settings_subpage.html.js';
 
-
-const SETTING_ID_URL_PARAM_NAME: string = 'settingId';
-
-/**
- * Retrieves the setting ID saved in the URL's query parameter. Returns null if
- * setting ID is unavailable.
- */
-function getSettingIdParameter(): string|null {
-  return Router.getInstance().getQueryParameters().get(
-      SETTING_ID_URL_PARAM_NAME);
-}
-
-export interface SettingsSubpageElement {
+export interface OsSettingsSubpageElement {
   $: {
     closeButton: HTMLElement,
   };
 }
 
-const SettingsSubpageElementBase =
+const OsSettingsSubpageElementBase =
     mixinBehaviors(
         [IronResizableBehavior],
         RouteObserverMixin(FindShortcutMixin(I18nMixin(PolymerElement)))) as {
@@ -57,9 +46,9 @@ const SettingsSubpageElementBase =
           RouteObserverMixinInterface,
     };
 
-export class SettingsSubpageElement extends SettingsSubpageElementBase {
+export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   static get is() {
-    return 'settings-subpage';
+    return 'os-settings-subpage';
   }
 
   static get properties() {
@@ -314,8 +303,8 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-subpage': SettingsSubpageElement;
+    'os-settings-subpage': OsSettingsSubpageElement;
   }
 }
 
-customElements.define(SettingsSubpageElement.is, SettingsSubpageElement);
+customElements.define(OsSettingsSubpageElement.is, OsSettingsSubpageElement);

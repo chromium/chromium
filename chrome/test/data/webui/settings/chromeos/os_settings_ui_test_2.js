@@ -202,7 +202,8 @@ suite('os-settings-ui', () => {
         settingsMain.shadowRoot.querySelector('os-settings-about-page');
     await waitBeforeNextRender(aboutPage);
     const aboutSection =
-        aboutPage.shadowRoot.querySelector('settings-section[section="about"]');
+        aboutPage.shadowRoot.querySelector(
+            'os-settings-section[section="about"]');
     assertEquals(aboutSection, aboutPage.shadowRoot.activeElement);
   });
 

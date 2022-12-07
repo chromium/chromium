@@ -329,7 +329,7 @@ export const MainPageMixin = dedupingMixin(
             return null;
           }
           return this.shadowRoot!.querySelector(
-              `settings-section[section="${section}"]`);
+              `os-settings-section[section="${section}"]`);
         }
 
         private dispatchCustomEvent_(

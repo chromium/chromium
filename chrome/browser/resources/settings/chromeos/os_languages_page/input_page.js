@@ -18,7 +18,7 @@ import './os_edit_dictionary_page.js';
 import '../keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
-import '../../settings_page/settings_animated_pages.js';
+import '../os_settings_page/os_settings_animated_pages.js';
 
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';

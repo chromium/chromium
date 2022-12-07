@@ -1,5 +1,5 @@
 <style include="settings-shared"></style>
-<settings-animated-pages id="pages" section="files"
+<os-settings-animated-pages id="pages" section="files"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
     <settings-toggle-button
@@ -14,9 +14,9 @@
     </cr-link-row>
   </div>
   <template is="dom-if" route-path="/smbShares">
-    <settings-subpage page-title="$i18n{smbSharesTitle}">
+    <os-settings-subpage page-title="$i18n{smbSharesTitle}">
       <settings-smb-shares-page prefs="[[prefs]]">
       </settings-smb-shares-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
-</settings-animated-pages>
+</os-settings-animated-pages>

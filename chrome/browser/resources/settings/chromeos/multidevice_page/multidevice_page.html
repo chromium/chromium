@@ -3,7 +3,7 @@
     padding: 0 var(--cr-controlled-by-spacing);
   }
 </style>
-<settings-animated-pages id="pages" section="multidevice"
+<os-settings-animated-pages id="pages" section="multidevice"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
     <div id="multidevice-item"
@@ -160,23 +160,23 @@
     </template>
   </div>
   <template is="dom-if" route-path="/multidevice/features" restamp>
-    <settings-subpage page-title="[[getLabelText_(pageContentData)]]">
+    <os-settings-subpage page-title="[[getLabelText_(pageContentData)]]">
       <settings-multidevice-subpage
           page-content-data="[[pageContentData]]">
       </settings-multidevice-subpage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
   <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
     <template is="dom-if" route-path="/multidevice/nearbyshare" restamp>
-      <settings-subpage page-title="$i18n{nearbyShareTitle}">
+      <os-settings-subpage page-title="$i18n{nearbyShareTitle}">
         <settings-nearby-share-subpage settings="{{settings}}"
             prefs="{{prefs}}"
             is-settings-retreived="[[isSettingsRetreived]]">
         </settings-nearby-share-subpage>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
   </template>
-</settings-animated-pages>
+</os-settings-animated-pages>
 <template is="dom-if" if="[[showPasswordPromptDialog_]]" restamp>
   <settings-password-prompt-dialog id="multidevicePasswordPrompt"
       on-token-obtained="onTokenObtained_">

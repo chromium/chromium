@@ -16,8 +16,8 @@ import './languages.js';
 import './os_japanese_manage_user_dictionary_page.js';
 import './os_languages_page_v2.js';
 import './smart_inputs_page.js';
-import '../../settings_page/settings_animated_pages.js';
-import '../../settings_page/settings_subpage.js';
+import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_subpage.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 

@@ -7,8 +7,8 @@
  * 'os-settings-files-page' is the settings page containing files settings.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import '../../settings_page/settings_animated_pages.js';
-import '../../settings_page/settings_subpage.js';
+import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_subpage.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 import './smb_shares_page.js';

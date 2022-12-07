@@ -4,7 +4,7 @@
     padding-inline-start: var(--cr-section-indent-padding);
   }
 </style>
-<settings-animated-pages id="pages" section="dateTime"
+<os-settings-animated-pages id="pages" section="dateTime"
     focus-config="[[focusConfig_]]">
   <div id="main" route-path="default">
     <template is="dom-if"
@@ -51,12 +51,12 @@
     </cr-link-row>
   </div>
   <template is="dom-if" route-path="/dateTime/timeZone">
-    <settings-subpage data-route="DATETIME_TIMEZONE_SUBPAGE"
+    <os-settings-subpage data-route="DATETIME_TIMEZONE_SUBPAGE"
         page-title="$i18n{timeZoneSubpageTitle}"
         learn-more-url="$i18n{timeZoneSettingsLearnMoreURL}">
       <timezone-subpage id="timezoneSubpage" prefs="{{prefs}}"
           active-time-zone-display-name="{{activeTimeZoneDisplayName}}">
       </timezone-subpage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
-</settings-animated-pages>
+</os-settings-animated-pages>

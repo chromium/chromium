@@ -5,7 +5,7 @@
   }
 </style>
 
-<settings-animated-pages id="pages" section="apps"
+<os-settings-animated-pages id="pages" section="apps"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
     <cr-link-row id="appManagement"
@@ -82,25 +82,25 @@
 
   <!-- APP NOTIFICATIONS -->
   <template is="dom-if" route-path="/app-notifications">
-    <settings-subpage page-title="$i18n{appNotificationsTitle}">
+    <os-settings-subpage page-title="$i18n{appNotificationsTitle}">
       <settings-app-notifications-subpage prefs="{{prefs}}">
       </settings-app-notifications-subpage>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <!-- APP MANAGEMENT -->
   <template is="dom-if" route-path="/app-management">
-    <settings-subpage
+    <os-settings-subpage
         page-title="$i18n{appManagementTitle}"
         search-label="$i18n{appManagementSearchPrompt}"
         search-term="{{searchTerm}}">
       <settings-app-management-page search-term="[[searchTerm]]">
       </settings-app-management-page>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <template is="dom-if" route-path="/app-management/detail">
-    <settings-subpage
+    <os-settings-subpage
         page-title="[[app_.title]]"
         title-icon="[[iconUrlFromId_(app_)]]">
       <app-management-uninstall-button slot="subpage-title-extra"
@@ -110,46 +110,46 @@
       </app-management-uninstall-button>
       <app-management-app-detail-view>
       </app-management-app-detail-view>
-    </settings-subpage>
+    </os-settings-subpage>
   </template>
 
   <!-- ANDROID APPS -->
   <template is="dom-if" if="[[showAndroidApps]]" restamp>
     <template is="dom-if" route-path="/androidAppsDetails">
-      <settings-subpage page-title="$i18n{androidAppsPageLabel}">
+      <os-settings-subpage page-title="$i18n{androidAppsPageLabel}">
         <settings-android-apps-subpage
           android-apps-info="[[androidAppsInfo]]"
           prefs="{{prefs}}"
           show-arcvm-manage-usb="[[showArcvmManageUsb]]">
         </settings-android-apps-subpage>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
   </template>
 
   <template is="dom-if" if="[[showArcvmManageUsb]]" restamp>
     <template is="dom-if" route-path="/androidAppsDetails/sharedUsbDevices">
-      <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+      <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
          <settings-guest-os-shared-usb-devices guest-os-type="arcvm">
          </settings-guest-os-shared-usb-devices>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
   </template>
 
   <!-- Plugin VM -->
   <template is="dom-if" if="[[showPluginVm]]" restamp>
     <template is="dom-if" route-path="/app-management/pluginVm/sharedPaths">
-      <settings-subpage page-title="$i18n{guestOsSharedPaths}">
+      <os-settings-subpage page-title="$i18n{guestOsSharedPaths}">
         <settings-guest-os-shared-paths
             guest-os-type="pluginVm" prefs="{{prefs}}">
         </settings-guest-os-shared-paths>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
     <template is="dom-if"
         route-path="/app-management/pluginVm/sharedUsbDevices">
-      <settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
+      <os-settings-subpage page-title="$i18n{guestOsSharedUsbDevicesLabel}">
         <settings-guest-os-shared-usb-devices guest-os-type="pluginVm">
         </settings-guest-os-shared-usb-devices>
-      </settings-subpage>
+      </os-settings-subpage>
     </template>
   </template>
-</settings-animated-pages>
+</os-settings-animated-pages>
