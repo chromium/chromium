@@ -40,12 +40,13 @@ ApnMigrator::ApnMigrator(
 
 ApnMigrator::~ApnMigrator() = default;
 
-void ApnMigrator::SetShillUserApnListForNetwork(const NetworkState& network,
-                                                base::Value::List apn_list) {
+void ApnMigrator::SetShillUserApnListForNetwork(
+    const NetworkState& network,
+    const base::Value::List* apn_list) {
   network_configuration_handler_->SetProperties(
       network.path(),
-      base::Value(chromeos::network_config::UserApnListToOnc(
-          network.guid(), std::move(apn_list))),
+      base::Value(
+          chromeos::network_config::UserApnListToOnc(network.guid(), apn_list)),
       base::BindOnce(&OnSetShillUserApnListSuccess),
       base::BindOnce(&OnSetShillUserApnListFailure, network.guid()));
 }
@@ -59,7 +60,8 @@ void ApnMigrator::ClearUserApnListForMigratedNetworks() {
             network->iccid())) {
       // Clear UserApnList so that Shill knows to use legacy APN selection
       // logic.
-      SetShillUserApnListForNetwork(*network, base::Value::List());
+      base::Value::List empty_user_apn_list;
+      SetShillUserApnListForNetwork(*network, /*apn_list=*/nullptr);
     }
   }
 }

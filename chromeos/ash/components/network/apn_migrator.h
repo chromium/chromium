@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
   // Creates an ONC configuration object for the Shill property user_apn_list
   // containing |apn_list|, and applies it for the cellular |network|.
   void SetShillUserApnListForNetwork(const NetworkState& network,
-                                     base::Value::List apn_list);
+                                     const base::Value::List* apn_list);
 
   // Iterates the registered cellular networks, and clears the Shill property
   // user_apn_list for networks that have been migrated to the APN Revamp

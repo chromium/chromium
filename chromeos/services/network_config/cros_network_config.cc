@@ -3647,8 +3647,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
   network_metadata_store->SetCustomApnList(network_guid, new_apns.Clone());
 
   SetPropertiesInternal(
-      network_guid, *network,
-      UserApnListToOnc(network_guid, std::move(new_apns)),
+      network_guid, *network, UserApnListToOnc(network_guid, &new_apns),
       base::BindOnce(
           [](const std::string& guid, mojom::ApnPropertiesPtr apn, bool success,
              const std::string& message) {
@@ -3721,8 +3720,7 @@ void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,
 
   network_metadata_store->SetCustomApnList(network_guid, new_apns.Clone());
   SetPropertiesInternal(
-      network_guid, *network,
-      UserApnListToOnc(network_guid, std::move(new_apns)),
+      network_guid, *network, UserApnListToOnc(network_guid, &new_apns),
       base::BindOnce(
           [](const std::string& guid, std::vector<mojom::ApnType> apn_types,
              bool success, const std::string& message) {
@@ -3800,8 +3798,7 @@ void CrosNetworkConfig::ModifyCustomApn(const std::string& network_guid,
   network_metadata_store->SetCustomApnList(network_guid,
                                            new_custom_apns.Clone());
   SetPropertiesInternal(
-      network_guid, *network,
-      UserApnListToOnc(network_guid, std::move(new_custom_apns)),
+      network_guid, *network, UserApnListToOnc(network_guid, &new_custom_apns),
       base::BindOnce(
           [](const std::string& guid, bool success,
              const std::string& message) {

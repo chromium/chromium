@@ -185,7 +185,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
 
   // Expect that the function resets the UserApnList for the migrated networks
   base::Value::Dict expected_onc1 = chromeos::network_config::UserApnListToOnc(
-      kTestCellularGuid1, base::Value::List());
+      kTestCellularGuid1, /*user_apn_list=*/nullptr);
   EXPECT_CALL(*managed_network_configuration_handler(),
               SetProperties(cellular_service_path_1(),
                             Truly([&expected_onc1](const base::Value& value) {
@@ -194,7 +194,7 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
                             _, _))
       .Times(1);
   base::Value::Dict expected_onc2 = chromeos::network_config::UserApnListToOnc(
-      kTestCellularGuid3, base::Value::List());
+      kTestCellularGuid3, /*user_apn_list=*/nullptr);
   EXPECT_CALL(*managed_network_configuration_handler(),
               SetProperties(cellular_service_path_3(),
                             Truly([&expected_onc2](const base::Value& value) {
