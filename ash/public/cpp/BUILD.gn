@@ -401,6 +401,7 @@ component("cpp") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/sync/model",
+    "//components/tab_groups",
     "//components/user_manager",
     "//mojo/public/cpp/bindings",
     "//net/traffic_annotation",

@@ -16,6 +16,7 @@ include_rules = [
   "+components/saved_tab_groups",
   "+components/segmentation_platform/content",
   "+components/soda",
+  "+components/tab_groups",
   "+components/translate/content/android",
   "+components/user_education/common",
   "+components/user_education/test",

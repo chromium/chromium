@@ -41,7 +41,6 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
-#include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon_base/favicon_util.h"

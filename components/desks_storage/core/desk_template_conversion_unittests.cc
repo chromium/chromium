@@ -26,6 +26,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace desks_storage {
@@ -38,8 +39,8 @@ constexpr char kBrowserUrl1[] = "https://example.com/";
 constexpr char kBrowserUrl2[] = "https://example.com/2";
 constexpr char kBrowserTemplateName[] = "BrowserTest";
 
-app_restore::TabGroupInfo MakeSampleTabGroup() {
-  return app_restore::TabGroupInfo(
+tab_groups::TabGroupInfo MakeSampleTabGroup() {
+  return tab_groups::TabGroupInfo(
       {1, 2}, tab_groups::TabGroupVisualData(
                   u"sample_tab_group", tab_groups::TabGroupColorId::kGrey));
 }

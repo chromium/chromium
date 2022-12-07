@@ -247,12 +247,17 @@ mojom("mojom") {
           mojom = "crosapi.mojom.GUID"
           cpp = "::base::GUID"
         },
+        {
+          mojom = "crosapi.mojom.TabGroup"
+          cpp = "::tab_groups::TabGroupInfo"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/cert_database_mojom_traits.h",
         "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.h",
         "//chromeos/crosapi/mojom/policy_domain_mojom_traits.h",
+        "//chromeos/crosapi/mojom/desk_template_mojom_traits.h",
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/desk_mojom_traits.h",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
@@ -268,6 +273,7 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.cc",
         "//chromeos/crosapi/mojom/cert_database_mojom_traits.cc",
         "//chromeos/crosapi/mojom/desk_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/desk_template_mojom_traits.cc",
         "//chromeos/crosapi/mojom/policy_domain_mojom_traits.cc",
         "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.cc",
         "//chromeos/crosapi/mojom/sharesheet_mojom_traits.cc",
@@ -282,6 +288,7 @@ mojom("mojom") {
         "//components/services/app_service/public/cpp:icon_types",
         "//components/services/app_service/public/cpp:preferred_app",
         "//components/services/app_service/public/mojom:mojom",
+        "//components/tab_groups",
         "//components/webapps/browser:constants",
       ]
     },

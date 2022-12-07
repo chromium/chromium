@@ -10,9 +10,9 @@
 
 #include "base/component_export.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "components/app_restore/tab_group_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -114,7 +114,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   // instance if there are any. This is only used in Desks Storage, tab groups
   // in full restore are persistsed by sessions.  This field is not converted to
   // base::value in base value conversions.
-  absl::optional<std::vector<TabGroupInfo>> tab_group_infos;
+  absl::optional<std::vector<tab_groups::TabGroupInfo>> tab_group_infos;
 
   // Extra ARC window's information.
   absl::optional<gfx::Size> minimum_size;

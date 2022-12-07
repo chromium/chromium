@@ -13,11 +13,11 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/app_restore_data.h"
-#include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,13 +113,14 @@ const tab_groups::TabGroupColorId kTestTabGroupColorThree =
     tab_groups::TabGroupColorId::kGreen;
 const gfx::Range kTestTabGroupTabRange(1, 2);
 
-TabGroupInfo MakeTestTabGroup(const char16_t* title,
-                              tab_groups::TabGroupColorId color) {
-  return TabGroupInfo(kTestTabGroupTabRange,
-                      tab_groups::TabGroupVisualData(title, color));
+tab_groups::TabGroupInfo MakeTestTabGroup(const char16_t* title,
+                                          tab_groups::TabGroupColorId color) {
+  return tab_groups::TabGroupInfo(kTestTabGroupTabRange,
+                                  tab_groups::TabGroupVisualData(title, color));
 }
 
-void PopulateTestTabgroups(std::vector<TabGroupInfo>& out_tab_groups) {
+void PopulateTestTabgroups(
+    std::vector<tab_groups::TabGroupInfo>& out_tab_groups) {
   out_tab_groups.push_back(
       MakeTestTabGroup(kTestTabGroupTitleOne, kTestTabGroupColorOne));
   out_tab_groups.push_back(
@@ -224,28 +225,29 @@ class RestoreDataTest : public testing::Test {
                                     kStatusBarColor2);
   }
 
-  void VerifyAppRestoreData(const std::unique_ptr<AppRestoreData>& data,
-                            apps::LaunchContainer container,
-                            WindowOpenDisposition disposition,
-                            int64_t display_id,
-                            std::vector<base::FilePath> file_paths,
-                            apps::IntentPtr intent,
-                            bool app_type_browser,
-                            int32_t activation_index,
-                            int32_t first_non_pinned_tab_index,
-                            int32_t desk_id,
-                            const gfx::Rect& current_bounds,
-                            chromeos::WindowStateType window_state_type,
-                            ui::WindowShowState pre_minimized_show_state_type,
-                            uint32_t snap_percentage,
-                            absl::optional<gfx::Size> max_size,
-                            absl::optional<gfx::Size> min_size,
-                            absl::optional<std::u16string> title,
-                            absl::optional<gfx::Rect> bounds_in_root,
-                            uint32_t primary_color,
-                            uint32_t status_bar_color,
-                            std::vector<TabGroupInfo> expected_tab_group_infos,
-                            bool test_tab_group_infos = true) {
+  void VerifyAppRestoreData(
+      const std::unique_ptr<AppRestoreData>& data,
+      apps::LaunchContainer container,
+      WindowOpenDisposition disposition,
+      int64_t display_id,
+      std::vector<base::FilePath> file_paths,
+      apps::IntentPtr intent,
+      bool app_type_browser,
+      int32_t activation_index,
+      int32_t first_non_pinned_tab_index,
+      int32_t desk_id,
+      const gfx::Rect& current_bounds,
+      chromeos::WindowStateType window_state_type,
+      ui::WindowShowState pre_minimized_show_state_type,
+      uint32_t snap_percentage,
+      absl::optional<gfx::Size> max_size,
+      absl::optional<gfx::Size> min_size,
+      absl::optional<std::u16string> title,
+      absl::optional<gfx::Rect> bounds_in_root,
+      uint32_t primary_color,
+      uint32_t status_bar_color,
+      std::vector<tab_groups::TabGroupInfo> expected_tab_group_infos,
+      bool test_tab_group_infos = true) {
     EXPECT_TRUE(data->container.has_value());
     EXPECT_EQ(static_cast<int>(container), data->container.value());
 
@@ -392,7 +394,7 @@ class RestoreDataTest : public testing::Test {
         /*tab_group_infos=*/{});
 
     const auto app_restore_data_it2 = launch_list_it1->second.find(kWindowId2);
-    std::vector<TabGroupInfo> expected_tab_group_infos;
+    std::vector<tab_groups::TabGroupInfo> expected_tab_group_infos;
     PopulateTestTabgroups(expected_tab_group_infos);
     EXPECT_TRUE(app_restore_data_it2 != launch_list_it1->second.end());
     VerifyAppRestoreData(

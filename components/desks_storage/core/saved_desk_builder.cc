@@ -171,7 +171,7 @@ BuiltApp::~BuiltApp() = default;
 // TabGroupWithStatus implementation
 SavedDeskTabGroupBuilder::TabGroupWithStatus::TabGroupWithStatus(
     TabGroupBuildStatus status,
-    std::unique_ptr<app_restore::TabGroupInfo> tab_group)
+    std::unique_ptr<tab_groups::TabGroupInfo> tab_group)
     : status(status), tab_group(std::move(tab_group)) {}
 SavedDeskTabGroupBuilder::TabGroupWithStatus::~TabGroupWithStatus() = default;
 
@@ -208,7 +208,7 @@ SavedDeskTabGroupBuilder::TabGroupWithStatus SavedDeskTabGroupBuilder::Build() {
   if (!range_ || !title_ || !color_ || !is_collapsed_)
     return TabGroupWithStatus(TabGroupBuildStatus::kNotAllFieldsSet, nullptr);
 
-  auto tab_group = std::make_unique<app_restore::TabGroupInfo>(
+  auto tab_group = std::make_unique<tab_groups::TabGroupInfo>(
       range_.value(),
       tab_groups::TabGroupVisualData(base::UTF8ToUTF16(title_.value()),
                                      color_.value(), is_collapsed_.value()));

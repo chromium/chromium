@@ -13,11 +13,11 @@
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/restore_data.h"
-#include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -124,11 +124,11 @@ class SavedDeskTabGroupBuilder {
   // calling build.
   struct TabGroupWithStatus {
     TabGroupWithStatus(TabGroupBuildStatus status,
-                       std::unique_ptr<app_restore::TabGroupInfo> tab_group);
+                       std::unique_ptr<tab_groups::TabGroupInfo> tab_group);
     ~TabGroupWithStatus();
 
     TabGroupBuildStatus status;
-    std::unique_ptr<app_restore::TabGroupInfo> tab_group;
+    std::unique_ptr<tab_groups::TabGroupInfo> tab_group;
   };
 
   SavedDeskTabGroupBuilder();

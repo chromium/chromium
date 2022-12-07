@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 

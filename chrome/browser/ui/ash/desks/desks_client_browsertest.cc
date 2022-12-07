@@ -89,7 +89,6 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/restore_data.h"
-#include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -97,6 +96,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -334,9 +334,9 @@ const std::vector<const ash::DeskTemplate*> GetAllEntries() {
 
 // Creates a vector of tab groups based on the vector of GURLs passed into it.
 // A tab group will be created for each individual tab.
-std::vector<app_restore::TabGroupInfo> MakeExpectedTabGroupsBasedOnTabVector(
+std::vector<tab_groups::TabGroupInfo> MakeExpectedTabGroupsBasedOnTabVector(
     const std::vector<GURL>& urls) {
-  std::vector<app_restore::TabGroupInfo> tab_groups;
+  std::vector<tab_groups::TabGroupInfo> tab_groups;
 
   for (uint32_t index = 0; index < urls.size(); ++index) {
     tab_groups.emplace_back(
@@ -515,7 +515,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
 
   Browser* CreateBrowserWithTabGroups(
       const std::vector<GURL>& urls,
-      const std::vector<app_restore::TabGroupInfo>& tab_groups) {
+      const std::vector<tab_groups::TabGroupInfo>& tab_groups) {
     Browser* browser = CreateBrowserImpl(urls, absl::nullopt);
 
     chrome_desks_util::AttachTabGroupsToBrowserInstance(tab_groups, browser);
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
 // Tests that a browser's tab groups can be captured correctly in a saved desk.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
   std::vector<GURL> tabs = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
-  std::vector<app_restore::TabGroupInfo> expected_tab_groups =
+  std::vector<tab_groups::TabGroupInfo> expected_tab_groups =
       MakeExpectedTabGroupsBasedOnTabVector(tabs);
 
   // Create a new browser and add a few tabs to it.
@@ -1127,7 +1127,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   // index.
   std::vector<GURL> creation_urls = {GURL(kExampleUrl1), GURL(kExampleUrl2),
                                      GURL(kExampleUrl3)};
-  std::vector<app_restore::TabGroupInfo> expected_tab_groups =
+  std::vector<tab_groups::TabGroupInfo> expected_tab_groups =
       MakeExpectedTabGroupsBasedOnTabVector(creation_urls);
 
   Browser* browser =
@@ -1155,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   Browser* new_browser = FindLaunchedBrowserByURLs(urls);
   ASSERT_TRUE(new_browser);
 
-  absl::optional<std::vector<app_restore::TabGroupInfo>> got_tab_groups =
+  absl::optional<std::vector<tab_groups::TabGroupInfo>> got_tab_groups =
       chrome_desks_util::ConvertTabGroupsToTabGroupInfos(
           new_browser->tab_strip_model()->group_model());
 

@@ -2,39 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/app_restore/tab_group_info.h"
+#include "components/tab_groups/tab_group_info.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/tab_groups/tab_group_color.h"
 
-namespace app_restore {
+namespace tab_groups {
 
-std::string TabGroupColorToString(tab_groups::TabGroupColorId color) {
+std::string TabGroupColorToString(TabGroupColorId color) {
   switch (color) {
-    case tab_groups::TabGroupColorId::kGrey:
+    case TabGroupColorId::kGrey:
       return kTabGroupColorGrey;
-    case tab_groups::TabGroupColorId::kBlue:
+    case TabGroupColorId::kBlue:
       return kTabGroupColorBlue;
-    case tab_groups::TabGroupColorId::kRed:
+    case TabGroupColorId::kRed:
       return kTabGroupColorRed;
-    case tab_groups::TabGroupColorId::kYellow:
+    case TabGroupColorId::kYellow:
       return kTabGroupColorYellow;
-    case tab_groups::TabGroupColorId::kGreen:
+    case TabGroupColorId::kGreen:
       return kTabGroupColorGreen;
-    case tab_groups::TabGroupColorId::kPink:
+    case TabGroupColorId::kPink:
       return kTabGroupColorYellow;
-    case tab_groups::TabGroupColorId::kPurple:
+    case TabGroupColorId::kPurple:
       return kTabGroupColorPurple;
-    case tab_groups::TabGroupColorId::kCyan:
+    case TabGroupColorId::kCyan:
       return kTabGroupColorCyan;
-    case tab_groups::TabGroupColorId::kOrange:
+    case TabGroupColorId::kOrange:
       return kTabGroupColorOrange;
   }
 }
 
 TabGroupInfo::TabGroupInfo(const gfx::Range& tab_range,
-                           const tab_groups::TabGroupVisualData& visual_data)
+                           const TabGroupVisualData& visual_data)
     : tab_range(tab_range), visual_data(visual_data) {}
+
+TabGroupInfo::TabGroupInfo() = default;
 
 TabGroupInfo::TabGroupInfo(TabGroupInfo&& other)
     : tab_range(other.tab_range), visual_data(other.visual_data) {}
@@ -59,4 +61,4 @@ std::string TabGroupInfo::ToString() const {
   return result;
 }
 
-}  // namespace app_restore
+}  // namespace tab_groups

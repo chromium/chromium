@@ -7,6 +7,7 @@ include_rules = [
   "+cc/metrics",
   "+components/prefs",
   "+components/language/core/browser",
+  "+components/tab_groups",
   "+services/data_decoder/public",
   "+services/device/public",
   "+skia/public/mojom",

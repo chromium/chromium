@@ -6,8 +6,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "components/app_restore/tab_group_info.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 
 namespace {
@@ -26,7 +26,7 @@ const std::vector<int> ConvertRangeToTabGroupIndices(const gfx::Range& range) {
 
 namespace chrome_desks_util {
 
-absl::optional<std::vector<app_restore::TabGroupInfo>>
+absl::optional<std::vector<tab_groups::TabGroupInfo>>
 ConvertTabGroupsToTabGroupInfos(const TabGroupModel* group_model) {
   DCHECK(group_model);
   const std::vector<tab_groups::TabGroupId>& listed_group_ids =
@@ -36,7 +36,7 @@ ConvertTabGroupsToTabGroupInfos(const TabGroupModel* group_model) {
     return absl::nullopt;
   }
 
-  std::vector<app_restore::TabGroupInfo> tab_groups;
+  std::vector<tab_groups::TabGroupInfo> tab_groups;
   for (const tab_groups::TabGroupId& group_id : listed_group_ids) {
     const TabGroup* tab_group = group_model->GetTabGroup(group_id);
     tab_groups.emplace_back(
@@ -48,11 +48,11 @@ ConvertTabGroupsToTabGroupInfos(const TabGroupModel* group_model) {
 }
 
 void AttachTabGroupsToBrowserInstance(
-    const std::vector<app_restore::TabGroupInfo>& tab_groups,
+    const std::vector<tab_groups::TabGroupInfo>& tab_groups,
     Browser* browser) {
   TabStripModel* tab_strip_model = browser->tab_strip_model();
 
-  for (const app_restore::TabGroupInfo& tab_group : tab_groups) {
+  for (const tab_groups::TabGroupInfo& tab_group : tab_groups) {
     tab_groups::TabGroupId new_group_id = tab_strip_model->AddToNewGroup(
         ConvertRangeToTabGroupIndices(tab_group.tab_range));
     tab_strip_model->group_model()

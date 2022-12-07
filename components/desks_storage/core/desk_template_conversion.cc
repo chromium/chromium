@@ -17,12 +17,12 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/restore_data.h"
-#include "components/app_restore/tab_group_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sync/protocol/proto_enum_conversions.h"
 #include "components/tab_groups/tab_group_color.h"
+#include "components/tab_groups/tab_group_info.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -161,11 +161,11 @@ constexpr auto kValidWindowStates = base::MakeFixedFlatSet<base::StringPiece>(
      kWindowStateFullscreen, kWindowStatePrimarySnapped,
      kWindowStateSecondarySnapped, kWindowStateFloated, kZIndex});
 constexpr auto kValidTabGroupColors = base::MakeFixedFlatSet<base::StringPiece>(
-    {app_restore::kTabGroupColorUnknown, app_restore::kTabGroupColorGrey,
-     app_restore::kTabGroupColorBlue, app_restore::kTabGroupColorRed,
-     app_restore::kTabGroupColorYellow, app_restore::kTabGroupColorGreen,
-     app_restore::kTabGroupColorPink, app_restore::kTabGroupColorPurple,
-     app_restore::kTabGroupColorCyan, app_restore::kTabGroupColorOrange});
+    {tab_groups::kTabGroupColorUnknown, tab_groups::kTabGroupColorGrey,
+     tab_groups::kTabGroupColorBlue, tab_groups::kTabGroupColorRed,
+     tab_groups::kTabGroupColorYellow, tab_groups::kTabGroupColorGreen,
+     tab_groups::kTabGroupColorPink, tab_groups::kTabGroupColorPurple,
+     tab_groups::kTabGroupColorCyan, tab_groups::kTabGroupColorOrange});
 
 // Version number.
 constexpr int kVersionNum = 1;
@@ -249,7 +249,7 @@ std::string GetJsonAppId(const base::Value& app) {
 
 // Convert a TabGroupInfo object to a base::Value dictionary.
 base::Value ConvertTabGroupInfoToValue(
-    const app_restore::TabGroupInfo& group_info) {
+    const tab_groups::TabGroupInfo& group_info) {
   base::Value tab_group_dict(base::Value::Type::DICTIONARY);
 
   tab_group_dict.SetIntKey(kTabRangeFirstIndex, group_info.tab_range.start());
@@ -258,7 +258,7 @@ base::Value ConvertTabGroupInfoToValue(
       kTabGroupTitleKey, base::UTF16ToUTF8(group_info.visual_data.title()));
   tab_group_dict.SetStringKey(
       kTabGroupColorKey,
-      app_restore::TabGroupColorToString(group_info.visual_data.color()));
+      tab_groups::TabGroupColorToString(group_info.visual_data.color()));
   tab_group_dict.SetBoolKey(kTabGroupIsCollapsed,
                             group_info.visual_data.is_collapsed());
 
@@ -270,27 +270,27 @@ bool IsValidGroupColor(const std::string& group_color) {
 }
 
 GroupColor ConvertGroupColorStringToGroupColor(const std::string& group_color) {
-  if (group_color == app_restore::kTabGroupColorGrey) {
+  if (group_color == tab_groups::kTabGroupColorGrey) {
     return GroupColor::kGrey;
-  } else if (group_color == app_restore::kTabGroupColorBlue) {
+  } else if (group_color == tab_groups::kTabGroupColorBlue) {
     return GroupColor::kBlue;
-  } else if (group_color == app_restore::kTabGroupColorRed) {
+  } else if (group_color == tab_groups::kTabGroupColorRed) {
     return GroupColor::kRed;
-  } else if (group_color == app_restore::kTabGroupColorYellow) {
+  } else if (group_color == tab_groups::kTabGroupColorYellow) {
     return GroupColor::kYellow;
-  } else if (group_color == app_restore::kTabGroupColorGreen) {
+  } else if (group_color == tab_groups::kTabGroupColorGreen) {
     return GroupColor::kGreen;
-  } else if (group_color == app_restore::kTabGroupColorPink) {
+  } else if (group_color == tab_groups::kTabGroupColorPink) {
     return GroupColor::kPink;
-  } else if (group_color == app_restore::kTabGroupColorPurple) {
+  } else if (group_color == tab_groups::kTabGroupColorPurple) {
     return GroupColor::kPurple;
-  } else if (group_color == app_restore::kTabGroupColorCyan) {
+  } else if (group_color == tab_groups::kTabGroupColorCyan) {
     return GroupColor::kCyan;
-  } else if (group_color == app_restore::kTabGroupColorOrange) {
+  } else if (group_color == tab_groups::kTabGroupColorOrange) {
     return GroupColor::kOrange;
     // There is no UNKNOWN equivalent in GroupColor, simply default
     // to grey.
-  } else if (group_color == app_restore::kTabGroupColorUnknown) {
+  } else if (group_color == tab_groups::kTabGroupColorUnknown) {
     return GroupColor::kGrey;
   } else {
     NOTREACHED();
@@ -338,9 +338,9 @@ bool MakeTabGroupRangeFromValue(const base::Value& tab_group,
 
 // Constructs a TabGroupInfo from `tab_group` IFF all fields are present
 // and valid in the value parameter. Returns true on success, false on failure.
-absl::optional<app_restore::TabGroupInfo> MakeTabGroupInfoFromDict(
+absl::optional<tab_groups::TabGroupInfo> MakeTabGroupInfoFromDict(
     const base::Value& tab_group) {
-  absl::optional<app_restore::TabGroupInfo> tab_group_info = absl::nullopt;
+  absl::optional<tab_groups::TabGroupInfo> tab_group_info = absl::nullopt;
 
   tab_groups::TabGroupVisualData visual_data;
   gfx::Range range;
@@ -496,7 +496,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertJsonToAppLaunchInfo(
         app.FindKeyOfType(kTabGroups, base::Value::Type::LIST);
     if (tab_groups) {
       for (auto& tab : tab_groups->GetList()) {
-        absl::optional<app_restore::TabGroupInfo> tab_group =
+        absl::optional<tab_groups::TabGroupInfo> tab_group =
             MakeTabGroupInfoFromDict(tab);
         if (tab_group.has_value()) {
           app_launch_info->tab_group_infos->push_back(
@@ -1144,13 +1144,13 @@ TabGroupColor TabGroupColorIdFromSyncTabColor(
 }
 
 // Instantiates a TabGroup from its sync equivalent.
-app_restore::TabGroupInfo FillTabGroupInfoFromProto(
+tab_groups::TabGroupInfo FillTabGroupInfoFromProto(
     const SyncTabGroup& sync_tab_group) {
   // This function should never be called with a partially instantiated
   // tab group.
   DCHECK(ValidSyncTabGroup(sync_tab_group));
 
-  return app_restore::TabGroupInfo(
+  return tab_groups::TabGroupInfo(
       {static_cast<uint32_t>(sync_tab_group.first_index()),
        static_cast<uint32_t>(sync_tab_group.last_index())},
       tab_groups::TabGroupVisualData(
@@ -1163,7 +1163,7 @@ app_restore::TabGroupInfo FillTabGroupInfoFromProto(
 // tab group structure.
 void FillTabGroupInfosFromProto(
     const BrowserAppWindow& browser_app_window,
-    std::vector<app_restore::TabGroupInfo>* out_group_infos) {
+    std::vector<tab_groups::TabGroupInfo>* out_group_infos) {
   for (const auto& group : browser_app_window.tab_groups()) {
     if (!ValidSyncTabGroup(group)) {
       continue;
@@ -1441,7 +1441,7 @@ SyncTabGroupColor SyncTabColorFromTabGroupColorId(
   };
 }
 
-void FillSyncTabGroupInfo(const app_restore::TabGroupInfo& tab_group_info,
+void FillSyncTabGroupInfo(const tab_groups::TabGroupInfo& tab_group_info,
                           SyncTabGroup* out_sync_tab_group) {
   out_sync_tab_group->set_first_index(tab_group_info.tab_range.start());
   out_sync_tab_group->set_last_index(tab_group_info.tab_range.end());
@@ -1458,7 +1458,7 @@ void FillSyncTabGroupInfo(const app_restore::TabGroupInfo& tab_group_info,
 }
 
 void FillBrowserAppTabGroupInfos(
-    const std::vector<app_restore::TabGroupInfo>& tab_group_infos,
+    const std::vector<tab_groups::TabGroupInfo>& tab_group_infos,
     BrowserAppWindow* out_browser_app_window) {
   for (const auto& tab_group : tab_group_infos) {
     SyncTabGroup* sync_tab_group = out_browser_app_window->add_tab_groups();
@@ -1909,23 +1909,23 @@ namespace desk_template_conversion {
 std::string ConvertTabGroupColorIdToString(GroupColor color) {
   switch (color) {
     case GroupColor::kGrey:
-      return app_restore::kTabGroupColorGrey;
+      return tab_groups::kTabGroupColorGrey;
     case GroupColor::kBlue:
-      return app_restore::kTabGroupColorBlue;
+      return tab_groups::kTabGroupColorBlue;
     case GroupColor::kRed:
-      return app_restore::kTabGroupColorRed;
+      return tab_groups::kTabGroupColorRed;
     case GroupColor::kYellow:
-      return app_restore::kTabGroupColorYellow;
+      return tab_groups::kTabGroupColorYellow;
     case GroupColor::kGreen:
-      return app_restore::kTabGroupColorGreen;
+      return tab_groups::kTabGroupColorGreen;
     case GroupColor::kPink:
-      return app_restore::kTabGroupColorPink;
+      return tab_groups::kTabGroupColorPink;
     case GroupColor::kPurple:
-      return app_restore::kTabGroupColorPurple;
+      return tab_groups::kTabGroupColorPurple;
     case GroupColor::kCyan:
-      return app_restore::kTabGroupColorCyan;
+      return tab_groups::kTabGroupColorCyan;
     case GroupColor::kOrange:
-      return app_restore::kTabGroupColorOrange;
+      return tab_groups::kTabGroupColorOrange;
   }
 }
 

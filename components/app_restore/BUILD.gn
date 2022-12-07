@@ -35,8 +35,6 @@ component("app_restore") {
     "lacros_save_handler.h",
     "restore_data.cc",
     "restore_data.h",
-    "tab_group_info.cc",
-    "tab_group_info.h",
     "window_info.cc",
     "window_info.h",
     "window_properties.cc",
