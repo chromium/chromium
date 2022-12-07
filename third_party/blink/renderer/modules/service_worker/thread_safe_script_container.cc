@@ -25,7 +25,8 @@ void ThreadSafeScriptContainer::RawScriptData::AddHeader(const String& key,
 }
 
 ThreadSafeScriptContainer::ThreadSafeScriptContainer()
-    : waiting_cv_(mutex_), are_all_data_added_(false) {}
+    : mutex_("ThreadSafeScriptContainer.mutex_"),
+      waiting_cv_(mutex_), are_all_data_added_(false) {}
 
 void ThreadSafeScriptContainer::AddOnIOThread(
     const KURL& url,
