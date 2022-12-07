@@ -298,11 +298,13 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
                "num_pending_overlays", pending_overlays_.size());
   DCHECK(!needs_rebuild_visual_tree_ || ink_renderer_->HasBeenInitialized());
 
-  if (root_surface->swap_chain() != root_swap_chain_ ||
-      root_surface->dcomp_surface() != root_dcomp_surface_) {
-    root_swap_chain_ = root_surface->swap_chain();
-    root_dcomp_surface_ = root_surface->dcomp_surface();
-    needs_rebuild_visual_tree_ = true;
+  if (root_surface) {
+    if (root_surface->swap_chain() != root_swap_chain_ ||
+        root_surface->dcomp_surface() != root_dcomp_surface_) {
+      root_swap_chain_ = root_surface->swap_chain();
+      root_dcomp_surface_ = root_surface->dcomp_surface();
+      needs_rebuild_visual_tree_ = true;
+    }
   }
 
   std::vector<std::unique_ptr<ui::DCRendererLayerParams>> overlays;
@@ -316,14 +318,18 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     needs_rebuild_visual_tree_ = true;
   }
 
-  // Add a placeholder overlay for the root surface, at a z-order of 0.
-  auto root_params = std::make_unique<ui::DCRendererLayerParams>();
-  root_params->z_order = 0;
-  root_params->dcomp_visual_content =
-      root_swap_chain_ ? static_cast<IUnknown*>(root_swap_chain_.Get())
-                       : static_cast<IUnknown*>(root_dcomp_surface_.Get());
-  root_params->dcomp_surface_serial = root_surface->dcomp_surface_serial();
-  overlays.emplace_back(std::move(root_params));
+  // DCompSurfaceless also uses DCLayerTree and lets its caller schedule an
+  // overlay for the root surface, instead of owning its own.
+  if (root_surface) {
+    // Add a placeholder overlay for the root surface, at a z-order of 0.
+    auto root_params = std::make_unique<ui::DCRendererLayerParams>();
+    root_params->z_order = 0;
+    root_params->dcomp_visual_content =
+        root_swap_chain_ ? static_cast<IUnknown*>(root_swap_chain_.Get())
+                         : static_cast<IUnknown*>(root_dcomp_surface_.Get());
+    root_params->dcomp_surface_serial = root_surface->dcomp_surface_serial();
+    overlays.emplace_back(std::move(root_params));
+  }
 
   // Sort layers by z-order.
   std::sort(overlays.begin(), overlays.end(),
