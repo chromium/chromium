@@ -13,8 +13,7 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {NavigationPredictor} from '../omnibox.mojom-webui.js';
-import {ACMatchClassification, AutocompleteMatch, PageHandlerInterface} from '../realbox.mojom-webui.js';
+import {ACMatchClassification, AutocompleteMatch, NavigationPredictor, PageHandlerInterface} from '../omnibox.mojom-webui.js';
 import {decodeString16, mojoTimeTicks} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';

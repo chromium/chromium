@@ -12,7 +12,7 @@ import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '../realbox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from '../omnibox.mojom-webui.js';
 import {decodeString16} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';

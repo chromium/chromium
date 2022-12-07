@@ -23,7 +23,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
-#include "chrome/browser/ui/webui/realbox/realbox.mojom-forward.h"
+#include "components/omnibox/browser/omnibox.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -102,10 +102,10 @@ class NewTabPageUI
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           pending_receiver);
 
-  // Instantiates the implementor of the realbox::mojom::PageHandler mojo
+  // Instantiates the implementor of the omnibox::mojom::PageHandler mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler);
+      mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler);
 
   // Instantiates the implementor of the
   // browser_command::mojom::CommandHandlerFactory mojo interface passing

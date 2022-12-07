@@ -260,7 +260,7 @@ static_library("browser") {
   public_deps = [
     ":buildflags",
     ":location_bar",
-    ":omnibox",
+    ":mojo_bindings",
     "//base",
     "//base:i18n",
     "//components/history/core/browser",
@@ -772,8 +772,13 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
   seed_corpus = "fuzz_corpus_suggest"
 }
 
-mojom("omnibox") {
+mojom("mojo_bindings") {
   sources = [ "omnibox.mojom" ]
   webui_module_path = "/"
   use_typescript_sources = true
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }

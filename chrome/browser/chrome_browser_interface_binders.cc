@@ -155,7 +155,7 @@
 #include "chrome/browser/ui/webui/feed/feed_ui.h"
 #include "chrome/browser/ui/webui/image_editor/image_editor.mojom.h"
 #include "chrome/browser/ui/webui/image_editor/image_editor_untrusted_ui.h"
-#include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
+#include "components/omnibox/browser/omnibox.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
@@ -944,7 +944,7 @@ void PopulateChromeWebUIFrameBinders(
       browser_command::mojom::CommandHandlerFactory, NewTabPageUI, WhatsNewUI>(
       map);
 
-  RegisterWebUIControllerInterfaceBinder<realbox::mojom::PageHandler,
+  RegisterWebUIControllerInterfaceBinder<omnibox::mojom::PageHandler,
                                          NewTabPageUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

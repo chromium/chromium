@@ -12,7 +12,7 @@ mojom("mojo_bindings") {
   use_typescript_sources = true
 
   public_deps = [
-    "//chrome/browser/ui/webui/realbox:mojo_bindings",
+    "//components/omnibox/browser:mojo_bindings",
     "//skia/public/mojom",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
     "//ui/webui/resources/cr_components/most_visited:mojom",

@@ -28,7 +28,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
-#include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/new_tab_page_resources.h"
@@ -124,15 +123,15 @@ constexpr char kWinShareIconResourceName[] = "realbox/icons/win_share.svg";
 constexpr char kShareIconResourceName[] = "realbox/icons/share.svg";
 #endif
 
-base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr>
+base::flat_map<int32_t, omnibox::mojom::SuggestionGroupPtr>
 CreateSuggestionGroupsMap(
     const AutocompleteResult& result,
     PrefService* prefs,
     const omnibox::GroupConfigMap& suggestion_groups_map) {
-  base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr> result_map;
+  base::flat_map<int32_t, omnibox::mojom::SuggestionGroupPtr> result_map;
   for (const auto& pair : suggestion_groups_map) {
-    realbox::mojom::SuggestionGroupPtr suggestion_group =
-        realbox::mojom::SuggestionGroup::New();
+    omnibox::mojom::SuggestionGroupPtr suggestion_group =
+        omnibox::mojom::SuggestionGroup::New();
     suggestion_group->header = base::UTF8ToUTF16(pair.second.header_text());
     suggestion_group->hidden =
         result.IsSuggestionGroupHidden(prefs, pair.first);
@@ -198,26 +197,26 @@ std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
   return std::u16string();
 }
 
-std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
+std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model) {
-  std::vector<realbox::mojom::AutocompleteMatchPtr> matches;
+  std::vector<omnibox::mojom::AutocompleteMatchPtr> matches;
   int line = 0;
   for (const AutocompleteMatch& match : result) {
-    realbox::mojom::AutocompleteMatchPtr mojom_match =
-        realbox::mojom::AutocompleteMatch::New();
+    omnibox::mojom::AutocompleteMatchPtr mojom_match =
+        omnibox::mojom::AutocompleteMatch::New();
     mojom_match->allowed_to_be_default_match =
         match.allowed_to_be_default_match;
     mojom_match->contents = match.contents;
     for (const auto& contents_class : match.contents_class) {
       mojom_match->contents_class.push_back(
-          realbox::mojom::ACMatchClassification::New(contents_class.offset,
+          omnibox::mojom::ACMatchClassification::New(contents_class.offset,
                                                      contents_class.style));
     }
     mojom_match->description = match.description;
     for (const auto& description_class : match.description_class) {
       mojom_match->description_class.push_back(
-          realbox::mojom::ACMatchClassification::New(description_class.offset,
+          omnibox::mojom::ACMatchClassification::New(description_class.offset,
                                                      description_class.style));
     }
     mojom_match->destination_url = match.destination_url;
@@ -240,7 +239,7 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     if (match.answer.has_value()) {
       const auto& additional_text =
           GetAdditionalText(match.answer->first_line());
-      mojom_match->answer = realbox::mojom::SuggestionAnswer::New(
+      mojom_match->answer = omnibox::mojom::SuggestionAnswer::New(
           additional_text ? base::JoinString(
                                 {match.contents, additional_text.value()}, u" ")
                           : match.contents,
@@ -255,7 +254,7 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     // instead of the switch to tab button.
     if (match.has_tab_match.value_or(false) &&
         base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
-      mojom_match->action = realbox::mojom::Action::New(
+      mojom_match->action = omnibox::mojom::Action::New(
           l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_BUTTON),
           l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
           std::u16string(), kTabIconResourceName);
@@ -265,7 +264,7 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
       const OmniboxAction::LabelStrings& label_strings =
           match.action->GetLabelStrings();
-      mojom_match->action = realbox::mojom::Action::New(
+      mojom_match->action = omnibox::mojom::Action::New(
           label_strings.accessibility_hint, label_strings.hint,
           label_strings.suggestion_contents,
           RealboxHandler::PedalVectorIconToResourceName(
@@ -291,12 +290,12 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
   return matches;
 }
 
-realbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
+omnibox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
     const std::u16string& input,
     const AutocompleteResult& result,
     bookmarks::BookmarkModel* bookmark_model,
     PrefService* prefs) {
-  return realbox::mojom::AutocompleteResult::New(
+  return omnibox::mojom::AutocompleteResult::New(
       input,
       CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, bookmark_model));
@@ -499,7 +498,7 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
 }
 
 RealboxHandler::RealboxHandler(
-    mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler,
+    mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
     Profile* profile,
     content::WebContents* web_contents)
     : profile_(profile),
@@ -509,7 +508,7 @@ RealboxHandler::RealboxHandler(
 RealboxHandler::~RealboxHandler() = default;
 
 void RealboxHandler::SetPage(
-    mojo::PendingRemote<realbox::mojom::Page> pending_page) {
+    mojo::PendingRemote<omnibox::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
 }
 

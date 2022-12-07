@@ -10,9 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/omnibox.mojom-shared.h"
+#include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -31,7 +30,7 @@ struct VectorIcon;
 }  // namespace gfx
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
-class RealboxHandler : public realbox::mojom::PageHandler,
+class RealboxHandler : public omnibox::mojom::PageHandler,
                        public AutocompleteController::Observer {
  public:
   enum class FocusState {
@@ -50,7 +49,7 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   static std::string PedalVectorIconToResourceName(const gfx::VectorIcon& icon);
 
   RealboxHandler(
-      mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler,
+      mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents);
 
@@ -59,8 +58,8 @@ class RealboxHandler : public realbox::mojom::PageHandler,
 
   ~RealboxHandler() override;
 
-  // realbox::mojom::PageHandler:
-  void SetPage(mojo::PendingRemote<realbox::mojom::Page> pending_page) override;
+  // omnibox::mojom::PageHandler:
+  void SetPage(mojo::PendingRemote<omnibox::mojom::Page> pending_page) override;
   void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete) override;
   void StopAutocomplete(bool clear_result) override;
@@ -110,8 +109,8 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
   base::TimeTicks time_user_first_modified_realbox_;
 
-  mojo::Remote<realbox::mojom::Page> page_;
-  mojo::Receiver<realbox::mojom::PageHandler> page_handler_;
+  mojo::Remote<omnibox::mojom::Page> page_;
+  mojo::Receiver<omnibox::mojom::PageHandler> page_handler_;
 
   base::WeakPtrFactory<RealboxHandler> weak_ptr_factory_{this};
 };

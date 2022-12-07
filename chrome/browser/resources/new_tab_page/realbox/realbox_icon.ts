@@ -5,7 +5,7 @@
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutocompleteMatch} from '../realbox.mojom-webui.js';
+import {AutocompleteMatch} from '../omnibox.mojom-webui.js';
 
 import {getTemplate} from './realbox_icon.html.js';
 
