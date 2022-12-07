@@ -1358,11 +1358,10 @@ void WebFrameWidgetImpl::WillBeginMainFrame() {
 
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(), [](WebLocalFrameImpl* local_frame) {
-        // TODO(https://crbug.com/1396467): A local frame in the tree should
-        // always have a document.
+        // A frame in the frame tree is fully attached and must always have a
+        // document.
         auto* document = local_frame->GetFrame()->GetDocument();
-        if (!document)
-          return;
+        DCHECK(document);
 
         if (auto* transition =
                 ViewTransitionUtils::GetActiveTransition(*document)) {
@@ -2151,12 +2150,12 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
 
   ForEachLocalFrameControlledByWidget(
       LocalRootImpl()->GetFrame(), [](WebLocalFrameImpl* local_frame) {
-        // TODO(https://crbug.com/1396467): A LocalFrame in the tree should
-        // always have a view.
-        if (LocalFrameView* view = local_frame->GetFrameView()) {
-          if (FragmentAnchor* anchor = view->GetFragmentAnchor())
-            anchor->PerformScriptableActions();
-        }
+        // A frame in the frame tree is fully attached and must always have a
+        // view.
+        LocalFrameView* view = local_frame->GetFrameView();
+        DCHECK(view);
+        if (FragmentAnchor* anchor = view->GetFragmentAnchor())
+          anchor->PerformScriptableActions();
       });
 
   absl::optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
@@ -4043,8 +4042,8 @@ void WebFrameWidgetImpl::NotifyCompositingScaleFactorChanged(
   // Update the scale factor for remote frames which in turn depends on the
   // compositing scale factor set in the widget.
   ForEachRemoteFrameControlledByWidget([](RemoteFrame* remote_frame) {
-    // TODO(https://crbug.com/1396467): A RemoteFrame with no view should not be
-    // in the tree; try removing this check.
+    // Only RemoteFrames with a local parent frame participate in compositing
+    // (and thus have a view).
     if (remote_frame->View())
       remote_frame->View()->UpdateCompositingScaleFactor();
   });
@@ -4338,15 +4337,13 @@ WebFrameWidgetImpl::GetFrameWidgetTestHelperForTesting() {
 void WebFrameWidgetImpl::PrepareForFinalLifecyclUpdateForTesting() {
   ForEachLocalFrameControlledByWidget(
       LocalRootImpl()->GetFrame(), [](WebLocalFrameImpl* local_frame) {
-        // TODO(https://crbug.com/1396467): A frame in the tree must have a core
-        // frame.
         LocalFrame* core_frame = local_frame->GetFrame();
-        if (!core_frame)
-          return;
+        // A frame in the frame tree is fully attached and must always have a
+        // core frame.
+        DCHECK(core_frame);
         Document* document = core_frame->GetDocument();
-        // TODO(https://crbug.com/1396467): And a document.
-        if (!document)
-          return;
+        // Similarly, a fully attached frame must always have a document.
+        DCHECK(document);
         if (auto* ds_controller = DeferredShapingController::From(*document))
           ds_controller->ReshapeAllDeferred(ReshapeReason::kTesting);
       });
