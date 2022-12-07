@@ -249,6 +249,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "app_stream_launcher_data_model_unittest.cc",
     "browser_tabs_model_controller_unittest.cc",
     "browser_tabs_model_unittest.cc",
     "camera_roll_item_unittest.cc",
