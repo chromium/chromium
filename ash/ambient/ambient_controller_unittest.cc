@@ -291,6 +291,25 @@ TEST_P(AmbientControllerTestForAnyTheme,
   EXPECT_TRUE(GetContainerViews().empty());
 }
 
+TEST_F(AmbientControllerTest,
+       CloseAmbientScreenUponPowerButtonClickInTabletMode) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  LockScreen();
+  FastForwardToLockScreenTimeout();
+  FastForwardTiny();
+
+  EXPECT_FALSE(GetContainerViews().empty());
+  EXPECT_TRUE(ambient_controller()->IsShown());
+
+  SimulatePowerButtonClick();
+
+  EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
+            AmbientUiVisibility::kClosed);
+  EXPECT_FALSE(ambient_controller()->IsShown());
+  // The view should be destroyed along the widget.
+  EXPECT_TRUE(GetContainerViews().empty());
+}
+
 TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
   // Simulate the login screen.
   ClearLogin();

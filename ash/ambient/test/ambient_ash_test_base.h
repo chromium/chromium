@@ -98,6 +98,9 @@ class AmbientAshTestBase : public AshTestBase {
   // Wait until the event has been processed.
   void SetScreenIdleStateAndWait(bool is_screen_dimmed, bool is_off);
 
+  // Simulates clicking the power button.
+  void SimulatePowerButtonClick();
+
   void SimulateMediaMetadataChanged(media_session::MediaMetadata metadata);
 
   void SimulateMediaPlaybackStateChanged(

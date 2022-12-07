@@ -196,6 +196,8 @@ AmbientController::AmbientController(
   // |SessionController| is initialized before |this| in Shell. Necessary to
   // bind observer here to monitor |OnActiveUserPrefServiceChanged|.
   session_observer_.Observe(Shell::Get()->session_controller());
+  backlights_forced_off_observation_.Observe(
+      Shell::Get()->backlights_forced_off_setter());
 }
 
 AmbientController::~AmbientController() {
@@ -420,6 +422,17 @@ void AmbientController::ScreenIdleStateChanged(
   }
 
   if (LockScreen::HasInstance() &&
+      ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed) {
+    // Restart hidden ui if the screen is back on and lockscreen is shown.
+    ShowHiddenUi();
+  }
+}
+
+void AmbientController::OnBacklightsForcedOffChanged(bool forced_off) {
+  if (forced_off) {
+    CloseUi(/*immediately=*/true);
+  }
+  if (!forced_off && LockScreen::HasInstance() &&
       ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed) {
     // Restart hidden ui if the screen is back on and lockscreen is shown.
     ShowHiddenUi();

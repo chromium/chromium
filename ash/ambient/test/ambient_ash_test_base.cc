@@ -267,6 +267,14 @@ void AmbientAshTestBase::SimulateSystemResumeAndWait() {
   base::RunLoop().RunUntilIdle();
 }
 
+void AmbientAshTestBase::SimulatePowerButtonClick() {
+  chromeos::FakePowerManagerClient::Get()->SendPowerButtonEvent(
+      true, task_environment()->NowTicks());
+  FastForwardTiny();
+  chromeos::FakePowerManagerClient::Get()->SendPowerButtonEvent(
+      false, task_environment()->NowTicks());
+}
+
 void AmbientAshTestBase::SetScreenIdleStateAndWait(bool is_screen_dimmed,
                                                    bool is_off) {
   power_manager::ScreenIdleState screen_idle_state;

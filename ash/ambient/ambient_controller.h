@@ -19,8 +19,10 @@
 #include "ash/assistant/model/assistant_interaction_model_observer.h"
 #include "ash/constants/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -58,6 +60,7 @@ class AmbientWeatherController;
 class ASH_EXPORT AmbientController
     : public AmbientUiModelObserver,
       public AmbientBackendModelObserver,
+      public ScreenBacklightObserver,
       public SessionObserver,
       public PowerStatus::Observer,
       public chromeos::PowerManagerClient::Observer,
@@ -78,6 +81,9 @@ class ASH_EXPORT AmbientController
 
   // AmbientUiModelObserver:
   void OnAmbientUiVisibilityChanged(AmbientUiVisibility visibility) override;
+
+  // Screen backlights off observer:
+  void OnBacklightsForcedOffChanged(bool backlights_forced_off) override;
 
   // SessionObserver:
   void OnLockStateChanged(bool locked) override;
@@ -234,6 +240,9 @@ class ASH_EXPORT AmbientController
       power_manager_client_observer_{this};
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observer_{this};
+
+  base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
+      backlights_forced_off_observation_{this};
 
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
