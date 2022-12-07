@@ -33,6 +33,10 @@ class VIZ_SERVICE_EXPORT FrameCounter {
   // Takes the collected frame counts.
   mojom::FrameCountingDataPtr TakeData();
 
+  // Sets a frame sink's type.
+  void SetFrameSinkType(const FrameSinkId& frame_sink_id,
+                        mojom::CompositorFrameSinkType type);
+
  private:
   // Time when the frame counting is stated.
   const base::TimeTicks start_time_;

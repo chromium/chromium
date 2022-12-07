@@ -64,4 +64,9 @@ mojom::FrameCountingDataPtr FrameCounter::TakeData() {
   return data;
 }
 
+void FrameCounter::SetFrameSinkType(const FrameSinkId& frame_sink_id,
+                                    mojom::CompositorFrameSinkType type) {
+  frame_sink_data_[frame_sink_id]->type = type;
+}
+
 }  // namespace viz

@@ -432,6 +432,11 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
     return;
   }
   frame_sink_type_ = type;
+
+  if (frame_sink_manager_->frame_counter()) {
+    frame_sink_manager_->frame_counter()->SetFrameSinkType(frame_sink_id_,
+                                                           frame_sink_type_);
+  }
 }
 
 void CompositorFrameSinkSupport::SetThreadIds(
