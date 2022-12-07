@@ -42,7 +42,7 @@
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
-        "rbe_link_cfg_file": "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux_link_large.cfg",
+        "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_large.cfg",
         "use_remoteexec": true,
         "use_remoteexec_links": true
       }
@@ -68,7 +68,7 @@
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
-        "rbe_link_cfg_file": "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux_link_medium.cfg",
+        "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_medium.cfg",
         "use_remoteexec": true,
         "use_remoteexec_links": true
       }
@@ -94,7 +94,7 @@
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
-        "rbe_link_cfg_file": "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux_link_small.cfg",
+        "rbe_link_cfg_file": "../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_small.cfg",
         "use_remoteexec": true,
         "use_remoteexec_links": true
       }
