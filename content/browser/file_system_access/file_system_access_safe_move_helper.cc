@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/quarantine/quarantine.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_routing_id.h"
@@ -31,12 +32,6 @@
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/common/file_system/file_system_util.h"
-
-namespace features {
-BASE_FEATURE(kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension,
-             "FileSystemAccessSkipAfterWriteChecksIfUnchangingExtension",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
 
 namespace content {
 

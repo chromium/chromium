@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DIRECTORY_HANDLE_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DIRECTORY_HANDLE_IMPL_H_
 
-#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/thread_annotations.h"
@@ -15,13 +14,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
-
-namespace features {
-// TODO(crbug.com/1254078): Remove this flag eventually.
-// When enabled, removeEntry() acquires an exclusive lock (as opposed to a
-// shared lock when disabled).
-BASE_DECLARE_FEATURE(kFileSystemAccessRemoveEntryExclusiveLock);
-}  // namespace features
 
 namespace content {
 

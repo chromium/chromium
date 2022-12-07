@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -17,18 +16,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
-
-namespace features {
-// TODO(crbug.com/1381621): Remove this flag eventually.
-// When enabled, move() will result in a promise rejection when the specified
-// destination to move to exists.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
-// TODO(crbug.com/1394837): Remove this flag eventually.
-// When enabled, a user gesture is required to rename a file if the site does
-// not have write access to the parent. See http://b/254157070 for more context.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
-}  // namespace features
 
 namespace storage {
 class FileSystemContext;

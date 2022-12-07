@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
@@ -41,12 +42,6 @@ using blink::mojom::FileSystemAccessHandle;
 using blink::mojom::FileSystemAccessStatus;
 using blink::mojom::FileSystemAccessTransferToken;
 using storage::FileSystemOperationRunner;
-
-namespace features {
-BASE_FEATURE(kFileSystemAccessRemoveEntryExclusiveLock,
-             "FileSystemAccessRemoveEntryExclusiveLock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
 
 namespace content {
 
