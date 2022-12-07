@@ -176,7 +176,7 @@ export class FileTasks {
   }
 
   /** Records trial of opening file grouped by extensions.  */
-  private static recordViewingFileTypeUMA_(
+  private static recordViewingFileTypeUma_(
       volumeManager: VolumeManager, entries: Entry[]) {
     for (const entry of entries) {
       FileTasks.recordEnumWithOnlineAndOffline_(
@@ -189,7 +189,7 @@ export class FileTasks {
    * Records trial of opening file grouped by root types.
    * @param rootType The type of the root where entries are being opened.
    */
-  private static recordViewingRootTypeUMA_(
+  private static recordViewingRootTypeUma_(
       volumeManager: VolumeManager,
       rootType: VolumeManagerCommon.RootType|null) {
     if (rootType !== null) {
@@ -206,7 +206,7 @@ export class FileTasks {
    *     from.
    * @param time Time to be recorded in milliseconds.
    */
-  private static recordZipMountTimeUMA_(
+  private static recordZipMountTimeUma_(
       rootType: VolumeManagerCommon.RootType|null, time: number) {
     let root;
     switch (rootType) {
@@ -228,7 +228,7 @@ export class FileTasks {
    * @param entries The entries to be opened.
    * @param rootType The type of the root where entries are being opened.
    */
-  private static recordOfficeFileHandlerUMA_(
+  private static recordOfficeFileHandlerUma_(
       volumeManager: VolumeManager, entries: Entry[],
       rootType: VolumeManagerCommon.RootType|null,
       task: chrome.fileManagerPrivate.FileTask|null) {
@@ -418,10 +418,10 @@ export class FileTasks {
 
   /** Executes default task.  */
   async executeDefault(): Promise<void> {
-    FileTasks.recordViewingFileTypeUMA_(this.volumeManager_, this.entries_);
-    FileTasks.recordViewingRootTypeUMA_(
+    FileTasks.recordViewingFileTypeUma_(this.volumeManager_, this.entries_);
+    FileTasks.recordViewingRootTypeUma_(
         this.volumeManager_, this.directoryModel_.getCurrentRootType());
-    FileTasks.recordOfficeFileHandlerUMA_(
+    FileTasks.recordOfficeFileHandlerUma_(
         this.volumeManager_, this.entries_,
         this.directoryModel_.getCurrentRootType(), this.defaultTask_);
     return this.executeDefaultInternal_();
@@ -519,10 +519,10 @@ export class FileTasks {
 
   /** Executes a single task.  */
   execute(task: chrome.fileManagerPrivate.FileTask) {
-    FileTasks.recordViewingFileTypeUMA_(this.volumeManager_, this.entries_);
-    FileTasks.recordViewingRootTypeUMA_(
+    FileTasks.recordViewingFileTypeUma_(this.volumeManager_, this.entries_);
+    FileTasks.recordViewingRootTypeUma_(
         this.volumeManager_, this.directoryModel_.getCurrentRootType());
-    FileTasks.recordOfficeFileHandlerUMA_(
+    FileTasks.recordOfficeFileHandlerUma_(
         this.volumeManager_, this.entries_,
         this.directoryModel_.getCurrentRootType(), task);
     this.executeInternal_(task);
@@ -786,7 +786,7 @@ export class FileTasks {
       const startTime = Date.now();
       const volumeInfo = await this.mountArchive_(url);
       // On mountArchive_ success, record mount time UMA.
-      FileTasks.recordZipMountTimeUMA_(
+      FileTasks.recordZipMountTimeUma_(
           this.directoryModel_.getCurrentRootType(), Date.now() - startTime);
 
       if (tracker.hasChanged) {

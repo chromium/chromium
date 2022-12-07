@@ -244,6 +244,9 @@ export class TrashEntry implements Entry {
    * Use filesEntry toURL() so this entry can be used as that file to view,
    * copy, etc.
    */
+  // Adding suppression since this class implements FileSystemEntry from
+  // https://developer.mozilla.org/en-US/docs/Web/API/FileSystemEntry
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   toURL(): string {
     return this.filesEntry.toURL();
   }

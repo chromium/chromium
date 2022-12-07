@@ -86,7 +86,7 @@ export class TaskController {
     this.taskHistory_.addEventListener(
         TaskHistory.EventType.UPDATE, this.updateTasks_.bind(this));
     chrome.fileManagerPrivate.onIOTaskProgressStatus.addListener(
-        this.onIOTaskProgressStatus_.bind(this));
+        this.onIoTaskProgressStatus_.bind(this));
     chrome.fileManagerPrivate.onAppsUpdated.addListener(
         this.clearCacheAndUpdateTasks_.bind(this));
   }
@@ -543,7 +543,7 @@ export class TaskController {
     this.extractTasks_.delete(taskId);
   }
 
-  private onIOTaskProgressStatus_(
+  private onIoTaskProgressStatus_(
       event: chrome.fileManagerPrivate.ProgressStatus) {
     const taskId = event.taskId;
     if (!taskId) {
@@ -576,7 +576,7 @@ export class TaskController {
    * @param {!DirectoryEntry|!FilesAppDirEntry} destination
    * @return {!Promise<void>} resolved with taskId.
    */
-  async startExtractIOTask(
+  async startExtractIoTask(
       entries: Array<Entry|FilesAppEntry>,
       destination: DirectoryEntry|FilesAppDirEntry): Promise<void> {
     const params = {

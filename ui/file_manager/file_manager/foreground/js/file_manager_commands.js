@@ -2277,7 +2277,7 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
     if (fileManager.directoryModel.isReadOnly()) {
       dirEntry = fileManager.directoryModel.getMyFiles();
     }
-    fileManager.taskController.startExtractIOTask(
+    fileManager.taskController.startExtractIoTask(
         selectionEntries, /** @type {!DirectoryEntry} */ (dirEntry));
   }
 
