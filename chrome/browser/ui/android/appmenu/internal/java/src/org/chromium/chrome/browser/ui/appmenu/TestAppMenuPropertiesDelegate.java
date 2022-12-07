@@ -161,12 +161,6 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
         return iconBeforeItem;
     }
 
-    @Override
-    public void recordHighlightedMenuItemShown(Integer menuItemId) {}
-
-    @Override
-    public void recordHighlightedMenuItemClicked(Integer menuItemId) {}
-
     protected int getAppMenuLayoutId() {
         return R.menu.test_menu;
     }

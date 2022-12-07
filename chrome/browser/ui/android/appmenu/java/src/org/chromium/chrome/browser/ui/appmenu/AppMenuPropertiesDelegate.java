@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -138,16 +137,6 @@ public interface AppMenuPropertiesDelegate {
      *         should show the icon before the text.
      */
     boolean shouldShowIconBeforeItem();
-
-    /**
-     * Called to record that the menu item {@code menuItemId} was highlighted.
-     */
-    void recordHighlightedMenuItemShown(@Nullable @IdRes Integer menuItemId);
-
-    /**
-     * Called to record that user clicked on highlighted menu item {@code menuItemId}.
-     */
-    void recordHighlightedMenuItemClicked(@Nullable @IdRes Integer menuItemId);
 
     /** Returns whether the menu icon is positioned at the start. */
     boolean isMenuIconAtStart();

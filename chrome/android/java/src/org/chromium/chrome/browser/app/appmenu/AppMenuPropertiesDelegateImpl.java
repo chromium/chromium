@@ -1047,18 +1047,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     @Override
-    public void recordHighlightedMenuItemShown(@Nullable @IdRes Integer menuItemId) {
-        RecordHistogram.recordEnumeratedHistogram("Mobile.AppMenu.HighlightMenuItem.Shown",
-                getUmaEnumForMenuItem(menuItemId), AppMenuHighlightItem.NUM_ENTRIES);
-    }
-
-    @Override
-    public void recordHighlightedMenuItemClicked(@Nullable @IdRes Integer menuItemId) {
-        RecordHistogram.recordEnumeratedHistogram("Mobile.AppMenu.HighlightMenuItem.Clicked",
-                getUmaEnumForMenuItem(menuItemId), AppMenuHighlightItem.NUM_ENTRIES);
-    }
-
-    @Override
     public boolean isMenuIconAtStart() {
         return false;
     }

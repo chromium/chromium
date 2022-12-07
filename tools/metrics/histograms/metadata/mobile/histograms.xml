@@ -49,26 +49,6 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for Translate Infobar."/>
 </variants>
 
-<histogram name="Mobile.AppMenu.HighlightMenuItem.Clicked"
-    enum="AppMenuHighlightItem" expires_after="2021-09-19">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records which menu item was clicked when a user clicks on a menu item from
-    the app menu that was highlighted. Android only.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.AppMenu.HighlightMenuItem.Shown"
-    enum="AppMenuHighlightItem" expires_after="2021-09-19">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>twellington@chromium.org</owner>
-  <summary>
-    Records which menu item was highlighted when the app menu was opened by the
-    user. Android only.
-  </summary>
-</histogram>
-
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
     expires_after="2023-05-07">
   <owner>gangwu@chromium.org</owner>

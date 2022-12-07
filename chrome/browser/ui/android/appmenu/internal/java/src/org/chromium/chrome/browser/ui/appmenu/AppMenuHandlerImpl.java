@@ -289,14 +289,13 @@ class AppMenuHandlerImpl
     }
 
     @VisibleForTesting
-    void onOptionsItemSelected(int itemId, boolean highlighted) {
+    void onOptionsItemSelected(int itemId) {
         if (mTestOptionsItemSelectedListener != null) {
             mTestOptionsItemSelectedListener.onResult(itemId);
             return;
         }
 
         mAppMenuDelegate.onOptionsItemSelected(itemId, mDelegate.getBundleForMenuItem(itemId));
-        if (highlighted) mDelegate.recordHighlightedMenuItemClicked(itemId);
     }
 
     /**
