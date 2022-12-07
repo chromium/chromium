@@ -105,7 +105,7 @@ BASE_FEATURE(kHighPriorityDatabaseTaskType,
 //
 // Parameter name and default values, exposed for testing.
 constexpr int kIntensiveWakeUpThrottling_GracePeriodSeconds_Default = 5 * 60;
-constexpr int kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded = 10;
+constexpr int kIntensiveWakeUpThrottling_GracePeriodSecondsLoaded_Default = 60;
 
 // Exposed so that multiple tests can tinker with the policy override.
 PLATFORM_EXPORT void

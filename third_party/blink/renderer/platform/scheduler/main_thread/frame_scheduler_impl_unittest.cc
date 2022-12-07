@@ -3121,7 +3121,8 @@ TEST_F(FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled,
 
 TEST_F(FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled,
        LoadedPageGracePeriod) {
-  EXPECT_EQ(base::Seconds(kIntensiveWakeUpThrottling_GracePeriodSeconds_Loaded),
+  EXPECT_EQ(base::Seconds(
+                kIntensiveWakeUpThrottling_GracePeriodSecondsLoaded_Default),
             GetIntensiveWakeUpThrottlingGracePeriod(false));
 }
 
