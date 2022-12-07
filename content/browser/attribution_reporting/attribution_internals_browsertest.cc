@@ -150,7 +150,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
     ASSERT_TRUE(
         ExecJsInWebUI(JsReplace(kObserveEmptyReportsTableScript, title)));
   }
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(status, {'childList': true, 'characterData': true});)";
+    obs.observe(status, {childList: true, characterData: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(status, {'childList': true, 'characterData': true});)";
+    obs.observe(status, {childList: true, characterData: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $3;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kMaxUint64String,
                                       kMaxInt64String, kCompleteTitle)));
 
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
 
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
 
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
 
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(status, {'childList': true, 'characterData': true});)";
+    obs.observe(status, {childList: true, subtree: true, characterData: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(status, {'childList': true, 'characterData': true});)";
+    obs.observe(status, {childList: true, subtree: true, characterData: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
@@ -632,7 +632,12 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           document.title = $1;
         }
       });
-      obs.observe(table, {'childList': true});)";
+      obs.observe(table, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+      });)";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
@@ -666,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           document.title = $1;
         }
       });
-      obs.observe(table, {'childList': true});)";
+      obs.observe(table, {childList: true, subtree: true, characterData: true});)";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle2)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle2);
@@ -703,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           document.title = $1;
         }
       });
-      obs.observe(table, {'childList': true});)";
+      obs.observe(table, {childList: true, subtree: true, characterData: true});)";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle3)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle3);
@@ -773,7 +778,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     if (!setTitleIfDone()) {
       let obs = new MutationObserver(setTitleIfDone);
-      obs.observe(table, {childList: true, characterData: true});
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
     })";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
@@ -826,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   // Wait for the table to rendered.
@@ -847,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
   ASSERT_TRUE(
       ExecJsInWebUI(JsReplace(kObserveEmptySourcesTableScript, kDeleteTitle)));
 
@@ -896,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     };
     if (!setTitleIfDone()) {
       let obs = new MutationObserver(setTitleIfDone);
-      obs.observe(table, {'childList': true});
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
     })";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
@@ -1028,7 +1033,7 @@ IN_PROC_BROWSER_TEST_F(
           document.title = $1;
         }
       });
-      obs.observe(table, {'childList': true});)";
+      obs.observe(table, {childList: true, subtree: true, characterData: true});)";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
@@ -1116,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           document.title = $1;
         }
       });
-      obs.observe(table, {'childList': true});)";
+      obs.observe(table, {childList: true, subtree: true, characterData: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle,
                                       kWantEventTriggerJSON,
                                       kWantAggregatableTriggerJSON)));
@@ -1181,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true});)";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   // Wait for the table to rendered.
@@ -1203,7 +1208,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
   ASSERT_TRUE(
       ExecJsInWebUI(JsReplace(kObserveEmptyReportsTableScript, kSentTitle)));
 
@@ -1260,8 +1265,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           document.title = $1;
         }
       });
-      obs.observe(table, {'childList': true});
-      obs.observe(label, {'characterData': true});)";
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+      obs.observe(label, {childList: true, characterData: true});)";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
@@ -1298,8 +1303,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           document.title = $1;
         }
       });
-      obs.observe(table, {'childList': true});
-      obs.observe(label, {'characterData': true});)";
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+      obs.observe(label, {childList: true, characterData: true});)";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle2)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle2);
@@ -1328,8 +1333,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           document.title = $1;
         }
       });
-      obs.observe(table, {'childList': true});
-      obs.observe(label, {'characterData': true});)";
+      obs.observe(table, {childList: true, subtree: true, characterData: true});
+      obs.observe(label, {childList: true, characterData: true});)";
     ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle3)));
 
     TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle3);
@@ -1367,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         document.title = $1;
       }
     });
-    obs.observe(table, {'childList': true});)";
+    obs.observe(table, {childList: true, subtree: true, characterData: true});)";
 
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
