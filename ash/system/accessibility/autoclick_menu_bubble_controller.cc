@@ -107,14 +107,12 @@ void AutoclickMenuBubbleController::SetPosition(
   if (bubble_widget_->GetWindowBoundsInScreen() == resting_bounds)
     return;
 
-  if (animate_) {
-    ui::ScopedLayerAnimationSettings settings(
-        bubble_widget_->GetLayer()->GetAnimator());
-    settings.SetPreemptionStrategy(
-        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-    settings.SetTransitionDuration(base::Milliseconds(kAnimationDurationMs));
-    settings.SetTweenType(gfx::Tween::EASE_OUT);
-  }
+  ui::ScopedLayerAnimationSettings settings(
+      bubble_widget_->GetLayer()->GetAnimator());
+  settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  settings.SetTransitionDuration(base::Milliseconds(kAnimationDurationMs));
+  settings.SetTweenType(gfx::Tween::EASE_OUT);
   bubble_widget_->SetBounds(resting_bounds);
 
   if (!scroll_bubble_controller_)
