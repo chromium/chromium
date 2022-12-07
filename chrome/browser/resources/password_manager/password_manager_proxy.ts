@@ -140,6 +140,16 @@ export interface PasswordManagerProxy {
       Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
 
   /**
+   * Gets the saved password for a given id and reason.
+   * @param id The id for the password entry being being retrieved.
+   * @param reason The reason why the plaintext password is requested.
+   * @return A promise that resolves to the plaintext password.
+   */
+  requestPlaintextPassword(
+      id: number,
+      reason: chrome.passwordsPrivate.PlaintextReason): Promise<string>;
+
+  /**
    * Should remove the blocked site and notify that the list has changed.
    * @param id The id for the blocked url entry being removed. No-op if |id|
    *     is not in the list.
@@ -233,6 +243,11 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   requestCredentialsDetails(ids: number[]) {
     return chrome.passwordsPrivate.requestCredentialsDetails(ids);
+  }
+
+  requestPlaintextPassword(
+      id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
+    return chrome.passwordsPrivate.requestPlaintextPassword(id, reason);
   }
 
   removeBlockedSite(id: number) {

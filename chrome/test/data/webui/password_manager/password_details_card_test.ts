@@ -74,4 +74,48 @@ suite('PasswordDetailsCardTest', function() {
     assertFalse(isVisible(card.$.editButton));
     assertTrue(isVisible(card.$.deleteButton));
   });
+
+  test('Copy username', async function() {
+    const password = createPasswordEntry({url: 'test.com', username: 'vik'});
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertTrue(isVisible(card.$.copyUsernameButton));
+    assertFalse(card.$.toast.open);
+
+    card.$.copyUsernameButton.click();
+
+    assertTrue(card.$.toast.open);
+    assertEquals(
+        loadTimeData.getString('usernameCopiedToClipboard'),
+        card.$.toast.textContent!.trim());
+  });
+
+  test('Copy password', async function() {
+    const password = createPasswordEntry(
+        {id: 1, url: 'test.com', username: 'vik', password: 'password69'});
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertTrue(isVisible(card.$.copyPasswordButton));
+    assertFalse(card.$.toast.open);
+
+    card.$.copyPasswordButton.click();
+    const {id, reason} =
+        await passwordManager.whenCalled('requestPlaintextPassword');
+    assertEquals(password.id, id);
+    assertEquals(chrome.passwordsPrivate.PlaintextReason.COPY, reason);
+
+    await flushTasks();
+    assertTrue(card.$.toast.open);
+    assertEquals(
+        loadTimeData.getString('passwordCopiedToClipboard'),
+        card.$.toast.textContent!.trim());
+  });
 });

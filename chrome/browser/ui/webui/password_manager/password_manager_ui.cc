@@ -45,6 +45,10 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile,
   webui::EnableTrustedTypesCSP(source);
 
   static constexpr webui::LocalizedString kStrings[] = {
+      {"usernameCopiedToClipboard",
+       IDS_PASSWORD_MANAGER_UI_USERNAME_COPIED_TO_CLIPBOARD},
+      {"passwordCopiedToClipboard",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_COPIED_TO_CLIPBOARD},
       {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},
       {"addShortcut", IDS_PASSWORD_MANAGER_UI_ADD_SHORTCUT_TITLE},
       {"addShortcutDescription",

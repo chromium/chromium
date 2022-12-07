@@ -43,6 +43,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'removeBlockedSite',
       'requestCredentialsDetails',
       'requestExportProgressStatus',
+      'requestPlaintextPassword',
       'startBulkPasswordCheck',
     ]);
 
@@ -153,6 +154,12 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   setRequestCredentialsDetailsResponse(
       credentials: chrome.passwordsPrivate.PasswordUiEntry[]) {
     this.requestCredentialsDetailsResponse_ = credentials;
+  }
+
+  requestPlaintextPassword(
+      id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
+    this.methodCalled('requestPlaintextPassword', {id, reason});
+    return Promise.resolve('plainTextPassword');
   }
 
   removeBlockedSite(id: number) {
