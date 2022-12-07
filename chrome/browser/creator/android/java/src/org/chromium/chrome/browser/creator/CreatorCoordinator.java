@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
 import org.chromium.chrome.browser.feed.FeedContentFirstLoadWatcher;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSubscriptionStatus;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
@@ -129,10 +131,11 @@ public class CreatorCoordinator
 
     // Create a FeedStream and bind it to the RecyclerView
     public void initFeedStream(FeedActionDelegate feedActionDelegate,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher,
+            Supplier<ShareDelegate> shareDelegateSupplier) {
         mStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShownInitially */ false, mWindowAndroid,
-                /* shareSupplier */ null, StreamKind.SINGLE_WEB_FEED,
+                /* shareSupplier */ shareDelegateSupplier, StreamKind.SINGLE_WEB_FEED,
                 /* FeedAutoplaySettingsDelegate */ this, feedActionDelegate,
                 helpAndFeedbackLauncher,
                 /* FeedContentFirstLoadWatcher */ this,
