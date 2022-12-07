@@ -615,6 +615,9 @@ void OpenscreenSessionHost::RestartMirroringStreaming() {
 }
 
 void OpenscreenSessionHost::SwitchSourceTab() {
+  if (observer_)
+    observer_->OnSourceChanged();
+
   if (state_ == State::kRemoting) {
     switching_tab_source_ = true;
     video_capture_client_.reset();

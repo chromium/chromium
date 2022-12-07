@@ -302,7 +302,7 @@ void CastActivityManager::JoinSession(
     activity = FindActivityForAutoJoin(cast_source, origin, frame_tree_node_id);
     if (!activity && cast_source.default_action_policy() !=
                          DefaultActionPolicy::kCastThisTab) {
-      auto sink = ConvertMirrorToCast(frame_tree_node_id);
+      auto sink = GetSinkForMirroringActivity(frame_tree_node_id);
       if (sink) {
         LaunchSession(cast_source, *sink, presentation_id, origin,
                       frame_tree_node_id, off_the_record, std::move(callback));
@@ -631,6 +631,26 @@ void CastActivityManager::OnMediaStatusUpdated(
   if (it != activities_.end()) {
     it->second->SendMediaStatusToClients(media_status, request_id);
   }
+}
+
+void CastActivityManager::OnSourceChanged(const std::string& media_route_id,
+                                          int old_frame_tree_node_id,
+                                          int frame_tree_node_id) {
+  auto current_it = routes_by_frame_.find(old_frame_tree_node_id);
+  if (current_it == routes_by_frame_.end() ||
+      current_it->second != media_route_id) {
+    return;
+  }
+
+  auto route_it = routes_by_frame_.find(frame_tree_node_id);
+  if (route_it != routes_by_frame_.end()) {
+    // Session is terminated as to not allow 2 cast sessions to have the same
+    // source tab.
+    TerminateSession(route_it->second, base::DoNothing());
+  }
+
+  routes_by_frame_.erase(old_frame_tree_node_id);
+  routes_by_frame_[frame_tree_node_id] = media_route_id;
 }
 
 // This method is only called in one place, so it should probably be inlined.
@@ -1007,8 +1027,8 @@ void CastActivityManager::SendPendingUserAuthNotification(
   media_router_->OnIssue(info);
 }
 
-absl::optional<MediaSinkInternal> CastActivityManager::ConvertMirrorToCast(
-    int frame_tree_node_id) {
+absl::optional<MediaSinkInternal>
+CastActivityManager::GetSinkForMirroringActivity(int frame_tree_node_id) const {
   auto route_it = routes_by_frame_.find(frame_tree_node_id);
   if (route_it == routes_by_frame_.end()) {
     return absl::nullopt;

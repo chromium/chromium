@@ -38,6 +38,9 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
     virtual void OnMediaStatusUpdated(const MediaSinkInternal& sink,
                                       const base::Value::Dict& media_status,
                                       absl::optional<int> request_id) = 0;
+    virtual void OnSourceChanged(const std::string& media_route_id,
+                                 int old_frame_tree_node_id,
+                                 int frame_tree_node_id) = 0;
   };
 
   CastSessionTracker(const CastSessionTracker&) = delete;
@@ -59,6 +62,10 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
 
   // Returns nullptr if there is no session with the specified ID.
   CastSession* GetSessionById(const std::string& session_id) const;
+
+  void OnSourceChanged(const std::string& media_route_id,
+                       int old_frame_tree_node_id,
+                       int frame_tree_node_id);
 
  private:
   friend class CastSessionTrackerTest;

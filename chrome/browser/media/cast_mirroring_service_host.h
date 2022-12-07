@@ -77,6 +77,8 @@ class CastMirroringServiceHost final : public mojom::MirroringServiceHost,
              mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
              mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel)
       override;
+  void GetTabSourceId(
+      GetTabSourceIdCallback get_tab_source_id_callback) override;
 
  private:
   friend class CastMirroringServiceHostBrowserTest;

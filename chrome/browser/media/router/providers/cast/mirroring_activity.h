@@ -61,6 +61,7 @@ class MirroringActivity : public CastActivity,
   void DidStop() override;
   void LogInfoMessage(const std::string& message) override;
   void LogErrorMessage(const std::string& message) override;
+  void OnSourceChanged() override;
 
   // CastMessageChannel implementation
   void OnMessage(mirroring::mojom::CastMessagePtr message) override;
@@ -78,11 +79,14 @@ class MirroringActivity : public CastActivity,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, GetScrubbedLogMessage);
+  FRIEND_TEST_ALL_PREFIXES(MirroringActivityTest, OnSourceChanged);
 
   void HandleParseJsonResult(const std::string& route_id,
                              data_decoder::DataDecoder::ValueOrError result);
 
   void StopMirroring();
+
+  void UpdateSourceTab(int32_t frame_tree_node_id);
 
   // Scrubs AES related data in messages with type "OFFER".
   static std::string GetScrubbedLogMessage(const base::Value::Dict& message);
@@ -116,7 +120,7 @@ class MirroringActivity : public CastActivity,
   const absl::optional<MirroringType> mirroring_type_;
 
   // The FrameTreeNode ID to retrieve the WebContents of the tab to mirror.
-  const int frame_tree_node_id_;
+  int frame_tree_node_id_;
   const CastSinkExtraData cast_data_;
   OnStopCallback on_stop_;
   base::WeakPtrFactory<MirroringActivity> weak_ptr_factory_{this};

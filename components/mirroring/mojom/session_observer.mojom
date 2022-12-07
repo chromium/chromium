@@ -43,4 +43,7 @@ interface SessionObserver {
 
   // Called when a message needs to be logged at ERROR level by the MR logger.
   LogErrorMessage(string message);
+
+  // Called when the source is changed.
+  OnSourceChanged();
 };

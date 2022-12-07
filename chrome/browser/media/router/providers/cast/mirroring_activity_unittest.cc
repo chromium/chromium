@@ -50,21 +50,43 @@ constexpr char kHistogramSessionLengthOffscreenTab[] =
 constexpr char kHistogramSessionLengthTab[] =
     "MediaRouter.CastStreaming.Session.Length.Tab";
 
+class MockCastSessionTrackerObserver : public CastSessionTracker::Observer {
+ public:
+  MockCastSessionTrackerObserver() = default;
+  ~MockCastSessionTrackerObserver() override = default;
+
+  MOCK_METHOD(void,
+              OnSessionAddedOrUpdated,
+              (const MediaSinkInternal& sink, const CastSession& session));
+  MOCK_METHOD(void, OnSessionRemoved, (const MediaSinkInternal& sink));
+  MOCK_METHOD(void,
+              OnMediaStatusUpdated,
+              (const MediaSinkInternal& sink,
+               const base::Value::Dict& media_status,
+               absl::optional<int> request_id));
+  MOCK_METHOD(void,
+              OnSourceChanged,
+              (const std::string& media_route_id,
+               int old_frame_tree_node_id,
+               int frame_tree_node_id));
+};
+
 class MockMirroringServiceHost : public mirroring::mojom::MirroringServiceHost {
  public:
-  MOCK_METHOD4(
-      Start,
-      void(mirroring::mojom::SessionParametersPtr params,
-           mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
-           mojo::PendingRemote<mirroring::mojom::CastMessageChannel>
-               outbound_channel,
-           mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
-               inbound_channel));
+  MOCK_METHOD(void,
+              Start,
+              (mirroring::mojom::SessionParametersPtr params,
+               mojo::PendingRemote<mirroring::mojom::SessionObserver> observer,
+               mojo::PendingRemote<mirroring::mojom::CastMessageChannel>
+                   outbound_channel,
+               mojo::PendingReceiver<mirroring::mojom::CastMessageChannel>
+                   inbound_channel));
+  MOCK_METHOD(void, GetTabSourceId, (GetTabSourceIdCallback callback));
 };
 
 class MockCastMessageChannel : public mirroring::mojom::CastMessageChannel {
  public:
-  MOCK_METHOD1(OnMessage, void(mirroring::mojom::CastMessagePtr message));
+  MOCK_METHOD(void, OnMessage, (mirroring::mojom::CastMessagePtr message));
 };
 
 }  // namespace
@@ -435,6 +457,34 @@ TEST_F(MirroringActivityTest, SendMessageToClient) {
     EXPECT_EQ(message_ptr, arg.get());
   });
   activity_->SendMessageToClient(kClientId, std::move(message));
+}
+
+TEST_F(MirroringActivityTest, OnSourceChanged) {
+  MakeActivity();
+  MockCastSessionTrackerObserver session_tracker_observer_;
+  session_tracker_.AddObserver(&session_tracker_observer_);
+
+  // A random int indicating the new tab source.
+  const int new_tab_source = 3;
+
+  EXPECT_CALL(*mirroring_service_, GetTabSourceId(_))
+      .WillOnce([](MockMirroringServiceHost::GetTabSourceIdCallback callback) {
+        std::move(callback).Run(new_tab_source);
+      });
+
+  EXPECT_CALL(session_tracker_observer_,
+              OnSourceChanged(kRouteId, kFrameTreeNodeId, new_tab_source));
+
+  EXPECT_EQ(activity_->frame_tree_node_id_, kFrameTreeNodeId);
+  activity_->OnSourceChanged();
+  RunUntilIdle();
+  EXPECT_EQ(activity_->frame_tree_node_id_, new_tab_source);
+  testing::Mock::VerifyAndClearExpectations(mirroring_service_);
+  testing::Mock::VerifyAndClearExpectations(&session_tracker_observer_);
+
+  // Nothing should happen as -1 is invalid value for tab source.
+  activity_->UpdateSourceTab(-1);
+  EXPECT_EQ(activity_->frame_tree_node_id_, new_tab_source);
 }
 
 }  // namespace media_router
