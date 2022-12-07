@@ -45,8 +45,8 @@ const char kEndpointResponseSuccess[] =
 class AccessCodeCastSinkServiceBrowserTest
     : public AccessCodeCastIntegrationBrowserTest {};
 
-// TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+// TODO(b/242928209): Saved device tests are flaky on linux-rel/Mac/ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_PRE_InstantExpiration DISABLED_PRE_InstantExpiration
 #define MAYBE_InstantExpiration DISABLED_InstantExpiration
 #else
