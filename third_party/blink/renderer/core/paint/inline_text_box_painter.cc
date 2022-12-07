@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 

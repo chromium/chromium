@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
-#include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -53,12 +53,7 @@ class LottieImageSource : public gfx::ImageSkiaSource {
 gfx::ImageSkia CreateImageSkia(Animation* content) {
   const gfx::Size size = content->GetOriginalSize();
 
-  scoped_refptr<cc::DisplayItemList> display_item_list =
-      base::MakeRefCounted<cc::DisplayItemList>(
-          cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
-  display_item_list->StartPaint();
-
-  cc::InspectableRecordPaintCanvas record_canvas(display_item_list.get(), size);
+  cc::InspectableRecordPaintCanvas record_canvas(size);
   gfx::Canvas canvas(&record_canvas, 1.0);
 #if DCHECK_IS_ON()
   gfx::Rect clip_rect;
@@ -67,9 +62,7 @@ gfx::ImageSkia CreateImageSkia(Animation* content) {
 #endif
   content->PaintFrame(&canvas, 0.f, size);
 
-  display_item_list->EndPaintOfPairedEnd();
-  display_item_list->Finalize();
-  const gfx::ImageSkiaRep rep(display_item_list->ReleaseAsRecord(), size, 0.f);
+  const gfx::ImageSkiaRep rep(record_canvas.ReleaseAsRecord(), size, 0.f);
   return gfx::ImageSkia(std::make_unique<LottieImageSource>(rep),
                         rep.pixel_size());
 }

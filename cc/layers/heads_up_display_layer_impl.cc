@@ -360,11 +360,12 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     auto* backing = static_cast<HudGpuBacking*>(pool_resource.gpu_backing());
 
     const auto& size = pool_resource.size();
+    RecordPaintCanvas canvas;
+    DrawHudContents(&canvas);
     auto display_item_list = base::MakeRefCounted<DisplayItemList>(
         DisplayItemList::kTopLevelDisplayItemList);
-    RecordPaintCanvas canvas(display_item_list.get());
     display_item_list->StartPaint();
-    DrawHudContents(&canvas);
+    display_item_list->push<DrawRecordOp>(canvas.ReleaseAsRecord());
     display_item_list->EndPaintOfUnpaired(gfx::Rect(size));
     display_item_list->Finalize();
 

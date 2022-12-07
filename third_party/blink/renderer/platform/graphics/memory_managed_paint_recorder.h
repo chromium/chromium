@@ -26,22 +26,37 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_RECORDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_MEMORY_MANAGED_PAINT_RECORDER_H_
 
-#include "cc/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
-class PLATFORM_EXPORT MemoryManagedPaintRecorder
-    : public cc::PaintRecorderBase {
+class PLATFORM_EXPORT MemoryManagedPaintRecorder {
  public:
   explicit MemoryManagedPaintRecorder(MemoryManagedPaintCanvas::Client* client);
+  ~MemoryManagedPaintRecorder();
 
   cc::PaintCanvas* beginRecording(const gfx::Size& size);
   sk_sp<cc::PaintRecord> finishRecordingAsPicture();
 
+  bool HasRecordedDrawOps() const {
+    DCHECK(canvas_);
+    return canvas_->HasRecordedDrawOps();
+  }
+  size_t TotalOpCount() const {
+    DCHECK(canvas_);
+    return canvas_->TotalOpCount();
+  }
+  size_t OpBytesUsed() const {
+    DCHECK(canvas_);
+    return canvas_->OpBytesUsed();
+  }
+
+  cc::PaintCanvas* getRecordingCanvas() const { return canvas_.get(); }
+
  private:
   MemoryManagedPaintCanvas::Client* client_;
+  std::unique_ptr<MemoryManagedPaintCanvas> canvas_;
 };
 
 }  // namespace blink

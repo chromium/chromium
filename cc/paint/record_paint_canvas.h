@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/skottie_color_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -17,20 +18,23 @@
 
 namespace cc {
 
-class DisplayItemList;
-class PaintFlags;
-
 // This implementation of PaintCanvas records paint operations into the given
-// DisplayItemList. The methods that inspect the current clip or CTM are not
+// PaintOpBuffer. The methods that inspect the current clip or CTM are not
 // implemented (DCHECK will fail if called). Use InspectableRecordPaintCanvas
 // instead if the client needs to call those methods.
 class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
  public:
-  explicit RecordPaintCanvas(DisplayItemList* list);
+  RecordPaintCanvas();
   ~RecordPaintCanvas() override;
 
   RecordPaintCanvas(const RecordPaintCanvas&) = delete;
   RecordPaintCanvas& operator=(const RecordPaintCanvas&) = delete;
+
+  sk_sp<PaintRecord> ReleaseAsRecord();
+
+  bool HasRecordedDrawOps() const { return buffer_.has_draw_ops(); }
+  size_t TotalOpCount() const { return buffer_.total_op_count(); }
+  size_t OpBytesUsed() const { return buffer_.paint_ops_size(); }
 
   void* accessTopLayerPixels(SkImageInfo* info,
                              size_t* rowBytes,
@@ -187,9 +191,9 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
 
  private:
   template <typename T, typename... Args>
-  size_t push(Args&&... args);
+  void push(Args&&... args);
 
-  DisplayItemList* list_;
+  PaintOpBuffer buffer_;
   int save_count_ = 1;
 
   bool needs_flush_ = false;
@@ -202,7 +206,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
 // inspection of the current clip and CTM during recording.
 class CC_PAINT_EXPORT InspectableRecordPaintCanvas : public RecordPaintCanvas {
  public:
-  InspectableRecordPaintCanvas(DisplayItemList* list, const gfx::Size& size);
+  explicit InspectableRecordPaintCanvas(const gfx::Size& size);
   ~InspectableRecordPaintCanvas() override;
 
   int save() override;

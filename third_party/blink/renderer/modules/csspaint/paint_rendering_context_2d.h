@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_RENDERING_CONTEXT_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CSSPAINT_PAINT_RENDERING_CONTEXT_2D_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_paint_rendering_context_2d_settings.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
@@ -115,7 +113,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
  private:
   void InitializePaintRecorder();
 
-  std::unique_ptr<cc::InspectablePaintRecorder> paint_recorder_;
+  cc::InspectablePaintRecorder paint_recorder_;
   sk_sp<PaintRecord> previous_frame_;
   gfx::Size container_size_;
   Member<const PaintRenderingContext2DSettings> context_settings_;

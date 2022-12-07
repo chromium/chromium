@@ -6,10 +6,9 @@
 
 namespace blink {
 
-MemoryManagedPaintCanvas::MemoryManagedPaintCanvas(cc::DisplayItemList* list,
-                                                   const gfx::Size& size,
+MemoryManagedPaintCanvas::MemoryManagedPaintCanvas(const gfx::Size& size,
                                                    Client* client)
-    : InspectableRecordPaintCanvas(list, size), client_(client) {
+    : cc::InspectableRecordPaintCanvas(size), client_(client) {
   DCHECK(client);
 }
 
@@ -21,7 +20,8 @@ void MemoryManagedPaintCanvas::drawImage(const cc::PaintImage& image,
                                          const SkSamplingOptions& sampling,
                                          const cc::PaintFlags* flags) {
   DCHECK(!image.IsPaintWorklet());
-  InspectableRecordPaintCanvas::drawImage(image, left, top, sampling, flags);
+  cc::InspectableRecordPaintCanvas::drawImage(image, left, top, sampling,
+                                              flags);
   UpdateMemoryUsage(image);
 }
 
@@ -32,8 +32,8 @@ void MemoryManagedPaintCanvas::drawImageRect(
     const SkSamplingOptions& sampling,
     const cc::PaintFlags* flags,
     SkCanvas::SrcRectConstraint constraint) {
-  InspectableRecordPaintCanvas::drawImageRect(image, src, dst, sampling, flags,
-                                              constraint);
+  cc::InspectableRecordPaintCanvas::drawImageRect(image, src, dst, sampling,
+                                                  flags, constraint);
   UpdateMemoryUsage(image);
 }
 

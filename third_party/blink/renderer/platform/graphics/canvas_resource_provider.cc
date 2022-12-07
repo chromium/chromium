@@ -1221,6 +1221,7 @@ CanvasResourceProvider::CanvasResourceProvider(
     oopr_uses_dmsaa_ = !caps.msaa_is_slow && !caps.avoid_stencil_buffers;
   }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+  recorder_.beginRecording(Size());
 }
 
 CanvasResourceProvider::~CanvasResourceProvider() {
@@ -1298,14 +1299,7 @@ cc::PaintCanvas* CanvasResourceProvider::Canvas(bool needs_will_draw) {
   if (needs_will_draw)
     WillDrawIfNeeded();
 
-  if (!recorder_) {
-    // A raw pointer is safe here because the callback is only used by the
-    // |recorder_|.
-    recorder_ = std::make_unique<MemoryManagedPaintRecorder>(this);
-
-    return recorder_->beginRecording(Size());
-  }
-  return recorder_->getRecordingCanvas();
+  return recorder_.getRecordingCanvas();
 }
 
 void CanvasResourceProvider::OnContextDestroyed() {
@@ -1410,10 +1404,10 @@ sk_sp<cc::PaintRecord> CanvasResourceProvider::FlushCanvasInternal(
   if (!HasRecordedDrawOps())
     return nullptr;
   clear_frame_ = false;
-  sk_sp<cc::PaintRecord> last_recording = recorder_->finishRecordingAsPicture();
+  sk_sp<cc::PaintRecord> last_recording = recorder_.finishRecordingAsPicture();
   RasterRecord(last_recording, preserve_recording);
   total_pinned_image_bytes_ = 0;
-  cc::PaintCanvas* canvas = recorder_->beginRecording(Size());
+  cc::PaintCanvas* canvas = recorder_.beginRecording(Size());
   if (restore_clip_stack_callback_)
     restore_clip_stack_callback_.Run(canvas);
   if (!preserve_recording)
@@ -1619,8 +1613,8 @@ void CanvasResourceProvider::SkipQueuedDrawCommands() {
   ClearFrame();
   if (!HasRecordedDrawOps())
     return;
-  recorder_->finishRecordingAsPicture();
-  cc::PaintCanvas* canvas = recorder_->beginRecording(Size());
+  recorder_.finishRecordingAsPicture();
+  cc::PaintCanvas* canvas = recorder_.beginRecording(Size());
   total_pinned_image_bytes_ = 0;
   if (restore_clip_stack_callback_)
     restore_clip_stack_callback_.Run(canvas);
@@ -1646,7 +1640,7 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
 }
 
 bool CanvasResourceProvider::HasRecordedDrawOps() const {
-  return recorder_ && recorder_->ListHasDrawOps();
+  return recorder_.HasRecordedDrawOps();
 }
 
 void CanvasResourceProvider::TearDownSkSurface() {

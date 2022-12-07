@@ -708,14 +708,8 @@ TEST_F(DiscardableImageMapTest, GathersDiscardableImagesFromNestedOps) {
   PaintImage discardable_image2 =
       CreateDiscardablePaintImage(gfx::Size(100, 100));
 
-  scoped_refptr<DisplayItemList> display_list =
-      new DisplayItemList(DisplayItemList::kToBeReleasedAsPaintOpBuffer);
-  display_list->StartPaint();
-  display_list->push<DrawImageOp>(discardable_image2, 100.f, 100.f);
-  display_list->EndPaintOfUnpaired(gfx::Rect(100, 100, 100, 100));
-  display_list->Finalize();
-
-  sk_sp<PaintRecord> record2 = display_list->ReleaseAsRecord();
+  sk_sp<PaintRecord> record2 = sk_make_sp<PaintRecord>();
+  record2->push<DrawImageOp>(discardable_image2, 100.f, 100.f);
 
   PaintOpBuffer root_buffer;
   root_buffer.push<DrawRecordOp>(internal_record);
