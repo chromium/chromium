@@ -39,7 +39,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int32_t query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) = 0;
 
@@ -90,7 +89,6 @@ class AutofillProvider : public content::WebContentsUserData<AutofillProvider> {
   virtual void Reset(AndroidAutofillManager* manager) = 0;
 
   void FillOrPreviewForm(AndroidAutofillManager* manager,
-                         int requestId,
                          const FormData& formData,
                          const url::Origin& triggered_origin);
 

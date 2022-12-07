@@ -104,7 +104,6 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int32_t query_id,
       AutoselectFirstSuggestion autoselect_first_field,
       FormElementWasClicked form_element_was_clicked) override {}
 
@@ -243,7 +242,7 @@ void SimulateFillForm(const FormData& form_data,
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->FillOrPreviewForm(0, form_data,
+  autofill_agent->FillOrPreviewForm(form_data,
                                     mojom::RendererFormDataAction::kFill);
 }
 
@@ -307,20 +306,17 @@ void SimulateFillFormWithNonFillableFields(
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->FillOrPreviewForm(0, data,
-                                    mojom::RendererFormDataAction::kFill);
+  autofill_agent->FillOrPreviewForm(data, mojom::RendererFormDataAction::kFill);
 }
 
 }  // end namespace
 
 class FormAutocompleteTest : public ChromeRenderViewTest {
  public:
-  FormAutocompleteTest() {}
-
+  FormAutocompleteTest() = default;
   FormAutocompleteTest(const FormAutocompleteTest&) = delete;
   FormAutocompleteTest& operator=(const FormAutocompleteTest&) = delete;
-
-  ~FormAutocompleteTest() override {}
+  ~FormAutocompleteTest() override = default;
 
  protected:
   void SetUp() override {

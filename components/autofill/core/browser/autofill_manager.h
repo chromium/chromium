@@ -177,7 +177,6 @@ class AutofillManager
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked);
 
@@ -195,8 +194,7 @@ class AutofillManager
                                bool known_success,
                                mojom::SubmissionSource source);
 
-  void FillCreditCardForm(int query_id,
-                          const FormData& form,
+  void FillCreditCardForm(const FormData& form,
                           const FormFieldData& field,
                           const CreditCard& credit_card,
                           const std::u16string& cvc);
@@ -383,7 +381,6 @@ class AutofillManager
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) = 0;
 
@@ -402,8 +399,7 @@ class AutofillManager
   virtual void FillCreditCardFormImpl(const FormData& form,
                                       const FormFieldData& field,
                                       const CreditCard& credit_card,
-                                      const std::u16string& cvc,
-                                      int query_id) = 0;
+                                      const std::u16string& cvc) = 0;
   virtual void FillProfileFormImpl(const FormData& form,
                                    const FormFieldData& field,
                                    const AutofillProfile& profile) = 0;

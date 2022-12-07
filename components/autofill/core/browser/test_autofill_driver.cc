@@ -62,7 +62,6 @@ bool TestAutofillDriver::RendererIsAvailable() {
 }
 
 std::vector<FieldGlobalId> TestAutofillDriver::FillOrPreviewForm(
-    int query_id,
     mojom::RendererFormDataAction action,
     const FormData& form_data,
     const url::Origin& triggered_origin,

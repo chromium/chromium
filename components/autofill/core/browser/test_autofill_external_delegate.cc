@@ -32,8 +32,7 @@ void TestAutofillExternalDelegate::OnPopupHidden() {
   run_loop_.Quit();
 }
 
-void TestAutofillExternalDelegate::OnQuery(int field_id,
-                                           const FormData& form,
+void TestAutofillExternalDelegate::OnQuery(const FormData& form,
                                            const FormFieldData& field,
                                            const gfx::RectF& bounds) {
   on_query_seen_ = true;
@@ -42,7 +41,7 @@ void TestAutofillExternalDelegate::OnQuery(int field_id,
   // If necessary, call the superclass's OnQuery to set up its other fields
   // properly.
   if (call_parent_methods_)
-    AutofillExternalDelegate::OnQuery(field_id, form, field, bounds);
+    AutofillExternalDelegate::OnQuery(form, field, bounds);
 }
 
 void TestAutofillExternalDelegate::OnSuggestionsReturned(

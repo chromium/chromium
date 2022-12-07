@@ -129,7 +129,6 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
 
 void GenerateTestAutofillPopup(
     AutofillExternalDelegate* autofill_external_delegate) {
-  int query_id = 1;
   FormData form;
   form.url = GURL("https://foo.com/bar");
   form.fields.emplace_back();
@@ -143,7 +142,7 @@ void GenerateTestAutofillPopup(
   mojom::AutofillDriver* mojo_driver = driver;
   TestAutofillManagerWaiter waiter(
       *manager, {&AutofillManager::Observer::OnAfterAskForValuesToFill});
-  mojo_driver->AskForValuesToFill(form, form.fields.front(), bounds, query_id,
+  mojo_driver->AskForValuesToFill(form, form.fields.front(), bounds,
                                   AutoselectFirstSuggestion(false),
                                   FormElementWasClicked(false));
   ASSERT_TRUE(waiter.Wait());

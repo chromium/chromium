@@ -52,7 +52,6 @@ class AutofillProviderAndroid : public AutofillProvider {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int32_t query_id,
       AutoselectFirstSuggestion /*unused_autoselect_first_suggestion*/,
       FormElementWasClicked /*unused_form_element_was_clicked*/) override;
   void OnTextFieldDidChange(AndroidAutofillManager* manager,
@@ -132,7 +131,6 @@ class AutofillProviderAndroid : public AutofillProvider {
 
   void Reset();
 
-  int32_t id_;
   // The form of the current session (queried input or changed select box).
   std::unique_ptr<FormDataAndroid> form_;
   // The field of the current session (queried input or changed select box).

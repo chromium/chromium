@@ -400,19 +400,17 @@ void ContentAutofillRouter::AskForValuesToFill(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    int32_t query_id,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked,
     void (*callback)(ContentAutofillDriver* target,
                      const FormData& form,
                      const FormFieldData& field,
                      const gfx::RectF& bounding_box,
-                     int32_t query_id,
                      AutoselectFirstSuggestion autoselect_first_suggestion,
                      FormElementWasClicked form_element_was_clicked)) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    callback(source, form, field, bounding_box, query_id,
-             autoselect_first_suggestion, form_element_was_clicked);
+    callback(source, form, field, bounding_box, autoselect_first_suggestion,
+             form_element_was_clicked);
     return;
   }
 
@@ -428,7 +426,7 @@ void ContentAutofillRouter::AskForValuesToFill(
   AFCHECK(target, return );
   SetLastQueriedSource(source);
   SetLastQueriedTarget(target);
-  callback(target, browser_form, field, bounding_box, query_id,
+  callback(target, browser_form, field, bounding_box,
            autoselect_first_suggestion, form_element_was_clicked);
 }
 
@@ -686,17 +684,15 @@ void ContentAutofillRouter::OnContextMenuShownInField(
 
 std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
     ContentAutofillDriver* source,
-    int query_id,
     mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
-    void (*callback)(ContentAutofillDriver*,
-                     int,
-                     mojom::RendererFormDataAction,
-                     const FormData&)) {
+    void (*callback)(ContentAutofillDriver* target,
+                     mojom::RendererFormDataAction action,
+                     const FormData& form)) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
-    callback(source, query_id, action, data);
+    callback(source, action, data);
     std::vector<FieldGlobalId> safe_fields;
     safe_fields.reserve(data.fields.size());
     for (const auto& field : data.fields)
@@ -716,9 +712,8 @@ std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
                              &FormFieldData::value)) {
       continue;
     }
-    if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
-      callback(target, kCrossFrameFill, action, renderer_form);
-    }
+    if (auto* target = DriverOfFrame(renderer_form.host_frame))
+      callback(target, action, renderer_form);
   }
   return renderer_forms.safe_fields;
 }
@@ -726,8 +721,8 @@ std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
 void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
     ContentAutofillDriver* source,
     const std::vector<FormDataPredictions>& browser_fdps,
-    void (*callback)(ContentAutofillDriver*,
-                     const std::vector<FormDataPredictions>&)) {
+    void (*callback)(ContentAutofillDriver* target,
+                     const std::vector<FormDataPredictions>& predictions)) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
     callback(source, browser_fdps);
     return;

@@ -52,7 +52,6 @@ interface AutofillDriver {
 
   // Queries the browser for Autofill suggestions for a form input field.
   // For autofill this means asking the user which values to fill.
-  // |query_id| is the request ID which is used to map responses correctly.
   // |autoselect_first_suggestion| indicates whether a first suggestion gets
   // auto selected. |form_element_was_clicked| indicates the user tapped an
   // input element. When this happens, surfaces like Touch To Fill and Fast
@@ -60,7 +59,6 @@ interface AutofillDriver {
   AskForValuesToFill(FormData form,
                      FormFieldData field,
                      gfx.mojom.RectF bounding_box,
-                     int32 query_id,
                      AutoselectFirstSuggestion autoselect_first_suggestion,
                      FormElementWasClicked form_element_was_clicked);
 

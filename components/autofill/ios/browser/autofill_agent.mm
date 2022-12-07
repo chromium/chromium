@@ -180,9 +180,6 @@ void GetFormField(autofill::FormFieldData* field,
 
   // ID of the last Autofill query made. Used to discard outdated suggestions.
   autofill::FieldGlobalId _lastQueriedFieldID;
-
-  // ID of the last Autofill query made. Used to discard outdated suggestions.
-  int _lastQueryID;
 }
 
 @end
@@ -212,7 +209,6 @@ void GetFormField(autofill::FormFieldData* field,
     UniqueIDDataTabHelper* uniqueIDDataTabHelper =
         UniqueIDDataTabHelper::FromWebState(_webState);
     _fieldDataManager = uniqueIDDataTabHelper->GetFieldDataManager();
-    _lastQueryID = 0;
   }
   return self;
 }
@@ -338,8 +334,7 @@ void GetFormField(autofill::FormFieldData* field,
   // -showAutofillPopup:popupDelegate:.
   _lastQueriedFieldID = field.global_id();
   autofillManager->OnAskForValuesToFill(
-      form, field, gfx::RectF(), ++_lastQueryID,
-      autofill::AutoselectFirstSuggestion(false),
+      form, field, gfx::RectF(), autofill::AutoselectFirstSuggestion(false),
       autofill::FormElementWasClicked(false));
 }
 

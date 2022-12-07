@@ -37,8 +37,7 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
 
   // Checks whether TTF is eligible for the given web form data. On success
   // triggers the corresponding surface and returns |true|.
-  virtual bool TryToShowTouchToFill(int query_id,
-                                    const FormData& form,
+  virtual bool TryToShowTouchToFill(const FormData& form,
                                     const FormFieldData& field);
 
   // Returns whether the TTF surface is currently being shown.
@@ -70,7 +69,6 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;
-  int query_id_;
   FormData query_form_;
   FormFieldData query_field_;
 

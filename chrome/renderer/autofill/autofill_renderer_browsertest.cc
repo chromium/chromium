@@ -106,7 +106,6 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int32_t query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) override {}
 
@@ -142,12 +141,10 @@ using AutofillQueryParam =
 
 class AutofillRendererTest : public ChromeRenderViewTest {
  public:
-  AutofillRendererTest() {}
-
+  AutofillRendererTest() = default;
   AutofillRendererTest(const AutofillRendererTest&) = delete;
   AutofillRendererTest& operator=(const AutofillRendererTest&) = delete;
-
-  ~AutofillRendererTest() override {}
+  ~AutofillRendererTest() override = default;
 
  protected:
   void SetUp() override {

@@ -78,7 +78,6 @@ class IBANManagerTest : public testing::Test {
 };
 
 TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
-  int test_query_id = 2;
   Suggestion iban_suggestion_0 =
       SetUpIBANAndSuggestion(u"IE12 BOFI 9000 0112 3456 78", u"Nickname 0");
   Suggestion iban_suggestion_1 =
@@ -102,13 +101,12 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions) {
   // Because all criteria are met to trigger returning to the handler,
   // the handler should be triggered and this should return true.
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
-      test_query_id, AutoselectFirstSuggestion(false), test_field,
-      autofill_client_, suggestions_handler_.GetWeakPtr(),
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
       /*context=*/context));
 }
 
 TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
-  int test_query_id = 2;
   base::StringPiece16 value_0 = u"IE12 BOFI 9000 0112 3456 78";
   Suggestion iban_suggestion_0 = SetUpIBANAndSuggestion(value_0, u"Nickname 0");
   Suggestion iban_suggestion_1 =
@@ -132,8 +130,8 @@ TEST_F(IBANManagerTest, ShowsIBANSuggestions_OnlyPrefixMatch) {
   // Because all criteria are met to trigger returning to the handler,
   // the handler should be triggered and this should return true.
   EXPECT_TRUE(iban_manager_.OnGetSingleFieldSuggestions(
-      test_query_id, AutoselectFirstSuggestion(false), test_field,
-      autofill_client_, suggestions_handler_.GetWeakPtr(),
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
       /*context=*/context));
 }
 
@@ -149,8 +147,8 @@ TEST_F(IBANManagerTest, DoesNotShowIBANsForOffTheRecord) {
 
   // Simulate request for suggestions.
   EXPECT_FALSE(iban_manager_.OnGetSingleFieldSuggestions(
-      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field,
-      autofill_client_, suggestions_handler_.GetWeakPtr(),
+      AutoselectFirstSuggestion(false), test_field, autofill_client_,
+      suggestions_handler_.GetWeakPtr(),
       /*context=*/context));
 }
 

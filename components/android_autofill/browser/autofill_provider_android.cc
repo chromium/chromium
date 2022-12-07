@@ -74,7 +74,6 @@ AutofillProviderAndroid::AutofillProviderAndroid(
     const JavaRef<jobject>& jcaller,
     content::WebContents* web_contents)
     : AutofillProvider(web_contents),
-      id_(kNoQueryId),
       java_ref_(JavaObjectWeakGlobalRef(env, jcaller)),
       check_submission_(false) {}
 
@@ -105,14 +104,12 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    int32_t query_id,
     AutoselectFirstSuggestion /*unused_autoselect_first_suggestion*/,
     FormElementWasClicked /*unused_form_element_was_clicked*/) {
   // The id isn't passed to Java side because Android API guarantees the
   // response is always for current session, so we just use the current id
   // in response, see OnAutofillAvailable.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  id_ = query_id;
 
   // Focus or field value change will also trigger the query, so it should be
   // ignored if the form is same.
@@ -186,7 +183,7 @@ void AutofillProviderAndroid::OnAutofillAvailable(JNIEnv* env,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager_ && form_) {
     const FormData& form = form_->GetAutofillValues();
-    FillOrPreviewForm(manager_.get(), id_, form, triggered_origin_);
+    FillOrPreviewForm(manager_.get(), form, triggered_origin_);
   }
 }
 
@@ -306,10 +303,6 @@ void AutofillProviderAndroid::OnFocusOnFormField(
   if (!IsCurrentlyLinkedManager(manager) || !IsCurrentlyLinkedForm(form) ||
       !form_->GetSimilarFieldIndex(field, &index))
     return;
-
-  // Because this will trigger a suggestion query, set request id to browser
-  // initiated request.
-  id_ = kNoQueryId;
 
   OnFocusChanged(true, index, ToClientAreaBound(bounding_box));
 }
@@ -460,7 +453,6 @@ void AutofillProviderAndroid::Reset() {
   form_.reset(nullptr);
   field_id_ = {};
   triggered_origin_ = {};
-  id_ = kNoQueryId;
   check_submission_ = false;
 }
 

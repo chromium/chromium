@@ -63,14 +63,6 @@ constexpr size_t kMaxTypeMatchingCalls = 5000;
 // upload the form to and request predictions from the Autofill servers.
 constexpr size_t kRequiredFieldsForFormsWithOnlyPasswordFields = 2;
 
-// Special query id used between the browser and the renderer when the action
-// is initiated from the browser.
-constexpr int kNoQueryId = -1;
-
-// Special query id used between the browser and the renderer when the action
-// is initiated from the browser.
-constexpr int kCrossFrameFill = -2;
-
 // Options bitmask values for AutofillHostMsg_ShowPasswordSuggestions IPC
 enum ShowPasswordSuggestionsOptions {
   SHOW_ALL = 1 << 0 /* show all credentials, not just ones matching username */,

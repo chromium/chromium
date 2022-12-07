@@ -25,13 +25,11 @@ TouchToFillDelegateImpl::~TouchToFillDelegateImpl() {
   HideTouchToFill();
 }
 
-bool TouchToFillDelegateImpl::TryToShowTouchToFill(int query_id,
-                                                   const FormData& form,
+bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
                                                    const FormFieldData& field) {
   // TODO(crbug.com/1386143): store only FormGlobalId and FieldGlobalId instead
   // to avoid that FormData and FormFieldData may become obsolete during the
   // bottomsheet being open.
-  query_id_ = query_id;
   query_form_ = form;
   query_field_ = field;
   // Trigger only for a credit card field/form.
@@ -113,7 +111,7 @@ void TouchToFillDelegateImpl::ScanCreditCard() {
 void TouchToFillDelegateImpl::OnCreditCardScanned(const CreditCard& card) {
   HideTouchToFill();
   manager_->FillCreditCardFormImpl(query_form_, query_field_, card,
-                                   std::u16string(), query_id_);
+                                   std::u16string());
 }
 
 void TouchToFillDelegateImpl::ShowCreditCardSettings() {
@@ -127,8 +125,7 @@ void TouchToFillDelegateImpl::SuggestionSelected(std::string unique_id) {
   DCHECK(pdm);
   CreditCard* card = pdm->GetCreditCardByGUID(unique_id);
   manager_->FillOrPreviewCreditCardForm(mojom::RendererFormDataAction::kFill,
-                                        query_id_, query_form_, query_field_,
-                                        card);
+                                        query_form_, query_field_, card);
 }
 
 base::WeakPtr<TouchToFillDelegateImpl> TouchToFillDelegateImpl::GetWeakPtr() {

@@ -177,11 +177,10 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int32_t query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) override {
     DeferMsg(&mojom::AutofillDriver::AskForValuesToFill, form, field,
-             bounding_box, query_id, autoselect_first_suggestion,
+             bounding_box, autoselect_first_suggestion,
              form_element_was_clicked);
   }
   void HidePopup() override { DeferMsg(&mojom::AutofillDriver::HidePopup); }
@@ -226,7 +225,6 @@ AutofillAgent::AutofillAgent(content::RenderFrame* render_frame,
       password_autofill_agent_(password_autofill_agent),
       password_generation_agent_(password_generation_agent),
       autofill_assistant_agent_(autofill_assistant_agent),
-      autofill_query_id_(0),
       query_node_autofill_state_(WebAutofillState::kNotFilled),
       is_popup_possibly_visible_(false),
       is_generation_popup_possibly_visible_(false),
@@ -531,8 +529,7 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 }
 
 // mojom::AutofillAgent:
-void AutofillAgent::FillOrPreviewForm(int32_t query_id,
-                                      const FormData& form,
+void AutofillAgent::FillOrPreviewForm(const FormData& form,
                                       mojom::RendererFormDataAction action) {
   // If `element_` is null or not focused, Autofill was either triggered from
   // another frame or the `element_` has been detached from the DOM or the focus
@@ -896,9 +893,6 @@ void AutofillAgent::QueryAutofillSuggestions(
   DCHECK(!element.DynamicTo<WebInputElement>().IsNull() ||
          form_util::IsTextAreaElement(element));
 
-  static int query_counter = 0;
-  autofill_query_id_ = query_counter++;
-
   FormData form;
   FormFieldData field;
   if (!FindFormAndFieldForFormControlElement(
@@ -933,9 +927,9 @@ void AutofillAgent::QueryAutofillSuggestions(
   }
 
   is_popup_possibly_visible_ = true;
-  GetAutofillDriver().AskForValuesToFill(
-      form, field, field.bounds, autofill_query_id_,
-      autoselect_first_suggestion, form_element_was_clicked);
+  GetAutofillDriver().AskForValuesToFill(form, field, field.bounds,
+                                         autoselect_first_suggestion,
+                                         form_element_was_clicked);
 }
 
 void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,

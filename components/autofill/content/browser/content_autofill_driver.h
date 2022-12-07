@@ -253,7 +253,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // These events are private to to avoid accidental in the browser.
   // They can be accessed explicitly through browser_events().
   std::vector<FieldGlobalId> FillOrPreviewForm(
-      int query_id,
       mojom::RendererFormDataAction action,
       const FormData& data,
       const url::Origin& triggered_origin,
@@ -309,7 +308,6 @@ class ContentAutofillDriver : public AutofillDriver,
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int32_t query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) override;
   void HidePopup() override;

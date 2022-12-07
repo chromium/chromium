@@ -19,8 +19,7 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
   MOCK_METHOD(
       bool,
       OnGetSingleFieldSuggestions,
-      (int query_id,
-       AutoselectFirstSuggestion autoselect_first_suggestion,
+      (AutoselectFirstSuggestion autoselect_first_suggestion,
        const FormFieldData& field,
        const AutofillClient& client,
        base::WeakPtr<AutocompleteHistoryManager::SuggestionsHandler> handler,

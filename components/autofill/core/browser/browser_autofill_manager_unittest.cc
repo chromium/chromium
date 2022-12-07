@@ -119,7 +119,6 @@ using mojom::SubmissionSource;
 
 namespace {
 
-const int kDefaultPageID = 137;
 const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
 const std::string kAddressEntryIcon = "accountIcon";
@@ -183,7 +182,7 @@ class MockTouchToFillDelegateImpl : public TouchToFillDelegateImpl {
 
   MOCK_METHOD(bool,
               TryToShowTouchToFill,
-              (int query_id, const FormData& form, const FormFieldData& field),
+              (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(void, HideTouchToFill, (), (override));
@@ -223,9 +222,7 @@ void ExpectFilledField(const char* expected_label,
 // Verifies address fields if |has_address_fields| is true, and verifies
 // credit card fields if |has_credit_card_fields| is true. Verifies both if both
 // are true. |use_month_type| is used for credit card input month type.
-void ExpectFilledForm(int page_id,
-                      const FormData& filled_form,
-                      int expected_page_id,
+void ExpectFilledForm(const FormData& filled_form,
                       const char* first,
                       const char* middle,
                       const char* last,
@@ -248,7 +245,6 @@ void ExpectFilledForm(int page_id,
   const size_t kAddressFormSize = 11;
   const size_t kCreditCardFormSize = use_month_type ? 4 : 5;
 
-  EXPECT_EQ(expected_page_id, page_id);
   EXPECT_EQ(u"MyForm", filled_form.name);
   EXPECT_EQ(GURL("https://myform.com/form.html"), filled_form.url);
   EXPECT_EQ(GURL("https://myform.com/submit.html"), filled_form.action);
@@ -306,35 +302,29 @@ void ExpectFilledForm(int page_id,
   }
 }
 
-void ExpectFilledAddressFormElvis(int page_id,
-                                  const FormData& filled_form,
-                                  int expected_page_id,
+void ExpectFilledAddressFormElvis(const FormData& filled_form,
                                   bool has_credit_card_fields) {
-  ExpectFilledForm(page_id, filled_form, expected_page_id, "Elvis", "Aaron",
-                   "Presley", "3734 Elvis Presley Blvd.", "Apt. 10", "Memphis",
+  ExpectFilledForm(filled_form, "Elvis", "Aaron", "Presley",
+                   "3734 Elvis Presley Blvd.", "Apt. 10", "Memphis",
                    "Tennessee", "38116", "United States", "12345678901",
                    "theking@gmail.com", "", "", "", "", true,
                    has_credit_card_fields, false);
 }
 
-void ExpectFilledCreditCardFormElvis(int page_id,
-                                     const FormData& filled_form,
-                                     int expected_page_id,
+void ExpectFilledCreditCardFormElvis(const FormData& filled_form,
                                      bool has_address_fields) {
-  ExpectFilledForm(page_id, filled_form, expected_page_id, "", "", "", "", "",
-                   "", "", "", "", "", "", "Elvis Presley", "4234567890123456",
-                   "04", "2999", has_address_fields, true, false);
+  ExpectFilledForm(filled_form, "", "", "", "", "", "", "", "", "", "", "",
+                   "Elvis Presley", "4234567890123456", "04", "2999",
+                   has_address_fields, true, false);
 }
 
-void ExpectFilledCreditCardYearMonthWithYearMonth(int page_id,
-                                                  const FormData& filled_form,
-                                                  int expected_page_id,
+void ExpectFilledCreditCardYearMonthWithYearMonth(const FormData& filled_form,
                                                   bool has_address_fields,
                                                   const char* year,
                                                   const char* month) {
-  ExpectFilledForm(page_id, filled_form, expected_page_id, "", "", "", "", "",
-                   "", "", "", "", "", "", "Miku Hatsune", "4234567890654321",
-                   month, year, has_address_fields, true, true);
+  ExpectFilledForm(filled_form, "", "", "", "", "", "", "", "", "", "", "",
+                   "Miku Hatsune", "4234567890654321", month, year,
+                   has_address_fields, true, true);
 }
 
 void CheckThatOnlyFieldByIndexHasThisPossibleType(
@@ -371,8 +361,7 @@ class MockAutofillDriver : public TestAutofillDriver {
   // Mock methods to enable testability.
   MOCK_METHOD((std::vector<FieldGlobalId>),
               FillOrPreviewForm,
-              (int query_id,
-               mojom::RendererFormDataAction action,
+              (mojom::RendererFormDataAction action,
                const FormData& data,
                const url::Origin& triggered_origin,
                (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
@@ -550,25 +539,18 @@ class BrowserAutofillManagerTest : public testing::Test {
     personal_data().ClearCreditCards();
   }
 
-  void GetAutofillSuggestions(int query_id,
-                              const FormData& form,
+  void GetAutofillSuggestions(const FormData& form,
                               const FormFieldData& field) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, gfx::RectF(), query_id, AutoselectFirstSuggestion(false),
+        form, field, gfx::RectF(), AutoselectFirstSuggestion(false),
         FormElementWasClicked(false));
   }
 
-  void GetAutofillSuggestions(const FormData& form,
-                              const FormFieldData& field) {
-    GetAutofillSuggestions(kDefaultPageID, form, field);
-  }
-
-  void TryToShowTouchToFill(int query_id,
-                            const FormData& form,
+  void TryToShowTouchToFill(const FormData& form,
                             const FormFieldData& field,
                             FormElementWasClicked form_element_was_clicked) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, gfx::RectF(), query_id, AutoselectFirstSuggestion(false),
+        form, field, gfx::RectF(), AutoselectFirstSuggestion(false),
         form_element_was_clicked);
   }
 
@@ -594,49 +576,41 @@ class BrowserAutofillManagerTest : public testing::Test {
         form, false, SubmissionSource::FORM_SUBMISSION);
   }
 
-  void FillAutofillFormData(int query_id,
-                            const FormData& form,
+  void FillAutofillFormData(const FormData& form,
                             const FormFieldData& field,
                             int unique_id) {
     browser_autofill_manager_->OnAskForValuesToFill(
-        form, field, {}, query_id, AutoselectFirstSuggestion(true),
+        form, field, {}, AutoselectFirstSuggestion(true),
         FormElementWasClicked(false));
     browser_autofill_manager_->FillOrPreviewForm(
-        mojom::RendererFormDataAction::kFill, query_id, form, field, unique_id);
+        mojom::RendererFormDataAction::kFill, form, field, unique_id);
   }
 
   // Calls |browser_autofill_manager_->OnFillAutofillFormData()| with the
   // specified input parameters after setting up the expectation that the mock
   // driver's |FillOrPreviewForm()| method will be called and saving the
-  // parameters of that call into the |response_query_id| and |response_data|
-  // output parameters.
-  void FillAutofillFormDataAndSaveResults(int input_query_id,
-                                          const FormData& input_form,
+  // parameter of that call into the |response_data| output parameter.
+  void FillAutofillFormDataAndSaveResults(const FormData& input_form,
                                           const FormFieldData& input_field,
                                           int unique_id,
-                                          int* response_query_id,
                                           FormData* response_data) {
-    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
-        .WillOnce(DoAll(testing::SaveArg<0>(response_query_id),
-                        testing::SaveArg<2>(response_data),
+    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
+        .WillOnce(DoAll(testing::SaveArg<1>(response_data),
                         testing::Return(std::vector<FieldGlobalId>{})));
-    FillAutofillFormData(input_query_id, input_form, input_field, unique_id);
+    FillAutofillFormData(input_form, input_field, unique_id);
   }
 
   void PreviewVirtualCardDataAndSaveResults(
       mojom::RendererFormDataAction action,
       const std::string& guid,
-      int input_query_id,
       const FormData& input_form,
       const FormFieldData& input_field,
-      int* response_query_id,
       FormData* response_data) {
-    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
-        .WillOnce((DoAll(testing::SaveArg<0>(response_query_id),
-                         testing::SaveArg<2>(response_data),
+    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
+        .WillOnce((DoAll(testing::SaveArg<1>(response_data),
                          testing::Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
-        action, guid, input_query_id, input_form, input_field);
+        action, guid, input_form, input_field);
   }
 
   int MakeFrontendId(
@@ -711,11 +685,10 @@ class BrowserAutofillManagerTest : public testing::Test {
                             "2017", "1");
     card->SetNetworkForMaskedCard(kVisaCard);
 
-    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
+    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
         .Times(AtLeast(1));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
-        mojom::RendererFormDataAction::kFill, kDefaultPageID, *form,
-        form->fields[0], card);
+        mojom::RendererFormDataAction::kFill, *form, form->fields[0], card);
   }
 
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
@@ -2309,8 +2282,7 @@ TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   FormsSeen({form});
   CreditCard credit_card = test::GetMaskedServerCard();
   browser_autofill_manager_->FillOrPreviewCreditCardForm(
-      mojom::RendererFormDataAction::kFill, kDefaultPageID, form,
-      form.fields[0], &credit_card);
+      mojom::RendererFormDataAction::kFill, form, form.fields[0], &credit_card);
 
   browser_autofill_manager_->OnCreditCardFetchedForTest(
       CreditCardFetchResult::kSuccess, &credit_card,
@@ -2363,10 +2335,9 @@ TEST_P(SuggestionMatchingTest, GetAddressAndCreditCardSuggestions) {
                    Suggestion("Charles", label1, kAddressEntryIcon, 1),
                    Suggestion("Elvis", label2, kAddressEntryIcon, 2));
 
-  const int kPageID2 = 2;
   FormFieldData field;
   test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
-  GetAutofillSuggestions(kPageID2, form, field);
+  GetAutofillSuggestions(form, field);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const std::string visa_label = std::string("04/99");
@@ -2407,8 +2378,7 @@ TEST_F(BrowserAutofillManagerTest, GetAddressAndCreditCardSuggestionsNonHttps) {
 
   FormFieldData field;
   test::CreateTestFormField("Card Number", "cardnumber", "", "text", &field);
-  const int kPageID2 = 2;
-  GetAutofillSuggestions(kPageID2, form, field);
+  GetAutofillSuggestions(form, field);
 
   // Test that we sent the right values to the external delegate.
   CheckSuggestions(field.global_id(),
@@ -2488,11 +2458,10 @@ TEST_F(BrowserAutofillManagerTest, FillTriggeredSection) {
   EXPECT_EQ(1U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
 
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      kDefaultPageID, form, form.fields[index_of_trigger_field],
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
+  FillAutofillFormDataAndSaveResults(form, form.fields[index_of_trigger_field],
+                                     MakeFrontendId({.profile_id = guid}),
+                                     &response_data);
   // Extract the sections into individual forms to reduce boiler plate code.
   size_t mid = response_data.fields.size() / 2;
   FormData section1 = response_data;
@@ -2500,11 +2469,9 @@ TEST_F(BrowserAutofillManagerTest, FillTriggeredSection) {
   section1.fields.erase(section1.fields.begin() + mid, section1.fields.end());
   section2.fields.erase(section2.fields.begin(), section2.fields.end() - mid);
   // First section should be empty, second should be filled.
-  ExpectFilledForm(response_page_id, section1, kDefaultPageID, "", "", "", "",
-                   "", "", "", "", "", "", "", "", "", "", "", true, false,
-                   false);
-  ExpectFilledAddressFormElvis(response_page_id, section2, kDefaultPageID,
-                               false);
+  ExpectFilledForm(section1, "", "", "", "", "", "", "", "", "", "", "", "", "",
+                   "", "", true, false, false);
+  ExpectFilledAddressFormElvis(section2, false);
 }
 
 MATCHER_P(HasValue, value, "") {
@@ -2532,15 +2499,13 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
   AutofillProfile* profile = personal_data().GetProfileByGUID(guid);
   ASSERT_TRUE(profile);
 
-  int response_query_id = 0;
   FormData response_data;
-  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
-      .WillOnce((DoAll(testing::SaveArg<0>(&response_query_id),
-                       testing::SaveArg<2>(&response_data),
+  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
+      .WillOnce((DoAll(testing::SaveArg<1>(&response_data),
                        testing::Return(std::vector<FieldGlobalId>{}))));
   browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
-      mojom::RendererFormDataAction::kFill, kDefaultPageID, form,
-      form.fields.front(), profile, nullptr, form_structure, autofill_field);
+      mojom::RendererFormDataAction::kFill, form, form.fields.front(), profile,
+      nullptr, form_structure, autofill_field);
   std::vector<FormFieldData> filled_fields(response_data.fields.begin(),
                                            response_data.fields.begin() + 2);
   std::vector<FormFieldData> skipped_fields(response_data.fields.begin() + 2,
@@ -2570,7 +2535,7 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldRemoved) {
   AutofillProfile* profile = personal_data().GetProfileByGUID(guid);
   ASSERT_TRUE(profile);
 
-  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _)).Times(0);
 }
 
 // Tests that BrowserAutofillManager ignores loss of focus events sent from the
@@ -3241,13 +3206,11 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm) {
   EXPECT_EQ(1U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
 
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
-                               false);
+                                     &response_data);
+  ExpectFilledAddressFormElvis(response_data, false);
 
   EXPECT_EQ(2U, profile->use_count());
   EXPECT_NE(base::Time(), profile->use_date());
@@ -3311,12 +3274,11 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_LogFieldWasAutofill) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
   FormData response_data;
   base::HistogramTester histogram_tester;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   // Cardholder name, card number, expiration data were autofilled but cvc was
   // not be autofilled.
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness.CreditCard",
@@ -3330,13 +3292,11 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_Simple) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledCreditCardFormElvis(response_page_id, response_data,
-                                  kDefaultPageID, false);
+                                     &response_data);
+  ExpectFilledCreditCardFormElvis(response_data, false);
 }
 
 // Test that whitespace is stripped from the credit card number.
@@ -3356,13 +3316,11 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000008";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledCreditCardFormElvis(response_page_id, response_data,
-                                  kDefaultPageID, false);
+                                     &response_data);
+  ExpectFilledCreditCardFormElvis(response_data, false);
 }
 
 // Test that separator characters are stripped from the credit card number.
@@ -3383,13 +3341,11 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000009";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledCreditCardFormElvis(response_page_id, response_data,
-                                  kDefaultPageID, false);
+                                     &response_data);
+  ExpectFilledCreditCardFormElvis(response_data, false);
 }
 
 // Test that we correctly fill a credit card form with month input type.
@@ -3407,13 +3363,11 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearNoMonth) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000007";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledCreditCardYearMonthWithYearMonth(response_page_id, response_data,
-                                               kDefaultPageID, false, "", "");
+                                     &response_data);
+  ExpectFilledCreditCardYearMonthWithYearMonth(response_data, false, "", "");
 }
 
 // Test that we correctly fill a credit card form with month input type.
@@ -3431,13 +3385,11 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearMonth) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000007";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledCreditCardYearMonthWithYearMonth(response_page_id, response_data,
-                                               kDefaultPageID, false, "", "04");
+                                     &response_data);
+  ExpectFilledCreditCardYearMonthWithYearMonth(response_data, false, "", "04");
 }
 
 // Test that we correctly fill a credit card form with month input type.
@@ -3457,13 +3409,12 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearNoMonth) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000007";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledCreditCardYearMonthWithYearMonth(
-      response_page_id, response_data, kDefaultPageID, false, "2999", "");
+                                     &response_data);
+  ExpectFilledCreditCardYearMonthWithYearMonth(response_data, false, "2999",
+                                               "");
 }
 
 // Test that we correctly fill a credit card form with month input type.
@@ -3481,13 +3432,12 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearMonth) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000007";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledCreditCardYearMonthWithYearMonth(
-      response_page_id, response_data, kDefaultPageID, false, "2999", "04");
+                                     &response_data);
+  ExpectFilledCreditCardYearMonthWithYearMonth(response_data, false, "2999",
+                                               "04");
 }
 
 // Test that only the first 16 credit card number fields are filled.
@@ -3519,11 +3469,10 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   ExpectFilledField("Card Name", "cardname", "Elvis", "text",
                     response_data.fields[0]);
   ExpectFilledField("Last Name", "cardlastname", "Presley", "text",
@@ -3570,11 +3519,10 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   ExpectFilledField("Card Name", "cardname", "Elvis", "text",
                     response_data.fields[0]);
   ExpectFilledField("Last Name", "cardlastname", "Presley", "text",
@@ -3620,11 +3568,10 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardNumberIntoSingleDigitFields) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   ExpectFilledField("Card Name", "cardname", "Elvis", "text",
                     response_data.fields[0]);
   ExpectFilledField("Last Name", "cardlastname", "Presley", "text",
@@ -3669,11 +3616,10 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_SplitName) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   ExpectFilledField("Card Name", "cardname", "Elvis", "text",
                     response_data.fields[0]);
   ExpectFilledField("Last Name", "cardlastname", "Presley", "text",
@@ -3747,11 +3693,10 @@ TEST_F(BrowserAutofillManagerTest,
   profile.set_guid(guid);
   personal_data().AddProfile(profile);
 
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
 
   // Verify the correct filling of the name entries.
   ExpectFilledField("First Name", "firstname", "Elvis", "text",
@@ -3796,29 +3741,23 @@ TEST_F(BrowserAutofillManagerTest, FillAddressAndCreditCardForm) {
 
   // First fill the address data.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
   {
     SCOPED_TRACE("Address");
-    FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+    FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                        MakeFrontendId({.profile_id = guid}),
-                                       &response_page_id, &response_data);
-    ExpectFilledAddressFormElvis(response_page_id, response_data,
-                                 kDefaultPageID, true);
+                                       &response_data);
+    ExpectFilledAddressFormElvis(response_data, true);
   }
 
   // Now fill the credit card data.
-  const int kPageID2 = 2;
   const char guid2[] = "00000000-0000-0000-0000-000000000004";
-  response_page_id = 0;
   {
     FillAutofillFormDataAndSaveResults(
-        kPageID2, form, form.fields.back(),
-        MakeFrontendId({.credit_card_id = guid2}), &response_page_id,
+        form, form.fields.back(), MakeFrontendId({.credit_card_id = guid2}),
         &response_data);
     SCOPED_TRACE("Credit card");
-    ExpectFilledCreditCardFormElvis(response_page_id, response_data, kPageID2,
-                                    true);
+    ExpectFilledCreditCardFormElvis(response_data, true);
   }
 }
 
@@ -3935,13 +3874,12 @@ TEST_P(AutofillSimpleFormTest, FillSimpleForm) {
 
   FormsSeen({form});
 
-  int response_page_id = 0;
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
-      kDefaultPageID, form, form.fields[0],
+      form, form.fields[0],
       MakeFrontendId({.credit_card_id = params.cc_guid,
                       .profile_id = params.profile_guid}),
-      &response_page_id, &response_data);
+      &response_data);
 
   ASSERT_EQ(response_data.fields.size(), params.expected_form_fields.size());
   for (size_t i = 0; i < response_data.fields.size(); ++i) {
@@ -3988,11 +3926,10 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CompanyBirthyear) {
   profile.set_guid(guid);
   personal_data().AddProfile(profile);
 
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(
-      kDefaultPageID, address_form, *address_form.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
+  FillAutofillFormDataAndSaveResults(address_form, *address_form.fields.begin(),
+                                     MakeFrontendId({.profile_id = guid}),
+                                     &response_data);
 
   // All the fields should be filled except the company.
   ExpectFilledField("First name", "firstname", "Elvis", "text",
@@ -4017,15 +3954,13 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_AutocompleteOff) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
 
   // All fields should be filled.
-  ExpectFilledCreditCardFormElvis(response_page_id, response_data,
-                                  kDefaultPageID, false);
+  ExpectFilledCreditCardFormElvis(response_data, false);
 }
 
 // Test that selecting an expired credit card fills everything except the
@@ -4067,11 +4002,10 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_ExpiredCard) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000009";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
 
   // The credit card name, type and number should be filled.
   ExpectFilledField("Name on Card", "nameoncard", "Homer Simpson", "text",
@@ -4096,11 +4030,10 @@ TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
   FormData form = CreateTestCreditCardFormData(true, false);
   FormsSeen({form});
 
-  int response_page_id = 0;
   FormData response_data;
-  PreviewVirtualCardDataAndSaveResults(
-      mojom::RendererFormDataAction::kPreview, virtual_card.guid(),
-      kDefaultPageID, form, form.fields[1], &response_page_id, &response_data);
+  PreviewVirtualCardDataAndSaveResults(mojom::RendererFormDataAction::kPreview,
+                                       virtual_card.guid(), form,
+                                       form.fields[1], &response_data);
 
   std::u16string expected_cardholder_name = u"Lorem Ipsum";
   // Virtual card number using obfuscated dots only: Virtual card Mastercard
@@ -4155,11 +4088,10 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithNonFocusableFields) {
 
   // Fill the form
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
 
   // All the visible fields should be filled as all the fields belong to the
   // same logical section.
@@ -4192,11 +4124,10 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleSections) {
 
   // Fill the first section.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Address 1");
     // The second address section should be empty.
@@ -4207,19 +4138,16 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleSections) {
 
     // The first address section should be filled with Elvis's data.
     response_data.fields.resize(kAddressFormSize);
-    ExpectFilledAddressFormElvis(response_page_id, response_data,
-                                 kDefaultPageID, false);
+    ExpectFilledAddressFormElvis(response_data, false);
   }
 
   // Fill the second section, with the initiating field somewhere in the middle
   // of the section.
-  const int kPageID2 = 2;
   const char guid2[] = "00000000-0000-0000-0000-000000000001";
   ASSERT_LT(9U, kAddressFormSize);
-  response_page_id = 0;
-  FillAutofillFormDataAndSaveResults(
-      kPageID2, form, form.fields[kAddressFormSize + 9],
-      MakeFrontendId({.profile_id = guid2}), &response_page_id, &response_data);
+  FillAutofillFormDataAndSaveResults(form, form.fields[kAddressFormSize + 9],
+                                     MakeFrontendId({.profile_id = guid2}),
+                                     &response_data);
   {
     SCOPED_TRACE("Address 2");
     ASSERT_EQ(response_data.fields.size(), form.fields.size());
@@ -4240,8 +4168,7 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleSections) {
       std::u16string original_name = name.substr(0, name.size() - 1);
       secondSection.fields[i].name = original_name;
     }
-    ExpectFilledAddressFormElvis(response_page_id, secondSection, kPageID2,
-                                 false);
+    ExpectFilledAddressFormElvis(secondSection, false);
   }
 }
 
@@ -4302,14 +4229,12 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
 
   // Fill the unnamed section.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[1],
+  FillAutofillFormDataAndSaveResults(form, form.fields[1],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Unnamed section");
-    EXPECT_EQ(kDefaultPageID, response_page_id);
     EXPECT_EQ(u"MyForm", response_data.name);
     EXPECT_EQ(GURL("https://myform.com/form.html"), response_data.url);
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
@@ -4332,15 +4257,12 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
   }
 
   // Fill the address portion of the billing section.
-  const int kPageID2 = 2;
   const char guid2[] = "00000000-0000-0000-0000-000000000001";
-  response_page_id = 0;
-  FillAutofillFormDataAndSaveResults(kPageID2, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid2}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Billing address");
-    EXPECT_EQ(kPageID2, response_page_id);
     EXPECT_EQ(u"MyForm", response_data.name);
     EXPECT_EQ(GURL("https://myform.com/form.html"), response_data.url);
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
@@ -4362,16 +4284,12 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithAuthorSpecifiedSections) {
   }
 
   // Fill the credit card portion of the billing section.
-  const int kPageID3 = 3;
   const char guid3[] = "00000000-0000-0000-0000-000000000004";
-  response_page_id = 0;
-  FillAutofillFormDataAndSaveResults(kPageID3, form,
-                                     form.fields[form.fields.size() - 2],
+  FillAutofillFormDataAndSaveResults(form, form.fields[form.fields.size() - 2],
                                      MakeFrontendId({.credit_card_id = guid3}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Credit card");
-    EXPECT_EQ(kPageID3, response_page_id);
     EXPECT_EQ(u"MyForm", response_data.name);
     EXPECT_EQ(GURL("https://myform.com/form.html"), response_data.url);
     EXPECT_EQ(GURL("https://myform.com/submit.html"), response_data.action);
@@ -4407,19 +4325,17 @@ TEST_F(BrowserAutofillManagerTest, FillFormWithMultipleEmails) {
 
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
 
   // The second email address should be filled.
   EXPECT_EQ(u"theking@gmail.com", response_data.fields.back().value);
 
   // The remainder of the form should be filled as usual.
   response_data.fields.pop_back();
-  ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
-                               false);
+  ExpectFilledAddressFormElvis(response_data, false);
 }
 
 // Test that we correctly fill a previously auto-filled form.
@@ -4437,29 +4353,24 @@ TEST_F(BrowserAutofillManagerTest, FillAutofilledForm) {
 
   // First fill the address data.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Address");
-    ExpectFilledForm(response_page_id, response_data, kDefaultPageID, "Elvis",
-                     "", "", "", "", "", "", "", "", "", "", "", "", "", "",
-                     true, true, false);
+    ExpectFilledForm(response_data, "Elvis", "", "", "", "", "", "", "", "", "",
+                     "", "", "", "", "", true, true, false);
   }
 
   // Now fill the credit card data.
-  const int kPageID2 = 2;
   const char guid2[] = "00000000-0000-0000-0000-000000000004";
-  response_page_id = 0;
-  FillAutofillFormDataAndSaveResults(kPageID2, form, form.fields.back(),
+  FillAutofillFormDataAndSaveResults(form, form.fields.back(),
                                      MakeFrontendId({.credit_card_id = guid2}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Credit card 1");
-    ExpectFilledCreditCardFormElvis(response_page_id, response_data, kPageID2,
-                                    true);
+    ExpectFilledCreditCardFormElvis(response_data, true);
   }
 
   // Now set the credit card fields to also be auto-filled, and try again to
@@ -4468,17 +4379,13 @@ TEST_F(BrowserAutofillManagerTest, FillAutofilledForm) {
     field.is_autofilled = true;
   }
 
-  const int kPageID3 = 3;
-  response_page_id = 0;
-  FillAutofillFormDataAndSaveResults(kPageID3, form,
-                                     form.fields[form.fields.size() - 2],
+  FillAutofillFormDataAndSaveResults(form, form.fields[form.fields.size() - 2],
                                      MakeFrontendId({.credit_card_id = guid2}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Credit card 2");
-    ExpectFilledForm(response_page_id, response_data, kPageID3, "", "", "", "",
-                     "", "", "", "", "", "", "", "", "", "", "2999", true, true,
-                     false);
+    ExpectFilledForm(response_data, "", "", "", "", "", "", "", "", "", "", "",
+                     "", "", "", "2999", true, true, false);
   }
 }
 
@@ -4499,30 +4406,25 @@ TEST_F(BrowserAutofillManagerTest, FillPartlyAutofilledForm) {
 
   // First fill the address data.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Address");
-    ExpectFilledForm(response_page_id, response_data, kDefaultPageID, "Elvis",
-                     "Aaron", "Presley", "", "", "", "", "38116",
-                     "United States", "12345678901", "", "", "", "", "", true,
-                     true, false);
+    ExpectFilledForm(response_data, "Elvis", "Aaron", "Presley", "", "", "", "",
+                     "38116", "United States", "12345678901", "", "", "", "",
+                     "", true, true, false);
   }
 
   // Now fill the credit card data.
-  const int kPageID2 = 2;
   const char guid2[] = "00000000-0000-0000-0000-000000000004";
-  response_page_id = 0;
-  FillAutofillFormDataAndSaveResults(kPageID2, form, form.fields.back(),
+  FillAutofillFormDataAndSaveResults(form, form.fields.back(),
                                      MakeFrontendId({.credit_card_id = guid2}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Credit card 1");
-    ExpectFilledCreditCardFormElvis(response_page_id, response_data, kPageID2,
-                                    true);
+    ExpectFilledCreditCardFormElvis(response_data, true);
   }
 }
 
@@ -4548,32 +4450,28 @@ TEST_F(BrowserAutofillManagerTest, FillPartlyManuallyFilledForm) {
 
   // First fill the address data.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Address");
-    ExpectFilledForm(response_page_id, response_data, kDefaultPageID, "Elvis",
-                     "Aaron", "Jackson", "3734 Elvis Presley Blvd.", "Apt. 10",
-                     "Memphis", "Tennessee", "38116", "United States",
-                     "12345678901", "theking@gmail.com", "", "", "", "", true,
-                     true, false);
+    ExpectFilledForm(response_data, "Elvis", "Aaron", "Jackson",
+                     "3734 Elvis Presley Blvd.", "Apt. 10", "Memphis",
+                     "Tennessee", "38116", "United States", "12345678901",
+                     "theking@gmail.com", "", "", "", "", true, true, false);
   }
 
   // Now fill the credit card data.
-  const int kPageID2 = 2;
   const char guid2[] = "00000000-0000-0000-0000-000000000004";
-  response_page_id = 0;
-  FillAutofillFormDataAndSaveResults(kPageID2, form, form.fields.back(),
+  FillAutofillFormDataAndSaveResults(form, form.fields.back(),
                                      MakeFrontendId({.credit_card_id = guid2}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   {
     SCOPED_TRACE("Credit card 1");
-    ExpectFilledForm(response_page_id, response_data, kPageID2, "Michael", "",
-                     "Jackson", "", "", "", "", "", "", "", "", "Elvis Presley",
-                     "4234567890123456", "04", "2999", true, true, false);
+    ExpectFilledForm(response_data, "Michael", "", "Jackson", "", "", "", "",
+                     "", "", "", "", "Elvis Presley", "4234567890123456", "04",
+                     "2999", true, true, false);
   }
 }
 
@@ -4627,14 +4525,11 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"16505554567");
 
   std::string guid(work_profile->guid());
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data1;
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_us_number_max_length,
+      form_with_us_number_max_length,
       *form_with_us_number_max_length.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data1);
-  EXPECT_EQ(1, response_page_id);
+      MakeFrontendId({.profile_id = guid}), &response_data1);
 
   ASSERT_EQ(5U, response_data1.fields.size());
   EXPECT_EQ(u"1", response_data1.fields[0].value);
@@ -4643,14 +4538,10 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   EXPECT_EQ(u"4567", response_data1.fields[3].value);
   EXPECT_EQ(std::u16string(), response_data1.fields[4].value);
 
-  page_id = 2;
-  response_page_id = 0;
   FormData response_data2;
-  FillAutofillFormDataAndSaveResults(page_id, form_with_autocompletetype,
-                                     *form_with_autocompletetype.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data2);
-  EXPECT_EQ(2, response_page_id);
+  FillAutofillFormDataAndSaveResults(
+      form_with_autocompletetype, *form_with_autocompletetype.fields.begin(),
+      MakeFrontendId({.profile_id = guid}), &response_data2);
 
   ASSERT_EQ(5U, response_data2.fields.size());
   EXPECT_EQ(u"1", response_data2.fields[0].value);
@@ -4662,14 +4553,11 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   // For other countries, fill prefix and suffix fields with best effort.
   work_profile->SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"447700954321");
-  page_id = 3;
-  response_page_id = 0;
   FormData response_data3;
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_us_number_max_length,
+      form_with_us_number_max_length,
       *form_with_us_number_max_length.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data3);
-  EXPECT_EQ(3, response_page_id);
+      MakeFrontendId({.profile_id = guid}), &response_data3);
 
   ASSERT_EQ(5U, response_data3.fields.size());
   EXPECT_EQ(u"4", response_data3.fields[0].value);
@@ -4678,14 +4566,10 @@ TEST_F(BrowserAutofillManagerTest, FillPhoneNumber) {
   EXPECT_EQ(u"4321", response_data3.fields[3].value);
   EXPECT_EQ(std::u16string(), response_data3.fields[4].value);
 
-  page_id = 4;
-  response_page_id = 0;
   FormData response_data4;
-  FillAutofillFormDataAndSaveResults(page_id, form_with_autocompletetype,
-                                     *form_with_autocompletetype.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data4);
-  EXPECT_EQ(4, response_page_id);
+  FillAutofillFormDataAndSaveResults(
+      form_with_autocompletetype, *form_with_autocompletetype.fields.begin(),
+      MakeFrontendId({.profile_id = guid}), &response_data4);
 
   ASSERT_EQ(5U, response_data4.fields.size());
   EXPECT_EQ(u"44", response_data4.fields[0].value);
@@ -4737,14 +4621,11 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_ComponentizedNumbers) {
   form_with_multiple_componentized_phone_fields.fields.push_back(field);
 
   FormsSeen({form_with_multiple_componentized_phone_fields});
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_multiple_componentized_phone_fields,
+      form_with_multiple_componentized_phone_fields,
       *form_with_multiple_componentized_phone_fields.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+      MakeFrontendId({.profile_id = guid}), &response_data);
 
   // Verify only the first complete set of phone number fields are filled.
   ASSERT_EQ(8U, response_data.fields.size());
@@ -4786,14 +4667,11 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_WholeNumbers) {
   form_with_multiple_whole_number_fields.fields.push_back(field);
 
   FormsSeen({form_with_multiple_whole_number_fields});
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_multiple_whole_number_fields,
+      form_with_multiple_whole_number_fields,
       *form_with_multiple_whole_number_fields.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+      MakeFrontendId({.profile_id = guid}), &response_data);
 
   // Verify only the first complete set of phone number fields are filled.
   ASSERT_EQ(4U, response_data.fields.size());
@@ -4846,14 +4724,11 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_FillPartsOnceOnly) {
   form_with_multiple_componentized_phone_fields.fields.push_back(field);
 
   FormsSeen({form_with_multiple_componentized_phone_fields});
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_multiple_componentized_phone_fields,
+      form_with_multiple_componentized_phone_fields,
       *form_with_multiple_componentized_phone_fields.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+      MakeFrontendId({.profile_id = guid}), &response_data);
 
   // Verify only the first complete set of phone number fields are filled,
   // and phone components are not filled more than once.
@@ -4906,14 +4781,11 @@ TEST_F(BrowserAutofillManagerTest,
   form_with_misclassified_extension.fields.push_back(field);
 
   FormsSeen({form_with_misclassified_extension});
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_misclassified_extension,
+      form_with_misclassified_extension,
       *form_with_misclassified_extension.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+      MakeFrontendId({.profile_id = guid}), &response_data);
 
   // Verify the misclassified extension field is not filled.
   ASSERT_EQ(5U, response_data.fields.size());
@@ -4958,14 +4830,11 @@ TEST_F(BrowserAutofillManagerTest, FillFirstPhoneNumber_BestEfforFilling) {
   form_with_no_complete_number.fields.push_back(field);
 
   FormsSeen({form_with_no_complete_number});
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_no_complete_number,
+      form_with_no_complete_number,
       *form_with_no_complete_number.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+      MakeFrontendId({.profile_id = guid}), &response_data);
 
   // Verify when there is no complete phone number fields, we do best effort
   // filling.
@@ -5007,16 +4876,13 @@ TEST_F(BrowserAutofillManagerTest,
   form_with_multiple_whole_number_fields.fields.push_back(field);
 
   FormsSeen({form_with_multiple_whole_number_fields});
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data;
   auto it = form_with_multiple_whole_number_fields.fields.begin();
   // Move it to point to "shipping number".
   std::advance(it, 3);
-  FillAutofillFormDataAndSaveResults(
-      page_id, form_with_multiple_whole_number_fields, *it,
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+  FillAutofillFormDataAndSaveResults(form_with_multiple_whole_number_fields,
+                                     *it, MakeFrontendId({.profile_id = guid}),
+                                     &response_data);
 
   // Verify when the second phone number field is being focused, we fill
   // that field *AND* the first phone number field.
@@ -5058,14 +4924,11 @@ TEST_F(BrowserAutofillManagerTest,
   form_with_multiple_whole_number_fields.fields.push_back(field);
 
   FormsSeen({form_with_multiple_whole_number_fields});
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data;
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_multiple_whole_number_fields,
+      form_with_multiple_whole_number_fields,
       *form_with_multiple_whole_number_fields.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+      MakeFrontendId({.profile_id = guid}), &response_data);
 
   // Verify hidden/non-focusable phone field is set to only_fill_when_focused.
   ASSERT_EQ(4U, response_data.fields.size());
@@ -5122,13 +4985,12 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
   base::HistogramTester histogram_tester;
 
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   histogram_tester.ExpectTotalCount(
       "Autofill.HiddenOrPresentationalSelectFieldsFilled", 2);
 
@@ -5186,15 +5048,11 @@ TEST_F(BrowserAutofillManagerTest,
   form_with_multiple_sections.fields.push_back(field);
 
   FormsSeen({form_with_multiple_sections});
-  int page_id = 1;
-  int response_page_id = 0;
   FormData response_data;
   // Fill first sections.
   FillAutofillFormDataAndSaveResults(
-      page_id, form_with_multiple_sections,
-      *form_with_multiple_sections.fields.begin(),
-      MakeFrontendId({.profile_id = guid}), &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+      form_with_multiple_sections, *form_with_multiple_sections.fields.begin(),
+      MakeFrontendId({.profile_id = guid}), &response_data);
 
   // Verify first section is filled with rationalization.
   ASSERT_EQ(9U, response_data.fields.size());
@@ -5212,10 +5070,9 @@ TEST_F(BrowserAutofillManagerTest,
   auto it = form_with_multiple_sections.fields.begin();
   std::advance(it, 6);  // Pointing to second section.
 
-  FillAutofillFormDataAndSaveResults(page_id, form_with_multiple_sections, *it,
+  FillAutofillFormDataAndSaveResults(form_with_multiple_sections, *it,
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
-  EXPECT_EQ(1, response_page_id);
+                                     &response_data);
 
   // Verify second section is filled with rationalization.
   ASSERT_EQ(9U, response_data.fields.size());
@@ -5249,13 +5106,11 @@ TEST_F(BrowserAutofillManagerTest, FormChangesRemoveField) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
-                               false);
+                                     &response_data);
+  ExpectFilledAddressFormElvis(response_data, false);
 }
 
 // Test that we can still fill a form when a field has been added to it.
@@ -5280,13 +5135,11 @@ TEST_F(BrowserAutofillManagerTest, FormChangesAddField) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
-                               false);
+                                     &response_data);
+  ExpectFilledAddressFormElvis(response_data, false);
 }
 
 // Test that we can still fill a form when the visibility of some fields
@@ -5322,11 +5175,10 @@ TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
   // Fill the form with the first profile. The hidden fields will not get
   // filled.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
 
   ASSERT_EQ(5U, response_data.fields.size());
   ExpectFilledField("First Name", "first_name", "Elvis", "text",
@@ -5348,10 +5200,9 @@ TEST_F(BrowserAutofillManagerTest, FormChangesVisibilityOfFields) {
 
   FormData later_response_data;
   const char guid2[] = "00000000-0000-0000-0000-000000000002";
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, response_data,
-                                     response_data.fields[4],
+  FillAutofillFormDataAndSaveResults(response_data, response_data.fields[4],
                                      MakeFrontendId({.profile_id = guid2}),
-                                     &response_page_id, &later_response_data);
+                                     &later_response_data);
   ASSERT_EQ(5U, later_response_data.fields.size());
   ExpectFilledField("First Name", "first_name", "Elvis", "text",
                     later_response_data.fields[0]);
@@ -5374,13 +5225,11 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted) {
 
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
-                               false);
+                                     &response_data);
+  ExpectFilledAddressFormElvis(response_data, false);
 
   // Simulate form submission. We should call into the PDM to try to save the
   // filled data.
@@ -5397,13 +5246,11 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedSaveData) {
 
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
-                               false);
+                                     &response_data);
+  ExpectFilledAddressFormElvis(response_data, false);
 
   browser_autofill_manager_->OnFormSubmitted(response_data, false,
                                              SubmissionSource::FORM_SUBMISSION);
@@ -5933,13 +5780,11 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedServerTypes) {
 
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
-  ExpectFilledAddressFormElvis(response_page_id, response_data, kDefaultPageID,
-                               false);
+                                     &response_data);
+  ExpectFilledAddressFormElvis(response_data, false);
 
   // Simulate form submission. We should call into the PDM to try to save the
   // filled data.
@@ -5989,11 +5834,10 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
 
   // Fill the form.
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[3],
+  FillAutofillFormDataAndSaveResults(form, form.fields[3],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
 
   // Simulate form submission.  We should call into the PDM to try to save the
   // filled data.
@@ -7208,9 +7052,9 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotFillFormData) {
   const char guid[] = "00000000-0000-0000-0000-000000000001";
 
   // Expect no fields filled, no form data sent to renderer.
-  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _)).Times(0);
 
-  FillAutofillFormData(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormData(form, *form.fields.begin(),
                        MakeFrontendId({.profile_id = guid}));
 }
 
@@ -7240,9 +7084,9 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotFillFormData) {
   const char guid[] = "00000000-0000-0000-0000-000000000004";
 
   // Expect no fields filled, no form data sent to renderer.
-  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _)).Times(0);
 
-  FillAutofillFormData(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormData(form, *form.fields.begin(),
                        MakeFrontendId({.credit_card_id = guid}));
 }
 
@@ -9158,11 +9002,10 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   FormsSeen({form});
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   EXPECT_EQ(response_data.fields[0].value, u"Elvis Aaron Presley");
   EXPECT_EQ(response_data.fields[1].value, u"Test City");
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
@@ -9208,9 +9051,9 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   features.InitAndDisableFeature(
       autofill::features::kAutofillPreventOverridingPrefilledValues);
 
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   EXPECT_EQ(response_data.fields[0].value, u"Elvis Aaron Presley");
   EXPECT_EQ(response_data.fields[1].value, u"Memphis");
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
@@ -9253,11 +9096,10 @@ TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
       form, form.fields.front(), gfx::RectF(), AutofillTickClock::NowTicks());
 
   const char guid[] = "00000000-0000-0000-0000-000000000001";
-  int response_page_id = 0;
   FormData response_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, form.fields[0],
+  FillAutofillFormDataAndSaveResults(form, form.fields[0],
                                      MakeFrontendId({.profile_id = guid}),
-                                     &response_page_id, &response_data);
+                                     &response_data);
   EXPECT_EQ(response_data.fields[0].value, u"Elvis Aaron Presley");
   EXPECT_EQ(response_data.fields[1].value, u"Test City");
   EXPECT_EQ(response_data.fields[2].value, u"Tennessee");
@@ -9289,24 +9131,22 @@ TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
                                /*use_month_type=*/false);
   FormsSeen({form});
   const FormFieldData& field = form.fields[1];
-  int query_id = 1;
 
   // Not a form element click, Autofill suggestions shown.
-  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
-      .Times(0);
-  TryToShowTouchToFill(query_id++, form, field, FormElementWasClicked(false));
+  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _)).Times(0);
+  TryToShowTouchToFill(form, field, FormElementWasClicked(false));
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // TTF not available, Autofill suggestions shown.
-  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
+  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _))
       .WillOnce(Return(false));
-  TryToShowTouchToFill(query_id++, form, field, FormElementWasClicked(true));
+  TryToShowTouchToFill(form, field, FormElementWasClicked(true));
   EXPECT_TRUE(external_delegate_->on_suggestions_returned_seen());
 
   // A form element click and TTF available, Autofill suggestions not shown.
-  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(query_id, _, _))
+  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _))
       .WillOnce(Return(true));
-  TryToShowTouchToFill(query_id++, form, field, FormElementWasClicked(true));
+  TryToShowTouchToFill(form, field, FormElementWasClicked(true));
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
@@ -9321,11 +9161,8 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
 
   EXPECT_CALL(*touch_to_fill_delegate_, IsShowingTouchToFill)
       .WillOnce(Return(true));
-  EXPECT_CALL(*touch_to_fill_delegate_,
-              TryToShowTouchToFill(kDefaultPageID, _, _))
-      .Times(0);
-  TryToShowTouchToFill(kDefaultPageID, form, field,
-                       FormElementWasClicked(true));
+  EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _)).Times(0);
+  TryToShowTouchToFill(form, field, FormElementWasClicked(true));
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
 }
 
@@ -9939,11 +9776,10 @@ TEST_P(BrowserAutofillManagerRefillTest,
 
   // Simulate filling and store the data to be filled in |first_fill_data|.
   const char guid[] = "00000000-0000-0000-0000-000000000004";
-  int response_page_id = 0;
   FormData first_fill_data;
-  FillAutofillFormDataAndSaveResults(kDefaultPageID, form, *form.fields.begin(),
+  FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                      MakeFrontendId({.credit_card_id = guid}),
-                                     &response_page_id, &first_fill_data);
+                                     &first_fill_data);
   ASSERT_EQ(3u, first_fill_data.fields.size());
   ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
                     first_fill_data.fields[0]);
@@ -9956,12 +9792,12 @@ TEST_P(BrowserAutofillManagerRefillTest,
   if (test_case.triggers_refill) {
     // Prepare intercepting the filling operation to the driver and capture
     // the re-filled form data.
-    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
+    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _))
         .Times(1)
-        .WillOnce(DoAll(testing::SaveArg<2>(&refilled_form),
+        .WillOnce(DoAll(testing::SaveArg<1>(&refilled_form),
                         testing::Return(std::vector<FieldGlobalId>{})));
   } else {
-    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _)).Times(0);
+    EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _)).Times(0);
   }
   // Simulate that JavaScript modifies the expiration date field.
   FormData form_after_js_modification = first_fill_data;
@@ -10055,11 +9891,9 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
 
     // Simulate filling and store the data to be filled in `fill_data_`.
     const char guid[] = "00000000-0000-0000-0000-000000000004";
-    int response_page_id = 0;
-    FillAutofillFormDataAndSaveResults(kDefaultPageID, form,
-                                       *form.fields.begin(),
+    FillAutofillFormDataAndSaveResults(form, *form.fields.begin(),
                                        MakeFrontendId({.credit_card_id = guid}),
-                                       &response_page_id, &fill_data_);
+                                       &fill_data_);
     ASSERT_EQ(3u, fill_data_.fields.size());
     ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley", "text",
                       fill_data_.fields[0]);

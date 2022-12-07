@@ -24,9 +24,6 @@ namespace autofill {
 
 namespace {
 
-// A constant value to use as a suggestions query ID.
-const int kQueryId = 1;
-
 class MockAutofillDriver : public TestAutofillDriver {
  public:
   MockAutofillDriver() = default;
@@ -97,13 +94,11 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
-               const std::u16string& cvc,
-               int query_id),
+               const std::u16string& cvc),
               (override));
   MOCK_METHOD(void,
               FillOrPreviewCreditCardForm,
               (mojom::RendererFormDataAction action,
-               int query_id,
                const FormData& form,
                const FormFieldData& field,
                const CreditCard* credit_card));
@@ -149,8 +144,8 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
                 HideAutofillPopup(
                     PopupHidingReason::kOverlappingWithTouchToFillSurface))
         .Times(expected_success ? 1 : 0);
-    EXPECT_EQ(expected_success, touch_to_fill_delegate_->TryToShowTouchToFill(
-                                    kQueryId, form_, field_));
+    EXPECT_EQ(expected_success,
+              touch_to_fill_delegate_->TryToShowTouchToFill(form_, field_));
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->IsShowingTouchToFill());
   }
@@ -219,8 +214,7 @@ TEST_F(TouchToFillDelegateImplUnitTest,
       autofill_client_,
       HideAutofillPopup(PopupHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
-  EXPECT_FALSE(
-      touch_to_fill_delegate_->TryToShowTouchToFill(kQueryId, form_, field_));
+  EXPECT_FALSE(touch_to_fill_delegate_->TryToShowTouchToFill(form_, field_));
   EXPECT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
 

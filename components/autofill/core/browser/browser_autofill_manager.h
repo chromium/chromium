@@ -133,8 +133,7 @@ class BrowserAutofillManager : public AutofillManager,
   virtual bool ShouldShowCardsFromAccountOption(const FormData& form,
                                                 const FormFieldData& field);
   virtual void OnUserAcceptedCardsFromAccountOption();
-  virtual void RefetchCardsAndUpdatePopup(int query_id,
-                                          const FormData& form,
+  virtual void RefetchCardsAndUpdatePopup(const FormData& form,
                                           const FormFieldData& field_data);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -156,15 +155,13 @@ class BrowserAutofillManager : public AutofillManager,
   // ContentAutofillDriver::FillFormForAssistant().
   // TODO(crbug.com/1330108): Clean up the API.
   virtual void FillOrPreviewForm(mojom::RendererFormDataAction action,
-                                 int query_id,
                                  const FormData& form,
                                  const FormFieldData& field,
                                  int unique_id);
   void FillCreditCardFormImpl(const FormData& form,
                               const FormFieldData& field,
                               const CreditCard& credit_card,
-                              const std::u16string& cvc,
-                              int query_id) override;
+                              const std::u16string& cvc) override;
   void DidShowSuggestions(bool has_autofill_suggestions,
                           const FormData& form,
                           const FormFieldData& field);
@@ -174,7 +171,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Asks for authentication via CVC before filling with server card data.
   // TODO(crbug.com/1330108): Clean up the API.
   virtual void FillOrPreviewCreditCardForm(mojom::RendererFormDataAction action,
-                                           int query_id,
                                            const FormData& form,
                                            const FormFieldData& field,
                                            const CreditCard* credit_card);
@@ -192,7 +188,6 @@ class BrowserAutofillManager : public AutofillManager,
   virtual void FillOrPreviewVirtualCardInformation(
       mojom::RendererFormDataAction action,
       const std::string& guid,
-      int query_id,
       const FormData& form,
       const FormFieldData& field);
 
@@ -394,7 +389,6 @@ class BrowserAutofillManager : public AutofillManager,
 
   void FillOrPreviewDataModelFormForTest(
       mojom::RendererFormDataAction action,
-      int query_id,
       const FormData& form,
       const FormFieldData& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
@@ -402,7 +396,7 @@ class BrowserAutofillManager : public AutofillManager,
       const std::u16string* optional_cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field) {
-    return FillOrPreviewDataModelForm(action, query_id, form, field,
+    return FillOrPreviewDataModelForm(action, form, field,
                                       profile_or_credit_card, optional_cvc,
                                       form_structure, autofill_field);
   }
@@ -452,7 +446,6 @@ class BrowserAutofillManager : public AutofillManager,
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& transformed_box,
-      int query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) override;
   void OnSelectControlDidChangeImpl(const FormData& form,
@@ -529,7 +522,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Assumes the form and field are valid.
   // TODO(crbug.com/1330108): Clean up the API.
   void FillOrPreviewProfileForm(mojom::RendererFormDataAction action,
-                                int query_id,
                                 const FormData& form,
                                 const FormFieldData& field,
                                 const AutofillProfile& profile);
@@ -538,7 +530,6 @@ class BrowserAutofillManager : public AutofillManager,
   // TODO(crbug.com/1330108): Clean up the API.
   void FillOrPreviewDataModelForm(
       mojom::RendererFormDataAction action,
-      int query_id,
       const FormData& form,
       const FormFieldData& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
@@ -785,7 +776,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Collected information about the autofill form where a credit card will be
   // filled.
   mojom::RendererFormDataAction credit_card_action_;
-  int credit_card_query_id_ = -1;
   FormData credit_card_form_;
   FormFieldData credit_card_field_;
   CreditCard credit_card_;

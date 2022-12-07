@@ -60,10 +60,7 @@ const char kAppLocale[] = "en-US";
 class FakeAutofillAgent : public mojom::AutofillAgent {
  public:
   FakeAutofillAgent()
-      : fill_form_id_(-1),
-        preview_form_id_(-1),
-        called_clear_section_(false),
-        called_clear_previewed_form_(false) {}
+      : called_clear_section_(false), called_clear_previewed_form_(false) {}
 
   ~FakeAutofillAgent() override {}
 
@@ -78,14 +75,9 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   // Returns the id and formdata received via
   // mojo interface method mojom::AutofillAgent::FillOrPreviewForm().
-  bool GetAutofillFillFormMessage(int* page_id, FormData* results) {
-    if (fill_form_id_ == -1)
-      return false;
+  bool GetAutofillFillFormMessage(FormData* results) {
     if (!fill_form_form_)
       return false;
-
-    if (page_id)
-      *page_id = fill_form_id_;
     if (results)
       *results = *fill_form_form_;
     return true;
@@ -93,14 +85,9 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   // Returns the id and formdata received via
   // mojo interface method mojom::AutofillAgent::PreviewForm().
-  bool GetAutofillPreviewFormMessage(int* page_id, FormData* results) {
-    if (preview_form_id_ == -1)
-      return false;
+  bool GetAutofillPreviewFormMessage(FormData* results) {
     if (!preview_form_form_)
       return false;
-
-    if (page_id)
-      *page_id = preview_form_id_;
     if (results)
       *results = *preview_form_form_;
     return true;
@@ -167,14 +154,11 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent:
   void TriggerReparse() override {}
 
-  void FillOrPreviewForm(int32_t query_id,
-                         const FormData& form,
+  void FillOrPreviewForm(const FormData& form,
                          mojom::RendererFormDataAction action) override {
     if (action == mojom::RendererFormDataAction::kPreview) {
-      preview_form_id_ = query_id;
       preview_form_form_ = form;
     } else {
-      fill_form_id_ = query_id;
       fill_form_form_ = form;
     }
     CallDone();
@@ -257,9 +241,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   base::OnceClosure quit_closure_;
 
   // Records data received from FillOrPreviewForm() call.
-  int32_t fill_form_id_;
   absl::optional<FormData> fill_form_form_;
-  int32_t preview_form_id_;
   absl::optional<FormData> preview_form_form_;
   // Records data received from FieldTypePredictionsAvailable() call.
   absl::optional<std::vector<FormDataPredictions>> predictions_;
@@ -531,7 +513,6 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
 }
 
 TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
-  int input_page_id = autofill_across_iframes_ ? kCrossFrameFill : 42;
   url::Origin triggered_origin;
   FormData input_form_data = SeeAddressFormData();
   for (FormFieldData& field : input_form_data.fields) {
@@ -541,24 +522,19 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->browser_events().FillOrPreviewForm(
-      input_page_id, mojom::RendererFormDataAction::kFill, input_form_data,
-      triggered_origin, {});
+      mojom::RendererFormDataAction::kFill, input_form_data, triggered_origin,
+      {});
 
   run_loop.RunUntilIdle();
 
-  int output_page_id = 0;
   FormData output_form_data;
-  EXPECT_FALSE(fake_agent_.GetAutofillPreviewFormMessage(&output_page_id,
-                                                         &output_form_data));
-  EXPECT_TRUE(fake_agent_.GetAutofillFillFormMessage(&output_page_id,
-                                                     &output_form_data));
-  EXPECT_EQ(input_page_id, output_page_id);
+  EXPECT_FALSE(fake_agent_.GetAutofillPreviewFormMessage(&output_form_data));
+  EXPECT_TRUE(fake_agent_.GetAutofillFillFormMessage(&output_form_data));
   EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
                   .SameFormAs(output_form_data));
 }
 
 TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
-  int input_page_id = autofill_across_iframes_ ? kCrossFrameFill : 42;
   url::Origin triggered_origin;
   FormData input_form_data = SeeAddressFormData();
   for (FormFieldData& field : input_form_data.fields) {
@@ -571,18 +547,14 @@ TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->browser_events().FillOrPreviewForm(
-      input_page_id, mojom::RendererFormDataAction::kPreview, input_form_data,
+      mojom::RendererFormDataAction::kPreview, input_form_data,
       triggered_origin, {});
 
   run_loop.RunUntilIdle();
 
-  int output_page_id = 0;
   FormData output_form_data;
-  EXPECT_FALSE(fake_agent_.GetAutofillFillFormMessage(&output_page_id,
-                                                      &output_form_data));
-  EXPECT_TRUE(fake_agent_.GetAutofillPreviewFormMessage(&output_page_id,
-                                                        &output_form_data));
-  EXPECT_EQ(input_page_id, output_page_id);
+  EXPECT_FALSE(fake_agent_.GetAutofillFillFormMessage(&output_form_data));
+  EXPECT_TRUE(fake_agent_.GetAutofillPreviewFormMessage(&output_form_data));
   EXPECT_TRUE(test::WithoutUnserializedData(input_form_data)
                   .SameFormAs(output_form_data));
 }

@@ -40,7 +40,6 @@ class SingleFieldFormFiller {
 
   // Gets suggestions for a given field. In the case of Autocomplete, this is
   // through a DB query, though it could be different for other fill types.
-  // `query_id` is given by the client as context.
   // `client` is used for functionality such as checking if autocomplete is
   // enabled, or checking if the URL we navigated to is blocklisted for the
   // specific single field form filler that we are trying to retrieve
@@ -56,7 +55,6 @@ class SingleFieldFormFiller {
   // SingleFieldFormFillers to offer filling the field. The callback can happen
   // synchronously even before OnGetSingleFieldSuggestions returns true.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
-      int query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       const FormFieldData& field,
       const AutofillClient& client,
@@ -100,10 +98,6 @@ class SingleFieldFormFiller {
                  base::WeakPtr<SuggestionsHandler> handler);
     QueryHandler(const QueryHandler& original);
     ~QueryHandler();
-
-    // Query ID living in the handler's scope, which is NOT the same as the
-    // database query ID. This ID is unique per frame, but not per profile.
-    int client_query_id_;
 
     // The queried field ID.
     FieldGlobalId field_id_;

@@ -126,7 +126,7 @@ TEST_F(SingleFieldFormFillRouterTest,
 
     EXPECT_EQ(test_field_.should_autocomplete,
               single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-                  /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
+                  AutoselectFirstSuggestion(false), test_field_,
                   autofill_client_, suggestions_handler->GetWeakPtr(),
                   /*context=*/SuggestionsContext()));
   }
@@ -258,9 +258,8 @@ TEST_F(SingleFieldFormFillRouterTest,
         .WillOnce(testing::Return(true));
 
     EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-        /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
-        autofill_client_, suggestions_handler->GetWeakPtr(),
-        SuggestionsContext()));
+        AutoselectFirstSuggestion(false), test_field_, autofill_client_,
+        suggestions_handler->GetWeakPtr(), SuggestionsContext()));
   }
 }
 
@@ -286,9 +285,8 @@ TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerNotPresent) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
-      autofill_client_, suggestions_handler->GetWeakPtr(),
-      SuggestionsContext()));
+      AutoselectFirstSuggestion(false), test_field_, autofill_client_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -317,9 +315,8 @@ TEST_F(SingleFieldFormFillRouterTest, MerchantPromoCodeManagerReturnedFalse) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
-      autofill_client_, suggestions_handler->GetWeakPtr(),
-      SuggestionsContext()));
+      AutoselectFirstSuggestion(false), test_field_, autofill_client_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this
@@ -365,9 +362,8 @@ TEST_F(
   // All SingleFieldFormFillers returned false, so we should return false as we
   // did not attempt to display any single field form fill suggestions.
   EXPECT_FALSE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
-      autofill_client_, suggestions_handler->GetWeakPtr(),
-      SuggestionsContext()));
+      AutoselectFirstSuggestion(false), test_field_, autofill_client_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -391,9 +387,8 @@ TEST_F(SingleFieldFormFillRouterTest, IBANManagerNotPresent) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
-      autofill_client_, suggestions_handler->GetWeakPtr(),
-      SuggestionsContext()));
+      AutoselectFirstSuggestion(false), test_field_, autofill_client_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -421,9 +416,8 @@ TEST_F(SingleFieldFormFillRouterTest, IBANManagerReturnedFalse) {
   // autocomplete. SingleFieldFormFillRouter::OnGetSingleFieldSuggestions()
   // should return true.
   EXPECT_TRUE(single_field_form_fill_router_->OnGetSingleFieldSuggestions(
-      /*query_id=*/2, AutoselectFirstSuggestion(false), test_field_,
-      autofill_client_, suggestions_handler->GetWeakPtr(),
-      SuggestionsContext()));
+      AutoselectFirstSuggestion(false), test_field_, autofill_client_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext()));
 }
 
 // Ensure that the router routes to IBANManager for this

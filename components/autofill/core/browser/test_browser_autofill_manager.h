@@ -55,7 +55,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       const FormData& form,
       const FormFieldData& field,
       const gfx::RectF& bounding_box,
-      int query_id,
       AutoselectFirstSuggestion autoselect_first_suggestion,
       FormElementWasClicked form_element_was_clicked) override;
   void OnJavaScriptChangedAutofilledValue(
@@ -117,7 +116,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   void OnAskForValuesToFillTest(
       const FormData& form,
       const FormFieldData& field,
-      int query_id = 0,
       const gfx::RectF& bounding_box = {},
       AutoselectFirstSuggestion autoselect_first_suggestion =
           AutoselectFirstSuggestion(false),

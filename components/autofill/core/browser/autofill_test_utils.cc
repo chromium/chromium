@@ -1034,7 +1034,6 @@ void FillUploadField(AutofillUploadContents::Field* field,
 
 void GenerateTestAutofillPopup(
     AutofillExternalDelegate* autofill_external_delegate) {
-  int query_id = 1;
   FormData form;
   FormFieldData field;
   form.host_frame = MakeLocalFrameToken();
@@ -1044,7 +1043,7 @@ void GenerateTestAutofillPopup(
   field.is_focusable = true;
   field.should_autocomplete = true;
   gfx::RectF bounds(100.f, 100.f);
-  autofill_external_delegate->OnQuery(query_id, form, field, bounds);
+  autofill_external_delegate->OnQuery(form, field, bounds);
 
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(u"Test suggestion"));

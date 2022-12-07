@@ -251,18 +251,17 @@ LanguageCode AutofillManager::GetCurrentPageLanguage() {
   return LanguageCode(language_state->current_language());
 }
 
-void AutofillManager::FillCreditCardForm(int query_id,
-                                         const FormData& form,
+void AutofillManager::FillCreditCardForm(const FormData& form,
                                          const FormFieldData& field,
                                          const CreditCard& credit_card,
                                          const std::u16string& cvc) {
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    FillCreditCardFormImpl(form, field, credit_card, cvc, query_id);
+    FillCreditCardFormImpl(form, field, credit_card, cvc);
     return;
   }
-  ParseFormAsync(form, ParsingCallback(&AutofillManager::FillCreditCardFormImpl,
-                                       /*after_event=*/nullptr, field,
-                                       credit_card, cvc, query_id));
+  ParseFormAsync(
+      form, ParsingCallback(&AutofillManager::FillCreditCardFormImpl,
+                            /*after_event=*/nullptr, field, credit_card, cvc));
 }
 
 void AutofillManager::FillProfileForm(const AutofillProfile& profile,
@@ -480,7 +479,6 @@ void AutofillManager::OnAskForValuesToFill(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    int query_id,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
@@ -496,17 +494,17 @@ void AutofillManager::OnAskForValuesToFill(
       client_->IsFastCheckoutSupported()
 #endif
   ) {
-    OnAskForValuesToFillImpl(form, field, bounding_box, query_id,
+    OnAskForValuesToFillImpl(form, field, bounding_box,
                              autoselect_first_suggestion,
                              form_element_was_clicked);
     NotifyObservers(&Observer::OnAfterAskForValuesToFill);
     return;
   }
   ParseFormAsync(
-      form, ParsingCallback(&AutofillManager::OnAskForValuesToFillImpl,
-                            &Observer::OnAfterAskForValuesToFill, field,
-                            bounding_box, query_id, autoselect_first_suggestion,
-                            form_element_was_clicked));
+      form,
+      ParsingCallback(&AutofillManager::OnAskForValuesToFillImpl,
+                      &Observer::OnAfterAskForValuesToFill, field, bounding_box,
+                      autoselect_first_suggestion, form_element_was_clicked));
 }
 
 void AutofillManager::OnFocusOnFormField(const FormData& form,

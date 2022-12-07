@@ -20,7 +20,6 @@ void StubAutofillProvider::OnAskForValuesToFill(
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     const gfx::RectF& bounding_box,
-    int32_t query_id,
     autofill::AutoselectFirstSuggestion /*unused_autoselect_first_suggestion*/,
     autofill::FormElementWasClicked /*unused_form_element_was_clicked*/) {
   on_received_form_data_.Run(form);

@@ -83,12 +83,11 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FormData& form,
     const FormFieldData& field,
     const gfx::RectF& bounding_box,
-    int query_id,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   TestAutofillManagerWaiter waiter(*this,
                                    {&Observer::OnAfterAskForValuesToFill});
-  AutofillManager::OnAskForValuesToFill(form, field, bounding_box, query_id,
+  AutofillManager::OnAskForValuesToFill(form, field, bounding_box,
                                         autoselect_first_suggestion,
                                         form_element_was_clicked);
   ASSERT_TRUE(waiter.Wait());
@@ -257,15 +256,14 @@ const std::string TestBrowserAutofillManager::GetSubmittedFormSignature() {
 void TestBrowserAutofillManager::OnAskForValuesToFillTest(
     const FormData& form,
     const FormFieldData& field,
-    int query_id,
     const gfx::RectF& bounding_box,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   TestAutofillManagerWaiter waiter(
       *this, {&AutofillManager::Observer::OnAfterAskForValuesToFill});
-  BrowserAutofillManager::OnAskForValuesToFill(
-      form, field, bounding_box, query_id, autoselect_first_suggestion,
-      form_element_was_clicked);
+  BrowserAutofillManager::OnAskForValuesToFill(form, field, bounding_box,
+                                               autoselect_first_suggestion,
+                                               form_element_was_clicked);
   ASSERT_TRUE(waiter.Wait());
 }
 

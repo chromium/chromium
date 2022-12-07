@@ -103,7 +103,6 @@ bool AutofillDriverIOS::RendererIsAvailable() {
 }
 
 std::vector<FieldGlobalId> AutofillDriverIOS::FillOrPreviewForm(
-    int query_id,
     mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,

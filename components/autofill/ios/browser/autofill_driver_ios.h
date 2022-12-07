@@ -49,7 +49,6 @@ class AutofillDriverIOS : public AutofillDriver {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool RendererIsAvailable() override;
   std::vector<FieldGlobalId> FillOrPreviewForm(
-      int query_id,
       mojom::RendererFormDataAction action,
       const FormData& data,
       const url::Origin& triggered_origin,

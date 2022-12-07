@@ -95,7 +95,6 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (const FormData& form,
                const FormFieldData& field,
                const gfx::RectF& bounding_box,
-               int32_t query_id,
                AutoselectFirstSuggestion autoselect_first_suggestion,
                FormElementWasClicked form_element_was_clicked),
               (override));

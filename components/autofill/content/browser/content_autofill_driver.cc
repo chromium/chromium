@@ -156,18 +156,17 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
 }
 
 std::vector<FieldGlobalId> ContentAutofillDriver::FillOrPreviewForm(
-    int query_id,
     mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
   return autofill_router().FillOrPreviewForm(
-      this, query_id, action, data, triggered_origin, field_type_map,
-      [](ContentAutofillDriver* target, int query_id,
-         mojom::RendererFormDataAction action, const FormData& data) {
+      this, action, data, triggered_origin, field_type_map,
+      [](ContentAutofillDriver* target, mojom::RendererFormDataAction action,
+         const FormData& data) {
         if (!target->RendererIsAvailable())
           return;
-        target->GetAutofillAgent()->FillOrPreviewForm(query_id, data, action);
+        target->GetAutofillAgent()->FillOrPreviewForm(data, action);
       });
 }
 
@@ -407,7 +406,6 @@ void ContentAutofillDriver::AskForValuesToFill(
     const FormData& raw_form,
     const FormFieldData& raw_field,
     const gfx::RectF& bounding_box,
-    int32_t query_id,
     AutoselectFirstSuggestion autoselect_first_suggestion,
     FormElementWasClicked form_element_was_clicked) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
@@ -417,15 +415,14 @@ void ContentAutofillDriver::AskForValuesToFill(
   SetFrameAndFormMetaData(form, &field);
   autofill_router().AskForValuesToFill(
       this, form, field,
-      TransformBoundingBoxToViewportCoordinates(bounding_box), query_id,
+      TransformBoundingBoxToViewportCoordinates(bounding_box),
       autoselect_first_suggestion, form_element_was_clicked,
       [](ContentAutofillDriver* target, const FormData& form,
          const FormFieldData& field, const gfx::RectF& bounding_box,
-         int32_t query_id,
          AutoselectFirstSuggestion autoselect_first_suggestion,
          FormElementWasClicked form_element_was_clicked) {
         target->autofill_manager_->OnAskForValuesToFill(
-            form, field, bounding_box, query_id, autoselect_first_suggestion,
+            form, field, bounding_box, autoselect_first_suggestion,
             form_element_was_clicked);
       });
 }
@@ -549,8 +546,7 @@ void ContentAutofillDriver::FillFormForAssistant(
                                                      field);
         } else if (fill_data.is_credit_card()) {
           target->autofill_manager_->FillCreditCardForm(
-              /*query_id=*/kNoQueryId, form, field, fill_data.credit_card(),
-              fill_data.cvc());
+              form, field, fill_data.credit_card(), fill_data.cvc());
         } else {
           NOTREACHED();
         }
