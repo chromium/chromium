@@ -158,6 +158,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui/default_promo:test_support",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/ntp:feature_flags",

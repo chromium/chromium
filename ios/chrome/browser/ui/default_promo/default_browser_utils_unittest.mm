@@ -6,6 +6,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -19,25 +20,8 @@ namespace {
 
 class DefaultBrowserUtilsTest : public PlatformTest {
  protected:
-  void SetUp() override {
-    ClearUserDefaults();
-  }
-  void TearDown() override { ClearUserDefaults(); }
-
-  // Clear NSUserDefault keys used in the class.
-  void ClearUserDefaults() {
-    NSArray<NSString*>* keys = @[
-      @"lastSignificantUserEvent", @"lastSignificantUserEventStaySafe",
-      @"lastSignificantUserEventMadeForIOS", @"lastSignificantUserEventAllTabs",
-      @"userHasInteractedWithFullscreenPromo",
-      @"userHasInteractedWithTailoredFullscreenPromo",
-      @"lastTimeUserInteractedWithFullscreenPromo"
-    ];
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    for (NSString* key in keys) {
-      [defaults removeObjectForKey:key];
-    }
-  }
+  void SetUp() override { ClearDefaultBrowserPromoData(); }
+  void TearDown() override { ClearDefaultBrowserPromoData(); }
 
   base::test::ScopedFeatureList feature_list_;
 };
@@ -49,20 +33,20 @@ TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
   EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
-  ClearUserDefaults();
+  ClearDefaultBrowserPromoData();
 
   // Stay safe promo.
   EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe));
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
   EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe));
-  ClearUserDefaults();
+  ClearDefaultBrowserPromoData();
 
   // Made for iOS promo.
   EXPECT_FALSE(
       IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS));
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
   EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS));
-  ClearUserDefaults();
+  ClearDefaultBrowserPromoData();
 
   // All tabs promo.
   EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs));
@@ -95,7 +79,7 @@ TEST_F(DefaultBrowserUtilsTest, PromoCoolDown) {
   LogUserInteractionWithFullscreenPromo();
   EXPECT_TRUE(UserInPromoCooldown());
 
-  ClearUserDefaults();
+  ClearDefaultBrowserPromoData();
   LogUserInteractionWithTailoredFullscreenPromo();
   EXPECT_TRUE(UserInPromoCooldown());
 }

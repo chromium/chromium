@@ -116,6 +116,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/content_suggestions:eg_app_support+eg2",
+    "//ios/chrome/browser/ui/default_promo:test_support",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/find_bar:eg_app_support+eg2",
     "//ios/chrome/browser/ui/first_run:eg_app_support+eg2",

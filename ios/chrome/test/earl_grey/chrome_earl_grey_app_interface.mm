@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -1347,17 +1348,7 @@ int watchRunNumber = 0;
 #pragma mark - Default Browser Promo Utilities
 
 + (void)clearDefaultBrowserPromoData {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSArray<NSString*>* keys = @[
-    @"lastTimeUserInteractedWithFullscreenPromo",
-    @"userHasInteractedWithFullscreenPromo",
-    @"userHasInteractedWithTailoredFullscreenPromo",
-    @"userInteractedWithNonModalPromoCount",
-    @"remindMeLaterPromoActionInteraction",
-  ];
-  for (NSString* key in keys) {
-    [defaults removeObjectForKey:key];
-  }
+  ClearDefaultBrowserPromoData();
 }
 
 + (void)copyURLToPasteBoard {

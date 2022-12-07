@@ -358,8 +358,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
 
     if (action == START_ACTION_OPEN_HTTP_FROM_OS ||
         action == START_ACTION_OPEN_HTTPS_FROM_OS) {
-      [[NSUserDefaults standardUserDefaults] setObject:[NSDate date]
-                                                forKey:kLastHTTPURLOpenTime];
+      LogOpenHTTPURLFromExternalURL();
     }
 
     if (!externalURL.is_valid())

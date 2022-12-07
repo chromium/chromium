@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/app_store_rating/constants.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -96,22 +97,14 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults removeObjectForKey:kAppStoreRatingActiveDaysInPastWeekKey];
     [defaults removeObjectForKey:kAppStoreRatingTotalDaysOnChromeKey];
-    [defaults removeObjectForKey:kLastHTTPURLOpenTime];
+    ClearDefaultBrowserPromoData();
   }
 
-  // Set kLastHTTPURLOpenTime in NSUserDefaults so
-  // ChromeIsLikelyDefaultBrowser() returns true.
-  void SetTrueChromeLikelyDefaultBrowser() {
-    [[NSUserDefaults standardUserDefaults] setObject:[NSDate date]
-                                              forKey:kLastHTTPURLOpenTime];
-  }
+  // Ensure that Chrome is considered as default browser.
+  void SetTrueChromeLikelyDefaultBrowser() { LogOpenHTTPURLFromExternalURL(); }
 
-  // Remove kLastHTTPURLOpenTime from NSUserDefaults so
-  // ChromeIsLikelyDefaultBrowser() returns false.
-  void SetFalseChromeLikelyDefaultBrowser() {
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:kLastHTTPURLOpenTime];
-  }
+  // Ensure that Chrome is not considered as default browser.
+  void SetFalseChromeLikelyDefaultBrowser() { ClearDefaultBrowserPromoData(); }
 
   // Enable Credentials Provider.
   void EnableCPE() {

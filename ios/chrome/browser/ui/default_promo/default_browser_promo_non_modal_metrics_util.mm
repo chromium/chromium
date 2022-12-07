@@ -19,7 +19,7 @@ using base::UmaHistogramEnumeration;
 
 void LogNonModalPromoAction(NonModalPromoAction action,
                             NonModalPromoTriggerType type,
-                            int impression_number) {
+                            NSInteger impression_number) {
   switch (action) {
     case NonModalPromoAction::kAppear:
       RecordAction(

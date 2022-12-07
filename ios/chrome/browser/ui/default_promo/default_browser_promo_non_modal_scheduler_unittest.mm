@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_metrics_util.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -66,7 +67,7 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
                                                 WebStateList::INSERT_ACTIVATE,
                                                 WebStateOpener());
 
-    ClearUserDefaults();
+    ClearDefaultBrowserPromoData();
 
     promo_commands_handler_ =
         OCMStrictProtocolMock(@protocol(DefaultBrowserPromoNonModalCommands));
@@ -89,23 +90,10 @@ class DefaultBrowserPromoNonModalSchedulerTest : public PlatformTest {
   }
 
   void TearDown() override {
-    ClearUserDefaults();
+    ClearDefaultBrowserPromoData();
     OverlayPresenter::FromBrowser(browser_.get(),
                                   OverlayModality::kInfobarBanner)
         ->SetPresentationContext(nullptr);
-  }
-
-  // Clear NSUserDefault keys used in the class.
-  void ClearUserDefaults() {
-    NSArray<NSString*>* keys = @[
-      @"userInteractedWithNonModalPromoCount",
-      @"lastTimeUserInteractedWithFullscreenPromo",
-      @"lastHTTPURLOpenTime",
-    ];
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-    for (NSString* key in keys) {
-      [defaults removeObjectForKey:key];
-    }
   }
 
   base::test::TaskEnvironment task_env_{
@@ -486,9 +474,7 @@ TEST_F(DefaultBrowserPromoNonModalSchedulerTest,
 TEST_F(DefaultBrowserPromoNonModalSchedulerTest, NoPromoIfDefault) {
 
   // Mark Chrome as currently default
-  [[NSUserDefaults standardUserDefaults]
-      setObject:[NSDate dateWithTimeIntervalSinceNow:-10]
-         forKey:kLastHTTPURLOpenTime];
+  LogOpenHTTPURLFromExternalURL();
 
   [scheduler_ logUserPastedInOmnibox];
 

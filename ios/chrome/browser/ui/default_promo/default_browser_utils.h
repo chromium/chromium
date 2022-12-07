@@ -29,12 +29,11 @@ enum class IOSDefaultBrowserFullscreenPromoAction {
 
 }  // namespace
 
-// UserDefaults key that saves the last time an HTTP(S) link was sent and opened
-// by the app.
-extern NSString* const kLastHTTPURLOpenTime;
-
 // The feature parameter to activate the remind me later button.
 extern const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[];
+
+// Logs the timestamp of opening an HTTP(S) link sent and opened by the app.
+void LogOpenHTTPURLFromExternalURL();
 
 // Logs the timestamp of user activity that is deemed to be an indication of
 // a user that would likely benefit from having Chrome set as their default
@@ -76,11 +75,11 @@ bool HasUserInteractedWithFullscreenPromoBefore();
 bool HasUserInteractedWithTailoredFullscreenPromoBefore();
 
 // Returns YES if the user taps on open settings button from first run promo.
-BOOL HasUserOpenedSettingsFromFirstRunPromo();
+bool HasUserOpenedSettingsFromFirstRunPromo();
 
 // Returns the number of times the user has seen and interacted with the
 // non-modal promo before.
-int UserInteractionWithNonModalPromoCount();
+NSInteger UserInteractionWithNonModalPromoCount();
 
 // Logs that the user has interacted with the Fullscreen Promo.
 void LogUserInteractionWithFullscreenPromo();
@@ -114,6 +113,6 @@ DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromo);
 
 // Return YES if the user has seen a promo recently, and shouldn't
 // see another one.
-BOOL UserInPromoCooldown();
+bool UserInPromoCooldown();
 
 #endif  // IOS_CHROME_BROWSER_UI_DEFAULT_PROMO_DEFAULT_BROWSER_UTILS_H_

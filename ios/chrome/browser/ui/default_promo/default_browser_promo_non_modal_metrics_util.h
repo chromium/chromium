@@ -31,7 +31,7 @@ enum class NonModalPromoTriggerType {
 // promo.
 void LogNonModalPromoAction(NonModalPromoAction action,
                             NonModalPromoTriggerType type,
-                            int impression_number);
+                            NSInteger impression_number);
 
 // Logs the time a non modal promo was on screen.
 void LogNonModalTimeOnScreen(base::TimeTicks initial_time);

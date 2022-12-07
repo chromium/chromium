@@ -43,8 +43,14 @@ const int kPromoShownTimesLimit = 3;
 constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
 
 bool PromoCanBeDisplayed() {
-  return !IsChromeLikelyDefaultBrowser() && !UserInPromoCooldown() &&
-         UserInteractionWithNonModalPromoCount() < kPromoShownTimesLimit;
+  if (IsChromeLikelyDefaultBrowser())
+    return false;
+
+  if (UserInPromoCooldown())
+    return false;
+
+  NSInteger count = UserInteractionWithNonModalPromoCount();
+  return count < kPromoShownTimesLimit;
 }
 
 typedef NS_ENUM(NSUInteger, PromoReason) {

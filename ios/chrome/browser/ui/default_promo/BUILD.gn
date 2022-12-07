@@ -81,6 +81,16 @@ source_set("default_promo_ui") {
   ]
 }
 
+source_set("test_support") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "default_browser_utils_test_support.h",
+    "default_browser_utils_test_support.mm",
+  ]
+  deps = [ ":utils" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -91,6 +101,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":default_promo",
+    ":test_support",
     ":utils",
     "//base",
     "//base/test:test_support",

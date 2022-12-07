@@ -9,6 +9,7 @@
 #import "components/metrics/metrics_features.h"
 #import "components/metrics/metrics_log_uploader.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils_test_support.h"
 #import "testing/platform_test.h"
 #import "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -48,8 +49,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Tests the implementation of ProvideCurrentSessionData() and
 // OnDidCreateMetricsLog().
 TEST_P(IOSChromeDefaultBrowserMetricsProviderTest, ProvideCurrentSessionData) {
-  [[NSUserDefaults standardUserDefaults]
-      removeObjectForKey:kLastHTTPURLOpenTime];
+  ClearDefaultBrowserPromoData();
   IOSChromeDefaultBrowserMetricsProvider provider(
       metrics::MetricsLogUploader::MetricServiceType::UMA);
   if (!ShouldEmitHistogramsEarlier()) {
@@ -61,8 +61,7 @@ TEST_P(IOSChromeDefaultBrowserMetricsProviderTest, ProvideCurrentSessionData) {
   histogram_tester_.ExpectBucketCount("IOS.IsDefaultBrowser", false, 1);
   histogram_tester_.ExpectBucketCount("IOS.IsDefaultBrowser", true, 0);
 
-  [[NSUserDefaults standardUserDefaults] setObject:[NSDate date]
-                                            forKey:kLastHTTPURLOpenTime];
+  LogOpenHTTPURLFromExternalURL();
   if (!ShouldEmitHistogramsEarlier()) {
     metrics::ChromeUserMetricsExtension uma_proto;
     provider.ProvideCurrentSessionData(&uma_proto);

@@ -9,6 +9,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/notreached.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,64 +18,76 @@
 
 #import <UIKit/UIKit.h>
 
-using base::mac::ObjCCast;
+// List of all key used to store data in NSUserDefaults. Still used as key
+// in the NSDictionary stored under `kBrowserDefaultsKey`.
+extern NSArray<NSString*>* const kDefaultBrowserUtilsLegacyKeysForTesting;
+
+// Key in NSUserDefaults containing an NSDictionary used to store all the
+// information.
+extern NSString* const kDefaultBrowserUtilsKey;
 
 namespace {
 
-// Key for NSUserDefaults containing an array of dates. Each date correspond to
+// Key in storage containing an NSDate corresponding to the last time
+// an HTTP(S) link was sent and opened by the app.
+NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
+
+// Key in storage containing an array of dates. Each date correspond to
 // a general event of interest for Default Browser Promo modals.
 NSString* const kLastSignificantUserEventGeneral = @"lastSignificantUserEvent";
 
-// Key for NSUserDefaults containing an array of dates. Each date correspond to
+// Key in storage containing an array of dates. Each date correspond to
 // a stay safe event of interest for Default Browser Promo modals.
 NSString* const kLastSignificantUserEventStaySafe =
     @"lastSignificantUserEventStaySafe";
 
-// Key for NSUserDefaults containing an array of dates. Each date correspond to
+// Key in storage containing an array of dates. Each date correspond to
 // a made for iOS event of interest for Default Browser Promo modals.
 NSString* const kLastSignificantUserEventMadeForIOS =
     @"lastSignificantUserEventMadeForIOS";
 
-// Key for NSUserDefaults containing an array of dates. Each date correspond to
+// Key in storage containing an array of dates. Each date correspond to
 // an all tabs event of interest for Default Browser Promo modals.
 NSString* const kLastSignificantUserEventAllTabs =
     @"lastSignificantUserEventAllTabs";
 
-// Key for NSUserDefaults containing an NSDate indicating the last time a user
+// Key in storage containing an NSDate indicating the last time a user
 // interacted with ANY promo. The string value is kept from when the promos
 // first launched to avoid changing the behavior for users that have already
 // seen the promo.
 NSString* const kLastTimeUserInteractedWithPromo =
     @"lastTimeUserInteractedWithFullscreenPromo";
 
-// Key for NSUserDefaults containing a bool indicating if the user has
+// Key in storage containing a bool indicating if the user has
 // previously interacted with a regular fullscreen promo.
 NSString* const kUserHasInteractedWithFullscreenPromo =
     @"userHasInteractedWithFullscreenPromo";
 
-// Key for NSUserDefaults containing a bool indicating if the user has
+// Key in storage containing a bool indicating if the user has
 // previously interacted with a tailored fullscreen promo.
 NSString* const kUserHasInteractedWithTailoredFullscreenPromo =
     @"userHasInteractedWithTailoredFullscreenPromo";
 
-// Key for NSUserDefaults containing a bool indicating if the user has
+// Key in storage containing a bool indicating if the user has
 // previously interacted with first run promo.
 NSString* const kUserHasInteractedWithFirstRunPromo =
     @"userHasInteractedWithFirstRunPromo";
 
-// Key for NSUserDefaults containing an int indicating the number of times the
+// Key in storage containing an int indicating the number of times the
 // user has interacted with a non-modal promo.
 NSString* const kUserInteractedWithNonModalPromoCount =
     @"userInteractedWithNonModalPromoCount";
 
-// Key for NSUserDefaults containing an int indicating the number of times a
+// Key in storage containing an int indicating the number of times a
 // promo has been displayed.
 NSString* const kDisplayedPromoCount = @"displayedPromoCount";
 
+// Key in storage containing an NSDate indicating the last time a user
+// interacted with the "remind me later" panel.
 NSString* const kRemindMeLaterPromoActionInteraction =
     @"remindMeLaterPromoActionInteraction";
 
-// Key for NSUserDefaults containing a bool indicating if the user tapped on
+// Key in storage containing a bool indicating if the user tapped on
 // button to open settings.
 NSString* const kOpenSettingsActionInteraction =
     @"openSettingsActionInteraction";
@@ -82,47 +95,103 @@ NSString* const kOpenSettingsActionInteraction =
 const char kDefaultBrowserFullscreenPromoExperimentChangeStringsGroupParam[] =
     "show_switch_description";
 
-// Time threshold before activity timestamps should be removed. Currently set to
-// 21 days.
-const NSTimeInterval kUserActivityTimestampExpiration = 21 * 24 * 60 * 60;
+// Maximum number of past event timestamps to record.
+const size_t kMaxPastTimestampsToRecord = 10;
+
+// Time threshold before activity timestamps should be removed.
+constexpr base::TimeDelta kUserActivityTimestampExpiration = base::Days(21);
+
 // Time threshold for the last URL open before no URL opens likely indicates
 // Chrome is no longer the default browser.
-const NSTimeInterval kLatestURLOpenForDefaultBrowser = 21 * 24 * 60 * 60;
+constexpr base::TimeDelta kLatestURLOpenForDefaultBrowser = base::Days(21);
+
 // Delay for the user to be reshown the fullscreen promo when the user taps on
-// the "Remind Me Later" button. 50 hours.
-const NSTimeInterval kRemindMeLaterPresentationDelay = 50 * 60 * 60;
+// the "Remind Me Later" button.
+constexpr base::TimeDelta kRemindMeLaterPresentationDelay = base::Hours(50);
 
-// Cool down between fullscreen promos. Currently set to 14 days.
-const NSTimeInterval kFullscreenPromoCoolDown = 14 * 24 * 60 * 60;
+// Cool down between fullscreen promos.
+constexpr base::TimeDelta kFullscreenPromoCoolDown = base::Days(14);
 
-// Short cool down between promos. Currently set to 3 days.
-const NSTimeInterval kPromosShortCoolDown = 3 * 24 * 60 * 60;
+// Short cool down between promos.
+constexpr base::TimeDelta kPromosShortCoolDown = base::Days(3);
 
-// Helper function to clear all timestamps that occur later than 21 days ago and
-// keep it only to 10 timestamps.
-NSMutableArray<NSDate*>* SanitizePastUserEvents(
-    NSMutableArray<NSDate*>* pastUserEvents) {
-  // First, keep the array to 10 items:
-  NSInteger count = pastUserEvents.count;
-  if (count > 10) {
-    [pastUserEvents removeObjectsInRange:NSMakeRange(0, count - 10)];
+// List of DefaultPromoType considered by MostRecentInterestDefaultPromoType.
+const DefaultPromoType kDefaultPromoTypes[] = {
+    DefaultPromoTypeStaySafe,
+    DefaultPromoTypeAllTabs,
+    DefaultPromoTypeMadeForIOS,
+};
+
+// Creates storage object from legacy keys.
+NSMutableDictionary<NSString*, NSObject*>* CreateStorageObjectFromLegacyKeys() {
+  NSMutableDictionary<NSString*, NSObject*>* dictionary =
+      [[NSMutableDictionary alloc] init];
+
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  for (NSString* key in kDefaultBrowserUtilsLegacyKeysForTesting) {
+    NSObject* object = [defaults objectForKey:key];
+    if (object) {
+      dictionary[key] = object;
+      [defaults removeObjectForKey:key];
+    }
   }
 
-  // Next, remove items older than a week:
-  NSDate* sevenDaysAgoDate =
-      [NSDate dateWithTimeIntervalSinceNow:-kUserActivityTimestampExpiration];
-  NSUInteger firstUnexpiredIndex = [pastUserEvents
-      indexOfObjectPassingTest:^BOOL(NSDate* date, NSUInteger idx, BOOL* stop) {
-        return ([date laterDate:sevenDaysAgoDate] == date);
-      }];
-  if (firstUnexpiredIndex != NSNotFound && firstUnexpiredIndex > 0) {
-    [pastUserEvents removeObjectsInRange:NSMakeRange(0, firstUnexpiredIndex)];
-  }
-  return pastUserEvents;
+  return dictionary;
 }
 
-// Helper function get the NSUserDefaults key for a specific promo type.
-NSString* NSUserDefaultKeyForType(DefaultPromoType type) {
+// Helper function to get the data for `key` from the storage object.
+template <typename T>
+T* GetObjectFromStorageForKey(NSString* key) {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary<NSString*, NSObject*>* storage =
+      [defaults objectForKey:kDefaultBrowserUtilsKey];
+
+  // If the storage is missing, create it, possibly from the legacy keys.
+  // This is used to support loading data written by version 109 or ealier.
+  // Remove once migrating data from such old version is no longer supported.
+  if (!storage) {
+    storage = CreateStorageObjectFromLegacyKeys();
+    [defaults setObject:storage forKey:kDefaultBrowserUtilsKey];
+  }
+
+  DCHECK(storage);
+  return base::mac::ObjCCast<T>(storage[key]);
+}
+
+// Helper function to update storage with `dict`. If a key in `dict` maps
+// to `NSNull` instance, it will be removed from storage.
+void UpdateStorageWithDictionary(NSDictionary<NSString*, NSObject*>* dict) {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  NSMutableDictionary<NSString*, NSObject*>* storage =
+      [[defaults objectForKey:kDefaultBrowserUtilsKey] mutableCopy];
+
+  // If the storage is missing, create it, possibly from the legacy keys.
+  // This is used to support loading data written by version 109 or ealier.
+  // Remove once migrating data from such old version is no longer supported.
+  if (!storage) {
+    storage = CreateStorageObjectFromLegacyKeys();
+  }
+  DCHECK(storage);
+
+  for (NSString* key in dict) {
+    NSObject* object = dict[key];
+    if (object == [NSNull null]) {
+      [storage removeObjectForKey:key];
+    } else {
+      storage[key] = object;
+    }
+  }
+
+  [defaults setObject:storage forKey:kDefaultBrowserUtilsKey];
+}
+
+// Helper function to set `data` for `key` into the storage object.
+void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
+  UpdateStorageWithDictionary(@{key : data});
+}
+
+// Helper function to get the storage key for a specific promo type.
+NSString* StorageKeyForDefaultPromoType(DefaultPromoType type) {
   switch (type) {
     case DefaultPromoTypeGeneral:
       return kLastSignificantUserEventGeneral;
@@ -137,40 +206,89 @@ NSString* NSUserDefaultKeyForType(DefaultPromoType type) {
   return nil;
 }
 
-// Returns the most recent event for a given promo type or nil if none.
-NSDate* MostRecentDateForType(DefaultPromoType type) {
-  NSString* key = NSUserDefaultKeyForType(type);
-  NSMutableArray<NSDate*>* pastUserEvents =
-      [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
-  return pastUserEvents.lastObject;
-}
-}  // namespace
+// Loads from NSUserDefaults the time of the last non-expired events.
+std::vector<base::Time> LoadTimestampsForPromoType(DefaultPromoType type) {
+  NSString* key = StorageKeyForDefaultPromoType(type);
+  NSArray* dates = GetObjectFromStorageForKey<NSArray>(key);
+  if (!dates)
+    return {};
 
-#pragma mark - Private
+  std::vector<base::Time> times;
+  times.reserve(dates.count);
+
+  const base::Time now = base::Time::Now();
+  for (NSObject* object : dates) {
+    NSDate* date = base::mac::ObjCCast<NSDate>(object);
+    if (!date)
+      continue;
+
+    const base::Time time = base::Time::FromNSDate(date);
+    if (now - time > kUserActivityTimestampExpiration)
+      continue;
+
+    times.push_back(time);
+  }
+
+  return times;
+}
+
+// Stores the time of the last recorded events for `type`.
+void StoreTimestampsForPromoType(DefaultPromoType type,
+                                 std::vector<base::Time> times) {
+  NSMutableArray<NSDate*>* dates =
+      [[NSMutableArray alloc] initWithCapacity:times.size()];
+
+  // Only record up to kMaxPastTimestampsToRecord timestamps.
+  if (times.size() > kMaxPastTimestampsToRecord) {
+    const size_t count_to_erase = times.size() - kMaxPastTimestampsToRecord;
+    times.erase(times.begin(), times.begin() + count_to_erase);
+  }
+
+  for (base::Time time : times) {
+    [dates addObject:time.ToNSDate()];
+  }
+
+  NSString* key = StorageKeyForDefaultPromoType(type);
+  SetObjectIntoStorageForKey(key, dates);
+}
+
+// Returns whether an event was logged for key occuring less than `delay`
+// in the past.
+bool HasRecordedEventForKeyLessThanDelay(NSString* key, base::TimeDelta delay) {
+  NSDate* date = GetObjectFromStorageForKey<NSDate>(key);
+  if (!date)
+    return false;
+
+  const base::Time time = base::Time::FromNSDate(date);
+  return base::Time::Now() - time < delay;
+}
+
+// Returns whether an event was logged for key occuring more than `delay`
+// in the past.
+bool HasRecordedEventForKeyMoreThanDelay(NSString* key, base::TimeDelta delay) {
+  NSDate* date = GetObjectFromStorageForKey<NSDate>(key);
+  if (!date)
+    return false;
+
+  const base::Time time = base::Time::FromNSDate(date);
+  return base::Time::Now() - time > delay;
+}
 
 // `YES` if user interacted with the first run default browser screen.
 BOOL HasUserInteractedWithFirstRunPromoBefore() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kUserHasInteractedWithFirstRunPromo];
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kUserHasInteractedWithFirstRunPromo);
+  return number.boolValue;
 }
 
 // Returns the number of time a default browser promo has been displayed.
 NSInteger DisplayedPromoCount() {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  return [standardDefaults integerForKey:kDisplayedPromoCount];
-}
-
-// Adds one to displayed default browser promo count.
-void AddOneToDisplayedPromoCount() {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  NSInteger currentDisplayedPromoCount =
-      [standardDefaults integerForKey:kDisplayedPromoCount];
-  [standardDefaults setInteger:currentDisplayedPromoCount + 1
-                        forKey:kDisplayedPromoCount];
+  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(kDisplayedPromoCount);
+  return number.integerValue;
 }
 
 // Computes cool down between promos.
-NSTimeInterval ComputeCooldown() {
+base::TimeDelta ComputeCooldown() {
   // `true` if the user is in the short delay group experiment and tap on the
   // "No thanks" button in first run default browser screen. Short cool down
   // should be set only one time, so after the first run promo there is a short
@@ -182,47 +300,35 @@ NSTimeInterval ComputeCooldown() {
   return kFullscreenPromoCoolDown;
 }
 
-#pragma mark - Public
-
-NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";
+}  // namespace
 
 const char kDefaultBrowserFullscreenPromoExperimentRemindMeGroupParam[] =
     "show_remind_me_later";
 
-void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type) {
-  NSString* key = NSUserDefaultKeyForType(type);
-  NSDate* date = [NSDate date];
-  NSMutableArray<NSDate*>* pastUserEvents =
-      [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
-  if (pastUserEvents) {
-    pastUserEvents = SanitizePastUserEvents(pastUserEvents);
-    [pastUserEvents addObject:date];
-  } else {
-    pastUserEvents = [@[ date ] mutableCopy];
-  }
+void LogOpenHTTPURLFromExternalURL() {
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime, [NSDate date]);
+}
 
-  [[NSUserDefaults standardUserDefaults] setObject:pastUserEvents forKey:key];
+void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type) {
+  std::vector<base::Time> times = LoadTimestampsForPromoType(type);
+  times.push_back(base::Time::Now());
+
+  StoreTimestampsForPromoType(type, std::move(times));
 }
 
 void LogRemindMeLaterPromoActionInteraction() {
   DCHECK(IsInRemindMeLaterGroup());
-  [[NSUserDefaults standardUserDefaults]
-      setObject:[NSDate date]
-         forKey:kRemindMeLaterPromoActionInteraction];
+  SetObjectIntoStorageForKey(kRemindMeLaterPromoActionInteraction,
+                             [NSDate date]);
 }
 
 bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo() {
   if (!IsInRemindMeLaterGroup()) {
     return false;
   }
-  NSDate* remindMeTimestamp = [[NSUserDefaults standardUserDefaults]
-      objectForKey:kRemindMeLaterPromoActionInteraction];
-  if (!remindMeTimestamp) {
-    return false;
-  }
-  NSDate* fiftyHoursAgoDate =
-      [NSDate dateWithTimeIntervalSinceNow:-kRemindMeLaterPresentationDelay];
-  return [remindMeTimestamp laterDate:fiftyHoursAgoDate] == fiftyHoursAgoDate;
+
+  return HasRecordedEventForKeyMoreThanDelay(
+      kRemindMeLaterPromoActionInteraction, kRemindMeLaterPresentationDelay);
 }
 
 bool IsInRemindMeLaterGroup() {
@@ -245,145 +351,136 @@ bool NonModalPromosEnabled() {
 }
 
 bool HasUserInteractedWithFullscreenPromoBefore() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kUserHasInteractedWithFullscreenPromo];
+  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
+      kUserHasInteractedWithFullscreenPromo);
+  return number.boolValue;
 }
 
 bool HasUserInteractedWithTailoredFullscreenPromoBefore() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kUserHasInteractedWithTailoredFullscreenPromo];
+  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
+      kUserHasInteractedWithTailoredFullscreenPromo);
+  return number.boolValue;
 }
 
-BOOL HasUserOpenedSettingsFromFirstRunPromo() {
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:kOpenSettingsActionInteraction];
+bool HasUserOpenedSettingsFromFirstRunPromo() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kOpenSettingsActionInteraction);
+  return number.boolValue;
 }
 
-int UserInteractionWithNonModalPromoCount() {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  return [standardDefaults integerForKey:kUserInteractedWithNonModalPromoCount];
+NSInteger UserInteractionWithNonModalPromoCount() {
+  NSNumber* number = GetObjectFromStorageForKey<NSNumber>(
+      kUserInteractedWithNonModalPromoCount);
+  return number.integerValue;
 }
 
 void LogUserInteractionWithFullscreenPromo() {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  [standardDefaults setBool:YES forKey:kUserHasInteractedWithFullscreenPromo];
-  [standardDefaults setObject:[NSDate date]
-                       forKey:kLastTimeUserInteractedWithPromo];
+  const NSInteger displayed_promo_count = DisplayedPromoCount();
+  NSDictionary<NSString*, NSObject*>* update = @{
+    kUserHasInteractedWithFullscreenPromo : @YES,
+    kLastTimeUserInteractedWithPromo : [NSDate date],
+    kDisplayedPromoCount : @(displayed_promo_count + 1),
+  };
 
   if (IsInRemindMeLaterGroup()) {
     // Clear any possible Remind Me Later timestamp saved.
-    [standardDefaults removeObjectForKey:kRemindMeLaterPromoActionInteraction];
+    NSMutableDictionary<NSString*, NSObject*>* copy = [update mutableCopy];
+    copy[kRemindMeLaterPromoActionInteraction] = [NSNull null];
+    update = copy;
   }
-  AddOneToDisplayedPromoCount();
+
+  UpdateStorageWithDictionary(update);
 }
 
 void LogUserInteractionWithTailoredFullscreenPromo() {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  [standardDefaults setBool:YES
-                     forKey:kUserHasInteractedWithTailoredFullscreenPromo];
-  [standardDefaults setObject:[NSDate date]
-                       forKey:kLastTimeUserInteractedWithPromo];
-  AddOneToDisplayedPromoCount();
+  const NSInteger displayed_promo_count = DisplayedPromoCount();
+  UpdateStorageWithDictionary(@{
+    kUserHasInteractedWithTailoredFullscreenPromo : @YES,
+    kLastTimeUserInteractedWithPromo : [NSDate date],
+    kDisplayedPromoCount : @(displayed_promo_count + 1),
+  });
 }
 
 void LogUserInteractionWithNonModalPromo() {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  int currentInteractionCount =
-      [standardDefaults integerForKey:kUserInteractedWithNonModalPromoCount];
-  [standardDefaults setInteger:currentInteractionCount + 1
-                        forKey:kUserInteractedWithNonModalPromoCount];
-  [standardDefaults setObject:[NSDate date]
-                       forKey:kLastTimeUserInteractedWithPromo];
-  AddOneToDisplayedPromoCount();
+  const NSInteger interaction_count = UserInteractionWithNonModalPromoCount();
+  const NSInteger displayed_promo_count = DisplayedPromoCount();
+  UpdateStorageWithDictionary(@{
+    kLastTimeUserInteractedWithPromo : [NSDate date],
+    kUserInteractedWithNonModalPromoCount : @(interaction_count + 1),
+    kDisplayedPromoCount : @(displayed_promo_count + 1),
+  });
 }
 
 void LogUserInteractionWithFirstRunPromo(BOOL openedSettings) {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  [standardDefaults setBool:YES forKey:kUserHasInteractedWithFirstRunPromo];
-  [standardDefaults setObject:[NSDate date]
-                       forKey:kLastTimeUserInteractedWithPromo];
-  [standardDefaults setBool:openedSettings
-                     forKey:kOpenSettingsActionInteraction];
-  AddOneToDisplayedPromoCount();
+  const NSInteger displayed_promo_count = DisplayedPromoCount();
+  UpdateStorageWithDictionary(@{
+    kUserHasInteractedWithFirstRunPromo : @YES,
+    kLastTimeUserInteractedWithPromo : [NSDate date],
+    kDisplayedPromoCount : @(displayed_promo_count + 1),
+  });
 }
 
 bool IsChromeLikelyDefaultBrowser7Days() {
-  NSDate* lastURLOpen =
-      [[NSUserDefaults standardUserDefaults] objectForKey:kLastHTTPURLOpenTime];
-  if (!lastURLOpen) {
-    return false;
-  }
-  NSTimeInterval sevenDays = 7 * 24 * 60 * 60;
-  NSDate* sevenDaysAgoDate = [NSDate dateWithTimeIntervalSinceNow:-sevenDays];
-  if ([lastURLOpen laterDate:sevenDaysAgoDate] == sevenDaysAgoDate) {
-    return false;
-  }
-  return true;
+  return HasRecordedEventForKeyLessThanDelay(kLastHTTPURLOpenTime,
+                                             base::Days(7));
 }
 
 bool IsChromeLikelyDefaultBrowser() {
-  NSDate* lastURLOpen =
-      [[NSUserDefaults standardUserDefaults] objectForKey:kLastHTTPURLOpenTime];
-  if (!lastURLOpen) {
-    return false;
-  }
-
-  NSDate* lookBackDate =
-      [NSDate dateWithTimeIntervalSinceNow:-kLatestURLOpenForDefaultBrowser];
-  if ([lastURLOpen laterDate:lookBackDate] == lookBackDate) {
-    return false;
-  }
-  return true;
+  return HasRecordedEventForKeyLessThanDelay(kLastHTTPURLOpenTime,
+                                             kLatestURLOpenForDefaultBrowser);
 }
 
-bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type) {
-  NSString* key = NSUserDefaultKeyForType(type);
-  NSMutableArray<NSDate*>* pastUserEvents =
-      [[[NSUserDefaults standardUserDefaults] arrayForKey:key] mutableCopy];
-  pastUserEvents = SanitizePastUserEvents(pastUserEvents);
-  return [pastUserEvents count] > 0;
+bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType promo_type) {
+  std::vector<base::Time> times = LoadTimestampsForPromoType(promo_type);
+  return !times.empty();
 }
 
-DefaultPromoType MostRecentInterestDefaultPromoType(BOOL skipAllTabsPromoType) {
-  DefaultPromoType mostRecentType = DefaultPromoTypeGeneral;
-  NSDate* mostRecentDate = [NSDate distantPast];
-  NSArray* promoTypes = @[
-    @(DefaultPromoTypeStaySafe), @(DefaultPromoTypeAllTabs),
-    @(DefaultPromoTypeMadeForIOS)
-  ];
+DefaultPromoType MostRecentInterestDefaultPromoType(
+    BOOL skip_all_tabs_promo_type) {
+  DefaultPromoType most_recent_event_type = DefaultPromoTypeGeneral;
+  base::Time most_recent_event_time = base::Time::Min();
 
-  for (NSNumber* wrappedType in promoTypes) {
-    DefaultPromoType type =
-        static_cast<DefaultPromoType>(wrappedType.unsignedIntegerValue);
-
-    // Since DefaultPromoTypeAllTabs has extra requirements (user signed in),
-    // it needs to be skipped if those are not met.
-    if (type == DefaultPromoTypeAllTabs && skipAllTabsPromoType) {
+  for (DefaultPromoType promo_type : kDefaultPromoTypes) {
+    // Ignore DefaultPromoTypeAllTabs if the extra requirements are not met.
+    if (promo_type == DefaultPromoTypeAllTabs && skip_all_tabs_promo_type)
       continue;
-    }
-    if (IsLikelyInterestedDefaultBrowserUser(type)) {
-      NSDate* interestDate = MostRecentDateForType(type);
-      if (interestDate &&
-          [interestDate laterDate:mostRecentDate] == interestDate) {
-        mostRecentDate = interestDate;
-        mostRecentType = type;
-      }
+
+    std::vector<base::Time> times = LoadTimestampsForPromoType(promo_type);
+    if (times.empty())
+      continue;
+
+    const base::Time last_time_for_type = times.back();
+    if (last_time_for_type >= most_recent_event_time) {
+      most_recent_event_type = promo_type;
+      most_recent_event_time = last_time_for_type;
     }
   }
-  return mostRecentType;
+  return most_recent_event_type;
 }
 
-BOOL UserInPromoCooldown() {
-  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
-  NSDate* lastFullscreenInteraction = ObjCCast<NSDate>(
-      [standardDefaults objectForKey:kLastTimeUserInteractedWithPromo]);
-  if (lastFullscreenInteraction) {
-    NSDate* coolDownDate =
-        [NSDate dateWithTimeIntervalSinceNow:-ComputeCooldown()];
-    if ([coolDownDate laterDate:lastFullscreenInteraction] ==
-        lastFullscreenInteraction) {
-      return YES;
-    }
-  }
-  return NO;
+bool UserInPromoCooldown() {
+  return HasRecordedEventForKeyLessThanDelay(kLastTimeUserInteractedWithPromo,
+                                             ComputeCooldown());
 }
+
+// Visible for testing.
+NSString* const kDefaultBrowserUtilsKey = @"DefaultBrowserUtils";
+
+// Visible for testing.
+NSArray<NSString*>* const kDefaultBrowserUtilsLegacyKeysForTesting = @[
+  // clang-format off
+  kLastHTTPURLOpenTime,
+  kLastSignificantUserEventGeneral,
+  kLastSignificantUserEventStaySafe,
+  kLastSignificantUserEventMadeForIOS,
+  kLastSignificantUserEventAllTabs,
+  kLastTimeUserInteractedWithPromo,
+  kUserHasInteractedWithFullscreenPromo,
+  kUserHasInteractedWithTailoredFullscreenPromo,
+  kUserHasInteractedWithFirstRunPromo,
+  kUserInteractedWithNonModalPromoCount,
+  kDisplayedPromoCount,
+  kRemindMeLaterPromoActionInteraction,
+  kOpenSettingsActionInteraction,
+  // clang-format on
+];
