@@ -41,6 +41,8 @@ class TouchToFillCreditCardProperties {
      * Properties for a credit card entry in the TouchToFill sheet for payments.
      */
     static class CreditCardProperties {
+        static final PropertyModel.ReadableIntPropertyKey CARD_ICON_ID =
+                new PropertyModel.ReadableIntPropertyKey("card_icon_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> CARD_NAME =
                 new PropertyModel.ReadableObjectPropertyKey<>("card_name");
         static final PropertyModel.ReadableObjectPropertyKey<String> CARD_NUMBER =
@@ -51,7 +53,7 @@ class TouchToFillCreditCardProperties {
                 new PropertyModel.ReadableObjectPropertyKey<>("on_click_action");
 
         static final PropertyKey[] ALL_KEYS = {
-                CARD_NAME, CARD_NUMBER, CARD_EXPIRATION, ON_CLICK_ACTION};
+                CARD_ICON_ID, CARD_NAME, CARD_NUMBER, CARD_EXPIRATION, ON_CLICK_ACTION};
 
         private CreditCardProperties() {}
     }

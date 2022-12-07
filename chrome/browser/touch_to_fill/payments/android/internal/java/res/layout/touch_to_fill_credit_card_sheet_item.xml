@@ -10,14 +10,17 @@ found in the LICENSE file.
     android:descendantFocusability="blocksDescendants"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="16dp"
+    android:layout_marginBottom="2dp"
+    android:background="@drawable/touch_to_fill_credit_card_background"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/favicon"
         android:layout_width="@dimen/touch_to_fill_payments_favicon_width"
         android:layout_height="@dimen/touch_to_fill_payments_favicon_height"
+        android:layout_marginEnd="16dp"
         android:importantForAccessibility="no"
         android:layout_gravity="center"/>
     <LinearLayout

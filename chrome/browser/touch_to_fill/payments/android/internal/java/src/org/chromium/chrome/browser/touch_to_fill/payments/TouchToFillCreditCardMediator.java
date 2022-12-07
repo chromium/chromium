@@ -76,6 +76,8 @@ class TouchToFillCreditCardMediator {
     private PropertyModel createCardModel(CreditCard card) {
         return new PropertyModel
                 .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
+                .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_ICON_ID,
+                        card.getIssuerIconDrawableId())
                 .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
                         card.getCardNameForAutofillDisplay())
                 .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,

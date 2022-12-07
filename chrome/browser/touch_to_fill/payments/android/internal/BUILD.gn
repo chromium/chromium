@@ -18,6 +18,7 @@ android_library("java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/payments/content/android:minimal_java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
@@ -40,6 +41,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/touch_to_fill_credit_card_background.xml",
     "java/res/layout/touch_to_fill_credit_card_sheet.xml",
     "java/res/layout/touch_to_fill_credit_card_sheet_item.xml",
     "java/res/values/dimens.xml",
@@ -73,7 +75,10 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardViewTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardRenderTest.java",
+    "java/src/org/chromium/chrome/browser/touch_to_fill/payments/TouchToFillCreditCardViewTest.java",
+  ]
 
   deps = [
     ":java",
@@ -84,7 +89,10 @@ android_library("javatests") {
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/touch_to_fill/payments/android:public_java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/autofill/android:autofill_payments_java_resources",
+    "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android/test:java",
     "//content/public/test/android:content_java_test_support",
@@ -94,6 +102,7 @@ android_library("javatests") {
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
