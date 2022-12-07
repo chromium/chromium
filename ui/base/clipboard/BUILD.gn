@@ -100,6 +100,9 @@ component("clipboard") {
       "clipboard_util_mac.h",
       "clipboard_util_mac.mm",
     ]
+    weak_frameworks = [
+      "UniformTypeIdentifiers.framework",  # macOS 11
+    ]
   }
 
   if (is_win) {

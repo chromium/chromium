@@ -12,112 +12,65 @@
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "third_party/mozilla/NSPasteboard+Utils.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
 namespace {
 
-class ClipboardUtilMacTest : public PlatformTest {
- public:
-  ClipboardUtilMacTest() = default;
+using ClipboardUtilMacTest = PlatformTest;
 
-  // Given a pasteboard, returns a dictionary of the contents of the pasteboard
-  // for use in deep comparisons. This fully unpacks any plist-encoded items.
-  NSDictionary* DictionaryFromPasteboardForDeepComparisons(
-      NSPasteboard* pboard) {
-    NSMutableDictionary* result = [NSMutableDictionary dictionary];
-    for (NSString* type in [pboard types]) {
-      NSData* data = [pboard dataForType:type];
-      // Try to unpack the data as a plist, and if it succeeds, use that in the
-      // resulting dictionary rather than the raw NSData. This is needed because
-      // plists have multiple encodings, and the comparison should be made on
-      // the underlying data rather than the specific encoding used by the OS.
-      NSDictionary* unpacked_data = [NSPropertyListSerialization
-          propertyListWithData:data
-                       options:NSPropertyListImmutable
-                        format:nil
-                         error:nil];
-      if (unpacked_data)
-        result[type] = unpacked_data;
-      else
-        result[type] = data;
-    }
-    return result;
-  }
-};
-
-TEST_F(ClipboardUtilMacTest, PasteboardItemFromUrl) {
-  NSString* urlString =
+TEST_F(ClipboardUtilMacTest, PasteboardItemsFromUrls) {
+  NSString* url_string_1 =
       @"https://www.google.com/"
       @"search?q=test&oq=test&aqs=chrome..69i57l2j69i60l4.278j0j7&"
       @"sourceid=chrome&ie=UTF-8";
 
-  base::scoped_nsobject<NSPasteboardItem> item(
-      ClipboardUtil::PasteboardItemFromUrl(urlString, nil));
+  NSString* url_string_2 = @"https://www.google.com/";
+  NSString* title_2 = @"Burrowing Yams";
+
+  NSArray<NSPasteboardItem*>* items = ClipboardUtil::PasteboardItemsFromUrls(
+      @[ url_string_1, url_string_2 ], @[ @"", title_2 ]);
+
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() writeObjects:@[ item ]];
+  [pasteboard->get() writeObjects:items];
 
   NSArray* urls = nil;
   NSArray* titles = nil;
-  [pasteboard->get() getURLs:&urls
-                   andTitles:&titles
-         convertingFilenames:NO
-         convertingTextToURL:NO];
+  ClipboardUtil::URLsAndTitlesFromPasteboard(pasteboard->get(), &urls, &titles);
 
-  ASSERT_EQ(1u, [urls count]);
-  EXPECT_NSEQ(urlString, urls[0]);
-  ASSERT_EQ(1u, [titles count]);
-  EXPECT_NSEQ(urlString, titles[0]);
-
-  NSURL* url = [NSURL URLFromPasteboard:pasteboard->get()];
-  EXPECT_NSEQ([url absoluteString], urlString);
-}
-
-TEST_F(ClipboardUtilMacTest, PasteboardItemWithTitle) {
-  NSString* urlString = @"https://www.google.com/";
-  NSString* title = @"Burrowing Yams";
-
-  base::scoped_nsobject<NSPasteboardItem> item(
-      ClipboardUtil::PasteboardItemFromUrl(urlString, title));
-  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() writeObjects:@[ item ]];
-
-  NSArray* urls = nil;
-  NSArray* titles = nil;
-  [pasteboard->get() getURLs:&urls
-                   andTitles:&titles
-         convertingFilenames:NO
-         convertingTextToURL:NO];
-
-  ASSERT_EQ(1u, [urls count]);
-  EXPECT_NSEQ(urlString, urls[0]);
-  ASSERT_EQ(1u, [titles count]);
-  EXPECT_NSEQ(title, titles[0]);
+  ASSERT_EQ(2u, urls.count);
+  EXPECT_NSEQ(url_string_1, urls[0]);
+  EXPECT_NSEQ(url_string_2, urls[1]);
+  ASSERT_EQ(2u, titles.count);
+  EXPECT_NSEQ(@"", titles[0]);
+  EXPECT_NSEQ(title_2, titles[1]);
 
   NSURL* url = [NSURL URLFromPasteboard:pasteboard->get()];
-  EXPECT_NSEQ([url absoluteString], urlString);
+  EXPECT_NSEQ(url.absoluteString, url_string_1);
+
+  // Only the first item should have the "web urls and titles" data.
+  EXPECT_TRUE([items[0].types containsObject:kUTTypeWebKitWebURLsWithTitles]);
+  EXPECT_FALSE([items[1].types containsObject:kUTTypeWebKitWebURLsWithTitles]);
 }
 
 TEST_F(ClipboardUtilMacTest, PasteboardItemWithFilePath) {
   NSURL* url = [NSURL fileURLWithPath:NSTemporaryDirectory() isDirectory:YES];
   ASSERT_TRUE(url);
-  NSString* urlString = [url absoluteString];
+  NSString* url_string = url.absoluteString;
 
-  base::scoped_nsobject<NSPasteboardItem> item(
-      ClipboardUtil::PasteboardItemFromUrl(urlString, nil));
+  NSArray<NSPasteboardItem*>* items =
+      ClipboardUtil::PasteboardItemsFromUrls(@[ url_string ], @[ @"" ]);
   scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() writeObjects:@[ item ]];
+  [pasteboard->get() writeObjects:items];
 
   NSArray* urls = nil;
   NSArray* titles = nil;
-  [pasteboard->get() getURLs:&urls
-                   andTitles:&titles
-         convertingFilenames:NO
-         convertingTextToURL:NO];
+  ClipboardUtil::URLsAndTitlesFromPasteboard(pasteboard->get(), &urls, &titles);
 
-  ASSERT_EQ(1u, [urls count]);
-  EXPECT_NSEQ(urlString, urls[0]);
-  ASSERT_EQ(1u, [titles count]);
-  EXPECT_NSEQ(urlString, titles[0]);
+  ASSERT_EQ(1u, urls.count);
+  EXPECT_NSEQ(url_string, urls[0]);
+  ASSERT_EQ(1u, titles.count);
+  EXPECT_NSEQ(@"", titles[0]);
 
   NSURL* urlFromPasteboard = [NSURL URLFromPasteboard:pasteboard->get()];
   EXPECT_NSEQ(urlFromPasteboard, url);
@@ -130,24 +83,6 @@ TEST_F(ClipboardUtilMacTest, CheckForLeak) {
       EXPECT_TRUE(pboard->get());
     }
   }
-}
-
-TEST_F(ClipboardUtilMacTest, CompareToWriteToPasteboard) {
-  NSString* urlString = @"https://www.cnn.com/";
-
-  base::scoped_nsobject<NSPasteboardItem> item(
-      ClipboardUtil::PasteboardItemFromUrl(urlString, nil));
-  scoped_refptr<UniquePasteboard> pasteboard = new UniquePasteboard;
-  [pasteboard->get() writeObjects:@[ item ]];
-
-  scoped_refptr<UniquePasteboard> pboard = new UniquePasteboard;
-  [pboard->get() setDataForURL:urlString title:urlString];
-
-  NSDictionary* data1 =
-      DictionaryFromPasteboardForDeepComparisons(pasteboard->get());
-  NSDictionary* data2 =
-      DictionaryFromPasteboardForDeepComparisons(pboard->get());
-  EXPECT_NSEQ(data1, data2);
 }
 
 }  // namespace

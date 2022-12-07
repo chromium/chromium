@@ -73,9 +73,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   // Gets the underlying pasteboard.
   virtual NSPasteboard* GetPasteboard() const = 0;
 
-  // Returns an NSDraggingItem useful for initiating a drag. (Currently
-  // OSExchangeDataProviderMac can only have one item.)
-  NSDraggingItem* GetDraggingItem() const;
+  // Returns NSDraggingItems for initiating a drag.
+  NSArray<NSDraggingItem*>* GetDraggingItems() const;
 
   // Returns an array of pasteboard types that can be supported by
   // OSExchangeData.

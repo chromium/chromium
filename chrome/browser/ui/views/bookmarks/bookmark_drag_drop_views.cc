@@ -69,7 +69,9 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
   static constexpr int kIconSize = 16;
   static constexpr int kTitlePadding = 12;
 
+#if !BUILDFLAG(IS_MAC)
   static constexpr int kCountPadding = 5;
+#endif
   static constexpr int kCountContainerRadius = 12;
 
   static constexpr gfx::Size kBookmarkDragImageSize =
@@ -85,10 +87,52 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
       : gfx::CanvasImageSource(kBookmarkDragImageSize),
         color_provider_(color_provider),
         title_(title),
-        icon_(icon),
-        count_(count) {}
+        icon_(icon)
+#if !BUILDFLAG(IS_MAC)
+        ,
+        count_(count)
+#endif
+  {
+  }
 
  private:
+#if !BUILDFLAG(IS_MAC)
+  void DrawCountBubble(const gfx::FontList& font_list,
+                       const gfx::RectF& container_rect,
+                       cc::PaintFlags paint_flags,
+                       gfx::Canvas* canvas) {
+    // Draw bookmark count if more than 1 bookmark is dragged.
+    std::u16string count = base::NumberToString16(count_);
+    std::unique_ptr<gfx::RenderText> render_text =
+        gfx::RenderText::CreateRenderText();
+    render_text->SetFontList(font_list);
+    render_text->SetCursorEnabled(false);
+    render_text->SetColor(
+        color_provider_->GetColor(kColorBookmarkDragImageCountForeground));
+    render_text->SetText(count);
+    render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+
+    // We measure the count text size to determine container width, as the
+    // container is a rounded rect behind the text.
+    int count_width = render_text->GetStringSize().width();
+    int count_container_width =
+        std::max(kCountContainerRadius * 2, count_width + 2 * kCountPadding);
+
+    // Draw the count container.
+    gfx::Rect count_container_rect(
+        container_rect.right() - count_container_width, 0,
+        count_container_width, kCountContainerRadius * 2);
+    paint_flags.setColor(
+        color_provider_->GetColor(kColorBookmarkDragImageCountBackground));
+    canvas->DrawRoundRect(gfx::RectF(count_container_rect),
+                          kCountContainerRadius, paint_flags);
+
+    // Draw the count text.
+    render_text->SetDisplayRect(count_container_rect);
+    render_text->Draw(canvas);
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   // gfx::CanvasImageSource overrides:
   void Draw(gfx::Canvas* canvas) override {
     cc::PaintFlags paint_flags;
@@ -126,44 +170,23 @@ class BookmarkDragImageSource : public gfx::CanvasImageSource {
         color_provider_->GetColor(kColorBookmarkDragImageForeground), text_rect,
         gfx::Canvas::TEXT_ALIGN_LEFT);
 
-    if (count_ <= 1)
-      return;
-
-    // Draw bookmark count if more than 1 bookmark is dragged.
-    std::u16string count = base::NumberToString16(count_);
-    std::unique_ptr<gfx::RenderText> render_text =
-        gfx::RenderText::CreateRenderText();
-    render_text->SetFontList(font_list);
-    render_text->SetCursorEnabled(false);
-    render_text->SetColor(
-        color_provider_->GetColor(kColorBookmarkDragImageCountForeground));
-    render_text->SetText(count);
-    render_text->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-
-    // We measure the count text size to determine container width, as the
-    // container is a rounded rect behind the text.
-    int count_width = render_text->GetStringSize().width();
-    int count_container_width =
-        std::max(kCountContainerRadius * 2, count_width + 2 * kCountPadding);
-
-    // Draw the count container.
-    gfx::Rect count_container_rect(
-        container_rect.right() - count_container_width, 0,
-        count_container_width, kCountContainerRadius * 2);
-    paint_flags.setColor(
-        color_provider_->GetColor(kColorBookmarkDragImageCountBackground));
-    canvas->DrawRoundRect(gfx::RectF(count_container_rect),
-                          kCountContainerRadius, paint_flags);
-
-    // Draw the count text.
-    render_text->SetDisplayRect(count_container_rect);
-    render_text->Draw(canvas);
+    // On the Mac, the Chromium drag code passes the bookmarks to macOS as
+    // individual drag items, and macOS will tag the drag image with the (#)
+    // count bubble. To avoid duplicate count tagging, end here on the Mac. On
+    // other platforms, tag the drag image with the count.
+#if !BUILDFLAG(IS_MAC)
+    if (count_ > 1) {
+      DrawCountBubble(font_list, container_rect, paint_flags, canvas);
+    }
+#endif
   }
 
   const raw_ref<const ui::ColorProvider> color_provider_;
   const std::u16string title_;
   const gfx::ImageSkia icon_;
+#if !BUILDFLAG(IS_MAC)
   const int count_;
+#endif
 };
 
 constexpr gfx::Size BookmarkDragImageSource::kBookmarkDragImageSize;

@@ -4,9 +4,11 @@
 
 #include "ui/base/clipboard/clipboard_util_mac.h"
 
+#include <AppKit/AppKit.h>
+#include <CoreServices/CoreServices.h>                      // pre-macOS 11
+#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>  // macOS 11
+
 #include "base/mac/foundation_util.h"
-#import "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
@@ -14,74 +16,150 @@ namespace ui {
 
 namespace {
 
-// It's much more convenient to return an NSString than a
-// base::ScopedCFTypeRef<CFStringRef>, since the methods on NSPasteboardItem
-// require an NSString*.
-NSString* UTIFromPboardType(NSString* type) {
-  return [base::mac::CFToNSCast(UTTypeCreatePreferredIdentifierForTag(
-      kUTTagClassNSPboardType, base::mac::NSToCFCast(type), kUTTypeData))
-      autorelease];
-}
-
+// Reads the "WebKitWebURLsWithTitles" type put onto the clipboard by Safari and
+// returns the urls/titles found within. Returns true if this was successful, or
+// false if it was not.
 bool ReadWebURLsWithTitlesPboardType(NSPasteboard* pboard,
-                                     NSArray** urls,
-                                     NSArray** titles) {
-  NSArray* bookmarkPairs = base::mac::ObjCCast<NSArray>(
+                                     NSArray<NSString*>** urls,
+                                     NSArray<NSString*>** titles) {
+  NSArray* bookmark_pairs = base::mac::ObjCCast<NSArray>(
       [pboard propertyListForType:kUTTypeWebKitWebURLsWithTitles]);
-  if (!bookmarkPairs)
+  if (!bookmark_pairs) {
     return false;
-
-  if ([bookmarkPairs count] != 2)
+  }
+  if (bookmark_pairs.count != 2) {
     return false;
-
-  NSArray* urlsArr = base::mac::ObjCCast<NSArray>(bookmarkPairs[0]);
-  NSArray* titlesArr = base::mac::ObjCCast<NSArray>(bookmarkPairs[1]);
-
-  if (!urlsArr || !titlesArr)
-    return false;
-  if ([urlsArr count] < 1)
-    return false;
-  if ([urlsArr count] != [titlesArr count])
-    return false;
-
-  for (id obj in urlsArr) {
-    if (![obj isKindOfClass:[NSString class]])
-      return false;
   }
 
-  for (id obj in titlesArr) {
-    if (![obj isKindOfClass:[NSString class]])
-      return false;
+  NSArray<NSString*>* urls_array =
+      base::mac::ObjCCast<NSArray>(bookmark_pairs[0]);
+  NSArray<NSString*>* titles_array =
+      base::mac::ObjCCast<NSArray>(bookmark_pairs[1]);
+
+  if (!urls_array || !titles_array) {
+    return false;
   }
-
-  *urls = urlsArr;
-  *titles = titlesArr;
-  return true;
-}
-
-bool ReadURLItemsWithTitles(NSPasteboard* pboard,
-                            NSArray** urls,
-                            NSArray** titles) {
-  NSMutableArray* urlsArr = [NSMutableArray array];
-  NSMutableArray* titlesArr = [NSMutableArray array];
-
-  NSArray* items = [pboard pasteboardItems];
-  for (NSPasteboardItem* item : items) {
-    NSString* url = [item stringForType:base::mac::CFToNSCast(kUTTypeURL)];
-    NSString* title = [item stringForType:kUTTypeURLName];
-
-    if (url) {
-      [urlsArr addObject:url];
-      if (title)
-        [titlesArr addObject:title];
-      else
-        [titlesArr addObject:@""];
+  if (urls_array.count < 1) {
+    return false;
+  }
+  if (urls_array.count != titles_array.count) {
+    return false;
+  }
+  for (id obj in urls_array) {
+    if (![obj isKindOfClass:[NSString class]]) {
+      return false;
     }
   }
 
-  if ([urlsArr count]) {
-    *urls = urlsArr;
-    *titles = titlesArr;
+  for (id obj in titles_array) {
+    if (![obj isKindOfClass:[NSString class]]) {
+      return false;
+    }
+  }
+
+  *urls = urls_array;
+  *titles = titles_array;
+  return true;
+}
+
+// If the given pasteboard item is a drag of an internet location file, return
+// the title that should be used for for the URL. Returns nil if it is not a
+// file or if any error occurs.
+NSString* ExtractTitleFromFileURL(NSPasteboardItem* item) {
+  NSURL* file_url =
+      [NSURL URLWithString:[item stringForType:NSPasteboardTypeFileURL]];
+  if (!file_url) {
+    return nil;
+  }
+
+  // The UTType for .webloc files is com.apple.web-internet-location, but
+  // there is no official constant for that. However, that type does conform
+  // to the generic "internet location" type (aka .inetloc), so check for
+  // that.
+  NSDictionary* resource_values;
+  if (@available(macOS 11, *)) {
+    resource_values = [file_url resourceValuesForKeys:@[
+      NSURLContentTypeKey, NSURLLocalizedNameKey, NSURLHasHiddenExtensionKey
+    ]
+                                                error:nil];
+    if (!resource_values) {
+      return nil;
+    }
+
+    UTType* type = resource_values[NSURLContentTypeKey];
+    if (!type || ![type conformsToType:UTTypeInternetLocation]) {
+      return nil;
+    }
+  } else {
+    resource_values = [file_url resourceValuesForKeys:@[
+      NSURLTypeIdentifierKey, NSURLLocalizedNameKey, NSURLHasHiddenExtensionKey
+    ]
+                                                error:nil];
+    if (!resource_values) {
+      return nil;
+    }
+
+    NSString* type = resource_values[NSURLTypeIdentifierKey];
+    if (!type ||
+        ![NSWorkspace.sharedWorkspace
+                      type:type
+            conformsToType:base::mac::CFToNSCast(kUTTypeInternetLocation)]) {
+      return nil;
+    }
+  }
+
+  NSString* title = resource_values[NSURLLocalizedNameKey];
+  if (!title) {
+    return nil;
+  }
+
+  NSNumber* has_hidden_extension = resource_values[NSURLHasHiddenExtensionKey];
+  if (!has_hidden_extension || has_hidden_extension.boolValue) {
+    // If it's already hidden, or it's unknown if it's hidden, return it
+    // unaltered.
+    return title;
+  }
+
+  return [title stringByDeletingPathExtension];
+}
+
+// Reads the given pasteboard, and returns urls/titles found on it. Returns true
+// if at least one url was found on the pasteboard, and false if none were.
+bool ReadURLItemsWithTitles(NSPasteboard* pboard,
+                            NSArray<NSString*>** urls,
+                            NSArray<NSString*>** titles) {
+  NSMutableArray<NSString*>* urls_array = [NSMutableArray array];
+  NSMutableArray<NSString*>* titles_array = [NSMutableArray array];
+
+  NSArray<NSPasteboardItem*>* items = pboard.pasteboardItems;
+  for (NSPasteboardItem* item : items) {
+    NSString* url = [item stringForType:NSPasteboardTypeURL];
+    NSString* title = [item stringForType:kUTTypeURLName];
+
+    if (!url) {
+      continue;
+    }
+
+    if (!title) {
+      // If there is no title on the drag, check to see if it's a URL drag
+      // reconstituted from a Finder .webloc. If so, use the name of the file as
+      // the title.
+      title = ExtractTitleFromFileURL(item);
+    }
+
+    if (url) {
+      [urls_array addObject:url];
+      if (title) {
+        [titles_array addObject:title];
+      } else {
+        [titles_array addObject:@""];
+      }
+    }
+  }
+
+  if (urls_array.count) {
+    *urls = urls_array;
+    *titles = titles_array;
     return true;
   } else {
     return false;
@@ -97,85 +175,52 @@ UniquePasteboard::~UniquePasteboard() {
   [pasteboard_ releaseGlobally];
 }
 
-// static
-base::scoped_nsobject<NSPasteboardItem> ClipboardUtil::PasteboardItemFromUrl(
-    NSString* urlString,
-    NSString* title) {
-  DCHECK(urlString);
-  if (!title)
-    title = urlString;
+NSArray<NSPasteboardItem*>* ClipboardUtil::PasteboardItemsFromUrls(
+    NSArray<NSString*>* urls,
+    NSArray<NSString*>* titles) {
+  DCHECK_EQ(urls.count, titles.count);
 
-  base::scoped_nsobject<NSPasteboardItem> item([[NSPasteboardItem alloc] init]);
+  NSMutableArray<NSPasteboardItem*>* items = [NSMutableArray array];
 
-  NSURL* url = [NSURL URLWithString:urlString];
-  if ([url isFileURL] &&
-      [[NSFileManager defaultManager] fileExistsAtPath:[url path]]) {
-    [item setPropertyList:@[ [url path] ]
-                  forType:UTIFromPboardType(NSFilenamesPboardType)];
+  for (NSUInteger i = 0; i < urls.count; ++i) {
+    NSPasteboardItem* item = [[[NSPasteboardItem alloc] init] autorelease];
+
+    NSString* url_string = urls[i];
+    NSString* title = titles[i];
+
+    NSURL* url = [NSURL URLWithString:url_string];
+    if (url.isFileURL &&
+        [NSFileManager.defaultManager fileExistsAtPath:url.path]) {
+      [item setString:url_string forType:NSPasteboardTypeFileURL];
+    }
+
+    [item setString:url_string forType:NSPasteboardTypeString];
+    [item setString:url_string forType:NSPasteboardTypeURL];
+    if (title.length) {
+      [item setString:title forType:kUTTypeURLName];
+    }
+
+    // Safari puts the "Web URLs and Titles" pasteboard type onto the first
+    // pasteboard item.
+    if (i == 0) {
+      [item setPropertyList:@[ urls, titles ]
+                    forType:kUTTypeWebKitWebURLsWithTitles];
+    }
+
+    [items addObject:item];
   }
 
-  // Set Safari's URL + title arrays Pboard type.
-  NSArray* urlsAndTitles = @[ @[ urlString ], @[ title ] ];
-  [item setPropertyList:urlsAndTitles forType:kUTTypeWebKitWebURLsWithTitles];
-
-  // Set NSURLPboardType. The format of the property list is divined from
-  // Webkit's function PlatformPasteboard::setStringForType.
-  // https://github.com/WebKit/webkit/blob/master/Source/WebCore/platform/mac/PlatformPasteboardMac.mm
-  NSURL* base = [url baseURL];
-  if (base) {
-    [item setPropertyList:@[ [url relativeString], [base absoluteString] ]
-                  forType:UTIFromPboardType(NSURLPboardType)];
-  } else if (url) {
-    [item setPropertyList:@[ [url absoluteString], @"" ]
-                  forType:UTIFromPboardType(NSURLPboardType)];
-  }
-
-  [item setString:urlString forType:NSPasteboardTypeString];
-  [item setString:urlString forType:base::mac::CFToNSCast(kUTTypeURL)];
-  [item setString:title forType:kUTTypeURLName];
-  return item;
+  return items;
 }
 
-// static
-base::scoped_nsobject<NSPasteboardItem> ClipboardUtil::PasteboardItemFromUrls(
-    NSArray* urls,
-    NSArray* titles) {
-  base::scoped_nsobject<NSPasteboardItem> item([[NSPasteboardItem alloc] init]);
-
-  // Set Safari's URL + title arrays Pboard type.
-  NSArray* urlsAndTitles = @[ urls, titles ];
-  [item setPropertyList:urlsAndTitles forType:kUTTypeWebKitWebURLsWithTitles];
-
-  return item;
-}
-
-// static
-base::scoped_nsobject<NSPasteboardItem> ClipboardUtil::PasteboardItemFromString(
-    NSString* string) {
-  base::scoped_nsobject<NSPasteboardItem> item([[NSPasteboardItem alloc] init]);
-  [item setString:string forType:NSPasteboardTypeString];
-  return item;
-}
-
-//static
-NSString* ClipboardUtil::GetTitleFromPasteboardURL(NSPasteboard* pboard) {
-  return [pboard stringForType:kUTTypeURLName];
-}
-
-//static
-NSString* ClipboardUtil::GetURLFromPasteboardURL(NSPasteboard* pboard) {
-  return [pboard stringForType:base::mac::CFToNSCast(kUTTypeURL)];
-}
-
-// static
 void ClipboardUtil::AddDataToPasteboard(NSPasteboard* pboard,
                                         NSPasteboardItem* item) {
-  NSSet* oldTypes = [NSSet setWithArray:[pboard types]];
-  NSMutableSet* newTypes = [NSMutableSet setWithArray:[item types]];
-  [newTypes minusSet:oldTypes];
+  NSSet* old_types = [NSSet setWithArray:[pboard types]];
+  NSMutableSet* new_types = [NSMutableSet setWithArray:[item types]];
+  [new_types minusSet:old_types];
 
-  [pboard addTypes:[newTypes allObjects] owner:nil];
-  for (NSString* type in newTypes) {
+  [pboard addTypes:[new_types allObjects] owner:nil];
+  for (NSString* type in new_types) {
     // Technically, the object associated with |type| might be an NSString or a
     // property list. It doesn't matter though, since the type gets pulled from
     // and shoved into an NSDictionary.
@@ -183,15 +228,13 @@ void ClipboardUtil::AddDataToPasteboard(NSPasteboard* pboard,
   }
 }
 
-// static
 bool ClipboardUtil::URLsAndTitlesFromPasteboard(NSPasteboard* pboard,
-                                                NSArray** urls,
-                                                NSArray** titles) {
+                                                NSArray<NSString*>** urls,
+                                                NSArray<NSString*>** titles) {
   return ReadWebURLsWithTitlesPboardType(pboard, urls, titles) ||
          ReadURLItemsWithTitles(pboard, urls, titles);
 }
 
-// static
 NSPasteboard* ClipboardUtil::PasteboardFromBuffer(ClipboardBuffer buffer) {
   NSString* buffer_type = nil;
   switch (buffer) {
@@ -209,24 +252,23 @@ NSPasteboard* ClipboardUtil::PasteboardFromBuffer(ClipboardBuffer buffer) {
   return [NSPasteboard pasteboardWithName:buffer_type];
 }
 
-// static
 NSString* ClipboardUtil::GetHTMLFromRTFOnPasteboard(NSPasteboard* pboard) {
-  NSData* rtfData = [pboard dataForType:NSRTFPboardType];
-  if (!rtfData)
+  NSData* rtf_data = [pboard dataForType:NSPasteboardTypeRTF];
+  if (!rtf_data)
     return nil;
 
   NSAttributedString* attributed =
-      [[[NSAttributedString alloc] initWithRTF:rtfData
+      [[[NSAttributedString alloc] initWithRTF:rtf_data
                             documentAttributes:nil] autorelease];
-  NSData* htmlData =
-      [attributed dataFromRange:NSMakeRange(0, [attributed length])
+  NSData* html_data =
+      [attributed dataFromRange:NSMakeRange(0, attributed.length)
              documentAttributes:@{
                NSDocumentTypeDocumentAttribute : NSHTMLTextDocumentType
              }
                           error:nil];
 
-  // According to the docs, NSHTMLTextDocumentType is UTF8.
-  return [[[NSString alloc] initWithData:htmlData
+  // According to the docs, NSHTMLTextDocumentType is UTF-8.
+  return [[[NSString alloc] initWithData:html_data
                                 encoding:NSUTF8StringEncoding] autorelease];
 }
 

@@ -63,8 +63,21 @@ void DragDropClientMac::StartDragAndDrop(
   NSImage* image = gfx::NSImageFromImageSkiaWithColorSpace(
       provider_mac.GetDragImage(), base::mac::GetSRGBColorSpace());
 
-  DCHECK(!NSEqualSizes([image size], NSZeroSize));
-  NSDraggingItem* drag_item = provider_mac.GetDraggingItem();
+  DCHECK(!NSEqualSizes(image.size, NSZeroSize));
+  NSArray<NSDraggingItem*>* drag_items = provider_mac.GetDraggingItems();
+  if (!drag_items) {
+    // The source of this data is ultimately the OS, and while this shouldn't be
+    // nil, it is documented as possibly being so if things are broken. If so,
+    // fail early rather than try to start a drag of a nil item list and making
+    // things worse.
+    return;
+  }
+
+  // At this point the mismatch between the Views drag API, which assumes a
+  // single drag item, and the macOS drag API, which allows for multiple items,
+  // is encountered. For now, set the dragging frame and image on the first
+  // item, and set nil images for the remaining items. In the future, when Views
+  // becomes more capable in the area of the clipboard, revisit this.
 
   // Create the frame to cause the mouse to be centered over the image, with the
   // image slightly above the mouse pointer for visibility.
@@ -72,9 +85,15 @@ void DragDropClientMac::StartDragAndDrop(
       NSMakeRect(event.locationInWindow.x - image.size.width / 2,
                  event.locationInWindow.y - image.size.height / 4,
                  image.size.width, image.size.height);
-  [drag_item setDraggingFrame:dragging_frame contents:image];
+  for (NSUInteger i = 0; i < drag_items.count; ++i) {
+    if (i == 0) {
+      [drag_items[i] setDraggingFrame:dragging_frame contents:image];
+    } else {
+      [drag_items[i] setDraggingFrame:NSMakeRect(0, 0, 1, 1) contents:nil];
+    }
+  }
 
-  [bridge_->ns_view() beginDraggingSessionWithItems:@[ drag_item ]
+  [bridge_->ns_view() beginDraggingSessionWithItems:drag_items
                                               event:event
                                              source:bridge_->ns_view()];
 
