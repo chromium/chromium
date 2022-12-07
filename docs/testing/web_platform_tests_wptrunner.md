@@ -73,10 +73,14 @@ Useful flags:
 
 ## Experimental Builders
 
-As of Q3 2022, `wptrunner` runs on a handful of experimental FYI CI builders
+As of Q4 2022, `wptrunner` runs on a handful of experimental FYI CI builders
 (mostly Linux):
 
 * [`linux-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-content-shell-fyi-rel),
+  which runs content shell against `external/wpt/` and `wpt_internal/`
+* [`win10-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/win10-wpt-content-shell-fyi-rel),
+  which runs content shell against `external/wpt/` and `wpt_internal/`
+* [`win11-wpt-content-shell-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/win11-wpt-content-shell-fyi-rel),
   which runs content shell against `external/wpt/` and `wpt_internal/`
 * [`linux-wpt-fyi-rel`](https://ci.chromium.org/p/chromium/builders/ci/linux-wpt-fyi-rel),
   which runs Chrome against `external/wpt/`
