@@ -4230,7 +4230,6 @@ void RenderFrameImpl::WillSendRequestInternal(
     }
   }
 
-  WebDocument frame_document = frame_->GetDocument();
   if (!request.GetURLRequestExtraData())
     request.SetURLRequestExtraData(
         base::MakeRefCounted<blink::WebURLRequestExtraData>());
@@ -5675,14 +5674,14 @@ void RenderFrameImpl::BeginNavigationInternal(
     observer.DidStartNavigation(info->url_request.Url(), info->navigation_type);
   browser_side_navigation_pending_ = true;
 
-  blink::WebURLRequest& request = info->url_request;
-
   // Set SiteForCookies.
   WebDocument frame_document = frame_->GetDocument();
-  if (info->frame_type == blink::mojom::RequestContextFrameType::kTopLevel)
-    request.SetSiteForCookies(net::SiteForCookies::FromUrl(request.Url()));
-  else
-    request.SetSiteForCookies(frame_document.SiteForCookies());
+  if (info->frame_type == blink::mojom::RequestContextFrameType::kTopLevel) {
+    info->url_request.SetSiteForCookies(
+        net::SiteForCookies::FromUrl(info->url_request.Url()));
+  } else {
+    info->url_request.SetSiteForCookies(frame_document.SiteForCookies());
+  }
 
   ui::PageTransition transition_type = GetTransitionType(
       ui::PAGE_TRANSITION_LINK,
@@ -5704,8 +5703,8 @@ void RenderFrameImpl::BeginNavigationInternal(
   // TODO(clamy): Make sure that navigation requests are not modified somewhere
   // else in blink.
   bool for_outermost_main_frame = frame_->IsOutermostMainFrame();
-  WillSendRequestInternal(request, for_outermost_main_frame, transition_type,
-                          ForRedirect(false));
+  WillSendRequestInternal(info->url_request, for_outermost_main_frame,
+                          transition_type, ForRedirect(false));
 
   if (!info->url_request.GetURLRequestExtraData()) {
     info->url_request.SetURLRequestExtraData(
