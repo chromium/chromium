@@ -103,8 +103,9 @@ class OnDeviceTailModelExecutor {
   bool InitModelInterpreter(const base::FilePath& model_filepath);
 
   // Gets the encoding for previous query token IDs.
-  bool EncodePreviousQuery(const std::vector<size_t>& prev_query_token_ids,
-                           std::vector<float>* prev_query_encoding);
+  bool EncodePreviousQuery(
+      const OnDeviceTailTokenizer::TokenIds& prev_query_token_ids,
+      std::vector<float>* prev_query_encoding);
 
   // Resets LRU caches.
   void ResetCaches();
@@ -121,8 +122,10 @@ class OnDeviceTailModelExecutor {
   // We use LRU caches to keep track of most recent outputs of subgraphs, such
   // that we will not need to run the interpreter if a cache hit is found for a
   // specific input.
-  base::LRUCache<std::vector<size_t>, std::vector<float>> prev_query_cache_;
-  base::LRUCache<std::vector<size_t>, RnnStepOutput> rnn_step_cache_;
+  base::LRUCache<OnDeviceTailTokenizer::TokenIds, std::vector<float>>
+      prev_query_cache_;
+  base::LRUCache<OnDeviceTailTokenizer::TokenIds, RnnStepOutput>
+      rnn_step_cache_;
 
   // Parameters needed to run the executor.
   size_t state_size_;

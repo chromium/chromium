@@ -48,9 +48,9 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace
 
-OnDeviceTailTokenization::OnDeviceTailTokenization() = default;
+OnDeviceTailTokenizer::Tokenization::Tokenization() = default;
 
-OnDeviceTailTokenization::~OnDeviceTailTokenization() = default;
+OnDeviceTailTokenizer::Tokenization::~Tokenization() = default;
 
 OnDeviceTailTokenizer::OnDeviceTailTokenizer() = default;
 
@@ -121,14 +121,15 @@ void OnDeviceTailTokenizer::Reset() {
   ambiguous_tokens_.clear();
 }
 
-std::string OnDeviceTailTokenizer::IDToToken(const size_t token_id) const {
-  if (token_id < 0 || token_id >= id_to_token_.size()) {
+std::string OnDeviceTailTokenizer::IdToToken(const TokenId token_id) const {
+  if (token_id < 0 || static_cast<size_t>(token_id) >= id_to_token_.size()) {
     return kUnknownToken;
   }
   return id_to_token_[token_id];
 }
 
-size_t OnDeviceTailTokenizer::TokenToID(const std::string& token) const {
+OnDeviceTailTokenizer::TokenId OnDeviceTailTokenizer::TokenToId(
+    const std::string& token) const {
   auto match = token_to_id_.find(token);
   if (match == token_to_id_.end()) {
     // The ID for unknown token.
@@ -164,7 +165,7 @@ bool OnDeviceTailTokenizer::IsAmbiguousToken(const std::string& token) const {
 
 void OnDeviceTailTokenizer::EncodeRawString(
     const std::string& raw_string,
-    std::vector<std::pair<std::string, size_t>>* token_and_ids) const {
+    std::vector<std::pair<std::string, TokenId>>* token_and_ids) const {
   size_t i = 0;
   while (i < raw_string.size()) {
     // Tries longest possible matches first and reduces the length gradually
@@ -191,16 +192,16 @@ void OnDeviceTailTokenizer::EncodeRawString(
 
 void OnDeviceTailTokenizer::TokenizePrevQuery(
     const std::string& prev_query,
-    std::vector<size_t>* prev_query_token_ids) const {
+    TokenIds* prev_query_token_ids) const {
   prev_query_token_ids->clear();
 
   if (prev_query.empty()) {
     // Uses the special control token <NPQ> to mark empty previous query.
-    prev_query_token_ids->push_back(TokenToID(kEmptyPreviousQueryToken));
+    prev_query_token_ids->push_back(TokenToId(kEmptyPreviousQueryToken));
     return;
   }
 
-  std::vector<std::pair<std::string, size_t>> token_and_ids;
+  std::vector<std::pair<std::string, TokenId>> token_and_ids;
   EncodeRawString(prev_query, &token_and_ids);
 
   for (const auto& pair : token_and_ids) {
@@ -210,8 +211,8 @@ void OnDeviceTailTokenizer::TokenizePrevQuery(
 
 void OnDeviceTailTokenizer::CreatePrefixTokenization(
     const std::string& prefix,
-    OnDeviceTailTokenization* tokenization) const {
-  std::vector<std::pair<std::string, size_t>> token_and_ids;
+    Tokenization* tokenization) const {
+  std::vector<std::pair<std::string, TokenId>> token_and_ids;
 
   EncodeRawString(prefix, &token_and_ids);
   if (token_and_ids.empty()) {
@@ -227,7 +228,7 @@ void OnDeviceTailTokenizer::CreatePrefixTokenization(
   }
 
   // Always add begin query token at the front of the prefix.
-  tokenization->unambiguous_ids.push_back(TokenToID(kBeginQueryToken));
+  tokenization->unambiguous_ids.push_back(TokenToId(kBeginQueryToken));
   for (size_t i = 0; i < num_unambiguous; ++i) {
     tokenization->unambiguous_prefix += token_and_ids[i].first;
     tokenization->unambiguous_ids.push_back(token_and_ids[i].second);

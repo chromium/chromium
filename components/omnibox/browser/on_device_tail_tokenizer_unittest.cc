@@ -42,7 +42,7 @@ TEST_F(OnDeviceTailTokenizerTest, CreatePrefixTokenization) {
   EXPECT_TRUE(tokenizer_.IsReady());
 
   {
-    OnDeviceTailTokenization tokenization;
+    OnDeviceTailTokenizer::Tokenization tokenization;
     // Expect tokens ["n", "j", " ", "do", "c"].
     // See OnDeviceTailTokenizer::EncodeRawString for details and simplified
     // examples about how ID sequences are determined.
@@ -54,7 +54,7 @@ TEST_F(OnDeviceTailTokenizerTest, CreatePrefixTokenization) {
   }
 
   {
-    OnDeviceTailTokenization tokenization;
+    OnDeviceTailTokenizer::Tokenization tokenization;
     // Expect tokens ["re", "mi", "t", "ly", " ", "log", "in"].
     tokenizer_.CreatePrefixTokenization("remitly login", &tokenization);
     EXPECT_THAT(tokenization.unambiguous_ids,
@@ -64,7 +64,7 @@ TEST_F(OnDeviceTailTokenizerTest, CreatePrefixTokenization) {
   }
 
   {
-    OnDeviceTailTokenization tokenization;
+    OnDeviceTailTokenizer::Tokenization tokenization;
     // Expect tokens
     // ["us", " ", "pa", "ss", "po", "rt", " ", "ap", "pl", "ica", "tio", "n"]
     tokenizer_.CreatePrefixTokenization("us passport application",
@@ -82,17 +82,17 @@ TEST_F(OnDeviceTailTokenizerTest, TokenizePrevQuery) {
 
   EXPECT_TRUE(tokenizer_.IsReady());
   {
-    std::vector<size_t> token_ids;
+    OnDeviceTailTokenizer::TokenIds token_ids;
     tokenizer_.TokenizePrevQuery("facebook", &token_ids);
 
     // Expect tokens: ["fa", "ce", "bo", "ok"]
     EXPECT_EQ(4, (int)token_ids.size());
     EXPECT_THAT(token_ids, ElementsAreArray({317, 285, 281, 390}));
-    EXPECT_EQ("fa", tokenizer_.IDToToken(token_ids[0]));
+    EXPECT_EQ("fa", tokenizer_.IdToToken(token_ids[0]));
   }
 
   {
-    std::vector<size_t> token_ids;
+    OnDeviceTailTokenizer::TokenIds token_ids;
     tokenizer_.TokenizePrevQuery("matching gym outfits", &token_ids);
 
     // Expect tokens:
@@ -100,6 +100,6 @@ TEST_F(OnDeviceTailTokenizerTest, TokenizePrevQuery) {
     EXPECT_EQ(12, (int)token_ids.size());
     EXPECT_THAT(token_ids, ElementsAreArray({364, 116, 488, 375, 32, 103, 121,
                                              109, 32, 533, 320, 443}));
-    EXPECT_EQ("ma", tokenizer_.IDToToken(token_ids[0]));
+    EXPECT_EQ("ma", tokenizer_.IdToToken(token_ids[0]));
   }
 }

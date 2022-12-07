@@ -42,7 +42,8 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
  protected:
   void TearDown() override { executor_.reset(); }
 
-  std::vector<float> GetPrevQueryCache(const std::vector<size_t>& token_ids) {
+  std::vector<float> GetPrevQueryCache(
+      const OnDeviceTailTokenizer::TokenIds& token_ids) {
     std::vector<float> result;
     auto iter = executor_->prev_query_cache_.Get(token_ids);
     if (iter != executor_->prev_query_cache_.end()) {
@@ -55,7 +56,7 @@ class OnDeviceTailModelExecutorTest : public ::testing::Test {
 };
 
 TEST_F(OnDeviceTailModelExecutorTest, TestEncodePreviousQuery) {
-  std::vector<size_t> ids1({16}), ids2({16, 17});
+  OnDeviceTailTokenizer::TokenIds ids1({16}), ids2({16, 17});
   std::vector<float> encoding1, encoding2, cached_encoding;
 
   EXPECT_TRUE(executor_->EncodePreviousQuery(ids1, &encoding1));

@@ -151,7 +151,7 @@ bool OnDeviceTailModelExecutor::InitModelInterpreter(
 }
 
 bool OnDeviceTailModelExecutor::EncodePreviousQuery(
-    const std::vector<size_t>& prev_query_token_ids,
+    const OnDeviceTailTokenizer::TokenIds& prev_query_token_ids,
     std::vector<float>* prev_query_encoding) {
   auto iter = prev_query_cache_.Get(prev_query_token_ids);
   if (iter != prev_query_cache_.end()) {
@@ -181,10 +181,7 @@ bool OnDeviceTailModelExecutor::EncodePreviousQuery(
   TfLiteTensor* input_tensor =
       prev_query_encoder_->input_tensor(kPrevQueryTokenIdsNodeName);
   for (size_t i = 0; i < prev_query_token_ids.size(); ++i) {
-    // TODO(crbug.com/1372112): make OnDeviceTailTokenizer directly output type
-    // int32_t (or equivalent aliases) for token IDs to avoid size_t -> int32_t
-    // casting here.
-    input_tensor->data.i32[i] = static_cast<int32_t>(prev_query_token_ids[i]);
+    input_tensor->data.i32[i] = prev_query_token_ids[i];
   }
   if (prev_query_encoder_->Invoke() != kTfLiteOk) {
     DVLOG(1) << "Could not invoke prev query encoder";

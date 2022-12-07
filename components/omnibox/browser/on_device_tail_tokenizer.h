@@ -14,30 +14,35 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 
-// Data structure to store tokenization information.
-struct OnDeviceTailTokenization {
-  // Unambiguous token IDs. This should at least include the begin query token.
-  std::vector<size_t> unambiguous_ids;
-
-  // Human-readable unambiguous part of the prefix.
-  std::string unambiguous_prefix;
-
-  // The constraint prefix for the next forward RNN step, if the last typed
-  // token was ambiguous. For example, given prefix [(pa)(t)] and if the
-  // trailing (t) could match multiple tokens, constraint prefix will be set as
-  // "t" and only outputs matching this prefix from the next step will be kept.
-  std::string constraint_prefix;
-
-  OnDeviceTailTokenization();
-  ~OnDeviceTailTokenization();
-};
-
 // The tokenizer performs tokenization for on device tail machine learning
 // model. It basically maps raw strings to/from tokens, and tokens to/from IDs
 // accepted by the ML model or vice versa based on the given vocabulary file.
 // This tokenizer has not supported CJK yet.
 class OnDeviceTailTokenizer {
  public:
+  using TokenId = int32_t;
+  using TokenIds = std::vector<TokenId>;
+
+  // Data structure to store tokenization information.
+  struct Tokenization {
+    // Unambiguous token IDs. This should at least include the begin query
+    // token.
+    TokenIds unambiguous_ids;
+
+    // Human-readable unambiguous part of the prefix.
+    std::string unambiguous_prefix;
+
+    // The constraint prefix for the next forward RNN step, if the last typed
+    // token was ambiguous. For example, given prefix [(pa)(t)] and if the
+    // trailing (t) could match multiple tokens, constraint prefix will be set
+    // as "t" and only outputs matching this prefix from the next step will be
+    // kept.
+    std::string constraint_prefix;
+
+    Tokenization();
+    ~Tokenization();
+  };
+
   ~OnDeviceTailTokenizer();
   OnDeviceTailTokenizer();
 
@@ -47,20 +52,20 @@ class OnDeviceTailTokenizer {
   // Determines whether the instance is successfully initialized.
   bool IsReady() const;
 
-  // Fills the OnDeviceTailTokenization struct for the given prefix.
+  // Fills the Tokenization struct for the given prefix.
   void CreatePrefixTokenization(const std::string& prefix,
-                                OnDeviceTailTokenization* tokenization) const;
+                                Tokenization* tokenization) const;
 
   // Tokenizes the previous query greedily.
   void TokenizePrevQuery(const std::string& prev_query,
-                         std::vector<size_t>* prev_query_token_ids) const;
+                         TokenIds* prev_query_token_ids) const;
 
   // Resets tokens <-> IDs maps.
   void Reset();
 
   // Maps token to ID and vice versa.
-  std::string IDToToken(const size_t token_id) const;
-  size_t TokenToID(const std::string& token) const;
+  std::string IdToToken(const TokenId token_id) const;
+  TokenId TokenToId(const std::string& token) const;
 
   // Returns the size of the vocabulary.
   size_t vocab_size() const { return token_to_id_.size(); }
@@ -86,13 +91,13 @@ class OnDeviceTailTokenizer {
   //    string:cbacba -> tokens:[c][b][a][c][b][a] -> IDs:[3][2][1][3][2][1]
   void EncodeRawString(
       const std::string& raw_string,
-      std::vector<std::pair<std::string, size_t>>* token_and_ids) const;
+      std::vector<std::pair<std::string, TokenId>>* token_and_ids) const;
 
   // Insert token and its ID to tokens <-> IDs maps.
   void InsertTokenToMaps(const std::string& token);
 
   // Maps for tokens <-> IDs.
-  base::flat_map<std::string, size_t> token_to_id_;
+  base::flat_map<std::string, TokenId> token_to_id_;
   std::vector<std::string> id_to_token_;
 
   // The max length of tokens in the vocabulary.
