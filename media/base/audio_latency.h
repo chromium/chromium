@@ -44,24 +44,27 @@ class MEDIA_SHMEM_EXPORT AudioLatency {
   static int GetInteractiveBufferSize(int hardware_buffer_size);
 
   // Return the closest buffer size for this platform that will result in a
-  // latency not less than |duration| for the given |sample_rate|.
+  // latency not less than `duration` for the given `sample_rate`.
   //
   // Requirements:
-  // - |hardware_buffer_size| > 0 and |max_allowed_buffer_size| > 0.
-  // - If |min_hardware_buffer_size| and |max_hardware_buffer_size| are > 0 then
-  //   the following must be true: |min_hardware_buffer_size| <=
-  //   |hardware_buffer_size| <= |max_hardware_buffer_size| <=
-  //   |max_allowed_buffer_size|.
+  // - `hardware_buffer_size > 0` and `max_allowed_buffer_size > 0`.
+  // - If `min_hardware_buffer_size` and `max_hardware_buffer_size` are > 0 then
+  //   the following must be true: `min_hardware_buffer_size <=
+  //   hardware_buffer_size <= max_hardware_buffer_size`
+  // - `hardware_buffer_size <= max_allowed_buffer_size`
   //
   // The returned buffer size is guaranteed to be between
-  // |min_hardware_buffer_size| and |max_allowed_buffer_size|.
-  // |max_hardware_buffer_size| is used to help determine a buffer size that
+  // `min_hardware_buffer_size` and `max_allowed_buffer_size`.
+  // `max_hardware_buffer_size` is used to help determine a buffer size that
   // won't cause the caller and the hardware to run at unsynchronized buffer
   // sizes (e.g. hardware running at 4096 and caller running at 4224).
-  // |hardware_buffer_size| is the platform's preferred buffer size.
+  // `hardware_buffer_size` is the platform's preferred buffer size.
+  //
+  // TODO(crbug.com/1395234) Ensure that all callers validate conditions listed
+  // above.
   //
   // It is valid for both the min and max to be zero in which case only
-  // |hardware_buffer_size| and multiples of it will be used.
+  // `hardware_buffer_size` and multiples of it will be used.
   static int GetExactBufferSize(base::TimeDelta duration,
                                 int sample_rate,
                                 int hardware_buffer_size,

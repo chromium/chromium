@@ -41,7 +41,7 @@ class AudioLatencyTest : public testing::TestWithParam<AudioLatencyTestData> {
 #endif
 
     const int platform_max_buffer_size =
-        max_buffer_size
+        (max_buffer_size && max_buffer_size < limits::kMaxWebAudioBufferSize)
             ? (limits::kMaxWebAudioBufferSize / max_buffer_size) *
                   max_buffer_size
             : (limits::kMaxWebAudioBufferSize / multiplier) * multiplier;
@@ -74,7 +74,7 @@ class AudioLatencyTest : public testing::TestWithParam<AudioLatencyTestData> {
         media::AudioLatency::GetExactBufferSize(
             base::Seconds(10.0), hardware_sample_rate, hardware_buffer_size,
             min_buffer_size, max_buffer_size, limits::kMaxWebAudioBufferSize));
-    if (max_buffer_size) {
+    if (max_buffer_size && max_buffer_size < limits::kMaxWebAudioBufferSize) {
       EXPECT_EQ(max_buffer_size,
                 media::AudioLatency::GetExactBufferSize(
                     base::Seconds(max_buffer_size /
@@ -203,7 +203,8 @@ INSTANTIATE_TEST_SUITE_P(
                                     limits::kMaxAudioBufferSize))
 #else
     testing::Values(std::make_tuple(44100, 256, 0, 0),
-                    std::make_tuple(44100, 440, 0, 0))
+                    std::make_tuple(44100, 440, 0, 0),
+                    std::make_tuple(48000, 480, 480, 48000))
 #endif
 );
 }  // namespace media

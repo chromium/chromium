@@ -207,14 +207,14 @@ int AudioLatency::GetExactBufferSize(base::TimeDelta duration,
   DCHECK_GE(max_hardware_buffer_size, min_hardware_buffer_size);
   DCHECK(max_hardware_buffer_size == 0 ||
          hardware_buffer_size <= max_hardware_buffer_size);
-  DCHECK(max_hardware_buffer_size == 0 ||
-         max_hardware_buffer_size <= max_allowed_buffer_size);
+  DCHECK_LE(hardware_buffer_size, max_allowed_buffer_size);
 
   int requested_buffer_size = std::round(duration.InSecondsF() * sample_rate);
 
   if (min_hardware_buffer_size &&
-      requested_buffer_size <= min_hardware_buffer_size)
+      requested_buffer_size <= min_hardware_buffer_size) {
     return min_hardware_buffer_size;
+  }
 
   if (requested_buffer_size <= hardware_buffer_size)
     return hardware_buffer_size;
@@ -244,7 +244,8 @@ int AudioLatency::GetExactBufferSize(base::TimeDelta duration,
   }
 
   const int platform_max_buffer_size =
-      max_hardware_buffer_size
+      (max_hardware_buffer_size &&
+       max_hardware_buffer_size <= max_allowed_buffer_size)
           ? (max_allowed_buffer_size / max_hardware_buffer_size) *
                 max_hardware_buffer_size
           : (max_allowed_buffer_size / multiplier) * multiplier;
