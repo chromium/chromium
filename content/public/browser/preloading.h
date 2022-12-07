@@ -25,7 +25,7 @@ enum class PreloadingType {
   // which will be added later to PreloadingType as we expand.
   kUnspecified = 0,
 
-  // TODO(crbug.com/1309934): Add preloading types 1 as we integrate
+  // TODO(crbug.com/1309934): Add preloading type 1 as we integrate
   // Preloading logging with preresolve.
 
   // Establishes a connection (including potential TLS handshake) with an
@@ -62,14 +62,19 @@ enum class PreloadingPredictor {
   // will be added later as a separate elements.
   kUnspecified = 0,
 
-  // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
-  // logging.
-
   // Preloading is triggered by OnPointerDown event heuristics.
   kUrlPointerDownOnAnchor = 1,
 
   // Preloading is triggered by OnPointerHover event heuristics.
   kUrlPointerHoverOnAnchor = 2,
+
+  // Preloading was triggered by embedding a keyword for the rel attribute of
+  // the <link> HTML element to hint to browsers that the user might need it for
+  // next navigation.
+  kLinkRel = 3,
+
+  // TODO(crbug.com/1309934): Add more predictors as we integrate Preloading
+  // logging.
 
   // This constant is used to define the value from which features can add more
   // enums beyond this value both inside and outside content. We mask it by 50

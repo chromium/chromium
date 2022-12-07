@@ -215,6 +215,8 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
   }
 
   SessionStorageNamespace* session_storage_namespace = nullptr;
+  PreloadingAttempt* attempt = nullptr;
+
   // Unit tests pass in a process_id == -1.
   if (process_id != -1) {
     RenderViewHost* source_render_view_host =
@@ -232,10 +234,26 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
     // TODO(ajwong): This does not correctly handle storage for isolated apps.
     session_storage_namespace = source_web_contents->GetController()
                                     .GetDefaultSessionStorageNamespace();
+    // Create new PreloadingPrediction class and pass all the fields.
+    content::PreloadingURLMatchCallback same_url_matcher =
+        content::PreloadingData::GetSameURLMatcher(url);
+
+    auto* preloading_data =
+        content::PreloadingData::GetOrCreateForWebContents(source_web_contents);
+    // In case of link-rel, the confidence is set as 100 as the URL
+    // was not predicted and confidence in this case is not defined.
+    int64_t confidence = 100;
+
+    // Create PreloadingPrediction and PreloadingAttempt for NoStatePrefetch.
+    preloading_data->AddPreloadingPrediction(
+        content::PreloadingPredictor::kLinkRel, confidence, same_url_matcher);
+    attempt = preloading_data->AddPreloadingAttempt(
+        content::PreloadingPredictor::kLinkRel,
+        content::PreloadingType::kNoStatePrefetch, same_url_matcher);
   }
   return StartPrefetchingWithPreconnectFallback(
       origin, url, referrer, initiator_origin, gfx::Rect(size),
-      session_storage_namespace);
+      session_storage_namespace, attempt);
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
