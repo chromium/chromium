@@ -993,33 +993,6 @@ void BrowserCommandController::OnSigninAllowedPrefChange() {
 
 // BrowserCommandController, TabStripModelObserver implementation:
 
-void BrowserCommandController::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  std::vector<content::WebContents*> new_contents;
-  std::vector<content::WebContents*> old_contents;
-
-  switch (change.type()) {
-    case TabStripModelChange::kInserted:
-      for (const auto& contents : change.GetInsert()->contents)
-        new_contents.push_back(contents.contents);
-      break;
-    case TabStripModelChange::kReplaced: {
-      auto* replace = change.GetReplace();
-      new_contents.push_back(replace->new_contents);
-      old_contents.push_back(replace->old_contents);
-      break;
-    }
-    case TabStripModelChange::kRemoved:
-      for (const auto& contents : change.GetRemove()->contents)
-        old_contents.push_back(contents.contents);
-      break;
-    default:
-      break;
-  }
-}
-
 void BrowserCommandController::TabBlockedStateChanged(
     content::WebContents* contents,
     int index) {
