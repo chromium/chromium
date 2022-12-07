@@ -404,7 +404,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
     self.navigationBar.scrollEdgeAppearance = appearance;
   }
 
-  self.navigationBar.translucent = NO;
   self.toolbar.translucent = NO;
   self.navigationBar.barTintColor =
       [UIColor colorNamed:kSecondaryBackgroundColor];
