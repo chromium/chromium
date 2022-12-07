@@ -64,7 +64,7 @@ class MEDIA_EXPORT FFmpegH264ToAnnexBBitstreamConverter
 
   // Variable to hold a pointer to memory where we can access the global
   // data from the FFmpeg file format's global headers.
-  raw_ptr<AVCodecParameters> stream_codec_parameters_;
+  raw_ptr<AVCodecParameters, DanglingUntriaged> stream_codec_parameters_;
 };
 
 }  // namespace media
