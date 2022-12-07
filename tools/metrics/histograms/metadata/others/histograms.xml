@@ -7047,83 +7047,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ImportantFile.DeleteOnCloseError" enum="PlatformFileError"
-    expires_after="M89">
-  <obsolete>
-    Removed in M89.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>xaerox@yandex-team.ru</owner>
-  <summary>
-    File error on Windows when ImportantFileWriter fails to mark the temporary
-    file for deletion upon closure.
-  </summary>
-</histogram>
-
-<histogram name="ImportantFile.FileCreateError" enum="PlatformFileError"
-    expires_after="2022-01-16">
-  <obsolete>
-    Removed in M95. Most failures are NO_SPACE.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>xaerox@yandex-team.ru</owner>
-  <summary>
-    File error happened upon temporary file creation at ImportantFileWriter.
-  </summary>
-</histogram>
-
-<histogram name="ImportantFile.FileDeleteNoRetryError" enum="PlatformFileError"
-    expires_after="2021-11-14">
-  <obsolete>
-    Removed in M95.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>xaerox@yandex-team.ru</owner>
-  <summary>
-    File error happened upon temporary file deletion at ImportantFileWriter when
-    it was not possible to retry in a delayed task.
-  </summary>
-</histogram>
-
-<histogram name="ImportantFile.FileDeleteRetryExceededError"
-    enum="PlatformFileError" expires_after="2021-12-19">
-  <obsolete>
-    Removed in M95.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>xaerox@yandex-team.ru</owner>
-  <summary>
-    The final file error when all retries for deleting the temorary file fail.
-  </summary>
-</histogram>
-
-<histogram name="ImportantFile.FileDeleteRetrySuccessCount"
-    units="attept number" expires_after="2021-12-19">
-  <obsolete>
-    Removed in M95.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>xaerox@yandex-team.ru</owner>
-  <summary>
-    The number of retries needed to successfully delete the temporary file. Only
-    recorded when at least one retry (two attempts) is needed.
-  </summary>
-</histogram>
-
-<histogram name="ImportantFile.FileRenameError" enum="PlatformFileError"
-    expires_after="2021-12-05">
-  <obsolete>
-    Removed in M95. Most failures are ACCESS_DENIED.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>xaerox@yandex-team.ru</owner>
-  <summary>
-    File error happened upon temporary file renaming at ImportantFileWriter.
-  </summary>
-</histogram>
-
 <histogram name="ImportantFile.FileReplaceRetryCount" units="attempt count"
-    expires_after="2023-06-04">
+    expires_after="2023-12-12">
   <owner>brucedawson@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -7133,21 +7058,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ImportantFile.FileWriteError" enum="PlatformFileError"
-    expires_after="2021-12-05">
-  <obsolete>
-    Removed in M95. Most failures are NO_SPACE.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>xaerox@yandex-team.ru</owner>
-  <summary>
-    File error happened upon writing data to temporary file at
-    ImportantFileWriter.
-  </summary>
-</histogram>
-
 <histogram name="ImportantFile.SerializationDuration{ImportantFileClients}"
-    units="ms" expires_after="2022-12-12">
+    units="ms" expires_after="2023-12-12">
   <owner>battre@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -7160,21 +7072,8 @@ chromium-metrics-reviews@google.com.
   <token key="ImportantFileClients" variants="ImportantFileClients"/>
 </histogram>
 
-<histogram name="ImportantFile.TempFileFailures" enum="TempFileFailure"
-    expires_after="2021-12-19">
-  <obsolete>
-    Removed in M95. Most failures are NO_SPACE.
-  </obsolete>
-  <owner>grt@chromium.org</owner>
-  <owner>lassey@google.com</owner>
-  <summary>
-    Count of various failures in ImportantFileWrite when manipulating a temp
-    file to write to before moving it into place (replacing another file).
-  </summary>
-</histogram>
-
 <histogram name="ImportantFile.WriteDuration{ImportantFileClients}" units="ms"
-    expires_after="2023-04-21">
+    expires_after="2023-12-12">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
