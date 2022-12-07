@@ -501,15 +501,11 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_BadBucket) {
       handle_future;
   manager_->GetSandboxedFileSystem(binding_context, bucket,
                                    handle_future.GetCallback());
-  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kOk,
+  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kFileError,
             handle_future.Get<0>()->status);
-
   mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> root(
       std::move(std::get<1>(handle_future.Take())));
-  // Currently we intentionally return a non-functional file/directory handle
-  // in the case of a bad bucket override, as there is currently no better way
-  // of representing a handle to a bucket that no longer exists.
-  ASSERT_TRUE(root);
+  EXPECT_FALSE(root);
 }
 
 TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_Permissions) {

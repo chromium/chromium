@@ -431,18 +431,31 @@ void FileSystemContext::OpenFileSystem(
   }
 
   // Quota manager isn't provided by all tests.
-  if (quota_manager_proxy() && !bucket.has_value()) {
+  if (!quota_manager_proxy()) {
+    ResolveURLOnOpenFileSystem(storage_key, bucket, type, mode,
+                               std::move(callback));
+    return;
+  }
+
+  auto got_bucket = base::BindOnce(&FileSystemContext::OnGetOrCreateBucket,
+                                   weak_factory_.GetWeakPtr(), storage_key,
+                                   type, mode, std::move(callback));
+  if (bucket.has_value()) {
+    if (!bucket->id) {
+      // This branch can be hit if the bucket has been deleted but `BucketHost`
+      // is still alive.
+      std::move(got_bucket).Run(QuotaError::kUnknownError);
+    } else {
+      quota_manager_proxy()->GetBucketById(bucket->id, io_task_runner_.get(),
+                                           std::move(got_bucket));
+    }
+  } else {
     // Ensure default bucket for `storage_key` exists so that Quota API
     // is aware of the usage.
     quota_manager_proxy()->GetOrCreateBucketDeprecated(
         BucketInitParams::ForDefaultBucket(storage_key),
         FileSystemTypeToQuotaStorageType(type), io_task_runner_.get(),
-        base::BindOnce(&FileSystemContext::OnGetOrCreateBucket,
-                       weak_factory_.GetWeakPtr(), storage_key, type, mode,
-                       std::move(callback)));
-  } else {
-    ResolveURLOnOpenFileSystem(storage_key, bucket, type, mode,
-                               std::move(callback));
+        std::move(got_bucket));
   }
 }
 
