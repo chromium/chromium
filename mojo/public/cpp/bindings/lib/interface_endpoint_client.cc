@@ -387,7 +387,9 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
   }
 
   // If the Remote is bound on another sequence, post the call.
-  const bool allow_interrupt = !message.has_flag(Message::kFlagNoInterrupt);
+  const bool allow_interrupt =
+      SyncCallRestrictions::AreSyncCallInterruptsEnabled() &&
+      !message.has_flag(Message::kFlagNoInterrupt);
   auto response = base::MakeRefCounted<SyncResponseInfo>();
   auto response_signaler = std::make_unique<SyncResponseSignaler>(response);
   task_runner_->PostTask(
@@ -625,7 +627,9 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
 
   const uint32_t message_name = message->name();
   const bool is_sync = message->has_flag(Message::kFlagIsSync);
-  const bool exclusive_wait = message->has_flag(Message::kFlagNoInterrupt);
+  const bool exclusive_wait =
+      message->has_flag(Message::kFlagNoInterrupt) ||
+      !SyncCallRestrictions::AreSyncCallInterruptsEnabled();
   if (!controller_->SendMessage(message))
     return false;
 

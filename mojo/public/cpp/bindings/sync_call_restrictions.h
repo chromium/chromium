@@ -86,6 +86,20 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   static void DisallowSyncCall() {}
 #endif
 
+  // Globally disables sync call interrupts. This means that all sync calls in
+  // the current process will be strictly blocking until a reply is received,
+  // and no incoming sync calls can dispatch on the blocking thread in interim.
+  static void DisableSyncCallInterrupts();
+
+  // Used only in tests to re-enable sync call interrupts after disabling them.
+  static void EnableSyncCallInterruptsForTesting();
+
+  // Indicates whether sync call interrupts are enabled in the calling process.
+  // They're enabled by default, so any sync message that isn't marked [Sync]
+  // may have its blocking call interrupted to dispatch other incoming sync
+  // IPCs which target the blocking thread.
+  static bool AreSyncCallInterruptsEnabled();
+
  private:
   // DO NOT ADD ANY OTHER FRIEND STATEMENTS, talk to mojo/OWNERS first.
   // BEGIN ALLOWED USAGE.

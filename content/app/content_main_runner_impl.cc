@@ -92,6 +92,7 @@
 #include "media/media_buildflags.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/dynamic_library_support.h"
 #include "mojo/public/cpp/system/invitation.h"
@@ -1029,7 +1030,13 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
   if (is_browser_main_loop_started_)
     return -1;
 
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kSingleProcess)) {
+    mojo::SyncCallRestrictions::DisableSyncCallInterrupts();
+  }
+
   bool should_start_minimal_browser = start_minimal_browser;
+
   if (!mojo_ipc_support_) {
     if (delegate_->ShouldCreateFeatureList()) {
       // This is intentionally leaked since it needs to live for the duration

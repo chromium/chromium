@@ -45,3 +45,7 @@ interface Ponger {
   [Sync] Pong() => ();
   PongAsync();
 };
+
+interface SyncService {
+  [Sync] SyncCall() => ();
+};

@@ -4,8 +4,6 @@
 
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 
-#if ENABLE_SYNC_CALL_RESTRICTIONS
-
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -17,6 +15,11 @@
 namespace mojo {
 
 namespace {
+
+// Sync call interrupts are enabled by default.
+bool g_enable_sync_call_interrupts = true;
+
+#if ENABLE_SYNC_CALL_RESTRICTIONS
 
 class GlobalSyncCallSettings {
  public:
@@ -60,7 +63,11 @@ bool SyncCallRestrictionsEnforceable() {
   return base::internal::SequenceLocalStorageMap::IsSetForCurrentThread();
 }
 
+#endif  // ENABLE_SYNC_CALL_RESTRICTIONS
+
 }  // namespace
+
+#if ENABLE_SYNC_CALL_RESTRICTIONS
 
 // static
 void SyncCallRestrictions::AssertSyncCallAllowed() {
@@ -101,6 +108,21 @@ void SyncCallRestrictions::DecreaseScopedAllowCount() {
   --GetSequenceLocalScopedAllowCount();
 }
 
-}  // namespace mojo
-
 #endif  // ENABLE_SYNC_CALL_RESTRICTIONS
+
+// static
+void SyncCallRestrictions::DisableSyncCallInterrupts() {
+  g_enable_sync_call_interrupts = false;
+}
+
+// static
+void SyncCallRestrictions::EnableSyncCallInterruptsForTesting() {
+  g_enable_sync_call_interrupts = true;
+}
+
+// static
+bool SyncCallRestrictions::AreSyncCallInterruptsEnabled() {
+  return g_enable_sync_call_interrupts;
+}
+
+}  // namespace mojo
