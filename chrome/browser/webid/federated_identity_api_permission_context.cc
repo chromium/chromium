@@ -37,15 +37,20 @@ FederatedIdentityApiPermissionContext::GetApiPermissionStatus(
   if (!base::FeatureList::IsEnabled(features::kFedCm))
     return PermissionStatus::BLOCKED_VARIATIONS;
 
+  const GURL rp_embedder_url = relying_party_embedder.GetURL();
+
   // TODO(npm): FedCM is currently restricted to contexts where third party
   // cookies are not blocked unless the FedCmWithoutThirdPartyCookies flag is
   // enabled.  Once the privacy improvements for the API are implemented, remove
   // this restriction. See https://crbug.com/13043
   if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies))
+      !cookie_settings_->IsThirdPartyAccessAllowed(
+          rp_embedder_url, /*source=*/nullptr,
+          content_settings::CookieSettings::QueryReason::kCookies) &&
+      !base::FeatureList::IsEnabled(features::kFedCmWithoutThirdPartyCookies)) {
     return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
+  }
 
-  const GURL rp_embedder_url = relying_party_embedder.GetURL();
   const ContentSetting setting = host_content_settings_map_->GetContentSetting(
       rp_embedder_url, rp_embedder_url,
       ContentSettingsType::FEDERATED_IDENTITY_API);
