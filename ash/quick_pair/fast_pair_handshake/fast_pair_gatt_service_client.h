@@ -23,9 +23,9 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
   virtual device::BluetoothRemoteGattService* gatt_service() = 0;
 
   // Constructs a data vector based on the message type, flags, provider
-  // address, and seekers address. Writes data to the key based characteristic
-  // and calls the callback with response data on success, or with a PairFailure
-  // on failure.
+  // address, and seekers address. Starts a notify session for key based
+  // Pairing. Once the notify session has been started, the message data will be
+  // written to the key based characteristic.
   virtual void WriteRequestAsync(
       uint8_t message_type,
       uint8_t flags,
@@ -36,9 +36,9 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
                               absl::optional<PairFailure>)>
           write_response_callback) = 0;
 
-  // Constructs a data vector based on the message type and passkey. Writes
-  // data to the passkey characteristic and calls the callback with response
-  // data on success, or with a PairFailure on failure.
+  // Constructs a data vector based on the message type and passkey. Starts a
+  // notify session for the passkey. Once the notify session has been started,
+  // the passkey data will be written to the passkey characteristic.
   virtual void WritePasskeyAsync(
       uint8_t message_type,
       uint32_t passkey,

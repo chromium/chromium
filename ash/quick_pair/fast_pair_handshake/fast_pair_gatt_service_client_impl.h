@@ -143,17 +143,21 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
       device::BluetoothRemoteGattCharacteristic* characteristic,
       const std::vector<uint8_t>& value) override;
 
-  void FindGattCharacteristicsAndStartNotifySessions();
+  absl::optional<PairFailure> SetGattCharacteristics();
 
   std::vector<device::BluetoothRemoteGattCharacteristic*>
   GetCharacteristicsByUUIDs(const device::BluetoothUUID& uuidV1,
                             const device::BluetoothUUID& uuidV2);
 
   // BluetoothRemoteGattCharacteristic StartNotifySession callbacks
-  void OnNotifySession(
+  void OnKeyBasedRequestNotifySession(
+      const std::vector<uint8_t>& request_data,
       std::unique_ptr<device::BluetoothGattNotifySession> session);
-  void OnGattError(PairFailure failure,
-                   device::BluetoothGattService::GattErrorCode error);
+  void OnPasskeyNotifySession(
+      const std::vector<uint8_t>& passkey_data,
+      std::unique_ptr<device::BluetoothGattNotifySession> session);
+  void OnNotifySessionError(PairFailure failure,
+                            device::BluetoothGattService::GattErrorCode error);
 
   // BluetoothRemoteGattCharacteristic WriteRemoteCharacteristic callbacks
   void OnWriteRequest();
@@ -183,7 +187,7 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   std::string device_address_;
   bool is_initialized_ = false;
 
-  // Initial timestamps used to calculate duration to log to metrics.;
+  // Initial timestamps used to calculate duration to log to metrics.
   base::TimeTicks notify_keybased_start_time_;
   base::TimeTicks notify_passkey_start_time_;
 
@@ -196,8 +200,8 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   // Initialize with zero failures.
   int num_gatt_connection_attempts_ = 0;
 
-  std::vector<std::unique_ptr<device::BluetoothGattNotifySession>>
-      bluetooth_gatt_notify_sessions_;
+  std::unique_ptr<device::BluetoothGattNotifySession> key_based_notify_session_;
+  std::unique_ptr<device::BluetoothGattNotifySession> passkey_notify_session_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<device::BluetoothGattConnection> gatt_connection_;
   device::BluetoothRemoteGattService* gatt_service_ = nullptr;
