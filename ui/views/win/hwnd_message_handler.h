@@ -822,6 +822,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // https://crbug.com/1270828.
   int num_drag_events_after_press_ = 0;
 
+  // Records ::GetLastError when ::ReleaseCapture fails. Logged in the DCHECK
+  // in `SetCapture` to diagnose https://crbug.com/1386013.
+  DWORD release_capture_errno_ = 0;
+
   // This tracks headless window visibility, fullscreen and min/max states. In
   // headless mode the platform window is never made visible or change its
   // state, so this structure holds the requested state for reporting.
