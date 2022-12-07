@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/public/freezing/freezing.h"
 
+#include <stdint.h>
+
 #include <memory>
 
 #include "base/bind.h"
@@ -16,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/types/id_type.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
@@ -34,7 +37,22 @@ namespace freezing {
 
 namespace {
 
-class FreezingVoteTokenImpl;
+// Wrapper for `FreezingVoteToken*` that provides type checking and avoids being
+// dereferenced.
+class FreezingVoteTokenID
+    : public base::IdType<class FreezingVoteTokenTag, std::uintptr_t, 0> {
+ public:
+  explicit FreezingVoteTokenID(const FreezingVoteToken* token)
+      : FreezingVoteTokenID(reinterpret_cast<uintptr_t>(token)) {}
+
+ private:
+  constexpr explicit FreezingVoteTokenID(uintptr_t value)
+      : base::IdType<FreezingVoteTokenTag, std::uintptr_t, 0>(value) {}
+
+  constexpr static FreezingVoteTokenID FromUnsafeValue(uintptr_t value) {
+    return FreezingVoteTokenID(value);
+  }
+};
 
 // NodeAttachedData used to store the set of FreezingVoteTokenImpl objects
 // associated with a PageNode.
@@ -44,10 +62,10 @@ class FreezingVoteNodeData : public NodeAttachedDataImpl<FreezingVoteNodeData> {
 
   ~FreezingVoteNodeData() override = default;
 
-  void AddVote(FreezingVoteTokenImpl* token);
-  void RemoveVote(FreezingVoteTokenImpl* token);
+  void AddVote(FreezingVoteTokenID token);
+  void RemoveVote(FreezingVoteTokenID token);
   bool IsEmpty() { return vote_tokens_.empty(); }
-  const base::flat_set<FreezingVoteTokenImpl*>& vote_tokens() {
+  const base::flat_set<FreezingVoteTokenID>& vote_tokens() {
     return vote_tokens_;
   }
 
@@ -57,7 +75,7 @@ class FreezingVoteNodeData : public NodeAttachedDataImpl<FreezingVoteNodeData> {
   explicit FreezingVoteNodeData(const PageNodeImpl* page_node) {}
 
   // The freezing votes associated with this node.
-  base::flat_set<FreezingVoteTokenImpl*> vote_tokens_;
+  base::flat_set<FreezingVoteTokenID> vote_tokens_;
 };
 
 // A registry of FreezingVoteToken that lives on the PM sequence.
@@ -71,7 +89,7 @@ class FreezingVoteTokenPMRegistry
   // A map that associates a voting token to a
   // <FreezingVotingChannel, const PageNode*> pair.
   using VotingChannelsMap =
-      base::flat_map<FreezingVoteTokenImpl*,
+      base::flat_map<FreezingVoteTokenID,
                      std::pair<FreezingVotingChannel, const PageNode*>>;
 
   // Returns the FreezingVoteTokenPMRegistry graph owned instance, creates it if
@@ -90,11 +108,11 @@ class FreezingVoteTokenPMRegistry
   static void RegisterVoteForWebContents(content::WebContents* contents,
                                          FreezingVoteValue vote_value,
                                          const char* vote_reason,
-                                         FreezingVoteTokenImpl* token);
+                                         FreezingVoteTokenID token);
 
   // Unregister the vote associated with |token|. This can only be called from
   // the UI thread.
-  static void UnregisterVote(FreezingVoteTokenImpl* token);
+  static void UnregisterVote(FreezingVoteTokenID token);
 
   const VotingChannelsMap& voting_channels_for_testing() {
     return voting_channels_;
@@ -107,10 +125,10 @@ class FreezingVoteTokenPMRegistry
   // associated with this vote that will be used when invalidating it.
   void RegisterVoteOnPMSequence(base::WeakPtr<PageNode> page_node,
                                 FreezingVote vote,
-                                FreezingVoteTokenImpl* token);
+                                FreezingVoteTokenID token);
 
   // Unregister the vote associated with |token|.
-  void UnregisterVoteOnPMSequence(FreezingVoteTokenImpl* token);
+  void UnregisterVoteOnPMSequence(FreezingVoteTokenID token);
 
   // PageNodeObserver:
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
@@ -149,12 +167,12 @@ class FreezingVoteTokenImpl : public FreezingVoteToken {
 FreezingVoteToken::FreezingVoteToken() = default;
 FreezingVoteToken::~FreezingVoteToken() = default;
 
-void FreezingVoteNodeData::AddVote(FreezingVoteTokenImpl* token) {
+void FreezingVoteNodeData::AddVote(FreezingVoteTokenID token) {
   DCHECK(!base::Contains(vote_tokens_, token));
   vote_tokens_.insert(token);
 }
 
-void FreezingVoteNodeData::RemoveVote(FreezingVoteTokenImpl* token) {
+void FreezingVoteNodeData::RemoveVote(FreezingVoteTokenID token) {
   DCHECK(base::Contains(vote_tokens_, token));
   vote_tokens_.erase(token);
 }
@@ -177,14 +195,14 @@ void FreezingVoteTokenPMRegistry::RegisterVoteForWebContents(
     content::WebContents* contents,
     FreezingVoteValue vote_value,
     const char* vote_reason,
-    FreezingVoteTokenImpl* token) {
+    FreezingVoteTokenID token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Register the vote on the PM sequence.
   PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(
           [](base::WeakPtr<PageNode> page_node, FreezingVote vote,
-             FreezingVoteTokenImpl* token, Graph* graph) {
+             FreezingVoteTokenID token, Graph* graph) {
             auto* registry =
                 FreezingVoteTokenPMRegistry::GetOrCreateInstance(graph);
             registry->RegisterVoteOnPMSequence(page_node, vote, token);
@@ -194,24 +212,24 @@ void FreezingVoteTokenPMRegistry::RegisterVoteForWebContents(
 }
 
 // static
-void FreezingVoteTokenPMRegistry::UnregisterVote(FreezingVoteTokenImpl* token) {
+void FreezingVoteTokenPMRegistry::UnregisterVote(FreezingVoteTokenID token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Unregister the vote on the PM sequence.
   PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(
-          [](FreezingVoteTokenImpl* token, Graph* graph) {
+          [](FreezingVoteTokenID token, Graph* graph) {
             auto* registry =
                 FreezingVoteTokenPMRegistry::GetOrCreateInstance(graph);
             registry->UnregisterVoteOnPMSequence(token);
           },
-          base::UnsafeDanglingUntriaged(token)));
+          token));
 }
 
 void FreezingVoteTokenPMRegistry::RegisterVoteOnPMSequence(
     base::WeakPtr<PageNode> page_node,
     FreezingVote vote,
-    FreezingVoteTokenImpl* token) {
+    FreezingVoteTokenID token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(page_node);
 
@@ -230,7 +248,7 @@ void FreezingVoteTokenPMRegistry::RegisterVoteOnPMSequence(
 }
 
 void FreezingVoteTokenPMRegistry::UnregisterVoteOnPMSequence(
-    FreezingVoteTokenImpl* token) {
+    FreezingVoteTokenID token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto voting_channel = voting_channels_.find(token);
   // The vote might be missing from |voting_channels_| if this gets called
@@ -266,7 +284,7 @@ void FreezingVoteTokenPMRegistry::OnBeforePageNodeRemoved(
   // Invalidate the votes if its associated page node is destroyed. This can
   // happen if a freezing vote token is released after the destruction of the
   // WebContents it's associated with.
-  for (const auto* token_iter : node_data->vote_tokens()) {
+  for (const auto token_iter : node_data->vote_tokens()) {
     auto voting_channel = voting_channels_.find(token_iter);
     DCHECK(voting_channel != voting_channels_.end());
     ResetAndRemoveVotingChannel(voting_channel, page_node);
@@ -299,12 +317,12 @@ void FreezingVoteTokenPMRegistry::ResetAndRemoveVotingChannel(
 FreezingVoteTokenImpl::FreezingVoteTokenImpl(content::WebContents* contents,
                                              FreezingVoteValue vote_value,
                                              const char* vote_reason) {
-  FreezingVoteTokenPMRegistry::RegisterVoteForWebContents(contents, vote_value,
-                                                          vote_reason, this);
+  FreezingVoteTokenPMRegistry::RegisterVoteForWebContents(
+      contents, vote_value, vote_reason, FreezingVoteTokenID(this));
 }
 
 FreezingVoteTokenImpl::~FreezingVoteTokenImpl() {
-  FreezingVoteTokenPMRegistry::UnregisterVote(this);
+  FreezingVoteTokenPMRegistry::UnregisterVote(FreezingVoteTokenID(this));
 }
 
 std::unique_ptr<FreezingVoteToken> EmitFreezingVoteForWebContents(
