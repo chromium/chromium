@@ -30,7 +30,7 @@ class ASH_EXPORT SnapControllerImpl : public chromeos::SnapController {
                        bool allow_haptic_feedback) override;
   void CommitSnap(aura::Window* window,
                   chromeos::SnapDirection snap,
-                  chromeos::SnapRatio snap_ratio) override;
+                  float snap_ratio) override;
 
  private:
   std::unique_ptr<PhantomWindowController> phantom_window_controller_;

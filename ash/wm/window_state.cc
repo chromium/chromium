@@ -482,19 +482,14 @@ void WindowState::RestoreZOrdering() {
 
 void WindowState::OnWMEvent(const WMEvent* event) {
   if (event->IsSnapEvent()) {
-    // Snap events should be created as WindowSnapWMEvent.
-    DCHECK(event->IsSnapInfoAvailable());
-    // Save the target snap ratio.
-    // TODO(b/259302867): Since the snap ratio is saved here, remove
-    // `new_snap_ratio` method parameter piping.
-    snap_ratio_ =
-        absl::make_optional(WindowSnapWMEvent::GetFloatValueForSnapRatio(
-            static_cast<const WindowSnapWMEvent*>(event)->snap_ratio()));
+    // Save `event` requested snap ratio.
+    snap_ratio_ = absl::make_optional(event->snap_ratio());
   }
 
   current_state_->OnWMEvent(this, event);
 
-  // TODO(b/259585069): Move the snap ratio update to `OnWindowBoundsChanged`.
+  // The current snap ratio may be different from the requested snap ratio, if
+  // the window has a minimum size requirement.
   if (event->IsBoundsEvent())
     UpdateSnapRatio();
 

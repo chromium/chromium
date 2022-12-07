@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_state.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -125,6 +126,9 @@ class DisplayMetricsChangedWMEvent;
 class ASH_EXPORT WMEvent {
  public:
   explicit WMEvent(WMEventType type);
+  // Creates a window snap event with the requested `snap_ratio`. Used only by
+  // snap events.
+  WMEvent(WMEventType type, float snap_ratio);
 
   WMEvent(const WMEvent&) = delete;
   WMEvent& operator=(const WMEvent&) = delete;
@@ -132,6 +136,8 @@ class ASH_EXPORT WMEvent {
   virtual ~WMEvent();
 
   WMEventType type() const { return type_; }
+
+  float snap_ratio() const { return snap_ratio_; }
 
   // Predicates to test the type of event.
 
@@ -158,6 +164,7 @@ class ASH_EXPORT WMEvent {
   // True if the event is a window snap event.
   bool IsSnapEvent() const;
 
+  // TODO(b/259302867): Remove with WindowSnapWMEvent.
   // True if the event has |snap_ratio| value, which is only available for
   // WindowSnapWMEvent types. Checks that snap events are created with valid
   // |snap_ratio| to pass ASan tests.
@@ -168,6 +175,9 @@ class ASH_EXPORT WMEvent {
 
  private:
   WMEventType type_;
+
+  // The snap ratio requested by snap events.
+  float snap_ratio_ = chromeos::kDefaultSnapRatio;
 };
 
 // An WMEvent to request new bounds for the window.

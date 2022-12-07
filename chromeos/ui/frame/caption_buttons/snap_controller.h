@@ -13,6 +13,14 @@ class Window;
 
 namespace chromeos {
 
+// Snap ratios that correspond to the size of a window when it is snapped. A
+// window with `kOneThirdSnapRatio` will snap to one third of the display,
+// `kTwoThirdSnapRatio` will snap to two thirds of the display, and
+// `kDefaultSnapRatio` will snap to the default half of the display.
+constexpr float kOneThirdSnapRatio = 0.33f;
+constexpr float kDefaultSnapRatio = 0.5f;
+constexpr float kTwoThirdSnapRatio = 0.67f;
+
 // The previewed snap state for a window, corresponding to the use of a
 // PhantomWindowController.
 enum class SnapDirection {
@@ -26,12 +34,6 @@ enum class SnapDirection {
                // secondary position, the opposite position of the primary. For
                // example, in primary portrait display, primary position is the
                // top and secondary position is the bottom.
-};
-
-enum class SnapRatio {
-  kDefaultSnapRatio,   // 0.5f
-  kOneThirdSnapRatio,  // 0.33f
-  kTwoThirdSnapRatio   // 0.67f
 };
 
 // This interface handles snap actions to be performed on a top level window.
@@ -53,10 +55,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
 
   // Snaps the window in the given direction, if not kNone. Destroys the preview
   // window, if any.
-  virtual void CommitSnap(
-      aura::Window* window,
-      SnapDirection snap,
-      SnapRatio snap_ratio = SnapRatio::kDefaultSnapRatio) = 0;
+  virtual void CommitSnap(aura::Window* window,
+                          SnapDirection snap,
+                          float snap_ratio) = 0;
 
  protected:
   SnapController();

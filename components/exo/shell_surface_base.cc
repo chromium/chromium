@@ -284,7 +284,8 @@ void ShowSnapPreview(aura::Window* window,
 }
 
 void CommitSnap(aura::Window* window, chromeos::SnapDirection snap_direction) {
-  chromeos::SnapController::Get()->CommitSnap(window, snap_direction);
+  chromeos::SnapController::Get()->CommitSnap(window, snap_direction,
+                                              chromeos::kDefaultSnapRatio);
 }
 
 }  // namespace

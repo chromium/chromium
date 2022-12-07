@@ -141,7 +141,7 @@ std::string MultitaskMenuView::GetEntryTypeHistogramName() {
 
 void MultitaskMenuView::SplitButtonPressed(bool left_top) {
   SnapController::Get()->CommitSnap(
-      window_, GetSnapDirectionForWindow(window_, left_top));
+      window_, GetSnapDirectionForWindow(window_, left_top), kDefaultSnapRatio);
   on_any_button_pressed_.Run();
 }
 
@@ -150,11 +150,10 @@ void MultitaskMenuView::PartialButtonPressed(bool left_top) {
 
   // TODO(crbug.com/1350197): Implement partial split for tablet mode. It
   // currently splits to the default half ratio.
-  SnapController::Get()->CommitSnap(
-      window_, snap,
-      snap == SnapDirection::kPrimary
-          ? chromeos::SnapRatio::kTwoThirdSnapRatio
-          : chromeos::SnapRatio::kOneThirdSnapRatio);
+  SnapController::Get()->CommitSnap(window_, snap,
+                                    snap == SnapDirection::kPrimary
+                                        ? kTwoThirdSnapRatio
+                                        : kOneThirdSnapRatio);
   on_any_button_pressed_.Run();
 }
 

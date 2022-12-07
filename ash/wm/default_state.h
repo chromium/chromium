@@ -50,11 +50,9 @@ class DefaultState : public BaseState {
                         const SetBoundsWMEvent* bounds_event);
 
   // Enters next state. This is used when the state moves from one to another
-  // within the same desktop mode. Uses `snap_ratio` for the next state type if
-  // provided.
+  // within the same desktop mode.
   void EnterToNextState(WindowState* window_state,
-                        chromeos::WindowStateType next_state_type,
-                        absl::optional<float> snap_ratio);
+                        chromeos::WindowStateType next_state_type);
 
   // Reenters the current state. This is called when migrating from
   // previous desktop mode, and the window's state needs to re-construct the
@@ -62,11 +60,10 @@ class DefaultState : public BaseState {
   void ReenterToCurrentState(WindowState* window_state,
                              WindowState::State* state_in_previous_mode);
 
-  // Animates to new window bounds, using `snap_ratio` if provided, based on the
-  // current and previous state type.
+  // Animates to new window bounds, based on the current and previous state
+  // type.
   void UpdateBoundsFromState(WindowState* window_state,
-                             chromeos::WindowStateType old_state_type,
-                             absl::optional<float> snap_ratio);
+                             chromeos::WindowStateType old_state_type);
 
   // Updates the window bounds for display bounds, or display work area bounds
   // changes.

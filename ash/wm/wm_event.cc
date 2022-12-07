@@ -13,6 +13,11 @@ WMEvent::WMEvent(WMEventType type) : type_(type) {
          IsTransitionEvent());
 }
 
+WMEvent::WMEvent(WMEventType type, float snap_ratio)
+    : type_(type), snap_ratio_(snap_ratio) {
+  DCHECK(IsSnapEvent());
+}
+
 WMEvent::~WMEvent() = default;
 
 bool WMEvent::IsWorkspaceEvent() const {

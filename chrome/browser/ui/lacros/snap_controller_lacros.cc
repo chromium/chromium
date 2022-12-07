@@ -53,7 +53,7 @@ void SnapControllerLacros::ShowSnapPreview(aura::Window* window,
 
 void SnapControllerLacros::CommitSnap(aura::Window* window,
                                       chromeos::SnapDirection snap,
-                                      chromeos::SnapRatio snap_ratio) {
+                                      float snap_ratio) {
   if (auto* wayland_extension = WaylandExtensionForAuraWindow(window)) {
     // TODO(crbug.com/1346780): Set `snap_ratio` for Lacros windows.
     wayland_extension->CommitSnap(ToWaylandWindowSnapDirection(snap));

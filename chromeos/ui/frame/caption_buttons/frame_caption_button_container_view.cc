@@ -728,7 +728,8 @@ void FrameCaptionButtonContainerView::ShowSnapPreview(
 }
 
 void FrameCaptionButtonContainerView::CommitSnap(SnapDirection snap) {
-  SnapController::Get()->CommitSnap(frame_->GetNativeWindow(), snap);
+  SnapController::Get()->CommitSnap(frame_->GetNativeWindow(), snap,
+                                    kDefaultSnapRatio);
 }
 
 BEGIN_METADATA(FrameCaptionButtonContainerView, views::View)
