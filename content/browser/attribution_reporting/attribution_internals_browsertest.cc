@@ -728,9 +728,16 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetReportTime(now)
           .SetPriority(7)
           .Build();
+
+  std::vector<AttributionReport> stored_reports;
+  stored_reports.push_back(report);
+
   EXPECT_CALL(*manager(), GetPendingReportsForInternalUse)
-      .WillOnce(InvokeCallback({report}))
-      .WillOnce(InvokeCallback(std::vector<AttributionReport>{}));
+      .WillRepeatedly(
+          [&](AttributionReport::Types, int limit,
+              base::OnceCallback<void(std::vector<AttributionReport>)>
+                  callback) { std::move(callback).Run(stored_reports); });
+
   report.set_report_time(report.report_time() + base::Hours(1));
   manager()->NotifyReportSent(report,
                               /*is_debug_report=*/false,
@@ -738,11 +745,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                                          /*http_response_code=*/200));
 
   EXPECT_CALL(*manager(), ClearData)
-      .WillOnce([](base::Time delete_begin, base::Time delete_end,
-                   StoragePartition::StorageKeyMatcherFunction filter,
-                   BrowsingDataFilterBuilder* filter_builder,
-                   bool delete_rate_limit_data,
-                   base::OnceClosure done) { std::move(done).Run(); });
+      .WillOnce([&](base::Time delete_begin, base::Time delete_end,
+                    StoragePartition::StorageKeyMatcherFunction filter,
+                    BrowsingDataFilterBuilder* filter_builder,
+                    bool delete_rate_limit_data, base::OnceClosure done) {
+        stored_reports.clear();
+        std::move(done).Run();
+      });
 
   // Verify both rows get rendered.
   static constexpr char wait_script[] = R"(
@@ -771,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // Wait for the table to rendered.
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the clear storage button and expect that the report table is emptied.
   const std::u16string kDeleteTitle = u"Delete";
@@ -780,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   // Click the button.
   ASSERT_TRUE(ExecJsInWebUI("document.getElementById('clear-data').click();"));
-  EXPECT_EQ(kDeleteTitle, delete_title_watcher.WaitAndGetTitle());
+  ASSERT_EQ(kDeleteTitle, delete_title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
