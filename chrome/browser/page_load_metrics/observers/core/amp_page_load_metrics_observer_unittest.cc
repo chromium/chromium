@@ -195,9 +195,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, GoogleSearchAMPViewerSameDocument) {
 
   // Verify that subframe metrics aren't recorded without an AMP subframe.
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe",
-      0);
-  tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       0);
   tester()->histogram_tester().ExpectTotalCount(
@@ -240,9 +237,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameInputBeforeNavigation) {
       GURL("https://ampviewer.com/other"), main_rfh())
       ->CommitSameDocument();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe",
-      0);
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       1);
@@ -303,9 +297,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameNavigationBeforeInput) {
       GURL("https://ampviewer.com/other"), main_rfh())
       ->CommitSameDocument();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe",
-      1);
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       0);
@@ -379,8 +370,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetrics) {
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe",
       1);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.InteractiveTiming.FirstInputDelay4.Subframe", 1);
 
   ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
   ASSERT_NE(nullptr, entry.get());
@@ -733,10 +722,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMetricsFullNavigation) {
       "PageLoad.Clients.AMP.PaintTiming.InputToLargestContentfulPaint.Subframe."
       "FullNavigation",
       1);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.InteractiveTiming.FirstInputDelay4.Subframe."
-      "FullNavigation",
-      1);
 
   ukm::mojom::UkmEntryPtr entry = GetAmpPageLoadUkmEntry(amp_url);
   tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(entry.get(), amp_url);
@@ -873,9 +858,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMultipleFrames) {
       ->CommitSameDocument();
 
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe",
-      0);
-  tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       1);
   tester()->histogram_tester().ExpectTotalCount(
@@ -895,9 +877,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, SubFrameMultipleFrames) {
 
   // We now expect one NavigationToInput (for the prerender) and one
   // InputToNavigation (for the non-prerender).
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe",
-      1);
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       1);
@@ -975,9 +954,6 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       ->CommitSameDocument();
 
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe",
-      0);
-  tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       0);
   tester()->histogram_tester().ExpectTotalCount(
@@ -1016,9 +992,6 @@ TEST_P(AMPPageLoadMetricsObserverTest, NoSubFrameMetricsForNonAmpSubFrame) {
       ->CommitSameDocument();
 
   tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe",
-      0);
-  tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       0);
   tester()->histogram_tester().ExpectTotalCount(
@@ -1055,9 +1028,6 @@ TEST_P(AMPPageLoadMetricsObserverTest,
       GURL("https://ampviewer.com/other"), main_rfh())
       ->CommitSameDocument();
 
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe",
-      0);
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       0);

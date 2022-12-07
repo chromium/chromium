@@ -458,41 +458,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.AMP.Experimental.PageTiming.NavigationToInput.Subframe"
-    units="ms" expires_after="M97">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    The time from navigation in the AMP frame to the user input that triggers
-    the top-level navigation for that AMP document. This gives insight into the
-    delta between when an AMP frame is prerendered and when it is actually
-    displayed for same document navigations.
-
-    This histogram has incomplete data. It expired after M78 and was re-added in
-    M90.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.AMP.InteractiveTiming.FirstInputDelay4.Subframe"
-    units="ms" expires_after="M97">
-  <owner>bmcquade@chromium.org</owner>
-  <owner>sullivan@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures First Input Delay, the duration between the hardware timestamp and
-    the start of event processing on the main thread for the first meaningful
-    input per navigation, in an AMP subframe document. Recorded on first page
-    interaction. See https://goo.gl/tr1oTZ for a detailed explanation. Excludes
-    scrolls. Only same-document navigations are included.
-
-    This histogram has incomplete data. It expired after M78 and was re-added in
-    M90.
-  </summary>
-</histogram>
-
-<histogram
     name="PageLoad.Clients.AMP.InteractiveTiming.FirstInputDelay4.Subframe.FullNavigation"
     units="ms" expires_after="M97">
   <owner>bmcquade@chromium.org</owner>
