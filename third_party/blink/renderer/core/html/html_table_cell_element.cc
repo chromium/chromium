@@ -49,15 +49,6 @@ unsigned HTMLTableCellElement::colSpan() const {
   if (!ParseHTMLClampedNonNegativeInteger(col_span_value, kMinColSpan,
                                           kMaxColSpan, value))
     return kDefaultColSpan;
-  // Counting for https://github.com/whatwg/html/issues/1198
-  UseCounter::Count(GetDocument(), WebFeature::kHTMLTableCellElementColspan);
-  if (value > 8190) {
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kHTMLTableCellElementColspanGreaterThan8190);
-  } else if (value > 1000) {
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kHTMLTableCellElementColspanGreaterThan1000);
-  }
   return value;
 }
 

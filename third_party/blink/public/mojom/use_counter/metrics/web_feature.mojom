@@ -1254,8 +1254,8 @@ enum WebFeature {
   kScrollbarUseHorizontalScrollbarButton = 1780,
   kScrollbarUseHorizontalScrollbarTrack = 1782,
   kHTMLTableCellElementColspan = 1783,
-  kHTMLTableCellElementColspanGreaterThan1000 = 1784,
-  kHTMLTableCellElementColspanGreaterThan8190 = 1785,
+  kOBSOLETE_HTMLTableCellElementColspanGreaterThan1000 = 1784,
+  kOBSOLETE_HTMLTableCellElementColspanGreaterThan8190 = 1785,
   kOBSOLETE_SelectionAddRangeIntersect = 1786,
   kPostMessageFromInsecureToSecureToplevel = 1787,
   // The above items are available in M57 branch.
