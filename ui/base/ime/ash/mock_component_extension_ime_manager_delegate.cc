@@ -10,7 +10,6 @@ namespace input_method {
 
 MockComponentExtensionIMEManagerDelegate::
     MockComponentExtensionIMEManagerDelegate() = default;
-
 MockComponentExtensionIMEManagerDelegate::
     ~MockComponentExtensionIMEManagerDelegate() = default;
 
@@ -23,7 +22,10 @@ void MockComponentExtensionIMEManagerDelegate::Load(
     Profile* profile,
     const std::string& extension_id,
     const std::string& manifest,
-    const base::FilePath& path) {}
+    const base::FilePath& path) {
+  load_call_count_++;
+  last_loaded_extension_id_ = extension_id;
+}
 
 bool MockComponentExtensionIMEManagerDelegate::IsInLoginLayoutAllowlist(
     const std::string& layout) {

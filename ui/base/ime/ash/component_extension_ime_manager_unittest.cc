@@ -17,14 +17,14 @@ namespace {
 
 class ComponentExtensionIMEManagerTest : public testing::Test {
  public:
-  ComponentExtensionIMEManagerTest() : mock_delegate_(nullptr) {}
+  ComponentExtensionIMEManagerTest() = default;
 
   ComponentExtensionIMEManagerTest(const ComponentExtensionIMEManagerTest&) =
       delete;
   ComponentExtensionIMEManagerTest& operator=(
       const ComponentExtensionIMEManagerTest&) = delete;
 
-  virtual void SetUp() {
+  void SetUp() override {
     ime_list_.clear();
 
     ComponentExtensionIME ext1;
@@ -38,21 +38,21 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
     ext1_engine1.engine_id = "zh-t-i0-pinyin";
     ext1_engine1.display_name = "ext1_engine_1_display_name";
     ext1_engine1.language_codes.push_back("zh-CN");
-    ext1_engine1.layouts.push_back("us");
+    ext1_engine1.layout = "us";
     ext1.engines.push_back(ext1_engine1);
 
     ComponentExtensionEngine ext1_engine2;
     ext1_engine2.engine_id = "mozc_us";
     ext1_engine2.display_name = "ext1_engine2_display_name";
     ext1_engine2.language_codes.push_back("jp");
-    ext1_engine2.layouts.push_back("us");
+    ext1_engine2.layout = "us";
     ext1.engines.push_back(ext1_engine2);
 
     ComponentExtensionEngine ext1_engine3;
     ext1_engine3.engine_id = "xkb:ru::rus";
     ext1_engine3.display_name = "ext1_engine3_display_name";
     ext1_engine3.language_codes.push_back("ru");
-    ext1_engine3.layouts.push_back("ru");
+    ext1_engine3.layout = "ru";
     ext1.engines.push_back(ext1_engine3);
 
     ime_list_.push_back(ext1);
@@ -66,21 +66,21 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
     ext2_engine1.engine_id = "vkd_ru_phone_aatseel";
     ext2_engine1.display_name = "ext2_engine_1_display_name";
     ext2_engine1.language_codes.push_back("ru");
-    ext2_engine1.layouts.push_back("us");
+    ext2_engine1.layout = "us";
     ext2.engines.push_back(ext2_engine1);
 
     ComponentExtensionEngine ext2_engine2;
     ext2_engine2.engine_id = "vkd_vi_telex";
     ext2_engine2.display_name = "ext2_engine2_display_name";
     ext2_engine2.language_codes.push_back("hi");
-    ext2_engine2.layouts.push_back("us");
+    ext2_engine2.layout = "us";
     ext2.engines.push_back(ext2_engine2);
 
     ComponentExtensionEngine ext2_engine3;
     ext2_engine3.engine_id = "xkb:us::eng";
     ext2_engine3.display_name = "ext2_engine3_display_name";
     ext2_engine3.language_codes.push_back("us");
-    ext2_engine3.layouts.push_back("us");
+    ext2_engine3.layout = "us";
     ext2.engines.push_back(ext2_engine3);
 
     ime_list_.push_back(ext2);
@@ -96,36 +96,35 @@ class ComponentExtensionIMEManagerTest : public testing::Test {
     ext3_engine1.engine_id = "ext3_engine1_engine_id";
     ext3_engine1.display_name = "ext3_engine_1_display_name";
     ext3_engine1.language_codes.push_back("hi");
-    ext3_engine1.layouts.push_back("us");
+    ext3_engine1.layout = "us";
     ext3.engines.push_back(ext3_engine1);
 
     ComponentExtensionEngine ext3_engine2;
     ext3_engine2.engine_id = "ext3_engine2_engine_id";
     ext3_engine2.display_name = "ext3_engine2_display_name";
     ext3_engine2.language_codes.push_back("en");
-    ext3_engine2.layouts.push_back("us");
+    ext3_engine2.layout = "us";
     ext3.engines.push_back(ext3_engine2);
 
     ComponentExtensionEngine ext3_engine3;
     ext3_engine3.engine_id = "ext3_engine3_engine_id";
     ext3_engine3.display_name = "ext3_engine3_display_name";
     ext3_engine3.language_codes.push_back("en");
-    ext3_engine3.layouts.push_back("us");
+    ext3_engine3.layout = "us";
     ext3.engines.push_back(ext3_engine3);
 
     ime_list_.push_back(ext3);
 
-    mock_delegate_ = new MockComponentExtIMEManagerDelegate();
+    auto delegate =
+        std::make_unique<MockComponentExtensionIMEManagerDelegate>();
+    mock_delegate_ = delegate.get();
     mock_delegate_->set_ime_list(ime_list_);
-    component_ext_mgr_ = std::make_unique<ComponentExtensionIMEManager>();
-    component_ext_mgr_->Initialize(base::WrapUnique(mock_delegate_));
-  }
-
-  virtual void TearDown() {
+    component_ext_mgr_ =
+        std::make_unique<ComponentExtensionIMEManager>(std::move(delegate));
   }
 
  protected:
-  MockComponentExtIMEManagerDelegate* mock_delegate_;
+  MockComponentExtensionIMEManagerDelegate* mock_delegate_;
   std::unique_ptr<ComponentExtensionIMEManager> component_ext_mgr_;
   std::vector<ComponentExtensionIME> ime_list_;
 };
@@ -143,21 +142,6 @@ TEST_F(ComponentExtensionIMEManagerTest, LoadComponentExtensionIMETest) {
     }
   }
   EXPECT_EQ(9, mock_delegate_->load_call_count());
-}
-
-TEST_F(ComponentExtensionIMEManagerTest, UnloadComponentExtensionIMETest) {
-  for (size_t i = 0; i < ime_list_.size(); ++i) {
-    for (size_t j = 0; j < ime_list_[i].engines.size(); ++j) {
-      const std::string input_method_id =
-          extension_ime_util::GetComponentInputMethodID(
-              ime_list_[i].id,
-              ime_list_[i].engines[j].engine_id);
-      component_ext_mgr_->UnloadComponentExtensionIME(nullptr /* profile */,
-                                                      input_method_id);
-      EXPECT_EQ(ime_list_[i].id, mock_delegate_->last_unloaded_extension_id());
-    }
-  }
-  EXPECT_EQ(9, mock_delegate_->unload_call_count());
 }
 
 TEST_F(ComponentExtensionIMEManagerTest, IsAllowlistedTest) {

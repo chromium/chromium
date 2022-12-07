@@ -1127,6 +1127,7 @@ test("ui_base_unittests") {
     if (is_chromeos_ash) {
       sources += [
         "dragdrop/os_exchange_data_provider_non_backed_unittest.cc",
+        "ime/ash/component_extension_ime_manager_unittest.cc",
         "ime/ash/extension_ime_util_unittest.cc",
         "ime/ash/ime_keyboard_unittest.cc",
         "ime/ash/input_method_ash_unittest.cc",
