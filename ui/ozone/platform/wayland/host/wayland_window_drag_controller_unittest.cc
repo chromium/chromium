@@ -77,6 +77,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
                         MockPlatformWindowDelegate* delegate) override {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     WaylandDragDropTest::SendPointerEnter(window, delegate);
+    Mock::VerifyAndClearExpectations(delegate);
     EXPECT_EQ(window,
               window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
@@ -85,6 +86,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
                         MockPlatformWindowDelegate* delegate) override {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     WaylandDragDropTest::SendPointerLeave(window, delegate);
+    Mock::VerifyAndClearExpectations(delegate);
     EXPECT_EQ(nullptr,
               window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
@@ -95,6 +97,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     WaylandDragDropTest::SendPointerButton(window, delegate, button,
                                            /*pressed=*/true);
+    Mock::VerifyAndClearExpectations(delegate);
     EXPECT_EQ(window,
               window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
@@ -120,6 +123,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     });
 
     if (ensure_dispatched) {
+      Mock::VerifyAndClearExpectations(delegate);
       EXPECT_EQ(window->GetWidget(),
                 screen_->GetLocalProcessWidgetAtPoint(location, {}));
     }
@@ -133,6 +137,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
                      const gfx::Point& location) override {
     EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
     WaylandDragDropTest::SendTouchDown(window, delegate, id, location);
+    Mock::VerifyAndClearExpectations(delegate);
     EXPECT_EQ(window,
               window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   }
@@ -145,6 +150,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
       EXPECT_EQ(ET_TOUCH_MOVED, event->type());
     });
     WaylandDragDropTest::SendTouchMotion(window, delegate, id, location);
+    Mock::VerifyAndClearExpectations(delegate);
     EXPECT_EQ(window->GetWidget(),
               screen_->GetLocalProcessWidgetAtPoint(location, {}));
   }
@@ -273,7 +279,6 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
     EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
   });
   SendDndMotion({10, 10});
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   enum TestStep { kDragging, kDropping, kDone } test_step = kDragging;
 
@@ -315,7 +320,6 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
   EXPECT_TRUE(GetWmMoveLoopHandler(*window_)->RunMoveLoop({}));
 
   EXPECT_EQ(test_step, TestStep::kDone);
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   SendPointerEnter(window_.get(), &delegate_);
 
@@ -373,7 +377,6 @@ TEST_P(WaylandWindowDragControllerTest,
   EXPECT_EQ(window_2.get(),
             window_manager()->GetCurrentPointerOrTouchFocusedWindow());
   EXPECT_EQ(window_2.get(), drag_controller()->origin_window_for_testing());
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   SendTouchUp(0 /*touch id*/);
 }
@@ -671,7 +674,6 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
     EXPECT_EQ(gfx::Point(10, 10), screen_->GetCursorScreenPoint());
   });
   SendDndMotion({10, 10});
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
   ASSERT_TRUE(move_loop_handler);
@@ -709,7 +711,6 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
   EXPECT_FALSE(move_loop_handler->RunMoveLoop({}));
 
   // Checks |target_window| is now "focused" and the states keep consistent.
-  Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_EQ(kEnteredTarget, test_step);
   EXPECT_EQ(State::kAttached, drag_controller()->state());
   EXPECT_EQ(target_window->GetWidget(),
@@ -861,7 +862,6 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   SendPointerEnter(window_.get(), &delegate_);
   SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
   SendPointerMotion(window_.get(), &delegate_, {10, 10});
-  Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_EQ(window_->GetWidget(),
             screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
 
@@ -895,7 +895,6 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   SendPointerEnter(window_.get(), &delegate_);
   SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
   SendPointerMotion(window_.get(), &delegate_, {200, 200});
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   // Set up an "interaction flow", start the drag session and run move loop:
   //  - Event dispatching and bounds changes are monitored
@@ -1107,7 +1106,6 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
   SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
   gfx::Point p0{10, 10};
   SendPointerMotion(window_.get(), &delegate_, p0);
-  Mock::VerifyAndClearExpectations(&delegate_);
   EXPECT_EQ(p0, screen_->GetCursorScreenPoint());
 
   auto* wayland_extension = GetWaylandExtension(*window_);
@@ -1209,7 +1207,6 @@ TEST_P(WaylandWindowDragControllerTest,
   SendPointerEnter(window_.get(), &delegate_);
   SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
   SendPointerMotion(window_.get(), &delegate_, {10, 10});
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   // 2. Start the window drag session.
   auto* wayland_extension = GetWaylandExtension(*window_);
@@ -1236,7 +1233,6 @@ TEST_P(WaylandWindowDragControllerTest,
   // destroyed dragged window.
   EXPECT_CALL(delegate_, DispatchEvent(_)).Times(0);
   SendDndDrop();
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   // 6. Verifies that related state is correctly reset after drop.
   EXPECT_EQ(State::kIdle, drag_controller()->state());
@@ -1254,7 +1250,6 @@ TEST_P(WaylandWindowDragControllerTest,
   SendPointerEnter(window_.get(), &delegate_);
   SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
   SendPointerMotion(window_.get(), &delegate_, {10, 10});
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   // 2. Start the window drag session.
   auto* wayland_extension = GetWaylandExtension(*window_);
@@ -1282,7 +1277,6 @@ TEST_P(WaylandWindowDragControllerTest,
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(1);
     SendDndMotion({11, 10});
     EXPECT_EQ(gfx::Point(11, 10), cursor_tracker->GetCursorSurfacePoint());
-    Mock::VerifyAndClearExpectations(&delegate_2);
 
     // Destroy the window being currently dragged.
     window_2.reset();
@@ -1292,7 +1286,6 @@ TEST_P(WaylandWindowDragControllerTest,
     EXPECT_CALL(delegate_2, OnBoundsChanged(_)).Times(0);
     SendDndMotion({12, 10});
     EXPECT_EQ(gfx::Point(12, 10), cursor_tracker->GetCursorSurfacePoint());
-    Mock::VerifyAndClearExpectations(&delegate_2);
 
     // Destroy the current drag controler's pointer events grabber.
     window_.reset();
@@ -1302,7 +1295,6 @@ TEST_P(WaylandWindowDragControllerTest,
     EXPECT_CALL(delegate_, OnBoundsChanged(_)).Times(0);
     SendDndMotion({13, 10});
     EXPECT_EQ(gfx::Point(12, 10), cursor_tracker->GetCursorSurfacePoint());
-    Mock::VerifyAndClearExpectations(&delegate_);
 
     drag_controller()->StopDragging();
   }));
@@ -1317,7 +1309,6 @@ TEST_P(WaylandWindowDragControllerTest,
   // destroyed dragged window.
   EXPECT_CALL(delegate_2, DispatchEvent(_)).Times(0);
   SendDndDrop();
-  Mock::VerifyAndClearExpectations(&delegate_);
 
   // 6. Verifies that related state is correctly reset after drop.
   EXPECT_EQ(State::kIdle, drag_controller()->state());
