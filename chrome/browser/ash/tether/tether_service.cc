@@ -414,7 +414,20 @@ NetworkStateHandler::TechnologyState TetherService::GetTetherTechnologyState() {
       return NetworkStateHandler::TechnologyState::TECHNOLOGY_PROHIBITED;
 
     case BLUETOOTH_DISABLED:
-      return NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED;
+      // Instant Tethering can sometimes be made available by enabling
+      // Bluetooth, in which case we should return TECHNOLOGY_UNINITIALIZED.
+      // However, if the user or policy has disabled the feature, then more
+      // steps are needed by user (or policy needs to be changed). In this case,
+      // return TECHNOLOGY_UNAVAILABLE.
+      switch (multidevice_setup_client_->GetFeatureState(
+          multidevice_setup::mojom::Feature::kInstantTethering)) {
+        case multidevice_setup::mojom::FeatureState::kUnavailableSuiteDisabled:
+        case multidevice_setup::mojom::FeatureState::kDisabledByUser:
+        case multidevice_setup::mojom::FeatureState::kProhibitedByPolicy:
+          return NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE;
+        default:
+          return NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED;
+      }
 
     case USER_PREFERENCE_DISABLED:
       return NetworkStateHandler::TechnologyState::TECHNOLOGY_AVAILABLE;

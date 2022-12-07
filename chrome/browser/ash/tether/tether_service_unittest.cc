@@ -775,6 +775,82 @@ TEST_F(TetherServiceTest, TestGet_NotPrimaryUser_FeatureFlagEnabled) {
   EXPECT_FALSE(TetherService::Get(profile_.get()));
 }
 
+// Regression test for b/242870461.
+TEST_F(TetherServiceTest, TestRegression_TetherDisabledWhileBluetoothDisabled) {
+  initial_feature_state_ =
+      multidevice_setup::mojom::FeatureState::kDisabledByUser;
+  profile_->GetPrefs()->SetBoolean(
+      multidevice_setup::kInstantTetheringEnabledPrefName, false);
+  SetIsBluetoothPowered(false);
+
+  CreateTetherService();
+
+  // Even though Bluetooth can be initalized, Tether should be UNAVAILABLE as
+  // it is disabled by user preference.
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+
+  fake_multidevice_setup_client_->SetFeatureState(
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kEnabledByUser);
+
+  // Technology should be UNINITIALIZED, since now only Bluetooth is disabled.
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+}
+
+// Regression test for b/242870461.
+TEST_F(TetherServiceTest,
+       TestRegression_BetterTogetherDisabledWhileBluetoothDisabled) {
+  initial_feature_state_ =
+      multidevice_setup::mojom::FeatureState::kUnavailableSuiteDisabled;
+  SetIsBluetoothPowered(false);
+
+  CreateTetherService();
+
+  // Even though Bluetooth can be initalized, Better Together being disabled
+  // should make the Tether state UNAVAILABLE, rather than UNINITIALIZED.
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+
+  fake_multidevice_setup_client_->SetFeatureState(
+      multidevice_setup::mojom::Feature::kInstantTethering,
+      multidevice_setup::mojom::FeatureState::kEnabledByUser);
+
+  // Technology should be UNINITIALIZED, since now only Bluetooth is disabled.
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+}
+
+// Regression test for b/242870461.
+// TODO(https://crbug.com/893878): Fix disabled test.
+TEST_F(TetherServiceTest,
+       DISABLED_TestRegression_ProhibitedByPolicyWhileBluetoothDisabled) {
+  profile_->GetPrefs()->SetBoolean(
+      multidevice_setup::kInstantTetheringAllowedPrefName, false);
+  SetIsBluetoothPowered(false);
+
+  CreateTetherService();
+
+  // Even though Bluetooth can be initalized, Tether should be UNAVAILABLE as
+  // it is prohibited by policy.
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNAVAILABLE,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+
+  profile_->GetPrefs()->SetBoolean(
+      multidevice_setup::kInstantTetheringAllowedPrefName, true);
+
+  // Technology should be UNINITIALIZED, since now only Bluetooth is disabled.
+  EXPECT_EQ(NetworkStateHandler::TechnologyState::TECHNOLOGY_UNINITIALIZED,
+            network_state_handler()->GetTechnologyState(
+                NetworkTypePattern::Tether()));
+}
+
 // TODO(https://crbug.com/893878): Fix disabled test.
 TEST_F(TetherServiceTest, DISABLED_TestGet_PrimaryUser_FeatureFlagEnabled) {
   SetPrimaryUserLoggedIn();
