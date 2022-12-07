@@ -319,6 +319,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://predictors",
     "chrome://prefs-internals",
     "chrome://print",
+    "chrome://privacy-sandbox-dialog/?debug",
     "chrome://process-internals",
     "chrome://quota-internals",
     "chrome://reset-password",
