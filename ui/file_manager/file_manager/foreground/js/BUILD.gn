@@ -281,7 +281,6 @@ js_unittest("actions_model_unittest") {
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -813,12 +812,12 @@ js_library("file_watcher") {
 js_library("folder_shortcuts_data_model") {
   deps = [
     "//ash/webui/common/resources:event_target",
+    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/file_manager/file_manager/common/js:filtered_volume_manager",
     "//ui/file_manager/file_manager/common/js:metrics",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/common/js:xfm",
   ]
 }
 

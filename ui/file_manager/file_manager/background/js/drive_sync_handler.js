@@ -6,10 +6,10 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {getUniqueParents} from '../../common/js/api.js';
 import {AsyncQueue, RateLimiter} from '../../common/js/async_util.js';
+import {notifications} from '../../common/js/notifications_browser_proxy.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getFilesAppIconURL, toFilesAppURL} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
-import {xfm} from '../../common/js/xfm.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
@@ -175,10 +175,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
         this.onFileTransfersStatusReceived_.bind(this, this.pinItem_));
     chrome.fileManagerPrivate.onDriveSyncError.addListener(
         this.onDriveSyncError_.bind(this));
-    xfm.notifications.onButtonClicked.addListener(
+    notifications.onButtonClicked.addListener(
         this.onNotificationButtonClicked_.bind(this));
-    xfm.notifications.onClosed.addListener(
-        this.onNotificationClosed_.bind(this));
+    notifications.onClosed.addListener(this.onNotificationClosed_.bind(this));
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
         this.onPreferencesChanged_.bind(this));
     chrome.fileManagerPrivate.onDriveConnectionStatusChanged.addListener(
@@ -224,7 +223,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
    * Shows a notification that Drive sync is disabled on cellular networks.
    */
   showDisabledMobileSyncNotification() {
-    xfm.notifications.create(
+    notifications.create(
         DriveSyncHandlerImpl.DISABLED_MOBILE_SYNC_NOTIFICATION_ID_, {
           type: 'basic',
           title: str('FILEMANAGER_APP_NAME'),
@@ -463,7 +462,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
   addDialog(appId, dialog) {
     this.dialogs_.set(appId, dialog);
     if (this.savedDialogEvent_) {
-      xfm.notifications.clear(
+      notifications.clear(
           DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, () => {});
       dialog.showDialog(this.savedDialogEvent_);
       this.savedDialogEvent_ = null;
@@ -491,11 +490,11 @@ export class DriveSyncHandlerImpl extends EventTarget {
   onNotificationButtonClicked_(notificationId, buttonIndex) {
     switch (notificationId) {
       case DriveSyncHandlerImpl.DISABLED_MOBILE_SYNC_NOTIFICATION_ID_:
-        xfm.notifications.clear(notificationId, () => {});
+        notifications.clear(notificationId, () => {});
         chrome.fileManagerPrivate.setPreferences({cellularDisabled: false});
         break;
       case DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_:
-        xfm.notifications.clear(notificationId, () => {});
+        notifications.clear(notificationId, () => {});
         this.savedDialogEvent_ = null;
         chrome.fileManagerPrivate.notifyDriveDialogResult(
             buttonIndex == 1 ?
@@ -564,7 +563,7 @@ export class DriveSyncHandlerImpl extends EventTarget {
             chrome.fileManagerPrivate.MountCompletedEventType.UNMOUNT &&
         event.volumeMetadata.volumeType ===
             chrome.fileManagerPrivate.VolumeType.DRIVE) {
-      xfm.notifications.clear(
+      notifications.clear(
           DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, () => {});
     }
   }

@@ -69,7 +69,6 @@ static_js_files = [
   "file_manager/common/js/url_constants.js",
   "file_manager/common/js/util.js",
   "file_manager/common/js/volume_manager_types.js",
-  "file_manager/common/js/xfm.js",
 
   # Externs:
   "file_manager/externs/background/crostini.js",

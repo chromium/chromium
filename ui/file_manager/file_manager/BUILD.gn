@@ -17,9 +17,6 @@ generate_grd("build_static_grdp") {
   input_files = [
     "main.html",
 
-    # For video player unittest:
-    "common/js/notifications_browser_proxy.js",
-
     # For some unittests:
     "common/js/app_util.js",
     "common/js/dialog_type.js",
@@ -33,7 +30,6 @@ generate_grd("build_static_grdp") {
     "common/js/test_error_reporting.js",
     "common/js/volume_manager_types.js",
     "common/js/url_constants.js",
-    "common/js/xfm.js",
     "externs/background/file_manager_base.js",
     "externs/entry_location.js",
     "externs/files_app_entry_interfaces.js",

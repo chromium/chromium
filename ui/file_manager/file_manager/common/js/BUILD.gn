@@ -45,7 +45,6 @@ group("js_modules") {
     ":url_constants",
     ":util",
     ":volume_manager_types",
-    ":xfm",
   ]
 }
 
@@ -75,7 +74,6 @@ js_type_check("closure_compile_jsmodules") {
     ":url_constants",
     ":util",
     ":volume_manager_types",
-    ":xfm",
   ]
 
   closure_flags = strict_error_checking_closure_args + [
@@ -297,10 +295,6 @@ js_unittest("storage_adapter_unittest") {
 
 js_library("test_error_reporting") {
   testonly = true
-}
-
-js_library("xfm") {
-  deps = [ ":notifications_browser_proxy" ]
 }
 
 js_library("unittest_util") {

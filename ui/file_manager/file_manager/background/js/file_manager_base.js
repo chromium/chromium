@@ -9,7 +9,6 @@ import {FilesAppState} from '../../common/js/files_app_state.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {xfm} from '../../common/js/xfm.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';

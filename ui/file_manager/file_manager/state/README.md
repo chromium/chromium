@@ -428,7 +428,7 @@ For the Actions Producer, we create a new file:
 `./actions_producers/ui_settings.ts`.
 
 ```typescript
-import {xfm} from '../../common/js/xfm.js';
+import {storage} from '../../common/js/storage_adapter.js';
 import {ColumnName, PropStatus, SortOrder, ViewType} from '../../externs/ts/state.js';
 import {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {keepLatest, serialize} from '../../lib/concurrency_models.js';
@@ -452,7 +452,7 @@ export async function*
     },
   };
 
-  await xfm.storage.local.setAsync({[VIEW_KEY]: viewType});
+  await storage.local.setAsync({[VIEW_KEY]: viewType});
 
   yield {
     type: ActionType.CHANGE_DETAIL_VIEW,
@@ -477,7 +477,7 @@ export async function*
     },
   };
 
-  await xfm.storage.local.setAsync({[SORTING_KEY]: {order, column}});
+  await storage.local.setAsync({[SORTING_KEY]: {order, column}});
 
   yield {
     type: ActionType.CHANGE_SORT_ORDER,
