@@ -197,13 +197,21 @@ class Event:
 
   def __init__(self, elem, project):
     util.check_attributes(elem, {'name'})
-    util.check_children(elem, {'summary', 'metric'})
+
+    if project.is_event_sequence_project:
+      expected_children = {'summary'}
+    else:
+      expected_children = {'summary', 'metric'}
+
+    util.check_children(elem, expected_children)
+
     util.check_child_names_unique(elem, 'metric')
 
     self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
     self.summary = util.get_text_child(elem, 'summary')
     self.metrics = [
-        Metric(m, project) for m in util.get_compound_children(elem, 'metric')
+        Metric(m, project) for m in util.get_compound_children(
+            elem, 'metric', project.is_event_sequence_project)
     ]
 
   def __repr__(self):

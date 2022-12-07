@@ -39,13 +39,13 @@ def get_attr(elem, tag, regex=None):
   return attr
 
 
-def get_compound_children(elem, tag):
+def get_compound_children(elem, tag, allow_missing_children=False):
   """Get all child nodes of `elem` with tag `tag`.
 
   Error if none exist, or a child is not a compound node.
   """
   children = elem.findall(tag)
-  if not children:
+  if not children and not allow_missing_children:
     error(elem, "missing node '{}'".format(tag))
   for child in children:
     if child.text and child.text.strip():

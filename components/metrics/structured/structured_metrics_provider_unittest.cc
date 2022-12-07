@@ -40,7 +40,7 @@ constexpr uint64_t kProjectFourHash = UINT64_C(6801665881746546626);
 constexpr uint64_t kProjectFiveHash = UINT64_C(3960582687892677139);
 // The name hash of "TestProjectSix"
 constexpr uint64_t kProjectSixHash = UINT64_C(6972396123792667134);
-// The name hash of "CrOSEvents"
+// The name hash for "CrOSEvents"
 constexpr uint64_t kCrOSEventsProjectHash = UINT64_C(12657197978410187837);
 
 // The name hash of "chrome::TestProjectOne::TestEventOne".
@@ -57,6 +57,8 @@ constexpr uint64_t kEventFiveHash = UINT64_C(7045523601811399253);
 constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 // The name hash of "chrome::TestProjectSix::TestEventSeven".
 constexpr uint64_t kEventSevenHash = UINT64_C(16749091071228286247);
+// The name hash of "chrome::CrOSEvents::NoMetricsEvent".
+constexpr uint64_t kNoMetricsEventHash = UINT64_C(5106854608989380457);
 
 // The name hash of "TestMetricOne".
 constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
@@ -827,6 +829,27 @@ TEST_F(StructuredMetricsProviderTest, EventsWithinProjectReportedWithSameID) {
   EXPECT_EQ(HashToHex(event_three.profile_event_id()), kProjectTwoId);
 
   histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
+}
+
+TEST_F(StructuredMetricsProviderTest, EventWithoutMetricsReportCorrectly) {
+  Init();
+
+  const int test_time = 50;
+
+  events::v2::cr_os_events::NoMetricsEvent test_event;
+  EXPECT_TRUE(test_event.IsEventSequenceType());
+  test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
+  test_event.SetRecordedTimeSinceBoot(base::Milliseconds(test_time));
+  test_event.Record();
+
+  const auto data = GetIndependentMetrics();
+
+  EXPECT_EQ(data.events_size(), 1);
+
+  const auto& event = data.events(0);
+
+  EXPECT_EQ(event.project_name_hash(), kCrOSEventsProjectHash);
+  EXPECT_EQ(event.event_name_hash(), kNoMetricsEventHash);
 }
 
 // Test that a call to ProvideCurrentSessionData clears the provided events from

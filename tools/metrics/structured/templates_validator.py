@@ -158,7 +158,12 @@ class {event.validator_name} final :
 absl::optional<EventValidator::MetricMetadata>
 {event.validator_name}::GetMetricMetadata(const std::string& metric_name)
 const {{
-   static constexpr auto metric_hash_map = base::MakeFixedFlatMap<
+  {get_metrics_metadata_impl}
+}}
+"""
+
+IMPL_GET_METRICS_METADATA = """\
+static constexpr auto metric_hash_map = base::MakeFixedFlatMap<
       base::StringPiece, EventValidator::MetricMetadata>({{
     {metric_hash_map}
    }});
@@ -166,5 +171,4 @@ const {{
    if (it == metric_hash_map.end())
       return absl::nullopt;
    return it->second;
-}}
 """

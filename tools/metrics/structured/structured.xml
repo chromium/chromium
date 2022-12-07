@@ -427,6 +427,13 @@
       </summary>
     </metric>
   </event>
+
+  <event name="NoMetricsEvent">
+    <summary>
+      Test event for events without metrics.
+    </summary>
+
+  </event>
 </project>
 
 <project name="TestProjectOne">

@@ -164,8 +164,13 @@ class EventInfo:
                                     self.validator_snake_name)
 
   def build_validator_code(self) -> str:
+    if len(self.metrics) > 0:
+      metadata_impl = validator_tmpl.IMPL_GET_METRICS_METADATA.format(
+          metric_hash_map=self.build_metric_hash_map())
+    else:
+      metadata_impl = "  return absl::nullopt;"
     return validator_tmpl.IMPL_EVENT_VALIDATOR_TEMPLATE.format(
-        event=self, metric_hash_map=self.build_metric_hash_map())
+        event=self, get_metrics_metadata_impl=metadata_impl)
 
 
 class MetricInfo:
