@@ -90,7 +90,7 @@ void WebSocket::Connect(net::CompletionOnceCallback callback) {
       std::move(callback).Run(net::ERR_ADDRESS_UNREACHABLE);
       return;
     }
-    base::ListValue endpoints;
+    base::Value::List endpoints;
     for (auto endpoint : addresses)
       endpoints.Append(endpoint.ToStringWithoutPort());
     std::string json;

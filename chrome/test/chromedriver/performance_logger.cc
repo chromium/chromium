@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
@@ -257,7 +258,7 @@ Status PerformanceLogger::StartTrace() {
     LOG(WARNING) << "tried to start tracing, but a trace was already started";
     return Status(kOk);
   }
-  base::ListValue categories;
+  base::Value::List categories;
   const std::vector<std::string> str_list =
       base::SplitString(prefs_.trace_categories, ",", base::TRIM_WHITESPACE,
                         base::SPLIT_WANT_NONEMPTY);
