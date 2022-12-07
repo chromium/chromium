@@ -484,12 +484,6 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   void EnterBackForwardCacheForTesting() { is_in_back_forward_cache_ = true; }
   void LeaveBackForwardCacheForTesting() { is_in_back_forward_cache_ = false; }
 
-  // Returns the origin of this container host.
-  // Note that you must use this function instead of retrieving the origin from
-  // url(). That can be invalid when this container host is created for a blob
-  // URL context. See comments on GetUrlForScopeMatch() for details.
-  const GURL GetOrigin() const;
-
   // For service worker clients. Returns the URL that is used for scope matching
   // algorithm. This can be different from url() in the case of blob URL
   // workers. In that case, url() may be like "blob://https://a.test" and the
