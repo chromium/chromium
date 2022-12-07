@@ -38,6 +38,7 @@ The current status of existing standards and Abseil features is:
     features below_
     *   absl::AnyInvocable: Initially supported June 20, 2022
     *   Log library: Initially supported Aug 31, 2022
+    *   CRC32C library: Initially supported Dec 5, 2022
 
 [TOC]
 
@@ -1935,6 +1936,19 @@ in the general case.
 **Notes:**
 *** promo
 Supplements `base/containers/`.
+***
+
+### CRC32C library <sup>[tbd]</sup>
+
+**Description:** API for computing CRC32C values as checksums for arbitrary
+sequences of bytes provided as a string buffer.
+
+**Documentation:**
+[crc32.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/crc/crc32c.h)
+
+**Notes:**
+*** promo
+Overlaps with //third_party/crc32c.
 ***
 
 ### Log macros and related classes <sup>[tbd]</sup>
