@@ -36,7 +36,9 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
 #else
   void SetBoundImage(gl::GLImage* image) override;
 #endif
+#if BUILDFLAG(IS_ANDROID)
   void BindStreamTextureImage(gl::GLImage* image, GLuint service_id) override;
+#endif
   gl::GLImage* GetImageForTesting() const override;
   void SetCleared() override;
   void SetCleanupCallback(CleanupCallback cb) override;

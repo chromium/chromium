@@ -96,6 +96,7 @@ void ValidatingAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
                                        image);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void ValidatingAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
                                                            GLuint service_id) {
   DCHECK(image);
@@ -113,6 +114,7 @@ void ValidatingAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
       service_id);
   SetCleared();
 }
+#endif
 
 gl::GLImage* ValidatingAbstractTextureImpl::GetImageForTesting() const {
   if (!texture_ref_)

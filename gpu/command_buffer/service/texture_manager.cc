@@ -19,6 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/decoder_context.h"
@@ -1902,6 +1903,7 @@ void Texture::SetLevelImage(GLenum target,
   SetLevelImageInternal(target, level, image, state);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void Texture::SetLevelStreamTextureImage(GLenum target,
                                          GLint level,
                                          gl::GLImage* image,
@@ -1910,6 +1912,7 @@ void Texture::SetLevelStreamTextureImage(GLenum target,
   SetStreamTextureServiceId(service_id);
   SetLevelImageInternal(target, level, image, state);
 }
+#endif
 
 void Texture::SetLevelImageState(GLenum target, GLint level, ImageState state) {
   DCHECK_GE(level, 0);
@@ -2603,6 +2606,7 @@ void TextureManager::SetLevelImage(TextureRef* ref,
   ref->texture()->SetLevelImage(target, level, image, state);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void TextureManager::SetLevelStreamTextureImage(TextureRef* ref,
                                                 GLenum target,
                                                 GLint level,
@@ -2613,6 +2617,7 @@ void TextureManager::SetLevelStreamTextureImage(TextureRef* ref,
   ref->texture()->SetLevelStreamTextureImage(target, level, image, state,
                                              service_id);
 }
+#endif
 
 void TextureManager::SetLevelImageState(TextureRef* ref,
                                         GLenum target,

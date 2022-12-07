@@ -38,7 +38,9 @@ class GPU_GLES2_EXPORT AbstractTextureImpl : public AbstractTexture {
   // AbstractTexture implementation.
   TextureBase* GetTextureBase() const override;
   void SetParameteri(GLenum pname, GLint param) override;
+#if BUILDFLAG(IS_ANDROID)
   void BindStreamTextureImage(gl::GLImage* image, GLuint service_id) override;
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetUnboundImage(gl::GLImage* image) override;
 #else
@@ -72,7 +74,9 @@ class GPU_GLES2_EXPORT AbstractTextureImplPassthrough : public AbstractTexture {
   // AbstractTexture implementation.
   TextureBase* GetTextureBase() const override;
   void SetParameteri(GLenum pname, GLint param) override;
+#if BUILDFLAG(IS_ANDROID)
   void BindStreamTextureImage(gl::GLImage* image, GLuint service_id) override;
+#endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void SetUnboundImage(gl::GLImage* image) override;
 #else

@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -309,6 +310,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
                      gl::GLImage* image,
                      ImageState state);
 
+#if BUILDFLAG(IS_ANDROID)
   // Set the GLImage for a particular level.  This is like SetLevelImage, but it
   // also makes it optional to override |service_id_| with a texture bound to
   // the stream texture. See SetStreamTextureServiceId() for the details of how
@@ -318,6 +320,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
                                   gl::GLImage* image,
                                   ImageState state,
                                   GLuint service_id);
+#endif
 
   // Set the ImageState for the image bound to the given level.
   void SetLevelImageState(GLenum target, GLint level, ImageState state);
@@ -1104,12 +1107,14 @@ class GPU_GLES2_EXPORT TextureManager
                      gl::GLImage* image,
                      Texture::ImageState state);
 
+#if BUILDFLAG(IS_ANDROID)
   void SetLevelStreamTextureImage(TextureRef* ref,
                                   GLenum target,
                                   GLint level,
                                   gl::GLImage* image,
                                   Texture::ImageState state,
                                   GLuint service_id);
+#endif
 
   void SetLevelImageState(TextureRef* ref,
                           GLenum target,

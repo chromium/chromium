@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -1707,6 +1708,7 @@ TEST_F(TextureTest, SetLevelImageState) {
   EXPECT_EQ(state, Texture::COPIED);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(TextureTest, SetStreamTextureImageServiceID) {
   manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES);
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_EXTERNAL_OES, 0,
@@ -1752,6 +1754,7 @@ TEST_F(TextureTest, SetStreamTextureImageServiceID) {
   manager_->RemoveTexture(kClient1Id);
   texture_ref_ = nullptr;
 }
+#endif
 
 namespace {
 

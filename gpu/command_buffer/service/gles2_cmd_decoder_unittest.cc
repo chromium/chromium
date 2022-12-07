@@ -350,6 +350,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   EXPECT_EQ(texture->SafeToRenderFrom(), false);
   EXPECT_EQ(abstract_texture->GetImageForTesting(), nullptr);
 
+#if BUILDFLAG(IS_ANDROID)
   // Attach a stream image, and verify that the image changes and the service_id
   // matches the one we provide.
   scoped_refptr<gl::GLImage> stream_image(new gl::GLImageStub);
@@ -359,6 +360,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   EXPECT_EQ(texture->SafeToRenderFrom(), true);
   EXPECT_EQ(texture->GetLevelImage(target, 0), stream_image.get());
   EXPECT_EQ(abstract_texture->service_id(), surface_texture_service_id);
+#endif
 
   // Deleting |abstract_texture| should delete the platform texture as well,
   // since we haven't make a copy of the TextureRef.  Also make sure that the

@@ -90,6 +90,7 @@ void PassthroughAbstractTextureImpl::BindImageInternal(gl::GLImage* image,
   texture_passthrough_->SetLevelImage(target, level, image);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void PassthroughAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
                                                             GLuint service_id) {
   DCHECK(image);
@@ -104,6 +105,7 @@ void PassthroughAbstractTextureImpl::BindStreamTextureImage(gl::GLImage* image,
   texture_passthrough_->set_bind_pending();
   texture_passthrough_->SetStreamLevelImage(target, level, image, service_id);
 }
+#endif
 
 gl::GLImage* PassthroughAbstractTextureImpl::GetImageForTesting() const {
   if (!texture_passthrough_)
