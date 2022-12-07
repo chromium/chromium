@@ -161,7 +161,7 @@ bool DoesNavigationChangeStoragePartition(SiteInstanceImpl* current_instance,
 }
 
 bool IsSiteInstanceCompatibleWithErrorIsolation(
-    SiteInstance* site_instance,
+    SiteInstanceImpl* site_instance,
     const FrameTreeNode& frame_tree_node,
     bool is_failure) {
   // With no error isolation all SiteInstances are compatible with any
@@ -175,23 +175,17 @@ bool IsSiteInstanceCompatibleWithErrorIsolation(
   // SiteInstance but the navigation will fail and actually need an error page
   // SiteInstance.
   bool is_site_instance_for_failures =
-      static_cast<SiteInstanceImpl*>(site_instance)
-          ->GetSiteInfo()
-          .is_error_page();
+      site_instance->GetSiteInfo().is_error_page();
   return is_site_instance_for_failures == is_failure;
 }
 
 // Simple wrapper around WebExposedIsolationInfo::AreCompatible for easier use
 // within the process model.
 bool IsSiteInstanceCompatibleWithWebExposedIsolation(
-    SiteInstance* site_instance,
+    SiteInstanceImpl* site_instance,
     const absl::optional<WebExposedIsolationInfo>& web_exposed_isolation_info) {
-  SiteInstanceImpl* site_instance_impl =
-      static_cast<SiteInstanceImpl*>(site_instance);
-
   return WebExposedIsolationInfo::AreCompatible(
-      site_instance_impl->GetWebExposedIsolationInfo(),
-      web_exposed_isolation_info);
+      site_instance->GetWebExposedIsolationInfo(), web_exposed_isolation_info);
 }
 
 // Helper for appending more information to the optional |reason| parameter
@@ -2020,7 +2014,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // history navigations. The two cannot be set simultaneously.
   DCHECK(!source_instance || !dest_instance);
 
-  SiteInstance* current_instance = render_frame_host_->GetSiteInstance();
+  SiteInstanceImpl* current_instance = render_frame_host_->GetSiteInstance();
 
   // Do not currently swap processes for navigations in webview tag guests,
   // unless site isolation is enabled for them.
@@ -2065,16 +2059,14 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
                                          ? current_entry->IsViewSourceMode()
                                          : dest_is_view_source_mode;
 
-  SiteInstanceImpl* current_instance_impl =
-      static_cast<SiteInstanceImpl*>(current_instance);
   ShouldSwapBrowsingInstance should_swap_result =
       force_new_browsing_instance
           ? ShouldSwapBrowsingInstance::kYes_SameSiteProactiveSwap
           : ShouldSwapBrowsingInstancesForNavigation(
                 current_effective_url, current_is_view_source_mode,
-                source_instance, current_instance_impl, dest_instance,
-                dest_url_info, dest_is_view_source_mode, transition, is_failure,
-                is_reload, is_same_document, is_same_site,
+                source_instance, current_instance, dest_instance, dest_url_info,
+                dest_is_view_source_mode, transition, is_failure, is_reload,
+                is_same_document, is_same_site,
                 cross_origin_opener_policy_mismatch, was_server_redirect,
                 should_replace_current_entry);
 
@@ -2289,9 +2281,9 @@ void RenderFrameHostManager::PrepareForInnerDelegateAttach(
 RenderFrameHostManager::SiteInstanceDescriptor
 RenderFrameHostManager::DetermineSiteInstanceForURL(
     const UrlInfo& dest_url_info,
-    SiteInstance* source_instance,
-    SiteInstance* current_instance,
-    SiteInstance* dest_instance,
+    SiteInstanceImpl* source_instance,
+    SiteInstanceImpl* current_instance,
+    SiteInstanceImpl* dest_instance,
     ui::PageTransition transition,
     bool is_failure,
     IsSameSiteGetter& is_same_site,
@@ -2305,8 +2297,6 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // `force_browsing_instance_swap` is true. All cases that result in an
   // unrelated SiteInstance should return Yes_ForceSwap or Yes_ProactiveSwap in
   // ShouldSwapBrowsingInstancesForNavigation.
-  SiteInstanceImpl* current_instance_impl =
-      static_cast<SiteInstanceImpl*>(current_instance);
   NavigationControllerImpl& controller = GetNavigationController();
 
   // If the entry has an instance already we should usually use it, unless it is
@@ -2396,8 +2386,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // restored or it's a Web UI as described below.
   // TODO(ahemery): In theory we should be able to go for an unused SiteInstance
   // with the same web exposed isolation status.
-  if (!current_instance_impl->HasSite() && !dest_url_info.IsIsolated() &&
-      !current_instance_impl->IsCrossOriginIsolated()) {
+  if (!current_instance->HasSite() && !dest_url_info.IsIsolated() &&
+      !current_instance->IsCrossOriginIsolated()) {
     // If we've already created a SiteInstance for our destination, we don't
     // want to use this unused SiteInstance; use the existing one.  (We don't
     // do this check if the current_instance has a site, because for now, we
@@ -2410,17 +2400,17 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // GetRelatedSiteInstance() for this, which will eagerly set the site and
     // thus use the correct process.
     DCHECK_EQ(controller.GetBrowserContext(),
-              current_instance_impl->GetBrowserContext());
+              current_instance->GetBrowserContext());
 
     const SiteInfo dest_site_info =
-        current_instance_impl->DeriveSiteInfo(dest_url_info);
+        current_instance->DeriveSiteInfo(dest_url_info);
     bool use_process_per_site =
         dest_site_info.ShouldUseProcessPerSite(
-            current_instance_impl->GetBrowserContext()) &&
+            current_instance->GetBrowserContext()) &&
         RenderProcessHostImpl::GetSoleProcessHostForSite(
-            current_instance_impl->GetIsolationContext(), dest_site_info);
+            current_instance->GetIsolationContext(), dest_site_info);
 
-    if (current_instance_impl->HasRelatedSiteInstance(dest_site_info) ||
+    if (current_instance->HasRelatedSiteInstance(dest_site_info) ||
         use_process_per_site) {
       AppendReason(reason,
                    "DetermineSiteInstanceForURL / !current->HasSite / "
@@ -2430,10 +2420,10 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     }
 
     // For extensions, Web UI URLs (such as the new tab page), and apps we do
-    // not want to use the `current_instance_impl` if it has no site, since it
+    // not want to use the `current_instance` if it has no site, since it
     // will have a non-privileged RenderProcessHost. Create a new SiteInstance
     // for this URL instead (with the correct process type).
-    if (!current_instance_impl->IsSuitableForUrlInfo(dest_url_info)) {
+    if (!current_instance->IsSuitableForUrlInfo(dest_url_info)) {
       AppendReason(reason,
                    "DetermineSiteInstanceForURL / !current->HasSite / "
                    "!current_instance->IsSuitable");
@@ -2457,12 +2447,11 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // See http://crbug.com/386542.
     if (dest_is_restore &&
         SiteInstanceImpl::ShouldAssignSiteForURL(dest_url_info.url)) {
-      current_instance_impl->ConvertToDefaultOrSetSite(dest_url_info);
+      current_instance->ConvertToDefaultOrSetSite(dest_url_info);
     }
 
-    AppendReason(reason,
-                 "DetermineSiteInstanceForURL => current_instance_impl");
-    return SiteInstanceDescriptor(current_instance_impl);
+    AppendReason(reason, "DetermineSiteInstanceForURL => current_instance");
+    return SiteInstanceDescriptor(current_instance);
   }
 
   // Use the current SiteInstance for same site navigations.
@@ -2563,8 +2552,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
 bool RenderFrameHostManager::CanUseDestinationInstance(
     const UrlInfo& dest_url_info,
-    SiteInstance* current_instance,
-    SiteInstance* dest_instance,
+    SiteInstanceImpl* current_instance,
+    SiteInstanceImpl* dest_instance,
     bool is_failure,
     bool force_browsing_instance_swap) {
   // If we've decided that the target SiteInstance cannot be in the same
@@ -2593,8 +2582,6 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
   // implications and needs more investigation of what behavior changes.
   // For now, use a conservative approach and explicitly check before
   // calling IsSuitableForUrlInfo.
-  SiteInstanceImpl* dest_instance_impl =
-      static_cast<SiteInstanceImpl*>(dest_instance);
   // Make sure that if the destination frame is sandboxed that we don't
   // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
   // have a sandboxed parent but unsandboxed child.
@@ -2603,7 +2590,7 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
   if (is_data_or_about_and_not_sandboxed)
     return true;
 
-  return dest_instance_impl->IsSuitableForUrlInfo(dest_url_info);
+  return dest_instance->IsSuitableForUrlInfo(dest_url_info);
 }
 
 bool RenderFrameHostManager::IsBrowsingInstanceSwapAllowedForPageTransition(
@@ -2706,7 +2693,7 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
 
 bool RenderFrameHostManager::CanUseSourceSiteInstance(
     const UrlInfo& dest_url_info,
-    SiteInstance* source_instance,
+    SiteInstanceImpl* source_instance,
     bool was_server_redirect,
     bool is_failure) {
   if (!source_instance)
@@ -2721,8 +2708,7 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // If `dest_url_info` is sandboxed, then we can't assign it to a SiteInstance
   // that isn't sandboxed. But if the `source_instance` is also sandboxed, then
   // it's possible (e.g. a sandboxed child frame in a sandboxed parent frame).
-  auto& source_site_info =
-      static_cast<SiteInstanceImpl*>(source_instance)->GetSiteInfo();
+  auto& source_site_info = source_instance->GetSiteInfo();
   if (dest_url_info.is_sandboxed != source_site_info.is_sandboxed())
     return false;
   if (dest_url_info.is_sandboxed &&
