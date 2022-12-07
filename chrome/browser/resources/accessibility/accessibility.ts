@@ -53,6 +53,7 @@ type PageData = Data&{
 };
 
 type WidgetData = Data&{
+  name: string,
   widgetId: number,
 };
 
@@ -252,7 +253,6 @@ function initialize() {
 
   if (data.viewsAccessibility) {
     const widgets = data.widgets;
-
     if (widgets.length === 0) {
       // There should always be at least 1 Widget displayed (for the current
       // window). If this is not the case, and Views Accessibility is enabled,
@@ -377,7 +377,7 @@ function formatRow(
     row.appendChild(createCopyAccessibilityTreeElement(data, row.id));
   }
   if (hasTree) {
-    row.appendChild(createHideAccessibilityTreeElement(row.id));
+    row.appendChild(createHideAccessibilityTreeElement(row.id, data.name));
   }
   // The accessibility event recorder currently only works for pages.
   // TODO(abigailbklein): Add event recording for native as well.
@@ -467,12 +467,15 @@ function createModeElement(
   const stateText = ((currentMode & mode) !== 0) ? 'true' : 'false';
   const isEnabled =
       (data as unknown as {[k: string]: boolean})[globalStateName];
+  const accessibilityModeName = getNameForAccessibilityMode(mode);
   if (isEnabled) {
-    link.textContent = getNameForAccessibilityMode(mode) + ': ' + stateText;
+    link.textContent = accessibilityModeName + ': ' + stateText;
   } else {
-    link.textContent = getNameForAccessibilityMode(mode) + ': disabled';
+    link.textContent = accessibilityModeName + ': disabled';
     link.classList.add('disabled');
   }
+  link.setAttribute(
+      'aria-label', `${accessibilityModeName} for ${data.name}: ${stateText}`);
   link.setAttribute('aria-pressed', stateText);
   link.addEventListener(
       'click', toggleAccessibility.bind(null, data, mode, globalStateName));
@@ -486,12 +489,16 @@ function createShowAccessibilityTreeElement(
   if (requestType === 'showOrRefreshTree') {
     // Give feedback that the tree has loaded.
     show.textContent = 'Accessibility tree loaded';
+    show.ariaLabel = `Accessibility tree loaded for ${data.name}`;
     setTimeout(() => {
       show.textContent = 'Refresh accessibility tree';
+      show.ariaLabel = `Refresh accessibility tree for ${data.name}`;
     }, 5000);
   } else {
-    show.textContent =
+    const textContent =
         refresh ? 'Refresh accessibility tree' : 'Show accessibility tree';
+    show.textContent = textContent;
+    show.ariaLabel = `${textContent} for ${data.name}`;
   }
   show.id = id + '-showOrRefreshTree';
   show.setAttribute('aria-expanded', String(refresh));
@@ -499,13 +506,15 @@ function createShowAccessibilityTreeElement(
   return show;
 }
 
-function createHideAccessibilityTreeElement(id: string) {
+function createHideAccessibilityTreeElement(id: string, name: string) {
   const hide = document.createElement('button');
   hide.textContent = 'Hide accessibility tree';
+  hide.ariaLabel = `Hide accessibility tree for ${name}`;
   hide.id = id + '-hideTree';
   hide.addEventListener('click', function() {
     const show = getRequiredElement(id + '-showOrRefreshTree');
     show.textContent = 'Show accessibility tree';
+    show.ariaLabel = `Show accessibility tree for ${name}`;
     show.setAttribute('aria-expanded', 'false');
     show.focus();
     const elements = ['hideTree', 'tree'];
@@ -523,6 +532,7 @@ function createCopyAccessibilityTreeElement(
     data: BrowserData|PageData|WidgetData, id: string): HTMLElement {
   const copy = document.createElement('button');
   copy.textContent = 'Copy accessibility tree';
+  copy.ariaLabel = `Copy accessibility tree for ${data.name}`;
   copy.id = id + '-copyTree';
   copy.addEventListener('click', requestTree.bind(null, data, copy));
   return copy;
@@ -533,6 +543,7 @@ function createStartStopAccessibilityEventRecordingElement(
   const show = document.createElement('button');
   show.classList.add('recordEventsButton');
   show.textContent = 'Start recording';
+  show.ariaLabel = `Start recording for ${data.name}`;
   show.id = id + '-startOrStopEvents';
   show.setAttribute('aria-expanded', 'false');
   show.addEventListener('click', requestEvents.bind(null, data, show));
