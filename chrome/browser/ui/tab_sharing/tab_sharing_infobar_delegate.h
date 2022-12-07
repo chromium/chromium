@@ -11,6 +11,7 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/models/image_model.h"
 
 namespace infobars {
 class ContentInfoBarManager;

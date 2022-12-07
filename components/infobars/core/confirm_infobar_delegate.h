@@ -10,12 +10,15 @@
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
 
 namespace infobars {
 class InfoBar;
+}
+
+namespace ui {
+class ImageModel;
 }
 
 // An interface derived from InfoBarDelegate implemented by objects wishing to
