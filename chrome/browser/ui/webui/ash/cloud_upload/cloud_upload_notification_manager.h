@@ -65,10 +65,15 @@ class CloudUploadNotificationManager
   // closed, timers are interrupted and the completion callback has been called.
   void CloseNotification();
 
+  // Counts the total number of notification manager instances. This counter is
+  // never decremented.
+  static inline int notification_manager_counter_ = 0;
+
   Profile* const profile_;
   CloudProvider provider_;
   std::string file_name_;
   std::string cloud_provider_name_;
+  std::string notification_id_;
   std::string target_app_name_;
   base::OnceClosure callback_;
   base::OneShotTimer notification_timer_;

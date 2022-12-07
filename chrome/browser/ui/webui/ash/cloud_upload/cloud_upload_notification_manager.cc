@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
@@ -15,8 +16,6 @@
 
 namespace ash::cloud_upload {
 namespace {
-
-constexpr char kCloudUploadProgressNotificationId[] = "cloud-upload-progress";
 
 // Minimum amount of time, in seconds, for which the notification should be
 // displayed.
@@ -41,6 +40,12 @@ CloudUploadNotificationManager::CloudUploadNotificationManager(
       file_name_(file_name),
       cloud_provider_name_(cloud_provider_name),
       target_app_name_(target_app_name) {
+  // Generate a unique ID for the cloud upload notifications.
+  notification_id_ =
+      "cloud-upload-" +
+      base::NumberToString(
+          ++CloudUploadNotificationManager::notification_manager_counter_);
+
   // Keep the new `CloudUploadNotificationManager` instance alive at least until
   // `OnNotificationManagerDone` executes.
   callback_ =
@@ -66,7 +71,7 @@ CloudUploadNotificationManager::CreateUploadProgressNotification() {
 
   return ash::CreateSystemNotification(
       /*type=*/message_center::NOTIFICATION_TYPE_PROGRESS,
-      /*id=*/kCloudUploadProgressNotificationId, base::UTF8ToUTF16(title),
+      /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message), /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
       /*optional_fields=*/{},
@@ -87,7 +92,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
       target_app_name_;
   return ash::CreateSystemNotification(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/kCloudUploadProgressNotificationId, base::UTF8ToUTF16(title),
+      /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
@@ -108,7 +113,7 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
   std::string title = "Failed to move " + file_name_;
   return ash::CreateSystemNotification(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/kCloudUploadProgressNotificationId, base::UTF8ToUTF16(title),
+      /*id=*/notification_id_, base::UTF8ToUTF16(title),
       base::UTF8ToUTF16(message),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), /*notifier_id=*/message_center::NotifierId(),
@@ -200,7 +205,7 @@ void CloudUploadNotificationManager::OnCompleteNotificationTimeout() {
 
 void CloudUploadNotificationManager::CloseNotification() {
   GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
-                                         kCloudUploadProgressNotificationId);
+                                         notification_id_);
   notification_timer_.Stop();
   complete_notification_timer_.Stop();
   if (callback_) {
