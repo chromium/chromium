@@ -20,13 +20,13 @@ namespace objects_movable = test::api::objects_movable;
 
 TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
   {
-    base::Value strings(base::Value::Type::LIST);
+    base::Value::List strings;
     strings.Append("one");
     strings.Append("two");
-    base::Value info_value(base::Value::Type::DICTIONARY);
-    info_value.SetKey("strings", std::move(strings));
-    info_value.SetIntPath("integer", 5);
-    info_value.SetBoolPath("boolean", true);
+    base::Value::Dict info_value;
+    info_value.Set("strings", std::move(strings));
+    info_value.Set("integer", 5);
+    info_value.Set("boolean", true);
 
     base::Value::List params_value;
     params_value.Append(std::move(info_value));
@@ -40,12 +40,12 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     EXPECT_TRUE(params->info.boolean);
   }
   {
-    base::Value strings(base::Value::Type::LIST);
+    base::Value::List strings;
     strings.Append("one");
     strings.Append("two");
-    base::Value info_value(base::Value::Type::DICTIONARY);
-    info_value.SetKey("strings", std::move(strings));
-    info_value.SetIntPath("integer", 5);
+    base::Value::Dict info_value;
+    info_value.Set("strings", std::move(strings));
+    info_value.Set("integer", 5);
 
     base::Value::List params_value;
     params_value.Append(std::move(info_value));
@@ -58,25 +58,24 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
   test::api::objects::ReturnsObject::Results::Info info;
   info.state = test::api::objects::FIRST_STATE_FOO;
-  base::Value results(test::api::objects::ReturnsObject::Results::Create(info));
-  ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetListDeprecated().size());
+  base::Value::List results =
+      test::api::objects::ReturnsObject::Results::Create(info);
+  ASSERT_EQ(1u, results.size());
 
-  base::DictionaryValue expected;
-  expected.SetString("state", "foo");
-  EXPECT_EQ(expected, results.GetListDeprecated()[0]);
+  base::Value::Dict expected;
+  expected.Set("state", "foo");
+  EXPECT_EQ(expected, results[0]);
 }
 
 TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
   test::api::objects::OnObjectFired::SomeObject object;
   object.state = test::api::objects::FIRST_STATE_BAR;
-  base::Value results(test::api::objects::OnObjectFired::Create(object));
-  ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetListDeprecated().size());
+  base::Value::List results = test::api::objects::OnObjectFired::Create(object);
+  ASSERT_EQ(1u, results.size());
 
-  base::DictionaryValue expected;
-  expected.SetString("state", "bar");
-  EXPECT_EQ(expected, results.GetListDeprecated()[0]);
+  base::Value::Dict expected;
+  expected.Set("state", "bar");
+  EXPECT_EQ(expected, results[0]);
 }
 
 TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {

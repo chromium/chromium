@@ -25,23 +25,20 @@ using json_schema_compiler::test_util::Vector;
 
 TEST(JsonSchemaCompilerChoicesTest, TakesIntegersParamsCreate) {
   {
-    std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
-        List(std::make_unique<base::Value>(true))->GetList()));
+    std::unique_ptr<TakesIntegers::Params> params(
+        TakesIntegers::Params::Create(List(base::Value(true)).GetList()));
     EXPECT_FALSE(params);
   }
   {
-    std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
-        List(std::make_unique<base::Value>(6))->GetList()));
+    std::unique_ptr<TakesIntegers::Params> params(
+        TakesIntegers::Params::Create(List(base::Value(6)).GetList()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->nums.as_integers);
     EXPECT_EQ(6, *params->nums.as_integer);
   }
   {
     std::unique_ptr<TakesIntegers::Params> params(TakesIntegers::Params::Create(
-        List(List(std::make_unique<base::Value>(2),
-                  std::make_unique<base::Value>(6),
-                  std::make_unique<base::Value>(8)))
-            ->GetList()));
+        List(List(base::Value(2), base::Value(6), base::Value(8))).GetList()));
     ASSERT_TRUE(params);
     ASSERT_TRUE(params->nums.as_integers);
     EXPECT_EQ(Vector(2, 6, 8), *params->nums.as_integers);
@@ -52,8 +49,7 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
   {
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
-            List(Dictionary("strings", std::make_unique<base::Value>("asdf")))
-                ->GetList()));
+            List(Dictionary("strings", base::Value("asdf"))).GetList()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->string_info.strings.as_strings);
     EXPECT_EQ("asdf", *params->string_info.strings.as_string);
@@ -62,9 +58,9 @@ TEST(JsonSchemaCompilerChoicesTest, ObjectWithChoicesParamsCreate) {
   {
     std::unique_ptr<choices::ObjectWithChoices::Params> params(
         choices::ObjectWithChoices::Params::Create(
-            List(Dictionary("strings", std::make_unique<base::Value>("asdf"),
-                            "integers", std::make_unique<base::Value>(6)))
-                ->GetList()));
+            List(Dictionary("strings", base::Value("asdf"), "integers",
+                            base::Value(6)))
+                .GetList()));
     ASSERT_TRUE(params);
     EXPECT_FALSE(params->string_info.strings.as_strings);
     EXPECT_EQ("asdf", *params->string_info.strings.as_string);

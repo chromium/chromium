@@ -21,57 +21,50 @@ base::Value ReadJson(const base::StringPiece& json) {
   return std::move(*parsed_json);
 }
 
-std::unique_ptr<base::ListValue> List(std::unique_ptr<base::Value> a) {
-  auto list = std::make_unique<base::ListValue>();
-  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(a)));
-  return list;
+base::Value List(base::Value a) {
+  base::Value::List list;
+  list.Append(std::move(a));
+  return base::Value(std::move(list));
 }
-std::unique_ptr<base::ListValue> List(std::unique_ptr<base::Value> a,
-                                      std::unique_ptr<base::Value> b) {
-  auto list = std::make_unique<base::ListValue>();
-  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(a)));
-  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(b)));
-  return list;
+base::Value List(base::Value a, base::Value b) {
+  base::Value::List list;
+  list.Append(std::move(a));
+  list.Append(std::move(b));
+  return base::Value(std::move(list));
 }
-std::unique_ptr<base::ListValue> List(std::unique_ptr<base::Value> a,
-                                      std::unique_ptr<base::Value> b,
-                                      std::unique_ptr<base::Value> c) {
-  auto list = std::make_unique<base::ListValue>();
-  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(a)));
-  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(b)));
-  list->GetList().Append(base::Value::FromUniquePtrValue(std::move(c)));
-  return list;
+base::Value List(base::Value a, base::Value b, base::Value c) {
+  base::Value::List list;
+  list.Append(std::move(a));
+  list.Append(std::move(b));
+  list.Append(std::move(c));
+  return base::Value(std::move(list));
 }
 
-std::unique_ptr<base::DictionaryValue> Dictionary(
-    const std::string& ak,
-    std::unique_ptr<base::Value> av) {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetKey(ak, base::Value::FromUniquePtrValue(std::move(av)));
-  return dict;
+base::Value Dictionary(const std::string& ak, base::Value av) {
+  base::Value::Dict dict;
+  dict.Set(ak, std::move(av));
+  return base::Value(std::move(dict));
 }
-std::unique_ptr<base::DictionaryValue> Dictionary(
-    const std::string& ak,
-    std::unique_ptr<base::Value> av,
-    const std::string& bk,
-    std::unique_ptr<base::Value> bv) {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetKey(ak, base::Value::FromUniquePtrValue(std::move(av)));
-  dict->SetKey(bk, base::Value::FromUniquePtrValue(std::move(bv)));
-  return dict;
+base::Value Dictionary(const std::string& ak,
+                       base::Value av,
+                       const std::string& bk,
+                       base::Value bv) {
+  base::Value::Dict dict;
+  dict.Set(ak, std::move(av));
+  dict.Set(bk, std::move(bv));
+  return base::Value(std::move(dict));
 }
-std::unique_ptr<base::DictionaryValue> Dictionary(
-    const std::string& ak,
-    std::unique_ptr<base::Value> av,
-    const std::string& bk,
-    std::unique_ptr<base::Value> bv,
-    const std::string& ck,
-    std::unique_ptr<base::Value> cv) {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetKey(ak, base::Value::FromUniquePtrValue(std::move(av)));
-  dict->SetKey(bk, base::Value::FromUniquePtrValue(std::move(bv)));
-  dict->SetKey(ck, base::Value::FromUniquePtrValue(std::move(cv)));
-  return dict;
+base::Value Dictionary(const std::string& ak,
+                       base::Value av,
+                       const std::string& bk,
+                       base::Value bv,
+                       const std::string& ck,
+                       base::Value cv) {
+  base::Value::Dict dict;
+  dict.Set(ak, std::move(av));
+  dict.Set(bk, std::move(bv));
+  dict.Set(ck, std::move(cv));
+  return base::Value(std::move(dict));
 }
 
 }  // namespace test_util

@@ -21,13 +21,13 @@ namespace enums = test::api::enums;
 
 namespace {
 
-static std::unique_ptr<base::DictionaryValue> CreateTestTypeDictionary() {
-  auto value = std::make_unique<base::DictionaryValue>();
-  value->SetKey("number", base::Value(1.1));
-  value->SetKey("integer", base::Value(4));
-  value->SetKey("string", base::Value("bling"));
-  value->SetKey("boolean", base::Value(true));
-  return value;
+static base::Value::Dict CreateTestTypeDictionary() {
+  base::Value::Dict dict;
+  dict.Set("number", 1.1);
+  dict.Set("integer", 4);
+  dict.Set("string", "bling");
+  dict.Set("boolean", true);
+  return dict;
 }
 
 void GetManifestParseError(base::StringPiece manifest_json,
@@ -154,31 +154,33 @@ TEST(JsonSchemaCompilerSimpleTest, NoParamsResultCreate) {
 TEST(JsonSchemaCompilerSimpleTest, TestTypePopulate) {
   {
     auto test_type = std::make_unique<simple_api::TestType>();
-    std::unique_ptr<base::DictionaryValue> value = CreateTestTypeDictionary();
-    EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
+    base::Value value(CreateTestTypeDictionary());
+    EXPECT_TRUE(simple_api::TestType::Populate(value, test_type.get()));
     EXPECT_EQ("bling", test_type->string);
     EXPECT_EQ(1.1, test_type->number);
     EXPECT_EQ(4, test_type->integer);
     EXPECT_EQ(true, test_type->boolean);
-    EXPECT_EQ(*value, test_type->ToValue());
+    EXPECT_EQ(value, test_type->ToValue());
   }
   {
     auto test_type = std::make_unique<simple_api::TestType>();
-    std::unique_ptr<base::DictionaryValue> value = CreateTestTypeDictionary();
-    value->RemoveKey("number");
-    EXPECT_FALSE(simple_api::TestType::Populate(*value, test_type.get()));
+    base::Value::Dict value = CreateTestTypeDictionary();
+    value.Remove("number");
+    EXPECT_FALSE(simple_api::TestType::Populate(base::Value(std::move(value)),
+                                                test_type.get()));
   }
 }
 
 TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
   {
-    std::unique_ptr<base::DictionaryValue> value = CreateTestTypeDictionary();
+    base::Value::Dict value = CreateTestTypeDictionary();
     auto test_type = std::make_unique<simple_api::TestType>();
-    EXPECT_TRUE(simple_api::TestType::Populate(*value, test_type.get()));
+    EXPECT_TRUE(simple_api::TestType::Populate(base::Value(value.Clone()),
+                                               test_type.get()));
     base::Value::List results =
         simple_api::GetTestType::Results::Create(*test_type);
     ASSERT_EQ(1u, results.size());
-    EXPECT_EQ(results[0], *value);
+    EXPECT_EQ(results[0], value);
   }
 }
 
@@ -203,23 +205,28 @@ TEST(JsonSchemaCompilerSimpleTest, OnStringFiredCreate) {
 TEST(JsonSchemaCompilerSimpleTest, OnTestTypeFiredCreate) {
   {
     simple_api::TestType some_test_type;
-    std::unique_ptr<base::DictionaryValue> expected =
-        CreateTestTypeDictionary();
+    base::Value::Dict expected = CreateTestTypeDictionary();
 
-    absl::optional<double> number_value = expected->FindDoubleKey("number");
-    ASSERT_TRUE(*number_value);
+    absl::optional<double> number_value = expected.FindDouble("number");
+    ASSERT_TRUE(number_value);
     some_test_type.number = *number_value;
 
-    ASSERT_TRUE(expected->GetString("string", &some_test_type.string));
-    ASSERT_TRUE(expected->GetInteger("integer", &some_test_type.integer));
-    absl::optional<bool> boolean_value = expected->FindBoolKey("boolean");
+    const std::string* string_value = expected.FindString("string");
+    ASSERT_TRUE(string_value);
+    some_test_type.string = *string_value;
+
+    absl::optional<int> int_value = expected.FindInt("integer");
+    ASSERT_TRUE(int_value);
+    some_test_type.integer = *int_value;
+
+    absl::optional<bool> boolean_value = expected.FindBool("boolean");
     ASSERT_TRUE(boolean_value);
     some_test_type.boolean = *boolean_value;
 
     base::Value results(simple_api::OnTestTypeFired::Create(some_test_type));
     ASSERT_TRUE(results.is_list());
-    ASSERT_EQ(1u, results.GetListDeprecated().size());
-    EXPECT_EQ(*expected, results.GetListDeprecated()[0]);
+    ASSERT_EQ(1u, results.GetList().size());
+    EXPECT_EQ(expected, results.GetList()[0]);
   }
 }
 

@@ -17,26 +17,27 @@ namespace simple_api = test::api::simple_api;
 
 namespace {
 
-base::DictionaryValue CreateTestTypeValue() {
-  base::DictionaryValue value;
-  value.GetDict().Set("number", 1.1);
-  value.SetInteger("integer", 4);
-  value.SetString("string", "bling");
-  value.SetBoolean("boolean", true);
-  return value;
+base::Value::Dict CreateTestTypeValue() {
+  base::Value::Dict dict;
+  dict.Set("number", 1.1);
+  dict.Set("integer", 4);
+  dict.Set("string", "bling");
+  dict.Set("boolean", true);
+  return dict;
 }
 
 }  // namespace
 
 TEST(JsonSchemaCompilerCrossrefTest, CrossrefTypePopulateAndToValue) {
-  base::DictionaryValue crossref_orig;
-  crossref_orig.SetKey("testType", CreateTestTypeValue());
-  crossref_orig.SetString("testEnumRequired", "one");
-  crossref_orig.SetString("testEnumOptional", "two");
+  base::Value::Dict crossref_orig;
+  crossref_orig.Set("testType", CreateTestTypeValue());
+  crossref_orig.Set("testEnumRequired", "one");
+  crossref_orig.Set("testEnumOptional", "two");
 
   // Test Populate of the value --> compiled type.
   crossref::CrossrefType crossref_type;
-  ASSERT_TRUE(crossref::CrossrefType::Populate(crossref_orig, &crossref_type));
+  ASSERT_TRUE(crossref::CrossrefType::Populate(
+      base::Value(crossref_orig.Clone()), &crossref_type));
   EXPECT_EQ(1.1, crossref_type.test_type.number);
   EXPECT_EQ(4, crossref_type.test_type.integer);
   EXPECT_EQ("bling", crossref_type.test_type.string);
@@ -62,8 +63,8 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamCreate) {
 
 TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
   base::Value::List params_value;
-  base::DictionaryValue test_type_value = CreateTestTypeValue();
-  test_type_value.RemoveKey("number");
+  base::Value::Dict test_type_value = CreateTestTypeValue();
+  test_type_value.Remove("number");
   params_value.Append(std::move(test_type_value));
   std::unique_ptr<crossref::TestTypeOptionalParam::Params> params(
       crossref::TestTypeOptionalParam::Params::Create(params_value));
@@ -71,9 +72,10 @@ TEST(JsonSchemaCompilerCrossrefTest, TestTypeOptionalParamFail) {
 }
 
 TEST(JsonSchemaCompilerCrossrefTest, GetTestType) {
-  base::DictionaryValue value = CreateTestTypeValue();
+  base::Value::Dict value = CreateTestTypeValue();
   auto test_type = std::make_unique<simple_api::TestType>();
-  EXPECT_TRUE(simple_api::TestType::Populate(value, test_type.get()));
+  EXPECT_TRUE(simple_api::TestType::Populate(base::Value(value.Clone()),
+                                             test_type.get()));
 
   base::Value::List results =
       crossref::GetTestType::Results::Create(*test_type);

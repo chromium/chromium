@@ -140,9 +140,5 @@ void AddItemToList(const base::Value& from, base::Value::List* out) {
   out->Append(from.Clone());
 }
 
-void AddItemToList(const base::Value& from, base::ListValue* out) {
-  out->Append(from.Clone());
-}
-
 }  // namespace util
 }  // namespace json_schema_compiler

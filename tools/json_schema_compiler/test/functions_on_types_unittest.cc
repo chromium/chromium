@@ -37,9 +37,9 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
     EXPECT_EQ("test", *params->keys->as_string);
   }
   {
-    base::Value keys_object_value(base::Value::Type::DICTIONARY);
-    keys_object_value.SetIntKey("integer", 5);
-    keys_object_value.SetStringKey("string", "string");
+    base::Value::Dict keys_object_value;
+    keys_object_value.Set("integer", 5);
+    keys_object_value.Set("string", "string");
     base::Value::List params_value;
     params_value.Append(keys_object_value.Clone());
     std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
@@ -58,13 +58,13 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetResultCreate) {
   base::Value results(
       functions_on_types::StorageArea::Get::Results::Create(items));
   ASSERT_TRUE(results.is_list());
-  ASSERT_EQ(1u, results.GetListDeprecated().size());
-  EXPECT_EQ(items.additional_properties, results.GetListDeprecated()[0]);
+  ASSERT_EQ(1u, results.GetList().size());
+  EXPECT_EQ(items.additional_properties, results.GetList()[0]);
 }
 
 TEST(JsonSchemaCompilerFunctionsOnTypesTest, ChromeSettingGetParamsCreate) {
-  base::Value details_value(base::Value::Type::DICTIONARY);
-  details_value.SetBoolKey("incognito", true);
+  base::Value::Dict details_value;
+  details_value.Set("incognito", true);
   base::Value::List params_value;
   params_value.Append(std::move(details_value));
   std::unique_ptr<functions_on_types::ChromeSetting::Get::Params> params(
