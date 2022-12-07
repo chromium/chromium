@@ -576,11 +576,8 @@ OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool enable_debugger = command_line->HasSwitch(switches::kShowOobeDevOverlay);
-  // TODO(crbug.com/1073095): Also enable for ChromeOS test images.
-  // Enable for ChromeOS-on-linux for developers.
-  bool test_mode = !base::SysInfo::IsRunningOnChromeOS();
-
-  if (enable_debugger && test_mode) {
+  if (enable_debugger) {
+    base::SysInfo::CrashIfChromeOSNonTestImage();
     AddWebUIHandler(std::make_unique<DebugOverlayHandler>());
   }
 
