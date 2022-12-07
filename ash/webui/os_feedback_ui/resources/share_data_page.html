@@ -228,13 +228,10 @@
       <h2 id="userEmailLabel">[[i18n('userEmailLabel')]]</h2>
       <select id="userEmailDropDown" class="md-select"
           aria-label="[[i18n('userEmailAriaLabel')]]">
-        <option value$="[[feedbackContext.email]]"
-            aria-label="user email"
-            class="email-dropdown">
+        <option value$="[[feedbackContext.email]]" class="email-dropdown">
           [[feedbackContext.email]]
         </option>
-        <option value="" aria-label="anonymous user"
-          id="anonymousUser" class="email-dropdown">
+        <option id="anonymousUser" value="" class="email-dropdown">
           [[i18n('anonymousUser')]]
         </option>
       </select>
@@ -280,7 +277,7 @@
       <div id="bluetoothCheckboxContainer" class="checkbox-field-container"
           hidden="[[!shouldShowBluetoothCheckbox]]">
         <cr-checkbox id="bluetoothLogsCheckbox" aria-labelledby="bluetoothInfoLabel" checked>
-          <div id="bluetoothInfoLabel" class="checkbox-label" 
+          <div id="bluetoothInfoLabel" class="checkbox-label"
               inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></div>
         </cr-checkbox>
       </div>

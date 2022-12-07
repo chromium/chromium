@@ -129,9 +129,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         this.i18n('attachScreenshotCheckboxAriaLabel');
     this.$.imageButton.ariaLabel = this.i18n(
         'previewImageAriaLabel', this.$.screenshotCheckLabel.textContent);
-    // The default role is combobox. Set it in JS to avoid the JSCompiler
-    // error not recognizing the role property.
-    this.$.userEmailDropDown.role = 'listbox';
 
     // Set up event listener for email change to retarget |this| to be the
     // ShareDataPageElement's context.

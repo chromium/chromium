@@ -131,9 +131,8 @@ export function shareDataPageTestSuite() {
     assertTrue(page.i18nExists('userEmailLabel'));
     assertEquals('Email', getElementContent('#userEmailLabel'));
 
-    // Verify the role and aria label of the user email dropdown.
+    // Verify the aria label of the user email dropdown.
     const userEmailDropDown = getElement('#userEmailDropDown');
-    assertEquals('listbox', userEmailDropDown.role);
     assertTrue(page.i18nExists('userEmailAriaLabel'));
     assertEquals('Select email', userEmailDropDown.ariaLabel);
 
