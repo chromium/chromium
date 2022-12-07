@@ -25,9 +25,6 @@ source_set("trust_tokens") {
     "expiry_inspecting_record_expiry_delegate.h",
     "in_memory_trust_token_persister.cc",
     "in_memory_trust_token_persister.h",
-    "local_trust_token_operation_delegate.h",
-    "local_trust_token_operation_delegate_impl.cc",
-    "local_trust_token_operation_delegate_impl.h",
     "operating_system_matching.cc",
     "operating_system_matching.h",
     "operation_timing_request_helper_wrapper.cc",
@@ -116,7 +113,6 @@ source_set("tests") {
   sources = [
     "boringssl_trust_token_issuance_cryptographer_unittest.cc",
     "expiry_inspecting_record_expiry_delegate_unittest.cc",
-    "local_trust_token_operation_delegate_impl_unittest.cc",
     "pending_trust_token_store_unittest.cc",
     "sqlite_trust_token_persister_unittest.cc",
     "suitable_trust_token_origin_unittest.cc",

@@ -60,19 +60,6 @@ bool HasKeyPairExpired(const IssuanceKeyPair& p) {
   return p.expiry <= base::Time::Now();
 }
 
-std::string UnavailableLocalOperationFallbackToString(
-    mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback
-        fallback) {
-  switch (fallback) {
-    case mojom::TrustTokenKeyCommitmentResult::
-        UnavailableLocalOperationFallback::kReturnWithError:
-      return "return_with_error";
-    case mojom::TrustTokenKeyCommitmentResult::
-        UnavailableLocalOperationFallback::kWebIssuance:
-      return "web_issuance";
-  };
-}
-
 }  // namespace
 
 TrustTokenRequestHandler::Options::Options() = default;
@@ -90,13 +77,6 @@ struct TrustTokenRequestHandler::Rep {
 
   // Issue at most this many tokens per issuance.
   int batch_size;
-
-  // These values determine which Platform Provided Trust Tokens-related
-  // arguments should be included in returned key commitments:
-  std::set<mojom::TrustTokenKeyCommitmentResult::Os>
-      specify_platform_issuance_on;
-  mojom::TrustTokenKeyCommitmentResult::UnavailableLocalOperationFallback
-      unavailable_local_operation_fallback;
 
   std::vector<IssuanceKeyPair> issuance_keys;
 
@@ -181,23 +161,6 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
         base::NumberToString(
             (rep_->issuance_keys[i].expiry - base::Time::UnixEpoch())
                 .InMicroseconds()));
-  }
-
-  if (!rep_->specify_platform_issuance_on.empty()) {
-    value.SetStringPath("TrustTokenV3PMB.unavailable_local_operation_fallback",
-                        UnavailableLocalOperationFallbackToString(
-                            rep_->unavailable_local_operation_fallback));
-
-    base::Value oses(base::Value::Type::LIST);
-    for (auto os : rep_->specify_platform_issuance_on) {
-      switch (os) {
-        case mojom::TrustTokenKeyCommitmentResult::Os::kAndroid:
-          oses.Append("android");
-          break;
-      };
-    }
-    value.SetPath("TrustTokenV3PMB.request_issuance_locally_on",
-                  std::move(oses));
   }
 
   // It's OK to be a bit crashy in exceptional failure cases because it
@@ -318,10 +281,6 @@ void TrustTokenRequestHandler::UpdateOptions(Options options) {
   for (int i = 0; i < options.num_keys; ++i) {
     rep_->issuance_keys.push_back(GenerateIssuanceKeyPair(i));
   }
-
-  rep_->specify_platform_issuance_on = options.specify_platform_issuance_on;
-  rep_->unavailable_local_operation_fallback =
-      options.unavailable_local_operation_fallback;
 }
 
 }  // namespace network::test

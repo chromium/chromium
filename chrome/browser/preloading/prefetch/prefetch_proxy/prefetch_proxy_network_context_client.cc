@@ -52,15 +52,6 @@ void PrefetchProxyNetworkContextClient::OnGenerateHttpNegotiateAuthToken(
 void PrefetchProxyNetworkContextClient::OnTrustAnchorUsed() {}
 #endif
 
-void PrefetchProxyNetworkContextClient::OnTrustTokenIssuanceDivertedToSystem(
-    network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
-    OnTrustTokenIssuanceDivertedToSystemCallback callback) {
-  auto response = network::mojom::FulfillTrustTokenIssuanceAnswer::New();
-  response->status =
-      network::mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound;
-  std::move(callback).Run(std::move(response));
-}
-
 void PrefetchProxyNetworkContextClient::OnCanSendSCTAuditingReport(
     OnCanSendSCTAuditingReportCallback callback) {
   std::move(callback).Run(false);

@@ -123,7 +123,6 @@ robolectric_library("junit") {
     "//components/commerce/core:proto_java",
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
-    "//content/public/common:trust_tokens_mojo_bindings_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/junit:junit",
