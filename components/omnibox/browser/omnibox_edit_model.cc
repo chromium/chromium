@@ -68,6 +68,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "url/third_party/mozilla/url_parse.h"
 #include "url/url_util.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -175,6 +176,36 @@ void RecordActionShownForAllActions(
       match_in_result.action->RecordActionShown(i, i == executed_position);
     }
   }
+}
+
+// Find the number of IPv4 parts if the user inputs a URL with an IP address
+// host. Returns 0 if the user does not manually types the full IP address.
+size_t CountNumberOfIPv4Parts(const std::u16string& text,
+                              const GURL& url,
+                              size_t completed_length) {
+  if (!url.HostIsIPAddress() || !url.SchemeIsHTTPOrHTTPS() ||
+      completed_length > 0) {
+    return 0;
+  }
+
+  url::Parsed parsed;
+  url::ParseStandardURL(text.data(), text.length(), &parsed);
+  if (!parsed.host.is_valid()) {
+    return 0;
+  }
+
+  size_t parts = 1;
+  bool potential_part = false;
+  for (int i = parsed.host.begin; i < parsed.host.end(); i++) {
+    if (text[i] == '.') {
+      potential_part = true;
+    }
+    if (potential_part && text[i] >= '0' && text[i] <= '9') {
+      parts++;
+      potential_part = false;
+    }
+  }
+  return parts;
 }
 
 }  // namespace
@@ -948,18 +979,20 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   AutocompleteResult fake_single_entry_result;
   fake_single_entry_result.AppendMatches(fake_single_entry_matches);
 
-  OmniboxLog log(
+  const std::u16string& user_text =
       input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT
           ? std::u16string()
-          : input_text,
-      just_deleted_text_, input_.type(), is_keyword_selected(),
+          : input_text;
+  size_t completed_length = match.allowed_to_be_default_match
+                                ? match.inline_autocompletion.length()
+                                : std::u16string::npos;
+  OmniboxLog log(
+      user_text, just_deleted_text_, input_.type(), is_keyword_selected(),
       keyword_mode_entry_method_, popup_open, dropdown_ignored ? 0 : index,
       disposition, !pasted_text.empty(),
       SessionID::InvalidValue(),  // don't know tab ID; set later if appropriate
       GetPageClassification(), elapsed_time_since_user_first_modified_omnibox,
-      match.allowed_to_be_default_match ? match.inline_autocompletion.length()
-                                        : std::u16string::npos,
-      elapsed_time_since_last_change_to_default_match,
+      completed_length, elapsed_time_since_last_change_to_default_match,
       dropdown_ignored ? fake_single_entry_result : result(),
       match.destination_url);
   DCHECK(dropdown_ignored ||
@@ -980,9 +1013,19 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
 
   base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.RichAutocompletion",
                                 match.rich_autocompletion_triggered);
+  size_t ipv4_parts_count = CountNumberOfIPv4Parts(
+      user_text, match.destination_url, completed_length);
+  // The histogram is collected to decide if shortened IPv4 addresses
+  // like 127.1 should be deprecated.
+  // Only valid IP addresses manually inputted by the user will be counted.
+  if (ipv4_parts_count > 0) {
+    base::UmaHistogramCounts100("Omnibox.IPv4AddressPartsCount",
+                                ipv4_parts_count);
+  }
 
   client_->OnURLOpenedFromOmnibox(&log);
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
+
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
   SuggestionAnswer::LogAnswerUsed(match.answer);
   if (!last_omnibox_focus_.is_null()) {

@@ -834,6 +834,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.IPv4AddressPartsCount" units="count"
+    expires_after="2023-05-01">
+  <owner>gjc@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The number of IPv4 address parts input by the user. The histogram is used to
+    verify whether shortened IPv4 addresses like 127.1 are still used. This
+    histogram is recorded when the user fully types the URL in the omnibox and
+    the URL uses an IPv4 address or IPv4 embedded IPv6 address as the host.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.IsPasteAndGo" enum="Boolean"
     expires_after="2022-05-01">
   <owner>jdonnelly@chromium.org</owner>

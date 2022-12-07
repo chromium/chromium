@@ -52,6 +52,23 @@ class TestOmniboxPopupView : public OmniboxPopupView {
   void OnDragCanceled() override {}
 };
 
+void OpenUrlFromEditBox(TestOmniboxEditModel* model,
+                        const std::u16string url_text,
+                        bool is_autocompleted) {
+  AutocompleteMatch match(model->autocomplete_controller()->search_provider(),
+                          0, false, AutocompleteMatchType::OPEN_TAB);
+  match.destination_url = GURL(url_text);
+  match.allowed_to_be_default_match = true;
+  if (is_autocompleted) {
+    match.inline_autocompletion = url_text;
+  } else {
+    model->SetUserText(url_text);
+  }
+  model->OnSetFocus(false);
+  model->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, GURL(),
+                   std::u16string(), 0);
+}
+
 }  // namespace
 
 class OmniboxEditModelTest : public testing::Test {
@@ -1197,6 +1214,28 @@ TEST_F(OmniboxEditModelTest, OmniboxEscapeHistogram) {
       EXPECT_FALSE(model()->has_focus());
     }
   }
+}
+
+TEST_F(OmniboxEditModelTest, IPv4AddressPartsCount) {
+  base::HistogramTester histogram_tester;
+  constexpr char kIPv4AddressPartsCountHistogramName[] =
+      "Omnibox.IPv4AddressPartsCount";
+  // Hostnames shall not be recorded.
+  OpenUrlFromEditBox(model(), u"http://example.com", false);
+  histogram_tester.ExpectTotalCount(kIPv4AddressPartsCountHistogramName, 0);
+
+  // Autocompleted navigations shall not be recorded.
+  OpenUrlFromEditBox(model(), u"http://127.0.0.1", true);
+  histogram_tester.ExpectTotalCount(kIPv4AddressPartsCountHistogramName, 0);
+
+  // Test IPv4 parts are correctly counted.
+  OpenUrlFromEditBox(model(), u"http://127.0.0.1", false);
+  OpenUrlFromEditBox(model(), u"http://127.1/test.html", false);
+  OpenUrlFromEditBox(model(), u"http://[::127.0.1]", false);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kIPv4AddressPartsCountHistogramName),
+      testing::ElementsAre(base::Bucket(2, 1), base::Bucket(3, 1),
+                           base::Bucket(4, 1)));
 }
 
 #if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
