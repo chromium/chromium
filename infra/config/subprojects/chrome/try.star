@@ -35,6 +35,7 @@ def chrome_internal_verifier(
             experiment_percentage = tryjob.experiment_percentage,
             location_filters = location_filters,
             cancel_stale = tryjob.cancel_stale,
+            result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
         )
     else:
         branches.cq_tryjob_verifier(
@@ -45,6 +46,7 @@ def chrome_internal_verifier(
                 "googlers",
                 "project-chromium-robot-committers",
             ],
+            result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
             **kwargs
         )
 
@@ -92,6 +94,7 @@ branches.cq_tryjob_verifier(
         "googlers",
         "project-chromium-robot-committers",
     ],
+    result_visibility = cq.COMMENT_LEVEL_RESTRICTED,
 )
 
 chrome_internal_verifier(
