@@ -190,7 +190,7 @@ void OnListValueMethodWithErrorCallback(
         .Run(kInvalidResponseErrorName, kInvalidResponseErrorMessage);
     return;
   }
-  std::move(callback).Run(base::Value::AsListValue(value));
+  std::move(callback).Run(value.GetList());
 }
 
 // Handles running appropriate error callbacks.

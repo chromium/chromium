@@ -13,13 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-
-namespace base {
-class ListValue;
-class Value;
-}  // namespace base
 
 namespace dbus {
 
@@ -37,9 +33,9 @@ class ShillClientHelper {
  public:
   class RefHolder;
 
-  // A callback to handle responses of methods returning a ListValue.
+  // A callback to handle responses of methods returning a `base::Value::List`.
   using ListValueCallback =
-      base::OnceCallback<void(const base::ListValue& result)>;
+      base::OnceCallback<void(const base::Value::List& result)>;
 
   // A callback to handle errors for method call.
   using ErrorCallback =

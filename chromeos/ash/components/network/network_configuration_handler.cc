@@ -660,15 +660,15 @@ void NetworkConfigurationHandler::ClearPropertiesSuccessCallback(
     const std::string& service_path,
     const std::vector<std::string>& names,
     base::OnceClosure callback,
-    const base::ListValue& result) {
+    const base::Value::List& result) {
   const std::string kClearPropertiesFailedError("Error.ClearPropertiesFailed");
-  DCHECK(names.size() == result.GetList().size())
+  DCHECK(names.size() == result.size())
       << "Incorrect result size from ClearProperties.";
 
-  for (size_t i = 0; i < result.GetList().size(); ++i) {
+  for (size_t i = 0; i < result.size(); ++i) {
     bool success = false;
-    if (result.GetList()[i].is_bool())
-      success = result.GetList()[i].GetBool();
+    if (result[i].is_bool())
+      success = result[i].GetBool();
     if (!success) {
       // If a property was cleared that has never been set, the clear will fail.
       // We do not track which properties have been set, so just log the error.

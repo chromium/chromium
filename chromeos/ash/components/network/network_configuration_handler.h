@@ -207,7 +207,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
   void ClearPropertiesSuccessCallback(const std::string& service_path,
                                       const std::vector<std::string>& names,
                                       base::OnceClosure callback,
-                                      const base::ListValue& result);
+                                      const base::Value::List& result);
   void ClearPropertiesErrorCallback(
       const std::string& service_path,
       network_handler::ErrorCallback error_callback,
