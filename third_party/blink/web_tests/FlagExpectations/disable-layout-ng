@@ -1262,8 +1262,6 @@ crbug.com/626703 external/wpt/css/css-flexbox/flexbox-definite-cross-size-constr
 crbug.com/626703 external/wpt/css/css-contain/content-visibility/content-visibility-fieldset-size.html [ Failure ]
 crbug.com/626703 virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibility/content-visibility-fieldset-size.html [ Failure ]
 crbug.com/626703 external/wpt/page-visibility/visibility-state-entry.tentative.html [ Timeout ]
-crbug.com/626703 external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
-crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/svg-intrinsic-size-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-sizing/svg-intrinsic-size-003.html [ Failure ]
 crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Timeout ]

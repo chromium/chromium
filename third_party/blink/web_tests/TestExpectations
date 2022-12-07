@@ -1965,7 +1965,6 @@ crbug.com/686118 http/tests/security/setDomainRelaxationForbiddenForURLScheme.ht
 
 # Flaky tests on Mac after enabling scroll animations in web_tests
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure Pass ]
-crbug.com/944583 [ Mac ] fast/events/space-scroll-textinput-canceled.html [ Failure Pass ]
 crbug.com/944583 [ Mac ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
 crbug.com/944583 [ Mac ] fast/scrolling/percentage-mousewheel-scroll.html [ Failure Pass ]
 crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-x-in-scrolling-page.html [ Failure Pass Timeout ]
@@ -2002,7 +2001,6 @@ crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
 
 crbug.com/1170052 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-audio-is-silence.https.html [ Pass Timeout ]
-crbug.com/1174937 [ Mac10.15 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 crbug.com/1174937 [ Mac11 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 crbug.com/1174937 external/wpt/mediacapture-streams/MediaStream-clone.https.html [ Crash ]
 
@@ -5362,7 +5360,6 @@ crbug.com/931533 media/video-played-collapse.html [ Failure Pass ]
 crbug.com/806357 virtual/threaded/fast/events/pointerevents/pinch/pointerevent_touch-action-pinch_zoom_touch.html [ Crash Failure Pass Timeout ]
 
 # Trooper 2019-03-19
-crbug.com/943388 [ Win ] http/tests/devtools/network/network-recording-after-reload-with-screenshots-enabled.js [ Failure Pass ]
 
 # Sheriff 2019-03-25
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule-tab.js [ Failure Pass ]
@@ -5757,7 +5754,6 @@ crbug.com/1059262 [ Mac ] webexposed/global-interface-listing-platform-specific.
 crbug.com/1059645 external/wpt/pointerevents/pointerevent_coalesced_events_attributes.html [ Failure Pass Timeout ]
 
 # [virtual/...]external/wpt/web-animation test flakes
-crbug.com/1064065 virtual/threaded/external/wpt/css/css-animations/event-dispatch.tentative.html [ Failure Pass ]
 
 # Sheriff 2020-04-01
 crbug.com/1066732 fast/events/platform-wheelevent-paging-x-in-scrolling-div.html [ Failure Pass ]
@@ -7092,7 +7088,6 @@ crbug.com/1194945 external/wpt/dom/events/scrolling/overscroll-event-fired-to-sc
 crbug.com/1244896 fast/mediacapturefromelement/CanvasCaptureMediaStream-set-size-too-large.html [ Failure Pass Timeout ]
 
 # Sheriff 2022-04-06
-crbug.com/1313894 [ Mac10.14 ] rootscroller/root-scroller-paint-order.html [ Failure Pass ]
 crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure Pass ]
 
 # Sheriff 2022-04-07
