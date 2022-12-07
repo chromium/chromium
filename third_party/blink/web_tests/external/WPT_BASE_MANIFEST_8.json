@@ -4602,6 +4602,13 @@
          {}
         ]
        ],
+       "fieldset-dynamic-oof-container-crash.html": [
+        "a2b999fa009959d047ae726672d4b05d69ae37c5",
+        [
+         null,
+         {}
+        ]
+       ],
        "insert-legend-in-multicol-fieldset-crash.html": [
         "aad552dbe2ca80ceaf66a180e1ae18c6d2b96708",
         [
@@ -259268,16 +259275,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "e74beca054fcf6fec1b491b01bfc33ee2114a92d",
-     []
-    ],
-    "mtime.json": [
-     "13de671720f1bcb8c44ac47eeb5382379351551d",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -340396,12 +340393,16 @@
       "15a0c2a3b579b308dfef01b0e1f9fa542641aaee",
       []
      ],
+     "FileSystemBaseHandle-buckets.js": [
+      "98261995f9659b939027d914d9f9ce0d3c2a980e",
+      []
+     ],
      "FileSystemBaseHandle-getUniqueId.js": [
       "d1240d8980c5d06d9357373137532df9bec19aa1",
       []
      ],
      "FileSystemBaseHandle-isSameEntry.js": [
-      "d90752744a69a8181125273523241ae3a57b4bad",
+      "e3b6d1891e1ec1bafbbeeac3652944c9c699638c",
       []
      ],
      "FileSystemBaseHandle-postMessage-BroadcastChannel.js": [
@@ -495057,6 +495058,47 @@
       }
      ]
     ],
+    "FileSystemBaseHandle-buckets.https.any.js": [
+     "6bb7d7711949de6fdbe014dc38b5a8f3cb77adff",
+     [
+      "fs/FileSystemBaseHandle-buckets.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-buckets.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "fs/FileSystemBaseHandle-buckets.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/test-helpers.js"
+        ],
+        [
+         "script",
+         "resources/sandboxed-fs-test-helpers.js"
+        ],
+        [
+         "script",
+         "script-tests/FileSystemBaseHandle-buckets.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "FileSystemBaseHandle-getUniqueId.https.any.js": [
      "24ea20244cb02dde5b930f0eebbdfcd897e32325",
      [
@@ -496148,6 +496190,15 @@
       [
        null,
        {}
+      ]
+     ],
+     "shadowroot-fullscreen-element.html": [
+      "5e605f00aa8e9c0fa31eba99acc4b821d7871f41",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ]
     },
