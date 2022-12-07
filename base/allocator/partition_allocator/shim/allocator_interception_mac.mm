@@ -34,7 +34,7 @@
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/process/memory.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/apple_apsl/CFBase.h"
@@ -542,7 +542,7 @@ void ShimNewMallocZonesAndReschedule(base::Time end_time,
     return;
 
   base::TimeDelta next_delay = delay * 2;
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ShimNewMallocZonesAndReschedule, end_time, next_delay),
       delay);
