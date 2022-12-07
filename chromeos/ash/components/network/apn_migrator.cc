@@ -63,7 +63,22 @@ void ApnMigrator::NetworkListChanged() {
     // TODO(b/162365553): Ignore stub cellular networks
     if (!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
             network->iccid())) {
-      // TODO(b/162365553): Implement this case: Network needs to be migrated
+      if (!ash::features::IsApnRevampEnabled()) {
+        continue;
+      }
+      // Network needs to be migrated to the APN revamp
+      const base::Value::List* custom_apn_list =
+          network_metadata_store_->GetCustomApnList(network->guid());
+      if (!custom_apn_list) {
+        base::Value::List empty_apn_list;
+        SetShillUserApnListForNetwork(*network, &empty_apn_list);
+      } else if (custom_apn_list->empty()) {
+        SetShillUserApnListForNetwork(*network, custom_apn_list);
+      } else {
+        // TODO(b/162365553): Implement this case: Network with custom APNs
+        // needs to be migrated
+      }
+      managed_cellular_pref_handler_->AddApnMigratedIccid(network->iccid());
       continue;
     }
 
