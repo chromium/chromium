@@ -4,6 +4,7 @@
 
 import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {decorate} from './ui.js';
+import type {CSSResult} from '../../widgets/xf_base.js';
 
 /**
  * Function to be used as event listener for `mouseenter`, it sets the `title`
@@ -157,4 +158,34 @@ class UserDomError extends DOMError {
   override get message(): string {
     return this.message_;
   }
+}
+
+/**
+ * Add prefix selector for the CSS literal.
+ * To support both Legacy and Refresh23 styles in the same component, we
+ * have 2 style groups defined in each component, for all legacy/refresh23
+ * specific styles, we need to prefix all rules to have
+ * `[theme=legacy]` and `[theme=refresh23]` so they won't conflict
+ * with each other.
+ *
+ * For example:
+ * original style -> p { color: red; }
+ * prefix with Legacy -> :host-context([theme="legacy"]) p { color: red }
+ * prefix with Refresh23 -> :host-context([theme="refresh23"]) p { color: red }
+ */
+export function addCSSPrefixSelector(
+    css: CSSResult, prefixSelector: string): CSSStyleSheet {
+  const prefixedCSS = new CSSStyleSheet();
+  const cssRules = css.styleSheet?.cssRules || [];
+  for (let i = 0; i < cssRules.length; i++) {
+    const cssText = cssRules[i]?.cssText;
+    if (cssText) {
+      // If the existing selector is `:host` or `:host-context`, there should
+      // be no space after the newly added `:host-context`.
+      const noSpace = cssText.startsWith(':host');
+      prefixedCSS.insertRule(
+          `:host-context(${prefixSelector})${noSpace ? '' : ' '}${cssText}`, i);
+    }
+  }
+  return prefixedCSS;
 }

@@ -13,11 +13,12 @@ import {customElement, property, query, state} from 'chrome://resources/mwc/lit/
 import {classMap} from 'chrome://resources/mwc/lit/directives/class-map.js';
 import {ifDefined} from 'chrome://resources/mwc/lit/directives/if-defined.js';
 import {styleMap} from 'chrome://resources/mwc/lit/directives/style-map.js';
-import {css, html, LitElement, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
+import {css, CSSResult, html, LitElement, PropertyValues} from 'chrome://resources/mwc/lit/index.js';
 
 export {
   classMap,
   css,
+  CSSResult,
   customElement,
   html,
   ifDefined,

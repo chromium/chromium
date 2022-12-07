@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
-import {util} from '../common/js/util.js';
+import {addCSSPrefixSelector} from '../common/js/dom_utils.js';
 
 import {css, customElement, html, ifDefined, property, PropertyValues, query, state, styleMap, XfBase} from './xf_base.js';
 import type {XfTree} from './xf_tree.js';
@@ -517,8 +517,8 @@ function getCSS() {
 
   return [
     commonCSS,
-    util.addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
-    util.addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
+    addCSSPrefixSelector(legacyStyle, '[theme="legacy"]'),
+    addCSSPrefixSelector(refresh23Style, '[theme="refresh23"]'),
   ];
 }
 
