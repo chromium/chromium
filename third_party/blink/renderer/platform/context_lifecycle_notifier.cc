@@ -49,8 +49,10 @@ void ContextLifecycleNotifier::RemoveContextLifecycleObserver(
 
 void ContextLifecycleNotifier::NotifyContextDestroyed() {
   // https://linear.app/replay/issue/RUN-806
-  recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed %d",
-                       recordreplay::PointerId(this));
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed %d",
+                         recordreplay::PointerId(this));
+  }
 
   // Manually ensure we notify observers in a consistent order when recording
   // vs. replaying. It would be better to ensure the observers_ set is iterated
@@ -64,7 +66,7 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
   std::sort(observers.begin(), observers.end(), recordreplay::CompareByPointerId());
 
   // https://linear.app/replay/issue/RUN-806
-  if (recordreplay::IsRecordingOrReplaying("values")) {
+  if (recordreplay::IsRecordingOrReplaying("values") && !recordreplay::AreEventsDisallowed()) {
     std::string observer_ids;
     for (ContextLifecycleObserver* observer : observers) {
       observer_ids += base::StringPrintf(" %d", recordreplay::PointerId(observer));
@@ -75,8 +77,10 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
 
   for (ContextLifecycleObserver* observer : observers) {
     // https://linear.app/replay/issue/RUN-806
-    recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #1 %d",
-                         recordreplay::PointerId(observer));
+    if (!recordreplay::AreEventsDisallowed()) {
+      recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #1 %d",
+                           recordreplay::PointerId(observer));
+    }
 
     observer->NotifyContextDestroyed();
   }
