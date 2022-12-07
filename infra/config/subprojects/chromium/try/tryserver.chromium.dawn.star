@@ -242,6 +242,36 @@ try_.builder(
 )
 
 try_.builder(
+    name = "dawn-try-win-x64-intel-exp",
+    builderless = True,
+    os = os.WINDOWS_ANY,
+    pool = "luci.chromium.gpu.win10.intel.try",
+    mirrors = [
+        "ci/Dawn Win10 x64 Builder",
+        "ci/Dawn Win10 x64 Experimental Release (Intel)",
+    ],
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+    goma_backend = None,
+)
+
+try_.builder(
+    name = "dawn-try-win-x86-intel-exp",
+    builderless = True,
+    os = os.WINDOWS_ANY,
+    pool = "luci.chromium.gpu.win10.intel.try",
+    mirrors = [
+        "ci/Dawn Win10 x86 Builder",
+        "ci/Dawn Win10 x86 Experimental Release (Intel)",
+    ],
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+    goma_backend = None,
+)
+
+try_.builder(
     name = "win-dawn-rel",
     os = os.WINDOWS_ANY,
     mirrors = [
