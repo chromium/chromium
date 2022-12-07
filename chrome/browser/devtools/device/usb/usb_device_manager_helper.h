@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/threading/thread_checker.h"
+#include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -76,11 +76,13 @@ class UsbDeviceManagerHelper {
   void EnsureUsbDeviceManagerConnection();
   void OnDeviceManagerConnectionError();
 
-  mojo::Remote<device::mojom::UsbDeviceManager> device_manager_;
+  mojo::Remote<device::mojom::UsbDeviceManager> device_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   // Just for test.
-  mojo::PendingRemote<device::mojom::UsbDeviceManager> testing_device_manager_;
+  mojo::PendingRemote<device::mojom::UsbDeviceManager> testing_device_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  THREAD_CHECKER(thread_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<UsbDeviceManagerHelper> weak_factory_{this};
 };

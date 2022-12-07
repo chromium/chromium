@@ -102,13 +102,6 @@ void CountAndroidDevices(base::OnceCallback<void(int)> callback,
   std::move(callback).Run(info_list.size());
 }
 
-void BindDeviceServiceOnUIThread(
-    mojo::PendingReceiver<device::mojom::UsbDeviceManager> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // Bind to the DeviceService for USB device manager.
-  content::GetDeviceService().BindUsbDeviceManager(std::move(receiver));
-}
-
 }  // namespace
 
 AndroidInterfaceInfo::AndroidInterfaceInfo(
@@ -152,11 +145,12 @@ void UsbDeviceManagerHelper::SetUsbManagerForTesting(
 UsbDeviceManagerHelper::UsbDeviceManagerHelper() {}
 
 UsbDeviceManagerHelper::~UsbDeviceManagerHelper() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void UsbDeviceManagerHelper::GetAndroidDevices(
     AndroidDeviceInfoListCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureUsbDeviceManagerConnection();
 
   DCHECK(device_manager_);
@@ -170,6 +164,7 @@ void UsbDeviceManagerHelper::GetAndroidDevices(
 void UsbDeviceManagerHelper::GetDevice(
     const std::string& guid,
     mojo::PendingReceiver<device::mojom::UsbDevice> device_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureUsbDeviceManagerConnection();
 
   DCHECK(device_manager_);
@@ -179,7 +174,7 @@ void UsbDeviceManagerHelper::GetDevice(
 }
 
 void UsbDeviceManagerHelper::EnsureUsbDeviceManagerConnection() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ensure connection with the Device Service.
   if (device_manager_)
     return;
@@ -193,9 +188,8 @@ void UsbDeviceManagerHelper::EnsureUsbDeviceManagerConnection() {
     return;
   }
 
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&BindDeviceServiceOnUIThread,
-                                device_manager_.BindNewPipeAndPassReceiver()));
+  content::GetDeviceService().BindUsbDeviceManager(
+      device_manager_.BindNewPipeAndPassReceiver());
 
   device_manager_.set_disconnect_handler(
       base::BindOnce(&UsbDeviceManagerHelper::OnDeviceManagerConnectionError,
@@ -204,6 +198,7 @@ void UsbDeviceManagerHelper::EnsureUsbDeviceManagerConnection() {
 
 void UsbDeviceManagerHelper::CountDevicesInternal(
     base::OnceCallback<void(int)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureUsbDeviceManagerConnection();
 
   DCHECK(device_manager_);
@@ -217,12 +212,12 @@ void UsbDeviceManagerHelper::CountDevicesInternal(
 
 void UsbDeviceManagerHelper::SetUsbManagerForTestingInternal(
     mojo::PendingRemote<device::mojom::UsbDeviceManager> fake_usb_manager) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(fake_usb_manager);
   testing_device_manager_ = std::move(fake_usb_manager);
 }
 
 void UsbDeviceManagerHelper::OnDeviceManagerConnectionError() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   device_manager_.reset();
 }
