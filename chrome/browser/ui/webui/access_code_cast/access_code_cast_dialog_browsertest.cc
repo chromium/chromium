@@ -50,12 +50,8 @@ class AccessCodeCastDialogBrowserTest : public DialogBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastDialogBrowserTest, InvokeUi_default) {
-#if BUILDFLAG(IS_LINUX)
-  GTEST_SKIP() << "Flaky on linux due to dialog closing early, b/235882005";
-#else
   // ShowAndVerifyUi();
   GTEST_SKIP() << "Disabling test while investigating failures, b/242863470";
-#endif
 }
 
 }  // namespace media_router

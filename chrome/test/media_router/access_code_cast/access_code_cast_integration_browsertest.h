@@ -63,9 +63,6 @@ class AccessCodeCastIntegrationBrowserTest
 
   void EnableAccessCodeCasting();
 
-  // TODO(b/235882005): This function will hang on Wayland linux tests. If a
-  // test case is added that uses this function, make sure to add that test case
-  // to  //testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter
   content::WebContents* ShowDialog();
 
   // TestBrowserDialog:
