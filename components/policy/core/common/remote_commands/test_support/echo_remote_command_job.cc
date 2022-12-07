@@ -22,24 +22,6 @@ namespace em = enterprise_management;
 const char EchoRemoteCommandJob::kMalformedCommandPayload[] =
     "_MALFORMED_COMMAND_PAYLOAD_";
 
-class EchoRemoteCommandJob::EchoPayload
-    : public RemoteCommandJob::ResultPayload {
- public:
-  explicit EchoPayload(const std::string& payload) : payload_(payload) {}
-  EchoPayload(const EchoPayload&) = delete;
-  EchoPayload& operator=(const EchoPayload&) = delete;
-
-  // RemoteCommandJob::ResultPayload:
-  std::unique_ptr<std::string> Serialize() override;
-
- private:
-  const std::string payload_;
-};
-
-std::unique_ptr<std::string> EchoRemoteCommandJob::EchoPayload::Serialize() {
-  return std::make_unique<std::string>(payload_);
-}
-
 EchoRemoteCommandJob::EchoRemoteCommandJob(bool succeed,
                                            base::TimeDelta execution_duration)
     : succeed_(succeed), execution_duration_(execution_duration) {
@@ -65,13 +47,11 @@ bool EchoRemoteCommandJob::IsExpired(base::TimeTicks now) {
 
 void EchoRemoteCommandJob::RunImpl(CallbackWithResult succeed_callback,
                                    CallbackWithResult failed_callback) {
-  std::unique_ptr<ResultPayload> echo_payload(
-      new EchoPayload(command_payload_));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           succeed_ ? std::move(succeed_callback) : std::move(failed_callback),
-          std::move(echo_payload)),
+          command_payload_),
       execution_duration_);
 }
 

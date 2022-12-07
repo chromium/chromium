@@ -63,35 +63,17 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
   return true;
 }
 
-}  // namespace
+std::string CreatePayload(
+    ash::cros_healthd::mojom::RunRoutineResponsePtr response) {
+  base::Value::Dict root_dict;
+  root_dict.Set(kIdFieldName, response->id);
+  root_dict.Set(kStatusFieldName, static_cast<int>(response->status));
 
-class DeviceCommandRunRoutineJob::Payload
-    : public RemoteCommandJob::ResultPayload {
- public:
-  explicit Payload(ash::cros_healthd::mojom::RunRoutineResponsePtr response);
-  Payload(const Payload&) = delete;
-  Payload& operator=(const Payload&) = delete;
-  ~Payload() override = default;
-
-  // RemoteCommandJob::ResultPayload:
-  std::unique_ptr<std::string> Serialize() override;
-
- private:
-  ash::cros_healthd::mojom::RunRoutineResponsePtr response_;
-};
-
-DeviceCommandRunRoutineJob::Payload::Payload(
-    ash::cros_healthd::mojom::RunRoutineResponsePtr response)
-    : response_(std::move(response)) {}
-
-std::unique_ptr<std::string> DeviceCommandRunRoutineJob::Payload::Serialize() {
   std::string payload;
-  base::Value root_dict(base::Value::Type::DICTIONARY);
-  root_dict.SetIntKey(kIdFieldName, response_->id);
-  root_dict.SetIntKey(kStatusFieldName, static_cast<int>(response_->status));
   base::JSONWriter::Write(root_dict, &payload);
-  return std::make_unique<std::string>(std::move(payload));
+  return payload;
 }
+}  // namespace
 
 // static
 constexpr char DeviceCommandRunRoutineJob::kStunServerHostnameFieldName[];
@@ -145,9 +127,9 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
   // are found. |response_callback| should not be used in this case.
   auto split_failed_callback =
       base::SplitOnceCallback(std::move(failed_callback));
-  auto invalid_parameters_callback = base::BindOnce(
-      std::move(split_failed_callback.first),
-      std::make_unique<Payload>(MakeInvalidParametersResponse()));
+  auto invalid_parameters_callback =
+      base::BindOnce(std::move(split_failed_callback.first),
+                     CreatePayload(MakeInvalidParametersResponse()));
   auto response_callback = base::BindOnce(
       &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
       weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
@@ -527,14 +509,13 @@ void DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived(
   if (!response) {
     SYSLOG(ERROR) << "No RunRoutineResponse received from cros_healthd.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
+        FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
     return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(succeeded_callback),
-                     std::make_unique<Payload>(std::move(response))));
+      FROM_HERE, base::BindOnce(std::move(succeeded_callback),
+                                CreatePayload(std::move(response))));
 }
 
 }  // namespace policy

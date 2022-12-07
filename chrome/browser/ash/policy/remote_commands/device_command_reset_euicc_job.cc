@@ -57,8 +57,8 @@ DeviceCommandResetEuiccJob::CreateTimedResetMemorySuccessCallback(
     CallbackWithResult success_callback) {
   return base::BindOnce(
       [](CallbackWithResult success_callback, base::Time reset_euicc_start_time,
-         std::unique_ptr<ResultPayload> result_pay_load) -> void {
-        std::move(success_callback).Run(std::move(result_pay_load));
+         absl::optional<std::string> result_payload) {
+        std::move(success_callback).Run(std::move(result_payload));
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "Network.Cellular.ESim.Policy.ResetEuicc.Duration",
             base::Time::Now() - reset_euicc_start_time);
@@ -109,7 +109,7 @@ void DeviceCommandResetEuiccJob::RunResultCallback(
   // Post |callback| to ensure async execution as required for RunImpl.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(callback), /*result_payload=*/nullptr));
+      base::BindOnce(std::move(callback), /*result_payload=*/absl::nullopt));
 }
 
 void DeviceCommandResetEuiccJob::ShowResetEuiccNotification() {

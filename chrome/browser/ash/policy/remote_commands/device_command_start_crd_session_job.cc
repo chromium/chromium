@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,6 +24,7 @@
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/common/value_builder.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "remoting/host/chromeos/features.h"
@@ -36,6 +36,9 @@ namespace policy {
 namespace {
 
 namespace mojom = chromeos::network_config::mojom;
+
+using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
+using extensions::DictionaryBuilder;
 
 // OAuth2 Token scopes
 constexpr char kCloudDevicesOAuth2Scope[] =
@@ -152,6 +155,34 @@ bool IsInManagedEnvironment(
   // Now if any networks remain we are in a managed environment.
   bool is_empty = (begin == end);
   return !is_empty;
+}
+
+std::string CreateSuccessPayload(const std::string& access_code) {
+  return DictionaryBuilder()
+      .Set(kResultCodeFieldName, ResultCode::SUCCESS)
+      .Set(kResultAccessCodeFieldName, access_code)
+      .ToJSON();
+}
+
+std::string CreateNonIdlePayload(const base::TimeDelta& time_delta) {
+  return DictionaryBuilder()
+      .Set(kResultCodeFieldName, ResultCode::FAILURE_NOT_IDLE)
+      .Set(kResultLastActivityFieldName,
+           static_cast<int>(time_delta.InSeconds()))
+      .ToJSON();
+}
+
+std::string CreateErrorPayload(ResultCode result_code,
+                               const std::string& error_message) {
+  DCHECK(result_code != ResultCode::SUCCESS);
+  DCHECK(result_code != ResultCode::FAILURE_NOT_IDLE);
+
+  DictionaryBuilder builder;
+  builder.Set(kResultCodeFieldName, result_code);
+  if (!error_message.empty()) {
+    builder.Set(kResultMessageFieldName, error_message);
+  }
+  return builder.ToJSON();
 }
 
 }  // namespace
@@ -286,82 +317,8 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-// ResultPayload
+// DeviceCommandStartCrdSessionJob
 ////////////////////////////////////////////////////////////////////////////////
-
-class DeviceCommandStartCrdSessionJob::ResultPayload
-    : public RemoteCommandJob::ResultPayload {
- public:
-  ResultPayload(ResultCode result_code,
-                const absl::optional<std::string>& access_code,
-                const absl::optional<base::TimeDelta>& time_delta,
-                const absl::optional<std::string>& error_message);
-  ~ResultPayload() override = default;
-
-  static std::unique_ptr<ResultPayload> CreateSuccessPayload(
-      const std::string& access_code);
-  static std::unique_ptr<ResultPayload> CreateNonIdlePayload(
-      const base::TimeDelta& time_delta);
-  static std::unique_ptr<ResultPayload> CreateErrorPayload(
-      ResultCode result_code,
-      const std::string& error_message);
-
-  // RemoteCommandJob::ResultPayload:
-  std::unique_ptr<std::string> Serialize() override;
-
- private:
-  std::string payload_;
-};
-
-DeviceCommandStartCrdSessionJob::ResultPayload::ResultPayload(
-    ResultCode result_code,
-    const absl::optional<std::string>& access_code,
-    const absl::optional<base::TimeDelta>& time_delta,
-    const absl::optional<std::string>& error_message) {
-  base::Value::Dict value;
-  value.Set(kResultCodeFieldName, result_code);
-  if (error_message && !error_message.value().empty())
-    value.Set(kResultMessageFieldName, error_message.value());
-  if (access_code)
-    value.Set(kResultAccessCodeFieldName, access_code.value());
-  if (time_delta) {
-    value.Set(kResultLastActivityFieldName,
-              static_cast<int>(time_delta.value().InSeconds()));
-  }
-  base::JSONWriter::Write(value, &payload_);
-}
-
-std::unique_ptr<DeviceCommandStartCrdSessionJob::ResultPayload>
-DeviceCommandStartCrdSessionJob::ResultPayload::CreateSuccessPayload(
-    const std::string& access_code) {
-  return std::make_unique<ResultPayload>(ResultCode::SUCCESS, access_code,
-                                         /*time_delta=*/absl::nullopt,
-                                         /*error_message=*/absl::nullopt);
-}
-
-std::unique_ptr<DeviceCommandStartCrdSessionJob::ResultPayload>
-DeviceCommandStartCrdSessionJob::ResultPayload::CreateNonIdlePayload(
-    const base::TimeDelta& time_delta) {
-  return std::make_unique<ResultPayload>(
-      ResultCode::FAILURE_NOT_IDLE, /*access_code=*/absl::nullopt, time_delta,
-      /*error_message=*/absl::nullopt);
-}
-
-std::unique_ptr<DeviceCommandStartCrdSessionJob::ResultPayload>
-DeviceCommandStartCrdSessionJob::ResultPayload::CreateErrorPayload(
-    ResultCode result_code,
-    const std::string& error_message) {
-  DCHECK(result_code != ResultCode::SUCCESS);
-  DCHECK(result_code != ResultCode::FAILURE_NOT_IDLE);
-  return std::make_unique<ResultPayload>(
-      result_code, /*access_code=*/absl::nullopt,
-      /*time_delta=*/absl::nullopt, error_message);
-}
-
-std::unique_ptr<std::string>
-DeviceCommandStartCrdSessionJob::ResultPayload::Serialize() {
-  return std::make_unique<std::string>(payload_);
-}
 
 DeviceCommandStartCrdSessionJob::DeviceCommandStartCrdSessionJob(
     Delegate* crd_host_delegate)
@@ -375,10 +332,6 @@ enterprise_management::RemoteCommand_Type
 DeviceCommandStartCrdSessionJob::GetType() const {
   return enterprise_management::RemoteCommand_Type_DEVICE_START_CRD_SESSION;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// DeviceCommandStartCrdSessionJob
-////////////////////////////////////////////////////////////////////////////////
 
 void DeviceCommandStartCrdSessionJob::SetOAuthTokenForTest(
     const std::string& token) {
@@ -522,9 +475,8 @@ void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
   SendResultCodeToUma(ResultCode::SUCCESS);
   SendSessionTypeToUma(GetUmaSessionType());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(succeeded_callback_),
-                     ResultPayload::CreateSuccessPayload(access_code)));
+      FROM_HERE, base::BindOnce(std::move(succeeded_callback_),
+                                CreateSuccessPayload(access_code)));
 }
 
 void DeviceCommandStartCrdSessionJob::FinishWithError(
@@ -538,9 +490,8 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
 
   SendResultCodeToUma(result_code);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(failed_callback_),
-                     ResultPayload::CreateErrorPayload(result_code, message)));
+      FROM_HERE, base::BindOnce(std::move(failed_callback_),
+                                CreateErrorPayload(result_code, message)));
 }
 
 void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
@@ -550,9 +501,9 @@ void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
 
   SendResultCodeToUma(ResultCode::FAILURE_NOT_IDLE);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(failed_callback_),
-                                ResultPayload::CreateNonIdlePayload(
-                                    GetDeviceIdlenessPeriod())));
+      FROM_HERE,
+      base::BindOnce(std::move(failed_callback_),
+                     CreateNonIdlePayload(GetDeviceIdlenessPeriod())));
 }
 
 bool DeviceCommandStartCrdSessionJob::AreServicesReady() const {

@@ -24,8 +24,8 @@ DeviceCommandFetchStatusJob::DeviceCommandFetchStatusJob() {}
 
 DeviceCommandFetchStatusJob::~DeviceCommandFetchStatusJob() {}
 
-enterprise_management::RemoteCommand_Type
-DeviceCommandFetchStatusJob::GetType() const {
+enterprise_management::RemoteCommand_Type DeviceCommandFetchStatusJob::GetType()
+    const {
   return enterprise_management::RemoteCommand_Type_DEVICE_FETCH_STATUS;
 }
 
@@ -46,12 +46,13 @@ void DeviceCommandFetchStatusJob::RunImpl(CallbackWithResult succeeded_callback,
     manager->GetStatusUploader()->ScheduleNextStatusUploadImmediately();
     manager->GetSystemLogUploader()->ScheduleNextSystemLogUploadImmediately();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(succeeded_callback), nullptr));
+        FROM_HERE,
+        base::BindOnce(std::move(succeeded_callback), absl::nullopt));
     return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
+      FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
 }
 
 }  // namespace policy

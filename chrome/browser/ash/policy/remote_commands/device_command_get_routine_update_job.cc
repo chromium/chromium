@@ -64,62 +64,42 @@ bool PopulateMojoEnumValueIfValid(int possible_enum, T* valid_enum_out) {
   return true;
 }
 
-}  // namespace
-
-class DeviceCommandGetRoutineUpdateJob::Payload
-    : public RemoteCommandJob::ResultPayload {
- public:
-  explicit Payload(ash::cros_healthd::mojom::RoutineUpdatePtr update);
-  Payload(const Payload&) = delete;
-  Payload& operator=(const Payload&) = delete;
-  ~Payload() override = default;
-
-  // RemoteCommandJob::ResultPayload:
-  std::unique_ptr<std::string> Serialize() override;
-
- private:
-  ash::cros_healthd::mojom::RoutineUpdatePtr update_;
-};
-
-DeviceCommandGetRoutineUpdateJob::Payload::Payload(
-    ash::cros_healthd::mojom::RoutineUpdatePtr update)
-    : update_(std::move(update)) {}
-
-std::unique_ptr<std::string>
-DeviceCommandGetRoutineUpdateJob::Payload::Serialize() {
-  base::Value root_dict(base::Value::Type::DICTIONARY);
-  root_dict.SetIntKey(kProgressPercentFieldName, update_->progress_percent);
-  if (update_->output.is_valid()) {
-    // TODO(crbug.com/1056323): Serialize update_->output. For now, set a dummy
+std::string CreatePayload(ash::cros_healthd::mojom::RoutineUpdatePtr update) {
+  base::Value::Dict root_dict;
+  root_dict.Set(kProgressPercentFieldName,
+                static_cast<int>(update->progress_percent));
+  if (update->output.is_valid()) {
+    // TODO(crbug.com/1056323): Serialize update->output. For now, set a dummy
     // value.
-    root_dict.SetStringKey(kOutputFieldName, "Dummy");
+    root_dict.Set(kOutputFieldName, "Dummy");
   }
 
-  const auto& routine_update_union = update_->routine_update_union;
+  const auto& routine_update_union = update->routine_update_union;
   if (routine_update_union->is_noninteractive_update()) {
     const auto& noninteractive_update =
         routine_update_union->get_noninteractive_update();
-    base::Value noninteractive_dict(base::Value::Type::DICTIONARY);
-    noninteractive_dict.SetIntKey(
-        kStatusFieldName, static_cast<int>(noninteractive_update->status));
-    noninteractive_dict.SetStringKey(
-        kStatusMessageFieldName,
-        std::move(noninteractive_update->status_message));
-    root_dict.SetPath(kNonInteractiveUpdateFieldName,
-                      std::move(noninteractive_dict));
+    base::Value::Dict noninteractive_dict;
+    noninteractive_dict.Set(kStatusFieldName,
+                            static_cast<int>(noninteractive_update->status));
+    noninteractive_dict.Set(kStatusMessageFieldName,
+                            std::move(noninteractive_update->status_message));
+    root_dict.Set(kNonInteractiveUpdateFieldName,
+                  std::move(noninteractive_dict));
   } else if (routine_update_union->is_interactive_update()) {
-    base::Value interactive_dict(base::Value::Type::DICTIONARY);
-    interactive_dict.SetIntKey(
+    base::Value::Dict interactive_dict;
+    interactive_dict.Set(
         kUserMessageFieldName,
         static_cast<int>(
             routine_update_union->get_interactive_update()->user_message));
-    root_dict.SetPath(kInteractiveUpdateFieldName, std::move(interactive_dict));
+    root_dict.Set(kInteractiveUpdateFieldName, std::move(interactive_dict));
   }
 
   std::string payload;
   base::JSONWriter::Write(root_dict, &payload);
-  return std::make_unique<std::string>(std::move(payload));
+  return payload;
 }
+
+}  // namespace
 
 DeviceCommandGetRoutineUpdateJob::DeviceCommandGetRoutineUpdateJob()
     : routine_id_(ash::cros_healthd::mojom::kFailedToStartId),
@@ -192,13 +172,13 @@ void DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived(
   if (!update) {
     SYSLOG(ERROR) << "No RoutineUpdate received from cros_healthd.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
+        FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
     return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(succeeded_callback),
-                                std::make_unique<Payload>(std::move(update))));
+                                CreatePayload(std::move(update))));
 }
 
 }  // namespace policy

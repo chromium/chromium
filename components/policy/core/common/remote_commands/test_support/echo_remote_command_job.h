@@ -27,8 +27,6 @@ class EchoRemoteCommandJob : public RemoteCommandJob {
   static const char kMalformedCommandPayload[];
 
  private:
-  class EchoPayload;
-
   // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
   bool IsExpired(base::TimeTicks now) override;

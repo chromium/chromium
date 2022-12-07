@@ -33,20 +33,21 @@ std::string ResultToString(KeyRotationResult result) {
   }
 }
 
-}  // namespace
-
-RotateAttestationCredentialJob::ResultPayload::ResultPayload(
-    KeyRotationResult result)
-    : result_(result) {
+std::string CreatePayload(KeyRotationResult result) {
   base::Value::Dict root_dict;
-  root_dict.Set(kResultFieldName, ResultToString(result_));
-  base::JSONWriter::Write(root_dict, &payload_);
+  root_dict.Set(kResultFieldName, ResultToString(result));
+
+  std::string payload;
+  base::JSONWriter::Write(root_dict, &payload);
+  return payload;
 }
 
-std::unique_ptr<std::string>
-RotateAttestationCredentialJob::ResultPayload::Serialize() {
-  return std::make_unique<std::string>(payload_);
+bool IsSuccess(KeyRotationResult result) {
+  return result == enterprise_connectors::DeviceTrustKeyManager::
+                       KeyRotationResult::SUCCESS;
 }
+
+}  // namespace
 
 RotateAttestationCredentialJob::RotateAttestationCredentialJob(
     DeviceTrustKeyManager* key_manager)
@@ -96,14 +97,11 @@ void RotateAttestationCredentialJob::OnKeyRotated(
     CallbackWithResult succeeded_callback,
     CallbackWithResult failed_callback,
     KeyRotationResult rotation_result) {
-  auto payload =
-      std::make_unique<RotateAttestationCredentialJob::ResultPayload>(
-          rotation_result);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(payload->IsSuccess() ? succeeded_callback
-                                                    : failed_callback),
-                     std::move(payload)));
+      base::BindOnce(std::move(IsSuccess(rotation_result) ? succeeded_callback
+                                                          : failed_callback),
+                     CreatePayload(rotation_result)));
 }
 
 }  // namespace enterprise_commands

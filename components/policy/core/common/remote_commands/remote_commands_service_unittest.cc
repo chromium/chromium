@@ -219,12 +219,12 @@ class FakeJob : public RemoteCommandJob {
   // Finish this job and report success.
   void FinishWithSuccess(const std::string& payload) {
     DCHECK(!succeed_callback_.is_null());
-    std::move(succeed_callback_).Run(std::make_unique<StringPayload>(payload));
+    std::move(succeed_callback_).Run(payload);
   }
   // Finish this job and report an error.
   void FinishWithFailure(const std::string& payload) {
     DCHECK(!failed_callback_.is_null());
-    std::move(failed_callback_).Run(std::make_unique<StringPayload>(payload));
+    std::move(failed_callback_).Run(payload);
   }
 
   void Finish() { FinishWithSuccess(""); }
@@ -245,22 +245,6 @@ class FakeJob : public RemoteCommandJob {
   }
 
  private:
-  class StringPayload : public RemoteCommandJob::ResultPayload {
-   public:
-    explicit StringPayload(const std::string& payload) : payload_(payload) {}
-    StringPayload(const StringPayload&) = delete;
-    StringPayload& operator=(const StringPayload&) = delete;
-    ~StringPayload() override = default;
-
-    // RemoteCommandJob::ResultPayload implementation:
-    std::unique_ptr<std::string> Serialize() override {
-      return std::make_unique<std::string>(payload_);
-    }
-
-   private:
-    const std::string payload_;
-  };
-
   const enterprise_management::RemoteCommand_Type type_;
 
   // The payload passed to ParseCommandPayload().

@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/policy/policy_export.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -106,15 +107,12 @@ class POLICY_EXPORT RemoteCommandJob {
   std::unique_ptr<std::string> GetResultPayload() const;
 
  protected:
-  class ResultPayload {
-   public:
-    virtual ~ResultPayload() {}
-
-    virtual std::unique_ptr<std::string> Serialize() = 0;
-  };
-
+  // Callback invoked by the job's implementation to signal the remote command
+  // has been executed.
+  // The passed-in string will be uploaded to the server in the `payload` field
+  // of the `RemoteCommandResult` message.
   using CallbackWithResult =
-      base::OnceCallback<void(std::unique_ptr<ResultPayload>)>;
+      base::OnceCallback<void(absl::optional<std::string>)>;
 
   RemoteCommandJob();
 
@@ -157,7 +155,7 @@ class POLICY_EXPORT RemoteCommandJob {
   // Posted tasks are expected to call this method.
   void OnCommandExecutionFinishedWithResult(
       bool succeeded,
-      std::unique_ptr<ResultPayload> result);
+      absl::optional<std::string> result_payload);
 
   Status status_;
 
@@ -170,7 +168,7 @@ class POLICY_EXPORT RemoteCommandJob {
   // Serialized command inside policy data proto with signature.
   enterprise_management::SignedData signed_command_;
 
-  std::unique_ptr<ResultPayload> result_payload_;
+  absl::optional<std::string> result_payload_;
 
   FinishedCallback finished_callback_;
 

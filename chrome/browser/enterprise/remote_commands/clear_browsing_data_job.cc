@@ -10,12 +10,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_commands {
+
+namespace {
 
 const char kFailedTypesPath[] = "failed_data_types";
 
@@ -23,27 +24,40 @@ const char kProfilePathField[] = "profile_path";
 const char kClearCacheField[] = "clear_cache";
 const char kClearCookiesField[] = "clear_cookies";
 
-ClearBrowsingDataJob::ResultPayload::ResultPayload(uint64_t failed_data_types)
-    : failed_data_types_(failed_data_types) {}
+// Define the possibly failed data types here for 2 reasons:
+//
+// 1. This will be easier to keep in sync with the server, as the latter
+// doesn't care about *all* the types in BrowsingDataRemover.
+//
+// 2. Centralize handling the underlying type of the values here.
+// BrowsingDataRemover represents failed types as uint64_t, which isn't
+// natively supported by base::Value, so this class needs to convert to a
+// type that's supported. This will also allow us to use a list instead of a
+// bit mask, which will be easier to parse gracefully on the server in case
+// more types are added.
+enum class DataTypes {
+  kCache = 0,
+  kCookies = 1,
+};
 
-ClearBrowsingDataJob::ResultPayload::~ResultPayload() = default;
-
-std::unique_ptr<std::string> ClearBrowsingDataJob::ResultPayload::Serialize() {
+std::string CreatePayload(uint64_t failed_data_types) {
   base::Value::Dict root;
   base::Value::List failed_types_list;
 
-  if (failed_data_types_ & content::BrowsingDataRemover::DATA_TYPE_CACHE)
-    failed_types_list.Append(static_cast<int>(CACHE));
+  if (failed_data_types & content::BrowsingDataRemover::DATA_TYPE_CACHE)
+    failed_types_list.Append(static_cast<int>(DataTypes::kCache));
 
-  if (failed_data_types_ & content::BrowsingDataRemover::DATA_TYPE_COOKIES)
-    failed_types_list.Append(static_cast<int>(COOKIES));
+  if (failed_data_types & content::BrowsingDataRemover::DATA_TYPE_COOKIES)
+    failed_types_list.Append(static_cast<int>(DataTypes::kCookies));
 
-  root.SetByDottedPath(kFailedTypesPath, std::move(failed_types_list));
+  root.Set(kFailedTypesPath, std::move(failed_types_list));
 
   std::string payload;
   base::JSONWriter::Write(root, &payload);
-  return std::make_unique<std::string>(std::move(payload));
+  return payload;
 }
+
+}  // namespace
 
 ClearBrowsingDataJob::ClearBrowsingDataJob(ProfileManager* profile_manager)
     : profile_manager_(profile_manager) {}
@@ -125,8 +139,8 @@ void ClearBrowsingDataJob::RunImpl(CallbackWithResult succeeded_callback,
     // there's nothing to do. The most likely scenario is that the profile was
     // deleted by the time the command was received.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback),
-                                  std::make_unique<ResultPayload>(types)));
+        FROM_HERE,
+        base::BindOnce(std::move(failed_callback), CreatePayload(types)));
     return;
   }
 
@@ -137,8 +151,8 @@ void ClearBrowsingDataJob::RunImpl(CallbackWithResult succeeded_callback,
     // There's nothing to clear, invoke the success callback and be done.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(succeeded_callback_),
-                                  std::make_unique<ResultPayload>(
-                                      /* failed_types= */ 0)));
+                                  CreatePayload(
+                                      /*failed_data_types=*/0)));
     return;
   }
 
@@ -158,7 +172,7 @@ void ClearBrowsingDataJob::OnBrowsingDataRemoverDone(
   content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
   remover->RemoveObserver(this);
 
-  auto payload = std::make_unique<ResultPayload>(failed_data_types);
+  std::string payload = CreatePayload(failed_data_types);
 
   if (failed_data_types != 0) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

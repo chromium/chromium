@@ -10,12 +10,11 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/json/json_writer.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "base/values.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -28,6 +27,7 @@
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "extensions/common/value_builder.h"
 #include "remoting/host/chromeos/features.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -40,6 +40,7 @@ namespace {
 
 using ::base::test::RepeatingTestFuture;
 using ::base::test::TestFuture;
+using extensions::DictionaryBuilder;
 using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using UmaSessionType = DeviceCommandStartCrdSessionJob::UmaSessionType;
 using chromeos::network_config::mojom::NetworkStateProperties;
@@ -67,21 +68,23 @@ constexpr char kTestAccountEmail[] = "test.account.email@example.com";
 // Macro expecting success. We are using a macro because a function would
 // report any error against the line in the function, and not against the
 // place where EXPECT_SUCCESS is called.
-#define EXPECT_SUCCESS(statement_)                                     \
-  ({                                                                   \
-    auto result_ = statement_;                                         \
-    EXPECT_EQ(result_.status, RemoteCommandJob::Status::SUCCEEDED);    \
-    EXPECT_EQ(result_.payload, CreateSuccessPayload(kTestAccessCode)); \
+#define EXPECT_SUCCESS(statement_)                                          \
+  ({                                                                        \
+    auto result_ = statement_;                                              \
+    EXPECT_EQ(result_.status, RemoteCommandJob::Status::SUCCEEDED);         \
+    EXPECT_THAT(result_.payload,                                            \
+                base::test::IsJson(CreateSuccessPayload(kTestAccessCode))); \
   })
 
 // Macro expecting error. We are using a macro because a function would
 // report any error against the line in the function, and not against the
 // place where EXPECT_ERROR is called.
-#define EXPECT_ERROR(statement_, error_code, ...)                              \
-  ({                                                                           \
-    auto result_ = statement_;                                                 \
-    EXPECT_EQ(result_.status, RemoteCommandJob::Status::FAILED);               \
-    EXPECT_EQ(result_.payload, CreateErrorPayload(error_code, ##__VA_ARGS__)); \
+#define EXPECT_ERROR(statement_, error_code, ...)                       \
+  ({                                                                    \
+    auto result_ = statement_;                                          \
+    EXPECT_EQ(result_.status, RemoteCommandJob::Status::FAILED);        \
+    EXPECT_THAT(result_.payload, base::test::IsJson(CreateErrorPayload( \
+                                     error_code, ##__VA_ARGS__)));      \
   })
 
 em::RemoteCommand GenerateCommandProto(RemoteCommandJob::UniqueIDType unique_id,
@@ -156,25 +159,6 @@ void StubCrdHostDelegate::StartCrdHostAndGetCode(
 struct Result {
   RemoteCommandJob::Status status;
   std::string payload;
-};
-
-// Convenience class that makes it easier to build a |base::Value::Dict|.
-class DictBuilder {
- public:
-  template <typename T>
-  DictBuilder& Set(base::StringPiece key, T value) {
-    dict_.Set(key, std::move(value));
-    return *this;
-  }
-
-  std::string ToString() const {
-    std::string result;
-    base::JSONWriter::Write(dict_, &result);
-    return result;
-  }
-
- private:
-  base::Value::Dict dict_;
 };
 
 // Helper class that creates a `NetworkStatePropertiesPtr`.
@@ -327,7 +311,8 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     DeviceSettingsTestBase::TearDown();
   }
 
-  Result RunJobAndWaitForResult(const DictBuilder& payload = DictBuilder()) {
+  Result RunJobAndWaitForResult(
+      const DictionaryBuilder& payload = DictionaryBuilder()) {
     bool launched = InitializeAndRunJob(payload);
     EXPECT_TRUE(launched) << "Failed to launch the job";
     // Do not wait for the result if the job was never launched in the first
@@ -339,7 +324,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
   }
 
   // Create an empty payload builder.
-  DictBuilder Payload() const { return DictBuilder(); }
+  DictionaryBuilder Payload() const { return DictionaryBuilder(); }
 
   std::string CreateSuccessPayload(const std::string& access_code);
   std::string CreateErrorPayload(ResultCode result_code,
@@ -429,13 +414,13 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
     return *job_;
   }
 
-  bool InitializeJob(const DictBuilder& payload) {
+  bool InitializeJob(const DictionaryBuilder& payload) {
     job_ =
         std::make_unique<DeviceCommandStartCrdSessionJob>(&crd_host_delegate_);
 
     bool success = job().Init(
         base::TimeTicks::Now(),
-        GenerateCommandProto(kUniqueID, base::TimeDelta(), payload.ToString()),
+        GenerateCommandProto(kUniqueID, base::TimeDelta(), payload.ToJSON()),
         em::SignedData());
 
     if (oauth_token_)
@@ -450,7 +435,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   // Initialize and run the remote command job.
   // The result will be stored in |future_result_|.
-  bool InitializeAndRunJob(const DictBuilder& payload) {
+  bool InitializeAndRunJob(const DictionaryBuilder& payload) {
     bool success = InitializeJob(payload);
     EXPECT_TRUE(success) << "Failed to initialize the job";
     if (!success)
@@ -501,29 +486,29 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
 std::string DeviceCommandStartCrdSessionJobTest::CreateSuccessPayload(
     const std::string& access_code) {
-  return DictBuilder()
+  return DictionaryBuilder()
       .Set(kResultCodeFieldName, DeviceCommandStartCrdSessionJob::SUCCESS)
       .Set(kResultAccessCodeFieldName, access_code)
-      .ToString();
+      .ToJSON();
 }
 
 std::string DeviceCommandStartCrdSessionJobTest::CreateErrorPayload(
     ResultCode result_code,
     const std::string& error_message = "") {
-  DictBuilder builder;
+  DictionaryBuilder builder;
   builder.Set(kResultCodeFieldName, result_code);
   if (!error_message.empty())
     builder.Set(kResultMessageFieldName, error_message);
-  return builder.ToString();
+  return builder.ToJSON();
 }
 
 std::string DeviceCommandStartCrdSessionJobTest::CreateNotIdlePayload(
     int idle_time_in_sec) {
-  return DictBuilder()
+  return DictionaryBuilder()
       .Set(kResultCodeFieldName,
            DeviceCommandStartCrdSessionJob::FAILURE_NOT_IDLE)
       .Set(kResultLastActivityFieldName, idle_time_in_sec)
-      .ToString();
+      .ToJSON();
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,

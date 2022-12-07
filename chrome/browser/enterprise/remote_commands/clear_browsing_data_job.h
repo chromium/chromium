@@ -23,33 +23,6 @@ class ClearBrowsingDataJob : public policy::RemoteCommandJob,
   ~ClearBrowsingDataJob() override;
 
  private:
-  class ResultPayload : public RemoteCommandJob::ResultPayload {
-   public:
-    explicit ResultPayload(uint64_t failed_data_types);
-    ~ResultPayload() override;
-
-   private:
-    // Define the possibly failed data types here for 2 reasons:
-    //
-    // 1. This will be easier to keep in sync with the server, as the latter
-    // doesn't care about *all* the types in BrowsingDataRemover.
-    //
-    // 2. Centralize handling the underlying type of the values here.
-    // BrowsingDataRemover represents failed types as uint64_t, which isn't
-    // natively supported by base::Value, so this class needs to convert to a
-    // type that's supported. This will also allow us to use a list instead of a
-    // bit mask, which will be easier to parse gracefully on the server in case
-    // more types are added.
-    enum DataTypes {
-      CACHE = 0,
-      COOKIES = 1,
-    };
-
-    std::unique_ptr<std::string> Serialize() override;
-
-    uint64_t failed_data_types_;
-  };
-
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
   bool ParseCommandPayload(const std::string& command_payload) override;

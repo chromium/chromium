@@ -29,8 +29,6 @@ class DeviceCommandGetRoutineUpdateJob : public RemoteCommandJob {
   enterprise_management::RemoteCommand_Type GetType() const override;
 
  private:
-  class Payload;
-
   // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
   void RunImpl(CallbackWithResult succeeded_callback,

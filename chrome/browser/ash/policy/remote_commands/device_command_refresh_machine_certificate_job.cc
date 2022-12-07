@@ -57,7 +57,7 @@ void DeviceCommandRefreshMachineCertificateJob::RunImpl(
     SYSLOG(WARNING) << "Machine certificate uploader unavailable,"
                     << " certificate cannot be refreshed.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
+        FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
   }
 }
 
@@ -68,7 +68,7 @@ void DeviceCommandRefreshMachineCertificateJob::OnCertificateUploaded(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(success ? succeeded_callback : failed_callback),
-                     nullptr));
+                     absl::nullopt));
 }
 
 }  // namespace policy

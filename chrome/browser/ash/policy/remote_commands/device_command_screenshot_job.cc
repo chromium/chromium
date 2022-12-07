@@ -27,6 +27,8 @@ namespace policy {
 
 namespace {
 
+using ResultCode = DeviceCommandScreenshotJob::ResultCode;
+
 // String constant identifying the result field in the result payload.
 const char* const kResultFieldName = "result";
 
@@ -60,35 +62,17 @@ void CallCollectAndUpload(
   std::move(collect_and_upload).Run(std::make_pair(screen_index, png_data));
 }
 
+std::string CreatePayload(ResultCode result_code) {
+  base::Value::Dict root_dict;
+  if (result_code != ResultCode::SUCCESS)
+    root_dict.Set(kResultFieldName, result_code);
+
+  std::string payload;
+  base::JSONWriter::Write(root_dict, &payload);
+  return payload;
+}
+
 }  // namespace
-
-class DeviceCommandScreenshotJob::Payload
-    : public RemoteCommandJob::ResultPayload {
- public:
-  explicit Payload(ResultCode result_code);
-
-  Payload(const Payload&) = delete;
-  Payload& operator=(const Payload&) = delete;
-
-  ~Payload() override {}
-
-  // RemoteCommandJob::ResultPayload:
-  std::unique_ptr<std::string> Serialize() override;
-
- private:
-  std::string payload_;
-};
-
-DeviceCommandScreenshotJob::Payload::Payload(ResultCode result_code) {
-  base::DictionaryValue root_dict;
-  if (result_code != SUCCESS)
-    root_dict.SetIntKey(kResultFieldName, result_code);
-  base::JSONWriter::Write(root_dict, &payload_);
-}
-
-std::unique_ptr<std::string> DeviceCommandScreenshotJob::Payload::Serialize() {
-  return std::make_unique<std::string>(payload_);
-}
 
 DeviceCommandScreenshotJob::DeviceCommandScreenshotJob(
     std::unique_ptr<Delegate> screenshot_delegate)
@@ -96,8 +80,7 @@ DeviceCommandScreenshotJob::DeviceCommandScreenshotJob(
   DCHECK(screenshot_delegate_);
 }
 
-DeviceCommandScreenshotJob::~DeviceCommandScreenshotJob() {
-}
+DeviceCommandScreenshotJob::~DeviceCommandScreenshotJob() = default;
 
 enterprise_management::RemoteCommand_Type DeviceCommandScreenshotJob::GetType()
     const {
@@ -107,8 +90,8 @@ enterprise_management::RemoteCommand_Type DeviceCommandScreenshotJob::GetType()
 void DeviceCommandScreenshotJob::OnSuccess() {
   SYSLOG(INFO) << "Upload successful.";
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(succeeded_callback_),
-                                std::make_unique<Payload>(SUCCESS)));
+      FROM_HERE,
+      base::BindOnce(std::move(succeeded_callback_), CreatePayload(SUCCESS)));
 }
 
 void DeviceCommandScreenshotJob::OnFailure(UploadJob::ErrorCode error_code) {
@@ -124,8 +107,8 @@ void DeviceCommandScreenshotJob::OnFailure(UploadJob::ErrorCode error_code) {
       break;
   }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(failed_callback_),
-                                std::make_unique<Payload>(result_code)));
+      FROM_HERE,
+      base::BindOnce(std::move(failed_callback_), CreatePayload(result_code)));
 }
 
 bool DeviceCommandScreenshotJob::ParseCommandPayload(
@@ -193,9 +176,8 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
   if (!screenshot_delegate_->IsScreenshotAllowed()) {
     SYSLOG(ERROR) << "Screenshots are not allowed.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(failed_callback_),
-                       std::make_unique<Payload>(FAILURE_USER_INPUT)));
+        FROM_HERE, base::BindOnce(std::move(failed_callback_),
+                                  CreatePayload(FAILURE_USER_INPUT)));
   }
 
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
@@ -204,9 +186,8 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
   if (!upload_url_.is_valid()) {
     SYSLOG(ERROR) << upload_url_ << " is not a valid URL.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(failed_callback_),
-                       std::make_unique<Payload>(FAILURE_INVALID_URL)));
+        FROM_HERE, base::BindOnce(std::move(failed_callback_),
+                                  CreatePayload(FAILURE_INVALID_URL)));
     return;
   }
 
@@ -214,9 +195,9 @@ void DeviceCommandScreenshotJob::RunImpl(CallbackWithResult succeeded_callback,
   if (root_windows.size() == 0) {
     SYSLOG(ERROR) << "No attached screens.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback_),
-                                  std::make_unique<Payload>(
-                                      FAILURE_SCREENSHOT_ACQUISITION)));
+        FROM_HERE,
+        base::BindOnce(std::move(failed_callback_),
+                       CreatePayload(FAILURE_SCREENSHOT_ACQUISITION)));
     return;
   }
 

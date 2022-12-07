@@ -29,8 +29,6 @@ class DeviceCommandGetAvailableRoutinesJob : public RemoteCommandJob {
   enterprise_management::RemoteCommand_Type GetType() const override;
 
  private:
-  class Payload;
-
   // RemoteCommandJob:
   void RunImpl(CallbackWithResult succeeded_callback,
                CallbackWithResult failed_callback) override;

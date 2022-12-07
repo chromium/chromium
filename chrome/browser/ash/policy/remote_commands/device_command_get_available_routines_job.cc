@@ -25,42 +25,22 @@ namespace {
 // String constant identifying the routines field in the result payload.
 constexpr char kRoutinesFieldName[] = "routines";
 
-}  // namespace
-
-class DeviceCommandGetAvailableRoutinesJob::Payload
-    : public RemoteCommandJob::ResultPayload {
- public:
-  explicit Payload(
-      const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
-          available_routines);
-  Payload(const Payload&) = delete;
-  Payload& operator=(const Payload&) = delete;
-  ~Payload() override = default;
-
-  // RemoteCommandJob::ResultPayload:
-  std::unique_ptr<std::string> Serialize() override;
-
- private:
-  std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>
-      available_routines_;
-};
-
-DeviceCommandGetAvailableRoutinesJob::Payload::Payload(
+std::string CreatePayload(
     const std::vector<ash::cros_healthd::mojom::DiagnosticRoutineEnum>&
-        available_routines)
-    : available_routines_(available_routines) {}
-
-std::unique_ptr<std::string>
-DeviceCommandGetAvailableRoutinesJob::Payload::Serialize() {
-  std::string payload;
-  base::Value root_dict(base::Value::Type::DICTIONARY);
-  base::Value routine_list(base::Value::Type::LIST);
-  for (const auto& routine : available_routines_)
+        available_routines) {
+  base::Value::Dict root_dict;
+  base::Value::List routine_list;
+  for (const auto& routine : available_routines) {
     routine_list.Append(static_cast<int>(routine));
-  root_dict.SetPath(kRoutinesFieldName, std::move(routine_list));
+  }
+  root_dict.Set(kRoutinesFieldName, std::move(routine_list));
+
+  std::string payload;
   base::JSONWriter::Write(root_dict, &payload);
-  return std::make_unique<std::string>(std::move(payload));
+  return payload;
 }
+
+}  // namespace
 
 DeviceCommandGetAvailableRoutinesJob::DeviceCommandGetAvailableRoutinesJob() =
     default;
@@ -93,13 +73,13 @@ void DeviceCommandGetAvailableRoutinesJob::OnCrosHealthdResponseReceived(
   if (available_routines.empty()) {
     SYSLOG(ERROR) << "No routines received from cros_healthd.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback), nullptr));
+        FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
     return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(succeeded_callback),
-                                std::make_unique<Payload>(available_routines)));
+                                CreatePayload(available_routines)));
 }
 
 }  // namespace policy

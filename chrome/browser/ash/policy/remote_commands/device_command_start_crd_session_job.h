@@ -120,7 +120,6 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  private:
   class ManagedNetworkChecker;
   class OAuthTokenFetcher;
-  class ResultPayload;
 
   enum class UserType {
     kAutoLaunchedKiosk,

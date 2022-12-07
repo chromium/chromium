@@ -57,7 +57,7 @@ void DeviceCommandSetVolumeJob::RunImpl(CallbackWithResult succeeded_callback,
   audio_handler->SetOutputMute(mute);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(succeeded_callback), nullptr));
+      FROM_HERE, base::BindOnce(std::move(succeeded_callback), absl::nullopt));
 }
 
 }  // namespace policy

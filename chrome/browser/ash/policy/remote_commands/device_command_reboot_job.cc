@@ -47,7 +47,8 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult succeeded_callback,
     SYSLOG(WARNING) << "Ignoring reboot command issued " << delta
                     << " before current boot time";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(succeeded_callback), nullptr));
+        FROM_HERE,
+        base::BindOnce(std::move(succeeded_callback), absl::nullopt));
     return;
   }
 
