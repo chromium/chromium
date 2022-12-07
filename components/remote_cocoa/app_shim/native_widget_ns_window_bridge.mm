@@ -1651,18 +1651,6 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
     invalidate_shadow_on_frame_swap_ = true;
 }
 
-void NativeWidgetNSWindowBridge::MoveChildrenTo(
-    NativeWidgetNSWindowBridge* target) {
-  // Make a copy of `child_windows_` because it will be updated during the loop.
-  std::vector<NativeWidgetNSWindowBridge*> child_windows(child_windows_);
-  for (NativeWidgetNSWindowBridge* child : child_windows) {
-    if (child != target) {
-      child->SetParent(target->id_);
-      child->host()->OnWindowParentChanged(target->id_);
-    }
-  }
-}
-
 void NativeWidgetNSWindowBridge::UpdateWindowDisplay() {
   if (fullscreen_controller_.IsInFullscreenTransition())
     return;

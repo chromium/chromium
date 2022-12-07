@@ -94,7 +94,6 @@ class BridgedNativeWidgetHostDummy
                                 bool full_keyboard_access_enabled) override {}
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override {}
-  void OnWindowParentChanged(uint64_t new_parent_id) override {}
   void DoDialogButtonAction(ui::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
   void SetRemoteAccessibilityTokens(
@@ -657,7 +656,17 @@ bool NativeWidgetMacNSWindowHost::RedispatchKeyEvent(NSEvent* event) {
 }
 
 gfx::Rect NativeWidgetMacNSWindowHost::GetContentBoundsInScreen() const {
-  return content_bounds_in_screen_;
+  NSView* contentView =
+      (NSView*)GetNativeWindowProperty(kImmersiveContentNSView);
+  if (!contentView)
+    return content_bounds_in_screen_;
+
+  // In immersive fullscreen, the content view is hosted in another NSWindow.
+  NSRect boundsInWindow = [contentView convertRect:contentView.bounds
+                                            toView:nil];
+  NSRect boundsInScreen =
+      [contentView.window convertRectToScreen:boundsInWindow];
+  return gfx::ScreenRectFromNSRect(boundsInScreen);
 }
 
 gfx::Rect NativeWidgetMacNSWindowHost::GetRestoredBounds() const {
@@ -1230,30 +1239,6 @@ void NativeWidgetMacNSWindowHost::OnWindowStateRestorationDataChanged(
     const std::vector<uint8_t>& data) {
   state_restoration_data_ = data;
   native_widget_mac_->GetWidget()->OnNativeWidgetWorkspaceChanged();
-}
-
-void NativeWidgetMacNSWindowHost::OnWindowParentChanged(
-    uint64_t new_parent_id) {
-  NativeWidgetMacNSWindowHost* new_parent = GetFromId(new_parent_id);
-
-  if (new_parent == parent_)
-    return;
-
-  if (parent_) {
-    auto found = base::ranges::find(parent_->children_, this);
-    CHECK(found != parent_->children_.end());
-    parent_->children_.erase(found);
-    parent_ = nullptr;
-  }
-
-  parent_ = new_parent;
-  if (parent_)
-    parent_->children_.push_back(this);
-
-  if (Widget* widget = native_widget_mac_->GetWidget()) {
-    widget->OnNativeWidgetParentChanged(
-        parent_ ? parent_->native_widget_mac()->GetNativeView() : nullptr);
-  }
 }
 
 void NativeWidgetMacNSWindowHost::DoDialogButtonAction(

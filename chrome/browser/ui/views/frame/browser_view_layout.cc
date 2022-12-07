@@ -123,8 +123,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
 
  private:
   gfx::NativeView GetHostView() const override {
-    return browser_view_layout_->browser_view_->GetWidgetForAnchoring()
-        ->GetNativeView();
+    return browser_view_layout_->host_view_;
   }
 
   // Add/remove observer.
@@ -145,6 +144,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
 
 BrowserViewLayout::BrowserViewLayout(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
+    gfx::NativeView host_view,
     BrowserView* browser_view,
     views::View* top_container,
     TabStripRegionView* tab_strip_region_view,
@@ -160,6 +160,7 @@ BrowserViewLayout::BrowserViewLayout(
     ImmersiveModeController* immersive_mode_controller,
     views::View* contents_separator)
     : delegate_(std::move(delegate)),
+      host_view_(host_view),
       browser_view_(browser_view),
       top_container_(top_container),
       tab_strip_region_view_(tab_strip_region_view),
