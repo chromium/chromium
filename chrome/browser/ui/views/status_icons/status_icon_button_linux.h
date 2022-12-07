@@ -50,7 +50,7 @@ class StatusIconButtonLinux : public ui::StatusIconLinux,
  private:
   std::unique_ptr<views::Widget> widget_;
 
-  raw_ptr<aura::WindowTreeHost> host_ = nullptr;
+  raw_ptr<aura::WindowTreeHost, DanglingUntriaged> host_ = nullptr;
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 };

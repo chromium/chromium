@@ -99,14 +99,14 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
 
   // Pending buffer that is to be placed into the |unsubmitted_buffers_| to be
   // processed.
-  raw_ptr<SharedMemoryBuffer> pending_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer, DanglingUntriaged> pending_buffer_ = nullptr;
 
   // Currently used buffer. Set on PresentCanvas() and released on
   // OnSubmission() call.
-  raw_ptr<SharedMemoryBuffer> current_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer, DanglingUntriaged> current_buffer_ = nullptr;
 
   // Previously used buffer. Set on OnSubmission().
-  raw_ptr<SharedMemoryBuffer> previous_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer, DanglingUntriaged> previous_buffer_ = nullptr;
 
   // Used by the internal VSyncProvider implementation. Set on OnPresentation().
   base::TimeTicks last_timestamp_;
