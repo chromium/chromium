@@ -371,10 +371,10 @@ std::unique_ptr<Node> Node::CreateRandom(Random* rnd) {
 }
 
 std::unique_ptr<Node> Node::ParseJson(const base::Value& value) {
-  const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
   if (!value.is_dict()) {
     return nullptr;
   }
+  const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
 
   std::unique_ptr<Node> node;
 
