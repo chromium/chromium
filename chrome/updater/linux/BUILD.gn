@@ -12,12 +12,22 @@ group("linux") {
   ]
 }
 
-executable("updater") {
+source_set("updater_executable") {
   sources = [ "main.cc" ]
+  deps = [ "//chrome/updater:base" ]
+}
 
+executable("updater") {
   deps = [
-    "//chrome/updater:base",
+    ":updater_executable",
     "//chrome/updater:constants_prod",
+  ]
+}
+
+executable("updater_test") {
+  deps = [
+    ":updater_executable",
+    "//chrome/updater:constants_test",
   ]
 }
 

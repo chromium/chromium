@@ -899,6 +899,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       deps += [ "//chrome/updater/app/server/posix/mojom" ]
+      data_deps = [ "//chrome/updater/linux:updater_test" ]
     }
   }
 
@@ -954,6 +955,9 @@ if (is_win || is_mac || is_linux) {
         "//third_party/updater:old_updater",
       ]
     }
+    if (is_linux) {
+      data_deps = [ "//chrome/updater/linux:updater_test" ]
+    }
   }
 
   test("updater_tests_system") {
@@ -987,6 +991,9 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win:updater_test",
         "//third_party/updater:old_updater",
       ]
+    }
+    if (is_linux) {
+      data_deps += [ "//chrome/updater/linux:updater_test" ]
     }
   }
 
