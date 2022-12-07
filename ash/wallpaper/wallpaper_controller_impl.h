@@ -56,6 +56,7 @@ struct ColorProfile;
 namespace ash {
 
 class WallpaperColorCalculator;
+class WallpaperDriveFsDelegate;
 class WallpaperMetricsManager;
 class WallpaperPrefManager;
 class WallpaperResizer;
@@ -232,6 +233,8 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // WallpaperController:
   void SetClient(WallpaperControllerClient* client) override;
+  void SetDriveFsDelegate(
+      std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) override;
   void Init(const base::FilePath& user_data,
             const base::FilePath& wallpapers,
             const base::FilePath& custom_wallpapers,
@@ -388,6 +391,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // Exposed for testing.
   void UpdateDailyRefreshWallpaperForTesting();
   base::WallClockTimer& GetUpdateWallpaperTimerForTesting();
+
+  WallpaperDriveFsDelegate* drivefs_delegate_for_testing() {
+    return drivefs_delegate_.get();
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WallpaperControllerTest, BasicReparenting);
@@ -742,6 +749,12 @@ class ASH_EXPORT WallpaperControllerImpl
 
   void DriveFsWallpaperChanged(const base::FilePath& path, bool error);
 
+  void OnGetDriveFsWallpaperModificationTime(
+      const AccountId& account_id,
+      const WallpaperInfo& wallpaper_info,
+      const base::FilePath& drivefs_path,
+      base::Time modification_time);
+
   PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) const;
 
   // This will not update a new wallpaper if the synced |info.collection_id| is
@@ -776,6 +789,8 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Manages interactions with relevant preferences.
   std::unique_ptr<WallpaperPrefManager> pref_manager_;
+
+  std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate_;
 
   // Asynchronous task to extract colors from the wallpaper.
   std::unique_ptr<WallpaperColorCalculator> color_calculator_;

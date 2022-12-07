@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/containers/adapters.h"
 #include "base/notreached.h"
@@ -38,6 +39,11 @@ void TestWallpaperController::ClearCounts() {
 void TestWallpaperController::SetClient(
     ash::WallpaperControllerClient* client) {
   was_client_set_ = true;
+}
+
+void TestWallpaperController::SetDriveFsDelegate(
+    std::unique_ptr<ash::WallpaperDriveFsDelegate> drivefs_delegate) {
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void TestWallpaperController::Init(

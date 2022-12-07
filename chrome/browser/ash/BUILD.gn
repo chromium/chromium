@@ -2984,6 +2984,8 @@ source_set("ash") {
     "usb/cros_usb_detector.h",
     "vm_shutdown_observer.h",
     "vm_starting_observer.h",
+    "wallpaper/wallpaper_drivefs_delegate_impl.cc",
+    "wallpaper/wallpaper_drivefs_delegate_impl.h",
     "wallpaper/wallpaper_enumerator.cc",
     "wallpaper/wallpaper_enumerator.h",
     "wallpaper_handlers/wallpaper_handlers.cc",

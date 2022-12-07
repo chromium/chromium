@@ -31,6 +31,7 @@ namespace ash {
 
 class WallpaperControllerObserver;
 class WallpaperControllerClient;
+class WallpaperDriveFsDelegate;
 
 // Used by Chrome to set the wallpaper displayed by ash.
 class ASH_PUBLIC_EXPORT WallpaperController {
@@ -48,6 +49,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   // Sets the client interface, used to show the wallpaper picker, etc.
   virtual void SetClient(WallpaperControllerClient* client) = 0;
+
+  virtual void SetDriveFsDelegate(
+      std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) = 0;
 
   // Sets paths for wallpaper directories and the device policy wallpaper path.
   // |user_data|: Directory where user data can be written.

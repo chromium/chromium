@@ -42,11 +42,13 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) = 0;
 
+  // TODO(b/245611754) move to `WallpaperDriveFsDelegate`.
   virtual void SaveWallpaperToDriveFs(
       const AccountId& account_id,
       const base::FilePath& origin,
       base::OnceCallback<void(bool)> wallpaper_saved_callback) = 0;
 
+  // TODO(b/245611754) move to `WallpaperDriveFsDelegate`.
   virtual base::FilePath GetWallpaperPathFromDriveFs(
       const AccountId& account_id) = 0;
 

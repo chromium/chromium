@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
+#include "chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -572,6 +573,8 @@ void WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged() {
 
 void WallpaperControllerClientImpl::InitController() {
   wallpaper_controller_->SetClient(this);
+  wallpaper_controller_->SetDriveFsDelegate(
+      std::make_unique<ash::WallpaperDriveFsDelegateImpl>());
 
   base::FilePath user_data;
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data));

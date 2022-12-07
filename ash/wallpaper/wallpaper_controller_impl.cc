@@ -22,6 +22,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/root_window_controller.h"
@@ -1019,6 +1020,12 @@ void WallpaperControllerImpl::SetClient(WallpaperControllerClient* client) {
   wallpaper_controller_client_ = client;
   pref_manager_->SetClient(client);
   variant_info_fetcher_->SetClient(client);
+}
+
+void WallpaperControllerImpl::SetDriveFsDelegate(
+    std::unique_ptr<WallpaperDriveFsDelegate> drivefs_delegate) {
+  DCHECK(!drivefs_delegate_);
+  drivefs_delegate_ = std::move(drivefs_delegate);
 }
 
 void WallpaperControllerImpl::Init(
@@ -3260,30 +3267,43 @@ void WallpaperControllerImpl::WallpaperSavedToDriveFS(
 
 void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
     const AccountId& account_id,
-    const WallpaperInfo& info) {
+    const WallpaperInfo& wallpaper_info) {
   base::FilePath drivefs_path =
       wallpaper_controller_client_->GetWallpaperPathFromDriveFs(account_id);
   if (drivefs_path.empty())
     return;
-  base::File::Info drivefs_file_info;
-  base::GetFileInfo(drivefs_path, &drivefs_file_info);
-  // If the drivefs image is older than the synced info date, we know it is
-  // outdated.
-  if (drivefs_file_info.last_modified < info.date) {
+
+  drivefs_delegate_->GetWallpaperModificationTime(
+      account_id,
+      base::BindOnce(
+          &WallpaperControllerImpl::OnGetDriveFsWallpaperModificationTime,
+          weak_factory_.GetWeakPtr(), account_id, wallpaper_info,
+          drivefs_path));
+}
+
+void WallpaperControllerImpl::OnGetDriveFsWallpaperModificationTime(
+    const AccountId& account_id,
+    const WallpaperInfo& wallpaper_info,
+    const base::FilePath& drivefs_path,
+    base::Time modification_time) {
+  if (modification_time.is_null() || modification_time < wallpaper_info.date) {
+    // If the drivefs image modification time is null, watch DriveFS for the
+    // file being created. If the file exists but is older than synced wallpaper
+    // info, watch for the file being updated by the other device.
     drive_fs_wallpaper_watcher_.Watch(
         drivefs_path, base::FilePathWatcher::Type::kNonRecursive,
         base::BindRepeating(&WallpaperControllerImpl::DriveFsWallpaperChanged,
                             weak_factory_.GetWeakPtr()));
     return;
   }
-  base::FilePath path_in_prefs = base::FilePath(info.location);
+  base::FilePath path_in_prefs = base::FilePath(wallpaper_info.location);
   std::string file_name = path_in_prefs.BaseName().value();
-  std::string file_path = info.user_file_path;
+  std::string file_path = wallpaper_info.user_file_path;
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::SaveAndSetWallpaper,
                      weak_factory_.GetWeakPtr(), account_id,
                      IsEphemeralUser(account_id), file_name, file_path,
-                     WallpaperType::kCustomized, info.layout,
+                     WallpaperType::kCustomized, wallpaper_info.layout,
                      /*show_wallpaper=*/true),
       drivefs_path);
 }

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_drivefs_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "base/files/file_path.h"
 #include "base/observer_list.h"
@@ -75,6 +76,8 @@ class TestWallpaperController : public ash::WallpaperController {
 
   // ash::WallpaperController:
   void SetClient(ash::WallpaperControllerClient* client) override;
+  void SetDriveFsDelegate(
+      std::unique_ptr<ash::WallpaperDriveFsDelegate> drivefs_delegate) override;
   void Init(const base::FilePath& user_data,
             const base::FilePath& wallpapers,
             const base::FilePath& custom_wallpapers,

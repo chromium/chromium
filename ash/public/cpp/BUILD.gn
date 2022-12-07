@@ -355,6 +355,7 @@ component("cpp") {
     "wallpaper/wallpaper_controller_client.h",
     "wallpaper/wallpaper_controller_observer.cc",
     "wallpaper/wallpaper_controller_observer.h",
+    "wallpaper/wallpaper_drivefs_delegate.h",
     "wallpaper/wallpaper_info.cc",
     "wallpaper/wallpaper_info.h",
     "wallpaper/wallpaper_types.h",
