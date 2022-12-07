@@ -898,7 +898,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
   ASSERT_EQ(persisted_holding_space_items.size(), 2u);
   persisted_holding_space_items[1u] =
-      finalized_holding_space_item_ptr->Serialize();
+      base::Value(finalized_holding_space_item_ptr->Serialize());
 
   EXPECT_EQ(GetProfile()->GetPrefs()->GetList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
@@ -933,7 +933,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   ASSERT_EQ(persisted_holding_space_items.size(), 2u);
   persisted_holding_space_items.Insert(
       persisted_holding_space_items.begin() + 1u,
-      in_progress_holding_space_item_ptr->Serialize());
+      base::Value(in_progress_holding_space_item_ptr->Serialize()));
 
   EXPECT_EQ(GetProfile()->GetPrefs()->GetList(
                 HoldingSpacePersistenceDelegate::kPersistencePath),
@@ -1020,7 +1020,8 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
               new_file_path.BaseName().LossyDisplayName());
 
     // Verify that persistence has been updated.
-    persisted_holding_space_items[i] = holding_space_item->Serialize();
+    persisted_holding_space_items[i] =
+        base::Value(holding_space_item->Serialize());
     ASSERT_EQ(GetProfile()->GetPrefs()->GetList(
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);
@@ -1058,7 +1059,8 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
               new_file_path.BaseName().LossyDisplayName());
 
     // Verify that persistence has been updated.
-    persisted_holding_space_items[i] = holding_space_item->Serialize();
+    persisted_holding_space_items[i] =
+        base::Value(holding_space_item->Serialize());
     ASSERT_EQ(GetProfile()->GetPrefs()->GetList(
                   HoldingSpacePersistenceDelegate::kPersistencePath),
               persisted_holding_space_items);

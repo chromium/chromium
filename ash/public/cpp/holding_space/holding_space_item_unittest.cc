@@ -51,7 +51,7 @@ TEST_P(HoldingSpaceItemTest, Serialization) {
       /*type=*/GetParam(), file_path, file_system_url,
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
-  const base::DictionaryValue serialized_holding_space_item =
+  const base::Value::Dict serialized_holding_space_item =
       holding_space_item->Serialize();
 
   const auto deserialized_holding_space_item = HoldingSpaceItem::Deserialize(
@@ -73,7 +73,7 @@ TEST_P(HoldingSpaceItemTest, DeserializeId) {
       GURL("filesystem:file_system_url"),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
-  const base::DictionaryValue serialized_holding_space_item =
+  const base::Value::Dict serialized_holding_space_item =
       holding_space_item->Serialize();
 
   const std::string& deserialized_holding_space_id =

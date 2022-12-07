@@ -53,7 +53,7 @@ HoldingSpaceItem* HoldingSpaceAshTestBase::AddPartiallyInitializedItem(
       HoldingSpaceItem::CreateFileBackedItem(
           type, path, GURL("filesystem:ignored"),
           base::BindOnce(&CreateStubHoldingSpaceImage));
-  const base::DictionaryValue serialized_holding_space_item = item->Serialize();
+  const base::Value::Dict serialized_holding_space_item = item->Serialize();
   std::unique_ptr<HoldingSpaceItem> deserialized_item =
       HoldingSpaceItem::Deserialize(
           serialized_holding_space_item,

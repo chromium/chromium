@@ -15,13 +15,10 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-}  // namespace base
 
 namespace cros_styles {
 enum class ColorName;
@@ -123,24 +120,24 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // Returns `true` if `type` is a suggestion type, `false` otherwise.
   static bool IsSuggestion(HoldingSpaceItem::Type type);
 
-  // Deserializes from `base::DictionaryValue` to `HoldingSpaceItem`.
+  // Deserializes from `base::Value::Dict` to `HoldingSpaceItem`.
   // This creates a partially initialized item with an empty file system URL.
   // The item should be fully initialized using `Initialize()`.
   static std::unique_ptr<HoldingSpaceItem> Deserialize(
-      const base::DictionaryValue& dict,
+      const base::Value::Dict& dict,
       ImageResolver image_resolver);
 
   // Deserializes `id_` from a serialized `HoldingSpaceItem`.
-  static const std::string& DeserializeId(const base::DictionaryValue& dict);
+  static const std::string& DeserializeId(const base::Value::Dict& dict);
 
   // Deserializes `file_path_` from a serialized `HoldingSpaceItem`.
-  static base::FilePath DeserializeFilePath(const base::DictionaryValue& dict);
+  static base::FilePath DeserializeFilePath(const base::Value::Dict& dict);
 
   // Deserializes `type_` from a serialized `HoldingSpaceItem`.
-  static Type DeserializeType(const base::DictionaryValue& dict);
+  static Type DeserializeType(const base::Value::Dict& dict);
 
-  // Serializes from `HoldingSpaceItem` to `base::DictionaryValue`.
-  base::DictionaryValue Serialize() const;
+  // Serializes from `HoldingSpaceItem` to `base::Value::Dict`.
+  base::Value::Dict Serialize() const;
 
   // Adds `callback` to be notified when `this` gets deleted.
   base::CallbackListSubscription AddDeletionCallback(

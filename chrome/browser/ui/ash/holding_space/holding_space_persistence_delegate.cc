@@ -82,8 +82,8 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemsRemoved(
   // Remove the `items` from persistent storage.
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   update->EraseIf([&items](const base::Value& persisted_item) {
-    const std::string& persisted_item_id = HoldingSpaceItem::DeserializeId(
-        base::Value::AsDictionaryValue(persisted_item));
+    const std::string& persisted_item_id =
+        HoldingSpaceItem::DeserializeId(persisted_item.GetDict());
     return base::Contains(items, persisted_item_id, &HoldingSpaceItem::id);
   });
 }
@@ -103,13 +103,12 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
   base::Value::List& list = update.Get();
   auto item_it = base::ranges::find(
       list, item->id(), [](const base::Value& persisted_item) {
-        return HoldingSpaceItem::DeserializeId(
-            base::Value::AsDictionaryValue(persisted_item));
+        return HoldingSpaceItem::DeserializeId(persisted_item.GetDict());
       });
 
   // If the finalized `item` already exists in persistent storage, update it.
   if (item_it != list.end()) {
-    *item_it = item->Serialize();
+    *item_it = base::Value(item->Serialize());
     return;
   }
 
@@ -118,7 +117,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
   item_it = list.begin();
   for (const auto& candidate_item : model()->items()) {
     if (candidate_item.get() == item) {
-      list.Insert(item_it, item->Serialize());
+      list.Insert(item_it, base::Value(item->Serialize()));
       return;
     }
     if (candidate_item->progress().IsComplete())
@@ -135,7 +134,7 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
   // Clear suggestions before restoration if needed.
   MaybeRemoveSuggestionsFromPersistence();
 
-  const auto& persisted_holding_space_items =
+  const base::Value::List& persisted_holding_space_items =
       profile()->GetPrefs()->GetList(kPersistencePath);
 
   // If persistent storage is empty we can immediately notify the callback of
@@ -149,7 +148,7 @@ void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
        persisted_holding_space_items) {
     std::unique_ptr<HoldingSpaceItem> holding_space_item =
         HoldingSpaceItem::Deserialize(
-            base::Value::AsDictionaryValue(persisted_holding_space_item),
+            persisted_holding_space_item.GetDict(),
             base::BindOnce(&holding_space_util::ResolveImage,
                            base::Unretained(thumbnail_loader_)));
 
@@ -169,8 +168,8 @@ void HoldingSpacePersistenceDelegate::MaybeRemoveSuggestionsFromPersistence() {
 
   ScopedListPrefUpdate update(profile()->GetPrefs(), kPersistencePath);
   update->EraseIf([](const base::Value& persisted_item) {
-    return HoldingSpaceItem::IsSuggestion(HoldingSpaceItem::DeserializeType(
-        base::Value::AsDictionaryValue(persisted_item)));
+    return HoldingSpaceItem::IsSuggestion(
+        HoldingSpaceItem::DeserializeType(persisted_item.GetDict()));
   });
 }
 
