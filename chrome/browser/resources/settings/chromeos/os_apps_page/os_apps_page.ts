@@ -7,49 +7,46 @@
  * 'os-settings-apps-page' is the settings page containing app related settings.
  *
  */
+import 'chrome://resources/cr_components/app_management/uninstall_button.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import '../../controls/settings_dropdown_menu.js';
 import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 import '../../settings_shared.css.js';
 import '../guest_os/guest_os_shared_usb_devices.js';
 import '../guest_os/guest_os_shared_paths.js';
-import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './android_apps_subpage.js';
 import './app_notifications_page/app_notifications_subpage.js';
 import './app_management_page/app_management_page.js';
 import './app_management_page/app_detail_view.js';
-import 'chrome://resources/cr_components/app_management/uninstall_button.js';
-import '../../controls/settings_dropdown_menu.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
-import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverInterface, AppNotificationsObserverReceiver, Readiness} from '../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
+import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
+import {App as AppWithNotifications, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver, Readiness} from '../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from './app_management_page/store_client.js';
+import {AppManagementStoreMixin, AppManagementStoreMixinInterface} from './app_management_page/store_mixin.js';
 import {getAppNotificationProvider} from './app_notifications_page/mojo_interface_provider.js';
+import {getTemplate} from './os_apps_page.html.js';
 
-/**
- * @param {!AppWithNotifications} app
- * @return {boolean}
- */
-export function isAppInstalled(app) {
+export function isAppInstalled(app: AppWithNotifications): boolean {
   switch (app.readiness) {
     case Readiness.kReady:
     case Readiness.kDisabledByBlocklist:
@@ -64,79 +61,56 @@ export function isAppInstalled(app) {
       return false;
   }
   assertNotReached();
-  return false;
 }
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {AppManagementStoreClientInterface}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const OsSettingsAppsPageElementBase = mixinBehaviors(
-    [
-      AppManagementStoreClient,
-      DeepLinkingBehavior,
-      I18nBehavior,
-      PrefsBehavior,
-      RouteObserverBehavior,
-    ],
-    PolymerElement);
+const OsSettingsAppsPageElementBase =
+    mixinBehaviors(
+        [
+          DeepLinkingBehavior,
+        ],
+        RouteObserverMixin(PrefsMixin(
+            AppManagementStoreMixin(I18nMixin(PolymerElement))))) as {
+      new (): PolymerElement & AppManagementStoreMixinInterface &
+          I18nMixinInterface & PrefsMixinInterface &
+          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
+    };
 
-/** @polymer */
 class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   static get is() {
-    return 'os-settings-apps-page';
+    return 'os-settings-apps-page' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * This object holds the playStoreEnabled and settingsAppAvailable
        * boolean.
-       * @type {Object}
        */
       androidAppsInfo: Object,
 
       /**
        * If the Play Store app is available.
-       * @type {boolean}
        */
       havePlayStoreApp: Boolean,
 
-      /**
-       * @type {string}
-       */
       searchTerm: String,
 
       /**
        * Show ARC++ related settings and sub-page.
-       * @type {boolean}
        */
       showAndroidApps: Boolean,
 
       /**
        * Show ARCVM Manage USB related settings and sub-page.
-       * @type {boolean}
        */
       showArcvmManageUsb: Boolean,
 
       /**
        * Whether the App Notifications page should be shown.
-       * @type {boolean}
        */
       showAppNotificationsRow_: {
         type: Boolean,
@@ -147,17 +121,14 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
       /**
        * Show Plugin VM shared folders sub-page.
-       * @type {boolean}
        */
       showPluginVm: Boolean,
 
       /**
        * Show On startup settings and sub-page.
-       * @type {boolean}
        */
       showStartup: Boolean,
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -174,16 +145,8 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         },
       },
 
-      /**
-       * @type {App}
-       * @private
-       */
       app_: Object,
 
-      /**
-       * @type {!Array<!Object>}
-       * @private
-       */
       appsWithNotifications_: {
         type: Array,
         value: [],
@@ -191,7 +154,6 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
       /**
        * List of options for the on startup drop-down menu.
-       * @type {!DropdownMenuOptionList}
        */
       onStartupOptions_: {
         readOnly: true,
@@ -205,7 +167,6 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
         },
       },
 
-      /** @private {boolean} */
       isDndEnabled_: {
         type: Boolean,
         value: false,
@@ -213,7 +174,6 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -226,7 +186,23 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     };
   }
 
-  connectedCallback() {
+  androidAppsInfo: AndroidAppsInfo;
+  havePlayStoreApp: boolean;
+  searchTerm: string;
+  showAndroidApps: boolean;
+  showArcvmManageUsb: boolean;
+  showPluginVm: boolean;
+  showStartup: boolean;
+  private app_: App;
+  private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver;
+  private appsWithNotifications_: AppWithNotifications[];
+  private focusConfig_: Map<string, string>;
+  private isDndEnabled_: boolean;
+  private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
+  private onStartupOptions_: DropdownMenuOptionList;
+  private showAppNotificationsRow_: boolean;
+
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.watch('app_', state => {
@@ -236,20 +212,10 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
       return getSelectedApp(state) || undefined;
     });
 
-    /**
-     * @private {!AppNotificationsHandlerInterface}
-     */
     this.mojoInterfaceProvider_ = getAppNotificationProvider();
 
-    /**
-     * @private {!AppNotificationsObserverReceiver}
-     */
     this.appNotificationsObserverReceiver_ =
-        new AppNotificationsObserverReceiver(
-            /**
-             * @type {!AppNotificationsObserverInterface}
-             */
-            (this));
+        new AppNotificationsObserverReceiver(this);
 
     this.mojoInterfaceProvider_.addObserver(
         this.appNotificationsObserverReceiver_.$.bindNewPipeAndPassRemote());
@@ -262,11 +228,7 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     });
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.APPS) {
       return;
@@ -275,20 +237,14 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @param {App} app
-   * @return {string}
-   * @private
-   */
-  iconUrlFromId_(app) {
+  private iconUrlFromId_(app: App): string {
     if (!app) {
       return '';
     }
     return getAppIcon(app);
   }
 
-  /** @private */
-  onClickAppManagement_() {
+  private onClickAppManagement_(): void {
     chrome.metricsPrivate.recordEnumerationValue(
         AppManagementEntryPointsHistogramName,
         AppManagementEntryPoint.OS_SETTINGS_MAIN_PAGE,
@@ -296,40 +252,27 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     Router.getInstance().navigateTo(routes.APP_MANAGEMENT);
   }
 
-  /** @private */
-  onClickAppNotifications_() {
+  private onClickAppNotifications_(): void {
     Router.getInstance().navigateTo(routes.APP_NOTIFICATIONS);
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onEnableAndroidAppsTap_(event) {
+  private onEnableAndroidAppsTap_(event: Event): void {
     this.setPrefValue('arc.enabled', true);
     event.stopPropagation();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isEnforced_(pref) {
+
+  private isEnforced_(pref: chrome.settingsPrivate.PrefObject): boolean {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
-  /** @private */
-  onAndroidAppsSubpageTap_(event) {
+  private onAndroidAppsSubpageTap_() {
     if (this.androidAppsInfo.playStoreEnabled) {
       Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS);
     }
   }
 
-  /**
-   * @param {!MouseEvent} event
-   * @private
-   */
-  onManageAndroidAppsTap_(event) {
+  private onManageAndroidAppsTap_(event: MouseEvent): void {
     // |event.detail| is the click count. Keyboard events will have 0 clicks.
     const isKeyboardAction = event.detail === 0;
     AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(
@@ -337,13 +280,13 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   }
 
   /** Override ash.settings.appNotification.onNotificationAppChanged */
-  onNotificationAppChanged(updatedApp) {
+  onNotificationAppChanged(updatedApp: AppWithNotifications) {
     const foundIdx = this.appsWithNotifications_.findIndex(app => {
       return app.id === updatedApp.id;
     });
     if (isAppInstalled(updatedApp)) {
       if (foundIdx !== -1) {
-        this.splice('appsWithNotifications_', foundIdx, updatedApp);
+        this.splice('appsWithNotifications_', foundIdx, 1, updatedApp);
         return;
       }
       this.push('appsWithNotifications_', updatedApp);
@@ -357,20 +300,22 @@ class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
   }
 
   /** Override ash.settings.appNotification.onQuietModeChanged */
-  onQuietModeChanged(enabled) {
+  onQuietModeChanged(enabled: boolean) {
     this.isDndEnabled_ = enabled;
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getAppListCountDescription_() {
+  private getAppListCountDescription_(): string {
     return this.isDndEnabled_ ?
         this.i18n('appNotificationsDoNotDisturbDescription') :
         this.i18n(
             'appNotificationsCountDescription',
             this.appsWithNotifications_.length);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsAppsPageElement.is]: OsSettingsAppsPageElement;
   }
 }
 

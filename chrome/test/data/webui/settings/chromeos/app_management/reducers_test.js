@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {addApp, changeApp, createInitialState, reduceAction, removeApp, updateApps, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
 
 import {createApp} from './test_util.js';
-import {addApp, AppState, changeApp, createInitialState, reduceAction, removeApp, updateSelectedAppId} from 'chrome://os-settings/chromeos/os_settings.js';
 
 suite('app state', function() {
   let apps;
@@ -20,7 +19,7 @@ suite('app state', function() {
   test('updates when an app is added', function() {
     const newApp = createApp('3', {type: 1, title: 'a'});
     const action = addApp(newApp);
-    apps = AppState.updateApps(apps, action);
+    apps = updateApps(apps, action);
 
     // Check that apps contains a key for each app id.
     assertTrue(!!apps['1']);
@@ -37,7 +36,7 @@ suite('app state', function() {
   test('updates when an app is changed', function() {
     const changedApp = createApp('2', {type: 1, title: 'a'});
     const action = changeApp(changedApp);
-    apps = AppState.updateApps(apps, action);
+    apps = updateApps(apps, action);
 
     // Check that app has changed.
     const app = apps['2'];
@@ -50,7 +49,7 @@ suite('app state', function() {
 
   test('updates when an app is removed', function() {
     const action = removeApp('1');
-    apps = AppState.updateApps(apps, action);
+    apps = updateApps(apps, action);
 
     // Check that app is removed.
     assertFalse(!!apps['1']);

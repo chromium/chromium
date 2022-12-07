@@ -14,7 +14,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../../assert_extras.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './resize_lock_item.html.js';
 
 class AppManagementResizeLockItemElement extends PolymerElement {
@@ -59,7 +59,7 @@ class AppManagementResizeLockItemElement extends PolymerElement {
   private toggleSetting_(): void {
     const newState = !this.app.resizeLocked;
     assert(newState === this.getToggleRow_().isChecked());
-    BrowserProxy.getInstance().handler.setResizeLocked(
+    AppManagementBrowserProxy.getInstance().handler.setResizeLocked(
         this.app.id,
         newState,
     );

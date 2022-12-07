@@ -152,12 +152,12 @@ export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_pr
 export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
 export {AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
 export {addApp, changeApp, removeApp, updateSelectedAppId} from './os_apps_page/app_management_page/actions.js';
-export {BrowserProxy as AppManagementBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
+export {AppManagementBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
 export {FakePageHandler} from './os_apps_page/app_management_page/fake_page_handler.js';
 export {PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
-export {AppState, reduceAction} from './os_apps_page/app_management_page/reducers.js';
+export {reduceAction, updateApps} from './os_apps_page/app_management_page/reducers.js';
 export {AppManagementStore} from './os_apps_page/app_management_page/store.js';
-export {AppManagementStoreClientImpl} from './os_apps_page/app_management_page/store_client.js';
+export {AppManagementStoreMixin} from './os_apps_page/app_management_page/store_mixin.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 export {OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
 export {FastPairSavedDevicesOptInStatus} from './os_bluetooth_page/settings_fast_pair_constants.js';

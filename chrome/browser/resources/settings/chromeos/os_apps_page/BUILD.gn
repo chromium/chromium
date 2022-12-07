@@ -12,7 +12,6 @@ js_type_check("closure_compile_module") {
   deps = [
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
-    ":os_apps_page",
   ]
 }
 
@@ -35,29 +34,6 @@ js_library("android_apps_subpage") {
   ]
 }
 
-js_library("os_apps_page") {
-  deps = [
-    ":android_apps_browser_proxy",
-    ":android_apps_subpage",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "..:prefs_behavior",
-    "../../:router",
-    "./app_management_page:store_client",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/app_management:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [
-    "$externs_path/metrics_private.js",
-    "../settings_controls_types.js",
-  ]
-}
-
 html_to_js("web_components") {
-  js_files = [
-    "android_apps_subpage.js",
-    "os_apps_page.js",
-  ]
+  js_files = [ "android_apps_subpage.js" ]
 }

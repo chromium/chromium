@@ -12,25 +12,21 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementPermissionItemElement} from 'chrome://resources/cr_components/app_management/permission_item.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../../../router.js';
 import {cast} from '../../../assert_extras.js';
 import {routes} from '../../../os_route.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from '../store_client.js';
+import {AppManagementStoreMixin} from '../store_mixin.js';
 
 import {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
 import {getTemplate} from './plugin_vm_detail_view.html.js';
 
 const AppManagementPluginVmDetailViewElementBase =
-    mixinBehaviors(
-        [AppManagementStoreClient], WebUiListenerMixin(PolymerElement)) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
-          AppManagementStoreClientInterface,
-    };
+    AppManagementStoreMixin(WebUiListenerMixin(PolymerElement));
 
 class AppManagementPluginVmDetailViewElement extends
     AppManagementPluginVmDetailViewElementBase {

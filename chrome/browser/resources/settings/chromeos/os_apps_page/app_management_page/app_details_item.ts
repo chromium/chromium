@@ -13,7 +13,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app_details_item.html.js';
-import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementBrowserProxy} from './browser_proxy.js';
 
 const AppManagementAppDetailsItemBase = I18nMixin(PolymerElement);
 
@@ -178,7 +178,8 @@ class AppManagementAppDetailsItem extends AppManagementAppDetailsItemBase {
     e.stopPropagation();
 
     if (this.app !== null) {
-      BrowserProxy.getInstance().handler.openStorePage(this.app.id);
+      AppManagementBrowserProxy.getInstance().handler.openStorePage(
+          this.app.id);
     }
   }
 

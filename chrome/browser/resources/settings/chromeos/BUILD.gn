@@ -315,7 +315,6 @@ group("closure_compile_module") {
     "multidevice_page:closure_compile_module",
     "os_a11y_page:closure_compile_module",
     "os_apps_page:closure_compile_module",
-    "os_apps_page/app_management_page:closure_compile_module",
     "os_bluetooth_page:closure_compile_module",
     "os_languages_page:closure_compile_module",
     "os_people_page:closure_compile_module",

@@ -11,21 +11,21 @@ import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_j
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {alphabeticalSort} from 'chrome://resources/cr_components/app_management/util.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../../router.js';
 import {routes} from '../../os_route.js';
 
 import {getTemplate} from './main_view.html.js';
-import {AppManagementStore} from './store.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
-import {AppMap} from './types.js';
+import {AppManagementStore, AppMap} from './store.js';
+import {AppManagementStoreMixin, AppManagementStoreMixinInterface} from './store_mixin.js';
 
+// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
+// once RouteObserverMixin is converted to TS
 const AppManagementMainViewElementBase =
-    mixinBehaviors(
-        [AppManagementStoreClient], RouteObserverMixin(PolymerElement)) as {
+    AppManagementStoreMixin(RouteObserverMixin(PolymerElement)) as {
       new (): PolymerElement & RouteObserverMixinInterface &
-          AppManagementStoreClientInterface,
+          AppManagementStoreMixinInterface,
     };
 
 class AppManagementMainViewElement extends AppManagementMainViewElementBase {

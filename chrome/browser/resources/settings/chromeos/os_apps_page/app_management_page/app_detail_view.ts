@@ -14,7 +14,7 @@ import {App} from 'chrome://resources/cr_components/app_management/app_managemen
 import {AppManagementUserAction, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getSelectedApp, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../../router.js';
 import {castExists} from '../../assert_extras.js';
@@ -22,15 +22,16 @@ import {routes} from '../../os_route.js';
 
 import {updateSelectedAppId} from './actions.js';
 import {getTemplate} from './app_detail_view.html.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
-import {AppMap} from './types.js';
+import {AppMap} from './store.js';
+import {AppManagementStoreMixin, AppManagementStoreMixinInterface} from './store_mixin.js';
 import {openMainPage} from './util.js';
 
+// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
+// once RouteObserverMixin is converted to TS
 const AppManagementAppDetailViewElementBase =
-    mixinBehaviors(
-        [AppManagementStoreClient], RouteObserverMixin(PolymerElement)) as {
+    AppManagementStoreMixin(RouteObserverMixin(PolymerElement)) as {
       new (): PolymerElement & RouteObserverMixinInterface &
-          AppManagementStoreClientInterface,
+          AppManagementStoreMixinInterface,
     };
 
 class AppManagementAppDetailViewElement extends

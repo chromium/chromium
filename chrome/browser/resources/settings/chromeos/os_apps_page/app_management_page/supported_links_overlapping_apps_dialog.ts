@@ -6,14 +6,14 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
 
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {AppMap} from './store.js';
+import {AppManagementStoreMixin} from './store_mixin.js';
 import {getTemplate} from './supported_links_overlapping_apps_dialog.html.js';
-import {AppMap} from './types.js';
 
 export interface AppManagementSupportedLinksOverlappingAppsDialogElement {
   $: {
@@ -22,10 +22,7 @@ export interface AppManagementSupportedLinksOverlappingAppsDialogElement {
 }
 
 const AppManagementSupportedLinksOverlappingAppsDialogElementBase =
-    mixinBehaviors([AppManagementStoreClient], I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface &
-          AppManagementStoreClientInterface,
-    };
+    AppManagementStoreMixin(I18nMixin(PolymerElement));
 
 export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
     AppManagementSupportedLinksOverlappingAppsDialogElementBase {

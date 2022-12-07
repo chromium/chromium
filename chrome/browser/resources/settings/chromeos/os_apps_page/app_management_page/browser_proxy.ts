@@ -2,32 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {App, PageCallbackRouter, PageHandlerRemote, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {App, PageCallbackRouter, PageHandlerInterface, PermissionType, PermissionValue, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy as ComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppType, InstallReason, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
 
 import {FakePageHandler} from './fake_page_handler.js';
 
-/** @type {?BrowserProxy} */
-let instance = null;
+export interface PermissionOption {
+  permissionValue: TriState;
+  isManaged: boolean;
+  value?: PermissionValue;
+}
 
-export class BrowserProxy {
-  /** @return {!BrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new BrowserProxy());
+let instance: AppManagementBrowserProxy|null = null;
+
+export class AppManagementBrowserProxy {
+  static getInstance(): AppManagementBrowserProxy {
+    return instance || (instance = new AppManagementBrowserProxy());
   }
 
-  /** @param {!BrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: AppManagementBrowserProxy): void {
     instance = obj;
   }
 
-  constructor() {
-    /** @type {PageCallbackRouter} */
-    this.callbackRouter = new PageCallbackRouter();
+  callbackRouter: PageCallbackRouter;
+  fakeHandler: FakePageHandler;
+  handler: PageHandlerInterface;
 
-    /** @type {PageHandlerRemote} */
-    this.handler = null;
+  constructor() {
+    this.callbackRouter = new PageCallbackRouter();
 
     const urlParams = new URLSearchParams(window.location.search);
     const useFake = urlParams.get('fakeBackend');
@@ -37,7 +40,7 @@ export class BrowserProxy {
           new FakePageHandler(this.callbackRouter.$.bindNewPipeAndPassRemote());
       this.handler = this.fakeHandler.getRemote();
 
-      const permissionOptions = {};
+      const permissionOptions: Record<PermissionType, PermissionOption> = {};
       permissionOptions[PermissionType.kLocation] = {
         permissionValue: TriState.kAllow,
         isManaged: true,
@@ -47,7 +50,7 @@ export class BrowserProxy {
         isManaged: true,
       };
 
-      const /** @type {!Array<App>}*/ appList = [
+      const appList: App[] = [
         FakePageHandler.createApp(
             'blpcfgokakmgnkcojhhkbfblekacnbeo',
             {

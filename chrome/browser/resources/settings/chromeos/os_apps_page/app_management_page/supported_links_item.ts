@@ -15,17 +15,17 @@ import {recordAppManagementUserAction} from 'chrome://resources/cr_components/ap
 import {LocalizedLinkElement} from 'chrome://resources/cr_components/localized_link/localized_link.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 
-import {BrowserProxy} from './browser_proxy.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {AppManagementBrowserProxy} from './browser_proxy.js';
+import {AppMap} from './store.js';
+import {AppManagementStoreMixin} from './store_mixin.js';
 import {getTemplate} from './supported_links_item.html.js';
 import {AppManagementSupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
-import {AppMap} from './types.js';
 
 type PreferenceType = 'preferred'|'browser';
 const PREFERRED_APP_PREF = 'preferred' as const;
@@ -39,10 +39,7 @@ interface AppManagementSupportedLinksItemElement {
 }
 
 const AppManagementSupportedLinksItemElementBase =
-    mixinBehaviors([AppManagementStoreClient], I18nMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nMixinInterface &
-          AppManagementStoreClientInterface,
-    };
+    AppManagementStoreMixin(I18nMixin(PolymerElement));
 
 class AppManagementSupportedLinksItemElement extends
     AppManagementSupportedLinksItemElementBase {
@@ -161,9 +158,8 @@ class AppManagementSupportedLinksItemElement extends
 
     let overlappingAppIds: string[] = [];
     try {
-      const {appIds: appIds} =
-          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
-              app.id);
+      const {appIds: appIds} = await AppManagementBrowserProxy.getInstance()
+                                   .handler.getOverlappingPreferredApps(app.id);
       overlappingAppIds = appIds;
     } catch (err) {
       // If we fail to get the overlapping preferred apps, do not
@@ -236,8 +232,8 @@ class AppManagementSupportedLinksItemElement extends
     let overlappingAppIds: string[] = [];
     try {
       const {appIds: appIds} =
-          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
-              this.app.id);
+          await AppManagementBrowserProxy.getInstance()
+              .handler.getOverlappingPreferredApps(this.app.id);
       overlappingAppIds = appIds;
     } catch (err) {
       // If we fail to get the overlapping preferred apps, don't prevent the
@@ -285,7 +281,8 @@ class AppManagementSupportedLinksItemElement extends
   private setAppAsPreferredApp_(preference: PreferenceType): void {
     const newState = preference === PREFERRED_APP_PREF;
 
-    BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newState);
+    AppManagementBrowserProxy.getInstance().handler.setPreferredApp(
+        this.app.id, newState);
 
     recordSettingChange();
     const userAction = newState ?

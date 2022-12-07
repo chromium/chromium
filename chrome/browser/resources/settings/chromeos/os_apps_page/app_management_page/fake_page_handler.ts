@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {App, AppType, ExtensionAppPermissionMessage, OptionalBool, PageHandlerInterface, PageHandlerReceiver, PageHandlerRemote, PageRemote, Permission, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
+import {PermissionOption} from './browser_proxy';
 import {AppManagementStore} from './store.js';
 
-/**
- * @implements {PageHandlerInterface}
- */
-export class FakePageHandler {
-  /**
-   * @param {Object=} options
-   * @return {!Object<number, Permission>}
-   */
-  static createWebPermissions(options) {
+type AppConfig = Partial<App>;
+
+export class FakePageHandler implements PageHandlerInterface {
+  static createWebPermissions(options?:
+                                  Record<PermissionType, PermissionOption>):
+      Record<PermissionType, Permission> {
     const permissionTypes = [
       PermissionType.kLocation,
       PermissionType.kNotifications,
@@ -26,7 +24,7 @@ export class FakePageHandler {
       PermissionType.kCamera,
     ];
 
-    const permissions = {};
+    const permissions: Record<PermissionType, Permission> = {};
 
     for (const permissionType of permissionTypes) {
       let permissionValue = TriState.kAllow;
@@ -34,8 +32,8 @@ export class FakePageHandler {
 
       if (options && options[permissionType]) {
         const opts = options[permissionType];
-        permissionValue =
-            getTriStatePermissionValue(opts.value) || permissionValue;
+        permissionValue = opts.value ? getTriStatePermissionValue(opts.value) :
+                                       permissionValue;
         isManaged = opts.isManaged || isManaged;
       }
       permissions[permissionType] =
@@ -45,11 +43,8 @@ export class FakePageHandler {
     return permissions;
   }
 
-  /**
-   * @param {Array<number>=} optIds
-   * @return {!Object<number, Permission>}
-   */
-  static createArcPermissions(optIds) {
+  static createArcPermissions(optIds?: number[]):
+      Record<PermissionType, Permission> {
     const permissionTypes = optIds || [
       PermissionType.kCamera,
       PermissionType.kLocation,
@@ -59,21 +54,18 @@ export class FakePageHandler {
       PermissionType.kStorage,
     ];
 
-    const permissions = {};
+    const permissions: Record<PermissionType, Permission> = {};
 
     for (const permissionType of permissionTypes) {
       permissions[permissionType] =
-          createBoolPermission(permissionType, true, false /*is_managed*/);
+          createBoolPermission(permissionType, true, /*is_managed=*/ false);
     }
 
     return permissions;
   }
 
-  /**
-   * @param {AppType} appType
-   * @return {!Object<number, Permission>}
-   */
-  static createPermissions(appType) {
+  static createPermissions(appType: AppType):
+      Record<PermissionType, Permission> {
     switch (appType) {
       case (AppType.kWeb):
         return FakePageHandler.createWebPermissions();
@@ -84,13 +76,8 @@ export class FakePageHandler {
     }
   }
 
-  /**
-   * @param {string} id
-   * @param {Object=} optConfig
-   * @return {!App}
-   */
-  static createApp(id, optConfig) {
-    const app = {
+  static createApp(id: string, optConfig?: AppConfig): App {
+    const app: App = {
       id: id,
       type: AppType.kWeb,
       title: 'App Title',
@@ -109,8 +96,8 @@ export class FakePageHandler {
       resizeLocked: false,
       hideResizeLocked: true,
       supportedLinks: [],
-      runOnOsLogin: null,
-      fileHandlingState: null,
+      runOnOsLogin: undefined,
+      fileHandlingState: undefined,
       installSource: InstallSource.kUnknown,
       appSize: '',
       dataSize: '',
@@ -129,212 +116,129 @@ export class FakePageHandler {
     return app;
   }
 
-  /**
-   * @param {PageRemote} page
-   */
-  constructor(page) {
+  guid: number;
+  overlappingAppIds: string[];
+  page: PageRemote;
+  private apps_: App[];
+  private receiver_: PageHandlerReceiver;
+  private resolverMap_: Map<string, PromiseResolver<void>>;
+
+  constructor(page: PageRemote) {
     this.receiver_ = new PageHandlerReceiver(this);
-    /** @type {PageRemote} */
+
+    this.guid = 0;
+    this.overlappingAppIds = [];
     this.page = page;
 
-    /** @type {!Array<App>} */
     this.apps_ = [];
-
-    /** @type {Array<!string>} */
-    this.overlappingAppIds = [];
-
-    /** @type {number} */
-    this.guid = 0;
-
-    /** @private {!Map<string, !PromiseResolver>} */
     this.resolverMap_ = new Map();
     this.resolverMap_.set('setPreferredApp', new PromiseResolver());
     this.resolverMap_.set('getOverlappingPreferredApps', new PromiseResolver());
   }
 
-  /**
-   * @param {string} methodName
-   * @return {!PromiseResolver}
-   * @private
-   */
-  getResolver_(methodName) {
+  private getResolver_(methodName: string): PromiseResolver<void> {
     const method = this.resolverMap_.get(methodName);
-    assert(!!method, `Method '${methodName}' not found.`);
+    assert(method, `Method '${methodName}' not found.`);
     return method;
   }
 
-  /**
-   * @param {string} methodName
-   * @protected
-   */
-  methodCalled(methodName) {
+  methodCalled(methodName: string): void {
     this.getResolver_(methodName).resolve();
   }
 
-  /**
-   * @param {string} methodName
-   * @return {!Promise}
-   */
-  whenCalled(methodName) {
-    return this.getResolver_(methodName).promise.then(() => {
-      // Support sequential calls to whenCalled by replacing the promise.
-      this.resolverMap_.set(methodName, new PromiseResolver());
-    });
+  async whenCalled(methodName: string): Promise<void> {
+    await this.getResolver_(methodName).promise;
+    // Support sequential calls to whenCalled by replacing the promise.
+    this.resolverMap_.set(methodName, new PromiseResolver());
   }
 
-  /**
-   * @returns {!PageHandlerRemote}
-   */
-  getRemote() {
+  getRemote(): PageHandlerRemote {
     return this.receiver_.$.bindNewPipeAndPassRemote();
   }
 
-  async flushPipesForTesting() {
+  async flushPipesForTesting(): Promise<void> {
     await this.page.$.flushForTesting();
   }
 
-  /**
-   * @return {!Promise<{apps: !Array<!App>}>}
-   */
-  async getApps() {
+  async getApps(): Promise<{apps: App[]}> {
     return {apps: this.apps_};
   }
 
-  /**
-   * @param {!string} appId
-   * @return {!Promise<{app: App}>}
-   */
-  async getApp(appId) {
+  async getApp(_appId: string): Promise<{app: App}> {
     assertNotReached();
   }
 
-  /**
-   * @param {!string} appId
-   * @return {!Promise<{messages: !Array<!ExtensionAppPermissionMessage>}>}
-   */
-  async getExtensionAppPermissionMessages(appId) {
+  async getExtensionAppPermissionMessages(_appId: string):
+      Promise<{messages: ExtensionAppPermissionMessage[]}> {
     return {messages: []};
   }
 
-  /**
-   * @param {!Array<App>} appList
-   */
-  setApps(appList) {
+  setApps(appList: App[]): void {
     this.apps_ = appList;
   }
 
-  /**
-   * @param {string} appId
-   * @param {OptionalBool} pinnedValue
-   */
-  setPinned(appId, pinnedValue) {
+  setPinned(appId: string, isPinned: OptionalBool): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
-
-    const newApp =
-        /** @type {!App} */ (Object.assign({}, app, {isPinned: pinnedValue}));
+    const newApp = {...app, isPinned};
     this.page.onAppChanged(newApp);
   }
 
-  /**
-   * @param {string} appId
-   * @param {Permission} permission
-   */
-  setPermission(appId, permission) {
+  setPermission(appId: string, permission: Permission): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
 
     // Check that the app had a previous value for the given permission
     assert(app.permissions[permission.permissionType]);
 
-    const newPermissions = Object.assign({}, app.permissions);
+    const newPermissions = {...app.permissions};
     newPermissions[permission.permissionType] = permission;
-    const newApp = /** @type {!App} */ (
-        Object.assign({}, app, {permissions: newPermissions}));
+    const newApp = {...app, permissions: newPermissions};
     this.page.onAppChanged(newApp);
   }
 
-  /**
-   * @param {string} appId
-   * @param {boolean} locked
-   */
-  setResizeLocked(appId, locked) {
+  setResizeLocked(appId: string, resizeLocked: boolean): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
-
-    const newApp =
-        /** @type {!App} */ (Object.assign({}, app, {resizeLocked: locked}));
+    const newApp = {...app, resizeLocked};
     this.page.onAppChanged(newApp);
   }
 
-  /**
-   * @param {string} appId
-   * @param {boolean} hide
-   */
-  setHideResizeLocked(appId, hide) {
+  setHideResizeLocked(appId: string, hideResizeLocked: boolean): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
-
-    const newApp =
-        /** @type {!App} */ (Object.assign({}, app, {hideResizeLocked: hide}));
+    const newApp = {...app, hideResizeLocked};
     this.page.onAppChanged(newApp);
   }
 
-  /**
-   * @param {string} appId
-   */
-  uninstall(appId) {
+  uninstall(appId: string): void {
     this.page.onAppRemoved(appId);
   }
 
-  /**
-   * @param {string} appId
-   * @param {boolean} preferredAppValue
-   */
-  setPreferredApp(appId, preferredAppValue) {
+  setPreferredApp(appId: string, isPreferredApp: boolean): void {
     const app = AppManagementStore.getInstance().data.apps[appId];
-
-    const newApp =
-        /** @type {!App} */ (
-            Object.assign({}, app, {isPreferredApp: preferredAppValue}));
+    const newApp = {...app, isPreferredApp};
     this.page.onAppChanged(newApp);
     this.methodCalled('setPreferredApp');
   }
 
-  /**
-   * @param {string} appId
-   */
-  openNativeSettings(appId) {}
+  openNativeSettings(_appId: string): void {}
 
-  /**
-   * @param {string} appId
-   * @param {WindowMode} windowMode
-   */
-  setWindowMode(appId, windowMode) {
+  setWindowMode(_appId: string, _windowMode: WindowMode): void {
     assertNotReached();
   }
 
-  /**
-   * @param {string} appId
-   * @param {RunOnOsLoginMode} runOnOsLoginMode
-   */
-  setRunOnOsLoginMode(appId, runOnOsLoginMode) {
+  setRunOnOsLoginMode(_appId: string, _runOnOsLoginMode: RunOnOsLoginMode):
+      void {
     assertNotReached();
   }
 
-  /**
-   * @param {string} appId
-   * @param {boolean} fileHandlingEnabled
-   */
-  setFileHandlingEnabled(appId, fileHandlingEnabled) {
+  setFileHandlingEnabled(_appId: string, _fileHandlingEnabled: boolean): void {
     assertNotReached();
   }
 
-  showDefaultAppAssociationsUi() {
+  showDefaultAppAssociationsUi(): void {
     assertNotReached();
   }
 
-  /**
-   * @param {string} appId
-   * @return {!Promise<{ appIds: !Array<!string> }>}
-   */
-  async getOverlappingPreferredApps(appId) {
+  async getOverlappingPreferredApps(_appId: string):
+      Promise<{appIds: string[]}> {
     this.methodCalled('getOverlappingPreferredApps');
     if (!this.overlappingAppIds) {
       return {appIds: []};
@@ -342,17 +246,9 @@ export class FakePageHandler {
     return {appIds: this.overlappingAppIds};
   }
 
-  /**
-   * @param {string} appId
-   */
-  openStorePage(appId) {}
+  openStorePage(_appId: string): void {}
 
-  /**
-   * @param {string} optId
-   * @param {Object=} optConfig
-   * @return {!Promise<!App>}
-   */
-  async addApp(optId, optConfig) {
+  async addApp(optId?: string, optConfig?: AppConfig): Promise<App> {
     optId = optId || String(this.guid++);
     const app = FakePageHandler.createApp(optId, optConfig);
     this.page.onAppAdded(app);
@@ -364,10 +260,8 @@ export class FakePageHandler {
    * Takes an app id and an object mapping app fields to the values they
    * should be changed to, and dispatches an action to carry out these
    * changes.
-   * @param {string} id
-   * @param {Object} changes
    */
-  async changeApp(id, changes) {
+  async changeApp(id: string, changes: AppConfig): Promise<void> {
     this.page.onAppChanged(FakePageHandler.createApp(id, changes));
     await this.flushPipesForTesting();
   }

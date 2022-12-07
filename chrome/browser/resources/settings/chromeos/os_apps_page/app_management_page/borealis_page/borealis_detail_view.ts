@@ -10,20 +10,18 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../../../router.js';
 import {routes} from '../../../os_route.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from '../store_client.js';
+import {AppManagementStoreMixin} from '../store_mixin.js';
 
 import {getTemplate} from './borealis_detail_view.html.js';
 
-const kBorealisClientAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
+const BOREALIS_CLIENT_APP_ID = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 
 const AppManagementBorealisDetailViewElementBase =
-    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
-      new (): PolymerElement & AppManagementStoreClientInterface,
-    };
+    AppManagementStoreMixin(PolymerElement);
 
 class AppManagementBorealisDetailViewElement extends
     AppManagementBorealisDetailViewElementBase {
@@ -55,13 +53,13 @@ class AppManagementBorealisDetailViewElement extends
   }
 
   private isMainApp_(): boolean {
-    return this.app_.id === kBorealisClientAppId;
+    return this.app_.id === BOREALIS_CLIENT_APP_ID;
   }
 
   private onBorealisLinkClicked_(event: CustomEvent<{event: Event}>): void {
     event.detail.event.preventDefault();
     const params = new URLSearchParams();
-    params.append('id', kBorealisClientAppId);
+    params.append('id', BOREALIS_CLIENT_APP_ID);
     Router.getInstance().navigateTo(routes.APP_MANAGEMENT_DETAIL, params);
   }
 }

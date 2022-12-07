@@ -9,17 +9,13 @@ import {App, AppType} from 'chrome://resources/cr_components/app_management/app_
 import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app_item.html.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
-import {AppManagementEntryPointType} from './types.js';
+import {AppManagementStoreMixin} from './store_mixin.js';
 import {openAppDetailPage} from './util.js';
 
-const AppManagementAppItemElementBase =
-    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
-      new (): PolymerElement & AppManagementStoreClientInterface,
-    };
+const AppManagementAppItemElementBase = AppManagementStoreMixin(PolymerElement);
 
 class AppManagementAppItemElement extends AppManagementAppItemElementBase {
   static get is() {
@@ -59,7 +55,7 @@ class AppManagementAppItemElement extends AppManagementAppItemElementBase {
   }
 
   private getAppManagementEntryPoint_(appType: AppType):
-      AppManagementEntryPointType {
+      AppManagementEntryPoint {
     switch (appType) {
       case AppType.kArc:
         return AppManagementEntryPoint.MAIN_VIEW_ARC;

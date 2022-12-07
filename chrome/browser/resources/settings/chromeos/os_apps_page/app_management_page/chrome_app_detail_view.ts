@@ -9,16 +9,14 @@ import './app_management_cros_shared_style.css.js';
 
 import {App, ExtensionAppPermissionMessage} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './chrome_app_detail_view.html.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {AppManagementStoreMixin} from './store_mixin.js';
 
 const AppManagementChromeAppDetailViewElementBase =
-    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
-      new (): PolymerElement & AppManagementStoreClientInterface,
-    };
+    AppManagementStoreMixin(PolymerElement);
 
 class AppManagementChromeAppDetailViewElement extends
     AppManagementChromeAppDetailViewElementBase {
@@ -54,7 +52,7 @@ class AppManagementChromeAppDetailViewElement extends
   private async onAppChanged_() {
     try {
       const {messages: messages} =
-          await BrowserProxy.getInstance()
+          await AppManagementBrowserProxy.getInstance()
               .handler.getExtensionAppPermissionMessages(this.app_.id);
       this.messages_ = messages;
     } catch (err) {

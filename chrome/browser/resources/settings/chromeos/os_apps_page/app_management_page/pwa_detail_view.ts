@@ -13,15 +13,13 @@ import 'chrome://resources/cr_elements/icons.html.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getAppIcon, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './pwa_detail_view.html.js';
-import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {AppManagementStoreMixin} from './store_mixin.js';
 
 const AppManagementPwaDetailViewElementBase =
-    mixinBehaviors([AppManagementStoreClient], PolymerElement) as {
-      new (): PolymerElement & AppManagementStoreClientInterface,
-    };
+    AppManagementStoreMixin(PolymerElement);
 
 class AppManagementPwaDetailViewElement extends
     AppManagementPwaDetailViewElementBase {

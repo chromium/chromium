@@ -9,20 +9,15 @@
  * calls.
  */
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {AppManagementPageState, AppMap} from './types.js';
+import {AddAppAction, AppManagementActions, ChangeAppAction, RemoveAppAction} from './actions.js';
+import {AppManagementPageState, AppMap} from './store';
 
-export const AppState = {};
-
-/**
- * @param {AppMap} apps
- * @param {Object} action
- * @return {AppMap}
- */
-AppState.addApp = function(apps, action) {
+function addApp(apps: AppMap, action: AddAppAction): AppMap {
   if (apps[action.app.id]) {
-    const stringifyApp = (app) => {
+    const stringifyApp = (app: App) => {
       return `id: ${app.id}, type: ${app.type}, install source: ${
           app.installReason} title: ${app.title}`;
     };
@@ -31,69 +26,42 @@ AppState.addApp = function(apps, action) {
                           Old app: ${stringifyApp(apps[action.app.id])}.`;
     assertNotReached(errorMessage);
   }
+  return {...apps, [action.app.id]: action.app};
+}
 
-  const newAppEntry = {};
-  newAppEntry[action.app.id] = action.app;
-  return Object.assign({}, apps, newAppEntry);
-};
-
-/**
- * @param {AppMap} apps
- * @param {Object} action
- * @return {AppMap}
- */
-AppState.changeApp = function(apps, action) {
+function changeApp(apps: AppMap, action: ChangeAppAction): AppMap {
   // If the app doesn't exist, that means that the app that has been changed
   // does not need to be shown in App Management.
   if (!apps[action.app.id]) {
     return apps;
   }
+  return {...apps, [action.app.id]: action.app};
+}
 
-  const changedAppEntry = {};
-  changedAppEntry[action.app.id] = action.app;
-  return Object.assign({}, apps, changedAppEntry);
-};
-
-/**
- * @param {AppMap} apps
- * @param {Object} action
- * @return {AppMap}
- */
-AppState.removeApp = function(apps, action) {
+function removeApp(apps: AppMap, action: RemoveAppAction): AppMap {
   if (!apps.hasOwnProperty(action.id)) {
     return apps;
   }
 
   delete apps[action.id];
-  return Object.assign({}, apps);
-};
+  return {...apps};
+}
 
-/**
- * @param {AppMap} apps
- * @param {Object} action
- * @return {AppMap}
- */
-AppState.updateApps = function(apps, action) {
+export function updateApps(apps: AppMap, action: AppManagementActions): AppMap {
   switch (action.name) {
     case 'add-app':
-      return AppState.addApp(apps, action);
+      return addApp(apps, action as AddAppAction);
     case 'change-app':
-      return AppState.changeApp(apps, action);
+      return changeApp(apps, action as ChangeAppAction);
     case 'remove-app':
-      return AppState.removeApp(apps, action);
+      return removeApp(apps, action as RemoveAppAction);
     default:
       return apps;
   }
-};
+}
 
-const SelectedAppId = {};
-
-/**
- * @param {?string} selectedAppId
- * @param {Object} action
- * @return {?string}
- */
-SelectedAppId.updateSelectedAppId = function(selectedAppId, action) {
+function updateSelectedAppId(
+    selectedAppId: string|null, action: AppManagementActions): string|null {
   switch (action.name) {
     case 'update-selected-app-id':
       return action.value;
@@ -105,19 +73,17 @@ SelectedAppId.updateSelectedAppId = function(selectedAppId, action) {
     default:
       return selectedAppId;
   }
-};
+}
 
 /**
  * Root reducer for the App Management page. This is called by the store in
  * response to an action, and the return value is used to update the UI.
- * @param {!AppManagementPageState} state
- * @param {Object} action
- * @return {!AppManagementPageState}
  */
-export function reduceAction(state, action) {
+export function reduceAction(
+    state: AppManagementPageState,
+    action: AppManagementActions): AppManagementPageState {
   return {
-    apps: AppState.updateApps(state.apps, action),
-    selectedAppId:
-        SelectedAppId.updateSelectedAppId(state.selectedAppId, action),
+    apps: updateApps(state.apps, action),
+    selectedAppId: updateSelectedAppId(state.selectedAppId, action),
   };
 }

@@ -13,7 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../../assert_extras.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './pin_to_shelf_item.html.js';
 
 class AppManagementPinToShelfItemElement extends PolymerElement {
@@ -70,7 +70,7 @@ class AppManagementPinToShelfItemElement extends PolymerElement {
     const newState = castExists(toggleOptionalBool(this.app.isPinned));
     const newStateBool = convertOptionalBoolToBool(newState);
     assert(newStateBool === this.getToggleRow_().isChecked());
-    BrowserProxy.getInstance().handler.setPinned(
+    AppManagementBrowserProxy.getInstance().handler.setPinned(
         this.app.id,
         newState,
     );
