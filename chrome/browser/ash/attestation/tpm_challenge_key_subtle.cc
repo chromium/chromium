@@ -111,23 +111,47 @@ bool IsUserConsentRequired() {
 // If no key name was given, use default well-known key names so they can be
 // reused across attestation operations (multiple challenge responses can be
 // generated using the same key).
-std::string GetDefaultKeyName(AttestationKeyType key_type) {
+std::string GetDefaultKeyName(AttestationKeyType key_type,
+                              ::attestation::KeyType key_crypto_type) {
+  // When the caller wants to "register" a key through attestation (resulting in
+  // a general-purpose key in the chaps PKCS#11 store), the behavior is
+  // different between EUK and EMK:
+  //
+  // For EUK, the EUK used to sign the attestation response is also the key that
+  // is "registered". If the EUK does not exist, one will be generated; but if
+  // it does already exist, the existing key will be used.  Thus it must be
+  // parameterized with the crypto algorithm type to ensure that the caller gets
+  // a key of the type they expect.
+  //
+  //  For EMK, the EMK used to sign the attestation response must remain stable
+  //  and instead a newly-generated EMK is registered. This function returns the
+  //  EMK that is used to sign the attesation response, so it may not be
+  //  parametrized with the crypto algorithm type.
+  //
+  //  See http://go/chromeos-va-registering-device-wide-keys-support for details
+  //  on the concept of the stable EMK.
   switch (key_type) {
     case KEY_DEVICE:
       return kEnterpriseMachineKey;
     case KEY_USER:
-      return kEnterpriseUserKey;
+      switch (key_crypto_type) {
+        case ::attestation::KEY_TYPE_RSA:
+          return kEnterpriseUserKey;
+        case ::attestation::KEY_TYPE_ECC:
+          return std::string(kEnterpriseUserKey) + "-ecdsa";
+      }
   }
   NOTREACHED();
 }
 
 // Returns the key name that should be used for the attestation platform APIs.
 std::string GetKeyNameWithDefault(AttestationKeyType key_type,
+                                  ::attestation::KeyType key_crypto_type,
                                   const std::string& key_name) {
   if (!key_name.empty())
     return key_name;
 
-  return GetDefaultKeyName(key_type);
+  return GetDefaultKeyName(key_type, key_crypto_type);
 }
 
 }  // namespace
@@ -171,7 +195,7 @@ void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
   key_type_ = key_type;
   will_register_key_ = will_register_key;
   key_crypto_type_ = key_crypto_type;
-  key_name_ = GetKeyNameWithDefault(key_type, key_name);
+  key_name_ = GetKeyNameWithDefault(key_type, key_crypto_type, key_name);
   public_key_ = public_key;
   profile_ = profile;
 }
@@ -197,7 +221,7 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
   key_type_ = key_type;
   will_register_key_ = will_register_key;
   key_crypto_type_ = key_crypto_type;
-  key_name_ = GetKeyNameWithDefault(key_type, key_name);
+  key_name_ = GetKeyNameWithDefault(key_type, key_crypto_type, key_name);
   profile_ = profile;
   callback_ = std::move(callback);
   signals_ = signals;
@@ -586,7 +610,8 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   // Name of the key that will be used to sign challenge.
   // Device key challenges are signed using a stable key.
   std::string key_name_for_challenge =
-      (key_type_ == KEY_DEVICE) ? GetDefaultKeyName(key_type_) : key_name_;
+      (key_type_ == KEY_DEVICE) ? GetDefaultKeyName(key_type_, key_crypto_type_)
+                                : key_name_;
   // Name of the key that will be included in SPKAC, it is used only when SPKAC
   // should be included for device key.
   std::string key_name_for_spkac =

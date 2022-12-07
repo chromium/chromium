@@ -667,6 +667,31 @@ TEST_F(TpmChallengeKeySubtleTestECC, DeviceKeyRegisteredSuccessECC) {
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
+TEST_F(AffiliatedUserTpmChallengeKeySubtleTest,
+       UserKeyRegisteredSuccessDefaultNameRsa) {
+  const AttestationKeyType key_type = KEY_USER;
+  const std::string key_name = std::string(kEnterpriseUserKey);
+
+  EXPECT_CALL(
+      mock_attestation_flow_,
+      GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_RSA, key_name, _, _));
+
+  RunOneStepAndExpect(key_type, /*will_register_key=*/true, "",
+                      TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
+}
+
+TEST_F(TpmChallengeKeySubtleTestECC, UserKeyRegisteredSuccessDefaultNameECC) {
+  const AttestationKeyType key_type = KEY_USER;
+  const std::string key_name = std::string(kEnterpriseUserKey) + "-ecdsa";
+
+  EXPECT_CALL(
+      mock_attestation_flow_,
+      GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_ECC, key_name, _, _));
+
+  RunOneStepAndExpect(key_type, /*will_register_key=*/true, "",
+                      TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
+}
+
 TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
   const AttestationKeyType key_type = KEY_USER;
   const char* const key_name = GetDefaultKeyName(key_type);
