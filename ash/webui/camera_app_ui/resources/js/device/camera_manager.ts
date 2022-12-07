@@ -314,7 +314,7 @@ export class CameraManager implements EventListener {
   switchCamera(): Promise<void>|null {
     const promise = this.tryReconfigure(() => {
       state.set(PerfEvent.CAMERA_SWITCHING, true);
-      const devices = this.infoUpdater.getDevicesInfo();
+      const devices = this.getCameraInfo().devicesInfo;
       let index =
           devices.findIndex((entry) => entry.deviceId === this.getDeviceId());
       if (index === -1) {

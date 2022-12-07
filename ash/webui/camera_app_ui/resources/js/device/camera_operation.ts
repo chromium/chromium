@@ -379,8 +379,7 @@ export class OperationScheduler {
         defaultFacing,
     );
     this.capturer = new Capturer(this.modes);
-    this.infoUpdater.addDeviceChangeListener((updater) => {
-      const info = new CameraInfo(updater);
+    this.infoUpdater.addDeviceChangeListener((info) => {
       if (this.ongoingOperationType !== null) {
         this.pendingUpdateInfo = info;
         return;
