@@ -1208,6 +1208,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
           }
         }));
   }
+  [cell layoutIfNeeded];
   return cell;
 }
 
