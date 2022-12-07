@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
+#include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/common/content_switches.h"
@@ -601,11 +602,23 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
                     FileSystemAccessPermissionContext::HandleType::kFile,
                     FileSystemAccessPermissionContext::UserAction::kNone))
         .WillOnce(testing::Return(target_grant));
+
     // These checks should only be called if the file is successfully moved.
-    EXPECT_CALL(permission_context_,
-                PerformAfterWriteChecks_(testing::_, testing::_, testing::_))
-        .WillOnce(base::test::RunOnceCallback<2>(
-            FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow));
+
+    // On Windows, CreateTemporaryFileInDir() creates files with the '.tmp'
+    // extension. When this feature flag is enabled, Safe Browsing checks are
+    // not run on same-file-system moves in which the extension does not change.
+    if (!base::FeatureList::IsEnabled(
+            features::
+                kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension) ||
+        source.Extension() != FILE_PATH_LITERAL(".tmp") ||
+        target.Extension() != FILE_PATH_LITERAL(".tmp")) {
+      EXPECT_CALL(permission_context_,
+                  PerformAfterWriteChecks_(testing::_, testing::_, testing::_))
+          .WillOnce(base::test::RunOnceCallback<2>(
+              FileSystemAccessPermissionContext::AfterWriteCheckResult::
+                  kAllow));
+    }
     EXPECT_CALL(
         permission_context_,
         NotifyEntryMoved(test_src_storage_key_.origin(), source, target));
@@ -656,6 +669,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
                     FileSystemAccessPermissionContext::HandleType::kFile,
                     FileSystemAccessPermissionContext::UserAction::kNone))
         .WillOnce(testing::Return(target_grant));
+
     // No after-write checks needed since the file should not have been moved.
 
     if (gesture_present()) {
@@ -698,11 +712,21 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
                     FileSystemAccessPermissionContext::HandleType::kFile,
                     FileSystemAccessPermissionContext::UserAction::kNone))
         .WillOnce(testing::Return(target_grant));
+
     // These checks should only be called if the file is successfully moved.
-    EXPECT_CALL(permission_context_,
-                PerformAfterWriteChecks_(testing::_, testing::_, testing::_))
-        .WillOnce(base::test::RunOnceCallback<2>(
-            FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow));
+
+    // On Windows, CreateTemporaryFileInDir() creates files with the '.tmp'
+    // extension. Safe Browsing checks are not run on same-file-system moves in
+    // which the extension does not change. For more context, see
+    // FileSystemAccessSafeMoveHelper::RequireAfterWriteChecks().
+    if (source.Extension() != FILE_PATH_LITERAL(".tmp") ||
+        target.Extension() != FILE_PATH_LITERAL(".tmp")) {
+      EXPECT_CALL(permission_context_,
+                  PerformAfterWriteChecks_(testing::_, testing::_, testing::_))
+          .WillOnce(base::test::RunOnceCallback<2>(
+              FileSystemAccessPermissionContext::AfterWriteCheckResult::
+                  kAllow));
+    }
     EXPECT_CALL(
         permission_context_,
         NotifyEntryMoved(test_src_storage_key_.origin(), source, target));
@@ -744,6 +768,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
                     FileSystemAccessPermissionContext::HandleType::kFile,
                     FileSystemAccessPermissionContext::UserAction::kNone))
         .WillOnce(testing::Return(target_grant));
+
     // No after-write checks needed since the file should not have been moved.
 
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;

@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_safe_move_helper.h"
 
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -30,6 +31,12 @@
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/common/file_system/file_system_util.h"
+
+namespace features {
+BASE_FEATURE(kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension,
+             "FileSystemAccessSkipAfterWriteChecksIfUnchangingExtension",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace features
 
 namespace content {
 
@@ -166,7 +173,7 @@ void FileSystemAccessSafeMoveHelper::Start(
     return;
   }
 
-  if (!RequireSecurityChecks() || !manager_->permission_context()) {
+  if (!RequireAfterWriteChecks() || !manager_->permission_context()) {
     DidAfterWriteCheck(
         FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow);
     return;
@@ -193,6 +200,36 @@ void FileSystemAccessSafeMoveHelper::ComputeHashForSourceFile(
       base::BindOnce(&HashCalculator::CreateAndStart,
                      base::WrapRefCounted(manager_->context()),
                      std::move(wrapped_callback), source_url()));
+}
+
+bool FileSystemAccessSafeMoveHelper::RequireAfterWriteChecks() const {
+  if (dest_url().type() == storage::kFileSystemTypeTemporary)
+    return false;
+
+  if (!base::FeatureList::IsEnabled(
+          features::
+              kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension)) {
+    return true;
+  }
+
+  // TODO(https://crbug.com/1396116): Fix FileSystemURL comparison operators
+  // that use a StorageKey.
+  //
+  // This check is held together by a hack in `CreateFileSystemURLFromPath()` in
+  // the FSA manager which ensures all non-sandboxed FileSystemURLs have the
+  // same opaque origin.
+  if (!source_url().IsInSameFileSystem(dest_url()))
+    return true;
+
+  // TODO(crbug.com/1250534): Properly handle directory moves here, for
+  // which extension checks don't make sense.
+  auto source_extension = source_url().path().Extension();
+  auto dest_extension = dest_url().path().Extension();
+  return source_extension.empty() || source_extension != dest_extension;
+}
+
+bool FileSystemAccessSafeMoveHelper::RequireQuarantine() const {
+  return dest_url().type() != storage::kFileSystemTypeTemporary;
 }
 
 void FileSystemAccessSafeMoveHelper::DoAfterWriteCheck(
@@ -256,7 +293,7 @@ void FileSystemAccessSafeMoveHelper::DidAfterWriteCheck(
   // not exist anymore. In case of error, the source file URL will point to a
   // valid filesystem location.
   base::OnceCallback<void(base::File::Error)> result_callback;
-  if (RequireSecurityChecks()) {
+  if (RequireQuarantine()) {
     GURL referrer_url = manager_->is_off_the_record() ? GURL() : context_.url;
     mojo::Remote<quarantine::mojom::Quarantine> quarantine_remote;
     if (quarantine_connection_callback_) {

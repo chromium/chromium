@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_SAFE_MOVE_HELPER_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_SAFE_MOVE_HELPER_H_
 
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -12,6 +13,14 @@
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
 #include "storage/browser/file_system/file_system_url.h"
+
+namespace features {
+// TODO(crbug.com/1247850): Remove this flag eventually.
+// When enabled, move operations within the same file system that do not change
+// the file extension will not be subject to safe browsing checks.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension);
+}  // namespace features
 
 namespace content {
 
@@ -52,6 +61,11 @@ class CONTENT_EXPORT FileSystemAccessSafeMoveHelper {
     ComputeHashForSourceFile(std::move(callback));
   }
 
+  bool RequireAfterWriteChecksForTesting() const {
+    return RequireAfterWriteChecks();
+  }
+  bool RequireQuarantineForTesting() const { return RequireQuarantine(); }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -72,12 +86,13 @@ class CONTENT_EXPORT FileSystemAccessSafeMoveHelper {
 
   void ComputeHashForSourceFile(HashCallback callback);
 
-  // After write and quarantine checks should apply to paths on all filesystems
-  // except temporary file systems.
-  // TOOD(crbug.com/1103076): Extend this check to non-native paths.
-  bool RequireSecurityChecks() const {
-    return dest_url().type() != storage::kFileSystemTypeTemporary;
-  }
+  // Safe browsing should apply to paths on all filesystems
+  // except temporary file systems, or for same-file-system moves in which the
+  // extension does not change.
+  bool RequireAfterWriteChecks() const;
+  // Quarantine checks should apply to paths on all filesystems except temporary
+  // file systems.
+  bool RequireQuarantine() const;
 
   base::WeakPtr<FileSystemAccessManagerImpl> manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
