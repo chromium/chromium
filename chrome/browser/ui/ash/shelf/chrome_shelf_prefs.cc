@@ -19,7 +19,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/checked_iterators.h"
-#include "base/containers/checked_range.h"
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"

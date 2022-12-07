@@ -254,7 +254,6 @@ TEST(ValuesTest, HardenTests) {
   EXPECT_DEATH_IF_SUPPORTED(value.GetString(), "");
   EXPECT_DEATH_IF_SUPPORTED(value.GetBlob(), "");
   EXPECT_DEATH_IF_SUPPORTED(value.DictItems(), "");
-  EXPECT_DEATH_IF_SUPPORTED(value.GetListDeprecated(), "");
 }
 
 // Group of tests for the copy constructors and copy-assigmnent. For equality
@@ -473,50 +472,50 @@ TEST(ValuesTest, MoveList) {
   Value value(list.Clone());
   Value moved_value(std::move(value));
   EXPECT_EQ(Value::Type::LIST, moved_value.type());
-  EXPECT_EQ(123, moved_value.GetListDeprecated().back().GetInt());
+  EXPECT_EQ(123, moved_value.GetList().back().GetInt());
 
   Value blank;
   blank = Value(std::move(list));
   EXPECT_EQ(Value::Type::LIST, blank.type());
-  EXPECT_EQ(123, blank.GetListDeprecated().back().GetInt());
+  EXPECT_EQ(123, blank.GetList().back().GetInt());
 }
 
 TEST(ValuesTest, Append) {
   ListValue value;
   value.Append(true);
-  EXPECT_TRUE(value.GetListDeprecated().back().is_bool());
+  EXPECT_TRUE(value.GetList().back().is_bool());
 
   value.Append(123);
-  EXPECT_TRUE(value.GetListDeprecated().back().is_int());
+  EXPECT_TRUE(value.GetList().back().is_int());
 
   value.Append(3.14);
-  EXPECT_TRUE(value.GetListDeprecated().back().is_double());
+  EXPECT_TRUE(value.GetList().back().is_double());
 
   std::string str = "foo";
   value.Append(str.c_str());
-  EXPECT_TRUE(value.GetListDeprecated().back().is_string());
+  EXPECT_TRUE(value.GetList().back().is_string());
 
   value.Append(StringPiece(str));
-  EXPECT_TRUE(value.GetListDeprecated().back().is_string());
+  EXPECT_TRUE(value.GetList().back().is_string());
 
   value.Append(std::move(str));
-  EXPECT_TRUE(value.GetListDeprecated().back().is_string());
+  EXPECT_TRUE(value.GetList().back().is_string());
 
   std::u16string str16 = u"bar";
   value.GetList().Append(str16.c_str());
   EXPECT_TRUE(value.GetList().back().is_string());
 
   value.Append(base::StringPiece16(str16));
-  EXPECT_TRUE(value.GetListDeprecated().back().is_string());
+  EXPECT_TRUE(value.GetList().back().is_string());
 
   value.Append(Value());
-  EXPECT_TRUE(value.GetListDeprecated().back().is_none());
+  EXPECT_TRUE(value.GetList().back().is_none());
 
   value.Append(Value(Value::Type::DICTIONARY));
-  EXPECT_TRUE(value.GetListDeprecated().back().is_dict());
+  EXPECT_TRUE(value.GetList().back().is_dict());
 
   value.Append(Value(Value::Type::LIST));
-  EXPECT_TRUE(value.GetListDeprecated().back().is_list());
+  EXPECT_TRUE(value.GetList().back().is_list());
 }
 
 TEST(ValuesTest, ListInsert) {
@@ -785,7 +784,7 @@ TEST(ValuesTest, ClearList) {
   EXPECT_EQ(0u, list.size());
   EXPECT_TRUE(list.empty());
 
-  // ClearList() should be idempotent.
+  // list.clear() should be idempotent.
   list.clear();
   EXPECT_EQ(0u, list.size());
   EXPECT_TRUE(list.empty());
@@ -1512,8 +1511,8 @@ TEST(ValuesTest, Basic) {
 
   Value* bookmark_list = settings.FindByDottedPath("global.toolbar.bookmarks");
   ASSERT_TRUE(bookmark_list);
-  ASSERT_EQ(1U, bookmark_list->GetListDeprecated().size());
-  Value* bookmark = &bookmark_list->GetListDeprecated()[0];
+  ASSERT_EQ(1U, bookmark_list->GetList().size());
+  Value* bookmark = &bookmark_list->GetList()[0];
   ASSERT_TRUE(bookmark);
   ASSERT_TRUE(bookmark->is_dict());
   const std::string* bookmark_name = bookmark->GetDict().FindString("name");
@@ -1525,32 +1524,22 @@ TEST(ValuesTest, Basic) {
 }
 
 TEST(ValuesTest, List) {
-  Value mixed_list(Value::Type::LIST);
+  Value::List mixed_list;
   mixed_list.Append(true);
   mixed_list.Append(42);
   mixed_list.Append(88.8);
   mixed_list.Append("foo");
 
-  Value::ConstListView list_view = mixed_list.GetListDeprecated();
-  ASSERT_EQ(4u, list_view.size());
+  ASSERT_EQ(4u, mixed_list.size());
 
-  ASSERT_FALSE(list_view[0].is_int());
-  ASSERT_FALSE(list_view[1].is_bool());
-  ASSERT_FALSE(list_view[2].is_string());
-  ASSERT_FALSE(list_view[2].is_int());
-  ASSERT_FALSE(list_view[2].is_bool());
-
-  ASSERT_TRUE(list_view[0].is_bool());
-  ASSERT_TRUE(list_view[1].is_int());
-  ASSERT_EQ(42, list_view[1].GetInt());
-  // Implicit conversion from Integer to Double should be possible.
-  ASSERT_EQ(42, list_view[1].GetDouble());
-  ASSERT_EQ(88.8, list_view[2].GetDouble());
-  ASSERT_EQ("foo", list_view[3].GetString());
+  EXPECT_EQ(true, mixed_list[0]);
+  EXPECT_EQ(42, mixed_list[1]);
+  EXPECT_EQ(88.8, mixed_list[2]);
+  EXPECT_EQ("foo", mixed_list[3]);
 
   // Try searching in the mixed list.
-  ASSERT_TRUE(Contains(list_view, base::Value(42)));
-  ASSERT_FALSE(Contains(list_view, base::Value(false)));
+  ASSERT_TRUE(Contains(mixed_list, 42));
+  ASSERT_FALSE(Contains(mixed_list, false));
 }
 
 TEST(ValuesTest, BinaryValue) {

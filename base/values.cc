@@ -1041,14 +1041,6 @@ bool operator>=(const Value::List& lhs, const Value::List& rhs) {
   return !(lhs < rhs);
 }
 
-Value::ListView Value::GetListDeprecated() {
-  return list();
-}
-
-Value::ConstListView Value::GetListDeprecated() const {
-  return list();
-}
-
 void Value::Append(bool value) {
   GetList().Append(value);
 }

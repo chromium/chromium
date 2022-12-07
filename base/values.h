@@ -21,7 +21,6 @@
 #include "base/bit_cast.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
-#include "base/containers/checked_range.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -189,8 +188,6 @@ class ListValue;
 // DEPRECATED (PREVIOUS) WAY:
 //
 //   void AlwaysTakesList(std::vector<base::Value> list);
-//   void AlwaysTakesListAlternative1(base::Value::ConstListView list);
-//   void AlwaysTakesListAlternative2(base::Value::ListView& list);
 //   void AlwaysTakesListAlterantive3(base::Value::ListStorage);
 //   void AlwaysTakesDict(base::flat_map<std::string, base::Value> dict);
 //   void AlwaysTakesDictAlternative(base::Value::DictStorage);
@@ -208,20 +205,11 @@ class BASE_EXPORT GSL_OWNER Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
 
-  using DeprecatedListStorage = std::vector<Value>;
-
   // Like `DictStorage`, but with std::unique_ptr in the mapped type. This is
   // due to legacy reasons, and should be replaced with
   // flat_map<std::string, Value> once no caller relies on stability of pointers
   // anymore.
   using LegacyDictStorage = flat_map<std::string, std::unique_ptr<Value>>;
-
-  using DeprecatedListView = CheckedContiguousRange<DeprecatedListStorage>;
-  using DeprecatedConstListView =
-      CheckedContiguousConstRange<DeprecatedListStorage>;
-  // TODO(https://crbug.com/1291666): Make these private.
-  using ListView = DeprecatedListView;
-  using ConstListView = DeprecatedConstListView;
 
   class Dict;
   class List;
@@ -704,15 +692,6 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // ===== DEPRECATED methods that require `type() == Type::LIST` =====
 
-  // Returns the Values in a list as a view. The mutable overload allows for
-  // modification of the underlying values, but does not allow changing the
-  // structure of the list.
-  //
-  // DEPRECATED: prefer direct use `base::Value::List` where possible, or
-  // `GetList()` otherwise.
-  DeprecatedListView GetListDeprecated();
-  DeprecatedConstListView GetListDeprecated() const;
-
   // Appends `value` to the end of the list.
   //
   // DEPRECATED: prefer `Value::List::Append()`.
@@ -1110,9 +1089,9 @@ class BASE_EXPORT GSL_OWNER Value {
   }
 
  protected:
-  // TODO(https://crbug.com/1187091): Once deprecated list methods and ListView
-  // have been removed, make this a private member of List.
-  using ListStorage = DeprecatedListStorage;
+  // TODO(https://crbug.com/1187062): Once ListValue has been removed, remove
+  // list() and make this a private member of List.
+  using ListStorage = std::vector<Value>;
 
   // Checked convenience accessors for dict and list.
   const LegacyDictStorage& dict() const { return GetDict().storage_; }
@@ -1364,9 +1343,6 @@ class BASE_EXPORT DictionaryValue : public Value {
 // DEPRECATED: prefer `base::Value::List`.
 class BASE_EXPORT ListValue : public Value {
  public:
-  using const_iterator = ListView::const_iterator;
-  using iterator = ListView::iterator;
-
   // Returns `value` if it is a list, nullptr otherwise.
   static std::unique_ptr<ListValue> From(std::unique_ptr<Value> value);
 
