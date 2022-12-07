@@ -15,4 +15,11 @@ mojo::NamedPlatformChannel::ServerName GetUpdateServiceInternalServerName(
   return GetActiveDutyInternalSocketPath(scope).MaybeAsASCII();
 }
 
+mojo::NamedPlatformChannel::ServerName GetUpdateServiceServerName(
+    UpdaterScope scope) {
+  absl::optional<base::FilePath> socket = GetActiveDutySocketPath(scope);
+  CHECK(socket);
+  return socket->MaybeAsASCII();
+}
+
 }  // namespace updater

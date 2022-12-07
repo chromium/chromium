@@ -79,6 +79,7 @@ class UpdateServiceProxy : public UpdateService {
 
  private:
   ~UpdateServiceProxy() override;
+  void EnsureConnecting();
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdateServiceProxyImpl> impl_;

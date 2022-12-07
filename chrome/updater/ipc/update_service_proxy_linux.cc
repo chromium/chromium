@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/updater/ipc/update_service_proxy_linux.h"
-#include "base/threading/platform_thread.h"
-#include "chrome/updater/service_proxy_factory.h"
 
 #include <memory>
 #include <string>
@@ -25,12 +23,14 @@
 #include "base/version.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/ipc/ipc_names.h"
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -147,23 +147,68 @@ MakeStateChangeObserver(
       std::move(state_change_callback), std::move(complete_callback));
 }
 
+mojo::PlatformChannelEndpoint ConnectMojo(UpdaterScope scope, int tries) {
+  if (tries == 1) {
+    // Launch a server process.
+    absl::optional<base::FilePath> updater = GetUpdaterExecutablePath(scope);
+    if (updater) {
+      base::CommandLine command(*updater);
+      command.AppendSwitch(kServerSwitch);
+      command.AppendSwitchASCII(kServerServiceSwitch,
+                                kServerUpdateServiceSwitchValue);
+      if (scope == UpdaterScope::kSystem) {
+        command.AppendSwitch(kSystemSwitch);
+      }
+      command.AppendSwitch(kEnableLoggingSwitch);
+      command.AppendSwitchASCII(kLoggingModuleSwitch,
+                                kLoggingModuleSwitchValue);
+      base::LaunchProcess(command, {});
+    }
+  }
+
+  return named_mojo_ipc_server::ConnectToServer(
+      GetUpdateServiceServerName(scope));
+}
+
+void Connect(
+    UpdaterScope scope,
+    int tries,
+    base::Time deadline,
+    base::OnceCallback<void(absl::optional<mojo::PlatformChannelEndpoint>)>
+        connected_callback) {
+  if (base::Time::Now() > deadline) {
+    LOG(ERROR) << "Failed to connect to UpdateService remote. "
+                  "Connection timed out.";
+    std::move(connected_callback).Run(absl::nullopt);
+    return;
+  }
+  mojo::PlatformChannelEndpoint endpoint = ConnectMojo(scope, tries);
+
+  if (endpoint.is_valid()) {
+    std::move(connected_callback).Run(std::move(endpoint));
+    return;
+  }
+
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&Connect, scope, tries + 1, deadline,
+                     std::move(connected_callback)),
+      base::Milliseconds(30 * tries));
+}
+
 }  // namespace
 
 class UpdateServiceProxyImpl
     : public base::RefCountedThreadSafe<UpdateServiceProxyImpl> {
  public:
-  explicit UpdateServiceProxyImpl(UpdaterScope scope) {
-    base::ThreadPool::CreateSequencedTaskRunner({})->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&UpdateServiceProxyImpl::Connect, scope),
-        base::BindOnce(&UpdateServiceProxyImpl::OnConnected,
-                       weak_factory_.GetWeakPtr(),
-                       remote_.BindNewPipeAndPassReceiver()));
-  }
+  explicit UpdateServiceProxyImpl(UpdaterScope scope) : scope_(scope) {}
 
-  UpdateServiceProxyImpl(UpdaterScope /*scope*/,
+  UpdateServiceProxyImpl(UpdaterScope scope,
                          std::unique_ptr<mojo::IsolatedConnection> connection,
                          mojo::Remote<mojom::UpdateService> remote)
-      : connection_(std::move(connection)), remote_(std::move(remote)) {
+      : connection_(std::move(connection)),
+        remote_(std::move(remote)),
+        scope_(scope) {
     remote_.set_disconnect_handler(base::BindOnce(
         &UpdateServiceProxyImpl::OnDisconnected, weak_factory_.GetWeakPtr()));
   }
@@ -181,8 +226,9 @@ class UpdateServiceProxyImpl
                 std::move(callback)),
             "");
 
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->GetVersion(std::move(wrapped_callback));
   }
@@ -193,8 +239,9 @@ class UpdateServiceProxyImpl
     mojom::UpdateService::FetchPoliciesCallback wrapped_callback =
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                     kErrorMojoDisconnect);
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->FetchPolicies(std::move(wrapped_callback));
   }
@@ -207,8 +254,9 @@ class UpdateServiceProxyImpl
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
                                                     kErrorMojoDisconnect);
 
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->RegisterApp(MakeRegistrationRequest(request),
                          std::move(wrapped_callback));
@@ -230,8 +278,9 @@ class UpdateServiceProxyImpl
             }).Then(std::move(callback)),
             std::vector<mojom::AppStatePtr>());
 
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->GetAppStates(std::move(wrapped_callback));
   }
@@ -242,8 +291,9 @@ class UpdateServiceProxyImpl
     mojom::UpdateService::RunPeriodicTasksCallback wrapped_callback =
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback));
 
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->RunPeriodicTasks(std::move(wrapped_callback));
   }
@@ -255,8 +305,9 @@ class UpdateServiceProxyImpl
     mojom::UpdateService::UpdateAllCallback state_change_observer_callback =
         MakeStateChangeObserver(std::move(state_change_callback),
                                 std::move(complete_callback));
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->UpdateAll(std::move(state_change_observer_callback));
   }
@@ -273,8 +324,9 @@ class UpdateServiceProxyImpl
         MakeStateChangeObserver(std::move(state_change_callback),
                                 std::move(complete_callback));
 
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->Update(app_id, install_data_index,
                     static_cast<mojom::UpdateService::Priority>(priority),
@@ -295,8 +347,9 @@ class UpdateServiceProxyImpl
         MakeStateChangeObserver(std::move(state_change_callback),
                                 std::move(complete_callback));
 
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->Install(MakeRegistrationRequest(registration), client_install_data,
                      install_data_index,
@@ -306,8 +359,9 @@ class UpdateServiceProxyImpl
 
   void CancelInstalls(const std::string& app_id) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->CancelInstalls(app_id);
   }
@@ -325,12 +379,28 @@ class UpdateServiceProxyImpl
         MakeStateChangeObserver(std::move(state_change_callback),
                                 std::move(complete_callback));
 
-    if (!remote_)
+    if (!remote_) {
       return;
+    }
 
     remote_->RunInstaller(app_id, installer_path, install_args, install_data,
                           install_settings,
                           std::move(state_change_observer_callback));
+  }
+
+  void EnsureConnecting() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (remote_) {
+      return;
+    }
+
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&Connect, scope_, 0,
+                       base::Time::Now() + kConnectionTimeout,
+                       OnCurrentSequence(base::BindOnce(
+                           &UpdateServiceProxyImpl::OnConnected, this,
+                           remote_.BindNewPipeAndPassReceiver()))));
   }
 
  private:
@@ -343,34 +413,6 @@ class UpdateServiceProxyImpl
     LOG(ERROR) << "UpdateService remote has unexpectedly disconnected.";
     connection_.reset();
     remote_.reset();
-  }
-
-  static absl::optional<mojo::PlatformChannelEndpoint> Connect(
-      UpdaterScope scope) {
-    absl::optional<base::FilePath> socket_path = GetActiveDutySocketPath(scope);
-    if (!socket_path) {
-      LOG(ERROR) << "Failed to get socket path.";
-      return absl::nullopt;
-    }
-
-    mojo::PlatformChannelEndpoint endpoint;
-
-    base::Time deadline = base::Time::NowFromSystemTime() + kConnectionTimeout;
-    do {
-      endpoint = mojo::NamedPlatformChannel::ConnectToServer(
-          socket_path->MaybeAsASCII());
-      base::PlatformThread::Sleep(base::Milliseconds(100));
-    } while (!endpoint.is_valid() &&
-             base::Time::NowFromSystemTime() < deadline);
-
-    if (!endpoint.is_valid()) {
-      LOG(ERROR)
-          << "Failed to connect to UpdateService remote. Connection timed "
-             "out.";
-      return absl::nullopt;
-    }
-
-    return std::move(endpoint);
   }
 
   void OnConnected(mojo::PendingReceiver<mojom::UpdateService> pending_receiver,
@@ -404,6 +446,7 @@ class UpdateServiceProxyImpl
       GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::UpdateService> remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  const UpdaterScope scope_;
 
   base::WeakPtrFactory<UpdateServiceProxyImpl> weak_factory_{this};
 };
@@ -422,12 +465,14 @@ UpdateServiceProxy::UpdateServiceProxy(
 void UpdateServiceProxy::GetVersion(
     base::OnceCallback<void(const base::Version&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->GetVersion(OnCurrentSequence(std::move(callback)));
 }
 
 void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->FetchPolicies(OnCurrentSequence(std::move(callback)));
 }
@@ -435,6 +480,7 @@ void UpdateServiceProxy::FetchPolicies(base::OnceCallback<void(int)> callback) {
 void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
                                      base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->RegisterApp(request, OnCurrentSequence(std::move(callback)));
 }
@@ -442,12 +488,14 @@ void UpdateServiceProxy::RegisterApp(const RegistrationRequest& request,
 void UpdateServiceProxy::GetAppStates(
     base::OnceCallback<void(const std::vector<AppState>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->GetAppStates(OnCurrentSequence(std::move(callback)));
 }
 
 void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->RunPeriodicTasks(OnCurrentSequence(std::move(callback)));
 }
@@ -455,6 +503,7 @@ void UpdateServiceProxy::RunPeriodicTasks(base::OnceClosure callback) {
 void UpdateServiceProxy::UpdateAll(StateChangeCallback state_update,
                                    Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->UpdateAll(OnCurrentSequence(state_update),
                    OnCurrentSequence(std::move(callback)));
@@ -468,6 +517,7 @@ void UpdateServiceProxy::Update(
     StateChangeCallback state_update,
     Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->Update(app_id, install_data_index, priority,
                 policy_same_version_update, OnCurrentSequence(state_update),
@@ -481,6 +531,7 @@ void UpdateServiceProxy::Install(const RegistrationRequest& registration,
                                  StateChangeCallback state_update,
                                  Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->Install(registration, client_install_data, install_data_index,
                  priority, OnCurrentSequence(state_update),
@@ -489,7 +540,9 @@ void UpdateServiceProxy::Install(const RegistrationRequest& registration,
 
 void UpdateServiceProxy::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
+  impl_->CancelInstalls(app_id);
 }
 
 void UpdateServiceProxy::RunInstaller(const std::string& app_id,
@@ -500,6 +553,7 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
                                       StateChangeCallback state_update,
                                       Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureConnecting();
   VLOG(1) << __func__;
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
                       install_settings, OnCurrentSequence(state_update),
@@ -509,6 +563,11 @@ void UpdateServiceProxy::RunInstaller(const std::string& app_id,
 UpdateServiceProxy::~UpdateServiceProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
+}
+
+void UpdateServiceProxy::EnsureConnecting() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  impl_->EnsureConnecting();
 }
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
