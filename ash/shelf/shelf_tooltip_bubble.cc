@@ -57,7 +57,7 @@ void ShelfTooltipBubble::OnThemeChanged() {
 
   const auto* color_provider = GetColorProvider();
 
-  // TODO(crbug.com/1377484): Update this function to use color id instead.
+  // TODO(b/261653838): Update this function to use color id instead.
   set_color(color_provider->GetColor(kColorAshShelfTooltipBackgroundColor));
 
   // Updates the background color in the bubble frame view.

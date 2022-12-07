@@ -152,7 +152,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   bool GetDisplayVisibleArrow() const;
 
   // Set the background color of the bubble border.
-  // TODO(crbug.com/1377484): Update this function to use color id instead.
+  // TODO(b/261653838): Update this function to use color id instead.
   void SetBackgroundColor(SkColor color);
   SkColor GetBackgroundColor() const;
 
