@@ -5,6 +5,7 @@
 #ifndef CHROME_UPDATER_APP_SERVER_LINUX_UPDATE_SERVICE_STUB_H_
 #define CHROME_UPDATER_APP_SERVER_LINUX_UPDATE_SERVICE_STUB_H_
 
+#include "base/functional/callback_forward.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
 
 #include "base/memory/scoped_refptr.h"
@@ -25,7 +26,9 @@ class UpdateServiceStub : public mojom::UpdateService {
   // `NamedMojoIpcServer` which listens on a socket whose name is decided by
   // `scope`.
   UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
-                    UpdaterScope scope);
+                    UpdaterScope scope,
+                    base::RepeatingClosure task_start_listener,
+                    base::RepeatingClosure task_end_listener);
   UpdateServiceStub(const UpdateServiceStub&) = delete;
   UpdateServiceStub& operator=(const UpdateServiceStub&) = delete;
   ~UpdateServiceStub() override;
@@ -61,6 +64,8 @@ class UpdateServiceStub : public mojom::UpdateService {
 
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateService> server_;
   scoped_refptr<updater::UpdateService> impl_;
+  base::RepeatingClosure task_start_listener_;
+  base::RepeatingClosure task_end_listener_;
 };
 
 }  // namespace updater

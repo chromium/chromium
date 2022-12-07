@@ -9,35 +9,28 @@
 
 #include <xpc/xpc.h>
 
-#include <memory>
-
 #include "base/atomic_ref_count.h"
 #include "base/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequence_checker.h"
-#include "chrome/updater/app/app_server.h"
 #include "chrome/updater/app/server/mac/service_delegate.h"
-#include "chrome/updater/app/server/posix/update_service_internal_stub.h"
+#include "chrome/updater/app/server/posix/app_server_posix.h"
 #import "chrome/updater/configurator.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service_impl.h"
 
 namespace base {
-class SequencedTaskRunner;
 struct RegistrationRequest;
-}
+}  // namespace base
 
 namespace updater {
 
 class UpdateServiceInternal;
 class UpdateService;
 
-class AppServerMac : public AppServer {
+class AppServerMac : public AppServerPosix {
  public:
   AppServerMac();
-  void TaskStarted();
-  void TaskCompleted();
 
  protected:
   // Overrides of App.
@@ -56,21 +49,9 @@ class AppServerMac : public AppServer {
           register_callback) override;
   void UninstallSelf() override;
 
-  void MarkTaskStarted();
-  void AcknowledgeTaskCompletion();
-
-  base::TimeDelta ServerKeepAlive();
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
   base::scoped_nsobject<CRUUpdateCheckServiceXPCDelegate>
       update_check_delegate_;
   base::scoped_nsobject<NSXPCListener> update_check_listener_;
-
-  // Task runner bound to the main sequence and the update service instance.
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
-  int tasks_running_ = 0;
 };
 
 }  // namespace updater

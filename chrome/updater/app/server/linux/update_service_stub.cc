@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
@@ -99,7 +100,9 @@ MakeStateChangeObserverCallbacks(
 }  // namespace
 
 UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
-                                     UpdaterScope scope)
+                                     UpdaterScope scope,
+                                     base::RepeatingClosure task_start_listener,
+                                     base::RepeatingClosure task_end_listener)
     : server_(
           GetActiveDutySocketPath(scope).MaybeAsASCII(),
           named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
@@ -112,7 +115,9 @@ UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
                 return interface;
               },
               this))),
-      impl_(impl) {
+      impl_(impl),
+      task_start_listener_(task_start_listener),
+      task_end_listener_(task_end_listener) {
   server_.set_disconnect_handler(base::BindRepeating(
       &UpdateServiceStub::OnClientDisconnected, base::Unretained(this)));
   server_.StartServer();
@@ -126,38 +131,50 @@ void UpdateServiceStub::OnClientDisconnected() {
 }
 
 void UpdateServiceStub::GetVersion(GetVersionCallback callback) {
-  impl_->GetVersion(base::BindOnce(
-      [](GetVersionCallback callback, const base::Version& version) {
-        std::move(callback).Run(version.GetString());
-      },
-      std::move(callback)));
+  task_start_listener_.Run();
+  impl_->GetVersion(
+      base::BindOnce(
+          [](GetVersionCallback callback, const base::Version& version) {
+            std::move(callback).Run(version.GetString());
+          },
+          std::move(callback))
+          .Then(task_end_listener_));
 }
 
 void UpdateServiceStub::FetchPolicies(FetchPoliciesCallback callback) {
-  impl_->FetchPolicies(std::move(callback));
+  task_start_listener_.Run();
+  impl_->FetchPolicies(std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::RegisterApp(mojom::RegistrationRequestPtr request,
                                     RegisterAppCallback callback) {
-  impl_->RegisterApp(MakeRegistrationRequest(request), std::move(callback));
+  task_start_listener_.Run();
+  impl_->RegisterApp(MakeRegistrationRequest(request),
+                     std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::GetAppStates(GetAppStatesCallback callback) {
+  task_start_listener_.Run();
   impl_->GetAppStates(
-      base::BindOnce([](const std::vector<updater::UpdateService::AppState>&
-                            app_states) {
-        std::vector<mojom::AppStatePtr> app_states_mojom;
-        std::transform(app_states.begin(), app_states.end(),
-                       std::back_inserter(app_states_mojom), &MakeMojoAppState);
-        return app_states_mojom;
-      }).Then(std::move(callback)));
+      base::BindOnce(
+          [](const std::vector<updater::UpdateService::AppState>& app_states) {
+            std::vector<mojom::AppStatePtr> app_states_mojom;
+            std::transform(app_states.begin(), app_states.end(),
+                           std::back_inserter(app_states_mojom),
+                           &MakeMojoAppState);
+            return app_states_mojom;
+          })
+          .Then(std::move(callback))
+          .Then(task_end_listener_));
 }
 
 void UpdateServiceStub::RunPeriodicTasks(RunPeriodicTasksCallback callback) {
-  impl_->RunPeriodicTasks(std::move(callback));
+  task_start_listener_.Run();
+  impl_->RunPeriodicTasks(std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::UpdateAll(UpdateAllCallback callback) {
+  task_start_listener_.Run();
   std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer =
       std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
   std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
@@ -165,7 +182,7 @@ void UpdateServiceStub::UpdateAll(UpdateAllCallback callback) {
   auto [state_change_callback, on_complete_callback] =
       MakeStateChangeObserverCallbacks(std::move(observer));
   impl_->UpdateAll(std::move(state_change_callback),
-                   std::move(on_complete_callback));
+                   std::move(on_complete_callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::Update(
@@ -174,6 +191,7 @@ void UpdateServiceStub::Update(
     UpdateService::Priority priority,
     UpdateService::PolicySameVersionUpdate policy_same_version_update,
     UpdateCallback callback) {
+  task_start_listener_.Run();
   std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer =
       std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
   std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
@@ -185,7 +203,7 @@ void UpdateServiceStub::Update(
                 static_cast<updater::UpdateService::PolicySameVersionUpdate>(
                     policy_same_version_update),
                 std::move(state_change_callback),
-                std::move(on_complete_callback));
+                std::move(on_complete_callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
@@ -193,6 +211,7 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
                                 const std::string& install_data_index,
                                 UpdateService::Priority priority,
                                 InstallCallback callback) {
+  task_start_listener_.Run();
   std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer =
       std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
   std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
@@ -203,11 +222,13 @@ void UpdateServiceStub::Install(mojom::RegistrationRequestPtr registration,
                  install_data_index,
                  static_cast<updater::UpdateService::Priority>(priority),
                  std::move(state_change_callback),
-                 std::move(on_complete_callback));
+                 std::move(on_complete_callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStub::CancelInstalls(const std::string& app_id) {
+  task_start_listener_.Run();
   impl_->CancelInstalls(app_id);
+  task_end_listener_.Run();
 }
 
 void UpdateServiceStub::RunInstaller(const std::string& app_id,
@@ -216,6 +237,7 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
                                      const std::string& install_data,
                                      const std::string& install_settings,
                                      RunInstallerCallback callback) {
+  task_start_listener_.Run();
   std::unique_ptr<mojo::Remote<mojom::StateChangeObserver>> observer =
       std::make_unique<mojo::Remote<mojom::StateChangeObserver>>();
   std::move(callback).Run(observer->BindNewPipeAndPassReceiver());
@@ -224,7 +246,7 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
       MakeStateChangeObserverCallbacks(std::move(observer));
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
                       install_settings, std::move(state_change_callback),
-                      std::move(on_complete_callback));
+                      std::move(on_complete_callback).Then(task_end_listener_));
 }
 
 }  // namespace updater

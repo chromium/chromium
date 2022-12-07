@@ -327,8 +327,8 @@ TEST_F(UpdaterIPCTestCase, AllRpcsComplete) {
             std::move(callback).Run(UpdateService::Result::kInstallFailed);
           });
 
-  auto service_stub =
-      std::make_unique<UpdateServiceStub>(mock_service, UpdaterScope::kUser);
+  auto service_stub = std::make_unique<UpdateServiceStub>(
+      mock_service, UpdaterScope::kUser, base::DoNothing(), base::DoNothing());
 
   base::Process child_process = base::SpawnMultiProcessTestChild(
       kClientProcessName, base::GetMultiProcessTestChildBaseCommandLine(),

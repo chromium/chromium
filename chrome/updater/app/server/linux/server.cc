@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -25,14 +26,17 @@ AppServerLinux::~AppServerLinux() = default;
 
 void AppServerLinux::ActiveDuty(scoped_refptr<UpdateService> update_service) {
   active_duty_stub_ = std::make_unique<UpdateServiceStub>(
-      std::move(update_service), updater_scope());
+      std::move(update_service), updater_scope(),
+      base::BindRepeating(&AppServerLinux::TaskStarted, this),
+      base::BindRepeating(&AppServerLinux::TaskCompleted, this));
 }
 
 void AppServerLinux::ActiveDutyInternal(
     scoped_refptr<UpdateServiceInternal> update_service_internal) {
   active_duty_internal_stub_ = std::make_unique<UpdateServiceInternalStub>(
-      std::move(update_service_internal), updater_scope(), base::DoNothing(),
-      base::DoNothing());
+      std::move(update_service_internal), updater_scope(),
+      base::BindRepeating(&AppServerLinux::TaskStarted, this),
+      base::BindRepeating(&AppServerLinux::TaskCompleted, this));
 }
 
 bool AppServerLinux::SwapInNewVersion() {

@@ -323,6 +323,8 @@ if (is_win || is_mac || is_linux) {
 
     if (is_posix) {
       sources += [
+        "app/server/posix/app_server_posix.cc",
+        "app/server/posix/app_server_posix.h",
         "app/server/posix/update_service_internal_stub.cc",
         "app/server/posix/update_service_internal_stub.h",
         "ipc/ipc_support.cc",

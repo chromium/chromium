@@ -35,8 +35,7 @@
 
 namespace updater {
 
-AppServerMac::AppServerMac()
-    : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+AppServerMac::AppServerMac() = default;
 AppServerMac::~AppServerMac() = default;
 
 void AppServerMac::Uninitialize() {
@@ -91,38 +90,6 @@ bool AppServerMac::MigrateLegacyUpdaters(
   MigrateKeystoneTickets(updater_scope(), register_callback);
 
   return true;
-}
-
-void AppServerMac::TaskStarted() {
-  main_task_runner_->PostTask(FROM_HERE,
-                              BindOnce(&AppServerMac::MarkTaskStarted, this));
-}
-
-void AppServerMac::MarkTaskStarted() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ++tasks_running_;
-  VLOG(2) << "Starting task, " << tasks_running_ << " tasks running";
-}
-
-base::TimeDelta AppServerMac::ServerKeepAlive() {
-  int seconds = external_constants()->ServerKeepAliveSeconds();
-  VLOG(2) << "ServerKeepAliveSeconds: " << seconds;
-  return base::Seconds(seconds);
-}
-
-void AppServerMac::TaskCompleted() {
-  main_task_runner_->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&AppServerMac::AcknowledgeTaskCompletion, this),
-      ServerKeepAlive());
-}
-
-void AppServerMac::AcknowledgeTaskCompletion() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (--tasks_running_ < 1) {
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&AppServerMac::Shutdown, this, 0));
-  }
-  VLOG(2) << "Completing task, " << tasks_running_ << " tasks running";
 }
 
 scoped_refptr<App> MakeAppServer() {
