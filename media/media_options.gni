@@ -61,17 +61,21 @@ declare_args() {
   enable_mse_mpeg2ts_stream_parser =
       proprietary_codecs && (enable_cast_receiver || use_fuzzing_engine)
 
-  # Enable Dolby Vision demuxing. Enable by default for Chromecast. Actual
-  # decoding must be provided by the platform. Note some Dolby Vision profiles
-  # which are encoded using HEVC require `enable_platform_hevc` to be enabled.
+  # Enable Dolby Vision demuxing. Enabled by default for Chromecast and Windows.
+  # Actual decoding must be provided by the platform. Since most Dolby Vision
+  # profiles use HEVC, `enable_platform_hevc` is required to enable this.
   #
   # TODO(crbug.com/1336055): Revisit the default value for this setting as it
   # applies to video-capable devices.
-  enable_platform_dolby_vision = proprietary_codecs && is_cast_media_device
+  enable_platform_dolby_vision =
+      proprietary_codecs && (is_cast_media_device || is_win)
 
-  # Enable platform support of encrypted Dolby Vision. Clear Dolby Vision is
-  # still not supported. The actual support depends on platform capability.
-  enable_platform_encrypted_dolby_vision = false
+  # Enable platform support of encrypted Dolby Vision. The actual support
+  # depends on platform capability and is controlled by the run time feature
+  # kPlatformEncryptedDolbyVision. Clear Dolby Vision is not supported by
+  # default, unless overwritten by the run time feature
+  # kAllowClearDolbyVisionInMseWhenPlatformEncryptedDvEnabled.
+  enable_platform_encrypted_dolby_vision = proprietary_codecs && is_win
 
   # Enable HLS with SAMPLE-AES decryption.
   enable_hls_sample_aes =
