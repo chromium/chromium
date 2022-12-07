@@ -5383,6 +5383,11 @@ const char kEcheSWADisableStunServerDescription[] =
     "Allows disabling the stun servers when establishing a WebRTC connection "
     "to Eche";
 
+const char kEcheSWACheckAndroidNetworkInfoName[] = "Check Android network info";
+const char kEcheSWACheckAndroidNetworkInfoDescription[] =
+    "Allows CrOS to analyze Android network information to provide more "
+    "context on connection errors";
+
 const char kEnableNetworkingInDiagnosticsAppName[] =
     "Enable networking cards in the Diagnostics App";
 const char kEnableNetworkingInDiagnosticsAppDescription[] =

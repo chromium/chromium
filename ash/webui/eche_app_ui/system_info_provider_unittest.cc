@@ -31,6 +31,7 @@ const char kFakeDeviceType[] = "Chromebook";
 const bool kFakeMeasureLatency = false;
 const bool kFakeSendStartSignaling = true;
 const bool kFakeDisableStunServer = false;
+const bool kFakeCheckAndroidNetworkInfo = false;
 
 void ParseJson(const std::string& json,
                std::string& device_name,
@@ -42,7 +43,8 @@ void ParseJson(const std::string& json,
                std::string& device_type,
                bool& measure_latency,
                bool& send_start_signaling,
-               bool& disable_stun_server) {
+               bool& disable_stun_server,
+               bool& check_android_network_info) {
   absl::optional<base::Value> message_value = base::JSONReader::Read(json);
   base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
@@ -85,6 +87,10 @@ void ParseJson(const std::string& json,
       message_dictionary->FindBool(kJsonDisableStunServerKey);
   if (disable_stun_server_opt.has_value())
     disable_stun_server = disable_stun_server_opt.value();
+  absl::optional<bool> check_android_network_info_opt =
+      message_dictionary->FindBool(kJsonCheckAndroidNetworkInfoKey);
+  if (check_android_network_info_opt.has_value())
+    check_android_network_info = check_android_network_info_opt.value();
 }
 
 class TaskRunner {
@@ -284,12 +290,14 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   bool measure_latency = true;
   bool send_start_signaling = false;
   bool disable_stun_server = true;
+  bool check_android_network_info = true;
 
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
   ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state,
             debug_mode, gaia_id, device_type, measure_latency,
-            send_start_signaling, disable_stun_server);
+            send_start_signaling, disable_stun_server,
+            check_android_network_info);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
   EXPECT_EQ(board_name, kFakeBoardName);
@@ -301,6 +309,7 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(measure_latency, kFakeMeasureLatency);
   EXPECT_EQ(send_start_signaling, kFakeSendStartSignaling);
   EXPECT_EQ(disable_stun_server, kFakeDisableStunServer);
+  EXPECT_EQ(check_android_network_info, kFakeCheckAndroidNetworkInfo);
 }
 
 TEST_F(SystemInfoProviderTest, ObserverCalledWhenBacklightChanged) {

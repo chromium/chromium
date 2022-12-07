@@ -28,6 +28,7 @@
  *    MeasureLatency: boolean,
  *    sendStartSignaling: boolean,
  *    disable_stun_server: boolean,
+ *    check_android_network_info: boolean,
  * }}
  */
 /* #export */ let SystemInfo;

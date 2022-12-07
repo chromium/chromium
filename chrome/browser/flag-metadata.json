@@ -1582,6 +1582,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "eche-swa-check-android-network-info",
+    "owners": [ "dhnishi", "corakwue@google.com", "ftsui@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "eche-swa-debug-mode",
     "owners": [ "nayebi@google.com" ],
     "expiry_milestone": 115

@@ -57968,6 +57968,7 @@ from previous Chrome versions.
   <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
   <int value="-1637552275" label="NtpRealboxUseGoogleGIcon:disabled"/>
+  <int value="-1636940108" label="EcheSWACheckAndroidNetworkInfo:enabled"/>
   <int value="-1636188191" label="IncognitoNtpRevamp:enabled"/>
   <int value="-1635872214"
       label="AutofillConsiderPlaceholderForParsing:disabled"/>
@@ -61746,6 +61747,7 @@ from previous Chrome versions.
   <int value="561374433" label="SCTAuditing:disabled"/>
   <int value="561951500" label="GlobalMediaControlsCastStartStop:enabled"/>
   <int value="562111126" label="SidePanelBorder:enabled"/>
+  <int value="562635337" label="EcheSWACheckAndroidNetworkInfo:disabled"/>
   <int value="562979188" label="DesktopIOSPromotion:enabled"/>
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
   <int value="564452531" label="SystemEmojiPickerExtension:enabled"/>

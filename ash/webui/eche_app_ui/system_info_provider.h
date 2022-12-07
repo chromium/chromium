@@ -26,6 +26,7 @@ extern const char kJsonDeviceTypeKey[];
 extern const char kJsonMeasureLatencyKey[];
 extern const char kJsonSendStartSignalingKey[];
 extern const char kJsonDisableStunServerKey[];
+extern const char kJsonCheckAndroidNetworkInfoKey[];
 
 class SystemInfo;
 
