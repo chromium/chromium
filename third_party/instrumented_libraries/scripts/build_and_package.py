@@ -32,7 +32,7 @@ class IncorrectReleaseError(Error):
 
 
 def _get_release():
-  return subprocess.check_output(['lsb_release', '-cs']).strip()
+  return subprocess.check_output(['lsb_release', '-cs']).decode('utf-8').strip()
 
 
 def _tar_filter(tar_info):
@@ -95,7 +95,7 @@ def main():
       'build_type',
       nargs='*',
       default='all',
-      choices=BUILD_TYPES.keys() + ['all'],
+      choices=list(BUILD_TYPES.keys()) + ['all'],
       help='the type of instrumented library to build')
   parser.add_argument(
       'release', help='the name of the Ubuntu release to build with')

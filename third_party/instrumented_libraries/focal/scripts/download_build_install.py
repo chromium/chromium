@@ -375,7 +375,9 @@ class LibcurlBuilder(DebianBuilder):
     # libcurl.so is installed by one of libcurl-{gnutls,nss,openssl}-dev.
     # Doing a standalone instrumented build of a dev package is tricky,
     # so we manually symlink libcurl.so instead.
-    os.symlink('libcurl.so.4', os.path.join(self.dest_libdir(), 'libcurl.so'))
+    libcurl_so = os.path.join(self.dest_libdir(), 'libcurl.so')
+    if not os.path.exists(libcurl_so):
+      os.symlink('libcurl.so.4', libcurl_so)
 
 
 class Libpci3Builder(InstrumentedPackageBuilder):
