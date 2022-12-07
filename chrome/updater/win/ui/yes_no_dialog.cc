@@ -5,6 +5,7 @@
 #include "chrome/updater/win/ui/yes_no_dialog.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui.h"
@@ -89,9 +90,7 @@ LRESULT YesNoDialog::OnClickedButton(WORD notify_code,
       break;
 
     default:
-      DCHECK(false);
-      yes_clicked_ = false;
-      break;
+      NOTREACHED();
   }
 
   handled = true;

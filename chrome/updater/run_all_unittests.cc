@@ -179,10 +179,10 @@ int main(int argc, char** argv) {
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
-  if (FAILED(updater::DisableCOMExceptionHandling())) {
-    // Failing to disable COM exception handling is a critical error.
-    CHECK(false) << "Failed to disable COM exception handling.";
-  }
+
+  // Failing to disable COM exception handling is a critical error.
+  CHECK(SUCCEEDED(updater::DisableCOMExceptionHandling()))
+      << "Failed to disable COM exception handling.";
 
   installer::ScopedTokenPrivilege token_se_debug(SE_DEBUG_NAME);
   if (::IsUserAnAdmin() && !token_se_debug.is_enabled()) {

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui.h"
@@ -98,8 +99,7 @@ void SplashScreen::Dismiss(base::OnceClosure on_close_closure) {
       break;
 
     default:
-      DCHECK(false);
-      break;
+      NOTREACHED();
   }
 }
 

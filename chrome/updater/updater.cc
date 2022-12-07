@@ -122,10 +122,10 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
     // TODO(crbug.com/1294543) - is there a more specific error needed?
     return kErrorComInitializationFailed;
   }
-  if (FAILED(DisableCOMExceptionHandling())) {
-    // Failing to disable COM exception handling is a critical error.
-    CHECK(false) << "Failed to disable COM exception handling.";
-  }
+
+  // Failing to disable COM exception handling is a critical error.
+  CHECK(SUCCEEDED(DisableCOMExceptionHandling()))
+      << "Failed to disable COM exception handling.";
   base::win::RegisterInvalidParamHandler();
   VLOG(1) << GetUACState();
 #endif
@@ -135,11 +135,9 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
       base::BindOnce([]() { base::ThreadPoolInstance::Get()->Shutdown(); }));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
 
-  if (command_line->HasSwitch(kCrashMeSwitch)) {
-    // Records a backtrace in the log, crashes the program, saves a crash dump,
-    // and reports the crash.
-    CHECK(false) << "--crash-me was used.";
-  }
+  // Records a backtrace in the log, crashes the program, saves a crash dump,
+  // and reports the crash.
+  CHECK(!command_line->HasSwitch(kCrashMeSwitch)) << "--crash-me was used.";
 
 #if BUILDFLAG(IS_POSIX)
   // As long as this object is alive, all Mojo API surface relevant to IPC

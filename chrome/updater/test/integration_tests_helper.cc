@@ -391,10 +391,9 @@ int IntegrationTestsHelperMain(int argc, char** argv) {
   auto scoped_com_initializer =
       std::make_unique<base::win::ScopedCOMInitializer>(
           base::win::ScopedCOMInitializer::kMTA);
-  if (FAILED(DisableCOMExceptionHandling())) {
-    // Failing to disable COM exception handling is a critical error.
-    CHECK(false) << "Failed to disable COM exception handling.";
-  }
+  // Failing to disable COM exception handling is a critical error.
+  CHECK(SUCCEEDED(DisableCOMExceptionHandling()))
+      << "Failed to disable COM exception handling.";
 #endif
   chrome::RegisterPathProvider();
   TestEventListeners& listeners = UnitTest::GetInstance()->listeners();
