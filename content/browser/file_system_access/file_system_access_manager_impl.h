@@ -315,7 +315,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   base::GUID GetUniqueId(const FileSystemAccessFileHandleImpl& file);
   base::GUID GetUniqueId(const FileSystemAccessDirectoryHandleImpl& directory);
 
-  // Creates a FileSystemURL which corresponds to a FilePath and Origin.
+  // Creates a FileSystemURL which corresponds `path`, which must
+  // correspond to a "real" file path and not a virtual path in a sandboxed file
+  // system.
   storage::FileSystemURL CreateFileSystemURLFromPath(
       PathType path_type,
       const base::FilePath& path);
@@ -604,6 +606,20 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   absl::optional<FileSystemChooser::ResultEntry>
       auto_file_picker_result_for_test_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // TODO(https://crbug.com/1396116): Remove this hack by fixing the fact that
+  // FileSystemURL uses a StorageKey with an opaque origin to represent "no
+  // origin".
+  //
+  // A StorageKey containing an arbitrary, unique, randomly-generated opaque
+  // origin. ChromeOS file system backends run security checks on the assumption
+  // that all FileSystemURLs of non-sandboxed file systems must have an opaque
+  // origin. Using a default-constructed StorageKey will create a random nonce,
+  // making origin comparison checks between two FileSystemURLs with
+  // default-constructed StorageKeys fail. Always using this StorageKey ensures
+  // that FileSystemURL::operator== will always return true for two
+  // FileSystemURLs which point to the same file.
+  blink::StorageKey opaque_origin_for_non_sandboxed_filesystemurls_;
 
   base::WeakPtrFactory<FileSystemAccessManagerImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

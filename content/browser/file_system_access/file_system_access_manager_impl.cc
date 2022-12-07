@@ -1526,7 +1526,7 @@ storage::FileSystemURL FileSystemAccessManagerImpl::CreateFileSystemURLFromPath(
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return context()->CreateCrackedFileSystemURL(
-      blink::StorageKey(),
+      opaque_origin_for_non_sandboxed_filesystemurls_,
       path_type == PathType::kLocal ? storage::kFileSystemTypeLocal
                                     : storage::kFileSystemTypeExternal,
       path);
