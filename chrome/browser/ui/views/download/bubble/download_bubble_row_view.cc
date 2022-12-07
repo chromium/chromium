@@ -32,7 +32,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -126,15 +125,6 @@ bool DownloadBubbleRowView::UpdateBubbleUIInfo(bool initial_setup) {
       (is_paused_ == is_paused)) {
     return false;
   }
-
-  // Announce completion of downloads
-  if (state == download::DownloadItem::COMPLETE && state_ != state) {
-    const std::u16string alert_text = l10n_util::GetStringFUTF16(
-        IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT,
-        model_->GetFileNameToReportUser().LossyDisplayName());
-    GetViewAccessibility().AnnounceText(alert_text);
-  }
-
   mode_ = mode;
   state_ = state;
   is_paused_ = is_paused;
