@@ -23,6 +23,14 @@ export const FIRST_PARTY_INPUT_METHOD_ID_PREFIX =
     '_comp_ime_jkghodnilhceideoidjikpgommlajknk';
 
 /**
+ * The preference string used to indicate a user has autocorrect enabled by
+ * default for a particular engine. See the following for more details
+ * https://crsrc.org/chrome/browser/ash/input_method/autocorrect_prefs.cc
+ */
+export const PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT =
+    'physicalKeyboardAutoCorrectionEnabledByDefault';
+
+/**
  * All possible keyboard layouts. Should match Google3.
  *
  * @enum {string}
@@ -184,6 +192,22 @@ export const OPTION_DEFAULT = {
   [OptionType.ZHUYIN_PAGE_SIZE]: '10',
   [OptionType.ZHUYIN_SELECT_KEYS]: '1234567890',
 };
+
+/**
+ * @param {OptionType} optionName The option we want the default value for.
+ * @param {Object<OptionType, *>} overrides List of values to use instead of
+ *    the default values.
+ * @return {*} The default, or overriden value.
+ */
+export function getDefaultValue(optionName, overrides) {
+  // Overrides are only coming from the following flag, let's be safe here and
+  // only enable this branch if the flag is also enabled.
+  if (!loadTimeData.getBoolean('autocorrectEnableByDefault')) {
+    return OPTION_DEFAULT[optionName];
+  }
+  return optionName in overrides ? overrides[optionName] :
+                                   OPTION_DEFAULT[optionName];
+}
 
 /**
  * Type conversions functions for reading and writing options.

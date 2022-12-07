@@ -24,7 +24,7 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OPTION_DEFAULT, OPTION_MAP, OptionType, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
+import {generateOptions, getDefaultValue, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OPTION_MAP, OptionType, PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT, shouldStoreAsNumber, SubmenuButton, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
 
 /**
@@ -166,18 +166,21 @@ class SettingsInputMethodOptionsPageElement extends
     const prefValue = this.getPref(this.PREFS_PATH).value;
     const currentSettings =
         this.engineId_ in prefValue ? prefValue[this.engineId_] : {};
+    const defaultOverrides = this.getDefaultValueOverrides_(this.engineId_);
 
     const makeOption = (option) => {
       const name = option.name;
       const uiType = getOptionUiType(name);
-      let value = name in currentSettings ? currentSettings[name] :
-                                            OPTION_DEFAULT[name];
+
+      let value = name in currentSettings ?
+          currentSettings[name] :
+          getDefaultValue(name, defaultOverrides);
       if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
           name in OPTION_MAP) {
         value = OPTION_MAP[name].mapValueForDisplay(value);
       }
       if (!this.isSettingValueValid_(name, value)) {
-        value = OPTION_DEFAULT[name];
+        value = getDefaultValue(name, defaultOverrides);
         this.updatePref_(name, value);
       }
 
@@ -215,6 +218,27 @@ class SettingsInputMethodOptionsPageElement extends
                 options: section.optionNames.map(makeOption, false),
               };
             });
+  }
+
+  /**
+   * Returns an object specifying the default values to be used for a subset
+   * of options.
+   *
+   * @param engineId string The engine id we want default values for.
+   * @return {Object<OptionType, *>} Default value overrides.
+   */
+  getDefaultValueOverrides_(engineId) {
+    if (!loadTimeData.getBoolean('autocorrectEnableByDefault')) {
+      return {};
+    }
+    const enabledByDefaultKey =
+        PHYSICAL_KEYBOARD_AUTOCORRECT_ENABLED_BY_DEFAULT;
+    const prefBlob = this.getPref(this.PREFS_PATH).value;
+    const isAutocorrectDefaultEnabled =
+        prefBlob?.[engineId]?.[enabledByDefaultKey];
+    return !isAutocorrectDefaultEnabled ? {} : {
+      [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 1,
+    };
   }
 
   /**

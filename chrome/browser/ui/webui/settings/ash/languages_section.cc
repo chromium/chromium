@@ -361,6 +361,9 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "allowAutocorrectToggle",
       base::FeatureList::IsEnabled(features::kAutocorrectToggle));
+  html_source->AddBoolean(
+      "autocorrectEnableByDefault",
+      base::FeatureList::IsEnabled(features::kAutocorrectByDefault));
 }
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
