@@ -930,23 +930,41 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
     AtomicHTMLToken* token,
     const Document& document,
     bool include_shadow_roots) {
-  Attribute* type_attribute =
+  // Declarative shadow DOM, as initially shipped:
+  //   1. used the 'shadowroot' attribute, and
+  //   2. attached the shadow root at the *closing* </template> tag.
+  // In 2022, discussions of the spec resumed, and two changes were made:
+  //   1. the attribute is called 'shadowrootmode', and
+  //   2. the shadow root is attached at the *opening* <template> tag.
+  // During the transition between these two behaviors, *both* behaviors can
+  // be used, and are controlled by the developer:
+  //   <template shadowroot=open>  ==> old behavior
+  //   <template shadowrootmode=open>  ==> new behavior
+  //   <template shadowroot=open shadowrootmode=open> ==> new behavior
+  // crbug.com/1379513 tracks the new behavior.
+  // crbug.com/1396384 tracks the eventual removal of the old behavior.
+  Attribute* type_attribute_non_streaming =
       token->GetAttributeItem(html_names::kShadowrootAttr);
-  if (!type_attribute)
+  Attribute* type_attribute_streaming =
+      token->GetAttributeItem(html_names::kShadowrootmodeAttr);
+  bool streaming =
+      type_attribute_streaming &&
+      RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled();
+  if (!type_attribute_non_streaming && !streaming)
     return DeclarativeShadowRootType::kNone;
-
+  String attribute_in_use = streaming ? "shadowrootmode" : "shadowroot";
+  String shadow_mode = streaming ? type_attribute_streaming->Value()
+                                 : type_attribute_non_streaming->Value();
   if (!include_shadow_roots) {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Found declarative shadowroot attribute on a template, but declarative "
-        "Shadow DOM has not been enabled by includeShadowRoots."));
+        "Found declarative " + attribute_in_use +
+            " attribute on a template, but declarative "
+            "Shadow DOM has not been enabled by includeShadowRoots."));
     return DeclarativeShadowRootType::kNone;
   }
 
-  bool streaming =
-      RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled();
-  String shadow_mode = type_attribute->Value();
   if (EqualIgnoringASCIICase(shadow_mode, "open")) {
     return streaming ? DeclarativeShadowRootType::kStreamingOpen
                      : DeclarativeShadowRootType::kOpen;
@@ -958,8 +976,8 @@ DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kOther,
       mojom::blink::ConsoleMessageLevel::kWarning,
-      "Invalid declarative shadowroot attribute value \"" + shadow_mode +
-          "\". Valid values include \"open\" and \"closed\"."));
+      "Invalid declarative " + attribute_in_use + " attribute value \"" +
+          shadow_mode + "\". Valid values include \"open\" and \"closed\"."));
   return DeclarativeShadowRootType::kNone;
 }
 }  // namespace
@@ -1014,10 +1032,7 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
       } else {
         DCHECK(shadow_host_stack_item);
         DCHECK(shadow_host_stack_item->IsElementNode());
-        if (template_element->GetDeclarativeShadowRootType() ==
-                DeclarativeShadowRootType::kOpen ||
-            template_element->GetDeclarativeShadowRootType() ==
-                DeclarativeShadowRootType::kClosed) {
+        if (template_element->IsNonStreamingDeclarativeShadowRoot()) {
           auto focus_delegation = template_stack_item->GetAttributeItem(
                                       html_names::kShadowrootdelegatesfocusAttr)
                                       ? FocusDelegation::kDelegateFocus

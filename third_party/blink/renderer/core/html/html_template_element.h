@@ -41,9 +41,11 @@ namespace blink {
 class DocumentFragment;
 class TemplateContentDocumentFragment;
 
-// TODO(crbug.com/1379513) Only three of these should be needed at a time,
-// depending on the state of the StreamingDeclarativeShadowDOM feature. That
-// feature flips between kOpen/kClosed and kStreamingOpen/kStreamingClosed.
+// TODO(crbug.com/1379513, crbug.com/1396384) Only three of these should be
+// needed at a time, depending on the state of the StreamingDeclarativeShadowDOM
+// feature and whether the `shadowroot` or `shadowrootmode` attribute is used.
+// For a given template, either kNone/kOpen/kClosed or
+// kNone/kStreamingOpen/kStreamingClosed are used.
 enum class DeclarativeShadowRootType {
   kNone,
   kOpen,
@@ -75,7 +77,11 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
     return ContentInternal();
   }
 
+  // TODO(crbug.com/1396384) Eventually remove this.
+  bool IsNonStreamingDeclarativeShadowRoot() const;
+  // TODO(crbug.com/1396384) Eventually remove this.
   DocumentFragment* DeclarativeShadowContent() const;
+
   void SetDeclarativeShadowRootType(DeclarativeShadowRootType val) {
     declarative_shadow_root_type_ = val;
   }

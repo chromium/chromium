@@ -783,6 +783,8 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
         template_element, type, focus_delegation, slot_assignment_mode);
     if (success) {
       DCHECK(host->AuthorShadowRoot());
+      UseCounter::Count(host->GetDocument(),
+                        WebFeature::kStreamingDeclarativeShadowDOM);
       should_attach_template = false;
       template_element->SetDeclarativeShadowRoot(*host->AuthorShadowRoot());
     } else {
@@ -794,7 +796,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     }
   }
   if (should_attach_template) {
-    // Attach a normal template element, set as a declarative shadow root.
+    // Attach a normal template element.
     AttachLater(CurrentNode(), template_element);
   }
   open_elements_.Push(template_stack_item);

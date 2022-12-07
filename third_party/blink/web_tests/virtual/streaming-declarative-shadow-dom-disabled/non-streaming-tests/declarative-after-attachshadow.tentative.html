@@ -2,8 +2,8 @@
 <title>Declarative Shadow DOM after attachShadow</title>
 <link rel='author' href='mailto:masonf@chromium.org'>
 <link rel='help' href='https://github.com/whatwg/dom/issues/831'>
-<script src='/resources/testharness.js'></script>
-<script src='/resources/testharnessreport.js'></script>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
 
 <body>
 <script>
@@ -27,7 +27,7 @@ assert_false(gotHost, 'No mutations yet');
 <div id=host>
   <!-- Ensure observer runs at this point (https://github.com/web-platform-tests/wpt/issues/35393) -->
   <script> // some content, which shouldn't be necessary </script>
-  <template shadowrootmode=open>
+  <template shadowroot=open>
     Content
     <slot>Fallback</slot>
   </template>

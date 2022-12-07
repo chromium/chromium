@@ -2,9 +2,9 @@
 <title>getInnerHTML </title>
 <link rel='author' href='mailto:masonf@chromium.org'>
 <link rel='help' href='https://github.com/whatwg/dom/issues/831'>
-<script src='/resources/testharness.js'></script>
-<script src='/resources/testharnessreport.js'></script>
-<script src='../../html/resources/common.js'></script>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../resources/element_names.js'></script>
 
 <body>
 
@@ -29,7 +29,7 @@ function testElementType(allowsShadowDom, elementType, applyToShadow, mode, dele
     const isOpen = mode === 'open';
     if (allowsShadowDom) {
       const delegatesAttr = delegatesFocus ? ' shadowrootdelegatesfocus=""' : '';
-      const correctShadowHtml = `<template shadowrootmode="${mode}"${delegatesAttr}><slot></slot></template>`;
+      const correctShadowHtml = `<template shadowroot="${mode}"${delegatesAttr}><slot></slot></template>`;
       const correctHtml = `<${elementType}>${correctShadowHtml}</${elementType}>`;
       const shadowRoot = element.attachShadow({mode: mode, delegatesFocus: delegatesFocus});
       shadowRoot.appendChild(document.createElement('slot'));

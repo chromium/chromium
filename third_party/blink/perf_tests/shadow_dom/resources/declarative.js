@@ -88,7 +88,7 @@
     measureParseAndAppend(test_div, html);
     return test_div;
   }
-  PerfTestRunner.assert_true(HTMLTemplateElement.prototype.hasOwnProperty("shadowRoot"),'Declarative Shadow DOM not enabled/supported');
+  PerfTestRunner.assert_true(HTMLTemplateElement.prototype.hasOwnProperty("shadowRootMode"),'Declarative Shadow DOM not enabled/supported');
   PerfTestRunner.assert_true(testParse(getShadowMarkup(true, 1, 1)).firstChild.shadowRoot,'Declarative Shadow DOM not detected');
   PerfTestRunner.assert_true(getShadowMarkup(true, 5, 6).length === getShadowMarkup(false, 5, 6).length,'Shadow and light DOM content should have identical length');
   const light1 = testParse(getShadowMarkup(false, 5, 6, /*lightDomDuplicates=*/1)).querySelectorAll(lightDomElementName).length;

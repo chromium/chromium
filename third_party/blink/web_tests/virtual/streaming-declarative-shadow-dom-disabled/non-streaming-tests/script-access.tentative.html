@@ -2,8 +2,8 @@
 <title>Declarative Shadow DOM</title>
 <link rel='author' href='mailto:masonf@chromium.org'>
 <link rel='help' href='https://github.com/whatwg/dom/issues/831'>
-<script src='../../resources/testharness.js'></script>
-<script src='../../resources/testharnessreport.js'></script>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
 
 <body>
 <script>
@@ -91,7 +91,7 @@ test(t => {
   host = document.querySelector('#noroot');
   assert_true(!!host.querySelector('template'), 'Template node still present');
   assert_true(!host.shadowRoot, 'No shadow root');
-},'(Non-streaming) Declarative Shadow DOM: template .content() should be null');
+},'Declarative Shadow DOM: template .content() should be null');
 </script>
 
 <script>
@@ -129,6 +129,6 @@ sync_events.forEach(e => addSyncObserver(e));
 test(t => {
   t.add_cleanup(function() { sync_events.forEach(e => removeSyncObserver(e)) });
   assert_true(!synchronous_events_received.size,`Synchronous mutation events fired: ${Array.from(synchronous_events_received)}`);
-},'Synchronous mutation events should not be fired during (non-streaming) declarative shadow DOM parsing');
+},'Synchronous mutation events should not be fired during declarative shadow DOM parsing');
 </script>
 </body>

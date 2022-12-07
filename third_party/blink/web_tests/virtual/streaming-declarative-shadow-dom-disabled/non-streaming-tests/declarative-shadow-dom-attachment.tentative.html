@@ -2,16 +2,16 @@
 <title>Declarative Shadow DOM Element Attachment</title>
 <link rel='author' href='mailto:masonf@chromium.org'>
 <link rel='help' href='https://github.com/whatwg/dom/issues/831'>
-<script src='/resources/testharness.js'></script>
-<script src='/resources/testharnessreport.js'></script>
-<script src='../../html/resources/common.js'></script>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../resources/element_names.js'></script>
 <script src="support/helpers.js"></script>
 
 <script>
 const shadowContent = '<span>Shadow tree</span><slot></slot>';
 function getDeclarativeContent(mode, delegatesFocus) {
   const delegatesFocusText = delegatesFocus ? ' shadowrootdelegatesfocus' : '';
-  return `<template shadowrootmode=${mode}${delegatesFocusText}>${shadowContent}</template>`;
+  return `<template shadowroot=${mode}${delegatesFocusText}>${shadowContent}</template>`;
 }
 
 const lightDomTextContent = 'Light DOM';
@@ -61,9 +61,9 @@ function testElementType(allowed, nochildren, elementType, mode, delegatesFocus)
     } else {
       if (!nochildren) {
         // Invalid elements should retain a <template> element child with a shadowroot attribute.
-        const template = nodes.wrapper.querySelector('template[shadowrootmode]');
+        const template = nodes.wrapper.querySelector('template[shadowroot]');
         assert_true(!!template);
-        assert_equals(template.getAttribute('shadowrootmode'), mode, `Template with shadowrootmode=${mode} should be left over`);
+        assert_equals(template.getAttribute('shadowroot'), mode, `Template with shadowroot=${mode} should be left over`);
         const span = nodes.wrapper.querySelector('span.lightdom');
         assert_true(!!span);
         assert_equals(span.textContent, lightDomTextContent);

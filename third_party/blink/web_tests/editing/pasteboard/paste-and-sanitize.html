@@ -20,9 +20,9 @@ assert_true(!!window.testRunner, 'This test requires testRunner');
 const root = document.createElement("root");
 document.body.appendChild(root);
 
-function testPaste(originalMarkupOrElement, expected) {
+function testPaste(originalMarkupOrElement, expected, descr) {
   const isElement = originalMarkupOrElement instanceof HTMLElement;
-  const descr = isElement ? originalMarkupOrElement.textContent : originalMarkupOrElement;
+  descr = descr || (isElement ? originalMarkupOrElement.textContent : originalMarkupOrElement);
   test(t => {
     // Clear the clipboard to something known, in case copy fails.
     const dummy = createEditable("Clear the clipboard");
@@ -60,7 +60,7 @@ testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>Hello</i></b></s
 testPaste("<div><div><div>Hello</div></div></div>", "Hello");
 testPaste("<div><b><div><i>Hello</i></div></b></div>", "<i style=\"font-weight: 700;\">Hello</i>");
 testPaste("<div><div style=\"text-align: center;\"><b>Hello</b></div></div>", "<b style=\"text-align: center;\">Hello</b>");
-testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>hello</i></b></span></i></b></div><div><b><i><span style=\"font-weight: normal\"><b><i>world</i></b></span></i></b></div>", 
+testPaste("<div><b><i><span style=\"font-weight: normal\"><b><i>hello</i></b></span></i></b></div><div><b><i><span style=\"font-weight: normal\"><b><i>world</i></b></span></i></b></div>",
           "<div><b><i>hello</i></b></div><div><b><i>world</i></b></div>");
 testPaste("<div><b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i> hello2</i></b></span></i></b></div>", "<b><i><span style=\"font-weight: normal;\"><b><i>hello1</i></b><b><i>&nbsp;hello2</i></b></span></i></b>");
 testPaste("<i style=\"margin: 10px;\"><b><i style=\"margin: 10px;\">hello</i></b></i>",
@@ -71,11 +71,16 @@ testPaste("<div><b><i><span style=\"font-weight: normal\">plain text<b><i>bold i
 testPaste("<span>foo</span><template>Hello</template><span>bar</span>", "foobar");
 // Note that an empty <div> is left in the resulting pasted text, which isn't ideal:
 testPaste("<span>foo</span><div><template>Hello</template></div><span>bar</span>", "foo<div></div>bar");
-// Contained shadow DOM is stripped, but content is retained:
-testPaste("<span>foo</span><div><template shadowroot='open'>Hello</template></div><span>bar</span>", "foo<div>Hello</div>bar");
-testPaste("<span>foo</span><div><template shadowroot='open'><slot></slot>DEF</template>ABC</div><span>bar</span>", "foo<div><slot>ABC</slot>DEF</div>bar");
+// Contained shadow DOM is stripped, but content is retained (old non-streaming DSD API, shadowroot):
+testPaste("<span>foo</span><div><template shadowroot='open'>Hello</template></div><span>bar</span>", "foo<div>Hello</div>bar", "non-streaming DSD 1");
+testPaste("<span>foo</span><div><template shadowroot='open'><slot></slot>DEF</template>ABC</div><span>bar</span>", "foo<div><slot>ABC</slot>DEF</div>bar", "non-streaming DSD 2");
+// Contained shadow DOM is stripped, but content is retained (new streaming DSD API, shadowrootmode):
+testPaste("<span>foo</span><div><template shadowrootmode='open'>Hello</template></div><span>bar</span>", "foo<div>Hello</div>bar");
+testPaste("<span>foo</span><div><template shadowrootmode='open'><slot></slot>DEF</template>ABC</div><span>bar</span>", "foo<div><slot>ABC</slot>DEF</div>bar");
 // Make sure non-declarative <template shadowroot> doesn't form a shadow root on paste:
 const nodeWithTemplate = createEditable("<span>foo</span><div>ABC<template>Hello</template></div><span>bar</span>");
 nodeWithTemplate.querySelector('template').setAttribute('shadowroot','open');
+testPaste(nodeWithTemplate, "foo<div>ABC</div>bar", "non-streaming DSD 3");
+nodeWithTemplate.querySelector('template').setAttribute('shadowrootmode','open');
 testPaste(nodeWithTemplate, "foo<div>ABC</div>bar");
 </script>

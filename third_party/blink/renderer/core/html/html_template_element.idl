@@ -35,6 +35,10 @@
 ] interface HTMLTemplateElement : HTMLElement {
     readonly attribute DocumentFragment content;
 
+    // This is the shipped version of declarative shadow DOM - using the
+    // 'shadowRoot' IDL attribute. However, discussions on the HTML spec PR
+    // (https://github.com/whatwg/html/pull/5465) has changed this behavior.
+    // This IDL will remain during the period during which we deprecate it.
     // This 'shadowRoot' attribute shadows Element.prototype.shadowRoot
     // without changing any behavior. The existence of this attribute
     // indicates support of Declarative Shadow DOM, so that this works:
@@ -43,5 +47,10 @@
     //   }
     // See https://github.com/mfreed7/declarative-shadow-dom/blob/master/README.md#feature-detection-and-polyfilling
     // for more detail.
+    // TODO(crbug.com/1396384) Eventually remove this.
     [ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
+
+    // This is the "new" declarative Shadow DOM IDL attribute, which reflects
+    // the 'shadowrootmode' content attribute.
+    [RuntimeEnabled=StreamingDeclarativeShadowDOM,Reflect,ReflectOnly=("open","closed")] attribute DOMString? shadowRootMode;
 };

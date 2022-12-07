@@ -106,5 +106,10 @@
     // https://github.com/WICG/fenced-frame
     "default",
     "opaque-ads",
+
+    // shadowrootmode attribute
+    // https://github.com/whatwg/html/pull/5465
+    "open",
+    "closed",
   ],
 }

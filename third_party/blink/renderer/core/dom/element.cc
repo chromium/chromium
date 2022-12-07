@@ -4284,7 +4284,7 @@ bool Element::AttachDeclarativeShadowRoot(HTMLTemplateElement* template_element,
   // to element internals" to true.
   shadow_root.SetAvailableToElementInternals(true);
 
-  if (!RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled()) {
+  if (template_element->IsNonStreamingDeclarativeShadowRoot()) {
     // 13.2. Append the declarative template element's DocumentFragment to the
     // newly-created shadow root.
     shadow_root.ParserTakeAllChildrenFrom(

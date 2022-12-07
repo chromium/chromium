@@ -313,6 +313,7 @@
     "select",
     "selected",
     "shadowroot",
+    "shadowrootmode",
     "shadowrootdelegatesfocus",
     "shape",
     "size",
