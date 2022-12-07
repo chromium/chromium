@@ -2125,29 +2125,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="HistoryPage.ClickAgeInDays" units="units"
-    expires_after="2020-02-29">
-  <owner>msramek@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Recorded each time an entry on the history page is clicked. Measures the age
-    in days (defined as 24 hour periods, not using local time) of that entry.
-    Values are ROUNDED UP, i.e. &quot;1&quot; means at most one day old etc.
-  </summary>
-</histogram>
-
-<histogram name="HistoryPage.ClickAgeInDaysSubset" units="units"
-    expires_after="2020-02-29">
-  <owner>msramek@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Subset of the HistoryPage.ClickAgeInDays histogram, with better bucket
-    resolution at lower numbers.
-  </summary>
-</histogram>
-
 <histogram name="HistoryPage.ClickPosition" units="units"
     expires_after="2020-02-23">
   <owner>rpop@google.com</owner>

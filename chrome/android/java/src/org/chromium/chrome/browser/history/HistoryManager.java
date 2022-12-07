@@ -689,10 +689,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private void openItemsInNewTabs(List<HistoryItem> items, boolean isIncognito) {
         recordUserActionWithOptionalSearch("OpenSelected" + (isIncognito ? "Incognito" : ""));
         mContentManager.openItemsInNewTab(items, isIncognito);
-
-        for (HistoryItem item : items) {
-            recordOpenedItemMetrics(item);
-        }
     }
 
     private void notifyHistoryClustersCoordinatorOfDeletion() {
@@ -713,25 +709,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      */
     void recordUserActionWithOptionalSearch(String action) {
         recordUserAction((mIsSearching ? "Search." : "") + action);
-    }
-
-    /**
-     * Records metrics about the age of an opened history |item|.
-     * @param item The item that has been opened.
-     */
-    private void recordOpenedItemMetrics(HistoryItem item) {
-        int ageInDays = 1
-                + (int) ((System.currentTimeMillis() - item.getTimestamp())
-                        / 1000 /* s/ms */ / 60 /* m/s */ / 60 /* h/m */ / 24 /* d/h */);
-
-        RecordHistogram.recordCustomCountHistogram("HistoryPage.ClickAgeInDays",
-                Math.min(ageInDays, UMA_MAX_BUCKET_VALUE), 1, UMA_MAX_BUCKET_VALUE,
-                UMA_BUCKET_COUNT);
-
-        if (ageInDays <= UMA_MAX_SUBSET_BUCKET_VALUE) {
-            RecordHistogram.recordCustomCountHistogram("HistoryPage.ClickAgeInDaysSubset",
-                    ageInDays, 1, UMA_MAX_SUBSET_BUCKET_VALUE, UMA_BUCKET_COUNT);
-        }
     }
 
     private void recordClearBrowsingDataMetric() {
@@ -797,7 +774,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     @Override
     public void onItemClicked(HistoryItem item) {
         recordUserActionWithOptionalSearch("OpenItem");
-        recordOpenedItemMetrics(item);
     }
 
     // HistoryContentManager.Observer
