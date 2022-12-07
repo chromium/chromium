@@ -119,7 +119,8 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
     raw_ptr<ThumbnailImage> thumbnail_ = nullptr;
   };
 
-  explicit ThumbnailImage(Delegate* delegate);
+  explicit ThumbnailImage(Delegate* delegate,
+                          CompressedThumbnailData data = nullptr);
 
   ThumbnailImage(const ThumbnailImage&) = delete;
   ThumbnailImage& operator=(const ThumbnailImage&) = delete;
@@ -166,6 +167,8 @@ class ThumbnailImage : public base::RefCountedThreadSafe<ThumbnailImage> {
       base::RepeatingClosure callback) {
     async_operation_finished_callback_ = std::move(callback);
   }
+
+  CompressedThumbnailData data() { return data_; }
 
  private:
   friend class Delegate;

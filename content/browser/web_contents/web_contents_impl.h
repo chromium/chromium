@@ -587,6 +587,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // that this may not equate to the feature being enabled.
   bool IsPrerender2Disabled();
 
+  void AboutToBeDiscarded(WebContents* new_contents) override;
+
   // RenderFrameHostDelegate ---------------------------------------------------
   bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
                          const IPC::Message& message) override;

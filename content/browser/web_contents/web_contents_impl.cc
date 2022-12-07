@@ -9554,6 +9554,11 @@ bool WebContentsImpl::IsPrerender2Disabled() {
   return prerender2_disabled_ || !GetDelegate()->IsPrerender2Supported(*this);
 }
 
+void WebContentsImpl::AboutToBeDiscarded(WebContents* new_contents) {
+  observers_.NotifyObservers(&WebContentsObserver::AboutToBeDiscarded,
+                             new_contents);
+}
+
 bool WebContentsImpl::CancelPrerendering(FrameTreeNode* frame_tree_node,
                                          PrerenderFinalStatus final_status) {
   if (!frame_tree_node)

@@ -6,6 +6,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/resource_coordinator/session_restore_policy.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/sessions/tab_loader_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -124,7 +126,8 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
   }
 
   void WaitForAndVerifyThumbnail(Browser* browser, int tab_index) {
-    auto* const web_contents = browser->tab_strip_model()->GetWebContentsAt(1);
+    auto* const web_contents =
+        browser->tab_strip_model()->GetWebContentsAt(tab_index);
     auto* const thumbnail_tab_helper =
         ThumbnailTabHelper::FromWebContents(web_contents);
     auto thumbnail = thumbnail_tab_helper->thumbnail();
@@ -168,6 +171,33 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
 
   DCHECK_EQ(2, browser()->tab_strip_model()->count());
   WaitForAndVerifyThumbnail(browser(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
+                       TabDiscardPreservesScreenshot) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
+
+  DCHECK_EQ(2, browser()->tab_strip_model()->count());
+  WaitForAndVerifyThumbnail(browser(), 1);
+
+  content::WebContents* web_contents_to_discard =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  resource_coordinator::TabLifecycleUnitSource::GetTabLifecycleUnitExternal(
+      web_contents_to_discard)
+      ->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
+
+  content::WebContents* new_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_NE(web_contents_to_discard, new_web_contents);
+  EXPECT_TRUE(new_web_contents->WasDiscarded());
+
+  auto* const thumbnail_tab_helper =
+      ThumbnailTabHelper::FromWebContents(new_web_contents);
+  EXPECT_TRUE(thumbnail_tab_helper);
+  auto thumbnail = thumbnail_tab_helper->thumbnail();
+  EXPECT_TRUE(thumbnail->has_data());
 }
 
 // TabLoader (used here) is available only when browser is built

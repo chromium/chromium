@@ -21,7 +21,8 @@ class BackgroundThumbnailCapturer;
 class ThumbnailScheduler;
 
 class ThumbnailTabHelper
-    : public content::WebContentsUserData<ThumbnailTabHelper> {
+    : public content::WebContentsUserData<ThumbnailTabHelper>,
+      public content::WebContentsObserver {
  public:
   ThumbnailTabHelper(const ThumbnailTabHelper&) = delete;
   ThumbnailTabHelper& operator=(const ThumbnailTabHelper&) = delete;
@@ -74,6 +75,8 @@ class ThumbnailTabHelper
       const gfx::Size& source_size,
       float scale_factor,
       bool include_scrollbars_in_capture);
+
+  void AboutToBeDiscarded(content::WebContents* new_contents) override;
 
   // Copy info from the most recent frame we have captured.
   ThumbnailCaptureInfo last_frame_capture_info_;

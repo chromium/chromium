@@ -623,6 +623,11 @@ class WebContents : public PageNavigator,
   virtual bool WasDiscarded() = 0;
   virtual void SetWasDiscarded(bool was_discarded) = 0;
 
+  // Notifies observers that this WebContents is about to be discarded, and
+  // replaced with `new_contents`. See the comment on
+  // WebContentsObserver::AboutToBeDiscarded.
+  virtual void AboutToBeDiscarded(WebContents* new_contents) = 0;
+
   // Internal state ------------------------------------------------------------
 
   // Indicates whether the WebContents is being captured (e.g., for screenshots,

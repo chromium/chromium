@@ -492,6 +492,10 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   // DCHECKs in the state transition machinery don't fail.
   ResourceCoordinatorTabHelper::CreateForWebContents(raw_null_contents);
 
+  // Send the notification to WebContentsObservers that the old content is about
+  // to be discarded and replaced with `null_contents`.
+  old_contents->AboutToBeDiscarded(null_contents.get());
+
   // Copy over the state from the navigation controller to preserve the
   // back/forward history and to continue to display the correct title/favicon.
   //

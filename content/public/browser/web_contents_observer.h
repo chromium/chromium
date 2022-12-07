@@ -828,6 +828,19 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void OnServiceWorkerAccessed(NavigationHandle* navigation_handle,
                                        const GURL& scope,
                                        AllowServiceWorkerResult allowed) {}
+
+  // Called when this WebContents is about to be discarded, and replaced with
+  // the new, empty `new_contents`. This is an opportunity to transfer to the
+  // new WebContents any data that should persist across the discard process.
+  // Because the point of tab discarding is to free up memory, careful
+  // consideration should be given to transferring data over to the new
+  // WebContents. Large amounts of data or data that can be recreated easily
+  // shouldn't be transferred, unless its existence is necessary for a feature
+  // to work. This will be invoked right after `new_contents` is created, but
+  // before its `WasDiscarded` is set to true and before it's attached to a tab
+  // strip.
+  virtual void AboutToBeDiscarded(WebContents* new_contents) {}
+
   WebContents* web_contents() const;
 
  protected:
