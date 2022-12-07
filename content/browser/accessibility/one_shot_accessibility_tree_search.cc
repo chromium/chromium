@@ -416,6 +416,14 @@ bool AccessibilityMediaPredicate(BrowserAccessibility* start,
   return tag == "audio" || tag == "video";
 }
 
+bool AccessibilityParagraphPredicate(BrowserAccessibility* start,
+                                     BrowserAccessibility* node) {
+  // Since paragraphs can contain other nodes, we exclude ancestors of the start
+  // node from the search
+  return node->GetRole() == ax::mojom::Role::kParagraph &&
+         !start->IsDescendantOf(node);
+}
+
 bool AccessibilityRadioButtonPredicate(BrowserAccessibility* start,
                                        BrowserAccessibility* node) {
   return (node->GetRole() == ax::mojom::Role::kRadioButton ||

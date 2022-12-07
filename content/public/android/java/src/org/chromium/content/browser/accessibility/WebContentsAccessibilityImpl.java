@@ -44,6 +44,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_CHARACTER;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_LINE;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_PARAGRAPH;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.MOVEMENT_GRANULARITY_WORD;
 
 import android.annotation.SuppressLint;
@@ -159,6 +160,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // Constants defined for requests to add data to AccessibilityNodeInfo Bundle extras.
     public static final String EXTRAS_DATA_REQUEST_IMAGE_DATA_KEY =
             "AccessibilityNodeInfo.requestImageData";
+
+    // Constant for paragraph predicate key from web_contents_accessibility_android.cc
+    private static final String PARAGRAPH_ELEMENT_TYPE = "PARAGRAPH";
 
     // Constant for no granularity selected.
     private static final int NO_GRANULARITY_SELECTED = 0;
@@ -796,6 +800,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             case MOVEMENT_GRANULARITY_CHARACTER:
             case MOVEMENT_GRANULARITY_WORD:
             case MOVEMENT_GRANULARITY_LINE:
+            case MOVEMENT_GRANULARITY_PARAGRAPH:
                 return true;
         }
         return false;
@@ -1012,6 +1017,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             boolean extend = arguments.getBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN);
             if (!isValidMovementGranularity(granularity)) {
                 return false;
+                // ATs view paragraphs as a granularity rather than an element type to jump between.
+                // As a stopgap until we implement an actual paragraph granularity, we can send
+                // these movements to jumpToElementType instead to allow AT users to at least
+                // navigate backward and forward by paragraph
+                // TODO(jacklynch): Implement paragraph granularity and remove this block
+            } else if (granularity == MOVEMENT_GRANULARITY_PARAGRAPH) {
+                return jumpToElementType(virtualViewId, PARAGRAPH_ELEMENT_TYPE, /*forwards*/ true,
+                        /*canWrap*/ false);
             }
             return nextAtGranularity(granularity, extend, virtualViewId);
         } else if (action == ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY.getId()) {
@@ -1020,6 +1033,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             boolean extend = arguments.getBoolean(ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN);
             if (!isValidMovementGranularity(granularity)) {
                 return false;
+                // ATs view paragraphs as a granularity rather than an element type to jump between.
+                // As a stopgap until we implement an actual paragraph granularity, we can send
+                // these movements to jumpToElementType instead to allow AT users to at least
+                // navigate backward and forward by paragraph
+                // TODO(jacklynch): Implement paragraph granularity and remove this block
+            } else if (granularity == MOVEMENT_GRANULARITY_PARAGRAPH) {
+                return jumpToElementType(virtualViewId, PARAGRAPH_ELEMENT_TYPE, /*forwards*/ false,
+                        /*canWrap*/ virtualViewId == mCurrentRootId);
             }
             return previousAtGranularity(granularity, extend, virtualViewId);
         } else if (action == ACTION_SCROLL_FORWARD.getId()) {
@@ -1750,7 +1771,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         node.setMovementGranularities(MOVEMENT_GRANULARITY_CHARACTER | MOVEMENT_GRANULARITY_WORD
-                | MOVEMENT_GRANULARITY_LINE);
+                | MOVEMENT_GRANULARITY_LINE | MOVEMENT_GRANULARITY_PARAGRAPH);
 
         node.setAccessibilityFocused(mAccessibilityFocusId == virtualViewId);
     }

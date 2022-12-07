@@ -93,6 +93,7 @@ void InitSearchKeyToPredicateMapIfNeeded() {
   AddToPredicateMap("LIVE", AccessibilityLiveRegionPredicate);
   AddToPredicateMap("MAIN", AccessibilityMainPredicate);
   AddToPredicateMap("MEDIA", AccessibilityMediaPredicate);
+  AddToPredicateMap("PARAGRAPH", AccessibilityParagraphPredicate);
   AddToPredicateMap("RADIO", AccessibilityRadioButtonPredicate);
   AddToPredicateMap("RADIO_GROUP", AccessibilityRadioGroupPredicate);
   AddToPredicateMap("SECTION", AccessibilitySectionPredicate);
