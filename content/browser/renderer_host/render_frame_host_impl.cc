@@ -3109,8 +3109,11 @@ void RenderFrameHostImpl::RenderProcessGone(
 
   // If this was the current pending or speculative RFH dying, cancel and
   // destroy it.
-  frame_tree_node_->render_manager()->CleanupIfSpeculativeForRenderProcessGone(
-      this);
+  if (lifecycle_state_ == LifecycleStateImpl::kSpeculative) {
+    CHECK(owner_);
+    owner_->GetRenderFrameHostManager()
+        .CleanupSpeculativeRfhForRenderProcessGone();
+  }
 
   // Note: don't add any more code at this point in the function because
   // |this| may be deleted. Any additional cleanup should happen before
