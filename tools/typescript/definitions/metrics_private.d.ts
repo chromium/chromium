@@ -32,14 +32,6 @@ declare namespace chrome {
       buckets: HistogramBucket[];
     }
 
-    export function getHistogram(
-        name: string, callback: (p1: Histogram) => void): void;
-    export function getIsCrashReportingEnabled(callback: (p1: boolean) => void):
-        void;
-    export function getFieldTrial(name: string, callback: (p1: string) => void):
-        void;
-    export function getVariationParams(
-        name: string, callback: (p1: Object|undefined) => void): void;
     export function recordUserAction(name: string): void;
     export function recordPercentage(metricName: string, value: number): void;
     export function recordCount(metricName: string, value: number): void;
