@@ -12,7 +12,7 @@
 namespace reading_list {
 namespace prefs {
 
-extern const char kReadingListHasUnseenEntries[];
+extern const char kDeprecatedReadingListHasUnseenEntries[];
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 extern const char kReadingListDesktopFirstUseExperienceShown[];

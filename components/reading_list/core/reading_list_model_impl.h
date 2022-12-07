@@ -39,6 +39,7 @@ class ReadingListModelImpl : public ReadingListModel,
   // ReadingListModelImpl without persistence. Data will not be persistent
   // across sessions.
   // |clock| will be used to timestamp all the operations.
+  // TODO(crbug.com/1386158): Remove |pref_service| which is unused.
   ReadingListModelImpl(std::unique_ptr<ReadingListModelStorage> storage_layer,
                        PrefService* pref_service,
                        base::Clock* clock);
@@ -58,8 +59,6 @@ class ReadingListModelImpl : public ReadingListModel,
   size_t unseen_size() const override;
   void MarkAllSeen() override;
   bool DeleteAllEntries() override;
-  bool GetLocalUnseenFlag() const override;
-  void ResetLocalUnseenFlag() override;
   const ReadingListEntry* GetEntryByURL(const GURL& gurl) const override;
   const ReadingListEntry* GetFirstUnreadEntry(bool distilled) const override;
   bool IsUrlSupported(const GURL& url) override;
@@ -128,7 +127,6 @@ class ReadingListModelImpl : public ReadingListModel,
  private:
   ReadingListModelImpl(
       std::unique_ptr<ReadingListModelStorage> storage_layer,
-      PrefService* pref_service,
       base::Clock* clock,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 
@@ -137,11 +135,6 @@ class ReadingListModelImpl : public ReadingListModel,
   // Tells model that batch updates have completed. Called from
   // ScopedReadingListBatchUpdateImpl's destructor.
   void EndBatchUpdates();
-
-  // Sets/Loads the pref flag that indicate if some entries have never been seen
-  // since being added to the store.
-  void SetPersistentHasUnseen(bool has_unseen);
-  bool GetPersistentHasUnseen();
 
   // Returns a mutable pointer to the entry with URL |url|. Return nullptr if
   // no entry is found.
@@ -160,18 +153,13 @@ class ReadingListModelImpl : public ReadingListModel,
   void UpdateEntryStateCountersOnEntryRemoval(const ReadingListEntry& entry);
   void UpdateEntryStateCountersOnEntryInsertion(const ReadingListEntry& entry);
 
-  // Set the unseen flag to true.
-  void SetUnseenFlag();
-
   const std::unique_ptr<ReadingListModelStorage> storage_layer_;
-  const raw_ptr<PrefService> pref_service_;
   const raw_ptr<base::Clock> clock_;
 
   ReadingListSyncBridge sync_bridge_;
 
   base::ObserverList<ReadingListModelObserver>::Unchecked observers_;
 
-  bool has_unseen_ = false;
   bool loaded_ = false;
 
   ReadingListEntries entries_;

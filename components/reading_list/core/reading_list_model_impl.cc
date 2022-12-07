@@ -13,9 +13,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
-#include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
-#include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/reading_list/core/reading_list_sync_bridge.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "url/gurl.h"
@@ -62,7 +60,6 @@ ReadingListModelImpl::ReadingListModelImpl(
     base::Clock* clock)
     : ReadingListModelImpl(
           std::move(storage_layer),
-          pref_service,
           clock,
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
               syncer::READING_LIST,
@@ -70,15 +67,12 @@ ReadingListModelImpl::ReadingListModelImpl(
 
 ReadingListModelImpl::ReadingListModelImpl(
     std::unique_ptr<ReadingListModelStorage> storage_layer,
-    PrefService* pref_service,
     base::Clock* clock,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
     : storage_layer_(std::move(storage_layer)),
-      pref_service_(pref_service),
       clock_(clock),
       sync_bridge_(clock, std::move(change_processor)) {
   DCHECK(clock_);
-  has_unseen_ = GetPersistentHasUnseen();
   if (storage_layer_) {
     storage_layer_->Load(clock_,
                          base::BindOnce(&ReadingListModelImpl::StoreLoaded,
@@ -142,35 +136,6 @@ size_t ReadingListModelImpl::unseen_size() const {
   if (!loaded())
     return 0;
   return unseen_entry_count_;
-}
-
-void ReadingListModelImpl::SetUnseenFlag() {
-  if (!has_unseen_) {
-    has_unseen_ = true;
-    if (!IsPerformingBatchUpdates()) {
-      SetPersistentHasUnseen(true);
-    }
-  }
-}
-
-bool ReadingListModelImpl::GetLocalUnseenFlag() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!loaded())
-    return false;
-  // If there are currently no unseen entries, return false even if has_unseen_
-  // is true.
-  // This is possible if the last unseen entry has be removed via sync.
-  return has_unseen_ && unseen_entry_count_;
-}
-
-void ReadingListModelImpl::ResetLocalUnseenFlag() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!loaded()) {
-    return;
-  }
-  has_unseen_ = false;
-  if (!IsPerformingBatchUpdates())
-    SetPersistentHasUnseen(false);
 }
 
 void ReadingListModelImpl::MarkAllSeen() {
@@ -314,9 +279,6 @@ void ReadingListModelImpl::SyncAddEntry(
   for (auto& observer : observers_)
     observer.ReadingListWillAddEntry(this, *entry);
   UpdateEntryStateCountersOnEntryInsertion(*entry);
-  if (!entry->HasBeenSeen()) {
-    SetUnseenFlag();
-  }
 
   // Write to the store.
   if (storage_layer_) {
@@ -345,15 +307,10 @@ ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
   for (auto& observer : observers_)
     observer.ReadingListWillMoveEntry(this, url);
 
-  bool was_seen = existing_entry->HasBeenSeen();
   UpdateEntryStateCountersOnEntryRemoval(*existing_entry);
   existing_entry->MergeWithEntry(*entry);
   existing_entry = GetMutableEntryFromURL(url);
   UpdateEntryStateCountersOnEntryInsertion(*existing_entry);
-  if (was_seen && !existing_entry->HasBeenSeen()) {
-    // Only set the flag if a new unseen entry is added.
-    SetUnseenFlag();
-  }
 
   // Write to the store.
   if (storage_layer_) {
@@ -433,7 +390,6 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
   for (auto& observer : observers_)
     observer.ReadingListWillAddEntry(this, entry);
   UpdateEntryStateCountersOnEntryInsertion(entry);
-  SetUnseenFlag();
 
   auto it = entries_.emplace(url, std::move(entry)).first;
   const ReadingListEntry* entry_ptr = &it->second;
@@ -674,9 +630,8 @@ std::unique_ptr<ReadingListModelImpl> ReadingListModelImpl::BuildNewForTest(
     base::Clock* clock,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor) {
   CHECK_IS_TEST();
-  return base::WrapUnique(
-      new ReadingListModelImpl(std::move(storage_layer), pref_service, clock,
-                               std::move(change_processor)));
+  return base::WrapUnique(new ReadingListModelImpl(
+      std::move(storage_layer), clock, std::move(change_processor)));
 }
 
 void ReadingListModelImpl::StoreLoaded(
@@ -717,31 +672,10 @@ void ReadingListModelImpl::EndBatchUpdates() {
   DCHECK(current_batch_updates_count_ > 0);
   --current_batch_updates_count_;
   if (current_batch_updates_count_ == 0) {
-    if (storage_layer_) {
-      SetPersistentHasUnseen(has_unseen_);
-    }
     for (auto& observer : observers_) {
       observer.ReadingListModelCompletedBatchUpdates(this);
     }
   }
-}
-
-void ReadingListModelImpl::SetPersistentHasUnseen(bool has_unseen) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_) {
-    return;
-  }
-  pref_service_->SetBoolean(reading_list::prefs::kReadingListHasUnseenEntries,
-                            has_unseen);
-}
-
-bool ReadingListModelImpl::GetPersistentHasUnseen() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!pref_service_) {
-    return false;
-  }
-  return pref_service_->GetBoolean(
-      reading_list::prefs::kReadingListHasUnseenEntries);
 }
 
 ReadingListSyncBridge* ReadingListModelImpl::GetModelTypeSyncBridge() {

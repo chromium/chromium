@@ -144,9 +144,6 @@ const char* const kPersistentPrefNames[] = {
     prefs::kUseCustomChromeFrame,
 #endif
 
-    // Reading list preferences are common between incognito and regular mode.
-    reading_list::prefs::kReadingListHasUnseenEntries,
-
     // Although UKMs are not collected in incognito, theses preferences may be
     // changed by UMA/Sync/Unity consent, and need to be the same between
     // incognito and regular modes.

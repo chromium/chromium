@@ -68,6 +68,7 @@ source_set("browser_prefs") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/proxy_config",
+    "//components/reading_list/core",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search_engines",
     "//components/segmentation_platform/public",

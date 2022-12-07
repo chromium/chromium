@@ -59,15 +59,6 @@ bool FakeReadingListModel::DeleteAllEntries() {
   return false;
 }
 
-bool FakeReadingListModel::GetLocalUnseenFlag() const {
-  NOTREACHED();
-  return false;
-}
-
-void FakeReadingListModel::ResetLocalUnseenFlag() {
-  NOTREACHED();
-}
-
 const ReadingListEntry* FakeReadingListModel::GetEntryByURL(
     const GURL& gurl) const {
   DCHECK(loaded_);

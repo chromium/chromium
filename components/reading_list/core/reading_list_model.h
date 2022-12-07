@@ -73,18 +73,6 @@ class ReadingListModel : public KeyedService {
   // deleted.
   virtual bool DeleteAllEntries() = 0;
 
-  // Returns the flag about unseen entries on the device.
-  // This flag is raised if some unseen items are added on this device.
-  // The flag is reset if |ResetLocalUnseenFlag| is called or if all unseen
-  // entries are removed.
-  // This is a local flag and it can have different values on different devices,
-  // even if they are synced.
-  // (unseen_size() == 0 => GetLocalUnseenFlag() == false)
-  virtual bool GetLocalUnseenFlag() const = 0;
-
-  // Set the unseen flag to false.
-  virtual void ResetLocalUnseenFlag() = 0;
-
   // Returns a specific entry. Returns null if the entry does not exist.
   virtual const ReadingListEntry* GetEntryByURL(const GURL& gurl) const = 0;
 

@@ -134,6 +134,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
+#include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/safe_browsing/content/common/file_type_policies_prefs.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -2088,6 +2089,10 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kAutofillAssistantConsent);
   profile_prefs->ClearPref(kAutofillAssistantTriggerScriptsEnabled);
   profile_prefs->ClearPref(kAutofillAssistantTriggerScriptsIsFirstTimeUser);
+
+  // Added 12/2022.
+  profile_prefs->ClearPref(
+      reading_list::prefs::kDeprecatedReadingListHasUnseenEntries);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

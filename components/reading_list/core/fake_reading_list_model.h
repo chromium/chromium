@@ -36,10 +36,6 @@ class FakeReadingListModel : public ReadingListModel {
 
   bool DeleteAllEntries() override;
 
-  bool GetLocalUnseenFlag() const override;
-
-  void ResetLocalUnseenFlag() override;
-
   const ReadingListEntry* GetEntryByURL(const GURL& gurl) const override;
 
   const ReadingListEntry* GetFirstUnreadEntry(bool distilled) const override;

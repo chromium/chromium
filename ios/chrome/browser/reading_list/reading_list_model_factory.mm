@@ -51,7 +51,7 @@ ReadingListModelFactory::~ReadingListModelFactory() {}
 void ReadingListModelFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
-      reading_list::prefs::kReadingListHasUnseenEntries, false,
+      reading_list::prefs::kDeprecatedReadingListHasUnseenEntries, false,
       PrefRegistry::NO_REGISTRATION_FLAGS);
 }
 
