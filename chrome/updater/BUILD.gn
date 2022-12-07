@@ -346,6 +346,7 @@ if (is_win || is_mac || is_linux) {
         "app/server/linux/update_service_stub.h",
         "app/server/posix/update_service_internal_stub_linux.cc",
         "device_management/dm_storage_linux.cc",
+        "installer_linux.cc",
         "linux/setup/setup.cc",
         "net/network_fetcher_linux.cc",
         "prefs_linux.cc",

@@ -45,8 +45,9 @@ static constexpr base::TaskTraits kTaskTraitsBlockWithSyncPrimitives = {
 absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
                                                 const std::string& app_id) {
   absl::optional<base::FilePath> app_install_dir = GetBaseDataDirectory(scope);
-  if (!app_install_dir)
+  if (!app_install_dir) {
     return absl::nullopt;
+  }
 
   return app_install_dir->AppendASCII(kAppsDir).AppendASCII(app_id);
 }
@@ -116,8 +117,9 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.app_id = app_id_;
 
   // Query server for install data only when the client does not specify one.
-  if (client_install_data_.empty())
+  if (client_install_data_.empty()) {
     component.install_data_index = install_data_index_;
+  }
 
   component.ap = ap_;
   component.brand = persisted_data_->GetBrandCode(app_id_);
@@ -170,14 +172,16 @@ Installer::Result Installer::InstallHelper(
   // Resolve the path to an installer file, which is included in the CRX, and
   // specified by the |run| attribute in the manifest object of an update
   // response.
-  if (!install_params || install_params->run.empty())
+  if (!install_params || install_params->run.empty()) {
     return Result(kErrorMissingInstallParams);
+  }
 
   // Assume the install params are ASCII for now.
   const auto application_installer =
       unpack_path.AppendASCII(install_params->run);
-  if (!base::PathExists(application_installer))
+  if (!base::PathExists(application_installer)) {
     return Result(kErrorMissingRunableFile);
+  }
 
   // Upon success, when the control flow returns back to the |update_client|,
   // the prefs are updated asynchronously with the new |pv| and |fingerprint|.
@@ -227,12 +231,14 @@ bool Installer::GetInstalledFile(const std::string& file,
                                  base::FilePath* installed_file) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  if (pv_ == base::Version(kNullVersion))
+  if (pv_ == base::Version(kNullVersion)) {
     return false;  // No component has been installed yet.
+  }
 
   const auto install_dir = GetCurrentInstallDir();
-  if (!install_dir)
+  if (!install_dir) {
     return false;
+  }
 
   *installed_file = install_dir->AppendASCII(file);
   return true;
@@ -247,24 +253,10 @@ absl::optional<base::FilePath> Installer::GetCurrentInstallDir() const {
                                                 base::BlockingType::WILL_BLOCK);
   const absl::optional<base::FilePath> path =
       GetAppInstallDir(updater_scope_, app_id_);
-  if (!path)
+  if (!path) {
     return absl::nullopt;
+  }
   return path->AppendASCII(pv_.GetString());
 }
-
-#if BUILDFLAG(IS_LINUX)
-
-AppInstallerResult RunApplicationInstaller(
-    const AppInfo& /*app_info*/,
-    const base::FilePath& /*app_installer*/,
-    const std::string& /*arguments*/,
-    const absl::optional<base::FilePath>& /*install_data_file*/,
-    const base::TimeDelta& timeout,
-    InstallProgressCallback /*progress_callback*/) {
-  NOTIMPLEMENTED();
-  return AppInstallerResult(-1);
-}
-
-#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace updater
