@@ -101,8 +101,8 @@ SearchResultPageView::SearchResultPageView() {
   SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(
-      kExpandedSearchBoxCornerRadiusForProductivityLauncher));
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kExpandedSearchBoxCornerRadius));
   SetLayoutManager(std::make_unique<views::FillLayout>());
 }
 
@@ -133,8 +133,7 @@ gfx::Size SearchResultPageView::CalculatePreferredSize() const {
   int adjusted_height = std::min(
       std::max(kMinHeight,
                productivity_launcher_search_view_->TabletModePreferredHeight() +
-                   kActiveSearchBoxHeight +
-                   kExpandedSearchBoxCornerRadiusForProductivityLauncher),
+                   kActiveSearchBoxHeight + kExpandedSearchBoxCornerRadius),
       contents_view()->height());
   return gfx::Size(kWidth, adjusted_height);
 }
@@ -333,9 +332,8 @@ int SearchResultPageView::GetCornerRadiusForSearchResultsState(
     case SearchResultsState::kClosed:
       return kSearchBoxBorderCornerRadius;
     case SearchResultsState::kActive:
-      return kExpandedSearchBoxCornerRadiusForProductivityLauncher;
     case SearchResultsState::kExpanded:
-      return kExpandedSearchBoxCornerRadiusForProductivityLauncher;
+      return kExpandedSearchBoxCornerRadius;
   }
 }
 

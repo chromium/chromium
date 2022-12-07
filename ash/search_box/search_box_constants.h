@@ -26,9 +26,8 @@ constexpr int kSearchBoxBorderCornerRadius = 24;
 // The background border corner radius of the expanded search box.
 constexpr int kSearchBoxBorderCornerRadiusSearchResult = 20;
 
-// The background border corner radius of the active/expanded search box with
-// productivity launcher enabled.
-constexpr int kExpandedSearchBoxCornerRadiusForProductivityLauncher = 28;
+// The background border corner radius of the active/expanded search box.
+constexpr int kExpandedSearchBoxCornerRadius = 28;
 
 // Preferred height of search box.
 constexpr int kSearchBoxPreferredHeight = 48;

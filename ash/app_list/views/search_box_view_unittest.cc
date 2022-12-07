@@ -139,7 +139,7 @@ class SearchBoxViewTest : public views::test::WidgetTest,
     std::unique_ptr<SearchBoxView> view;
     // Initialize SearchBoxView like clamshell productivity launcher.
     view = std::make_unique<SearchBoxView>(this, &view_delegate_,
-                                           /*app_list_view=*/nullptr);
+                                           /*is_bubble_app_list=*/true);
     view->InitializeForBubbleLauncher();
     view_ = widget_->GetContentsView()->AddChildView(std::move(view));
 

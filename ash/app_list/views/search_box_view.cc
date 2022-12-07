@@ -15,8 +15,6 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_model.h"
-#include "ash/app_list/views/app_list_view.h"
-#include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
@@ -30,6 +28,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -39,6 +38,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -204,12 +204,10 @@ class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
 
 SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
                              AppListViewDelegate* view_delegate,
-                             AppListView* app_list_view)
+                             bool is_app_list_bubble)
     : delegate_(delegate),
       view_delegate_(view_delegate),
-      app_list_view_(app_list_view),
-      is_app_list_bubble_(!app_list_view_),
-      is_tablet_mode_(view_delegate_->IsInTabletMode()) {
+      is_app_list_bubble_(is_app_list_bubble) {
   AppListModelProvider* const model_provider = AppListModelProvider::Get();
   model_provider->AddObserver(this);
   SearchBoxModel* const search_box_model =
@@ -270,31 +268,10 @@ void SearchBoxView::SetResultSelectionController(
   result_selection_controller_ = controller;
 }
 
-void SearchBoxView::OnTabletModeChanged(bool started) {
-  // Reset timer metrics when tablet mode changes.
-  if (is_tablet_mode_ != started)
-    user_initiated_model_update_time_ = base::TimeTicks();
-
-  is_tablet_mode_ = started;
-
-  UpdateKeyboardVisibility();
-  // Search box accessible name may change depending on tablet mode state.
-  UpdatePlaceholderTextAndAccessibleName();
-  UpdateSearchBoxBorder();
-  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
-}
-
 void SearchBoxView::ResetForShow() {
-  // Avoid clearing an already inactive SearchBox in tablet mode because this
-  // causes suggested chips to flash (http://crbug.com/979594).
-  if (!is_search_box_active() && is_tablet_mode_)
+  if (!is_search_box_active())
     return;
-
   ClearSearchAndDeactivateSearchBox();
-  if (contents_view_) {
-    SetSearchBoxBackgroundCornerRadius(GetSearchBoxBorderCornerRadiusForState(
-        contents_view_->GetActiveState()));
-  }
 }
 
 void SearchBoxView::UpdateSearchTextfieldAccessibleNodeData(
@@ -303,19 +280,6 @@ void SearchBoxView::UpdateSearchTextfieldAccessibleNodeData(
     node_data->AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
                                *a11y_active_descendant_);
   }
-}
-
-void SearchBoxView::HandleSearchBoxEvent(ui::LocatedEvent* located_event) {
-  if (located_event->type() == ui::ET_MOUSEWHEEL) {
-    // TODO(crbug.com/1216082): Forward scroll events for bubble launcher.
-    if (app_list_view_ &&
-        !app_list_view_->HandleScroll(
-            located_event->location(),
-            located_event->AsMouseWheelEvent()->offset(), ui::ET_MOUSEWHEEL)) {
-      return;
-    }
-  }
-  SearchBoxViewBase::HandleSearchBoxEvent(located_event);
 }
 
 void SearchBoxView::OnActiveAppListModelsChanged(AppListModel* model,
@@ -372,11 +336,11 @@ void SearchBoxView::HandleQueryChange(const std::u16string& query,
       user_initiated_model_update_time_ = base::TimeTicks();
     } else if (query != current_query_ &&
                !user_initiated_model_update_time_.is_null()) {
-      if (is_tablet_mode_) {
-        UMA_HISTOGRAM_TIMES("Ash.SearchModelUpdateTime.TabletMode",
+      if (is_app_list_bubble_) {
+        UMA_HISTOGRAM_TIMES("Ash.SearchModelUpdateTime.ClamshellMode",
                             current_time - user_initiated_model_update_time_);
       } else {
-        UMA_HISTOGRAM_TIMES("Ash.SearchModelUpdateTime.ClamshellMode",
+        UMA_HISTOGRAM_TIMES("Ash.SearchModelUpdateTime.TabletMode",
                             current_time - user_initiated_model_update_time_);
       }
       user_initiated_model_update_time_ = current_time;
@@ -524,12 +488,12 @@ void SearchBoxView::RecordSearchBoxActivationHistogram(
 
   base::UmaHistogramEnumeration("Apps.AppListSearchBoxActivated",
                                 activation_type);
-  if (is_tablet_mode_) {
-    base::UmaHistogramEnumeration("Apps.AppListSearchBoxActivated.TabletMode",
-                                  activation_type);
-  } else {
+  if (is_app_list_bubble_) {
     base::UmaHistogramEnumeration(
         "Apps.AppListSearchBoxActivated.ClamshellMode", activation_type);
+  } else {
+    base::UmaHistogramEnumeration("Apps.AppListSearchBoxActivated.TabletMode",
+                                  activation_type);
   }
 }
 
@@ -596,12 +560,6 @@ void SearchBoxView::OnKeyEvent(ui::KeyEvent* evt) {
   delegate_->OnSearchBoxKeyEvent(evt);
 }
 
-bool SearchBoxView::OnMouseWheel(const ui::MouseWheelEvent& event) {
-  if (contents_view_)
-    return contents_view_->OnMouseWheel(event);
-  return false;
-}
-
 void SearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (HasAutocompleteText()) {
     node_data->role = ax::mojom::Role::kTextField;
@@ -620,8 +578,8 @@ void SearchBoxView::UpdateBackground(AppListState target_state) {
 
   // The background layer is only painted for the search box in tablet mode.
   // Also the layer is not painted when the search result page is visible.
-  if (is_tablet_mode_ && (!search_result_page_visible_ ||
-                          target_state == AppListState::kStateApps)) {
+  if (!is_app_list_bubble_ && (!search_result_page_visible_ ||
+                               target_state == AppListState::kStateApps)) {
     layer()->SetClipRect(GetContentsBounds());
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
@@ -660,35 +618,24 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
 
 int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
     AppListState state) const {
-  if (state == AppListState::kStateSearchResults && app_list_view_) {
-    return features::IsProductivityLauncherEnabled()
-               ? kExpandedSearchBoxCornerRadiusForProductivityLauncher
-               : kSearchBoxBorderCornerRadiusSearchResult;
-  }
-  return kSearchBoxBorderCornerRadius;
+  return state == AppListState::kStateSearchResults
+             ? kExpandedSearchBoxCornerRadius
+             : kSearchBoxBorderCornerRadius;
 }
 
 SkColor SearchBoxView::GetBackgroundColorForState(AppListState state) const {
   const auto* app_list_widget = GetWidget();
 
-  if (state == AppListState::kStateSearchResults) {
-    if ((features::IsDarkLightModeEnabled() ||
-         features::IsProductivityLauncherEnabled()) &&
-        search_result_page_visible_) {
-      return SK_ColorTRANSPARENT;
-    }
-    return AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor(
-        app_list_widget);
+  if (is_app_list_bubble_) {
+    return app_list_widget->GetColorProvider()->GetColor(
+        kColorAshControlBackgroundColorInactive);
   }
-  return AppListColorProvider::Get()->GetSearchBoxBackgroundColor(
-      app_list_widget);
-}
 
-void SearchBoxView::ShowZeroStateSuggestions() {
-  base::RecordAction(
-      base::UserMetricsAction("AppList_ShowZeroStateSuggestions"));
-  std::u16string empty_query;
-  ContentsChanged(search_box(), empty_query);
+  if (search_result_page_visible_)
+    return SK_ColorTRANSPARENT;
+
+  return app_list_widget->GetColorProvider()->GetColor(
+      kColorAshShieldAndBase80);
 }
 
 void SearchBoxView::OnWallpaperColorsChanged() {
@@ -696,10 +643,8 @@ void SearchBoxView::OnWallpaperColorsChanged() {
   UpdatePlaceholderTextStyle();
   UpdateTextColor();
 
-  if (features::IsDarkLightModeEnabled()) {
-    UpdateBackgroundColor(
-        AppListColorProvider::Get()->GetSearchBoxBackgroundColor(GetWidget()));
-  }
+  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
+
   SchedulePaint();
 }
 
@@ -891,64 +836,48 @@ void SearchBoxView::UpdateTextColor() {
 }
 
 void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {
-  if (features::IsProductivityLauncherEnabled()) {
-    switch (SelectPlaceholderText()) {
-      case PlaceholderTextType::kShortcuts:
-        search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
-            IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
-            l10n_util::GetStringUTF16(
-                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS)));
-        search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
-            is_tablet_mode_
-                ? IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET
-                : IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
-            l10n_util::GetStringUTF16(
-                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS)));
-        break;
-      case PlaceholderTextType::kTabs:
-        search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
-            IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
-            l10n_util::GetStringUTF16(
-                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)));
-        search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
-            is_tablet_mode_
-                ? IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET
-                : IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
-            l10n_util::GetStringUTF16(
-                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)));
-        break;
-      case PlaceholderTextType::kSettings:
-        search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
-            IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
-            l10n_util::GetStringUTF16(
-                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)));
-        search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
-            is_tablet_mode_
-                ? IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET
-                : IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
-            l10n_util::GetStringUTF16(
-                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)));
-        break;
-      case PlaceholderTextType::kGames:
-        search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
-            IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
-            l10n_util::GetStringUTF16(
-                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES)));
-        search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
-            is_tablet_mode_
-                ? IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET
-                : IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL,
-            l10n_util::GetStringUTF16(
-                IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES)));
-        break;
-    }
-  } else {
-    search_box()->SetPlaceholderText(
-        l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER));
-    search_box()->SetAccessibleName(l10n_util::GetStringUTF16(
-        is_tablet_mode_
-            ? IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET
-            : IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL));
+  const int a11y_name_template =
+      is_app_list_bubble_
+          ? IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_CLAMSHELL
+          : IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE_ACCESSIBILITY_NAME_TABLET;
+  switch (SelectPlaceholderText()) {
+    case PlaceholderTextType::kShortcuts:
+      search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+          IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+          l10n_util::GetStringUTF16(
+              IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS)));
+      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+          a11y_name_template,
+          l10n_util::GetStringUTF16(
+              IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SHORTCUTS)));
+      break;
+    case PlaceholderTextType::kTabs:
+      search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+          IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+          l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)));
+      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+          a11y_name_template,
+          l10n_util::GetStringUTF16(IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TABS)));
+      break;
+    case PlaceholderTextType::kSettings:
+      search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+          IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+          l10n_util::GetStringUTF16(
+              IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)));
+      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+          a11y_name_template,
+          l10n_util::GetStringUTF16(
+              IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_SETTINGS)));
+      break;
+    case PlaceholderTextType::kGames:
+      search_box()->SetPlaceholderText(l10n_util::GetStringFUTF16(
+          IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_TEMPLATE,
+          l10n_util::GetStringUTF16(
+              IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES)));
+      search_box()->SetAccessibleName(l10n_util::GetStringFUTF16(
+          a11y_name_template, l10n_util::GetStringUTF16(
+                                  IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER_GAMES)));
+      break;
   }
 }
 
@@ -1193,16 +1122,6 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
 
 bool SearchBoxView::HandleMouseEvent(views::Textfield* sender,
                                      const ui::MouseEvent& mouse_event) {
-  if (mouse_event.type() == ui::ET_MOUSEWHEEL) {
-    // TODO(crbug.com/1216082): Forward scroll events for bubble launcher.
-    if (!app_list_view_) {
-      NOTIMPLEMENTED_LOG_ONCE();
-      return false;
-    }
-    return app_list_view_->HandleScroll(
-        mouse_event.location(), (&mouse_event)->AsMouseWheelEvent()->offset(),
-        ui::ET_MOUSEWHEEL);
-  }
   if (mouse_event.type() == ui::ET_MOUSE_PRESSED && HasAutocompleteText())
     AcceptAutocompleteText();
 

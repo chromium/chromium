@@ -28,9 +28,7 @@ class View;
 
 namespace ash {
 
-class AppListView;
 class AppListViewDelegate;
-class ContentsView;
 class ResultSelectionController;
 class SearchBoxViewDelegate;
 class SearchResultBaseView;
@@ -52,7 +50,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   SearchBoxView(SearchBoxViewDelegate* delegate,
                 AppListViewDelegate* view_delegate,
-                AppListView* app_list_view = nullptr);
+                bool is_app_list_bubble);
 
   SearchBoxView(const SearchBoxView&) = delete;
   SearchBoxView& operator=(const SearchBoxView&) = delete;
@@ -72,9 +70,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // is called.
   void SetResultSelectionController(ResultSelectionController* controller);
 
-  // Called when tablet mode starts and ends.
-  void OnTabletModeChanged(bool started);
-
   // Resets state of SearchBoxView so it can be reshown.
   void ResetForShow();
 
@@ -87,7 +82,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxViewBase:
   void UpdateSearchTextfieldAccessibleNodeData(
       ui::AXNodeData* node_data) override;
-  void HandleSearchBoxEvent(ui::LocatedEvent* located_event) override;
   void UpdateKeyboardVisibility() override;
   void HandleQueryChange(const std::u16string& query,
                          bool initiated_by_user) override;
@@ -103,7 +97,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Overridden from views::View:
   void OnKeyEvent(ui::KeyEvent* event) override;
-  bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
@@ -123,9 +116,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Returns background color for the given state.
   SkColor GetBackgroundColorForState(AppListState state) const;
-
-  // Shows Zero State suggestions.
-  void ShowZeroStateSuggestions();
 
   // Called when the wallpaper colors change.
   void OnWallpaperColorsChanged();
@@ -156,11 +146,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Refreshes the placeholder text with a fixed one rather than the one picked
   // up randomly
   void UseFixedPlaceholderTextForTest();
-
-  void set_contents_view(ContentsView* contents_view) {
-    contents_view_ = contents_view;
-  }
-  ContentsView* contents_view() { return contents_view_; }
 
   ResultSelectionController* result_selection_controller_for_test() {
     return result_selection_controller_;
@@ -257,21 +242,12 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   SearchBoxViewDelegate* const delegate_;
   AppListViewDelegate* const view_delegate_;
 
-  // Owned by views hierarchy. May be null for bubble launcher.
-  AppListView* const app_list_view_;
-
-  // Owned by views hierarchy. May be null for bubble launcher.
-  ContentsView* contents_view_ = nullptr;
-
   // The layer that will draw the focus ring if needed. Could be a nullptr if
   // the search box is in the bubble launcher.
   std::unique_ptr<FocusRingLayer> focus_ring_layer_;
 
   // Whether the search box is embedded in the bubble launcher.
   const bool is_app_list_bubble_;
-
-  // Whether tablet mode is active.
-  bool is_tablet_mode_;
 
   // Whether the search box view should draw a highlight border.
   bool should_paint_highlight_border_ = false;

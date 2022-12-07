@@ -244,7 +244,7 @@ void AppListBubbleView::InitContentsView(
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
   search_box_view_ = contents->AddChildView(std::make_unique<SearchBoxView>(
-      /*delegate=*/this, view_delegate_, /*app_list_view=*/nullptr));
+      /*delegate=*/this, view_delegate_, /*is_app_list_bubble=*/true));
   search_box_view_->InitializeForBubbleLauncher();
 
   // Skip the assistant button on arrow up/down in app list.

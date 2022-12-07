@@ -5499,12 +5499,6 @@ New install
       <message name="IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC" desc="Accessibility text to specify a search result is an app recommendation.">
         <ph name="APP_NAME">$1<ex>Instagram</ex></ph>, App recommendation
       </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL" desc="Hint text for the search box in fullscreen app list window with additional instructions to use the arrow keys in Accessibility mode.">
-        Search your device, apps, settings, and web. Use the arrow keys to navigate your apps.
-      </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET" desc="Hint text for the search box in fullscreen app list window. Tablet mode only, so we don't mention the arrow keys.">
-        Search your device, apps, settings, and web.
-      </message>
       <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER" desc="Placeholder text for the search box shown in the app list UI.">
         Search your device, apps, settings, web...
       </message>

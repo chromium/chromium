@@ -403,8 +403,8 @@ void AppListView::InitContents() {
       AddChildView(std::make_unique<views::View>()));
 
   auto app_list_main_view = std::make_unique<AppListMainView>(delegate_, this);
-  search_box_view_ =
-      new SearchBoxView(app_list_main_view.get(), delegate_, this);
+  search_box_view_ = new SearchBoxView(app_list_main_view.get(), delegate_,
+                                       /*is_app_list_bubble=*/false);
   search_box_view_->InitializeForFullscreenLauncher();
 
   // Assign |app_list_main_view_| here since it is accessed during Init().
@@ -887,7 +887,6 @@ void AppListView::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void AppListView::OnTabletModeChanged(bool started) {
-  search_box_view_->OnTabletModeChanged(started);
   app_list_main_view_->contents_view()->OnTabletModeChanged(started);
 
   // Refresh the state if the view is not in a fullscreen state.

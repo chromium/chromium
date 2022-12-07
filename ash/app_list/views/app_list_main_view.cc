@@ -77,8 +77,6 @@ void AppListMainView::AddContentsViews() {
   contents_view->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   contents_view->layer()->SetMasksToBounds(true);
   contents_view_ = AddChildView(std::move(contents_view));
-
-  search_box_view_->set_contents_view(contents_view_);
 }
 
 void AppListMainView::ShowAppListWhenReady() {
