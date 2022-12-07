@@ -308,6 +308,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
 int PrerenderHostRegistry::CreateAndStartHostForNewTab(
     const PrerenderAttributes& attributes) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab));
+  DCHECK_EQ(attributes.trigger_type, PrerenderTriggerType::kSpeculationRule);
   std::string recorded_url =
       attributes.initiator_origin.has_value()
           ? attributes.initiator_origin.value().GetURL().spec()
@@ -502,6 +503,39 @@ bool PrerenderHostRegistry::CancelHost(
   }
 
   return false;
+}
+
+void PrerenderHostRegistry::CancelHostsForTrigger(
+    PrerenderTriggerType trigger_type,
+    PrerenderFinalStatus final_status) {
+  TRACE_EVENT1("navigation", "PrerenderHostRegistry::CancelHostsForTrigger",
+               "trigger_type", trigger_type);
+
+  std::vector<int> ids_to_be_deleted;
+
+  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+    if (iter.second->trigger_type() == trigger_type) {
+      ids_to_be_deleted.push_back(iter.first);
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InNewTab)) {
+    switch (trigger_type) {
+      case PrerenderTriggerType::kSpeculationRule:
+        for (auto& iter : prerender_new_tab_handle_by_frame_tree_node_id_) {
+          ids_to_be_deleted.push_back(iter.first);
+        }
+        break;
+      case PrerenderTriggerType::kEmbedder:
+        // Prerendering into a new tab can be triggered by speculation
+        // rules only.
+        break;
+    }
+  } else {
+    DCHECK(prerender_new_tab_handle_by_frame_tree_node_id_.empty());
+  }
+
+  CancelHosts(ids_to_be_deleted, final_status);
 }
 
 void PrerenderHostRegistry::CancelAllHosts(PrerenderFinalStatus final_status) {
@@ -728,21 +762,34 @@ void PrerenderHostRegistry::OnVisibilityChanged(Visibility visibility) {
       case Visibility::HIDDEN:
         // Keep a prerendered page alive in the background when its visibility
         // state changes to HIDDEN if the feature is enabled.
-        DCHECK(!timeout_timer_.IsRunning());
+        DCHECK(!timeout_timer_for_embedder_.IsRunning());
+        DCHECK(!timeout_timer_for_speculation_rules_.IsRunning());
 
-        timeout_timer_.SetTaskRunner(GetTimerTaskRunner());
+        timeout_timer_for_embedder_.SetTaskRunner(GetTimerTaskRunner());
+        timeout_timer_for_speculation_rules_.SetTaskRunner(
+            GetTimerTaskRunner());
+
         // Cancel PrerenderHost in the background when it exceeds a certain
-        // amount of time defined in `kTimeToLiveInBackground`.
-        timeout_timer_.Start(
-            FROM_HERE, kTimeToLiveInBackground,
-            base::BindOnce(&PrerenderHostRegistry::CancelAllHosts,
+        // amount of time. The timeout differs depending on the trigger
+        // type.
+        timeout_timer_for_embedder_.Start(
+            FROM_HERE, kTimeToLiveInBackgroundForEmbedder,
+            base::BindOnce(&PrerenderHostRegistry::CancelHostsForTrigger,
                            base::Unretained(this),
+                           PrerenderTriggerType::kEmbedder,
+                           PrerenderFinalStatus::kTimeoutBackgrounded));
+        timeout_timer_for_speculation_rules_.Start(
+            FROM_HERE, kTimeToLiveInBackgroundForSpeculationRules,
+            base::BindOnce(&PrerenderHostRegistry::CancelHostsForTrigger,
+                           base::Unretained(this),
+                           PrerenderTriggerType::kSpeculationRule,
                            PrerenderFinalStatus::kTimeoutBackgrounded));
         break;
       case Visibility::OCCLUDED:
       case Visibility::VISIBLE:
         // Stop the timer when a prerendered page gets visible to users.
-        timeout_timer_.Stop();
+        timeout_timer_for_embedder_.Stop();
+        timeout_timer_for_speculation_rules_.Stop();
         break;
     }
 

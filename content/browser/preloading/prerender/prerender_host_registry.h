@@ -52,10 +52,16 @@ class PrerenderCancellationReason;
 class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
  public:
   // The time to allow prerendering kept alive in the background. All the hosts
-  // that this PrerenderHostRegistry holds will be terminated with
-  // kTimeoutBackgrounded when the timer exceeds this. The value was determined
-  // by PageLoad.Clients.Prerender.NavigationToActivation.*.
-  static constexpr base::TimeDelta kTimeToLiveInBackground = base::Seconds(19);
+  // that this PrerenderHostRegistry holds will be terminated when the timer
+  // exceeds this. The timeout value differs depending on the trigger type. The
+  // value for an embedder was determined by
+  // PageLoad.Clients.Prerender.NavigationToActivation.*.
+  // The value for speculation rules was determined to align with the default
+  // value of BFCache's eviction timer.
+  static constexpr base::TimeDelta kTimeToLiveInBackgroundForEmbedder =
+      base::Seconds(19);
+  static constexpr base::TimeDelta kTimeToLiveInBackgroundForSpeculationRules =
+      base::Seconds(180);
 
   using PassKey = base::PassKey<PrerenderHostRegistry>;
 
@@ -115,6 +121,10 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // status.
   void CancelHosts(const std::vector<int>& frame_tree_node_ids,
                    PrerenderFinalStatus final_status);
+
+  // Cancels the existing hosts that were triggered by `trigger_type`.
+  void CancelHostsForTrigger(PrerenderTriggerType trigger_type,
+                             PrerenderFinalStatus final_status);
 
   // Applies CancelHost for all existing PrerenderHost.
   void CancelAllHosts(PrerenderFinalStatus final_status);
@@ -192,7 +202,12 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
 
   // Only used for tests.
-  base::OneShotTimer* GetTimerForTesting() { return &timeout_timer_; }
+  base::OneShotTimer* GetEmbedderTimerForTesting() {
+    return &timeout_timer_for_embedder_;
+  }
+  base::OneShotTimer* GetSpeculationRulesTimerForTesting() {
+    return &timeout_timer_for_speculation_rules_;
+  }
   void SetTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
@@ -276,8 +291,9 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // of the registry) and results in UAF.
   std::vector<std::unique_ptr<PrerenderHost>> to_be_deleted_hosts_;
 
-  // Starts running the timer when prerendering gets hidden.
-  base::OneShotTimer timeout_timer_;
+  // Starts running the timers when prerendering gets hidden.
+  base::OneShotTimer timeout_timer_for_embedder_;
+  base::OneShotTimer timeout_timer_for_speculation_rules_;
   // Only used for tests. This task runner is used for precise injection in
   // tests and for timing control.
   scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner_for_testing_;
