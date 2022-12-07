@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
+#include "ash/system/video_conference/video_conference_tray_effects_manager.h"
 #include "base/observer_list_types.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
@@ -56,10 +57,17 @@ class ASH_EXPORT VideoConferenceTrayController
   void OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState state) override;
 
+  VideoConferenceTrayEffectsManager& effects_manager() {
+    return effects_manager_;
+  }
+
  private:
   // This keeps track the current VC media state. The state is being updated by
   // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.
   VideoConferenceMediaState state_;
+
+  // Used by the views to construct and lay out effects in the bubble.
+  VideoConferenceTrayEffectsManager effects_manager_;
 
   // Registered observers.
   base::ObserverList<Observer> observer_list_;
