@@ -18882,6 +18882,11 @@ Called by update_net_error_codes.py.-->
   <int value="85" label="Federated identity browser JavaScript API"/>
   <int value="86" label="Notification interactions"/>
   <int value="87" label="Reduce accept language"/>
+  <int value="88" label="Notification permission review"/>
+  <int value="89" label="Private network guard"/>
+  <int value="90" label="Private network chooser data"/>
+  <int value="91"
+      label="Federated identity identity-provider-sign-in-status API"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">
