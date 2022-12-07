@@ -208,8 +208,8 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         main_test_rfh()->frame_tree_node()->pending_frame_policy();
     auto request = NavigationRequest::CreateBrowserInitiated(
         main_test_rfh()->frame_tree_node(), std::move(common_params),
-        std::move(commit_params), false /* browser-initiated */,
-        false /* was_opener_suppressed */, nullptr /* initiator_frame_token */,
+        std::move(commit_params), false /* was_opener_suppressed */,
+        nullptr /* initiator_frame_token */,
         ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
         std::string() /* extra_headers */, nullptr /* frame_entry */,
         nullptr /* entry */, false /* is_form_submission */,

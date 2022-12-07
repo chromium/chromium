@@ -3844,7 +3844,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   std::string extra_headers_crlf;
   base::ReplaceChars(params.extra_headers, "\n", "\r\n", &extra_headers_crlf);
 
-  auto navigation_request = NavigationRequest::CreateBrowserInitiated(
+  auto navigation_request = NavigationRequest::Create(
       node, std::move(common_params), std::move(commit_params),
       !params.is_renderer_initiated, params.was_opener_suppressed,
       params.initiator_frame_token.has_value()
@@ -3974,7 +3974,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
     // instead.
     commit_params->srcdoc_value = frame_tree_node->srcdoc_value();
   }
-  return NavigationRequest::CreateBrowserInitiated(
+  return NavigationRequest::Create(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       is_browser_initiated, false /* was_opener_suppressed */,
       nullptr /* initiator_frame_token */,
@@ -4100,7 +4100,7 @@ NavigationControllerImpl::LoadPostCommitErrorPage(
   std::unique_ptr<NavigationRequest> navigation_request =
       NavigationRequest::CreateBrowserInitiated(
           node, std::move(common_params), std::move(commit_params),
-          true /* browser_initiated */, false /* was_opener_suppressed */,
+          false /* was_opener_suppressed */,
           nullptr /* initiator_frame_token */,
           ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
           "" /* extra_headers */, nullptr /* frame_entry */,

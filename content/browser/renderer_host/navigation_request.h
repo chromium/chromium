@@ -208,11 +208,36 @@ class CONTENT_EXPORT NavigationRequest
   };
 
   // Creates a request for a browser-initiated navigation.
-  // Note: this is sometimes called for renderer-initiated navigations going
-  // through the OpenURL path. |browser_initiated| should be false in that case.
-  // TODO(clamy): Rename this function and consider merging it with
-  // CreateRendererInitiated.
   static std::unique_ptr<NavigationRequest> CreateBrowserInitiated(
+      FrameTreeNode* frame_tree_node,
+      blink::mojom::CommonNavigationParamsPtr common_params,
+      blink::mojom::CommitNavigationParamsPtr commit_params,
+      bool was_opener_suppressed,
+      const blink::LocalFrameToken* initiator_frame_token,
+      int initiator_process_id,
+      const std::string& extra_headers,
+      FrameNavigationEntry* frame_entry,
+      NavigationEntryImpl* entry,
+      bool is_form_submission,
+      std::unique_ptr<NavigationUIData> navigation_ui_data,
+      const absl::optional<blink::Impression>& impression,
+      bool is_pdf,
+      bool is_embedder_initiated_fenced_frame_navigation = false);
+
+  // Creates a request for either a browser-initiated navigation or a
+  // renderer-initiated navigation.  Normally, renderer-initiated navigations
+  // use CreateRendererInitiated(), but some legacy renderer-initiated
+  // navigation paths, such as OpenURL, are stuck using this path instead;
+  // these cases specify `browser_initiated` as false.
+  //
+  // Do NOT add more uses of this function.  Browser-initiated navigations
+  // should use CreateBrowserInitiated() and renderer-initiated navigations
+  // should use CreateRendererInitiated().
+  //
+  // TODO(crbug.com/1399292): Refactor the remaining uses of this function to
+  // use either CreateBrowserInitiated() or CreateRendererInitiated() and then
+  // remove this helper.
+  static std::unique_ptr<NavigationRequest> Create(
       FrameTreeNode* frame_tree_node,
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::CommitNavigationParamsPtr commit_params,

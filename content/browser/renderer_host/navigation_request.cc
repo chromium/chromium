@@ -1076,6 +1076,30 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     FrameTreeNode* frame_tree_node,
     blink::mojom::CommonNavigationParamsPtr common_params,
     blink::mojom::CommitNavigationParamsPtr commit_params,
+    bool was_opener_suppressed,
+    const blink::LocalFrameToken* initiator_frame_token,
+    int initiator_process_id,
+    const std::string& extra_headers,
+    FrameNavigationEntry* frame_entry,
+    NavigationEntryImpl* entry,
+    bool is_form_submission,
+    std::unique_ptr<NavigationUIData> navigation_ui_data,
+    const absl::optional<blink::Impression>& impression,
+    bool is_pdf,
+    bool is_embedder_initiated_fenced_frame_navigation) {
+  return Create(
+      frame_tree_node, std::move(common_params), std::move(commit_params),
+      /*browser_initiated=*/true, was_opener_suppressed, initiator_frame_token,
+      initiator_process_id, extra_headers, frame_entry, entry,
+      is_form_submission, std::move(navigation_ui_data), impression, is_pdf,
+      is_embedder_initiated_fenced_frame_navigation);
+}
+
+// static
+std::unique_ptr<NavigationRequest> NavigationRequest::Create(
+    FrameTreeNode* frame_tree_node,
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    blink::mojom::CommitNavigationParamsPtr commit_params,
     bool browser_initiated,
     bool was_opener_suppressed,
     const blink::LocalFrameToken* initiator_frame_token,
@@ -1088,7 +1112,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     const absl::optional<blink::Impression>& impression,
     bool is_pdf,
     bool is_embedder_initiated_fenced_frame_navigation) {
-  TRACE_EVENT0("navigation", "NavigationRequest::CreateBrowserInitiated");
+  TRACE_EVENT1("navigation", "NavigationRequest::Create", "browser_initiated",
+               browser_initiated);
 
   common_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
