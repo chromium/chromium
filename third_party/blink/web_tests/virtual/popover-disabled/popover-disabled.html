@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <script src='../../resources/testharness.js'></script>
+<script src="../../resources/testharnessreport.js"></script>
 
 <div id=elements>
   <div popover=auto>This content should be visible, if HTMLPopoverAttribute is disabled</div>
-  <div popover=hint>This content should be visible, if HTMLPopoverAttribute is disabled</div>
   <div popover=async>This content should be visible, if HTMLPopoverAttribute is disabled</div>
   <div popover=invalid>This content should be visible, if HTMLPopoverAttribute is disabled</div>
   <div popover="">This content should be visible, if HTMLPopoverAttribute is disabled</div>
@@ -12,6 +12,7 @@
 </div>
 
 <script>
+window.onload = () => {
   if (window.testRunner)
     testRunner.dumpAsText();
 
@@ -40,5 +41,5 @@
   test(() => {
     assert_false(supportsPopover());
   },`The popover IDL attribute should not be present on Element`);
-
+};
 </script>

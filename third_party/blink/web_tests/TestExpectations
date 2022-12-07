@@ -1586,10 +1586,6 @@ crbug.com/958381 [ Mac ] virtual/text-antialias/hyphen-min-preferred-width.html 
 crbug.com/958381 [ Win ] virtual/text-antialias/hyphen-min-preferred-width.html [ Failure ]
 crbug.com/958381 [ Mac ] fragmentation/single-line-cells-paginated-with-text.html [ Failure ]
 
-# Popover test needing a fix
-
-crbug.com/1396139 virtual/popover-disabled/popover-disabled.html [ Failure Pass ]
-
 # TablesNG ends
 
 # ====== LayoutNG-only failures until here ======
