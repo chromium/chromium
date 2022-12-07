@@ -73,7 +73,14 @@ Only one build configuration is currently supported.
 
 # Troubleshooting
 
-## Python3 version
+If you have trouble with new submodules popping up that are not part of our current release:
+
+* You might see the submodules pop up as unwanted files in `git status`, and they might sneak into your PR.
+* You can easily and safely remove them via `git rm --cached name-of-submodule`.
+* E.g. (for old Chromium 91): `git rm --cached docs/website third_party/cast_core/public/src third_party/content_analysis_sdk/src third_party/cpuinfo/src third_party/cros_components third_party/fxdiv/src third_party/highway/src third_party/libjxl/src third_party/pthreadpool/src third_party/wayland-protocols/gtk third_party/wayland-protocols/kde third_party/xnnpack/src`
+
+
+## Linux: Python3 version
 
 When encountering the following errors:
 ```
