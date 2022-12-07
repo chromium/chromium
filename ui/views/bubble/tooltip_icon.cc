@@ -112,10 +112,11 @@ void TooltipIcon::RemoveObserver(Observer* observer) {
 }
 
 void TooltipIcon::SetDrawAsHovered(bool hovered) {
-  SetImage(gfx::CreateVectorIcon(
-      vector_icons::kInfoOutlineIcon, tooltip_icon_size_,
+  SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kInfoOutlineIcon,
       GetColorProvider()->GetColor(hovered ? ui::kColorHelpIconActive
-                                           : ui::kColorHelpIconInactive)));
+                                           : ui::kColorHelpIconInactive),
+      tooltip_icon_size_));
 }
 
 void TooltipIcon::ShowBubble() {
