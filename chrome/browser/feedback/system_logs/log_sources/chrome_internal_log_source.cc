@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -496,6 +497,12 @@ void ChromeInternalLogSource::PopulatePowerApiLogs(
   std::string info;
   for (auto* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    // Some profiles cannot have entesions, such as the System Profile.
+    if (extensions::ChromeContentBrowserClientExtensionsPart::
+            AreExtensionsDisabledForProfile(profile)) {
+      continue;
+    }
+
     for (const auto& it :
          extensions::PowerAPI::Get(profile)->extension_levels()) {
       if (!info.empty())
