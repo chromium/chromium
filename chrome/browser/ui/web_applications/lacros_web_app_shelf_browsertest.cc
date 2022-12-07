@@ -136,6 +136,58 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
   test::UninstallWebApp(profile(), app1_id);
 }
 
+// Navigating out of scope in an app window does not affect which app is
+// considered running.
+IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Navigation) {
+  if (!IsServiceAvailable())
+    GTEST_SKIP();
+
+  const GURL app1_url =
+      https_server().GetURL(kFirstAppUrlHost, "/web_apps/basic.html");
+  const AppId app1_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), app1_url);
+
+  const GURL app2_url = https_server().GetURL(
+      kSecondAppUrlHost, "/web_app_shortcuts/shortcuts.html");
+  const AppId app2_id =
+      InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
+
+  GURL out_of_scope_url = https_server().GetURL("/empty.html");
+
+  Browser* app_browser1 = LaunchWebAppBrowser(profile(), app1_id);
+  {
+    NavigateParams params(app_browser1, out_of_scope_url,
+                          ui::PAGE_TRANSITION_LINK);
+    params.tabstrip_index = app_browser1->tab_strip_model()->active_index();
+    params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    Navigate(&params);
+    ASSERT_TRUE(
+        content::WaitForLoadStop(params.navigated_or_inserted_contents));
+    EXPECT_EQ(app_browser1->tab_strip_model()->count(), 1);
+    EXPECT_EQ(app_browser1->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->GetLastCommittedURL(),
+              out_of_scope_url);
+  }
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+
+  LaunchWebAppBrowser(profile(), app2_id);
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kRunning)));
+
+  app_browser1->window()->Activate();
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app2_id, static_cast<uint32_t>(ShelfItemState::kRunning)));
+
+  test::UninstallWebApp(profile(), app1_id);
+  test::UninstallWebApp(profile(), app2_id);
+}
+
 IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, BadgeShown) {
   if (!IsServiceAvailable())
     GTEST_SKIP();
