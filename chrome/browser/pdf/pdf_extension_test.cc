@@ -3652,9 +3652,12 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, BackgroundColor) {
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
 
   // Verify that current focus state is body element.
   const std::string script =
@@ -3664,7 +3667,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, DefaultFocusForEmbeddedPDF) {
 
   bool result = false;
   ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(guest_contents, script, &result));
+      content::ExecuteScriptAndExtractBool(guest_mainframe, script, &result));
   ASSERT_TRUE(result);
 }
 
