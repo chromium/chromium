@@ -68,38 +68,6 @@ class TrustTokenBrowsertest : virtual public ContentBrowserTest {
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// HandlerWrappingLocalTrustTokenFulfiller serves two purposes:
-//
-// 1. Its lifetime scopes an override to content::GetGlobalJavaInterfaces()'s
-// interface provider, forwarding requests to bind a
-// content::mojom::LocalTrustTokenFulfiller to this object;
-//
-// 2. It forwards the requests it receives to the TrustTokenRequestHandler
-// passed to its constructor (this will likely be
-// TrustTokenBrowsertest::request_handler_). This arrangement means that the
-// calls to FulfillTrustTokenIssuance receive well-formed issuance responses
-// signed using the request handler's issuance keys.
-class HandlerWrappingLocalTrustTokenFulfiller final
-    : public content::mojom::LocalTrustTokenFulfiller {
- public:
-  HandlerWrappingLocalTrustTokenFulfiller(TrustTokenRequestHandler& handler);
-  ~HandlerWrappingLocalTrustTokenFulfiller() override;
-
-  void FulfillTrustTokenIssuance(
-      network::mojom::FulfillTrustTokenIssuanceRequestPtr request,
-      FulfillTrustTokenIssuanceCallback callback) override;
-
- private:
-  void Bind(mojo::ScopedMessagePipeHandle handle);
-
-  const raw_ref<TrustTokenRequestHandler> handler_;
-  service_manager::InterfaceProvider::TestApi interface_overrider_{
-      content::GetGlobalJavaInterfaces()};
-  mojo::Receiver<content::mojom::LocalTrustTokenFulfiller> receiver_{this};
-};
-#endif
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_NETWORK_TRUST_TOKEN_BROWSERTEST_H_

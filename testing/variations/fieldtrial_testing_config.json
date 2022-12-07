@@ -11333,7 +11333,6 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "PlatformProvidedTrustTokenIssuance": "true",
                         "TrustTokenOperationsRequiringOriginTrial": "all-operations-require-origin-trial"
                     },
                     "enable_features": [

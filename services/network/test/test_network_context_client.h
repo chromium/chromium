@@ -58,9 +58,6 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
       OnCanSendSCTAuditingReportCallback callback) override;
   void OnNewSCTAuditingReportSent() override {}
 #endif
-  void OnTrustTokenIssuanceDivertedToSystem(
-      mojom::FulfillTrustTokenIssuanceRequestPtr request,
-      OnTrustTokenIssuanceDivertedToSystemCallback callback) override {}
 
  private:
   mojo::Receiver<mojom::NetworkContextClient> receiver_;

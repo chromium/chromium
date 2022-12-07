@@ -96,10 +96,6 @@ TrustTokenRequestIssuanceHelper::TrustTokenRequestIssuanceHelper(
     absl::optional<std::string> custom_key_commitment,
     absl::optional<url::Origin> custom_issuer,
     std::unique_ptr<Cryptographer> cryptographer,
-    std::unique_ptr<LocalTrustTokenOperationDelegate> local_operation_delegate,
-    base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
-        is_current_os_callback,
-    MetricsDelegate* metrics_delegate,
     net::NetLogWithSource net_log)
     : top_level_origin_(std::move(top_level_origin)),
       token_store_(token_store),
@@ -107,9 +103,6 @@ TrustTokenRequestIssuanceHelper::TrustTokenRequestIssuanceHelper(
       custom_key_commitment_(custom_key_commitment),
       custom_issuer_(custom_issuer),
       cryptographer_(std::move(cryptographer)),
-      local_operation_delegate_(std::move(local_operation_delegate)),
-      is_current_os_callback_(std::move(is_current_os_callback)),
-      metrics_delegate_(metrics_delegate),
       net_log_(std::move(net_log)) {
   DCHECK(token_store_);
   DCHECK(key_commitment_getter_);
@@ -190,26 +183,6 @@ void TrustTokenRequestIssuanceHelper::OnGotKeyCommitment(
     return;
   }
 
-  if (features::kPlatformProvidedTrustTokenIssuance.Get() &&
-      !commitment_result->request_issuance_locally_on.empty()) {
-    should_divert_issuance_request_to_os_ = base::ranges::any_of(
-        commitment_result->request_issuance_locally_on,
-        [this](mojom::TrustTokenKeyCommitmentResult::Os os) {
-          return is_current_os_callback_.Run(os);
-        });
-    if (!should_divert_issuance_request_to_os_ &&
-        commitment_result->unavailable_local_operation_fallback ==
-            mojom::TrustTokenKeyCommitmentResult::
-                UnavailableLocalOperationFallback::kReturnWithError) {
-      // If the issuer requests that issuance be mediated by the OS on at least
-      // one platform, and we aren't on that platform, and the issuer has
-      // configured that we should return with an error in this case, do so.
-      std::move(done).Run(absl::nullopt,
-                          mojom::TrustTokenOperationStatus::kUnavailable);
-      return;
-    }
-  }
-
   protocol_version_ = commitment_result->protocol_version;
   if (!commitment_result->batch_size ||
       !cryptographer_->Initialize(protocol_version_,
@@ -266,22 +239,6 @@ void TrustTokenRequestIssuanceHelper::OnDelegateBeginIssuanceCallComplete(
     return;
   }
 
-  if (should_divert_issuance_request_to_os_) {
-    LogOutcome(net_log_, kBegin,
-               "Passing operation to local issuance provider");
-    auto fulfill_request = mojom::FulfillTrustTokenIssuanceRequest::New();
-    fulfill_request->issuer = url::Origin::Create(url);
-    fulfill_request->request = std::move(*maybe_blinded_tokens);
-    metrics_delegate_->WillExecutePlatformProvidedOperation();
-    local_operation_delegate_->FulfillIssuance(
-        std::move(fulfill_request),
-        base::BindOnce(&TrustTokenRequestIssuanceHelper::
-                           DoneRequestingLocallyFulfilledIssuance,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(done)));
-    // |this| may have been deleted and/or Finalize may have been called
-    // already.
-    return;
-  }
   net::HttpRequestHeaders request_headers;
   request_headers.SetHeader(kTrustTokensSecTrustTokenHeader,
                             std::move(*maybe_blinded_tokens));
@@ -376,52 +333,6 @@ void TrustTokenRequestIssuanceHelper::OnDoneProcessingIssuanceResponse(
       });
   std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
   return;
-}
-
-void TrustTokenRequestIssuanceHelper::DoneRequestingLocallyFulfilledIssuance(
-    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
-                            mojom::TrustTokenOperationStatus)> done,
-    mojom::FulfillTrustTokenIssuanceAnswerPtr answer) {
-  base::UmaHistogramEnumeration(
-      "Net.TrustTokens.IssuanceHelperLocalFulfillResult", answer->status);
-  switch (answer->status) {
-    case mojom::FulfillTrustTokenIssuanceAnswer::Status::kNotFound: {
-      std::move(done).Run(absl::nullopt,
-                          mojom::TrustTokenOperationStatus::kUnavailable);
-      return;
-    }
-    case mojom::FulfillTrustTokenIssuanceAnswer::Status::kUnknownError: {
-      std::move(done).Run(absl::nullopt,
-                          mojom::TrustTokenOperationStatus::kUnknownError);
-      return;
-    }
-    case mojom::FulfillTrustTokenIssuanceAnswer::Status::kOk:
-      break;
-  }
-
-  // Log the beginning of the Finalize event here, since this is where we enter
-  // the main response processing logic when executing issuance locally:
-  net_log_.BeginEvent(
-      net::NetLogEventType::TRUST_TOKEN_OPERATION_FINALIZE_ISSUANCE);
-  ProcessIssuanceResponse(
-      std::move(answer->response),
-      base::BindOnce(&TrustTokenRequestIssuanceHelper::
-                         DoneFinalizingLocallyFulfilledIssuance,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(done)));
-}
-
-void TrustTokenRequestIssuanceHelper::DoneFinalizingLocallyFulfilledIssuance(
-    base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
-                            mojom::TrustTokenOperationStatus)> done,
-    mojom::TrustTokenOperationStatus status) {
-  if (status == mojom::TrustTokenOperationStatus::kOk) {
-    std::move(done).Run(absl::nullopt,
-                        mojom::TrustTokenOperationStatus::
-                            kOperationSuccessfullyFulfilledLocally);
-    return;
-  }
-
-  std::move(done).Run(absl::nullopt, status);
 }
 
 mojom::TrustTokenOperationResultPtr

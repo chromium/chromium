@@ -244,7 +244,6 @@ source_set("common_sources") {
     ":main_function_params",
     ":renderer_type",
     ":switches",
-    ":trust_tokens_mojo_bindings",
 
     # TODO(crbug.com/977637): Remove when
     # content::LaunchUtilityProcessServiceDeprecated() gets removed.
@@ -433,19 +432,6 @@ mojom("interfaces") {
       ]
       traits_deps = [ "//ipc" ]
     },
-  ]
-}
-
-mojom("trust_tokens_mojo_bindings") {
-  generate_java = true
-  sources = [ "trust_tokens.mojom" ]
-  public_deps = [
-    "//services/network/public/mojom",
-
-    # Generating Java code requires that we depend directly, not transitively,
-    # on this target, because it contains symbols needed by the generated Java
-    # classes.
-    "//services/network/public/mojom:url_loader_base",
   ]
 }
 

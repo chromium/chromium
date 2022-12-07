@@ -16,7 +16,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
-#include "services/network/trust_tokens/local_trust_token_operation_delegate.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
@@ -99,16 +98,6 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
         base::StringPiece response_header) = 0;
   };
 
-  class MetricsDelegate {
-   public:
-    virtual ~MetricsDelegate() = default;
-
-    // Indicates that this delegate is about to attempt to execute its
-    // issuance operation through a call to the provided
-    // LocalTrustTokenOperationDelegate.
-    virtual void WillExecutePlatformProvidedOperation() = 0;
-  };
-
   // Creates a new issuance helper.
   //
   // - |top_level_origin| is the top-level origin of the request subsequently
@@ -141,11 +130,6 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
       absl::optional<std::string> custom_key_commitment,
       absl::optional<url::Origin> custom_issuer,
       std::unique_ptr<Cryptographer> cryptographer,
-      std::unique_ptr<LocalTrustTokenOperationDelegate>
-          local_operation_delegate,
-      base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
-          is_current_os_callback,
-      MetricsDelegate* metrics_delegate,
       net::NetLogWithSource net_log = net::NetLogWithSource());
   ~TrustTokenRequestIssuanceHelper() override;
 
@@ -242,27 +226,6 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
       base::OnceCallback<void(mojom::TrustTokenOperationStatus)> done,
       CryptographerAndUnblindedTokens cryptographer_and_unblinded_tokens);
 
-  // DoneRequestingLocallyFulfilledIssuance proceeds with a locally fulfilled
-  // issuance operation by handling the operation's response |answer|,
-  // either terminating the operation with an error passed to |done| (if
-  // |answer| contains an error) or continuing to finalize the operation (if
-  // |answer| contains an issuance response).
-  void DoneRequestingLocallyFulfilledIssuance(
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
-                              mojom::TrustTokenOperationStatus)> done,
-      mojom::FulfillTrustTokenIssuanceAnswerPtr answer);
-
-  // DoneFinalizingLocallyFulfilledIssuance determines a final response status
-  // to pass to the caller via |done|, then calls the callback.
-  //
-  // If the operation succeeded, calls |done| with
-  // kOperationSuccessfullyFulfilledLocally. Otherwise, calls |done| with
-  // |status|.
-  void DoneFinalizingLocallyFulfilledIssuance(
-      base::OnceCallback<void(absl::optional<net::HttpRequestHeaders>,
-                              mojom::TrustTokenOperationStatus)> done,
-      mojom::TrustTokenOperationStatus status);
-
   // |issuer_| needs to be a nullable type because it is initialized in |Begin|,
   // but, once initialized, it will never be empty over the course of the
   // operation's execution.
@@ -275,28 +238,11 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
 
   mojom::TrustTokenProtocolVersion protocol_version_;
 
-  // Set once we read the issuer's key commitment,
-  // |should_divert_issuance_request_to_os_| specifies whether, at the time we
-  // would return from an otherwise successful Begin half of this issuance
-  // operation, we should pass the issuance request to
-  // |local_operation_delegate_| rather than returning to the caller.
-  bool should_divert_issuance_request_to_os_ = false;
-
   // Relinquishes ownership during posted tasks for the potentially
   // computationally intensive cryptographic operations
   // (Cryptographer::BeginIssuance, Cryptographer::ConfirmIssuance); repopulated
   // when regaining ownership upon receiving each operation's results.
   std::unique_ptr<Cryptographer> cryptographer_;
-
-  // |local_operation_delegate_| is responsible for attempting to satisfying
-  // "platform-provided" issuance operations (e.g. by talking to a system
-  // service capable of replying to an issuance request).
-  std::unique_ptr<LocalTrustTokenOperationDelegate> local_operation_delegate_;
-
-  base::RepeatingCallback<bool(mojom::TrustTokenKeyCommitmentResult::Os)>
-      is_current_os_callback_;
-
-  const raw_ptr<MetricsDelegate> metrics_delegate_;
 
   net::NetLogWithSource net_log_;
   absl::optional<size_t> num_obtained_tokens_;
