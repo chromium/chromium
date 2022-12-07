@@ -1111,6 +1111,64 @@ TEST_F(PointerTest, IgnoresHandledEvents) {
   ash::Shell::Get()->RemovePreTargetHandler(&handler);
 }
 
+TEST_F(PointerTest, IgnoresCursorHideEvents) {
+  Seat seat(std::make_unique<TestDataExchangeDelegate>());
+  testing::NiceMock<MockPointerDelegate> pointer_delegate;
+  auto pointer = std::make_unique<Pointer>(&pointer_delegate, &seat);
+
+  // Make origin into a real window so the touch can click it
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+
+  // If the pointer event is targeting something other than |shell_surface|,
+  // it's not what we want so block here.
+  // Note that, gmock puts priority to the later call, so the specific one
+  // should come after the default one.
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(
+                                    shell_surface->surface_for_testing()))
+      .WillRepeatedly(testing::Return(true));
+
+  // Set up multi-display environment, and emulate the story that we hit
+  // an issue on event dispatching. (see crbug.com/1395256 for details).
+  // - Create two displays.
+  // - Move the cursor to the secondary display, then move it back to the
+  //   primary display.
+  UpdateDisplay("800x600, 800x600");
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseTo({1000, 10});
+  auto window_point = shell_surface->surface_for_testing()
+                          ->window()
+                          ->GetBoundsInScreen()
+                          .CenterPoint();
+  generator->MoveMouseTo(window_point);
+  ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
+
+  // Now dispatch a key event.
+  // This key event internally generates MOUSE_EXITED pointer event with
+  // CURSOR_HIDE|IS_SYNTHESIZED flags and dispatches to the tree.
+  // Currently, wayland leave/enter events should be suppressed temporarily.
+  // See also crbug.com/1395073 what is the eventaully expected state.
+  EXPECT_CALL(pointer_delegate, OnPointerLeave(testing::_)).Times(0);
+  EXPECT_CALL(pointer_delegate,
+              OnPointerEnter(testing::_, testing::_, testing::_))
+      .Times(0);
+  EXPECT_CALL(pointer_delegate, OnPointerFrame()).Times(0);
+
+  // Re-set up CanAcceptPointerEventsForSurface, which was reset above.
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(
+                                    shell_surface->surface_for_testing()))
+      .WillRepeatedly(testing::Return(true));
+
+  // All set up of expectations is done, so dispatch the key event now.
+  generator->PressKey(ui::VKEY_A, 0, 0);
+
+  ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
+}
+
 namespace {
 
 class PointerDragDropObserver : public WMHelper::DragDropObserver {

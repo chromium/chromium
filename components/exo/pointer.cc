@@ -467,6 +467,20 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
     return;
 
+  // TODO(crbug.com/1395073, crbug.com/1395256): Currently, due to a bug in
+  // multi-display implementation, mouse move event sent to hide cursor is
+  // sent twice occasionally. That confuses focus tracking implemented in this
+  // class.
+  // For the short term workaround, we ignore such events.
+  // Note that this is not a *correct* implementation, because we have to send
+  // the correconding wayland event to client (such as Lacros) with carrying
+  // the info that it is triggered for cursor hiding to let it take an action
+  // on cursor hiding (e.g. hiding hover, too).
+  // We need to fix the implementation here, though, it depends on the fix of
+  // multi-display event tracking.
+  if (event->flags() & ui::EF_CURSOR_HIDE)
+    return;
+
   gfx::PointF location_in_target;
   Surface* target = GetEffectiveTargetForEvent(event, &location_in_target);
   gfx::PointF location_in_root = event->root_location_f();
