@@ -8,6 +8,8 @@
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
+#include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -20,13 +22,12 @@
 #include <gbm.h>
 #include <string.h>
 #include <xf86drm.h>
-#include <filesystem>
 
 namespace media {
 
 namespace {
 
-constexpr std::string_view kDecoderDevicePrefix = "/dev/dri/";
+const base::FilePath kDecoderDevicePrefix("/dev/dri/");
 
 #define V4L2_PIX_FMT_INVALID 0
 
@@ -34,14 +35,15 @@ constexpr std::string_view kDecoderDevicePrefix = "/dev/dri/";
   case enumCase:        \
     return #enumCase
 
+struct DrmVersionDeleter {
+  void operator()(drmVersion* version) const { drmFreeVersion(version); }
+};
+using ScopedDrmVersionPtr = std::unique_ptr<drmVersion, DrmVersionDeleter>;
+
 // Converts v4l2 format to gbm format
 uint32_t ToGBMFormat(uint32_t v4l2_format) {
-  switch (v4l2_format) {
-    case V4L2_PIX_FMT_NV12:
-      return DRM_FORMAT_NV12;
-    case V4L2_PIX_FMT_NV12M:
-      return DRM_FORMAT_NV12;
-  }
+  if (v4l2_format == V4L2_PIX_FMT_NV12 || v4l2_format == V4L2_PIX_FMT_NV12M)
+    return DRM_FORMAT_NV12;
   return DRM_FORMAT_INVALID;
 }
 
@@ -82,7 +84,6 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
                                     scoped_refptr<V4L2Device> device,
                                     uint32_t chosen_v4l2_pixel_format,
                                     gfx::Size resolution) {
-  // Creates the OUTPUT queue, set its format and allocate a few buffers there.
   scoped_refptr<V4L2Queue> OUTPUT_queue =
       device->GetQueue(V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
   ASSERT_NE(OUTPUT_queue.get(), nullptr);
@@ -91,16 +92,15 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
   ASSERT_TRUE(input_v4l2_format.has_value());
 
   // Checks that pixel format is set properly as denoted in section 4.5.1.5
-  // https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-decoder.html#initialization
+  // https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-decoder.html#initialization.
   ASSERT_EQ(codec_fourcc, input_v4l2_format.value().fmt.pix_mp.pixelformat)
       << "The driver should never changed the codec :)";
   LOG(INFO) << " Chosen codec: " << FourccToString(codec_fourcc);
   constexpr size_t kNumInputBuffers = 8;
-  ASSERT_GT(
+  ASSERT_NE(
       OUTPUT_queue->AllocateBuffers(kNumInputBuffers, V4L2_MEMORY_MMAP, false),
       0u);
 
-  // Creates and verifies CAPTURE queue
   scoped_refptr<V4L2Queue> CAPTURE_queue =
       device->GetQueue(V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
   ASSERT_NE(CAPTURE_queue.get(), nullptr);
@@ -114,32 +114,30 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
       << "Device adjusted " << resolution.ToString() << " to "
       << coded_size.ToString();
   constexpr size_t kNumOutputBuffers = VIDEO_MAX_FRAME;
-  ASSERT_GT(CAPTURE_queue->AllocateBuffers(kNumOutputBuffers, V4L2_MEMORY_MMAP,
+  ASSERT_NE(CAPTURE_queue->AllocateBuffers(kNumOutputBuffers, V4L2_MEMORY_MMAP,
                                            false),
             0u);
 
-  // Sets up GBM and verifies graphics buffer object allocation
+  // Determines proper device driver to use for setting up GBM.
+  base::FilePath drm_path;
+  base::FileEnumerator fe(kDecoderDevicePrefix, true,
+                          base::FileEnumerator::FILES);
 
-  // Determines proper device driver to use
-  std::string drm_path;
-  for (const auto& entry :
-       std::filesystem::directory_iterator(kDecoderDevicePrefix)) {
-    int fd = open(entry.path().string().c_str(), O_RDONLY);
-    auto version = drmGetVersion(fd);
-    close(fd);
+  for (base::FilePath name = fe.Next(); !name.empty(); name = fe.Next()) {
+    base::File fd(name, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ScopedDrmVersionPtr version(drmGetVersion(fd.GetPlatformFile()));
 
     // VGEM in the version name describes a virtual driver which
     // is not what is desired for the tests.
     if (strncmp(version->name, "vgem", 4)) {
-      drm_path = entry.path().string();
+      drm_path = name;
       break;
     }
   }
-  ASSERT_TRUE(!drm_path.empty());
 
-  base::File drm_fd(
-      base::FilePath(drm_path.c_str()),
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
+  ASSERT_TRUE(!drm_path.empty());
+  base::File drm_fd(drm_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                  base::File::FLAG_WRITE);
   ASSERT_TRUE(drm_fd.IsValid());
   struct gbm_device* gbm = gbm_create_device(drm_fd.GetPlatformFile());
   ASSERT_TRUE(gbm);
@@ -156,7 +154,6 @@ void TestStatefulDecoderAllocations(uint32_t codec_fourcc,
       GBM_BO_USE_SCANOUT | GBM_BO_USE_TEXTURING | GBM_BO_USE_HW_VIDEO_DECODER);
   ASSERT_TRUE(bo);
 
-  // Compares allocations
   EXPECT_EQ(coded_size,
             gfx::Size(base::checked_cast<int>(gbm_bo_get_width(bo)),
                       base::checked_cast<int>(gbm_bo_get_height(bo))));
@@ -193,13 +190,11 @@ TEST_P(V4L2MinigbmTest, AllocateAndCompareWithMinigbm) {
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   ASSERT_TRUE(device);
 
-  // Open the device to determine its decode capabilities.
   const auto fourcc_stateful =
       V4L2Device::VideoCodecProfileToV4L2PixFmt(video_codec_profile, false);
   const bool is_stateful =
       device->Open(V4L2Device::Type::kDecoder, fourcc_stateful);
 
-  // Verifies device capabilities.
   constexpr auto kCapsRequired = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
   struct v4l2_capability caps;
   if (device->Ioctl(VIDIOC_QUERYCAP, &caps) ||
@@ -207,7 +202,6 @@ TEST_P(V4L2MinigbmTest, AllocateAndCompareWithMinigbm) {
     GTEST_SKIP() << "Device doesn't support expected capabilities";
   }
 
-  // Tests whether device supports a desired pixel format.
   constexpr uint32_t desired_v4l2_pixel_formats[] = {V4L2_PIX_FMT_NV12,
                                                      V4L2_PIX_FMT_NV12M};
   std::vector<uint32_t> supported_v4l2_pixel_formats =
