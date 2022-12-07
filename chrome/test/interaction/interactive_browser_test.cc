@@ -389,14 +389,14 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
   return builder;
 }
 
-InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::MoveMouseTo(
+InteractiveBrowserTestApi::StepBuilder InteractiveBrowserTestApi::MoveMouseTo(
     ElementSpecifier web_contents,
     DeepQuery where) {
   return MoveMouseTo(web_contents,
                      DeepQueryToRelativePosition(std::move(where)));
 }
 
-InteractiveBrowserTestApi::MultiStep InteractiveBrowserTestApi::DragMouseTo(
+InteractiveBrowserTestApi::StepBuilder InteractiveBrowserTestApi::DragMouseTo(
     ElementSpecifier web_contents,
     DeepQuery where,
     bool release) {

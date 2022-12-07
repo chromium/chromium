@@ -21,8 +21,6 @@ using ui::test::internal::SpecifyElement;
 
 namespace {
 
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseGestureCompleteEvent);
-
 auto CreateTestUtil() {
   auto test_util = std::make_unique<ui::test::InteractionTestUtil>();
   test_util->AddSimulator(
@@ -82,77 +80,52 @@ InteractiveViewsTestApi::NameDescendantView(ElementSpecifier parent,
           matcher));
 }
 
-InteractiveViewsTestApi::MultiStep InteractiveViewsTestApi::MoveMouseTo(
+InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
     ElementSpecifier reference,
     RelativePositionSpecifier position) {
   StepBuilder step;
   SpecifyElement(step, reference);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
-         ui::TrackedElement* el) {
+         ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
-        test->mouse_util().PerformGestures(
-            base::BindOnce(
-                [](InteractiveViewsTestApi* test, ui::ElementContext context,
-                   bool success) {
-                  if (!success)
-                    test->test_impl().mouse_error_message_ =
-                        "MoveMouseTo() failed.";
-                  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-                      test->test_impl().GetPivotElement(context),
-                      kMouseGestureCompleteEvent);
-                },
-                base::Unretained(test), el->context()),
-            InteractionTestUtilMouse::MoveTo(std::move(pos_callback).Run(el)));
+        if (!test->mouse_util().PerformGestures(
+                InteractionTestUtilMouse::MoveTo(
+                    std::move(pos_callback).Run(el)))) {
+          seq->FailForTesting();
+        }
       },
       base::Unretained(this), GetPositionCallback(std::move(position))));
-
-  MultiStep result;
-  result.emplace_back(std::move(step));
-  result.emplace_back(CreateMouseFollowUpStep());
-  return result;
+  return step;
 }
 
-InteractiveViewsTestApi::MultiStep InteractiveViewsTestApi::MoveMouseTo(
+InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
     AbsolutePositionSpecifier position) {
   return MoveMouseTo(kInteractiveTestPivotElementId,
                      GetPositionCallback(std::move(position)));
 }
 
-InteractiveViewsTestApi::MultiStep InteractiveViewsTestApi::ClickMouse(
+InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ClickMouse(
     ui_controls::MouseButton button,
     bool release) {
   StepBuilder step;
   step.SetElementID(kInteractiveTestPivotElementId);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
-         bool release, ui::TrackedElement* el) {
+         bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
-        test->mouse_util().PerformGestures(
-            base::BindOnce(
-                [](InteractiveViewsTestApi* test, ui::ElementContext context,
-                   bool success) {
-                  if (!success)
-                    test->test_impl().mouse_error_message_ =
-                        "ClickMouse() failed.";
-                  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-                      test->test_impl().GetPivotElement(context),
-                      kMouseGestureCompleteEvent);
-                },
-                base::Unretained(test), el->context()),
-            release ? InteractionTestUtilMouse::Click(button)
-                    : InteractionTestUtilMouse::MouseGestures{
-                          InteractionTestUtilMouse::MouseDown(button)});
+        if (!test->mouse_util().PerformGestures(
+                release ? InteractionTestUtilMouse::Click(button)
+                        : InteractionTestUtilMouse::MouseGestures{
+                              InteractionTestUtilMouse::MouseDown(button)})) {
+          seq->FailForTesting();
+        }
       },
       base::Unretained(this), button, release));
-
-  MultiStep result;
-  result.emplace_back(std::move(step));
-  result.emplace_back(CreateMouseFollowUpStep());
-  return result;
+  return step;
 }
 
-InteractiveViewsTestApi::MultiStep InteractiveViewsTestApi::DragMouseTo(
+InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
     ElementSpecifier reference,
     RelativePositionSpecifier position,
     bool release) {
@@ -160,67 +133,42 @@ InteractiveViewsTestApi::MultiStep InteractiveViewsTestApi::DragMouseTo(
   SpecifyElement(step, reference);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
-         bool release, ui::TrackedElement* el) {
+         bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         const gfx::Point target = std::move(pos_callback).Run(el);
-        test->mouse_util().PerformGestures(
-            base::BindOnce(
-                [](InteractiveViewsTestApi* test, ui::ElementContext context,
-                   bool success) {
-                  if (!success)
-                    test->test_impl().mouse_error_message_ =
-                        "DragMouseTo() failed.";
-                  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-                      test->test_impl().GetPivotElement(context),
-                      kMouseGestureCompleteEvent);
-                },
-                base::Unretained(test), el->context()),
-            release ? InteractionTestUtilMouse::DragAndRelease(target)
-                    : InteractionTestUtilMouse::DragAndHold(target));
+        if (!test->mouse_util().PerformGestures(
+                release ? InteractionTestUtilMouse::DragAndRelease(target)
+                        : InteractionTestUtilMouse::DragAndHold(target))) {
+          seq->FailForTesting();
+        }
       },
       base::Unretained(this), GetPositionCallback(std::move(position)),
       release));
-
-  MultiStep result;
-  result.emplace_back(std::move(step));
-  result.emplace_back(CreateMouseFollowUpStep());
-  return result;
+  return step;
 }
 
-InteractiveViewsTestApi::MultiStep InteractiveViewsTestApi::DragMouseTo(
+InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
     AbsolutePositionSpecifier position,
     bool release) {
   return DragMouseTo(kInteractiveTestPivotElementId,
                      GetPositionCallback(std::move(position)), release);
 }
 
-InteractiveViewsTestApi::MultiStep InteractiveViewsTestApi::ReleaseMouse(
+InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
     ui_controls::MouseButton button) {
   StepBuilder step;
   step.SetElementID(kInteractiveTestPivotElementId);
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
-         ui::TrackedElement* el) {
+         ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
-        test->mouse_util().PerformGestures(
-            base::BindOnce(
-                [](InteractiveViewsTestApi* test, ui::ElementContext context,
-                   bool success) {
-                  if (!success)
-                    test->test_impl().mouse_error_message_ =
-                        "ReleaseMouse() failed.";
-                  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
-                      test->test_impl().GetPivotElement(context),
-                      kMouseGestureCompleteEvent);
-                },
-                base::Unretained(test), el->context()),
-            InteractionTestUtilMouse::MouseUp(button));
+        if (!test->mouse_util().PerformGestures(
+                InteractionTestUtilMouse::MouseUp(button))) {
+          return seq->FailForTesting();
+        }
       },
       base::Unretained(this), button));
-  MultiStep result;
-  result.emplace_back(std::move(step));
-  result.emplace_back(CreateMouseFollowUpStep());
-  return result;
+  return step;
 }
 
 // static
@@ -339,26 +287,6 @@ InteractiveViewsTestApi::GetPositionCallback(RelativePositionSpecifier spec) {
         ->GetBoundsInScreen()
         .CenterPoint();
   });
-}
-
-InteractiveViewsTestApi::StepBuilder
-InteractiveViewsTestApi::CreateMouseFollowUpStep() {
-  return std::move(
-      StepBuilder()
-          .SetElementID(kInteractiveTestPivotElementId)
-          .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                   kMouseGestureCompleteEvent)
-          .SetContext(ui::InteractionSequence::ContextMode::kFromPreviousStep)
-          .SetMustBeVisibleAtStart(false)
-          .SetStartCallback(base::BindOnce(
-              [](InteractiveViewsTestApi* test, ui::InteractionSequence* seq,
-                 ui::TrackedElement* el) {
-                if (!test->test_impl().mouse_error_message_.empty()) {
-                  LOG(ERROR) << test->test_impl().mouse_error_message_;
-                  seq->FailForTesting();
-                }
-              },
-              base::Unretained(this))));
 }
 
 InteractiveViewsTest::InteractiveViewsTest(

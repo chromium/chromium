@@ -22,10 +22,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kGestureCompleteEvent);
-}
-
 class InteractionTestUtilMouseUiTest : public InProcessBrowserTest {
  public:
   InteractionTestUtilMouseUiTest() = default;
@@ -52,54 +48,31 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, MoveAndClick) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
 
-  // This will receive the result of the gesture success or failure.
-  bool gesture_result = false;
-
   auto sequence =
       ui::InteractionSequence::Builder()
           .SetContext(browser()->window()->GetElementContext())
           .SetAbortedCallback(aborted.Get())
           .SetCompletedCallback(completed.Get())
           // Find the app menu button.
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetElementID(kAppMenuButtonElementId)
-                  .SetStartCallback(
-                      base::BindLambdaForTesting([&](ui::TrackedElement* el) {
-                        auto* const view =
-                            el->AsA<views::TrackedElementViews>()->view();
-                        const gfx::Point pos =
-                            view->GetBoundsInScreen().CenterPoint();
-                        // Perform the following gesture:
-                        // - move to the center point of the app menu button
-                        // - click the left mouse button
-                        // When this gesture is complete, record the result, and
-                        // send an event on the menu button.
-                        mouse_->PerformGestures(
-                            base::BindOnce(
-                                [](bool* result_out, ui::TrackedElement* el,
-                                   bool result) {
-                                  *result_out = result;
-                                  ui::ElementTracker::GetFrameworkDelegate()
-                                      ->NotifyCustomEvent(
-                                          el, kGestureCompleteEvent);
-                                },
-                                &gesture_result, el),
-                            Mouse::MoveTo(pos),
-                            Mouse::Click(ui_controls::LEFT));
-                      })))
-          // When the gesture complete event comes in, check that the gesture
-          // succeeded.
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetElementID(kAppMenuButtonElementId)
-                  .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                           kGestureCompleteEvent)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence* seq, ui::TrackedElement*) {
-                        if (!gesture_result)
-                          seq->FailForTesting();
-                      })))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kAppMenuButtonElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [this](ui::InteractionSequence* seq,
+                                  ui::TrackedElement* el) {
+                             auto* const view =
+                                 el->AsA<views::TrackedElementViews>()->view();
+                             const gfx::Point pos =
+                                 view->GetBoundsInScreen().CenterPoint();
+                             // Perform the following gesture:
+                             // - move to the center point of the app menu
+                             // button
+                             // - click the left mouse button
+                             if (!mouse_->PerformGestures(
+                                     Mouse::MoveTo(pos),
+                                     Mouse::Click(ui_controls::LEFT))) {
+                               seq->FailForTesting();
+                             }
+                           })))
           // Verify that the click opened the app menu, which should contain a
           // known menu item.
           .AddStep(ui::InteractionSequence::StepBuilder().SetElementID(
@@ -113,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, GestureAborted) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
 
-  // This will receive the result of the gesture success or failure.
-  bool gesture_result = false;
+  auto cancel =
+      base::BindLambdaForTesting([this]() { mouse_->CancelAllGestures(); });
 
   auto sequence =
       ui::InteractionSequence::Builder()
@@ -122,46 +95,26 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, GestureAborted) {
           .SetAbortedCallback(aborted.Get())
           .SetCompletedCallback(completed.Get())
           // Find the app menu button.
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetElementID(kAppMenuButtonElementId)
-                  .SetStartCallback(
-                      base::BindLambdaForTesting([&](ui::TrackedElement* el) {
-                        auto* const view =
-                            el->AsA<views::TrackedElementViews>()->view();
-                        const gfx::Point pos =
-                            view->GetBoundsInScreen().CenterPoint();
-                        // Perform the following gesture:
-                        // - move to the center point of the app menu button
-                        // - click the left mouse button
-                        // When this gesture is complete, record the result, and
-                        // send an event on the menu button.
-                        mouse_->PerformGestures(
-                            base::BindOnce(
-                                [](bool* result_out, ui::TrackedElement* el,
-                                   bool result) {
-                                  *result_out = result;
-                                  ui::ElementTracker::GetFrameworkDelegate()
-                                      ->NotifyCustomEvent(
-                                          el, kGestureCompleteEvent);
-                                },
-                                &gesture_result, el),
-                            Mouse::MoveTo(pos),
-                            Mouse::Click(ui_controls::LEFT));
-                        mouse_->CancelAllGestures();
-                      })))
-          // When the gesture complete event comes in, check that the gesture
-          // failed.
-          .AddStep(
-              ui::InteractionSequence::StepBuilder()
-                  .SetElementID(kAppMenuButtonElementId)
-                  .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                           kGestureCompleteEvent)
-                  .SetStartCallback(base::BindLambdaForTesting(
-                      [&](ui::InteractionSequence* seq, ui::TrackedElement*) {
-                        if (gesture_result)
-                          seq->FailForTesting();
-                      })))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kAppMenuButtonElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [this, &cancel](ui::TrackedElement* el) {
+                             auto* const view =
+                                 el->AsA<views::TrackedElementViews>()->view();
+                             const gfx::Point pos =
+                                 view->GetBoundsInScreen().CenterPoint();
+                             // Queue a cancellation. This should execute
+                             // sometime after the mouse move is sent.
+                             base::ThreadTaskRunnerHandle::Get()->PostTask(
+                                 FROM_HERE, cancel);
+                             // Perform the following gesture:
+                             // - move to the center point of the app menu
+                             // button
+                             // - click the left mouse button
+                             EXPECT_FALSE(mouse_->PerformGestures(
+                                 Mouse::MoveTo(pos),
+                                 Mouse::Click(ui_controls::LEFT)));
+                           })))
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
@@ -170,9 +123,6 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, GestureAborted) {
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, Drag) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
-
-  // This will receive the result of the gesture success or failure.
-  bool gesture_result = false;
 
   const GURL first_url =
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL();
@@ -188,8 +138,9 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, Drag) {
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetElementID(kTabStripElementId)
-                  .SetStartCallback(
-                      base::BindLambdaForTesting([&](ui::TrackedElement* el) {
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* seq,
+                          ui::TrackedElement* el) {
                         auto* const tab_strip = views::AsViewClass<TabStrip>(
                             el->AsA<views::TrackedElementViews>()->view());
                         // The second tab might still be animating in, which
@@ -203,30 +154,19 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilMouseUiTest, Drag) {
                                                    ->GetBoundsInScreen()
                                                    .CenterPoint();
                         // Drag the first tab into the second spot.
-                        mouse_->PerformGestures(
-                            base::BindOnce(
-                                [](bool* result_out, ui::TrackedElement* el,
-                                   bool result) {
-                                  *result_out = result;
-                                  ui::ElementTracker::GetFrameworkDelegate()
-                                      ->NotifyCustomEvent(
-                                          el, kGestureCompleteEvent);
-                                },
-                                &gesture_result, el),
-                            Mouse::MoveTo(start), Mouse::DragAndRelease(end));
+                        if (!mouse_->PerformGestures(
+                                Mouse::MoveTo(start),
+                                Mouse::DragAndRelease(end))) {
+                          seq->FailForTesting();
+                        }
                       })))
-          // When the gesture complete event comes in, check that the gesture
-          // succeeded.
+          // When the gesture is complete, check that the gesture succeeded.
           .AddStep(
               ui::InteractionSequence::StepBuilder()
                   .SetElementID(kTabStripElementId)
-                  .SetType(ui::InteractionSequence::StepType::kCustomEvent,
-                           kGestureCompleteEvent)
                   .SetStartCallback(base::BindLambdaForTesting(
                       [&](ui::InteractionSequence* seq,
                           ui::TrackedElement* el) {
-                        if (!gesture_result)
-                          seq->FailForTesting();
                         // Stop any remaining animations, and verify that the
                         // tab was moved.
                         auto* const tab_strip = views::AsViewClass<TabStrip>(

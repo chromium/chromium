@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/test/rectify_callback.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -43,11 +42,6 @@ class InteractionTestUtilMouse {
   InteractionTestUtilMouse(const InteractionTestUtilMouse&) = delete;
   void operator=(const InteractionTestUtilMouse&) = delete;
 
-  // Callback called when a gesture ends; if the gesture succeeded, `success`
-  // will be true. If CancelAllGestures() is called or this object is destroyed,
-  // the callback is called immediately.
-  using GestureCallback = base::OnceCallback<void(bool success)>;
-
   // These represent mouse gestures of different types. They are implementation
   // details; prefer to use the static factory methods below.
   using MouseButtonGesture =
@@ -65,10 +59,9 @@ class InteractionTestUtilMouse {
   static MouseGestures DragAndHold(gfx::Point destination);
   static MouseGestures DragAndRelease(gfx::Point destination);
 
-  // Perform the gesture or gestures specified, then call `result_callback` on
-  // success or failure.
-  template <typename T, typename... Args>
-  void PerformGestures(T result_callback, Args... gestures);
+  // Perform the gesture or gestures specified, returns true on success.
+  template <typename... Args>
+  bool PerformGestures(Args... gestures);
 
   // Cancels any pending actions and cleans up any resulting mouse state (i.e.
   // releases any buttons which were pressed).
@@ -81,35 +74,23 @@ class InteractionTestUtilMouse {
   static void AddGestures(MouseGestures& gestures, MouseGesture to_add);
   static void AddGestures(MouseGestures& gestures, MouseGestures to_add);
 
-  void PerformGesturesImpl(MouseGestures gestures,
-                           GestureCallback result_callback);
+  bool PerformGesturesImpl(MouseGestures gestures);
 
-  void QueueNextGesture();
-  void PerformNextGesture();
-  void OnMouseButton(MouseButtonGesture gesture);
-  void OnMouseMove();
-  void OnDragStart();
-  void OnDragEnd();
-  void OnSequenceComplete();
-
-  // List of gestures left to perform.
-  MouseGestures pending_gestures_;
-
-  // The callback that will be called when all gestures are performed, or the
-  // current gesture fails or is canceled.
-  GestureCallback pending_callback_;
+  void MaybeCancelDrag(bool in_future);
 
   // The set of mouse buttons currently depressed. Used to clean up on abort.
   std::set<ui_controls::MouseButton> buttons_down_;
 
+  // Whether gestures are being executed.
+  bool performing_gestures_ = false;
+
+  // Whether the current sequence is canceled.
+  bool canceled_ = false;
+
+#if defined(USE_AURA)
   // Whether the mouse is currently being dragged.
   bool dragging_ = false;
 
-  // Whether the mouse has been dragged and released without [yet] doing
-  // cleanup.
-  bool dragged_ = false;
-
-#if defined(USE_AURA)
   // These are used in order to clean up extraneous drags on Aura platforms;
   // without this it is possible for a drag loop to start and not exit,
   // preventing a test from completing.
@@ -118,18 +99,13 @@ class InteractionTestUtilMouse {
   class NativeWindowRef;
   const std::unique_ptr<NativeWindowRef> native_window_;
 #endif
-
-  base::WeakPtrFactory<InteractionTestUtilMouse> weak_ptr_factory_{this};
 };
 
-template <typename T, typename... Args>
-void InteractionTestUtilMouse::PerformGestures(T result_callback,
-                                               Args... gestures) {
+template <typename... Args>
+bool InteractionTestUtilMouse::PerformGestures(Args... gestures) {
   MouseGestures gesture_list;
   (AddGestures(gesture_list, std::move(gestures)), ...);
-  PerformGesturesImpl(
-      std::move(gesture_list),
-      base::RectifyCallback<GestureCallback>(std::move(result_callback)));
+  return PerformGesturesImpl(std::move(gesture_list));
 }
 
 }  // namespace test

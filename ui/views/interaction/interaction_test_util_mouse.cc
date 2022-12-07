@@ -7,9 +7,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -106,7 +110,7 @@ InteractionTestUtilMouse::InteractionTestUtilMouse(views::Widget* widget)
     : InteractionTestUtilMouse(widget->GetNativeWindow()) {}
 
 InteractionTestUtilMouse::~InteractionTestUtilMouse() {
-  CHECK(!pending_callback_ && pending_gestures_.empty())
+  CHECK(!performing_gestures_)
       << "InteractionTestUtilMouse destroyed with pending actions.";
   LOG_IF(ERROR, g_current_mouse_util != this)
       << "Expected |this| to be current InteractionTestUtilMouse.";
@@ -150,24 +154,82 @@ InteractionTestUtilMouse::DragAndRelease(gfx::Point destination) {
                        MouseUp(ui_controls::LEFT)};
 }
 
-void InteractionTestUtilMouse::PerformGesturesImpl(
-    MouseGestures gestures,
-    GestureCallback result_callback) {
-  CHECK(pending_gestures_.empty());
-  CHECK(!pending_callback_);
+void InteractionTestUtilMouse::MaybeCancelDrag(bool in_future) {
+#if defined(USE_AURA)
+  if (in_future) {
+    if (dragging_ && !drag_ender_) {
+      if (auto* const window = static_cast<aura::Window*>(*native_window_)) {
+        drag_ender_ = std::make_unique<DragEnder>(window);
+      }
+    }
+    dragging_ = false;
+  } else {
+    CHECK(!dragging_);
+    drag_ender_.reset();
+    if (aura::Window* const window =
+            static_cast<aura::Window*>(*native_window_)) {
+      DragEnder::EndDrag(window);
+    }
+  }
+#endif
+}
+
+bool InteractionTestUtilMouse::PerformGesturesImpl(MouseGestures gestures) {
   CHECK(!gestures.empty());
-  CHECK(result_callback);
+  CHECK(!performing_gestures_);
+  base::AutoReset<bool> performing_gestures(&performing_gestures_, true);
+  canceled_ = false;
+  for (auto& gesture : gestures) {
+    if (canceled_)
+      break;
 
-  pending_gestures_ = std::move(gestures);
-  pending_callback_ = std::move(result_callback);
+    base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
+    if (MouseButtonGesture* const button =
+            absl::get_if<MouseButtonGesture>(&gesture)) {
+      switch (button->second) {
+        case ui_controls::UP:
+          CHECK(buttons_down_.erase(button->first));
+          if (!ui_controls::SendMouseEventsNotifyWhenDone(
+                  button->first, button->second, run_loop.QuitClosure())) {
+            LOG(ERROR) << "Mouse button " << button->first << " up failed.";
+            return false;
+          }
+          run_loop.Run();
+          MaybeCancelDrag(true);
+          break;
+        case ui_controls::DOWN:
+          CHECK(buttons_down_.insert(button->first).second);
+          MaybeCancelDrag(false);
+          if (!ui_controls::SendMouseEventsNotifyWhenDone(
+                  button->first, button->second, run_loop.QuitClosure())) {
+            LOG(ERROR) << "Mouse button " << button->first << " down failed.";
+            return false;
+          }
+          run_loop.Run();
+          break;
+      }
+    } else {
+      const auto& move = absl::get<MouseMoveGesture>(gesture);
+#if defined(USE_AURA)
+      if (!buttons_down_.empty()) {
+        CHECK(base::Contains(buttons_down_, ui_controls::LEFT));
+        dragging_ = true;
+      }
+#endif
+      if (!ui_controls::SendMouseMoveNotifyWhenDone(move.x(), move.y(),
+                                                    run_loop.QuitClosure())) {
+        LOG(ERROR) << "Mouse move to " << move.ToString() << " failed.";
+        return false;
+      }
+      run_loop.Run();
+    }
+  }
 
-  QueueNextGesture();
+  return !canceled_;
 }
 
 void InteractionTestUtilMouse::CancelAllGestures() {
-  // Clear and cancel all pending actions.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-  pending_gestures_.clear();
+  canceled_ = true;
 
   // Now that no additional actions will happen, release all mouse buttons.
   for (ui_controls::MouseButton button : buttons_down_) {
@@ -177,20 +239,7 @@ void InteractionTestUtilMouse::CancelAllGestures() {
   buttons_down_.clear();
 
   // Maybe handle dragging stopped.
-#if defined(USE_AURA)
-  if (dragged_) {
-    if (auto* const window = static_cast<aura::Window*>(*native_window_))
-      drag_ender_ = std::make_unique<DragEnder>(window);
-  }
-#endif
-  dragged_ = false;
-  dragging_ = false;
-
-  // Call the gesture failed callback if one is present. This needs to be the
-  // last thing here because theoretically it could cause the |this| pointer to
-  // be deleted.
-  if (pending_callback_)
-    std::move(pending_callback_).Run(false);
+  MaybeCancelDrag(true);
 }
 
 InteractionTestUtilMouse::InteractionTestUtilMouse(gfx::NativeWindow window)
@@ -202,103 +251,6 @@ InteractionTestUtilMouse::InteractionTestUtilMouse(gfx::NativeWindow window)
   CHECK(!g_current_mouse_util)
       << "Cannot have multiple overlapping InteractionTestUtilMouse instances";
   g_current_mouse_util = this;
-}
-
-void InteractionTestUtilMouse::QueueNextGesture() {
-  base::OnceClosure to_post;
-  // We are often in the middle of an event callback. Therefore, don't post the
-  // completed event quite yet - put it at the end of the current event queue
-  // instead.
-  if (pending_gestures_.empty()) {
-    to_post = base::BindOnce(&InteractionTestUtilMouse::OnSequenceComplete,
-                             weak_ptr_factory_.GetWeakPtr());
-  } else {
-    to_post = base::BindOnce(&InteractionTestUtilMouse::PerformNextGesture,
-                             weak_ptr_factory_.GetWeakPtr());
-  }
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, std::move(to_post));
-}
-
-void InteractionTestUtilMouse::PerformNextGesture() {
-  const MouseGesture next = std::move(pending_gestures_.front());
-  pending_gestures_.pop_front();
-
-  auto followup = base::BindOnce(&InteractionTestUtilMouse::QueueNextGesture,
-                                 weak_ptr_factory_.GetWeakPtr());
-
-  bool result;
-  if (absl::holds_alternative<MouseButtonGesture>(next)) {
-    const auto& gesture = absl::get<MouseButtonGesture>(next);
-    OnMouseButton(gesture);
-    result = ui_controls::SendMouseEventsNotifyWhenDone(
-        gesture.first, gesture.second, std::move(followup));
-  } else {
-    const auto& gesture = absl::get<MouseMoveGesture>(next);
-    OnMouseMove();
-    result = ui_controls::SendMouseMoveNotifyWhenDone(gesture.x(), gesture.y(),
-                                                      std::move(followup));
-  }
-
-  if (!result && pending_callback_)
-    std::move(pending_callback_).Run(false);
-}
-
-void InteractionTestUtilMouse::OnMouseButton(MouseButtonGesture gesture) {
-#if defined(USE_AURA)
-  drag_ender_.reset();
-#endif
-  switch (gesture.second) {
-    case ui_controls::DOWN:
-#if defined(USE_AURA)
-      if (aura::Window* const window =
-              static_cast<aura::Window*>(*native_window_)) {
-        DragEnder::EndDrag(window);
-      }
-#endif
-      CHECK(buttons_down_.insert(gesture.first).second);
-      CHECK(!dragging_);
-      dragging_ = false;
-      dragged_ = false;
-      break;
-    case ui_controls::UP:
-      CHECK(buttons_down_.erase(gesture.first));
-      if (dragging_)
-        OnDragEnd();
-      break;
-  }
-}
-
-void InteractionTestUtilMouse::OnMouseMove() {
-#if defined(USE_AURA)
-  drag_ender_.reset();
-#endif
-  switch (buttons_down_.size()) {
-    case 0U:
-      return;
-    case 1U:
-      CHECK_EQ(ui_controls::LEFT, *buttons_down_.begin());
-      if (!dragging_)
-        OnDragStart();
-      break;
-    default:
-      NOTREACHED() << "Cannot drag with multiple buttons down.";
-      break;
-  }
-}
-
-void InteractionTestUtilMouse::OnDragStart() {
-  dragging_ = true;
-}
-
-void InteractionTestUtilMouse::OnDragEnd() {
-  dragged_ |= dragging_;
-  dragging_ = false;
-}
-
-void InteractionTestUtilMouse::OnSequenceComplete() {
-  if (pending_callback_)
-    std::move(pending_callback_).Run(true);
 }
 
 // static

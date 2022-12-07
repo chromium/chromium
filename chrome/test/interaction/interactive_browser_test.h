@@ -263,16 +263,16 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // Find the DOM element at the given path in the reference element, which
   // should be an instrumented WebContents; see Instrument*(). Move the mouse to
   // the element's center point in screen coordinates.
-  [[nodiscard]] MultiStep MoveMouseTo(ElementSpecifier web_contents,
-                                      DeepQuery where);
+  [[nodiscard]] StepBuilder MoveMouseTo(ElementSpecifier web_contents,
+                                        DeepQuery where);
 
   // Find the DOM element at the given path in the reference element, which
   // should be an instrumented WebContents; see Instrument*(). Perform a drag
   // from the mouse's current location to the element's center point in screen
   // coordinates, and then if `release` is true, releases the mouse button.
-  [[nodiscard]] MultiStep DragMouseTo(ElementSpecifier web_contents,
-                                      DeepQuery where,
-                                      bool release = true);
+  [[nodiscard]] StepBuilder DragMouseTo(ElementSpecifier web_contents,
+                                        DeepQuery where,
+                                        bool release = true);
 
  protected:
   explicit InteractiveBrowserTestApi(
