@@ -296,7 +296,8 @@ class SourceTableModel extends TableModel<Source> {
       new ValueColumn<Source, string>('Source Origin', (e) => e.sourceOrigin),
       new ValueColumn<Source, string>(
           'Destination', (e) => e.attributionDestination),
-      new ValueColumn<Source, string>('Report To', (e) => e.reportingOrigin),
+      new ValueColumn<Source, string>(
+          'Reporting Origin', (e) => e.reportingOrigin),
       new DateColumn<Source>('Source Registration Time', (e) => e.sourceTime),
       new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
       new DateColumn<Source>(
@@ -385,7 +386,8 @@ class TriggerTableModel extends TableModel<Trigger> {
           'Aggregatable Status', (e) => e.aggregatableStatus),
       new ValueColumn<Trigger, string>(
           'Destination', (e) => e.destinationOrigin),
-      new ValueColumn<Trigger, string>('Report To', (e) => e.reportingOrigin),
+      new ValueColumn<Trigger, string>(
+          'Reporting Origin', (e) => e.reportingOrigin),
       new CodeColumn<Trigger>('Registration JSON', (e) => e.registrationJson),
     ];
 
@@ -725,11 +727,11 @@ class DebugReportTableModel extends TableModel<DebugReport> {
 
 abstract class Log {
   readonly timestamp: Date;
-  readonly reportTo: string;
+  readonly reportingOrigin: string;
 
   constructor(mojo: {time: number, reportingOrigin: Origin}) {
     this.timestamp = new Date(mojo.time);
-    this.reportTo = originToText(mojo.reportingOrigin);
+    this.reportingOrigin = originToText(mojo.reportingOrigin);
   }
 
   abstract renderDescription(td: HTMLElement): void;
@@ -741,7 +743,8 @@ const CLEARED_DEBUG_KEY_COLS: Array<Column<ClearedDebugKeyLog>> = [
   new ValueColumn<ClearedDebugKeyLog, string>(
       'Cleared Debug Key', e => e.clearedDebugKey),
   new ValueColumn<ClearedDebugKeyLog, string>('From', e => e.clearedFrom),
-  new ValueColumn<ClearedDebugKeyLog, string>('Report To', e => e.reportTo),
+  new ValueColumn<ClearedDebugKeyLog, string>(
+      'Reporting Origin', e => e.reportingOrigin),
 ];
 
 class ClearedDebugKeyLog extends Log {
@@ -784,7 +787,7 @@ const FAILED_SOURCE_REGISTRATION_COLS:
       new ValueColumn<FailedSourceRegistrationLog, string>(
           'Failure Reason', e => e.failureReason),
       new ValueColumn<FailedSourceRegistrationLog, string>(
-          'Report To', e => e.reportTo),
+          'Reporting Origin', e => e.reportingOrigin),
       new CodeColumn<FailedSourceRegistrationLog>(
           'Attribution-Reporting-Register-Source Header', e => e.headerValue),
     ];

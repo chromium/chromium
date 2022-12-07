@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                         'sources" target="_blank">Failed Source Registration' +
                         '</a>';
     const metadata = '<dl><dt>Failure Reason</dt><dd>invalid JSON</dd>' +
-                     '<dt>Report To</dt><dd>https://a.test</dd>' +
+                     '<dt>Reporting Origin</dt><dd>https://a.test</dd>' +
                      '<dt>Attribution-Reporting-Register-Source Header</dt>'+
                      '<dd><pre><code>!</code></pre></dd></dl>';
 
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                     'reports" target="_blank">Cleared Debug Key</a>';
     const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
                      '<dt>From</dt><dd>Source</dd>'+
-                     '<dt>Report To</dt><dd>https://report.test</dd></dl>';
+                     '<dt>Reporting Origin</dt><dd>https://report.test</dd></dl>';
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                     'reports" target="_blank">Cleared Debug Key</a>';
     const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
                      '<dt>From</dt><dd>Trigger</dd>'+
-                     '<dt>Report To</dt><dd>https://report.test</dd></dl>';
+                     '<dt>Reporting Origin</dt><dd>https://report.test</dd></dl>';
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
