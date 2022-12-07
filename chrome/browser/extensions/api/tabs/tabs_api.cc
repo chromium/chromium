@@ -27,6 +27,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/optional_util.h"
@@ -2116,10 +2118,14 @@ ExtensionFunction::ResponseAction TabsCaptureVisibleTabFunction::Run() {
   if (!contents)
     return RespondNow(Error(std::move(error)));
 
+  // NOTE: CaptureAsync() may invoke its callback from a background thread,
+  // hence the BindPostTask().
   const CaptureResult capture_result = CaptureAsync(
       contents, image_details.get(),
-      base::BindOnce(&TabsCaptureVisibleTabFunction::CopyFromSurfaceComplete,
-                     this));
+      base::BindPostTask(
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::BindOnce(
+              &TabsCaptureVisibleTabFunction::CopyFromSurfaceComplete, this)));
   if (capture_result == OK) {
     // CopyFromSurfaceComplete might have already responded.
     return did_respond() ? AlreadyResponded() : RespondLater();
