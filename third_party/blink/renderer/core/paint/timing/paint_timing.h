@@ -124,7 +124,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     first_paint_presentation_ = base::TimeTicks();
     first_contentful_paint_ = base::TimeTicks();
     first_contentful_paint_presentation_ = base::TimeTicks();
-    // TODO(yoav): Investigate if we should also reset first_image_paint_ here.
+    first_image_paint_ = base::TimeTicks();
+    first_image_paint_presentation_ = base::TimeTicks();
   }
 
   // FirstImagePaint returns the first time that image content was painted.

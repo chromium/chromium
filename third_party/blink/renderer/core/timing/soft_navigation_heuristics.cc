@@ -74,6 +74,7 @@ void SoftNavigationHeuristics::ResetHeuristic() {
   flag_set_.Clear();
   potential_soft_navigation_task_ids_.clear();
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
+  did_reset_paints_ = false;
 }
 
 void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {

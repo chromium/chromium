@@ -120,9 +120,9 @@ void PaintTiming::MarkFirstPaint() {
 
 void PaintTiming::MarkFirstContentfulPaint() {
   // Test that |first_contentful_paint_| is non-zero here, as well as in
-  // setFirstContentfulPaint, so we avoid invoking
-  // monotonicallyIncreasingTime() on every call to
-  // markFirstContentfulPaint().
+  // SetFirstContentfulPaint, so we avoid invoking
+  // MonotonicallyIncreasingTime() on every call to
+  // MarkFirstContentfulPaint().
   if (!first_contentful_paint_.is_null())
     return;
   if (IgnorePaintTimingScope::IgnoreDepth() > 0)

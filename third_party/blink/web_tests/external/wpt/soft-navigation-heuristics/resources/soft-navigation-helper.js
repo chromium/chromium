@@ -166,7 +166,7 @@ const validateSoftNavigationEntry = async (clicks, extraValidations,
 
 };
 
-const validatePaintEntries = async type => {
+const validatePaintEntries = async (type, entries_number = 2) => {
   const entries = await new Promise(resolve => {
     (new PerformanceObserver(list => resolve(
       list.getEntriesByName(type)))).observe(
@@ -175,9 +175,12 @@ const validatePaintEntries = async type => {
   // TODO(crbug/1372997): investigate why this is not failing when multiple
   // clicks are fired. Also, make sure the observer waits on the number of
   // required clicks, instead of counting on double rAF.
-  assert_equals(entries.length, 2, "There are two entries for " + type);
-  assert_not_equals(entries[0].startTime, entries[1].startTime,
-    "Entries have different timestamps for " + type);
+  assert_equals(entries.length, entries_number,
+    `There are ${entries_number} entries for ${type}`);
+  if (entries_number > 1) {
+    assert_not_equals(entries[0].startTime, entries[1].startTime,
+      "Entries have different timestamps for " + type);
+  }
 };
 
 const getLcpEntries = async () => {
