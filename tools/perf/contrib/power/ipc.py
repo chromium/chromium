@@ -42,7 +42,18 @@ class ContribPowerIpc(_PowerPerfBenchmarkBase):
           config {
               name: "org.chromium.trace_event"
               chrome_config {
-                  trace_config: "{\\"record_mode\\":\\"record-until-full\\",\\"included_categories\\":[\\"toplevel.flow\\",\\"toplevel\\",\\"mojom\\",\\"navigation\\",\\"ipc\\"],\\",excluded_categories\\":[\\"*\\"],\\"memory_dump_config\\":{}}"
+                  trace_config: "{
+                    \\"record_mode\\": \\"record-until-full\\",
+                    \\"included_categories\\": [
+                      \\"toplevel.flow\\",
+                      \\"toplevel\\",
+                      \\"mojom\\",
+                      \\"navigation\\",
+                      \\"ipc\\"
+                    ],
+                    \\"excluded_categories\\": [\\"*\\"],
+                    \\"memory_dump_config\\": {}
+                  }"
                   client_priority: USER_INITIATED
               }
           }
@@ -51,7 +62,18 @@ class ContribPowerIpc(_PowerPerfBenchmarkBase):
           config {
               name: "org.chromium.trace_metadata"
               chrome_config {
-                  trace_config: "{\\"record_mode\\":\\"record-until-full\\",\\"included_categories\\":[\\"toplevel.flow\\",\\"toplevel\\",\\"mojom\\",\\"navigation\\",\\"ipc\\"],excluded_categories\\":[\\"*\\"],\\"memory_dump_config\\":{}}"
+                  trace_config: "{
+                    \\"record_mode\\": \\"record-until-full\\",
+                    \\"included_categories\\": [
+                      \\"toplevel.flow\\",
+                      \\"toplevel\\",
+                      \\"mojom\\",
+                      \\"navigation\\",
+                      \\"ipc\\"
+                    ],
+                    \\"excluded_categories\\": [\\"*\\"],
+                    \\"memory_dump_config\\": {}
+                  }"
                   client_priority: USER_INITIATED
               }
           }
