@@ -2053,7 +2053,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
-                       PermissionChipWithoutUserGesture) {
+                       PermissionChipWithAndWithoutUserGesture) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
   content::WebContents* web_contents =
@@ -2068,10 +2068,10 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
 
   EXPECT_FALSE(manager->IsRequestInProgress());
 
+  // Request permission without user gesture
   {
     permissions::PermissionRequestObserver observer(web_contents);
 
-    // Request permission in foreground tab, prompt should be shown.
     EXPECT_TRUE(content::ExecJs(
         main_rfh, kRequestNotifications,
         content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES |
@@ -2079,15 +2079,37 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
 
     observer.Wait();
     EXPECT_TRUE(observer.request_shown());
+
+    EXPECT_TRUE(manager->IsRequestInProgress());
+    EXPECT_FALSE(permissions::PermissionUtil::HasUserGesture(manager));
+    absl::optional<permissions::PermissionPromptDisposition> disposition =
+        manager->current_request_prompt_disposition_for_testing();
+
+    ASSERT_TRUE(disposition.has_value());
+    EXPECT_EQ(permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
+              disposition.value());
+    manager->Dismiss();
   }
 
-  EXPECT_TRUE(manager->IsRequestInProgress());
-  EXPECT_FALSE(permissions::PermissionUtil::HasUserGesture(manager));
-  absl::optional<permissions::PermissionPromptDisposition> disposition =
-      manager->current_request_prompt_disposition_for_testing();
+  // Request permission with user gesture
+  {
+    permissions::PermissionRequestObserver observer(web_contents);
 
-  ASSERT_TRUE(disposition.has_value());
-  EXPECT_EQ(permissions::PermissionPromptDisposition::
-                LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE,
-            disposition.value());
+    EXPECT_TRUE(content::ExecJs(
+        main_rfh, kRequestNotifications,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    observer.Wait();
+    EXPECT_TRUE(observer.request_shown());
+
+    EXPECT_TRUE(manager->IsRequestInProgress());
+    EXPECT_TRUE(permissions::PermissionUtil::HasUserGesture(manager));
+    absl::optional<permissions::PermissionPromptDisposition> disposition =
+        manager->current_request_prompt_disposition_for_testing();
+
+    ASSERT_TRUE(disposition.has_value());
+    EXPECT_EQ(permissions::PermissionPromptDisposition::
+                  LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE,
+              disposition.value());
+  }
 }
