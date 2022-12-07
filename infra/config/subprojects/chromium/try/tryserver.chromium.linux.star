@@ -105,10 +105,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-example-builder",
-)
-
-try_.builder(
     name = "linux-extended-tracing-rel",
     mirrors = [
         "ci/linux-extended-tracing-rel",

@@ -385,16 +385,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-example-builder",
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-    ),
-    os = os.LINUX_DEFAULT,
-    schedule = "with 12h interval",
-    triggered_by = [],
-)
-
-ci.builder(
     name = "linux-fieldtrial-rel",
     console_view_entry = consoles.console_view_entry(
         category = "linux",

@@ -3317,14 +3317,6 @@
           'scripts': 'chromium_linux_scripts',
         },
       },
-      'linux-example-builder': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_example_builder_gtests',
-        },
-      },
       'linux-fieldtrial-rel': {
         'mixins': [
           'linux-bionic',
