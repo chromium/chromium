@@ -269,9 +269,9 @@ void ArcGhostWindowView::AddChildrenViewsForAppLaunchType() {
                   .SetPreferredSize(gfx::Size(kThrobberDiameterNewStyle,
                                               kThrobberDiameterNewStyle)),
               views::Builder<views::Label>()
-                  .SetText(l10n_util::GetStringUTF16(
-                               IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_MESSAGE) +
-                           u" " + base::UTF8ToUTF16(app_name_))
+                  .SetText(l10n_util::GetStringFUTF16(
+                      IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_MESSAGE,
+                      base::UTF8ToUTF16(app_name_)))
                   .SetTextContext(views::style::CONTEXT_LABEL)
                   .SetTextStyle(views::style::STYLE_SECONDARY)
                   .SetMultiLine(true)
