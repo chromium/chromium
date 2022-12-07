@@ -2236,6 +2236,11 @@ void MainThreadSchedulerImpl::OnIdlePeriodEnded() {
 }
 
 void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
+  // https://linear.app/replay/issue/RUN-827
+  recordreplay::Assert("MainThreadSchedulerImpl::OnPendingTasksChanged %d %d",
+                       has_tasks,
+                       main_thread_only().compositor_will_send_main_frame_not_expected.get());
+
   if (has_tasks ==
       main_thread_only().compositor_will_send_main_frame_not_expected.get())
     return;
@@ -2255,7 +2260,9 @@ void MainThreadSchedulerImpl::OnPendingTasksChanged(bool has_tasks) {
 void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
     bool has_tasks) {
   // https://linear.app/replay/issue/RUN-827
-  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected %d", has_tasks);
+  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected %d %d",
+                       has_tasks,
+                       main_thread_only().compositor_will_send_main_frame_not_expected.get());
 
   if (has_tasks ==
       main_thread_only().compositor_will_send_main_frame_not_expected.get()) {
@@ -2284,7 +2291,8 @@ void MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected(
   }
 
   // https://linear.app/replay/issue/RUN-827
-  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #3 %d", success);
+  recordreplay::Assert("MainThreadSchedulerImpl::DispatchRequestBeginMainFrameNotExpected #3 %d %d",
+                       success, has_tasks);
 
   main_thread_only().compositor_will_send_main_frame_not_expected =
       success && has_tasks;
