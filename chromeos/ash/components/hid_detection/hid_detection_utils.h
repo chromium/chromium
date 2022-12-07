@@ -63,6 +63,9 @@ void RecordBluetoothPairingResult(bool success,
 // Record each HID that is missing when the HID detection screen is shown.
 void RecordInitialHidsMissing(const HidsMissing& hids_missing);
 
+// Record each time a pairing session exceeds the timeout.
+void RecordPairingTimeoutExceeded();
+
 }  // namespace ash::hid_detection
 
 #endif  // CHROMEOS_ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_UTILS_H_

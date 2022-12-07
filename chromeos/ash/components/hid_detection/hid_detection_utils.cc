@@ -107,6 +107,11 @@ void RecordBluetoothPairingResult(bool success,
                             success);
 }
 
+void RecordPairingTimeoutExceeded() {
+  base::UmaHistogramBoolean(
+      "OOBE.HidDetectionScreen.BluetoothPairing.TimeoutExceeded", true);
+}
+
 void RecordInitialHidsMissing(const HidsMissing& hids_missing) {
   base::UmaHistogramEnumeration("OOBE.HidDetectionScreen.InitialHidsMissing",
                                 hids_missing);

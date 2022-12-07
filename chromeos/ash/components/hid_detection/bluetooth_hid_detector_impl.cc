@@ -355,10 +355,14 @@ void BluetoothHidDetectorImpl::ProcessQueue() {
   HID_LOG(EVENT) << "Pairing with device with id: "
                  << current_pairing_device_.value()->id;
   ++num_pairing_attempts_;
+
+  // Start a timer to make sure that the queue never gets stuck, such as in
+  // b/242358619.
   current_pairing_timer_.Start(
       FROM_HERE, kMaxPairingSessionDuration,
-      base::BindOnce(&BluetoothHidDetectorImpl::ClearCurrentPairingState,
+      base::BindOnce(&BluetoothHidDetectorImpl::OnPairingTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
+
   device_pairing_handler_remote_->PairDevice(
       current_pairing_device_.value()->id,
       device_pairing_delegate_receiver_.BindNewPipeAndPassRemote(),
@@ -394,6 +398,13 @@ void BluetoothHidDetectorImpl::OnPairDevice(
 
   HID_LOG(ERROR) << "Pairing failed, clearing current pairing state and "
                  << "processing the next device in queue.";
+  ClearCurrentPairingState();
+}
+
+void BluetoothHidDetectorImpl::OnPairingTimeout() {
+  HID_LOG(ERROR) << "Pairing session has timed out, clearing current pairing "
+                 << "state.";
+  hid_detection::RecordPairingTimeoutExceeded();
   ClearCurrentPairingState();
 }
 

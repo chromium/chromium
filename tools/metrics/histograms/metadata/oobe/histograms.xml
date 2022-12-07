@@ -393,6 +393,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.HidDetectionScreen.BluetoothPairing.TimeoutExceeded"
+    enum="BooleanSuccess" expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records success each time a pairing session times out while on the OOBE HID
+    detection page.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
     units="attempts" expires_after="2023-05-06">
   <owner>gordonseto@google.com</owner>

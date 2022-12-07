@@ -102,6 +102,7 @@ class BluetoothHidDetectorImpl
   void ProcessQueue();
   void OnPairDevice(std::unique_ptr<base::ElapsedTimer> pairing_timer,
                     bluetooth_config::mojom::PairingResult pairing_result);
+  void OnPairingTimeout();
 
   // Removes any state related to the current pairing device. This will cancel
   // pairing with the device if there is an ongoing pairing.

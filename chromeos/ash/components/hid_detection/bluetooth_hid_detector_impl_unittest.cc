@@ -221,6 +221,12 @@ class BluetoothHidDetectorImplTest : public testing::Test {
         "OOBE.HidDetectionScreen.BluetoothPairing.Result", success, count);
   }
 
+  void AssertBluetoothPairingTimeoutExceeded(int count) {
+    histogram_tester_.ExpectBucketCount(
+        "OOBE.HidDetectionScreen.BluetoothPairing.TimeoutExceeded", true,
+        count);
+  }
+
   void AssertBluetoothPairingAttemptsCount(int bucket,
                                            int count,
                                            int total_count) {
@@ -1237,6 +1243,8 @@ TEST_F(BluetoothHidDetectorImplTest, PairingTimesOut) {
   // Fast forward past the pairing timeout period. The pairing state should
   // reset and the second device should be pairing.
   FastForward(GetMaxPairingSessionDuration());
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/1);
+
   EXPECT_EQ(device_id2,
             GetDevicePairingHandlers()[0]->current_pairing_device_id());
   EXPECT_EQ(4u, delegate->num_bluetooth_hid_status_changed_calls());
@@ -1249,6 +1257,8 @@ TEST_F(BluetoothHidDetectorImplTest, PairingTimesOut) {
   FastForward(GetMaxPairingSessionDuration() / 2);
   MockPairDeviceFinished(device_id2, GetDevicePairingHandlers()[0],
                          /*failure_reason=*/absl::nullopt);
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/1);
+
   EXPECT_EQ(4u, delegate->num_bluetooth_hid_status_changed_calls());
   AssertBluetoothPairingResult(/*success=*/true, /*count=*/1,
                                GetMaxPairingSessionDuration() / 2);
@@ -1267,6 +1277,7 @@ TEST_F(BluetoothHidDetectorImplTest, PairingTimesOut) {
   EXPECT_EQ(6u, delegate->num_bluetooth_hid_status_changed_calls());
   AssertBluetoothPairingResult(/*success=*/true, /*count=*/1,
                                GetMaxPairingSessionDuration() / 2);
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/2);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnFailure) {
@@ -1295,6 +1306,7 @@ TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnFailure) {
   AssertBluetoothHidDetectionStatus(
       BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
       BluetoothHidPairingState(kTestPinCode, /*num_keys_entered=*/0u));
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/0);
 
   // Mock |device_id1| as failed pairing.
   MockPairDeviceFinished(device_id1, GetDevicePairingHandlers()[0],
@@ -1313,6 +1325,7 @@ TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnFailure) {
   AssertBluetoothHidDetectionStatus(
       /*current_pairing_device=*/absl::nullopt,
       /*pairing_state=*/absl::nullopt);
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/0);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnSuccess) {
@@ -1359,6 +1372,7 @@ TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnSuccess) {
   AssertBluetoothHidDetectionStatus(
       /*current_pairing_device=*/absl::nullopt,
       /*pairing_state=*/absl::nullopt);
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/0);
 
   // Advance the rest of the timeout duration. If the timer from the last
   // pairing was not cancelled, this should cause a crash.
@@ -1367,6 +1381,7 @@ TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnSuccess) {
   AssertBluetoothHidDetectionStatus(
       /*current_pairing_device=*/absl::nullopt,
       /*pairing_state=*/absl::nullopt);
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/0);
 }
 
 TEST_F(BluetoothHidDetectorImplTest,
@@ -1392,6 +1407,7 @@ TEST_F(BluetoothHidDetectorImplTest,
   AssertBluetoothHidDetectionStatus(
       BluetoothHidMetadata(device_id1, BluetoothHidType::kPointer),
       /*pairing_state=*/absl::nullopt);
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/0);
 
   StopBluetoothHidDetection(/*is_using_bluetooth=*/false);
   EXPECT_FALSE(IsDiscoverySessionActive());
@@ -1407,6 +1423,7 @@ TEST_F(BluetoothHidDetectorImplTest,
   AssertBluetoothHidDetectionStatus(
       /*current_pairing_device=*/absl::nullopt,
       /*pairing_state=*/absl::nullopt);
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/0);
 }
 
 TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnBluetoothDisabled) {
@@ -1434,6 +1451,7 @@ TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnBluetoothDisabled) {
       /*current_pairing_device=*/absl::nullopt,
       /*pairing_state=*/absl::nullopt);
   EXPECT_EQ(2u, delegate->num_bluetooth_hid_status_changed_calls());
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/0);
 
   // Advance the rest of the timeout duration. If the timer from the previous
   // pairing was not cancelled, this should cause a crash.
@@ -1442,6 +1460,7 @@ TEST_F(BluetoothHidDetectorImplTest, TimeoutTimerCancelledOnBluetoothDisabled) {
   AssertBluetoothHidDetectionStatus(
       /*current_pairing_device=*/absl::nullopt,
       /*pairing_state=*/absl::nullopt);
+  AssertBluetoothPairingTimeoutExceeded(/*count=*/0);
 
   // HID detection must be stopped before BluetoothHidDetectorImpl is destroyed.
   StopBluetoothHidDetection(/*is_using_bluetooth=*/false);
