@@ -234,7 +234,6 @@ All changes to this list should go through Blink's feature review process: http:
     lighting-color
     line-break
     line-height
-    line-height-step
     list-style-image
     list-style-position
     list-style-type

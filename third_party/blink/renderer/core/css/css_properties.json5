@@ -3121,18 +3121,6 @@
       valid_for_marker: true,
     },
     {
-      name: "line-height-step",
-      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      inherited: true,
-      runtime_flag: "CSSSnapSize",
-      field_group: "*",
-      field_template: "primitive",
-      default_value: "0",
-      type_name: "uint8_t",
-      converter: "ConvertComputedLength<uint8_t>",
-      typedom_types: ["Length"],
-    },
-    {
       name: "list-style-image",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,

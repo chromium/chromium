@@ -868,10 +868,6 @@
       base_feature: "CssSelectorFragmentAnchor",
     },
     {
-      name: "CSSSnapSize",
-      status: "experimental",
-    },
-    {
       // Support for CSS ::spelling-error, ::grammar-error, and the
       // spelling-error and grammar-error values in text-decoration-line.
       //

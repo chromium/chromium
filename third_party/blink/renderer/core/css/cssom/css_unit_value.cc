@@ -69,7 +69,6 @@ bool IsValueOutOfRangeForProperty(CSSPropertyID property_id,
     case CSSPropertyID::kFontSizeAdjust:
     case CSSPropertyID::kFontStretch:
     case CSSPropertyID::kInlineSize:
-    case CSSPropertyID::kLineHeightStep:
     case CSSPropertyID::kMaxBlockSize:
     case CSSPropertyID::kMaxInlineSize:
     case CSSPropertyID::kMinBlockSize:

@@ -82,7 +82,7 @@
                 "TextEmphasisMark", "text-emphasis-position",
                 "TextEmphasisCustomMark", "text-orientation",
                 "text-combine-upright", "tab-size", "text-size-adjust",
-                "list-style-image", "line-height-step",
+                "list-style-image",
                 "-webkit-text-stroke-width", "line-height",
                 "-webkit-border-horizontal-spacing",
                 "-webkit-border-vertical-spacing", "TextAutosizingMultiplier",

@@ -229,20 +229,6 @@ void RootInlineBox::ChildRemoved(InlineBox* box) {
   }
 }
 
-static inline void ApplyLineHeightStep(uint8_t line_height_step,
-                                       LayoutUnit& max_ascent,
-                                       LayoutUnit& max_descent) {
-  // Round up to the multiple of units, by adding spaces to over/under equally.
-  // https://drafts.csswg.org/css-rhythm/#line-height-step
-  int remainder = (max_ascent + max_descent).ToInt() % line_height_step;
-  if (!remainder)
-    return;
-  DCHECK_GT(remainder, 0);
-  int space = line_height_step - remainder;
-  max_descent += space / 2;
-  max_ascent += space - space / 2;
-}
-
 LayoutUnit RootInlineBox::AlignBoxesInBlockDirection(
     LayoutUnit height_of_block,
     GlyphOverflowAndFallbackFontsMap& text_box_data_map,
@@ -272,10 +258,6 @@ LayoutUnit RootInlineBox::AlignBoxesInBlockDirection(
       std::max(max_position_top, max_position_bottom))
     AdjustMaxAscentAndDescent(max_ascent, max_descent, max_position_top.ToInt(),
                               max_position_bottom.ToInt());
-
-  if (uint8_t line_height_step =
-          GetLineLayoutItem().StyleRef().LineHeightStep())
-    ApplyLineHeightStep(line_height_step, max_ascent, max_descent);
 
   LayoutUnit max_height = LayoutUnit(max_ascent + max_descent);
   LayoutUnit line_top = height_of_block;

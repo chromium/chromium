@@ -568,7 +568,7 @@ enum CSSSampleId {
     kFontDisplay = 516,
     kContain = 517,
     kD = 518,
-    kLineHeightStep = 519,
+    // kLineHeightStep = 519,
     kBreakAfter = 520,
     kBreakBefore = 521,
     kBreakInside = 522,

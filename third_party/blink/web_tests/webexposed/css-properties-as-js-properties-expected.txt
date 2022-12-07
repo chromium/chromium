@@ -250,7 +250,6 @@ lightingColor
 lineBreak
 lineGapOverride
 lineHeight
-lineHeightStep
 listStyle
 listStyleImage
 listStylePosition
