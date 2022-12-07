@@ -113,10 +113,10 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
     PostToServerAndWait([location](wl::TestWaylandServerThread* server) {
       wl_fixed_t x = wl_fixed_from_int(location.x());
       wl_fixed_t y = wl_fixed_from_int(location.y());
-      auto* pointer = server->seat()->pointer();
-      DCHECK(pointer);
-      wl_pointer_send_motion(pointer->resource(), server->GetNextTime(), x, y);
-      wl_pointer_send_frame(pointer->resource());
+      ASSERT_TRUE(server->seat()->pointer());
+      wl_resource* pointer_resource = server->seat()->pointer()->resource();
+      wl_pointer_send_motion(pointer_resource, server->GetNextTime(), x, y);
+      wl_pointer_send_frame(pointer_resource);
     });
 
     if (ensure_dispatched) {
@@ -1131,7 +1131,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
                  wl::TestWaylandServerThread* server, WaylandWindow* window,
                  WmMoveLoopHandler* move_loop_handler,
                  bool in_pixel_coordinates) {
-    DCHECK(outputs);
+    ASSERT_TRUE(outputs);
     for (const auto& output : *outputs) {
       SCOPED_TRACE(
           base::StringPrintf("Output Scale=%f", output.second->scale_factor()));
