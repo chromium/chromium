@@ -302,6 +302,7 @@ bool ImplementationBase::GetBucketContents(uint32_t bucket_id,
         helper_->GetBucketData(bucket_id, offset, buffer.size(),
                                buffer.shm_id(), buffer.offset());
         if (!WaitForCmd()) {
+          data->clear();
           return false;
         }
       }
