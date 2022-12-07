@@ -36,6 +36,7 @@
     },
     "build2": {
       "gn_args": {
+        "concurrent_links": 20,
         "dcheck_always_on": false,
         "enable_nacl": false,
         "ffmpeg_branding": "Chrome",
@@ -62,6 +63,7 @@
     },
     "build2": {
       "gn_args": {
+        "concurrent_links": 20,
         "dcheck_always_on": false,
         "enable_nacl": false,
         "ffmpeg_branding": "Chrome",
@@ -88,6 +90,7 @@
     },
     "build2": {
       "gn_args": {
+        "concurrent_links": 20,
         "dcheck_always_on": false,
         "enable_nacl": false,
         "ffmpeg_branding": "Chrome",

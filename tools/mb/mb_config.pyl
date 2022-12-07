@@ -4720,17 +4720,17 @@
 
     # Temporary configuration for testing remote linking on different worker sizes
     'use_remoteexec_links_large': {
-      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_large.cfg"',
+      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_large.cfg" concurrent_links=20',
     },
 
     # Temporary configuration for testing remote linking on different worker sizes
     'use_remoteexec_links_medium': {
-      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_medium.cfg"',
+      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_medium.cfg" concurrent_links=20',
     },
 
     # Temporary configuration for testing remote linking on different worker sizes
     'use_remoteexec_links_small': {
-      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_small.cfg"',
+      'gn_args': 'use_remoteexec_links=true rbe_link_cfg_file="../../buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux_link_small.cfg" concurrent_links=20',
     },
 
     'v8_enable_debugging_features': {
