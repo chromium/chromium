@@ -485,7 +485,7 @@ export class SearchPageElement extends SearchPageElementBase {
     }
 
     for (const question of toAppend) {
-      if (question in this.appendedQuestions) {
+      if (this.appendedQuestions.includes(question)) {
         continue;
       }
 

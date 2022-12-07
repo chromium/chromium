@@ -487,4 +487,24 @@ export function searchPageTestSuite() {
         // Check that the questionnaire is not shown.
         assertFalse(textAreaElement.value.indexOf(questionnaireBegin) >= 0);
       });
+
+  test('typingBluetoothTwiceOnlyPastesTheQuestionsOnce', async () => {
+    let textAreaElement = null;
+    await initializePage();
+    // The questionnaire will be only shown if the account belongs to an
+    // internal user.
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+
+    textAreaElement = getElement('#descriptionText');
+    textAreaElement.value = 'My cat got a blue tooth because of ChromeOS.';
+    // Setting the value of the textarea in code does not trigger the
+    // input event. So we trigger it here twice to simulate pressing two keys.
+    textAreaElement.dispatchEvent(new Event('input'));
+    textAreaElement.dispatchEvent(new Event('input'));
+    await flushTasks();
+
+    // Check that there is only one instance of the first question.
+    assertEquals(
+        2, textAreaElement.value.split(domainQuestions['bluetooth'][0]).length);
+  });
 }
