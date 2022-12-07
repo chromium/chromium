@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/test/bind.h"
@@ -177,10 +178,10 @@ class SyncReaderTest : public ::testing::Test {
   std::unique_ptr<MockOutputGlitchCounter> mock_audio_glitch_counter_ptr_;
 
  protected:
-  MockOutputGlitchCounter* mock_output_glitch_counter_;
+  raw_ptr<MockOutputGlitchCounter> mock_output_glitch_counter_;
   std::unique_ptr<SyncReader> reader_;
   base::WritableSharedMemoryMapping shmem_;
-  media::AudioOutputBuffer* buffer_;
+  raw_ptr<media::AudioOutputBuffer> buffer_;
 };
 
 TEST_F(SyncReaderTest, CallsGlitchCounter) {

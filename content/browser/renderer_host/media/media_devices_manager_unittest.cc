@@ -378,7 +378,7 @@ class MediaDevicesManagerTest : public ::testing::Test {
   testing::StrictMock<MockMediaDevicesManagerClient>
       media_devices_manager_client_;
   std::set<std::string> removed_device_ids_;
-  MockVideoCaptureProvider* mock_video_capture_provider_;
+  raw_ptr<MockVideoCaptureProvider> mock_video_capture_provider_;
   std::unique_ptr<InProcessVideoCaptureProvider>
       in_process_video_capture_provider_;
 };

@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
@@ -132,7 +133,7 @@ class DeviceChooserExtensionBrowserTest
   }
 
  private:
-  const extensions::Extension* extension_ = nullptr;
+  raw_ptr<const extensions::Extension> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceChooserExtensionBrowserTest,
