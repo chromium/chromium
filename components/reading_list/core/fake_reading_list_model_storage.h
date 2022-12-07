@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_READING_LIST_CORE_FAKE_READING_LIST_MODEL_STORAGE_H_
 #define COMPONENTS_READING_LIST_CORE_FAKE_READING_LIST_MODEL_STORAGE_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
+#include "components/sync/model/dummy_metadata_change_list.h"
 
 // Test-only implementation of ReadingListModelStorage that doesn't do any
 // actual I/O but allows populating the initial list of entries. It also
@@ -24,7 +28,10 @@ class FakeReadingListModelStorage
     virtual void FakeStorageDidRemoveEntry() = 0;
   };
 
-  class FakeScopedBatchUpdate : public ScopedBatchUpdate {
+  // TODO(crbug.com/1386158): Remove inheritance from WriteBatch when
+  // GetWriteBatch() is removed.
+  class FakeScopedBatchUpdate : public ScopedBatchUpdate,
+                                public syncer::ModelTypeStore::WriteBatch {
    public:
     explicit FakeScopedBatchUpdate(Observer* observer);
 
@@ -35,9 +42,17 @@ class FakeReadingListModelStorage
 
     void SaveEntry(const ReadingListEntry& entry) override;
     void RemoveEntry(const GURL& entry_url) override;
+    syncer::MetadataChangeList* GetSyncMetadataChangeList() override;
+    syncer::ModelTypeStore::WriteBatch* GetWriteBatch() override;
+
+    // WriteBatch implementation.
+    void WriteData(const std::string& id, const std::string& value) override;
+    void DeleteData(const std::string& id) override;
+    syncer::MetadataChangeList* GetMetadataChangeList() override;
 
    private:
     const raw_ptr<Observer> observer_ = nullptr;
+    syncer::DummyMetadataChangeList sync_metadata_change_list;
   };
 
   FakeReadingListModelStorage();
@@ -49,13 +64,13 @@ class FakeReadingListModelStorage
   // load operation was ongoing.
   bool TriggerLoadCompletion(LoadResultOrError load_result_or_error);
 
-  // Convenience overload that uses the default (empty-store) success case.
-  bool TriggerLoadCompletion();
+  // Convenience overload that uses sensible defaults (empty store) for success
+  // case.
+  bool TriggerLoadCompletion(std::vector<ReadingListEntry> entries = {});
 
   // ReadingListModelStorage implementation.
   void Load(base::Clock* clock, LoadCallback load_cb) override;
   std::unique_ptr<ScopedBatchUpdate> EnsureBatchCreated() override;
-  ReadingListSyncBridge* GetSyncBridge() override;
 
  private:
   const raw_ptr<Observer> observer_ = nullptr;

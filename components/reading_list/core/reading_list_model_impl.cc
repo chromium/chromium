@@ -5,7 +5,10 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 
 #include "base/bind.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -14,6 +17,7 @@
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
 #include "components/reading_list/core/reading_list_sync_bridge.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "url/gurl.h"
 
 ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
@@ -22,6 +26,7 @@ ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
   model->AddObserver(this);
   if (model->StorageLayer()) {
     storage_token_ = model->StorageLayer()->EnsureBatchCreated();
+    DCHECK(storage_token_);
   }
 }
 
@@ -32,6 +37,18 @@ ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
     model_->RemoveObserver(this);
     model_->EndBatchUpdates();
   }
+}
+
+syncer::MetadataChangeList* ReadingListModelImpl::
+    ScopedReadingListBatchUpdateImpl::GetSyncMetadataChangeList() {
+  DCHECK(storage_token_);
+  return storage_token_->GetSyncMetadataChangeList();
+}
+
+syncer::ModelTypeStore::WriteBatch*
+ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::GetWriteBatch() {
+  DCHECK(storage_token_);
+  return storage_token_->GetWriteBatch();
 }
 
 void ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
@@ -46,24 +63,40 @@ void ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
 }
 
 ReadingListModelImpl::ReadingListModelImpl(
-    std::unique_ptr<ReadingListModelStorage> storage,
+    std::unique_ptr<ReadingListModelStorage> storage_layer,
     PrefService* pref_service,
     base::Clock* clock)
-    : storage_layer_(std::move(storage)),
+    : ReadingListModelImpl(
+          std::move(storage_layer),
+          pref_service,
+          clock,
+          std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
+              syncer::READING_LIST,
+              /*dump_stack=*/base::DoNothing())) {}
+
+ReadingListModelImpl::ReadingListModelImpl(
+    std::unique_ptr<ReadingListModelStorage> storage_layer,
+    PrefService* pref_service,
+    base::Clock* clock,
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
+    : storage_layer_(std::move(storage_layer)),
       pref_service_(pref_service),
-      clock_(clock) {
+      clock_(clock),
+      sync_bridge_(clock, std::move(change_processor)) {
   DCHECK(clock_);
+  has_unseen_ = GetPersistentHasUnseen();
   if (storage_layer_) {
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->SetReadingListModel(this, this, clock_);
-    }
     storage_layer_->Load(clock_,
                          base::BindOnce(&ReadingListModelImpl::StoreLoaded,
                                         weak_ptr_factory_.GetWeakPtr()));
   } else {
+    // TODO(crbug.com/1386158): Require a non-null storage instead of supporting
+    // this test-only path. After all tests, can trivially adopt a fake.
+    CHECK_IS_TEST();
     loaded_ = true;
+    sync_bridge_.ModelReadyToSync(/*model=*/this, /*delegate=*/this,
+                                  std::make_unique<syncer::MetadataBatch>());
   }
-  has_unseen_ = GetPersistentHasUnseen();
 }
 
 ReadingListModelImpl::~ReadingListModelImpl() {
@@ -91,15 +124,7 @@ bool ReadingListModelImpl::IsPerformingBatchUpdates() const {
 
 std::unique_ptr<ReadingListModelImpl::ScopedReadingListBatchUpdate>
 ReadingListModelImpl::BeginBatchUpdates() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto token = std::make_unique<ScopedReadingListBatchUpdateImpl>(this);
-  ++current_batch_updates_count_;
-  if (current_batch_updates_count_ == 1) {
-    for (auto& observer : observers_) {
-      observer.ReadingListModelBeganBatchUpdates(this);
-    }
-  }
-  return token;
+  return BeginBatchUpdatesWithSyncMetadata();
 }
 
 size_t ReadingListModelImpl::size() const {
@@ -178,9 +203,8 @@ void ReadingListModelImpl::MarkAllSeen() {
       std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
           storage_layer_->EnsureBatchCreated();
       batch->SaveEntry(entry);
-      if (storage_layer_->GetSyncBridge()) {
-        storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
-      }
+      sync_bridge_.DidAddOrUpdateEntry(entry,
+                                       batch->GetSyncMetadataChangeList());
     }
     for (auto& observer : observers_) {
       observer.ReadingListDidApplyChanges(this);
@@ -356,10 +380,7 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->RemoveEntry(url);
-
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->DidRemoveEntry(*entry);
-    }
+    sync_bridge_.DidRemoveEntry(*entry, batch->GetSyncMetadataChangeList());
   }
 
   UpdateEntryStateCountersOnEntryRemoval(*entry);
@@ -406,9 +427,8 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->SaveEntry(*GetEntryByURL(url));
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(*entry_ptr);
-    }
+    sync_bridge_.DidAddOrUpdateEntry(*entry_ptr,
+                                     batch->GetSyncMetadataChangeList());
   }
 
   for (auto& observer : observers_) {
@@ -449,9 +469,7 @@ void ReadingListModelImpl::SetReadStatus(const GURL& url, bool read) {
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->SaveEntry(entry);
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
-    }
+    sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
 
   for (ReadingListModelObserver& observer : observers_) {
@@ -482,9 +500,7 @@ void ReadingListModelImpl::SetEntryTitle(const GURL& url,
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->SaveEntry(entry);
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
-    }
+    sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -512,9 +528,7 @@ void ReadingListModelImpl::SetEstimatedReadTime(
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->SaveEntry(entry);
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
-    }
+    sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -548,9 +562,7 @@ void ReadingListModelImpl::SetEntryDistilledInfo(
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->SaveEntry(entry);
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
-    }
+    sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -579,9 +591,7 @@ void ReadingListModelImpl::SetEntryDistilledState(
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->SaveEntry(entry);
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(entry);
-    }
+    sync_bridge_.DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -607,9 +617,8 @@ void ReadingListModelImpl::SetContentSuggestionsExtra(
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->SaveEntry(*entry);
-    if (storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->DidAddOrUpdateEntry(*entry);
-    }
+    sync_bridge_.DidAddOrUpdateEntry(*entry,
+                                     batch->GetSyncMetadataChangeList());
   }
   for (ReadingListModelObserver& observer : observers_) {
     observer.ReadingListDidApplyChanges(this);
@@ -630,15 +639,38 @@ void ReadingListModelImpl::RemoveObserver(ReadingListModelObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+std::unique_ptr<ReadingListModelImpl::ScopedReadingListBatchUpdateImpl>
+ReadingListModelImpl::BeginBatchUpdatesWithSyncMetadata() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto token = std::make_unique<ScopedReadingListBatchUpdateImpl>(this);
+  ++current_batch_updates_count_;
+  if (current_batch_updates_count_ == 1) {
+    for (auto& observer : observers_) {
+      observer.ReadingListModelBeganBatchUpdates(this);
+    }
+  }
+  return token;
+}
+
+// static
+std::unique_ptr<ReadingListModelImpl> ReadingListModelImpl::BuildNewForTest(
+    std::unique_ptr<ReadingListModelStorage> storage_layer,
+    PrefService* pref_service,
+    base::Clock* clock,
+    std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor) {
+  CHECK_IS_TEST();
+  return base::WrapUnique(
+      new ReadingListModelImpl(std::move(storage_layer), pref_service, clock,
+                               std::move(change_processor)));
+}
+
 void ReadingListModelImpl::StoreLoaded(
     ReadingListModelStorage::LoadResultOrError result_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!result_or_error.has_value()) {
-    if (storage_layer_ && storage_layer_->GetSyncBridge()) {
-      storage_layer_->GetSyncBridge()->ReportError(
-          syncer::ModelError(FROM_HERE, result_or_error.error()));
-    }
+    sync_bridge_.ReportError(
+        syncer::ModelError(FROM_HERE, result_or_error.error()));
     return;
   }
 
@@ -651,10 +683,8 @@ void ReadingListModelImpl::StoreLoaded(
   DCHECK_EQ(read_entry_count_ + unread_entry_count_, entries_.size());
   loaded_ = true;
 
-  if (storage_layer_ && storage_layer_->GetSyncBridge()) {
-    storage_layer_->GetSyncBridge()->ModelReadyToSync(
-        std::move(result_or_error.value().second));
-  }
+  sync_bridge_.ModelReadyToSync(/*model=*/this, /*delegate=*/this,
+                                std::move(result_or_error.value().second));
 
   base::UmaHistogramCounts1000("ReadingList.Unread.Count.OnModelLoaded",
                                unread_entry_count_);
@@ -699,10 +729,8 @@ bool ReadingListModelImpl::GetPersistentHasUnseen() {
       reading_list::prefs::kReadingListHasUnseenEntries);
 }
 
-syncer::ModelTypeSyncBridge* ReadingListModelImpl::GetModelTypeSyncBridge() {
-  if (!storage_layer_)
-    return nullptr;
-  return storage_layer_->GetSyncBridge();
+ReadingListSyncBridge* ReadingListModelImpl::GetModelTypeSyncBridge() {
+  return &sync_bridge_;
 }
 
 ReadingListModelStorage* ReadingListModelImpl::StorageLayer() {

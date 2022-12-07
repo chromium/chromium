@@ -8,12 +8,10 @@
 #include <set>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/reading_list/core/reading_list_model_storage_impl.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/sync/test/model_type_store_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -111,32 +109,32 @@ class MockReadingListSyncBridgeDelegate : public ReadingListSyncBridgeDelegate {
 class ReadingListSyncBridgeTest : public testing::Test {
  protected:
   ReadingListSyncBridgeTest() {
+    model_ = ReadingListModelImpl::BuildNewForTest(
+        std::make_unique<ReadingListModelStorageImpl>(
+            syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(
+                syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest())),
+        /*pref_service=*/nullptr, &clock_,
+        processor_.CreateForwardingProcessor());
+
+    // Wait until the model loads.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(model_->loaded());
+
+    // Intercept calls to the delegate for mocking purposes.
+    bridge()->SetDelegateForTest(&delegate_);
+
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
-    reading_list_sync_bridge_ = std::make_unique<ReadingListSyncBridge>(
-        syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(
-            syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest()),
-        processor_.CreateForwardingProcessor());
-    model_ = std::make_unique<ReadingListModelImpl>(nullptr, nullptr, &clock_);
-    reading_list_sync_bridge_->SetReadingListModel(model_.get(), &delegate_,
-                                                   &clock_);
-    base::RunLoop loop;
-    reading_list_sync_bridge_->Load(
-        &clock_, base::BindLambdaForTesting(
-                     [&loop](ReadingListModelStorage::LoadResultOrError) {
-                       loop.Quit();
-                     }));
-    loop.Run();
   }
+
+  ReadingListSyncBridge* bridge() { return model_->GetModelTypeSyncBridge(); }
 
   // In memory model type store needs to be able to post tasks.
   base::test::SingleThreadTaskEnvironment task_environment_;
-
+  base::SimpleTestClock clock_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   testing::NiceMock<MockReadingListSyncBridgeDelegate> delegate_;
   std::unique_ptr<ReadingListModelImpl> model_;
-  base::SimpleTestClock clock_;
-  std::unique_ptr<ReadingListSyncBridge> reading_list_sync_bridge_;
 };
 
 TEST_F(ReadingListSyncBridgeTest, CheckEmpties) {
@@ -157,10 +155,8 @@ TEST_F(ReadingListSyncBridgeTest, SaveOneRead) {
                   MatchesSpecifics("read title", "http://read.example.com/",
                                    sync_pb::ReadingListSpecifics::READ),
                   _));
-  // TODO(crbug.com/1386158): Currently the bridge assumes the caller starts
-  // a transaction.
-  auto token = reading_list_sync_bridge_->EnsureBatchCreated();
-  reading_list_sync_bridge_->DidAddOrUpdateEntry(entry);
+  auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
+  bridge()->DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
 }
 
 TEST_F(ReadingListSyncBridgeTest, SaveOneUnread) {
@@ -175,10 +171,8 @@ TEST_F(ReadingListSyncBridgeTest, SaveOneUnread) {
                   MatchesSpecifics("unread title", "http://unread.example.com/",
                                    sync_pb::ReadingListSpecifics::UNSEEN),
                   _));
-  // TODO(crbug.com/1386158): Currently the bridge assumes the caller starts
-  // a transaction.
-  auto token = reading_list_sync_bridge_->EnsureBatchCreated();
-  reading_list_sync_bridge_->DidAddOrUpdateEntry(entry);
+  auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
+  bridge()->DidAddOrUpdateEntry(entry, batch->GetSyncMetadataChangeList());
 }
 
 TEST_F(ReadingListSyncBridgeTest, DeleteOneEntry) {
@@ -189,10 +183,8 @@ TEST_F(ReadingListSyncBridgeTest, DeleteOneEntry) {
   ReadingListEntry entry(GURL("http://unread.example.com/"), "unread title",
                          AdvanceAndGetTime(&clock_));
   EXPECT_CALL(processor_, Delete("http://unread.example.com/", _));
-  // TODO(crbug.com/1386158): Currently the bridge assumes the caller starts
-  // a transaction.
-  auto token = reading_list_sync_bridge_->EnsureBatchCreated();
-  reading_list_sync_bridge_->DidRemoveEntry(entry);
+  auto batch = model_->BeginBatchUpdatesWithSyncMetadata();
+  bridge()->DidRemoveEntry(entry, batch->GetSyncMetadataChangeList());
 }
 
 TEST_F(ReadingListSyncBridgeTest, SyncMergeOneEntry) {
@@ -217,9 +209,9 @@ TEST_F(ReadingListSyncBridgeTest, SyncMergeOneEntry) {
       "http://read.example.com/", std::move(data)));
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_changes(
-      reading_list_sync_bridge_->CreateMetadataChangeList());
-  auto error = reading_list_sync_bridge_->MergeSyncData(
-      std::move(metadata_changes), std::move(remote_input));
+      bridge()->CreateMetadataChangeList());
+  auto error = bridge()->MergeSyncData(std::move(metadata_changes),
+                                       std::move(remote_input));
   EXPECT_FALSE(error.has_value());
 }
 
@@ -243,9 +235,8 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneAdd) {
 
   add_changes.push_back(syncer::EntityChange::CreateAdd(
       "http://read.example.com/", std::move(data)));
-  auto error = reading_list_sync_bridge_->ApplySyncChanges(
-      reading_list_sync_bridge_->CreateMetadataChangeList(),
-      std::move(add_changes));
+  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                                          std::move(add_changes));
   EXPECT_FALSE(error.has_value());
 }
 
@@ -280,9 +271,8 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneMerge) {
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
       "http://unread.example.com/", std::move(data)));
-  auto error = reading_list_sync_bridge_->ApplySyncChanges(
-      reading_list_sync_bridge_->CreateMetadataChangeList(),
-      std::move(add_changes));
+  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                                          std::move(add_changes));
   EXPECT_FALSE(error.has_value());
 }
 
@@ -320,9 +310,8 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneIgnored) {
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
       "http://unread.example.com/", std::move(data)));
-  auto error = reading_list_sync_bridge_->ApplySyncChanges(
-      reading_list_sync_bridge_->CreateMetadataChangeList(),
-      std::move(add_changes));
+  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                                          std::move(add_changes));
 }
 
 TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneRemove) {
@@ -334,9 +323,8 @@ TEST_F(ReadingListSyncBridgeTest, ApplySyncChangesOneRemove) {
   syncer::EntityChangeList delete_changes;
   delete_changes.push_back(
       syncer::EntityChange::CreateDelete("http://read.example.com/"));
-  auto error = reading_list_sync_bridge_->ApplySyncChanges(
-      reading_list_sync_bridge_->CreateMetadataChangeList(),
-      std::move(delete_changes));
+  auto error = bridge()->ApplySyncChanges(bridge()->CreateMetadataChangeList(),
+                                          std::move(delete_changes));
   EXPECT_FALSE(error.has_value());
 }
 

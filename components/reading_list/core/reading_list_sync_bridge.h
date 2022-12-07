@@ -10,10 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/reading_list/core/reading_list_model_storage_impl.h"
 #include "components/reading_list/core/reading_list_sync_bridge_delegate.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
 namespace base {
@@ -21,19 +19,19 @@ class Clock;
 }  // namespace base
 
 namespace syncer {
+class MetadataChangeList;
 class ModelTypeChangeProcessor;
 class MutableDataBatch;
 }  // namespace syncer
 
-class ReadingListModel;
+class ReadingListModelImpl;
 
-// A ReadingListModelStorage storing and syncing data in protobufs.
-// TODO(crbug.com/1386158): Avoid inheritance from ReadingListModelStorageImpl.
-class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge,
-                              public ReadingListModelStorageImpl {
+// Sync bridge implementation for READING_LIST model type. Takes care of
+// propagating local passwords to other clients and vice versa.
+class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   ReadingListSyncBridge(
-      syncer::OnceModelTypeStoreFactory create_store_callback,
+      base::Clock* clock,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
 
   ReadingListSyncBridge(const ReadingListSyncBridge&) = delete;
@@ -41,20 +39,20 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge,
 
   ~ReadingListSyncBridge() override;
 
-  void SetReadingListModel(ReadingListModel* model,
-                           ReadingListSyncBridgeDelegate* delegate,
-                           base::Clock* clock);
+  // TODO(crbug.com/1386158): Remove ReadingListSyncBridgeDelegate altogether
+  // since it represents the same object as |model|, except in unit-tests.
   void ModelReadyToSync(
+      ReadingListModelImpl* model,
+      ReadingListSyncBridgeDelegate* delegate,
       std::unique_ptr<syncer::MetadataBatch> sync_metadata_batch);
   void ReportError(const syncer::ModelError& error);
 
   // TODO(crbug.com/1386158): Remove the functions below and instead register
   // the bridge as model observer.
-  void DidAddOrUpdateEntry(const ReadingListEntry& entry);
-  void DidRemoveEntry(const ReadingListEntry& entry);
-
-  // ReadingListModelStorage implementation.
-  ReadingListSyncBridge* GetSyncBridge() override;
+  void DidAddOrUpdateEntry(const ReadingListEntry& entry,
+                           syncer::MetadataChangeList* metadata_change_list);
+  void DidRemoveEntry(const ReadingListEntry& entry,
+                      syncer::MetadataChangeList* metadata_change_list);
 
   // Creates an object used to communicate changes in the sync metadata to the
   // model type store.
@@ -143,13 +141,15 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge,
   // should be.
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
+  void SetDelegateForTest(ReadingListSyncBridgeDelegate* delegate);
+
  private:
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);
 
-  raw_ptr<ReadingListModel> model_;
-  raw_ptr<ReadingListSyncBridgeDelegate> delegate_;
-  raw_ptr<base::Clock> clock_;
+  const raw_ptr<base::Clock> clock_;
+  raw_ptr<ReadingListModelImpl> model_ = nullptr;
+  raw_ptr<ReadingListSyncBridgeDelegate> delegate_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

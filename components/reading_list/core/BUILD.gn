@@ -46,7 +46,7 @@ static_library("test_support") {
     "fake_reading_list_model_storage.cc",
     "fake_reading_list_model_storage.h",
   ]
-
+  deps = [ "//components/sync/model" ]
   public_deps = [
     ":core",
     "//base",

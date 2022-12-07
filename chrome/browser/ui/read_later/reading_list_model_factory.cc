@@ -15,16 +15,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/reading_list/core/reading_list_model_storage_impl.h"
 #include "components/reading_list/core/reading_list_pref_names.h"
-#include "components/reading_list/core/reading_list_sync_bridge.h"
-#include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,16 +32,11 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
   Profile* const profile = Profile::FromBrowserContext(context);
   syncer::OnceModelTypeStoreFactory store_factory =
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
-  auto change_processor =
-      std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-          syncer::READING_LIST,
-          base::BindRepeating(&syncer::ReportUnrecoverableError,
-                              chrome::GetChannel()));
-  auto bridge = std::make_unique<ReadingListSyncBridge>(
-      std::move(store_factory), std::move(change_processor));
+  auto storage =
+      std::make_unique<ReadingListModelStorageImpl>(std::move(store_factory));
 
   return std::make_unique<ReadingListModelImpl>(
-      std::move(bridge), profile->GetPrefs(),
+      std::move(storage), profile->GetPrefs(),
       base::DefaultClock::GetInstance());
 }
 

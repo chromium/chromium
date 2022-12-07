@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_DELEGATE_H_
 #define COMPONENTS_READING_LIST_CORE_READING_LIST_SYNC_BRIDGE_DELEGATE_H_
 
+class GURL;
 class ReadingListEntry;
 
 // The delegate to handle callbacks from the ReadingListSyncBridge.

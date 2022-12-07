@@ -118,14 +118,11 @@ TEST_F(ReadingListManagerImplTest, Load) {
   base::WeakPtr<FakeReadingListModelStorage> fake_storage = ResetStorage();
   ASSERT_FALSE(manager()->IsLoaded());
 
-  // Mimic the completion of storage loading.
-  ReadingListEntries entries;
+  // Mimic the completion of storage loading with one initial entry.
+  std::vector<ReadingListEntry> entries;
   GURL url(kURL);
-  entries.emplace(url, ReadingListEntry(url, kTitle, clock()->Now()));
-  ASSERT_TRUE(
-      fake_storage->TriggerLoadCompletion(ReadingListModelStorage::LoadResult{
-          std::move(entries), /*metadata_batch=*/nullptr}));
-
+  entries.emplace_back(url, kTitle, clock()->Now());
+  ASSERT_TRUE(fake_storage->TriggerLoadCompletion(std::move(entries)));
   EXPECT_TRUE(manager()->IsLoaded());
 
   const auto* node = manager()->Get(url);

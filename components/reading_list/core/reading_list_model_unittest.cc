@@ -9,7 +9,6 @@
 #include "base/test/simple_test_clock.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
-#include "components/reading_list/core/reading_list_sync_bridge_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -19,41 +18,37 @@ base::Time AdvanceAndGetTime(base::SimpleTestClock* clock) {
   return clock->Now();
 }
 
-ReadingListModelStorage::ReadingListEntries PopulateSampleEntries(
+std::vector<ReadingListEntry> PopulateSampleEntries(
     base::SimpleTestClock* clock) {
-  ReadingListModelStorage::ReadingListEntries entries;
+  std::vector<ReadingListEntry> entries;
   // Adds timer and interlace read/unread entry creation to avoid having two
   // entries with the same creation timestamp.
-  ReadingListEntry unread_a(GURL("http://unread_a.com"), "unread_a",
-                            AdvanceAndGetTime(clock));
-  entries.emplace(GURL("http://unread_a.com"), std::move(unread_a));
+  entries.emplace_back(GURL("http://unread_a.com"), "unread_a",
+                       AdvanceAndGetTime(clock));
 
   ReadingListEntry read_a(GURL("http://read_a.com"), "read_a",
                           AdvanceAndGetTime(clock));
   read_a.SetRead(true, AdvanceAndGetTime(clock));
-  entries.emplace(GURL("http://read_a.com"), std::move(read_a));
+  entries.push_back(std::move(read_a));
 
-  ReadingListEntry unread_b(GURL("http://unread_b.com"), "unread_b",
-                            AdvanceAndGetTime(clock));
-  entries.emplace(GURL("http://unread_b.com"), std::move(unread_b));
+  entries.emplace_back(GURL("http://unread_b.com"), "unread_b",
+                       AdvanceAndGetTime(clock));
 
   ReadingListEntry read_b(GURL("http://read_b.com"), "read_b",
                           AdvanceAndGetTime(clock));
   read_b.SetRead(true, AdvanceAndGetTime(clock));
-  entries.emplace(GURL("http://read_b.com"), std::move(read_b));
+  entries.push_back(std::move(read_b));
 
-  ReadingListEntry unread_c(GURL("http://unread_c.com"), "unread_c",
-                            AdvanceAndGetTime(clock));
-  entries.emplace(GURL("http://unread_c.com"), std::move(unread_c));
+  entries.emplace_back(GURL("http://unread_c.com"), "unread_c",
+                       AdvanceAndGetTime(clock));
 
   ReadingListEntry read_c(GURL("http://read_c.com"), "read_c",
                           AdvanceAndGetTime(clock));
   read_c.SetRead(true, AdvanceAndGetTime(clock));
-  entries.emplace(GURL("http://read_c.com"), std::move(read_c));
+  entries.push_back(std::move(read_c));
 
-  ReadingListEntry unread_d(GURL("http://unread_d.com"), "unread_d",
-                            AdvanceAndGetTime(clock));
-  entries.emplace(GURL("http://unread_d.com"), std::move(unread_d));
+  entries.emplace_back(GURL("http://unread_d.com"), "unread_d",
+                       AdvanceAndGetTime(clock));
 
   return entries;
 }
@@ -224,8 +219,7 @@ TEST_F(ReadingListModelTest, EmptyLoaded) {
 // Tests successful load model.
 TEST_F(ReadingListModelTest, ModelLoadSuccess) {
   ASSERT_TRUE(
-      ResetStorage()->TriggerLoadCompletion(ReadingListModelStorage::LoadResult{
-          PopulateSampleEntries(&clock_), /*metadata_batch=*/nullptr}));
+      ResetStorage()->TriggerLoadCompletion(PopulateSampleEntries(&clock_)));
 
   AssertObserverCount(1, 0, 0, 0, 0, 0, 0, 0, 0);
   std::map<GURL, std::string> loaded_entries;

@@ -42,20 +42,6 @@ ReadingListModelStorage::LoadResultOrError LoadStorageAndWait(
   return load_result_or_error;
 }
 
-// Subclass to implement unused but pure member functions.
-// TODO(crbug.com/1386158): Remove when the class is non-abstract.
-class ReadingListModelStorageImplForTest : public ReadingListModelStorageImpl {
- public:
-  explicit ReadingListModelStorageImplForTest(
-      syncer::OnceModelTypeStoreFactory create_store_callback)
-      : ReadingListModelStorageImpl(std::move(create_store_callback)) {}
-
-  ~ReadingListModelStorageImplForTest() override = default;
-
-  // Remaining ReadingListModelStorage implementation.
-  ReadingListSyncBridge* GetSyncBridge() override { return nullptr; }
-};
-
 class ReadingListModelStorageImplTest : public testing::Test {
  protected:
   ReadingListModelStorageImplTest()
@@ -73,7 +59,7 @@ class ReadingListModelStorageImplTest : public testing::Test {
 };
 
 TEST_F(ReadingListModelStorageImplTest, LoadEmpty) {
-  ReadingListModelStorageImplForTest storage(shared_store_factory_);
+  ReadingListModelStorageImpl storage(shared_store_factory_);
 
   const ReadingListModelStorage::LoadResultOrError result_or_error =
       LoadStorageAndWait(&storage, &clock_);
@@ -84,7 +70,7 @@ TEST_F(ReadingListModelStorageImplTest, LoadEmpty) {
 }
 
 TEST_F(ReadingListModelStorageImplTest, SaveEntry) {
-  ReadingListModelStorageImplForTest storage(shared_store_factory_);
+  ReadingListModelStorageImpl storage(shared_store_factory_);
 
   ASSERT_TRUE(LoadStorageAndWait(&storage, &clock_).has_value());
 
@@ -93,7 +79,7 @@ TEST_F(ReadingListModelStorageImplTest, SaveEntry) {
 
   // To verify the write, use another storage with the same underlying in-memory
   // leveldb.
-  ReadingListModelStorageImplForTest other_storage(shared_store_factory_);
+  ReadingListModelStorageImpl other_storage(shared_store_factory_);
 
   const ReadingListModelStorage::LoadResultOrError load_result_or_error =
       LoadStorageAndWait(&other_storage, &clock_);
@@ -104,7 +90,7 @@ TEST_F(ReadingListModelStorageImplTest, SaveEntry) {
 }
 
 TEST_F(ReadingListModelStorageImplTest, RemoveEntry) {
-  ReadingListModelStorageImplForTest storage(shared_store_factory_);
+  ReadingListModelStorageImpl storage(shared_store_factory_);
   ASSERT_TRUE(LoadStorageAndWait(&storage, &clock_).has_value());
   storage.EnsureBatchCreated()->SaveEntry(
       ReadingListEntry(GURL("http://example1.com/"), "Title 1", clock_.Now()));
@@ -112,7 +98,7 @@ TEST_F(ReadingListModelStorageImplTest, RemoveEntry) {
       ReadingListEntry(GURL("http://example2.com/"), "Title 2", clock_.Now()));
 
   // There should be two entries in storage.
-  ReadingListModelStorageImplForTest second_storage(shared_store_factory_);
+  ReadingListModelStorageImpl second_storage(shared_store_factory_);
   ASSERT_THAT(LoadStorageAndWait(&second_storage, &clock_)->first,
               UnorderedElementsAre(EntryHasUrl(GURL("http://example1.com/")),
                                    EntryHasUrl(GURL("http://example2.com/"))));
@@ -123,7 +109,7 @@ TEST_F(ReadingListModelStorageImplTest, RemoveEntry) {
 
   // To verify the deletion, use a third storage with the same underlying
   // in-memory leveldb.
-  ReadingListModelStorageImplForTest third_storage(shared_store_factory_);
+  ReadingListModelStorageImpl third_storage(shared_store_factory_);
   EXPECT_THAT(LoadStorageAndWait(&third_storage, &clock_)->first,
               ElementsAre(EntryHasUrl(GURL("http://example2.com/"))));
 }

@@ -46,16 +46,13 @@ class ReadingListModelStorageImpl : public ReadingListModelStorage {
 
     void SaveEntry(const ReadingListEntry& entry) override;
     void RemoveEntry(const GURL& entry_url) override;
+    syncer::MetadataChangeList* GetSyncMetadataChangeList() override;
+    syncer::ModelTypeStore::WriteBatch* GetWriteBatch() override;
 
    private:
     const raw_ptr<ReadingListModelStorageImpl> store_;
     SEQUENCE_CHECKER(sequence_checker_);
   };
-
- protected:
-  // TODO(crbug.com/1386158): Avoid exposing WriteBatch directly via
-  // protected functions.
-  syncer::ModelTypeStore::WriteBatch* store_batch() { return batch_.get(); }
 
  private:
   void BeginTransaction();
