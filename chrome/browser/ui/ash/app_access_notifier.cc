@@ -92,6 +92,8 @@ AppAccessNotifier::AppAccessNotifier() {
   if (um) {
     user_session_state_observation_.Observe(um);
   }
+
+  CheckActiveUserChanged();
 }
 
 AppAccessNotifier::~AppAccessNotifier() = default;
