@@ -41789,6 +41789,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4417" label="CSSGetComputedAnimationDelayZero"/>
   <int value="4418" label="GetEffectTimingDelayZero"/>
   <int value="4419" label="Scrollend"/>
+  <int value="4420" label="DOMWindowOpenCrossOriginIframe"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

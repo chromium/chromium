@@ -2187,6 +2187,8 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
     return nullptr;
 
   UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpen);
+  entered_window->CountUseOnlyInCrossOriginIframe(
+      WebFeature::kDOMWindowOpenCrossOriginIframe);
   if (!features.empty())
     UseCounter::Count(*entered_window, WebFeature::kDOMWindowOpenFeatures);
 
