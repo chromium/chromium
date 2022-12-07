@@ -47,6 +47,9 @@ export class Autoclick {
         [], chrome.automation.EventType.MOUSE_PRESSED,
         event => this.onAutomationHitTestResult_(event), {capture: true});
 
+    /** @private {?function()} */
+    this.onLoadDesktopCallbackForTest_ = null;
+
     this.init_();
   }
 
@@ -82,6 +85,11 @@ export class Autoclick {
       // at that point, in order to find the scrollable area.
       this.hitTestHandler_.setNodes(this.desktop_);
       this.hitTestHandler_.start();
+
+      if (this.onLoadDesktopCallbackForTest_) {
+        this.onLoadDesktopCallbackForTest_();
+        this.onLoadDesktopCallbackForTest_ = null;
+      }
     });
 
     chrome.accessibilityPrivate.onScrollableBoundsForPointRequested.addListener(
@@ -176,5 +184,19 @@ export class Autoclick {
     // The hit test will come back through onAutmoationHitTestResult_,
     // which will do the logic for finding the scrolling container.
     this.desktop_.hitTest(x, y, chrome.automation.EventType.MOUSE_PRESSED);
+  }
+
+  /**
+   * Used by C++ tests to ensure Autoclick JS load is completed.
+   * @param {!function()} callback Callback for when desktop is loaded from
+   * automation.
+   */
+  setOnLoadDesktopCallbackForTest(callback) {
+    if (!this.desktop_) {
+      this.onLoadDesktopCallbackForTest_ = callback;
+      return;
+    }
+    // Desktop already loaded.
+    callback();
   }
 }

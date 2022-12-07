@@ -77,11 +77,13 @@ class ASH_EXPORT AutoclickMenuBubbleController
 
   // For tests only.
   views::Widget* GetBubbleWidgetForTesting() { return bubble_widget_; }
+  void SetAnimateForTesting(bool animate) { animate_ = animate; }
 
  private:
   friend class AutoclickMenuBubbleControllerTest;
   friend class AutoclickTest;
   friend class FloatingAccessibilityControllerTest;
+  friend class AutoclickBrowserTest;
 
   // Owned by views hierarchy.
   TrayBubbleView* bubble_view_ = nullptr;
@@ -94,6 +96,9 @@ class ASH_EXPORT AutoclickMenuBubbleController
   // by this class so that positioning calculations can take place using both
   // classes at once.
   std::unique_ptr<AutoclickScrollBubbleController> scroll_bubble_controller_;
+
+  // Whether to animate position changes. Can be set to false for testing.
+  bool animate_ = true;
 };
 
 }  // namespace ash

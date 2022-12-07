@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/caret_bounds_changed_waiter.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/base/locale_util.h"
@@ -260,32 +261,6 @@ class SuccessWaiter {
   base::RepeatingTimer timer_;
   base::RunLoop run_loop_;
   base::WeakPtrFactory<SuccessWaiter> weak_factory_{this};
-};
-
-class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
- public:
-  explicit CaretBoundsChangedWaiter(ui::InputMethod* input_method)
-      : input_method_(input_method) {
-    input_method_->AddObserver(this);
-  }
-  CaretBoundsChangedWaiter(const CaretBoundsChangedWaiter&) = delete;
-  CaretBoundsChangedWaiter& operator=(const CaretBoundsChangedWaiter&) = delete;
-  ~CaretBoundsChangedWaiter() override { input_method_->RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // ui::InputMethodObserver:
-  void OnFocus() override {}
-  void OnBlur() override {}
-  void OnTextInputStateChanged(const ui::TextInputClient* client) override {}
-  void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
-  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {
-    run_loop_.Quit();
-  }
-
-  ui::InputMethod* input_method_;
-  base::RunLoop run_loop_;
 };
 
 // Listens for changes to the clipboard. This class only allows `Wait()` to be
