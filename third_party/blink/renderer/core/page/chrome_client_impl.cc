@@ -337,6 +337,10 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
     // https://linear.app/replay/issue/RUN-824
     mojo::internal::RecordReplayAssertBufferAllocationsBegin();
 
+    // https://linear.app/replay/issue/RUN-824
+    recordreplay::Assert("ChromeClientImpl::AddMessageToConsole %u %u %u",
+                         message.length(), source_id.length(), stack_trace.length());
+
     local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
         level, message, static_cast<int32_t>(line_number), source_id,
         stack_trace);
