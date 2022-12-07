@@ -59,22 +59,22 @@ void AsyncAudioDecoder::DecodeAsync(DOMArrayBuffer* audio_data,
           blink::TaskType::kInternalMedia);
 
   worker_pool::PostTask(
-      FROM_HERE, CrossThreadBindOnce(
-                     &AsyncAudioDecoder::DecodeOnBackgroundThread,
-                     WrapCrossThreadPersistent(audio_data), sample_rate,
-                     WrapCrossThreadPersistent(success_callback),
-                     WrapCrossThreadPersistent(error_callback),
-                     WrapCrossThreadPersistent(resolver),
-                     WrapCrossThreadPersistent(context), std::move(task_runner),
-                     exception_state.GetContext()));
+      FROM_HERE,
+      CrossThreadBindOnce(
+          &AsyncAudioDecoder::DecodeOnBackgroundThread,
+          WrapCrossThreadPersistent(audio_data), sample_rate,
+          MakeCrossThreadHandle(success_callback),
+          MakeCrossThreadHandle(error_callback),
+          MakeCrossThreadHandle(resolver), WrapCrossThreadPersistent(context),
+          std::move(task_runner), exception_state.GetContext()));
 }
 
 void AsyncAudioDecoder::DecodeOnBackgroundThread(
     DOMArrayBuffer* audio_data,
     float sample_rate,
-    V8DecodeSuccessCallback* success_callback,
-    V8DecodeErrorCallback* error_callback,
-    ScriptPromiseResolver* resolver,
+    CrossThreadHandle<V8DecodeSuccessCallback> success_callback,
+    CrossThreadHandle<V8DecodeErrorCallback> error_callback,
+    CrossThreadHandle<ScriptPromiseResolver> resolver,
     BaseAudioContext* context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const ExceptionContext& exception_context) {
@@ -93,10 +93,10 @@ void AsyncAudioDecoder::DecodeOnBackgroundThread(
         *task_runner, FROM_HERE,
         CrossThreadBindOnce(&AsyncAudioDecoder::NotifyComplete,
                             WrapCrossThreadPersistent(audio_data),
-                            WrapCrossThreadPersistent(success_callback),
-                            WrapCrossThreadPersistent(error_callback),
+                            MakeUnwrappingCrossThreadHandle(success_callback),
+                            MakeUnwrappingCrossThreadHandle(error_callback),
                             WTF::RetainedRef(std::move(bus)),
-                            WrapCrossThreadPersistent(resolver),
+                            MakeUnwrappingCrossThreadHandle(resolver),
                             WrapCrossThreadPersistent(context),
                             exception_context));
   }
