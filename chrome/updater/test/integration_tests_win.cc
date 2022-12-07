@@ -1099,13 +1099,10 @@ void SetupLaunchCommandElevated(const std::wstring& app_id,
                                 base::ScopedTempDir& temp_dir) {
   base::CommandLine cmd_exe_command_line(base::CommandLine::NO_PROGRAM);
   SetupCmdExe(UpdaterScope::kSystem, cmd_exe_command_line, temp_dir);
-  EXPECT_EQ(
-      CreateAppClientKey(UpdaterScope::kSystem, app_id)
-          .WriteValue(command_id.c_str(),
-                      base::StrCat({cmd_exe_command_line.GetCommandLineString(),
-                                    command_parameters.c_str()})
-                          .c_str()),
-      ERROR_SUCCESS);
+  CreateLaunchCmdElevatedRegistry(
+      app_id, command_id,
+      base::StrCat({cmd_exe_command_line.GetCommandLineString(),
+                    command_parameters.c_str()}));
 }
 
 void DeleteLaunchCommandElevated(const std::wstring& app_id,
@@ -1160,7 +1157,7 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
 
   DeleteLaunchCommandElevated(kAppId1, kCommandId);
   EXPECT_EQ(
-      HRESULT_FROM_WIN32(ERROR_BAD_COMMAND),
+      HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND),
       ProcessLaunchCmdElevated(process_launcher, kAppId1, kCommandId, 5420));
 
   base::ScopedTempDir app_command_temp_dir;

@@ -24,6 +24,13 @@ base::win::RegKey CreateAppClientKey(UpdaterScope scope,
 void DeleteAppClientKey(UpdaterScope scope, const std::wstring& app_id);
 
 // Creates the key
+// `HKLM\Software\{CompanyName}\Update\Clients\{app_id}`,
+// and adds a `command_id` REG_SZ entry with the value `command_line`.
+void CreateLaunchCmdElevatedRegistry(const std::wstring& app_id,
+                                     const std::wstring& command_id,
+                                     const std::wstring& command_line);
+
+// Creates the key
 // `{HKRoot}\Software\{CompanyName}\Update\Clients\{app_id}\Commands\{cmd_id}`,
 // and adds a `CommandLine` REG_SZ entry with the value `cmd_line`. `{HKRoot}`
 // is determined by `scope`.

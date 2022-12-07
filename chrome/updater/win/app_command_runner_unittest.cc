@@ -72,6 +72,18 @@ class AppCommandRunnerTest : public testing::Test {
                                             app_command_runner);
   }
 
+  HRESULT CreateProcessLauncherRunner(const std::wstring& app_id,
+                                      const std::wstring& command_id,
+                                      const std::wstring& command_line_format,
+                                      AppCommandRunner& app_command_runner) {
+    EXPECT_TRUE(IsSystemInstall(GetTestScope()));
+
+    CreateLaunchCmdElevatedRegistry(app_id, command_id, command_line_format);
+
+    return AppCommandRunner::LoadAppCommand(GetTestScope(), app_id, command_id,
+                                            app_command_runner);
+  }
+
   base::CommandLine cmd_exe_command_line_{base::CommandLine::NO_PROGRAM};
   base::ScopedTempDir temp_programfiles_dir_;
 };
@@ -290,7 +302,7 @@ TEST_F(AppCommandRunnerTest, NoCmd) {
       GetTestScope(), kAppId1, kCmdId2, app_command_runner));
 }
 
-TEST_F(AppCommandRunnerTest, Run) {
+TEST_F(AppCommandRunnerTest, RunAppCommandFormat) {
   const struct {
     const std::vector<std::wstring> input;
     const std::vector<std::wstring> substitutions;
@@ -319,6 +331,96 @@ TEST_F(AppCommandRunnerTest, Run) {
     EXPECT_TRUE(process.WaitForExitWithTimeout(
         TestTimeouts::action_max_timeout(), &exit_code));
     EXPECT_EQ(exit_code, test_case.expected_exit_code);
+  }
+}
+
+TEST_F(AppCommandRunnerTest, RunProcessLauncherFormat) {
+  if (!IsSystemInstall(GetTestScope()))
+    return;
+
+  const struct {
+    const std::vector<std::wstring> input;
+    const int expected_exit_code;
+  } test_cases[] = {
+      {{L"/c", L"exit 7"}, 7},
+      {{L"/c", L"exit 21"}, 21},
+  };
+
+  for (const auto& test_case : test_cases) {
+    AppCommandRunner app_command_runner;
+    base::Process process;
+    ASSERT_EQ(app_command_runner.Run({}, process), E_UNEXPECTED);
+
+    ASSERT_HRESULT_SUCCEEDED(CreateProcessLauncherRunner(
+        kAppId1, kCmdId1,
+        base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
+                      base::JoinString(test_case.input, L" ")}),
+        app_command_runner));
+
+    ASSERT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
+
+    int exit_code = 0;
+    EXPECT_TRUE(process.WaitForExitWithTimeout(
+        TestTimeouts::action_max_timeout(), &exit_code));
+    EXPECT_EQ(exit_code, test_case.expected_exit_code);
+  }
+}
+
+TEST_F(AppCommandRunnerTest, RunBothFormats) {
+  if (!IsSystemInstall(GetTestScope()))
+    return;
+
+  const struct {
+    const wchar_t* cmd_id_to_execute;
+    const wchar_t* cmd_id_appcommand;
+    const std::vector<std::wstring> input_appcommand;
+    const wchar_t* cmd_id_processlauncher;
+    const std::vector<std::wstring> input_processlauncher;
+    const int expected_exit_code;
+  } test_cases[] = {
+      // both formats in registry; AppCommand overrides ProcessLauncher entry.
+      {L"cmd1", L"cmd1", {L"/c", L"exit 7"}, L"cmd1", {L"/c", L"exit 14"}, 7},
+      // only AppCommand format in registry.
+      {L"cmd1", L"cmd1", {L"/c", L"exit 21"}, {}, {}, 21},
+      // only ProcessLauncher format in registry.
+      {L"cmd1", {}, {}, L"cmd1", {L"/c", L"exit 28"}, 28},
+      // both formats in registry, but AppCommand has a different command ID, so
+      // does not override ProcessLauncher entry.
+      {L"cmd1", L"cmd2", {L"/c", L"exit 7"}, L"cmd1", {L"/c", L"exit 35"}, 35},
+  };
+
+  for (const auto& test_case : test_cases) {
+    AppCommandRunner app_command_runner;
+    base::Process process;
+    ASSERT_EQ(app_command_runner.Run({}, process), E_UNEXPECTED);
+
+    if (test_case.cmd_id_appcommand) {
+      CreateAppCommandRegistry(
+          GetTestScope(), kAppId1, test_case.cmd_id_appcommand,
+          base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
+                        base::JoinString(test_case.input_appcommand, L" ")}));
+    }
+
+    if (test_case.cmd_id_processlauncher) {
+      CreateLaunchCmdElevatedRegistry(
+          kAppId1, test_case.cmd_id_processlauncher,
+          base::StrCat(
+              {cmd_exe_command_line_.GetCommandLineString(), L" ",
+               base::JoinString(test_case.input_processlauncher, L" ")}));
+    }
+
+    ASSERT_HRESULT_SUCCEEDED(AppCommandRunner::LoadAppCommand(
+        GetTestScope(), kAppId1, test_case.cmd_id_to_execute,
+        app_command_runner));
+
+    ASSERT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
+
+    int exit_code = 0;
+    EXPECT_TRUE(process.WaitForExitWithTimeout(
+        TestTimeouts::action_max_timeout(), &exit_code));
+    EXPECT_EQ(exit_code, test_case.expected_exit_code);
+
+    DeleteAppClientKey(GetTestScope(), kAppId1);
   }
 }
 

@@ -60,6 +60,14 @@ void DeleteAppClientKey(UpdaterScope scope, const std::wstring& app_id) {
       .DeleteKey(GetAppClientsKey(app_id).c_str());
 }
 
+void CreateLaunchCmdElevatedRegistry(const std::wstring& app_id,
+                                     const std::wstring& command_id,
+                                     const std::wstring& command_line) {
+  EXPECT_EQ(CreateAppClientKey(UpdaterScope::kSystem, app_id)
+                .WriteValue(command_id.c_str(), command_line.c_str()),
+            ERROR_SUCCESS);
+}
+
 void CreateAppCommandRegistry(UpdaterScope scope,
                               const std::wstring& app_id,
                               const std::wstring& cmd_id,

@@ -31,6 +31,37 @@ namespace updater {
 
 namespace {
 
+// Loads the AppCommand under:
+//     Update\Clients\{`app_id`}\Commands\`command_id`
+//         REG_SZ "CommandLine" == {command format}
+HRESULT LoadAppCommandFormat(UpdaterScope scope,
+                             const std::wstring& app_id,
+                             const std::wstring& command_id,
+                             std::wstring& command_format) {
+  base::win::RegKey command_key;
+  HRESULT hr = HRESULT_FROM_WIN32(command_key.Open(
+      UpdaterScopeToHKeyRoot(scope),
+      GetAppCommandKey(app_id, command_id).c_str(), Wow6432(KEY_QUERY_VALUE)));
+  return SUCCEEDED(hr) ? HRESULT_FROM_WIN32(command_key.ReadValue(
+                             kRegValueCommandLine, &command_format))
+                       : hr;
+}
+
+// Loads the ProcessLauncher command in HKLM under:
+//     Update\Clients\{`app_id`}
+//         REG_SZ `command_id` == {command format}
+HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
+                                        const std::wstring& command_id,
+                                        std::wstring& command_format) {
+  base::win::RegKey app_key;
+  HRESULT hr = HRESULT_FROM_WIN32(app_key.Open(HKEY_LOCAL_MACHINE,
+                                               GetAppClientsKey(app_id).c_str(),
+                                               Wow6432(KEY_QUERY_VALUE)));
+  return SUCCEEDED(hr) ? HRESULT_FROM_WIN32(app_key.ReadValue(
+                             command_id.c_str(), &command_format))
+                       : hr;
+}
+
 // Formats a single `parameter` and returns the result. Any placeholder `%N` in
 // `parameter` is replaced with substitutions[N - 1]. Any literal `%` needs to
 // be escaped with a `%`.
@@ -162,35 +193,15 @@ HRESULT AppCommandRunner::LoadAppCommand(UpdaterScope scope,
                                          const std::wstring& app_id,
                                          const std::wstring& command_id,
                                          AppCommandRunner& app_command_runner) {
-  const HKEY root = UpdaterScopeToHKeyRoot(scope);
   std::wstring command_format;
-
-  if (const base::win::RegKey command_key(
-          root, GetAppCommandKey(app_id, command_id).c_str(),
-          Wow6432(KEY_QUERY_VALUE));
-      !command_key.Valid()) {
-    const base::win::RegKey app_key(root, GetAppClientsKey(app_id).c_str(),
-                                    Wow6432(KEY_QUERY_VALUE));
-    if (!app_key.HasValue(command_id.c_str()))
-      return HRESULT_FROM_WIN32(ERROR_BAD_COMMAND);
-
-    // Older command layout format:
-    //     Update\Clients\{`app_id`}
-    //         REG_SZ `command_id` == {command format}
-    if (const LONG result =
-            app_key.ReadValue(command_id.c_str(), &command_format);
-        result != ERROR_SUCCESS) {
-      return HRESULT_FROM_WIN32(result);
+  HRESULT hr = LoadAppCommandFormat(scope, app_id, command_id, command_format);
+  if (FAILED(hr)) {
+    if (IsSystemInstall(scope)) {
+      hr = LoadLegacyProcessLauncherFormat(app_id, command_id, command_format);
     }
-  } else {
-    // New command layout format:
-    //     Update\Clients\{`app_id`}\Commands\`command_id`
-    //         REG_SZ "CommandLine" == {command format}
-    if (const LONG result =
-            command_key.ReadValue(kRegValueCommandLine, &command_format);
-        result != ERROR_SUCCESS) {
-      return HRESULT_FROM_WIN32(result);
-    }
+
+    if (FAILED(hr))
+      return hr;
   }
 
   return GetAppCommandFormatComponents(scope, command_format,
@@ -289,7 +300,8 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
   const wchar_t** argv = reinterpret_cast<const wchar_t**>(args.get());
   const base::FilePath exe = base::FilePath(argv[0]);
   if (!IsSecureAppCommandExePath(scope, exe)) {
-    LOG(ERROR) << __func__ << "!IsSecureAppCommandExePath(scope, exe): " << exe;
+    LOG(WARNING) << __func__
+                 << ": !IsSecureAppCommandExePath(scope, exe): " << exe;
     return E_INVALIDARG;
   }
 
