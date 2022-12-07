@@ -107,9 +107,6 @@ class POLICY_EXPORT RemoteCommandsService
   void SetClocksForTesting(const base::Clock* clock,
                            const base::TickClock* tick_clock);
 
-  void SetSignatureTypeForTesting(
-      enterprise_management::PolicyFetchRequest::SignatureType signature_type);
-
   // Sets a callback that will be invoked the next time we receive a response
   // from the server.
   virtual void SetOnCommandAckedCallback(base::OnceClosure callback);
@@ -140,10 +137,6 @@ class POLICY_EXPORT RemoteCommandsService
   void RecordReceivedRemoteCommand(MetricReceivedRemoteCommand metric) const;
   // Records UMA metric of executed remote command.
   void RecordExecutedRemoteCommand(const RemoteCommandJob& command) const;
-
-  // Signature type that will be used for the requests.
-  enterprise_management::PolicyFetchRequest::SignatureType signature_type_ =
-      enterprise_management::PolicyFetchRequest::SHA256_RSA;
 
   // Whether there is a command fetch on going or not.
   bool command_fetch_in_progress_ = false;

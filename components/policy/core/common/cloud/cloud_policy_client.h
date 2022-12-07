@@ -389,18 +389,16 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void CancelExtensionInstallReportUpload();
 
   // Attempts to fetch remote commands, with |last_command_id| being the ID of
-  // the last command that finished execution, |command_results| being
-  // results for previous commands which have not been reported yet and
-  // |signature_type| being a security signature type that will be used to sign
-  // remote commands data. The |callback| will be called when the operation
-  // completes. Note that sending |last_command_id| will acknowledge
-  // this command and any previous commands. A nullptr indicates that no
-  // commands have finished execution.
+  // the last command that finished execution and |command_results| being
+  // results for previous commands which have not been reported yet. The
+  // |callback| will be called when the operation completes.
+  // Note that sending |last_command_id| will acknowledge this command and any
+  // previous commands. A nullptr indicates that no commands have finished
+  // execution.
   virtual void FetchRemoteCommands(
       std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
       const std::vector<enterprise_management::RemoteCommandResult>&
           command_results,
-      enterprise_management::PolicyFetchRequest::SignatureType signature_type,
       RemoteCommandCallback callback);
 
   // Sends a device attribute update permission request to the server, uses

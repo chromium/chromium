@@ -238,10 +238,10 @@ bool CloudPolicyValidatorBase::VerifySignature(const std::string& data,
   crypto::SignatureVerifier verifier;
   crypto::SignatureVerifier::SignatureAlgorithm algorithm;
   switch (signature_type) {
-    case em::PolicyFetchRequest::SHA1_RSA:
+    case SHA1:
       algorithm = crypto::SignatureVerifier::RSA_PKCS1_SHA1;
       break;
-    case em::PolicyFetchRequest::SHA256_RSA:
+    case SHA256:
       algorithm = crypto::SignatureVerifier::RSA_PKCS1_SHA256;
       break;
     default:
@@ -440,7 +440,7 @@ bool CloudPolicyValidatorBase::CheckVerificationKeySignature(
     return false;
   }
   return VerifySignature(signed_data_as_string, verification_key, signature,
-                         em::PolicyFetchRequest::SHA256_RSA);
+                         SHA256);
 }
 
 std::string CloudPolicyValidatorBase::ExtractDomainFromPolicy() {
@@ -465,8 +465,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckSignature() {
     signature_key = &policy_->new_public_key();
     if (!policy_->has_new_public_key_signature() ||
         !VerifySignature(policy_->new_public_key(), key_,
-                         policy_->new_public_key_signature(),
-                         em::PolicyFetchRequest::SHA1_RSA)) {
+                         policy_->new_public_key_signature(), SHA1)) {
       LOG(ERROR) << "New public key rotation signature verification failed";
       return VALIDATION_BAD_SIGNATURE;
     }
@@ -479,8 +478,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckSignature() {
 
   if (!policy_->has_policy_data_signature() ||
       !VerifySignature(policy_->policy_data(), *signature_key,
-                       policy_->policy_data_signature(),
-                       em::PolicyFetchRequest::SHA1_RSA)) {
+                       policy_->policy_data_signature(), SHA1)) {
     LOG(ERROR) << "Policy signature validation failed";
     return VALIDATION_BAD_SIGNATURE;
   }
@@ -491,8 +489,7 @@ CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckSignature() {
 CloudPolicyValidatorBase::Status CloudPolicyValidatorBase::CheckInitialKey() {
   if (!policy_->has_new_public_key() || !policy_->has_policy_data_signature() ||
       !VerifySignature(policy_->policy_data(), policy_->new_public_key(),
-                       policy_->policy_data_signature(),
-                       em::PolicyFetchRequest::SHA1_RSA)) {
+                       policy_->policy_data_signature(), SHA1)) {
     LOG(ERROR) << "Initial policy signature validation failed";
     return VALIDATION_BAD_INITIAL_SIGNATURE;
   }

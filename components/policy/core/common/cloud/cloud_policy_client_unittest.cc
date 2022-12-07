@@ -389,8 +389,7 @@ em::DeviceManagementRequest GetUploadStatusRequest() {
   return upload_status_request;
 }
 
-em::DeviceManagementRequest GetRemoteCommandRequest(
-    em::PolicyFetchRequest::SignatureType signature_type) {
+em::DeviceManagementRequest GetRemoteCommandRequest() {
   em::DeviceManagementRequest remote_command_request;
 
   remote_command_request.mutable_remote_command_request()
@@ -402,8 +401,6 @@ em::DeviceManagementRequest GetRemoteCommandRequest(
   command_result->set_result(em::RemoteCommandResult_ResultType_RESULT_SUCCESS);
   command_result->set_payload(kResultPayload);
   command_result->set_timestamp(kTimestamp);
-  remote_command_request.mutable_remote_command_request()->set_signature_type(
-      signature_type);
   remote_command_request.mutable_remote_command_request()
       ->set_send_secure_commands(true);
 
@@ -2149,7 +2146,7 @@ TEST_F(CloudPolicyClientTest, ShouldRejectUnsignedCommands) {
 
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
-      em::PolicyFetchRequest::SHA256_RSA, std::move(callback));
+      std::move(callback));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -2178,7 +2175,7 @@ TEST_F(CloudPolicyClientTest,
 
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
-      em::PolicyFetchRequest::SHA256_RSA, std::move(callback));
+      std::move(callback));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(received_commands, ElementsAre());
@@ -2204,7 +2201,7 @@ TEST_F(CloudPolicyClientTest, ShouldNotFailIfRemoteCommandResponseIsEmpty) {
 
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId), {},
-      em::PolicyFetchRequest::SHA256_RSA, std::move(callback));
+      std::move(callback));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(received_commands, ElementsAre());
@@ -2214,7 +2211,7 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
   RegisterClient();
 
   em::DeviceManagementRequest remote_command_request =
-      GetRemoteCommandRequest(em::PolicyFetchRequest::SHA256_RSA);
+      GetRemoteCommandRequest();
 
   em::DeviceManagementResponse remote_command_response;
   em::SignedData* signed_command =
@@ -2249,7 +2246,7 @@ TEST_F(CloudPolicyClientTest, FetchSecureRemoteCommands) {
       1, remote_command_request.remote_command_request().command_results(0));
   client_->FetchRemoteCommands(
       std::make_unique<RemoteCommandJob::UniqueIDType>(kLastCommandId),
-      command_results, em::PolicyFetchRequest::SHA256_RSA, std::move(callback));
+      command_results, std::move(callback));
   run_loop.Run();
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REMOTE_COMMANDS,
             job_type_);
