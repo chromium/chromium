@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/public/cpp/privacy_hub_delegate.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -26,10 +26,10 @@ using testing::_;
 
 namespace {
 
-class FakeMicrophoneMuteNotificationDelegate
-    : public MicrophoneMuteNotificationDelegate {
+class FakeSensorDisabledNotificationDelegate
+    : public SensorDisabledNotificationDelegate {
  public:
-  std::vector<std::u16string> GetAppsAccessingMicrophone() override {
+  std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
     return {};
   }
 };
@@ -55,9 +55,9 @@ class PrivacyHubMicrophoneControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    // This makes sure a global instance of MicrophoneMuteNotificationDelegate
+    // This makes sure a global instance of SensorDisabledNotificationDelegate
     // is created before running tests.
-    delegate_ = std::make_unique<FakeMicrophoneMuteNotificationDelegate>();
+    delegate_ = std::make_unique<FakeSensorDisabledNotificationDelegate>();
     Shell::Get()->privacy_hub_controller()->set_frontend(&mock_frontend_);
   }
 
@@ -77,7 +77,7 @@ class PrivacyHubMicrophoneControllerTest : public AshTestBase {
   ::testing::NiceMock<MockFrontendAPI> mock_frontend_;
 
  private:
-  std::unique_ptr<FakeMicrophoneMuteNotificationDelegate> delegate_;
+  std::unique_ptr<FakeSensorDisabledNotificationDelegate> delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

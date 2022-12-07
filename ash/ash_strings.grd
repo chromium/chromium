@@ -4512,10 +4512,16 @@ Here are some things you can try to get started.
         Turn off the camera access on this device to block all cameras all the time.
       </message>
       <message name="IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when an app tries to use the camera while the camera is disabled.">
-        Camera access is off on this device
+        Turn on camera access?
       </message>
       <message name="IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use the camera while the camera is off.">
-        Turn on camera access to allow apps and webpages with the camera permission to use the camera(s) connected to this device.
+        This allows camera access for all apps and websites with the camera permission
+      </message>
+      <message name="IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME" desc="Message for a notification shown to the users when an app tries to use the camera while the camera is off.">
+        This allows camera access for <ph name="APP_NAME">$1<ex>Zoom</ex></ph> and all apps and websites with the camera permission
+      </message>
+      <message name="IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES" desc="Message for a notification shown to the users when an app tries to use the camera while the camera is off.">
+        This allows camera access for <ph name="APP1_NAME">$1<ex>Zoom</ex></ph>, <ph name="APP2_NAME">$2<ex>Snapchat</ex></ph>, and all apps and websites with the camera permission
       </message>
       <message name="IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON" desc="Label for an action button that disables the camera.">
         Turn off camera access

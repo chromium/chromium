@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
@@ -42,12 +43,22 @@ apps::AppCapabilityAccessCache* GetAppCapabilityAccessCache(
 absl::optional<std::u16string> MapAppIdToShortName(
     std::string app_id,
     apps::AppCapabilityAccessCache* capability_cache,
-    apps::AppRegistryCache* registry_cache) {
+    apps::AppRegistryCache* registry_cache,
+    ash::SensorDisabledNotificationDelegate::Sensor sensor) {
   DCHECK(capability_cache);
   DCHECK(registry_cache);
 
-  for (const std::string& app :
-       capability_cache->GetAppsAccessingMicrophone()) {
+  std::set<std::string> apps_accessing_sensor;
+  switch (sensor) {
+    case ash::SensorDisabledNotificationDelegate::Sensor::kCamera:
+      apps_accessing_sensor = capability_cache->GetAppsAccessingCamera();
+      break;
+    case ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone:
+      apps_accessing_sensor = capability_cache->GetAppsAccessingMicrophone();
+      break;
+  }
+
+  for (const std::string& app : apps_accessing_sensor) {
     absl::optional<std::u16string> name;
     registry_cache->ForOneApp(app,
                               [&app_id, &name](const apps::AppUpdate& update) {
@@ -98,22 +109,34 @@ AppAccessNotifier::AppAccessNotifier() {
 
 AppAccessNotifier::~AppAccessNotifier() = default;
 
-std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingMicrophone() {
+std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingSensor(
+    ash::SensorDisabledNotificationDelegate::Sensor sensor) {
   apps::AppRegistryCache* reg_cache = GetActiveUserAppRegistryCache();
+
   apps::AppCapabilityAccessCache* cap_cache =
       GetActiveUserAppCapabilityAccessCache();
+
+  MruAppIdList* app_id_list;
+  switch (sensor) {
+    case ash::SensorDisabledNotificationDelegate::Sensor::kCamera:
+      app_id_list = &camera_using_app_ids_[active_user_account_id_];
+      break;
+    case ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone:
+      app_id_list = &mic_using_app_ids_[active_user_account_id_];
+      break;
+  }
+
   // A reg_cache and/or cap_cache of value nullptr is possible if we have no
   // active user, e.g. the login screen, so we test and return  empty list in
   // that case instead of using DCHECK().
-  if (!reg_cache || !cap_cache ||
-      mic_using_app_ids_[active_user_account_id_].empty()) {
+  if (!reg_cache || !cap_cache || app_id_list->empty()) {
     return {};
   }
 
   std::vector<std::u16string> app_names;
-  for (const auto& app_id : mic_using_app_ids_[active_user_account_id_]) {
+  for (const auto& app_id : *app_id_list) {
     absl::optional<std::u16string> app_name =
-        MapAppIdToShortName(app_id, cap_cache, reg_cache);
+        MapAppIdToShortName(app_id, cap_cache, reg_cache, sensor);
     if (app_name.has_value())
       app_names.push_back(app_name.value());
   }
@@ -123,8 +146,9 @@ std::vector<std::u16string> AppAccessNotifier::GetAppsAccessingMicrophone() {
 bool AppAccessNotifier::MapContainsAppId(const MruAppIdMap& id_map,
                                          const std::string& app_id) {
   auto it = id_map.find(active_user_account_id_);
-  if (it == id_map.end())
+  if (it == id_map.end()) {
     return false;
+  }
   return base::Contains(it->second, app_id);
 }
 

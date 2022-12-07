@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
@@ -20,7 +22,9 @@
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 using testing::_;
 
@@ -45,6 +49,28 @@ class MockFrontendAPI : public PrivacyHubDelegate {
   void AvailabilityOfMicrophoneChanged(bool) override {}
   void MicrophoneHardwareToggleChanged(bool) override {}
 };
+
+class FakeSensorDisabledNotificationDelegate
+    : public SensorDisabledNotificationDelegate {
+ public:
+  std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
+    if (sensor == Sensor::kCamera) {
+      return apps_accessing_camera_;
+    }
+    return {};
+  }
+
+  void LaunchAppAccessingCamera(const std::u16string& app_name) {
+    apps_accessing_camera_.insert(apps_accessing_camera_.begin(), app_name);
+  }
+
+ private:
+  std::vector<std::u16string> apps_accessing_camera_;
+};
+
+message_center::Notification* FindNotificationById(const std::string& id) {
+  return message_center::MessageCenter::Get()->FindNotificationById(id);
+}
 
 }  // namespace
 
@@ -78,11 +104,16 @@ class PrivacyHubCameraControllerTests : public AshTestBase {
     controller_->SetCameraPrivacySwitchAPIForTest(std::move(mock_switch));
   }
 
+  void LaunchAppAccessingCamera(const std::u16string& app_name) {
+    delegate_.LaunchAppAccessingCamera(app_name);
+  }
+
   ::testing::NiceMock<MockFrontendAPI> mock_frontend_;
   ::testing::NiceMock<MockSwitchAPI>* mock_switch_;
   CameraPrivacySwitchController* controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::HistogramTester histogram_tester_;
+  FakeSensorDisabledNotificationDelegate delegate_;
 };
 
 // Test reaction on UI action.
@@ -175,7 +206,7 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
       std::string(), cros::mojom::CameraPrivacySwitchState::OFF);
   EXPECT_EQ(cros::mojom::CameraPrivacySwitchState::OFF,
             controller.HWSwitchState());
-  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+  EXPECT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 
   controller.OnCameraHWPrivacySwitchStateChanged(
@@ -185,7 +216,7 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
 
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
-  EXPECT_TRUE(message_center->FindNotificationById(
+  EXPECT_TRUE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
   EXPECT_TRUE(GetUserPref());
   EXPECT_EQ(histogram_tester_.GetBucketCount(
@@ -201,7 +232,7 @@ TEST_F(PrivacyHubCameraControllerTests, OnCameraHardwarePrivacySwitchChanged) {
   message_center->ClickOnNotificationButton(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId, 0);
   EXPECT_FALSE(GetUserPref());
-  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+  EXPECT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::
@@ -224,16 +255,15 @@ TEST_F(PrivacyHubCameraControllerTests,
 
   controller.OnCameraHWPrivacySwitchStateChanged(
       "0", cros::mojom::CameraPrivacySwitchState::ON);
-  const message_center::Notification* const notification =
-      message_center::MessageCenter::Get()->FindNotificationById(
-          kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId);
+  const message_center::Notification* const notification = FindNotificationById(
+      kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId);
   EXPECT_TRUE(notification);
   // User should be able to clear the notification manually
   EXPECT_FALSE(notification->rich_notification_data().pinned);
   // Notification should be cleared when hardware mute is disabled
   controller.OnCameraHWPrivacySwitchStateChanged(
       "0", cros::mojom::CameraPrivacySwitchState::OFF);
-  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+  EXPECT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 }
 
@@ -243,14 +273,12 @@ TEST_F(PrivacyHubCameraControllerTests,
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
   ASSERT_TRUE(message_center);
-  ASSERT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  ASSERT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
   // An application starts accessing the camera.
   controller_->ActiveApplicationsChanged(/*application_added=*/true);
   // A notification should be fired.
-  EXPECT_TRUE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_TRUE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
 
   EXPECT_EQ(histogram_tester_.GetBucketCount(
@@ -262,8 +290,7 @@ TEST_F(PrivacyHubCameraControllerTests,
   message_center->ClickOnNotificationButton(kPrivacyHubCameraOffNotificationId,
                                             0);
   EXPECT_TRUE(GetUserPref());
-  EXPECT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::
                     kPrivacyHubCameraEnabledFromNotificationHistogram,
@@ -277,14 +304,12 @@ TEST_F(PrivacyHubCameraControllerTests,
   message_center::MessageCenter* const message_center =
       message_center::MessageCenter::Get();
   ASSERT_TRUE(message_center);
-  ASSERT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  ASSERT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
   // An application starts accessing the camera.
   controller_->ActiveApplicationsChanged(/*application_added=*/true);
   // A notification should be fired.
-  EXPECT_TRUE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_TRUE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
 
   EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
@@ -300,8 +325,7 @@ TEST_F(PrivacyHubCameraControllerTests,
   EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   // The user pref should not be changed.
   EXPECT_FALSE(GetUserPref());
-  EXPECT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::kPrivacyHubOpenedHistogram,
                 privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
@@ -309,7 +333,7 @@ TEST_F(PrivacyHubCameraControllerTests,
 
   SetUserPref(true);
 
-  ASSERT_FALSE(message_center->FindNotificationById(
+  ASSERT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
 
   // Flip the hardware switch.
@@ -320,7 +344,7 @@ TEST_F(PrivacyHubCameraControllerTests,
           "0", cros::mojom::CameraPrivacySwitchState::ON);
 
   // A notification should be fired.
-  EXPECT_TRUE(message_center->FindNotificationById(
+  EXPECT_TRUE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
   EXPECT_TRUE(GetUserPref());
 
@@ -337,7 +361,7 @@ TEST_F(PrivacyHubCameraControllerTests,
   EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 2);
   // The user pref should not be changed.
   EXPECT_TRUE(GetUserPref());
-  EXPECT_FALSE(message_center->FindNotificationById(
+  EXPECT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::kPrivacyHubOpenedHistogram,
@@ -348,24 +372,18 @@ TEST_F(PrivacyHubCameraControllerTests,
 TEST_F(PrivacyHubCameraControllerTests,
        CameraOffNotificationRemoveViaUserPref) {
   SetUserPref(false);
-  message_center::MessageCenter* const message_center =
-      message_center::MessageCenter::Get();
-  ASSERT_TRUE(message_center);
-  ASSERT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  ASSERT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
   // An application starts accessing the camera.
   controller_->ActiveApplicationsChanged(/*application_added=*/true);
   // A notification should be fired.
-  EXPECT_TRUE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_TRUE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
 
   // Enabling camera via the user pref should clear the notification
   SetUserPref(true);
   EXPECT_TRUE(GetUserPref());
-  EXPECT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
 }
 
 TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
@@ -381,8 +399,7 @@ TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
   SetUserPref(false);
 
   // A notification should be fired.
-  EXPECT_TRUE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_TRUE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
 
   EXPECT_EQ(histogram_tester_.GetBucketCount(
@@ -394,8 +411,7 @@ TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
   message_center->ClickOnNotificationButton(kPrivacyHubCameraOffNotificationId,
                                             0);
   EXPECT_TRUE(GetUserPref());
-  EXPECT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 privacy_hub_metrics::
                     kPrivacyHubCameraEnabledFromNotificationHistogram,
@@ -408,13 +424,9 @@ TEST_F(PrivacyHubCameraControllerTests, InSessionSwitchNotification) {
 TEST_F(PrivacyHubCameraControllerTests,
        NotificationRemovedWhenNoActiveApplication) {
   SetUserPref(true);
-  message_center::MessageCenter* const message_center =
-      message_center::MessageCenter::Get();
-  ASSERT_TRUE(message_center);
 
   // The notification should not be in the message center initially.
-  EXPECT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
   // This is the effect of an application starting to access the camera.
   controller_->ActiveApplicationsChanged(/*application_added=*/true);
@@ -423,16 +435,70 @@ TEST_F(PrivacyHubCameraControllerTests,
   SetUserPref(false);
 
   // Notification `kPrivacyHubCameraOffNotificationId` should pop up.
-  EXPECT_TRUE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_TRUE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
 
   // The only active application stops accessing the camera the camera.
   controller_->ActiveApplicationsChanged(/*application_added=*/false);
 
   // Existing notification `kPrivacyHubCameraOffNotificationId` should be
   // removed as the number of active applications is 0 now.
-  EXPECT_FALSE(
-      message_center->FindNotificationById(kPrivacyHubCameraOffNotificationId));
+  EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
+}
+
+// Tests if the camera software switch notification contains proper text.
+TEST_F(PrivacyHubCameraControllerTests, NotificationText) {
+  SetUserPref(true);
+
+  // The notification should not be in the message center initially.
+  EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
+
+  // This fakes launching an application with name "app_1_name".
+  LaunchAppAccessingCamera(u"app_1_name");
+  controller_->ActiveApplicationsChanged(/*application_added=*/true);
+
+  // Disabling camera using the software switch.
+  SetUserPref(false);
+
+  // Notification should pop up. The notification body should contain the app
+  // name "app_1_name".
+  message_center::Notification* notification =
+      FindNotificationById(kPrivacyHubCameraOffNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE),
+      notification->title());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+          u"app_1_name"),
+      notification->message());
+
+  // This fakes launching another application with name "app_2_name".
+  LaunchAppAccessingCamera(u"app_2_name");
+  controller_->ActiveApplicationsChanged(/*application_added=*/true);
+
+  // A new notification should pop up. The notification body should contain both
+  // the application names in order of most recently launched first.
+  notification = FindNotificationById(kPrivacyHubCameraOffNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+          u"app_2_name", u"app_1_name"),
+      notification->message());
+
+  // This fakes launching another application with name "app_3_name".
+  LaunchAppAccessingCamera(u"app_3_name");
+  controller_->ActiveApplicationsChanged(/*application_added=*/true);
+
+  // A new notification should pop up. The notification body should not contain
+  // any application name as there are more than 2 applications attempting to
+  // access camera.
+  notification = FindNotificationById(kPrivacyHubCameraOffNotificationId);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE),
+            notification->message());
 }
 
 TEST_F(PrivacyHubCameraControllerTests, MetricCollection) {

@@ -9,6 +9,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -192,11 +193,33 @@ CameraPrivacySwitchController::HWSwitchState() const {
   return camera_privacy_switch_state_;
 }
 
+std::u16string
+CameraPrivacySwitchController::GetCameraOffNotificationMessage() {
+  auto* sensor_disabled_notification_delegate =
+      SensorDisabledNotificationDelegate::Get();
+  std::vector<std::u16string> app_names =
+      sensor_disabled_notification_delegate->GetAppsAccessingSensor(
+          SensorDisabledNotificationDelegate::Sensor::kCamera);
+
+  if (app_names.size() == 1) {
+    return l10n_util::GetStringFUTF16(
+        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_ONE_APP_NAME,
+        app_names[0]);
+  } else if (app_names.size() == 2) {
+    return l10n_util::GetStringFUTF16(
+        IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE_WITH_TWO_APP_NAMES,
+        app_names[0], app_names[1]);
+  }
+
+  return l10n_util::GetStringUTF16(
+      IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE);
+}
+
 void CameraPrivacySwitchController::ShowCameraOffNotification() {
   ShowNotification(/*action_enables_camera=*/true,
                    kPrivacyHubCameraOffNotificationId,
                    IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_TITLE,
-                   IDS_PRIVACY_HUB_CAMERA_OFF_NOTIFICATION_MESSAGE,
+                   GetCameraOffNotificationMessage(),
                    ash::NotificationCatalogName::kPrivacyHubCamera);
 }
 
@@ -206,7 +229,8 @@ void CameraPrivacySwitchController::
       /*action_enables_camera=*/false,
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
       IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_TITLE,
-      IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE,
+      l10n_util::GetStringUTF16(
+          IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE),
       NotificationCatalogName::kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn);
 }
 
@@ -214,7 +238,7 @@ void CameraPrivacySwitchController::ShowNotification(
     bool action_enables_camera,
     const char* kNotificationId,
     const int notification_title_id,
-    const int notification_message_id,
+    const std::u16string& notification_message,
     const NotificationCatalogName catalog) {
   message_center::RichNotificationData notification_data;
   notification_data.pinned = false;
@@ -242,7 +266,7 @@ void CameraPrivacySwitchController::ShowNotification(
       ash::CreateSystemNotificationPtr(
           message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
           l10n_util::GetStringUTF16(notification_title_id),
-          l10n_util::GetStringUTF16(notification_message_id),
+          notification_message,
           /*display_source=*/std::u16string(),
           /*origin_url=*/GURL(),
           message_center::NotifierId(

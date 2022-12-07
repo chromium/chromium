@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/microphone_mute_notification_delegate.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -11,21 +11,21 @@ namespace ash {
 
 namespace {
 
-MicrophoneMuteNotificationDelegate* g_instance = nullptr;
+SensorDisabledNotificationDelegate* g_instance = nullptr;
 
 }  // namespace
 
 // static
-MicrophoneMuteNotificationDelegate* MicrophoneMuteNotificationDelegate::Get() {
+SensorDisabledNotificationDelegate* SensorDisabledNotificationDelegate::Get() {
   return g_instance;
 }
 
-MicrophoneMuteNotificationDelegate::MicrophoneMuteNotificationDelegate() {
+SensorDisabledNotificationDelegate::SensorDisabledNotificationDelegate() {
   DCHECK(!g_instance);
   g_instance = this;
 }
 
-MicrophoneMuteNotificationDelegate::~MicrophoneMuteNotificationDelegate() {
+SensorDisabledNotificationDelegate::~SensorDisabledNotificationDelegate() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
 }

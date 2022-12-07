@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/microphone_mute_notification_delegate.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/microphone_mute/microphone_mute_notification_controller.h"
@@ -26,20 +26,26 @@
 
 namespace ash {
 
-class FakeMicrophoneMuteNotificationDelegate
-    : public MicrophoneMuteNotificationDelegate {
+class FakeSensorDisabledNotificationDelegate
+    : public SensorDisabledNotificationDelegate {
  public:
-  std::vector<std::u16string> GetAppsAccessingMicrophone() override {
-    return app_names_;
+  std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
+    if (sensor == Sensor::kMicrophone) {
+      return apps_accessing_microphone_;
+    }
+    return {};
   }
 
-  void AddAppAccessingMicrophone(
+  void LaunchAppAccessingMicrophone(
       const absl::optional<std::u16string> app_name) {
-    if (app_name.has_value())
-      app_names_.insert(app_names_.begin(), app_name.value());
+    if (app_name.has_value()) {
+      apps_accessing_microphone_.insert(apps_accessing_microphone_.begin(),
+                                        app_name.value());
+    }
   }
 
-  std::vector<std::u16string> app_names_;
+ private:
+  std::vector<std::u16string> apps_accessing_microphone_;
 };
 
 class MicrophoneMuteNotificationControllerTest : public AshTestBase {
@@ -53,7 +59,7 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     controller_ = std::make_unique<MicrophoneMuteNotificationController>();
-    delegate_ = std::make_unique<FakeMicrophoneMuteNotificationDelegate>();
+    delegate_ = std::make_unique<FakeSensorDisabledNotificationDelegate>();
   }
 
   void TearDown() override {
@@ -124,7 +130,7 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
   }
 
   void LaunchApp(absl::optional<std::u16string> app_name) {
-    delegate_->AddAppAccessingMicrophone(app_name);
+    delegate_->LaunchAppAccessingMicrophone(app_name);
   }
 
   const base::HistogramTester& histogram_tester() const {
@@ -135,7 +141,7 @@ class MicrophoneMuteNotificationControllerTest : public AshTestBase {
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MicrophoneMuteNotificationController> controller_;
-  std::unique_ptr<FakeMicrophoneMuteNotificationDelegate> delegate_;
+  std::unique_ptr<FakeSensorDisabledNotificationDelegate> delegate_;
 };
 
 TEST_F(MicrophoneMuteNotificationControllerTest, SimpleMuteUnMute) {

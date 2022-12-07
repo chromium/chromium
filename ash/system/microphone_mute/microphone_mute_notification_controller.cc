@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/public/cpp/microphone_mute_notification_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/privacy_hub/privacy_hub_metrics.h"
@@ -88,13 +88,15 @@ void MicrophoneMuteNotificationController::MaybeShowNotification(
     message_center::NotificationPriority priority,
     bool recreate) {
   if (mic_mute_on_) {
-    auto* microphone_mute_notification_delegate =
-        MicrophoneMuteNotificationDelegate::Get();
-    // `MicrophoneMuteNotificationDelegate` is not created in guest mode.
-    if (!microphone_mute_notification_delegate)
+    auto* sensor_disabled_notification_delegate =
+        SensorDisabledNotificationDelegate::Get();
+    // `SensorDisabledNotificationDelegate` is not created in guest mode.
+    if (!sensor_disabled_notification_delegate) {
       return;
+    }
     std::vector<std::u16string> app_names =
-        microphone_mute_notification_delegate->GetAppsAccessingMicrophone();
+        sensor_disabled_notification_delegate->GetAppsAccessingSensor(
+            SensorDisabledNotificationDelegate::Sensor::kMicrophone);
     if (!app_names.empty() || input_stream_count_) {
       if (recreate)
         RemoveMicrophoneMuteNotification();

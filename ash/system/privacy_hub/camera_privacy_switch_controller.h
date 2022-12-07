@@ -95,11 +95,15 @@ class ASH_EXPORT CameraPrivacySwitchController
   // Displays the "Do you want to turn the camera off" notification.
   void ShowHWCameraSwitchOffSWCameraSwitchOnNotification();
 
+  // A helper to generate the message to display in the camera software switch
+  // notification.
+  std::u16string GetCameraOffNotificationMessage();
+
   // Displays a notification with an action that can enable/disable the camera.
   void ShowNotification(bool action_enables_camera,
                         const char* kNotificationId,
                         const int notification_title_id,
-                        const int notification_message_id,
+                        const std::u16string& notification_message,
                         const NotificationCatalogName catalog);
 
   // Clears all notifications related to the camera SW switch

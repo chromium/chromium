@@ -147,8 +147,14 @@ class AppAccessNotifierBaseTest : public testing::Test {
     SetActiveUserAccountId(/*is_primary=*/false);
   }
 
+  std::vector<std::u16string> GetAppsAccessingCamera() {
+    return app_access_notifier_->GetAppsAccessingSensor(
+        ash::SensorDisabledNotificationDelegate::Sensor::kCamera);
+  }
+
   std::vector<std::u16string> GetAppsAccessingMicrophone() {
-    return app_access_notifier_->GetAppsAccessingMicrophone();
+    return app_access_notifier_->GetAppsAccessingSensor(
+        ash::SensorDisabledNotificationDelegate::Sensor::kMicrophone);
   }
 
   static apps::AppPtr MakeApp(const std::string app_id,
@@ -299,64 +305,85 @@ INSTANTIATE_TEST_SUITE_P(
                        /*IsCrosPrivacyHubEnabled()=*/testing::Bool()));
 
 TEST_P(AppAccessNotifierParameterizedTest, NoAppsLaunched) {
-  // Should return a empty list of application names.
-  std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_TRUE(app_names.empty());
+  // The list of apps using mic or camera should be empty.
+  EXPECT_EQ(std::vector<std::u16string>(), GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>(), GetAppsAccessingMicrophone());
 }
 
-TEST_P(AppAccessNotifierParameterizedTest, AppLaunchedNotUsingMicrophone) {
+TEST_P(AppAccessNotifierParameterizedTest, AppLaunchedNotUsingCameraAndMic) {
   LaunchAppUsingCameraOrMicrophone("id_rose", "name_rose", /*use_camera=*/false,
                                    /*use_microphone=*/false);
 
-  // Should return a empty list of application names.
-  std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_TRUE(app_names.empty());
+  // The list of apps using mic or camera should be empty.
+  EXPECT_EQ(std::vector<std::u16string>(), GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>(), GetAppsAccessingMicrophone());
 }
 
-TEST_P(AppAccessNotifierParameterizedTest, AppLaunchedUsingMicrophone) {
-  LaunchAppUsingCameraOrMicrophone("id_rose", "name_rose", /*use_camera=*/false,
+TEST_P(AppAccessNotifierParameterizedTest, AppLaunchedUsingCameraAndMic) {
+  LaunchAppUsingCameraOrMicrophone("id_rose", "name_rose", /*use_camera=*/true,
                                    /*use_microphone=*/true);
 
-  // Returned list of application names should only contain "name_rose".
-  std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 1u);
-  EXPECT_EQ(app_names[0], u"name_rose");
+  // List of application names should only contain "name_rose".
+  EXPECT_EQ(std::vector<std::u16string>({u"name_rose"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>({u"name_rose"}),
+            GetAppsAccessingMicrophone());
 }
 
 TEST_P(AppAccessNotifierParameterizedTest,
-       MultipleAppsLaunchedUsingMicrophone) {
-  LaunchAppUsingCameraOrMicrophone("id_rose", "name_rose", /*use_camera=*/false,
+       MultipleAppsLaunchedUsingBothCameraAndMic) {
+  LaunchAppUsingCameraOrMicrophone("id_rose", "name_rose", /*use_camera=*/true,
                                    /*use_microphone=*/true);
-  LaunchAppUsingCameraOrMicrophone("id_mars", "name_mars", /*use_camera=*/false,
+  LaunchAppUsingCameraOrMicrophone("id_mars", "name_mars", /*use_camera=*/true,
                                    /*use_microphone=*/true);
-  LaunchAppUsingCameraOrMicrophone("id_zara", "name_zara", /*use_camera=*/false,
+  LaunchAppUsingCameraOrMicrophone("id_zara", "name_zara", /*use_camera=*/true,
                                    /*use_microphone=*/true);
   LaunchAppUsingCameraOrMicrophone(
       "id_oscar", "name_oscar", /*use_camera=*/false, /*use_microphone=*/false);
 
-  // Most recently launched mic-using app should be in front of the returned
-  // list.
-  std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 3u);
-  EXPECT_EQ(app_names[0], u"name_zara");
+  // Only the applications using the sensor should be in the respective list and
+  // the list should be ordered by the most recently launced app first.
+  // "name_oscar" should not be in any of the lists.
+  EXPECT_EQ(
+      std::vector<std::u16string>({u"name_zara", u"name_mars", u"name_rose"}),
+      GetAppsAccessingCamera());
+  EXPECT_EQ(
+      std::vector<std::u16string>({u"name_zara", u"name_mars", u"name_rose"}),
+      GetAppsAccessingMicrophone());
 
-  // Oscar starts using the mic, Oscar should be the front element of the
-  // returned list now.
+  // Oscar starts using camera, Oscar should be the front element of the camera
+  // list now. The mic list should stay the same.
   LaunchAppUsingCameraOrMicrophone(
-      "id_oscar", "name_oscar", /*use_camera=*/false, /*use_microphone=*/true);
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 4u);
-  EXPECT_EQ(app_names[0], u"name_oscar");
+      "id_oscar", "name_oscar", /*use_camera=*/true, /*use_microphone=*/false);
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_oscar", u"name_zara", u"name_mars", u"name_rose"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(
+      std::vector<std::u16string>({u"name_zara", u"name_mars", u"name_rose"}),
+      GetAppsAccessingMicrophone());
+
+  // Oscar starts using mic, Oscar should be the front element of the mic list
+  // as well now.
+  LaunchAppUsingCameraOrMicrophone(
+      "id_oscar", "name_oscar", /*use_camera=*/true, /*use_microphone=*/true);
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_oscar", u"name_zara", u"name_mars", u"name_rose"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_oscar", u"name_zara", u"name_mars", u"name_rose"}),
+            GetAppsAccessingMicrophone());
 
   // If we "kill" Oscar (set to no longer be using the mic or camera), Oscar
-  // should not be in the returned list anymore. Zara should be at the front.
+  // should not be in the returned lists anymore. Zara should be at the front of
+  // both of the lists.
   LaunchAppUsingCameraOrMicrophone(
       "id_oscar", "name_oscar", /*use_camera=*/false, /*use_microphone=*/false);
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 3u);
-  EXPECT_TRUE(std::find(app_names.begin(), app_names.end(), u"name_oscar") ==
-              app_names.end());
-  EXPECT_EQ(app_names[0], u"name_zara");
+  EXPECT_EQ(
+      std::vector<std::u16string>({u"name_zara", u"name_mars", u"name_rose"}),
+      GetAppsAccessingCamera());
+  EXPECT_EQ(
+      std::vector<std::u16string>({u"name_zara", u"name_mars", u"name_rose"}),
+      GetAppsAccessingMicrophone());
 }
 
 TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
@@ -366,30 +393,32 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
   // Primary user is the active user.
   SetActiveUserAccountId(/*is_primary=*/true);
 
-  // Primary user launches a mic-using app.
+  // Primary user launches an app using both sensors.
   LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
-                                   /*use_camera=*/false,
+                                   /*use_camera=*/true,
                                    /*use_microphone=*/true);
 
-  // App we just launched should be the front and only element of the returned
-  // list.
-  std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 1u);
-  EXPECT_EQ(app_names[0], u"name_primary_user");
+  // App we just launched should be the front and only element of both the
+  // lists.
+  EXPECT_EQ(std::vector<std::u16string>({u"name_primary_user"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>({u"name_primary_user"}),
+            GetAppsAccessingMicrophone());
 
   // Secondary user is now the primary user.
   SetActiveUserAccountId(/*is_primary=*/false);
 
-  // Secondary user launches a mic-using app.
+  // Secondary user launches an app using both sensors.
   LaunchAppUsingCameraOrMicrophone("id_secondary_user", "name_secondary_user",
-                                   /*use_camera=*/false,
+                                   /*use_camera=*/true,
                                    /*use_microphone=*/true);
 
-  // App we just launched should be the front and only element of the returned
-  // list.
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 1u);
-  EXPECT_EQ(app_names[0], u"name_secondary_user");
+  // App we just launched should be the front and only element of both the
+  // lists.
+  EXPECT_EQ(std::vector<std::u16string>({u"name_secondary_user"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>({u"name_secondary_user"}),
+            GetAppsAccessingMicrophone());
 
   // Switch back to the primary user and "kill" the app it was running, no app
   // name to show.
@@ -397,23 +426,24 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsers) {
   LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
                                    /*use_camera=*/false,
                                    /*use_microphone=*/false);
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_TRUE(app_names.empty());
+  EXPECT_EQ(std::vector<std::u16string>(), GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>(), GetAppsAccessingMicrophone());
 
   // Now switch back to the secondary user, verify that the same app as before
-  // shows up at the front of the returned list.
+  // shows up in the lists.
   SetActiveUserAccountId(/*is_primary=*/false);
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 1u);
-  EXPECT_EQ(app_names[0], u"name_secondary_user");
+  EXPECT_EQ(std::vector<std::u16string>({u"name_secondary_user"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>({u"name_secondary_user"}),
+            GetAppsAccessingMicrophone());
 
   // Now "kill" our secondary user's app and verify that there's no name to
   // show.
   LaunchAppUsingCameraOrMicrophone("id_secondary_user", "name_secondary_user",
                                    /*use_camera=*/false,
                                    /*use_microphone=*/false);
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_TRUE(app_names.empty());
+  EXPECT_EQ(std::vector<std::u16string>(), GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>(), GetAppsAccessingMicrophone());
 }
 
 TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
@@ -423,65 +453,72 @@ TEST_P(AppAccessNotifierParameterizedTest, MultipleUsersMultipleApps) {
   // Primary user is the active user.
   SetActiveUserAccountId(/*is_primary=*/true);
 
-  // Primary user launches a mic-using app.
+  // Primary user launches an app using both sensors.
   LaunchAppUsingCameraOrMicrophone("id_primary_user", "name_primary_user",
-                                   /*use_camera=*/false,
+                                   /*use_camera=*/true,
                                    /*use_microphone=*/true);
 
-  // App we just launched should be the front and only element of the returned
-  // list.
-  std::vector<std::u16string> app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 1u);
-  EXPECT_EQ(app_names[0], u"name_primary_user");
+  // App we just launched should be the front and only element of both the
+  // lists.
+  EXPECT_EQ(std::vector<std::u16string>({u"name_primary_user"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>({u"name_primary_user"}),
+            GetAppsAccessingMicrophone());
 
-  // Primary user launches a second mic-using app.
-  LaunchAppUsingCameraOrMicrophone("id_primary_user_another_app",
-                                   "name_primary_user_another_app",
-                                   /*use_camera=*/false,
-                                   /*use_microphone=*/true);
+  // Primary user launches a second app using both sensors.
+  LaunchAppUsingCameraOrMicrophone(
+      "id_primary_user_another_app", "name_primary_user_another_app",
+      /*use_camera=*/true, /*use_microphone=*/true);
 
-  // The returned list should contain two application names ordered by most
-  // recently launched.
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 2u);
-  EXPECT_EQ(app_names[0], u"name_primary_user_another_app");
-  EXPECT_EQ(app_names[1], u"name_primary_user");
+  // The lists should contain two application names ordered by most recently
+  // launched.
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_primary_user_another_app", u"name_primary_user"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_primary_user_another_app", u"name_primary_user"}),
+            GetAppsAccessingMicrophone());
 
   // Secondary user is now the primary user.
   SetActiveUserAccountId(/*is_primary=*/false);
 
-  // Secondary user launches a mic-using app.
+  // Secondary user launches an app using both sensors.
   LaunchAppUsingCameraOrMicrophone("id_secondary_user", "name_secondary_user",
-                                   /*use_camera=*/false,
+                                   /*use_camera=*/true,
                                    /*use_microphone=*/true);
 
-  // App we just launched should be the front and only element of the returned
-  // list.
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 1u);
-  EXPECT_EQ(app_names[0], u"name_secondary_user");
+  // App we just launched should be the front and only element of both the
+  // lists.
+  EXPECT_EQ(std::vector<std::u16string>({u"name_secondary_user"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>({u"name_secondary_user"}),
+            GetAppsAccessingMicrophone());
 
-  // Secondary user launches a second mic-using app.
+  // Secondary user launches a second app using both sensors.
   LaunchAppUsingCameraOrMicrophone(
       "id_secondary_user_another_app", "name_secondary_user_another_app",
-      /*use_camera=*/false, /*use_microphone=*/true);
+      /*use_camera=*/true, /*use_microphone=*/true);
 
-  // The returned list should contain two application names ordered by most
-  // recently launched.
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 2u);
-  EXPECT_EQ(app_names[0], u"name_secondary_user_another_app");
-  EXPECT_EQ(app_names[1], u"name_secondary_user");
+  // The lists should contain two application names ordered by most recently
+  // launched.
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_secondary_user_another_app", u"name_secondary_user"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_secondary_user_another_app", u"name_secondary_user"}),
+            GetAppsAccessingMicrophone());
 
   // Switch back to the primary user.
   SetActiveUserAccountId(/*is_primary=*/true);
 
-  // Both of the apps we launced for the primary user should be in the list
+  // Both of the apps we launced for the primary user should be in the lists
   // ordered by most recently launched.
-  app_names = GetAppsAccessingMicrophone();
-  EXPECT_EQ(app_names.size(), 2u);
-  EXPECT_EQ(app_names[0], u"name_primary_user_another_app");
-  EXPECT_EQ(app_names[1], u"name_primary_user");
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_primary_user_another_app", u"name_primary_user"}),
+            GetAppsAccessingCamera());
+  EXPECT_EQ(std::vector<std::u16string>(
+                {u"name_primary_user_another_app", u"name_primary_user"}),
+            GetAppsAccessingMicrophone());
 }
 
 TEST_P(AppAccessNotifierParameterizedTest, GetShortNameFromAppId) {

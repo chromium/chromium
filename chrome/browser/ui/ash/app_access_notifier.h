@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/microphone_mute_notification_delegate.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
@@ -31,11 +31,11 @@ class SessionManager;
 
 // This class is responsible for observing AppCapabilityAccessCache, notifying
 // to appropriate entities when an app is accessing camera/microphone. This is
-// also the concrete implementation of MicrophoneMuteNotificationDelegate, which
-// allows code relevant to microphone mute notifications that resides under
-// //ash to invoke functions/objects that actually reside under //chrome.
+// also the concrete implementation of SensorDisabledNotificationDelegate, which
+// allows code relevant to microphone and camera notifications that resides
+// under //ash to invoke functions/objects that actually reside under //chrome.
 class AppAccessNotifier
-    : public ash::MicrophoneMuteNotificationDelegate,
+    : public ash::SensorDisabledNotificationDelegate,
       public apps::AppCapabilityAccessCache::Observer,
       public session_manager::SessionManagerObserver,
       public user_manager::UserManager::UserSessionStateObserver {
@@ -45,8 +45,8 @@ class AppAccessNotifier
   AppAccessNotifier& operator=(const AppAccessNotifier&) = delete;
   ~AppAccessNotifier() override;
 
-  // ash::MicrophoneMuteNotificationDelegate
-  std::vector<std::u16string> GetAppsAccessingMicrophone() override;
+  // ash::SensorDisabledNotificationDelegate
+  std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override;
 
   // apps::AppCapabilityAccessCache::Observer
   void OnCapabilityAccessUpdate(

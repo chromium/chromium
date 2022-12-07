@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/microphone_mute_notification_delegate.h"
+#include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -28,10 +28,10 @@
 namespace ash {
 namespace {
 
-class FakeMicrophoneMuteNotificationDelegate
-    : public MicrophoneMuteNotificationDelegate {
+class FakeSensorDisabledNotificationDelegate
+    : public SensorDisabledNotificationDelegate {
  public:
-  std::vector<std::u16string> GetAppsAccessingMicrophone() override {
+  std::vector<std::u16string> GetAppsAccessingSensor(Sensor sensor) override {
     return {};
   }
 };
@@ -55,7 +55,6 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
         Shell::Get()->system_notification_controller()->microphone_mute_.get();
     controller_ =
         Shell::Get()->system_notification_controller()->privacy_hub_.get();
-    ;
   }
   void TearDown() override { AshTestBase::TearDown(); }
 
@@ -128,7 +127,7 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
 
  private:
   base::raw_ptr<PrivacyHubNotificationController> controller_;
-  const FakeMicrophoneMuteNotificationDelegate delegate_;
+  const FakeSensorDisabledNotificationDelegate delegate_;
   const base::HistogramTester histogram_tester_;
   base::raw_ptr<MicrophoneMuteNotificationController>
       microphone_mute_controller_;
