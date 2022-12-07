@@ -799,26 +799,6 @@ StoragePartition::StorageKeyMatcherFunction CreateGenericStorageKeyMatcher(
                              storage_key);
 }
 
-void ClearPluginPrivateDataOnFileTaskRunner(
-    scoped_refptr<storage::FileSystemContext> filesystem_context,
-    base::OnceClosure callback) {
-  DCHECK(filesystem_context->default_file_task_runner()
-             ->RunsTasksInCurrentSequence());
-  DVLOG(3) << "Clearing plugin data: " << filesystem_context;
-
-  // The Plugin Private File System has been deprecated. Delete all data at
-  // %profile/File System/Plugins.
-  auto plugin_path = filesystem_context->partition_path()
-                         .Append(storage::kFileSystemDirectory)
-                         .Append(FILE_PATH_LITERAL("Plugins"));
-
-  filesystem_context->default_file_task_runner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
-                     plugin_path),
-      std::move(callback));
-}
-
 }  // namespace
 
 class StoragePartitionImpl::URLLoaderFactoryForBrowserProcess
@@ -1039,8 +1019,8 @@ class StoragePartitionImpl::DataDeletionHelper {
     kQuota = 3,
     kLocalStorage = 4,
     kSessionStorage = 5,
-    kShaderCache = 6,  // Deprecated in favor of using kGpuCache.
-    kPluginPrivate = 7,
+    kShaderCache = 6,    // Deprecated in favor of using kGpuCache.
+    kPluginPrivate = 7,  // Deprecated.
     kConversions = 8,
     kAggregationService = 9,
     kSharedStorage = 10,
@@ -2608,15 +2588,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             CreateTaskCompletionClosure(TracingDataType::kPrivateAggregation)));
   }
-
-  // TODO(crbug.com/1340250): The Plugin Private File System is removed, but
-  // some devices may still have old data on their machine. For now greedily try
-  // to delete this data, but we'll want to remove this code at some point.
-  filesystem_context->default_file_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&ClearPluginPrivateDataOnFileTaskRunner,
-                                base::WrapRefCounted(filesystem_context),
-                                CreateTaskCompletionClosure(
-                                    TracingDataType::kPluginPrivate)));
 
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
       shared_storage_manager &&
