@@ -6,6 +6,8 @@ module media.mojom;
 
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+// The following mojom classes are the corresponding classes in webrtc project.
+// See third_party/webrtc/api/video_codecs/video_encoder.h for details.
 struct ResolutionBitrateLimit {
   gfx.mojom.Size frame_size;
   int32 min_start_bitrate_bps;
@@ -21,6 +23,8 @@ struct VideoEncoderInfo {
   bool is_hardware_accelerated;
   bool supports_simulcast;
   bool reports_average_qp;
+  uint32 requested_resolution_alignment;
+  bool apply_alignment_to_all_simulcast_layers;
 
   // This array size is equal to media::VideoEncoderInfo::kMaxSpatialLayers.
   array<array<uint8>, 5> fps_allocation;

@@ -732,6 +732,12 @@ void MediaFoundationVideoEncodeAccelerator::EncoderInitializeTask(
                                 bitstream_buffer_size_));
 
   encoder_info_.implementation_name = "MediaFoundationVideoEncodeAccelerator";
+  // Currently, MFVEA does not support odd resolution well. The implementation
+  // here reports alignment of 2 in the EncoderInfo, together with simulcast
+  // layers applied.
+  // See https://crbug.com/1275453 for more details.
+  encoder_info_.requested_resolution_alignment = 2;
+  encoder_info_.apply_alignment_to_all_simulcast_layers = true;
   encoder_info_.has_trusted_rate_controller = false;
   DCHECK(encoder_info_.is_hardware_accelerated);
   DCHECK(encoder_info_.supports_native_handle);

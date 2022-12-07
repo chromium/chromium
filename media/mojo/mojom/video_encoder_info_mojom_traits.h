@@ -64,6 +64,14 @@ class StructTraits<media::mojom::VideoEncoderInfoDataView,
       const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.reports_average_qp;
   }
+  static bool apply_alignment_to_all_simulcast_layers(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.apply_alignment_to_all_simulcast_layers;
+  }
+  static uint32_t requested_resolution_alignment(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.requested_resolution_alignment;
+  }
   static base::span<const std::vector<uint8_t>,
                     media::VideoEncoderInfo::kMaxSpatialLayers>
   fps_allocation(const media::VideoEncoderInfo& video_encoder_info) {

@@ -49,6 +49,8 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   // per-macroblock QP adjustment, and that QP can be calculated from
   // uncompressed sequence/frame/slice/tile headers.
   bool reports_average_qp = true;
+  uint32_t requested_resolution_alignment = 1;
+  bool apply_alignment_to_all_simulcast_layers = false;
 
   std::vector<uint8_t> fps_allocation[kMaxSpatialLayers];
   std::vector<ResolutionBitrateLimit> resolution_bitrate_limits;

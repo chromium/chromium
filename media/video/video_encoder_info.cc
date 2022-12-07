@@ -43,6 +43,9 @@ bool operator==(const VideoEncoderInfo& l, const VideoEncoderInfo& r) {
          l.is_hardware_accelerated == r.is_hardware_accelerated &&
          l.supports_simulcast == r.supports_simulcast &&
          l.reports_average_qp == r.reports_average_qp &&
+         l.requested_resolution_alignment == r.requested_resolution_alignment &&
+         l.apply_alignment_to_all_simulcast_layers ==
+             r.apply_alignment_to_all_simulcast_layers &&
          l.resolution_bitrate_limits == r.resolution_bitrate_limits;
 }
 }  // namespace media

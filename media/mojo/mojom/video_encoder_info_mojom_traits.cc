@@ -29,6 +29,9 @@ bool StructTraits<
   out->is_hardware_accelerated = data.is_hardware_accelerated();
   out->supports_simulcast = data.supports_simulcast();
   out->reports_average_qp = data.reports_average_qp();
+  out->apply_alignment_to_all_simulcast_layers =
+      data.apply_alignment_to_all_simulcast_layers();
+  out->requested_resolution_alignment = data.requested_resolution_alignment();
 
   if (!data.ReadImplementationName(&out->implementation_name))
     return false;

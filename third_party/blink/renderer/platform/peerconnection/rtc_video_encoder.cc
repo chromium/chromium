@@ -1802,6 +1802,10 @@ void RTCVideoEncoder::UpdateEncoderInfo(
       media_enc_info.is_hardware_accelerated;
   encoder_info_.supports_simulcast = media_enc_info.supports_simulcast;
   encoder_info_.is_qp_trusted = media_enc_info.reports_average_qp;
+  encoder_info_.requested_resolution_alignment =
+      media_enc_info.requested_resolution_alignment;
+  encoder_info_.apply_alignment_to_all_simulcast_layers =
+      media_enc_info.apply_alignment_to_all_simulcast_layers;
   static_assert(
       webrtc::kMaxSpatialLayers >= media::VideoEncoderInfo::kMaxSpatialLayers,
       "webrtc::kMaxSpatiallayers is less than "
