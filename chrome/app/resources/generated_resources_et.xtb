@@ -5479,7 +5479,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6087746524533454243">Kas otsite brauseri teabe lehte? Külastage saiti</translation>
 <translation id="6087960857463881712">Lahe nägu</translation>
 <translation id="608912389580139775">Selle lehe lisamiseks lugemisloendisse klõpsake järjehoidjaikoonil</translation>
-<translation id="6091116443517744502">Kontrollige internetiühendust ja proovige uuesti.</translation>
 <translation id="6091761513005122595">Jagatava üksuse ühendamine õnnestus.</translation>
 <translation id="6093803049406781019">Profiili kustutamine</translation>
 <translation id="6093888419484831006">Värskenduse tühistamine ...</translation>
@@ -8623,6 +8622,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9040661932550800571">Kas värskendada saidi <ph name="ORIGIN" /> parooli?</translation>
 <translation id="9041692268811217999">Administraator keelas juurdepääsu arvutis olevatele kohalikele failidele</translation>
 <translation id="904224458472510106">Seda toimingut ei saa tagasi võtta</translation>
+<translation id="9042827002460091668">Kontrollige internetiühendust ja proovige uuesti</translation>
 <translation id="9042893549633094279">Privaatsus ja turvalisus</translation>
 <translation id="9044646465488564462">Võrguga ühenduse loomine ebaõnnestus: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Lugemisloend teisaldati külgpaneelile. Proovige seda siin.</translation>

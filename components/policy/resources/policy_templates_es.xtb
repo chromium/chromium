@@ -5722,7 +5722,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       - Si se inhabilita esta política, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
 <translation id="6609867253856597039">Establecer la experiencia de usuario de funciones inhabilitadas</translation>
 <translation id="6614557704487944013">Permitir que los usuarios utilicen el navegador <ph name="LACROS_NAME" /></translation>
-<translation id="661610294649586421">No permitir solicitudes de la API WebAuthn en sitios con certificados TLS rotos.</translation>
+<translation id="661610294649586421">No permitir solicitudes de la API WebAuthn en sitios con certificados TLS dañados.</translation>
 <translation id="6617589895942747919">Hora de inicio del intervalo, inclusiva.</translation>
 <translation id="6621830999036927230">Si se le asigna un valor a esta política, el host de acceso remoto utilizará esta URL para validar los tokens de autenticación de los clientes de acceso remoto y para aceptar las conexiones. Esta función está inhabilitada si está vacía o no se le asigna ningún valor.
 

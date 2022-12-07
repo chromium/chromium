@@ -5475,7 +5475,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6087746524533454243">Está à procura da página Acerca do navegador? Visite</translation>
 <translation id="6087960857463881712">Cara de fantástico</translation>
 <translation id="608912389580139775">Para adicionar esta página à sua Lista de leitura, clique no ícone de marcador</translation>
-<translation id="6091116443517744502">verifique a sua ligação à Internet e tente novamente</translation>
 <translation id="6091761513005122595">A partilha foi montada com êxito.</translation>
 <translation id="6093803049406781019">Eliminar perfil</translation>
 <translation id="6093888419484831006">A cancelar a atualização...</translation>
@@ -8619,6 +8618,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="9040661932550800571">Pretende atualizar a palavra-passe para <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">O acesso a ficheiros locais no seu computador foi desativado pelo seu administrador.</translation>
 <translation id="904224458472510106">Não é possível anular esta operação.</translation>
+<translation id="9042827002460091668">Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="9042893549633094279">Privacidade e segurança</translation>
 <translation id="9044646465488564462">Não foi possível ligar à rede: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">A sua lista de leitura foi movida para o novo painel lateral. Experimente-a aqui.</translation>

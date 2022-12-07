@@ -5476,7 +5476,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6087746524533454243">Brauzer haqida sahifasini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="6087960857463881712">Hayratdagi yuz</translation>
 <translation id="608912389580139775">Bu sahifani Saqlangan sahifalarga kiritish uchun Bukmark belgisini bosing</translation>
-<translation id="6091116443517744502">internet aloqasini tekshiring va qayta urining</translation>
 <translation id="6091761513005122595">Umumiy ruxsat berildi.</translation>
 <translation id="6093803049406781019">Profilni oʻchirish</translation>
 <translation id="6093888419484831006">Yangilash bekor qilinmoqda...</translation>
@@ -8618,6 +8617,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9040661932550800571"><ph name="ORIGIN" /> uchun parol yangilansinmi?</translation>
 <translation id="9041692268811217999">Kompyuteringizdagi fayllarga kirish administrator tomonidan taqiqlab qo‘yilgan</translation>
 <translation id="904224458472510106">Bu amalni bekor qilish imkonsiz</translation>
+<translation id="9042827002460091668">Internet aloqasini tekshiring va qayta urining</translation>
 <translation id="9042893549633094279">Maxfiylik va xavfsizlik</translation>
 <translation id="9044646465488564462">Tarmoqqa ulanmadi: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Mutolaa roʻyxatingiz yangi yon panelga koʻchdi. Bu yerda sinang.</translation>

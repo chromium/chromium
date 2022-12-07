@@ -5492,7 +5492,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="6087746524533454243">Chwilio am dudalen ynghylch y porwr? Ewch i</translation>
 <translation id="6087960857463881712">Wyneb anhygoel</translation>
 <translation id="608912389580139775">I ychwanegu'r dudalen hon at eich rhestr ddarllen, cliciwch yr eicon Nod Tudalen</translation>
-<translation id="6091116443517744502">gwiriwch eich cysylltiad â'r rhyngrwyd a rhowch gynnig arall arni</translation>
 <translation id="6091761513005122595">Mae'r gyfran wedi'i gosod yn llwyddiannus.</translation>
 <translation id="6093803049406781019">Dileu proffil</translation>
 <translation id="6093888419484831006">Wrthi'n canslo'r diweddariad...</translation>
@@ -8647,6 +8646,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9040661932550800571">Diweddaru'r cyfrinair ar gyfer <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Mae mynediad at ffeiliau lleol ar eich peiriant wedi'i analluogi gan eich gweinyddwr</translation>
 <translation id="904224458472510106">Nid oes modd dadwneud y weithred hon</translation>
+<translation id="9042827002460091668">Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni</translation>
 <translation id="9042893549633094279">Preifatrwydd a diogelwch</translation>
 <translation id="9044646465488564462">Wedi methu â chysylltu â'r rhwydwaith: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Mae eich rhestr ddarllen wedi symud i'r panel ochr newydd. Rhowch gynnig arni yma.</translation>

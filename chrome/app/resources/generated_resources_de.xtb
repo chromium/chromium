@@ -5467,7 +5467,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6087746524533454243">Suchst du die Seite „Über den Browser“? Gehe zu</translation>
 <translation id="6087960857463881712">Cooles Gesicht</translation>
 <translation id="608912389580139775">Wenn du deiner Leseliste diese Seite hinzufügen möchtest, klicke auf das Lesezeichensymbol</translation>
-<translation id="6091116443517744502">Prüfe die Internetverbindung und versuch es noch einmal</translation>
 <translation id="6091761513005122595">Freigabe wurde erfolgreich bereitgestellt.</translation>
 <translation id="6093803049406781019">Profil löschen</translation>
 <translation id="6093888419484831006">Aktualisierung wird abgebrochen...</translation>
@@ -8611,6 +8610,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="9040661932550800571">Passwort für <ph name="ORIGIN" /> aktualisieren?</translation>
 <translation id="9041692268811217999">Der Zugriff auf lokale Dateien auf deinem Gerät wurde von deinem Administrator deaktiviert</translation>
 <translation id="904224458472510106">Dieser Vorgang kann nicht rückgängig gemacht werden</translation>
+<translation id="9042827002460091668">Prüfe deine Internetverbindung und versuch es noch einmal</translation>
 <translation id="9042893549633094279">Datenschutz und Sicherheit</translation>
 <translation id="9044646465488564462">Fehler beim Herstellen einer Verbindung mit dem Netzwerk: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Deine Leseliste wurde in die neue Seitenliste verschoben. Hier kannst du die Funktion testen.</translation>

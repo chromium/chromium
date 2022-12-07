@@ -5489,7 +5489,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6087746524533454243">Looking for the browser about page? Visit</translation>
 <translation id="6087960857463881712">Awesome face</translation>
 <translation id="608912389580139775">To add this page to your reading list, click the Bookmark icon</translation>
-<translation id="6091116443517744502">please check your Internet connection and try again</translation>
 <translation id="6091761513005122595">Share mounted successfully.</translation>
 <translation id="6093803049406781019">Delete profile</translation>
 <translation id="6093888419484831006">Cancelling update...</translation>
@@ -8633,6 +8632,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9040661932550800571">Update password for <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Access to local files on your machine is disabled by your administrator</translation>
 <translation id="904224458472510106">This operation cannot be undone</translation>
+<translation id="9042827002460091668">Please check your Internet connection and try again</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9044646465488564462">Failed to connect to network: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Your reading list has moved to the new side panel. Try it here.</translation>

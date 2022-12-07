@@ -5475,7 +5475,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6087746524533454243">Vous recherchez des informations à propos du navigateur ? Accédez à la page</translation>
 <translation id="6087960857463881712">Visage "Génial"</translation>
 <translation id="608912389580139775">Pour ajouter cette page à votre liste de lecture, cliquez sur l'icône Ajouter aux favoris</translation>
-<translation id="6091116443517744502">veuillez vérifier votre connexion Internet et réessayer</translation>
 <translation id="6091761513005122595">Le partage a bien été installé.</translation>
 <translation id="6093803049406781019">Supprimer le profil</translation>
 <translation id="6093888419484831006">Annulation de la mise à jour...</translation>
@@ -8622,6 +8621,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9040661932550800571">Mettre à jour le mot de passe pour <ph name="ORIGIN" /> ?</translation>
 <translation id="9041692268811217999">Votre administrateur a désactivé l'accès aux fichiers locaux sur votre ordinateur</translation>
 <translation id="904224458472510106">Cette opération est irréversible</translation>
+<translation id="9042827002460091668">Vérifiez votre connexion Internet, puis réessayez</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="9044646465488564462">Échec de la connexion au réseau : <ph name="DETAILS" />.</translation>
 <translation id="9045160989383249058">Votre liste de lecture a été déplacée vers le nouveau panneau latéral. Faites un essai.</translation>

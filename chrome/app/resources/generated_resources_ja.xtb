@@ -5463,7 +5463,6 @@
 <translation id="6087746524533454243">ブラウザ情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="6087960857463881712">エピック スマイリー</translation>
 <translation id="608912389580139775">リーディング リストにこのページを追加するには、ブックマーク アイコンをクリックしてください</translation>
-<translation id="6091116443517744502">インターネット接続を確認し、もう一度お試しください</translation>
 <translation id="6091761513005122595">共有フォルダが正常にマウントされました。</translation>
 <translation id="6093803049406781019">プロフィールを削除</translation>
 <translation id="6093888419484831006">更新をキャンセルしています...</translation>
@@ -8603,6 +8602,7 @@
 <translation id="9040661932550800571"><ph name="ORIGIN" /> のパスワードを更新しますか？</translation>
 <translation id="9041692268811217999">パソコンのローカル ファイルへのアクセスは管理者によって無効にされています</translation>
 <translation id="904224458472510106">この操作は元に戻せません</translation>
+<translation id="9042827002460091668">インターネット接続を確認してもう一度お試しください</translation>
 <translation id="9042893549633094279">プライバシーとセキュリティ</translation>
 <translation id="9044646465488564462">ネットワークに接続できませんでした: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">リーディング リストは新しいサイドパネルに移動しました。こちらをお使いください。</translation>

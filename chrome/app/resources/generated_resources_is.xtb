@@ -5490,7 +5490,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6087746524533454243">Ertu að leita að upplýsingasíðu vafrans? Opna</translation>
 <translation id="6087960857463881712">Geðveikt hresst andlit</translation>
 <translation id="608912389580139775">Smelltu á bókamerkistáknið til að bæta þessari síðu við leslistann</translation>
-<translation id="6091116443517744502">Athugaðu nettenginguna þína og reyndu aftur</translation>
 <translation id="6091761513005122595">Deilt efni var tengt.</translation>
 <translation id="6093803049406781019">Eyða prófíl</translation>
 <translation id="6093888419484831006">Hættir við uppfærslu...</translation>
@@ -8636,6 +8635,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9040661932550800571">Uppfæra aðgangsorð fyrir <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Stjórnandi hefur lokað fyrir aðgang að staðbundnum skrám tölvunnar</translation>
 <translation id="904224458472510106">Ekki er hægt að afturkalla þessa aðgerð</translation>
+<translation id="9042827002460091668">Athugaðu nettenginguna og reyndu aftur</translation>
 <translation id="9042893549633094279">Persónuvernd og öryggi</translation>
 <translation id="9044646465488564462">Mistókst að tengjast netinu: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Leslistinn þinn var færður yfir í nýja hliðargluggann. Prófaðu hann hér.</translation>

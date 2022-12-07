@@ -111,7 +111,7 @@
 <translation id="1503394326855300303">החשבון של בעלים זה צריך להיות החשבון הראשון שאליו נכנסים בעת כניסה לפעילות באתר מחשבונות מרובים.</translation>
 <translation id="1510238584712386396">מרכז האפליקציות</translation>
 <translation id="1516740043221086139">מצב 'נא לא להפריע' מופעל.</translation>
-<translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}many{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
+<translation id="1520303207432623762">{NUM_APPS,plural, =1{צפייה בהגדרות של הודעות. ההודעות מושבתות באפליקציה אחת}one{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}two{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}other{צפייה בהגדרות של הודעות. ההודעות מושבתות ב-# אפליקציות}}</translation>
 <translation id="1525508553941733066">סגירה</translation>
 <translation id="1528259147807435347">נערך בשבוע האחרון</translation>
 <translation id="1536604384701784949">כדי להשתמש ב-<ph name="USER_EMAIL_ADDRESS" />, עליך לצאת תחילה מכל החשבונות. כדי לצאת, בוחרים ב'ביטול' וחוזרים חזרה. לוחצים על השעון כדי לפתוח את אזור הסטטוס ובוחרים באפשרות 'יציאה'. אחר כך נכנסים שוב אל <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
@@ -397,7 +397,7 @@
 <translation id="3161500364292033097">סגירה של שולחן העבודה הווירטואלי והחלונות</translation>
 <translation id="316356270129335934">ה-<ph name="DEVICE_TYPE" /> יוחזר לגרסה הקודמת על ידי <ph name="MANAGER" />. המכשיר יעבור איפוס וכל הנתונים שבו יימחקו.</translation>
 <translation id="3181441307743005334">ההפעלה מחדש עשויה להימשך זמן מה</translation>
-<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{מחובר למכשיר אחד}two{מחובר ל-# מכשירים}many{מחובר ל-# מכשירים}other{מחובר ל-# מכשירים}}</translation>
+<translation id="3202010236269062730">{NUM_DEVICES,plural, =1{מחובר למכשיר אחד}one{מחובר ל-# מכשירים}two{מחובר ל-# מכשירים}other{מחובר ל-# מכשירים}}</translation>
 <translation id="320207200541803018">הגדרת טיימר</translation>
 <translation id="3203405173652969239">'גישה באמצעות מתג' מופעלת</translation>
 <translation id="3207953481422525583">הגדרות משתמש</translation>
@@ -454,7 +454,7 @@
 <translation id="3509391053705095206">‏לא הצלחנו למצוא את הטלפון. צריך לוודא שה-Bluetooth שלו מופעל.</translation>
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
-<translation id="352245152354538528">{0,plural, =1{עליך לעדכן את המכשיר בתוך דקה אחת}two{עליך לעדכן את המכשיר בתוך # דקות}many{עליך לעדכן את המכשיר בתוך # דקות}other{עליך לעדכן את המכשיר בתוך # דקות}}</translation>
+<translation id="352245152354538528">{0,plural, =1{עליך לעדכן את המכשיר בתוך דקה אחת}one{עליך לעדכן את המכשיר בתוך # דקות}two{עליך לעדכן את המכשיר בתוך # דקות}other{עליך לעדכן את המכשיר בתוך # דקות}}</translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> מכשירים מחוברים</translation>
 <translation id="3542066395059568317">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ימנית.</translation>
 <translation id="3552189655002856821">‏Wi-Fi כבוי</translation>
@@ -527,7 +527,7 @@
 <translation id="3899995891769452915">קלט קולי</translation>
 <translation id="3900355044994618856">הסשן יסתיים בעוד <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">מתבצעת התחברות אל: <ph name="NAME" /></translation>
-<translation id="3922427723338465344">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך דקה}two{שינוי המכשיר לגרסה קודמת בתוך # דקות}many{שינוי המכשיר לגרסה קודמת בתוך # דקות}other{שינוי המכשיר לגרסה קודמת בתוך # דקות}}</translation>
+<translation id="3922427723338465344">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך דקה}one{שינוי המכשיר לגרסה קודמת בתוך # דקות}two{שינוי המכשיר לגרסה קודמת בתוך # דקות}other{שינוי המכשיר לגרסה קודמת בתוך # דקות}}</translation>
 <translation id="3923494859158167397">לא הוגדרו רשתות סלולריות</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, האירועים בטעינה.</translation>
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
@@ -552,7 +552,7 @@
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">המסך שלך משותף</translation>
 <translation id="4057003836560082631">כרטיסייה <ph name="INDEX" /> מתוך <ph name="TOTAL_COUNT" /> בדפדפן. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
-<translation id="4065525899979931964">{NUM_APPS,plural, =1{מושבת לאפליקציה אחת}two{מושבת ל-2 אפליקציות}many{מושבת ל-# אפליקציות}other{מושבת ל-# אפליקציות}}</translation>
+<translation id="4065525899979931964">{NUM_APPS,plural, =1{מושבת לאפליקציה אחת}one{מושבת ל-# אפליקציות}two{מושבת ל-2 אפליקציות}other{מושבת ל-# אפליקציות}}</translation>
 <translation id="4066027111132117168">פועל, <ph name="REMAINING_TIME" /></translation>
 <translation id="4072264167173457037">אות בינוני</translation>
 <translation id="4112140312785995938">הרצה לאחור</translation>
@@ -566,7 +566,7 @@
 <translation id="4136724716305260864">התכונה פעילה עד הזריחה</translation>
 <translation id="4146833061457621061">השמעת מוזיקה</translation>
 <translation id="4165275524535002941">יכול להיות שהכבל לא תומך במסכים</translation>
-<translation id="4177913004758410636">{0,plural, =1{עליך לעדכן את המכשיר בתוך יום אחד}two{עליך לעדכן את המכשיר תוך יומיים}many{עליך לעדכן את המכשיר תוך # ימים}other{עליך לעדכן את המכשיר תוך # ימים}}</translation>
+<translation id="4177913004758410636">{0,plural, =1{עליך לעדכן את המכשיר בתוך יום אחד}one{עליך לעדכן את המכשיר תוך # ימים}two{עליך לעדכן את המכשיר תוך יומיים}other{עליך לעדכן את המכשיר תוך # ימים}}</translation>
 <translation id="4181841719683918333">שפות</translation>
 <translation id="4192112279662688596">או</translation>
 <translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
@@ -619,14 +619,14 @@
 <translation id="4435022394553622295">הצגת ההתראות והאפליקציות שבטלפון ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="4441283832827406317">האפליקציות ממוינות לפי שם</translation>
 <translation id="4445159312344259901">יש להיכנס כדי לבטל את הנעילה</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{התראה חשובה אחת}two{# התראות חשובות}many{# התראות חשובות}other{# התראות חשובות}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{התראה חשובה אחת}one{# התראות חשובות}two{# התראות חשובות}other{# התראות חשובות}}</translation>
 <translation id="4450893287417543264">אין להציג שוב</translation>
 <translation id="4451374464530248585">‏מקשי הקיצור Alt + חץ למטה הוחלפו. כדי לדמות את הפעולה של המקש Page Down, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + החץ למטה.</translation>
 <translation id="4455051983450390249">הצגת ההתראות שבטלפון שלך ב<ph name="DEVICE_TYPE" /></translation>
 <translation id="445864333228800152">ערב טוב,</translation>
 <translation id="4458688154122353284">הפסקה של הקלטת המסך</translation>
 <translation id="4471354919263203780">‏מתבצעת הורדה של קובצי זיהוי דיבור… ‎<ph name="PERCENT" />%‎</translation>
-<translation id="4471432286288241507">{0,plural, =0{עליך לעדכן את המכשיר עכשיו}=1{עליך לעדכן את המכשיר תוך שנייה אחת}two{עליך לעדכן את המכשיר תוך # שניות}many{עליך לעדכן את המכשיר תוך # שניות}other{עליך לעדכן את המכשיר תוך # שניות}}</translation>
+<translation id="4471432286288241507">{0,plural, =0{עליך לעדכן את המכשיר עכשיו}=1{עליך לעדכן את המכשיר תוך שנייה אחת}one{עליך לעדכן את המכשיר תוך # שניות}two{עליך לעדכן את המכשיר תוך # שניות}other{עליך לעדכן את המכשיר תוך # שניות}}</translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4477350412780666475">הטראק הבא</translation>
 <translation id="4477892968187500306">‏המכשיר הזה עשוי להכיל אפליקציות שלא אומתו על-ידי Google.</translation>
@@ -658,7 +658,7 @@
 <translation id="4623167406982293031">יש לאמת את החשבון</translation>
 <translation id="4628757576491864469">מכשירים</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, דירוג כוכבים: <ph name="RATING_SCORE" /></translation>
-<translation id="4633185660152240791">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך יום אחד}two{שינוי המכשיר לגרסה קודמת בתוך יומיים}many{שינוי המכשיר לגרסה קודמת בתוך # ימים}other{שינוי המכשיר לגרסה קודמת בתוך # ימים}}</translation>
+<translation id="4633185660152240791">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך יום אחד}one{שינוי המכשיר לגרסה קודמת בתוך # ימים}two{שינוי המכשיר לגרסה קודמת בתוך יומיים}other{שינוי המכשיר לגרסה קודמת בתוך # ימים}}</translation>
 <translation id="4633636853437260449">‏כדי למחוק, מקישים על Ctrl+W.</translation>
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
 <translation id="4644727592819780893">האזור קטן מדי ואי אפשר להציג אותו במצלמה</translation>
@@ -757,7 +757,7 @@
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> אירועים</translation>
 <translation id="5198715732953550718">האפליקציה <ph name="MOVED_APP_NAME" /> משולבת ביחד עם האפליקציה <ph name="IN_PLACE_APP" /> ליצירת תיקייה חדשה.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{התראה אחת נוספת}two{# התראות נוספות}many{# התראות נוספות}other{# התראות נוספות}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{התראה אחת נוספת}one{# התראות נוספות}two{# התראות נוספות}other{# התראות נוספות}}</translation>
 <translation id="5207949376430453814">הדגשה של סמן הטקסט</translation>
 <translation id="5208059991603368177">פועל</translation>
 <translation id="5216991270656129561">התכונה כבויה עד <ph name="TIME" /></translation>
@@ -999,7 +999,7 @@
 התקנה חדשה</translation>
 <translation id="6559976592393364813">יש לבקש ממנהל המערכת</translation>
 <translation id="6565007273808762236">‏החיבור ל-eSIM לא זמין</translation>
-<translation id="6570831796530454248">{0,plural, =1{עליך לעדכן את המכשיר בתוך שעה אחת}two{עליך לעדכן את המכשיר בתוך שעתיים}many{עליך לעדכן את המכשיר בתוך # שעות}other{עליך לעדכן את המכשיר בתוך # שעות}}</translation>
+<translation id="6570831796530454248">{0,plural, =1{עליך לעדכן את המכשיר בתוך שעה אחת}one{עליך לעדכן את המכשיר בתוך # שעות}two{עליך לעדכן את המכשיר בתוך שעתיים}other{עליך לעדכן את המכשיר בתוך # שעות}}</translation>
 <translation id="6570902864550063460">‏מתבצעת טעינה באמצעות USB</translation>
 <translation id="6574587113394758819">ההתראה מ-<ph name="APP_TITLE" /> מוסתרת כי מופעלת הגנה על תצוגה</translation>
 <translation id="6574622320167699133">הנעילה בוטלה על ידי הטלפון שלך. כדי להיכנס, צריך להקיש או ללחוץ.</translation>
@@ -1056,7 +1056,7 @@
 <translation id="6852052252232534364">תופעל בלחיצה</translation>
 <translation id="6855029042976311970">נערך ממש עכשיו</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> שניות</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}many{נשארו # ספרות}other{נשארו # ספרות}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}one{נשארו # ספרות}two{נשארו # ספרות}other{נשארו # ספרות}}</translation>
 <translation id="6867938213751067702">ההורדה של <ph name="FILENAME" /> הושהתה</translation>
 <translation id="6878400149835617132">קיצור הדרך מושבת</translation>
 <translation id="6884665277231944629">חזרה להיום</translation>
@@ -1210,7 +1210,7 @@
 <translation id="7714767791242455379">הוספה של רשת סלולרית חדשה</translation>
 <translation id="7720400844887872976">התכונה פעילה עד <ph name="TIME" /></translation>
 <translation id="7720410380936703141">ניסיון חוזר</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}two{2 הודעות}many{# הודעות}other{# הודעות}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{הודעה אחת}one{# הודעות}two{2 הודעות}other{# הודעות}}</translation>
 <translation id="7724603315864178912">חיתוך</translation>
 <translation id="7745560842763881396">הצגת האפליקציות במדף</translation>
 <translation id="7749443890790263709">הגעת למספר המקסימלי של שולחנות עבודה.</translation>
@@ -1235,7 +1235,7 @@
 <translation id="7872195908557044066">‏ה-eSIM הזה עובר איפוס בהוראת האדמין שלך. עליך להמתין מספר דקות.</translation>
 <translation id="7872786842639831132">כבוי</translation>
 <translation id="7875575368831396199">‏נראה שה-Bluetooth כבוי ב-<ph name="DEVICE_TYPE" /> שלך. יש להפעיל את Bluetooth כדי להשתמש ב-Phone Hub.</translation>
-<translation id="7877557217297072640">{0,plural, =0{עליך לשנות את המכשיר לגרסה הקודמת עכשיו}=1{עליך לשנות את המכשיר לגרסה הקודמת בתוך שנייה}two{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}many{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}other{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}}</translation>
+<translation id="7877557217297072640">{0,plural, =0{עליך לשנות את המכשיר לגרסה הקודמת עכשיו}=1{עליך לשנות את המכשיר לגרסה הקודמת בתוך שנייה}one{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}two{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}other{עליך לשנות את המכשיר לגרסה קודמת בתוך # שניות}}</translation>
 <translation id="7886169021410746335">התאמת הגדרות הפרטיות</translation>
 <translation id="7886277072580235377">סשן הגלישה שלך יימחק אחרי היציאה. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">שליחת אימייל</translation>
@@ -1309,7 +1309,7 @@
 <translation id="8255234195843591763">עליך לאפס כדי לעדכן</translation>
 <translation id="826107067893790409">‏יש להקיש על Enter כדי לבטל את הנעילה בשביל <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8261506727792406068">מחיקה</translation>
-<translation id="8270450402312105425">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך שעה}two{שינוי המכשיר לגרסה קודמת בתוך שעתיים}many{שינוי המכשיר לגרסה קודמת בתוך # שעות}other{שינוי המכשיר לגרסה קודמת בתוך # שעות}}</translation>
+<translation id="8270450402312105425">{0,plural, =1{שינוי המכשיר לגרסה קודמת בתוך שעה}one{שינוי המכשיר לגרסה קודמת בתוך # שעות}two{שינוי המכשיר לגרסה קודמת בתוך שעתיים}other{שינוי המכשיר לגרסה קודמת בתוך # שעות}}</translation>
 <translation id="8277261673056602147">יש להדגיש טקסט במסך</translation>
 <translation id="8284362522226889623">יש להחליק ימינה בעזרת ארבע אצבעות כדי לעבור לשולחן העבודה הווירטואלי הקודם</translation>
 <translation id="828708037801473432">כבויה</translation>

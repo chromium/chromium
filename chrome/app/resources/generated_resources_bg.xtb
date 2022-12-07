@@ -5487,7 +5487,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6087746524533454243">Търсите страницата с информация за браузъра? Посетете</translation>
 <translation id="6087960857463881712">Страхотно лице</translation>
 <translation id="608912389580139775">За да добавите тази страница към списъка си за четене, кликнете върху иконата на отметка</translation>
-<translation id="6091116443517744502">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="6091761513005122595">Дялът е свързан успешно.</translation>
 <translation id="6093803049406781019">Изтриване на потребителския профил</translation>
 <translation id="6093888419484831006">Актуализирането се анулира...</translation>
@@ -8631,6 +8630,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9040661932550800571">Да се актуализира ли паролата за <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Достъпът до локални файлове на компютъра ви е деактивиран от администратора ви</translation>
 <translation id="904224458472510106">Това действие не може да бъде отменено</translation>
+<translation id="9042827002460091668">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="9042893549633094279">Поверителност и сигурност</translation>
 <translation id="9044646465488564462">Свързването с мрежата не бе успешно: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Списъкът ви за четене е преместен в новия страничен панел. Изпробвайте го тук.</translation>

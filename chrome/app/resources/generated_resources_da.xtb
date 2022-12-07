@@ -5490,7 +5490,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6087746524533454243">Leder du efter siden Om for browseren? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-smiley</translation>
 <translation id="608912389580139775">Klik på bogmærkeikonet for at føje denne side til din læseliste</translation>
-<translation id="6091116443517744502">tjek din internetforbindelse, og prøv igen</translation>
 <translation id="6091761513005122595">Delingen blev anvendt.</translation>
 <translation id="6093803049406781019">Slet profil</translation>
 <translation id="6093888419484831006">Annullerer opdatering...</translation>
@@ -8637,6 +8636,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="9040661932550800571">Vil du opdatere adgangskoden til <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Din administrator har deaktiveret adgangen til lokale filer på din maskine</translation>
 <translation id="904224458472510106">Denne handling kan ikke fortrydes</translation>
+<translation id="9042827002460091668">Tjek din internetforbindelse, og prøv igen</translation>
 <translation id="9042893549633094279">Sikkerhed og privatliv</translation>
 <translation id="9044646465488564462">Det var ikke muligt at oprette forbindelse til netværket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Din læseliste er blevet flyttet til det nye sidepanel. Prøv det her.</translation>

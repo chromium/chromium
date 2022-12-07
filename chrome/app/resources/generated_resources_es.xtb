@@ -5473,7 +5473,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6087746524533454243">¿Buscas la página de información del navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de emoción</translation>
 <translation id="608912389580139775">Para añadir esta página a tu lista de lectura, haz clic en el icono de marcadores</translation>
-<translation id="6091116443517744502">comprueba tu conexión a Internet y vuelve a intentarlo</translation>
 <translation id="6091761513005122595">El recurso compartido se ha activado correctamente.</translation>
 <translation id="6093803049406781019">Eliminar perfil</translation>
 <translation id="6093888419484831006">Cancelando la actualización...</translation>
@@ -8617,6 +8616,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9040661932550800571">¿Quieres actualizar la contraseña de <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Tu administrador ha inhabilitado el acceso a los archivos locales de tu equipo</translation>
 <translation id="904224458472510106">Esta operación no se puede deshacer</translation>
+<translation id="9042827002460091668">Comprueba tu conexión a Internet y vuelve a intentarlo</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9044646465488564462">Error al establecer conexión con la red: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Tu lista de lectura se ha movido al nuevo panel lateral. Pruébala.</translation>

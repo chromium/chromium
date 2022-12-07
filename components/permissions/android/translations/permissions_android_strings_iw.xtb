@@ -26,6 +26,6 @@
 <translation id="781351614677332494">ל-<ph name="APP_NAME" /> נדרשת הרשאת גישה למיקום כדי לשתף אותו עם האתר הזה.</translation>
 <translation id="7884346424584885269">‏נדרשת ל-Chrome הרשאה לבצע סריקה לאיתור מכשירים בקרבת מקום. <ph name="BEGIN_LINK" />לעדכון ההרשאות<ph name="END_LINK" />.</translation>
 <translation id="8368027906805972958">מכשיר לא ידוע או שאינו נתמך (<ph name="DEVICE_ID" />)</translation>
-<translation id="8687353297350450808">{N_BARS,plural, =1{רמת עוצמת אות: עמודה אחת}two{רמת עוצמת אות: שתי עמודות}many{רמת עוצמת אות: # עמודות}other{רמת עוצמת אות: # עמודות}}</translation>
+<translation id="8687353297350450808">{N_BARS,plural, =1{רמת עוצמת אות: עמודה אחת}one{רמת עוצמת אות: # עמודות}two{רמת עוצמת אות: שתי עמודות}other{רמת עוצמת אות: # עמודות}}</translation>
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 </translationbundle>

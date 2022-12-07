@@ -3888,7 +3888,7 @@
 <translation id="4594577641390224176">想要查看系统简介页面？请访问</translation>
 <translation id="4595560905247879544">只有管理员（<ph name="CUSTODIAN_NAME" />）可以修改应用和扩展程序。</translation>
 <translation id="4596295440756783523">您有证书可标识以下服务器</translation>
-<translation id="4598345735110653698">管理密钥</translation>
+<translation id="4598345735110653698">管理通行密钥</translation>
 <translation id="4598556348158889687">存储空间管理</translation>
 <translation id="4598776695426288251">可通过多部设备使用 Wi-Fi</translation>
 <translation id="4600071396330666617">建议数量</translation>
@@ -5459,7 +5459,6 @@
 <translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>
 <translation id="608912389580139775">若要将此网页添加到您的阅读清单中，请点击“书签”图标</translation>
-<translation id="6091116443517744502">请检查互联网连接，然后重试</translation>
 <translation id="6091761513005122595">已成功装载共享资源。</translation>
 <translation id="6093803049406781019">删除个人资料</translation>
 <translation id="6093888419484831006">正在取消更新...</translation>
@@ -8603,6 +8602,7 @@
 <translation id="9040661932550800571">要更新 <ph name="ORIGIN" /> 的密码吗？</translation>
 <translation id="9041692268811217999">您的管理员已禁止访问您计算机上的本地文件</translation>
 <translation id="904224458472510106">此操作无法撤消</translation>
+<translation id="9042827002460091668">请检查互联网连接，然后重试</translation>
 <translation id="9042893549633094279">隐私设置和安全性</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>

@@ -5494,7 +5494,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6087746524533454243">Ali iščete stran z vizitko brskalnika? Obiščite</translation>
 <translation id="6087960857463881712">Navdušen obraz</translation>
 <translation id="608912389580139775">Če želite dodati to stran na bralni seznam, se dotaknite ikone za ustvarjanje zaznamkov.</translation>
-<translation id="6091116443517744502">preverite internetno povezavo in poskusite znova</translation>
 <translation id="6091761513005122595">Datotečno sredstvo v skupni rabi je bilo uspešno vpeto.</translation>
 <translation id="6093803049406781019">Izbriši profil</translation>
 <translation id="6093888419484831006">Preklic posodabljanja ...</translation>
@@ -8647,6 +8646,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9040661932550800571">Želite posodobiti geslo za <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Dostop do lokalnih datotek v vašem računalniku je onemogočil skrbnik</translation>
 <translation id="904224458472510106">Tega dejanja ni mogoče razveljaviti</translation>
+<translation id="9042827002460091668">Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="9042893549633094279">Zasebnost in varnost</translation>
 <translation id="9044646465488564462">Z omrežjem se ni bilo mogoče povezati: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Vaš bralni seznam je premaknjen v novo stransko podokno. Preizkusite.</translation>

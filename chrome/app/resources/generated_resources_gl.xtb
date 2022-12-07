@@ -5469,7 +5469,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6087746524533454243">Buscas a páxina de información do navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de sorpresa</translation>
 <translation id="608912389580139775">Para engadir esta páxina á túa lista de lectura, fai clic na icona dos marcadores</translation>
-<translation id="6091116443517744502">comproba a conexión a Internet e téntao de novo</translation>
 <translation id="6091761513005122595">A localización compartida montouse correctamente.</translation>
 <translation id="6093803049406781019">Eliminar perfil</translation>
 <translation id="6093888419484831006">Cancelando a actualización...</translation>
@@ -8612,6 +8611,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="9040661932550800571">Queres actualizar o contrasinal de <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">O acceso aos ficheiros locais do teu equipo está desactivado polo teu administrador</translation>
 <translation id="904224458472510106">Esta operación non se pode desfacer</translation>
+<translation id="9042827002460091668">Comproba a conexión a Internet e téntao de novo</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9044646465488564462">Erro ao conectar coa rede: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">A túa lista de lectura trasladouse ao novo panel lateral. Próbaa aquí.</translation>

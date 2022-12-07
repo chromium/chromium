@@ -5486,7 +5486,6 @@
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">開懷大笑</translation>
 <translation id="608912389580139775">如要將網頁加入您的閱讀清單，請按一下「書籤」圖示</translation>
-<translation id="6091116443517744502">請檢查您的互聯網連線，然後再試一次</translation>
 <translation id="6091761513005122595">已成功連接共用裝置。</translation>
 <translation id="6093803049406781019">刪除設定檔</translation>
 <translation id="6093888419484831006">正在取消更新…</translation>
@@ -8631,6 +8630,7 @@
 <translation id="9040661932550800571">要更新 <ph name="ORIGIN" /> 的密碼嗎？</translation>
 <translation id="9041692268811217999">管理員已停用電腦的本機檔案存取權</translation>
 <translation id="904224458472510106">此操作無法復原</translation>
+<translation id="9042827002460091668">請檢查您的互聯網連線，然後再試一次</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9044646465488564462">無法連線至網絡：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">閱讀清單已移動至新的側面板。按這裡即可試用。</translation>

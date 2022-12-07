@@ -5472,7 +5472,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="6087746524533454243">Vai meklējat pārlūka lapu “Par”? Apmeklējiet vietni</translation>
 <translation id="6087960857463881712">Satriecoša seja</translation>
 <translation id="608912389580139775">Lai pievienotu šo lapu lasīšanas sarakstam, pieskarieties grāmatzīmes ikonai</translation>
-<translation id="6091116443517744502">Lūdzu, pārbaudiet interneta savienojumu un mēģiniet vēlreiz</translation>
 <translation id="6091761513005122595">Kopīgošana veiksmīgi iekļauta.</translation>
 <translation id="6093803049406781019">Dzēst profilu</translation>
 <translation id="6093888419484831006">Notiek atjaunināšanas atcelšana...</translation>
@@ -8621,6 +8620,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9040661932550800571">Vai atjaunināt paroli vietnei <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Administrators ir atspējojis piekļuvi lokālajiem failiem jūsu datorā.</translation>
 <translation id="904224458472510106">Šo darbību nevar atsaukt.</translation>
+<translation id="9042827002460091668">Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="9042893549633094279">Konfidencialitāte un drošība</translation>
 <translation id="9044646465488564462">Neizdevās izveidot savienojumu ar tīklu: <ph name="DETAILS" />.</translation>
 <translation id="9045160989383249058">Lasīšanas saraksts tagad ir atrodams jaunajā sānu panelī. Izmēģiniet šeit.</translation>

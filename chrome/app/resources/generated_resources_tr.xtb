@@ -5472,7 +5472,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6087746524533454243">Tarayıcı bilgisi sayfasını mı arıyorsunuz? Şu adresi ziyaret edin:</translation>
 <translation id="6087960857463881712">Çok beğenen</translation>
 <translation id="608912389580139775">Bu sayfayı okuma listenize eklemek için Yer İşareti simgesini tıklayın</translation>
-<translation id="6091116443517744502">Lütfen internet bağlantınızı kontrol edip tekrar deneyin</translation>
 <translation id="6091761513005122595">Paylaşım başarıyla eklendi.</translation>
 <translation id="6093803049406781019">Profili sil</translation>
 <translation id="6093888419484831006">Güncelleme iptal ediliyor...</translation>
@@ -8616,6 +8615,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="9040661932550800571"><ph name="ORIGIN" /> için şifre güncellensin mi?</translation>
 <translation id="9041692268811217999">Makinenizde yerel dosyalara erişim, yöneticiniz tarafından devre dışı bırakılmış durumda</translation>
 <translation id="904224458472510106">Bu işlem geri alınamaz</translation>
+<translation id="9042827002460091668">İnternet bağlantınızı kontrol edip tekrar deneyin</translation>
 <translation id="9042893549633094279">Gizlilik ve güvenlik</translation>
 <translation id="9044646465488564462">Şu ağa bağlanamadı: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Okuma listeniz yeni yan panele taşındı. Buradan deneyin.</translation>

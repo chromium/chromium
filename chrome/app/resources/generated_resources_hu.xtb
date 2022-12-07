@@ -5489,7 +5489,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6087746524533454243">A böngésző névjegyoldalát keresi? Nyissa meg ezt az oldalt:</translation>
 <translation id="6087960857463881712">Menő arc</translation>
 <translation id="608912389580139775">Ha szeretne oldalakat felvenni az olvasási listájára, kattintson a Könyvjelző ikonra</translation>
-<translation id="6091116443517744502">ellenőrizze az internetkapcsolatot, és próbálkozzon újra</translation>
 <translation id="6091761513005122595">A megosztott tároló csatlakoztatása sikeres volt.</translation>
 <translation id="6093803049406781019">Profil törlése</translation>
 <translation id="6093888419484831006">Frissítés leállítása...</translation>
@@ -8633,6 +8632,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="9040661932550800571">Szeretné frissíteni a(z) <ph name="ORIGIN" /> jelszavát?</translation>
 <translation id="9041692268811217999">A rendszergazda letiltotta a számítógép helyi fájljaihoz való hozzáférést</translation>
 <translation id="904224458472510106">Ez a művelet nem vonható vissza</translation>
+<translation id="9042827002460091668">Ellenőrizze az internetkapcsolatot, és próbálja újra</translation>
 <translation id="9042893549633094279">Adatvédelem és biztonság</translation>
 <translation id="9044646465488564462">Nem sikerült csatlakozni a hálózathoz: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Az olvasólistája átkerült az új oldalsó panelre. Itt kipróbálhatja.</translation>

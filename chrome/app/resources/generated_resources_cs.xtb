@@ -5471,7 +5471,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6087746524533454243">Hledáte stránku s informacemi o prohlížeči? Přejděte na stránku</translation>
 <translation id="6087960857463881712">Paráda</translation>
 <translation id="608912389580139775">Pokud tuto stránku chcete přidat do seznamu ke čtení, klikněte na ikonu záložky</translation>
-<translation id="6091116443517744502">Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="6091761513005122595">Sdílená složka byla úspěšně připojena.</translation>
 <translation id="6093803049406781019">Smazat profil</translation>
 <translation id="6093888419484831006">Rušení aktualizace...</translation>
@@ -8621,6 +8620,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9040661932550800571">Aktualizovat heslo pro web <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Správce přístup k místním souborům v tomto počítači zakázal</translation>
 <translation id="904224458472510106">Tuto akci nelze vrátit zpět</translation>
+<translation id="9042827002460091668">Zkontrolujte připojení k internetu a zkuste to znovu</translation>
 <translation id="9042893549633094279">Ochrana soukromí a zabezpečení</translation>
 <translation id="9044646465488564462">Připojení k síti se nezdařilo: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Seznam četby byl přesunut na nový postranní panel. Vyzkoušejte si to zde.</translation>

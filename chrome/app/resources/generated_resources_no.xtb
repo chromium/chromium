@@ -5479,7 +5479,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6087746524533454243">Ser du etter nettleserens Om-side? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-fjes</translation>
 <translation id="608912389580139775">For å legge til denne siden på leselisten din, klikk på Bokmerke-ikonet</translation>
-<translation id="6091116443517744502">kontroller internettilkoblingen din, og prøv på nytt</translation>
 <translation id="6091761513005122595">Delingen er aktivert.</translation>
 <translation id="6093803049406781019">Slett profil</translation>
 <translation id="6093888419484831006">Avbryter oppdatering …</translation>
@@ -8623,6 +8622,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="9040661932550800571">Vil du oppdatere passordet for <ph name="ORIGIN" />?</translation>
 <translation id="9041692268811217999">Administratoren din har deaktivert tilgang til lokale filer på maskinen din</translation>
 <translation id="904224458472510106">Denne handlingen kan ikke angres</translation>
+<translation id="9042827002460091668">Sjekk internettilkoblingen, og prøv på nytt</translation>
 <translation id="9042893549633094279">Personvern og sikkerhet</translation>
 <translation id="9044646465488564462">Kunne ikke koble til nettverket: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Leselisten din er flyttet til det nye sidepanelet. Prøv det her.</translation>
