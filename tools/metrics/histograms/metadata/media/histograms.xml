@@ -211,6 +211,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanMissingCallbacks" expires_after="2023-04-23">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether missing callbacks where detected during audio capture. Logged when
     AudioInputDevice is stopped.
@@ -220,7 +221,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.Audio.Capture.FramesProvided" units="frames"
     expires_after="2023-06-04">
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of captured audio frames that is provided by the operating system
     in each callback. Typically, Chrome will want to use a 10 ms buffer (e.g.
@@ -237,12 +239,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.HighLatencyCallbackError"
-    enum="BooleanError" expires_after="2022-04-05">
+    enum="BooleanError" expires_after="2023-04-05">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     A boolean that reflects whether or not an error was reported during audio
-    capture for a high latency stream.
+    capture for a high latency stream. Warning: this histogram was expired from
+    2022-04-05 to 2022-12-07; data may be missing.
   </summary>
 </histogram>
 
@@ -250,6 +254,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-04">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     This histogram measures the duration of every input stream, as seen from the
     renderer. It counts from when it has been successfully started, until it is
@@ -261,6 +266,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanError" expires_after="2023-04-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     A boolean that reflects whether or not an error was reported during audio
     capture for a low latency stream.
@@ -273,6 +279,7 @@ chromium-metrics-reviews@google.com.
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The time from the first microphone access failure due to blocked system
     permission before the last browser restart to startup after browser restart.
@@ -288,6 +295,7 @@ chromium-metrics-reviews@google.com.
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The time from the last microphone access failure due to blocked system
     permission before the last browser restart to startup after browser restart.
@@ -302,6 +310,7 @@ chromium-metrics-reviews@google.com.
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The Mac system permission state for microphone. Logged once at browser
     startup. For more information on the values, see
@@ -317,6 +326,7 @@ chromium-metrics-reviews@google.com.
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The Mac system permission state for microphone. Logged once at browser
     startup if there was a failure accessing the microphone due to blocked
@@ -333,6 +343,7 @@ chromium-metrics-reviews@google.com.
   <owner>grunell@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The Mac system permission state for microphone at the time of a user media
     request. Logged when the system permission is checked. If the permission is
@@ -349,6 +360,7 @@ chromium-metrics-reviews@google.com.
     units="buffers" expires_after="2023-06-04">
   <owner>tguilbert@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Maximum size (in buffers) of the unprocessed data queue, reached over a
     sampling interval (1000 callbacks). Not logged for streams received less
@@ -360,6 +372,7 @@ chromium-metrics-reviews@google.com.
     units="count" expires_after="2023-04-04">
   <owner>tguilbert@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Number of times over a sampling interval (1000 callbacks) a
     ProcessingAudioFifo has overflowed and dropped buffers. Capped at 100 (1/10
@@ -373,6 +386,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     When AudioInputDevice is stopped, this stat is recorded with whether an
     error callback was ever received over IPC, and in that case whether the
@@ -380,19 +394,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Capture.VirtualCallbackError" enum="BooleanError"
-    expires_after="M85">
-  <owner>maxmorin@chromium.org</owner>
-  <summary>
-    A boolean that reflects whether or not an error was reported during audio
-    capture for a virtual stream.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Capture.Win.Glitches2" units="glitches"
     expires_after="2023-04-23">
+  <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of glitches that were detected at the OS level while an audio
     input stream was active. A glitch in this case corresponds to a certain
@@ -404,9 +411,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
     expires_after="2023-05-07">
+  <owner>olka@chromium.org</owner>
   <owner>tommi@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Error codes from IAudioClient::Initialize() in
     WASAPIAudioInputStream::InitializeAudioEngine on Windows.
@@ -417,6 +425,7 @@ chromium-metrics-reviews@google.com.
     enum="AudioStreamFormatRelatedInitError" expires_after="2023-10-14">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Errors from IAudioClient::Initialize() in
     WASAPIAudioInputStream::InitializeAudioEngine on Windows that are related to
@@ -430,19 +439,22 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-23">
   <owner>gudiou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Success/error cases for opening an audio input stream on Windows.
   </summary>
 </histogram>
 
 <histogram name="Media.Audio.CoreAudioDispatchOverrideInitResult"
-    enum="CoreAudioDispatchOverrideInitResult" expires_after="2022-10-01">
-  <owner>guidou@chromium.org</owner>
+    enum="CoreAudioDispatchOverrideInitResult" expires_after="2023-10-01">
+  <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Tracks support and initialization success/failure of the CoreAudio dispatch
     override hotfix. Logged during initialization of AudioManagerMac. The fix is
-    not supported on macOS earlier than version 10.10.
+    not supported on macOS earlier than version 10.10. Warning: this histogram
+    was expired from 2022-10-01 to 2022-12-08; data may be missing.
   </summary>
 </histogram>
 
@@ -450,6 +462,7 @@ chromium-metrics-reviews@google.com.
     enum="CoreAudioDispatchOverrideLookupEvent" expires_after="2023-10-14">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged whenever the CoreAudio dispatch override hotfix needs to look up the
     calling function using dladdr(). Once ResumeIO and PauseIO have been
@@ -464,6 +477,7 @@ chromium-metrics-reviews@google.com.
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Error codes reported by the NotifyStreamError function in CrasInputStream.
   </summary>
@@ -474,6 +488,7 @@ chromium-metrics-reviews@google.com.
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged at each call to CrasInputStream::Open to indicate any errors.
   </summary>
@@ -484,6 +499,7 @@ chromium-metrics-reviews@google.com.
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged at each call to CrasInputStream::Start to indicate any errors.
   </summary>
@@ -494,6 +510,7 @@ chromium-metrics-reviews@google.com.
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Error codes reported by the NotifyStreamError function in CrasUnifiedStream.
   </summary>
@@ -504,6 +521,7 @@ chromium-metrics-reviews@google.com.
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged at each call to CrasUnifiedStream::Open to indicate any errors.
   </summary>
@@ -514,6 +532,7 @@ chromium-metrics-reviews@google.com.
   <owner>peah@chromium.org</owner>
   <owner>hychao@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Logged at each call to CrasUnifiedStream::Start to indicate any errors.
   </summary>
@@ -522,7 +541,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.Audio.InputStartupSuccessMac" enum="BooleanSuccess"
     expires_after="2023-05-27">
   <owner>henrika@chromium.org</owner>
-  <owner>webrtc-audio@google.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Indicates if audio capturing did start after stream startup was requested.
     Sampled once, a few seconds after a stream has been asked to start.
@@ -530,13 +549,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.InputVolumeStartsAtZeroWin"
-    enum="BooleanVolumeZero" expires_after="2020-10-15">
+    enum="BooleanVolumeZero" expires_after="2023-06-07">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Indicates if the volume level of the audio session is set to zero when the
     input audio session starts. Sampled once when the stream starts but only on
-    Windows platforms. See http://crbug.com/1014443.
+    Windows platforms. See http://crbug.com/1014443. Warning: this histogram was
+    expired from 2022-10-09 to 2022-12-07; data may be missing.
   </summary>
 </histogram>
 
@@ -544,6 +565,7 @@ chromium-metrics-reviews@google.com.
     enum="Hresult" expires_after="M113">
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Errors from various methods on WASAPIAudioOutputStream. Recorded upon a
     failure being returned from a call into WASAPI.
@@ -559,9 +581,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.OutputDeviceAuthorizationTime" units="ms"
     expires_after="2023-04-30">
-  <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Time delta between the moment output device authorization request is
     received by the browser and the moment its processessing is finished (and
@@ -573,6 +595,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-05">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Duration of the interval when a listener listens to a specific output
     device. Recorded when a listener chooses to listen to another output device,
@@ -588,6 +611,7 @@ chromium-metrics-reviews@google.com.
     units="listeners" expires_after="2023-10-05">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Maximum number of listeners receiving the reference output signal during
     mixed playback. Recoreded when mixing stops (i.e. when all reference signal
@@ -604,6 +628,7 @@ chromium-metrics-reviews@google.com.
     units="streams" expires_after="2023-10-05">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Maximum number of output streams mixed simlutaniously by OutputDeviceMixer.
     Recoreded when mixing stops (when all reference signal listeners are gone).
@@ -619,6 +644,7 @@ chromium-metrics-reviews@google.com.
     enum="AudioOutputDeviceMixerMixedPlaybackStatus" expires_after="2023-04-16">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Health status of the mixed playback. Recorded when mixed playback stopped or
     failed to start.
@@ -629,6 +655,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2023-10-05">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Duration of the interval between the moment OutputDeviceMixer started mixed
     playback (referece playback signal is requested by at least one listener and
@@ -648,6 +675,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-05">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Duration of the interval when there are no output streams to mix but there
     are reference signal listeners present, so OutputDeviceMixer renders silence
@@ -663,6 +691,7 @@ chromium-metrics-reviews@google.com.
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Number of times over a sampling interval (1000 callbacks) when the mixing
     callback took longer than the playback buffer duration to finish. Capped at
@@ -676,6 +705,7 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2023-10-05">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Duration of the interval when an output stream managed by OutputDeviceMixer
     is playing independently (Unmixed) or as a part of the mix (Mixed). Measured
@@ -700,6 +730,7 @@ chromium-metrics-reviews@google.com.
     enum="AudioOutputDeviceMixerStreamStatus" expires_after="2023-10-05">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Health status of each output stream managed by mixer. Recorded when the
     stream is closed.
@@ -711,6 +742,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-05">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     A path OutputDeviceMixerManager uses to create an output stream.
   </summary>
@@ -718,8 +750,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Processing.CaptureDelayMs" units="ms"
     expires_after="2023-04-16">
-  <owner>guidou@chromium.org</owner>
+  <owner>saza@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The time, in milliseconds, between when a block of audio is read from the
     soundcard and when it's presented to the audio processor. Used in
@@ -729,8 +762,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Processing.CaptureDelayVarianceMs"
     units="ms squared" expires_after="2023-04-16">
-  <owner>guidou@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The variance of the capture delay in milliseconds (see
     Media.Audio.Processing.CaptureDelayMs). Logged once every second and
@@ -740,8 +774,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Processing.RenderDelayMs" units="ms"
     expires_after="2023-04-16">
-  <owner>guidou@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The time, in milliseconds, between when a block of audio is presented to the
     audio processor and the time it's played out on the soundcard. Used in
@@ -751,8 +786,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Processing.RenderDelayVarianceMs"
     units="ms squared" expires_after="2023-04-16">
-  <owner>guidou@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The variance of the render delay in milliseconds (see
     Media.Audio.Processing.RenderDelayMs). Logged once every second and
@@ -762,8 +798,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Processing.TotalDelayMs" units="ms"
     expires_after="2023-04-30">
-  <owner>armax@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The estimated total audio system delay presented to the audio processor. The
     sum of the individual capture and render delays at similar points in time.
@@ -772,8 +809,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.Audio.Processing.TotalDelayVarianceMs"
     units="ms squared" expires_after="2023-04-16">
-  <owner>guidou@chromium.org</owner>
+  <owner>saza@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The variance of the total delay in milliseconds (see
     Media.Audio.Processing.TotalDelayMs). Logged once every second and
@@ -785,6 +823,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-02-12">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether the capture device supports raw audio capture or not. Emitted when
     the audio input stream is closed but only on Windows platforms. Only
@@ -797,6 +836,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-05-27">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of frames audio is actually rendered at if the number is
     different from the desired number of frames. If the desired frame size is
@@ -812,6 +852,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2023-05-27">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The time spent to get audio data from the source. For WebRTC, it's the time
     spent in WebRtcAudioRenderer::SourceCallback. Logged every function call,
@@ -829,6 +870,7 @@ chromium-metrics-reviews@google.com.
     units="microseconds" expires_after="2023-04-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The maximum time spent to get audio data from the source during a session.
     For WebRTC, it's the time spent in WebRtcAudioRenderer::SourceCallback. A
@@ -846,6 +888,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-04">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Similar to Media.Audio.OutputDeviceAuthorizationTime, this histogram
     measures the time required for device authorization, but it is measured on
@@ -862,6 +905,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanTimedOut" expires_after="2023-04-16">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether audio output device timed out waiting for authorization reply from
     the browser side.
@@ -873,6 +917,7 @@ chromium-metrics-reviews@google.com.
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The time delta from an AudioOutputDevice sending its first PlayStream
     message to it getting its first data callback.
@@ -884,6 +929,7 @@ chromium-metrics-reviews@google.com.
   <owner>dalecurtis@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Device status received in response to device authorization request.
   </summary>
@@ -893,6 +939,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-04">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     This histogram measures the duration of every output stream, as seen from
     the renderer. It counts from when it has been successfully started, until it
@@ -917,6 +964,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     When AudioOutputDevice is stopped, this stat is recorded with whether an
     error callback was ever received over IPC, and in that case whether the
@@ -942,7 +990,8 @@ chromium-metrics-reviews@google.com.
 <!-- https://crbug.com/986492 -->
 
   <owner>olka@chromium.org</owner>
-  <owner>maxmorin@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Device status received during TrackAudioRenderer initialization. This is a
     specific case of Media.Audio.Render.OutputDeviceStatus histogram.
@@ -956,7 +1005,8 @@ chromium-metrics-reviews@google.com.
 <!-- https://crbug.com/986492 -->
 
   <owner>olka@chromium.org</owner>
-  <owner>maxmorin@chromium.org</owner>
+  <owner>fhernqvist@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Device status received by TrackAudioRenderer when switching the output
     device. This is a specific case of Media.Audio.Render.OutputDeviceStatus
@@ -971,7 +1021,8 @@ chromium-metrics-reviews@google.com.
 <!-- https://crbug.com/986501 -->
 
   <owner>olka@chromium.org</owner>
-  <owner>maxmorin@chromium.org</owner>
+  <owner>fhrenqvist@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Device status received during WebRTCAudioRenderer initialization. This is a
     specific case of Media.Audio.Render.OutputDeviceStatus histogram.
@@ -985,7 +1036,8 @@ chromium-metrics-reviews@google.com.
 <!-- https://crbug.com/986501 -->
 
   <owner>olka@chromium.org</owner>
-  <owner>maxmorin@chromium.org</owner>
+  <owner>fhernqvist@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Device status received by WebRTCAudioRenderer when switching the output
     device. This is a specific case of Media.Audio.Render.OutputDeviceStatus
@@ -997,6 +1049,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-10">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether a glitch in the capture/render audio at the OS level was detected
     during the first 1000 OS callbacks of an active input/output stream. A
@@ -1014,6 +1067,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-10">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of glitches that were detected at the OS level while an audio
     input (Capture) or output (Render) stream was active. A glitch is detected
@@ -1033,6 +1087,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-10">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The length in milliseconds of the largest glitch that was detected at the OS
     level by an audio input (Capture) or output (Render) stream. This value is
@@ -1051,6 +1106,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-06-10">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The combined length in milliseconds of input (Capture) or output (Render)
     audio glitches detected at the OS level. This is useful to know in
@@ -1075,6 +1131,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-09">
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether there is input audio glitches due to dropped input audio data or
     not. Sampled when a low-latency input audio stream is destructed.
@@ -1085,6 +1142,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-05">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of input audio data blocks that were dropped at the
     browser/renderer boundary due to for example buffer overflow in the writer
@@ -1103,6 +1161,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The proportion of input audio data that was dropped at the browser/renderer
     boundary due to for example buffer overflow in the writer side buffer or in
@@ -1119,6 +1178,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-05">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of input audio data blocks that were dropped at the
     browser/renderer boundary due to for example buffer overflow in the writer
@@ -1131,6 +1191,7 @@ chromium-metrics-reviews@google.com.
     units="misses" expires_after="2023-10-05">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of times input audio data blocks that had to be buffered because
     there was not room in the shared memory ring buffer on the browser/renderer
@@ -1149,6 +1210,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>olka@chromium.org</owner>
   <owner>gustaf@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The proportion of input audio data blocks that had to be buffered because
     there was not room in the shared memory ring buffer on the browser/renderer
@@ -1166,6 +1228,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-05">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of times input audio data blocks that had to be buffered because
     there was not room in the shared memory ring buffer on the browser/renderer
@@ -1193,7 +1256,9 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Audio pipeline health metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>Measures the time taken for AudioInputController::</summary>
 </histogram>
 
@@ -1201,6 +1266,7 @@ chromium-metrics-reviews@google.com.
     enum="AudioInputSilenceReport" expires_after="2023-04-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Every 15 seconds during the lifetime of an audio input stream, the sound
     level is measured, see AudioInputController::CheckAudioPower(). If the level
@@ -1219,6 +1285,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-16">
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     A boolean that reflects whether or not an error was reported during audio
     rendering, reported after a stream has stopped, if it was started.
@@ -1233,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>armax@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Time interval from the output stream controller construction to its
     destruction.
@@ -1244,6 +1311,7 @@ chromium-metrics-reviews@google.com.
     enum="AudioOutputStreamCreationResult" expires_after="2023-04-16">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether an AudioOutputController succeeded in creating and opening an output
     stream proxy. Only logged for the initial creation, subsequent re-creations
@@ -1258,6 +1326,7 @@ chromium-metrics-reviews@google.com.
     enum="AudioOutputStreamCreationResult" expires_after="2023-04-16">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether an AudioOutputController succeeded in creating and opening an output
     stream proxy after receiving a default device change event.
@@ -1270,6 +1339,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Time spent waiting in AudioOutputController::WaitTillDataReady() if the data
     was not initially available.
@@ -1282,6 +1352,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether playback started successfully after stream startup was requested.
   </summary>
@@ -1293,6 +1364,7 @@ chromium-metrics-reviews@google.com.
   <owner>olka@chromium.org</owner>
   <owner>armax@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether a low latency stream to be rendered through the resampler was opened
     successfully or which type of fallback stream was used instead. In case a
@@ -1302,72 +1374,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.CreateClientResult"
-    enum="Hresult" expires_after="2020-04-05">
-  <owner>marinaciocea@chromium.org</owner>
-  <summary>
-    This histogram is the 3nd potential failure step in
-    CoreAudioUtil::GetPreferredAudioParameters. The success% of this histogram
-    is input for
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.GetMixFormatResult
-    histogram.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.CreateDeviceEnumeratorResult"
-    enum="Hresult" expires_after="M82">
-  <owner>marinaciocea@chromium.org</owner>
-  <summary>
-    This histogram is the 1st potential failure step in
-    CoreAudioUtil::GetPreferredAudioParameters. The success% of this histogram
-    is input for
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.CreateDeviceResult
-    histogram.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.CreateDeviceResult"
-    enum="Hresult" expires_after="M82">
-  <owner>marinaciocea@chromium.org</owner>
-  <summary>
-    This histogram is the 2nd potential failure step in
-    CoreAudioUtil::GetPreferredAudioParameters. The success% of this histogram
-    is input for
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.CreateClientResult
-    histogram.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.GetDevicePeriodResult"
-    enum="Hresult" expires_after="M82">
-  <owner>marinaciocea@chromium.org</owner>
-  <summary>
-    This histogram is the last potential failure step in
-    CoreAudioUtil::GetPreferredAudioParameters.
-  </summary>
-</histogram>
-
-<histogram
-    name="Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.GetMixFormatResult"
-    enum="Hresult" expires_after="2020-04-05">
-  <owner>marinaciocea@chromium.org</owner>
-  <summary>
-    This histogram is the 4nd potential failure step in
-    CoreAudioUtil::GetPreferredAudioParameters. The success% of this histogram
-    is input for
-    Media.AudioOutputStreamProxy.GetPreferredOutputStreamParametersWin.GetDevicePeriodResult
-    histogram.
-  </summary>
-</histogram>
-
 <histogram name="Media.AudioOutputStreamProxy.StreamFormat"
     enum="AudioOutputProxyStreamFormat" expires_after="2023-05-27">
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Records format used by AudioManager to create audio output stream proxy. If
     a fake stream is created it results in muted audio playback. Warning: this
@@ -1383,6 +1394,7 @@ chromium-metrics-reviews@google.com.
   </obsolete>
   <owner>henrika@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Captures if render-side audio glitches are detected or not. Sampled when a
     low-latency output audio stream is destructed.
@@ -1394,6 +1406,7 @@ chromium-metrics-reviews@google.com.
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Captures if render-side audio glitches are detected or not. Sampled when a
     low-latency output audio stream is destructed.
@@ -1412,22 +1425,13 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-11-02">
   <owner>olka@chromium.org</owner>
   <owner>fhernqvist@google.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Status of audio sink used by AudioRendererImpl. If not OK, a NullAudioSink
     will be used for audio output instead. This is logged for every call to
     AudioRendererImpl::Initialize, which generally occurs once per active audio
     session (i.e., between a play and pause). If audio track changes are ever
     enabled, it may additionally be called for every audio track change.
-  </summary>
-</histogram>
-
-<histogram name="Media.AudioRendererMissedDeadline" units="%"
-    expires_after="2023-06-04">
-  <owner>dalecurtis@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    Percentage of SyncReader::Read() calls where the renderer missed its
-    realtime deadline.
   </summary>
 </histogram>
 
@@ -1441,6 +1445,7 @@ chromium-metrics-reviews@google.com.
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Proportion of SyncReader::Read() calls where the renderer missed its
     realtime deadline. Rounded up, clipped to 1/10 of the stream callbacks.
@@ -1472,6 +1477,7 @@ chromium-metrics-reviews@google.com.
   <owner>olka@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The number of SyncReader::Read() calls where the renderer missed its
     realtime deadline. Logged at the end of each 1000-read interval for
@@ -1499,33 +1505,10 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-10-05">
   <owner>fhernqvist@google.com</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     How long it take for the audio manager instance to be created by the audio
     service, in case the audio service owns the audio manager.
-  </summary>
-</histogram>
-
-<histogram name="Media.AudioService.HasConnectionsDuration" units="ms"
-    expires_after="M85">
-  <owner>marinaciocea@chromium.org</owner>
-  <owner>maxmorin@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The time interval when the audio service has connections, computed from the
-    moment the first bind request is received to the moment when the last
-    connection is closed.
-  </summary>
-</histogram>
-
-<histogram name="Media.AudioService.HasNoConnectionsDuration" units="ms"
-    expires_after="M85">
-  <owner>marinaciocea@chromium.org</owner>
-  <owner>maxmorin@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The time interval when the audio service has no connections, computed from
-    the moment the last connection is closed until quit closure is called or a
-    new bind request is received.
   </summary>
 </histogram>
 
@@ -1535,6 +1518,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     State of the audio thread. A value of &quot;started&quot; is emitted once
     the hang monitor has been initialized. If the thread is detected as hung
@@ -2603,6 +2587,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Whether Chrome had to fallback to the high latency audio path or not.
   </summary>
@@ -2645,6 +2630,7 @@ chromium-metrics-reviews@google.com.
     enum="GetDisplayMediaBooleanConstraint" expires_after="2023-05-07">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Records whether getDisplayMedia was called with the
     suppressLocalAudioPlayback constraint.
@@ -2665,6 +2651,7 @@ chromium-metrics-reviews@google.com.
     enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2023-05-07">
   <owner>eladalon@chromium.org</owner>
   <owner>fbeaufort@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Records whether getDisplayMedia was called with the systemAudio constraint.
   </summary>
@@ -2849,6 +2836,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Media platform support planning metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>Channel count of the hardware audio device.</summary>
 </histogram>
 
@@ -2857,6 +2845,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Media platform support planning metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>Channel layout of the hardware audio device.</summary>
 </histogram>
 
@@ -2865,6 +2854,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Media platform support planning metric. -->
 
   <owner>dalecurtis@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>Samples per second of the hardware audio device.</summary>
 </histogram>
 
@@ -2906,17 +2896,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.HighLatencyAudioCaptureStartupSuccess"
-    enum="AudioCaptureStartupResult" expires_after="2021-12-05">
-  <owner>armax@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    Whether capture started successfully after a high-latency input stream
-    startup was requested.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Media.InitialDecoderSelectionTime" units="ms"
     expires_after="2023-03-25">
   <owner>cassew@google.com</owner>
@@ -2936,7 +2915,7 @@ chromium-metrics-reviews@google.com.
   <owner>olka@chromium.org</owner>
   <owner>fhernqvist@google.com</owner>
   <owner>henrika@hromium.org</owner>
-  <owner>webrtc-audio@google.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Error codes that we encounter while setting up an AUAudioInputStream on Mac.
   </summary>
@@ -2947,6 +2926,7 @@ chromium-metrics-reviews@google.com.
 
   <owner>henrika@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Duration in milliseconds of low-latency audio input streams. Sampled when
     the stream is closed by the AudioInputController.
@@ -2957,6 +2937,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-16">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Duration in milliseconds of low-latency audio input streams which never got
     any callbacks. Warning: this histogram was expired from 2020-10-11 to
@@ -3686,6 +3667,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-30">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Duration of an audio output stream. Measured in AudioOutputController from
     when a stream is started until it is stopped. A stream is stopped when it is
