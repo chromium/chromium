@@ -5,13 +5,18 @@
 #ifndef REMOTING_HOST_MOJO_CALLER_SECURITY_CHECKER_H_
 #define REMOTING_HOST_MOJO_CALLER_SECURITY_CHECKER_H_
 
-#include "base/process/process_handle.h"
+#include <memory>
+
+namespace named_mojo_ipc_server {
+struct ConnectionInfo;
+}
 
 namespace remoting {
 
 // Returns true if the process referred to by |caller_pid| is a trusted mojo
 // endpoint.
-bool IsTrustedMojoEndpoint(base::ProcessId caller_pid);
+bool IsTrustedMojoEndpoint(
+    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> caller);
 
 }  // namespace remoting
 

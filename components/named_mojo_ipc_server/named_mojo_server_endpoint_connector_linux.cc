@@ -5,7 +5,9 @@
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector_linux.h"
 
 #include <sys/socket.h>
+#include <sys/types.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -13,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/threading/sequence_bound.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
@@ -45,13 +48,14 @@ void NamedMojoServerEndpointConnectorLinux::OnSocketReady() {
     return;
   }
 
-  ucred unix_peer_identity;
-  socklen_t len = sizeof(unix_peer_identity);
+  auto info = std::make_unique<ConnectionInfo>();
+  socklen_t len = sizeof(info->credentials);
   if (getsockopt(connection_fd.get(), SOL_SOCKET, SO_PEERCRED,
-                 &unix_peer_identity, &len) != 0) {
+                 &info->credentials, &len) != 0) {
     PLOG(ERROR) << "getsockopt failed.";
     return;
   }
+  info->pid = info->credentials.pid;
 
   mojo::PlatformChannelEndpoint endpoint(
       mojo::PlatformHandle(std::move(connection_fd)));
@@ -60,7 +64,7 @@ void NamedMojoServerEndpointConnectorLinux::OnSocketReady() {
     return;
   }
   delegate_.AsyncCall(&Delegate::OnClientConnected)
-      .WithArgs(std::move(endpoint), unix_peer_identity.pid);
+      .WithArgs(std::move(endpoint), std::move(info));
 }
 
 bool NamedMojoServerEndpointConnectorLinux::TryStart() {

@@ -18,6 +18,7 @@
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_version.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -104,7 +105,8 @@ UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
           named_mojo_ipc_server::NamedMojoIpcServerBase::kUseIsolatedConnection,
           base::BindRepeating(base::BindRepeating(
               [](mojom::UpdateService* interface,
-                 base::ProcessId /* caller_pid */) {
+                 std::unique_ptr<
+                     named_mojo_ipc_server::ConnectionInfo> /* info */) {
                 // TODO(crbug.com/1378742): Implement some form of
                 // validation.
                 return interface;

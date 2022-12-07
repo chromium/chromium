@@ -64,7 +64,8 @@ class NamedMojoIpcServerBase : public IpcServer {
   NamedMojoIpcServerBase(
       const mojo::NamedPlatformChannel::ServerName& server_name,
       absl::optional<uint64_t> message_pipe_id,
-      base::RepeatingCallback<void*(base::ProcessId)> impl_provider);
+      base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
+          impl_provider);
   ~NamedMojoIpcServerBase() override;
 
   void OnIpcDisconnected();
@@ -93,7 +94,7 @@ class NamedMojoIpcServerBase : public IpcServer {
 
     // Overrides for NamedMojoServerEndpointConnector::Delegate
     void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
-                           base::ProcessId peer_pid) override;
+                           std::unique_ptr<ConnectionInfo> info) override;
     void OnServerEndpointCreated() override;
 
    private:
@@ -103,7 +104,7 @@ class NamedMojoIpcServerBase : public IpcServer {
   void OnEndpointConnectorStarted(
       base::SequenceBound<NamedMojoServerEndpointConnector> endpoint_connector);
   void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
-                         base::ProcessId peer_pid);
+                         std::unique_ptr<ConnectionInfo> info);
   void OnServerEndpointCreated();
 
   using ActiveConnectionMap =
@@ -112,7 +113,8 @@ class NamedMojoIpcServerBase : public IpcServer {
 
   mojo::NamedPlatformChannel::ServerName server_name_;
   absl::optional<uint64_t> message_pipe_id_;
-  base::RepeatingCallback<void*(base::ProcessId)> impl_provider_;
+  base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
+      impl_provider_;
 
   bool server_started_ = false;
 
@@ -149,7 +151,8 @@ class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
   NamedMojoIpcServer(
       const mojo::NamedPlatformChannel::ServerName& server_name,
       absl::optional<uint64_t> message_pipe_id,
-      base::RepeatingCallback<Interface*(base::ProcessId)> impl_provider)
+      base::RepeatingCallback<Interface*(std::unique_ptr<ConnectionInfo>)>
+          impl_provider)
       : NamedMojoIpcServerBase(
             server_name,
             message_pipe_id,

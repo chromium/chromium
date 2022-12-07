@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -20,6 +21,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -45,9 +47,9 @@ NamedMojoIpcServerBase::DelegateProxy::~DelegateProxy() = default;
 
 void NamedMojoIpcServerBase::DelegateProxy::OnClientConnected(
     mojo::PlatformChannelEndpoint endpoint,
-    base::ProcessId peer_pid) {
+    std::unique_ptr<ConnectionInfo> info) {
   if (server_) {
-    server_->OnClientConnected(std::move(endpoint), peer_pid);
+    server_->OnClientConnected(std::move(endpoint), std::move(info));
   }
 }
 
@@ -60,7 +62,8 @@ void NamedMojoIpcServerBase::DelegateProxy::OnServerEndpointCreated() {
 NamedMojoIpcServerBase::NamedMojoIpcServerBase(
     const mojo::NamedPlatformChannel::ServerName& server_name,
     absl::optional<uint64_t> message_pipe_id,
-    base::RepeatingCallback<void*(base::ProcessId)> impl_provider)
+    base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
+        impl_provider)
     : server_name_(server_name),
       message_pipe_id_(message_pipe_id),
       impl_provider_(impl_provider) {
@@ -117,8 +120,9 @@ void NamedMojoIpcServerBase::OnIpcDisconnected() {
 
 void NamedMojoIpcServerBase::OnClientConnected(
     mojo::PlatformChannelEndpoint endpoint,
-    base::ProcessId peer_pid) {
-  void* impl = impl_provider_.Run(peer_pid);
+    std::unique_ptr<ConnectionInfo> info) {
+  base::ProcessId peer_pid = info->pid;
+  void* impl = impl_provider_.Run(std::move(info));
   if (!impl) {
     LOG(ERROR) << "Process " << peer_pid
                << " is not a trusted mojo endpoint. Connection refused.";

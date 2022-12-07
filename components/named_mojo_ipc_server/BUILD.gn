@@ -12,6 +12,8 @@ mojom("testing_mojom") {
 
 static_library("named_mojo_ipc_server") {
   sources = [
+    "connection_info.cc",
+    "connection_info.h",
     "ipc_server.h",
     "named_mojo_ipc_server.cc",
     "named_mojo_ipc_server.h",

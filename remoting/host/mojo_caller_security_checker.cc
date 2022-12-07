@@ -5,6 +5,7 @@
 #include "remoting/host/mojo_caller_security_checker.h"
 
 #include <array>
+#include <memory>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
@@ -13,6 +14,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "remoting/host/base/process_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -36,12 +38,13 @@ constexpr auto kAllowedCallerProgramNames =
 
 }  // namespace
 
-bool IsTrustedMojoEndpoint(base::ProcessId caller_pid) {
+bool IsTrustedMojoEndpoint(
+    std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> caller) {
   static base::NoDestructor<base::FilePath> current_process_image_path(
       GetProcessImagePath(base::GetCurrentProcId()));
-  base::FilePath caller_process_image_path = GetProcessImagePath(caller_pid);
+  base::FilePath caller_process_image_path = GetProcessImagePath(caller->pid);
   if (caller_process_image_path.empty()) {
-    LOG(ERROR) << "Cannot resolve process image path for PID " << caller_pid;
+    LOG(ERROR) << "Cannot resolve process image path for PID " << caller->pid;
     return false;
   }
   if (caller_process_image_path == *current_process_image_path) {

@@ -25,6 +25,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_test_util.h"
 #include "components/named_mojo_ipc_server/testing.test-mojom.h"
@@ -143,8 +144,9 @@ void NamedMojoIpcServerTest::CreateIpcServer() {
       test_server_name_,
       GetParam() ? NamedMojoIpcServerBase::kUseIsolatedConnection
                  : kTestMessagePipeId,
-      base::BindRepeating(
-          [](test::mojom::Echo* impl, base::ProcessId) { return impl; }, this));
+      base::BindRepeating([](test::mojom::Echo* impl,
+                             std::unique_ptr<ConnectionInfo>) { return impl; },
+                          this));
   ipc_server_->set_on_server_endpoint_created_callback_for_testing(
       base::BindRepeating(&NamedMojoIpcServerTest::OnServerEndpointCreated,
                           base::Unretained(this)));

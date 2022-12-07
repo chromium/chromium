@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
 #define COMPONENTS_NAMED_MOJO_IPC_SERVER_NAMED_MOJO_SERVER_ENDPOINT_CONNECTOR_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
+#include "build/buildflag.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
@@ -20,6 +23,8 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace named_mojo_ipc_server {
+
+struct ConnectionInfo;
 
 // Interface to allow platform-specific implementations to establish connection
 // between the server endpoint and the client. mojo::IsolatedConnection can
@@ -40,7 +45,7 @@ class NamedMojoServerEndpointConnector {
     // Called when a client has connected to the server endpoint.
     virtual void OnClientConnected(
         mojo::PlatformChannelEndpoint client_endpoint,
-        base::ProcessId peer_pid) = 0;
+        std::unique_ptr<ConnectionInfo> info) = 0;
 
     // Called to notify unittests that the server endpoint has been created.
     virtual void OnServerEndpointCreated() = 0;

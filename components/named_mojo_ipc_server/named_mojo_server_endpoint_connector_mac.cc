@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 
@@ -55,7 +56,9 @@ void NamedMojoServerEndpointConnectorMac::HandleRequest() {
     return;
   }
 
-  pid_t sender_pid = audit_token_to_pid(request.trailer.msgh_audit);
+  auto info = std::make_unique<ConnectionInfo>();
+  info->pid = audit_token_to_pid(request.trailer.msgh_audit);
+  info->audit_token = request.trailer.msgh_audit;
 
   mojo::PlatformChannelEndpoint remote_endpoint(mojo::PlatformHandle(
       base::mac::ScopedMachSendRight(request.header.msgh_remote_port)));
@@ -66,7 +69,7 @@ void NamedMojoServerEndpointConnectorMac::HandleRequest() {
 
   scoped_message.Disarm();
   delegate_.AsyncCall(&Delegate::OnClientConnected)
-      .WithArgs(std::move(remote_endpoint), sender_pid);
+      .WithArgs(std::move(remote_endpoint), std::move(info));
 }
 
 mach_port_t NamedMojoServerEndpointConnectorMac::port() {

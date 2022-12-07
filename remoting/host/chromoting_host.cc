@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/named_mojo_ipc_server.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"

@@ -7,6 +7,7 @@
 #include <string.h>
 #include <windows.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -25,6 +26,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_types.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -130,12 +132,20 @@ void NamedMojoServerEndpointConnectorWin::OnConnectedEventSignaled(
 void NamedMojoServerEndpointConnectorWin::OnReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::ProcessId peer_pid;
+  auto info = std::make_unique<ConnectionInfo>();
   if (!GetNamedPipeClientProcessId(pending_named_pipe_handle_.Get(),
-                                   &peer_pid)) {
+                                   &info->pid)) {
     PLOG(ERROR) << "Failed to get peer PID";
     OnError();
     return;
+  }
+  absl::optional<base::win::ScopedHandle> impersonation_token;
+  if (ImpersonateNamedPipeClient(pending_named_pipe_handle_.Get())) {
+    HANDLE token = nullptr;
+    if (OpenThreadToken(GetCurrentThread(), TOKEN_ALL_ACCESS, TRUE, &token)) {
+      info->impersonation_token = base::win::ScopedHandle(token);
+    }
+    RevertToSelf();
   }
   mojo::PlatformChannelEndpoint endpoint(
       mojo::PlatformHandle(std::move(pending_named_pipe_handle_)));
@@ -146,7 +156,7 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
   }
   ResetConnectionObjects();
   delegate_.AsyncCall(&Delegate::OnClientConnected)
-      .WithArgs(std::move(endpoint), peer_pid);
+      .WithArgs(std::move(endpoint), std::move(info));
   Connect();
 }
 
