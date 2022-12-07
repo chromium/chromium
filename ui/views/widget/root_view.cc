@@ -282,7 +282,7 @@ raw_ptr<AnnounceTextView> RootView::GetOrCreateAnnounceView() {
     announce_view_ = AddChildView(std::make_unique<AnnounceTextView>());
     announce_view_->SetProperty(kViewIgnoredByLayoutKey, true);
   }
-  return announce_view_;
+  return announce_view_.get();
 }
 
 void RootView::AnnounceText(const std::u16string& text) {

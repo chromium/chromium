@@ -134,10 +134,10 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   // Controller for this view.
   base::WeakPtr<AutofillPopupController> controller_ = nullptr;
   std::vector<AutofillPopupRowView*> rows_;
-  raw_ptr<views::BoxLayout> layout_ = nullptr;
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
-  raw_ptr<views::View> body_container_ = nullptr;
-  raw_ptr<views::View> footer_container_ = nullptr;
+  raw_ptr<views::BoxLayout, DanglingUntriaged> layout_ = nullptr;
+  raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> body_container_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged> footer_container_ = nullptr;
 };
 
 }  // namespace autofill

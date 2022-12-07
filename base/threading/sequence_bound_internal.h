@@ -120,9 +120,9 @@ class Storage {
   void Destruct(SequencedTaskRunner& task_runner) {
     CrossThreadTraits::PostTask(
         task_runner, FROM_HERE,
-        CrossThreadTraits::BindOnce(&InternalDestruct,
-                                    CrossThreadTraits::Unretained(ptr_),
-                                    CrossThreadTraits::Unretained(alloc_)));
+        CrossThreadTraits::BindOnce(
+            &InternalDestruct, CrossThreadTraits::Unretained(ptr_),
+            CrossThreadTraits::Unretained(alloc_.get())));
     ptr_ = nullptr;
     alloc_ = nullptr;
   }
@@ -150,7 +150,7 @@ class Storage {
   // Storage originally allocated by `AlignedAlloc()`. Maintained separately
   // from  `ptr_` since the original, unadjusted pointer needs to be passed to
   // `AlignedFree()`.
-  raw_ptr<void> alloc_ = nullptr;
+  raw_ptr<void, DanglingUntriaged> alloc_ = nullptr;
 };
 
 template <typename T, typename CrossThreadTraits>
