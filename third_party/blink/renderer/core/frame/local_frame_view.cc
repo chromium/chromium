@@ -4410,10 +4410,6 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
     // the scheduled visual update.
     SetIntersectionObservationState(kRequired);
   } else if (GetFrame().IsLocalRoot()) {
-    // By this point, every frame in the local frame tree has become throttled,
-    // so painting the tree should just clear the previous painted output.
-    SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES(
-        "Blink.RenderThrottling.PaintUpdateTime");
     DCHECK(!IsUpdatingLifecycle());
     ForceThrottlingScope force_throttling(*this);
     // TODO(https://crbug.com/1196853): Switch to ScriptForbiddenScope once

@@ -2367,19 +2367,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.RenderThrottling.PaintUpdateTime" units="microseconds"
-    expires_after="2023-04-16">
-  <owner>pdr@chromium.org</owner>
-  <owner>tcaptan@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Time spent running the paint lifecycle following a frame becoming throttled.
-
-    This histogram does not record metrics on machines with low-resolution
-    clocks.
-  </summary>
-</histogram>
-
 <histogram name="Blink.ResourceRequest.CompletionDelay" units="ms"
     expires_after="2023-07-19">
   <owner>cduvall@chromium.org</owner>
