@@ -18,6 +18,8 @@
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 namespace scheduler {
 

@@ -117,7 +117,10 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
   // The bit fields may fit into the machine word of DisplayItemClient which
   // has only 8-bit data.
   unsigned bit_fields1 : 24;
-  unsigned bit_fields2 : 24;
+  // The number of bitfields here is greater than the number in the actual struct.
+  // DisplayItemClient has a record_replay_id member which affects the field layout
+  // vs. upstream chromium.
+  //unsigned bit_fields2 : 24;
 #if DCHECK_IS_ON()
   bool is_destroyed;
 #endif
