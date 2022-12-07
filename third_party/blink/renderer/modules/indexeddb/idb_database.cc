@@ -141,6 +141,10 @@ void IDBDatabase::SetDatabaseMetadata(const IDBDatabaseMetadata& metadata) {
 }
 
 void IDBDatabase::TransactionCreated(IDBTransaction* transaction) {
+  // https://linear.app/replay/issue/RUN-969
+  recordreplay::Assert("IDBDatabase::TransactionCreated %d",
+                       (int)transaction->Id());
+
   DCHECK(transaction);
   DCHECK(!transactions_.Contains(transaction->Id()));
   transactions_.insert(transaction->Id(), transaction);
@@ -152,6 +156,10 @@ void IDBDatabase::TransactionCreated(IDBTransaction* transaction) {
 }
 
 void IDBDatabase::TransactionFinished(const IDBTransaction* transaction) {
+  // https://linear.app/replay/issue/RUN-969
+  recordreplay::Assert("IDBDatabase::TransactionFinished %d",
+                       (int)transaction->Id());
+
   DCHECK(transaction);
   DCHECK(transactions_.Contains(transaction->Id()));
   DCHECK_EQ(transactions_.at(transaction->Id()), transaction);
@@ -172,6 +180,10 @@ void IDBDatabase::OnAbort(int64_t transaction_id, DOMException* error) {
 }
 
 void IDBDatabase::OnComplete(int64_t transaction_id) {
+  // https://linear.app/replay/issue/RUN-969
+  recordreplay::Assert("IDBDatabase::OnComplete %d %d",
+                       (int)transaction_id, transactions_.Contains(transaction_id));
+
   DCHECK(transactions_.Contains(transaction_id));
   transactions_.at(transaction_id)->OnComplete();
 }
