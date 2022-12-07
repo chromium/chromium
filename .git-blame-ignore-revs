@@ -633,3 +633,6 @@ bed62bd9e242e3e4742fbd3fd09c96d2ce009113
 
 # Replace includes by imports.
 999088c03b4721b1508bfa4c1e2b00423a3f5fae
+
+# Move android_affiliation and site_affiliation into the same folder.
+5910c68207058a5eebd3cac9e107777d01d50bf3
