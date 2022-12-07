@@ -60,6 +60,13 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 
 #pragma mark - SceneStateObserver
 
+// Init stage changes are potential opportunities for dictating the window count
+// to Voiceover users.
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  [self maybeScheduleWindowCountWithDelay:kWindowNotifcationDelay];
+}
+
 // Changes in the activation level of scene states will indicate that the count
 // of visible windows has changed. Some actions (such as opening a third window
 // when two are already open) can cause a scene's activation level to change
@@ -71,23 +78,25 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (self.lastUpdateTime == nil) {
-    [self scheduleWindowCountWithDelay:kWindowNotifcationDelay];
+    [self maybeScheduleWindowCountWithDelay:kWindowNotifcationDelay];
   }
   self.lastUpdateTime = [NSDate date];
 }
 
 #pragma mark - private
 
-- (void)scheduleWindowCountWithDelay:(NSTimeInterval)delay {
+- (void)maybeScheduleWindowCountWithDelay:(NSTimeInterval)delay {
   // Weakify, since the window count can change in shutdown, so there are
   // likely to be pending notifications that would otherwise keep this object
   // alive.
-  __weak WindowAccessibilityChangeNotifierAppAgent* weakSelf = self;
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                               static_cast<int64_t>(delay * NSEC_PER_SEC)),
-                 dispatch_get_main_queue(), ^{
-                   [weakSelf notifyWindowCount];
-                 });
+  if (self.appState.initStage == InitStageFinal) {
+    __weak WindowAccessibilityChangeNotifierAppAgent* weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 static_cast<int64_t>(delay * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+                     [weakSelf notifyWindowCount];
+                   });
+  }
 }
 
 // Performs the notification, if enough time has passed since the last update.
@@ -100,13 +109,13 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
     // Repost with a delay sufficient to be `kWindowNotifcationDelay` after
     // the last update time.
     NSTimeInterval newDelta = kWindowNotifcationDelay - delta;
-    [self scheduleWindowCountWithDelay:newDelta];
+    [self maybeScheduleWindowCountWithDelay:newDelta];
     return;
   }
 
   if (!ui::ResourceBundle::HasSharedInstance()) {
     // The resources have not yet been initialized. Delay the notification.
-    [self scheduleWindowCountWithDelay:kWindowNotifcationDelay];
+    [self maybeScheduleWindowCountWithDelay:kWindowNotifcationDelay];
     return;
   }
 
