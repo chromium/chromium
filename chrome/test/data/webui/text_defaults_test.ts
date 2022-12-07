@@ -2,16 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertNotEquals, assertTrue} from './chai_assert.js';
-
-/**
- * @param html Text, possibly with HTML &entities; in it.
- */
-function decodeHtmlEntities(html: string): string {
-  const element = document.createElement('div');
-  element.innerHTML = html;
-  return element.textContent!;
-}
+import {assertNotEquals, assertTrue} from './chai_assert.js';
 
 suite('TextDefaults', function() {
   test('text_defaults.css', function(done) {
@@ -23,7 +14,6 @@ suite('TextDefaults', function() {
       const fontFamily = (link.sheet.rules[1] as CSSStyleRule)
                              .style.getPropertyValue('font-family');
       assertNotEquals('', fontFamily);
-      assertEquals(decodeHtmlEntities(fontFamily), fontFamily);
       done();
     };
     document.body.appendChild(link);
@@ -38,7 +28,6 @@ suite('TextDefaults', function() {
       const fontFamily = (link.sheet.rules[2] as CSSStyleRule)
                              .style.getPropertyValue('font-family');
       assertNotEquals('', fontFamily);
-      assertEquals(decodeHtmlEntities(fontFamily), fontFamily);
       done();
     };
     document.body.appendChild(link);
