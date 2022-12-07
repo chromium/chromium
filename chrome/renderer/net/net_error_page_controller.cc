@@ -78,6 +78,10 @@ bool NetErrorPageController::DiagnoseErrorsButtonClick() {
   return ButtonClick(NetErrorHelperCore::DIAGNOSE_ERROR);
 }
 
+bool NetErrorPageController::PortalSigninButtonClick() {
+  return ButtonClick(NetErrorHelperCore::PORTAL_SIGNIN);
+}
+
 bool NetErrorPageController::ButtonClick(NetErrorHelperCore::Button button) {
   if (delegate_)
     delegate_->ButtonPressed(button);
@@ -132,6 +136,8 @@ gin::ObjectTemplateBuilder NetErrorPageController::GetObjectTemplateBuilder(
                  &NetErrorPageController::DetailsButtonClick)
       .SetMethod("diagnoseErrorsButtonClick",
                  &NetErrorPageController::DiagnoseErrorsButtonClick)
+      .SetMethod("portalSigninButtonClick",
+                 &NetErrorPageController::PortalSigninButtonClick)
       .SetMethod("trackEasterEgg", &NetErrorPageController::TrackEasterEgg)
       .SetMethod("updateEasterEggHighScore",
                  &NetErrorPageController::UpdateEasterEggHighScore)

@@ -305,6 +305,10 @@ void NetErrorHelperCore::ExecuteButtonPress(Button button) {
       RecordEvent(error_page::NETWORK_ERROR_DIAGNOSE_BUTTON_CLICKED);
       delegate_->DiagnoseError(committed_error_page_info_->error.url());
       return;
+    case PORTAL_SIGNIN:
+      RecordEvent(error_page::NETWORK_ERROR_PORTAL_SIGNIN_BUTTON_CLICKED);
+      delegate_->PortalSignin();
+      return;
     case DOWNLOAD_BUTTON:
       RecordEvent(error_page::NETWORK_ERROR_PAGE_DOWNLOAD_BUTTON_CLICKED);
       delegate_->DownloadPageLater();

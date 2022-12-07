@@ -98,6 +98,9 @@ class NetErrorPageController : public gin::Wrappable<NetErrorPageController> {
   // Execute a "Diagnose Errors" button click.
   bool DiagnoseErrorsButtonClick();
 
+  // Execute a "Sign in to network" button click.
+  bool PortalSigninButtonClick();
+
   // Used internally by other button click methods.
   bool ButtonClick(NetErrorHelperCore::Button button);
 

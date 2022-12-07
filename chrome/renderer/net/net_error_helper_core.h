@@ -48,6 +48,7 @@ class NetErrorHelperCore {
     MORE_BUTTON,
     EASTER_EGG,
     DIAGNOSE_ERROR,
+    PORTAL_SIGNIN,
     DOWNLOAD_BUTTON,  // "Download page later" experiment.
   };
 
@@ -92,6 +93,9 @@ class NetErrorHelperCore {
 
     // Run the platform diagnostics too for the specified URL.
     virtual void DiagnoseError(const GURL& page_url) = 0;
+
+    // Show the captive portal signin page.
+    virtual void PortalSignin() = 0;
 
     // Schedule to download the page at a later time.
     virtual void DownloadPageLater() = 0;

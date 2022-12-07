@@ -339,6 +339,12 @@ void NetErrorHelper::DiagnoseError(const GURL& page_url) {
   GetRemoteNetworkDiagnostics()->RunNetworkDiagnostics(page_url);
 }
 
+void NetErrorHelper::PortalSignin() {
+#if BUILDFLAG(IS_CHROMEOS)
+  GetRemoteNetErrorPageSupport()->ShowPortalSignin();
+#endif
+}
+
 void NetErrorHelper::DownloadPageLater() {
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   GetRemoteNetErrorPageSupport()->DownloadPageLater();

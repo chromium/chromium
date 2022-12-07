@@ -14,4 +14,8 @@ interface NetErrorPageSupport {
   // Called to indicate if download button is being shown in the error page.
   [EnableIf=enable_offline_pages]
   SetIsShowingDownloadButtonInErrorPage(bool showing_download_button);
+
+  // Called to show the captive portal signin page.
+  [EnableIf=is_chromeos]
+  ShowPortalSignin();
 };

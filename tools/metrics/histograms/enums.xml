@@ -69804,6 +69804,10 @@ Called by update_net_error_codes.py.-->
   <int value="29" label="Offline error shown">
     The error page was shown because the device is offline (dino page).
   </int>
+  <int value="30" label="Sign in to network button clicked">
+    An error page was shown with at least a &quot;Sign in to network&quot;
+    button on it and the user pressed that button.
+  </int>
 </enum>
 
 <enum name="NetFilterType">

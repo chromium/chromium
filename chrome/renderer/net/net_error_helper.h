@@ -101,6 +101,7 @@ class NetErrorHelper
   void RequestEasterEggHighScore() override;
   void ReloadFrame() override;
   void DiagnoseError(const GURL& page_url) override;
+  void PortalSignin() override;
   void DownloadPageLater() override;
   void SetIsShowingDownloadButton(bool show) override;
   void OfflineContentAvailable(

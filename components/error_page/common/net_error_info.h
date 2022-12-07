@@ -75,6 +75,9 @@ enum NetworkErrorPageEvent {
   // page).
   NETWORK_ERROR_PAGE_OFFLINE_ERROR_SHOWN = 29,
 
+  // "Sign in to network" button clicked.
+  NETWORK_ERROR_PORTAL_SIGNIN_BUTTON_CLICKED = 30,
+
   NETWORK_ERROR_PAGE_EVENT_MAX,
 };
 

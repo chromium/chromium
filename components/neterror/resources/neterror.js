@@ -8,6 +8,7 @@
  *   reloadButtonClick: function(string),
  *   detailsButtonClick: function(),
  *   diagnoseErrorsButtonClick: function(),
+ *   portalSigninsButtonClick: function(),
  *   trackEasterEgg: function(),
  *   updateEasterEggHighScore: function(number),
  *   resetEasterEggHighScore: function(),
@@ -58,6 +59,12 @@ function toggleHelpBox() {
 function diagnoseErrors() {
   if (window.errorPageController) {
     errorPageController.diagnoseErrorsButtonClick();
+  }
+}
+
+function portalSignin() {
+  if (window.errorPageController) {
+    errorPageController.portalSigninButtonClick();
   }
 }
 
