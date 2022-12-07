@@ -9,6 +9,7 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -26,6 +27,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/insets.h"
@@ -167,9 +169,13 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
 
   UpdateIcons();
   TooltipTextChanged();
+
+  Shell::Get()->session_controller()->AddObserver(this);
 }
 
-PrivacyIndicatorsTrayItemView::~PrivacyIndicatorsTrayItemView() = default;
+PrivacyIndicatorsTrayItemView::~PrivacyIndicatorsTrayItemView() {
+  Shell::Get()->session_controller()->RemoveObserver(this);
+}
 
 void PrivacyIndicatorsTrayItemView::Update(const std::string& app_id,
                                            bool is_camera_used,
@@ -402,6 +408,26 @@ void PrivacyIndicatorsTrayItemView::AnimationCanceled(
   UpdateBoundsInset();
 }
 
+void PrivacyIndicatorsTrayItemView::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  if (count_visible_per_session_ == 0)
+    return;
+
+  // `GetWidget()` might be null in unit tests.
+  if (!GetWidget())
+    return;
+  auto* screen = display::Screen::GetScreen();
+  // Only record this metric on primary screen.
+  if (screen->GetDisplayNearestWindow(GetWidget()->GetNativeWindow()) !=
+      screen->GetPrimaryDisplay()) {
+    return;
+  }
+
+  base::UmaHistogramCounts100("Ash.PrivacyIndicators.NumberOfShowsPerSession",
+                              count_visible_per_session_);
+  count_visible_per_session_ = 0;
+}
+
 bool PrivacyIndicatorsTrayItemView::IsCameraUsed() const {
   return !use_camera_apps_.empty();
 }
@@ -481,7 +507,11 @@ void PrivacyIndicatorsTrayItemView::UpdateAccessStatus(
 
 void PrivacyIndicatorsTrayItemView::UpdateVisibility() {
   // We only hide the view when all the sets are empty.
-  SetVisible(IsCameraUsed() || IsMicrophoneUsed() || is_screen_sharing_);
+  bool visible = IsCameraUsed() || IsMicrophoneUsed() || is_screen_sharing_;
+  SetVisible(visible);
+
+  if (visible)
+    count_visible_per_session_++;
 }
 
 void PrivacyIndicatorsTrayItemView::EndAllAnimations() {

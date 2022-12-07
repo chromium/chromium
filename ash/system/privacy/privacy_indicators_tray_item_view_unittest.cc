@@ -7,8 +7,11 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -26,6 +29,8 @@ const int kPrivacyIndicatorsViewSize = 8;
 
 constexpr char kPrivacyIndicatorsShowTypeHistogramName[] =
     "Ash.PrivacyIndicators.ShowType";
+constexpr char kPrivacyIndicatorsShowPerSessionHistogramName[] =
+    "Ash.PrivacyIndicators.NumberOfShowsPerSession";
 constexpr char kCountAppsAccessCameraHistogramName[] =
     "Ash.PrivacyIndicators.NumberOfAppsAccessingCamera";
 constexpr char kCountAppsAccessMicrophoneHistogramName[] =
@@ -83,6 +88,11 @@ class PrivacyIndicatorsTrayItemViewTest : public AshTestBase {
     AshTestBase::SetUp();
     privacy_indicators_view_ =
         std::make_unique<PrivacyIndicatorsTrayItemView>(GetPrimaryShelf());
+  }
+
+  void TearDown() override {
+    privacy_indicators_view_.reset();
+    AshTestBase::TearDown();
   }
 
   std::u16string GetTooltipText() {
@@ -543,6 +553,62 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
       /*is_camera_used=*/true, /*is_microphone_used=*/true,
       /*is_screen_sharing=*/true, privacy_indicators_view(),
       PrivacyIndicatorsTrayItemView::Type::kAllUsed);
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
+  // Set up 2 displays. Note that only one instance should be recorded for the
+  // primary display when session changes.
+  UpdateDisplay("100x200,300x400");
+  int expected_count = 1;
+
+  // Show the indicator in the given `show_count` number of times.
+  auto trigger_show_indicator = [](int show_count) {
+    // Update the state of camera/microphone access so that the indicators on
+    // all displays show, then hide for `show_count` times.
+    for (auto i = 0; i < show_count; i++) {
+      for (auto* controller : Shell::Get()->GetAllRootWindowControllers()) {
+        auto* indicator_view = controller->GetStatusAreaWidget()
+                                   ->unified_system_tray()
+                                   ->privacy_indicators_view();
+        indicator_view->Update(/*app_id=*/"app_id", /*is_camera_used=*/true,
+                               /*is_microphone_used=*/true);
+        indicator_view->Update(/*app_id=*/"app_id", /*is_camera_used=*/false,
+                               /*is_microphone_used=*/false);
+      }
+    }
+  };
+
+  base::HistogramTester histograms;
+
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+
+  int expected_sample = 1;
+  trigger_show_indicator(expected_sample);
+
+  // After session changed, metrics should be recorded.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  histograms.ExpectBucketCount(kPrivacyIndicatorsShowPerSessionHistogramName,
+                               expected_sample, expected_count);
+
+  expected_sample = 6;
+  trigger_show_indicator(expected_sample);
+
+  // After session changed, metrics should be recorded.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  histograms.ExpectBucketCount(kPrivacyIndicatorsShowPerSessionHistogramName,
+                               expected_sample, expected_count);
+
+  expected_sample = 10;
+  trigger_show_indicator(expected_sample);
+
+  // After session changed, metrics should be recorded.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  histograms.ExpectBucketCount(kPrivacyIndicatorsShowPerSessionHistogramName,
+                               expected_sample, expected_count);
 }
 
 // When multiple apps access camera and microphone, their histograms should

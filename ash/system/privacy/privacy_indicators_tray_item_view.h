@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_PRIVACY_PRIVACY_INDICATORS_TRAY_ITEM_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_item_view.h"
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
@@ -24,7 +25,8 @@ class Shelf;
 
 // A tray item which resides in the system tray, indicating to users that an app
 // is currently accessing camera/microphone.
-class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
+class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
+                                                 public SessionObserver {
  public:
   enum AnimationState {
     // No animation is running.
@@ -101,6 +103,9 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+
   // Specify whether camera/microphone is in used.
   bool IsCameraUsed() const;
   bool IsMicrophoneUsed() const;
@@ -160,6 +165,9 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView {
   // completed.
   base::OneShotTimer longer_side_shrink_delay_timer_;
   base::OneShotTimer shorter_side_shrink_delay_timer_;
+
+  // Used to record metrics of the number of shows per session.
+  int count_visible_per_session_ = 0;
 
   // Measure animation smoothness metrics for all the animations.
   absl::optional<ui::ThroughputTracker> throughput_tracker_;
