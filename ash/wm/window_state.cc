@@ -105,6 +105,39 @@ constexpr auto kWindowStateRestoreHistoryLayerMap =
         {WindowStateType::kMinimized, 4},
     });
 
+// Whether the window state type is valid for putting in the restore history.
+bool IsValidForRestoreHistory(WindowStateType state_type) {
+  return kWindowStateRestoreHistoryLayerMap.contains(state_type);
+}
+
+// Returns true if |current_state| can restore back to |previous_state|.
+// Normally, a state can only restore back to another state at a lower level.
+// If |allow_same_level_restore| is true, some window state types at the same
+// restore level are allowed to restore between each other. This is useful to
+// set to false to prevent cycles in the restore state transition graph.
+bool CanRestoreState(WindowStateType current_state,
+                     WindowStateType previous_state,
+                     bool allow_same_level_restore) {
+  DCHECK(IsValidForRestoreHistory(current_state));
+  DCHECK(IsValidForRestoreHistory(previous_state));
+  if (kWindowStateRestoreHistoryLayerMap.at(current_state) >
+      kWindowStateRestoreHistoryLayerMap.at(previous_state)) {
+    return true;
+  }
+
+  if (allow_same_level_restore) {
+    // `Fullscreen` and `Floated` have the same restore order, but can restore
+    // to each other.
+    if ((current_state == WindowStateType::kFullscreen &&
+         previous_state == WindowStateType::kFloated) ||
+        (current_state == WindowStateType::kFloated &&
+         previous_state == WindowStateType::kFullscreen)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool IsTabletModeEnabled() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
 }
@@ -1026,10 +1059,7 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
     chromeos::WindowStateType previous_state_type) {
   WindowStateType current_state_type = GetStateType();
 
-  const bool is_state_type_supported =
-      kWindowStateRestoreHistoryLayerMap.find(current_state_type) !=
-      kWindowStateRestoreHistoryLayerMap.end();
-  if (!is_state_type_supported) {
+  if (!IsValidForRestoreHistory(current_state_type)) {
     window_state_restore_history_.clear();
     window_->ClearProperty(aura::client::kRestoreShowStateKey);
     return;
@@ -1039,31 +1069,24 @@ void WindowState::UpdateWindowStateRestoreHistoryStack(
   // not restore back to (i.e., whose restore order is equal or higher than
   // `current_state_type`).
   for (auto state : base::Reversed(window_state_restore_history_)) {
-    if (kWindowStateRestoreHistoryLayerMap.at(state) <
-        kWindowStateRestoreHistoryLayerMap.at(current_state_type)) {
+    // Don't allow same-level restore here to prevent restore cycles which can
+    // lead to unbounded stack, e.g. when toggling between fullscreen and
+    // floated repeatedly. The side effect is that restore will only remember
+    // (handled below) at most one such same-level transition (e.g. fullscreen
+    // to floated, or vice versa), which is ok.
+    if (CanRestoreState(current_state_type, state,
+                        /*allow_same_level_restore=*/false)) {
       break;
     }
     window_state_restore_history_.pop_back();
   }
 
-  // `Fullscreen` and `Floated` have the same restore order, but can restore
-  // to each other.
-  const bool is_restore_between_float_and_full =
-      (current_state_type == WindowStateType::kFullscreen &&
-       previous_state_type == WindowStateType::kFloated) ||
-      (current_state_type == WindowStateType::kFloated &&
-       previous_state_type == WindowStateType::kFullscreen);
-
-  // If `current_state_type` can restore to `previous_state_type`, or we're
-  // restoring between Fullscreen and Floated window state, push
-  // `previous_state_type` into the stack.
-  const bool is_previous_state_type_supported =
-      kWindowStateRestoreHistoryLayerMap.find(previous_state_type) !=
-      kWindowStateRestoreHistoryLayerMap.end();
-  if ((is_previous_state_type_supported &&
-       (kWindowStateRestoreHistoryLayerMap.at(current_state_type) >
-        kWindowStateRestoreHistoryLayerMap.at(previous_state_type))) ||
-      is_restore_between_float_and_full) {
+  if (IsValidForRestoreHistory(previous_state_type) &&
+      // Allow same-level restore, so the previous state can be remembered.
+      // Potential restore cycles are handled when the history is updated next
+      // time, in the code above.
+      CanRestoreState(current_state_type, previous_state_type,
+                      /*allow_same_level_restore=*/true)) {
     window_state_restore_history_.push_back(previous_state_type);
   }
 
