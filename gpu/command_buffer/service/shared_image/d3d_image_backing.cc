@@ -560,7 +560,8 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
 #if BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == WGPUBackendType_OpenGLES) {
@@ -589,6 +590,9 @@ std::unique_ptr<DawnImageRepresentation> D3DImageBacking::ProduceDawn(
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
+  texture_descriptor.viewFormatCount =
+      static_cast<uint32_t>(view_formats.size());
+  texture_descriptor.viewFormats = view_formats.data();
 
   // We need to have internal usages of CopySrc for copies,
   // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.

@@ -116,7 +116,8 @@ class GPU_GLES2_EXPORT D3DImageBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
-      WGPUBackendType backend_type) override;
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats) override;
   void OnMemoryDump(const std::string& dump_name,
                     base::trace_event::MemoryAllocatorDumpGuid client_guid,
                     base::trace_event::ProcessMemoryDump* pmd,

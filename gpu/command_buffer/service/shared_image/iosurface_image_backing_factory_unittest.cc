@@ -330,7 +330,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, Dawn_SkiaGL) {
 
   // Create a DawnImageRepresentation.
   auto dawn_representation = shared_image_representation_factory_->ProduceDawn(
-      mailbox, device.Get(), WGPUBackendType_Metal);
+      mailbox, device.Get(), WGPUBackendType_Metal, {});
   EXPECT_TRUE(dawn_representation);
 
   // Clear the shared image to green using Dawn.
@@ -456,7 +456,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_Dawn_Skia_UnclearTexture) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_Metal);
+            mailbox, device.Get(), WGPUBackendType_Metal, {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(
@@ -546,7 +546,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, UnclearDawn_SkiaFails) {
   {
     auto dawn_representation =
         shared_image_representation_factory_->ProduceDawn(
-            mailbox, device.Get(), WGPUBackendType_Metal);
+            mailbox, device.Get(), WGPUBackendType_Metal, {});
     ASSERT_TRUE(dawn_representation);
 
     auto dawn_scoped_access = dawn_representation->BeginScopedAccess(

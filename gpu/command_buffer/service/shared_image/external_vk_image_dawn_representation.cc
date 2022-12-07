@@ -20,10 +20,12 @@ ExternalVkImageDawnImageRepresentation::ExternalVkImageDawnImageRepresentation(
     MemoryTypeTracker* tracker,
     WGPUDevice device,
     WGPUTextureFormat wgpu_format,
+    std::vector<WGPUTextureFormat> view_formats,
     base::ScopedFD memory_fd)
     : DawnImageRepresentation(manager, backing, tracker),
       device_(device),
       wgpu_format_(wgpu_format),
+      view_formats_(std::move(view_formats)),
       memory_fd_(std::move(memory_fd)),
       dawn_procs_(dawn::native::GetProcs()) {
   DCHECK(device_);
@@ -55,6 +57,9 @@ WGPUTexture ExternalVkImageDawnImageRepresentation::BeginAccess(
                              static_cast<uint32_t>(size().height()), 1};
   texture_descriptor.mipLevelCount = 1;
   texture_descriptor.sampleCount = 1;
+  texture_descriptor.viewFormatCount =
+      static_cast<uint32_t>(view_formats_.size());
+  texture_descriptor.viewFormats = view_formats_.data();
 
   // We need to have internal usages of CopySrc for copies,
   // RenderAttachment for clears, and TextureBinding for copyTextureForBrowser.

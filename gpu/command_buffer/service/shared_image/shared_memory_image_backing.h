@@ -44,7 +44,8 @@ class SharedMemoryImageBacking : public SharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
-      WGPUBackendType backend_type) override;
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats) override;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;

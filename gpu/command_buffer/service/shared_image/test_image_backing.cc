@@ -307,7 +307,8 @@ std::unique_ptr<DawnImageRepresentation> TestImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
   return std::make_unique<TestDawnImageRepresentation>(manager, this, tracker);
 }
 

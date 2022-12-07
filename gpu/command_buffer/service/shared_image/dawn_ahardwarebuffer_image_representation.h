@@ -24,6 +24,7 @@ class DawnAHardwareBufferImageRepresentation : public DawnImageRepresentation {
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUTextureFormat format,
+      std::vector<WGPUTextureFormat> view_formats,
       AHardwareBuffer* buffer,
       scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
   ~DawnAHardwareBufferImageRepresentation() override;
@@ -40,6 +41,7 @@ class DawnAHardwareBufferImageRepresentation : public DawnImageRepresentation {
   WGPUTexture texture_ = nullptr;
   WGPUDevice device_;
   WGPUTextureFormat format_;
+  std::vector<WGPUTextureFormat> view_formats_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
 };
 

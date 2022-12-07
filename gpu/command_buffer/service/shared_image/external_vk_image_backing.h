@@ -156,7 +156,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice dawnDevice,
-      WGPUBackendType backend_type) override;
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats) override;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) override;

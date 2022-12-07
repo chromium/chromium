@@ -115,14 +115,16 @@ std::unique_ptr<DawnImageRepresentation> PbufferImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;
   }
 
   return GLTextureImageBackingHelper::ProduceDawnCommon(
-      factory(), manager, tracker, device, backend_type, this, true);
+      factory(), manager, tracker, device, backend_type,
+      std::move(view_formats), this, true);
 }
 
 std::unique_ptr<SkiaImageRepresentation> PbufferImageBacking::ProduceSkia(

@@ -50,6 +50,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
+      std::vector<WGPUTextureFormat> view_formats,
       gfx::ScopedIOSurface io_surface,
       uint32_t io_surface_plane);
   static bool InitializePixels(SharedImageBacking* backing,

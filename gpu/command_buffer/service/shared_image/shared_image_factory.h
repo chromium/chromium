@@ -189,7 +189,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentationFactory {
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       const Mailbox& mailbox,
       WGPUDevice device,
-      WGPUBackendType backend_type);
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats);
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       const Mailbox& mailbox);
   std::unique_ptr<MemoryImageRepresentation> ProduceMemory(

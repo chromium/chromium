@@ -643,10 +643,13 @@ SharedImageRepresentationFactory::ProduceSkia(
 }
 
 std::unique_ptr<DawnImageRepresentation>
-SharedImageRepresentationFactory::ProduceDawn(const Mailbox& mailbox,
-                                              WGPUDevice device,
-                                              WGPUBackendType backend_type) {
-  return manager_->ProduceDawn(mailbox, tracker_.get(), device, backend_type);
+SharedImageRepresentationFactory::ProduceDawn(
+    const Mailbox& mailbox,
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
+  return manager_->ProduceDawn(mailbox, tracker_.get(), device, backend_type,
+                               std::move(view_formats));
 }
 
 std::unique_ptr<OverlayImageRepresentation>

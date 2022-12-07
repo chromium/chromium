@@ -73,7 +73,8 @@ class GPU_GLES2_EXPORT SharedImageManager
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
       WGPUDevice device,
-      WGPUBackendType backend_type);
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats);
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref);

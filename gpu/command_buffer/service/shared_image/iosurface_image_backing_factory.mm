@@ -90,11 +90,13 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
                               MemoryTypeTracker* tracker,
                               WGPUDevice device,
                               base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-                              WGPUTextureFormat wgpu_format)
+                              WGPUTextureFormat wgpu_format,
+                              std::vector<WGPUTextureFormat> view_formats)
       : DawnImageRepresentation(manager, backing, tracker),
         io_surface_(std::move(io_surface)),
         device_(device),
         wgpu_format_(wgpu_format),
+        view_formats_(std::move(view_formats)),
         dawn_procs_(dawn::native::GetProcs()) {
     DCHECK(device_);
     DCHECK(io_surface_);
@@ -118,6 +120,9 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
                                static_cast<uint32_t>(size().height()), 1};
     texture_descriptor.mipLevelCount = 1;
     texture_descriptor.sampleCount = 1;
+    texture_descriptor.viewFormatCount =
+        static_cast<uint32_t>(view_formats_.size());
+    texture_descriptor.viewFormats = view_formats_.data();
 
     // We need to have internal usages of CopySrc for copies. If texture is not
     // for video frame import, which has bi-planar format, we also need
@@ -225,6 +230,7 @@ class DawnIOSurfaceRepresentation : public DawnImageRepresentation {
   WGPUDevice device_;
   WGPUTexture texture_ = nullptr;
   WGPUTextureFormat wgpu_format_;
+  std::vector<WGPUTextureFormat> view_formats_;
 
   // TODO(cwallez@chromium.org): Load procs only once when the factory is
   // created and pass a pointer to them around?
@@ -258,12 +264,14 @@ IOSurfaceImageBackingFactory::ProduceSkiaPromiseTextureMetal(
 
 // static
 std::unique_ptr<DawnImageRepresentation>
-IOSurfaceImageBackingFactory::ProduceDawn(SharedImageManager* manager,
-                                          SharedImageBacking* backing,
-                                          MemoryTypeTracker* tracker,
-                                          WGPUDevice device,
-                                          gfx::ScopedIOSurface io_surface,
-                                          uint32_t io_surface_plane) {
+IOSurfaceImageBackingFactory::ProduceDawn(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    std::vector<WGPUTextureFormat> view_formats,
+    gfx::ScopedIOSurface io_surface,
+    uint32_t io_surface_plane) {
   DCHECK(!io_surface_plane);
 #if BUILDFLAG(USE_DAWN)
   // See comments in IOSurfaceImageBackingFactory::CreateSharedImage
@@ -284,7 +292,8 @@ IOSurfaceImageBackingFactory::ProduceDawn(SharedImageManager* manager,
     return nullptr;
 
   return std::make_unique<DawnIOSurfaceRepresentation>(
-      manager, backing, tracker, device, io_surface, wgpu_format.value());
+      manager, backing, tracker, device, io_surface, wgpu_format.value(),
+      std::move(view_formats));
 #else   // BUILDFLAG(USE_DAWN)
   return nullptr;
 #endif  // BUILDFLAG(USE_DAWN)

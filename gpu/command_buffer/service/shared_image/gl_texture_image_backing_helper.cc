@@ -120,13 +120,15 @@ GLTextureImageBackingHelper::ScopedRestoreTexture::~ScopedRestoreTexture() {
 }
 
 std::unique_ptr<DawnImageRepresentation>
-GLTextureImageBackingHelper::ProduceDawnCommon(SharedImageFactory* factory,
-                                               SharedImageManager* manager,
-                                               MemoryTypeTracker* tracker,
-                                               WGPUDevice device,
-                                               WGPUBackendType backend_type,
-                                               SharedImageBacking* backing,
-                                               bool use_passthrough) {
+GLTextureImageBackingHelper::ProduceDawnCommon(
+    SharedImageFactory* factory,
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats,
+    SharedImageBacking* backing,
+    bool use_passthrough) {
   DCHECK(factory);
   // Make SharedContextState from factory the current context
   SharedContextState* shared_context_state = factory->GetSharedContextState();
@@ -213,7 +215,8 @@ GLTextureImageBackingHelper::ProduceDawnCommon(SharedImageFactory* factory,
   // representation ref.
   factory->DestroySharedImage(dst_mailbox);
 
-  return manager->ProduceDawn(dst_mailbox, tracker, device, backend_type);
+  return manager->ProduceDawn(dst_mailbox, tracker, device, backend_type,
+                              std::move(view_formats));
 }
 
 // static

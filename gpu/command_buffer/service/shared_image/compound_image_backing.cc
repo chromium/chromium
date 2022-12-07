@@ -457,13 +457,14 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
   LazyAllocateGpuBacking();
   if (!gpu_backing_)
     return nullptr;
 
-  auto real_rep =
-      gpu_backing_->ProduceDawn(manager, tracker, device, backend_type);
+  auto real_rep = gpu_backing_->ProduceDawn(
+      manager, tracker, device, backend_type, std::move(view_formats));
   if (!real_rep)
     return nullptr;
 

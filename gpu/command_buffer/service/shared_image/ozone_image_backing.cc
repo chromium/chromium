@@ -130,7 +130,8 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
   DCHECK(dawn_procs_);
   WGPUTextureFormat webgpu_format = ToWGPUFormat(format());
@@ -138,7 +139,8 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
     return nullptr;
   }
   return std::make_unique<DawnOzoneImageRepresentation>(
-      manager, this, tracker, device, webgpu_format, pixmap_, dawn_procs_);
+      manager, this, tracker, device, webgpu_format, std::move(view_formats),
+      pixmap_, dawn_procs_);
 #else  // !BUILDFLAG(USE_DAWN)
   return nullptr;
 #endif

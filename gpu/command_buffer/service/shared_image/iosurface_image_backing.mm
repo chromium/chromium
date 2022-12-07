@@ -535,9 +535,11 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
   auto result = IOSurfaceImageBackingFactory::ProduceDawn(
-      manager, this, tracker, device, io_surface_, io_surface_plane_);
+      manager, this, tracker, device, view_formats, io_surface_,
+      io_surface_plane_);
   if (result)
     return result;
 
@@ -547,7 +549,8 @@ std::unique_ptr<DawnImageRepresentation> IOSurfaceImageBacking::ProduceDawn(
   }
 
   return GLTextureImageBackingHelper::ProduceDawnCommon(
-      factory(), manager, tracker, device, backend_type, this,
+      factory(), manager, tracker, device, backend_type,
+      std::move(view_formats), this,
       /*use_passthrough=*/true);
 }
 

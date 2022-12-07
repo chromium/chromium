@@ -29,6 +29,7 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUTextureFormat format,
+      std::vector<WGPUTextureFormat> view_formats,
       scoped_refptr<gfx::NativePixmap> pixmap,
       scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs);
 
@@ -50,6 +51,7 @@ class DawnOzoneImageRepresentation : public DawnImageRepresentation {
   }
   const WGPUDevice device_;
   const WGPUTextureFormat format_;
+  std::vector<WGPUTextureFormat> view_formats_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   WGPUTexture texture_ = nullptr;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;

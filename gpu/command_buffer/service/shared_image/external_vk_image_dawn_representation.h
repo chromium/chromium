@@ -12,12 +12,14 @@ namespace gpu {
 
 class ExternalVkImageDawnImageRepresentation : public DawnImageRepresentation {
  public:
-  ExternalVkImageDawnImageRepresentation(SharedImageManager* manager,
-                                         SharedImageBacking* backing,
-                                         MemoryTypeTracker* tracker,
-                                         WGPUDevice device,
-                                         WGPUTextureFormat dawn_format,
-                                         base::ScopedFD memory_fd);
+  ExternalVkImageDawnImageRepresentation(
+      SharedImageManager* manager,
+      SharedImageBacking* backing,
+      MemoryTypeTracker* tracker,
+      WGPUDevice device,
+      WGPUTextureFormat dawn_format,
+      std::vector<WGPUTextureFormat> view_formats,
+      base::ScopedFD memory_fd);
 
   ExternalVkImageDawnImageRepresentation(
       const ExternalVkImageDawnImageRepresentation&) = delete;
@@ -36,6 +38,7 @@ class ExternalVkImageDawnImageRepresentation : public DawnImageRepresentation {
 
   const WGPUDevice device_;
   const WGPUTextureFormat wgpu_format_;
+  std::vector<WGPUTextureFormat> view_formats_;
   base::ScopedFD memory_fd_;
 
   WGPUTexture texture_ = nullptr;

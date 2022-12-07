@@ -107,6 +107,7 @@ class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
       MemoryTypeTracker* tracker,
       WGPUDevice device,
       WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats,
       SharedImageBacking* backing,
       bool use_passthrough);
 };

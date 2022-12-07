@@ -402,7 +402,8 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == WGPUBackendType_OpenGLES) {
     if (!image_egl_) {
@@ -425,7 +426,8 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
   }
 
   return GLTextureImageBackingHelper::ProduceDawnCommon(
-      factory(), manager, tracker, device, backend_type, this, IsPassthrough());
+      factory(), manager, tracker, device, backend_type,
+      std::move(view_formats), this, IsPassthrough());
 }
 
 std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(

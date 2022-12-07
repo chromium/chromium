@@ -177,7 +177,8 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
-      WGPUBackendType backend_type) override;
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats) override;
 
  private:
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
@@ -404,10 +405,12 @@ AHardwareBufferImageBacking::ProduceOverlay(SharedImageManager* manager,
 }
 
 std::unique_ptr<DawnImageRepresentation>
-AHardwareBufferImageBacking::ProduceDawn(SharedImageManager* manager,
-                                         MemoryTypeTracker* tracker,
-                                         WGPUDevice device,
-                                         WGPUBackendType backend_type) {
+AHardwareBufferImageBacking::ProduceDawn(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
 #if BUILDFLAG(USE_DAWN)
   // Use same texture for all the texture representations generated from same
   // backing.
@@ -422,7 +425,7 @@ AHardwareBufferImageBacking::ProduceDawn(SharedImageManager* manager,
     return nullptr;
   }
   return std::make_unique<DawnAHardwareBufferImageRepresentation>(
-      manager, this, tracker, device, webgpu_format,
+      manager, this, tracker, device, webgpu_format, std::move(view_formats),
       hardware_buffer_handle_.get(), dawn_procs_);
 #else
   return nullptr;

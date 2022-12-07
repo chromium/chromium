@@ -213,7 +213,8 @@ std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
     const Mailbox& mailbox,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
   CALLED_ON_VALID_THREAD();
 
   AutoLock autolock(this);
@@ -224,8 +225,8 @@ std::unique_ptr<DawnImageRepresentation> SharedImageManager::ProduceDawn(
     return nullptr;
   }
 
-  auto representation =
-      (*found)->ProduceDawn(this, tracker, device, backend_type);
+  auto representation = (*found)->ProduceDawn(
+      this, tracker, device, backend_type, std::move(view_formats));
   if (!representation) {
     LOG(ERROR) << "SharedImageManager::ProduceDawn: Trying to produce a "
                   "Dawn representation from an incompatible mailbox.";

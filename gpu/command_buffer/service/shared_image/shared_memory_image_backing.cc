@@ -105,7 +105,8 @@ std::unique_ptr<DawnImageRepresentation> SharedMemoryImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice device,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }

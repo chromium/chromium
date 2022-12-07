@@ -186,7 +186,7 @@ TEST_F(SharedImageRepresentationTest, SkiaClearing) {
 
 TEST_F(SharedImageRepresentationTest, DawnClearing) {
   auto representation = manager_.ProduceDawn(
-      mailbox_, tracker_.get(), nullptr /* device */, WGPUBackendType_Null);
+      mailbox_, tracker_.get(), nullptr /* device */, WGPUBackendType_Null, {});
   EXPECT_FALSE(representation->IsCleared());
 
   // We should not be able to begin access with |allow_uncleared| == false.

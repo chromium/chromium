@@ -411,13 +411,16 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       MailboxFlags flags,
       WGPUDevice device,
       WGPUBackendType backendType,
-      WGPUTextureUsage usage);
+      WGPUTextureUsage usage,
+      std::vector<WGPUTextureFormat> view_formats);
 
   std::unique_ptr<SharedImageRepresentationAndAccess>
-  AssociateMailboxUsingSkiaFallback(const Mailbox& mailbox,
-                                    MailboxFlags flags,
-                                    WGPUDevice device,
-                                    WGPUTextureUsage usage);
+  AssociateMailboxUsingSkiaFallback(
+      const Mailbox& mailbox,
+      MailboxFlags flags,
+      WGPUDevice device,
+      WGPUTextureUsage usage,
+      std::vector<WGPUTextureFormat> view_formats);
 
   // Device creation requires that an isolation key has been set for the
   // decoder. As a result, this callback also runs all queued device creation
@@ -494,7 +497,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
            std::unique_ptr<SkiaImageRepresentation> representation,
            const DawnProcTable& procs,
            WGPUDevice device,
-           WGPUTextureUsage usage) {
+           WGPUTextureUsage usage,
+           std::vector<WGPUTextureFormat> view_formats) {
       viz::ResourceFormat format = (representation->format()).resource_format();
       // Include list of formats this is tested to work with.
       // See gpu/command_buffer/tests/webgpu_mailbox_unittest.cc
@@ -519,7 +523,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       auto result =
           base::WrapUnique(new SharedImageRepresentationAndAccessSkiaFallback(
               std::move(shared_context_state), std::move(representation), procs,
-              device, usage));
+              device, usage, std::move(view_formats)));
       if (is_initialized && !result->PopulateFromSkia()) {
         return nullptr;
       }
@@ -555,7 +559,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
         std::unique_ptr<SkiaImageRepresentation> representation,
         const DawnProcTable& procs,
         WGPUDevice device,
-        WGPUTextureUsage usage)
+        WGPUTextureUsage usage,
+        std::vector<WGPUTextureFormat> view_formats)
         : shared_context_state_(std::move(shared_context_state)),
           representation_(std::move(representation)),
           procs_(procs),
@@ -586,6 +591,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           .format = ToWGPUFormat(representation_->format()),
           .mipLevelCount = 1,
           .sampleCount = 1,
+          .viewFormatCount = static_cast<uint32_t>(view_formats.size()),
+          .viewFormats = view_formats.data(),
       };
 
       procs_->deviceReference(device_);
@@ -1740,14 +1747,16 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
 }
 
 std::unique_ptr<WebGPUDecoderImpl::SharedImageRepresentationAndAccess>
-WebGPUDecoderImpl::AssociateMailboxDawn(const Mailbox& mailbox,
-                                        MailboxFlags flags,
-                                        WGPUDevice device,
-                                        WGPUBackendType backendType,
-                                        WGPUTextureUsage usage) {
+WebGPUDecoderImpl::AssociateMailboxDawn(
+    const Mailbox& mailbox,
+    MailboxFlags flags,
+    WGPUDevice device,
+    WGPUBackendType backendType,
+    WGPUTextureUsage usage,
+    std::vector<WGPUTextureFormat> view_formats) {
   std::unique_ptr<DawnImageRepresentation> shared_image =
-      shared_image_representation_factory_->ProduceDawn(mailbox, device,
-                                                        backendType);
+      shared_image_representation_factory_->ProduceDawn(
+          mailbox, device, backendType, std::move(view_formats));
 
   if (!shared_image) {
     DLOG(ERROR) << "AssociateMailbox: Couldn't produce shared image";
@@ -1780,10 +1789,12 @@ WebGPUDecoderImpl::AssociateMailboxDawn(const Mailbox& mailbox,
 }
 
 std::unique_ptr<WebGPUDecoderImpl::SharedImageRepresentationAndAccess>
-WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(const Mailbox& mailbox,
-                                                     MailboxFlags flags,
-                                                     WGPUDevice device,
-                                                     WGPUTextureUsage usage) {
+WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
+    const Mailbox& mailbox,
+    MailboxFlags flags,
+    WGPUDevice device,
+    WGPUTextureUsage usage,
+    std::vector<WGPUTextureFormat> view_formats) {
   // Before using the shared context, ensure it is current if we're on GL.
   if (shared_context_state_->GrContextIsGL()) {
     shared_context_state_->MakeCurrent(/* gl_surface */ nullptr);
@@ -1806,7 +1817,7 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(const Mailbox& mailbox,
 
   return SharedImageRepresentationAndAccessSkiaFallback::Create(
       shared_context_state_, std::move(shared_image), dawn::native::GetProcs(),
-      device, usage);
+      device, usage, std::move(view_formats));
 }
 
 error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
@@ -1852,10 +1863,10 @@ error::Error WebGPUDecoderImpl::HandleAssociateMailboxImmediate(
   DCHECK(it != known_device_metadata_.end());
   if (it->second.adapterType == WGPUAdapterType_CPU) {
     representation_and_access =
-        AssociateMailboxUsingSkiaFallback(mailbox, flags, device, usage);
+        AssociateMailboxUsingSkiaFallback(mailbox, flags, device, usage, {});
   } else {
     representation_and_access = AssociateMailboxDawn(
-        mailbox, flags, device, it->second.backendType, usage);
+        mailbox, flags, device, it->second.backendType, usage, {});
   }
 
   if (!representation_and_access) {

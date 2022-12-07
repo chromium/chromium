@@ -25,11 +25,13 @@ DawnOzoneImageRepresentation::DawnOzoneImageRepresentation(
     MemoryTypeTracker* tracker,
     WGPUDevice device,
     WGPUTextureFormat format,
+    std::vector<WGPUTextureFormat> view_formats,
     scoped_refptr<gfx::NativePixmap> pixmap,
     scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs)
     : DawnImageRepresentation(manager, backing, tracker),
       device_(device),
       format_(format),
+      view_formats_(std::move(view_formats)),
       pixmap_(pixmap),
       dawn_procs_(dawn_procs) {
   DCHECK(device_);
@@ -76,6 +78,9 @@ WGPUTexture DawnOzoneImageRepresentation::BeginAccess(WGPUTextureUsage usage) {
   gfx::Size pixmap_size = pixmap_->GetBufferSize();
   WGPUTextureDescriptor texture_descriptor = {};
   texture_descriptor.format = format_;
+  texture_descriptor.viewFormats = view_formats_.data();
+  texture_descriptor.viewFormatCount =
+      static_cast<uint32_t>(view_formats_.size());
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
   texture_descriptor.size = {static_cast<uint32_t>(pixmap_size.width()),

@@ -60,7 +60,8 @@ class GPU_GLES2_EXPORT PbufferImageBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       WGPUDevice device,
-      WGPUBackendType backend_type) final;
+      WGPUBackendType backend_type,
+      std::vector<WGPUTextureFormat> view_formats) final;
   std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,

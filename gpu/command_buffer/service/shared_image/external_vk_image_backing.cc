@@ -572,7 +572,8 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     WGPUDevice wgpuDevice,
-    WGPUBackendType backend_type) {
+    WGPUBackendType backend_type,
+    std::vector<WGPUTextureFormat> view_formats) {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
   auto wgpu_format = ToWGPUFormat(format());
 
@@ -591,7 +592,8 @@ std::unique_ptr<DawnImageRepresentation> ExternalVkImageBacking::ProduceDawn(
   }
 
   return std::make_unique<ExternalVkImageDawnImageRepresentation>(
-      manager, this, tracker, wgpuDevice, wgpu_format, std::move(memory_fd));
+      manager, this, tracker, wgpuDevice, wgpu_format, std::move(view_formats),
+      std::move(memory_fd));
 #else  // (!BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)) ||
        // !BUILDFLAG(USE_DAWN)
   NOTIMPLEMENTED_LOG_ONCE();
