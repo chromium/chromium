@@ -77,6 +77,7 @@ chromium-metrics-reviews@google.com.
     module using ModuleCache. Emitted at the time a snapshot is taken with an
     entry for every stack in the snapshot.
   </summary>
+  <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
 <histogram name="HeapProfiling.InProcess.SamplesPerSnapshot{Process}"
@@ -100,6 +101,7 @@ chromium-metrics-reviews@google.com.
     low-quality and may indicate a problem with the stack unwinder. Emitted at
     the time a snapshot is taken with an entry for every stack in the snapshot.
   </summary>
+  <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
 <histogram
