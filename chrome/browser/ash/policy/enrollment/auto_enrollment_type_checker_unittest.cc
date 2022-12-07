@@ -331,6 +331,17 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
                   &fake_statistics_provider_),
               AutoEnrollmentTypeChecker::FRERequirement::kExplicitlyRequired);
   }
+
+  {
+    fake_statistics_provider_.SetVpdStatus(
+        ash::system::StatisticsProvider::VpdStatus::kInvalid);
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kRevenBranding);
+
+    EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
+                  &fake_statistics_provider_),
+              AutoEnrollmentTypeChecker::FRERequirement::kRequired);
+  }
 }
 
 TEST_F(AutoEnrollmentTypeCheckerTest,

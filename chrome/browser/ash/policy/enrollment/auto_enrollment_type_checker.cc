@@ -65,9 +65,9 @@ bool AutoEnrollmentTypeChecker::IsFREEnabled() {
 
   std::string command_line_mode = command_line->GetSwitchValueASCII(
       ash::switches::kEnterpriseEnableForcedReEnrollment);
-  if (command_line_mode == kForcedReEnrollmentAlways)
+  if (command_line_mode == kForcedReEnrollmentAlways) {
     return true;
-
+  }
   if (command_line_mode.empty() ||
       command_line_mode == kForcedReEnrollmentOfficialBuild) {
     return IsGoogleBrandedChrome();
@@ -129,6 +129,14 @@ AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
                << ": " << check_enrollment_value;
     LOG(WARNING) << "Forcing auto enrollment check.";
     return FRERequirement::kExplicitlyRequired;
+  }
+
+  // FRE fails on reven, do not force FRE check.
+  if (ash::switches::IsRevenBranding() &&
+      statistics_provider->GetVpdStatus() !=
+          ash::system::StatisticsProvider::VpdStatus::kValid) {
+    LOG(WARNING) << "Re-enrollment is not forced on reven device";
+    return FRERequirement::kRequired;
   }
 
   // The FRE flag is not found. If VPD is in valid state, do not require FRE
