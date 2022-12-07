@@ -8155,3 +8155,6 @@ crbug.com/1395744 [ Linux ] external/wpt/css/filter-effects/effect-reference-on-
 
 # Sheriff 2022-12-6
 crbug.com/1396127 [ Linux ] virtual/gpu-rasterization/images/color-profile-image-canvas.html [ Crash Failure Pass ]
+
+# Sheriff 2022-12-07
+crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
