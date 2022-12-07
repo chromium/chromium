@@ -17,6 +17,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -188,6 +189,15 @@ absl::optional<dbus::ObjectPath> GetEuiccResetPath() {
   }
 
   return euicc_path;
+}
+
+std::string HexDecode(const std::string& hex_ssid) {
+  std::string ssid;
+  if (!base::HexStringToString(hex_ssid, &ssid)) {
+    NET_LOG(ERROR) << "Error decoding HexSSID: " << hex_ssid;
+  }
+
+  return ssid;
 }
 
 class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
@@ -651,6 +661,14 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
     }
     NET_LOG(USER) << "SetManagerProperty: " << shill::kTetheringConfigProperty
                   << ": " << *value;
+    const std::string* ssid =
+        value->GetDict().FindString(shill::kTetheringConfSSIDProperty);
+    if (ssid) {
+      value->GetDict().Set(
+          shill::kTetheringConfSSIDProperty,
+          base::Value(base::HexEncode(ssid->c_str(), ssid->size())));
+    }
+
     ShillManagerClient::Get()->SetProperty(
         shill::kTetheringConfigProperty, *value,
         base::BindOnce(&HotspotConfigMessageHandler::RespondStringResult,
@@ -672,11 +690,18 @@ class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
       return;
     }
 
-    const base::Value::Dict* value = properties->GetDict().FindDict(dict_key);
-    if (value)
+    base::Value::Dict* value = properties->GetDict().FindDict(dict_key);
+    if (value) {
+      const std::string* ssid =
+          value->FindString(shill::kTetheringConfSSIDProperty);
+      if (ssid) {
+        value->Set(shill::kTetheringConfSSIDProperty, HexDecode(*ssid));
+      }
       Respond(callback_id, *value);
-    else
-      Respond(callback_id, base::Value::Dict());
+      return;
+    }
+
+    Respond(callback_id, base::Value::Dict());
   }
 
   void SetManagerPropertiesErrorCallback(
