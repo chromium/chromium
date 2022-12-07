@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -7197,6 +7198,27 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPrerenderBrowserTest,
   RenderFrameHostImpl* activated_rfh = web_contents()->GetPrimaryMainFrame();
   EXPECT_EQ(prerender_frame_host, activated_rfh);
   EXPECT_EQ(expected_ftn, activated_rfh->owner_);
+}
+
+using RenderFrameHostImplDeathTest = RenderFrameHostImplBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplDeathTest,
+                       ReloadInPendingDeletionOrBFCache) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+
+  // Leave rfh_a in pending deletion state.
+  LeaveInPendingDeletionState(rfh_a);
+
+  // Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  EXPECT_TRUE(rfh_a->IsPendingDeletion() || rfh_a->IsInBackForwardCache());
+  EXPECT_CHECK_DEATH(rfh_a->Reload());
 }
 
 }  // namespace content

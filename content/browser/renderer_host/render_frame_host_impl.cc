@@ -6277,8 +6277,14 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
 }
 
 bool RenderFrameHostImpl::Reload() {
-  return frame_tree_node_->navigator().controller().ReloadFrame(
-      frame_tree_node_);
+  // Reloading the document frame will delete the currently active one.
+  // We expected this function to be used only when this RenderFrameHost
+  // is the currently active one. RenderFrameHost pending deletion, or
+  // in the BackForwardCache are not expected to have side effect on the
+  // current page.
+  CHECK(IsActive());
+
+  return owner_->Reload();
 }
 
 void RenderFrameHostImpl::SendAccessibilityEventsToManager(

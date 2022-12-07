@@ -580,6 +580,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   void DidStopLoading() override;
   void RestartNavigationAsCrossDocument(
       std::unique_ptr<NavigationRequest> navigation_request) override;
+  bool Reload() override;
   Navigator& GetCurrentNavigator() override;
   RenderFrameHostManager& GetRenderFrameHostManager() override;
   void SetFocusedFrame(SiteInstanceGroup* source) override;

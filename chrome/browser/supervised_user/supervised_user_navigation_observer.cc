@@ -237,8 +237,12 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
   auto* render_frame_host = content::RenderFrameHost::FromID(
       render_frame_process_id, render_frame_routing_id);
 
-  if (!render_frame_host || !render_frame_host->IsRenderFrameLive())
+  // `render_frame_host` could be in an inactive state since this callback is
+  // called asynchronously, and we should not reload an unrelated document.
+  if (!render_frame_host || !render_frame_host->IsRenderFrameLive() ||
+      !render_frame_host->IsActive()) {
     return;
+  }
 
   int frame_id = render_frame_host->GetFrameTreeNodeId();
   bool is_showing_interstitial =

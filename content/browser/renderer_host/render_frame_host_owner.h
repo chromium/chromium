@@ -71,6 +71,10 @@ class RenderFrameHostOwner {
   virtual void RestartNavigationAsCrossDocument(
       std::unique_ptr<NavigationRequest> navigation_request) = 0;
 
+  // Reload the current document in this frame again. Return whether an actual
+  // navigation request was created or not.
+  virtual bool Reload() = 0;
+
   virtual Navigator& GetCurrentNavigator() = 0;
 
   virtual RenderFrameHostManager& GetRenderFrameHostManager() = 0;

@@ -1000,6 +1000,10 @@ void FrameTreeNode::RestartNavigationAsCrossDocument(
   navigator().RestartNavigationAsCrossDocument(std::move(navigation_request));
 }
 
+bool FrameTreeNode::Reload() {
+  return navigator().controller().ReloadFrame(this);
+}
+
 Navigator& FrameTreeNode::GetCurrentNavigator() {
   return navigator();
 }
