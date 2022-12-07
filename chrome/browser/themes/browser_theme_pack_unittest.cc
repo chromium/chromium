@@ -61,14 +61,14 @@ class BrowserThemePackTest : public ::testing::Test {
 
   void VerifyColorMap(const std::map<int, SkColor>& color_map);
   void LoadColorJSON(const std::string& json);
-  void LoadColorDictionary(base::DictionaryValue* value);
+  void LoadColorDictionary(const base::Value::Dict* value);
   void LoadTintJSON(const std::string& json);
-  void LoadTintDictionary(base::DictionaryValue* value);
+  void LoadTintDictionary(const base::Value::Dict* value);
   void LoadDisplayPropertiesJSON(const std::string& json);
-  void LoadDisplayPropertiesDictionary(base::DictionaryValue* value);
+  void LoadDisplayPropertiesDictionary(const base::Value::Dict* value);
   void ParseImageNamesJSON(const std::string& json,
                            TestFilePathMap* out_file_paths);
-  void ParseImageNamesDictionary(base::DictionaryValue* value,
+  void ParseImageNamesDictionary(const base::Value::Dict* value,
                                  TestFilePathMap* out_file_paths);
   bool LoadRawBitmapsTo(const TestFilePathMap& out_file_paths);
 
@@ -180,49 +180,40 @@ void BrowserThemePackTest::VerifyColorMap(
 }
 
 void BrowserThemePackTest::LoadColorJSON(const std::string& json) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(value->is_dict());
-  LoadColorDictionary(static_cast<base::DictionaryValue*>(value.get()));
+  LoadColorDictionary(&base::JSONReader::Read(json)->GetDict());
 }
 
-void BrowserThemePackTest::LoadColorDictionary(base::DictionaryValue* value) {
+void BrowserThemePackTest::LoadColorDictionary(const base::Value::Dict* value) {
   theme_pack_->SetColorsFromJSON(value);
   theme_pack_->GenerateFrameColorsFromTints();
 }
 
 void BrowserThemePackTest::LoadTintJSON(const std::string& json) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(value->is_dict());
-  LoadTintDictionary(static_cast<base::DictionaryValue*>(value.get()));
+  LoadTintDictionary(&base::JSONReader::Read(json)->GetDict());
 }
 
-void BrowserThemePackTest::LoadTintDictionary(base::DictionaryValue* value) {
+void BrowserThemePackTest::LoadTintDictionary(const base::Value::Dict* value) {
   theme_pack_->SetTintsFromJSON(value);
 }
 
 void BrowserThemePackTest::LoadDisplayPropertiesJSON(const std::string& json) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(value->is_dict());
-  LoadDisplayPropertiesDictionary(
-      static_cast<base::DictionaryValue*>(value.get()));
+  LoadDisplayPropertiesDictionary(&base::JSONReader::Read(json)->GetDict());
 }
 
 void BrowserThemePackTest::LoadDisplayPropertiesDictionary(
-    base::DictionaryValue* value) {
+    const base::Value::Dict* value) {
   theme_pack_->SetDisplayPropertiesFromJSON(value);
 }
 
 void BrowserThemePackTest::ParseImageNamesJSON(
     const std::string& json,
     TestFilePathMap* out_file_paths) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
-  ASSERT_TRUE(value->is_dict());
-  ParseImageNamesDictionary(static_cast<base::DictionaryValue*>(value.get()),
+  ParseImageNamesDictionary(&base::JSONReader::Read(json)->GetDict(),
                             out_file_paths);
 }
 
 void BrowserThemePackTest::ParseImageNamesDictionary(
-    base::DictionaryValue* value,
+    const base::Value::Dict* value,
     TestFilePathMap* out_file_paths) {
   theme_pack_->ParseImageNamesFromJSON(value, base::FilePath(), out_file_paths);
 
@@ -242,13 +233,13 @@ void BrowserThemePackTest::BuildFromUnpackedExtension(
   base::FilePath manifest_path = extension_path.AppendASCII("manifest.json");
   std::string error;
   JSONFileValueDeserializer deserializer(manifest_path);
-  std::unique_ptr<base::DictionaryValue> valid_value =
-      base::DictionaryValue::From(deserializer.Deserialize(nullptr, &error));
+  std::unique_ptr<base::Value> valid_value =
+      deserializer.Deserialize(nullptr, &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(valid_value.get());
   scoped_refptr<Extension> extension(Extension::Create(
       extension_path, extensions::mojom::ManifestLocation::kInvalidLocation,
-      *valid_value, Extension::NO_FLAGS, &error));
+      valid_value->GetDict(), Extension::NO_FLAGS, &error));
   ASSERT_TRUE(extension.get());
   ASSERT_EQ("", error);
   BrowserThemePack::BuildFromExtension(extension.get(), pack);
@@ -716,7 +707,7 @@ TEST_F(BrowserThemePackTest, InvalidDisplayProperties) {
       theme_pack().GetDisplayProperty(TP::NTP_BACKGROUND_ALIGNMENT, &out_val));
 }
 
-// These three tests should just not cause a segmentation fault.
+// These four tests should just not cause a segmentation fault.
 TEST_F(BrowserThemePackTest, NullPaths) {
   TestFilePathMap out_file_paths;
   ParseImageNamesDictionary(nullptr, &out_file_paths);

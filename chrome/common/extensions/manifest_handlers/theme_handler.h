@@ -7,12 +7,9 @@
 
 #include <memory>
 
+#include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 
@@ -22,23 +19,23 @@ struct ThemeInfo : public Extension::ManifestData {
   ThemeInfo();
   ~ThemeInfo() override;
 
-  static const base::DictionaryValue* GetImages(const Extension* extension);
-  static const base::Value* GetColors(const Extension* extension);
-  static const base::DictionaryValue* GetTints(const Extension* extension);
-  static const base::DictionaryValue* GetDisplayProperties(
+  static const base::Value::Dict* GetImages(const Extension* extension);
+  static const base::Value::Dict* GetColors(const Extension* extension);
+  static const base::Value::Dict* GetTints(const Extension* extension);
+  static const base::Value::Dict* GetDisplayProperties(
       const Extension* extension);
 
   // A map of resource id's to relative file paths.
-  std::unique_ptr<base::DictionaryValue> theme_images_;
+  base::Value::Dict theme_images_;
 
   // A map of color names to colors.
-  std::unique_ptr<base::Value> theme_colors_;
+  base::Value::Dict theme_colors_;
 
   // A map of color names to colors.
-  std::unique_ptr<base::DictionaryValue> theme_tints_;
+  base::Value::Dict theme_tints_;
 
   // A map of display properties.
-  std::unique_ptr<base::DictionaryValue> theme_display_properties_;
+  base::Value::Dict theme_display_properties_;
 };
 
 // Parses the "theme" manifest key.

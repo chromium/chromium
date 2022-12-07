@@ -24,7 +24,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -1240,8 +1239,7 @@ void BrowserThemePack::SetHeaderId(const Extension* extension) {
   memcpy(header_->theme_id, id.c_str(), crx_file::id_util::kIdSize);
 }
 
-void BrowserThemePack::SetTintsFromJSON(
-    const base::DictionaryValue* tints_value) {
+void BrowserThemePack::SetTintsFromJSON(const base::Value::Dict* tints_value) {
   DCHECK(tints_);
 
   if (!tints_value)
@@ -1249,11 +1247,11 @@ void BrowserThemePack::SetTintsFromJSON(
 
   // Parse the incoming data from |tints_value| into an intermediary structure.
   std::map<int, color_utils::HSL> temp_tints;
-  for (const auto item : tints_value->GetDict()) {
-    if (!item.second.is_list())
+  for (const auto [key, value] : *tints_value) {
+    if (!value.is_list())
       continue;
 
-    const base::Value::List& tint_list = item.second.GetList();
+    const base::Value::List& tint_list = value.GetList();
     if (tint_list.size() != 3)
       continue;
 
@@ -1266,7 +1264,7 @@ void BrowserThemePack::SetTintsFromJSON(
     color_utils::HSL hsl = {*h, *s, *l};
     MakeHSLShiftValid(&hsl);
 
-    int id = GetIntForString(item.first, kTintTable, kTintTableLength);
+    int id = GetIntForString(key, kTintTable, kTintTableLength);
     if (id != -1)
       temp_tints[id] = hsl;
   }
@@ -1284,12 +1282,13 @@ void BrowserThemePack::SetTintsFromJSON(
   }
 }
 
-void BrowserThemePack::SetColorsFromJSON(const base::Value* colors_value) {
+void BrowserThemePack::SetColorsFromJSON(
+    const base::Value::Dict* colors_value) {
   DCHECK(colors_);
 
   std::map<int, SkColor> temp_colors;
   if (colors_value)
-    ReadColorsFromJSON(colors_value, &temp_colors);
+    ReadColorsFromJSON(*colors_value, &temp_colors);
 
   // Copy data from the intermediary data structure to the array.
   size_t count = 0;
@@ -1301,15 +1300,13 @@ void BrowserThemePack::SetColorsFromJSON(const base::Value* colors_value) {
   }
 }
 
-void BrowserThemePack::ReadColorsFromJSON(const base::Value* colors_value,
+void BrowserThemePack::ReadColorsFromJSON(const base::Value::Dict& colors_value,
                                           std::map<int, SkColor>* temp_colors) {
-  DCHECK(colors_value);
-  DCHECK(colors_value->is_dict());
   // Parse the incoming data from |colors_value| into an intermediary structure.
-  for (const auto iter : colors_value->DictItems()) {
-    if (!iter.second.is_list())
+  for (const auto [key, value] : colors_value) {
+    if (!value.is_list())
       continue;
-    const base::Value::List& color_list = iter.second.GetList();
+    const base::Value::List& color_list = value.GetList();
     if (!(color_list.size() == 3 || color_list.size() == 4))
       continue;
 
@@ -1346,14 +1343,14 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value* colors_value,
       color = SkColorSetRGB(*r, *g, *b);
     }
 
-    if (iter.first == "ntp_section") {
+    if (key == "ntp_section") {
       // We no longer use ntp_section, but to support legacy
       // themes we still need to use it as a fallback for
       // ntp_header.
       if (!temp_colors->count(TP::COLOR_NTP_HEADER))
         (*temp_colors)[TP::COLOR_NTP_HEADER] = color;
     } else {
-      int id = GetIntForString(iter.first, kOverwritableColorTable,
+      int id = GetIntForString(key, kOverwritableColorTable,
                                kOverwritableColorTableLength);
       if (id != -1)
         (*temp_colors)[id] = color;
@@ -1362,34 +1359,34 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value* colors_value,
 }
 
 void BrowserThemePack::SetDisplayPropertiesFromJSON(
-    const base::DictionaryValue* display_properties_value) {
+    const base::Value::Dict* display_properties_value) {
   DCHECK(display_properties_);
 
   if (!display_properties_value)
     return;
 
   std::map<int, int> temp_properties;
-  for (const auto item : display_properties_value->GetDict()) {
+  for (const auto [key, value] : *display_properties_value) {
     int property_id =
-        GetIntForString(item.first, kDisplayProperties, kDisplayPropertiesSize);
+        GetIntForString(key, kDisplayProperties, kDisplayPropertiesSize);
     switch (property_id) {
       case TP::NTP_BACKGROUND_ALIGNMENT: {
-        if (item.second.is_string()) {
+        if (value.is_string()) {
           temp_properties[TP::NTP_BACKGROUND_ALIGNMENT] =
-              TP::StringToAlignment(item.second.GetString());
+              TP::StringToAlignment(value.GetString());
         }
         break;
       }
       case TP::NTP_BACKGROUND_TILING: {
-        if (item.second.is_string()) {
+        if (value.is_string()) {
           temp_properties[TP::NTP_BACKGROUND_TILING] =
-              TP::StringToTiling(item.second.GetString());
+              TP::StringToTiling(value.GetString());
         }
         break;
       }
       case TP::NTP_LOGO_ALTERNATE: {
-        if (item.second.is_int())
-          temp_properties[TP::NTP_LOGO_ALTERNATE] = item.second.GetInt();
+        if (value.is_int())
+          temp_properties[TP::NTP_LOGO_ALTERNATE] = value.GetInt();
         break;
       }
     }
@@ -1406,27 +1403,26 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
 }
 
 void BrowserThemePack::ParseImageNamesFromJSON(
-    const base::DictionaryValue* images_value,
+    const base::Value::Dict* images_value,
     const base::FilePath& images_path,
     FilePathMap* file_paths) const {
   if (!images_value)
     return;
 
-  for (const auto item : images_value->GetDict()) {
-    if (item.second.is_dict()) {
-      for (const auto inner_item : item.second.GetDict()) {
+  for (const auto [key, value] : *images_value) {
+    if (value.is_dict()) {
+      for (const auto [inner_key, inner_value] : value.GetDict()) {
         ui::ResourceScaleFactor scale_factor = ui::kScaleFactorNone;
-        if (GetScaleFactorFromManifestKey(inner_item.first, &scale_factor) &&
-            inner_item.second.is_string()) {
-          AddFileAtScaleToMap(
-              item.first, scale_factor,
-              images_path.AppendASCII(inner_item.second.GetString()),
-              file_paths);
+        if (GetScaleFactorFromManifestKey(inner_key, &scale_factor) &&
+            inner_value.is_string()) {
+          AddFileAtScaleToMap(key, scale_factor,
+                              images_path.AppendASCII(inner_value.GetString()),
+                              file_paths);
         }
       }
-    } else if (item.second.is_string()) {
-      AddFileAtScaleToMap(item.first, ui::k100Percent,
-                          images_path.AppendASCII(item.second.GetString()),
+    } else if (value.is_string()) {
+      AddFileAtScaleToMap(key, ui::k100Percent,
+                          images_path.AppendASCII(value.GetString()),
                           file_paths);
     }
   }
