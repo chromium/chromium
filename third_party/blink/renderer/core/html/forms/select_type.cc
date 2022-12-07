@@ -325,21 +325,22 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 
   gfx::Rect local_root_rect = select_->VisibleBoundsInLocalRoot();
 
-  if (!document.GetFrame()->LocalFrameRoot().IsOutermostMainFrame()) {
+  if (document.GetFrame()->LocalFrameRoot().IsOutermostMainFrame()) {
+    gfx::Rect visual_viewport_rect =
+        document.GetPage()->GetVisualViewport().RootFrameToViewport(
+            local_root_rect);
+    visual_viewport_rect.Intersect(
+        gfx::Rect(document.GetPage()->GetVisualViewport().Size()));
+    if (visual_viewport_rect.IsEmpty())
+      return;
+  } else {
     // TODO(bokan): If we're in a remote frame, we cannot access the active
     // visual viewport. VisibleBoundsInLocalRoot will clip to the outermost
     // main frame but if the user is pinch-zoomed this won't be accurate.
+    // https://crbug.com/840944.
     if (local_root_rect.IsEmpty())
       return;
   }
-
-  gfx::Rect visual_viewport_rect =
-      document.GetPage()->GetVisualViewport().RootFrameToViewport(
-          local_root_rect);
-  visual_viewport_rect.Intersect(
-      gfx::Rect(document.GetPage()->GetVisualViewport().Size()));
-  if (visual_viewport_rect.IsEmpty())
-    return;
 
   if (!popup_) {
     popup_ = document.GetPage()->GetChromeClient().OpenPopupMenu(
