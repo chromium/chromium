@@ -4,7 +4,7 @@
 
 GEN_INCLUDE(['dictation_test_base.js']);
 
-DictationLocaleInfoTest = class extends DictationE2ETestDisallowConsole {
+DictationLocaleInfoTest = class extends DictationE2ETestAllowConsole {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

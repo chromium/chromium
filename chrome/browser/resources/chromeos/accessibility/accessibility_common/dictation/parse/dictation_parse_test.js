@@ -5,7 +5,7 @@
 GEN_INCLUDE(['../dictation_test_base.js']);
 
 /** Dictation tests for speech parsing. */
-DictationParseTest = class extends DictationE2ETestDisallowConsole {
+DictationParseTest = class extends DictationE2ETestAllowConsole {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();

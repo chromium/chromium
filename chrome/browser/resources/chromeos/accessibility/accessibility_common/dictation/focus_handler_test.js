@@ -4,7 +4,7 @@
 
 GEN_INCLUDE(['dictation_test_base.js']);
 
-DictationFocusHandlerTest = class extends DictationE2ETestDisallowConsole {
+DictationFocusHandlerTest = class extends DictationE2ETestAllowConsole {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
