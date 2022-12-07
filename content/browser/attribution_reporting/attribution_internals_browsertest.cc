@@ -1094,12 +1094,6 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       *SuitableOrigin::Deserialize("https://d.test"),
       /*is_within_fenced_frame=*/false);
 
-  static constexpr char kWantEventTriggerJSON[] =
-      R"json([ {  "data": "2",  "priority": "3",  "filters": {   "c": [    "d"   ]  } }, {  "data": "4",  "priority": "5",  "deduplication_key": "6",  "not_filters": {   "e": [    "f"   ]  } }])json";
-
-  static constexpr char kWantAggregatableTriggerJSON[] =
-      R"json([ {  "key_piece": "0x159",  "source_keys": [   "a"  ],  "filters": {   "c": [    "d"   ]  } }, {  "key_piece": "0x2a6",  "source_keys": [   "b"  ],  "not_filters": {   "e": [    "f"   ]  } }])json";
-
   static constexpr char wait_script[] = R"(
       let table = document.querySelector('#triggerTable')
           .shadowRoot.querySelector('tbody');
@@ -1109,22 +1103,13 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[0].children[2].innerText === "Success: Report stored" &&
             table.children[0].children[3].innerText === "https://d.test" &&
             table.children[0].children[4].innerText === "https://r.test" &&
-            table.children[0].children[5].innerText === "1" &&
-            table.children[0].children[6].innerText === '{ "a": [  "b" ]}' &&
-            table.children[0].children[7].innerText === '{ "g": [  "h" ]}' &&
-            table.children[0].children[8].innerText === $2 &&
-            table.children[0].children[9].innerText === $3 &&
-            table.children[0].children[10].innerText === '{ "a": 123, "b": 456}' &&
-            table.children[0].children[11].innerText === "18" &&
-            table.children[0].children[12].innerText === "disabled") {
+            table.children[0].children[5].innerText.includes('{')) {
           obs.disconnect();
           document.title = $1;
         }
       });
       obs.observe(table, {childList: true, subtree: true, characterData: true});)";
-  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle,
-                                      kWantEventTriggerJSON,
-                                      kWantAggregatableTriggerJSON)));
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   auto notify_trigger_handled =
       [&](AttributionTrigger::EventLevelResult event_status,

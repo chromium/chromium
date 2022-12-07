@@ -19,9 +19,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregation_keys.h"
-#include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -192,12 +190,6 @@ void ForwardReportsToWebUI(
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_reports));
-}
-
-attribution_internals::mojom::DedupKeyPtr CreateWebUIDedupKey(
-    absl::optional<uint64_t> dedup_key) {
-  return dedup_key ? attribution_internals::mojom::DedupKey::New(*dedup_key)
-                   : nullptr;
 }
 
 }  // namespace
@@ -519,42 +511,13 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   web_ui_trigger->trigger_time = result.trigger_time().ToJsTime();
   web_ui_trigger->destination_origin = trigger.destination_origin();
   web_ui_trigger->reporting_origin = registration.reporting_origin;
-  web_ui_trigger->filters = registration.filters.filter_values();
-  web_ui_trigger->not_filters = registration.not_filters.filter_values();
-  web_ui_trigger->debug_key = WebUIDebugKey(registration.debug_key);
+  web_ui_trigger->registration_json =
+      SerializeAttributionJson(registration.ToJson(),
+                               /*pretty_print=*/true);
   web_ui_trigger->event_level_status =
       GetWebUITriggerStatus(result.event_level_status());
   web_ui_trigger->aggregatable_status =
       GetWebUITriggerStatus(result.aggregatable_status());
-
-  for (const auto& event_trigger : registration.event_triggers.vec()) {
-    web_ui_trigger->event_triggers.emplace_back(
-        absl::in_place,
-        /*data=*/event_trigger.data,
-        /*priority=*/event_trigger.priority,
-        /*deduplication_key=*/CreateWebUIDedupKey(event_trigger.dedup_key),
-        /*filters=*/event_trigger.filters.filter_values(),
-        /*not_filters=*/event_trigger.not_filters.filter_values());
-  }
-
-  for (const auto& aggregatable_trigger_data :
-       registration.aggregatable_trigger_data.vec()) {
-    web_ui_trigger->aggregatable_triggers.emplace_back(
-        absl::in_place,
-        /*key_piece=*/
-        attribution_reporting::HexEncodeAggregationKey(
-            aggregatable_trigger_data.key_piece()),
-        /*source_keys=*/aggregatable_trigger_data.source_keys(),
-        /*filters=*/aggregatable_trigger_data.filters().filter_values(),
-        /*not_filters=*/
-        aggregatable_trigger_data.not_filters().filter_values());
-  }
-
-  web_ui_trigger->aggregatable_values =
-      registration.aggregatable_values.values();
-  web_ui_trigger->aggregatable_dedup_key =
-      CreateWebUIDedupKey(registration.aggregatable_dedup_key);
-  web_ui_trigger->debug_reporting_enabled = registration.debug_reporting;
 
   for (auto& observer : observers_) {
     observer->OnTriggerHandled(web_ui_trigger.Clone());
