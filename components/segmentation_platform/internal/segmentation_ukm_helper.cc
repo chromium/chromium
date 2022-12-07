@@ -58,7 +58,27 @@ const UkmMemberFn kSegmentationUkmInputMethods[] = {
     &Segmentation_ModelExecution::SetInput26,
     &Segmentation_ModelExecution::SetInput27,
     &Segmentation_ModelExecution::SetInput28,
-    &Segmentation_ModelExecution::SetInput29};
+    &Segmentation_ModelExecution::SetInput29,
+    &Segmentation_ModelExecution::SetInput30,
+    &Segmentation_ModelExecution::SetInput31,
+    &Segmentation_ModelExecution::SetInput32,
+    &Segmentation_ModelExecution::SetInput33,
+    &Segmentation_ModelExecution::SetInput34,
+    &Segmentation_ModelExecution::SetInput35,
+    &Segmentation_ModelExecution::SetInput36,
+    &Segmentation_ModelExecution::SetInput37,
+    &Segmentation_ModelExecution::SetInput38,
+    &Segmentation_ModelExecution::SetInput39,
+    &Segmentation_ModelExecution::SetInput40,
+    &Segmentation_ModelExecution::SetInput41,
+    &Segmentation_ModelExecution::SetInput42,
+    &Segmentation_ModelExecution::SetInput43,
+    &Segmentation_ModelExecution::SetInput44,
+    &Segmentation_ModelExecution::SetInput45,
+    &Segmentation_ModelExecution::SetInput46,
+    &Segmentation_ModelExecution::SetInput47,
+    &Segmentation_ModelExecution::SetInput48,
+    &Segmentation_ModelExecution::SetInput49};
 
 const UkmMemberFn kSegmentationUkmOutputMethods[] = {
     &Segmentation_ModelExecution::SetActualResult,
