@@ -57,8 +57,10 @@ sync_pb::HistorySpecifics CreateSpecifics(
     auto* redirect_entry = specifics.add_redirect_entries();
     redirect_entry->set_originator_visit_id(originator_visit_ids[i]);
     redirect_entry->set_url(urls[i].spec());
-    redirect_entry->set_redirect_type(
-        sync_pb::SyncEnums_PageTransitionRedirectType_SERVER_REDIRECT);
+    if (i > 0) {
+      redirect_entry->set_redirect_type(
+          sync_pb::SyncEnums_PageTransitionRedirectType_SERVER_REDIRECT);
+    }
   }
   return specifics;
 }
@@ -933,14 +935,15 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
   URLID url_id3 = backend()->AddURL(url_row3);
   url_row3.set_id(url_id3);
 
+  // Simulate server-side redirects, which cause all visits in the chain to have
+  // the same timestamp.
   const base::Time visit_time = base::Time::Now();
 
   VisitRow visit_row1;
   visit_row1.url_id = url_id1;
   visit_row1.visit_time = visit_time;
   visit_row1.transition = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
-      ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START);
   visit_row1.visit_id = backend()->AddVisit(visit_row1);
 
   VisitRow visit_row2;
@@ -956,7 +959,8 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
   visit_row3.url_id = url_id3;
   visit_row3.visit_time = visit_time;
   visit_row3.transition = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_END);
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_SERVER_REDIRECT |
+      ui::PAGE_TRANSITION_CHAIN_END);
   visit_row3.visit_id = backend()->AddVisit(visit_row3);
 
   // Notify the bridge about all of the visits.
@@ -1009,8 +1013,7 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   visit_row1.url_id = url_id1;
   visit_row1.visit_time = visit_time_chain1;
   visit_row1.transition = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
-      ui::PAGE_TRANSITION_SERVER_REDIRECT);
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START);
   visit_row1.visit_id = backend()->AddVisit(visit_row1);
 
   VisitRow visit_row2;
@@ -1018,7 +1021,8 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   visit_row2.url_id = url_id2;
   visit_row2.visit_time = visit_time_chain1;
   visit_row2.transition = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_END);
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_SERVER_REDIRECT |
+      ui::PAGE_TRANSITION_CHAIN_END);
   visit_row2.visit_id = backend()->AddVisit(visit_row2);
 
   // Notify the bridge about the visits.
@@ -1038,10 +1042,12 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   ASSERT_FALSE(history1.redirect_chain_start_incomplete());
   ASSERT_FALSE(history1.redirect_chain_end_incomplete());
 
-  // Now, the existing chain gets extended.
-  // First, the PAGE_TRANSITION_CHAIN_END bit gets removed from the existing
-  // visit.
-  visit_row2.transition = ui::PAGE_TRANSITION_LINK;
+  // Now, the chain gets extended: The last page (corresponding tovisit 2)
+  // issues a client redirect (e.g. <meta http-equiv="Refresh" ...> tag).
+  // First, the PAGE_TRANSITION_CHAIN_END bit gets removed from the
+  // existing visit.
+  visit_row2.transition = ui::PageTransitionFromInt(
+      visit_row2.transition & ~ui::PAGE_TRANSITION_CHAIN_END);
   ASSERT_TRUE(backend()->UpdateVisit(visit_row2));
   // The bridge gets notified about the updated visit, but this should have no
   // effect since it's not a chain end anymore.
@@ -1073,7 +1079,8 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   visit_row4.url_id = url_id4;
   visit_row4.visit_time = visit_time_chain2;
   visit_row4.transition = ui::PageTransitionFromInt(
-      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_END);
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_SERVER_REDIRECT |
+      ui::PAGE_TRANSITION_CHAIN_END);
   visit_row4.visit_id = backend()->AddVisit(visit_row4);
 
   // Notify the bridge about the new visits.
@@ -1125,11 +1132,11 @@ TEST_F(HistorySyncBridgeTest, TrimsExcessivelyLongRedirectChain) {
     visit_row.visit_time = visit_time;
     visit_row.referring_visit = previous_visit;
     int transition = ui::PAGE_TRANSITION_LINK;
+    if (i > 0) {
+      transition |= ui::PAGE_TRANSITION_SERVER_REDIRECT;
+    }
     if (i == 1) {
       transition |= ui::PAGE_TRANSITION_CHAIN_START;
-    }
-    if (i < kNumRedirects) {
-      transition |= ui::PAGE_TRANSITION_SERVER_REDIRECT;
     }
     if (i == kNumRedirects) {
       transition |= ui::PAGE_TRANSITION_CHAIN_END;
