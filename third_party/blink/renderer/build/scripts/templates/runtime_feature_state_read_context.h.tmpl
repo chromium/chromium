@@ -48,6 +48,27 @@ class BLINK_COMMON_EXPORT RuntimeFeatureStateReadContext {
 
   // Values for all read/write features on context creation.
   base::flat_map<blink::mojom::RuntimeFeatureState, bool> initial_values_;
+
+ private:
+  // Only RuntimeFeatureChangeImpl should be able to make changes
+  // to the read-only context, when a feature diff is sent from
+  // the renderer to the browser via IPC. Thus, ApplyFeatureChange()
+  // is private but will be called in RuntimeFeatureChangeImpl instances.
+  // This function allows RuntimeFeatureChangeImpl to update the
+  // browser process's copy of the feature state
+  // (RuntimeFeatureStateReadContext) to match the state found in
+  // the renderer process.
+  // TODO(https://crbug.com/1377000): friend the
+  // RuntimeFeatureChangeImpl class once implemented.
+  void ApplyFeatureChange(
+    const base::flat_map<blink::mojom::RuntimeFeatureState,
+                                       bool>& modified_features) {
+    // Feature values sent from the renderer take precedence over state
+    // held currently in the browser, so insert_or_assign is used.
+    for(auto const& feature : modified_features) {
+      feature_overrides_.insert_or_assign(feature.first, feature.second);
+    }
+  }
 };
 
 }  // namespace blink
