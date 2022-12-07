@@ -13,66 +13,64 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../../settings_shared.css.js';
 
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {assert} from 'chrome://resources/js/assert.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from './android_apps_browser_proxy.js';
+import {getTemplate} from './android_apps_subpage.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsAndroidAppsSubpageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+interface SettingsAndroidAppsSubpageElement {
+  $: {
+    confirmDisableDialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const SettingsAndroidAppsSubpageElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior],
+        RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & I18nMixinInterface & PrefsMixinInterface &
+          RouteObserverMixinInterface & DeepLinkingBehaviorInterface,
+    };
+
 class SettingsAndroidAppsSubpageElement extends
     SettingsAndroidAppsSubpageElementBase {
   static get is() {
-    return 'settings-android-apps-subpage';
+    return 'settings-android-apps-subpage' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** Preferences state. */
-      prefs: Object,
-
-      /** @private {!AndroidAppsInfo|undefined} */
       androidAppsInfo: {
         type: Object,
       },
 
-      /** @private */
       playStoreEnabled_: {
         type: Boolean,
         computed: 'computePlayStoreEnabled_(androidAppsInfo)',
         observer: 'onPlayStoreEnabledChanged_',
       },
 
-      /** @private */
       dialogBody_: {
         type: String,
-        value() {
-          return this.i18nAdvanced(
-              'androidAppsDisableDialogMessage',
-              {substitutions: [], tags: ['br']});
+        value(this: SettingsAndroidAppsSubpageElement): string {
+          return this
+              .i18nAdvanced(
+                  'androidAppsDisableDialogMessage',
+                  {substitutions: [], tags: ['br']})
+              .toString();
         },
       },
 
@@ -81,7 +79,6 @@ class SettingsAndroidAppsSubpageElement extends
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -93,11 +90,12 @@ class SettingsAndroidAppsSubpageElement extends
     };
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  androidAppsInfo: AndroidAppsInfo;
+  showArcvmManageUsb: boolean;
+  private dialogBody_: string;
+  private playStoreEnabled_: boolean;
+
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.ANDROID_APPS_DETAILS) {
       return;
@@ -106,8 +104,7 @@ class SettingsAndroidAppsSubpageElement extends
     this.attemptDeepLink();
   }
 
-  /** @private */
-  onPlayStoreEnabledChanged_(enabled) {
+  private onPlayStoreEnabledChanged_(enabled: boolean) {
     if (!enabled &&
         Router.getInstance().getCurrentRoute() ===
             routes.ANDROID_APPS_DETAILS) {
@@ -115,37 +112,26 @@ class SettingsAndroidAppsSubpageElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computePlayStoreEnabled_() {
+  private computePlayStoreEnabled_(): boolean {
     return this.androidAppsInfo.playStoreEnabled;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  allowRemove_() {
+  private allowRemove_(): boolean {
     return this.prefs.arc.enabled.enforcement !==
         chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 
   /**
    * Shows a confirmation dialog when disabling android apps.
-   * @param {!Event} event
-   * @private
    */
-  onRemoveTap_(event) {
+  private onRemoveTap_(): void {
     this.$.confirmDisableDialog.showModal();
   }
 
   /**
    * Handles the shared proxy confirmation dialog 'Confirm' button.
-   * @private
    */
-  onConfirmDisableDialogConfirm_() {
+  private onConfirmDisableDialogConfirm_(): void {
     this.setPrefValue('arc.enabled', false);
     this.$.confirmDisableDialog.close();
     // Sub-page will be closed in onAndroidAppsInfoUpdate_ call.
@@ -154,32 +140,31 @@ class SettingsAndroidAppsSubpageElement extends
   /**
    * Handles the shared proxy confirmation dialog 'Cancel' button or a cancel
    * event.
-   * @private
    */
-  onConfirmDisableDialogCancel_() {
+  private onConfirmDisableDialogCancel_(): void {
     this.$.confirmDisableDialog.close();
   }
 
-  /** @private */
-  onConfirmDisableDialogClose_() {
-    focusWithoutInk(assert(this.shadowRoot.querySelector('#remove')));
+  private onConfirmDisableDialogClose_(): void {
+    focusWithoutInk(castExists(this.shadowRoot!.querySelector('#remove')));
   }
 
-  /**
-   * @param {!MouseEvent} event
-   * @private
-   */
-  onManageAndroidAppsTap_(event) {
+  private onManageAndroidAppsTap_(event: MouseEvent): void {
     // |event.detail| is the click count. Keyboard events will have 0 clicks.
     const isKeyboardAction = event.detail === 0;
     AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(
         isKeyboardAction);
   }
 
-  /** @private */
-  onSharedUsbDevicesClick_() {
+  private onSharedUsbDevicesClick_(): void {
     Router.getInstance().navigateTo(
         routes.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsAndroidAppsSubpageElement.is]: SettingsAndroidAppsSubpageElement;
   }
 }
 

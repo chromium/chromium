@@ -11,49 +11,38 @@
  * Type definition of AndroidAppsInfo entry. |playStoreEnabled| indicates that
  * Play Store is enabled. |settingsAppAvailable| indicates that Android settings
  * app is registered in the system.
- * @typedef {{
- *   playStoreEnabled: boolean,
- *   settingsAppAvailable: boolean,
- * }}
  * @see chrome/browser/ui/webui/settings/ash/android_apps_handler.cc
  */
-export let AndroidAppsInfo;
-
-/** @interface */
-export class AndroidAppsBrowserProxy {
-  requestAndroidAppsInfo() {}
-
-  /**
-   * @param {boolean} keyboardAction True if the app was opened using a
-   *     keyboard action.
-   */
-  showAndroidAppsSettings(keyboardAction) {}
+export interface AndroidAppsInfo {
+  playStoreEnabled: boolean;
+  settingsAppAvailable: boolean;
 }
 
-/** @type {?AndroidAppsBrowserProxy} */
-let instance = null;
+export interface AndroidAppsBrowserProxy {
+  requestAndroidAppsInfo(): void;
 
-/**
- * @implements {AndroidAppsBrowserProxy}
- */
-export class AndroidAppsBrowserProxyImpl {
-  /** @return {!AndroidAppsBrowserProxy} */
-  static getInstance() {
+  /**
+   * @param keyboardAction True if the app was opened using a keyboard action.
+   */
+  showAndroidAppsSettings(keyboardAction: boolean): void;
+}
+
+let instance: AndroidAppsBrowserProxy|null = null;
+
+export class AndroidAppsBrowserProxyImpl implements AndroidAppsBrowserProxy {
+  static getInstance(): AndroidAppsBrowserProxy {
     return instance || (instance = new AndroidAppsBrowserProxyImpl());
   }
 
-  /** @param {!AndroidAppsBrowserProxy} obj */
-  static setInstanceForTesting(obj) {
+  static setInstanceForTesting(obj: AndroidAppsBrowserProxy): void {
     instance = obj;
   }
 
-  /** @override */
-  requestAndroidAppsInfo() {
+  requestAndroidAppsInfo(): void {
     chrome.send('requestAndroidAppsInfo');
   }
 
-  /** @override */
-  showAndroidAppsSettings(keyboardAction) {
+  showAndroidAppsSettings(keyboardAction: boolean): void {
     chrome.send('showAndroidAppsSettings', [keyboardAction]);
   }
 }
