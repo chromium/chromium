@@ -567,6 +567,23 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSpeechMenu) {
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenContextMenu) {
+  EnableChromeVox();
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_M); });
+  sm_.ExpectSpeech("menu opened");
+  // Close the menu
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_ESCAPE); });
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+            <button autofocus>Click me</button>)")));
+  });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_M); });
+  sm_.ExpectSpeech("menu opened");
+
+  sm_.Replay();
+}
+
 // Verifies that speaking text under mouse works for Shelf button and voice
 // announcements should not be stacked when mouse goes over many Shelf buttons
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
