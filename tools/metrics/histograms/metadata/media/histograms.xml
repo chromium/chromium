@@ -2726,6 +2726,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.GlobalMediaControls.MediaCastMode.{Action}"
+    enum="GlobalMediaControlsCastMode" expires_after="2023-05-01">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the type of Media Route that users {Action} from the Global Media
+    Controls dialog. Recorded when users click on a button and this histogram
+    doesn't represent the actual number of sessions {Action}ed from the GMC
+    dialog.
+  </summary>
+  <token key="Action">
+    <variant name="Start" summary="start"/>
+    <variant name="Stop" summary="stop"/>
+  </token>
+</histogram>
+
 <histogram name="Media.GlobalMediaControls.NumberOfAvailableAudioDevices"
     units="devices" expires_after="2022-12-04">
   <owner>steimel@chromium.org</owner>

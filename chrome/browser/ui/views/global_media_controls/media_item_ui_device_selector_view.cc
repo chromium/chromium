@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
+#include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_observer.h"
@@ -20,7 +21,7 @@
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/media_router/common/media_sink.h"
-#include "components/media_router/common/mojom/media_route_provider_id.mojom-shared.h"
+#include "components/media_router/common/mojom/media_route_provider_id.mojom.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -39,8 +40,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
-
-#include "components/media_router/common/mojom/media_route_provider_id.mojom.h"
 
 using media_router::MediaRouterMetrics;
 using media_router::mojom::MediaRouteProviderId;
@@ -97,6 +96,17 @@ void RecordCastDeviceCountMetrics(
                                                provider, is_available, count);
     }
   }
+}
+
+absl::optional<media_router::MediaCastMode> GetPreferredCastMode(
+    media_router::CastModeSet cast_mode) {
+  if (base::Contains(cast_mode, media_router::MediaCastMode::PRESENTATION)) {
+    return media_router::MediaCastMode::PRESENTATION;
+  } else if (base::Contains(cast_mode,
+                            media_router::MediaCastMode::REMOTE_PLAYBACK)) {
+    return media_router::MediaCastMode::REMOTE_PLAYBACK;
+  }
+  return absl::nullopt;
 }
 
 class ExpandDeviceSelectorLabel : public views::Label {
@@ -583,7 +593,10 @@ void MediaItemUIDeviceSelectorView::StartCastSession(
   } else if (sink.state == media_router::UIMediaSinkState::CONNECTED) {
     // We record stopping casting here even if we are starting casting, because
     // the existing session is being stopped and replaced by a new session.
-    RecordStopCastingMetrics();
+    if (GetPreferredCastMode(sink.cast_modes)) {
+      MediaItemUIMetrics::RecordStopCastingMetrics(
+          GetPreferredCastMode(sink.cast_modes).value(), entry_point_);
+    }
     if (sink.provider == MediaRouteProviderId::DIAL) {
       DCHECK(sink.route);
       cast_controller_->StopCasting(sink.route->media_route_id());
@@ -595,64 +608,18 @@ void MediaItemUIDeviceSelectorView::StartCastSession(
 
 void MediaItemUIDeviceSelectorView::DoStartCastSession(
     media_router::UIMediaSink sink) {
-  if (base::Contains(sink.cast_modes,
-                     media_router::MediaCastMode::PRESENTATION)) {
-    cast_controller_->StartCasting(sink.id,
-                                   media_router::MediaCastMode::PRESENTATION);
-  } else if (base::Contains(sink.cast_modes,
-                            media_router::MediaCastMode::REMOTE_PLAYBACK)) {
-    cast_controller_->StartCasting(
-        sink.id, media_router::MediaCastMode::REMOTE_PLAYBACK);
-    delegate_->OnMediaRemotingRequested(item_id_);
-  } else {
+  auto cast_mode = GetPreferredCastMode(sink.cast_modes);
+  if (!cast_mode) {
     NOTREACHED() << "Cast mode is not supported.";
+    return;
   }
-  RecordStartCastingMetrics(sink.icon_type);
-}
-
-void MediaItemUIDeviceSelectorView::RecordStartCastingMetrics(
-    media_router::SinkIconType sink_icon_type) {
-  MediaRouterMetrics::RecordMediaSinkTypeForGlobalMediaControls(sink_icon_type);
-
-  global_media_controls::GlobalMediaControlsCastActionAndEntryPoint action;
-  switch (entry_point_) {
-    case global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon:
-      action = global_media_controls::
-          GlobalMediaControlsCastActionAndEntryPoint::kStartViaToolbarIcon;
-      break;
-    case global_media_controls::GlobalMediaControlsEntryPoint::kPresentation:
-      action = global_media_controls::
-          GlobalMediaControlsCastActionAndEntryPoint::kStartViaPresentation;
-      break;
-    case global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray:
-      action = global_media_controls::
-          GlobalMediaControlsCastActionAndEntryPoint::kStartViaSystemTray;
-      break;
+  cast_controller_->StartCasting(sink.id, cast_mode.value());
+  if (cast_mode.value() == media_router::MediaCastMode::REMOTE_PLAYBACK) {
+    delegate_->OnMediaRemotingRequested(item_id_);
   }
-  base::UmaHistogramEnumeration(
-      media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
-      action);
-}
 
-void MediaItemUIDeviceSelectorView::RecordStopCastingMetrics() {
-  global_media_controls::GlobalMediaControlsCastActionAndEntryPoint action;
-  switch (entry_point_) {
-    case global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon:
-      action = global_media_controls::
-          GlobalMediaControlsCastActionAndEntryPoint::kStopViaToolbarIcon;
-      break;
-    case global_media_controls::GlobalMediaControlsEntryPoint::kPresentation:
-      action = global_media_controls::
-          GlobalMediaControlsCastActionAndEntryPoint::kStopViaPresentation;
-      break;
-    case global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray:
-      action = global_media_controls::
-          GlobalMediaControlsCastActionAndEntryPoint::kStopViaSystemTray;
-      break;
-  }
-  base::UmaHistogramEnumeration(
-      media_message_center::MediaNotificationItem::kCastStartStopHistogramName,
-      action);
+  MediaItemUIMetrics::RecordStartCastingMetrics(
+      sink.icon_type, cast_mode.value(), entry_point_);
 }
 
 void MediaItemUIDeviceSelectorView::RecordCastDeviceCountAfterDelay() {

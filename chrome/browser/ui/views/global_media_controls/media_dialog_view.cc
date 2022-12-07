@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
@@ -533,15 +534,17 @@ MediaDialogView::BuildMediaItemUIView(
   } else if (is_local_media_session) {
     auto route_id = GetRemotePlaybackRouteId(id, profile_);
     if (!route_id.empty()) {
-      footer_view =
-          std::make_unique<MediaItemUILegacyCastFooterView>(base::BindRepeating(
-              [](const std::string& route_id,
-                 media_router::MediaRouter* router) {
-                router->TerminateRoute(route_id);
-              },
-              route_id,
-              media_router::MediaRouterFactory::GetApiForBrowserContext(
-                  profile_)));
+      footer_view = std::make_unique<
+          MediaItemUILegacyCastFooterView>(base::BindRepeating(
+          [](const std::string& route_id, media_router::MediaRouter* router,
+             global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+            router->TerminateRoute(route_id);
+            MediaItemUIMetrics::RecordStopCastingMetrics(
+                media_router::MediaCastMode::REMOTE_PLAYBACK, entry_point);
+          },
+          route_id,
+          media_router::MediaRouterFactory::GetApiForBrowserContext(profile_),
+          entry_point_));
     }
   }
 

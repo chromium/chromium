@@ -1330,6 +1330,10 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithRemotePlaybackBrowserTest,
   const global_media_controls::MediaItemUIFooter* view =
       item_pair->second->footer_view_for_testing();
   EXPECT_TRUE(view && view->GetVisible());
+
+  // Click on the "Stop Casting button".
+  EXPECT_CALL(*media_router_, TerminateRoute(route.media_route_id()));
+  ui_test_utils::ClickOnView(*view->children().begin());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

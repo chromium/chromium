@@ -46888,6 +46888,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Casting stopped via system tray"/>
 </enum>
 
+<enum name="GlobalMediaControlsCastMode">
+  <int value="0" label="Presentation"/>
+  <int value="1" label="Remote Playback"/>
+</enum>
+
 <enum name="GlobalMediaControlsDismissReason">
   <int value="0" label="User dismissed notification"/>
   <int value="1" label="Inactive timeout"/>
