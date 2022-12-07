@@ -21,6 +21,10 @@ export class AccessibilityCommon {
     /** @private {Dictation} */
     this.dictation_ = null;
 
+    // For tests.
+    /** @private {?function()} */
+    this.autoclickLoadCallbackForTest_ = null;
+
     this.init_();
   }
 
@@ -82,6 +86,11 @@ export class AccessibilityCommon {
     if (details.value && !this.autoclick_) {
       // Initialize the Autoclick extension.
       this.autoclick_ = new Autoclick();
+      if (this.autoclickLoadCallbackForTest_) {
+        this.autoclick_.setOnLoadDesktopCallbackForTest(
+            this.autoclickLoadCallbackForTest_);
+        this.autoclickLoadCallbackForTest_ = null;
+      }
     } else if (!details.value && this.autoclick_) {
       // TODO(crbug.com/1096759): Consider using XHR to load/unload autoclick
       // rather than relying on a destructor to clean up state.
@@ -117,6 +126,20 @@ export class AccessibilityCommon {
       this.dictation_.onDictationDisabled();
       this.dictation_ = null;
     }
+  }
+
+  /**
+   * Used by C++ tests to ensure Autoclick load is completed.
+   * Set on AccessibilityCommon in case Autoclick has not started up yet.
+   * @param {!function()} callback Callback for Autoclick JS load complete.
+   */
+  setAutoclickLoadCallbackForTest(callback) {
+    if (!this.autoclick_) {
+      this.autoclickLoadCallbackForTest_ = callback;
+      return;
+    }
+    // Autoclick already loaded.
+    this.autoclick_.setOnLoadDesktopCallbackForTest(callback);
   }
 }
 
