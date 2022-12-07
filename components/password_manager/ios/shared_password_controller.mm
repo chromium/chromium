@@ -41,6 +41,7 @@
 #include "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #include "components/password_manager/ios/password_manager_ios_util.h"
+#import "components/password_manager/ios/shared_password_controller+private.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/web/common/url_scheme_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -101,9 +102,6 @@ BOOL canProcessCrossOriginIframes() {
 
 // Helper contains common password suggestion logic.
 @property(nonatomic, readonly) PasswordSuggestionHelper* suggestionHelper;
-
-// Tracks if current password is generated.
-@property(nonatomic, assign) BOOL isPasswordGenerated;
 
 // Tracks field when current password was generated.
 @property(nonatomic) FieldRendererId passwordGeneratedIdentifier;

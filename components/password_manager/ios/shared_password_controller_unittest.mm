@@ -26,6 +26,7 @@
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
+#import "components/password_manager/ios/shared_password_controller+private.h"
 #include "components/password_manager/ios/test_helpers.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
@@ -49,17 +50,6 @@ using password_manager::IsCrossOriginIframe;
 using password_manager::PasswordGenerationFrameHelper;
 using ::testing::_;
 using ::testing::Return;
-
-@interface SharedPasswordController (Testing)
-
-// Provides access for testing.
-
-- (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms
-                        withMaxUniqueID:(uint32_t)maxID
-                  triggeredByFormChange:(BOOL)triggeredByFormChange
-                                inFrame:(web::WebFrame*)frame;
-
-@end
 
 namespace password_manager {
 

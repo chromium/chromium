@@ -34,6 +34,7 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/password_manager/ios/shared_password_controller+private.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/password_manager/ios/test_helpers.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -230,18 +231,6 @@ struct TestPasswordFormData {
 - (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {
   self.suggestions = suggestions;
 }
-
-@end
-
-@interface SharedPasswordController (Testing)
-
-// Provides access for testing.
-@property(nonatomic, assign) BOOL isPasswordGenerated;
-
-- (void)injectGeneratedPasswordForFormId:(FormRendererId)formIdentifier
-                                 inFrame:(web::WebFrame*)frame
-                       generatedPassword:(NSString*)generatedPassword
-                       completionHandler:(void (^)())completionHandler;
 
 @end
 

@@ -47,6 +47,7 @@ component("ios") {
     "password_manager_ios_util.mm",
     "password_suggestion_helper.h",
     "password_suggestion_helper.mm",
+    "shared_password_controller+private.h",
     "shared_password_controller.h",
     "shared_password_controller.mm",
   ]
