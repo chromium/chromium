@@ -350,16 +350,14 @@ void MemoryCache::EvictResources() {
 void MemoryCache::Prune() {
   TRACE_EVENT0("renderer", "MemoryCache::prune()");
 
-  // https://linear.app/replay/issue/RUN-821
-  recordreplay::Assert("MemoryCache::Prune Start");
+  // Cache state can vary when replaying, make sure we don't interact
+  // with the recording while pruning.
+  recordreplay::AutoDisallowEvents disallow;
 
   if (in_prune_resources_)
     return;
   if (size_ <= capacity_)  // Fast path.
     return;
-
-  // https://linear.app/replay/issue/RUN-821
-  recordreplay::Assert("MemoryCache::Prune #1");
 
   // To avoid burdening the current thread with repetitive pruning jobs, pruning
   // is postponed until the end of the current task. If it has been more than
