@@ -23,77 +23,36 @@ import {
   Script,
   Session,
 } from './domains/protocol/bidiProtocolTypes';
-import {CdpConnection} from './cdp';
-import {BiDiMessageEntry, IBidiServer} from './bidiServer';
+import {CdpConnection} from './CdpConnection';
+import {OutgoingBidiMessage} from './OutgoindBidiMessage';
 import {IEventManager} from './domains/events/EventManager';
 import {
   ErrorResponseClass,
   UnknownCommandException,
   UnknownException,
 } from './domains/protocol/error';
-import {BrowsingContextStorage} from './domains/context/browsingContextStorage';
+import {EventEmitter} from '../utils/EventEmitter';
 
-export class CommandProcessor {
+type CommandProcessorEvents = {
+  response: Promise<OutgoingBidiMessage>;
+};
+
+export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
   #contextProcessor: BrowsingContextProcessor;
-  #bidiServer: IBidiServer;
   #eventManager: IEventManager;
-  #cdpConnection: CdpConnection;
 
-  static async run(
+  constructor(
     cdpConnection: CdpConnection,
-    bidiServer: IBidiServer,
     eventManager: IEventManager,
     selfTargetId: string
   ) {
-    const commandProcessor = new CommandProcessor(
-      cdpConnection,
-      bidiServer,
-      eventManager,
-      selfTargetId
-    );
-
-    await commandProcessor.#run();
-  }
-
-  private constructor(
-    cdpConnection: CdpConnection,
-    bidiServer: IBidiServer,
-    eventManager: IEventManager,
-    selfTargetId: string
-  ) {
+    super();
     this.#eventManager = eventManager;
-    this.#bidiServer = bidiServer;
-    this.#cdpConnection = cdpConnection;
     this.#contextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       selfTargetId,
       eventManager
     );
-  }
-
-  async #prepareCdp() {
-    const cdpClient = this.#cdpConnection.browserClient();
-
-    // Needed to get events about new targets.
-    await cdpClient.sendCommand('Target.setDiscoverTargets', {discover: true});
-
-    // Needed to automatically attach to new targets.
-    await cdpClient.sendCommand('Target.setAutoAttach', {
-      autoAttach: true,
-      waitForDebuggerOnStart: true,
-      flatten: true,
-    });
-
-    await Promise.all(
-      BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
-    );
-  }
-
-  async #run() {
-    this.#bidiServer.on('message', (messageObj) => {
-      return this.#onBidiMessage(messageObj);
-    });
-    await this.#prepareCdp();
   }
 
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
@@ -192,7 +151,9 @@ export class CommandProcessor {
     }
   }
 
-  #onBidiMessage = async (command: Message.RawCommandRequest) => {
+  processCommand = async (
+    command: Message.RawCommandRequest
+  ): Promise<void> => {
     try {
       const result = await this.#processCommand(command);
 
@@ -201,15 +162,16 @@ export class CommandProcessor {
         ...result,
       };
 
-      this.#bidiServer.sendMessage(
-        BiDiMessageEntry.createResolved(response, command.channel ?? null)
+      this.emit(
+        'response',
+        OutgoingBidiMessage.createResolved(response, command.channel ?? null)
       );
     } catch (e) {
       if (e instanceof ErrorResponseClass) {
         const errorResponse = e as ErrorResponseClass;
-
-        this.#bidiServer.sendMessage(
-          BiDiMessageEntry.createResolved(
+        this.emit(
+          'response',
+          OutgoingBidiMessage.createResolved(
             errorResponse.toErrorResponse(command.id),
             command.channel ?? null
           )
@@ -217,9 +179,9 @@ export class CommandProcessor {
       } else {
         const error = e as Error;
         console.error(error);
-
-        this.#bidiServer.sendMessage(
-          BiDiMessageEntry.createResolved(
+        this.emit(
+          'response',
+          OutgoingBidiMessage.createResolved(
             new UnknownException(error.message).toErrorResponse(command.id),
             command.channel ?? null
           )

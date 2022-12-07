@@ -22,73 +22,72 @@ import {ITransport} from '../utils/transport';
 import {Message} from './domains/protocol/bidiProtocolTypes';
 import {ProcessingQueue} from '../utils/processingQueue';
 import ErrorCode = Message.ErrorCode;
+import {OutgoingBidiMessage} from './OutgoindBidiMessage';
+import {EventManager} from './domains/events/EventManager';
+import {CommandProcessor} from './CommandProcessor';
+import {CdpConnection} from './CdpConnection';
+import {BrowsingContextStorage} from './domains/context/browsingContextStorage';
 
 const logBidi = log(LogType.bidi);
-
-export interface IBidiServer {
-  on(
-    event: 'message',
-    handler: (messageObj: Message.RawCommandRequest) => void
-  ): void;
-
-  sendMessage: (message: Promise<BiDiMessageEntry>) => void;
-
-  close(): void;
-}
 
 type BidiServerEvents = {
   message: Message.RawCommandRequest;
 };
 
-export class BiDiMessageEntry {
-  readonly #message: Message.OutgoingMessage;
-  readonly #channel: string | null;
+export class BidiServer extends EventEmitter<BidiServerEvents> {
+  #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
+  #transport: ITransport;
+  #commandProcessor: CommandProcessor;
 
-  constructor(message: Message.OutgoingMessage, channel: string | null) {
-    this.#message = message;
-    this.#channel = channel;
-  }
-
-  static createFromPromise(
-    messagePromise: Promise<Message.OutgoingMessage>,
-    channel: string | null
-  ): Promise<BiDiMessageEntry> {
-    return messagePromise.then(
-      (message) => new BiDiMessageEntry(message, channel)
-    );
-  }
-
-  static createResolved(
-    message: Message.OutgoingMessage,
-    channel: string | null
-  ): Promise<BiDiMessageEntry> {
-    return Promise.resolve(new BiDiMessageEntry(message, channel));
-  }
-
-  get message(): Message.OutgoingMessage {
-    return this.#message;
-  }
-
-  get channel(): string | null {
-    return this.#channel;
-  }
-}
-
-export class BidiServer
-  extends EventEmitter<BidiServerEvents>
-  implements IBidiServer
-{
-  #messageQueue: ProcessingQueue<BiDiMessageEntry>;
-
-  constructor(private _transport: ITransport) {
+  private constructor(
+    bidiTransport: ITransport,
+    cdpConnection: CdpConnection,
+    selfTargetId: string
+  ) {
     super();
-    this.#messageQueue = new ProcessingQueue<BiDiMessageEntry>((m) =>
-      this.#sendMessage(m)
+    this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
+      this.#processOutgoingMessage
     );
-    this._transport.setOnMessage(this.#onBidiMessage);
+    this.#transport = bidiTransport;
+    this.#transport.setOnMessage(this.#handleIncomingMessage);
+    this.#commandProcessor = new CommandProcessor(
+      cdpConnection,
+      new EventManager(this),
+      selfTargetId
+    );
+    this.#commandProcessor.on(
+      'response',
+      (response: Promise<OutgoingBidiMessage>) => {
+        this.emitOutgoingMessage(response);
+      }
+    );
   }
 
-  async #sendMessage(messageEntry: BiDiMessageEntry) {
+  public static async createAndStart(
+    bidiTransport: ITransport,
+    cdpConnection: CdpConnection,
+    selfTargetId: string
+  ): Promise<BidiServer> {
+    const server = new BidiServer(bidiTransport, cdpConnection, selfTargetId);
+    const cdpClient = cdpConnection.browserClient();
+
+    // Needed to get events about new targets.
+    await cdpClient.sendCommand('Target.setDiscoverTargets', {discover: true});
+
+    // Needed to automatically attach to new targets.
+    await cdpClient.sendCommand('Target.setAutoAttach', {
+      autoAttach: true,
+      waitForDebuggerOnStart: true,
+      flatten: true,
+    });
+
+    await Promise.all(
+      BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
+    );
+    return server;
+  }
+
+  #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {
     const message = messageEntry.message as any;
 
     if (messageEntry.channel !== null) {
@@ -97,21 +96,21 @@ export class BidiServer
 
     const messageStr = JSON.stringify(message);
     logBidi('sent > ' + messageStr);
-    await this._transport.sendMessage(messageStr);
-  }
+    await this.#transport.sendMessage(messageStr);
+  };
 
   /**
    * Sends BiDi message.
    */
-  sendMessage(messageEntry: Promise<BiDiMessageEntry>): void {
+  emitOutgoingMessage(messageEntry: Promise<OutgoingBidiMessage>): void {
     this.#messageQueue.add(messageEntry);
   }
 
   close(): void {
-    this._transport.close();
+    this.#transport.close();
   }
 
-  #onBidiMessage = async (messageStr: string) => {
+  #handleIncomingMessage = async (messageStr: string) => {
     logBidi('received < ' + messageStr);
 
     let messageObj;
@@ -122,7 +121,8 @@ export class BidiServer
       this.#respondWithError(messageStr, 'invalid argument', e.message, null);
       return;
     }
-    this.emit('message', messageObj);
+
+    this.#commandProcessor.processCommand(messageObj);
   };
 
   #respondWithError(
@@ -136,7 +136,9 @@ export class BidiServer
       errorCode,
       errorMessage
     );
-    this.sendMessage(BiDiMessageEntry.createResolved(errorResponse, channel));
+    this.emitOutgoingMessage(
+      OutgoingBidiMessage.createResolved(errorResponse, channel)
+    );
   }
 
   static #getJsonType(value: any) {

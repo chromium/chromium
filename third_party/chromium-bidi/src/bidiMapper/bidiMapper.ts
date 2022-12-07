@@ -21,6 +21,5 @@
  * TODO: eslint rule for this.
  */
 
-export {CommandProcessor} from './commandProcessor';
-export {CdpConnection, CdpClient} from './cdp';
-export {IBidiServer} from './bidiServer';
+export {CdpConnection, CdpClient} from './CdpConnection';
+export {BidiServer} from './BidiServer';

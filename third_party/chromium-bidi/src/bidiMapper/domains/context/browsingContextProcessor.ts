@@ -16,7 +16,7 @@
  */
 
 import {log, LogType} from '../../../utils/log';
-import {CdpClient, CdpConnection} from '../../cdp';
+import {CdpClient, CdpConnection} from '../../CdpConnection';
 import {BrowsingContext, CDP, Script} from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import {IEventManager} from '../events/EventManager';

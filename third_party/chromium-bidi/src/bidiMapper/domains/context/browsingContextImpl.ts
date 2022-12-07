@@ -17,7 +17,7 @@
 
 import {Protocol} from 'devtools-protocol';
 import {BrowsingContext} from '../protocol/bidiProtocolTypes';
-import {CdpClient} from '../../cdp';
+import {CdpClient} from '../../CdpConnection';
 import {IEventManager} from '../events/EventManager';
 import {Deferred} from '../../../utils/deferred';
 import {UnknownException} from '../protocol/error';

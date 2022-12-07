@@ -16,7 +16,8 @@
  */
 
 import {CommonDataTypes, Message} from '../protocol/bidiProtocolTypes';
-import {BiDiMessageEntry, IBidiServer} from '../../bidiServer';
+import {type BidiServer} from '../../BidiServer';
+import {OutgoingBidiMessage} from '../../OutgoindBidiMessage';
 import {SubscriptionManager} from './SubscriptionManager';
 import {IdWrapper} from '../../../utils/idWrapper';
 import {Buffer} from '../../../utils/buffer';
@@ -97,9 +98,9 @@ export class EventManager implements IEventManager {
    */
   #lastMessageSent: Map<string, number> = new Map();
   #subscriptionManager: SubscriptionManager;
-  #bidiServer: IBidiServer;
+  #bidiServer: BidiServer;
 
-  constructor(bidiServer: IBidiServer) {
+  constructor(bidiServer: BidiServer) {
     this.#bidiServer = bidiServer;
     this.#subscriptionManager = new SubscriptionManager();
   }
@@ -140,8 +141,8 @@ export class EventManager implements IEventManager {
     this.#bufferEvent(eventWrapper, eventName);
     // Send events to channels in the subscription priority.
     for (const channel of sortedChannels) {
-      this.#bidiServer.sendMessage(
-        BiDiMessageEntry.createFromPromise(event, channel)
+      this.#bidiServer.emitOutgoingMessage(
+        OutgoingBidiMessage.createFromPromise(event, channel)
       );
       this.#markEventSent(eventWrapper, channel, eventName);
     }
@@ -168,8 +169,8 @@ export class EventManager implements IEventManager {
           channel
         )) {
           // The order of the events is important.
-          this.#bidiServer.sendMessage(
-            BiDiMessageEntry.createFromPromise(eventWrapper.event, channel)
+          this.#bidiServer.emitOutgoingMessage(
+            OutgoingBidiMessage.createFromPromise(eventWrapper.event, channel)
           );
           this.#markEventSent(eventWrapper, channel, eventName);
         }

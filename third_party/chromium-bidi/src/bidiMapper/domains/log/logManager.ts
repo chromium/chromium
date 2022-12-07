@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {CdpClient} from '../../cdp';
+import {CdpClient} from '../../CdpConnection';
 import {CommonDataTypes, Log, Script} from '../protocol/bidiProtocolTypes';
 import {getRemoteValuesText} from './logHelper';
 import {Protocol} from 'devtools-protocol';

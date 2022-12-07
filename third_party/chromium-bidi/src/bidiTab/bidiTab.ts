@@ -17,15 +17,13 @@
  * @license
  */
 
-import {CommandProcessor} from '../bidiMapper/commandProcessor';
-
 import {CdpConnection} from '../cdp';
-import {BiDiMessageEntry, BidiServer} from '../bidiMapper/bidiServer';
+import {BidiServer} from '../bidiMapper/BidiServer';
 import {ITransport} from '../utils/transport';
 
 import {log, LogType} from '../utils/log';
-import {EventManager} from '../bidiMapper/domains/events/EventManager';
 import {MapperTabPage} from './mapperTabPage';
+import {OutgoingBidiMessage} from '../bidiMapper/OutgoindBidiMessage';
 
 const logSystem = log(LogType.system);
 
@@ -55,26 +53,15 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
 (async () => {
   MapperTabPage.generatePage();
 
-  const cdpConnection = _createCdpConnection();
-  const bidiServer = _createBidiServer();
-  const eventManager = new EventManager(bidiServer);
-
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await _waitSelfTargetIdPromise;
 
-  // The command processor needs to start running before calling _prepareCdp
-  // so that it has a chance to set up event listeners for tracking targets.
-  await CommandProcessor.run(
-    cdpConnection,
-    bidiServer,
-    eventManager,
-    selfTargetId
-  );
+  const bidiServer = await _createBidiServer(selfTargetId);
 
   logSystem('launched');
 
-  bidiServer.sendMessage(
-    BiDiMessageEntry.createResolved({launched: true}, null)
+  bidiServer.emitOutgoingMessage(
+    OutgoingBidiMessage.createResolved({launched: true}, null)
   );
 })();
 
@@ -109,7 +96,7 @@ function _createCdpConnection() {
   return new CdpConnection(new WindowCdpTransport(), log(LogType.cdp));
 }
 
-function _createBidiServer() {
+async function _createBidiServer(selfTargetId: string) {
   class WindowBidiTransport implements ITransport {
     private _onMessage: ((message: string) => void) | null = null;
 
@@ -135,7 +122,11 @@ function _createBidiServer() {
     }
   }
 
-  return new BidiServer(new WindowBidiTransport());
+  return await BidiServer.createAndStart(
+    new WindowBidiTransport(),
+    _createCdpConnection(),
+    selfTargetId
+  );
 }
 
 // Needed to filter out info related to BiDi target.
