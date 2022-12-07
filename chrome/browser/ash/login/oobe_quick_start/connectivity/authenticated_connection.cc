@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
 
-#include "base/json/json_writer.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/quick_start_decoder.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 
 namespace ash::quick_start {
@@ -38,25 +36,14 @@ constexpr int kFlowTypeTargetChallenge = 2;
 
 }  // namespace
 
-// TODO(b/234655072): Remove once we have implemented a way to set
-// NearbyConnection at the Connection level.
 AuthenticatedConnection::AuthenticatedConnection(
     NearbyConnection* nearby_connection)
-    : nearby_connection_(nearby_connection) {}
+    : Connection(nearby_connection) {}
 
 AuthenticatedConnection::~AuthenticatedConnection() = default;
 
 void AuthenticatedConnection::RequestAccountTransferAssertion() {
   SendBootstrapOptions();
-}
-
-void AuthenticatedConnection::SendPayload(
-    const base::Value::Dict& message_payload) {
-  std::string json_serialized_payload;
-  CHECK(base::JSONWriter::Write(message_payload, &json_serialized_payload));
-  std::vector<uint8_t> request_payload(json_serialized_payload.begin(),
-                                       json_serialized_payload.end());
-  nearby_connection_->Write(request_payload);
 }
 
 void AuthenticatedConnection::SendBootstrapOptions() {

@@ -6,6 +6,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::quick_start {
@@ -61,11 +63,14 @@ class IncomingConnectionTest : public testing::Test {
 
   void SetUp() override {
     RandomSessionId session_id(kRandomSessionId);
-    incoming_connection_ =
-        std::make_unique<IncomingConnection>(session_id, kSharedSecret);
+    fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
+    NearbyConnection* nearby_connection = fake_nearby_connection_.get();
+    incoming_connection_ = std::make_unique<IncomingConnection>(
+        nearby_connection, session_id, kSharedSecret);
   }
 
   std::unique_ptr<IncomingConnection> incoming_connection_;
+  std::unique_ptr<FakeNearbyConnection> fake_nearby_connection_;
 };
 
 TEST_F(IncomingConnectionTest, TestGetQrCodeData) {

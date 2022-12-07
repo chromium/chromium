@@ -10,14 +10,18 @@
 
 namespace ash::quick_start {
 
-IncomingConnection::IncomingConnection(RandomSessionId session_id)
-    : random_session_id_(session_id) {
+IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
+                                       RandomSessionId session_id)
+    : Connection(nearby_connection), random_session_id_(session_id) {
   crypto::RandBytes(shared_secret_);
 }
 
-IncomingConnection::IncomingConnection(RandomSessionId session_id,
+IncomingConnection::IncomingConnection(NearbyConnection* nearby_connection,
+                                       RandomSessionId session_id,
                                        std::array<uint8_t, 32> shared_secret)
-    : random_session_id_(session_id), shared_secret_(shared_secret) {}
+    : Connection(nearby_connection),
+      random_session_id_(session_id),
+      shared_secret_(shared_secret) {}
 
 IncomingConnection::~IncomingConnection() = default;
 

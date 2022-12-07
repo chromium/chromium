@@ -52,8 +52,10 @@ void FakeTargetDeviceConnectionBroker::StopAdvertising(
 void FakeTargetDeviceConnectionBroker::InitiateConnection(
     const std::string& source_device_id) {
   auto random_session_id = RandomSessionId();
-  auto fake_incomming_connection =
-      std::make_unique<FakeIncommingConnection>(random_session_id);
+  fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
+  NearbyConnection* nearby_connection = fake_nearby_connection_.get();
+  auto fake_incomming_connection = std::make_unique<FakeIncommingConnection>(
+      nearby_connection, random_session_id);
   connection_lifecycle_listener_->OnIncomingConnectionInitiated(
       source_device_id, fake_incomming_connection->AsWeakPtr());
   fake_connection_ = std::move(fake_incomming_connection);
@@ -62,8 +64,6 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
 void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
     const std::string& source_device_id) {
   fake_connection_.reset();
-  // TODO(b/234655072): Edit once we have implemented a way to set
-  // NearbyConnection at the Connection level.
   fake_nearby_connection_ = std::make_unique<FakeNearbyConnection>();
   NearbyConnection* nearby_connection = fake_nearby_connection_.get();
   auto fake_authenticated_connection =

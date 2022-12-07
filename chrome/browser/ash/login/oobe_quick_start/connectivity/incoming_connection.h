@@ -16,11 +16,13 @@ namespace ash::quick_start {
 // remote source device.
 class IncomingConnection : public Connection {
  public:
-  explicit IncomingConnection(RandomSessionId session_id);
+  IncomingConnection(NearbyConnection* nearby_connection,
+                     RandomSessionId session_id);
 
   // An alternate constructor that accepts a shared_secret for testing purposes
   // or for resuming a connection after a critical update.
-  IncomingConnection(RandomSessionId session_id,
+  IncomingConnection(NearbyConnection* nearby_connection,
+                     RandomSessionId session_id,
                      std::array<uint8_t, 32> shared_secret);
 
   IncomingConnection(IncomingConnection&) = delete;
