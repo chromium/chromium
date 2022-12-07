@@ -939,8 +939,13 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
             credential.federation_origin,
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-    entry.federation_text = l10n_util::GetStringFUTF8(
-        IDS_PASSWORDS_VIA_FEDERATION, formatted_origin);
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordsGrouping)) {
+      entry.federation_text = base::UTF16ToUTF8(formatted_origin);
+    } else {
+      entry.federation_text = l10n_util::GetStringFUTF8(
+          IDS_PASSWORDS_VIA_FEDERATION, formatted_origin);
+    }
   }
   entry.id = credential_id_generator_.GenerateId(std::move(credential));
   return entry;

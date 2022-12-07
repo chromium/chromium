@@ -4,11 +4,12 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {Page, PasswordDetailsCardElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createPasswordEntry} from './test_util.js';
@@ -38,11 +39,39 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals('password', card.$.passwordValue.type);
     assertEquals(password.urls.shown, card.$.linkValue.textContent!.trim());
     assertEquals(password.urls.link, card.$.linkValue.getAttribute('href'));
-    assertEquals(loadTimeData.getString('emptyNote'), card.$.noteValue.value);
+    const note: CrInputElement|null =
+        card.shadowRoot!.querySelector('#noteValue');
+    assertTrue(!!note);
+    assertEquals(loadTimeData.getString('emptyNote'), note.value);
     assertTrue(isVisible(card.$.copyUsernameButton));
     assertTrue(isVisible(card.$.showPasswordButton));
     assertTrue(isVisible(card.$.copyPasswordButton));
     assertTrue(isVisible(card.$.editButton));
+    assertTrue(isVisible(card.$.deleteButton));
+  });
+
+  test('Content displayed properly for federated credential', async function() {
+    const password = createPasswordEntry(
+        {url: 'test.com', username: 'vik', federationText: 'federation.com'});
+
+    const card: PasswordDetailsCardElement =
+        document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    assertEquals(password.username, card.$.usernameValue.value);
+    assertEquals(password.federationText, card.$.passwordValue.value);
+    assertEquals('text', card.$.passwordValue.type);
+    assertEquals(password.urls.shown, card.$.linkValue.textContent!.trim());
+    assertEquals(password.urls.link, card.$.linkValue.getAttribute('href'));
+    const note: CrInputElement|null =
+        card.shadowRoot!.querySelector('#noteValue');
+    assertFalse(!!note);
+    assertTrue(isVisible(card.$.copyUsernameButton));
+    assertFalse(isVisible(card.$.showPasswordButton));
+    assertFalse(isVisible(card.$.copyPasswordButton));
+    assertFalse(isVisible(card.$.editButton));
     assertTrue(isVisible(card.$.deleteButton));
   });
 });
