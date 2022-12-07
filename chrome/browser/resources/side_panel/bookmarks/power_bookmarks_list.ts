@@ -101,6 +101,16 @@ export class PowerBookmarksListElement extends PolymerElement {
              loadTimeData.getString('sortAlphabetically'),
              loadTimeData.getString('sortReverseAlphabetically')],
       },
+
+      editing_: {
+        type: Boolean,
+        value: false,
+      },
+
+      selectedBookmarks_: {
+        type: Array,
+        value: () => [],
+      },
     };
   }
 
@@ -130,6 +140,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private sortTypes_: string[];
   private searchQuery_: string|undefined;
   private currentUrl_: string|undefined;
+  private editing_: boolean;
+  private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
 
   override connectedCallback() {
     super.connectedCallback();
@@ -392,6 +404,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     }
   }
 
+  private getBookmarksListRole_(): string {
+    return this.editing_ ? 'listbox' : 'list';
+  }
+
   private getBookmarkName_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       string {
     return bookmark.title || bookmark.url || '';
@@ -547,19 +563,41 @@ export class PowerBookmarksListElement extends PolymerElement {
           {bookmark: chrome.bookmarks.BookmarkTreeNode, event: MouseEvent}>) {
     event.preventDefault();
     event.stopPropagation();
-    if (event.detail.bookmark.children) {
-      this.push('activeFolderPath_', event.detail.bookmark);
-    } else {
-      this.bookmarksApi_.openBookmark(
-          event.detail.bookmark.id, this.activeFolderPath_.length, {
-            middleButton: false,
-            altKey: event.detail.event.altKey,
-            ctrlKey: event.detail.event.ctrlKey,
-            metaKey: event.detail.event.metaKey,
-            shiftKey: event.detail.event.shiftKey,
-          },
-          ActionSource.kBookmark);
+    if (!this.editing_) {
+      if (event.detail.bookmark.children) {
+        this.push('activeFolderPath_', event.detail.bookmark);
+      } else {
+        this.bookmarksApi_.openBookmark(
+            event.detail.bookmark.id, this.activeFolderPath_.length, {
+              middleButton: false,
+              altKey: event.detail.event.altKey,
+              ctrlKey: event.detail.event.ctrlKey,
+              metaKey: event.detail.event.metaKey,
+              shiftKey: event.detail.event.shiftKey,
+            },
+            ActionSource.kBookmark);
+      }
     }
+  }
+
+  private onRowSelectedChange_(
+      event: CustomEvent<
+          {bookmark: chrome.bookmarks.BookmarkTreeNode, checked: boolean}>) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.detail.checked) {
+      this.unshift('selectedBookmarks_', event.detail.bookmark);
+    } else {
+      this.splice(
+          'selectedBookmarks_',
+          this.selectedBookmarks_.findIndex(b => b === event.detail.bookmark),
+          1);
+    }
+  }
+
+  private getSelectedDescription_() {
+    return loadTimeData.getStringF(
+        'selectedBookmarkCount', this.selectedBookmarks_.length);
   }
 
   /**
@@ -610,7 +648,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onBulkEditClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    // TODO: Implement edit state
+    this.editing_ = !this.editing_;
+    if (!this.editing_) {
+      this.selectedBookmarks_ = [];
+    }
   }
 
   private onSortTypeClicked_(event: DomRepeatEvent<string>) {
@@ -636,6 +677,10 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private onAddTabClicked_() {
     this.bookmarksApi_.bookmarkCurrentTab();
+  }
+
+  private disableBackButton_(): boolean {
+    return !this.activeFolderPath_.length || this.editing_;
   }
 
   /**

@@ -50,6 +50,12 @@ export class CrToolbarSearchFieldElement extends
         reflectToAttribute: true,
       },
 
+      disabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       autofocus: {
         type: Boolean,
         value: false,
@@ -71,6 +77,7 @@ export class CrToolbarSearchFieldElement extends
 
   narrow: boolean;
   showingSearch: boolean;
+  disabled: boolean;
   override autofocus: boolean;
   spinnerActive: boolean;
   private isSpinnerShown_: boolean;

@@ -2,9 +2,14 @@
   :host {
     --power-bookmark-row-image-size: 56px;
     --power-bookmark-row-height: 68px;
+    --power-bookmark-row-checkbox-width: 0;
     display: block;
     user-select: none;
     white-space: nowrap;
+  }
+
+  :host([has-checkbox]) {
+    --power-bookmark-row-checkbox-width: 32px;
   }
 
   :host([compact]) {
@@ -18,12 +23,31 @@
     gap: 4px;
   }
 
+  cr-checkbox {
+    grid-area: checkbox;
+    height: 32px;
+    margin-inline-start: 14px;
+    position: absolute;
+    width: 16px;
+  }
+
+  /* Visually hide the label but allow the screen reader to pick it up. */
+  cr-checkbox::part(label-container) {
+    clip: rect(0,0,0,0);
+    display: block;
+    position: fixed;
+  }
+
   .bookmark-image {
     border-radius: 6px;
     grid-area: image;
     height: var(--power-bookmark-row-image-size);
     justify-self: center;
     width: var(--power-bookmark-row-image-size);
+  }
+
+  #container {
+    display: flex;
   }
 
   .content {
@@ -55,8 +79,9 @@
     color: currentColor;
     display: grid;
     font-size: var(--mwb-primary-text-font-size);
-    grid-template-areas: 'image content';
-    grid-template-columns: calc(var(--power-bookmark-row-image-size) +
+    grid-template-areas: 'checkbox image content';
+    grid-template-columns: var(--power-bookmark-row-checkbox-width)
+                           calc(var(--power-bookmark-row-image-size) +
                                 var(--power-bookmark-row-image-padding)) auto;
     height: var(--power-bookmark-row-height);
     padding: 0;
@@ -68,13 +93,13 @@
     background-color: var(--mwb-list-item-hover-background-color);
   }
 
-  .row:focus,
-  .row:focus:hover {
+  .row:focus-within,
+  .row:focus-within:hover {
     background-color: var(--mwb-list-item-selected-background-color);
     outline: none;
   }
 
-  .row:focus-visible:focus {
+  .row:focus-visible:focus-within {
     outline: none;
   }
 
@@ -108,11 +133,17 @@
     background-size: var(--power-bookmark-row-image-size);
   }
 </style>
-<div id="container" role="treeitem">
+<div id="container" role="listitem">
+  <template is="dom-if" if="[[hasCheckbox]]" restamp>
+    <cr-checkbox hidden="[[!hasCheckbox]]" on-change="onCheckboxChange_">
+      TODO: hidden label text
+    </cr-checkbox>
+  </template>
   <button id="rowButton" class="row"
       title="[[bookmark.title]]"
       data-bookmark="[[bookmark]]"
-      on-click="onRowClicked_">
+      on-click="onRowClicked_"
+      disabled="[[hasCheckbox]]">
     <div id="bookmarkImage" class="bookmark-image"></div>
     <div class="text-container">
       <div class="content">[[bookmark.title]]</div>

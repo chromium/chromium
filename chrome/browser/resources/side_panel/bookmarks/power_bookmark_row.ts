@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import './power_bookmark_chip.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -43,11 +45,18 @@ export class PowerBookmarkRowElement extends PolymerElement {
         type: String,
         value: '',
       },
+
+      hasCheckbox: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
     };
   }
 
   bookmark: chrome.bookmarks.BookmarkTreeNode;
   compact: boolean;
+  hasCheckbox: boolean;
 
   /**
    * Add the appropriate image for the given bookmark and compact/expanded
@@ -86,6 +95,22 @@ export class PowerBookmarkRowElement extends PolymerElement {
       detail: {
         bookmark: this.bookmark,
         event: event,
+      },
+    }));
+  }
+
+  /**
+   * Dispatches a custom click event when the user clicks on the checkbox.
+   */
+  private onCheckboxChange_(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dispatchEvent(new CustomEvent('checkbox-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        checked: (event.target as CrCheckboxElement).checked,
       },
     }));
   }

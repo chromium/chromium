@@ -8,6 +8,10 @@
         width: 44px;
       }
 
+      :host([disabled]) {
+        opacity: var(--cr-disabled-opacity);
+      }
+
       [hidden] {
         display: none !important;
       }
@@ -200,7 +204,7 @@
     <cr-icon-button id="icon" iron-icon="cr:search" title="[[label]]" dir="ltr"
         tabindex$="[[computeIconTabIndex_(narrow, hasSearchText)]]"
         aria-hidden$="[[computeIconAriaHidden_(narrow, hasSearchText)]]"
-        on-click="onSearchIconClicked_">
+        on-click="onSearchIconClicked_" disabled="[[disabled]]">
     </cr-icon-button>
     <div id="searchTerm">
       <label id="prompt" for="searchInput" aria-hidden="true">[[label]]</label>
@@ -215,9 +219,11 @@
           on-focus="onInputFocus_"
           on-blur="onInputBlur_"
           autofocus$="[[autofocus]]"
-          spellcheck="false">
+          spellcheck="false"
+          disabled="[[disabled]]">
     </div>
     <template is="dom-if" if="[[hasSearchText]]">
       <cr-icon-button id="clearSearch" iron-icon="cr:cancel"
-          title="[[clearLabel]]" on-click="clearSearch_"></cr-icon-button>
+          title="[[clearLabel]]" on-click="clearSearch_"
+          disabled="[[disabled]]"></cr-icon-button>
     </template>

@@ -3,6 +3,7 @@
     --back-button-size: 14px;
     --border-color: var(--google-grey-300);
     --disabled-text-color: var(--google-grey-600);
+    --edit-footer-background: var(--google-grey-50);
     --empty-state-image: url(../images/bookmarks_empty.svg);
     --label-selected-color: var(--google-blue-50);
     --price-tracking-chip-background: var(--google-green-50);
@@ -14,6 +15,7 @@
     :host {
       --border-color: var(--google-grey-700);
       --disabled-text-color: var(--google-grey-500);
+      --edit-footer-background: var(--google-grey-900-white-4-percent);
       --empty-state-image: url(../images/bookmarks_empty_dark.svg);
       --price-tracking-chip-background: var(--google-green-900);
       --price-tracking-discount-color: white;
@@ -73,6 +75,15 @@
 
   .dropdown-item {
     gap: 4px;
+  }
+
+  .edit-footer {
+    align-items: center;
+    background-color: var(--edit-footer-background);
+    color: var(--cr-secondary-text-color);
+    display: flex;
+    gap: 8px;
+    padding: 14px;
   }
 
   .empty {
@@ -163,12 +174,16 @@
     padding: 6px;
   }
 
+  .label[disabled] {
+    opacity: var(--cr-disabled-opacity);
+  }
+
   .label[selected] {
     background-color: var(--label-selected-color);
     border-color: var(--label-selected-color);
   }
 
-  .label:hover {
+  .label:hover:not([disabled]) {
     background-color: var(--google-grey-100);
   }
 
@@ -211,11 +226,12 @@
 
 <div class="column" id="powerBookmarksContainer">
   <cr-toolbar-search-field label="$i18n{searchBookmarks}"
-      clear-label="$i18n{clearSearch}" on-search-changed="onSearchChanged_">
+      clear-label="$i18n{clearSearch}" on-search-changed="onSearchChanged_"
+      disabled="[[editing_]]">
   </cr-toolbar-search-field>
   <div class="label-row">
     <template is="dom-repeat" items="[[labels_]]">
-      <button class="label" selected$="[[item.active]]"
+      <button class="label" selected$="[[item.active]]" disabled="[[editing_]]"
           on-click="onLabelClicked_" aria-pressed="[[item.active]]">
         <iron-icon class="label-icon"
             icon="[[getLabelIcon_(item, item.active)]]"></iron-icon>
@@ -225,7 +241,7 @@
   </div>
   <div class="heading-row">
     <button class="back-button" on-click="onBackClicked_"
-        disabled="[[!activeFolderPath_.length]]">
+        disabled="[[disableBackButton_(activeFolderPath_.*, editing_)]]">
       <div class="icon-arrow-back" hidden="[[!activeFolderPath_.length]]">
       </div>
       [[getFolderLabel_(activeFolderPath_.*)]]
@@ -239,18 +255,24 @@
       <cr-icon-button iron-icon="bookmarks:create-new-folder"
           aria-label="$i18n{createNewFolderA11yLabel}"
           on-click="onAddNewFolderClicked_"></cr-icon-button>
-      <cr-icon-button class="icon-edit"
+      <cr-icon-button class="icon-edit" disabled="[[!shownBookmarks_.length]]"
           aria-label="$i18n{editBookmarkListA11yLabel}"
+          aria-pressed="[[editing_]]"
+          aria-disabled="[[!shownBookmarks_.length]]"
           on-click="onBulkEditClicked_"></cr-icon-button>
     </div>
   </div>
-  <div class="bookmarks" hidden="[[!shownBookmarks_.length]]">
+  <div class="bookmarks" hidden="[[!shownBookmarks_.length]]"
+      role="[[getBookmarksListRole_(editing_)]]"
+      aria-multiselectable="[[editing_]]">
     <template is="dom-repeat" items="[[shownBookmarks_]]">
       <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
           description= "[[getBookmarkDescription_(item, compactDescriptions_.*,
                           expandedDescriptions_.*, compact_)]]"
           compact="[[compact_]]"
-          on-row-clicked="onRowClicked_">
+          has-checkbox="[[editing_]]"
+          on-row-clicked="onRowClicked_"
+          on-checkbox-change="onRowSelectedChange_">
         <div slot="extra-content-container">
           <template is="dom-if"
               if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
@@ -279,11 +301,18 @@
       <div class="empty-title">$i18n{emptyTitle}</div>
       <div class="empty-body">$i18n{emptyBody}</div>
     </div>
-    <cr-button class="footer-button" on-click="onAddTabClicked_"
+    <cr-button class="footer-button" hidden="[[editing_]]"
+        on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(activeFolderPath_.*, currentUrl_)]]">
       <iron-icon icon="bookmarks:add-tab" class="label-icon"></iron-icon>
       $i18n{addCurrentTab}
     </cr-button>
+    <div class="edit-footer" hidden="[[!editing_]]">
+      <cr-icon-button iron-icon="cr:close"
+          aria-label="$i18n{cancelA11yLabel}"
+          on-click="onBulkEditClicked_"></cr-icon-button>
+      [[getSelectedDescription_(selectedBookmarks_.*)]]
+    </div>
   </div>
 </div>
 
