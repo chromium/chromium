@@ -89,6 +89,7 @@ public class MultiInstanceManager
     private boolean mIsRecreating;
     private int mDisplayId;
     private static List<Integer> sTestDisplayIds;
+    private boolean mDestroyed;
 
     /**
      * Create a new {@link MultiInstanceManager}.
@@ -143,8 +144,12 @@ public class MultiInstanceManager
 
     @Override
     public void onDestroy() {
+        mDestroyed = true;
         mMultiWindowModeStateDispatcher.removeObserver(this);
         mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(this);
+        mActivityLifecycleDispatcher.unregister(this);
+        removeOtherCTAStateObserver();
+
         DisplayManager displayManager =
                 (DisplayManager) mActivity.getSystemService(Context.DISPLAY_SERVICE);
         if (displayManager != null && mDisplayListener != null) {
@@ -319,15 +324,16 @@ public class MultiInstanceManager
                 if (otherResumedCTA == null) {
                     maybeMergeTabs();
                 } else {
+                    // Remove the other CTA state observer if one already exists to protect
+                    // against multiple #onMultiWindowModeChanged calls.
+                    // See https://crbug.com/1385987.
+                    removeOtherCTAStateObserver();
                     // Wait for the other ChromeTabbedActivity to pause before trying to merge
                     // tabs.
-                    mOtherCTAStateObserver = new ApplicationStatus.ActivityStateListener() {
-                        @Override
-                        public void onActivityStateChange(Activity activity, int newState) {
-                            if (newState == ActivityState.PAUSED) {
-                                removeOtherCTAStateObserver();
-                                maybeMergeTabs();
-                            }
+                    mOtherCTAStateObserver = (activity, newState) -> {
+                        if (newState == ActivityState.PAUSED) {
+                            removeOtherCTAStateObserver();
+                            maybeMergeTabs();
                         }
                     };
                     ApplicationStatus.registerStateListenerForActivity(
@@ -441,7 +447,8 @@ public class MultiInstanceManager
      */
     @VisibleForTesting
     public void maybeMergeTabs() {
-        if (!isTabModelMergingEnabled()) return;
+        assert !mDestroyed;
+        if (!isTabModelMergingEnabled() || mDestroyed) return;
 
         killOtherTask();
         RecordUserAction.record("Android.MergeState.Live");
