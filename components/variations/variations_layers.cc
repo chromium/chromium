@@ -24,8 +24,7 @@ enum class InvalidLayerReason {
   kInvalidEntropyMode = 3,
   kSlotsDoNotDivideLowEntropyDomain = 4,
   kInvalidSlotBounds = 5,
-  kUnknownFields = 6,
-  kMaxValue = kUnknownFields,
+  kMaxValue = kInvalidSlotBounds,
 };
 
 void LogInvalidLayerReason(InvalidLayerReason reason) {
@@ -136,17 +135,8 @@ NormalizedMurmurHashEntropyProvider ComputeRemainderEntropy(
 }
 
 bool ValidSlotBounds(const Layer& layer_proto) {
-  uint32_t next_slot_after_processed_ranges = 0;
-  // Since num_slots divides LES range, we know it is small enough that
-  // num_slots + 1 does not overflow.
-  DCHECK_LE(layer_proto.num_slots(), layer_proto.num_slots() + 1);
   for (const auto& member : layer_proto.members()) {
     for (const auto& range : member.slots()) {
-      // Ranges should be non-overlapping. We also require them to be in
-      // increasing order so that we can validate that easily.
-      if (range.start() < next_slot_after_processed_ranges) {
-        return false;
-      }
       // start and end are both unsigned (uint32_t) so no need to check that
       // they are non-negative.
       if (range.end() >= layer_proto.num_slots())
@@ -154,7 +144,6 @@ bool ValidSlotBounds(const Layer& layer_proto) {
       if (range.start() > range.end()) {
         return false;
       }
-      next_slot_after_processed_ranges = range.end() + 1;
     }
   }
   return true;
@@ -181,10 +170,6 @@ VariationsLayers::~VariationsLayers() = default;
 
 void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
                                       const Layer& layer_proto) {
-  if (!layer_proto.unknown_fields().empty()) {
-    LogInvalidLayerReason(InvalidLayerReason::kUnknownFields);
-    return;
-  }
   if (layer_proto.id() == 0) {
     LogInvalidLayerReason(InvalidLayerReason::kInvalidId);
     return;
@@ -204,6 +189,11 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
     return;
   }
 
+  if (!ValidSlotBounds(layer_proto)) {
+    LogInvalidLayerReason(InvalidLayerReason::kInvalidSlotBounds);
+    return;
+  }
+
   // Using the size of the domain as the output range maximizes the number of
   // possible pseudorandom outputs when using the low entropy source.
   size_t range = entropy_providers.low_entropy_domain();
@@ -214,18 +204,11 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
         InvalidLayerReason::kSlotsDoNotDivideLowEntropyDomain);
     return;
   }
-
-  if (!ValidSlotBounds(layer_proto)) {
-    LogInvalidLayerReason(InvalidLayerReason::kInvalidSlotBounds);
-    return;
-  }
-
   const auto& entropy_provider = (layer_proto.entropy_mode() != Layer::LOW)
                                      ? entropy_providers.default_entropy()
                                      : entropy_providers.low_entropy();
-  uint32_t salt = layer_proto.salt() || layer_proto.id();
   ValueInRange pseudorandom = {
-      .value = entropy_provider.GetPseudorandomValue(salt, range),
+      .value = entropy_provider.GetPseudorandomValue(layer_proto.salt(), range),
       .range = static_cast<uint32_t>(range),
   };
   SlotSelection selection = SelectSlot(pseudorandom, layer_proto.num_slots());
