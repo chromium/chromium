@@ -109,19 +109,24 @@ void CacheStorageContextImpl::AddReceiver(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto add_receiver =
+      base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
+                     weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,
+                     std::move(coep_reporter), bucket_locator.storage_key,
+                     owner, std::move(receiver));
+
   if (bucket_locator.is_default) {
     DCHECK_EQ(storage::BucketId(), bucket_locator.id);
     quota_manager_proxy_->UpdateOrCreateBucket(
         storage::BucketInitParams::ForDefaultBucket(bucket_locator.storage_key),
         base::SequencedTaskRunner::GetCurrentDefault(),
-        base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
-                       weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,
-                       std::move(coep_reporter), bucket_locator.storage_key,
-                       owner, std::move(receiver)));
+        std::move(add_receiver));
+  } else if (!bucket_locator.is_null()) {
+    quota_manager_proxy_->GetBucketById(
+        bucket_locator.id, base::SequencedTaskRunner::GetCurrentDefault(),
+        std::move(add_receiver));
   } else {
-    dispatcher_host_->AddReceiver(
-        cross_origin_embedder_policy, std::move(coep_reporter),
-        bucket_locator.storage_key, bucket_locator, owner, std::move(receiver));
+    std::move(add_receiver).Run(storage::QuotaError::kNotFound);
   }
 }
 
