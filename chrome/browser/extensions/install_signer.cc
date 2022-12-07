@@ -320,16 +320,16 @@ void InstallSigner::GetSignature(SignatureCallback callback) {
 
   // The request protocol is JSON of the form:
   // {
-  //   "protocol_version": "1",
+  //   "protocol_version": 1,
   //   "hash": "<base64-encoded hash value here>",
-  //   "ids": [ "<id1>", "id2" ]
+  //   "ids": [ "<id1>", "<id2>" ]
   // }
-  base::DictionaryValue dictionary;
-  dictionary.SetIntKey(kProtocolVersionKey, 1);
-  dictionary.SetStringKey(kHashKey, hash_base64);
-  std::unique_ptr<base::ListValue> id_list(new base::ListValue);
-  for (auto i = ids_.begin(); i != ids_.end(); ++i) {
-    id_list->Append(*i);
+  base::Value::Dict dictionary;
+  dictionary.Set(kProtocolVersionKey, 1);
+  dictionary.Set(kHashKey, hash_base64);
+  base::Value::List id_list;
+  for (const ExtensionId& extension_id : ids_) {
+    id_list.Append(extension_id);
   }
   dictionary.Set(kIdsKey, std::move(id_list));
   std::string json;
@@ -373,7 +373,7 @@ void InstallSigner::ParseFetchResponse(
 
   // The response is JSON of the form:
   // {
-  //   "protocol_version": "1",
+  //   "protocol_version": 1,
   //   "signature": "<base64-encoded signature>",
   //   "expiry": "<date in YYYY-MM-DD form>",
   //   "invalid_ids": [ "<id3>", "<id4>" ]
