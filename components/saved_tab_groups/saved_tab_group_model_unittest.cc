@@ -418,6 +418,18 @@ TEST_F(SavedTabGroupModelTest, RemoveTabFromGroup) {
   CompareSavedTabGroupTabs(group->saved_tabs(), {group->saved_tabs()[0]});
 }
 
+// Tests that a group is removed from the model when the last tab is removed
+// from it.
+TEST_F(SavedTabGroupModelTest, RemoveLastTabFromGroup) {
+  SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
+  ASSERT_EQ(group->saved_tabs().size(), size_t(1));
+
+  saved_tab_group_model_->RemoveTabFromGroup(
+      group->saved_guid(), group->saved_tabs()[0].saved_tab_guid());
+
+  EXPECT_FALSE(saved_tab_group_model_->Contains(id_1_));
+}
+
 // Tests that the correct tabs are replaced in group 1.
 TEST_F(SavedTabGroupModelTest, ReplaceTabInGroup) {
   SavedTabGroupTab tab1 = CreateSavedTabGroupTab("first", u"First Tab", id_1_);

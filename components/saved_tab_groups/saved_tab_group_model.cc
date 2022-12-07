@@ -211,6 +211,14 @@ void SavedTabGroupModel::RemoveTabFromGroup(const base::GUID& group_id,
     return;
 
   absl::optional<int> index = GetIndexOf(group_id);
+  SavedTabGroup group = saved_tab_groups_[index.value()];
+
+  // Remove the group from the model if the last tab will be removed from it.
+  if (group.ContainsTab(tab_id) && group.saved_tabs().size() == 1) {
+    Remove(group_id);
+    return;
+  }
+
   saved_tab_groups_[index.value()].RemoveTab(tab_id);
 
   // TODO(dljames): Update to use SavedTabGroupRemoveLocally and update the API
