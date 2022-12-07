@@ -226,12 +226,12 @@ class CommandExecutor(object):
   def __init__(self, server_url):
     self._server_url = server_url
     parsed_url = urlparse(server_url)
-    timeout = 10
+    self._http_timeout = 10
     # see https://crbug.com/1045241: short timeout seems to introduce flakiness
     if util.IsMac() or util.IsWindows():
-      timeout = 30
+      self._http_timeout = 30
     self._http_client = http.client.HTTPConnection(
-      parsed_url.hostname, parsed_url.port, timeout=timeout)
+      parsed_url.hostname, parsed_url.port, timeout=self._http_timeout)
 
   @staticmethod
   def CreatePath(template_url_path, params):
@@ -245,6 +245,9 @@ class CommandExecutor(object):
       else:
         substituted_parts += [part]
     return '/'.join(substituted_parts)
+
+  def HttpTimeout(self):
+    return self._http_timeout
 
   def Execute(self, command, params):
     url_path = self.CreatePath(command[1], params)
