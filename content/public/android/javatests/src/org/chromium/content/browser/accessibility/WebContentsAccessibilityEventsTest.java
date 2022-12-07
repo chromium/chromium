@@ -111,7 +111,7 @@ public class WebContentsAccessibilityEventsTest {
             expectedResults = "";
         } else {
             expectedResults =
-                    mActivityTestRule.readExpectationFile(BASE_FILE_PATH + expectationFile);
+                    mActivityTestRule.readExpectationFile(BASE_FILE_PATH + expectationFile).trim();
         }
 
         String actualResults = getTrackerResults();
