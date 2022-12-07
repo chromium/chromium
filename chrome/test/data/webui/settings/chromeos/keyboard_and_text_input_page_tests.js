@@ -4,9 +4,9 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
-import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,29 +15,15 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 suite('KeyboardAndTextInputPageTests', function() {
   let page = null;
 
-  function initPage(opt_prefs) {
-    page = document.createElement('settings-keyboard-and-text-input-page');
-    page.prefs = opt_prefs || getDefaultPrefs();
-    document.body.appendChild(page);
-  }
+  async function initPage() {
+    const prefElement = document.createElement('settings-prefs');
+    document.body.appendChild(prefElement);
+    await CrSettingsPrefs.initialized;
 
-  function getDefaultPrefs() {
-    return {
-      'settings': {
-        'a11y': {
-          'dictation': {
-            key: 'prefs.settings.a11y.dictation',
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: true,
-          },
-          'dictation_locale': {
-            key: 'prefs.settings.a11y.dictation_locale',
-            type: chrome.settingsPrivate.PrefType.STRING,
-            value: 'en-US',
-          },
-        },
-      },
-    };
+    page = document.createElement('settings-keyboard-and-text-input-page');
+    page.prefs = prefElement.prefs;
+    document.body.appendChild(page);
+    flush();
   }
 
   setup(function() {
@@ -56,7 +42,11 @@ suite('KeyboardAndTextInputPageTests', function() {
     // Ensure that the Dictation locale menu is shown by setting the dictation
     // pref to true (done in default prefs) and populating dictation locale
     // options with mock data.
-    initPage();
+    await initPage();
+
+    page.setPrefValue('settings.a11y.dictation', true);
+    page.setPrefValue('settings.a11y.dictation_locale', 'en-US');
+
     const locales = [{
       name: 'English (United States)',
       worksOffline: true,
@@ -102,7 +92,7 @@ suite('KeyboardAndTextInputPageTests', function() {
   });
 
   test('Test computeDictationLocaleSubtitle_()', async () => {
-    initPage();
+    await initPage();
     const locales = [
       {
         name: 'English (United States)',
@@ -139,25 +129,28 @@ suite('KeyboardAndTextInputPageTests', function() {
     webUIListenerCallback('dictation-locales-set', locales);
     page.dictationLocaleSubtitleOverride_ = 'Testing';
     flush();
+
+    page.setPrefValue('settings.a11y.dictation_locale', 'en-US');
+    flush();
     assertEquals(
         'English (United States) is processed locally and works offline',
         page.computeDictationLocaleSubtitle_());
 
     // Changing the Dictation locale pref should change the subtitle
     // computation.
-    page.prefs.settings.a11y.dictation_locale.value = 'es';
+    page.setPrefValue('settings.a11y.dictation_locale', 'es');
     assertEquals(
         'Couldn’t download Spanish speech files. Download will be attempted ' +
             'later. Speech is sent to Google for processing until download ' +
             'is completed.',
         page.computeDictationLocaleSubtitle_());
 
-    page.prefs.settings.a11y.dictation_locale.value = 'de';
+    page.setPrefValue('settings.a11y.dictation_locale', 'de');
     assertEquals(
         'German speech is sent to Google for processing',
         page.computeDictationLocaleSubtitle_());
 
-    page.prefs.settings.a11y.dictation_locale.value = 'fr-FR';
+    page.setPrefValue('settings.a11y.dictation_locale', 'fr-FR');
     assertEquals(
         'French (France) speech is sent to Google for processing',
         page.computeDictationLocaleSubtitle_());
@@ -171,12 +164,12 @@ suite('KeyboardAndTextInputPageTests', function() {
         page.computeDictationLocaleSubtitle_());
   });
 
-  test('some parts are hidden in kiosk mode', function() {
+  test('some parts are hidden in kiosk mode', async function() {
     loadTimeData.overrideValues({
       isKioskModeActive: true,
       showTabletModeShelfNavigationButtonsSettings: true,
     });
-    initPage();
+    await initPage();
     flush();
 
     const subpageLinks = page.root.querySelectorAll('cr-link-row');
@@ -187,7 +180,7 @@ suite('KeyboardAndTextInputPageTests', function() {
     loadTimeData.overrideValues({
       isKioskModeActive: false,
     });
-    initPage();
+    await initPage();
 
     const params = new URLSearchParams();
     params.append('settingId', '1522');
@@ -213,7 +206,7 @@ suite('KeyboardAndTextInputPageTests', function() {
         `should focus ${selector} button when returning from ${
             route.path} subpage`,
         async () => {
-          initPage();
+          await initPage();
           flush();
           const router = Router.getInstance();
 
@@ -237,5 +230,46 @@ suite('KeyboardAndTextInputPageTests', function() {
               subpageButton, page.shadowRoot.activeElement,
               `${selector} should be focused`);
         });
+  });
+
+  const settingsToggleButtons = [
+    {
+      id: 'stickyKeysToggle',
+      prefKey: 'settings.a11y.sticky_keys_enabled',
+    },
+    {
+      id: 'focusHighlightToggle',
+      prefKey: 'settings.a11y.focus_highlight',
+    },
+    {
+      id: 'caretHighlightToggle',
+      prefKey: 'settings.a11y.caret_highlight',
+    },
+    {
+      id: 'caretBrowsingToggle',
+      prefKey: 'settings.a11y.caretbrowsing.enabled',
+    },
+  ];
+
+  settingsToggleButtons.forEach(({id, prefKey}) => {
+    test(`Accessibility toggle button syncs to prefs: ${id}`, async function() {
+      await initPage();
+      // Find the toggle and ensure that it's:
+      // 1. Not checked
+      // 2. The associated pref is off
+      const toggle = page.shadowRoot.querySelector(`#${id}`);
+      assertTrue(!!toggle);
+      assertFalse(toggle.checked);
+      let pref = page.getPref(prefKey);
+      assertFalse(pref.value);
+
+      // Click the toggle. Ensure that it's:
+      // 1. Checked
+      // 2. The associated pref is on
+      toggle.click();
+      assertTrue(toggle.checked);
+      pref = page.getPref(prefKey);
+      assertTrue(pref.value);
+    });
   });
 });

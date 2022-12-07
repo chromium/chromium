@@ -95,6 +95,7 @@
   </iron-collapse>
 </template>
 <settings-toggle-button
+    id="stickyKeysToggle"
     class="hr"
     pref="{{prefs.settings.a11y.sticky_keys_enabled}}"
     label="$i18n{stickyKeysLabel}"
@@ -102,6 +103,7 @@
     deep-link-focus-id$="[[Setting.kStickyKeys]]">
 </settings-toggle-button>
 <settings-toggle-button
+    id="focusHighlightToggle"
     class="hr"
     pref="{{prefs.settings.a11y.focus_highlight}}"
     label="$i18n{focusHighlightLabel}"
@@ -109,6 +111,7 @@
     deep-link-focus-id$="[[Setting.kHighlightKeyboardFocus]]">
 </settings-toggle-button>
 <settings-toggle-button
+    id="caretHighlightToggle"
     class="hr"
     pref="{{prefs.settings.a11y.caret_highlight}}"
     label="$i18n{caretHighlightLabel}"
@@ -116,6 +119,7 @@
     deep-link-focus-id$="[[Setting.kHighlightTextCaret]]">
 </settings-toggle-button>
 <settings-toggle-button
+    id="caretBrowsingToggle"
     class="hr"
     pref="{{prefs.settings.a11y.caretbrowsing.enabled}}"
     on-change="onA11yCaretBrowsingChange_"
