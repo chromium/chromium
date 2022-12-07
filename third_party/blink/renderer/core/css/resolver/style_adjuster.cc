@@ -548,7 +548,7 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
                                   const ComputedStyle& layout_parent_style,
                                   const Element* element,
                                   Document* document) {
-  // Blockify the children of flex, grid or LayoutCustom containers.
+  // Blockify the children of flex, grid, math or LayoutCustom containers.
   if (layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) {
     builder.SetIsInBlockifyingDisplay();
     if (builder.Display() != EDisplay::kContents) {
@@ -556,8 +556,10 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
       if (!builder.HasOutOfFlowPosition())
         builder.SetIsFlexOrGridOrCustomItem();
     }
-    if (layout_parent_style.IsDisplayFlexibleOrGridBox())
-      builder.SetIsFlexOrGridItem();
+    if (layout_parent_style.IsDisplayFlexibleOrGridBox() ||
+        layout_parent_style.IsDisplayMathType()) {
+      builder.SetIsInsideDisplayIgnoringFloatingChildren();
+    }
   }
 
   if (builder.Display() == EDisplay::kBlock)

@@ -128,7 +128,7 @@ bool LayoutMedia::IsChildAllowed(LayoutObject* child,
   // Out-of-flow positioned or floating child breaks layout hierarchy.
   // This check can be removed if ::-webkit-media-controls is made internal.
   if (style.HasOutOfFlowPosition() ||
-      (style.IsFloating() && !style.IsFlexOrGridItem()))
+      (style.IsFloating() && !style.IsInsideDisplayIgnoringFloatingChildren()))
     return false;
 
   // The user agent stylesheet (mediaControls.css) has

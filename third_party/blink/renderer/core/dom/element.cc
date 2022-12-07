@@ -355,7 +355,8 @@ bool DefinitelyNewFormattingContext(const Node& node,
   if (style.IsScrollContainer())
     return node.GetDocument().ViewportDefiningElement() != &node;
   if (style.HasOutOfFlowPosition() ||
-      (style.IsFloating() && !style.IsFlexOrGridItem()) ||
+      (style.IsFloating() &&
+       !style.IsInsideDisplayIgnoringFloatingChildren()) ||
       style.ContainsPaint() || style.ContainsLayout() ||
       style.SpecifiesColumns())
     return true;

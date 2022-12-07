@@ -2870,7 +2870,8 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
 
     affects_parent_block_ =
         IsFloatingOrOutOfFlowPositioned() &&
-        ((!new_style.IsFloating() || new_style.IsFlexOrGridItem()) &&
+        ((!new_style.IsFloating() ||
+          new_style.IsInsideDisplayIgnoringFloatingChildren()) &&
          !new_style.HasOutOfFlowPosition()) &&
         Parent() &&
         (Parent()->IsLayoutBlockFlow() || Parent()->IsLayoutInline());

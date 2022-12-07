@@ -1005,7 +1005,7 @@ void LayoutBox::UpdateFromStyle() {
 
   const ComputedStyle& style_to_use = StyleRef();
   SetFloating(style_to_use.IsFloating() && !IsOutOfFlowPositioned() &&
-              !style_to_use.IsFlexOrGridItem());
+              !style_to_use.IsInsideDisplayIgnoringFloatingChildren());
   SetHasTransformRelatedProperty(
       IsSVGChild() ? style_to_use.HasTransformRelatedPropertyForSVG()
                    : style_to_use.HasTransformRelatedProperty());
