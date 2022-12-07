@@ -1817,6 +1817,12 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_TITLE" translateable="false" desc="Title for the Topics preferences page.">
     Mauris interdum lectus vitae lacinia
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL" translateable="false" desc="Label for the toggle in the Topics preferences page.">
+    Nunc gravida condimentum consectetur
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL" translateable="false" desc="Subabel for the toggle in the Topics preferences page.">
+    Vivamus nibh turpis, varius quis nisi vel, porta laoreet tellus. Mauris porta imperdiet venenatis
+  </message>
 
   <!-- Privacy Sandbox Settings 4 - Fledge Page -->
   <message name="IDS_SETTINGS_FLEDGE_PAGE_TITLE" translateable="false" desc="Title for the Fledge preferences page.">

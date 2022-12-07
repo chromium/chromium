@@ -5,7 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxPageElement} from 'chrome://settings/lazy_load.js';
+import {SettingsPrivacySandboxAdMeasurementSubpageElement, SettingsPrivacySandboxPageElement, SettingsPrivacySandboxTopicsSubpageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -109,6 +109,70 @@ suite('PrivacySandboxPageTests', function() {
     assertEquals(
         routes.PRIVACY_SANDBOX_AD_MEASUREMENT,
         Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('PrivacySandboxTopicsSubpageTests', function() {
+  let page: SettingsPrivacySandboxTopicsSubpageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    document.body.appendChild(settingsPrefs);
+    page = document.createElement('settings-privacy-sandbox-topics-subpage');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('enableTopicsToggle', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', false);
+    await flushTasks();
+    assertTrue(isVisible(page.$.topicsToggle));
+    assertFalse(page.$.topicsToggle.checked);
+    assertEquals(
+        loadTimeData.getString('topicsPageToggleSubLabel'),
+        page.$.topicsToggle.subLabel);
+
+    page.$.topicsToggle.click();
+    await flushTasks();
+    assertTrue(isVisible(page.$.topicsToggle));
+    assertTrue(page.$.topicsToggle.checked);
+    assertEquals(
+        loadTimeData.getString('topicsPageToggleSubLabel'),
+        page.$.topicsToggle.subLabel);
+    assertTrue(!!page.getPref('privacy_sandbox.m1.topics_enabled.value'));
+  });
+
+  test('disableTopicsToggle', async function() {
+    page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
+    await flushTasks();
+    assertTrue(isVisible(page.$.topicsToggle));
+    assertTrue(page.$.topicsToggle.checked);
+    assertEquals(
+        loadTimeData.getString('topicsPageToggleSubLabel'),
+        page.$.topicsToggle.subLabel);
+
+    page.$.topicsToggle.click();
+    await flushTasks();
+    assertTrue(isVisible(page.$.topicsToggle));
+    assertFalse(page.$.topicsToggle.checked);
+    assertEquals(
+        loadTimeData.getString('topicsPageToggleSubLabel'),
+        page.$.topicsToggle.subLabel);
+    assertFalse(!!page.getPref('privacy_sandbox.m1.topics_enabled.value'));
   });
 });
 
