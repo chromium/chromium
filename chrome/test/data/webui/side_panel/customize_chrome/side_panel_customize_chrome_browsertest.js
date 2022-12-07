@@ -62,6 +62,15 @@ var SidePanelCustomizeChromeCategoriesTest =
   }
 };
 
+var SidePanelCustomizeChromeCheckMarkWrapperTest =
+    class extends SidePanelCustomizeChromeBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://customize-chrome-side-panel.top-chrome/test_loader.html' +
+        '?module=side_panel_customize_chrome/check_mark_wrapper_test.js';
+  }
+};
+
 var SidePanelCustomizeChromeColorTest =
     class extends SidePanelCustomizeChromeBrowserTest {
   /** @override */
@@ -102,6 +111,10 @@ TEST_F('SidePanelCustomizeChromeAppearanceTest', 'All', function() {
 });
 
 TEST_F('SidePanelCustomizeChromeCategoriesTest', 'All', function() {
+  mocha.run();
+});
+
+TEST_F('SidePanelCustomizeChromeCheckMarkWrapperTest', 'All', function() {
   mocha.run();
 });
 

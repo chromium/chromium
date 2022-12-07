@@ -1,0 +1,59 @@
+<style>
+  :host {
+    --customize-chrome-check-mark-wrapper-color: var(--google-blue-600);
+    --customize-chrome-check-mark-wrapper-end: 0px;
+    --customize-chrome-check-mark-wrapper-size: 16px;
+    --customize-chrome-check-mark-wrapper-top: 0px;
+    display: block;
+    position: relative;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --customize-chrome-check-mark-wrapper-color: var(--google-blue-300);
+    }
+  }
+
+  svg {
+    display: block;
+    height: var(--customize-chrome-check-mark-wrapper-size);
+    left: initial;
+    position: absolute;
+    right: var(--customize-chrome-check-mark-wrapper-end);
+    top: var(--customize-chrome-check-mark-wrapper-top);
+    width: var(--customize-chrome-check-mark-wrapper-size);
+  }
+
+  :host(:not([checked])) svg {
+    display: none;
+  }
+
+  :host-context([dir=rtl]) svg {
+    left: var(--customize-chrome-check-mark-wrapper-end);
+    right: initial;
+  }
+
+  #background {
+    fill: var(--customize-chrome-check-mark-wrapper-color);
+  }
+
+  #checkMark {
+    fill: white;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #checkMark {
+      fill: var(--google-grey-900);
+    }
+  }
+
+  :host([checked]) ::slotted(*) {
+    box-shadow: 0 0 0 2px var(--customize-chrome-check-mark-wrapper-color);
+  }
+</style>
+<svg id="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <circle id="background" cx="24" cy="24" r="24"></circle>
+  <path id="checkMark" d="M20 34 10 24l2.83-2.83L20 28.34l15.17-15.17L38 16Z">
+  </path>
+</svg>
+<slot></slot>

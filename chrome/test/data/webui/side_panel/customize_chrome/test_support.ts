@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -20,4 +20,9 @@ export function installMock<T extends object>(
 export function assertStyle(element: Element, name: string, expected: string) {
   const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
   assertEquals(expected, actual);
+}
+
+export function assertNotStyle(element: Element, name: string, not: string) {
+  const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
+  assertNotEquals(not, actual);
 }

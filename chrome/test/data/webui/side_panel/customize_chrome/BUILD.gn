@@ -23,6 +23,7 @@ ts_library("build_ts") {
     "app_test.ts",
     "appearance_test.ts",
     "categories_test.ts",
+    "check_mark_wrapper_test.ts",
     "color_test.ts",
     "colors_test.ts",
     "themes_test.ts",

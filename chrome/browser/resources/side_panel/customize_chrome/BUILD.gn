@@ -16,6 +16,7 @@ build_webui("build") {
     "app.ts",
     "shortcuts.ts",
     "categories.ts",
+    "check_mark_wrapper.ts",
     "color.ts",
     "colors.ts",
     "appearance.ts",

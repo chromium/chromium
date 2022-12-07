@@ -4,16 +4,23 @@
     display: flex;
     justify-content: center;
   }
+
+  customize-chrome-check-mark {
+    --customize-chrome-check-mark-wrapper-end: -1px;
+  }
 </style>
 <!-- TODO(crbug.com/1384229): Make grid adaptive. -->
 <cr-grid columns="4">
   <!-- TODO(crbug.com/1384229): Add extracted/default color. -->
   <template is="dom-repeat" items="[[colors_]]">
-    <customize-chrome-color
-        background-color="[[item.background]]"
-        foreground-color="[[item.foreground]]"
-        title="[[item.name]]">
-    </customize-chrome-color>
+    <!-- TODO(crbug.com/1384229): Only set checked if selected. -->
+    <customize-chrome-check-mark-wrapper checked>
+      <customize-chrome-color
+          background-color="[[item.background]]"
+          foreground-color="[[item.foreground]]"
+          title="[[item.name]]">
+      </customize-chrome-color>
+    </customize-chrome-check-mark-wrapper>
   </template>
   <!-- TODO(crbug.com/1384229): Add color picker. -->
 </cr-grid>
