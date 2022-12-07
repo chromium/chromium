@@ -113,9 +113,6 @@ public class FindInPageDirectActionHandlerTest {
 
     /**
      * A simple action definition for testing.
-     *
-     * TODO(crbug.com/806868): Share these fakes. There is another one in
-     * features/autofill_assistant.
      */
     private static class FakeDirectActionDefinition implements Definition {
         final String mId;

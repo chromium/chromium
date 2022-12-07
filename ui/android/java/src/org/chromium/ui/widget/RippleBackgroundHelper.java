@@ -30,8 +30,6 @@ import org.chromium.ui.R;
  * A helper class to create and maintain a background drawable with customized background color,
  * ripple color, and corner radius.
  */
-// TODO(jdemeulenaere): Make this class package-private once it is not accessed by {@link
-// org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView} anymore.
 public class RippleBackgroundHelper {
     private static final int[] STATE_SET_PRESSED = {android.R.attr.state_pressed};
     private static final int[] STATE_SET_SELECTED = {android.R.attr.state_selected};

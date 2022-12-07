@@ -17,7 +17,6 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/autofill_assistant/browser/public/runtime_manager.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
@@ -227,16 +226,6 @@ void PermissionRequestManager::AddRequest(
         auto_approval_origin.value()) {
       request->PermissionGranted(/*is_one_time=*/false);
     }
-    request->RequestFinished();
-    return;
-  }
-
-  // Cancel permission requests wile Autofill Assistant's UI is shown.
-  auto* assistant_runtime_manager =
-      autofill_assistant::RuntimeManager::GetForWebContents(web_contents());
-  if (assistant_runtime_manager && assistant_runtime_manager->GetState() ==
-                                       autofill_assistant::UIState::kShown) {
-    request->Cancelled();
     request->RequestFinished();
     return;
   }

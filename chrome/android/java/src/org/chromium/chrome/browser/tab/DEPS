@@ -15,8 +15,6 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeDragAndDropBrowserDelegate.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherImpl.java",
-  "+chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTabHelper.java",
-  "+chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependencyUtilsChrome.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/app/bluetooth/BluetoothNotificationService.java",
   "+chrome/browser/bluetooth/android/java/src/org/chromium/chrome/browser/bluetooth/BluetoothNotificationManager.java",

@@ -38,7 +38,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.autofill_assistant.AssistantFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -84,9 +83,6 @@ public class GoogleServicesSettingsTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
             prefService.clearPref(Pref.SIGNIN_ALLOWED);
-            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_CONSENT);
-            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_ENABLED);
-            prefService.clearPref(Pref.AUTOFILL_ASSISTANT_TRIGGER_SCRIPTS_ENABLED);
         });
     }
 
@@ -157,7 +153,6 @@ public class GoogleServicesSettingsTest {
     @LargeTest
     @Feature({"AssistantVoiceSearch"})
     @EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
-    @DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_PROACTIVE_HELP_NAME)
     public void testAutofillAssistantSubsection_AssistantVoiceSeach() {
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -282,15 +277,6 @@ public class GoogleServicesSettingsTest {
             Assert.assertNull(googleServicesSettings.findPreference(
                     GoogleServicesSettings.PREF_PRICE_TRACKING_ANNOTATIONS));
         });
-    }
-
-    /**
-     * Sets the pref for whether Autofill Assistant is enabled. Needs to be run
-     * on the UI thread.
-     */
-    private void setAutofillAssistantSwitchValue(boolean newValue) {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-        prefService.setBoolean(Pref.AUTOFILL_ASSISTANT_ENABLED, newValue);
     }
 
     private GoogleServicesSettings startGoogleServicesSettings() {

@@ -182,12 +182,6 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   GetActiveTranslateMetricsLogger()->LogInitialState();
 }
 
-void TranslateManager::OnAutofillAssistantFinished() {
-  if (!page_language_code_.empty()) {
-    InitiateTranslation(page_language_code_);
-  }
-}
-
 bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   bool can_translate = true;
 
@@ -869,17 +863,6 @@ void TranslateManager::FilterIsTranslatePossible(
         TranslateBrowserMetrics::INITIATION_STATUS_NO_NETWORK);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledOffline);
-  }
-
-  // Skip translation if autofill assistant is running.
-  if (translate_client_->IsAutofillAssistantRunning()) {
-    page_language_code_ = page_language_code;
-    decision->PreventAllTriggering();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::
-            INITIATION_STATUS_DISABLED_BY_AUTOFILL_ASSISTANT);
-    GetActiveTranslateMetricsLogger()
-        ->LogAutofillAssistantDeferredTriggerDecision();
   }
 
   if (!ignore_missing_key_for_testing_ &&

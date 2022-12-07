@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "client_android\.cc": [
-    "+content/public/browser/tts_controller.h",
-  ],
-}

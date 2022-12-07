@@ -20,8 +20,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
       <ignore regexp="components/browser_ui/photo_picker/android/java/src/org/chromium/components/browser_ui/photo_picker/BitmapUtils.java"/>
   </issue>
   <issue id="IconDensities">
-    <!-- This is intentional to reduce APK size. See: http://crrev/c/1352161 -->
-    <ignore regexp="chrome/android/features/autofill_assistant/java/res/drawable-*"/>
     <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
     <ignore regexp="btn_bg_holo_active_normal.png, btn_bg_holo_active_pressed.png, btn_bg_holo_pressed.png"/>
     <!-- This is intentional to save on WebAPKs' size. -->
@@ -38,8 +36,6 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="tools/android/memconsumer/java/res/drawable/"/>
   </issue>
   <issue id="IconMissingDensityFolder">
-    <!-- This is intentional to reduce APK size. See: http://crrev/c/1352161 -->
-    <ignore regexp="chrome/android/features/autofill_assistant/java/res"/>
     <!-- Originals are gone, so ignore these specific ones: crbug.com/457918 -->
     <ignore regexp="components/embedder_support/android/java/res"/>
   </issue>

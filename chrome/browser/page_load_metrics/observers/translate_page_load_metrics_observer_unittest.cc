@@ -60,11 +60,6 @@ class MockTranslateMetricsLoggerContainer
     mock_translate_metrics_logger_->LogTriggerDecision(trigger_decision);
   }
 
-  void LogAutofillAssistantDeferredTriggerDecision() override {
-    mock_translate_metrics_logger_
-        ->LogAutofillAssistantDeferredTriggerDecision();
-  }
-
   void LogInitialState() override {
     mock_translate_metrics_logger_->LogInitialState();
   }

@@ -161,7 +161,6 @@ class TranslateMetricsLogger {
   // highest priority trigger decision will be logged to UMA at the end of the
   // page load.
   virtual void LogTriggerDecision(TriggerDecision trigger_decision) = 0;
-  virtual void LogAutofillAssistantDeferredTriggerDecision() = 0;
 
   // Tracks the state of Translate over the course of the page load.
   virtual void LogInitialState() = 0;

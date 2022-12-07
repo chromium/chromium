@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/config.gni")
-import(
-    "//chrome/android/features/autofill_assistant/autofill_assistant_module.gni")
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/features/tab_ui/tab_ui_module.gni")
 import("//chrome/android/modules/buildflags.gni")
@@ -57,9 +55,6 @@ if (dfmify_dev_ui) {
 monochrome_module_descs = chrome_modern_module_descs
 if (false) {  # AR DFM is currently disabled
   monochrome_module_descs += [ ar_module_desc ]
-}
-if (!disable_autofill_assistant_dfm) {
-  monochrome_module_descs += [ autofill_assistant_module_desc ]
 }
 if (!disable_tab_ui_dfm) {
   monochrome_module_descs += [ tab_ui_module_desc ]

@@ -89,9 +89,6 @@
 -org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testSharePublicOfflinePage
 -org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerTest.testDoNotShowOfflineIndicatorOnOfflinePageWhenOffline
 
-# crbug.com/1179791
--org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest.interactingWithLocationBarHidesAutofillAssistant
-
 # crbug.com/1287572
 -org.chromium.chrome.browser.webapps.WebappLaunchCauseMetricsTest.testHomescreenLaunch
 

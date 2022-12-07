@@ -122,9 +122,6 @@ class TranslateManager {
   // Starts the translation process for the page in the |page_lang| language.
   void InitiateTranslation(const std::string& page_lang);
 
-  // Maybe initiates translation when Autofill Assistant has finished.
-  void OnAutofillAssistantFinished();
-
   // Show the translation UI with the target language enforced to |target_lang|.
   // If |auto_translate| is true the page gets translated to the target
   // language.

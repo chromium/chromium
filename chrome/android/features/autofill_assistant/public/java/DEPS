@@ -1,5 +1,0 @@
-include_rules = [
-  "+components/module_installer",
-  "+components/ukm/android/java",
-  "+content/public/android/java/src/org/chromium/content_public/browser",
-]

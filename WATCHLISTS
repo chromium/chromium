@@ -222,11 +222,6 @@
         '|content/browser/renderer_host/delegated' \
         '|content/common/gpu/client/' \
     },
-    'autofill_assistant': {
-      'filepath': 'chrome/android/features/autofill_assistant/|'\
-                  'chrome/browser/android/autofill_assistant/|'\
-                  'components/autofill_assistant/',
-    },
     'autofill_payments': {
       'filepath': 'chrome/browser/ui/autofill/chrome_autofill_client|'\
                   'chrome/browser/ui/autofill/payments/|'\
@@ -2317,7 +2312,6 @@
                        'owenzhang+audio-settings-watch@google.com'],
     'aura': ['sadrul@chromium.org'],
     'aura_compositor': ['jbauman+watch@chromium.org'],
-    'autofill_assistant': ['autofill_assistant+watch@google.com'],
     'autofill_payments': ['armalhotra+autofillwatch@google.com',
                           'jsaul+autofillwatch@google.com',
                           'shgar+autofillwatch@google.com',

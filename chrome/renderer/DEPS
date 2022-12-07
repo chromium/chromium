@@ -6,8 +6,6 @@ include_rules = [
   "+components/autofill/content/common",
   "+components/autofill/content/renderer",
   "+components/autofill/core/common",
-  "+components/autofill_assistant/content/common",
-  "+components/autofill_assistant/content/renderer",
   "+components/cdm/renderer",
   "+components/client_hints/common",
   "+components/content_capture/common",

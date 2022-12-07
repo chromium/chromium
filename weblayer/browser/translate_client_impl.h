@@ -66,7 +66,6 @@ class TranslateClientImpl
                        translate::TranslateErrors error_type,
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
-  bool IsAutofillAssistantRunning() const override;
 
   // TranslateDriver::LanguageDetectionObserver implementation.
   void OnLanguageDetermined(

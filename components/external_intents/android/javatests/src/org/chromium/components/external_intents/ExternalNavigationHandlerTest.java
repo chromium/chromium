@@ -49,7 +49,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingAsyncActionType;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -67,7 +66,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -157,24 +155,6 @@ public class ExternalNavigationHandlerTest {
     private static final String[] SUPERVISOR_START_ACTIONS = {
             "com.google.android.instantapps.START", "com.google.android.instantapps.nmr1.INSTALL",
             "com.google.android.instantapps.nmr1.VIEW"};
-
-    private static final String AUTOFILL_ASSISTANT_INTENT_URL_WITH_FALLBACK =
-            "intent://www.example.com#Intent;scheme=https;"
-            + "B.org.chromium.chrome.browser.autofill_assistant.ENABLED=true;"
-            + "S." + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL + "="
-            + Uri.encode("https://www.example.com") + ";end";
-
-    private static final String AUTOFILL_ASSISTANT_INTENT_URL_WITHOUT_FALLBACK =
-            "intent://www.example.com#Intent;scheme=https;"
-            + "B.org.chromium.chrome.browser.autofill_assistant.ENABLED=true;"
-            + "end;";
-
-    private static final String AUTOFILL_ASSISTANT_INTENT_URL_WITH_SOMEAPP =
-            "intent://someapp.com#Intent;scheme=https;"
-            + "B.org.chromium.chrome.browser.autofill_assistant.ENABLED=true;"
-            + "S.org.chromium.chrome.browser.autofill_assistant.ALLOW_APP=true;"
-            + "S." + ExternalNavigationHandler.EXTRA_BROWSER_FALLBACK_URL + "="
-            + Uri.encode("https://someapp.com") + ";end";
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -2148,107 +2128,6 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testAutofillAssistantIntentWithFallback_InRegular() {
-        RedirectHandler redirectHandler = RedirectHandler.create();
-        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, true, true);
-
-        mDelegate.setIsIntentToAutofillAssistant(true);
-        checkUrl(AUTOFILL_ASSISTANT_INTENT_URL_WITH_FALLBACK)
-                .withRedirectHandler(redirectHandler)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB, IGNORE);
-
-        Assert.assertTrue(redirectHandler.shouldNotOverrideUrlLoading());
-        Assert.assertNull(mUrlHandler.mStartActivityIntent);
-    }
-
-    @Test
-    @SmallTest
-    public void testAutofillAssistantIntentWithFallback_InIncognito() {
-        mDelegate.setIsIntentToAutofillAssistant(true);
-        checkUrl(AUTOFILL_ASSISTANT_INTENT_URL_WITH_FALLBACK)
-                .withIsIncognito(true)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB, IGNORE);
-
-        Assert.assertNull(mUrlHandler.mStartActivityIntent);
-    }
-
-    @Test
-    @SmallTest
-    public void testAutofillAssistantIntentWithoutFallback_InRegular() {
-        mDelegate.setIsIntentToAutofillAssistant(true);
-        checkUrl(AUTOFILL_ASSISTANT_INTENT_URL_WITHOUT_FALLBACK)
-                .withIsIncognito(false)
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-
-        Assert.assertNull(mUrlHandler.mStartActivityIntent);
-    }
-
-    @Test
-    @SmallTest
-    public void testAutofillAssistantIntentWithoutFallback_InIncognito() {
-        mDelegate.setIsIntentToAutofillAssistant(true);
-        checkUrl(AUTOFILL_ASSISTANT_INTENT_URL_WITHOUT_FALLBACK)
-                .withIsIncognito(true)
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-
-        Assert.assertNull(mUrlHandler.mStartActivityIntent);
-    }
-
-    @Test
-    @SmallTest
-    public void testAutofillAssistantIntentWithAppOverrideNow_InRegular() {
-        mDelegate.add(new IntentActivity("https://someapp.com", "someapp"));
-
-        mDelegate.setIsIntentToAutofillAssistant(true);
-        mDelegate.setAutofillAssistantAllowAppOverrideResult(
-                IntentToAutofillAllowingAppResult.DEFER_TO_APP_NOW);
-        checkUrl(AUTOFILL_ASSISTANT_INTENT_URL_WITH_SOMEAPP)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY);
-
-        Assert.assertNotNull(mUrlHandler.mStartActivityIntent);
-    }
-
-    @Test
-    @SmallTest
-    public void testAutofillAssistantIntentWithAppOverrideLater_InRegular() {
-        mDelegate.add(new IntentActivity("https://someapp.com", "someapp"));
-
-        RedirectHandler redirectHandler = RedirectHandler.create();
-        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, true, true);
-
-        mUrlHandler.mIsAutofillAssistantGoogleReferrer = true;
-        mDelegate.setIsIntentToAutofillAssistant(true);
-        mDelegate.setAutofillAssistantAllowAppOverrideResult(
-                IntentToAutofillAllowingAppResult.DEFER_TO_APP_LATER);
-        checkUrl(AUTOFILL_ASSISTANT_INTENT_URL_WITH_SOMEAPP)
-                .withRedirectHandler(redirectHandler)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB, IGNORE);
-
-        Assert.assertFalse(redirectHandler.shouldNotOverrideUrlLoading());
-        Assert.assertFalse(
-                redirectHandler
-                        .getAndClearShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain());
-        Assert.assertNull(mUrlHandler.mStartActivityIntent);
-    }
-
-    @Test
-    @SmallTest
-    public void testAutofillAssistantIntentWithAppOverride_InIncognito() {
-        mDelegate.add(new IntentActivity("https://someapp.com", "someapp"));
-
-        mDelegate.setIsIntentToAutofillAssistant(true);
-        mDelegate.setAutofillAssistantAllowAppOverrideResult(
-                IntentToAutofillAllowingAppResult.DEFER_TO_APP_NOW);
-        checkUrl(AUTOFILL_ASSISTANT_INTENT_URL_WITH_SOMEAPP)
-                .withIsIncognito(true)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB, IGNORE);
-
-        Assert.assertNull(mUrlHandler.mStartActivityIntent);
-    }
-
-    @Test
-    @SmallTest
     public void testIsDownload_noSystemDownloadManager() {
         Assert.assertTrue("pdf should be a download, no viewer in Android Chrome",
                 mUrlHandler.isPdfDownload(new GURL("http://somesampeleurldne.com/file.pdf")));
@@ -2713,7 +2592,6 @@ public class ExternalNavigationHandlerTest {
         public String defaultSmsPackageName;
         public GURL mLastCommittedUrl;
         public boolean mIsSerpReferrer;
-        public boolean mIsAutofillAssistantGoogleReferrer;
         public boolean mShouldRequestFileAccess;
         public String mNewUrlAfterClobbering;
         public String mReferrerUrlForClobbering;
@@ -2767,11 +2645,6 @@ public class ExternalNavigationHandlerTest {
         @Override
         protected boolean isSerpReferrer() {
             return mIsSerpReferrer;
-        }
-
-        @Override
-        protected boolean isAutofillAssistantGoogleReferrer(ExternalNavigationParams params) {
-            return mIsAutofillAssistantGoogleReferrer;
         }
 
         @Override
@@ -2989,25 +2862,6 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean isIntentToAutofillAssistant(Intent intent) {
-            return mIsIntentToAutofillAssistant;
-        }
-
-        @Override
-        public @IntentToAutofillAllowingAppResult int isIntentToAutofillAssistantAllowingApp(
-                ExternalNavigationParams params, Intent targetIntent,
-                Function<Intent, Boolean> canExternalAppHandleIntent) {
-            return mAutofillAssistantAllowAppOverrideResult;
-        }
-
-        @Override
-        public boolean handleWithAutofillAssistant(ExternalNavigationParams params,
-                Intent targetIntent, GURL browserFallbackUrl,
-                boolean isAutofillAssistantGoogleReferrer) {
-            return mHandleWithAutofillAssistant;
-        }
-
-        @Override
         public boolean shouldLaunchWebApksOnInitialIntent() {
             return mShouldLaunchWebApksOnInitialIntent;
         }
@@ -3065,25 +2919,12 @@ public class ExternalNavigationHandlerTest {
             return mReferrerWebappPackageName;
         }
 
-        public void setHandleIntentWithAutofillAssistant(boolean value) {
-            mHandleWithAutofillAssistant = value;
-        }
-
         public void setIsCallingAppTrusted(boolean trusted) {
             mIsCallingAppTrusted = trusted;
         }
 
         public void setDisableExternalIntentRequests(boolean disable) {
             mShouldDisableExternalIntentRequests = disable;
-        }
-
-        public void setIsIntentToAutofillAssistant(boolean value) {
-            mIsIntentToAutofillAssistant = value;
-        }
-
-        public void setAutofillAssistantAllowAppOverrideResult(
-                @IntentToAutofillAllowingAppResult int value) {
-            mAutofillAssistantAllowAppOverrideResult = value;
         }
 
         public void setCanLoadUrlInTab(boolean value) {
@@ -3127,12 +2968,9 @@ public class ExternalNavigationHandlerTest {
         private ArrayList<IntentActivity> mIntentActivities = new ArrayList<IntentActivity>();
         private boolean mCanResolveActivityForExternalSchemes = true;
         private boolean mCanResolveActivityForMarket = true;
-        private boolean mHandleWithAutofillAssistant;
         public boolean mIsChromeAppInForeground = true;
         private boolean mIsCallingAppTrusted;
         private boolean mShouldDisableExternalIntentRequests;
-        private boolean mIsIntentToAutofillAssistant;
-        private @IntentToAutofillAllowingAppResult int mAutofillAssistantAllowAppOverrideResult;
         private boolean mCanLoadUrlInTab;
         private boolean mShouldPresentLeavingIncognitoDialog;
         private boolean mShouldLaunchWebApksOnInitialIntent;

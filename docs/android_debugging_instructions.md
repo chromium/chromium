@@ -318,7 +318,6 @@ ls -l /data/app/~~ybTygSP5u72F9GN-3TMKXA==/org.chromium.chrome-zYY5mcB7YgB5pa3vf
 total 389079
 -rw-r--r-- 1 system system 369634375 2022-11-05 01:49 base.apk
 drwxr-xr-x 3 system system      3452 2022-11-05 01:49 lib
--rw-r--r-- 1 system system   4591760 2022-11-05 01:49 split_autofill_assistant.apk
 -rw-r--r-- 1 system system    786666 2022-11-05 01:49 split_cablev2_authenticator.apk
 -rw-r--r-- 1 system system  21258500 2022-11-05 01:49 split_chrome.apk
 -rw-r--r-- 1 system system   1298934 2022-11-05 01:49 split_config.en.apk

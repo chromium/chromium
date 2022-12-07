@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/autofill_assistant/browser/public",
   "+components/back_forward_cache",
   "+components/content_settings/core",
   "+components/keyed_service/content",

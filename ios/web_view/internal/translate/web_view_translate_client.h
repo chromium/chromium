@@ -79,7 +79,6 @@ class WebViewTranslateClient : public translate::TranslateClient {
                        translate::TranslateErrors error_type,
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
-  bool IsAutofillAssistantRunning() const override;
 
  private:
   PrefService* pref_service_;

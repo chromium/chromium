@@ -353,7 +353,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/policy/android:delegate_public_impl_java",
       "//chrome/browser/supervised_user:parent_auth_delegate_impl_java",
       "//chrome/browser/touch_to_fill/android/internal:resource_provider_public_impl_java",
-      "//components/autofill_assistant/android:autofill_assistant_public_impl_java",
       "//components/externalauth/android:google_delegate_public_impl_java",
       "//components/language/android:ulp_delegate_public_java",
     ]
@@ -515,9 +514,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/xsurface:java",
       "//components/autofill/android:autofill_java",
       "//components/autofill/android:prefeditor_autofill_java",
-      "//components/autofill_assistant/android:public_dependencies_java",
-      "//components/autofill_assistant/android:public_java",
-      "//components/autofill_assistant/browser:proto_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/bookmarks/common/android:bookmarks_java",
@@ -870,10 +866,6 @@ if (current_toolchain == default_toolchain) {
       "//components/messages/android/internal:java",
       "//components/segmentation_platform/internal:internal_java",
     ]
-
-    if (disable_autofill_assistant_dfm) {
-      deps += [ "//components/autofill_assistant/android:java" ]
-    }
 
     if (disable_tab_ui_dfm) {
       deps += [
@@ -1303,7 +1295,7 @@ if (current_toolchain == default_toolchain) {
     ]
   }
 
-  # Files used for both chrome tests and VR/AR and autofill_assistant tests
+  # Files used for both chrome tests and VR/AR tests
   android_library("chrome_test_util_java") {
     testonly = true
 
@@ -1412,7 +1404,6 @@ if (current_toolchain == default_toolchain) {
       "//base:base_java_test_support",
       "//chrome/android:base_module_java",
       "//chrome/android:chrome_java",
-      "//chrome/android/features/autofill_assistant:unit_test_java",
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/browserservices/verification:java",
       "//chrome/browser/android/crypto:java",
@@ -1439,7 +1430,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:chrome_java_unit_test_support",
       "//components/autofill/android:main_autofill_java",
-      "//components/autofill_assistant/android:public_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/bookmarks/common/android:bookmarks_java",
       "//components/browser_ui/modaldialog/android:java",
@@ -1665,8 +1655,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
       "//components/autofill/android:autofill_java",
       "//components/autofill/android:prefeditor_autofill_java",
-      "//components/autofill_assistant/android:public_dependencies_java",
-      "//components/autofill_assistant/android:public_java",
       "//components/background_task_scheduler:background_task_scheduler_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/bookmarks/common/android:bookmarks_java",
@@ -2398,7 +2386,6 @@ if (current_toolchain == default_toolchain) {
     deps = [
       ":browser_java_test_support",
       ":chrome_test_util_java",
-      "//chrome/android/features/autofill_assistant:autofill_assistant_java_test_support",
       "//chrome/browser/android/metrics:ukm_java_test_support",
       "//chrome/browser/password_manager/android:test_support_java",
       "//chrome/browser/subresource_filter:subresource_filter_java_test_support",
@@ -3222,7 +3209,6 @@ if (current_toolchain == default_toolchain) {
     deps = [
       ":chrome_test_apk_template_resources",
       ":chrome_test_java",
-      "//chrome/android/features/autofill_assistant:test_java",
       "//chrome/android/features/keyboard_accessory:test_java",
       "//chrome/browser/autofill/test:test_java",
       "//chrome/browser/banners/android:javatests",
@@ -4198,7 +4184,6 @@ source_set("chrome_test_util_jni") {
 group("jni_headers") {
   public_deps = [
     ":chrome_jni_headers",
-    "//chrome/android/features/autofill_assistant:jni_headers_public",
     "//chrome/android/features/keyboard_accessory:jni_headers",
     "//chrome/android/features/start_surface:jni_headers",
     "//chrome/browser/android/browserservices/metrics:jni_headers",
@@ -4233,9 +4218,6 @@ group("jni_headers") {
     "//chrome/browser/ui/messages/android:jni_headers",
     "//chrome/browser/util:jni_headers",
     "//chrome/browser/webauthn/android:jni_headers",
-    "//components/autofill_assistant/android:jni_headers",
-    "//components/autofill_assistant/android:jni_headers_public",
-    "//components/autofill_assistant/android:jni_headers_public_dependencies",
     "//components/digital_asset_links/android:jni_headers",
     "//components/image_fetcher:jni_headers",
     "//components/media_router/browser/android:jni_headers",
@@ -4293,7 +4275,6 @@ chrome_common_shared_library("libchromefortest") {
     "//chrome/browser/password_manager/android:test_support",
     "//chrome/browser/subresource_filter:android_test_support",
     "//chrome/browser/supervised_user:test_support",
-    "//components/autofill_assistant/browser:test_support",
     "//components/crash/android:crash_android",
     "//components/external_intents/android:test_support",
     "//components/minidump_uploader",

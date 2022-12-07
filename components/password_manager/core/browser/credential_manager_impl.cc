@@ -128,7 +128,6 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
         metrics_util::CredentialManagerGetResult::kNoneIncognito, mediation);
     return;
   }
-
   // Return an empty credential if zero-click is required but disabled.
   if (mediation == CredentialMediationRequirement::kSilent &&
       !IsZeroClickAllowed()) {

@@ -1145,7 +1145,6 @@
       'linux-1mbu-compile-fyi-rel': 'release_trybot_reclient',
       'linux-annotator-rel': 'release_trybot',
       'linux-arm64-castos': 'cast_arm64_release_bot',
-      'linux-autofill-assistant': 'autofill_assistant_release_trybot',
       'linux-bfcache-rel': 'release_bot_blink_reclient',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
       'linux-blink-heap-verification-try': 'release_trybot_enable_blink_heap_verification_reclient',
@@ -1888,10 +1887,6 @@
 
     'asan_v8_heap_debug_bot_hybrid_reclient': [
       'asan', 'v8_heap', 'debug_bot_reclient', 'hybrid',
-    ],
-
-    'autofill_assistant_release_trybot': [
-      'autofill_assistant_api', 'release_trybot',
     ],
 
     'cast_arm64_release_bot': [
@@ -3809,10 +3804,6 @@
 
     'asan': {
       'gn_args': 'is_asan=true',
-    },
-
-    'autofill_assistant_api': {
-      'gn_args': 'enable_autofill_assistant_api=true',
     },
 
     'backuprefptr': {

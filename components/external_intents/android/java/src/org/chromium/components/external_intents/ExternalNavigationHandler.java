@@ -52,7 +52,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
-import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -1452,56 +1451,6 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    // This will handle external navigations only for intent meant for Autofill Assistant.
-    private boolean handleWithAutofillAssistant(
-            ExternalNavigationParams params, Intent targetIntent, GURL browserFallbackUrl) {
-        if (!mDelegate.isIntentToAutofillAssistant(targetIntent)) {
-            return false;
-        }
-
-        // Launching external intents is always forbidden in incognito. Handle the intent with
-        // Autofill Assistant instead. Note that Autofill Assistant won't start in incognito either,
-        // this will only result in navigating to the browserFallbackUrl.
-        if (!params.isIncognito()) {
-            @IntentToAutofillAllowingAppResult
-            int intentAllowingAppResult = mDelegate.isIntentToAutofillAssistantAllowingApp(params,
-                    targetIntent,
-                    (intent)
-                            -> getSpecializedHandlersWithFilter(queryIntentActivities(intent),
-                                       /* filterPackageName= */ null)
-                                       .size()
-                            == 1);
-            switch (intentAllowingAppResult) {
-                case IntentToAutofillAllowingAppResult.DEFER_TO_APP_NOW:
-                    if (debug()) {
-                        Log.i(TAG, "Autofill Assistant passed in favour of App.");
-                    }
-                    return false;
-                case IntentToAutofillAllowingAppResult.DEFER_TO_APP_LATER:
-                    if (params.getRedirectHandler() != null
-                            && isAutofillAssistantGoogleReferrer(params)) {
-                        if (debug()) {
-                            Log.i(TAG, "Autofill Assistant passed in favour of App later.");
-                        }
-                        params.getRedirectHandler()
-                                .setShouldNotBlockUrlLoadingOverrideOnCurrentRedirectionChain();
-                        return true;
-                    }
-                    break;
-                case IntentToAutofillAllowingAppResult.NONE:
-                    break;
-            }
-        }
-
-        if (mDelegate.handleWithAutofillAssistant(params, targetIntent, browserFallbackUrl,
-                    isAutofillAssistantGoogleReferrer(params))) {
-            if (debug()) Log.i(TAG, "Handled with Autofill Assistant.");
-        } else {
-            if (debug()) Log.i(TAG, "Not handled with Autofill Assistant.");
-        }
-        return true;
-    }
-
     // Check if we're navigating under conditions that should never launch an external app,
     // regardless of which URL we're navigating to.
     private boolean shouldBlockAllExternalAppLaunches(
@@ -1542,10 +1491,6 @@ public class ExternalNavigationHandler {
                 && UrlUtilities.isAcceptedScheme(intentDataUrl);
 
         if (shouldBlockAllExternalAppLaunches(params, incomingIntentRedirect)) {
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
-
-        if (handleWithAutofillAssistant(params, targetIntent, browserFallbackUrl)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
@@ -2398,25 +2343,6 @@ public class ExternalNavigationHandler {
         if (referrerUrl == null || referrerUrl.isEmpty()) return false;
 
         return UrlUtilitiesJni.get().isGoogleSubDomainUrl(referrerUrl.getSpec());
-    }
-
-    /**
-     * @return whether this navigation is from a Google domain.
-     */
-    @VisibleForTesting
-    protected boolean isAutofillAssistantGoogleReferrer(ExternalNavigationParams params) {
-        if (!ExternalIntentsFeatures.AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK.isEnabled()) {
-            return isLastCommittedUrlGoogleReferrer();
-        }
-
-        // We check that there were no previous redirects and that the navigation originated on
-        // a valid google.<TLD> (top level domain).
-        RedirectHandler redirectHandler = params.getRedirectHandler();
-        if (redirectHandler == null || !redirectHandler.isOnFirstLoadInNavigationChain()) {
-            return false;
-        }
-
-        return isInitiatorOriginGoogleReferrer(params);
     }
 
     /**

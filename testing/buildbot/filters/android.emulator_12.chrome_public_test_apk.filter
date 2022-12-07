@@ -54,9 +54,6 @@
 # crbug.com/1231652
 -org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragmentTest.testKeyboardShownOnDpadCenter
 
-# crbug.com/1179791
--org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest.interactingWithLocationBarHidesAutofillAssistant
-
 # crbug.com/1188920
 -org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest.testIntentPickerNotShownForNormalUrl
 

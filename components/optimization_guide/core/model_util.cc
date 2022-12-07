@@ -64,8 +64,6 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationQueryTiles";
     case proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY:
       return "PageVisibility";
-    case proto::OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT:
-      return "AutofillAssistant";
     case proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2:
       return "PageTopicsV2";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:

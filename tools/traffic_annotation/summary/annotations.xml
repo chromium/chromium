@@ -320,8 +320,6 @@ Refer to README.md for content description and update process.
  <item id="permission_request_creator" added_in_milestone="98" content_hash_code="04629d73" os_list="android,chromeos" file_path="chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc" />
  <item id="kids_chrome_management_client_classify_url" added_in_milestone="98" content_hash_code="06b848f5" os_list="android" file_path="chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.cc" />
  <item id="kids_chrome_management_list_family_members" added_in_milestone="106" content_hash_code="00458289" os_list="android,chromeos" file_path="chrome/browser/supervised_user/kids_chrome_management/kids_external_fetcher.cc" />
- <item id="gstatic_onboarding_definition" added_in_milestone="98" content_hash_code="07b20d53" os_list="android,chromeos,linux,windows" file_path="components/autofill_assistant/browser/autofill_assistant_onboarding_fetcher.cc" />
- <item id="autofill_service" added_in_milestone="98" content_hash_code="080a4c8d" os_list="android,chromeos,linux,windows" file_path="components/autofill_assistant/browser/service/service_request_sender_impl.cc" />
  <item id="publish_note_request" added_in_milestone="98" content_hash_code="01e9f0b8" os_list="android" file_path="components/content_creation/notes/core/server/notes_server_saver.cc" />
  <item id="cached_image_fetcher" added_in_milestone="98" content_hash_code="06334a2d" os_list="android" file_path="components/image_fetcher/image_fetcher_bridge.cc" />
  <item id="chrome_cast_discovery_api" added_in_milestone="98" content_hash_code="0502b792" os_list="linux,windows,chromeos" file_path="chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.cc" />

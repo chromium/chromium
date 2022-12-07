@@ -6,8 +6,4 @@ import("//build/config/chromecast_build.gni")
 
 declare_args() {
   enable_extensions = !is_android && !is_ios && !is_castos
-
-  # Compile time flag for the Autofill Assistant API.
-  # WARNING: This must not be enabled in official builds.
-  enable_autofill_assistant_api = false
 }

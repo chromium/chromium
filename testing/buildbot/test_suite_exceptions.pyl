@@ -433,11 +433,6 @@
           'shards': 1,
         },
       },
-      'linux-autofill-assistant': {
-        'args': [
-          '--release',
-        ],
-      },
       'linux-blink-animation-use-time-delta': {
         'args': [
           '--debug',
@@ -742,11 +737,6 @@
         'swarming': {
           'shards': 1,
         },
-      },
-      'linux-autofill-assistant': {
-        'args': [
-          '--release',
-        ],
       },
       'linux-bfcache-rel': {
         'args': [

@@ -149,8 +149,6 @@ class TranslateManagerTest : public ::testing::Test {
   void SetUp() override {
     // Ensure we're not requesting a server-side translate language list.
     TranslateLanguageList::DisableUpdate();
-    ON_CALL(mock_translate_client_, IsAutofillAssistantRunning)
-        .WillByDefault(Return(false));
 
     manager_->ResetForTesting();
   }
@@ -363,8 +361,6 @@ TEST_F(TranslateManagerTest,
   ON_CALL(mock_translate_client_,
           ShowTranslateUI(_, _, _, _, false /* triggered_from_menu */))
       .WillByDefault(Return(true));
-  ON_CALL(mock_translate_client_, IsAutofillAssistantRunning())
-      .WillByDefault(Return(false));
 
   translate_manager_ = std::make_unique<TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
@@ -401,8 +397,6 @@ TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishExperiment) {
   ON_CALL(mock_translate_client_,
           ShowTranslateUI(_, _, _, _, false /* triggered_from_menu */))
       .WillByDefault(Return(true));
-  ON_CALL(mock_translate_client_, IsAutofillAssistantRunning())
-      .WillByDefault(Return(false));
 
   translate_manager_ = std::make_unique<TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
@@ -762,54 +756,6 @@ TEST_F(TranslateManagerTest, DontTranslateOffline) {
   // UI showing and no auto-translate.
   network_notifier_.SimulateOffline();
   translate_manager_->InitiateTranslation("de");
-  EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
-              ::testing::Not(::testing::Contains(
-                  Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 1))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
-              ::testing::Not(::testing::Contains(
-                  Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
-              ::testing::Not(::testing::Contains(
-                  Bucket(metrics::INITIATION_STATUS_AUTO_BY_CONFIG, 1))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
-              ::testing::Not(::testing::Contains(
-                  Bucket(metrics::INITIATION_STATUS_AUTO_BY_LINK, 1))));
-}
-
-TEST_F(TranslateManagerTest, DontTranslateAutofillAssistantRunning) {
-  TranslateManager::SetIgnoreMissingKeyForTesting(true);
-
-  language::AcceptLanguagesService accept_languages(&prefs_,
-                                                    accept_languages_prefs);
-  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
-      .WillByDefault(Return(&accept_languages));
-  ON_CALL(mock_translate_client_, IsAutofillAssistantRunning())
-      .WillByDefault(Return(true));
-
-  translate_manager_ = std::make_unique<TranslateManager>(
-      &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
-
-  ExpectHighestPriorityTriggerDecision(
-      TriggerDecision::kDisabledURLNotSupported);
-  EXPECT_CALL(*mock_translate_metrics_logger(),
-              LogAutofillAssistantDeferredTriggerDecision())
-      .Times(1);
-
-  // The test measures that the "Translate was disabled" exit can only be
-  // reached after the early-out tests including IsOffline() passed.
-  base::HistogramTester histogram_tester;
-
-  prefs_.SetBoolean(prefs::kOfferTranslateEnabled, false);
-
-  translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
-
-  // When Autofill assistant is running, Initiate won't trigger any translate
-  // behavior.
-  translate_manager_->InitiateTranslation("de");
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kInitiationStatusName),
-      ::testing::Contains(Bucket(
-          metrics::INITIATION_STATUS_DISABLED_BY_AUTOFILL_ASSISTANT, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kInitiationStatusName),
               ::testing::Not(::testing::Contains(
                   Bucket(metrics::INITIATION_STATUS_SHOW_INFOBAR, 1))));

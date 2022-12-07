@@ -652,8 +652,6 @@ TEST_F(TranslateMetricsLoggerImplTest, MultipleRecordMetrics) {
                                          ranker_model_version, 1);
   histogram_tester()->ExpectUniqueSample(kTranslatePageLoadTriggerDecision,
                                          trigger_decision, 1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslatePageLoadAutofillAssistantDeferredTriggerDecision, false, 1);
   CheckTranslateStateHistograms(TranslateState::kNotTranslatedNoUI,
                                 TranslateState::kNotTranslatedUIShown, 1, 1);
 }
@@ -812,22 +810,6 @@ TEST_F(TranslateMetricsLoggerImplTest,
   histogram_tester()->ExpectUniqueSample(
       kTranslatePageLoadTriggerDecision,
       TriggerDecision::kAutomaticTranslationByHref, 1);
-}
-
-TEST_F(TranslateMetricsLoggerImplTest,
-       LogAutofillAssistantDeferredTriggerDecision) {
-  TriggerDecision trigger_decision = TriggerDecision::kShowUI;
-
-  // Simulate the autofill assistant running the first time.
-  translate_metrics_logger()->LogAutofillAssistantDeferredTriggerDecision();
-  translate_metrics_logger()->LogTriggerDecision(trigger_decision);
-
-  translate_metrics_logger()->RecordMetrics(true);
-
-  histogram_tester()->ExpectUniqueSample(kTranslatePageLoadTriggerDecision,
-                                         trigger_decision, 1);
-  histogram_tester()->ExpectUniqueSample(
-      kTranslatePageLoadAutofillAssistantDeferredTriggerDecision, true, 1);
 }
 
 TEST_F(TranslateMetricsLoggerImplTest, LogTranslationAndReversion) {

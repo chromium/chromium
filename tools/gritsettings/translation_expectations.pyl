@@ -42,7 +42,6 @@
       "chrome/credential_provider/gaiacp/gaia_resources.grd",
       "chromeos/chromeos_strings.grd",
       "components/autofill/android/java/strings/autofill_strings.grd",
-      "components/autofill_assistant/android/internal/java/strings/android_chrome_autofill_assistant_strings.grd",
       "components/browser_ui/strings/android/browser_ui_strings.grd",
       "components/components_chromium_strings.grd",
       "components/components_google_chrome_strings.grd",

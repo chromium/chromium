@@ -20,7 +20,6 @@ after discussions on the right group.
       <annotation id="android_web_socket"/>
       <annotation id="query_tiles_fetcher"/>
       <annotation id="query_tiles_image_loader"/>
-      <annotation id="autofill_service"/>
       <annotation id="cached_image_fetcher"/>
       <annotation id="chime_sdk"/>
       <annotation id="chrome_android_hats"/>
@@ -30,7 +29,6 @@ after discussions on the right group.
       <annotation id="download_manager_service_retry"/>
       <annotation id="explore_sites"/>
       <annotation id="family_info"/>
-      <annotation id="gstatic_onboarding_definition"/>
       <annotation id="kids_chrome_management_client_classify_url"/>
       <annotation id="minidump_uploader_android"/>
       <annotation id="oma_download_handler_android"/>

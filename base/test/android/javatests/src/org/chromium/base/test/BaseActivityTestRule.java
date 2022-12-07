@@ -71,7 +71,7 @@ public class BaseActivityTestRule<T extends Activity> implements TestRule {
         //   DuplicateClickableBounds checks - Some containers are marked clickable when they do not
         //                                     process click events. Two views with the same bounds
         //                                     should not both be clickable. Some examples in:
-        //                                     PageInfoRowView, AutofillAssistant and TabModal.
+        //                                     PageInfoRowView and TabModal.
         //
         //   SpeakableTextPresent* checks - Some views are failing this test on certain try bots,
         //                                  so disable this check to reduce churn for sheriffs

@@ -72,10 +72,6 @@ class TranslateClient {
 
   // Returns true if the URL can be translated.
   virtual bool IsTranslatableURL(const GURL& url) = 0;
-
-  // Returns if AutofillAssistant is running. Translation should be disabled
-  // while AutofillAssistant is running.
-  virtual bool IsAutofillAssistantRunning() const = 0;
 };
 
 }  // namespace translate

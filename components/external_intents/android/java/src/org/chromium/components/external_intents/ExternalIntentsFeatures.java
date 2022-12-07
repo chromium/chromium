@@ -17,20 +17,15 @@ import org.chromium.base.annotations.NativeMethods;
  */
 @JNINamespace("external_intents")
 public class ExternalIntentsFeatures extends Features {
-    public static final String AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK_NAME =
-            "AutofillAssistantGoogleInitiatorOriginCheck";
     public static final String BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME =
             "BlockExternalFormSubmitWithoutGesture";
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
 
-    public static final ExternalIntentsFeatures AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK =
-            new ExternalIntentsFeatures(0, AUTOFILL_ASSISTANT_GOOGLE_INITIATOR_ORIGIN_CHECK_NAME);
-
     public static final ExternalIntentsFeatures BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE =
-            new ExternalIntentsFeatures(1, BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME);
+            new ExternalIntentsFeatures(0, BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME);
 
     public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_DEBUG_LOGS =
-            new ExternalIntentsFeatures(2, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
+            new ExternalIntentsFeatures(1, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
 
     private final int mOrdinal;
 

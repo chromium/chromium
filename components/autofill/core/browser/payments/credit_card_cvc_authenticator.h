@@ -125,7 +125,6 @@ class CreditCardCVCAuthenticator
   GetAsFullCardRequestUIDelegate();
 
  private:
-  friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
   friend class metrics::AutofillMetricsBaseTest;

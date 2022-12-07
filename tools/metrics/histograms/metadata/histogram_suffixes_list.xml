@@ -303,7 +303,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="AndroidFeatureModuleName" separator=".">
   <suffix name="ar" label="Augmented Reality Module"/>
-  <suffix name="autofill_assistant" label="Assistant-in-Chrome Module"/>
+  <suffix name="autofill_assistant" label="Assistant-in-Chrome Module">
+    <obsolete>
+      Deprecated in M110 since we removed the autofill_assistant component.
+    </obsolete>
+  </suffix>
   <suffix name="cablev2_authenticator" label="caBLEv2 Authenticator Module"/>
   <suffix name="chime" label="Chime Notification Module"/>
   <suffix name="chrome" label="Chrome Module"/>
@@ -5988,13 +5992,13 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ShillCumulativeTimeOnline" separator=".">
+  <obsolete>
+    Obsoleted Dec 2022, histograms were renamed (b/254170385).
+  </obsolete>
   <suffix name="Any" label="Any connection type"/>
   <suffix name="Cellular" label="Cellular connection"/>
   <suffix name="Wifi" label="WiFi connection"/>
   <affected-histogram name="Network.Shill.CumulativeTimeOnline"/>
-  <obsolete>
-    Obsoleted Dec 2022, histograms were renamed (b/254170385).
-  </obsolete>
 </histogram_suffixes>
 
 <histogram_suffixes name="ShillWiFiRememberedNetworkSecurityMode" separator=".">

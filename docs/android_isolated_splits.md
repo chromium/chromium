@@ -34,8 +34,7 @@ renderer processes require almost no DEX.
 Chrome's splits look like:
 
 ```
-base.apk <-- chrome.apk <-- autofill_assistant.apk
-                        <-- image_editor.apk
+base.apk <-- chrome.apk <-- image_editor.apk
                         <-- feedv2.apk
                         <-- ...
 ```

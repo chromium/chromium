@@ -20,23 +20,19 @@ import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
-import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * The main implementation of the {@link ExternalNavigationDelegate}.
@@ -197,15 +193,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     /**
-     * Starts the autofill assistant with the given intent. Exists to allow tests to stub out this
-     * functionality.
-     */
-    protected void startAutofillAssistantWithIntent(Intent targetIntent, GURL browserFallbackUrl) {
-        AutofillAssistantFacade.start(
-                TabUtils.getActivity(mTab), targetIntent.getExtras(), browserFallbackUrl.getSpec());
-    }
-
-    /**
      * @return Whether or not we have a valid {@link Tab} available.
      */
     @Override
@@ -221,37 +208,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     @Override
     public boolean isIntentForTrustedCallingApp(
             Intent intent, Supplier<List<ResolveInfo>> resolveInfoSupplier) {
-        return false;
-    }
-
-    @Override
-    public boolean isIntentToAutofillAssistant(Intent intent) {
-        return AutofillAssistantFacade.isAutofillAssistantByIntentTriggeringEnabled(intent);
-    }
-
-    @Override
-    public @IntentToAutofillAllowingAppResult int isIntentToAutofillAssistantAllowingApp(
-            ExternalNavigationParams params, Intent targetIntent,
-            Function<Intent, Boolean> canExternalAppHandleIntent) {
-        if (params.isIncognito()) {
-            return IntentToAutofillAllowingAppResult.NONE;
-        }
-        return AutofillAssistantFacade.shouldAllowOverrideWithApp(
-                targetIntent, canExternalAppHandleIntent);
-    }
-
-    @Override
-    public boolean handleWithAutofillAssistant(ExternalNavigationParams params, Intent targetIntent,
-            GURL browserFallbackUrl, boolean isGoogleReferrer) {
-        if (!browserFallbackUrl.isEmpty() && !params.isIncognito()
-                && AutofillAssistantFacade.isAutofillAssistantByIntentTriggeringEnabled(
-                        targetIntent)
-                && isGoogleReferrer) {
-            if (mTab != null) {
-                startAutofillAssistantWithIntent(targetIntent, browserFallbackUrl);
-            }
-            return true;
-        }
         return false;
     }
 

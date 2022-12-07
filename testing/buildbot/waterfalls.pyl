@@ -6638,14 +6638,6 @@
     'name': 'tryserver.chromium.linux',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'linux-autofill-assistant': {
-        'additional_compile_targets': [
-          'browser_tests',
-        ],
-        'mixins': [
-          'linux-bionic',
-        ],
-      },
       'linux-layout-tests-edit-ng': {
         'additional_compile_targets': [
           'blink_tests',

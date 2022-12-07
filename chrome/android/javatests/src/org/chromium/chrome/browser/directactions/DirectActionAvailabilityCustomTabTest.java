@@ -25,8 +25,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.components.autofill_assistant.AssistantFeatures;
 
 /**
  * Tests the availability of core direct actions in different activities.
@@ -36,7 +34,6 @@ import org.chromium.components.autofill_assistant.AssistantFeatures;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS_NAME)
 @MinAndroidSdkLevel(Build.VERSION_CODES.N)
 @RequiresApi(24) // For java.util.function.Consumer.
 public class DirectActionAvailabilityCustomTabTest {

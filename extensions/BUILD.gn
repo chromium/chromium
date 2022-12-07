@@ -11,10 +11,6 @@ import("//ui/base/ui_features.gni")
 
 assert(enable_extensions)
 
-assert(
-    !(enable_autofill_assistant_api && is_official_build),
-    "The AutofillAssistant Extension API must be disabled in official builds.")
-
 if (is_component_build) {
   component("extensions") {
     visibility = [

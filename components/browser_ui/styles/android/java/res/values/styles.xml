@@ -161,9 +161,6 @@ found in the LICENSE file.
     </style>
 
     <!-- Accent1 text styles -->
-    <style name="TextAppearance.TextLarge.Accent1">
-        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
-    </style>
     <style name="TextAppearance.TextMedium.Accent1">
         <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
     </style>

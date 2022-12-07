@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.AccessibilityTabHelper;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTabHelper;
 import org.chromium.chrome.browser.complex_tasks.TaskTabHelper;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -38,7 +37,6 @@ public final class TabHelpers {
         TaskTabHelper.createForTab(tab, parentTab);
         TabBrowserControlsConstraintsHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
-        AutofillAssistantTabHelper.createForTab(tab);
         PasswordCheckUkmRecorder.createForTab(tab);
         AccessibilityTabHelper.createForTab(tab);
 

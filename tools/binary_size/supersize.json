@@ -20,9 +20,6 @@
     }
   },
   "apk_splits": {
-    "autofill_assistant": {
-      "default_component": "UI>Browser>Autofill>Assistant"
-    },
     "cablev2_authenticator": {
       "default_component": "Blink>WebAuthentication"
     },

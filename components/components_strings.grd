@@ -282,7 +282,6 @@
   <release seq="1">
     <messages fallback_to_english="true">
       <part file="arc_strings.grdp" />
-      <part file="autofill_assistant_strings.grdp" />
       <part file="autofill_payments_strings.grdp" />
       <part file="autofill_strings.grdp" />
       <part file="bookmark_bar_strings.grdp" />

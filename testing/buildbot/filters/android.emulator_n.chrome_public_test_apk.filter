@@ -23,9 +23,6 @@
 # TODO(crbug/1349083)
 -org.chromium.chrome.browser.sync.SyncErrorCardPreferenceTest.testSyncErrorCardForPassphraseRequiredWithTitleFeatureDisabled__NightModeEnabled
 
-# TODO(crbug/1349958)
--org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest.testShowCastOnIFrameElementInScrollIFrame
-
 # TODO(crbug/1361660)
 -org.chromium.chrome.browser.sync.SyncErrorCardPreferenceTest.testSyncErrorCardForTrustedVaultRecoverabilityDegradedForEverythingWithTitleFeatureDisabled__NightModeEnabled
 -org.chromium.chrome.browser.sync.SyncErrorCardPreferenceTest.testSyncErrorCardForTrustedVaultRecoverabilityDegradedForPasswordsWithTitleFeatureDisabled__NightModeDisabled
@@ -36,12 +33,6 @@
 -org.chromium.chrome.browser.firstrun.FirstRunActivitySigninAndSyncTest.clickingSettingsThenCancelForChildAccountWithAllowSyncOffDisabledPartiallyEnablesSync
 -org.chromium.chrome.browser.firstrun.FirstRunActivitySigninAndSyncTest.continueButtonClickShowsSyncConsentPageWithChildAccountAndEarlySigninCheckerCreation
 -org.chromium.chrome.browser.firstrun.FirstRunActivitySigninAndSyncTest.acceptingSyncForChildAccountEndsFreAndEnablesSyncIfAllowSyncOffForChildAccountsFeatureEnabled
-
-# TODO(crbug/1366098)
--org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataIntegrationTest.testEnterPayment
-
-# TODO(crbug/1368332)
--org.chromium.chrome.browser.autofill_assistant.AutofillAssistantCollectUserDataIntegrationTest.testFailingAutofillSendsProperError
 
 # TODO(crbug/1359954)
 -org.chromium.chrome.browser.tasks.tab_management.TabSuggestionMessageCardTest.groupTabSuggestionReviewedAndAccepted

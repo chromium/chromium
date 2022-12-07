@@ -5127,13 +5127,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Tab management
       </message>
 
-      <message name="IDS_AUTOFILL_ASSISTANT_MODULE_TITLE"
-  desc="Text shown when the Foo module is referenced in install start, success,
-        failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to
-        'Installing Assistant for Chrome…').">
-  Google Assistant in Chrome
-      </message>
-
       <message name="IDS_DEV_UI_MODULE_TITLE" desc="Text shown when the Developer UI module is referenced in install start, success, failure UI (e.g. in IDS_MODULE_INSTALL_START_TEXT, which will expand to 'Installing Developer UI for Chrome…').">
         Developer UI
       </message>

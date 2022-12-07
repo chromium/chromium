@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/browser_ui/widget/android",
-  "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  "+chrome/browser/password_manager/android_test_helpers",
-  "-content/public/android",
-  "+content/public/android/java/src/org/chromium/content_public/browser",
-  "+content/public/android/java/src/org/chromium/content/browser/accessibility",
-]

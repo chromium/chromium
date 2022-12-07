@@ -193,16 +193,6 @@
       "use_goma": true
     }
   },
-  "linux-autofill-assistant": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "enable_autofill_assistant_api": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
-      "use_goma": true
-    }
-  },
   "linux-bfcache-rel": {
     "gn_args": {
       "dcheck_always_on": false,

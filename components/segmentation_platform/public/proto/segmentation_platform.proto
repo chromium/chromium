@@ -16,7 +16,7 @@ package segmentation_platform.proto;
 // Keep in sync with SegmentationPlatformSegmentationModel in
 // //tools/metrics/histograms/enums.xml.
 enum SegmentId {
-  reserved 20;
+  reserved 14, 20;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
@@ -45,9 +45,6 @@ enum SegmentId {
   OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES = 12;
   // Target for determining the UI visibility of a page.
   OPTIMIZATION_TARGET_PAGE_VISIBILITY = 13;
-  // Target for supplying the Autofill Assistant annotate DOM model via the
-  // model downloader.
-  OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT = 14;
   // Target for determining topics present on a page.
   // TODO(crbug/1266504): Remove PAGE_TOPICS in favor of this target.
   OPTIMIZATION_TARGET_PAGE_TOPICS_V2 = 15;

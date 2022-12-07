@@ -38,7 +38,6 @@ suite('PersonalizationOptionsTests_AllBuilds', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-personalization-options');
     testElement.prefs = {
-      autofill_assistant: {enabled: {value: false}},
       signin: {
         allowed_on_next_startup:
             {type: chrome.settingsPrivate.PrefType.BOOLEAN, value: true},

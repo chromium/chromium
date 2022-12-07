@@ -30,8 +30,6 @@ const char kTranslateTranslationType[] = "Translate.Translation.Type";
 const char kTranslateUiInteractionEvent[] = "Translate.UiInteraction.Event";
 
 // Page-load frequency UMA histograms.
-const char kTranslatePageLoadAutofillAssistantDeferredTriggerDecision[] =
-    "Translate.PageLoad.AutofillAssistantDeferredTriggerDecision";
 const char kTranslatePageLoadFinalSourceLanguage[] =
     "Translate.PageLoad.FinalSourceLanguage";
 const char kTranslatePageLoadFinalState[] = "Translate.PageLoad.FinalState";
@@ -237,10 +235,6 @@ void TranslateMetricsLoggerImpl::RecordPageLoadUmaMetrics(
     base::UmaHistogramEnumeration(kTranslatePageLoadHrefTriggerDecision,
                                   trigger_decision_);
   }
-  base::UmaHistogramBoolean(
-      kTranslatePageLoadAutofillAssistantDeferredTriggerDecision,
-      autofill_assistant_deferred_trigger_decision_);
-
   base::UmaHistogramEnumeration(
       kTranslatePageLoadInitialState,
       ConvertToTranslateState(initial_state_is_translated,
@@ -325,10 +319,6 @@ void TranslateMetricsLoggerImpl::LogTriggerDecision(
        trigger_decision_ != TriggerDecision::kAutomaticTranslationByHref)) {
     trigger_decision_ = trigger_decision;
   }
-}
-
-void TranslateMetricsLoggerImpl::LogAutofillAssistantDeferredTriggerDecision() {
-  autofill_assistant_deferred_trigger_decision_ = true;
 }
 
 void TranslateMetricsLoggerImpl::LogInitialState() {

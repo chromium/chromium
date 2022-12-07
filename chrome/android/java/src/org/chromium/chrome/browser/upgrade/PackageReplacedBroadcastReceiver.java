@@ -14,7 +14,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.base.DexFixer;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
-import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
 
 /**
  * Triggered when Chrome's package is replaced (e.g. when it is upgraded).
@@ -35,7 +34,6 @@ public final class PackageReplacedBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         if (!Intent.ACTION_MY_PACKAGE_REPLACED.equals(intent.getAction())) return;
         VrModuleProvider.maybeRequestModuleIfDaydreamReady();
-        AutofillAssistantModuleEntryProvider.maybeInstallDeferred();
 
         final PendingResult result = goAsync();
         PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {

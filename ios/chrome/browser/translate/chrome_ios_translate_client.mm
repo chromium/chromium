@@ -145,10 +145,6 @@ bool ChromeIOSTranslateClient::IsTranslatableURL(const GURL& url) {
   return TranslateServiceIOS::IsTranslatableURL(url);
 }
 
-bool ChromeIOSTranslateClient::IsAutofillAssistantRunning() const {
-  return false;
-}
-
 void ChromeIOSTranslateClient::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {

@@ -85,10 +85,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-autofill-assistant",
-)
-
-try_.builder(
     name = "linux-bfcache-rel",
     mirrors = [
         "ci/linux-bfcache-rel",

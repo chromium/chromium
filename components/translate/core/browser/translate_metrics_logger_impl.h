@@ -32,7 +32,6 @@ extern const char kTranslateTranslationType[];
 extern const char kTranslateUiInteractionEvent[];
 
 // Page-load frequency UMA histograms.
-extern const char kTranslatePageLoadAutofillAssistantDeferredTriggerDecision[];
 extern const char kTranslatePageLoadFinalSourceLanguage[];
 extern const char kTranslatePageLoadFinalState[];
 extern const char kTranslatePageLoadFinalTargetLanguage[];
@@ -72,7 +71,6 @@ class NullTranslateMetricsLogger : public TranslateMetricsLogger {
   void LogRankerStart() override {}
   void LogRankerFinish() override {}
   void LogTriggerDecision(TriggerDecision trigger_decision) override {}
-  void LogAutofillAssistantDeferredTriggerDecision() override {}
   void LogInitialState() override {}
   void LogTranslationStarted(TranslationType translation_type) override {}
   void LogTranslationFinished(bool was_successful,
@@ -134,7 +132,6 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   void LogRankerStart() override;
   void LogRankerFinish() override;
   void LogTriggerDecision(TriggerDecision trigger_decision) override;
-  void LogAutofillAssistantDeferredTriggerDecision() override;
   void LogInitialState() override;
   void LogTranslationStarted(TranslationType translation_type) override;
   void LogTranslationFinished(bool was_successful,
@@ -224,7 +221,6 @@ class TranslateMetricsLoggerImpl : public TranslateMetricsLogger {
   // Stores the reason for the initial state of the page load. In the case there
   // are multiple reasons, only the first reported reason is stored.
   TriggerDecision trigger_decision_ = TriggerDecision::kUninitialized;
-  bool autofill_assistant_deferred_trigger_decision_ = false;
 
   // Tracks the different dimensions that determine the state of Translate.
   bool is_initial_state_set_ = false;

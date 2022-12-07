@@ -2042,6 +2042,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
     }
   };
 
+  // These settings will also need to be deleted from ChromePreferenceKeys.java.
   migrate_shared_pref(kDeprecatedAutofillAssistantConsent,
                       kAutofillAssistantConsent);
   migrate_shared_pref(kDeprecatedAutofillAssistantEnabled,
