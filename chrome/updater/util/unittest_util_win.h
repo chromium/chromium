@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_UPDATER_UNITTEST_UTIL_WIN_H_
-#define CHROME_UPDATER_UNITTEST_UTIL_WIN_H_
+#ifndef CHROME_UPDATER_UTIL_UNITTEST_UTIL_WIN_H_
+#define CHROME_UPDATER_UTIL_UNITTEST_UTIL_WIN_H_
 
 #include <string>
 
@@ -57,4 +57,4 @@ void SetupCmdExe(UpdaterScope scope,
 
 }  // namespace updater
 
-#endif  // CHROME_UPDATER_UNITTEST_UTIL_WIN_H_
+#endif  // CHROME_UPDATER_UTIL_UNITTEST_UTIL_WIN_H_

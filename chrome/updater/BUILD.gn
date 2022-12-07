@@ -191,8 +191,6 @@ if (is_win || is_mac || is_linux) {
         "installer_mac.cc",
         "ipc/ipc_names_mac.mm",
         "ipc/update_service_internal_proxy_mac.mm",
-        "launchd_util.cc",
-        "launchd_util.h",
         "mac/install_from_archive.h",
         "mac/install_from_archive.mm",
         "mac/setup/keystone.h",
@@ -206,6 +204,8 @@ if (is_win || is_mac || is_linux) {
         "prefs_mac.mm",
         "setup_mac.mm",
         "update_usage_stats_task_mac.mm",
+        "util/launchd_util.cc",
+        "util/launchd_util.h",
       ]
 
       deps += [
@@ -686,14 +686,14 @@ if (is_win || is_mac || is_linux) {
       "test/server.cc",
       "test/server.h",
       "test_scope.h",
-      "unittest_util.cc",
-      "unittest_util.h",
-      "unittest_util_unittest.cc",
       "update_service_unittest.cc",
       "update_usage_stats_task_unittest.cc",
       "updater_scope_unittest.cc",
       "updater_unittest.cc",
-      "util_unittest.cc",
+      "util/unittest_util.cc",
+      "util/unittest_util.h",
+      "util/unittest_util_unittest.cc",
+      "util/util_unittest.cc",
     ]
 
     deps = [
@@ -729,9 +729,10 @@ if (is_win || is_mac || is_linux) {
         "auto_run_on_os_upgrade_task_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
-        "unittest_util_win.cc",
-        "unittest_util_win.h",
-        "util_win_unittest.cc",
+        "util/unittest_util_win.cc",
+        "util/unittest_util_win.h",
+        "util/util_win_unittest.cc",
+        "util/win_util_unittest.cc",
         "win/app_command_runner_unittest.cc",
         "win/installer_api_unittest.cc",
         "win/manifest_util_unittest.cc",
@@ -740,7 +741,6 @@ if (is_win || is_mac || is_linux) {
         "win/tag_extractor_unittest.cc",
         "win/task_scheduler_unittest.cc",
         "win/ui/l10n_util_unittest.cc",
-        "win/win_util_unittest.cc",
       ]
 
       deps += [
@@ -806,7 +806,7 @@ if (is_win || is_mac || is_linux) {
         "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
         "policy/mac/managed_preference_policy_manager_unittest.cc",
         "test/integration_tests_mac.mm",
-        "util_mac_unittest.mm",
+        "util/util_mac_unittest.mm",
       ]
 
       deps += [

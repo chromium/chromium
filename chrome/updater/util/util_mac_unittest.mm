@@ -18,7 +18,7 @@ constexpr int kPermissionsMask = base::FILE_PERMISSION_USER_MASK |
                                  base::FILE_PERMISSION_EXECUTE_BY_GROUP |
                                  base::FILE_PERMISSION_READ_BY_OTHERS |
                                  base::FILE_PERMISSION_EXECUTE_BY_OTHERS;
-}
+}  // namespace
 
 TEST(UtilTest, ConfirmFilePermissionsTest) {
   base::ScopedTempDir temp_dir_;
@@ -32,4 +32,4 @@ TEST(UtilTest, ConfirmFilePermissionsTest) {
       updater::ConfirmFilePermissions(temp_dir_.GetPath(), kPermissionsMask));
 }
 
-}
+}  // namespace updater

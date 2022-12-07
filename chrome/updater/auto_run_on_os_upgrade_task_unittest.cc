@@ -18,7 +18,7 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/test_scope.h"
-#include "chrome/updater/unittest_util_win.h"
+#include "chrome/updater/util/unittest_util_win.h"
 #include "chrome/updater/util/win_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"

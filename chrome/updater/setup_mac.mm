@@ -10,10 +10,10 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/launchd_util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/posix/setup.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/launchd_util.h"
 
 namespace updater {
 
