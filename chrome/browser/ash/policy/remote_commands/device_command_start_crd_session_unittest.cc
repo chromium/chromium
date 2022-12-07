@@ -405,9 +405,6 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 
   void ClearOAuthToken() { oauth_token_ = absl::nullopt; }
 
-  void DeleteUserActivityDetector() { user_activity_detector_ = nullptr; }
-  void DeleteUserManager() { user_manager_enabler_ = nullptr; }
-
   StubCrdHostDelegate& crd_host_delegate() { return crd_host_delegate_; }
   DeviceCommandStartCrdSessionJob& job() {
     DCHECK(job_);
@@ -528,32 +525,6 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   EXPECT_SUCCESS(RunJobAndWaitForResult());
   EXPECT_TRUE(crd_host_delegate().IsActiveSessionTerminated());
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldFailIfOAuthTokenServiceIsNotRunning) {
-  DeviceOAuth2TokenServiceFactory::Shutdown();
-
-  crd_host_delegate().SetHasActiveSession(true);
-
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_SERVICES_NOT_READY);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldFailIfUserActivityDetectorIsNotRunning) {
-  DeleteUserActivityDetector();
-
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_SERVICES_NOT_READY);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldFailIfUserManagerIsNotRunning) {
-  DeleteUserManager();
-
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_SERVICES_NOT_READY);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldFailForGuestUser) {
@@ -881,21 +852,6 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceRemoteCommand.Crd.SessionType",
       UmaSessionType::kManagedGuestSession, 1);
-}
-
-TEST_F(DeviceCommandStartCrdSessionJobTest,
-       ShouldSendErrorUmaLogWhenDeviceNotReady) {
-  base::HistogramTester histogram_tester;
-
-  DeviceOAuth2TokenServiceFactory::Shutdown();
-
-  crd_host_delegate().SetHasActiveSession(true);
-
-  RunJobAndWaitForResult();
-
-  histogram_tester.ExpectUniqueSample(
-      "Enterprise.DeviceRemoteCommand.Crd.Result",
-      ResultCode::FAILURE_SERVICES_NOT_READY, 1);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,

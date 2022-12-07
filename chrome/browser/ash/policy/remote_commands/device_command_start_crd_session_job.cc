@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -183,6 +184,10 @@ std::string CreateErrorPayload(ResultCode result_code,
     builder.Set(kResultMessageFieldName, error_message);
   }
   return builder.ToJSON();
+}
+
+DeviceOAuth2TokenService& GetOAuthService() {
+  return CHECK_DEREF(DeviceOAuth2TokenServiceFactory::Get());
 }
 
 }  // namespace
@@ -393,11 +398,6 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
   failed_callback_ = std::move(failed_callback);
   succeeded_callback_ = std::move(succeeded_callback);
 
-  if (!AreServicesReady()) {
-    FinishWithError(ResultCode::FAILURE_SERVICES_NOT_READY, "");
-    return;
-  }
-
   if (!UserTypeSupportsCrd()) {
     FinishWithError(ResultCode::FAILURE_UNSUPPORTED_USER_TYPE, "");
     return;
@@ -441,11 +441,10 @@ void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
 void DeviceCommandStartCrdSessionJob::FetchOAuthTokenASync(
     OAuthTokenCallback on_success) {
   DCHECK_EQ(oauth_token_fetcher_, nullptr);
-  DCHECK(oauth_service());
 
   oauth_token_fetcher_ = std::make_unique<OAuthTokenFetcher>(
-      *oauth_service(), std::move(oauth_token_for_test_), std::move(on_success),
-      GetErrorCallback());
+      GetOAuthService(), std::move(oauth_token_for_test_),
+      std::move(on_success), GetErrorCallback());
   oauth_token_fetcher_->Start();
 }
 
@@ -504,12 +503,6 @@ void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
       FROM_HERE,
       base::BindOnce(std::move(failed_callback_),
                      CreateNonIdlePayload(GetDeviceIdlenessPeriod())));
-}
-
-bool DeviceCommandStartCrdSessionJob::AreServicesReady() const {
-  return user_manager::UserManager::IsInitialized() &&
-         ui::UserActivityDetector::Get() != nullptr &&
-         oauth_service() != nullptr;
 }
 
 bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
@@ -599,7 +592,7 @@ base::TimeDelta DeviceCommandStartCrdSessionJob::GetDeviceIdlenessPeriod()
 }
 
 std::string DeviceCommandStartCrdSessionJob::GetRobotAccountUserName() const {
-  CoreAccountId account_id = oauth_service()->GetRobotAccountId();
+  CoreAccountId account_id = GetOAuthService().GetRobotAccountId();
 
   // TODO(msarda): This conversion will not be correct once account id is
   // migrated to be the Gaia ID on ChromeOS. Fix it.
@@ -654,11 +647,6 @@ DeviceCommandStartCrdSessionJob::ErrorCallback
 DeviceCommandStartCrdSessionJob::GetErrorCallback() {
   return base::BindOnce(&DeviceCommandStartCrdSessionJob::FinishWithError,
                         weak_factory_.GetWeakPtr());
-}
-
-DeviceOAuth2TokenService* DeviceCommandStartCrdSessionJob::oauth_service()
-    const {
-  return DeviceOAuth2TokenServiceFactory::Get();
 }
 
 void DeviceCommandStartCrdSessionJob::TerminateImpl() {
