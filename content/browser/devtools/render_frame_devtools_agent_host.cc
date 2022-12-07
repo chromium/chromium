@@ -889,20 +889,18 @@ bool RenderFrameDevToolsAgentHost::ShouldAllowSession(
 }
 
 void RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories() {
-  if (!frame_tree_node_)
+  if (!frame_host_)
     return;
-  base::queue<FrameTreeNode*> queue;
-  queue.push(frame_tree_node_);
-  while (!queue.empty()) {
-    FrameTreeNode* node = queue.front();
-    queue.pop();
-    RenderFrameHostImpl* host = node->current_frame_host();
-    if (node != frame_tree_node_ && host->is_local_root_subframe())
-      continue;
-    host->UpdateSubresourceLoaderFactories();
-    for (size_t i = 0; i < node->child_count(); ++i)
-      queue.push(node->child_at(i));
-  }
+
+  frame_host_->ForEachRenderFrameHostWithAction([this](
+                                                    RenderFrameHostImpl* rfh) {
+    if (frame_host_ != rfh && (rfh->is_local_root_subframe() ||
+                               &frame_host_->GetPage() != &rfh->GetPage())) {
+      return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+    }
+    rfh->UpdateSubresourceLoaderFactories();
+    return content::RenderFrameHost::FrameIterationAction::kContinue;
+  });
 }
 
 absl::optional<network::CrossOriginEmbedderPolicy>
