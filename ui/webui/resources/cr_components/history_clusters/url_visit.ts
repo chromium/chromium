@@ -252,7 +252,7 @@ class VisitRowElement extends ClusterMenuElementBase {
   private openUrl_(event: MouseEvent|KeyboardEvent) {
     BrowserProxyImpl.getInstance().handler.openHistoryCluster(
         this.visit.normalizedUrl, {
-          middleButton: false,
+          middleButton: (event as MouseEvent).button === 1,
           altKey: event.altKey,
           ctrlKey: event.ctrlKey,
           metaKey: event.metaKey,
