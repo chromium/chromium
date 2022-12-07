@@ -131,10 +131,15 @@ absl::optional<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
     return absl::nullopt;
   }
 
-  return base::Value::FromUniquePtrValue(
+  std::unique_ptr<base::Value> result =
       proxy_api_helpers::CreateProxyConfigDict(
           mode_enum, pac_mandatory, pac_url, pac_data, proxy_rules_string,
-          bypass_list, &error));
+          bypass_list, &error);
+
+  if (!result)
+    return absl::nullopt;
+
+  return base::Value::FromUniquePtrValue(std::move(result));
 }
 
 absl::optional<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
