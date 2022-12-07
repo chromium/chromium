@@ -97639,9 +97639,21 @@ would be helpful to identify which type is being sent.
       label="Error in MergeSyncData() or ApplySyncChanges(): writing metadata"/>
   <int value="2" label="OnDatabaseError() called"/>
   <int value="3" label="Error in LoadMetadata()"/>
-  <int value="4" label="Error in OnURLVisited(): reading visit data"/>
-  <int value="5" label="Error in OnURLsDeleted(): reading metadata"/>
-  <int value="6" label="Error in OnVisitUpdated(): reading URL data"/>
+  <int value="4" label="(obsolete) Error in OnURLVisited(): reading visit data">
+    <obsolete>
+      Was never recorded.
+    </obsolete>
+  </int>
+  <int value="5" label="(obsolete) Error in OnURLsDeleted(): reading metadata">
+    <obsolete>
+      Was never recorded.
+    </obsolete>
+  </int>
+  <int value="6" label="(obsolete) Error in OnVisitUpdated(): reading URL data">
+    <obsolete>
+      Was never recorded.
+    </obsolete>
+  </int>
   <int value="7" label="Error in GetAllData(): reading metadata"/>
 </enum>
 

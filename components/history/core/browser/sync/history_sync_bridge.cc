@@ -76,7 +76,7 @@ enum class SyncHistoryDatabaseError {
   // Deprecated (call sites were removed):
   // kOnURLVisitedGetVisit = 4,
   // kOnURLsDeletedReadMetadata = 5,
-  kOnVisitUpdatedGetURL = 6,
+  // kOnVisitUpdatedGetURL = 6,
   kGetAllDataReadMetadata = 7,
   kMaxValue = kGetAllDataReadMetadata
 };
@@ -423,6 +423,8 @@ absl::optional<SpecificsError> GetSpecificsError(
       specifics.redirect_entries_size() == 0) {
     return SpecificsError::kMissingRequiredFields;
   }
+
+  // TODO(crbug.com/1364576): Filter out URLs that shouldn't be synced.
 
   base::Time visit_time = GetVisitTime(specifics);
 
@@ -859,6 +861,13 @@ void HistorySyncBridge::MaybeCommit(const VisitRow& visit_row) {
   // visits that are not part of a redirect chain are considered to be both
   // start and end of a chain, so these are *not* ignored here.
   if (!(visit_row.transition & ui::PAGE_TRANSITION_CHAIN_END)) {
+    return;
+  }
+
+  // If this visit originally came from a different device, don't update it.
+  // This shouldn't usually happen, but if it does happen for some reason (e.g.
+  // due to a bug elsewhere), better not to mess up other clients.
+  if (!visit_row.originator_cache_guid.empty()) {
     return;
   }
 

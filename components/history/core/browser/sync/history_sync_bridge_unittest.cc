@@ -887,6 +887,52 @@ TEST_F(HistorySyncBridgeTest, UploadsUpdatedLocalVisit) {
       visit_duration);
 }
 
+TEST_F(HistorySyncBridgeTest, DoesNotUploadUpdatedForeignVisit) {
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      GURL("https://remote.com"));
+
+  // Start Sync, so the remote data gets written to the local DB.
+  ApplyInitialSyncChanges({remote_entity});
+  ASSERT_EQ(backend()->GetVisits().size(), 1u);
+
+  VisitRow visit_row = backend()->GetVisits()[0];
+  const std::string storage_key =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
+          visit_row.visit_time);
+
+  // The visit is known in the processor (representing the server state).
+  ASSERT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key), 1u);
+  ASSERT_FALSE(processor()->IsEntityUnsynced(storage_key));
+  ASSERT_EQ(processor()
+                ->GetEntities()
+                .at(storage_key)
+                .specifics.history()
+                .visit_duration_micros(),
+            0);
+
+  // Update the foreign visit locally. Generally, foreign visits shouldn't get
+  // updated on this device, but some other code interacting with the history DB
+  // might do it (probably mistakenly).
+  visit_row.visit_duration = base::Seconds(10);
+  ASSERT_TRUE(backend()->UpdateVisit(visit_row));
+  bridge()->OnVisitUpdated(visit_row);
+
+  // The updated visit should *not* have been sent to the processor - the entity
+  // in the processor should *not* be unsynced, and its visit duration should
+  // still be 0.
+  ASSERT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key), 1u);
+  EXPECT_FALSE(processor()->IsEntityUnsynced(storage_key));
+  EXPECT_EQ(processor()
+                ->GetEntities()
+                .at(storage_key)
+                .specifics.history()
+                .visit_duration_micros(),
+            0);
+}
+
 TEST_F(HistorySyncBridgeTest, UploadsUpdatedUrlTitle) {
   // Start syncing (with no data yet).
   ApplyInitialSyncChanges({});
