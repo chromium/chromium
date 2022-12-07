@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -111,6 +112,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
 
+  ASSERT_TRUE(AddTabAtIndex(/*index=*/1, app1_url, ui::PAGE_TRANSITION_TYPED));
+
   AppReadinessWaiter(profile(), app2_id).Await();
   LaunchWebAppBrowser(profile(), app2_id);
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
@@ -119,6 +122,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
       app1_id, static_cast<uint32_t>(ShelfItemState::kRunning)));
 
   CloseAndWait(app_browser1);
+  // A tab open at app1_url is not sufficient for the app to be considered
+  // running.
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app1_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
 
@@ -232,6 +237,29 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app_constants::kLacrosAppId,
       static_cast<uint32_t>(ShelfItemState::kRunning)));
+
+  tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(),
+                                      TabCloseTypes::CLOSE_NONE);
+  ASSERT_TRUE(AddTabAtIndex(/*index=*/1, app2_url, ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
+
+  // Navigation is sufficient to change which app is considered running.
+  {
+    NavigateParams params(browser(), app1_url, ui::PAGE_TRANSITION_TYPED);
+    params.tabstrip_index = tab_strip_model->active_index();
+    params.disposition = WindowOpenDisposition::CURRENT_TAB;
+    Navigate(&params);
+    ASSERT_TRUE(
+        content::WaitForLoadStop(params.navigated_or_inserted_contents));
+  }
+
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app2_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
+  ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
+      app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
 
   test::UninstallWebApp(profile(), app1_id);
   test::UninstallWebApp(profile(), app2_id);
