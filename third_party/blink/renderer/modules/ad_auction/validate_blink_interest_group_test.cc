@@ -84,6 +84,8 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         mojom::blink::InterestGroup::New();
     blink_interest_group->owner = kOrigin;
     blink_interest_group->name = kName;
+    blink_interest_group->all_sellers_capabilities =
+        mojom::blink::SellerCapabilities::New();
     return blink_interest_group;
   }
 
@@ -188,6 +190,39 @@ TEST_F(ValidateBlinkInterestGroupTest, NonHttpsOriginRejected) {
       blink_interest_group, "owner" /* expected_error_field_name */,
       "null" /* expected_error_field_value */,
       "owner origin must be HTTPS." /* expected_error */);
+}
+
+// Same as NonHttpsOriginRejected, but for `seller_capabilities`.
+TEST_F(ValidateBlinkInterestGroupTest,
+       NonHttpsOriginRejectedSellerCapabilities) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->seller_capabilities.emplace();
+  blink_interest_group->seller_capabilities->insert(
+      SecurityOrigin::CreateFromString(
+          String::FromUTF8("https://origin.test/")),
+      mojom::blink::SellerCapabilities::New());
+  blink_interest_group->seller_capabilities->insert(
+      SecurityOrigin::CreateFromString(String::FromUTF8("http://origin.test/")),
+      mojom::blink::SellerCapabilities::New());
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"sellerCapabilities",
+      /*expected_error_field_value=*/"http://origin.test",
+      /*expected_error=*/"sellerCapabilities origins must all be HTTPS.");
+
+  blink_interest_group->seller_capabilities->clear();
+  blink_interest_group->seller_capabilities->insert(
+      SecurityOrigin::CreateFromString(String::FromUTF8("data:,foo")),
+      mojom::blink::SellerCapabilities::New());
+  blink_interest_group->seller_capabilities->insert(
+      SecurityOrigin::CreateFromString(
+          String::FromUTF8("https://origin.test/")),
+      mojom::blink::SellerCapabilities::New());
+  // Data URLs have opaque origins, which are mapped to the string "null".
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"sellerCapabilities",
+      /*expected_error_field_value=*/"null",
+      /*expected_error=*/"sellerCapabilities origins must all be HTTPS.");
 }
 
 // Check that `bidding_url`, `bidding_wasm_helper_url`, `daily_update_url`, and
@@ -545,8 +580,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePriorityVector) {
   // estimate for mojom::blink::InterestGroupPtr and blink::InterestGroup
   // equivalent values exactly match.
   const size_t kTooLongNameLength =
-      mojom::blink::kMaxInterestGroupSize -
-      EstimateBlinkInterestGroupSize(*blink_interest_group);
+      mojom::blink::kMaxInterestGroupSize - current_estimate;
   std::string too_long_name(kTooLongNameLength, 'n');
   blink_interest_group->name = String(too_long_name);
 
@@ -585,8 +619,51 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePrioritySignalsOverride) {
   // estimate for mojom::blink::InterestGroupPtr and blink::InterestGroup
   // equivalent values exactly match.
   const size_t kTooLongNameLength =
-      mojom::blink::kMaxInterestGroupSize -
+      mojom::blink::kMaxInterestGroupSize - current_estimate;
+  std::string too_long_name(kTooLongNameLength, 'n');
+  blink_interest_group->name = String(too_long_name);
+
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"size",
+      /*expected_error_field_value=*/"51200",
+      /*expected_error=*/"interest groups must be less than 51200 bytes");
+
+  // Almost too long should still work.
+  too_long_name = std::string(kTooLongNameLength - 1, 'n');
+  blink_interest_group->name = String(too_long_name);
+  ExpectInterestGroupIsValid(blink_interest_group);
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, TooLargeSellerCapabilities) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->name = "";
+
+  size_t initial_estimate =
       EstimateBlinkInterestGroupSize(*blink_interest_group);
+  blink_interest_group->seller_capabilities.emplace();
+  // Set 510 entries with 100-byte origin values. This should be estimated to be
+  // 51000 bytes.
+  for (int i = 0; i < 510; ++i) {
+    // Use a unique 100-byte value for each origin -- 8 bytes for the
+    // "https://", 5 bytes for the ".test" suffix, 4 bytes for the flags, and
+    // 100 - 8 - 5 - 4 = 83 bytes of numerical characters.
+    String origin_string =
+        String::FromUTF8(base::StringPrintf("https://%.83i.test", i));
+    blink_interest_group->seller_capabilities->insert(
+        SecurityOrigin::CreateFromString(origin_string),
+        mojom::blink::SellerCapabilities::New());
+  }
+  size_t current_estimate =
+      EstimateBlinkInterestGroupSize(*blink_interest_group);
+  EXPECT_EQ(51000 + initial_estimate, current_estimate);
+
+  // Name that should cause the group to exactly exceed the maximum name length.
+  // Need to call into ExpectInterestGroupIsNotValid() to make sure name length
+  // estimate for mojom::blink::InterestGroupPtr and blink::InterestGroup
+  // equivalent values exactly match.
+  const size_t kTooLongNameLength =
+      mojom::blink::kMaxInterestGroupSize - current_estimate;
   std::string too_long_name(kTooLongNameLength, 'n');
   blink_interest_group->name = String(too_long_name);
 
@@ -604,7 +681,7 @@ TEST_F(ValidateBlinkInterestGroupTest, TooLargePrioritySignalsOverride) {
 TEST_F(ValidateBlinkInterestGroupTest, TooLargeAds) {
   mojom::blink::InterestGroupPtr blink_interest_group =
       CreateMinimalInterestGroup();
-  blink_interest_group->name = "padding to 51200..";
+  blink_interest_group->name = "paddingTo51200";
   blink_interest_group->ad_components.emplace();
   for (int i = 0; i < 682; ++i) {
     // Each ad component is 75 bytes.

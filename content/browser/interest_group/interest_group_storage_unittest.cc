@@ -609,6 +609,10 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
       /*enable_bidding_signals_prioritization=*/true,
       /*priority_vector=*/{{{"a", 2}, {"b", -2.2}}},
       /*priority_signals_overrides=*/{{{"a", -2}, {"c", 10}, {"d", 1.2}}},
+      // TODO(crbug.com/1385549): Update once storage support added.
+      /*seller_capabilities=*/absl::nullopt,
+      /*all_sellers_capabilities=*/
+      blink::InterestGroup::SellerCapabilitiesType(),
       /*execution_mode=*/InterestGroup::ExecutionMode::kCompatibilityMode,
       /*bidding_url=*/GURL("https://full.example.com/bid"),
       /*bidding_wasm_helper_url=*/GURL("https://full.example.com/bid_wasm"),

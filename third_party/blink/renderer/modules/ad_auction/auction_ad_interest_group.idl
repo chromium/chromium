@@ -4,6 +4,8 @@
 
 // Name, origin owner, and metadata for ad interest groups.
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
+// sellerCapabilities:
+// https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
 
 enum WorkletExecutionMode {
   "compatibility",
@@ -20,6 +22,7 @@ dictionary AuctionAdInterestGroup {
   record<USVString, double> priorityVector;
   record<USVString, double> prioritySignalsOverrides;
 
+  record<USVString, sequence<USVString>> sellerCapabilities;
   WorkletExecutionMode executionMode;
   USVString biddingLogicUrl;
   USVString biddingWasmHelperUrl;

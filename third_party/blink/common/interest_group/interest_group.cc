@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
+#include <stdint.h>
+
 #include <cmath>
 #include <string>
 #include <tuple>
@@ -84,6 +86,9 @@ InterestGroup::InterestGroup(
     absl::optional<base::flat_map<std::string, double>> priority_vector,
     absl::optional<base::flat_map<std::string, double>>
         priority_signals_overrides,
+    absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+        seller_capabilities,
+    SellerCapabilitiesType all_sellers_capabilities,
     blink::mojom::InterestGroup::ExecutionMode execution_mode,
     absl::optional<GURL> bidding_url,
     absl::optional<GURL> bidding_wasm_helper_url,
@@ -101,6 +106,8 @@ InterestGroup::InterestGroup(
           enable_bidding_signals_prioritization),
       priority_vector(std::move(priority_vector)),
       priority_signals_overrides(std::move(priority_signals_overrides)),
+      seller_capabilities(std::move(seller_capabilities)),
+      all_sellers_capabilities(all_sellers_capabilities),
       execution_mode(execution_mode),
       bidding_url(std::move(bidding_url)),
       bidding_wasm_helper_url(std::move(bidding_wasm_helper_url)),
@@ -122,6 +129,13 @@ bool InterestGroup::IsValid() const {
 
   if (!std::isfinite(priority))
     return false;
+
+  if (seller_capabilities) {
+    for (const auto& [seller_origin, flags] : *seller_capabilities) {
+      if (seller_origin.scheme() != url::kHttpsScheme)
+        return false;
+    }
+  }
 
   if (execution_mode !=
           blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode &&
@@ -181,6 +195,13 @@ size_t InterestGroup::EstimateSize() const {
     size += EstimateFlatMapSize(*priority_vector);
   if (priority_signals_overrides)
     size += EstimateFlatMapSize(*priority_signals_overrides);
+  if (seller_capabilities) {
+    for (const auto& [seller_origin, flags] : *seller_capabilities) {
+      size +=
+          seller_origin.Serialize().size() + sizeof(decltype(flags)::EnumType);
+    }
+  }
+  size += sizeof(decltype(all_sellers_capabilities)::EnumType);
   if (bidding_url)
     size += bidding_url->spec().length();
   if (bidding_wasm_helper_url)
@@ -209,13 +230,15 @@ size_t InterestGroup::EstimateSize() const {
 bool InterestGroup::IsEqualForTesting(const InterestGroup& other) const {
   return std::tie(expiry, owner, name, priority,
                   enable_bidding_signals_prioritization, priority_vector,
-                  priority_signals_overrides, execution_mode, bidding_url,
+                  priority_signals_overrides, seller_capabilities,
+                  all_sellers_capabilities, execution_mode, bidding_url,
                   bidding_wasm_helper_url, daily_update_url,
                   trusted_bidding_signals_url, trusted_bidding_signals_keys,
                   user_bidding_signals, ads, ad_components) ==
          std::tie(other.expiry, other.owner, other.name, other.priority,
                   other.enable_bidding_signals_prioritization,
                   other.priority_vector, other.priority_signals_overrides,
+                  other.seller_capabilities, other.all_sellers_capabilities,
                   other.execution_mode, other.bidding_url,
                   other.bidding_wasm_helper_url, other.daily_update_url,
                   other.trusted_bidding_signals_url,

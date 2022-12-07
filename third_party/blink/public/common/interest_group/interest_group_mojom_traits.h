@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_INTEREST_GROUP_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_INTEREST_GROUP_MOJOM_TRAITS_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
@@ -32,6 +34,26 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::InterestGroupAdDataView,
 
   static bool Read(blink::mojom::InterestGroupAdDataView data,
                    blink::InterestGroup::Ad* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::SellerCapabilitiesDataView,
+                 blink::InterestGroup::SellerCapabilitiesType> {
+  static bool allows_interest_group_counts(
+      const blink::InterestGroup::SellerCapabilitiesType& capabilities) {
+    return capabilities.Has(
+        blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
+  }
+
+  static bool allows_latency_stats(
+      const blink::InterestGroup::SellerCapabilitiesType& capabilities) {
+    return capabilities.Has(
+        blink::InterestGroup::SellerCapabilities::kLatencyStats);
+  }
+
+  static bool Read(blink::mojom::SellerCapabilitiesDataView data,
+                   blink::InterestGroup::SellerCapabilitiesType* out);
 };
 
 template <>
@@ -66,6 +88,18 @@ struct BLINK_COMMON_EXPORT
   static const absl::optional<base::flat_map<std::string, double>>&
   priority_signals_overrides(const blink::InterestGroup& interest_group) {
     return interest_group.priority_signals_overrides;
+  }
+
+  static const absl::optional<
+      base::flat_map<url::Origin,
+                     blink::InterestGroup::SellerCapabilitiesType>>&
+  seller_capabilities(const blink::InterestGroup& interest_group) {
+    return interest_group.seller_capabilities;
+  }
+
+  static blink::InterestGroup::SellerCapabilitiesType all_sellers_capabilities(
+      const blink::InterestGroup& interest_group) {
+    return interest_group.all_sellers_capabilities;
   }
 
   static blink::InterestGroup::ExecutionMode execution_mode(

@@ -20,6 +20,17 @@ bool StructTraits<
   return true;
 }
 
+bool StructTraits<blink::mojom::SellerCapabilitiesDataView,
+                  blink::InterestGroup::SellerCapabilitiesType>::
+    Read(blink::mojom::SellerCapabilitiesDataView data,
+         blink::InterestGroup::SellerCapabilitiesType* out) {
+  if (data.allows_interest_group_counts())
+    out->Put(blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
+  if (data.allows_latency_stats())
+    out->Put(blink::InterestGroup::SellerCapabilities::kLatencyStats);
+  return true;
+}
+
 bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
     Read(blink::mojom::InterestGroupDataView data, blink::InterestGroup* out) {
   out->priority = data.priority();
@@ -30,6 +41,8 @@ bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
       !data.ReadName(&out->name) ||
       !data.ReadPriorityVector(&out->priority_vector) ||
       !data.ReadPrioritySignalsOverrides(&out->priority_signals_overrides) ||
+      !data.ReadSellerCapabilities(&out->seller_capabilities) ||
+      !data.ReadAllSellersCapabilities(&out->all_sellers_capabilities) ||
       !data.ReadBiddingUrl(&out->bidding_url) ||
       !data.ReadBiddingWasmHelperUrl(&out->bidding_wasm_helper_url) ||
       !data.ReadDailyUpdateUrl(&out->daily_update_url) ||

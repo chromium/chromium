@@ -61,7 +61,16 @@ size_t EstimateBlinkInterestGroupSize(
     size += EstimateHashMapSize(*group.priority_vector);
   if (group.priority_signals_overrides)
     size += EstimateHashMapSize(*group.priority_signals_overrides);
-
+  // Tests ensure this matches the blink::InterestGroup size, which is computed
+  // from the underlying number of enum bytes (the actual size on disk will
+  // vary, but we need a rough estimate for size enforcement).
+  constexpr size_t kCapabilitiesFlagsSize = 4;
+  if (group.seller_capabilities) {
+    for (const auto& [seller_origin, flags] : *group.seller_capabilities) {
+      size += seller_origin->ToString().length() + kCapabilitiesFlagsSize;
+    }
+  }
+  size += kCapabilitiesFlagsSize;  // For all_sellers_capabilities.
   if (group.bidding_url)
     size += group.bidding_url->GetString().length();
 
@@ -128,6 +137,17 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
     error_field_value = String::Number(static_cast<int>(group.execution_mode));
     error = "execution mode is not valid.";
     return false;
+  }
+
+  if (group.seller_capabilities) {
+    for (const auto& [seller_origin, flags] : *group.seller_capabilities) {
+      if (seller_origin->Protocol() != url::kHttpsScheme) {
+        error_field_name = "sellerCapabilities";
+        error_field_value = seller_origin->ToString();
+        error = "sellerCapabilities origins must all be HTTPS.";
+        return false;
+      }
+    }
   }
 
   if (group.bidding_url) {

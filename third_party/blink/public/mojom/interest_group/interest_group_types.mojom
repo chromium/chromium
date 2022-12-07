@@ -21,6 +21,15 @@ struct InterestGroupAd {
 // The maximum size of a valid interest group in bytes.
 const uint32 kMaxInterestGroupSize = 51200; // 50 * 1024
 
+// Permissions granted by an interest group to sellers.
+struct SellerCapabilities {
+  // Iff true, reports interest group and bid counts to the given seller.
+  bool allows_interest_group_counts = false;
+  // Iff true, reports bid and trusted signals fetch latency to the given
+  // seller.
+  bool allows_latency_stats = false;
+};
+
 // Interest group description, passed to JoinInterestGroup(). If an entry keyed
 // by (owner, name) already exists, we "merge" by overwriting specified fields,
 // leaving other existing fields intact.
@@ -70,6 +79,11 @@ struct InterestGroup {
   // priority signals.
   map<string, double>? priority_signals_overrides;
 
+  // For each seller, list the capabilities this interest group grants.
+  map<url.mojom.Origin, SellerCapabilities>? seller_capabilities;
+  // Specifies the default capabilities granted to sellers not listed in
+  // `seller_capabilities`.
+  SellerCapabilities all_sellers_capabilities;
   // `execution_mode` of the interest group.
   ExecutionMode execution_mode = kCompatibilityMode;
   // `bidding_url` must match the current frame URL's origin.

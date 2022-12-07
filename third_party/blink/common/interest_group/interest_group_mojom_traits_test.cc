@@ -116,6 +116,41 @@ TEST(InterestGroupMojomTraitsTest,
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeSellerCapabilities) {
+  InterestGroup interest_group = CreateInterestGroup();
+
+  interest_group.seller_capabilities = {
+      {url::Origin::Create(GURL(kOrigin1)),
+       InterestGroup::SellerCapabilitiesType()}};
+  SerializeAndDeserializeAndCompare(interest_group);
+
+  interest_group.seller_capabilities = {
+      {url::Origin::Create(GURL(kOrigin1)),
+       InterestGroup::SellerCapabilitiesType()},
+      {url::Origin::Create(GURL(kOrigin2)),
+       InterestGroup::SellerCapabilitiesType()}};
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeAllSellerCapabilities) {
+  InterestGroup interest_group = CreateInterestGroup();
+
+  interest_group.all_sellers_capabilities.Put(
+      InterestGroup::SellerCapabilities::kInterestGroupCounts);
+  SerializeAndDeserializeAndCompare(interest_group);
+
+  interest_group.all_sellers_capabilities.Put(
+      InterestGroup::SellerCapabilities::kLatencyStats);
+  SerializeAndDeserializeAndCompare(interest_group);
+
+  interest_group.all_sellers_capabilities.Put(
+      InterestGroup::SellerCapabilities::kInterestGroupCounts);
+  interest_group.all_sellers_capabilities.Put(
+      InterestGroup::SellerCapabilities::kLatencyStats);
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeBiddingUrl) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.bidding_url = GURL(kUrl1);

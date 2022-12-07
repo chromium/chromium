@@ -5,10 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_INTEREST_GROUP_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_INTEREST_GROUP_H_
 
+#include <stdint.h>
+
 #include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,6 +54,17 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     bool operator==(const Ad& other) const;
   };
 
+  enum class SellerCapabilities : uint32_t {
+    kInterestGroupCounts,
+    kLatencyStats,
+
+    kMaxValue = kLatencyStats
+  };
+  using SellerCapabilitiesType =
+      base::EnumSet<SellerCapabilities,
+                    SellerCapabilities::kInterestGroupCounts,
+                    SellerCapabilities::kMaxValue>;
+
   InterestGroup();
 
   // Constructor takes arguments by value. They're unlikely to be independently
@@ -65,6 +79,9 @@ struct BLINK_COMMON_EXPORT InterestGroup {
       absl::optional<base::flat_map<std::string, double>> priority_vector,
       absl::optional<base::flat_map<std::string, double>>
           priority_signals_overrides,
+      absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+          seller_capabilities,
+      SellerCapabilitiesType all_sellers_capabilities,
       ExecutionMode execution_mode,
       absl::optional<GURL> bidding_url,
       absl::optional<GURL> bidding_wasm_helper_url,
@@ -97,6 +114,9 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<base::flat_map<std::string, double>>
       priority_signals_overrides;
 
+  absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+      seller_capabilities;
+  SellerCapabilitiesType all_sellers_capabilities;
   ExecutionMode execution_mode = ExecutionMode::kCompatibilityMode;
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;
@@ -106,7 +126,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<std::string> user_bidding_signals;
   absl::optional<std::vector<InterestGroup::Ad>> ads, ad_components;
 
-  static_assert(__LINE__ == 109, R"(
+  static_assert(__LINE__ == 129, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class
