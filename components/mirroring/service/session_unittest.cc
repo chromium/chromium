@@ -123,22 +123,22 @@ class SessionTest : public mojom::ResourceProvider,
   ~SessionTest() override { task_environment_.RunUntilIdle(); }
 
  protected:
-  // mojom::SessionObserver implementation.
-  MOCK_METHOD(void, OnError, (SessionError));
-  MOCK_METHOD(void, DidStart, ());
-  MOCK_METHOD(void, DidStop, ());
-  MOCK_METHOD(void, LogInfoMessage, (const std::string&));
-  MOCK_METHOD(void, LogErrorMessage, (const std::string&));
-  MOCK_METHOD(void, OnSourceChanged, ());
+  // mojom::SessionObserver implemenation.
+  MOCK_METHOD1(OnError, void(SessionError));
+  MOCK_METHOD0(DidStart, void());
+  MOCK_METHOD0(DidStop, void());
+  MOCK_METHOD1(LogInfoMessage, void(const std::string&));
+  MOCK_METHOD1(LogErrorMessage, void(const std::string&));
 
-  MOCK_METHOD(void, OnGetVideoCaptureHost, ());
-  MOCK_METHOD(void, OnGetNetworkContext, ());
-  MOCK_METHOD(void, OnCreateAudioStream, ());
-  MOCK_METHOD(void, OnConnectToRemotingSource, ());
+  MOCK_METHOD0(OnGetVideoCaptureHost, void());
+  MOCK_METHOD0(OnGetNetworkContext, void());
+  MOCK_METHOD0(OnCreateAudioStream, void());
+  MOCK_METHOD0(OnConnectToRemotingSource, void());
 
-  MOCK_METHOD(void, OnOutboundMessage, (const std::string& message_type));
+  // Called when sends an outbound message.
+  MOCK_METHOD1(OnOutboundMessage, void(const std::string& message_type));
 
-  MOCK_METHOD(void, OnInitDone, ());
+  MOCK_METHOD0(OnInitDone, void());
 
   // mojom::CastMessageChannel implementation (outbound messages).
   void OnMessage(mojom::CastMessagePtr message) override {
@@ -415,8 +415,7 @@ class SessionTest : public mojom::ResourceProvider,
         .Times(get_video_host_call_count);
     EXPECT_CALL(*this, OnCreateAudioStream())
         .Times(create_audio_stream_call_count);
-    EXPECT_CALL(*this, OnConnectToRemotingSource());
-    EXPECT_CALL(*this, OnSourceChanged());
+    EXPECT_CALL(*this, OnConnectToRemotingSource);
 
     if (cast_mode_ == "remoting") {
       EXPECT_CALL(*this, OnOutboundMessage("OFFER"));

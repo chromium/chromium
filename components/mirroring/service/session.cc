@@ -963,9 +963,6 @@ void Session::RestartMirroringStreaming() {
 }
 
 void Session::SwitchSourceTab() {
-  if (observer_)
-    observer_->OnSourceChanged();
-
   if (state_ == REMOTING) {
     switching_tab_source_ = true;
     video_capture_client_.reset();

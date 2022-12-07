@@ -282,20 +282,6 @@ void MirroringActivity::LogErrorMessage(const std::string& message) {
                     route_.media_source().id(), route_.presentation_id());
 }
 
-void MirroringActivity::OnSourceChanged() {
-  host_->GetTabSourceId(base::BindOnce(&MirroringActivity::UpdateSourceTab,
-                                       weak_ptr_factory_.GetWeakPtr()));
-}
-
-void MirroringActivity::UpdateSourceTab(int32_t frame_tree_node_id) {
-  if (frame_tree_node_id == -1 || frame_tree_node_id == frame_tree_node_id_)
-    return;
-
-  session_tracker_->OnSourceChanged(route_.media_route_id(),
-                                    frame_tree_node_id_, frame_tree_node_id);
-  frame_tree_node_id_ = frame_tree_node_id;
-}
-
 void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {
   DCHECK(message);
   DVLOG(2) << "Relaying message to receiver: " << message->json_format_data;
