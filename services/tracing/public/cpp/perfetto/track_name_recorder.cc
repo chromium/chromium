@@ -169,7 +169,11 @@ void TrackNameRecorder::WillClearIncrementalState(
 }
 
 void TrackNameRecorder::OnThreadNameChanged(const char* name) {
-  FillThreadTrack(perfetto::ThreadTrack::Current(), name);
+  // If tracing is not initialized, the thread name is lost, but this should
+  // never happen outside of tests.
+  if (perfetto::Tracing::IsInitialized()) {
+    FillThreadTrack(perfetto::ThreadTrack::Current(), name);
+  }
 }
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
