@@ -898,8 +898,15 @@ class PendingBeaconRendererProcessExitBrowserTest
   }
 };
 
+#if BUILDFLAG(IS_MAC)
+// Disabled due to failures on various Mac builders.
+// TODO(crbug.com/1382713) Reenable the test.
+#define MAYBE_SendAllOnProcessCrash DISABLED_SendAllOnProcessCrash
+#else
+#define MAYBE_SendAllOnProcessCrash SendAllOnProcessCrash
+#endif
 IN_PROC_BROWSER_TEST_F(PendingBeaconRendererProcessExitBrowserTest,
-                       SendAllOnProcessCrash) {
+                       MAYBE_SendAllOnProcessCrash) {
   const size_t total_beacon = 2;
   RegisterBeaconRequestMonitor(total_beacon);
 
