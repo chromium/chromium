@@ -94,7 +94,7 @@ That said, the `chrome-untrusted://` scheme is an implementation detail of the W
 const char kUntrustedExampleHost[] = "untrusted-example";
 const char kUntrustedExampleURL[] = "chrome-untrusted://untrusted-example";
 
-class UntrustedExampleUIConfig : public ui::WebUIConfig {
+class UntrustedExampleUIConfig : public content::WebUIConfig {
  public:
   UntrustedExampleUIConfig()
     // Set scheme and host.
