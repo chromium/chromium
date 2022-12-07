@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL getDisplayMedia() must adhere to frameRate if set assert_greater_than_equal: expected a number greater than or equal to 2.5 but got NaN
-Harness: the test ran to completion.
-
