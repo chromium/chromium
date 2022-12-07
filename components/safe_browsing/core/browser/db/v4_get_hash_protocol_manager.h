@@ -168,9 +168,6 @@ class V4GetHashProtocolManager {
   static void RegisterFactory(
       std::unique_ptr<V4GetHashProtocolManagerFactory> factory);
 
-  // Empties the cache.
-  void ClearCache();
-
   // Retrieve the full hash for a set of prefixes, and invoke the callback
   // argument when the results are retrieved. The callback may be invoked
   // synchronously. |list_client_states| is needed for reporting the current
