@@ -141,7 +141,7 @@ class SigninViewController {
 
   // Shows the modal sync confirmation dialog as a browser-modal dialog on top
   // of the |browser_|'s window.
-  void ShowModalSyncConfirmationDialog();
+  void ShowModalSyncConfirmationDialog(bool is_signin_intercept = false);
 
   // Shows the modal enterprise confirmation dialog as a browser-modal dialog on
   // top of the `browser_`'s window. `domain_name` is the domain of the
@@ -190,6 +190,7 @@ class SigninViewController {
   friend class login_ui_test_utils::SigninViewControllerTestUtil;
   friend class SigninReauthViewControllerBrowserTest;
   friend class SigninInterceptFirstRunExperienceDialogBrowserTest;
+  friend class SyncConfirmationUIDialogPixelTest;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Shows the DICE-specific sign-in flow: opens a Gaia sign-in webpage in a new

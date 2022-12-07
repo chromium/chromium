@@ -259,10 +259,12 @@ void SigninViewController::ShowModalSigninEmailConfirmationDialog(
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-void SigninViewController::ShowModalSyncConfirmationDialog() {
+void SigninViewController::ShowModalSyncConfirmationDialog(
+    bool is_signin_intercept) {
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateSyncConfirmationDelegate(browser_),
+      SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
+          browser_, is_signin_intercept),
       GetOnModalDialogClosedCallback());
 }
 
