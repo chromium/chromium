@@ -104,7 +104,7 @@ struct CredentialUIEntry {
   PasswordNote note;
 
   // Tracks if the user opted to never remember passwords for this website.
-  bool blocked_by_user;
+  bool blocked_by_user = false;
 
   // Indicates when the credential was last used by the user to login to the
   // site. Defaults to |date_created|.
