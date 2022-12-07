@@ -378,6 +378,7 @@ if (!is_component_build && enable_dsyms) {
              rebase_path(get_label_info(dump_syms, "root_out_dir") + "/" +
                              get_label_info(dump_syms, "name"),
                          root_build_dir),
+             "-m",
              "-g",
              rebase_path(
                  "$root_out_dir/{{source_file_part}}.dSYM/Contents/Resources/DWARF/{{source_file_part}}",
