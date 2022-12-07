@@ -71,6 +71,21 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
         delegate_ptr->GetButtonTooltip(ConfirmInfoBarDelegate::BUTTON_CANCEL));
   }
 
+  if (buttons & ConfirmInfoBarDelegate::BUTTON_EXTRA) {
+    extra_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_EXTRA,
+                                  &ConfirmInfoBar::ExtraButtonPressed);
+    if (buttons == ConfirmInfoBarDelegate::BUTTON_EXTRA) {
+      extra_button_->SetProminent(true);
+    }
+    extra_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        delegate_ptr->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_EXTRA));
+    extra_button_->SetEnabled(
+        delegate_ptr->GetButtonEnabled(ConfirmInfoBarDelegate::BUTTON_EXTRA));
+    extra_button_->SetTooltipText(
+        delegate_ptr->GetButtonTooltip(ConfirmInfoBarDelegate::BUTTON_EXTRA));
+  }
+
   link_ = AddChildView(CreateLink(delegate_ptr->GetLinkText()));
 }
 
@@ -88,6 +103,10 @@ void ConfirmInfoBar::Layout() {
 
   if (cancel_button_) {
     cancel_button_->SizeToPreferredSize();
+  }
+
+  if (extra_button_) {
+    extra_button_->SizeToPreferredSize();
   }
 
   int x = GetStartX();
@@ -112,8 +131,15 @@ void ConfirmInfoBar::Layout() {
             views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
   }
 
-  if (cancel_button_)
+  if (cancel_button_) {
     cancel_button_->SetPosition(gfx::Point(x, OffsetY(cancel_button_)));
+    x = cancel_button_->bounds().right() +
+        layout_provider->GetDistanceMetric(
+            views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
+  }
+
+  if (extra_button_)
+    extra_button_->SetPosition(gfx::Point(x, OffsetY(extra_button_)));
 
   link_->SetPosition(gfx::Point(GetEndX() - link_->width(), OffsetY(link_)));
 }
@@ -129,6 +155,13 @@ void ConfirmInfoBar::CancelButtonPressed() {
   if (!owner())
     return;  // We're closing; don't call anything, it might access the owner.
   if (GetDelegate()->Cancel())
+    RemoveSelf();
+}
+
+void ConfirmInfoBar::ExtraButtonPressed() {
+  if (!owner())
+    return;  // We're closing; don't call anything, it might access the owner.
+  if (GetDelegate()->ExtraButtonPressed())
     RemoveSelf();
 }
 
@@ -149,11 +182,17 @@ int ConfirmInfoBar::NonLabelWidth() const {
   const int button_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
 
-  int width = (label_->GetText().empty() || (!ok_button_ && !cancel_button_))
-                  ? 0
-                  : label_spacing;
-  if (ok_button_)
-    width += ok_button_->width() + (cancel_button_ ? button_spacing : 0);
+  const int button_count =
+      (ok_button_ ? 1 : 0) + (cancel_button_ ? 1 : 0) + (extra_button_ ? 1 : 0);
+
+  int width =
+      (label_->GetText().empty() || button_count == 0) ? 0 : label_spacing;
+
+  width += std::max(0, button_spacing * (button_count - 1));
+
+  width += ok_button_ ? ok_button_->width() : 0;
   width += cancel_button_ ? cancel_button_->width() : 0;
+  width += extra_button_ ? extra_button_->width() : 0;
+
   return width + ((link_->GetText().empty() || !width) ? 0 : label_spacing);
 }

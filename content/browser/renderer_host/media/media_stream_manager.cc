@@ -522,6 +522,8 @@ bool ChangeSourceSupported(const MediaStreamDevices& devices) {
   }
 
   if (!base::Contains(devices, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                      &MediaStreamDevice::type) &&
+      !base::Contains(devices, MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB,
                       &MediaStreamDevice::type)) {
     return false;  // Not an API call that supports share-this-tab-instead.
   }

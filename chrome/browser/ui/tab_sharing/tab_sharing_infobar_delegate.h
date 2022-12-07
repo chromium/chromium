@@ -93,6 +93,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   bool Accept() override;
   bool Cancel() override;
+  bool ExtraButtonPressed() override;
   bool IsCloseable() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
 
@@ -107,6 +108,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
   const bool favicons_used_for_switch_to_tab_button_;
 
   std::unique_ptr<TabSharingInfoBarDelegateButton> secondary_button_;
+  std::unique_ptr<TabSharingInfoBarDelegateButton> tertiary_button_;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_SHARING_TAB_SHARING_INFOBAR_DELEGATE_H_

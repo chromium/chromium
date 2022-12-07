@@ -216,6 +216,7 @@ std::u16string IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
                  : l10n_util::GetStringUTF16(
                        IDS_IOS_PASSWORD_MANAGER_MODAL_BLOCK_BUTTON);
     }
+    case BUTTON_EXTRA:
     case BUTTON_NONE:
       NOTREACHED();
       return std::u16string();

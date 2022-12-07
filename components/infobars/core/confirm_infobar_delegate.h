@@ -26,9 +26,10 @@ class ImageModel;
 class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
  public:
   enum InfoBarButton {
-    BUTTON_NONE   = 0,
-    BUTTON_OK     = 1 << 0,
+    BUTTON_NONE = 0,
+    BUTTON_OK = 1 << 0,
     BUTTON_CANCEL = 1 << 1,
+    BUTTON_EXTRA = 1 << 2,
   };
 
   ConfirmInfoBarDelegate(const ConfirmInfoBarDelegate&) = delete;
@@ -91,6 +92,11 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // the infobar is then immediately closed. Subclasses MUST NOT return true if
   // in handling this call something triggers the infobar to begin closing.
   virtual bool Cancel();
+
+  // Called when the Extra button is pressed. If this function returns true,
+  // the infobar is then immediately closed. Subclasses MUST NOT return true if
+  // in handling this call something triggers the infobar to begin closing.
+  virtual bool ExtraButtonPressed();
 
  protected:
   ConfirmInfoBarDelegate();

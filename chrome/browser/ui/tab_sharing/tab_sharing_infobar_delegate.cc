@@ -188,12 +188,27 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
       ui_(ui),
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button) {
-  if (focus_target.has_value()) {
-    secondary_button_ =
-        std::make_unique<SwitchToTabButton>(*focus_target, shared_tab);
-  } else if (share_this_tab_instead_button_state != ButtonState::NOT_SHOWN) {
-    secondary_button_ = std::make_unique<ShareTabInsteadButton>(
-        ui_, share_this_tab_instead_button_state);
+  auto share_this_tab_instead_button =
+      share_this_tab_instead_button_state != ButtonState::NOT_SHOWN
+          ? std::make_unique<ShareTabInsteadButton>(
+                ui_, share_this_tab_instead_button_state)
+          : nullptr;
+
+  auto quick_nav =
+      focus_target.has_value()
+          ? std::make_unique<SwitchToTabButton>(*focus_target, shared_tab)
+          : nullptr;
+
+  if (share_this_tab_instead_button && quick_nav) {
+    // [Stop] [Share-this-tab-instead] [View tab: ...]
+    secondary_button_ = std::move(share_this_tab_instead_button);
+    tertiary_button_ = std::move(quick_nav);
+  } else if (share_this_tab_instead_button) {
+    // [Stop] [Share-this-tab-instead]
+    secondary_button_ = std::move(share_this_tab_instead_button);
+  } else if (quick_nav) {
+    // [Stop] [View tab: ...]
+    secondary_button_ = std::move(quick_nav);
   }
 }
 
@@ -232,17 +247,26 @@ std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
   if (button == BUTTON_OK) {
     return l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON);
-  } else {
+  } else if (button == BUTTON_CANCEL) {
     DCHECK(secondary_button_);
     return secondary_button_->GetLabel();
+  } else if (button == BUTTON_EXTRA) {
+    DCHECK(tertiary_button_);
+    return tertiary_button_->GetLabel();
   }
+  return ConfirmInfoBarDelegate::GetButtonLabel(button);
 }
 
 ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
     InfoBarButton button) const {
-  if (favicons_used_for_switch_to_tab_button_ && button == BUTTON_CANCEL) {
-    DCHECK(secondary_button_);
-    return secondary_button_->GetImage();
+  if (favicons_used_for_switch_to_tab_button_) {
+    if (button == BUTTON_CANCEL) {
+      DCHECK(secondary_button_);
+      return secondary_button_->GetImage();
+    } else if (button == BUTTON_EXTRA) {
+      DCHECK(tertiary_button_);
+      return tertiary_button_->GetImage();
+    }
   }
   return ConfirmInfoBarDelegate::GetButtonImage(button);
 }
@@ -251,6 +275,9 @@ bool TabSharingInfoBarDelegate::GetButtonEnabled(InfoBarButton button) const {
   if (button == BUTTON_CANCEL) {
     DCHECK(secondary_button_);
     return secondary_button_->IsEnabled();
+  } else if (button == BUTTON_EXTRA) {
+    DCHECK(tertiary_button_);
+    return tertiary_button_->IsEnabled();
   }
   return ConfirmInfoBarDelegate::GetButtonEnabled(button);
 }
@@ -260,12 +287,16 @@ std::u16string TabSharingInfoBarDelegate::GetButtonTooltip(
   if (button == BUTTON_CANCEL) {
     DCHECK(secondary_button_);
     return secondary_button_->GetTooltip();
+  } else if (button == BUTTON_EXTRA) {
+    DCHECK(tertiary_button_);
+    return tertiary_button_->GetTooltip();
   }
   return ConfirmInfoBarDelegate::GetButtonTooltip(button);
 }
 
 int TabSharingInfoBarDelegate::GetButtons() const {
-  return secondary_button_ ? BUTTON_OK | BUTTON_CANCEL : BUTTON_OK;
+  return BUTTON_OK | (secondary_button_ ? BUTTON_CANCEL : 0) |
+         (tertiary_button_ ? BUTTON_EXTRA : 0);
 }
 
 bool TabSharingInfoBarDelegate::Accept() {
@@ -276,6 +307,12 @@ bool TabSharingInfoBarDelegate::Accept() {
 bool TabSharingInfoBarDelegate::Cancel() {
   DCHECK(secondary_button_);
   secondary_button_->Click(infobar());
+  return false;
+}
+
+bool TabSharingInfoBarDelegate::ExtraButtonPressed() {
+  DCHECK(tertiary_button_);
+  tertiary_button_->Click(infobar());
   return false;
 }
 

@@ -42,6 +42,7 @@ int ConfirmInfoBarDelegate::GetButtons() const {
 
 std::u16string ConfirmInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
+  DCHECK(button == BUTTON_OK || button == BUTTON_CANCEL);
   return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_APP_OK
                                                          : IDS_APP_CANCEL);
 }
@@ -75,6 +76,11 @@ bool ConfirmInfoBarDelegate::Accept() {
 }
 
 bool ConfirmInfoBarDelegate::Cancel() {
+  return true;
+}
+
+bool ConfirmInfoBarDelegate::ExtraButtonPressed() {
+  NOTREACHED() << "Method must be overridden.";
   return true;
 }
 

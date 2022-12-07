@@ -287,9 +287,13 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
       if (web_contents && web_contents->GetPrimaryMainFrame()) {
         capturer_id = web_contents->GetPrimaryMainFrame()->GetGlobalId();
       }
-      notification_ui = TabSharingUI::Create(
-          capturer_id, media_id, application_title,
-          /*favicons_used_for_switch_to_tab_button=*/false);
+      const bool app_preferred_current_tab =
+          request.video_type ==
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+      notification_ui =
+          TabSharingUI::Create(capturer_id, media_id, application_title,
+                               /*favicons_used_for_switch_to_tab_button=*/false,
+                               app_preferred_current_tab);
     } else {
       notification_ui = ScreenCaptureNotificationUI::Create(
           GetNotificationText(application_title, capture_audio, media_id.type));

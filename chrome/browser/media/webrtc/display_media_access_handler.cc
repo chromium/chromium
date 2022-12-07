@@ -146,11 +146,6 @@ void DisplayMediaAccessHandler::HandleRequest(
 
   if (request.request_type == blink::MEDIA_DEVICE_UPDATE) {
     DCHECK(!request.requested_video_device_id.empty());
-    // The share-this-tab-instead button is not shown when the screen capture is
-    // initiated with preferCurrentTab: true, so it should not be possible to
-    // reach HandleRequest in that case.
-    DCHECK(request.video_type !=
-           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB);
     ProcessChangeSourceRequest(web_contents, request, std::move(callback));
     return;
   }

@@ -154,7 +154,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturingTab) {
       CreateDelegate({.shared_tab_name = std::u16string(),
                       .app_name = kAppName,
                       .shared_tab = true,
-                      .can_share_instead = true,
+                      .can_share_instead = false,
                       .tab_index = 1,
                       .focus_target = FocusTarget{GetGlobalId(0), favicon}});
 
@@ -192,7 +192,7 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCapturedTab) {
       CreateDelegate({.shared_tab_name = std::u16string(),
                       .app_name = kAppName,
                       .shared_tab = true,
-                      .can_share_instead = true,
+                      .can_share_instead = false,
                       .tab_index = 0,
                       .focus_target = FocusTarget{GetGlobalId(1), favicon}});
 
@@ -236,8 +236,8 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotSharedTab) {
   EXPECT_FALSE(delegate->IsCloseable());
 }
 
-// Test that when sharing is not allowed, the infobar only has one button (the
-// "Stop" button) on both shared and not shared tabs.
+// Test that when dynamic surface switching is not allowed, the infobar only
+// has one button (the "Stop" button) on both shared and not shared tabs.
 TEST_P(TabSharingInfoBarDelegateTest, InfobarWhenSharingNotAllowed) {
   // Create infobar for shared tab.
   AddTab(browser(), GURL("about:blank"));
@@ -259,6 +259,62 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarWhenSharingNotAllowed) {
                       .can_share_instead = false,
                       .tab_index = 1});
   EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK);
+}
+
+// Test that if the app preferred self-capture, but the user either chose
+// another tab, or chose the current tab but then switched to sharing another,
+// then the infobar has the correct layout:
+// |icon| Sharing |shared_tab| to |app| [Stop] [STTI] [Qick-nav]
+// (Where STTI = share-this-tab-instead, and quick-nav changes the focused tab.)
+TEST_P(TabSharingInfoBarDelegateTest,
+       InfobarOnCapturingTabIfCapturedAnotherTabButSelfCapturePreferred) {
+  AddTab(browser(), GURL("about:blank"));  // Captured; index = 0.
+  AddTab(browser(), GURL("about:blank"));  // Capturing; index = 1.
+
+  const ui::ImageModel favicon =
+      favicons_used_for_switch_to_tab_button_
+          ? ui::ImageModel::FromImage(
+                gfx::Image::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
+                    GURL("https://example.com"), gfx::kFaviconSize,
+                    gfx::kFaviconSize)))
+          : ui::ImageModel();
+
+  // The key part of this test, is that both `can_share_instead` as well as
+  // `focus_target` are set.
+  ConfirmInfoBarDelegate* const delegate =
+      CreateDelegate({.shared_tab_name = std::u16string(),
+                      .app_name = kAppName,
+                      .shared_tab = true,
+                      .can_share_instead = true,
+                      .tab_index = 0,
+                      .focus_target = FocusTarget{GetGlobalId(1), favicon}});
+
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               vector_icons::kScreenShareIcon.name);
+  EXPECT_EQ(delegate->GetMessageText(),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL, kAppName));
+
+  // Correct number of buttons.
+  EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK |
+                                        ConfirmInfoBarDelegate::BUTTON_CANCEL |
+                                        ConfirmInfoBarDelegate::BUTTON_EXTRA);
+
+  // Validate the [Stop] button.
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
+            l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_STOP_BUTTON));
+
+  // Validate the [Share this tab instead] button.
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL),
+            l10n_util::GetStringUTF16(IDS_TAB_SHARING_INFOBAR_SHARE_BUTTON));
+
+  // Validate the [Quick-nav] button.
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_EXTRA),
+            GetExpectedSwitchToMessageForTargetTab(0));
+  EXPECT_EQ(delegate->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_EXTRA),
+            favicon);
+
+  EXPECT_FALSE(delegate->IsCloseable());
 }
 
 // Test that multiple infobars can be created on the same tab.

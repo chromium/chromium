@@ -513,7 +513,8 @@ void CastMirroringServiceHost::ShowTabSharingUI(
 
   std::unique_ptr<MediaStreamUI> notification_ui =
       TabSharingUI::Create(capturer_id, source_media_id_, std::u16string(),
-                           /*favicons_used_for_switch_to_tab_button=*/false);
+                           /*favicons_used_for_switch_to_tab_button=*/false,
+                           /*app_preferred_current_tab=*/false);
 
   media_stream_ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                          ->GetMediaStreamCaptureIndicator()

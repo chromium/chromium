@@ -95,6 +95,17 @@ bool SecondaryButtonIsEnabled(Browser* browser, int tab) {
       ->GetButtonEnabled(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
 }
 
+bool HasTertiaryButton(Browser* browser, int tab) {
+  return GetDelegate(browser, tab)->GetButtons() &
+         ConfirmInfoBarDelegate::InfoBarButton::BUTTON_EXTRA;
+}
+
+std::u16string GetTertiaryButtonLabel(Browser* browser, int tab) {
+  DCHECK(HasTertiaryButton(browser, tab));  // Test error otherwise.
+  return GetDelegate(browser, tab)
+      ->GetButtonLabel(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_EXTRA);
+}
+
 std::u16string GetExpectedSwitchToMessage(Browser* browser, int tab) {
   content::RenderFrameHost* const rfh =
       GetWebContents(browser, tab)->GetPrimaryMainFrame();
@@ -133,6 +144,7 @@ void ActivateTab(Browser* browser, int tab) {
 
 constexpr int kNullTabIndex = -1;
 const std::u16string kShareThisTabInsteadMessage = u"Share this tab instead";
+const std::u16string kViewTabMessage = u"View tab:";
 
 #if BUILDFLAG(IS_CHROMEOS)
 const policy::DlpContentRestrictionSet kEmptyRestrictionSet;
@@ -171,7 +183,8 @@ class TabSharingUIViewsBrowserTest
     tab_sharing_ui_ = TabSharingUI::Create(
         GetGlobalId(browser, capturing_tab),
         GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
-        favicons_used_for_switch_to_tab_button_);
+        favicons_used_for_switch_to_tab_button_,
+        /*app_preferred_current_tab=*/false);
 
     if (favicons_used_for_switch_to_tab_button_) {
       for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
@@ -664,7 +677,8 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
       tab_sharing_ui_views_.push_back(TabSharingUI::Create(
           GetGlobalId(browser, capturing_tab),
           GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
-          /*favicons_used_for_switch_to_tab_button=*/false));
+          /*favicons_used_for_switch_to_tab_button=*/false,
+          /*app_preferred_current_tab=*/false));
       tab_sharing_ui_views_[tab_sharing_ui_views_.size() - 1]->OnStarted(
           base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
           std::vector<content::DesktopMediaID>{});
@@ -749,4 +763,84 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, CloseTabs) {
       ASSERT_EQ(tab_strip_model->count() - 1u,
                 GetInfoBarManager(browser(), i)->infobar_count());
   }
+}
+
+class TabSharingUIViewsPreferCurrentTabBrowserTest
+    : public InProcessBrowserTest {
+ public:
+#if BUILDFLAG(IS_CHROMEOS)
+  TabSharingUIViewsPreferCurrentTabBrowserTest() {
+    features_.InitAndEnableFeature(features::kTabCaptureBlueBorderCrOS);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  ~TabSharingUIViewsPreferCurrentTabBrowserTest() override = default;
+
+  void ManualSetUp(int captured_tab) {
+    auto source_change_cb = base::BindRepeating(
+        &TabSharingUIViewsPreferCurrentTabBrowserTest::SourceChange,
+        base::Unretained(this));
+
+    AddTabs(browser(), 1);  // Starts at 1, so we're up to 2.
+
+    ActivateTab(browser(), kTab0);
+    tab_sharing_ui_views_ = TabSharingUI::Create(
+        GetGlobalId(browser(), kTab0),
+        GetDesktopMediaID(browser(), captured_tab), u"example-sharing.com",
+        /*favicons_used_for_switch_to_tab_button=*/false,
+        /*app_preferred_current_tab=*/true);
+    tab_sharing_ui_views_->OnStarted(base::OnceClosure(), source_change_cb,
+                                     std::vector<content::DesktopMediaID>{});
+  }
+
+  void AddTabs(Browser* browser, int tab_count) {
+    for (int i = 0; i < tab_count; ++i)
+      AddBlankTabAndShow(browser);
+  }
+
+  void SourceChange(const content::DesktopMediaID& media_id) {}
+
+ protected:
+  const int kTab0 = 0;
+  const int kTab1 = 1;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList features_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  std::unique_ptr<TabSharingUI> tab_sharing_ui_views_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
+                       VerifyUiWhenSelfCapturing) {
+  ManualSetUp(/*captured_tab=*/kTab0);
+
+  // The tab which is capturing itself: [Stop]
+  EXPECT_FALSE(HasSecondaryButton(browser(), kTab0));
+  EXPECT_FALSE(HasTertiaryButton(browser(), kTab0));
+
+  // Any other tab: [Stop] [Share this tab instead]
+  EXPECT_TRUE(HasSecondaryButton(browser(), kTab1));
+  EXPECT_EQ(GetSecondaryButtonLabel(browser(), kTab1),
+            kShareThisTabInsteadMessage);
+  EXPECT_FALSE(HasTertiaryButton(browser(), kTab1));
+}
+
+IN_PROC_BROWSER_TEST_F(TabSharingUIViewsPreferCurrentTabBrowserTest,
+                       VerifyUiWhenCapturingAnotherTab) {
+  ManualSetUp(/*captured_tab=*/kTab1);
+
+  // The capturing tab: [Stop] [Share this tab instead] [View tab: ...]
+  EXPECT_TRUE(HasSecondaryButton(browser(), kTab0));
+  EXPECT_EQ(GetSecondaryButtonLabel(browser(), kTab0),
+            kShareThisTabInsteadMessage);
+  EXPECT_TRUE(HasTertiaryButton(browser(), kTab0));
+  EXPECT_TRUE(base::StartsWith(GetTertiaryButtonLabel(browser(), kTab0),
+                               kViewTabMessage));
+
+  // The capturing tab: [Stop] [View tab: ...]
+  EXPECT_TRUE(HasSecondaryButton(browser(), kTab1));
+  EXPECT_TRUE(base::StartsWith(GetSecondaryButtonLabel(browser(), kTab1),
+                               kViewTabMessage));
+  EXPECT_FALSE(HasTertiaryButton(browser(), kTab1));
 }

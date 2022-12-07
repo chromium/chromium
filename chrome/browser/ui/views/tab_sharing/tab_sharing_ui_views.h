@@ -49,7 +49,8 @@ class TabSharingUIViews : public TabSharingUI,
   TabSharingUIViews(content::GlobalRenderFrameHostId capturer,
                     const content::DesktopMediaID& media_id,
                     std::u16string app_name,
-                    bool favicons_used_for_switch_to_tab_button);
+                    bool favicons_used_for_switch_to_tab_button,
+                    bool app_preferred_current_tab);
   ~TabSharingUIViews() override;
 
   // MediaStreamUI:
@@ -154,6 +155,9 @@ class TabSharingUIViews : public TabSharingUI,
   void UpdateTabCaptureData(content::WebContents* contents,
                             TabCaptureUpdate update);
 
+  // Whether the share-this-tab-instead button may be shown for |web_contents|.
+  bool IsShareInsteadButtonPossible(content::WebContents* web_contents) const;
+
   // As for the purpose of this identification:
   // Assume a tab is captured twice, and both sessions use Region Capture.
   // The blue border falls back on its viewport-encompassing form. But when
@@ -190,6 +194,8 @@ class TabSharingUIViews : public TabSharingUI,
 
   // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
   const bool favicons_used_for_switch_to_tab_button_;
+
+  const bool app_preferred_current_tab_;
 
   absl::optional<uint32_t> capturer_favicon_hash_;
   absl::optional<uint32_t> captured_favicon_hash_;
