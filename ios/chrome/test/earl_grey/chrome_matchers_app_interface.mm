@@ -186,14 +186,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return imageMatcher;
 }
 
-+ (id<GREYMatcher>)imageViewWithImage:(int)imageID {
-  UIImage* expectedImage = NativeImage(imageID);
++ (id<GREYMatcher>)imageViewWithImage:(UIImage*)image {
   GREYMatchesBlock matches = ^BOOL(UIImageView* imageView) {
-    return ui::test::uiimage_utils::UIImagesAreEqual(expectedImage,
-                                                     imageView.image);
+    return ui::test::uiimage_utils::UIImagesAreEqual(image, imageView.image);
   };
   NSString* descriptionString =
-      [NSString stringWithFormat:@"Images matching %i", imageID];
+      [NSString stringWithFormat:@"Images matching image %@", image];
   GREYDescribeToBlock describe = ^(id<GREYDescription> description) {
     [description appendText:descriptionString];
   };

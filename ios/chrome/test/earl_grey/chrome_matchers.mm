@@ -46,8 +46,8 @@ id<GREYMatcher> ImageViewWithImageNamed(NSString* imageName) {
   return [ChromeMatchersAppInterface imageViewWithImageNamed:imageName];
 }
 
-id<GREYMatcher> ImageViewWithImage(int image_id) {
-  return [ChromeMatchersAppInterface imageViewWithImage:image_id];
+id<GREYMatcher> ImageViewWithImage(UIImage* image) {
+  return [ChromeMatchersAppInterface imageViewWithImage:image];
 }
 
 id<GREYMatcher> ButtonWithImage(int image_id) {
