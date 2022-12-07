@@ -245,6 +245,16 @@ void CastMirroringServiceHost::Start(
   ShowCaptureIndicator();
 }
 
+void CastMirroringServiceHost::GetTabSourceId(
+    GetTabSourceIdCallback get_tab_source_id_callback) {
+  if (web_contents()) {
+    std::move(get_tab_source_id_callback)
+        .Run(web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
+  } else {
+    std::move(get_tab_source_id_callback).Run(-1);
+  }
+}
+
 // static
 gfx::Size CastMirroringServiceHost::GetCaptureResolutionConstraint() {
   absl::optional<gfx::Size> screen_resolution = GetScreenResolution();

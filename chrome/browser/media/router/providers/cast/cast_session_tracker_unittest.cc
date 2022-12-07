@@ -69,13 +69,20 @@ class MockCastSessionObserver : public CastSessionTracker::Observer {
   MockCastSessionObserver() = default;
   ~MockCastSessionObserver() override = default;
 
-  MOCK_METHOD2(OnSessionAddedOrUpdated,
-               void(const MediaSinkInternal& sink, const CastSession& session));
-  MOCK_METHOD1(OnSessionRemoved, void(const MediaSinkInternal& sink));
-  MOCK_METHOD3(OnMediaStatusUpdated,
-               void(const MediaSinkInternal& sink,
-                    const base::Value::Dict& media_status,
-                    absl::optional<int> request_id));
+  MOCK_METHOD(void,
+              OnSessionAddedOrUpdated,
+              (const MediaSinkInternal& sink, const CastSession& session));
+  MOCK_METHOD(void, OnSessionRemoved, (const MediaSinkInternal& sink));
+  MOCK_METHOD(void,
+              OnMediaStatusUpdated,
+              (const MediaSinkInternal& sink,
+               const base::Value::Dict& media_status,
+               absl::optional<int> request_id));
+  MOCK_METHOD(void,
+              OnSourceChanged,
+              (const std::string& media_route_id,
+               int old_frame_tree_node_id,
+               int frame_tree_node_id));
 };
 
 class CastSessionTrackerTest : public testing::Test {

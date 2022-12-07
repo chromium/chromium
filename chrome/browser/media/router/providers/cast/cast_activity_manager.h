@@ -119,6 +119,9 @@ class CastActivityManager : public CastActivityManagerBase,
   void OnMediaStatusUpdated(const MediaSinkInternal& sink,
                             const base::Value::Dict& media_status,
                             absl::optional<int> request_id) override;
+  void OnSourceChanged(const std::string& media_route_id,
+                       int old_frame_tree_node_id,
+                       int frame_tree_node_id) override;
 
   static void SetActitityFactoryForTest(CastActivityFactoryForTest* factory) {
     cast_activity_factory_for_test_ = factory;
@@ -282,7 +285,8 @@ class CastActivityManager : public CastActivityManagerBase,
 
   // Returns a sink used to convert a mirroring activity to a cast activity.
   // If no conversion should occur, returns absl::nullopt.
-  absl::optional<MediaSinkInternal> ConvertMirrorToCast(int frame_tree_node_id);
+  absl::optional<MediaSinkInternal> GetSinkForMirroringActivity(
+      int frame_tree_node_id) const;
 
   std::string ChooseAppId(const CastMediaSource& source,
                           const MediaSinkInternal& sink) const;

@@ -351,8 +351,6 @@ class CastActivityManagerTest : public testing::Test,
   }
 
   void LaunchNonSdkMirroringSession() {
-    CallLaunchSessionSuccess(cast_streaming_app_id_, /* app_params */ "",
-                             /* client_id */ "");
     mirroring_activity_callback_ =
         base::BindLambdaForTesting([this](MockMirroringActivity* activity) {
           EXPECT_CALL(*activity, OnSessionSet).WillOnce([this]() {
@@ -360,6 +358,9 @@ class CastActivityManagerTest : public testing::Test,
           });
           mirroring_activity_callback_ = base::DoNothing();
         });
+
+    CallLaunchSessionSuccess(cast_streaming_app_id_, /* app_params */ "",
+                             /* client_id */ "");
 
     ResolveMirroringSessionLaunch();
   }
@@ -473,6 +474,50 @@ class CastActivityManagerTest : public testing::Test,
   void SetSessionForTest(const MediaSink::Id& sink_id,
                          std::unique_ptr<CastSession> session) {
     session_tracker_->SetSessionForTest(sink_id, std::move(session));
+  }
+
+  // This method starts out with `route_id_to_move` associated with
+  // `frame_id_before`, and `route_id_to_terminate` with `frame_id_after`. We
+  // move `route_id_to_move` to `frame_id_after`, and that results in the
+  // termination of `route_id_to_terminate`.
+  void UpdateRouteSourceTabInRoutesMap(
+      int frame_id_before,
+      const MediaRoute::Id& route_id_to_move,
+      int frame_id_after,
+      const MediaRoute::Id& route_id_to_terminate) {
+    EXPECT_EQ(2u, manager_->GetRoutes().size());
+
+    // `route_id_to_move` is connected to `sink_`.
+    EXPECT_TRUE(manager_->GetRoute(route_id_to_move));
+    EXPECT_EQ(manager_->GetSinkForMirroringActivity(frame_id_before), sink_);
+
+    // `route_id_to_terminate` is connected to `sink2_`.
+    EXPECT_TRUE(manager_->GetRoute(route_id_to_terminate));
+    EXPECT_EQ(manager_->GetSinkForMirroringActivity(frame_id_after), sink2_);
+
+    session_tracker_->OnSourceChanged(route_id_to_move, frame_id_before,
+                                      frame_id_after);
+    // The route with id `route_id_to_terminate` should be terminated.
+    // `frame_id_before` should have no route connected to it.
+    // `frame_id_after` should be connected to `route_id_to_move`.
+
+    // Verify that `route_id_to_terminate` was terminated.
+    EXPECT_EQ(1u, manager_->GetRoutes().size());
+    EXPECT_FALSE(manager_->GetRoute(route_id_to_terminate));
+    EXPECT_TRUE(manager_->GetRoute(route_id_to_move));
+
+    // Verify that the source tab has been updated.
+    EXPECT_FALSE(manager_->GetSinkForMirroringActivity(frame_id_before));
+    EXPECT_EQ(manager_->GetSinkForMirroringActivity(frame_id_after), sink_);
+
+    session_tracker_->OnSourceChanged(route_id_to_move, frame_id_before,
+                                      frame_id_after);
+    // Nothing is expected to happen as there is no route exist for the given
+    // `frame_id_before`.
+    EXPECT_EQ(1u, manager_->GetRoutes().size());
+    EXPECT_TRUE(manager_->GetRoute(route_id_to_move));
+    EXPECT_FALSE(manager_->GetSinkForMirroringActivity(frame_id_before));
+    EXPECT_EQ(manager_->GetSinkForMirroringActivity(frame_id_after), sink_);
   }
 
  protected:
@@ -885,6 +930,41 @@ TEST_F(CastActivityManagerTest, SecondPendingRequestCancelsTheFirst) {
                             base::BindOnce(&MockLaunchSessionCallback::Run,
                                            base::Unretained(&callback)));
   }
+}
+
+TEST_F(CastActivityManagerTest, OnSourceChanged) {
+  LaunchNonSdkMirroringSession();
+
+  MediaRoute::Id route_id = MediaRoute::GetMediaRouteId(
+      kPresentationId, sink_.id(),
+      MediaSource(MakeSourceId(cast_streaming_app_id_, /* app_params */ "",
+                               /* client_id */ "")));
+
+  // Launch a 2nd session from a different tab on a different sink.
+  media_sink_service_.AddOrUpdateSink(sink2_);
+  EXPECT_CALL(message_handler_,
+              LaunchSession(kChannelId2, cast_streaming_app_id_, _, _, _, _))
+      .WillOnce(WithArg<5>([this](auto callback) {
+        launch_session_callback_ = std::move(callback);
+      }));
+
+  auto source2 =
+      CastMediaSource::FromMediaSourceId(MakeSourceId(cast_streaming_app_id_));
+  manager_->LaunchSession(
+      *source2, sink2_, kPresentationId2, origin_,
+      kFrameTreeNodeId2, /*incognito*/
+      false,
+      base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
+                     base::Unretained(this)));
+
+  RunUntilIdle();
+  ReceiveLaunchSuccessResponseFromReceiver(cast_streaming_app_id_);
+
+  MediaRoute::Id route_id2 = MediaRoute::GetMediaRouteId(
+      kPresentationId2, sink2_.id(), MediaSource(source2->source_id()));
+
+  UpdateRouteSourceTabInRoutesMap(kFrameTreeNodeId, route_id, kFrameTreeNodeId2,
+                                  route_id2);
 }
 
 }  // namespace media_router

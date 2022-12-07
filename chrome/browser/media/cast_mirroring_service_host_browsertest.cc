@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/mock_callback.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -197,9 +198,29 @@ class CastMirroringServiceHostBrowserTest
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
+    int web_contents_source_tab_id =
+        web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+
+    base::MockCallback<CastMirroringServiceHost::GetTabSourceIdCallback>
+        before_update_callback;
+    base::MockCallback<CastMirroringServiceHost::GetTabSourceIdCallback>
+        after_update_callback;
+
+    EXPECT_CALL(before_update_callback, Run(_))
+        .WillOnce([&web_contents_source_tab_id](int32_t source_tab_id) {
+          ASSERT_NE(web_contents_source_tab_id, source_tab_id);
+        });
+
+    EXPECT_CALL(after_update_callback, Run(_))
+        .WillOnce([&web_contents_source_tab_id](int32_t source_tab_id) {
+          ASSERT_EQ(web_contents_source_tab_id, source_tab_id);
+        });
+
+    host_->GetTabSourceId(before_update_callback.Get());
     ASSERT_NE(host_->web_contents(), web_contents);
     host_->SwitchMirroringSourceTab(BuildMediaIdForTabMirroring(web_contents));
     ASSERT_EQ(host_->web_contents(), web_contents);
+    host_->GetTabSourceId(after_update_callback.Get());
   }
 
   void GetVideoCaptureHost() {
@@ -260,17 +281,18 @@ class CastMirroringServiceHostBrowserTest
 
  private:
   // mojom::SessionObserver mocks.
-  MOCK_METHOD1(OnError, void(mojom::SessionError));
-  MOCK_METHOD0(DidStart, void());
-  MOCK_METHOD0(DidStop, void());
-  MOCK_METHOD1(LogInfoMessage, void(const std::string&));
-  MOCK_METHOD1(LogErrorMessage, void(const std::string&));
+  MOCK_METHOD(void, OnError, (mojom::SessionError));
+  MOCK_METHOD(void, DidStart, ());
+  MOCK_METHOD(void, DidStop, ());
+  MOCK_METHOD(void, LogInfoMessage, (const std::string&));
+  MOCK_METHOD(void, LogErrorMessage, (const std::string&));
+  MOCK_METHOD(void, OnSourceChanged, ());
 
   // mojom::CastMessageChannel mock implementation (inbound messages).
-  MOCK_METHOD1(OnMessage, void(mojom::CastMessagePtr));
+  MOCK_METHOD(void, OnMessage, (mojom::CastMessagePtr));
 
   // mojom::AudioStreamCreatorClient mocks.
-  MOCK_METHOD0(OnAudioStreamCreated, void());
+  MOCK_METHOD(void, OnAudioStreamCreated, ());
   void StreamCreated(
       mojo::PendingRemote<media::mojom::AudioInputStream> stream,
       mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
