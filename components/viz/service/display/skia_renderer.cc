@@ -78,6 +78,7 @@
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/linear_gradient.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -3593,7 +3594,10 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       apply_clip.Intersect(overlay->clip_rect.value());
 
     OverlayCandidate::ApplyClip(*overlay, gfx::RectF(apply_clip));
+    overlay->clip_rect = absl::nullopt;
   }
+  // Assume full damage every time the pass is rendered.
+  overlay->damage_rect = gfx::RectF(filter_bounds);
 #endif  // BUILDFLAG(IS_APPLE)
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
