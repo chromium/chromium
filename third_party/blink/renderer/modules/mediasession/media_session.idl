@@ -24,7 +24,9 @@ enum MediaSessionAction {
   "seekto",
   "togglemicrophone",
   "togglecamera",
-  "hangup"
+  "hangup",
+  "previousslide",
+  "nextslide"
 };
 
 callback MediaSessionActionHandler = void (MediaSessionActionDetails details);

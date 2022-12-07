@@ -87,6 +87,8 @@ const gfx::VectorIcon& GetVectorIconForMediaAction(MediaSessionAction action) {
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
     case MediaSessionAction::kSetMute:
+    case MediaSessionAction::kPreviousSlide:
+    case MediaSessionAction::kNextSlide:
       NOTREACHED();
       break;
   }

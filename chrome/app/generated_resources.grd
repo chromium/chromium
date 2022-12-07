@@ -8473,6 +8473,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button invokes previous track action.">
         Previous track
       </message>
+      <message name="IDS_PICTURE_IN_PICTURE_PREVIOUS_SLIDE_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button invokes previous slide action.">
+        Previous slide
+      </message>
+      <message name="IDS_PICTURE_IN_PICTURE_NEXT_SLIDE_CONTROL_ACCESSIBLE_TEXT" desc="Accessible text label used for the controls button in the Picture-in-Picture window. The button invokes next slide action.">
+        Next slide
+      </message>
 
       <!-- Load State -->
       <message name="IDS_LOAD_STATE_WAITING_FOR_SOCKET_SLOT" desc="Status text when Chrome is at its connection limit, and is waiting for a URL request to complete to free up a connection.">

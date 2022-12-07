@@ -22,11 +22,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
+#include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/browser/ui/views/overlay/skip_ad_label_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_camera_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
-#include "chrome/browser/ui/views/overlay/track_image_button.h"
-#include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -106,6 +105,8 @@ class MockVideoPictureInPictureWindowController
   MOCK_METHOD0(ToggleMicrophone, void());
   MOCK_METHOD0(ToggleCamera, void());
   MOCK_METHOD0(HangUp, void());
+  MOCK_METHOD0(PreviousSlide, void());
+  MOCK_METHOD0(NextSlide, void());
   MOCK_CONST_METHOD0(GetSourceBounds, const gfx::Rect&());
   MOCK_METHOD0(GetWindowBounds, absl::optional<gfx::Rect>());
 };
@@ -1612,7 +1613,7 @@ class MediaSessionVideoPictureInPictureWindowControllerBrowserTest
     VideoPictureInPictureWindowControllerBrowserTest::SetUpCommandLine(
         command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "MediaSession,SkipAd");
+                                    "MediaSession,SkipAd,MediaSessionSlides");
     scoped_feature_list_.InitWithFeatures(
         {media_session::features::kMediaSessionService}, {});
   }
@@ -1761,6 +1762,65 @@ IN_PROC_BROWSER_TEST_F(
       {GetOverlayWindow()->previous_track_controls_view_for_testing()}, false));
 }
 
+// Tests that a Next Slide button is displayed in the Picture-in-Picture window
+// when Media Session Action "nextslide" is handled by the website.
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    NextSlideButtonVisibility) {
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  ASSERT_NE(GetOverlayWindow(), nullptr);
+
+  // Next Slide button is not displayed initially.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_slide_controls_view_for_testing()}, false));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Next Slide button is displayed if a media session action handler has been
+  // set.
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "setMediaSessionActionHandler('nextslide');"));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_slide_controls_view_for_testing()}, true));
+
+  // Unset action handler and check that Next Slide button is not displayed.
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "unsetMediaSessionActionHandler('nextslide');"));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_slide_controls_view_for_testing()}, false));
+}
+
+// Tests that a Previous Slide button is displayed in the Picture-in-Picture
+// window when Media Session Action "previousslide" is handled by the website.
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    PreviousSlideButtonVisibility) {
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+
+  // Previous Slide button is not displayed initially.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_slide_controls_view_for_testing()}, false));
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Previous Slide button is displayed if a media session action handler has
+  // been set.
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "setMediaSessionActionHandler('previousslide');"));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_slide_controls_view_for_testing()}, true));
+
+  // Unset action handler and check that Previous Slide button is not displayed.
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "unsetMediaSessionActionHandler('previousslide');"));
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_slide_controls_view_for_testing()}, false));
+}
+
 // Tests that clicking the Skip Ad button in the Picture-in-Picture window
 // calls the Media Session Action "skipad" handler function.
 IN_PROC_BROWSER_TEST_F(
@@ -1882,6 +1942,56 @@ IN_PROC_BROWSER_TEST_F(
   // called.
   window_controller()->PreviousTrack();
   WaitForTitle(active_web_contents, u"previoustrack");
+}
+
+// Tests that clicking the Next Slide button in the Picture-in-Picture window
+// calls the Media Session Action "nextslide" handler function.
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    NextSlideHandlerCalled) {
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "setMediaSessionActionHandler('nextslide');"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
+  WaitForPlaybackState(active_web_contents,
+                       VideoOverlayWindowViews::PlaybackState::kPlaying);
+
+  // Make sure the action handler is set before trying to invoke the action.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->next_slide_controls_view_for_testing()}, true));
+
+  // Simulates user clicking "Next Slide" and check the handler function is
+  // called.
+  window_controller()->NextSlide();
+  WaitForTitle(active_web_contents, u"nextslide");
+}
+
+// Tests that clicking the Previous Slide button in the Picture-in-Picture
+// window calls the Media Session Action "previousslide" handler function.
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    PreviousSlideHandlerCalled) {
+  LoadTabAndEnterPictureInPicture(
+      browser(), base::FilePath(kPictureInPictureWindowSizePage));
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ExecJs(active_web_contents,
+                     "setMediaSessionActionHandler('previousslide');"));
+  ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
+  WaitForPlaybackState(active_web_contents,
+                       VideoOverlayWindowViews::PlaybackState::kPlaying);
+
+  // Make sure the action handler is set before trying to invoke the action.
+  EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
+      {GetOverlayWindow()->previous_slide_controls_view_for_testing()}, true));
+
+  // Simulates user clicking "Previous Slide" and check the handler function is
+  // called.
+  window_controller()->PreviousSlide();
+  WaitForTitle(active_web_contents, u"previousslide");
 }
 
 // Tests that stopping Media Sessions closes the Picture-in-Picture window.

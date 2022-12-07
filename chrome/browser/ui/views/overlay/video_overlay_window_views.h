@@ -26,10 +26,10 @@ class CloseImageButton;
 class HangUpButton;
 class PlaybackImageButton;
 class ResizeHandleButton;
+class SimpleOverlayWindowImageButton;
 class SkipAdLabelButton;
 class ToggleMicrophoneButton;
 class ToggleCameraButton;
-class TrackImageButton;
 
 // The Chrome desktop implementation of VideoOverlayWindow. This will only be
 // implemented in views, which will support all desktop platforms.
@@ -63,6 +63,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override;
   void SetToggleCameraButtonVisibility(bool is_visible) override;
   void SetHangUpButtonVisibility(bool is_visible) override;
+  void SetPreviousSlideButtonVisibility(bool is_visible) override;
+  void SetNextSlideButtonVisibility(bool is_visible) override;
   void SetSurfaceId(const viz::SurfaceId& surface_id) override;
 
   // views::Widget
@@ -127,14 +129,20 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   gfx::Rect GetToggleMicrophoneButtonBounds();
   gfx::Rect GetToggleCameraButtonBounds();
   gfx::Rect GetHangUpButtonBounds();
+  gfx::Rect GetPreviousSlideControlsBounds();
+  gfx::Rect GetNextSlideControlsBounds();
 
   PlaybackImageButton* play_pause_controls_view_for_testing() const;
-  TrackImageButton* next_track_controls_view_for_testing() const;
-  TrackImageButton* previous_track_controls_view_for_testing() const;
+  SimpleOverlayWindowImageButton* next_track_controls_view_for_testing() const;
+  SimpleOverlayWindowImageButton* previous_track_controls_view_for_testing()
+      const;
   SkipAdLabelButton* skip_ad_controls_view_for_testing() const;
   ToggleMicrophoneButton* toggle_microphone_button_for_testing() const;
   ToggleCameraButton* toggle_camera_button_for_testing() const;
   HangUpButton* hang_up_button_for_testing() const;
+  SimpleOverlayWindowImageButton* next_slide_controls_view_for_testing() const;
+  SimpleOverlayWindowImageButton* previous_slide_controls_view_for_testing()
+      const;
   CloseImageButton* close_button_for_testing() const;
   gfx::Point close_image_position_for_testing() const;
   gfx::Point resize_handle_position_for_testing() const;
@@ -208,7 +216,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
     kToggleMicrophone,
     kToggleCamera,
     kHangUp,
-    kMaxValue = kHangUp
+    kPreviousSlide,
+    kNextSlide,
+    kMaxValue = kNextSlide
   };
   void RecordButtonPressed(OverlayWindowControl);
   void RecordTapGesture(OverlayWindowControl);
@@ -259,14 +269,18 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<views::View> controls_container_view_ = nullptr;
   raw_ptr<CloseImageButton> close_controls_view_ = nullptr;
   raw_ptr<BackToTabLabelButton> back_to_tab_label_button_ = nullptr;
-  raw_ptr<TrackImageButton> previous_track_controls_view_ = nullptr;
+  raw_ptr<SimpleOverlayWindowImageButton> previous_track_controls_view_ =
+      nullptr;
   raw_ptr<PlaybackImageButton> play_pause_controls_view_ = nullptr;
-  raw_ptr<TrackImageButton> next_track_controls_view_ = nullptr;
+  raw_ptr<SimpleOverlayWindowImageButton> next_track_controls_view_ = nullptr;
   raw_ptr<SkipAdLabelButton> skip_ad_controls_view_ = nullptr;
   raw_ptr<ResizeHandleButton> resize_handle_view_ = nullptr;
   raw_ptr<ToggleMicrophoneButton> toggle_microphone_button_ = nullptr;
   raw_ptr<ToggleCameraButton> toggle_camera_button_ = nullptr;
   raw_ptr<HangUpButton> hang_up_button_ = nullptr;
+  raw_ptr<SimpleOverlayWindowImageButton> previous_slide_controls_view_ =
+      nullptr;
+  raw_ptr<SimpleOverlayWindowImageButton> next_slide_controls_view_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Generates a nine patch layer painted with a highlight border for ChromeOS
@@ -302,6 +316,14 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // Whether or not the hang up button will be shown. This is the case when
   // Media Session "hangup" action is handled by the website.
   bool show_hang_up_button_ = false;
+
+  // Whether or not the previous slide button will be shown. This is the
+  // case when Media Session "previousslide" action is handled by the website.
+  bool show_previous_slide_button_ = false;
+
+  // Whether or not the next slide button will be shown. This is the
+  // case when Media Session "nextslide" action is handled by the website.
+  bool show_next_slide_button_ = false;
 
   // Whether or not the current frame sink for the surface displayed in the
   // |video_view_| is registered as the child of the overlay window frame sink.

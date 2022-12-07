@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
-#include "chrome/browser/ui/views/overlay/track_image_button.h"
+#include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/overlay_window.h"
@@ -59,6 +59,8 @@ class TestVideoPictureInPictureWindowController
   void SkipAd() override {}
   void NextTrack() override {}
   void PreviousTrack() override {}
+  void NextSlide() override {}
+  void PreviousSlide() override {}
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}

@@ -51,6 +51,10 @@ const AtomicString& MojomActionToActionName(MediaSessionAction action) {
   DEFINE_STATIC_LOCAL(const AtomicString, toggle_camera_action_name,
                       ("togglecamera"));
   DEFINE_STATIC_LOCAL(const AtomicString, hang_up_action_name, ("hangup"));
+  DEFINE_STATIC_LOCAL(const AtomicString, previous_slide_action_name,
+                      ("previousslide"));
+  DEFINE_STATIC_LOCAL(const AtomicString, next_slide_action_name,
+                      ("nextslide"));
 
   switch (action) {
     case MediaSessionAction::kPlay:
@@ -77,6 +81,10 @@ const AtomicString& MojomActionToActionName(MediaSessionAction action) {
       return toggle_camera_action_name;
     case MediaSessionAction::kHangUp:
       return hang_up_action_name;
+    case MediaSessionAction::kPreviousSlide:
+      return previous_slide_action_name;
+    case MediaSessionAction::kNextSlide:
+      return next_slide_action_name;
     default:
       NOTREACHED();
   }
@@ -109,6 +117,10 @@ absl::optional<MediaSessionAction> ActionNameToMojomAction(
     return MediaSessionAction::kToggleCamera;
   if ("hangup" == action_name)
     return MediaSessionAction::kHangUp;
+  if ("previousslide" == action_name)
+    return MediaSessionAction::kPreviousSlide;
+  if ("nextslide" == action_name)
+    return MediaSessionAction::kNextSlide;
 
   NOTREACHED();
   return absl::nullopt;
@@ -219,6 +231,15 @@ void MediaSession::setActionHandler(const String& action,
     }
 
     UseCounter::Count(window, WebFeature::kMediaSessionSkipAd);
+  }
+
+  if (!RuntimeEnabledFeatures::MediaSessionSlidesEnabled()) {
+    if ("previousslide" == action || "nextslide" == action) {
+      exception_state.ThrowTypeError("The provided value '" + action +
+                                     "' is not a valid enum "
+                                     "value of type MediaSessionAction.");
+      return;
+    }
   }
 
   if (handler) {

@@ -37,6 +37,8 @@ enum MediaSessionAction {
   [MinVersion=11] kHangUp,
   [MinVersion=12] kRaise,
   [MinVersion=13] kSetMute,
+  [MinVersion=18] kPreviousSlide,
+  [MinVersion=18] kNextSlide,
 };
 
 [Stable, Extensible]
@@ -356,4 +358,10 @@ interface MediaSession {
 
   // Request Media Remoting once there are available sinks.
   [MinVersion=16] RequestMediaRemoting@23();
+
+  // Go back to previous slide.
+  [MinVersion=18] PreviousSlide@24();
+
+  // Go to next slide.
+  [MinVersion=18] NextSlide@25();
 };

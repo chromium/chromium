@@ -203,6 +203,8 @@ void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
     case MediaSessionAction::kSetMute:
+    case MediaSessionAction::kPreviousSlide:
+    case MediaSessionAction::kNextSlide:
       NOTREACHED();
       return;
   }
@@ -256,6 +258,8 @@ ActiveMediaSessionController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kHangUp:
     case MediaSessionAction::kRaise:
     case MediaSessionAction::kSetMute:
+    case MediaSessionAction::kPreviousSlide:
+    case MediaSessionAction::kNextSlide:
       return absl::nullopt;
   }
 }

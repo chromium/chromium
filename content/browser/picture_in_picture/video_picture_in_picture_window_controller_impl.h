@@ -78,6 +78,9 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void ToggleMicrophone() override;
   void ToggleCamera() override;
   void HangUp() override;
+  void PreviousSlide() override;
+  void NextSlide() override;
+
   const gfx::Rect& GetSourceBounds() const override;
   absl::optional<gfx::Rect> GetWindowBounds() override;
 
@@ -173,6 +176,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   bool media_session_action_toggle_microphone_handled_ = false;
   bool media_session_action_toggle_camera_handled_ = false;
   bool media_session_action_hang_up_handled_ = false;
+  bool media_session_action_previous_slide_handled_ = false;
+  bool media_session_action_next_slide_handled_ = false;
 
   // Tracks the current microphone state.
   bool microphone_muted_ = false;

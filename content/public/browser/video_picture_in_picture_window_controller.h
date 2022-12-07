@@ -42,6 +42,12 @@ class VideoPictureInPictureWindowController
   // Called when the user interacts with the "Hang Up" control.
   virtual void HangUp() = 0;
 
+  // Called when the user interacts with the "Previous Slide" control.
+  virtual void PreviousSlide() = 0;
+
+  // Called when the user interacts with the "Next Slide" control.
+  virtual void NextSlide() = 0;
+
   // Returns the source bounds of the video, in the WebContents top-level
   // coordinate space, of the video before it enters picture in picture.
   virtual const gfx::Rect& GetSourceBounds() const = 0;

@@ -65,6 +65,9 @@ class VideoOverlayWindow {
   virtual void SetToggleMicrophoneButtonVisibility(bool is_visible) = 0;
   virtual void SetToggleCameraButtonVisibility(bool is_visible) = 0;
   virtual void SetHangUpButtonVisibility(bool is_visible) = 0;
+  virtual void SetNextSlideButtonVisibility(bool is_visible) = 0;
+  virtual void SetPreviousSlideButtonVisibility(bool is_visible) = 0;
+
   virtual void SetSurfaceId(const viz::SurfaceId& surface_id) = 0;
 };
 

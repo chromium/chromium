@@ -1763,6 +1763,10 @@
       status: "stable",
     },
     {
+      name: "MediaSessionSlides",
+      status: "experimental",
+    },
+    {
       name: "MediaSourceExperimental",
       status: "experimental",
     },

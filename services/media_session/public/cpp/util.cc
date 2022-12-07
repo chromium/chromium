@@ -63,6 +63,8 @@ void PerformMediaSessionAction(
     case mojom::MediaSessionAction::kSeekTo:
     case mojom::MediaSessionAction::kScrubTo:
     case mojom::MediaSessionAction::kSwitchAudioDevice:
+    case mojom::MediaSessionAction::kPreviousSlide:
+    case mojom::MediaSessionAction::kNextSlide:
       break;
   }
 }

@@ -57,6 +57,11 @@ fuchsia::media::sessions2::PlayerCapabilityFlags ActionToCapabilityFlag(
       return {};  // PlayerControl does not support raising.
     case MediaSessionAction::kSetMute:
       return {};  // TODO(crbug.com/1240811): implement set mute.
+    case MediaSessionAction::kPreviousSlide:
+      return {};  // PlayerControl does not support going back to previous
+                  // slide.
+    case MediaSessionAction::kNextSlide:
+      return {};  // PlayerControl does not support going to next slide.
   }
 }
 

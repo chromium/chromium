@@ -66705,6 +66705,9 @@ Called by update_use_counter_css.py.-->
   <int value="17" label="Toggle camera"/>
   <int value="18" label="Hang up"/>
   <int value="19" label="Raise"/>
+  <int value="20" label="Mute"/>
+  <int value="21" label="Next slide"/>
+  <int value="22" label="Previous slide"/>
 </enum>
 
 <enum name="MediaSinkType">

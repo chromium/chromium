@@ -90,6 +90,8 @@ class TestOverlayWindow : public VideoOverlayWindow {
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}
   void SetToggleCameraButtonVisibility(bool is_visible) override {}
   void SetHangUpButtonVisibility(bool is_visible) override {}
+  void SetNextSlideButtonVisibility(bool is_visible) override {}
+  void SetPreviousSlideButtonVisibility(bool is_visible) override {}
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
 
  private:

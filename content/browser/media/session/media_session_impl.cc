@@ -152,6 +152,10 @@ MediaSessionUserAction MediaSessionActionToUserAction(
       return MediaSessionUserAction::kRaise;
     case media_session::mojom::MediaSessionAction::kSetMute:
       return MediaSessionUserAction::kSetMute;
+    case media_session::mojom::MediaSessionAction::kPreviousSlide:
+      return MediaSessionUserAction::kPreviousSlide;
+    case media_session::mojom::MediaSessionAction::kNextSlide:
+      return MediaSessionUserAction::kNextSlide;
   }
   NOTREACHED();
   return MediaSessionUserAction::kPlay;
@@ -1190,6 +1194,14 @@ void MediaSessionImpl::NextTrack() {
 
 void MediaSessionImpl::SkipAd() {
   DidReceiveAction(media_session::mojom::MediaSessionAction::kSkipAd);
+}
+
+void MediaSessionImpl::PreviousSlide() {
+  DidReceiveAction(media_session::mojom::MediaSessionAction::kPreviousSlide);
+}
+
+void MediaSessionImpl::NextSlide() {
+  DidReceiveAction(media_session::mojom::MediaSessionAction::kNextSlide);
 }
 
 void MediaSessionImpl::SeekTo(base::TimeDelta seek_time) {

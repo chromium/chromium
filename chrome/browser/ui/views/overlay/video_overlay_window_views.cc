@@ -23,10 +23,10 @@
 #include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
 #include "chrome/browser/ui/views/overlay/resize_handle_button.h"
+#include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/browser/ui/views/overlay/skip_ad_label_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_camera_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
-#include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "components/vector_icons/vector_icons.h"
@@ -668,7 +668,9 @@ bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
       GetPreviousTrackControlsBounds().Contains(point) ||
       GetToggleMicrophoneButtonBounds().Contains(point) ||
       GetToggleCameraButtonBounds().Contains(point) ||
-      GetHangUpButtonBounds().Contains(point)) {
+      GetHangUpButtonBounds().Contains(point) ||
+      GetPreviousSlideControlsBounds().Contains(point) ||
+      GetNextSlideControlsBounds().Contains(point)) {
     return true;
   }
   return false;
@@ -711,16 +713,18 @@ void VideoOverlayWindowViews::SetUpViews() {
             overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
           },
           base::Unretained(this)));
-  auto previous_track_controls_view = std::make_unique<TrackImageButton>(
-      base::BindRepeating(
-          [](VideoOverlayWindowViews* overlay) {
-            overlay->controller_->PreviousTrack();
-            overlay->RecordButtonPressed(OverlayWindowControl::kPreviousTrack);
-          },
-          base::Unretained(this)),
-      vector_icons::kMediaPreviousTrackIcon,
-      l10n_util::GetStringUTF16(
-          IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
+  auto previous_track_controls_view =
+      std::make_unique<SimpleOverlayWindowImageButton>(
+          base::BindRepeating(
+              [](VideoOverlayWindowViews* overlay) {
+                overlay->controller_->PreviousTrack();
+                overlay->RecordButtonPressed(
+                    OverlayWindowControl::kPreviousTrack);
+              },
+              base::Unretained(this)),
+          vector_icons::kMediaPreviousTrackIcon,
+          l10n_util::GetStringUTF16(
+              IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
   auto play_pause_controls_view =
       std::make_unique<PlaybackImageButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
@@ -728,16 +732,17 @@ void VideoOverlayWindowViews::SetUpViews() {
             overlay->RecordButtonPressed(OverlayWindowControl::kPlayPause);
           },
           base::Unretained(this)));
-  auto next_track_controls_view = std::make_unique<TrackImageButton>(
-      base::BindRepeating(
-          [](VideoOverlayWindowViews* overlay) {
-            overlay->controller_->NextTrack();
-            overlay->RecordButtonPressed(OverlayWindowControl::kNextTrack);
-          },
-          base::Unretained(this)),
-      vector_icons::kMediaNextTrackIcon,
-      l10n_util::GetStringUTF16(
-          IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
+  auto next_track_controls_view =
+      std::make_unique<SimpleOverlayWindowImageButton>(
+          base::BindRepeating(
+              [](VideoOverlayWindowViews* overlay) {
+                overlay->controller_->NextTrack();
+                overlay->RecordButtonPressed(OverlayWindowControl::kNextTrack);
+              },
+              base::Unretained(this)),
+          vector_icons::kMediaNextTrackIcon,
+          l10n_util::GetStringUTF16(
+              IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
   auto skip_ad_controls_view =
       std::make_unique<SkipAdLabelButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
@@ -766,6 +771,29 @@ void VideoOverlayWindowViews::SetUpViews() {
         overlay->RecordButtonPressed(OverlayWindowControl::kHangUp);
       },
       base::Unretained(this)));
+  auto previous_slide_controls_view =
+      std::make_unique<SimpleOverlayWindowImageButton>(
+          base::BindRepeating(
+              [](VideoOverlayWindowViews* overlay) {
+                overlay->controller_->PreviousSlide();
+                overlay->RecordButtonPressed(
+                    OverlayWindowControl::kPreviousSlide);
+              },
+              base::Unretained(this)),
+          vector_icons::kMediaPreviousTrackIcon,
+          l10n_util::GetStringUTF16(
+              IDS_PICTURE_IN_PICTURE_PREVIOUS_SLIDE_CONTROL_ACCESSIBLE_TEXT));
+  auto next_slide_controls_view =
+      std::make_unique<SimpleOverlayWindowImageButton>(
+          base::BindRepeating(
+              [](VideoOverlayWindowViews* overlay) {
+                overlay->controller_->NextSlide();
+                overlay->RecordButtonPressed(OverlayWindowControl::kNextSlide);
+              },
+              base::Unretained(this)),
+          vector_icons::kMediaNextTrackIcon,
+          l10n_util::GetStringUTF16(
+              IDS_PICTURE_IN_PICTURE_NEXT_SLIDE_CONTROL_ACCESSIBLE_TEXT));
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   auto resize_handle_view =
       std::make_unique<ResizeHandleButton>(views::Button::PressedCallback());
@@ -834,6 +862,14 @@ void VideoOverlayWindowViews::SetUpViews() {
   hang_up_button->layer()->SetFillsBoundsOpaquely(false);
   hang_up_button->layer()->SetName("HangUpButton");
 
+  previous_slide_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+  previous_slide_controls_view->layer()->SetFillsBoundsOpaquely(false);
+  previous_slide_controls_view->layer()->SetName("PreviousSlideButton");
+
+  next_slide_controls_view->SetPaintToLayer(ui::LAYER_TEXTURED);
+  next_slide_controls_view->layer()->SetFillsBoundsOpaquely(false);
+  next_slide_controls_view->layer()->SetName("NextSlideButton");
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // views::View that shows the affordance that the window can be resized. ----
   resize_handle_view->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -855,10 +891,14 @@ void VideoOverlayWindowViews::SetUpViews() {
 
   previous_track_controls_view_ = controls_container_view->AddChildView(
       std::move(previous_track_controls_view));
+  previous_slide_controls_view_ = controls_container_view->AddChildView(
+      std::move(previous_slide_controls_view));
   play_pause_controls_view_ = controls_container_view->AddChildView(
       std::move(play_pause_controls_view));
   next_track_controls_view_ = controls_container_view->AddChildView(
       std::move(next_track_controls_view));
+  next_slide_controls_view_ = controls_container_view->AddChildView(
+      std::move(next_slide_controls_view));
   skip_ad_controls_view_ =
       controls_container_view->AddChildView(std::move(skip_ad_controls_view));
   toggle_microphone_button_ = controls_container_view->AddChildView(
@@ -967,18 +1007,24 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
 
   // Following controls order matters:
   // #1 Previous track
-  // #2 Play/Pause
-  // #3 Next track
-  // #4 Toggle microphone
-  // #5 Toggle camera
-  // #6 Hang up
+  // #2 Previous slide
+  // #3 Play/Pause
+  // #4 Next track
+  // #5 Next slide
+  // #6 Toggle microphone
+  // #7 Toggle camera
+  // #8 Hang up
   std::vector<views::ImageButton*> visible_controls_views;
   if (show_previous_track_button_)
     visible_controls_views.push_back(previous_track_controls_view_);
+  if (show_previous_slide_button_)
+    visible_controls_views.push_back(previous_slide_controls_view_);
   if (show_play_pause_button_)
     visible_controls_views.push_back(play_pause_controls_view_);
   if (show_next_track_button_)
     visible_controls_views.push_back(next_track_controls_view_);
+  if (show_next_slide_button_)
+    visible_controls_views.push_back(next_slide_controls_view_);
   if (show_toggle_microphone_button_)
     visible_controls_views.push_back(toggle_microphone_button_);
   if (show_toggle_camera_button_)
@@ -1094,6 +1140,8 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
   toggle_microphone_button_->SetVisible(show_toggle_microphone_button_);
   toggle_camera_button_->SetVisible(show_toggle_camera_button_);
   hang_up_button_->SetVisible(show_hang_up_button_);
+  previous_slide_controls_view_->SetVisible(show_previous_slide_button_);
+  next_slide_controls_view_->SetVisible(show_next_slide_button_);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1181,6 +1229,23 @@ void VideoOverlayWindowViews::SetSkipAdButtonVisibility(bool is_visible) {
     return;
 
   show_skip_ad_button_ = is_visible;
+  UpdateControlsBounds();
+}
+
+void VideoOverlayWindowViews::SetPreviousSlideButtonVisibility(
+    bool is_visible) {
+  if (show_previous_slide_button_ == is_visible)
+    return;
+
+  show_previous_slide_button_ = is_visible;
+  UpdateControlsBounds();
+}
+
+void VideoOverlayWindowViews::SetNextSlideButtonVisibility(bool is_visible) {
+  if (show_next_slide_button_ == is_visible)
+    return;
+
+  show_next_slide_button_ = is_visible;
   UpdateControlsBounds();
 }
 
@@ -1362,6 +1427,14 @@ gfx::Rect VideoOverlayWindowViews::GetHangUpButtonBounds() {
   return hang_up_button_->GetMirroredBounds();
 }
 
+gfx::Rect VideoOverlayWindowViews::GetPreviousSlideControlsBounds() {
+  return previous_slide_controls_view_->GetMirroredBounds();
+}
+
+gfx::Rect VideoOverlayWindowViews::GetNextSlideControlsBounds() {
+  return next_slide_controls_view_->GetMirroredBounds();
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 int VideoOverlayWindowViews::GetResizeHTComponent() const {
   return resize_handle_view_->GetHTComponent();
@@ -1381,12 +1454,12 @@ VideoOverlayWindowViews::play_pause_controls_view_for_testing() const {
   return play_pause_controls_view_;
 }
 
-TrackImageButton*
+SimpleOverlayWindowImageButton*
 VideoOverlayWindowViews::next_track_controls_view_for_testing() const {
   return next_track_controls_view_;
 }
 
-TrackImageButton*
+SimpleOverlayWindowImageButton*
 VideoOverlayWindowViews::previous_track_controls_view_for_testing() const {
   return previous_track_controls_view_;
 }
@@ -1408,6 +1481,16 @@ ToggleCameraButton* VideoOverlayWindowViews::toggle_camera_button_for_testing()
 
 HangUpButton* VideoOverlayWindowViews::hang_up_button_for_testing() const {
   return hang_up_button_;
+}
+
+SimpleOverlayWindowImageButton*
+VideoOverlayWindowViews::next_slide_controls_view_for_testing() const {
+  return next_slide_controls_view_;
+}
+
+SimpleOverlayWindowImageButton*
+VideoOverlayWindowViews::previous_slide_controls_view_for_testing() const {
+  return previous_slide_controls_view_;
 }
 
 CloseImageButton* VideoOverlayWindowViews::close_button_for_testing() const {

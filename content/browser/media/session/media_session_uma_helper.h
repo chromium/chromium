@@ -31,6 +31,8 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
 
   // Extended enum to media_session::mojom::MediaSessionAction, distinguishing
   // default action handling.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class MediaSessionUserAction {
     kPlay = 0,
     kPlayDefault = 1,
@@ -53,7 +55,9 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
     kHangUp = 18,
     kRaise = 19,
     kSetMute = 20,
-    kMaxValue = kSetMute,
+    kPreviousSlide = 21,
+    kNextSlide = 22,
+    kMaxValue = kNextSlide,
   };
 
   MediaSessionUmaHelper();
