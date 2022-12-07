@@ -103,3 +103,99 @@ suite('cr-scrollable-mixin', function() {
     });
   });
 });
+
+suite('cr-scrollable-mixin items', function() {
+  const TestElementBase = CrScrollableMixin(PolymerElement);
+
+  class TestElement extends TestElementBase {
+    static get is() {
+      return 'test-items-element';
+    }
+
+    static get template() {
+      return html`
+        <style>
+          .hidden {
+            display: none;
+          }
+
+          #container {
+            min-height: 1px;
+          }
+        </style>
+        <div id="outer" class="hidden">
+          <div id="container" scrollable>
+            <iron-list id="list" scroll-target="container" items="[[items]]">
+              <template>
+                <div class="item">[[item]]</div>
+              </template>
+            </iron-list>
+          </div>
+        </div>
+      `;
+    }
+
+    static get properties() {
+      return {
+        items: Array,
+        opened: Boolean,
+      };
+    }
+
+    items: string[] = ['apple', 'bannana', 'cucumber', 'doughnut', 'enchilada'];
+    opened: boolean = false;
+  }
+  customElements.define(TestElement.is, TestElement);
+
+  let testElement: TestElement;
+  let ironList: IronListElement;
+
+  setup(function(done) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testElement = document.createElement('test-items-element') as TestElement;
+    document.body.appendChild(testElement);
+    ironList = testElement.shadowRoot!.querySelector('iron-list')!;
+
+    // Wait for CrScrollableBehavior to set the initial scrollable class
+    // properties.
+    window.requestAnimationFrame(() => {
+      waitBeforeNextRender(testElement).then(done);
+    });
+  });
+
+  test('initially hidden', function(done) {
+    const outer = testElement.shadowRoot!.querySelector('#outer')!;
+    assertEquals(
+        0, ironList.shadowRoot!.querySelectorAll('.item')!.length,
+        'should have no initial items');
+    let resizeEvents = 0;
+    const resizeListener = function() {
+      flush();
+      // There will be two resize events - the first is fired after scrollHeight
+      // changes from 0 -> 1, which updates scrollHeight to its final value.
+      // Then, the second resize event is fired causing the list to properly
+      // render its items.
+      resizeEvents += 1;
+      if (resizeEvents === 1) {
+        assertEquals(
+            3,
+            testElement.shadowRoot!.querySelectorAll('.item')!.length,
+            'should have default minimum number of items',
+        );
+      } else if (resizeEvents === 2) {
+        assertEquals(
+            testElement.items.length,
+            testElement.shadowRoot!.querySelectorAll('.item')!.length,
+            'should render all items',
+        );
+        done();
+      }
+    };
+    ironList.addEventListener('iron-resize', resizeListener);
+    testElement.updateScrollableContents();
+    window.setTimeout(function() {
+      outer.classList.remove('hidden');
+    }, 100);
+  });
+});

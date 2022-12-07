@@ -37,7 +37,6 @@
 // clang-format off
 import {beforeNextRender, dedupingMixin, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 // clang-format on
 
 type IronListElementWithExtras = IronListElement&{
@@ -51,7 +50,19 @@ export const CrScrollableMixin = dedupingMixin(
     Constructor<CrScrollableMixinInterface> => {
       class CrScrollableMixin extends superClass implements
           CrScrollableMixinInterface {
-        private intervalId_: number|null = null;
+        private resizeObserver_: ResizeObserver;
+
+        constructor(...args: any[]) {
+          super(...args);
+
+          this.resizeObserver_ = new ResizeObserver((entries) => {
+            requestAnimationFrame(() => {
+              for (const entry of entries) {
+                this.onScrollableContainerResize_(entry.target as HTMLElement);
+              }
+            });
+          });
+        }
 
         override ready() {
           super.ready();
@@ -71,10 +82,7 @@ export const CrScrollableMixin = dedupingMixin(
 
         override disconnectedCallback() {
           super.disconnectedCallback();
-
-          if (this.intervalId_ !== null) {
-            clearInterval(this.intervalId_);
-          }
+          this.resizeObserver_.disconnect();
         }
 
         /**
@@ -83,64 +91,41 @@ export const CrScrollableMixin = dedupingMixin(
          * sized containers are resized correctly.
          */
         updateScrollableContents() {
-          if (this.intervalId_ !== null) {
-            return;
-          }  // notifyResize is already in progress.
-
           this.requestUpdateScroll();
 
-          const nodeList = this.shadowRoot!.querySelectorAll<IronListElement>(
+          const ironLists = this.shadowRoot!.querySelectorAll<IronListElement>(
               '[scrollable] iron-list');
-          if (!nodeList.length) {
-            return;
-          }
 
-          interface NodeToResize {
-            node: IronListElement;
-            lastScrollHeight: number;
-          }
+          for (const ironList of ironLists) {
+            // When the scroll-container of an iron-list has scrollHeight of 1,
+            // the iron-list will default to showing a minimum of 3 items.
+            // After an iron-resize is fired, it will resize to have the correct
+            // scrollHeight, but another iron-resize is required to render all
+            // the items correctly.
+            // If the scrollHeight of the scroll-container is 0, the element is
+            // not yet rendered, and we must wait until its scrollHeight becomes
+            // 1, then fire the first iron-resize event.
+            const scrollContainer = ironList.parentElement!;
+            const scrollHeight = scrollContainer.scrollHeight;
 
-          let nodesToResize: NodeToResize[] =
-              Array.from(nodeList).map(node => ({
-                                         node: node,
-                                         lastScrollHeight: 0,
-                                       }));
-          // Use setInterval to avoid initial render / sizing issues.
-          this.intervalId_ = window.setInterval(() => {
-            const checkAgain: NodeToResize[] = [];
-            nodesToResize.forEach(({node, lastScrollHeight}) => {
-              const scrollHeight = node.parentElement!.scrollHeight;
-              // A hidden scroll-container has a height of 0. When not hidden,
-              // it has a min-height of 1px and the iron-list needs a resize to
-              // show the initial items and update the |scrollHeight|. The
-              // initial item count is determined by the |scrollHeight|. A
-              // scrollHeight of 1px will result in the minimum default item
-              // count (currently 3). After the |scrollHeight| is updated to be
-              // greater than 1px, another resize is needed to correctly
-              // calculate the number of physical iron-list items to render.
-              if (scrollHeight !== lastScrollHeight) {
-                const ironList = node as IronListElement;
-                ironList.notifyResize();
-              }
-
-              // TODO(crbug.com/1121679): Add UI Test for this behavior.
-              if (scrollHeight <= 1 &&
-                  window.getComputedStyle(node.parentElement!).display !==
-                      'none') {
-                checkAgain.push({
-                  node: node,
-                  lastScrollHeight: scrollHeight,
-                });
-              }
-            });
-            if (checkAgain.length === 0) {
-              assert(this.intervalId_);
-              window.clearInterval(this.intervalId_);
-              this.intervalId_ = null;
-            } else {
-              nodesToResize = checkAgain;
+            if (scrollHeight <= 1 && ironList.items!.length > 0 &&
+                window.getComputedStyle(scrollContainer).display !== 'none') {
+              // The scroll-container does not have a proper scrollHeight yet.
+              // An additional iron-resize is needed, which will be triggered by
+              // the observer after scrollHeight changes.
+              // Do not observe for resize if there are no items, or if the
+              // scroll-container is explicitly hidden, as in those cases there
+              // will not be any future resizes.
+              this.resizeObserver_.observe(scrollContainer);
             }
-          }, 10);
+
+            if (scrollHeight !== 0) {
+              // If the iron-list is already rendered, fire an initial
+              // iron-resize event. Otherwise, the resizeObserver_ will handle
+              // firing the iron-resize event, upon its scrollHeight becoming 1.
+              ironList.notifyResize();
+            }
+          }
         }
 
         /**
@@ -199,6 +184,29 @@ export const CrScrollableMixin = dedupingMixin(
               'scrolled-to-bottom',
               scrollable.scrollTop + scrollable.clientHeight >=
                   scrollable.scrollHeight);
+        }
+
+        /**
+         * This gets called upon a resize event on the scrollable element
+         */
+        private onScrollableContainerResize_(scrollable: HTMLElement) {
+          const nodeList =
+              scrollable.querySelectorAll<IronListElement>('iron-list');
+          if (nodeList.length === 0 || scrollable.scrollHeight > 1) {
+            // Stop observing after the scrollHeight has its correct value, or
+            // if somehow there are no more iron-lists in the scrollable.
+            this.resizeObserver_.unobserve(scrollable);
+          }
+
+          if (scrollable.scrollHeight !== 0) {
+            // Fire iron-resize event only if scrollHeight has changed from 0 to
+            // 1 or from 1 to the correct size. ResizeObserver doesn't exactly
+            // observe scrollHeight and may fire despite it staying at 0, so
+            // we can ignore those events.
+            for (const node of nodeList) {
+              node.notifyResize();
+            }
+          }
         }
       }
       return CrScrollableMixin;
