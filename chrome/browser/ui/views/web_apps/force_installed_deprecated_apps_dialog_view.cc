@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -28,7 +29,6 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
     content::WebContents* web_contents,
     base::OnceClosure launch_anyways) {
   auto delegate = std::make_unique<views::DialogDelegate>();
-  //   delegate->SetButtons(ui::DIALOG_BUTTON_OK);
   delegate->SetModalType(ui::MODAL_TYPE_CHILD);
   delegate->SetShowCloseButton(false);
   delegate->SetOwnedByWidget(true);
@@ -39,11 +39,16 @@ void ForceInstalledDeprecatedAppsDialogView::CreateAndShowDialog(
   std::u16string app_name = base::UTF8ToUTF16(extension->name());
   delegate->SetTitle(l10n_util::GetStringFUTF16(
       IDS_DEPRECATED_APPS_RENDERER_TITLE_WITH_APP_NAME, app_name));
-  delegate->SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
-      l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL));
-  delegate->SetAcceptCallback(std::move(launch_anyways));
-
+  bool hide_launch_anyways =
+      features::kChromeAppsDeprecationHideLaunchAnyways.Get();
+  if (hide_launch_anyways) {
+    delegate->SetButtons(ui::DIALOG_BUTTON_OK);
+  } else {
+    delegate->SetButtonLabel(
+        ui::DIALOG_BUTTON_OK,
+        l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL));
+    delegate->SetAcceptCallback(std::move(launch_anyways));
+  }
   delegate->SetContentsView(
       base::WrapUnique<ForceInstalledDeprecatedAppsDialogView>(
           new ForceInstalledDeprecatedAppsDialogView(app_name, web_contents)));

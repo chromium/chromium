@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -192,7 +193,9 @@ void DeprecatedAppsDialogView::InitDialog() {
   SetAcceptCallback(base::BindOnce(&DeprecatedAppsDialogView::OnAccept,
                                    base::Unretained(this)));
 
-  if (launched_extension_name_) {
+  bool hide_launch_anyways =
+      features::kChromeAppsDeprecationHideLaunchAnyways.Get();
+  if (launched_extension_name_ && !hide_launch_anyways) {
     SetButtonLabel(
         ui::DIALOG_BUTTON_CANCEL,
         l10n_util::GetStringUTF16(IDS_DEPRECATED_APPS_LAUNCH_ANYWAY_LABEL));
@@ -265,7 +268,10 @@ void DeprecatedAppsDialogView::OnAccept() {
 }
 
 void DeprecatedAppsDialogView::OnCancel() {
-  std::move(launch_anyways_).Run();
+  bool hide_launch_anyways =
+      features::kChromeAppsDeprecationHideLaunchAnyways.Get();
+  if (!hide_launch_anyways)
+    std::move(launch_anyways_).Run();
   CloseDialog();
 }
 

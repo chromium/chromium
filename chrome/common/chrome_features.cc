@@ -339,11 +339,14 @@ BASE_FEATURE(kDesktopPWAsWebBundles,
 BASE_FEATURE(kChromeAppsDeprecation,
              "ChromeAppsDeprecation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-//  Controls whether force installed and preinstalled apps should be exempt from
-//  deprecation.
+// Controls whether force installed and preinstalled apps should be exempt from
+// deprecation.
 BASE_FEATURE(kKeepForceInstalledPreinstalledApps,
              "KeepForceInstalledPreinstalledApps",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Controls if the 'launch anyways' button is shown.
+const base::FeatureParam<bool> kChromeAppsDeprecationHideLaunchAnyways{
+    &kChromeAppsDeprecation, "HideLaunchAnyways", false};
 #endif
 
 // Enables notification permission revocation for origins that may send
