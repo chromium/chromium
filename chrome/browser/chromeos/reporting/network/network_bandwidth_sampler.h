@@ -32,7 +32,7 @@ class NetworkBandwidthSampler : public Sampler {
 
  private:
   const raw_ptr<::network::NetworkQualityTracker> network_quality_tracker_;
-  const raw_ptr<Profile> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 }  // namespace reporting
