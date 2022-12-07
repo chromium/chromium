@@ -10,12 +10,14 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -129,6 +131,15 @@ absl::optional<MirroringActivity::MirroringType> GetMirroringType(
 
   NOTREACHED() << "Invalid source: " << source;
   return absl::nullopt;
+}
+
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+bool ShouldForceLetterboxing(base::StringPiece model_name) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "disable-cast-letterboxing")) {
+    return false;
+  }
+  return model_name.find("Nest Hub") != base::StringPiece::npos;
 }
 
 }  // namespace
@@ -466,7 +477,8 @@ void MirroringActivity::OnSessionSet(const CastSession& session) {
           sink_.sink().name(), session.destination_id(),
           message_handler_->source_id(), cast_source->target_playout_delay(),
           route().media_source().IsRemotePlaybackSource(),
-          GetMirroringRefreshInterval()),
+          GetMirroringRefreshInterval(),
+          ShouldForceLetterboxing(cast_data_.model_name)),
       std::move(observer_remote), std::move(channel_remote),
       std::move(channel_to_service_receiver_));
 }

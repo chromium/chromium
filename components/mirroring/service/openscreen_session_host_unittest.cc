@@ -291,6 +291,9 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
       session_params->target_playout_delay =
           base::Milliseconds(target_playout_delay_ms_);
     }
+    if (force_letterboxing_) {
+      session_params->force_letterboxing = true;
+    }
     cast_mode_ = "mirroring";
     mojo::PendingRemote<mojom::ResourceProvider> resource_provider_remote;
     mojo::PendingRemote<mojom::SessionObserver> session_observer_remote;
@@ -495,6 +498,8 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     target_playout_delay_ms_ = target_playout_delay_ms;
   }
 
+  void ForceLetterboxing() { force_letterboxing_ = true; }
+
   void SetAnswer(std::unique_ptr<openscreen::cast::Answer> answer) {
     answer_ = std::move(answer);
   }
@@ -524,13 +529,14 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   mojo::Remote<media::mojom::Remoter> remoter_;
   NiceMock<MockRemotingSource> remoting_source_;
   std::string cast_mode_;
-  int32_t target_playout_delay_ms_ = kDefaultPlayoutDelay;
+  int32_t target_playout_delay_ms_{kDefaultPlayoutDelay};
+  bool force_letterboxing_{false};
 
   std::unique_ptr<OpenscreenSessionHost> session_host_;
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<openscreen::cast::Answer> answer_;
 
-  int next_receiver_ssrc_ = 35336;
+  int next_receiver_ssrc_{35336};
   absl::optional<openscreen::cast::SenderMessage> last_sent_offer_;
 };
 
@@ -555,9 +561,7 @@ TEST_F(OpenscreenSessionHostTest, AudioAndVideoMirroring) {
   StopSession();
 }
 
-TEST_F(OpenscreenSessionHostTest, AnswerWithConstraintsLetterboxDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCastDisableLetterboxing);
+TEST_F(OpenscreenSessionHostTest, AnswerWithConstraints) {
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
       .min_frame_size = gfx::Size(2, 2),
@@ -574,6 +578,21 @@ TEST_F(OpenscreenSessionHostTest, AnswerWithConstraintsLetterboxDisabled) {
 TEST_F(OpenscreenSessionHostTest, AnswerWithConstraintsLetterboxEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kCastDisableLetterboxing);
+  SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
+  media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
+      .min_frame_size = gfx::Size(320, 180),
+      .max_frame_size = gfx::Size(1920, 1080),
+      .fixed_aspect_ratio = true};
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  StopSession();
+  EXPECT_EQ(video_host_->GetVideoCaptureParams().SuggestConstraints(),
+            expected_constraints);
+}
+
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+TEST_F(OpenscreenSessionHostTest, AnswerWithConstraintsLetterboxForced) {
+  ForceLetterboxing();
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
       .min_frame_size = gfx::Size(320, 180),

@@ -40,7 +40,9 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/audio/audio_input_device.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_parameters.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/capture/video_capture_types.h"
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/encoding/encoding_support.h"
 #include "media/cast/sender/audio_sender.h"
@@ -158,6 +160,14 @@ void UpdateConfigUsingSessionParameters(
     config.min_playout_delay = *session_params.target_playout_delay;
     config.max_playout_delay = *session_params.target_playout_delay;
   }
+}
+
+const std::string ToString(const media::VideoCaptureParams& params) {
+  return base::StringPrintf(
+      "requested_format = %s, buffer_type = %d, resolution_policy = %d",
+      media::VideoCaptureFormat::ToString(params.requested_format).c_str(),
+      static_cast<int>(params.buffer_type),
+      static_cast<int>(params.resolution_change_policy));
 }
 
 }  // namespace
@@ -412,6 +422,10 @@ void OpenscreenSessionHost::OnNegotiated(
             &OpenscreenSessionHost::CreateAudioStream, base::Unretained(this))),
         media::AudioInputDevice::Purpose::kLoopback,
         media::AudioInputDevice::DeadStreamDetection::kEnabled);
+    const media::AudioParameters& capture_params =
+        mirror_settings_.GetAudioCaptureParams();
+    LogInfoMessage(base::StrCat({"Creating AudioInputDevice with params ",
+                                 capture_params.AsHumanReadableString()}));
     audio_input_device_->Initialize(mirror_settings_.GetAudioCaptureParams(),
                                     audio_capturing_callback_.get());
     audio_input_device_->Start();
@@ -447,8 +461,12 @@ void OpenscreenSessionHost::OnNegotiated(
       mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
       resource_provider_->GetVideoCaptureHost(
           video_host.InitWithNewPipeAndPassReceiver());
+      const media::VideoCaptureParams& capture_params =
+          mirror_settings_.GetVideoCaptureParams();
       video_capture_client_ = std::make_unique<VideoCaptureClient>(
-          mirror_settings_.GetVideoCaptureParams(), std::move(video_host));
+          capture_params, std::move(video_host));
+      LogInfoMessage(base::StrCat({"Starting VideoCaptureHost with params ",
+                                   ToString(capture_params)}));
       video_capture_client_->Start(
           base::BindRepeating(&VideoRtpStream::InsertVideoFrame,
                               video_stream_->AsWeakPtr()),
@@ -773,7 +791,10 @@ void OpenscreenSessionHost::SetConstraints(
                  static_cast<double>(video.maximum.frame_rate));
 
     // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
-    if (base::FeatureList::IsEnabled(features::kCastDisableLetterboxing)) {
+    if (session_params_.force_letterboxing) {
+      mirror_settings_.SetSenderSideLetterboxingEnabled(true);
+    } else if (base::FeatureList::IsEnabled(
+                   features::kCastDisableLetterboxing)) {
       mirror_settings_.SetSenderSideLetterboxingEnabled(false);
     } else {
       // Enable sender-side letterboxing if the receiver specifically does not

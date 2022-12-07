@@ -283,6 +283,14 @@ bool ShouldQueryForRemotingCapabilities(
   return media::remoting::IsKnownToSupportRemoting(receiver_model_name);
 }
 
+const std::string ToString(const media::VideoCaptureParams& params) {
+  return base::StringPrintf(
+      "requested_format = %s, buffer_type = %d, resolution_policy = %d",
+      media::VideoCaptureFormat::ToString(params.requested_format).c_str(),
+      static_cast<int>(params.buffer_type),
+      static_cast<int>(params.resolution_change_policy));
+}
+
 }  // namespace
 
 class Session::AudioCapturingCallback final
@@ -578,7 +586,10 @@ void Session::ApplyConstraintsToConfigs(
                  static_cast<double>(video.maximum.frame_rate));
 
     // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
-    if (base::FeatureList::IsEnabled(features::kCastDisableLetterboxing)) {
+    if (session_params_.force_letterboxing) {
+      mirror_settings_.SetSenderSideLetterboxingEnabled(true);
+    } else if (base::FeatureList::IsEnabled(
+                   features::kCastDisableLetterboxing)) {
       mirror_settings_.SetSenderSideLetterboxingEnabled(false);
     } else {
       // Enable sender-side letterboxing if the receiver specifically does not
@@ -725,7 +736,11 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
               &Session::CreateAudioStream, base::Unretained(this))),
           media::AudioInputDevice::Purpose::kLoopback,
           media::AudioInputDevice::DeadStreamDetection::kEnabled);
-      audio_input_device_->Initialize(mirror_settings_.GetAudioCaptureParams(),
+      const media::AudioParameters& capture_params =
+          mirror_settings_.GetAudioCaptureParams();
+      LogInfoMessage(base::StrCat({"Creating AudioInputDevice with params ",
+                                   capture_params.AsHumanReadableString()}));
+      audio_input_device_->Initialize(capture_params,
                                       audio_capturing_callback_.get());
       audio_input_device_->Start();
     }
@@ -749,6 +764,10 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
         mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
         resource_provider_->GetVideoCaptureHost(
             video_host.InitWithNewPipeAndPassReceiver());
+        const media::VideoCaptureParams& capture_params =
+            mirror_settings_.GetVideoCaptureParams();
+        LogInfoMessage(base::StrCat({"Starting VideoCaptureHost with params ",
+                                     ToString(capture_params)}));
         video_capture_client_ = std::make_unique<VideoCaptureClient>(
             mirror_settings_.GetVideoCaptureParams(), std::move(video_host));
         video_capture_client_->Start(

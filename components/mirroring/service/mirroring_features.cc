@@ -13,7 +13,7 @@ namespace features {
 // TODO(crbug.com/1363512):  Remove support for sender side letterboxing.
 BASE_FEATURE(kCastDisableLetterboxing,
              "CastDisableLetterboxing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The mirroring service previously used a model name filter before even
 // attempting to query the receiver for media remoting support. This

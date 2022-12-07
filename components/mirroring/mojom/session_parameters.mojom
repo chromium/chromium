@@ -57,4 +57,12 @@ struct SessionParameters {
   // parameter uses the default value defined in mirror_settings.cc.  A value of
   // zero disables refresh frame requests.
   mojo_base.mojom.TimeDelta? refresh_interval;
+
+  // If true, all video frames sent will be letterboxed/pillarboxed to fit the
+  // aspect ratio of the negotiated resolution.  This is to allow letterboxing
+  // to be selectively applied to receivers that have outstanding bugs with
+  // rendering variable aspect ratio frames.
+  //
+  // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+  bool force_letterboxing;
 };
