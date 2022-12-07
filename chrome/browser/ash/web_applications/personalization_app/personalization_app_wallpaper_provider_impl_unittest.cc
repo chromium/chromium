@@ -60,6 +60,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace ash::personalization_app {
 

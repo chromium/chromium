@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/types/strong_alias.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"

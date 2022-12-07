@@ -7,7 +7,6 @@ module apps.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/safe_base_name.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "ui/gfx/image/mojom/image.mojom";
 
 // Information about an app. See components/services/app_service/README.md.
 // Mojom App struct is DEPRECATED. When adding new fields, please use the App
@@ -248,51 +247,6 @@ enum TriState {
 union PermissionValue {
   bool bool_value;
   TriState tristate_value;
-};
-
-struct MenuItem {
-  // The type of the menu item.
-  MenuItemType type;
-
-  // The menu item command id. Used to identify the command when the menu item
-  // is executed.
-  int32 command_id;
-
-  // The grit id of the menu item label. Used when the menu item's type is
-  // kCommand, kRadio, or kSubmenu.
-  int32 string_id;
-
-  // The optional nested submenu item list.
-  array<MenuItem> submenu;
-
-  // The radio group id. All MenuItems with type kRadio will be grouped by this
-  // ID value in the menu.
-  int32 radio_group_id;
-
-  // Publisher-specific shortcut id. May be empty if not required.
-  string shortcut_id;
-
-  // The string label for this menu item. Used when the menu item's type is
-  // kPublisherCommand.
-  string label;
-
-  // The icon for the menu item. May be null if the item doesn't have an icon.
-  gfx.mojom.ImageSkia? image;
-};
-
-// The types of menu items shown in the app list or shelf.
-enum MenuItemType {
-  kCommand,    // Performs an action when selected.
-  kRadio,      // Can be selected/checked among a group of choices.
-  kSeparator,  // Shows a horizontal line separator.
-  kSubmenu,    // Presents a submenu within another menu.
-  kPublisherCommand, // Performs an app publisher shortcut action when selected.
-};
-
-// Which component requests context menus, the app list or shelf.
-enum MenuType {
-  kAppList,
-  kShelf,
 };
 
 // The intent filter matching condition types.

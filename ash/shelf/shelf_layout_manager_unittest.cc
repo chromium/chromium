@@ -106,6 +106,7 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/test/widget_animation_waiter.h"
 #include "ui/views/view.h"

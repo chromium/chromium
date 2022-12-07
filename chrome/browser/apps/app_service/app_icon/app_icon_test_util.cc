@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

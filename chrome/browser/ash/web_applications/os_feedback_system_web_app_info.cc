@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"

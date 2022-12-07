@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crostini/crostini_terminal_provider.h"
 
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"

@@ -13,6 +13,7 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/metrics/browser_to_tab_list.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"

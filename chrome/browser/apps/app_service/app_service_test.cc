@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

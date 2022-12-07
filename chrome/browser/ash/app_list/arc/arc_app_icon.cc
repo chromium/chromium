@@ -31,6 +31,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 
 namespace {

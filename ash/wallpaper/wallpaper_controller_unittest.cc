@@ -70,6 +70,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/color_analysis.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 

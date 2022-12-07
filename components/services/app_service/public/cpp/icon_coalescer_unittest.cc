@@ -10,6 +10,8 @@
 #include "components/services/app_service/public/cpp/icon_coalescer.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 class AppsIconCoalescerTest : public testing::Test {
  protected:

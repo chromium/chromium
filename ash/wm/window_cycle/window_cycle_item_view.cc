@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_preview_view.h"
+#include "base/cxx17_backports.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"

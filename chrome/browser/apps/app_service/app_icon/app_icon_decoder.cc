@@ -10,6 +10,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/base/layout.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace {
 
