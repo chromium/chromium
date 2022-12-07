@@ -89,6 +89,29 @@ TEST(ServiceProviderConfigTest, LocalTest2) {
             kMaxFileSize);
 }
 
+TEST(ServiceProviderConfigTest, BrcmChrmCas) {
+  const ServiceProviderConfig* config = GetServiceProviderConfig();
+  ASSERT_TRUE(config->count("brcm_chrm_cas"));
+  ServiceProvider service_provider = config->at("brcm_chrm_cas");
+
+  ASSERT_TRUE(service_provider.analysis);
+  ASSERT_FALSE(service_provider.reporting);
+  ASSERT_FALSE(service_provider.file_system);
+
+  ASSERT_FALSE(service_provider.analysis->url);
+  ASSERT_TRUE(service_provider.analysis->local_path);
+  ASSERT_EQ("brcm_chrm_cas",
+            std::string(service_provider.analysis->local_path));
+  ASSERT_FALSE(service_provider.analysis->user_specific);
+
+  // The BrcmChrmCas local service provider has 1 tag: dlp.
+  ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);
+  ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
+            "dlp");
+  ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
+            kMaxFileSize);
+}
+
 TEST(ServiceProviderConfigTest, Box) {
   const ServiceProviderConfig* config = GetServiceProviderConfig();
   ASSERT_TRUE(config->count("box"));

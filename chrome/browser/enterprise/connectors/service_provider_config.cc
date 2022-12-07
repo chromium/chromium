@@ -53,6 +53,14 @@ constexpr std::array<SupportedTag, 1> kLocalTestSupportedTags = {{
     },
 }};
 
+constexpr std::array<SupportedTag, 1> kBrcmChrmCasSupportedTags = {{
+    {
+        .name = "dlp",
+        .display_name = "Sensitive data protection",
+        .max_file_size = 52428800,
+    },
+}};
+
 constexpr AnalysisConfig kLocalTestUserAnalysisConfig = {
     .local_path = "path_user",
     .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
@@ -62,6 +70,12 @@ constexpr AnalysisConfig kLocalTestUserAnalysisConfig = {
 constexpr AnalysisConfig kLocalTestSystemAnalysisConfig = {
     .local_path = "path_system",
     .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
+    .user_specific = false,
+};
+
+constexpr AnalysisConfig kBrcmChrmCasAnalysisConfig = {
+    .local_path = "brcm_chrm_cas",
+    .supported_tags = base::span<const SupportedTag>(kBrcmChrmCasSupportedTags),
     .user_specific = false,
 };
 
@@ -114,6 +128,13 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
               {
                   .display_name = "Test system agent",
                   .analysis = &kLocalTestSystemAnalysisConfig,
+              },
+          },
+          {
+              "brcm_chrm_cas",
+              {
+                  .display_name = "brcm_chrm_cas",
+                  .analysis = &kBrcmChrmCasAnalysisConfig,
               },
           },
       });
