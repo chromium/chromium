@@ -761,7 +761,6 @@ mojo.internal.Decoder = class {
         new DataView(this.data_.buffer, arrayOffset), this.handles_,
         this.context_);
 
-    const size = arrayDecoder.decodeUint32(0);
     const numElements = arrayDecoder.decodeUint32(4);
     if (!numElements)
       return [];
@@ -956,7 +955,7 @@ mojo.internal.Decoder = class {
 
   decodeInterfaceProxy(type, offset) {
     const handle = this.decodeHandle(offset);
-    const version = this.decodeUint32(offset + 4);  // TODO: support versioning
+    // TODO: support versioning
     if (!handle)
       return null;
     return new type(handle);
