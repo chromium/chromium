@@ -45,6 +45,7 @@ class IOSPasswordManagerDriver
                       const std::u16string& password) override;
   void PreviewSuggestion(const std::u16string& username,
                          const std::u16string& password) override;
+  void PreviewGenerationSuggestion(const std::u16string& password) override;
   void ClearPreviewedForm() override;
   password_manager::PasswordGenerationFrameHelper* GetPasswordGenerationHelper()
       override;

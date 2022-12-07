@@ -79,6 +79,7 @@ class ContentPasswordManagerDriver
 #endif
   void PreviewSuggestion(const std::u16string& username,
                          const std::u16string& password) override;
+  void PreviewGenerationSuggestion(const std::u16string& password) override;
   void ClearPreviewedForm() override;
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManager* GetPasswordManager() override;

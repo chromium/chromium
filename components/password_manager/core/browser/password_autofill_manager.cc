@@ -397,8 +397,10 @@ void PasswordAutofillManager::DidSelectSuggestion(
           autofill::
               POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE ||
       frontend_id ==
-          autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE)
+          autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE) {
     return;
+  }
+
   bool success =
       PreviewSuggestion(GetUsernameFromSuggestion(value), frontend_id);
   DCHECK(success);

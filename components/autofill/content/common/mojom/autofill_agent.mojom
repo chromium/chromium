@@ -56,6 +56,9 @@ interface AutofillAgent {
   PreviewPasswordSuggestion(mojo_base.mojom.String16 username,
                             mojo_base.mojom.String16 password);
 
+  // Tells the renderer to preview the generated password.
+  PreviewPasswordGenerationSuggestion(mojo_base.mojom.String16 password);
+
   // Configures the render to require, or not, a user gesture before notifying
   // the autofill agent of a field change. The default is true. Bypassing the
   // user gesture check should only used for Android Webview, which needs to

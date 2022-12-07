@@ -81,6 +81,12 @@ void CopyElementValueToOtherInputElements(
   }
 }
 
+void PreviewGeneratedValue(WebInputElement& input_element,
+                           const blink::WebString& value) {
+  input_element.SetShouldRevealPassword(true);
+  input_element.SetSuggestedValue(value);
+}
+
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -285,6 +291,52 @@ bool PasswordGenerationAgent::ShouldIgnoreBlur() const {
 
 bool PasswordGenerationAgent::IsPrerendering() const {
   return render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
+}
+
+void PasswordGenerationAgent::PreviewGenerationSuggestion(
+    const std::u16string& password) {
+  PasswordFormGenerationData* generation_data = GetCurrentGenerationData();
+  DCHECK(generation_data);
+
+  WebInputElement new_password_element =
+      FindFieldByRendererId(generation_data->new_password_renderer_id);
+  if (new_password_element.IsNull())
+    return;
+  PreviewGeneratedValue(new_password_element,
+                        blink::WebString::FromUTF16(password));
+
+  WebInputElement confirmation_password_element =
+      FindFieldByRendererId(generation_data->confirmation_password_renderer_id);
+  if (!confirmation_password_element.IsNull()) {
+    PreviewGeneratedValue(confirmation_password_element,
+                          blink::WebString::FromUTF16(password));
+  }
+}
+
+bool PasswordGenerationAgent::DidClearGenerationSuggestion(
+    const WebFormControlElement& control_element) {
+  const WebInputElement element = control_element.DynamicTo<WebInputElement>();
+  if (element.IsNull() || !current_generation_item_ ||
+      element != current_generation_item_->generation_element_)
+    return false;
+
+  PasswordFormGenerationData* generation_data = GetCurrentGenerationData();
+  DCHECK(generation_data);
+  WebInputElement new_password_element =
+      FindFieldByRendererId(generation_data->new_password_renderer_id);
+  if (new_password_element.IsNull() ||
+      new_password_element.SuggestedValue().IsEmpty()) {
+    return false;
+  }
+  PreviewGeneratedValue(new_password_element, blink::WebString());
+
+  WebInputElement confirmation_password_element =
+      FindFieldByRendererId(generation_data->confirmation_password_renderer_id);
+  if (!confirmation_password_element.IsNull() &&
+      !confirmation_password_element.SuggestedValue().IsEmpty()) {
+    PreviewGeneratedValue(confirmation_password_element, blink::WebString());
+  }
+  return true;
 }
 
 void PasswordGenerationAgent::GeneratedPasswordAccepted(
@@ -730,6 +782,27 @@ PasswordGenerationAgent::GetPasswordGenerationDriver() {
   }
 
   return *password_generation_client_;
+}
+
+PasswordFormGenerationData*
+PasswordGenerationAgent::GetCurrentGenerationData() {
+  if (!current_generation_item_)
+    return nullptr;
+  autofill::FieldRendererId password_generation_element_id(
+      current_generation_item_->generation_element_
+          .UniqueRendererFormControlId());
+  auto generation_data =
+      generation_enabled_fields_.find(password_generation_element_id);
+  return generation_data == generation_enabled_fields_.end()
+             ? nullptr
+             : &generation_data->second;
+}
+
+WebInputElement PasswordGenerationAgent::FindFieldByRendererId(
+    autofill::FieldRendererId field_id) {
+  WebDocument document = render_frame()->GetWebFrame()->GetDocument();
+  return form_util::FindFormControlElementByUniqueRendererId(document, field_id)
+      .DynamicTo<WebInputElement>();
 }
 
 void PasswordGenerationAgent::LogMessage(Logger::StringID message_id) {

@@ -371,10 +371,12 @@ void PasswordGenerationPopupControllerImpl::ViewDestroyed() {
 
 void PasswordGenerationPopupControllerImpl::SelectionCleared() {
   PasswordSelected(false);
+  driver_->ClearPreviewedForm();
 }
 
 void PasswordGenerationPopupControllerImpl::SetSelected() {
   PasswordSelected(true);
+  driver_->PreviewGenerationSuggestion(current_generated_password_);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

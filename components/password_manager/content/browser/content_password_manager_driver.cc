@@ -200,6 +200,11 @@ void ContentPasswordManagerDriver::PreviewSuggestion(
   GetAutofillAgent()->PreviewPasswordSuggestion(username, password);
 }
 
+void ContentPasswordManagerDriver::PreviewGenerationSuggestion(
+    const std::u16string& password) {
+  GetAutofillAgent()->PreviewPasswordGenerationSuggestion(password);
+}
+
 void ContentPasswordManagerDriver::ClearPreviewedForm() {
   GetAutofillAgent()->ClearPreviewedForm();
 }

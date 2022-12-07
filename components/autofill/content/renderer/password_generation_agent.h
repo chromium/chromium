@@ -95,6 +95,14 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
 
   bool IsPrerendering() const;
 
+  // Previews the generation suggestion for the current generation element.
+  void PreviewGenerationSuggestion(const std::u16string& password);
+
+  // Returns true if a generation suggestion was found and cleared successfully
+  // on |control_element|.
+  bool DidClearGenerationSuggestion(
+      const blink::WebFormControlElement& control_element);
+
  private:
   class DeferringPasswordGenerationDriver;
 
@@ -144,6 +152,14 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   void MaybeCreateCurrentGenerationItem(
       blink::WebInputElement element,
       FieldRendererId confirmation_password_renderer_id);
+
+  // Returns the generation data for |current_generation_item_| if available, or
+  // nullptr otherwise.
+  PasswordFormGenerationData* GetCurrentGenerationData();
+
+  // Finds the form control element with with the given id in the document.
+  blink::WebInputElement FindFieldByRendererId(
+      autofill::FieldRendererId field_id);
 
   void LogMessage(SavePasswordProgressLogger::StringID message_id);
   void LogBoolean(SavePasswordProgressLogger::StringID message_id,

@@ -84,6 +84,10 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               (const ::std::u16string& username,
                const ::std::u16string& password),
               (override));
+  MOCK_METHOD(void,
+              PreviewPasswordGenerationSuggestion,
+              (const ::std::u16string& password),
+              (override));
   MOCK_METHOD(void, SetUserGestureRequired, (bool required), (override));
   MOCK_METHOD(void, SetSecureContextRequired, (bool required), (override));
   MOCK_METHOD(void, SetFocusRequiresScroll, (bool require), (override));

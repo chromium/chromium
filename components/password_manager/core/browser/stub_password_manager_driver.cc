@@ -33,6 +33,9 @@ void StubPasswordManagerDriver::PreviewSuggestion(
     const std::u16string& username,
     const std::u16string& password) {}
 
+void StubPasswordManagerDriver::PreviewGenerationSuggestion(
+    const std::u16string& password) {}
+
 void StubPasswordManagerDriver::ClearPreviewedForm() {
 }
 

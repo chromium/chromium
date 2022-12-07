@@ -85,6 +85,11 @@ void IOSPasswordManagerDriver::PreviewSuggestion(
   NOTIMPLEMENTED();
 }
 
+void IOSPasswordManagerDriver::PreviewGenerationSuggestion(
+    const std::u16string& password) {
+  NOTIMPLEMENTED();
+}
+
 void IOSPasswordManagerDriver::ClearPreviewedForm() {
   NOTIMPLEMENTED();
 }

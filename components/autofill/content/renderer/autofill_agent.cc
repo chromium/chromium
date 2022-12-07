@@ -610,6 +610,9 @@ void AutofillAgent::ClearPreviewedForm() {
   if (password_autofill_agent_->DidClearAutofillSelection(element_))
     return;
 
+  if (password_generation_agent_->DidClearGenerationSuggestion(element_))
+    return;
+
   form_util::ClearPreviewedElements(previewed_elements_, element_,
                                     query_node_autofill_state_);
   previewed_elements_ = {};
@@ -727,6 +730,11 @@ void AutofillAgent::PreviewPasswordSuggestion(const std::u16string& username,
       element_, blink::WebString::FromUTF16(username),
       blink::WebString::FromUTF16(password));
   DCHECK(handled);
+}
+
+void AutofillAgent::PreviewPasswordGenerationSuggestion(
+    const std::u16string& password) {
+  password_generation_agent_->PreviewGenerationSuggestion(password);
 }
 
 bool AutofillAgent::CollectFormlessElements(FormData* output) const {

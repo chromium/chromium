@@ -565,8 +565,12 @@ input[type="password" i] {
     -webkit-text-security: disc !important;
 }
 
-input[type="password" i]::-internal-input-suggested {
+input[type="password" i]::-internal-input-suggested:not(.reveal-password) {
     -webkit-text-security: disc !important;
+}
+
+input[type="password" i]::-internal-input-suggested.reveal-password {
+    -webkit-text-security: none;
 }
 
 input[type="password" i]::-internal-reveal {

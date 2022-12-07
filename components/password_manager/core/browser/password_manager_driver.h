@@ -104,6 +104,9 @@ class PasswordManagerDriver
   virtual void PreviewSuggestion(const std::u16string& username,
                                  const std::u16string& password) = 0;
 
+  // Tells the driver to preview a password generation suggestion.
+  virtual void PreviewGenerationSuggestion(const std::u16string& password) = 0;
+
   // Tells the driver to clear previewed password and username fields.
   virtual void ClearPreviewedForm() = 0;
 

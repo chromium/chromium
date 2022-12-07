@@ -1252,4 +1252,47 @@ TEST_F(PasswordGenerationAgentTest, GenerationAvailableByRendererIds) {
   ExpectAutomaticGenerationAvailable(kPasswordElementsIds[2], kAvailable);
 }
 
+TEST_F(PasswordGenerationAgentTest, SuggestionPreviewTest) {
+  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
+  WebDocument document = GetMainFrame()->GetDocument();
+  SetFoundFormEligibleForGeneration(password_generation_,
+                                    GetMainFrame()->GetDocument(),
+                                    "first_password" /* new_passwod_id */,
+                                    "second_password" /* confirm_password_id*/);
+  ExpectAutomaticGenerationAvailable("first_password", kAvailable);
+
+  WebElement element =
+      document.GetElementById(WebString::FromUTF8("first_password"));
+  ASSERT_FALSE(element.IsNull());
+  WebInputElement first_password_element = element.To<WebInputElement>();
+  element = document.GetElementById(WebString::FromUTF8("second_password"));
+  ASSERT_FALSE(element.IsNull());
+  WebInputElement second_password_element = element.To<WebInputElement>();
+
+  std::u16string password = u"random_password";
+  password_generation_->PreviewGenerationSuggestion(password);
+
+  // Both password fields should have sugegsted values.
+  EXPECT_EQ(password, first_password_element.SuggestedValue().Utf16());
+  EXPECT_EQ(password, second_password_element.SuggestedValue().Utf16());
+  EXPECT_EQ(first_password_element.GetAutofillState(),
+            blink::WebAutofillState::kPreviewed);
+  EXPECT_EQ(second_password_element.GetAutofillState(),
+            blink::WebAutofillState::kPreviewed);
+
+  // Previewed suggestions should be successfully cleared upon request.
+  EXPECT_TRUE(password_generation_->DidClearGenerationSuggestion(
+      first_password_element));
+  EXPECT_TRUE(first_password_element.SuggestedValue().IsNull());
+  EXPECT_TRUE(second_password_element.SuggestedValue().IsNull());
+  EXPECT_EQ(first_password_element.GetAutofillState(),
+            blink::WebAutofillState::kNotFilled);
+  EXPECT_EQ(second_password_element.GetAutofillState(),
+            blink::WebAutofillState::kNotFilled);
+
+  // Clearing should not succeed when there is nothing to clear.
+  EXPECT_FALSE(password_generation_->DidClearGenerationSuggestion(
+      first_password_element));
+}
+
 }  // namespace autofill
