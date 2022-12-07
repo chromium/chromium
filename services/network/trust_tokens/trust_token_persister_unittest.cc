@@ -8,14 +8,17 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/proto/storage.pb.h"
 #include "services/network/trust_tokens/sqlite_trust_token_persister.h"
+#include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_database_owner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,6 +30,65 @@ using ::testing::Pointee;
 namespace network {
 
 namespace {
+
+// Some arbitrary time in microseconds since windows epoch. This is a
+// timestamp before begin timestamp to be used in time filters. Tokens
+// and redemtion records created at this time should not be deleted.
+const int64_t before_begin = 12345;
+// 1 microsecond after before_begin, this will be used as begin time
+// in time filters.
+const base::Time begin_time = base::Time::FromDeltaSinceWindowsEpoch(
+    base::Microseconds(before_begin) + base::Microseconds(1));
+// 42 seconds later than begin_time (in microseconds since windows epoch). This
+// will be used as creation time for token and redemption records.  Data with
+// this creation time will get deleted.
+const int64_t time_in_window =
+    begin_time.ToDeltaSinceWindowsEpoch().InMicroseconds() +
+    base::Seconds(42).InMicroseconds();
+// 1 second after time_in_window, this will be used as end time in time
+// filters.
+const base::Time end_time = base::Time::FromDeltaSinceWindowsEpoch(
+    base::Microseconds(time_in_window) + base::Seconds(1));
+// 1 microseconds later than end time (in microseconds since windows epoch).
+// This will be used as a creation time, data created at this time
+// should not be deleted.
+const int64_t after_end_time =
+    end_time.ToDeltaSinceWindowsEpoch().InMicroseconds() + 1;
+
+// A matcher that returns true if origin == origin_to_delete.
+// This is used to create matchers in tests.
+const auto GenericKeyMatcher =
+    [](const SuitableTrustTokenOrigin& origin,
+       const SuitableTrustTokenOrigin& origin_to_delete) -> bool {
+  return (origin == origin_to_delete);
+};
+
+// A matcher that returns true if creation time is between begin and end
+// time. This is used to create time matchers in tests.
+const auto GenericTimeMatcher = [](const base::Time& begin_time,
+                                   const base::Time& end_time,
+                                   const base::Time& creation_time) -> bool {
+  const base::TimeDelta creation_delta =
+      creation_time.ToDeltaSinceWindowsEpoch();
+  const base::TimeDelta begin_delta = begin_time.ToDeltaSinceWindowsEpoch();
+  const base::TimeDelta end_delta = end_time.ToDeltaSinceWindowsEpoch();
+  if ((creation_delta < begin_delta) || (creation_delta > end_delta)) {
+    return false;
+  }
+  return true;
+};
+
+const auto AlwaysFalseKeyMatcher = base::BindRepeating(
+    [](const SuitableTrustTokenOrigin& origin) -> bool { return false; });
+
+const auto AlwaysFalseTimeMatcher = base::BindRepeating(
+    [](const base::Time& creation_time) -> bool { return false; });
+
+const auto AlwaysTrueKeyMatcher = base::BindRepeating(
+    [](const SuitableTrustTokenOrigin& origin) -> bool { return true; });
+
+const auto AlwaysTrueTimeMatcher = base::BindRepeating(
+    [](const base::Time& creation_time) -> bool { return true; });
 
 MATCHER_P(EqualsProto,
           message,
@@ -216,96 +278,287 @@ TYPED_TEST(TrustTokenPersisterTest, StoresIssuerToplevelPairConfigs) {
   env.RunUntilIdle();
 }
 
-TYPED_TEST(TrustTokenPersisterTest, DeletesIssuerToplevelKeyedData) {
+TYPED_TEST(TrustTokenPersisterTest, CallDeleteOnEmptyPersister) {
   base::test::TaskEnvironment env;
   std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
-  env.RunUntilIdle();  // Give implementations with asynchronous initialization
-                       // time to initialize.
+  env.RunUntilIdle();
 
+  EXPECT_FALSE(
+      persister->DeleteForOrigins(AlwaysTrueKeyMatcher, AlwaysTrueTimeMatcher));
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest, DeletesIssuerToplevelKeyedDataNoRR) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();
+
+  // create pair config that has no redemption record
   TrustTokenIssuerToplevelPairConfig pair_config;
   pair_config.set_penultimate_redemption("four o'clock");
   pair_config.set_last_redemption("five o'clock");
 
+  // set config
   auto toplevel = *SuitableTrustTokenOrigin::Create(GURL("https://a.com/"));
   auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
   persister->SetIssuerToplevelPairConfig(
       issuer, toplevel,
       std::make_unique<TrustTokenIssuerToplevelPairConfig>(pair_config));
-  env.RunUntilIdle();  // Give implementations with asynchronous write
-                       // operations time to complete the operation.
+  env.RunUntilIdle();
 
-  // A matcher matching neither the issuer nor the top-level origin should not
-  // delete (issuer, top level)-keyed data.
-  EXPECT_FALSE(persister->DeleteForOrigins(base::BindLambdaForTesting(
-      [&](const SuitableTrustTokenOrigin& origin) { return false; })));
-
-  // A matcher matching the issuer should delete (issuer, top level)-keyed data.
+  // When there is no RR, config should be deleted no matter what time matcher
+  // returns.
   EXPECT_TRUE(persister->DeleteForOrigins(
-      base::BindLambdaForTesting([&](const SuitableTrustTokenOrigin& origin) {
-        return origin == issuer;
-      })));
-  env.RunUntilIdle();  // Give implementations with asynchronous write
-                       // operations time to complete the operation.
+      base::BindRepeating(GenericKeyMatcher, issuer), AlwaysFalseTimeMatcher));
+  env.RunUntilIdle();
   EXPECT_FALSE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
 
-  // A matcher matching the top-level origin should delete (issuer, top
-  // level)-keyed data, too.
-  persister->SetIssuerToplevelPairConfig(
-      issuer, toplevel,
-      std::make_unique<TrustTokenIssuerToplevelPairConfig>(pair_config));
-
-  env.RunUntilIdle();  // Give implementations with asynchronous write
-                       // operations time to complete the operation.
-  ASSERT_TRUE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
-
-  EXPECT_TRUE(persister->DeleteForOrigins(
-      base::BindLambdaForTesting([&](const SuitableTrustTokenOrigin& origin) {
-        return origin == toplevel;
-      })));
-  env.RunUntilIdle();  // Give implementations with asynchronous write
-                       // operations time to complete the operation.
-  EXPECT_FALSE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
-
-  // Some implementations of TrustTokenPersister may release resources
-  // asynchronously at destruction time; manually free the persister and allow
-  // this asynchronous release to occur, if any.
   persister.reset();
   env.RunUntilIdle();
 }
 
-TYPED_TEST(TrustTokenPersisterTest, DeletesIssuerKeyedData) {
+TYPED_TEST(TrustTokenPersisterTest,
+           DeletesIssuerToplevelKeyedDataHasRRNoCreationTime) {
   base::test::TaskEnvironment env;
   std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
-  env.RunUntilIdle();  // Give implementations with asynchronous initialization
-                       // time to initialize.
+  env.RunUntilIdle();
+
+  // create pair config that has no redemption record
+  TrustTokenIssuerToplevelPairConfig pair_config;
+  pair_config.set_penultimate_redemption("four o'clock");
+  pair_config.set_last_redemption("five o'clock");
+
+  // set redemption record
+  TrustTokenRedemptionRecord rr;
+  rr.set_body("rr body");
+  rr.set_token_verification_key("key");
+  rr.set_lifetime(1234567);
+  *(pair_config.mutable_redemption_record()) = rr;
+
+  // set config
+  auto toplevel = *SuitableTrustTokenOrigin::Create(GURL("https://a.com/"));
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+  persister->SetIssuerToplevelPairConfig(
+      issuer, toplevel,
+      std::make_unique<TrustTokenIssuerToplevelPairConfig>(pair_config));
+  env.RunUntilIdle();
+  ASSERT_TRUE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
+
+  // Config should not be deleted when key is not a match.
+  EXPECT_FALSE(persister->DeleteForOrigins(AlwaysFalseKeyMatcher,
+                                           AlwaysTrueTimeMatcher));
+  env.RunUntilIdle();
+  EXPECT_TRUE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
+  env.RunUntilIdle();
+
+  // Config should be deleted when redemption record does not have creation
+  // time.
+  EXPECT_TRUE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, toplevel),
+      AlwaysFalseTimeMatcher));
+  env.RunUntilIdle();
+  EXPECT_FALSE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
+
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest,
+           DeletesIssuerToplevelKeyedDataHasRRHasCreationTimeNoMatch) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();
+
+  // create pair config that has no redemption record
+  TrustTokenIssuerToplevelPairConfig pair_config;
+  pair_config.set_penultimate_redemption("four o'clock");
+  pair_config.set_last_redemption("five o'clock");
+
+  // set redemption record
+  TrustTokenRedemptionRecord rr;
+  rr.set_body("rr body");
+  rr.set_token_verification_key("key");
+  rr.set_lifetime(1234567);
+  rr.set_creation_time_windows_epoch_micros(before_begin);
+  *(pair_config.mutable_redemption_record()) = rr;
+
+  // set config
+  auto toplevel = *SuitableTrustTokenOrigin::Create(GURL("https://a.com/"));
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+  persister->SetIssuerToplevelPairConfig(
+      issuer, toplevel,
+      std::make_unique<TrustTokenIssuerToplevelPairConfig>(pair_config));
+  env.RunUntilIdle();
+  ASSERT_TRUE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
+
+  // Creation time is before begin time. Should not delete.
+  EXPECT_FALSE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();
+  EXPECT_TRUE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
+
+  // set creation time to after end
+  pair_config.mutable_redemption_record()
+      ->set_creation_time_windows_epoch_micros(after_end_time);
+  env.RunUntilIdle();
+
+  // Creation time is after end time. Should not delete.
+  EXPECT_FALSE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();
+  EXPECT_TRUE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
+
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest,
+           DeletesIssuerToplevelKeyedDataHasRRHasCreationTimeMatches) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();
+
+  // create pair config that has no redemption record
+  TrustTokenIssuerToplevelPairConfig pair_config;
+  pair_config.set_penultimate_redemption("four o'clock");
+  pair_config.set_last_redemption("five o'clock");
+
+  // set redemption record
+  TrustTokenRedemptionRecord rr;
+  rr.set_body("rr body");
+  rr.set_token_verification_key("key");
+  rr.set_lifetime(1234567);
+  rr.set_creation_time_windows_epoch_micros(time_in_window);
+  *(pair_config.mutable_redemption_record()) = rr;
+
+  // set config
+  auto toplevel = *SuitableTrustTokenOrigin::Create(GURL("https://a.com/"));
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+  persister->SetIssuerToplevelPairConfig(
+      issuer, toplevel,
+      std::make_unique<TrustTokenIssuerToplevelPairConfig>(pair_config));
+  env.RunUntilIdle();
+  ASSERT_TRUE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
+
+  // Creation time is before begin time. Should not delete.
+  EXPECT_TRUE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, toplevel),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();
+  EXPECT_FALSE(persister->GetIssuerToplevelPairConfig(issuer, toplevel));
+
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest, DeletesIssuerKeyedDataKeyNoTokens) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();
 
   TrustTokenIssuerConfig issuer_config;
-  issuer_config.add_tokens()->set_signing_key("key");
 
   auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
 
   persister->SetIssuerConfig(
       issuer, std::make_unique<TrustTokenIssuerConfig>(issuer_config));
-  env.RunUntilIdle();  // Give implementations with asynchronous write
-                       // operations time to complete the operation.
+  env.RunUntilIdle();
   ASSERT_TRUE(persister->GetIssuerConfig(issuer));
 
-  // Deleting with a matcher not matching |issuer| should no-op.
-  EXPECT_FALSE(persister->DeleteForOrigins(base::BindLambdaForTesting(
-      [&](const SuitableTrustTokenOrigin& origin) { return false; })));
+  // Delete should return false. Key matcher returns false.
+  EXPECT_FALSE(persister->DeleteForOrigins(AlwaysFalseKeyMatcher,
+                                           AlwaysTrueTimeMatcher));
+  env.RunUntilIdle();
+  EXPECT_TRUE(persister->GetIssuerConfig(issuer));
 
-  // Deleting with a matcher not matching |issuer| should delete data.
+  // Key matches, issuer config has no tokens. Deletes config that
+  // does not have any tokens no matter what time matcher returns.
   EXPECT_TRUE(persister->DeleteForOrigins(
-      base::BindLambdaForTesting([&](const SuitableTrustTokenOrigin& origin) {
-        return origin == issuer;
-      })));
-  env.RunUntilIdle();  // Give implementations with asynchronous write
-                       // operations time to complete the operation.
-  ASSERT_FALSE(persister->GetIssuerConfig(issuer));
+      base::BindRepeating(GenericKeyMatcher, issuer), AlwaysFalseTimeMatcher));
+  EXPECT_FALSE(persister->GetIssuerConfig(issuer));
 
-  // Some implementations of TrustTokenPersister may release resources
-  // asynchronously at destruction time; manually free the persister and allow
-  // this asynchronous release to occur, if any.
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest,
+           DeletesIssuerKeyedDataKeyHasTokenNoCreationTime) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();
+
+  // create issuer config
+  TrustTokenIssuerConfig issuer_config;
+
+  // set token
+  TrustToken* token = issuer_config.add_tokens();
+  token->set_signing_key("key");
+
+  // set issuer config
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+  persister->SetIssuerConfig(
+      issuer, std::make_unique<TrustTokenIssuerConfig>(issuer_config));
+  env.RunUntilIdle();
+  ASSERT_TRUE(persister->GetIssuerConfig(issuer));
+
+  // Delete token that does not have creation time. Delete config since no
+  // tokens left.
+  EXPECT_TRUE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer), AlwaysFalseTimeMatcher));
+  env.RunUntilIdle();
+  EXPECT_FALSE(persister->GetIssuerConfig(issuer));
+
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest,
+           DeletesIssuerKeyedDataKeyHasTokenWithCreationTime) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();
+
+  // create issuer config
+  TrustTokenIssuerConfig issuer_config;
+
+  // set token
+  TrustToken* token = issuer_config.add_tokens();
+  token->set_signing_key("key");
+  token->set_creation_time_windows_epoch_micros(before_begin);
+
+  // set issuer config
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+  persister->SetIssuerConfig(
+      issuer, std::make_unique<TrustTokenIssuerConfig>(issuer_config));
+  env.RunUntilIdle();
+  ASSERT_TRUE(persister->GetIssuerConfig(issuer));
+
+  // Do not delete token created before begin time.
+  EXPECT_FALSE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();
+  EXPECT_TRUE(persister->GetIssuerConfig(issuer));
+
+  // add token created between begin and end
+  issuer_config.clear_tokens();
+  token = issuer_config.add_tokens();
+  token->set_signing_key("key");
+  token->set_creation_time_windows_epoch_micros(time_in_window);
+  persister->SetIssuerConfig(
+      issuer, std::make_unique<TrustTokenIssuerConfig>(issuer_config));
+  env.RunUntilIdle();
+
+  // Delete token created between begin and end time
+  EXPECT_TRUE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();
+  EXPECT_FALSE(persister->GetIssuerConfig(issuer));
+
   persister.reset();
   env.RunUntilIdle();
 }
@@ -327,14 +580,15 @@ TYPED_TEST(TrustTokenPersisterTest, DeletesToplevelKeyedData) {
   ASSERT_TRUE(persister->GetToplevelConfig(toplevel));
 
   // Deleting with a matcher not matching |toplevel| should no-op.
-  EXPECT_FALSE(persister->DeleteForOrigins(base::BindLambdaForTesting(
-      [&](const SuitableTrustTokenOrigin& origin) { return false; })));
+  EXPECT_FALSE(persister->DeleteForOrigins(AlwaysFalseKeyMatcher,
+                                           AlwaysTrueTimeMatcher));
 
-  // Deleting with a matcher matching |toplevel| should delete the data.
+  // Deleting with a matcher matching |toplevel| should delete the data, no
+  // matter what time matcher returns.  Time matcher does not matter. Top level
+  // config does not have time data.
   EXPECT_TRUE(persister->DeleteForOrigins(
-      base::BindLambdaForTesting([&](const SuitableTrustTokenOrigin& origin) {
-        return origin == toplevel;
-      })));
+      base::BindRepeating(GenericKeyMatcher, toplevel),
+      AlwaysFalseTimeMatcher));
   env.RunUntilIdle();  // Give implementations with asynchronous write
                        // operations time to complete the operation.
   ASSERT_FALSE(persister->GetToplevelConfig(toplevel));
@@ -358,6 +612,7 @@ TYPED_TEST(TrustTokenPersisterTest, RetrievesAvailableTrustTokens) {
   TrustTokenIssuerConfig config;
   TrustToken my_token;
   my_token.set_body("token token token");
+  my_token.set_creation_time_windows_epoch_micros(time_in_window);
   *config.add_tokens() = my_token;
 
   auto config_to_store = std::make_unique<TrustTokenIssuerConfig>(config);
@@ -379,5 +634,219 @@ TYPED_TEST(TrustTokenPersisterTest, RetrievesAvailableTrustTokens) {
   persister.reset();
   env.RunUntilIdle();
 }
+
+TYPED_TEST(TrustTokenPersisterTest, SomeTokensAreOutOfTimeWindow) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();  // Give implementations with asynchronous initialization
+                       // time to initialize.
+
+  TrustTokenIssuerConfig issuer_config;
+  // add tokens
+  {
+    TrustToken* first_token = issuer_config.add_tokens();
+    first_token->set_signing_key("key");
+    first_token->set_body("before begin time");
+    first_token->set_creation_time_windows_epoch_micros(before_begin);
+
+    TrustToken* second_token = issuer_config.add_tokens();
+    second_token->set_signing_key("key");
+    second_token->set_body("between begin and end time");
+    second_token->set_creation_time_windows_epoch_micros(time_in_window);
+
+    TrustToken* third_token = issuer_config.add_tokens();
+    third_token->set_signing_key("key");
+    third_token->set_body("after end");
+    third_token->set_creation_time_windows_epoch_micros(after_end_time);
+  }
+
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+
+  persister->SetIssuerConfig(
+      issuer, std::make_unique<TrustTokenIssuerConfig>(issuer_config));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+  ASSERT_TRUE(persister->GetIssuerConfig(issuer));
+
+  EXPECT_TRUE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+  EXPECT_TRUE(persister->GetIssuerConfig(issuer));
+
+  // check first and third tokens are in store
+  EXPECT_EQ(persister->GetIssuerConfig(issuer)->tokens().size(), 2);
+  EXPECT_EQ(persister->GetIssuerConfig(issuer)->tokens()[0].body(),
+            "before begin time");
+  EXPECT_EQ(persister->GetIssuerConfig(issuer)->tokens()[1].body(),
+            "after end");
+
+  // Some implementations of TrustTokenPersister may release resources
+  // asynchronously at destruction time; manually free the persister and allow
+  // this asynchronous release to occur, if any.
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest, AllTokensAreWithinTimeWindow) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();  // Give implementations with asynchronous initialization
+                       // time to initialize.
+
+  TrustTokenIssuerConfig issuer_config;
+
+  const int64_t begin_time_in_micros =
+      begin_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  const int64_t end_time_in_micros =
+      end_time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  // add tokens within window
+  for (int i = 0; i < 5; ++i) {
+    TrustToken* b_token = issuer_config.add_tokens();
+    b_token->set_signing_key("key");
+    b_token->set_body("token towards begin time");
+    b_token->set_creation_time_windows_epoch_micros(begin_time_in_micros + i);
+
+    TrustToken* e_token = issuer_config.add_tokens();
+    e_token->set_signing_key("key");
+    e_token->set_body("token towards end time");
+    e_token->set_creation_time_windows_epoch_micros(end_time_in_micros - i);
+  }
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+
+  persister->SetIssuerConfig(
+      issuer, std::make_unique<TrustTokenIssuerConfig>(issuer_config));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+  ASSERT_TRUE(persister->GetIssuerConfig(issuer));
+
+  // Should delete all tokens
+  EXPECT_TRUE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+
+  // All tokens are within the time window, this results issuer config
+  // being deleted.
+  EXPECT_FALSE(persister->GetIssuerConfig(issuer));
+
+  // Some implementations of TrustTokenPersister may release resources
+  // asynchronously at destruction time; manually free the persister and allow
+  // this asynchronous release to occur, if any.
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest, AllTokensAreOutOfTimeWindow) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();  // Give implementations with asynchronous initialization
+                       // time to initialize.
+
+  TrustTokenIssuerConfig issuer_config;
+  // add tokens
+  {
+    TrustToken* first_token = issuer_config.add_tokens();
+    first_token->set_signing_key("key");
+    first_token->set_body("before begin time");
+    first_token->set_creation_time_windows_epoch_micros(before_begin);
+
+    TrustToken* second_token = issuer_config.add_tokens();
+    second_token->set_signing_key("key");
+    second_token->set_body("after end");
+    second_token->set_creation_time_windows_epoch_micros(after_end_time);
+  }
+
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+
+  persister->SetIssuerConfig(
+      issuer, std::make_unique<TrustTokenIssuerConfig>(issuer_config));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+  ASSERT_TRUE(persister->GetIssuerConfig(issuer));
+
+  // Should not delete any token
+  EXPECT_FALSE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+  EXPECT_TRUE(persister->GetIssuerConfig(issuer));
+
+  // check the tokens
+  EXPECT_EQ(persister->GetIssuerConfig(issuer)->tokens().size(), 2);
+  EXPECT_EQ(persister->GetIssuerConfig(issuer)->tokens()[0].body(),
+            "before begin time");
+  EXPECT_EQ(persister->GetIssuerConfig(issuer)->tokens()[1].body(),
+            "after end");
+
+  // Some implementations of TrustTokenPersister may release resources
+  // asynchronously at destruction time; manually free the persister and allow
+  // this asynchronous release to occur, if any.
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+TYPED_TEST(TrustTokenPersisterTest,
+           DoNotDeleteOutOfTimeWindowRedemptionRecord) {
+  base::test::TaskEnvironment env;
+  std::unique_ptr<TrustTokenPersister> persister = TypeParam::Create();
+  env.RunUntilIdle();  // Give implementations with asynchronous initialization
+                       // time to initialize.
+
+  TrustTokenIssuerToplevelPairConfig config;
+  config.set_penultimate_redemption("four o'clock");
+  config.set_last_redemption("five o'clock");
+  TrustTokenRedemptionRecord rr;
+  rr.set_body("rr body");
+  rr.set_token_verification_key("key");
+  rr.set_lifetime(1234567);
+  rr.set_creation_time_windows_epoch_micros(before_begin);
+  *(config.mutable_redemption_record()) = rr;
+
+  auto config_to_store =
+      std::make_unique<TrustTokenIssuerToplevelPairConfig>(config);
+  auto toplevel = *SuitableTrustTokenOrigin::Create(GURL("https://a.com/"));
+  auto issuer = *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/"));
+  persister->SetIssuerToplevelPairConfig(issuer, toplevel,
+                                         std::move(config_to_store));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+
+  // should not delete, since rr is before begin time
+  EXPECT_FALSE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, issuer),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+
+  auto result = persister->GetIssuerToplevelPairConfig(issuer, toplevel);
+  EXPECT_THAT(result, Pointee(EqualsProto(config)));
+
+  // update redemptino record to have creation time after end time
+  rr.set_creation_time_windows_epoch_micros(after_end_time);
+  *(result->mutable_redemption_record()) = rr;
+  env.RunUntilIdle();
+
+  // should not delete, since rr is after end time
+  EXPECT_FALSE(persister->DeleteForOrigins(
+      base::BindRepeating(GenericKeyMatcher, toplevel),
+      base::BindRepeating(GenericTimeMatcher, begin_time, end_time)));
+  env.RunUntilIdle();  // Give implementations with asynchronous write
+                       // operations time to complete the operation.
+
+  result = persister->GetIssuerToplevelPairConfig(issuer, toplevel);
+  EXPECT_THAT(result, Pointee(EqualsProto(config)));
+
+  // Some implementations of TrustTokenPersister may release resources
+  // asynchronously at destruction time; manually free the persister and allow
+  // this asynchronous release to occur, if any.
+  persister.reset();
+  env.RunUntilIdle();
+}
+
+// add tests when creation time is missing in tokens and rr
 
 }  // namespace network

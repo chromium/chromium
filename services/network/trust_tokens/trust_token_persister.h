@@ -7,8 +7,9 @@
 
 #include <memory>
 
-#include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 
 namespace network {
@@ -16,6 +17,9 @@ namespace network {
 class TrustTokenIssuerConfig;
 class TrustTokenToplevelConfig;
 class TrustTokenIssuerToplevelPairConfig;
+typedef base::RepeatingCallback<bool(const SuitableTrustTokenOrigin&)>
+    PSTKeyMatcher;
+typedef base::RepeatingCallback<bool(const base::Time&)> PSTTimeMatcher;
 
 // Interface TrustTokenPersister defines interaction with a backing store for
 // Trust Tokens state. The most-frequently-used implementation will
@@ -48,14 +52,41 @@ class TrustTokenPersister {
       const SuitableTrustTokenOrigin& toplevel,
       std::unique_ptr<TrustTokenIssuerToplevelPairConfig> config) = 0;
 
-  // Deletes any data stored keyed by matching origins (as issuers or top-level
-  // origins).
-  virtual bool DeleteForOrigins(
-      base::RepeatingCallback<bool(const SuitableTrustTokenOrigin&)>
-          matcher) = 0;
+  // Implementation of this should either update or delete the issuer config
+  // depending on the matchers. Key matcher is used to find the right issuer
+  // config, and time matcher is used when deciding to delete the stored tokens.
+  // Tokens are deleted if time matcher returns true. The config is deleted if
+  // all tokens are deleted or there were no tokens to begin with.
+  //
+  // If a token (from a key matched issuer config) does not have a creation
+  // time, it is deleted.
+  virtual bool DeleteIssuerConfig(PSTKeyMatcher key_matcher,
+                                  PSTTimeMatcher time_matcher) = 0;
+  virtual bool DeleteToplevelConfig(PSTKeyMatcher key_matcher) = 0;
+
+  // Implementation of this should delete the issuer config depending on the
+  // matchers. Key matcher is used to find the right issuer toplevel pair
+  // config, and time matcher is used to check the creation time of the stored
+  // redemption record. The config is deleted if time matcher returns true.
+  //
+  // The config is deleted if it does not have a redemption record. The config
+  // is deleted if the stored redemption record does not have creation time.
+  //
+  virtual bool DeleteIssuerToplevelPairConfig(PSTKeyMatcher key_matcher,
+                                              PSTTimeMatcher time_matcher) = 0;
 
   virtual base::flat_map<SuitableTrustTokenOrigin, int>
   GetStoredTrustTokenCounts() = 0;
+
+  bool DeleteForOrigins(PSTKeyMatcher key_matcher,
+                        PSTTimeMatcher time_matcher) {
+    bool any_data_was_deleted = false;
+    any_data_was_deleted |= DeleteIssuerConfig(key_matcher, time_matcher);
+    any_data_was_deleted |= DeleteToplevelConfig(key_matcher);
+    any_data_was_deleted |=
+        DeleteIssuerToplevelPairConfig(key_matcher, time_matcher);
+    return any_data_was_deleted;
+  }
 };
 
 }  // namespace network

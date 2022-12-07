@@ -6,6 +6,7 @@
 #include "base/containers/cxx20_erase.h"
 
 #include "base/containers/cxx20_erase_map.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -61,26 +62,121 @@ void InMemoryTrustTokenPersister::SetIssuerToplevelPairConfig(
       std::move(config);
 }
 
-bool InMemoryTrustTokenPersister::DeleteForOrigins(
-    base::RepeatingCallback<bool(const SuitableTrustTokenOrigin&)> matcher) {
-  bool deleted_any_data = false;
+bool InMemoryTrustTokenPersister::DeleteIssuerConfig(
+    PSTKeyMatcher key_matcher,
+    PSTTimeMatcher time_matcher) {
+  std::vector<SuitableTrustTokenOrigin> keys_to_delete;
+  std::vector<std::pair<SuitableTrustTokenOrigin, TrustTokenIssuerConfig>>
+      key_value_pairs_to_update;
+  bool data_deleted = false;
 
-  auto predicate_for_origin_keyed_maps = [&matcher](const auto& entry) {
-    return matcher.Run(entry.first);
-  };
-  deleted_any_data |=
-      base::EraseIf(issuer_configs_, predicate_for_origin_keyed_maps);
-  deleted_any_data |=
-      base::EraseIf(toplevel_configs_, predicate_for_origin_keyed_maps);
+  for (const auto& kv : issuer_configs_) {
+    if (!key_matcher.Run(kv.first)) {
+      continue;
+    }
 
-  deleted_any_data |= base::EraseIf(
-      issuer_toplevel_pair_configs_, [&matcher](const auto& entry) {
-        const std::pair<SuitableTrustTokenOrigin, SuitableTrustTokenOrigin>&
-            key = entry.first;
-        return matcher.Run(key.first) || matcher.Run(key.second);
-      });
+    TrustTokenIssuerConfig new_issuer_config(*kv.second);
+    // clear all tokens first, we will add them back if they are not a match
+    new_issuer_config.clear_tokens();
+    for (const auto& token : kv.second->tokens()) {
+      if (token.has_creation_time_windows_epoch_micros()) {
+        const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
+            base::Microseconds(token.creation_time_windows_epoch_micros()));
+        if (!time_matcher.Run(creation_time)) {
+          // add token back to new issuer config
+          TrustToken* new_token = new_issuer_config.add_tokens();
+          *new_token = token;
+        }  // else token is deleted, do not add token back to new_issuer_config
+      }    // else token has no creation time, delete it
+    }
+    if (new_issuer_config.tokens().size() == 0) {
+      // all tokens are deleted, or there were no tokens to begin with
+      keys_to_delete.push_back(kv.first);
+      data_deleted = true;
+    } else if (new_issuer_config.tokens().size() !=
+               kv.second->tokens().size()) {
+      // some tokens deleted, at least one token remains
+      key_value_pairs_to_update.emplace_back(kv.first,
+                                             std::move(new_issuer_config));
+      data_deleted = true;
+    }
+    // else no change in config
+  }
 
-  return deleted_any_data;
+  for (auto const& origin : keys_to_delete) {
+    auto it = issuer_configs_.find(origin);
+    DCHECK(it != issuer_configs_.end());
+    issuer_configs_.erase(it);
+  }
+  for (const auto& kv : key_value_pairs_to_update) {
+    issuer_configs_[kv.first] =
+        std::make_unique<TrustTokenIssuerConfig>(std::move(kv.second));
+  }
+
+  return data_deleted;
+}
+
+bool InMemoryTrustTokenPersister::DeleteToplevelConfig(
+    PSTKeyMatcher key_matcher) {
+  std::vector<SuitableTrustTokenOrigin> keys_to_delete;
+  bool data_deleted = false;
+
+  for (const auto& kv : toplevel_configs_) {
+    if (key_matcher.Run(kv.first)) {
+      keys_to_delete.push_back(kv.first);
+      data_deleted = true;
+    }
+  }
+  for (auto const& origin : keys_to_delete) {
+    auto it = toplevel_configs_.find(origin);
+    DCHECK(it != toplevel_configs_.end());
+    toplevel_configs_.erase(it);
+  }
+  return data_deleted;
+}
+
+bool InMemoryTrustTokenPersister::DeleteIssuerToplevelPairConfig(
+    PSTKeyMatcher key_matcher,
+    PSTTimeMatcher time_matcher) {
+  bool data_deleted = false;
+  std::vector<std::pair<SuitableTrustTokenOrigin, SuitableTrustTokenOrigin>>
+      keys_to_delete;
+  for (const auto& kv : issuer_toplevel_pair_configs_) {
+    const TrustTokenIssuerToplevelPairConfig* pair_config = kv.second.get();
+
+    if (!key_matcher.Run(kv.first.first) && !key_matcher.Run(kv.first.second)) {
+      continue;
+    }
+
+    if (!pair_config->has_redemption_record()) {
+      // config does not have redemption record, delete it
+      keys_to_delete.push_back(kv.first);
+      data_deleted = true;
+      continue;
+    }
+
+    if (pair_config->redemption_record()
+            .has_creation_time_windows_epoch_micros()) {
+      const base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
+          base::Microseconds(pair_config->redemption_record()
+                                 .creation_time_windows_epoch_micros()));
+
+      if (time_matcher.Run(creation_time)) {
+        keys_to_delete.push_back(kv.first);
+        data_deleted = true;
+      }
+    } else {
+      // no creation time for RR, delete it
+      keys_to_delete.push_back(kv.first);
+      data_deleted = true;
+    }
+  }
+  for (auto const& key : keys_to_delete) {
+    auto it = issuer_toplevel_pair_configs_.find(key);
+    DCHECK(it != issuer_toplevel_pair_configs_.end());
+    issuer_toplevel_pair_configs_.erase(it);
+  }
+  return data_deleted;
 }
 
 base::flat_map<SuitableTrustTokenOrigin, int>

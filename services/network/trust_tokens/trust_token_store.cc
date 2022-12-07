@@ -309,15 +309,22 @@ TrustTokenStore::RetrieveNonstaleRedemptionRecord(
 }
 
 bool TrustTokenStore::ClearDataForFilter(mojom::ClearDataFilterPtr filter) {
+  const base::Time windows_epoch =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(0));
+  const base::Time beginning_of_time = windows_epoch;
+  const base::Time end_of_time = base::Time::Now();
   if (!filter) {
-    return persister_->DeleteForOrigins(base::BindRepeating(
-        [](const SuitableTrustTokenOrigin&) { return true; }));
+    const auto key_matcher = base::BindRepeating(
+        [](const SuitableTrustTokenOrigin&) { return true; });
+    const auto time_matcher =
+        base::BindRepeating([](const base::Time&) { return true; });
+    return persister_->DeleteForOrigins(std::move(key_matcher),
+                                        std::move(time_matcher));
   }
-
   // Returns whether |storage_key|'s data should be deleted, based on the logic
   // |filter| specifies. (Default to deleting everything, because a null
   // |filter| is a wildcard.)
-  auto matcher = base::BindRepeating(
+  auto key_matcher = base::BindRepeating(
       [](const mojom::ClearDataFilter& filter,
          const SuitableTrustTokenOrigin& storage_key) -> bool {
         // Match an origin if
@@ -346,7 +353,22 @@ bool TrustTokenStore::ClearDataForFilter(mojom::ClearDataFilterPtr filter) {
       },
       *filter);
 
-  return persister_->DeleteForOrigins(std::move(matcher));
+  auto time_matcher = base::BindRepeating(
+      [](const base::Time& begin_time, const base::Time& end_time,
+         const base::Time& creation_time) -> bool {
+        const base::TimeDelta creation_delta =
+            creation_time.ToDeltaSinceWindowsEpoch();
+        const base::TimeDelta begin_delta =
+            begin_time.ToDeltaSinceWindowsEpoch();
+        const base::TimeDelta end_delta = end_time.ToDeltaSinceWindowsEpoch();
+        if ((creation_delta < begin_delta) || (creation_delta > end_delta)) {
+          return false;
+        }
+        return true;
+      },
+      beginning_of_time, end_of_time);
+  return persister_->DeleteForOrigins(std::move(key_matcher),
+                                      std::move(time_matcher));
 }
 
 bool TrustTokenStore::DeleteStoredTrustTokens(
