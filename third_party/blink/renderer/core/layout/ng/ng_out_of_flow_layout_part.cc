@@ -190,7 +190,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
 
   wtf_size_t prev_placed_objects_size = placed_objects.size();
   bool did_get_same_object_count_once = false;
-  while (SweepLegacyCandidates(&placed_objects)) {
+  while (SweepLegacyCandidates(placed_objects)) {
     container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
 
     // We must have at least one new candidate, otherwise we shouldn't have
@@ -234,7 +234,7 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
 // </div>
 // Returns false if no new candidates were found.
 bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
-    HeapHashSet<Member<const LayoutObject>>* placed_objects) {
+    const HeapHashSet<Member<const LayoutObject>>& placed_objects) {
   const auto* container_block =
       DynamicTo<LayoutBlock>(container_builder_->GetLayoutObject());
   if (!container_block)
@@ -245,7 +245,7 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
   bool are_legacy_objects_already_placed = true;
   if (legacy_objects) {
     for (LayoutObject* legacy_object : *legacy_objects) {
-      if (!placed_objects->Contains(legacy_object)) {
+      if (!placed_objects.Contains(legacy_object)) {
         are_legacy_objects_already_placed = false;
         break;
       }
@@ -269,7 +269,7 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
   }
   bool candidate_added = false;
   for (LayoutObject* legacy_object : *legacy_objects) {
-    if (placed_objects->Contains(legacy_object)) {
+    if (placed_objects.Contains(legacy_object)) {
       if (!performing_extra_legacy_check_ || !legacy_object->NeedsLayout())
         continue;
       container_builder_->RemoveOldLegacyOOFFlexItem(*legacy_object);

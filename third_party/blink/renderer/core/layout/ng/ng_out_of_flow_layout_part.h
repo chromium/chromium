@@ -263,7 +263,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   enum RepeatMode { kNotRepeated, kMayRepeatAgain, kRepeatedLast };
 
   bool SweepLegacyCandidates(
-      HeapHashSet<Member<const LayoutObject>>* placed_objects);
+      const HeapHashSet<Member<const LayoutObject>>& placed_objects);
 
   const ContainingBlockInfo GetContainingBlockInfo(
       const NGLogicalOutOfFlowPositionedNode&);
