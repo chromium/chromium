@@ -42,11 +42,12 @@ CSSKeyframeRule::CSSKeyframeRule(StyleRuleKeyframe* keyframe,
 
 CSSKeyframeRule::~CSSKeyframeRule() = default;
 
-void CSSKeyframeRule::setKeyText(const String& key_text,
+void CSSKeyframeRule::setKeyText(const ExecutionContext* execution_context,
+                                 const String& key_text,
                                  ExceptionState& exception_state) {
   CSSStyleSheet::RuleMutationScope rule_mutation_scope(this);
 
-  if (!keyframe_->SetKeyText(key_text))
+  if (!keyframe_->SetKeyText(execution_context, key_text))
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "The key '" + key_text + "' is invalid and cannot be parsed");

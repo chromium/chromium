@@ -48,7 +48,7 @@ class CSSKeyframeRule final : public CSSRule {
   void Reattach(StyleRuleBase*) override;
 
   String keyText() const { return keyframe_->KeyText(); }
-  void setKeyText(const String&, ExceptionState&);
+  void setKeyText(const ExecutionContext*, const String&, ExceptionState&);
 
   CSSStyleDeclaration* style() const;
 

@@ -23,10 +23,12 @@ class CssKeyframeEffectModel : public StringKeyframeEffectModel {
   explicit CssKeyframeEffectModel(
       const KeyframeVector& keyframes,
       CompositeOperation composite = kCompositeReplace,
-      scoped_refptr<TimingFunction> default_keyframe_easing = nullptr)
+      scoped_refptr<TimingFunction> default_keyframe_easing = nullptr,
+      bool has_named_range_keyframes = false)
       : StringKeyframeEffectModel(keyframes,
                                   composite,
-                                  std::move(default_keyframe_easing)) {}
+                                  std::move(default_keyframe_easing),
+                                  has_named_range_keyframes) {}
 
   // Overridden to fill in missing property values for generated "from" and "to"
   // keyframes. TODO(crbug.com/1070627): Also perform the following steps:

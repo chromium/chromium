@@ -315,7 +315,10 @@ CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange&,
                                          const CSSParserContext&);
 // https://drafts.csswg.org/scroll-animations-1/#typedef-timeline-range-name
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange&);
+CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange&,
+                                             const CSSParserContext&);
 CSSValue* ConsumeAnimationDelay(CSSParserTokenRange&, const CSSParserContext&);
+
 bool ConsumeAnimationShorthand(
     const StylePropertyShorthand&,
     HeapVector<Member<CSSValueList>, kMaxNumAnimationLonghands>&,

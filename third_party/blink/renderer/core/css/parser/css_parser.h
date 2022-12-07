@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 
 namespace blink {
 
@@ -102,7 +103,9 @@ class CORE_EXPORT CSSParser {
   static ImmutableCSSPropertyValueSet*
   ParseInlineStyleDeclaration(const String&, CSSParserMode, SecureContextMode);
 
-  static std::unique_ptr<Vector<double>> ParseKeyframeKeyList(const String&);
+  static std::unique_ptr<Vector<KeyframeOffset>> ParseKeyframeKeyList(
+      const CSSParserContext*,
+      const String&);
   static StyleRuleKeyframe* ParseKeyframeRule(const CSSParserContext*,
                                               const String&);
 

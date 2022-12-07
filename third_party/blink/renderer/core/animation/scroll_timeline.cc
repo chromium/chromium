@@ -268,7 +268,14 @@ void ScrollTimeline::ScheduleNextService() {
 }
 
 void ScrollTimeline::UpdateSnapshot() {
-  timeline_state_snapshotted_ = ComputeTimelineState();
+  auto state = ComputeTimelineState();
+  // TODO(crbug.com/1395378): Check for change in target/container size as well
+  // as scroll_offsets.
+  if (timeline_state_snapshotted_ == state)
+    return;
+
+  timeline_state_snapshotted_ = state;
+  InvalidateEffectTargetStyle();
 }
 
 Element* ScrollTimeline::source() const {

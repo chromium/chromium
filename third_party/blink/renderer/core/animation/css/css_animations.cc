@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/animation/interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
+#include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
@@ -105,7 +106,9 @@ StringKeyframeVector ProcessKeyframesRule(
     const ComputedStyle* parent_style,
     TimingFunction* default_timing_function,
     WritingMode writing_mode,
-    TextDirection text_direction) {
+    TextDirection text_direction,
+    AnimationTimeline* timeline,
+    bool& has_named_range_keyframes) {
   StringKeyframeVector keyframes;
   const HeapVector<Member<StyleRuleKeyframe>>& style_keyframes =
       keyframes_rule->Keyframes();
@@ -113,9 +116,24 @@ StringKeyframeVector ProcessKeyframesRule(
   for (wtf_size_t i = 0; i < style_keyframes.size(); ++i) {
     const StyleRuleKeyframe* style_keyframe = style_keyframes[i].Get();
     auto* keyframe = MakeGarbageCollected<StringKeyframe>();
-    const Vector<double>& offsets = style_keyframe->Keys();
+    const Vector<KeyframeOffset>& offsets = style_keyframe->Keys();
     DCHECK(!offsets.empty());
-    keyframe->SetOffset(offsets[0]);
+
+    // If keyframe doesn't have a named range offset, act as before, we don't
+    // care if we have a timeline at this point or not in this case.
+    if (offsets[0].phase == Timing::TimelineNamedPhase::kNone) {
+      keyframe->SetOffset(offsets[0].percent);
+    } else {
+      // No matter what the timeline is, we have named range keyframes.
+      has_named_range_keyframes = true;
+
+      if (timeline && timeline->IsViewTimeline()) {
+        auto fractional_offset = To<ViewTimeline>(timeline)->ToFractionalOffset(
+            Timing::Delay(offsets[0].phase, offsets[0].percent));
+        keyframe->SetOffset(fractional_offset.value());
+      }
+    }
+
     keyframe->SetEasing(default_timing_function);
     const CSSPropertyValueSet& properties = style_keyframe->Properties();
     for (unsigned j = 0; j < properties.PropertyCount(); j++) {
@@ -148,8 +166,19 @@ StringKeyframeVector ProcessKeyframesRule(
     keyframes.push_back(keyframe);
     // The last keyframe specified at a given offset is used.
     for (wtf_size_t j = 1; j < offsets.size(); ++j) {
-      keyframes.push_back(
-          To<StringKeyframe>(keyframe->CloneWithOffset(offsets[j])));
+      if (offsets[j].phase == Timing::TimelineNamedPhase::kNone) {
+        keyframes.push_back(
+            To<StringKeyframe>(keyframe->CloneWithOffset(offsets[j].percent)));
+      } else {
+        has_named_range_keyframes = true;
+        if (timeline && timeline->IsViewTimeline()) {
+          auto fractional_offset =
+              To<ViewTimeline>(timeline)->ToFractionalOffset(
+                  Timing::Delay(offsets[j].phase, offsets[j].percent));
+          keyframes.push_back(To<StringKeyframe>(
+              keyframe->CloneWithOffset(fractional_offset.value())));
+        }
+      }
     }
   }
 
@@ -208,7 +237,8 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
     const ComputedStyle* parent_style,
     const AtomicString& name,
     TimingFunction* default_timing_function,
-    size_t animation_index) {
+    size_t animation_index,
+    AnimationTimeline* timeline) {
   // The algorithm for constructing string keyframes for a CSS animation is
   // covered in the following spec:
   // https://drafts.csswg.org/css-animations-2/#keyframes
@@ -249,10 +279,11 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   // 5. Perform a stable sort of the keyframe blocks in the @keyframes rule by
   //    the offset specified in the keyframe selector, and iterate over the
   //    result in reverse applying the following steps:
-  keyframes = ProcessKeyframesRule(keyframes_rule, element.GetDocument(),
-                                   parent_style, default_timing_function,
-                                   writing_direction.GetWritingMode(),
-                                   writing_direction.Direction());
+  bool has_named_range_keyframes = false;
+  keyframes = ProcessKeyframesRule(
+      keyframes_rule, element.GetDocument(), parent_style,
+      default_timing_function, writing_direction.GetWritingMode(),
+      writing_direction.Direction(), timeline, has_named_range_keyframes);
 
   double last_offset = 1;
   wtf_size_t merged_frame_count = 0;
@@ -394,7 +425,8 @@ StringKeyframeEffectModel* CreateKeyframeEffectModel(
   DCHECK_EQ(keyframes.back()->CheckedOffset(), 1);
 
   auto* model = MakeGarbageCollected<CssKeyframeEffectModel>(
-      keyframes, EffectModel::kCompositeReplace, &start_keyframe->Easing());
+      keyframes, EffectModel::kCompositeReplace, &start_keyframe->Easing(),
+      has_named_range_keyframes);
   if (animation_index > 0 && model->HasSyntheticKeyframes()) {
     UseCounter::Count(element.GetDocument(),
                       WebFeature::kCSSAnimationsStackedNeutralKeyframe);
@@ -986,14 +1018,30 @@ void CSSAnimations::CalculateAnimationUpdate(
                                      existing_animation->Timeline());
         }
 
-        if (keyframes_rule != existing_animation->style_rule ||
+        // If there are no named range keyframes, when scroll_offsets change,
+        // 'from' is still 'from', '10%' is still '10%',no need to recalc model.
+        bool has_named_range_keyframes = false;
+        if (animation->effect() && animation->effect()->IsKeyframeEffect()) {
+          if (auto* model = To<KeyframeEffect>(animation->effect())->Model())
+            has_named_range_keyframes = model->HasNamedRangeKeyframes();
+        }
+        bool scroll_offsets_changed = false;
+        if (timeline && timeline->IsViewTimeline()) {
+          scroll_offsets_changed =
+              existing_animation->scroll_offsets !=
+              To<ViewTimeline>(timeline)->GetResolvedScrollOffsets();
+        }
+        bool needs_keyframe_model_recalc =
+            has_named_range_keyframes && scroll_offsets_changed;
+
+        if (needs_keyframe_model_recalc ||
+            keyframes_rule != existing_animation->style_rule ||
             keyframes_rule->Version() !=
                 existing_animation->style_rule_version ||
             existing_animation->specified_timing != specified_timing ||
             is_paused != was_paused || logical_property_mapping_change ||
             timeline != existing_animation->Timeline()) {
           DCHECK(!is_animation_style_change);
-
           absl::optional<AnimationTimeDelta> inherited_time;
           absl::optional<AnimationTimeDelta> timeline_duration;
 
@@ -1042,7 +1090,8 @@ void CSSAnimations::CalculateAnimationUpdate(
               *MakeGarbageCollected<InertEffect>(
                   CreateKeyframeEffectModel(
                       resolver, element, animating_element, writing_direction,
-                      parent_style, name, keyframe_timing_function.get(), i),
+                      parent_style, name, keyframe_timing_function.get(), i,
+                      timeline),
                   timing, is_paused, inherited_time, timeline_duration,
                   animation->playbackRate()),
               specified_timing, keyframes_rule, timeline,
@@ -1069,7 +1118,8 @@ void CSSAnimations::CalculateAnimationUpdate(
             *MakeGarbageCollected<InertEffect>(
                 CreateKeyframeEffectModel(resolver, element, animating_element,
                                           writing_direction, parent_style, name,
-                                          keyframe_timing_function.get(), i),
+                                          keyframe_timing_function.get(), i,
+                                          timeline),
                 timing, is_paused, inherited_time, timeline_duration, 1.0),
             specified_timing, keyframes_rule, timeline,
             animation_data->PlayStateList());

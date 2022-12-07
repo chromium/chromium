@@ -31,6 +31,6 @@
 [
     Exposed=Window
 ] interface CSSKeyframeRule : CSSRule {
-    [RaisesException=Setter] attribute DOMString keyText;
+    [RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString keyText;
     [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 };

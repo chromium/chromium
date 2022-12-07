@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalueorstringsequence_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"

@@ -84,6 +84,8 @@ struct CORE_EXPORT Timing {
     kOverrideAll = (1 << 8) - 1
   };
 
+  // TODO: Rename to TimelineRangeName
+  // https://github.com/w3c/csswg-drafts/issues/7589
   enum class TimelineNamedPhase { kNone, kCover, kContain, kEnter, kExit };
 
   // Delay can be directly expressed as time delays or calculated based on a
@@ -132,6 +134,7 @@ struct CORE_EXPORT Timing {
   static String FillModeString(FillMode);
   static FillMode StringToFillMode(const String&);
   static String PlaybackDirectionString(PlaybackDirection);
+  static String TimelineRangeNameToString(Timing::TimelineNamedPhase);
 
   Timing() = default;
 

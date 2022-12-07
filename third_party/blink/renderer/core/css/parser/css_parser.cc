@@ -257,9 +257,10 @@ ImmutableCSSPropertyValueSet* CSSParser::ParseInlineStyleDeclaration(
                                                     secure_context_mode);
 }
 
-std::unique_ptr<Vector<double>> CSSParser::ParseKeyframeKeyList(
+std::unique_ptr<Vector<KeyframeOffset>> CSSParser::ParseKeyframeKeyList(
+    const CSSParserContext* context,
     const String& key_list) {
-  return CSSParserImpl::ParseKeyframeKeyList(key_list);
+  return CSSParserImpl::ParseKeyframeKeyList(context, key_list);
 }
 
 StyleRuleKeyframe* CSSParser::ParseKeyframeRule(const CSSParserContext* context,

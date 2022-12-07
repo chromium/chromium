@@ -3730,13 +3730,8 @@ CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange& range) {
                       CSSValueID::kEnter, CSSValueID::kExit>(range);
 }
 
-CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
-                                const CSSParserContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
-  if (CSSPrimitiveValue* time =
-          ConsumeTime(range, context, CSSPrimitiveValue::ValueRange::kAll)) {
-    return time;
-  }
+CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange& range,
+                                             const CSSParserContext& context) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValue* range_name = ConsumeTimelineRangeName(range);
   if (!range_name)
@@ -3748,6 +3743,16 @@ CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
     return nullptr;
   list->Append(*percentage);
   return list;
+}
+
+CSSValue* ConsumeAnimationDelay(CSSParserTokenRange& range,
+                                const CSSParserContext& context) {
+  DCHECK(RuntimeEnabledFeatures::CSSScrollTimelineEnabled());
+  if (CSSPrimitiveValue* time =
+          ConsumeTime(range, context, CSSPrimitiveValue::ValueRange::kAll)) {
+    return time;
+  }
+  return ConsumeTimelineRangeNameAndPercent(range, context);
 }
 
 bool ConsumeAnimationShorthand(

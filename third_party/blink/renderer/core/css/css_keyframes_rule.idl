@@ -35,8 +35,8 @@
     readonly attribute CSSRuleList cssRules;
 
     [CallWith=ExecutionContext] void appendRule(DOMString rule);
-    void deleteRule(DOMString select);
-    CSSKeyframeRule? findRule(DOMString select);
+    [CallWith=ExecutionContext] void deleteRule(DOMString select);
+    [CallWith=ExecutionContext] CSSKeyframeRule? findRule(DOMString select);
 
     // Non-standard APIs
     [NotEnumerable] getter CSSKeyframeRule (unsigned long index);

@@ -64,8 +64,10 @@ void StyleRuleKeyframes::WrapperRemoveKeyframe(unsigned index) {
   StyleChanged();
 }
 
-int StyleRuleKeyframes::FindKeyframeIndex(const String& key) const {
-  std::unique_ptr<Vector<double>> keys = CSSParser::ParseKeyframeKeyList(key);
+int StyleRuleKeyframes::FindKeyframeIndex(const CSSParserContext* context,
+                                          const String& key) const {
+  std::unique_ptr<Vector<KeyframeOffset>> keys =
+      CSSParser::ParseKeyframeKeyList(context, key);
   if (!keys)
     return -1;
   for (wtf_size_t i = keyframes_.size(); i--;) {
@@ -116,11 +118,15 @@ void CSSKeyframesRule::appendRule(const ExecutionContext* execution_context,
   child_rule_cssom_wrappers_.Grow(length());
 }
 
-void CSSKeyframesRule::deleteRule(const String& s) {
+void CSSKeyframesRule::deleteRule(const ExecutionContext* execution_context,
+                                  const String& s) {
   DCHECK_EQ(child_rule_cssom_wrappers_.size(),
             keyframes_rule_->Keyframes().size());
 
-  int i = keyframes_rule_->FindKeyframeIndex(s);
+  const CSSParserContext* parser_context =
+      ParserContext(execution_context->GetSecureContextMode());
+
+  int i = keyframes_rule_->FindKeyframeIndex(parser_context, s);
   if (i < 0)
     return;
 
@@ -133,8 +139,13 @@ void CSSKeyframesRule::deleteRule(const String& s) {
   child_rule_cssom_wrappers_.EraseAt(i);
 }
 
-CSSKeyframeRule* CSSKeyframesRule::findRule(const String& s) {
-  int i = keyframes_rule_->FindKeyframeIndex(s);
+CSSKeyframeRule* CSSKeyframesRule::findRule(
+    const ExecutionContext* execution_context,
+    const String& s) {
+  const CSSParserContext* parser_context =
+      ParserContext(execution_context->GetSecureContextMode());
+
+  int i = keyframes_rule_->FindKeyframeIndex(parser_context, s);
   return (i >= 0) ? Item(i) : nullptr;
 }
 

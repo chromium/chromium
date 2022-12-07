@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
@@ -427,11 +428,13 @@ CSSSelectorList* CSSParserImpl::ParsePageSelector(
       base::span<CSSSelector>(selectors));
 }
 
-std::unique_ptr<Vector<double>> CSSParserImpl::ParseKeyframeKeyList(
+std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ParseKeyframeKeyList(
+    const CSSParserContext* context,
     const String& key_list) {
   CSSTokenizer tokenizer(key_list);
   // TODO(crbug.com/661854): Use streams instead of ranges
-  return ConsumeKeyframeKeyList(CSSParserTokenRange(tokenizer.TokenizeToEOF()));
+  return ConsumeKeyframeKeyList(context,
+                                CSSParserTokenRange(tokenizer.TokenizeToEOF()));
 }
 
 bool CSSParserImpl::ConsumeSupportsDeclaration(CSSParserTokenStream& stream) {
@@ -1614,7 +1617,8 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
     const CSSParserTokenRange prelude,
     const RangeOffset& prelude_offset,
     CSSParserTokenStream& block) {
-  std::unique_ptr<Vector<double>> key_list = ConsumeKeyframeKeyList(prelude);
+  std::unique_ptr<Vector<KeyframeOffset>> key_list =
+      ConsumeKeyframeKeyList(context_, prelude);
   if (!key_list)
     return nullptr;
 
@@ -2039,23 +2043,43 @@ bool CSSParserImpl::RemoveImportantAnnotationIfPresent(
   return false;
 }
 
-std::unique_ptr<Vector<double>> CSSParserImpl::ConsumeKeyframeKeyList(
+std::unique_ptr<Vector<KeyframeOffset>> CSSParserImpl::ConsumeKeyframeKeyList(
+    const CSSParserContext* context,
     CSSParserTokenRange range) {
-  std::unique_ptr<Vector<double>> result = std::make_unique<Vector<double>>();
+  std::unique_ptr<Vector<KeyframeOffset>> result =
+      std::make_unique<Vector<KeyframeOffset>>();
   while (true) {
     range.ConsumeWhitespace();
-    const CSSParserToken& token = range.ConsumeIncludingWhitespace();
+    const CSSParserToken& token = range.Peek();
     if (token.GetType() == kPercentageToken && token.NumericValue() >= 0 &&
-        token.NumericValue() <= 100)
-      result->push_back(token.NumericValue() / 100);
-    else if (token.GetType() == kIdentToken &&
-             EqualIgnoringASCIICase(token.Value(), "from"))
-      result->push_back(0);
-    else if (token.GetType() == kIdentToken &&
-             EqualIgnoringASCIICase(token.Value(), "to"))
-      result->push_back(1);
-    else
-      return nullptr;  // Parser error, invalid value in keyframe selector
+        token.NumericValue() <= 100) {
+      result->push_back(KeyframeOffset(Timing::TimelineNamedPhase::kNone,
+                                       token.NumericValue() / 100));
+      range.ConsumeIncludingWhitespace();
+    } else if (token.GetType() == kIdentToken) {
+      if (EqualIgnoringASCIICase(token.Value(), "from")) {
+        result->push_back(KeyframeOffset(Timing::TimelineNamedPhase::kNone, 0));
+        range.ConsumeIncludingWhitespace();
+      } else if (EqualIgnoringASCIICase(token.Value(), "to")) {
+        result->push_back(KeyframeOffset(Timing::TimelineNamedPhase::kNone, 1));
+        range.ConsumeIncludingWhitespace();
+      } else {
+        auto* range_name_percent = To<CSSValueList>(
+            css_parsing_utils::ConsumeTimelineRangeNameAndPercent(range,
+                                                                  *context));
+        if (!range_name_percent)
+          return nullptr;
+
+        auto range_name = To<CSSIdentifierValue>(range_name_percent->Item(0))
+                              .ConvertTo<Timing::TimelineNamedPhase>();
+        auto percent =
+            To<CSSPrimitiveValue>(range_name_percent->Item(1)).GetFloatValue();
+        result->push_back(KeyframeOffset(range_name, percent / 100.0));
+      }
+    } else {
+      return nullptr;
+    }
+
     if (range.AtEnd())
       return result;
     if (range.Consume().GetType() != kCommaToken)

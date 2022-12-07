@@ -16,7 +16,7 @@
 
 namespace blink {
 
-String TimelineNamedPhaseString(Timing::TimelineNamedPhase phase) {
+String Timing::TimelineRangeNameToString(Timing::TimelineNamedPhase phase) {
   switch (phase) {
     case Timing::TimelineNamedPhase::kNone:
       return "none";
@@ -43,7 +43,7 @@ V8UnionDoubleOrTimelineOffset* Timing::Delay::ToV8UnionDoubleOrTimelineOffset()
   } else {
     TimelineOffset* timeline_offset = TimelineOffset::Create();
     absl::optional<V8TimelineOffsetPhase> timeline_offset_phase =
-        V8TimelineOffsetPhase::Create(TimelineNamedPhaseString(phase));
+        V8TimelineOffsetPhase::Create(TimelineRangeNameToString(phase));
     if (timeline_offset_phase)
       timeline_offset->setPhase(timeline_offset_phase.value());
     timeline_offset->setPercent(CSSUnitValues::percent(100 * relative_offset));

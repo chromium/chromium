@@ -43,6 +43,10 @@ class CC_ANIMATION_EXPORT ScrollTimeline : public AnimationTimeline {
     bool operator==(const ScrollOffsets& other) const {
       return start == other.start && end == other.end;
     }
+    bool operator!=(const ScrollOffsets& other) const {
+      return !(*this == other);
+    }
+
     double start = 0;
     double end = 0;
   };

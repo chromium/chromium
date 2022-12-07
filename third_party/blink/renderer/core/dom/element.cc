@@ -4062,9 +4062,8 @@ void Element::SetNeedsAnimationStyleRecalc() {
   // Setting this flag to 'true' only makes sense if there's an existing style,
   // otherwise there is no previous style to use as the basis for the new one.
   if (NeedsStyleRecalc() && GetComputedStyle() &&
-      !GetComputedStyle()->IsEnsuredInDisplayNone()) {
+      !GetComputedStyle()->IsEnsuredInDisplayNone())
     SetAnimationStyleChange(true);
-  }
 }
 
 void Element::SetNeedsCompositingUpdate() {

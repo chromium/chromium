@@ -11,8 +11,9 @@
 
 namespace blink {
 
-StyleRuleKeyframe::StyleRuleKeyframe(std::unique_ptr<Vector<double>> keys,
-                                     CSSPropertyValueSet* properties)
+StyleRuleKeyframe::StyleRuleKeyframe(
+    std::unique_ptr<Vector<KeyframeOffset>> keys,
+    CSSPropertyValueSet* properties)
     : StyleRuleBase(kKeyframe), properties_(properties), keys_(*keys) {}
 
 String StyleRuleKeyframe::KeyText() const {
@@ -22,18 +23,25 @@ String StyleRuleKeyframe::KeyText() const {
   for (unsigned i = 0; i < keys_.size(); ++i) {
     if (i)
       key_text.Append(", ");
-    key_text.AppendNumber(keys_.at(i) * 100);
+    if (keys_.at(i).phase != Timing::TimelineNamedPhase::kNone) {
+      key_text.Append(Timing::TimelineRangeNameToString(keys_.at(i).phase));
+      key_text.Append(" ");
+    }
+    key_text.AppendNumber(keys_.at(i).percent * 100);
     key_text.Append('%');
   }
 
   return key_text.ReleaseString();
 }
 
-bool StyleRuleKeyframe::SetKeyText(const String& key_text) {
+bool StyleRuleKeyframe::SetKeyText(const ExecutionContext* execution_context,
+                                   const String& key_text) {
   DCHECK(!key_text.IsNull());
 
-  std::unique_ptr<Vector<double>> keys =
-      CSSParser::ParseKeyframeKeyList(key_text);
+  auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
+
+  std::unique_ptr<Vector<KeyframeOffset>> keys =
+      CSSParser::ParseKeyframeKeyList(context, key_text);
   if (!keys || keys->empty())
     return false;
 
@@ -41,7 +49,7 @@ bool StyleRuleKeyframe::SetKeyText(const String& key_text) {
   return true;
 }
 
-const Vector<double>& StyleRuleKeyframe::Keys() const {
+const Vector<KeyframeOffset>& StyleRuleKeyframe::Keys() const {
   return keys_;
 }
 

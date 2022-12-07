@@ -1256,7 +1256,9 @@ CSSKeyframeRule* InspectorStyleSheet::SetKeyframeKey(
   }
 
   CSSKeyframeRule* keyframe_rule = To<CSSKeyframeRule>(rule);
-  keyframe_rule->setKeyText(text, exception_state);
+  keyframe_rule->setKeyText(
+      page_style_sheet_->OwnerDocument()->GetExecutionContext(), text,
+      exception_state);
 
   ReplaceText(source_data->rule_header_range, text, new_range, old_text);
   OnStyleSheetTextChanged();

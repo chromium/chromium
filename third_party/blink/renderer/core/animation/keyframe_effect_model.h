@@ -157,6 +157,8 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
     return has_revert_;
   }
 
+  bool HasNamedRangeKeyframes() { return has_named_range_keyframes_; }
+
   bool RequiresPropertyNode() const;
 
   bool IsTransformRelatedEffect() const override;
@@ -178,10 +180,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
         last_fraction_(std::numeric_limits<double>::quiet_NaN()),
         last_iteration_duration_(AnimationTimeDelta()),
         composite_(composite),
-        default_keyframe_easing_(std::move(default_keyframe_easing)),
-        has_synthetic_keyframes_(false),
-        needs_compositor_keyframes_snapshot_(true),
-        has_revert_(false) {}
+        default_keyframe_easing_(std::move(default_keyframe_easing)) {}
 
   // Lazily computes the groups of property-specific keyframes.
   void EnsureKeyframeGroups() const;
@@ -222,9 +221,10 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   CompositeOperation composite_;
   scoped_refptr<TimingFunction> default_keyframe_easing_;
 
-  mutable bool has_synthetic_keyframes_;
-  mutable bool needs_compositor_keyframes_snapshot_;
-  mutable bool has_revert_;
+  mutable bool has_synthetic_keyframes_ = false;
+  mutable bool needs_compositor_keyframes_snapshot_ = true;
+  mutable bool has_revert_ = false;
+  mutable bool has_named_range_keyframes_ = false;
 
   friend class KeyframeEffectModelTest;
 };
@@ -237,9 +237,11 @@ class KeyframeEffectModel : public KeyframeEffectModelBase {
   KeyframeEffectModel(
       const KeyframeVector& keyframes,
       CompositeOperation composite = kCompositeReplace,
-      scoped_refptr<TimingFunction> default_keyframe_easing = nullptr)
+      scoped_refptr<TimingFunction> default_keyframe_easing = nullptr,
+      bool has_named_range_keyframes = false)
       : KeyframeEffectModelBase(composite, std::move(default_keyframe_easing)) {
     keyframes_.AppendVector(keyframes);
+    has_named_range_keyframes_ = has_named_range_keyframes;
   }
 
   KeyframeEffectModelBase* Clone() override {
