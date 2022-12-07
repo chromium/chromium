@@ -50,8 +50,10 @@ KeyedService* VolumeManagerFactory::BuildServiceInstanceFor(
 VolumeManagerFactory::VolumeManagerFactory()
     : ProfileKeyedServiceFactory(
           "VolumeManagerFactory",
-          // Explicitly allow this manager in guest login mode.
-          ProfileSelections::BuildForRegularAndIncognito()) {
+          // Allow VolumeManager instances in regular and guest login modes,
+          // but OTR (Off The Record) regular and OTR guest re-use the original
+          // regular and original guest modes' instances respectively.
+          ProfileSelections::BuildRedirectedToOriginal()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
   DependsOn(ash::file_system_provider::ServiceFactory::GetInstance());
 }
