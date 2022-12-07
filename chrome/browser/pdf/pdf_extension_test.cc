@@ -4218,18 +4218,19 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Enable accessibility and load the test file.
     content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-    WebContents* guest_contents =
-        LoadPdfGetGuestContents(embedded_test_server()->GetURL(
+    MimeHandlerViewGuest* guest =
+        LoadPdfGetMimeHandlerView(embedded_test_server()->GetURL(
             "/" + std::string(file_dir) + "/" +
             test_file_path.BaseName().MaybeAsASCII()));
-    ASSERT_TRUE(guest_contents);
-    WaitForAccessibilityTreeToContainNodeWithName(guest_contents, "Page 1");
+    ASSERT_TRUE(guest);
+    WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
+                                                  "Page 1");
 
     // Find the embedded PDF and dump the accessibility tree.
     content::FindAccessibilityNodeCriteria find_criteria;
     find_criteria.role = ax::mojom::Role::kPdfRoot;
     ui::AXPlatformNodeDelegate* pdf_root =
-        content::FindAccessibilityNode(guest_contents, find_criteria);
+        content::FindAccessibilityNode(GetActiveWebContents(), find_criteria);
     ASSERT_TRUE(pdf_root);
 
     std::string actual_contents = formatter->Format(pdf_root);
