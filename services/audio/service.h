@@ -38,7 +38,6 @@ namespace audio {
 class DebugRecording;
 class DeviceNotifier;
 class LogFactoryManager;
-class ServiceMetrics;
 class SystemInfo;
 
 class Service final : public mojom::AudioService {
@@ -132,7 +131,6 @@ class Service final : public mojom::AudioService {
   absl::optional<StreamFactory> stream_factory_;
   std::unique_ptr<DeviceNotifier> device_notifier_;
   std::unique_ptr<LogFactoryManager> log_factory_manager_;
-  std::unique_ptr<ServiceMetrics> metrics_;
 };
 
 }  // namespace audio

@@ -23,7 +23,6 @@
 #include "services/audio/debug_recording.h"
 #include "services/audio/device_notifier.h"
 #include "services/audio/log_factory_manager.h"
-#include "services/audio/service_metrics.h"
 #include "services/audio/system_info.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -64,16 +63,11 @@ Service::Service(std::unique_ptr<AudioManagerAccessor> audio_manager_accessor,
   audio_manager_accessor_->GetAudioManager()->SetAecDumpRecordingManager(
       aecdump_recording_manager_->AsWeakPtr());
 #endif
-
-  metrics_ =
-      std::make_unique<ServiceMetrics>(base::DefaultTickClock::GetInstance());
 }
 
 Service::~Service() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT0("audio", "audio::Service::~Service");
-
-  metrics_.reset();
 
   // Stop all streams cleanly before shutting down the audio manager.
   stream_factory_.reset();
