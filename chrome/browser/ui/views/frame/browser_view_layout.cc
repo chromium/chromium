@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -755,6 +756,18 @@ void BrowserViewLayout::LayoutContentBorder() {
         gfx::Rect(contents_top_left.x(), contents_top_left.y(),
                   contents_container_->width(), contents_container_->height());
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Immersive top container might overlap with the blue border in fullscreen
+  // mode - see crbug.com/1392733. By insetting the bounds rectangle we ensure
+  // that the blue border is always placed below the top container.
+  if (immersive_mode_controller_->IsRevealed()) {
+    int delta = top_container_->bounds().bottom() - rect.y();
+    if (delta > 0) {
+      rect.Inset(gfx::Insets().set_top(delta));
+    }
+  }
+#endif
 
   contents_border_widget_->SetBounds(rect);
 }
