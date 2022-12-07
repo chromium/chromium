@@ -57,7 +57,7 @@ struct NET_EXPORT HttpRequestInfo {
   HttpRequestHeaders extra_headers;
 
   // Any upload data.
-  raw_ptr<UploadDataStream> upload_data_stream = nullptr;
+  raw_ptr<UploadDataStream, DanglingUntriaged> upload_data_stream = nullptr;
 
   // Any load flags (see load_flags.h).
   int load_flags = 0;

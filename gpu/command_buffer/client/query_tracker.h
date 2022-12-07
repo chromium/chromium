@@ -58,10 +58,10 @@ class GLES2_IMPL_EXPORT QuerySyncManager {
         : bucket(bucket), sync(bucket->syncs + index) {}
     QueryInfo() = default;
 
-    uint32_t index() const { return sync - bucket->syncs; }
+    uint32_t index() const { return sync - bucket->syncs.get(); }
 
     raw_ptr<Bucket, DanglingUntriaged> bucket = nullptr;
-    raw_ptr<QuerySync> sync = nullptr;
+    raw_ptr<QuerySync, DanglingUntriaged> sync = nullptr;
     int32_t submit_count = 0;
   };
 
