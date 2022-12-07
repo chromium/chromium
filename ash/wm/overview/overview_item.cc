@@ -1371,14 +1371,15 @@ void OverviewItem::AnimateOpacity(float opacity,
 }
 
 void OverviewItem::StartDrag() {
-  aura::Window* widget_window = item_widget_->GetNativeWindow();
+  // Stack the window and the widget window at the top. This is to ensure that
+  // they appear above other app windows, as well as above the desks bar. Note
+  // that the stacking operations are done in this order to make sure that that
+  // the window appears above the widget window.
+  if (aura::Window* widget_window = item_widget_->GetNativeWindow())
+    widget_window->parent()->StackChildAtTop(widget_window);
+
   aura::Window* window = GetWindow();
-  if (widget_window && widget_window->parent() == window->parent()) {
-    // TODO(xdai): This might not work if there is an always on top window.
-    // See crbug.com/733760.
-    widget_window->parent()->StackChildAtTop(window);
-    widget_window->parent()->StackChildBelow(widget_window, window);
-  }
+  window->parent()->StackChildAtTop(window);
 }
 
 void OverviewItem::CloseButtonPressed() {
