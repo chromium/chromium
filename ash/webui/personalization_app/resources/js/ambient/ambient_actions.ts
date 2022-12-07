@@ -5,7 +5,7 @@
 import {Action} from 'chrome://resources/ash/common/store/store.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 
 /**
  * @fileoverview Defines the actions to change ambient state.
@@ -19,12 +19,13 @@ export enum AmbientActionName {
   SET_GOOGLE_PHOTOS_ALBUMS_PREVIEWS = 'set_google_photos_albums_previews',
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
   SET_TOPIC_SOURCE = 'set_topic_source',
+  SET_AMBIENT_UI_VISIBILITY = 'set_ambient_ui_visibility',
 }
 
 export type AmbientActions =
     SetAlbumsAction|SetAlbumSelectedAction|SetAmbientModeEnabledAction|
     SetAnimationThemeAction|SetGooglePhotosAlbumsPreviewsAction|
-    SetTopicSourceAction|SetTemperatureUnitAction;
+    SetTopicSourceAction|SetTemperatureUnitAction|SetAmbientUiVisibilityAction;
 
 export type SetAlbumsAction = Action&{
   name: AmbientActionName.SET_ALBUMS,
@@ -58,6 +59,11 @@ export type SetTemperatureUnitAction = Action&{
 export type SetTopicSourceAction = Action&{
   name: AmbientActionName.SET_TOPIC_SOURCE,
   topicSource: TopicSource,
+};
+
+export type SetAmbientUiVisibilityAction = Action&{
+  name: AmbientActionName.SET_AMBIENT_UI_VISIBILITY,
+  ambientUiVisibility: AmbientUiVisibility,
 };
 
 /**
@@ -109,4 +115,15 @@ export function setTopicSourceAction(topicSource: TopicSource):
 export function setTemperatureUnitAction(temperatureUnit: TemperatureUnit):
     SetTemperatureUnitAction {
   return {name: AmbientActionName.SET_TEMPERATURE_UNIT, temperatureUnit};
+}
+
+/**
+ * Sets the current state of Ambient UI visibility.
+ */
+export function setAmbientUiVisibilityAction(
+    ambientUiVisibility: AmbientUiVisibility): SetAmbientUiVisibilityAction {
+  return {
+    name: AmbientActionName.SET_AMBIENT_UI_VISIBILITY,
+    ambientUiVisibility,
+  };
 }

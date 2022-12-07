@@ -83,6 +83,17 @@ export function topicSourceReducer(
   }
 }
 
+export function ambientUiVisibilityReducer(
+    state: AmbientState['ambientUiVisibility'], action: Actions,
+    _: PersonalizationState): AmbientState['ambientUiVisibility'] {
+  switch (action.name) {
+    case AmbientActionName.SET_AMBIENT_UI_VISIBILITY:
+      return action.ambientUiVisibility;
+    default:
+      return state;
+  }
+}
+
 export const ambientReducers:
     {[K in keyof AmbientState]: ReducerFunction<AmbientState[K]>} = {
       albums: albumsReducer,
@@ -91,4 +102,5 @@ export const ambientReducers:
       googlePhotosAlbumsPreviews: googlePhotosAlbumsPreviewsReducer,
       temperatureUnit: temperatureUnitReducer,
       topicSource: topicSourceReducer,
+      ambientUiVisibility: ambientUiVisibilityReducer,
     };

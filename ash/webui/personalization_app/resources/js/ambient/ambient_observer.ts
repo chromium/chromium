@@ -4,10 +4,10 @@
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAlbumsAction, setAmbientModeEnabledAction, setAnimationThemeAction, setGooglePhotosAlbumsPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientUiVisibilityAction, setAnimationThemeAction, setGooglePhotosAlbumsPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {isRecentHighlightsAlbum} from './utils.js';
 
@@ -92,5 +92,8 @@ export class AmbientObserver implements AmbientObserverInterface {
     store.dispatch(setGooglePhotosAlbumsPreviewsAction(previews));
   }
 
-  onAmbientUiVisibilityChanged() {}
+  onAmbientUiVisibilityChanged(ambientUiVisibility: AmbientUiVisibility) {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setAmbientUiVisibilityAction(ambientUiVisibility));
+  }
 }

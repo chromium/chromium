@@ -4,7 +4,7 @@
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
+import {AmbientModeAlbum, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../personalization_app.mojom-webui.js';
 
 /**
  * Stores ambient related states.
@@ -16,6 +16,7 @@ export interface AmbientState {
   googlePhotosAlbumsPreviews: Url[]|null;
   temperatureUnit: TemperatureUnit|null;
   topicSource: TopicSource|null;
+  ambientUiVisibility: AmbientUiVisibility|null;
 }
 
 export function emptyState(): AmbientState {
@@ -26,5 +27,6 @@ export function emptyState(): AmbientState {
     googlePhotosAlbumsPreviews: null,
     temperatureUnit: null,
     topicSource: null,
+    ambientUiVisibility: null,
   };
 }
