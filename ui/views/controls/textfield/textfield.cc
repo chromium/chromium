@@ -32,6 +32,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/color/color_id.h"
@@ -87,7 +88,6 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
@@ -2343,7 +2343,9 @@ void Textfield::UpdateBackgroundColor() {
   const SkColor color = GetBackgroundColor();
   SetBackground(
       CreateBackgroundFromPainter(Painter::CreateSolidRoundRectPainter(
-          color, FocusableBorder::kCornerRadiusDp)));
+          color, ::features::IsChromeRefresh2023()
+                     ? FocusableBorder::kChromeRefresh2023CornerRadiusDp
+                     : FocusableBorder::kCornerRadiusDp)));
   // Disable subpixel rendering when the background color is not opaque because
   // it draws incorrect colors around the glyphs in that case.
   // See crbug.com/115198
