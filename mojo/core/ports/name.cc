@@ -8,9 +8,9 @@ namespace mojo {
 namespace core {
 namespace ports {
 
-const PortName kInvalidPortName = {0, 0};
+constexpr PortName kInvalidPortName = {0, 0};
 
-const NodeName kInvalidNodeName = {0, 0};
+constexpr NodeName kInvalidNodeName = {0, 0};
 
 std::ostream& operator<<(std::ostream& stream, const Name& name) {
   std::ios::fmtflags flags(stream.flags());

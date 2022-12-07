@@ -18,7 +18,7 @@ namespace core {
 namespace ports {
 
 struct COMPONENT_EXPORT(MOJO_CORE_PORTS) Name {
-  Name(uint64_t v1, uint64_t v2) : v1(v1), v2(v2) {}
+  constexpr Name(uint64_t v1, uint64_t v2) : v1(v1), v2(v2) {}
   uint64_t v1, v2;
 };
 
@@ -38,15 +38,15 @@ COMPONENT_EXPORT(MOJO_CORE_PORTS)
 std::ostream& operator<<(std::ostream& stream, const Name& name);
 
 struct COMPONENT_EXPORT(MOJO_CORE_PORTS) PortName : Name {
-  PortName() : Name(0, 0) {}
-  PortName(uint64_t v1, uint64_t v2) : Name(v1, v2) {}
+  constexpr PortName() : Name(0, 0) {}
+  constexpr PortName(uint64_t v1, uint64_t v2) : Name(v1, v2) {}
 };
 
 extern COMPONENT_EXPORT(MOJO_CORE_PORTS) const PortName kInvalidPortName;
 
 struct COMPONENT_EXPORT(MOJO_CORE_PORTS) NodeName : Name {
-  NodeName() : Name(0, 0) {}
-  NodeName(uint64_t v1, uint64_t v2) : Name(v1, v2) {}
+  constexpr NodeName() : Name(0, 0) {}
+  constexpr NodeName(uint64_t v1, uint64_t v2) : Name(v1, v2) {}
 };
 
 extern COMPONENT_EXPORT(MOJO_CORE_PORTS) const NodeName kInvalidNodeName;
