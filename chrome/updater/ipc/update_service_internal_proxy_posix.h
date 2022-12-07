@@ -22,10 +22,6 @@ class IsolatedConnection;
 
 namespace updater {
 
-// Connects to the server.
-// `retries` is 0 for the first try, 1 for the first retry, etc.
-mojo::PlatformChannelEndpoint ConnectMojo(UpdaterScope scope, int retries);
-
 class UpdateServiceInternalProxy : public UpdateServiceInternal {
  public:
   // Creates an UpdateServiceInternalProxy which is not bound to a remote. It

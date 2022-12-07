@@ -28,8 +28,9 @@ absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope) {
   base::FilePath path;
   switch (scope) {
     case UpdaterScope::kUser:
-      if (base::PathService::Get(base::DIR_HOME, &path))
+      if (base::PathService::Get(base::DIR_HOME, &path)) {
         return path.Append(kUserRelativeDataPath);
+      }
       break;
     case UpdaterScope::kSystem:
       return base::FilePath(kSystemDataPath);
@@ -39,6 +40,15 @@ absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope) {
 
 base::FilePath GetExecutableRelativePath() {
   return base::FilePath(kExecutableName);
+}
+
+absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
+  absl::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
+  if (!path) {
+    return absl::nullopt;
+  }
+
+  return path->AppendASCII(kExecutableName);
 }
 
 }  // namespace updater

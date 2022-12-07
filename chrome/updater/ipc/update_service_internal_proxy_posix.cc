@@ -7,19 +7,27 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/process/launch.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service_internal.mojom.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/ipc/ipc_names.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service_internal.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/named_mojo_ipc_server/named_mojo_ipc_server_client_util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,6 +39,31 @@ namespace {
 // can take a long time if the server is unable to start because it is blocked
 // behind acquiring a prefs lock (for example if the active instance is busy).
 constexpr base::TimeDelta kConnectionTimeout = base::Minutes(10);
+
+// Connect to the server.
+// `retries` is 0 for the first try, 1 for the first retry, etc.
+mojo::PlatformChannelEndpoint ConnectMojo(UpdaterScope scope, int retries) {
+  if (retries == 1) {
+    // Launch a server process.
+    absl::optional<base::FilePath> updater = GetUpdaterExecutablePath(scope);
+    if (updater) {
+      base::CommandLine command(*updater);
+      command.AppendSwitch(kServerSwitch);
+      command.AppendSwitchASCII(kServerServiceSwitch,
+                                kServerUpdateServiceInternalSwitchValue);
+      if (scope == UpdaterScope::kSystem) {
+        command.AppendSwitch(kSystemSwitch);
+      }
+      command.AppendSwitch(kEnableLoggingSwitch);
+      command.AppendSwitchASCII(kLoggingModuleSwitch,
+                                kLoggingModuleSwitchValue);
+      base::LaunchProcess(command, {});
+    }
+  }
+
+  return named_mojo_ipc_server::ConnectToServer(
+      GetUpdateServiceInternalServerName(scope));
+}
 
 void Connect(
     UpdaterScope scope,
@@ -84,8 +117,9 @@ UpdateServiceInternalProxy::~UpdateServiceInternalProxy() = default;
 
 void UpdateServiceInternalProxy::EnsureConnecting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (remote_)
+  if (remote_) {
     return;
+  }
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&Connect, scope_, 0,

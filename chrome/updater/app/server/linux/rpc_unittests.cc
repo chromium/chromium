@@ -8,13 +8,22 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/mock_callback.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/updater/app/server/linux/update_service_stub.h"
@@ -27,10 +36,13 @@
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/util.h"
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 
 namespace updater {
 
@@ -148,8 +160,9 @@ class UpdaterIPCTestCase : public testing::Test {
     EXPECT_EQ(lhs.app_id, rhs.app_id);
     EXPECT_EQ(lhs.state, rhs.state);
     EXPECT_EQ(lhs.next_version.IsValid(), rhs.next_version.IsValid());
-    if (lhs.next_version.IsValid() && rhs.next_version.IsValid())
+    if (lhs.next_version.IsValid() && rhs.next_version.IsValid()) {
       EXPECT_EQ(lhs.next_version, rhs.next_version);
+    }
     EXPECT_EQ(lhs.downloaded_bytes, rhs.downloaded_bytes);
     EXPECT_EQ(lhs.total_bytes, rhs.total_bytes);
     EXPECT_EQ(lhs.install_progress, rhs.install_progress);
@@ -323,57 +336,102 @@ TEST_F(UpdaterIPCErrorTestCase, DroppedUpdateAll) {
 
 class FakeUpdateServiceInternal : public UpdateServiceInternal {
  public:
-  void Run(base::OnceClosure callback) override { std::move(callback).Run(); }
+  enum class FuncTag { Run, Hello };
 
-  void Hello(base::OnceClosure callback) override { std::move(callback).Run(); }
+  explicit FakeUpdateServiceInternal(
+      const base::RepeatingCallback<void(FuncTag)>& on_rpc_callback)
+      : on_rpc_callback_(on_rpc_callback) {}
+
+  // Overrides for UpdateServiceInternal
+  void Run(base::OnceClosure callback) override {
+    on_rpc_callback_.Run(FuncTag::Run);
+    std::move(callback).Run();
+  }
+
+  void Hello(base::OnceClosure callback) override {
+    on_rpc_callback_.Run(FuncTag::Hello);
+    std::move(callback).Run();
+  }
 
  private:
+  base::RepeatingCallback<void(FuncTag)> on_rpc_callback_;
   ~FakeUpdateServiceInternal() override = default;
 };
 
 class UpdaterIPCInternalTestCase : public testing::Test {
  public:
-  void SetUp() override {
-    scoped_refptr<UpdateServiceInternal> service =
-        base::MakeRefCounted<FakeUpdateServiceInternal>();
-    service_stub_ = std::make_unique<UpdateServiceInternalStub>(
-        std::move(service), UpdaterScope::kUser, base::DoNothing(),
-        base::DoNothing());
-    client_proxy_ = CreateUpdateServiceInternalProxy(UpdaterScope::kUser);
+  static constexpr char kClientProcessName[] = "UpdateServiceInternalClient";
+  static constexpr char kServerProcessName[] = "UpdateServiceInternalServer";
+
+  UpdaterIPCInternalTestCase() {
+    wait_for_process_exit_thread_.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0));
   }
 
  protected:
-  ScopedIPCSupportWrapper ipc_support_;
+  int WaitForProcessExit(base::Process& process) {
+    int exit_code;
+    bool process_exited = false;
+    base::RunLoop wait_for_process_exit_loop;
+    wait_for_process_exit_thread_.task_runner()->PostTaskAndReply(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          process_exited = base::WaitForMultiprocessTestChildExit(
+              process, TestTimeouts::action_timeout(), &exit_code);
+        }),
+        wait_for_process_exit_loop.QuitClosure());
+    wait_for_process_exit_loop.Run();
+    process.Close();
+    EXPECT_TRUE(process_exited);
+    return exit_code;
+  }
 
-  // An IO thread is required for NamedMojoIpcServer's socket fd watching.
+ private:
   base::test::TaskEnvironment environment_{
       base::test::TaskEnvironment::MainThreadType::IO};
-  base::RunLoop run_loop_;
-
-  std::unique_ptr<UpdateServiceInternalStub> service_stub_;
-  scoped_refptr<UpdateServiceInternal> client_proxy_;
+  ScopedIPCSupportWrapper ipc_support_;
+  // Helper thread to wait for process exit without blocking the main thread.
+  base::Thread wait_for_process_exit_thread_{"wait_for_process_exit"};
 };
 
-TEST_F(UpdaterIPCInternalTestCase, Run) {
-  client_proxy_->Run(run_loop_.QuitClosure());
-  run_loop_.Run();
+TEST_F(UpdaterIPCInternalTestCase, AllRpcsComplete) {
+  base::MockCallback<
+      base::RepeatingCallback<void(FakeUpdateServiceInternal::FuncTag)>>
+      on_rpc_callback;
+  // The RPC calls should be received and processed in order.
+  EXPECT_CALL(on_rpc_callback, Run(FakeUpdateServiceInternal::FuncTag::Run));
+  EXPECT_CALL(on_rpc_callback, Run(FakeUpdateServiceInternal::FuncTag::Hello));
+
+  auto service_stub = std::make_unique<UpdateServiceInternalStub>(
+      base::MakeRefCounted<FakeUpdateServiceInternal>(on_rpc_callback.Get()),
+      UpdaterScope::kUser, base::DoNothing(), base::DoNothing());
+
+  base::Process child_process = base::SpawnMultiProcessTestChild(
+      kClientProcessName, base::GetMultiProcessTestChildBaseCommandLine(),
+      /*options= */ {});
+  EXPECT_EQ(WaitForProcessExit(child_process), 0);
 }
 
-TEST_F(UpdaterIPCInternalTestCase, Hello) {
-  client_proxy_->Hello(run_loop_.QuitClosure());
-  run_loop_.Run();
-}
+MULTIPROCESS_TEST_MAIN(UpdateServiceInternalClient) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  ScopedIPCSupportWrapper ipc_support;
 
-class UpdaterIPCInternalErrorTestCase : public UpdaterIPCInternalTestCase {
- public:
-  void SetUp() override {
-    client_proxy_ = CreateUpdateServiceInternalProxy(UpdaterScope::kUser);
+  scoped_refptr<UpdateServiceInternal> client_proxy =
+      CreateUpdateServiceInternalProxy(UpdaterScope::kUser);
+
+  {
+    base::RunLoop wait_for_response_run_loop;
+    client_proxy->Run(wait_for_response_run_loop.QuitClosure());
+    wait_for_response_run_loop.Run();
   }
-};
 
-TEST_F(UpdaterIPCInternalErrorTestCase, Run) {
-  client_proxy_->Run(run_loop_.QuitClosure());
-  run_loop_.Run();
+  {
+    base::RunLoop wait_for_response_run_loop;
+    client_proxy->Hello(wait_for_response_run_loop.QuitClosure());
+    wait_for_response_run_loop.Run();
+  }
+
+  return 0;
 }
 
 }  // namespace updater
