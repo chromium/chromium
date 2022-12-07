@@ -30,7 +30,7 @@ const GraphMetadataInfo = {
           {
             title: 'Close',
             handler: () => {
-              this.$modal.hide('dialog')
+              this.$modal.hide('dialog');
             },
           },
         ],

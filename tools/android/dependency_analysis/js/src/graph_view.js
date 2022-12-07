@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Exports a class GraphView, which encapsulates all the D3 logic
+ * @file Exports a class GraphView, which encapsulates all the D3 logic
  * in the graph visualization.
  *
  * D3 uses the concept of "data joins" to bind data to the SVG, and might be
@@ -90,6 +90,7 @@ const NODE_COLORS = {
 
 /**
  * Computes the color to display for a given node.
+ *
  * @param {!GraphNode} node The node in question.
  * @return {string} The color of the node.
  */
@@ -111,10 +112,12 @@ function getNodeColor(node) {
     return NODE_COLORS.OUTBOUND.brighter(
         node.visualizationState.outboundDepth);
   }
+  throw new Error(`Unexpected node visualization state ${node}`);
 }
 
 /**
  * Adds a def for an arrowhead (triangle) marker to the SVG.
+ *
  * @param {*} defs The d3 selection of the SVG defs.
  * @param {string} id The HTML id for the arrowhead.
  * @param {string} color The color of the arrowhead.
@@ -141,6 +144,7 @@ function addArrowMarkerDef(defs, id, color, length, width) {
  * Creates a polygon (array of [x, y] pairs) that can be converted into a
  * valid convex hull. For a polygon to be valid for conversion, it must have
  * at least 3 points.
+ *
  * @param {!Array<!GraphNode>} nodes The nodes to generate a polygon for. This
  *     array must have at least one element.
  * @return {!Array<!Array<number>>} A valid polygon for the input nodes.
@@ -191,6 +195,7 @@ function countNumReheatTicks() {
 /**
  * Helper to scale a vector to a given magnitude. If [x, y] is nearly the zero
  * vector, then [newMagnitude, 0] is returned.
+ *
  * @param {number} x The x-coordinate of the vector.
  * @param {number} y The y-coordinate of the vector.
  * @param {number} newMagnitude The magnitude to scale the vector to.
@@ -252,6 +257,7 @@ class HullColorManager {
   /**
    * Gets the next color from the array of colors `HULL_COLORS`. When all the
    * colors of the array are used, starts from the beginning again.
+   *
    * @return {string} The next color to use.
    */
   getNextColor_() {
@@ -262,6 +268,7 @@ class HullColorManager {
   /**
    * Gets the color associated with a given hull, generating a color for it if
    * there isn't one already.
+   *
    * @param {string} hullKey A key uniquely identifying the hull.
    * @return {string} The color associated with the hull's key.
    */
@@ -274,7 +281,7 @@ class HullColorManager {
 }
 
 /**
- * @typedef {Object} PhantomTextNode A node that isn't displayed in the
+ * @typedef {object} PhantomTextNode A node that isn't displayed in the
  *     visualization, but affects the simulation. Used to prevent text overlap
  *     by being fixed to the right of real nodes (where the text is drawn).
  * @property {boolean} isPhantomTextNode A flag (always true) used to
@@ -287,6 +294,7 @@ class HullColorManager {
 
 /**
  * A callback to be triggered whenever a node is clicked in the visualization.
+ *
  * @callback OnNodeClickedCallback
  * @param {!GraphNode} node The node that was clicked.
  */
@@ -294,12 +302,14 @@ class HullColorManager {
 /**
  * A callback to be triggered whenever a node is double-clicked in the
  * visualization.
+ *
  * @callback OnNodeDoubleClickedCallback
  * @param {!GraphNode} node The node that was double-clicked.
  */
 
 /**
  * Returns the group a node is in, or `null` if the node shouldn't be grouped.
+ *
  * @callback GetNodeGroupCallback
  * @param {!GraphNode} node The node to find the group for.
  * @return {?string} The unique key identifying the node's group, or `null` if
@@ -353,8 +363,8 @@ class GraphView {
     // Set up zoom and pan on the entire graph.
     svg.call(d3.zoom()
         .scaleExtent([0.25, 10])
-        .on('zoom', () =>
-          graphGroup.attr('transform', d3.event.transform),
+        .on('zoom', event =>
+          graphGroup.attr('transform', event.transform),
         ))
         .on('dblclick.zoom', null);
 
@@ -453,7 +463,7 @@ class GraphView {
     /**
      * @callback LinearScaler
      * @param {number} input The input value between [0, 1] inclusive.
-     * @returns {number} The input scaled linearly to new bounds.
+     * @return {number} The input scaled linearly to new bounds.
      */
     /** @private {LinearScaler} */
     this.velocityDecayScale_ = d3.scaleLinear()
@@ -464,6 +474,7 @@ class GraphView {
 
   /**
    * Binds the event when a node is clicked in the graph to a given callback.
+   *
    * @param {!OnNodeClickedCallback} onNodeClicked The callback to bind to.
    */
   registerOnNodeClicked(onNodeClicked) {
@@ -473,6 +484,7 @@ class GraphView {
   /**
    * Binds the event when a node is double-clicked in the graph to a given
    * callback.
+   *
    * @param {!OnNodeDoubleClickedCallback} onNodeDoubleClicked The callback to
    *   bind to.
    */
@@ -482,6 +494,7 @@ class GraphView {
 
   /**
    * Assigns the node group accessor to a given function.
+   *
    * @param {!GetNodeGroupCallback} getNodeGroup The function to assign to.
    */
   registerGetNodeGroup(getNodeGroup) {
@@ -495,6 +508,7 @@ class GraphView {
    * nodes on the page by starting off with a high decay (slower nodes), easing
    * to a low decay (faster nodes), then easing back to a high decay at the end.
    * This makes the node animation seem more smooth and natural.
+   *
    * @param {number} currentTick The number of ticks passed in the reheat.
    * @return {number} The velocityDecay for the current point in the reheat.
    */
@@ -604,6 +618,7 @@ class GraphView {
 
   /**
    * Groups nodes together by using the current group accessor function.
+   *
    * @param {!Array<!GraphNode>} nodes The nodes to group.
    * @return {!Map<string, !Array<!GraphNode>>} The map from group key to the
    *     list of nodes included in that group.
@@ -626,7 +641,8 @@ class GraphView {
 
   /**
    * Data representing a convex hull surrounding a certain group.
-   * @typedef {Object} HullData
+   *
+   * @typedef {object} HullData
    * @property {string} key The unique key for the hull.
    * @property {string} color The color to display the hull as.
    * @property {!Array<number>} labelPosition An [x, y] point representing where
@@ -638,6 +654,7 @@ class GraphView {
   /**
    * Given the node grouping from `getNodeGroups`, constructs a list of convex
    * hulls, one per node group.
+   *
    * @param {!Map<string, !Array<!GraphNode>>} nodeGroups The node groupings.
    * @return {!Array<!HullData>} A list of convex hulls to display.
    */
@@ -676,6 +693,7 @@ class GraphView {
   /**
    * Synchronizes the color and position of all convex hulls with their
    * underlying data.
+   *
    * @param {!Array<!HullData>} hullData A list of convex hulls to display for
    *     the current data.
    */
@@ -706,6 +724,7 @@ class GraphView {
   /**
    * Reheats the simulation, allowing all nodes to move according to the physics
    * simulation until they cool down again.
+   *
    * @param {boolean} shouldEase Whether the node movement should be eased. This
    *     should not be used when dragging nodes, since the speed at the start of
    *     the ease will be used all throughout the drag.
@@ -765,6 +784,7 @@ class GraphView {
 
   /**
    * Updates the display settings for the visualization.
+   *
    * @param {!DisplaySettingsData} displaySettings The display config.
    */
   updateDisplaySettings(displaySettings) {
@@ -792,6 +812,7 @@ class GraphView {
   /**
    * Generates sparse integers subset in [0, n] that's roughly evenly
    * distributed.
+   *
    * @generator
    * @param {number} upperBound Exclusive upper bound on generated values.
    * @param {number} separation Ideal separation between generated values.
@@ -867,19 +888,19 @@ class GraphView {
               })
               .call(d3.drag()
                   .on('start', () => this.hoveredNodeManager_.setDragging(true))
-                  .on('drag', (node, idx, nodes) => {
+                  .on('drag', (event, node) => {
                     this.reheatSimulation(/* shouldEase */ false);
-                    d3.select(nodes[idx]).classed('locked', true);
+                    d3.select(enter.nodes()[idx]).classed('locked', true);
                     // Fix the node's position after it has been dragged.
-                    node.fx = d3.event.x;
-                    node.fy = d3.event.y;
+                    node.fx = event.x;
+                    node.fy = event.y;
                   })
                   .on('end', () => this.hoveredNodeManager_.setDragging(false)))
-              .on('click', (node, idx, nodes) => {
-                if (d3.event.defaultPrevented) {
+              .on('click', (event, node) => {
+                if (event.defaultPrevented) {
                   return; // Skip drag events.
                 }
-                const pageNode = d3.select(nodes[idx]);
+                const pageNode = d3.select(enter.nodes()[idx]);
                 if (pageNode.classed('locked')) {
                   node.fx = null;
                   node.fy = null;

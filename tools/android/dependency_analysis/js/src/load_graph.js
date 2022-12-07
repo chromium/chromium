@@ -16,6 +16,7 @@ import * as d3 from 'd3';
 
 /**
  * Retrieve the graph to show.
+ *
  * @return {Promise} Promise resolved with the graph data.
  */
 async function loadGraph() {

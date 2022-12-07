@@ -73,7 +73,7 @@ const GraphFilterInput = {
       const otherMatches = [];
 
       const searchTermLower = searchTerm.toLowerCase();
-      for (let name of this.nodeIdsSortedByShortNames) {
+      for (const name of this.nodeIdsSortedByShortNames) {
         const nameLower = name.toLowerCase();
 
         // Match only nodes not already shown and that contain the search term.

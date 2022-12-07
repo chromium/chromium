@@ -156,7 +156,8 @@ const ClassGraphPage = {
 
   /**
    * Various references to objects used across the entire class page.
-   * @typedef {Object} ClassPageData
+   *
+   * @typedef {object} ClassPageData
    * @property {PageModel} pageModel The data store for the page.
    * @property {!ClassDisplaySettingsData} displaySettingsData Additional data
    *   store for the graph's display settings.

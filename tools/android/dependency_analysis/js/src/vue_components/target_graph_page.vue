@@ -128,7 +128,8 @@ const TargetGraphPage = {
 
   /**
    * Various references to objects used across the entire target page.
-   * @typedef {Object} TargetPageData
+   *
+   * @typedef {object} TargetPageData
    * @property {!PageModel} pageModel The data store for the page.
    * @property {!TargetDisplaySettingsData} displaySettingsData Additional data
    *   store for the graph's display settings.
@@ -137,7 +138,7 @@ const TargetGraphPage = {
 
   /**
    * @return {TargetPageData} The objects used throughout the page.
-  */
+   */
   data: function() {
     const graphModel = parseTargetGraphModelFromJson(this.graphJson);
     const pageModel = new PageModel(graphModel);

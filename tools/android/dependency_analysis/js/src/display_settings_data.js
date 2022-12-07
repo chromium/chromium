@@ -7,6 +7,7 @@ import {UrlProcessor, URL_PARAM_KEYS} from './url_processor.js';
 
 /**
  * Various different graph edge color schemes.
+ *
  * @enum {string}
  */
 const GraphEdgeColor = {
@@ -17,6 +18,7 @@ const GraphEdgeColor = {
 
 /**
  * Various different display setting presets.
+ *
  * @enum {string}
  */
 const DisplaySettingsPreset = {
@@ -52,7 +54,7 @@ const PRESET_SETTINGS = {
 class NodeFilterData {
   constructor() {
     /**
-     * @typedef {Object} NodeFilterEntry An entry in the filter list.
+     * @typedef {object} NodeFilterEntry An entry in the filter list.
      * @property {string} name The name of the node to be filtered.
      * @property {boolean} checked Whether the node is checked (selected). If
      *   true, then the node is shown in the visualizer.
@@ -60,13 +62,15 @@ class NodeFilterData {
 
     /**
      * List of filter list entries, i.e., nodes in unchecked or checked state.
-     * @public {!Array<!NodeFilterEntry>)
-   */
+     *
+     * @public {!Array<!NodeFilterEntry>}
+     */
     this.filterList = [];
   }
 
   /**
    * Finds a node in the filter list, creating and adding one if necessary.
+   *
    * @param {string} nodeName The name of the node to find.
    * @return {!NodeFilterEntry} The node's entry in the filter list.
    */
@@ -87,6 +91,7 @@ class NodeFilterData {
   /**
    * Delists a node from the filter list (i.e., set state to ignored) if it
    *   exists.
+   *
    * @param {string} nodeName The name of the node to delist.
    */
   delistNode(nodeName) {
@@ -155,6 +160,7 @@ class DisplaySettingsData {
   /**
    * Applies a preset by copying all its properties to the current display
    * settings, overwriting existing values.
+   *
    * @param {string} presetName The key of the preset to apply.
    */
   applyPreset(presetName) {
@@ -163,6 +169,7 @@ class DisplaySettingsData {
 
   /**
    * Updates a UrlProcessor with all contained data.
+   *
    * @param {!UrlProcessor} urlProcessor The UrlProcessor to update.
    */
   updateUrlProcessor(urlProcessor) {
@@ -185,6 +192,7 @@ class DisplaySettingsData {
 
   /**
    * Reads all contained data from a UrlProcessor.
+   *
    * @param {!UrlProcessor} urlProcessor The UrlProcessor to read from.
    */
   readUrlProcessor(urlProcessor) {
@@ -229,6 +237,7 @@ class ClassDisplaySettingsData extends DisplaySettingsData {
 
   /**
    * Updates a UrlProcessor with all contained data.
+   *
    * @param {!UrlProcessor} urlProcessor The UrlProcessor to update.
    */
   updateUrlProcessor(urlProcessor) {
@@ -238,6 +247,7 @@ class ClassDisplaySettingsData extends DisplaySettingsData {
 
   /**
    * Reads all contained data from a UrlProcessor.
+   *
    * @param {!UrlProcessor} urlProcessor The UrlProcessor to read from.
    */
   readUrlProcessor(urlProcessor) {

@@ -2,6 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
+/**
+ * Shortens a class name to be displayed in the svg.
+ *
+ * @param {string} name The full class name to shorten.
+ * @return {string} The shortened class name.
+ */
+function shortenClassName(name) {
+  return name.substring(name.lastIndexOf('.') + 1);
+}
+
+/**
+ * Shortens a package name to be displayed in the svg.
+ *
+ * @param {string} name The full package name to shorten.
+ * @return {string} The shortened package name.
+ */
+function shortenPackageName(name) {
+  return name.replace('org.chromium.', '.').replace('chrome.browser.', 'c.b.');
+}
+
 /**
  * Shortens a target name to be displayed in the svg.
  *
@@ -22,25 +43,8 @@ function shortenTargetName(name) {
 }
 
 /**
- * Shortens a package name to be displayed in the svg.
- * @param {string} name The full package name to shorten.
- * @return {string} The shortened package name.
- */
-function shortenPackageName(name) {
-  return name.replace('org.chromium.', '.').replace('chrome.browser.', 'c.b.');
-}
-
-/**
- * Shortens a class name to be displayed in the svg.
- * @param {string} name The full class name to shorten.
- * @return {string} The shortened class name.
- */
-function shortenClassName(name) {
-  return name.substring(name.lastIndexOf('.') + 1);
-}
-
-/**
  * Splits a full class name into its package and class name.
+ *
  * @param {string} name The full class name to split.
  * @return {!Array<string>} An array of [packageName, className].
  */
@@ -52,8 +56,8 @@ function splitClassName(name) {
 }
 
 export {
-  shortenTargetName,
-  shortenPackageName,
   shortenClassName,
+  shortenPackageName,
+  shortenTargetName,
   splitClassName,
 };

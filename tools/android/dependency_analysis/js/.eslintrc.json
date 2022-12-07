@@ -1,39 +1,60 @@
 {
   "env": {
     "browser": true,
-    "es2020": true
+    "es2021": true
   },
   "extends": [
     "google",
-    "plugin:vue/recommended"
+    "plugin:vue/recommended",
+    "plugin:jsdoc/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": 11,
     "sourceType": "module"
   },
   "rules": {
-    "require-jsdoc": ["warn", {
-        "require": {
-            "FunctionDeclaration": true,
-            "MethodDefinition": true,
-            "ClassDeclaration": true,
-            "ArrowFunctionExpression": true,
-            "FunctionExpression": true
-        }
-    }],
-    "arrow-parens": ["warn", "as-needed"],
-    "generator-star-spacing": ["error", "before"],
+    "arrow-parens": [
+      "warn",
+      "as-needed"
+    ],
+    "generator-star-spacing": [
+      "error",
+      "before"
+    ],
+    "no-console": "off",
+    "require-jsdoc": "off",
+    "valid-jsdoc": "off",
+    "jsdoc/require-param-description": "off",
+    "jsdoc/require-returns-description": "off",
     "vue/require-default-prop": "off",
-    "vue/html-indent": ["error", 2, {
-      "attribute": 2
-    }],
-    "vue/html-closing-bracket-newline": ["error", {
-      "multiline": "never"
-    }],
-    "vue/html-closing-bracket-spacing": ["error", {
-      "startTag": "never",
-      "selfClosingTag": "never"
-    }],
-    "vue/html-comment-indent": ["error", 5]
+    "vue/html-indent": [
+      "error",
+      2,
+      {
+        "attribute": 2
+      }
+    ],
+    "vue/html-closing-bracket-newline": [
+      "error",
+      {
+        "multiline": "never"
+      }
+    ],
+    "vue/html-closing-bracket-spacing": [
+      "error",
+      {
+        "startTag": "never",
+        "selfClosingTag": "never"
+      }
+    ],
+    "vue/html-comment-indent": [
+      "error",
+      5
+    ]
+  },
+  "settings": {
+    "jsdoc": {
+      "mode": "closure"
+    }
   }
 }

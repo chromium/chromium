@@ -11,9 +11,9 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 module.exports = {
   // Defines multiple entry point chunks, one for each page.
   entry: {
-    targetView: './src/target_view.js',
-    packageView: './src/package_view.js',
     classView: './src/class_view.js',
+    packageView: './src/package_view.js',
+    targetView: './src/target_view.js',
   },
   // The chunks will be output as packageView.bundle.js, etc.
   output: {
@@ -34,13 +34,13 @@ module.exports = {
     // Enables hot module replacement
     // (https://webpack.js.org/concepts/hot-module-replacement/).
     hot: true,
-    // Opens localhost:8888/package_view.html on dev-server startup.
+    // Opens localhost:8888/index.html on dev-server startup.
     port: 8888,
-    open: true,
-    contentBase: path.resolve(__dirname, 'src'),
-    openPage: 'package_view.html',
-    // Suppresses most command-line output from dev-server.
-    stats: 'minimal',
+    compress: true,
+    open: ['index.html'],
+    static: {
+      directory: path.join(__dirname, 'src'),
+    },
   },
   optimization: {
     // Splits out common dependencies from all chunks into their own bundles.
@@ -73,12 +73,17 @@ module.exports = {
     ],
   },
   plugins: [
+    // This is the index page, required to use index.html from dist/.
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: './src/index.html',
+    }),
     // Defines multiple HTML outputs, one for each page.
     new HtmlWebpackPlugin({
-      filename: 'target_view.html',
-      template: './src/target_view.html',
-      favicon: './src/assets/package_graph_icon.png',
-      chunks: ['targetView'],
+      filename: 'class_view.html',
+      template: './src/class_view.html',
+      favicon: './src/assets/class_graph_icon.png',
+      chunks: ['classView'],
     }),
     new HtmlWebpackPlugin({
       filename: 'package_view.html',
@@ -87,10 +92,10 @@ module.exports = {
       chunks: ['packageView'],
     }),
     new HtmlWebpackPlugin({
-      filename: 'class_view.html',
-      template: './src/class_view.html',
-      favicon: './src/assets/class_graph_icon.png',
-      chunks: ['classView'],
+      filename: 'target_view.html',
+      template: './src/target_view.html',
+      favicon: './src/assets/target_graph_icon.png',
+      chunks: ['targetView'],
     }),
     // For development purposes: Copies `json_graph.txt` in `src` to `src/dist`
     // on build.
@@ -104,4 +109,5 @@ module.exports = {
     }),
     new VueLoaderPlugin(),
   ],
+  stats: 'minimal',
 };

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 /**
- * @fileoverview Data structures for representing a directed graph.
+ * @file Data structures for representing a directed graph.
  */
 
 /** Some aspects of the node's state, to help with node visualization. */
@@ -53,6 +53,7 @@ class GraphNode {
 
   /**
    * Adds a node to the inbound set of this node.
+   *
    * @param {!GraphNode} other The inbound node.
    */
   addInbound(other) {
@@ -61,6 +62,7 @@ class GraphNode {
 
   /**
    * Adds a node to the outbound set of this node.
+   *
    * @param {!GraphNode} other The outbound node.
    */
   addOutbound(other) {
@@ -68,13 +70,15 @@ class GraphNode {
   }
 }
 
-/** A node representing a Java build target. */
-class TargetNode extends GraphNode {
-  constructor(id, displayName, classNames) {
+/** A node representing a Java class. */
+class ClassNode extends GraphNode {
+  constructor(id, displayName, packageName, buildTargets) {
     super(id, displayName);
 
+    /** @public {string} */
+    this.packageName = packageName;
     /** @public {!Array<string>} */
-    this.classNames = classNames;
+    this.buildTargets = buildTargets;
   }
 }
 
@@ -88,15 +92,13 @@ class PackageNode extends GraphNode {
   }
 }
 
-/** A node representing a Java class. */
-class ClassNode extends GraphNode {
-  constructor(id, displayName, packageName, buildTargets) {
+/** A node representing a Java build target. */
+class TargetNode extends GraphNode {
+  constructor(id, displayName, classNames) {
     super(id, displayName);
 
-    /** @public {string} */
-    this.packageName = packageName;
     /** @public {!Array<string>} */
-    this.buildTargets = buildTargets;
+    this.classNames = classNames;
   }
 }
 
@@ -122,7 +124,7 @@ class GraphEdge {
 /**
  * The graph data for d3 to visualize.
  *
- * @typedef {Object} D3GraphData
+ * @typedef {object} D3GraphData
  * @property {!Array<!GraphNode>} nodes The nodes to visualize.
  * @property {!Array<!GraphEdge>} edges The edges to visualize.
  */
@@ -133,6 +135,7 @@ let D3GraphData;
  *
  * This is used as an SVG element ID, so it must adhere to ID requirements
  * (unique, non-empty, no whitespace).
+ *
  * @param {string} sourceId The ID of the source node.
  * @param {string} targetId The ID of the target node.
  * @return {string} The ID uniquely identifying the edge source -> target.
@@ -152,6 +155,7 @@ class GraphModel {
 
   /**
    * Adds a GraphNode to the node set.
+   *
    * @param {!GraphNode} node The node to add.
    */
   addNodeIfNew(node) {
@@ -162,6 +166,7 @@ class GraphModel {
 
   /**
    * Retrieves a GraphNode from the node set, if it exists.
+   *
    * @param {string} id The ID of the desired node.
    * @return {?GraphNode} The GraphNode if it exists, otherwise null.
    */
@@ -171,6 +176,7 @@ class GraphModel {
 
   /**
    * Retrieves a GraphEdge from the edge set, if it exists.
+   *
    * @param {string} id The ID of the desired edge.
    * @return {?GraphEdge} The GraphEdge if it exists, otherwise null.
    */
@@ -181,6 +187,7 @@ class GraphModel {
   /**
    * Creates and adds an GraphEdge to the edge set.
    * Also updates the inbound/outbound sets of the edge's nodes.
+   *
    * @param {!GraphNode} sourceNode The node at the start of the edge.
    * @param {!GraphNode} targetNode The node at the end of the edge.
    */
@@ -236,6 +243,7 @@ class GraphModel {
 
     /**
      * Runs BFS and updates the result (resultNodeSet, resultEdgeSet).
+     *
      * @param {boolean} inboundTraversal Whether inbound edges should be used to
      *     traverse. If false, outbound edges are used.
      * @param {!Set<string>} seenNodes The IDs of nodes already visited in the
@@ -311,11 +319,11 @@ class GraphModel {
 }
 
 export {
-  GraphNode,
-  TargetNode,
-  PackageNode,
   ClassNode,
+  D3GraphData,
   GraphEdge,
   GraphModel,
-  D3GraphData,
+  GraphNode,
+  PackageNode,
+  TargetNode,
 };
