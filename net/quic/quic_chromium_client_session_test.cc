@@ -56,6 +56,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_promised_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 #include "net/third_party/quiche/src/quiche/quic/platform/api/quic_test.h"
@@ -2469,11 +2470,11 @@ TEST_P(QuicChromiumClientSessionTest, DegradingWithMultiPortEnabled) {
   allow_port_migration_ = true;
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   auto options = config_.SendConnectionOptions();
-  options.push_back(quic::kMPQC);
+  config_.SetClientConnectionOptions(quic::QuicTagVector{quic::kMPQC});
   config_.SetConnectionOptionsToSend(options);
 
   Initialize();
-  EXPECT_TRUE(session_->connection()->multi_port_enabled());
+  EXPECT_TRUE(session_->connection()->multi_port_stats());
 
   session_->ReallyOnPathDegrading();
   EXPECT_EQ(1u, connectivity_monitor_->GetNumDegradingSessions());

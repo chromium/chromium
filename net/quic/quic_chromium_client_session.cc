@@ -2735,7 +2735,7 @@ void QuicChromiumClientSession::OnPathDegrading() {
   for (auto& observer : connectivity_observer_list_)
     observer.OnSessionPathDegrading(this, current_network);
 
-  if (!stream_factory_ || connection()->multi_port_enabled())
+  if (!stream_factory_ || connection()->multi_port_stats())
     return;
 
   if (allow_port_migration_ && !migrate_session_early_v2_) {

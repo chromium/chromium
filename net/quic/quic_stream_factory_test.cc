@@ -4660,7 +4660,7 @@ TEST_P(QuicStreamFactoryTest, MultiPortSession) {
   }
   SetIetfConnectionMigrationFlagsAndConnectionOptions();
   // Turning on MPQC will implicitly turn on port migration.
-  quic_params_->connection_options.push_back(quic::kMPQC);
+  quic_params_->client_connection_options.push_back(quic::kMPQC);
   socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
   Initialize();
 
