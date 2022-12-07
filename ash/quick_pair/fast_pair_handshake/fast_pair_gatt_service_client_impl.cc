@@ -68,6 +68,30 @@ constexpr const char* ToString(
   }
 }
 
+constexpr ash::quick_pair::AccountKeyFailure GattErrorCodeToAccountKeyFailure(
+    device::BluetoothGattService::GattErrorCode error_code) {
+  switch (error_code) {
+    case device::BluetoothGattService::GattErrorCode::kUnknown:
+      return ash::quick_pair::AccountKeyFailure::kGattErrorUnknown;
+    case device::BluetoothGattService::GattErrorCode::kFailed:
+      return ash::quick_pair::AccountKeyFailure::kGattErrorFailed;
+    case device::BluetoothGattService::GattErrorCode::kInProgress:
+      return ash::quick_pair::AccountKeyFailure::kGattInProgress;
+    case device::BluetoothGattService::GattErrorCode::kInvalidLength:
+      return ash::quick_pair::AccountKeyFailure::kGattErrorInvalidLength;
+    case device::BluetoothGattService::GattErrorCode::kNotPermitted:
+      return ash::quick_pair::AccountKeyFailure::kGattErrorNotPermitted;
+    case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
+      return ash::quick_pair::AccountKeyFailure::kGattErrorNotAuthorized;
+    case device::BluetoothGattService::GattErrorCode::kNotPaired:
+      return ash::quick_pair::AccountKeyFailure::kGattErrorNotPaired;
+    case device::BluetoothGattService::GattErrorCode::kNotSupported:
+      return ash::quick_pair::AccountKeyFailure::kGattErrorNotSupported;
+    default:
+      NOTREACHED();
+  }
+}
+
 constexpr const char* ToString(
     device::BluetoothDevice::ConnectErrorCode error_code) {
   switch (error_code) {
@@ -212,6 +236,7 @@ void FastPairGattServiceClientImpl::ClearCurrentState() {
   key_based_write_request_timer_.Stop();
   key_based_notify_session_.reset();
   passkey_notify_session_.reset();
+  account_key_write_request_timer_.Stop();
 }
 
 void FastPairGattServiceClientImpl::NotifyInitializedError(
@@ -255,9 +280,10 @@ void FastPairGattServiceClientImpl::NotifyWritePasskeyError(
 }
 
 void FastPairGattServiceClientImpl::NotifyWriteAccountKeyError(
-    device::BluetoothGattService::GattErrorCode error) {
+    ash::quick_pair::AccountKeyFailure failure) {
+  account_key_write_request_timer_.Stop();
   DCHECK(write_account_key_callback_);
-  std::move(write_account_key_callback_).Run(error);
+  std::move(write_account_key_callback_).Run(failure);
 }
 
 void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
@@ -547,8 +573,7 @@ void FastPairGattServiceClientImpl::WritePasskeyAsync(
 void FastPairGattServiceClientImpl::WriteAccountKey(
     std::array<uint8_t, 16> account_key,
     FastPairDataEncryptor* fast_pair_data_encryptor,
-    base::OnceCallback<
-        void(absl::optional<device::BluetoothGattService::GattErrorCode>)>
+    base::OnceCallback<void(absl::optional<ash::quick_pair::AccountKeyFailure>)>
         write_account_key_callback) {
   DCHECK(account_key[0] == kAccountKeyStartByte);
   DCHECK(is_initialized_);
@@ -556,6 +581,13 @@ void FastPairGattServiceClientImpl::WriteAccountKey(
 
   const std::array<uint8_t, kBlockSizeBytes> data_to_write =
       fast_pair_data_encryptor->EncryptBytes(account_key);
+
+  account_key_write_request_timer_.Start(
+      FROM_HERE, kGattOperationTimeout,
+      base::BindOnce(&FastPairGattServiceClientImpl::NotifyWriteAccountKeyError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     ash::quick_pair::AccountKeyFailure::
+                         kAccountKeyCharacteristicWriteTimeout));
 
   account_key_characteristic_->WriteRemoteCharacteristic(
       std::vector<uint8_t>(data_to_write.begin(), data_to_write.end()),
@@ -618,8 +650,8 @@ void FastPairGattServiceClientImpl::OnWritePasskeyError(
 
 void FastPairGattServiceClientImpl::OnWriteAccountKey(
     base::TimeTicks write_account_key_start_time) {
+  account_key_write_request_timer_.Stop();
   QP_LOG(INFO) << __func__;
-  DCHECK(write_account_key_callback_);
   RecordWriteAccountKeyTime(base::TimeTicks::Now() -
                             write_account_key_start_time);
   std::move(write_account_key_callback_).Run(/*failure=*/absl::nullopt);
@@ -629,7 +661,8 @@ void FastPairGattServiceClientImpl::OnWriteAccountKeyError(
     device::BluetoothGattService::GattErrorCode error) {
   QP_LOG(WARNING) << __func__ << ": Error: " << ToString(error);
   RecordWriteAccountKeyGattError(error);
-  NotifyWriteAccountKeyError(error);
+  NotifyWriteAccountKeyError(GattErrorCodeToAccountKeyFailure(error));
+  // |this| may be destroyed after this line.
 }
 
 }  // namespace quick_pair

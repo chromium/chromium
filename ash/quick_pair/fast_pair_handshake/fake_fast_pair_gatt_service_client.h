@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
 
+#include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "base/callback.h"
@@ -51,12 +52,11 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
                                                  absl::optional<PairFailure>)>
                              write_response_callback) override;
 
-  void WriteAccountKey(
-      std::array<uint8_t, 16> account_key,
-      FastPairDataEncryptor* fast_pair_data_encryptor,
-      base::OnceCallback<
-          void(absl::optional<device::BluetoothGattService::GattErrorCode>)>
-          write_account_key_callback) override;
+  void WriteAccountKey(std::array<uint8_t, 16> account_key,
+                       FastPairDataEncryptor* fast_pair_data_encryptor,
+                       base::OnceCallback<void(
+                           absl::optional<ash::quick_pair::AccountKeyFailure>)>
+                           write_account_key_callback) override;
 
   void RunOnGattClientInitializedCallback(
       absl::optional<PairFailure> failure = absl::nullopt);
@@ -70,8 +70,7 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
       absl::optional<PairFailure> failure = absl::nullopt);
 
   void RunWriteAccountKeyCallback(
-      absl::optional<device::BluetoothGattService::GattErrorCode> error =
-          absl::nullopt);
+      absl::optional<AccountKeyFailure> failure = absl::nullopt);
 
  private:
   bool is_connected_ = false;
@@ -81,8 +80,7 @@ class FakeFastPairGattServiceClient : public FastPairGattServiceClient {
       key_based_write_response_callback_;
   base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>
       passkey_write_response_callback_;
-  base::OnceCallback<void(
-      absl::optional<device::BluetoothGattService::GattErrorCode>)>
+  base::OnceCallback<void(absl::optional<ash::quick_pair::AccountKeyFailure>)>
       write_account_key_callback_;
 };
 

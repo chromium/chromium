@@ -50,31 +50,6 @@ std::string MessageTypeToString(
   }
 }
 
-std::string GattErrorToString(
-    device::BluetoothGattService::GattErrorCode error_code) {
-  switch (error_code) {
-    case device::BluetoothGattService::GattErrorCode::kUnknown:
-      return "[GATT_ERROR_UNKNOWN]";
-    case device::BluetoothGattService::GattErrorCode::kFailed:
-      return "[GATT_ERROR_FAILED]";
-    case device::BluetoothGattService::GattErrorCode::kInProgress:
-      return "[GATT_ERROR_IN_PROGRESS]";
-    case device::BluetoothGattService::GattErrorCode::kInvalidLength:
-      return "[GATT_ERROR_INVALID_LENGTH]";
-    case device::BluetoothGattService::GattErrorCode::kNotPermitted:
-      return "[GATT_ERROR_NOT_PERMITTED]";
-    case device::BluetoothGattService::GattErrorCode::kNotAuthorized:
-      return "[GATT_ERROR_NOT_AUTHORIZED]";
-    case device::BluetoothGattService::GattErrorCode::kNotPaired:
-      return "[GATT_ERROR_NOT_PAIRED]";
-    case device::BluetoothGattService::GattErrorCode::kNotSupported:
-      return "[GATT_ERROR_NOT_SUPPORTED]";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
 bool ShouldBeEnabledForLoginStatus(ash::LoginStatus status) {
   switch (status) {
     case ash::LoginStatus::NOT_LOGGED_IN:
@@ -588,15 +563,13 @@ void FastPairPairerImpl::WriteAccountKey() {
 
 void FastPairPairerImpl::OnWriteAccountKey(
     std::array<uint8_t, 16> account_key,
-    absl::optional<device::BluetoothGattService::GattErrorCode> error) {
-  RecordWriteAccountKeyCharacteristicResult(/*success=*/!error.has_value());
+    absl::optional<AccountKeyFailure> failure) {
+  RecordWriteAccountKeyCharacteristicResult(/*success=*/!failure.has_value());
 
-  if (error) {
-    QP_LOG(WARNING)
-        << "Failed to write account key to device due to Gatt Error: "
-        << GattErrorToString(error.value());
-    std::move(account_key_failure_callback_)
-        .Run(device_, AccountKeyFailure::kAccountKeyCharacteristicWrite);
+  if (failure) {
+    QP_LOG(WARNING) << "Failed to write account key to device due to error: "
+                    << failure.value();
+    std::move(account_key_failure_callback_).Run(device_, failure.value());
     return;
   }
 

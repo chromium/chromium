@@ -5,6 +5,7 @@
 #ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_GATT_SERVICE_CLIENT_H_
 
+#include "ash/quick_pair/common/account_key_failure.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
 inline constexpr int kBlockByteSize = 16;
@@ -52,7 +53,7 @@ class FastPairGattServiceClient : public device::BluetoothAdapter::Observer {
       std::array<uint8_t, 16> account_key,
       FastPairDataEncryptor* fast_pair_data_encryptor,
       base::OnceCallback<
-          void(absl::optional<device::BluetoothGattService::GattErrorCode>)>
+          void(absl::optional<ash::quick_pair::AccountKeyFailure>)>
           write_account_key_callback) = 0;
 
   // Returns whether or not this client has an active GATT connection.

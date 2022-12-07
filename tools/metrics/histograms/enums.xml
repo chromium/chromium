@@ -36760,7 +36760,18 @@ Called by update_extension_permission.py.-->
 <enum name="FastPairAccountKeyFailure">
   <int value="0" label="Failed to find the Account Key GATT characteristic"/>
   <int value="1"
-      label="Failed to write to the Account Key GATT characteristic"/>
+      label="[Deprecated] Failed to write to the Account Key GATT
+             characteristic"/>
+  <int value="2"
+      label="Timed out while writing to Account Key GATT characteristic"/>
+  <int value="3" label="GATT Error: Unknown"/>
+  <int value="4" label="GATT Error: Failed"/>
+  <int value="5" label="GATT Error: In Progress"/>
+  <int value="6" label="GATT Error: Invalid Length"/>
+  <int value="7" label="GATT Error: Not Permitted"/>
+  <int value="8" label="GATT Error: Not Authorized"/>
+  <int value="9" label="GATT Error: Not Paired"/>
+  <int value="10" label="GATT Error: Not Supported"/>
 </enum>
 
 <enum name="FastPairEngagementFlowEvent">

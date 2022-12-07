@@ -403,6 +403,11 @@ class FastPairGattServiceClientTest : public testing::Test {
       fake_account_key_characteristic->SetWriteError(true);
     }
 
+    if (write_account_key_timeout_) {
+      fake_account_key_characteristic->SetWriteTimeout(true,
+                                                       &task_environment_);
+    }
+
     gatt_service_->AddMockCharacteristic(
         std::move(fake_account_key_characteristic));
     adapter_->NotifyGattDiscoveryCompleteForService(gatt_service_.get());
@@ -448,13 +453,15 @@ class FastPairGattServiceClientTest : public testing::Test {
   }
 
   void AccountKeyCallback(
-      absl::optional<device::BluetoothGattService::GattErrorCode> error) {
-    gatt_error_ = error;
+      absl::optional<ash::quick_pair::AccountKeyFailure> failure) {
+    account_key_error_ = failure;
+    if (failure.has_value()) {
+      gatt_service_client_.reset();
+    }
   }
 
-  absl::optional<device::BluetoothGattService::GattErrorCode>
-  GetAccountKeyCallback() {
-    return gatt_error_;
+  absl::optional<ash::quick_pair::AccountKeyFailure> GetAccountKeyCallback() {
+    return account_key_error_;
   }
 
   absl::optional<PairFailure> GetWriteCallbackResult() {
@@ -467,6 +474,10 @@ class FastPairGattServiceClientTest : public testing::Test {
 
   void SetKeybasedNotifySessionTimeout(bool timeout) {
     keybased_notify_session_timeout_ = timeout;
+  }
+
+  void SetWriteAccountKeyTimeout(bool timeout) {
+    write_account_key_timeout_ = timeout;
   }
 
   void FastForwardTimeByConnetingTimeout() {
@@ -529,7 +540,7 @@ class FastPairGattServiceClientTest : public testing::Test {
   // move the unique pointers when we notify the session.
   FakeBluetoothGattCharacteristic* temp_fake_key_based_characteristic_;
   FakeBluetoothGattCharacteristic* temp_passkey_based_characteristic_;
-  absl::optional<device::BluetoothGattService::GattErrorCode> gatt_error_ =
+  absl::optional<ash::quick_pair::AccountKeyFailure> account_key_error_ =
       absl::nullopt;
   bool passkey_char_error_ = false;
   bool keybased_char_error_ = false;
@@ -542,6 +553,7 @@ class FastPairGattServiceClientTest : public testing::Test {
   bool key_based_write_timeout_ = false;
   bool passkey_write_error_ = false;
   bool passkey_write_timeout_ = false;
+  bool write_account_key_timeout_ = false;
 
   absl::optional<PairFailure> initalized_failure_;
   absl::optional<PairFailure> write_failure_;
@@ -847,6 +859,23 @@ TEST_F(FastPairGattServiceClientTest, WriteAccountKeyFailure) {
   EXPECT_NE(GetAccountKeyCallback(), absl::nullopt);
   histogram_tester().ExpectTotalCount(kWriteAccountKeyCharacteristicGattError,
                                       1);
+  histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 0);
+}
+
+TEST_F(FastPairGattServiceClientTest, WriteAccountKeyTimeout) {
+  histogram_tester().ExpectTotalCount(kWriteAccountKeyCharacteristicGattError,
+                                      0);
+  histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 0);
+  SetWriteAccountKeyTimeout(true);
+  SuccessfulGattConnectionSetUp();
+  NotifyGattDiscoveryCompleteForService();
+  EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
+  EXPECT_TRUE(ServiceIsSet());
+  WriteRequestToKeyBased();
+  TriggerKeyBasedGattChanged();
+  EXPECT_EQ(GetWriteCallbackResult(), absl::nullopt);
+  WriteAccountKey();
+  EXPECT_NE(GetAccountKeyCallback(), absl::nullopt);
   histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 0);
 }
 

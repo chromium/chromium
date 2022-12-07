@@ -344,10 +344,9 @@ class FastPairPairerImplTest : public AshTestBase {
   }
 
   void RunWriteAccountKeyCallback(
-      absl::optional<device::BluetoothGattService::GattErrorCode> error =
-          absl::nullopt) {
+      absl::optional<AccountKeyFailure> failure = absl::nullopt) {
     fast_pair_gatt_service_factory_.fake_fast_pair_gatt_service_client()
-        ->RunWriteAccountKeyCallback(error);
+        ->RunWriteAccountKeyCallback(failure);
   }
 
   void PairFailedCallback(scoped_refptr<Device> device, PairFailure failure) {
@@ -1708,8 +1707,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kFailed);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorFailed);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1735,8 +1733,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kUnknown);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorUnknown);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1762,8 +1759,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kInProgress);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattInProgress);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1789,8 +1785,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kInvalidLength);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorInvalidLength);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1816,8 +1811,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kNotPermitted);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPermitted);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1843,8 +1837,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kNotAuthorized);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotAuthorized);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1870,8 +1863,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kNotPaired);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotPaired);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1897,8 +1889,7 @@ TEST_F(FastPairPairerImplTest,
   EXPECT_CALL(account_key_failure_callback_, Run);
   EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kNotSupported);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorNotSupported);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
@@ -1924,8 +1915,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_NoCancelPairing) {
   // Mock that the device was paired successfully.
   EXPECT_CALL(*fake_bluetooth_device_ptr_, IsPaired()).WillOnce(Return(true));
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback(
-      device::BluetoothGattService::GattErrorCode::kFailed);
+  RunWriteAccountKeyCallback(AccountKeyFailure::kGattErrorFailed);
 
   // Check to make sure that, after bonding a device, we don't cancel pairing
   // (since this causes a paired device to disconnect).

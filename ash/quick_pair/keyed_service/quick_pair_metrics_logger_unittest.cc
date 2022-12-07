@@ -399,14 +399,13 @@ class QuickPairMetricsLoggerTest : public testing::Test {
     switch (protocol) {
       case Protocol::kFastPairInitial:
         mock_pairer_broker_->NotifyAccountKeyWrite(
-            initial_device_, AccountKeyFailure::kAccountKeyCharacteristicWrite);
+            initial_device_, AccountKeyFailure::kGattErrorFailed);
         break;
       case Protocol::kFastPairSubsequent:
         break;
       case Protocol::kFastPairRetroactive:
         mock_pairer_broker_->NotifyAccountKeyWrite(
-            retroactive_device_,
-            AccountKeyFailure::kAccountKeyCharacteristicWrite);
+            retroactive_device_, AccountKeyFailure::kGattErrorFailed);
         break;
     }
   }

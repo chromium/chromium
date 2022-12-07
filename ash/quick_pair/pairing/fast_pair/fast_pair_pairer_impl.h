@@ -157,9 +157,8 @@ class FastPairPairerImpl : public FastPairPairer,
   void AttemptSendAccountKey();
 
   // FastPairDataEncryptor::WriteAccountKey callback
-  void OnWriteAccountKey(
-      std::array<uint8_t, 16> account_key,
-      absl::optional<device::BluetoothGattService::GattErrorCode> error);
+  void OnWriteAccountKey(std::array<uint8_t, 16> account_key,
+                         absl::optional<AccountKeyFailure> error);
 
   void StartPairing();
 
