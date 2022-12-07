@@ -625,10 +625,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     return;
   }
 
-  // Note that when CompositorGpuThread is disabled, this cleanup for gpu main
-  // thread context also happens in raster decoder.
-  dependency_->ScheduleGrContextCleanup();
-
   // Only overlayed images require end_semaphore synchronization.
   DCHECK(is_overlay || end_semaphores.empty());
 
