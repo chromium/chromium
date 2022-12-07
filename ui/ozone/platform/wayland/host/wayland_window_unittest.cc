@@ -3175,7 +3175,9 @@ TEST_P(WaylandWindowTest, DestroysCreatesPopupsOnHideShow) {
 }
 
 // TODO(crbug.com/1393155): Flaky on Linux TSAN.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+// TODO(crbug.com/1396725): Failing on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && \
+    (defined(THREAD_SANITIZER) || defined(MEMORY_SANITIZER))
 #define MAYBE_ReattachesBackgroundOnShow DISABLED_ReattachesBackgroundOnShow
 #else
 #define MAYBE_ReattachesBackgroundOnShow ReattachesBackgroundOnShow
