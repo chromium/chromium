@@ -137,17 +137,12 @@ def CheckoutLLVM(commit, dir):
   # Try updating the current repo if it exists and has no local diff.
   if os.path.isdir(dir):
     os.chdir(dir)
-    # Force re-clone if we're not using the GoB LLVM mirror since some users
-    # may still have the github repo checked out locally.
-    # TODO: remove this after a while
-    remotes = subprocess.check_output(['git', 'remote', '-v'],
-                                      universal_newlines=True)
     # git diff-index --quiet returns success when there is no diff.
     # Also check that the first commit is reachable.
-    if ('googlesource' in remotes and RunCommand(
-        ['git', 'diff-index', '--quiet', 'HEAD'], fail_hard=False)
+    if (RunCommand(['git', 'diff-index', '--quiet', 'HEAD'], fail_hard=False)
         and RunCommand(['git', 'fetch'], fail_hard=False)
-        and RunCommand(['git', 'checkout', commit], fail_hard=False)):
+        and RunCommand(['git', 'checkout', commit], fail_hard=False)
+        and RunCommand(['git', 'clean', '-f'], fail_hard=False)):
       return
 
     # If we can't use the current repo, delete it.
