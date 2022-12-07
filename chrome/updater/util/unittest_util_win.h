@@ -25,8 +25,10 @@ void DeleteAppClientKey(UpdaterScope scope, const std::wstring& app_id);
 
 // Creates the key
 // `HKLM\Software\{CompanyName}\Update\Clients\{app_id}`,
-// and adds a `command_id` REG_SZ entry with the value `command_line`.
+// and adds the provided REG_SZ entries under it.
 void CreateLaunchCmdElevatedRegistry(const std::wstring& app_id,
+                                     const std::wstring& name,
+                                     const std::wstring& pv,
                                      const std::wstring& command_id,
                                      const std::wstring& command_line);
 

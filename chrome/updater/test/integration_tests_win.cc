@@ -1094,13 +1094,15 @@ void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
 }
 
 void SetupLaunchCommandElevated(const std::wstring& app_id,
+                                const std::wstring& name,
+                                const std::wstring& pv,
                                 const std::wstring& command_id,
                                 const std::wstring& command_parameters,
                                 base::ScopedTempDir& temp_dir) {
   base::CommandLine cmd_exe_command_line(base::CommandLine::NO_PROGRAM);
   SetupCmdExe(UpdaterScope::kSystem, cmd_exe_command_line, temp_dir);
   CreateLaunchCmdElevatedRegistry(
-      app_id, command_id,
+      app_id, name, pv, command_id,
       base::StrCat({cmd_exe_command_line.GetCommandLineString(),
                     command_parameters.c_str()}));
 }
@@ -1144,12 +1146,12 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
       CreateLocalServer(__uuidof(ProcessLauncherClass), process_launcher));
 
   constexpr wchar_t kAppId1[] = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
-  constexpr wchar_t kCommandId[] = L"CmdExit0";
+  constexpr wchar_t kCommandId[] = L"cmd";
 
   // Succeeds when the command is present in the registry.
   base::ScopedTempDir temp_dir;
-  SetupLaunchCommandElevated(kAppId1, kCommandId, L" /c \"exit 5420\"",
-                             temp_dir);
+  SetupLaunchCommandElevated(kAppId1, L"Google Chrome", L"1.0.0.0", kCommandId,
+                             L" /c \"exit 5420\"", temp_dir);
 
   // Succeeds when the command is present in the registry.
   ASSERT_HRESULT_SUCCEEDED(

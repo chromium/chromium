@@ -20,6 +20,8 @@
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
@@ -50,16 +52,56 @@ HRESULT LoadAppCommandFormat(UpdaterScope scope,
 // Loads the ProcessLauncher command in HKLM under:
 //     Update\Clients\{`app_id`}
 //         REG_SZ `command_id` == {command format}
+//
+// The legacy process launcher format is only supported for Google Chrome
+// versions 110.0.5435.0 and below with the "cmd" command id. This is because
+// the legacy process launcher command layout format can be used to interpret
+// and/or execute unrelated registry entries. For instance, if the app_id is
+// `{8A69D345-D564-463c-AFF1-A69D9E530F96}`, the older command would be
+// registered under
+// `SOFTWARE\Google\Update\Clients\{8A69D345-D564-463c-AFF1-A69D9E530F96}`
+// REG_SZ `cmd`. Along with `cmd`, there are other properties of the app
+// registered, such as the version "pv"="107.0.5304.107". So, `pv` is also a
+// potential "command" for `IProcessLauncher`, which is unexpected.
+// TODO(crbug/1399177): Parameterize `LoadLegacyProcessLauncherFormat`.
 HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
                                         const std::wstring& command_id,
                                         std::wstring& command_format) {
-  base::win::RegKey app_key;
-  HRESULT hr = HRESULT_FROM_WIN32(app_key.Open(HKEY_LOCAL_MACHINE,
-                                               GetAppClientsKey(app_id).c_str(),
-                                               Wow6432(KEY_QUERY_VALUE)));
-  return SUCCEEDED(hr) ? HRESULT_FROM_WIN32(app_key.ReadValue(
-                             command_id.c_str(), &command_format))
-                       : hr;
+  constexpr wchar_t kAllowedLegacyProcessLauncherAppNameSubstring[] =
+      L"Google Chrome";
+  constexpr char kAllowedLegacyProcessLauncherMaxAppVersion[] = "110.0.5435.0";
+  constexpr wchar_t kAllowedLegacyProcessLauncherCommandId[] = L"cmd";
+
+  if (command_id == kAllowedLegacyProcessLauncherCommandId) {
+    base::win::RegKey app_key;
+    HRESULT hr = HRESULT_FROM_WIN32(
+        app_key.Open(HKEY_LOCAL_MACHINE, GetAppClientsKey(app_id).c_str(),
+                     Wow6432(KEY_QUERY_VALUE)));
+    if (FAILED(hr))
+      return hr;
+
+    std::wstring pv;
+    std::wstring name;
+    app_key.ReadValue(kRegValuePV, &pv);
+    app_key.ReadValue(kRegValueName, &name);
+    const base::Version app_version(base::WideToASCII(pv));
+
+    if (app_version.IsValid() &&
+        app_version.CompareTo(
+            base::Version(kAllowedLegacyProcessLauncherMaxAppVersion)) <= 0 &&
+        name.find(kAllowedLegacyProcessLauncherAppNameSubstring) !=
+            std::wstring::npos) {
+      return HRESULT_FROM_WIN32(
+          app_key.ReadValue(command_id.c_str(), &command_format));
+    }
+  }
+
+  LOG(WARNING)
+      << __func__
+      << "Legacy ProcessLauncher format not supported, use more secure "
+         "AppCommand format: "
+      << app_id << ": " << command_id;
+  return E_INVALIDARG;
 }
 
 // Formats a single `parameter` and returns the result. Any placeholder `%N` in

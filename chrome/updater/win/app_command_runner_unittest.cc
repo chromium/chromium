@@ -73,12 +73,15 @@ class AppCommandRunnerTest : public testing::Test {
   }
 
   HRESULT CreateProcessLauncherRunner(const std::wstring& app_id,
+                                      const std::wstring& name,
+                                      const std::wstring& pv,
                                       const std::wstring& command_id,
                                       const std::wstring& command_line_format,
                                       AppCommandRunner& app_command_runner) {
     EXPECT_TRUE(IsSystemInstall(GetTestScope()));
 
-    CreateLaunchCmdElevatedRegistry(app_id, command_id, command_line_format);
+    CreateLaunchCmdElevatedRegistry(app_id, name, pv, command_id,
+                                    command_line_format);
 
     return AppCommandRunner::LoadAppCommand(GetTestScope(), app_id, command_id,
                                             app_command_runner);
@@ -339,11 +342,20 @@ TEST_F(AppCommandRunnerTest, RunProcessLauncherFormat) {
     return;
 
   const struct {
+    const wchar_t* app_name;
+    const wchar_t* app_version;
+    const wchar_t* cmd_id;
     const std::vector<std::wstring> input;
     const int expected_exit_code;
+    const int expected_hr;
   } test_cases[] = {
-      {{L"/c", L"exit 7"}, 7},
-      {{L"/c", L"exit 21"}, 21},
+      {L"foo", L"1.0.0.0", L"cmd1", {L"/c", L"exit 7"}, 7, E_INVALIDARG},
+      {L"foo", L"110.0.5434.0", L"cmd", {L"/c", L"exit 7"}, 7, E_INVALIDARG},
+      {L"Chrome", L"110.0.5434.0", L"cmd", {L"/c", L"exit 7"}, 7, E_INVALIDARG},
+      {L"Google Chrome", L"110.0.5434.0", L"cmd", {L"/c", L"exit 7"}, 7, S_OK},
+      {L"Google Chrome Beta", L"1.0.0.0", L"cmd", {L"/c", L"exit 7"}, 7, S_OK},
+      {L"Google Chrome Dev", L"110.0.0.0", L"cmd", {L"/c", L"exit 7"}, 7, S_OK},
+      {L"Google Chrome SxS", L"110.0.0.0", L"cmd", {L"/c", L"exit 7"}, 7, S_OK},
   };
 
   for (const auto& test_case : test_cases) {
@@ -351,11 +363,15 @@ TEST_F(AppCommandRunnerTest, RunProcessLauncherFormat) {
     base::Process process;
     ASSERT_EQ(app_command_runner.Run({}, process), E_UNEXPECTED);
 
-    ASSERT_HRESULT_SUCCEEDED(CreateProcessLauncherRunner(
-        kAppId1, kCmdId1,
-        base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
-                      base::JoinString(test_case.input, L" ")}),
-        app_command_runner));
+    ASSERT_EQ(CreateProcessLauncherRunner(
+                  kAppId1, test_case.app_name, test_case.app_version,
+                  test_case.cmd_id,
+                  base::StrCat({cmd_exe_command_line_.GetCommandLineString(),
+                                L" ", base::JoinString(test_case.input, L" ")}),
+                  app_command_runner),
+              test_case.expected_hr);
+    if (FAILED(test_case.expected_hr))
+      continue;
 
     ASSERT_HRESULT_SUCCEEDED(app_command_runner.Run({}, process));
 
@@ -379,14 +395,14 @@ TEST_F(AppCommandRunnerTest, RunBothFormats) {
     const int expected_exit_code;
   } test_cases[] = {
       // both formats in registry; AppCommand overrides ProcessLauncher entry.
-      {L"cmd1", L"cmd1", {L"/c", L"exit 7"}, L"cmd1", {L"/c", L"exit 14"}, 7},
+      {L"cmd", L"cmd", {L"/c", L"exit 7"}, L"cmd", {L"/c", L"exit 14"}, 7},
       // only AppCommand format in registry.
-      {L"cmd1", L"cmd1", {L"/c", L"exit 21"}, {}, {}, 21},
+      {L"cmd", L"cmd", {L"/c", L"exit 21"}, {}, {}, 21},
       // only ProcessLauncher format in registry.
-      {L"cmd1", {}, {}, L"cmd1", {L"/c", L"exit 28"}, 28},
+      {L"cmd", {}, {}, L"cmd", {L"/c", L"exit 28"}, 28},
       // both formats in registry, but AppCommand has a different command ID, so
       // does not override ProcessLauncher entry.
-      {L"cmd1", L"cmd2", {L"/c", L"exit 7"}, L"cmd1", {L"/c", L"exit 35"}, 35},
+      {L"cmd", L"cmd2", {L"/c", L"exit 7"}, L"cmd", {L"/c", L"exit 35"}, 35},
   };
 
   for (const auto& test_case : test_cases) {
@@ -403,7 +419,8 @@ TEST_F(AppCommandRunnerTest, RunBothFormats) {
 
     if (test_case.cmd_id_processlauncher) {
       CreateLaunchCmdElevatedRegistry(
-          kAppId1, test_case.cmd_id_processlauncher,
+          kAppId1, L"Google Chrome", L"1.0.0.0",
+          test_case.cmd_id_processlauncher,
           base::StrCat(
               {cmd_exe_command_line_.GetCommandLineString(), L" ",
                base::JoinString(test_case.input_processlauncher, L" ")}));
