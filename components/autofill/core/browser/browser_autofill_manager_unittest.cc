@@ -3709,14 +3709,14 @@ TEST_F(BrowserAutofillManagerTest,
   // Create a selection box for the state that hat the correct entry to be
   // filled with user data. Note, TN is the official abbreviation for Tennessee.
   test::CreateTestSelectField("State", "state", "", {"AA", "BB", "TN"},
-                              {"AA", "BB", "TN"}, 3, &field);
+                              {"AA", "BB", "TN"}, &field);
   form.fields.push_back(field);
 
   // Add 20 selection boxes that can not be filled since the correct entry
   // is missing.
   for (int i = 0; i < 20; i++) {
     test::CreateTestSelectField("State", "state", "", {"AA", "BB", "CC"},
-                                {"AA", "BB", "CC"}, 3, &field);
+                                {"AA", "BB", "CC"}, &field);
     form.fields.push_back(field);
   }
 
@@ -3724,7 +3724,7 @@ TEST_F(BrowserAutofillManagerTest,
   // entry is present.
   for (int i = 0; i < 20; i++) {
     test::CreateTestSelectField("State", "state", "", {"AA", "BB", "TN"},
-                                {"AA", "BB", "TN"}, 3, &field);
+                                {"AA", "BB", "TN"}, &field);
     form.fields.push_back(field);
   }
 
@@ -3732,7 +3732,7 @@ TEST_F(BrowserAutofillManagerTest,
   // filled with user data. Note, TN is the official abbreviation for Tennessee.
   for (int i = 0; i < 20; ++i) {
     test::CreateTestSelectField("Country", "country", "", {"DE", "FR", "US"},
-                                {"DE", "FR", "US"}, 3, &field);
+                                {"DE", "FR", "US"}, &field);
     form.fields.push_back(field);
   }
 
@@ -4053,7 +4053,7 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_ExpiredCard) {
   std::vector<const char*> kCreditCardTypes = {"Visa", "Mastercard", "AmEx",
                                                "discover"};
   test::CreateTestSelectField("Card Type", "cardtype", "", "cc-type",
-                              kCreditCardTypes, kCreditCardTypes, 4, &field);
+                              kCreditCardTypes, kCreditCardTypes, &field);
   form.fields.push_back(field);
   test::CreateTestFormField("Card Number", "cardnumber", "", "text",
                             "cc-number", &field);
@@ -5098,7 +5098,7 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
     const std::vector<const char*> contents{"Canada", "United States",
                                             "Banana Republic"};
     test::CreateTestSelectField("Country", "country", "", values, contents,
-                                values.size(), &field);
+                                &field);
     field.is_focusable = false;
     form.fields.push_back(field);
   }
@@ -5106,8 +5106,7 @@ TEST_F(BrowserAutofillManagerTest, FormWithHiddenOrPresentationalSelects) {
     const std::vector<const char*> values{"NY", "CA", "TN"};
     const std::vector<const char*> contents{"New York", "California",
                                             "Tennessee"};
-    test::CreateTestSelectField("State", "state", "", values, contents,
-                                values.size(), &field);
+    test::CreateTestSelectField("State", "state", "", values, contents, &field);
     field.role = FormFieldData::RoleAttribute::kPresentation;
     form.fields.push_back(field);
   }
@@ -6216,7 +6215,7 @@ TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
   test::CreateTestSelectField(
       "label", "name", /*value=*/"2",
       /*values=*/{"1", "2", "3"},
-      /*contents=*/{"New York", "Memphis", "Gotham City"}, 3, &city_field);
+      /*contents=*/{"New York", "Memphis", "Gotham City"}, &city_field);
 
   // We want the +1 in <option value="US">USA (+1)</option> to be recognized
   // as a phone country code. Despite the value "US", we don't want this to be
@@ -6224,7 +6223,7 @@ TEST_P(DeterminePossibleFieldTypesForUploadOfSelectTest,
   FormFieldData phone_country_code_field;
   test::CreateTestSelectField(
       "label", "name", /*value=*/"US", /*values=*/{"US", "DE"},
-      /*contents=*/{"USA (+1)", "Germany (+49)"}, 2, &phone_country_code_field);
+      /*contents=*/{"USA (+1)", "Germany (+49)"}, &phone_country_code_field);
 
   form.fields = {city_field, phone_country_code_field};
 
@@ -7897,7 +7896,7 @@ TEST_F(BrowserAutofillManagerTest, FormWithLongOptionValuesIsAcceptable) {
   const std::vector<const char*> values(3, long_string.c_str());
   const std::vector<const char*> contents{"A", "B", "C"};
   test::CreateTestSelectField("Country", "country", "", values, contents,
-                              values.size(), &field);
+                              &field);
   form.fields.push_back(field);
 
   FormsSeen({form});
@@ -9146,7 +9145,7 @@ TEST_F(BrowserAutofillManagerTest, PreventOverridingOfPrefilledValues) {
   form.fields.push_back(field);
   test::CreateTestSelectField("State", "state", "California",
                               {"Washington", "Tennessee", "California"},
-                              {"DC", "TN", "CA"}, 3, &field);
+                              {"DC", "TN", "CA"}, &field);
   form.fields.push_back(field);
   test::CreateTestFormField("Country", "country", "Test Country", "text",
                             &field);
@@ -9240,7 +9239,7 @@ TEST_F(BrowserAutofillManagerTest, AutofillOverridePrefilledValue) {
   form.fields.push_back(field);
   test::CreateTestSelectField("State", "state", "California",
                               {"Washington", "Tennessee", "California"},
-                              {"DC", "TN", "CA"}, 3, &field);
+                              {"DC", "TN", "CA"}, &field);
   form.fields.push_back(field);
   test::CreateTestFormField("Country", "country", "Test Country", "text",
                             &field);

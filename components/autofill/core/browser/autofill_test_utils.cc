@@ -230,7 +230,6 @@ void CreateTestSelectField(const char* label,
                            const char* value,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
-                           size_t select_size,
                            FormFieldData* field) {
   // Fill the base attributes.
   CreateTestFormField(label, name, value, "select-one", field);
@@ -251,10 +250,8 @@ void CreateTestSelectField(const char* label,
                            const char* autocomplete,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
-                           size_t select_size,
                            FormFieldData* field) {
-  CreateTestSelectField(label, name, value, values, contents, select_size,
-                        field);
+  CreateTestSelectField(label, name, value, values, contents, field);
   field->autocomplete_attribute = autocomplete;
   field->parsed_autocomplete =
       ParseAutocompleteAttribute(autocomplete, field->max_length);
@@ -262,7 +259,7 @@ void CreateTestSelectField(const char* label,
 
 void CreateTestSelectField(const std::vector<const char*>& values,
                            FormFieldData* field) {
-  CreateTestSelectField("", "", "", values, values, values.size(), field);
+  CreateTestSelectField("", "", "", values, values, field);
 }
 
 void CreateTestDatalistField(const char* label,

@@ -185,7 +185,6 @@ void CreateTestSelectField(const char* label,
                            const char* value,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
-                           size_t select_size,
                            FormFieldData* field);
 
 void CreateTestSelectField(const char* label,
@@ -194,7 +193,6 @@ void CreateTestSelectField(const char* label,
                            const char* autocomplete,
                            const std::vector<const char*>& values,
                            const std::vector<const char*>& contents,
-                           size_t select_size,
                            FormFieldData* field);
 
 void CreateTestSelectField(const std::vector<const char*>& values,

@@ -44,10 +44,10 @@ void CreateTestPasswordFormFillData(PasswordFormFillData* fill_data) {
   fill_data->url = GURL("https://foo.com/");
   fill_data->action = GURL("https://foo.com/login");
   test::CreateTestSelectField("TestUsernameFieldLabel", "TestUsernameFieldName",
-                              "TestUsernameFieldValue", kOptions, kOptions, 4,
+                              "TestUsernameFieldValue", kOptions, kOptions,
                               &fill_data->username_field);
   test::CreateTestSelectField("TestPasswordFieldLabel", "TestPasswordFieldName",
-                              "TestPasswordFieldValue", kOptions, kOptions, 4,
+                              "TestPasswordFieldValue", kOptions, kOptions,
                               &fill_data->password_field);
   fill_data->preferred_realm = "https://foo.com/";
   fill_data->uses_account_store = true;
@@ -299,7 +299,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   FormFieldData input;
   test::CreateTestSelectField("TestLabel", "TestName", "TestValue", kOptions,
-                              kOptions, 4, &input);
+                              kOptions, &input);
   // Set other attributes to check if they are passed correctly.
   input.host_frame = test::MakeLocalFrameToken();
   input.unique_renderer_id = FieldRendererId(1234);

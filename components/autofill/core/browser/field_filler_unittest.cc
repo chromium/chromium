@@ -87,12 +87,10 @@ size_t GetIndexOfValue(const std::vector<SelectOption>& values,
 // Creates the select field from the specified |values| and |contents| and tests
 // filling with 3 different values.
 void TestFillingExpirationMonth(const std::vector<const char*>& values,
-                                const std::vector<const char*>& contents,
-                                size_t select_size) {
+                                const std::vector<const char*>& contents) {
   // Create the select field.
   AutofillField field;
-  test::CreateTestSelectField("", "", "", values, contents, select_size,
-                              &field);
+  test::CreateTestSelectField("", "", "", values, contents, &field);
   field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_EXP_MONTH);
 
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -1031,8 +1029,8 @@ TEST_P(AutofillSelectWithExpirationMonthTest,
   auto test_case = GetParam();
   ASSERT_EQ(test_case.select_values.size(), test_case.select_contents.size());
 
-  TestFillingExpirationMonth(test_case.select_values, test_case.select_contents,
-                             test_case.select_values.size());
+  TestFillingExpirationMonth(test_case.select_values,
+                             test_case.select_contents);
 }
 
 INSTANTIATE_TEST_SUITE_P(
