@@ -4956,6 +4956,35 @@ TEST_P(CertVerifyProcConstraintsTrustedLeafTest, ExtendedKeyUsageNoServerAuth) {
   }
 }
 
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, UnknownSignatureAlgorithm) {
+  chain_[0]->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
+
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedLeafTest, UnknownExtension) {
+  for (bool critical : {true, false}) {
+    SCOPED_TRACE(critical);
+    chain_[0]->SetExtension(TestOid0(), "hello world", critical);
+
+    if (verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+      if (critical) {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+      } else {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+      }
+    } else if (VerifyProcTypeIsBuiltin()) {
+      EXPECT_THAT(Verify(), IsError(ERR_CERT_AUTHORITY_INVALID));
+    } else {
+      EXPECT_THAT(Verify(), IsOk());
+    }
+  }
+}
+
 // A set of tests that check how various constraints are enforced when they
 // are applied to a directly trusted self-signed leaf certificate.
 class CertVerifyProcConstraintsTrustedSelfSignedTest
@@ -5095,6 +5124,34 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
   cert_->SetExtendedKeyUsages({der::Input(kCodeSigning)});
 
   EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest,
+       UnknownSignatureAlgorithm) {
+  cert_->SetSignatureAlgorithmTLV(TestOid0SignatureAlgorithmTLV());
+  if (VerifyProcTypeIsBuiltin() || verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+    EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+  } else {
+    EXPECT_THAT(Verify(), IsOk());
+  }
+}
+
+TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, UnknownExtension) {
+  for (bool critical : {true, false}) {
+    SCOPED_TRACE(critical);
+    cert_->SetExtension(TestOid0(), "hello world", critical);
+
+    if (critical) {
+      if (VerifyProcTypeIsBuiltin() ||
+          verify_proc_type() == CERT_VERIFY_PROC_WIN) {
+        EXPECT_THAT(Verify(), IsError(ERR_CERT_INVALID));
+      } else {
+        EXPECT_THAT(Verify(), IsOk());
+      }
+    } else {
+      EXPECT_THAT(Verify(), IsOk());
+    }
+  }
 }
 
 TEST(CertVerifyProcTest, RejectsPublicSHA1Leaves) {
