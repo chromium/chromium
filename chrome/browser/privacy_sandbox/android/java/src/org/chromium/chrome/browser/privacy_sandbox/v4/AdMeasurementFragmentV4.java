@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
@@ -26,6 +27,21 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener {
     public static final String TOGGLE_PREFERENCE = "ad_measurement_toggle";
 
+    static boolean isAdMeasurementPrefEnabled() {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return prefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
+    }
+
+    static void setAdMeasurementPrefEnabled(boolean isEnabled) {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED, isEnabled);
+    }
+
+    static boolean isAdMeasurementPrefManaged() {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return prefService.isManagedPreference(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
+    }
+
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
@@ -33,20 +49,26 @@ public class AdMeasurementFragmentV4 extends PrivacySandboxSettingsBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.ad_measurement_preference_v4);
 
         ChromeSwitchPreference adMeasurementToggle = findPreference(TOGGLE_PREFERENCE);
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-        adMeasurementToggle.setChecked(
-                prefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED));
+        adMeasurementToggle.setChecked(isAdMeasurementPrefEnabled());
         adMeasurementToggle.setOnPreferenceChangeListener(this);
-        // TODO(b/254412966): Make the preference managed.
+        adMeasurementToggle.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
     }
 
     @Override
     public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
         if (preference.getKey().equals(TOGGLE_PREFERENCE)) {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED, (boolean) value);
+            setAdMeasurementPrefEnabled((boolean) value);
             return true;
         }
         return false;
+    }
+
+    private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
+        return preference -> {
+            if (TOGGLE_PREFERENCE.equals(preference.getKey())) {
+                return isAdMeasurementPrefManaged();
+            }
+            return false;
+        };
     }
 }

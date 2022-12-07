@@ -98,17 +98,13 @@ public final class AdMeasurementFragmentV4Test {
     }
 
     private void setAdMeasurementPrefEnabled(boolean isEnabled) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED, isEnabled);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> AdMeasurementFragmentV4.setAdMeasurementPrefEnabled(isEnabled));
     }
 
     private boolean isAdMeasurementPrefEnabled() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            return prefService.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED);
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> AdMeasurementFragmentV4.isAdMeasurementPrefEnabled());
     }
 
     @Test
@@ -156,4 +152,6 @@ public final class AdMeasurementFragmentV4Test {
 
         assertFalse(isAdMeasurementPrefEnabled());
     }
+    // TODO(http://b/261439615): Add Managed state tests when the Privacy Sandbox policy is
+    // implemented.
 }
