@@ -133,12 +133,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [super tearDown];
 }
 
-// TODO(crbug.com/1379289): Test fails on simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testTrendingQueries DISABLED_testTrendingQueries
-#else
-#define MAYBE_testTrendingQueries testTrendingQueries
-#endif
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   // Use commandline args to enable the Discover feed for this test case.
   // Disabled elsewhere to account for possible flakiness.
@@ -148,11 +142,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   config.features_disabled.push_back(kEnableFeedAblation);
 
   config.features_enabled.push_back(kContentSuggestionsUIModuleRefresh);
-  if ([self isRunningTest:@selector(MAYBE_testTrendingQueries)]) {
-    // Enable arm that does not hide shortcuts.
-    config.features_enabled.push_back(kTrendingQueriesModule);
-    config.variations_enabled = {3350760};
-  }
   return config;
 }
 
@@ -509,8 +498,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that the trending queries module header is visible and all four
 // trending queries are interactable.
-// TODO(crbug.com/1379289): Test fails on simulator.
-- (void)MAYBE_testTrendingQueries {
+- (void)testTrendingQueries {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.features_enabled.push_back(kTrendingQueriesModule);
+  config.variations_enabled = {3350760};
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID([NSString
@@ -519,7 +512,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                   l10n_util::GetNSString(
                       IDS_IOS_CONTENT_SUGGESTIONS_TRENDING_QUERIES_MODULE_TITLE)])]
       assertWithMatcher:grey_sufficientlyVisible()];
-
   for (int index = 0; index < 4; index++) {
     [[EarlGrey
         selectElementWithMatcher:
