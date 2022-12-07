@@ -10,7 +10,7 @@ export {PasswordDetailsCardElement} from './password_details_card.js';
 export {PasswordDetailsSectionElement} from './password_details_section.js';
 export {PasswordListItemElement} from './password_list_item.js';
 export {PasswordManagerAppElement} from './password_manager_app.js';
-export {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
+export {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordCheckInteraction, PasswordCheckStatusChangedListener, PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
 export {PasswordsSectionElement} from './passwords_section.js';
 export {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 export {PrefsBrowserProxy, PrefsBrowserProxyImpl, PrefsChangedListener} from './prefs/prefs_browser_proxy.js';

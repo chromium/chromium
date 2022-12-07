@@ -14,6 +14,8 @@ export type CredentialsChangedListener =
 export type PasswordCheckStatusChangedListener =
     (status: chrome.passwordsPrivate.PasswordCheckStatus) => void;
 export type BlockedSitesListChangedListener = (entries: BlockedSite[]) => void;
+export type PasswordsFileExportProgressListener =
+    (progress: chrome.passwordsPrivate.PasswordExportProgress) => void;
 
 /**
  * Represents different interactions the user can perform on the Password Check
@@ -161,6 +163,23 @@ export interface PasswordManagerProxy {
    */
   requestExportProgressStatus():
       Promise<chrome.passwordsPrivate.ExportProgressStatus>;
+
+  /**
+   * Triggers the dialog for exporting passwords.
+   */
+  exportPasswords(): Promise<void>;
+
+  /**
+   * Add an observer to the export progress.
+   */
+  addPasswordsFileExportProgressListener(
+      listener: PasswordsFileExportProgressListener): void;
+
+  /**
+   * Remove an observer from the export progress.
+   */
+  removePasswordsFileExportProgressListener(
+      listener: PasswordsFileExportProgressListener): void;
 }
 
 /**
@@ -256,6 +275,21 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   requestExportProgressStatus() {
     return chrome.passwordsPrivate.requestExportProgressStatus();
+  }
+
+  exportPasswords() {
+    return chrome.passwordsPrivate.exportPasswords();
+  }
+
+  addPasswordsFileExportProgressListener(
+      listener: PasswordsFileExportProgressListener) {
+    chrome.passwordsPrivate.onPasswordsFileExportProgress.addListener(listener);
+  }
+
+  removePasswordsFileExportProgressListener(
+      listener: PasswordsFileExportProgressListener) {
+    chrome.passwordsPrivate.onPasswordsFileExportProgress.removeListener(
+        listener);
   }
 
   static getInstance(): PasswordManagerProxy {

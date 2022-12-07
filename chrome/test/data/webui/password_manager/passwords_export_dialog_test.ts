@@ -63,4 +63,22 @@ suite('PasswordsExportDialog', function() {
     cancelButton.click();
     await eventToPromise('passwords-export-dialog-close', exportDialog);
   });
+
+  // Test that tapping "Export passwords" notifies the browser on start and
+  // fires close event on completion.
+  test('Export starts and finishes', async function() {
+    const exportDialog = createExportPasswordsDialog();
+    const exportButton = exportDialog.shadowRoot!.querySelector<HTMLElement>(
+        '#exportPasswordsButton');
+    assertTrue(!!exportButton);
+    exportButton.click();
+    await passwordManager.whenCalled('exportPasswords');
+
+    const progressCallback =
+        passwordManager.listeners.passwordsFileExportProgressListener;
+    assertTrue(!!progressCallback);
+    progressCallback(
+        {status: chrome.passwordsPrivate.ExportProgressStatus.SUCCEEDED});
+    await eventToPromise('passwords-export-dialog-close', exportDialog);
+  });
 });
