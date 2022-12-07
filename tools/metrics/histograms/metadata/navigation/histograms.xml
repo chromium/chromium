@@ -529,24 +529,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Navigation.ClearSiteData.Duration" units="ms"
-    expires_after="M77">
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    Recorded when a navigation is deferred while clearing site data. Indicates
-    how much time the clearing took.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.ClearSiteData.Parameters"
-    enum="ClearSiteDataParameters" expires_after="M77">
-  <owner>msramek@chromium.org</owner>
-  <summary>
-    The parameters of the Clear-Site-Data header. Recorded when the header is
-    successfully parsed.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.CodeCacheTime.{CodeCacheType}" units="ms"
     expires_after="2023-06-15">
   <owner>cduvall@chromium.org</owner>

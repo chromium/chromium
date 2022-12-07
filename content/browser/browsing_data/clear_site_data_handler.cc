@@ -347,10 +347,6 @@ void ClearSiteDataHandler::TaskFinished(
     base::OnceClosure callback) {
   DCHECK(!clearing_started.is_null());
 
-  UMA_HISTOGRAM_CUSTOM_TIMES("Navigation.ClearSiteData.Duration",
-                             base::TimeTicks::Now() - clearing_started,
-                             base::Milliseconds(1), base::Seconds(1), 50);
-
   // TODO(crbug.com/876931): Delay output until next frame for navigations.
   delegate->OutputMessages(web_contents_getter);
 
