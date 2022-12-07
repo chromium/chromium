@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_co_mem.h"
@@ -44,64 +43,6 @@ const GUID kCommunicationsSessionId = {
 namespace {
 
 constexpr uint32_t KSAUDIO_SPEAKER_UNSUPPORTED = 0xFFFFFFFF;
-
-// Used for mapping UMA histograms with corresponding source of logging.
-enum class UmaLogStep {
-  CREATE_DEVICE_ENUMERATOR,
-  CREATE_DEVICE,
-  CREATE_CLIENT,
-  GET_MIX_FORMAT,
-  GET_DEVICE_PERIOD,
-  GET_SHARED_MODE_ENGINE_PERIOD,
-};
-
-using UMALogCallback = base::RepeatingCallback<void(UmaLogStep, HRESULT)>;
-
-// Empty UMA logging callback to be passed to functions that don't need to log
-// any UMA stats
-void LogUMAEmptyCb(UmaLogStep step, HRESULT hr) {}
-
-// UMA logging callback used for tracking return values of
-// GetPreferredAudioParameters for output stream proxy parameter creation, in
-// order to get a clearer picture of the different failure reasons and their
-// distribution. https://crbug.com/774998
-void LogUMAPreferredOutputParams(UmaLogStep step, HRESULT hr) {
-  switch (step) {
-    case UmaLogStep::CREATE_DEVICE_ENUMERATOR:
-      base::UmaHistogramSparse(
-          "Media.AudioOutputStreamProxy."
-          "GetPreferredOutputStreamParametersWin.CreateDeviceEnumeratorResult",
-          hr);
-      break;
-    case UmaLogStep::CREATE_DEVICE:
-      base::UmaHistogramSparse(
-          "Media.AudioOutputStreamProxy."
-          "GetPreferredOutputStreamParametersWin.CreateDeviceResult",
-          hr);
-      break;
-    case UmaLogStep::CREATE_CLIENT:
-      base::UmaHistogramSparse(
-          "Media.AudioOutputStreamProxy."
-          "GetPreferredOutputStreamParametersWin.CreateClientResult",
-          hr);
-      break;
-    case UmaLogStep::GET_MIX_FORMAT:
-      base::UmaHistogramSparse(
-          "Media.AudioOutputStreamProxy."
-          "GetPreferredOutputStreamParametersWin.GetMixFormatResult",
-          hr);
-      break;
-    case UmaLogStep::GET_DEVICE_PERIOD:
-      base::UmaHistogramSparse(
-          "Media.AudioOutputStreamProxy."
-          "GetPreferredOutputStreamParametersWin.GetDevicePeriodResult",
-          hr);
-      break;
-    case UmaLogStep::GET_SHARED_MODE_ENGINE_PERIOD:
-      // TODO(crbug.com/892044): add histogram logging.
-      break;
-  }
-}
 
 // TODO(henrika): add mapping for all types in the ChannelLayout enumerator.
 ChannelConfig ChannelLayoutToChannelConfig(ChannelLayout layout) {
@@ -309,8 +250,7 @@ HRESULT GetDeviceFriendlyNameInternal(IMMDevice* device,
 }
 
 ComPtr<IMMDeviceEnumerator> CreateDeviceEnumeratorInternal(
-    bool allow_reinitialize,
-    const UMALogCallback& uma_log_cb) {
+    bool allow_reinitialize) {
   ComPtr<IMMDeviceEnumerator> device_enumerator;
   HRESULT hr = ::CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
                                   CLSCTX_INPROC_SERVER,
@@ -320,9 +260,8 @@ ComPtr<IMMDeviceEnumerator> CreateDeviceEnumeratorInternal(
     // Buggy third-party DLLs can uninitialize COM out from under us.  Attempt
     // to re-initialize it.  See http://crbug.com/378465 for more details.
     CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
-    return CreateDeviceEnumeratorInternal(false, uma_log_cb);
+    return CreateDeviceEnumeratorInternal(false);
   }
-  uma_log_cb.Run(UmaLogStep::CREATE_DEVICE_ENUMERATOR, hr);
   return device_enumerator;
 }
 
@@ -373,8 +312,7 @@ bool IsSupportedInternal() {
 
   // Verify that it is possible to a create the IMMDeviceEnumerator interface.
   ComPtr<IMMDeviceEnumerator> device_enumerator =
-      CreateDeviceEnumeratorInternal(false,
-                                     base::BindRepeating(&LogUMAEmptyCb));
+      CreateDeviceEnumeratorInternal(false);
   if (!device_enumerator) {
     LOG(ERROR)
         << "Failed to create Core Audio device enumerator on thread with ID "
@@ -389,8 +327,7 @@ bool IsSupportedInternal() {
 // specified by data-flow direction and role if |device_id| is default.
 ComPtr<IMMDevice> CreateDeviceInternal(const std::string& device_id,
                                        EDataFlow data_flow,
-                                       ERole role,
-                                       const UMALogCallback& uma_log_cb) {
+                                       ERole role) {
   ComPtr<IMMDevice> endpoint_device;
   // In loopback mode, a client of WASAPI can capture the audio stream that
   // is being played by a rendering endpoint device.
@@ -415,8 +352,7 @@ ComPtr<IMMDevice> CreateDeviceInternal(const std::string& device_id,
   }
 
   // Create the IMMDeviceEnumerator interface.
-  ComPtr<IMMDeviceEnumerator> device_enum(
-      CreateDeviceEnumeratorInternal(true, uma_log_cb));
+  ComPtr<IMMDeviceEnumerator> device_enum(CreateDeviceEnumeratorInternal(true));
   if (!device_enum.Get())
     return endpoint_device;
 
@@ -442,35 +378,32 @@ ComPtr<IMMDevice> CreateDeviceInternal(const std::string& device_id,
     hr = E_FAIL;
   }
 
-  uma_log_cb.Run(UmaLogStep::CREATE_DEVICE, hr);
   return endpoint_device;
 }
 
 // Decide on data_flow and role based on |device_id|, and return the
 // corresponding audio device.
 ComPtr<IMMDevice> CreateDeviceByID(const std::string& device_id,
-                                   bool is_output_device,
-                                   const UMALogCallback& uma_log_cb) {
+                                   bool is_output_device) {
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
     DCHECK(!is_output_device);
     return CreateDeviceInternal(AudioDeviceDescription::kDefaultDeviceId,
-                                eRender, eConsole, uma_log_cb);
+                                eRender, eConsole);
   }
 
   EDataFlow data_flow = is_output_device ? eRender : eCapture;
   if (device_id == AudioDeviceDescription::kCommunicationsDeviceId)
     return CreateDeviceInternal(AudioDeviceDescription::kDefaultDeviceId,
-                                data_flow, eCommunications, uma_log_cb);
+                                data_flow, eCommunications);
 
   // If AudioDeviceDescription::IsDefaultDevice(device_id), a default device
   // will be created
-  return CreateDeviceInternal(device_id, data_flow, eConsole, uma_log_cb);
+  return CreateDeviceInternal(device_id, data_flow, eConsole);
 }
 
 // Creates and activates an IAudioClient COM object given the selected
 // endpoint device.
-ComPtr<IAudioClient> CreateClientInternal(IMMDevice* audio_device,
-                                          const UMALogCallback& uma_log_cb) {
+ComPtr<IAudioClient> CreateClientInternal(IMMDevice* audio_device) {
   if (!audio_device)
     return ComPtr<IAudioClient>();
 
@@ -478,14 +411,12 @@ ComPtr<IAudioClient> CreateClientInternal(IMMDevice* audio_device,
   HRESULT hr = audio_device->Activate(
       __uuidof(IAudioClient), CLSCTX_INPROC_SERVER, NULL, &audio_client);
   DVLOG_IF(1, FAILED(hr)) << "IMMDevice::Activate: " << std::hex << hr;
-  uma_log_cb.Run(UmaLogStep::CREATE_CLIENT, hr);
   return audio_client;
 }
 
 // Creates and activates an IAudioClient3 COM object given the selected
 // endpoint device.
-ComPtr<IAudioClient3> CreateClientInternal3(IMMDevice* audio_device,
-                                            const UMALogCallback& uma_log_cb) {
+ComPtr<IAudioClient3> CreateClientInternal3(IMMDevice* audio_device) {
   if (!audio_device)
     return ComPtr<IAudioClient3>();
 
@@ -493,17 +424,14 @@ ComPtr<IAudioClient3> CreateClientInternal3(IMMDevice* audio_device,
   HRESULT hr = audio_device->Activate(
       __uuidof(IAudioClient3), CLSCTX_INPROC_SERVER, NULL, &audio_client);
   DVLOG_IF(1, FAILED(hr)) << "IMMDevice::Activate: " << std::hex << hr;
-  uma_log_cb.Run(UmaLogStep::CREATE_CLIENT, hr);
   return audio_client;
 }
 
 HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
                                             bool is_output_device,
-                                            AudioParameters* params,
-                                            const UMALogCallback& uma_log_cb) {
+                                            AudioParameters* params) {
   WAVEFORMATEXTENSIBLE mix_format;
   HRESULT hr = CoreAudioUtil::GetSharedModeMixFormat(client, &mix_format);
-  uma_log_cb.Run(UmaLogStep::GET_MIX_FORMAT, hr);
   if (FAILED(hr))
     return hr;
   CoreAudioUtil::WaveFormatWrapper format(&mix_format);
@@ -529,7 +457,6 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
           format.get(), &default_period_frames, &fundamental_period_frames,
           &min_period_frames, &max_period_frames);
 
-      uma_log_cb.Run(UmaLogStep::GET_SHARED_MODE_ENGINE_PERIOD, hr);
       if (SUCCEEDED(hr)) {
         min_frames_per_buffer = min_period_frames;
         max_frames_per_buffer = max_period_frames;
@@ -549,7 +476,6 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
     REFERENCE_TIME default_period = 0;
     hr = CoreAudioUtil::GetDevicePeriod(client, AUDCLNT_SHAREMODE_SHARED,
                                         &default_period);
-    uma_log_cb.Run(UmaLogStep::GET_DEVICE_PERIOD, hr);
     if (FAILED(hr))
       return hr;
 
@@ -720,8 +646,7 @@ int CoreAudioUtil::NumberOfActiveDevices(EDataFlow data_flow) {
 }
 
 ComPtr<IMMDeviceEnumerator> CoreAudioUtil::CreateDeviceEnumerator() {
-  return CreateDeviceEnumeratorInternal(true,
-                                        base::BindRepeating(&LogUMAEmptyCb));
+  return CreateDeviceEnumeratorInternal(true);
 }
 
 std::string CoreAudioUtil::GetDefaultInputDeviceID() {
@@ -895,24 +820,21 @@ EDataFlow CoreAudioUtil::GetDataFlow(IMMDevice* device) {
 ComPtr<IMMDevice> CoreAudioUtil::CreateDevice(const std::string& device_id,
                                               EDataFlow data_flow,
                                               ERole role) {
-  return CreateDeviceInternal(device_id, data_flow, role,
-                              base::BindRepeating(&LogUMAEmptyCb));
+  return CreateDeviceInternal(device_id, data_flow, role);
 }
 
 ComPtr<IAudioClient> CoreAudioUtil::CreateClient(const std::string& device_id,
                                                  EDataFlow data_flow,
                                                  ERole role) {
   ComPtr<IMMDevice> device(CreateDevice(device_id, data_flow, role));
-  return CreateClientInternal(device.Get(),
-                              base::BindRepeating(&LogUMAEmptyCb));
+  return CreateClientInternal(device.Get());
 }
 
 ComPtr<IAudioClient3> CoreAudioUtil::CreateClient3(const std::string& device_id,
                                                    EDataFlow data_flow,
                                                    ERole role) {
   ComPtr<IMMDevice> device(CreateDevice(device_id, data_flow, role));
-  return CreateClientInternal3(device.Get(),
-                               base::BindRepeating(&LogUMAEmptyCb));
+  return CreateClientInternal3(device.Get());
 }
 
 HRESULT CoreAudioUtil::GetSharedModeMixFormat(IAudioClient* client,
@@ -1052,10 +974,6 @@ HRESULT CoreAudioUtil::GetDevicePeriod(IAudioClient* client,
 HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
                                                    bool is_output_device,
                                                    AudioParameters* params) {
-  UMALogCallback uma_log_cb(
-      is_output_device ? base::BindRepeating(&LogUMAPreferredOutputParams)
-                       : base::BindRepeating(&LogUMAEmptyCb));
-
   // Loopback audio streams must be input streams.
   DCHECK(!(AudioDeviceDescription::IsLoopbackDevice(device_id) &&
            is_output_device));
@@ -1064,17 +982,16 @@ HRESULT CoreAudioUtil::GetPreferredAudioParameters(const std::string& device_id,
     return E_FAIL;
   }
 
-  ComPtr<IMMDevice> device(
-      CreateDeviceByID(device_id, is_output_device, uma_log_cb));
+  ComPtr<IMMDevice> device(CreateDeviceByID(device_id, is_output_device));
   if (!device.Get())
     return E_FAIL;
 
-  ComPtr<IAudioClient> client(CreateClientInternal(device.Get(), uma_log_cb));
+  ComPtr<IAudioClient> client(CreateClientInternal(device.Get()));
   if (!client.Get())
     return E_FAIL;
 
-  HRESULT hr = GetPreferredAudioParametersInternal(
-      client.Get(), is_output_device, params, uma_log_cb);
+  HRESULT hr = GetPreferredAudioParametersInternal(client.Get(),
+                                                   is_output_device, params);
   if (FAILED(hr) || is_output_device || !params->IsValid()) {
     return hr;
   }
