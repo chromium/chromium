@@ -667,10 +667,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
     return false;
   }
 
-  std::unique_ptr<base::ListValue> result;
-  // Only construct the result if we have an |out_value| to populate.
-  if (out_value)
-    result = std::make_unique<base::ListValue>();
+  base::Value::List result;
   v8::Local<v8::Array> v8_result;
   if (v8_out_value)
     v8_result = v8::Array::New(context->GetIsolate(), length);
@@ -697,7 +694,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
       return false;
     }
     if (out_value)
-      result->Append(base::Value::FromUniquePtrValue(std::move(item)));
+      result.Append(base::Value::FromUniquePtrValue(std::move(item)));
     if (v8_out_value) {
       // This should never fail, since it's a newly-created array with
       // CreateDataProperty().
@@ -706,7 +703,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
   }
 
   if (out_value)
-    *out_value = std::move(result);
+    *out_value = std::make_unique<base::Value>(std::move(result));
   if (v8_out_value)
     *v8_out_value = v8_result;
 
