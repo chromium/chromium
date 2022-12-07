@@ -29,7 +29,6 @@ class CORE_EXPORT ContainerSelector {
     WTF::HashTraits<AtomicString>::ConstructDeletedValue(
         name_, false /* zero_value */);
   }
-  explicit ContainerSelector(AtomicString name) : name_(std::move(name)) {}
   explicit ContainerSelector(PhysicalAxes physical_axes)
       : physical_axes_(physical_axes) {}
   ContainerSelector(AtomicString name,
