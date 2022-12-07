@@ -18,7 +18,6 @@ _VALID_SWARMING_DIMENSIONS = {
 _DEFAULT_VALID_PERF_POOLS = {
     'chrome.tests.perf',
     'chrome.tests.perf-webview',
-    'chrome.tests.perf-weblayer',
     'chrome.tests.perf-fyi',
     'chrome.tests.perf-webview-fyi',
 }

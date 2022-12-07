@@ -18,7 +18,6 @@ TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES = [
     '_android_chrome',
     '_android_monochrome',
     '_android_monochrome_bundle',
-    '_android_weblayer',
     '_android_webview',
 ]
 

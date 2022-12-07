@@ -68,7 +68,6 @@ from devil.android.sdk import intent # pylint: disable=import-error
 # Note: "startup_mobile_benchmark" instead of "startup.mobile".
 
 _NUMBER_OF_ITERATIONS = 10
-_NUMBER_OF_ITERATIONS_FOR_WEBLAYER = 20
 _MAX_BATTERY_TEMP = 32
 
 class _MobileStartupSharedState(story_module.SharedState):
@@ -103,9 +102,6 @@ class _MobileStartupSharedState(story_module.SharedState):
     self.platform.InstallApplication(maps_webapk)
     wpr_mode = wpr_modes.WPR_REPLAY
     self._number_of_iterations = _NUMBER_OF_ITERATIONS
-    if 'android-weblayer' in self._possible_browser.GetTypExpectationsTags():
-      # As discussed in crbug.com/1032364, use a higher number to reduce noise.
-      self._number_of_iterations = _NUMBER_OF_ITERATIONS_FOR_WEBLAYER
     if finder_options.use_live_sites:
       wpr_mode = wpr_modes.WPR_OFF
     elif finder_options.browser_options.wpr_mode == wpr_modes.WPR_RECORD:
