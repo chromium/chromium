@@ -52,21 +52,23 @@ TEST(Logging, NameToLevelErrors) {
 
 namespace {
 
-void ValidateLogEntry(base::ListValue *entries,
-                      int index,
+void ValidateLogEntry(const base::Value::List& entries,
+                      size_t index,
                       const std::string& expected_level,
                       const std::string& expected_message) {
-  const base::Value& entry_value = entries->GetList()[index];
+  ASSERT_LT(index, entries.size());
+  const base::Value& entry_value = entries[index];
   ASSERT_TRUE(entry_value.is_dict());
-  const base::DictionaryValue& entry =
-      base::Value::AsDictionaryValue(entry_value);
-  std::string level;
-  EXPECT_TRUE(entry.GetString("level", &level));
-  EXPECT_EQ(expected_level, level);
-  std::string message;
-  ASSERT_TRUE(entry.GetString("message", &message));
-  EXPECT_EQ(expected_message, message);
-  EXPECT_LT(0, entry.FindDoubleKey("timestamp").value());
+  const base::Value::Dict& entry = entry_value.GetDict();
+
+  const std::string* level = entry.FindString("level");
+  ASSERT_TRUE(level);
+  EXPECT_EQ(*level, expected_level);
+
+  const std::string* message = entry.FindString("message");
+  ASSERT_TRUE(message);
+  EXPECT_EQ(*message, expected_message);
+  EXPECT_LT(0.0, *entry.FindDouble("timestamp"));
 }
 
 }  // namespace
@@ -77,11 +79,11 @@ TEST(WebDriverLog, Levels) {
   log.AddEntry(Log::kError, "severe message");
   log.AddEntry(Log::kDebug, "debug message");  // Must not log
 
-  std::unique_ptr<base::ListValue> entries(log.GetAndClearEntries());
+  base::Value::List entries = log.GetAndClearEntries();
 
-  ASSERT_EQ(2u, entries->GetList().size());
-  ValidateLogEntry(entries.get(), 0, "INFO", "info message");
-  ValidateLogEntry(entries.get(), 1, "SEVERE", "severe message");
+  ASSERT_EQ(2u, entries.size());
+  ValidateLogEntry(entries, 0u, "INFO", "info message");
+  ValidateLogEntry(entries, 1u, "SEVERE", "severe message");
 }
 
 TEST(WebDriverLog, Off) {
@@ -89,9 +91,8 @@ TEST(WebDriverLog, Off) {
   log.AddEntry(Log::kError, "severe message");  // Must not log
   log.AddEntry(Log::kDebug, "debug message");  // Must not log
 
-  std::unique_ptr<base::ListValue> entries(log.GetAndClearEntries());
-
-  ASSERT_EQ(0u, entries->GetList().size());
+  base::Value::List entries = log.GetAndClearEntries();
+  EXPECT_TRUE(entries.empty());
 }
 
 TEST(WebDriverLog, All) {
@@ -99,11 +100,11 @@ TEST(WebDriverLog, All) {
   log.AddEntry(Log::kError, "severe message");
   log.AddEntry(Log::kDebug, "debug message");
 
-  std::unique_ptr<base::ListValue> entries(log.GetAndClearEntries());
+  base::Value::List entries = log.GetAndClearEntries();
 
-  ASSERT_EQ(2u, entries->GetList().size());
-  ValidateLogEntry(entries.get(), 0, "SEVERE", "severe message");
-  ValidateLogEntry(entries.get(), 1, "DEBUG", "debug message");
+  ASSERT_EQ(2u, entries.size());
+  ValidateLogEntry(entries, 0u, "SEVERE", "severe message");
+  ValidateLogEntry(entries, 1u, "DEBUG", "debug message");
 }
 
 TEST(Logging, CreatePerformanceLog) {
@@ -117,12 +118,12 @@ TEST(Logging, CreatePerformanceLog) {
   std::vector<std::unique_ptr<CommandListener>> command_listeners;
   Status status = CreateLogs(capabilities, &session, &logs, &devtools_listeners,
                              &command_listeners);
-  ASSERT_TRUE(status.IsOk());
+  EXPECT_TRUE(status.IsOk());
+  EXPECT_EQ(2u, devtools_listeners.size());
+  EXPECT_EQ(1u, command_listeners.size());
   ASSERT_EQ(2u, logs.size());
-  ASSERT_EQ(2u, devtools_listeners.size());
-  ASSERT_EQ(1u, command_listeners.size());
-  ASSERT_EQ("performance", logs[0]->type());
-  ASSERT_EQ("browser", logs[1]->type());
+  EXPECT_EQ("performance", logs[0]->type());
+  EXPECT_EQ("browser", logs[1]->type());
 }
 
 TEST(Logging, IgnoreUnknownLogType) {
@@ -136,10 +137,10 @@ TEST(Logging, IgnoreUnknownLogType) {
   Status status = CreateLogs(capabilities, &session, &logs, &devtools_listeners,
                              &command_listeners);
   EXPECT_TRUE(status.IsOk());
+  EXPECT_EQ(1u, devtools_listeners.size());
+  EXPECT_EQ(0u, command_listeners.size());
   ASSERT_EQ(1u, logs.size());
-  ASSERT_EQ(1u, devtools_listeners.size());
-  ASSERT_EQ(0u, command_listeners.size());
-  ASSERT_EQ("browser", logs[0]->type());
+  EXPECT_EQ("browser", logs[0]->type());
 }
 
 TEST(Logging, DefaultLogs) {
@@ -152,10 +153,10 @@ TEST(Logging, DefaultLogs) {
   Status status = CreateLogs(capabilities, &session, &logs, &devtools_listeners,
                              &command_listeners);
   EXPECT_TRUE(status.IsOk());
+  EXPECT_EQ(1u, devtools_listeners.size());
+  EXPECT_EQ(0u, command_listeners.size());
   ASSERT_EQ(1u, logs.size());
-  ASSERT_EQ(1u, devtools_listeners.size());
-  ASSERT_EQ(0u, command_listeners.size());
-  ASSERT_EQ("browser", logs[0]->type());
+  EXPECT_EQ("browser", logs[0]->type());
 }
 
 TEST(Logging, GetFirstErrorMessage) {
@@ -163,7 +164,7 @@ TEST(Logging, GetFirstErrorMessage) {
   std::string entry;
 
   entry = log.GetFirstErrorMessage();
-  ASSERT_TRUE(entry.empty());
+  EXPECT_TRUE(entry.empty());
 
   log.AddEntry(Log::kInfo, "info message");
   log.AddEntry(Log::kError, "first error message");
@@ -171,7 +172,7 @@ TEST(Logging, GetFirstErrorMessage) {
   log.AddEntry(Log::kError, "second error message");
 
   entry = log.GetFirstErrorMessage();
-  ASSERT_EQ("first error message", entry);
+  EXPECT_EQ("first error message", entry);
 }
 
 TEST(Logging, OverflowLogs) {
@@ -180,8 +181,8 @@ TEST(Logging, OverflowLogs) {
     log.AddEntry(Log::kInfo, base::StringPrintf("%" PRIuS, i));
   log.AddEntry(Log::kError, "the 1st error is in the 2nd batch");
   ASSERT_EQ("the 1st error is in the 2nd batch", log.GetFirstErrorMessage());
-  std::unique_ptr<base::ListValue> entries = log.GetAndClearEntries();
-  ASSERT_EQ(internal::kMaxReturnedEntries, entries->GetList().size());
+  base::Value::List entries = log.GetAndClearEntries();
+  EXPECT_EQ(internal::kMaxReturnedEntries, entries.size());
   entries = log.GetAndClearEntries();
-  ASSERT_EQ(1u, entries->GetList().size());
+  EXPECT_EQ(1u, entries.size());
 }

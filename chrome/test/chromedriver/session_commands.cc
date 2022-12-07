@@ -1293,7 +1293,8 @@ Status ExecuteGetLog(Session* session,
        log != logs.end();
        ++log) {
     if (*log_type == (*log)->type()) {
-      *value = (*log)->GetAndClearEntries();
+      *value = base::Value::ToUniquePtrValue(
+          base::Value((*log)->GetAndClearEntries()));
       return Status(kOk);
     }
   }
