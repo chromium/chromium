@@ -261,6 +261,13 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 // Test that the help app provider provides list search results.
 IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
                        HelpAppProviderProvidesListResults) {
+  // Show the app list and simulate search.
+  AppListClientImpl::GetInstance()->ShowAppList(
+      ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  ash::AppListTestApi().SimulateSearch(u"Fix");
+
   // Need this because it sets up the icon.
   ash::SystemWebAppManager::GetForTest(GetProfile())
       ->InstallSystemAppsForTesting();

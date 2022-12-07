@@ -147,6 +147,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
 
   // AppListControllerObserver:
   void OnAppListVisibilityWillChange(bool shown, int64_t display_id) override;
+  void OnViewStateChanged(ash::AppListViewState state) override;
 
  private:
   // Possible states of the state machine.
@@ -194,6 +195,8 @@ class AppListNotifierImpl : public ash::AppListNotifier,
 
   // Whether or not the app list is shown.
   bool shown_ = false;
+  // Whether or not a search session is in progress.
+  bool search_session_in_progress_ = false;
   // The currently shown results for each UI view.
   base::flat_map<Location, std::vector<Result>> results_;
   // The current search query, may be empty.

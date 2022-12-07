@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/scoring.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_manager.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ui/app_list/search/search_session_metrics_manager.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -59,6 +60,8 @@ SearchControllerImpl::SearchControllerImpl(
       ranker_manager_(std::make_unique<RankerManager>(profile, this)),
       metrics_manager_(
           std::make_unique<SearchMetricsManager>(profile, notifier)),
+      session_metrics_manager_(
+          std::make_unique<SearchSessionMetricsManager>(profile, notifier)),
       app_search_data_source_(std::make_unique<AppSearchDataSource>(
           profile,
           list_controller,

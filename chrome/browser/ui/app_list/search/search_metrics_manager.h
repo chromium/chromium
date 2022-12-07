@@ -34,17 +34,6 @@ class SearchMetricsManager : ash::AppListNotifier::Observer {
     kMaxValue = kIgnore
   };
 
-  // Represents possible error states of the metrics observer itself. These
-  // values persist to logs. Entries should not be renumbered and numeric values
-  // should never be reused.
-  enum class Error {
-    kMissingNotifier = 0,
-    kResultNotFound = 1,
-    kUntrackedLocation = 2,
-    kUntypedResult = 3,
-    kMaxValue = kUntypedResult
-  };
-
   SearchMetricsManager(Profile* profile, ash::AppListNotifier* notifier);
   ~SearchMetricsManager() override;
 

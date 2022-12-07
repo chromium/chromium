@@ -60,7 +60,7 @@ void AppListSearchBrowserTest::SearchAndWaitForProviders(
   SearchResultsChangedWaiter results_changed_waiter(
       GetClient()->search_controller(), providers);
   ResultsWaiter results_waiter(base::ASCIIToUTF16(query));
-  GetClient()->StartSearch(base::ASCIIToUTF16(query));
+  StartSearch(query);
   results_changed_waiter.Wait();
   // Wait for some results to get published for the query - result publishing
   // may get delayed due to a burn in period.

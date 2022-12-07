@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/search/search_metrics_util.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -18,14 +19,6 @@ namespace {
 using Result = ash::AppListNotifier::Result;
 using Location = ash::AppListNotifier::Location;
 using Action = SearchMetricsManager::Action;
-using Error = SearchMetricsManager::Error;
-
-constexpr char kHistogramPrefix[] = "Apps.AppList.Search.";
-
-void LogError(Error error) {
-  base::UmaHistogramEnumeration(base::StrCat({kHistogramPrefix, "Error"}),
-                                error);
-}
 
 std::string GetViewString(Location location, const std::u16string& raw_query) {
   std::u16string query;

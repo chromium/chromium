@@ -39,6 +39,14 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
 
   class Observer : public base::CheckedObserver {
    public:
+    // Called when the search query is first updated after activating the search
+    // box or the app list view state transitions to kFullscreenSearch.
+    virtual void OnSearchSessionStarted() {}
+
+    // Called when an active search session ends when exiting bubble launcher
+    // search or the app list view state transitions out of kFullscreenSearch.
+    virtual void OnSearchSessionEnded() {}
+
     // Called when |results| have been displayed for the length of the
     // impression timer.
     virtual void OnImpression(Location location,

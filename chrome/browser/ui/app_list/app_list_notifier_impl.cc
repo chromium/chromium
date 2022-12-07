@@ -107,6 +107,13 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
                             ? State::kShown
                             : State::kNone);
     } else {
+      if (!search_session_in_progress_) {
+        search_session_in_progress_ = true;
+        for (auto& observer : observers_) {
+          observer.OnSearchSessionStarted();
+        }
+      }
+
       DoStateTransition(Location::kList, State::kShown);
       DoStateTransition(Location::kAnswerCard, State::kNone);
       DoStateTransition(Location::kContinue, State::kNone);
@@ -148,10 +155,29 @@ void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
       DoStateTransition(Location::kRecentApps, State::kShown);
     // kList is not shown until a search query is entered.
   } else {
+    search_session_in_progress_ = false;
+    for (auto& observer : observers_) {
+      observer.OnSearchSessionEnded();
+    }
+
     DoStateTransition(Location::kList, State::kNone);
     DoStateTransition(Location::kContinue, State::kNone);
     DoStateTransition(Location::kRecentApps, State::kNone);
     DoStateTransition(Location::kAnswerCard, State::kNone);
+  }
+}
+
+void AppListNotifierImpl::OnViewStateChanged(ash::AppListViewState state) {
+  if (state == ash::AppListViewState::kFullscreenSearch) {
+    search_session_in_progress_ = true;
+    for (auto& observer : observers_) {
+      observer.OnSearchSessionStarted();
+    }
+  } else {
+    search_session_in_progress_ = false;
+    for (auto& observer : observers_) {
+      observer.OnSearchSessionEnded();
+    }
   }
 }
 

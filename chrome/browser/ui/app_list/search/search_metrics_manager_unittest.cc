@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/app_list/search/search_metrics_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list::test {
@@ -19,9 +20,6 @@ using Result = ash::AppListNotifier::Result;
 using Location = ash::AppListNotifier::Location;
 using Type = ash::SearchResultType;
 using Action = SearchMetricsManager::Action;
-using Error = SearchMetricsManager::Error;
-
-constexpr char kHistogramPrefix[] = "Apps.AppList.Search.";
 
 Result CreateFakeResult(Type type, const std::string& id = "fake_id") {
   return Result(id, type);
