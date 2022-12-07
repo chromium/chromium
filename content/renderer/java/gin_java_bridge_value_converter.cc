@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <memory>
+#include <utility>
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
