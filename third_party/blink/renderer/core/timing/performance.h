@@ -395,8 +395,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   PerformanceEntryVector soft_navigation_buffer_;
   Member<PerformanceEntry> navigation_timing_;
   Member<UserTiming> user_timing_;
-  Member<PerformanceEntry> first_paint_timing_;
-  Member<PerformanceEntry> first_contentful_paint_timing_;
+  PerformanceEntryVector paint_entries_timing_;
   Member<PerformanceEventTiming> first_input_timing_;
 
   base::TimeTicks time_origin_;

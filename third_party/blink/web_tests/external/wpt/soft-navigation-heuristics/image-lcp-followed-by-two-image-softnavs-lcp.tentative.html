@@ -17,19 +17,6 @@
   </main>
   <script>
     const link = document.getElementById("link");
-    // TODO(https://crbug.com/1397720): This is currently needed because
-    // paint entries are not properly buffered.
-    const paintEntriesPromise = () => {
-      return new Promise(resolve => {
-        const paint_entries = []
-        new PerformanceObserver(list => {
-          paint_entries.push(...list.getEntries());
-          if (paint_entries.length == 2) {
-            resolve();
-          }
-        }).observe({type: 'paint'});
-      });
-    };
 
     promise_test(async t => {
       validatePaintEntries('first-contentful-paint', 1);
@@ -39,7 +26,7 @@
         /*addContent=*/async () => await addImageToMain(), /*pushUrl=*/true,
         /*eventType=*/"click");
 
-      const first_click_paint_promise = paintEntriesPromise();
+      const first_click_paint_promise = waitOnPaintEntriesPromise();
 
       click(link);
       await new Promise(resolve => {
@@ -62,7 +49,7 @@
           'Soft navigation LCP element should have a smaller size than the hard'
               + ' navigation LCP element');
 
-      const second_click_paint_promise = paintEntriesPromise();
+      const second_click_paint_promise = waitOnPaintEntriesPromise();
       const preClickLcp2 = await getLcpEntries();
       click(link);
       await new Promise(resolve => {

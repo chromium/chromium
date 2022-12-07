@@ -22,6 +22,7 @@ const testSoftNavigation =
         const preClickLcp = await getLcpEntries();
         setEvent(t, link, pushState, addContent, pushUrl, eventType);
         for (let i = 0; i < clicks; ++i) {
+          let paint_entries_promise = waitOnPaintEntriesPromise();
           clicked = false;
           click(link);
 
@@ -30,6 +31,9 @@ const testSoftNavigation =
               type: 'soft-navigation'
             });
           });
+          // Ensure paint timing entries are fired before moving on to the next
+          // click.
+          await paint_entries_promise;
         }
         assert_equals(
             document.softNavigations, clicks,
@@ -162,7 +166,7 @@ const validateSoftNavigationEntry = async (clicks, extraValidations,
   }
   assert_equals(performance.getEntriesByType("soft-navigation").length,
                 expectedClicks, "Performance timeline got an entry");
-  extraValidations(entries, options);
+  await extraValidations(entries, options);
 
 };
 
@@ -214,3 +218,17 @@ const addTextToDivOnMain = () => {
   div.style="font-size: 3em";
   main.appendChild(div);
 }
+
+const waitOnPaintEntriesPromise = () => {
+  return new Promise((resolve, reject) => {
+    const paint_entries = []
+    new PerformanceObserver(list => {
+      paint_entries.push(...list.getEntries());
+      if (paint_entries.length == 2) {
+        resolve();
+      } else if (paint_entries.length > 2) {
+        reject();
+      }
+    }).observe({type: 'paint'});
+  });
+};

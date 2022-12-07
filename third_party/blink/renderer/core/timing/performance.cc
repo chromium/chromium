@@ -148,6 +148,7 @@ PerformanceEntry::EntryType kDroppableEntryTypes[] = {
     PerformanceEntry::kEvent,
     PerformanceEntry::kLayoutShift,
     PerformanceEntry::kLargestContentfulPaint,
+    PerformanceEntry::kPaint,
     PerformanceEntry::kBackForwardCacheRestoration,
     PerformanceEntry::kSoftNavigation,
 };
@@ -195,6 +196,11 @@ constexpr size_t kDefaultLargestContenfulPaintSize = 150;
 constexpr size_t kDefaultLongTaskBufferSize = 200;
 constexpr size_t kDefaultBackForwardCacheRestorationBufferSize = 200;
 constexpr size_t kDefaultSoftNavigationBufferSize = 50;
+// Paint timing entries is more than twice as much as the soft navigation buffer
+// size, as there can be 2 paint entries for each soft navigation, plus 2
+// entries for the initial navigation.
+constexpr size_t kDefaultPaintEntriesBufferSize =
+    kDefaultSoftNavigationBufferSize * 2 + 2;
 
 Performance::Performance(
     base::TimeTicks time_origin,
@@ -290,10 +296,8 @@ PerformanceEntryVector Performance::getEntries() {
                                         user_timing_->GetMeasures());
   }
 
-  if (first_paint_timing_)
-    InsertEntryIntoSortedList(entries_list, *first_paint_timing_);
-  if (first_contentful_paint_timing_) {
-    InsertEntryIntoSortedList(entries_list, *first_contentful_paint_timing_);
+  if (paint_entries_timing_.size()) {
+    MergePerformanceEntryVectorIntoList(entries_list, paint_entries_timing_);
   }
 
   if (RuntimeEnabledFeatures::NavigationIdEnabled(GetExecutionContext())) {
@@ -387,16 +391,7 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kPaintTimingRequested);
 
-      PerformanceEntryVector paint_entries;
-      if (first_paint_timing_) {
-        InsertEntryIntoSortedBuffer(paint_entries, *first_paint_timing_);
-      }
-      if (first_contentful_paint_timing_) {
-        InsertEntryIntoSortedBuffer(paint_entries,
-                                    *first_contentful_paint_timing_);
-      }
-
-      return paint_entries;
+      return paint_entries_timing_;
     }
 
     case PerformanceEntry::kLongTask:
@@ -736,11 +731,13 @@ void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
   PerformanceEntry* entry = MakeGarbageCollected<PerformancePaintTiming>(
       type, MonotonicTimeToDOMHighResTimeStamp(start_time),
       PerformanceEntry::GetNavigationId(GetExecutionContext()));
-  // Always buffer First Paint & First Contentful Paint.
-  if (type == PerformancePaintTiming::PaintType::kFirstPaint)
-    first_paint_timing_ = entry;
-  else if (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint)
-    first_contentful_paint_timing_ = entry;
+  DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||
+         (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint));
+  if (paint_entries_timing_.size() < kDefaultPaintEntriesBufferSize) {
+    InsertEntryIntoSortedBuffer(paint_entries_timing_, *entry);
+  } else {
+    ++(dropped_entries_count_map_.find(PerformanceEntry::kPaint)->value);
+  }
   NotifyObserversOfEntry(*entry);
 }
 
@@ -1190,8 +1187,7 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(soft_navigation_buffer_);
   visitor->Trace(navigation_timing_);
   visitor->Trace(user_timing_);
-  visitor->Trace(first_paint_timing_);
-  visitor->Trace(first_contentful_paint_timing_);
+  visitor->Trace(paint_entries_timing_);
   visitor->Trace(first_input_timing_);
   visitor->Trace(observers_);
   visitor->Trace(active_observers_);

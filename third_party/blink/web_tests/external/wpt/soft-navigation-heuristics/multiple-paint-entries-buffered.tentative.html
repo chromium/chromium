@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>Detect simple soft navigation.</title>
+<title>Detect multiple soft navigations and ensure they buffer paint entries.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -22,20 +22,18 @@
         await addImageToMain();
       },
       link: link,
-      clicks: 52,
+      clicks: 4,
       extraValidations: async (entries, options)=>{
-        const [paint_entries, paint_options] = await new Promise(resolve => {
-          new PerformanceObserver((list, obs, options) =>
-            resolve([list.getEntries(), options])).observe(
+        const paint_entries = await new Promise(resolve => {
+          new PerformanceObserver(list => resolve(list.getEntries())).observe(
             {type: 'paint', buffered: true});
           });
-        assert_equals(options['droppedEntriesCount'], 2);
-        assert_equals(paint_options['droppedEntriesCount'], 4);
+        assert_equals(paint_entries.length, 10);
       },
-      test: "Test that a soft navigation entries get dropped when buffer limits"
-        + " get exceeded."});
+      test: "Test that multiple soft navigation buffer paint entries"});
   </script>
 </body>
 </html>
+
 
 
