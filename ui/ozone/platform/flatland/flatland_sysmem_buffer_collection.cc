@@ -332,16 +332,17 @@ FlatlandSysmemBufferCollection::CreateNativePixmap(
       buffers_info_.settings.buffer_settings.coherency_domain ==
       fuchsia::sysmem::CoherencyDomain::RAM;
 
+  // `handle.planes` need to be filled in only for mappable buffers.
+  if (!is_mappable())
+    return new FlatlandSysmemNativePixmap(this, std::move(handle), size);
+
   zx::vmo main_plane_vmo;
-  if (is_mappable()) {
-    DCHECK(buffers_info_.buffers[handle.buffer_index].vmo.is_valid());
-    zx_status_t status =
-        buffers_info_.buffers[handle.buffer_index].vmo.duplicate(
-            ZX_RIGHT_SAME_RIGHTS, &main_plane_vmo);
-    if (status != ZX_OK) {
-      ZX_DLOG(ERROR, status) << "zx_handle_duplicate";
-      return nullptr;
-    }
+  DCHECK(buffers_info_.buffers[handle.buffer_index].vmo.is_valid());
+  zx_status_t status = buffers_info_.buffers[handle.buffer_index].vmo.duplicate(
+      ZX_RIGHT_SAME_RIGHTS, &main_plane_vmo);
+  if (status != ZX_OK) {
+    ZX_DLOG(ERROR, status) << "zx_handle_duplicate";
+    return nullptr;
   }
 
   const fuchsia::sysmem::ImageFormatConstraints& format =
@@ -362,8 +363,17 @@ FlatlandSysmemBufferCollection::CreateNativePixmap(
   if (format_ == gfx::BufferFormat::YUV_420_BIPLANAR) {
     size_t uv_plane_offset = plane_offset + plane_size;
     size_t uv_plane_size = plane_size / 2;
+
+    zx::vmo uv_plane_vmo;
+    status =
+        handle.planes[0].vmo.duplicate(ZX_RIGHT_SAME_RIGHTS, &uv_plane_vmo);
+    if (status != ZX_OK) {
+      ZX_DLOG(ERROR, status) << "zx_handle_duplicate";
+      return nullptr;
+    }
+
     handle.planes.emplace_back(stride, uv_plane_offset, uv_plane_size,
-                               zx::vmo());
+                               std::move(uv_plane_vmo));
     DCHECK_LE(uv_plane_offset + uv_plane_size, buffer_size_);
   }
 
