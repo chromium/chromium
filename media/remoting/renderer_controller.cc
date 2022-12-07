@@ -88,12 +88,12 @@ MediaObserverClient::ReasonToSwitchToLocal GetSwitchReason(
     case PEERS_OUT_OF_SYNC:
     case RPC_INVALID:
     case DATA_PIPE_CREATE_ERROR:
-    case MOJO_DISCONNECTED:
     case DATA_PIPE_WRITE_ERROR:
     case MESSAGE_SEND_FAILED:
     case DATA_SEND_FAILED:
     case UNEXPECTED_FAILURE:
       return MediaObserverClient::ReasonToSwitchToLocal::PIPELINE_ERROR;
+    case MOJO_DISCONNECTED:
     case ROUTE_TERMINATED:
     case MEDIA_ELEMENT_DESTROYED:
     case MEDIA_ELEMENT_FROZEN:
@@ -607,7 +607,12 @@ void RendererController::OnRendererFatalError(StopTrigger stop_trigger) {
   if (!remote_rendering_started_)
     return;
 
-  encountered_renderer_fatal_error_ = true;
+  // MOJO_DISCONNECTED means the streaming session has stopped, which is not a
+  // fatal error and should not prevent future sessions.
+  if (stop_trigger != StopTrigger::MOJO_DISCONNECTED) {
+    encountered_renderer_fatal_error_ = true;
+  }
+
   UpdateAndMaybeSwitch(UNKNOWN_START_TRIGGER, stop_trigger);
 }
 
