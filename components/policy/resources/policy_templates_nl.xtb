@@ -1523,7 +1523,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 
       Als dit beleid niet is ingesteld, staat de detectie van occlusie aan.</translation>
 <translation id="2462606868915618110">Vanaf M108 worden alle <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden synchroon aangeroepen.
-      Tot M110 zorgt dit beleid dat asynchroon aanroepen van<ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden opnieuw wordt aangezet.
+      Tot M110 zorgt dit beleid dat asynchroon aanroepen van <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden opnieuw wordt aangezet.
       Als je dit beleid toepast, worden <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden asynchroon aangeroepen.
       Als je dit beleid niet toepast of niet instelt, worden alle <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden synchroon aangeroepen.</translation>
 <translation id="2463034609187171371">DHE-coderingssuites in TLS aanzetten</translation>

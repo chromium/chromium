@@ -18,7 +18,7 @@
 <translation id="1758486001363313524">ሌላ...</translation>
 <translation id="1787192514241997742">ጠቅላላ ጊዜ፦ <ph name="REMAINING_TIME" /></translation>
 <translation id="1822429046913737220">ጥዋት/ከሰዓት</translation>
-<translation id="1832974991323546415">በርቀት መሳሪያ ላይ አጫውት</translation>
+<translation id="1832974991323546415">በርቀት መሣሪያ ላይ አጫውት</translation>
 <translation id="1921819250265091946">ቀቀ</translation>
 <translation id="1938124657309484470">ዋጋ <ph name="MAXIMUM_DATE_OR_TIME" /> ወይም ከዚያ በፊት መሆን አለበት።</translation>
 <translation id="1946271899482435442">የቀን መልቀሚያ አሳይ</translation>
@@ -110,7 +110,7 @@
 <translation id="6165053282446038410">ተዘርግቷል፣ <ph name="COUNT" /> የራስ-ማጠናቀቅ አማራጮች አሉ።</translation>
 <translation id="6212595056017402527">የአሁኑ ገጽ</translation>
 <translation id="6281588256137006900">ፍካት</translation>
-<translation id="6310801910862476708">ከስዕል-ውስጥ-ስዕል ውጣ</translation>
+<translation id="6310801910862476708">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
 <translation id="6398862346408813489">የወር መምረጫ ፓነል አሳይ</translation>
 <translation id="6404546809543547843">የኦዲዮ ሰዓት አንፏቃቂ</translation>
 <translation id="6443871981718447451">የተዘጉ የመግለጫ ጽሁፎችን ምናሌ አሳይ</translation>
@@ -173,10 +173,10 @@
 <translation id="894736920926684893">የቅርጸት መቀያየሪያ</translation>
 <translation id="8987927404178983737">ወር</translation>
 <translation id="901493112792887934">የአሁኑ ጊዜ በሰከንዶች</translation>
-<translation id="9093215626363556771">ከስዕል-ውስጥ-ስዕል ውጣ</translation>
+<translation id="9093215626363556771">ከሥዕል-ውስጥ-ሥዕል ውጣ</translation>
 <translation id="9132465097189459683">ሌላ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />፣ የሚጀምረው በ<ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">በሥዕል ላይ ሥዕል</translation>
 <translation id="945780513535800434">በከፊል ምልክት ተደርጎበታል</translation>
-<translation id="954003015749068518">ወደ ስዕል-ውስጥ-ስዕል ይግቡ</translation>
+<translation id="954003015749068518">ወደ ሥዕል-ውስጥ-ሥዕል ይግቡ</translation>
 </translationbundle>

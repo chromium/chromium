@@ -743,7 +743,7 @@
 <translation id="2911973620368911614">የስራ አካውንቲንግ ተጠቃሚ መታወቂያ</translation>
 <translation id="2914160345369867329"><ph name="SITE" /> የእርስዎን መረጃ ለመጠበቅ በመደበኝነት ምስጠራ ይጠቀማል። Chrome አሁን ከ<ph name="SITE" /> ጋር ለመገናኘት ሲሞክር ድር ጣቢያው ያልተለመደ እና ትክክል ያልሆኑ የመግቢያ ማስረጃዎችን መልሷል። ይህ አንድ አጥቂ <ph name="SITE" />ን አስመስሎ ለመቅረብ ከሞከረ ነው ወይም አንድ የWi-Fi መግቢያ ገጽ ግንኙነቱን ካቋረጠ ሊከሰት ይችላል። Chrome ማንኛውም የውሂብ ልውውጥ ከመካሄዱ በፊት ግንኙነቱን ስላቋረጠው የእርስዎ መረጃ ደህንነት ተጠብቋል።</translation>
 <translation id="2915068235268646559"><ph name="CRASH_TIME" /> ላይ ስንክል</translation>
-<translation id="2915496182262110498">የቀለም ስዕል</translation>
+<translation id="2915496182262110498">የቀለም ሥዕል</translation>
 <translation id="2916038427272391327">ሌሎች ፕሮግራሞችን ይዝጉ</translation>
 <translation id="2918922650248459053">የዋና ጠለቃ እና የውሃ ውስጥ እንቅስቃሴዎች</translation>
 <translation id="2922350208395188000">የአገልጋይ እውቅና ማረጋገጫ ሊረጋገጥ አልቻለም።</translation>
@@ -1286,7 +1286,7 @@
 <translation id="4325863107915753736">ጽሑፉን ማግኘት አልተቻለም</translation>
 <translation id="4326324639298822553">የእርስዎን የአገልግሎት ማብቂያ ቀን ይመልከቱ እና እንደገና ይሞክሩ</translation>
 <translation id="4329657820650401545">ሲ0 ፖስታ</translation>
-<translation id="4329871760342656885">የፖሊሲ ትንተና ስሕተት፦ <ph name="ERROR" /></translation>
+<translation id="4329871760342656885">የፖሊሲ ትንተና ስህተት፦ <ph name="ERROR" /></translation>
 <translation id="4331519897422864041">ቁልል 5</translation>
 <translation id="4331708818696583467">ደህንነቱ አልተጠበቀም</translation>
 <translation id="4333561522337981382">በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ማስተዳደር</translation>
@@ -1538,7 +1538,7 @@
 <translation id="4995216769782533993">ከዚህ ጣቢያ ጋር የእርስዎን የካርድ ዝርዝሮች ለማጋራት የደህንነት ኮዱን ያረጋግጡ</translation>
 <translation id="4995474875135717171">የተቀየረው፦</translation>
 <translation id="4995749490935861684"><ph name="CUSTOMIZE_SEARCH_ENGINES_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ከዚያ የጣቢያ ፍለጋን እና ነባሪ የፍለጋ ፕሮግራምዎን ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
-<translation id="5002932099480077015">የነቃ እንደሆነ Chrome ለበለጠ ፈጣን ቅጽ አሞላል ሲባል በዚህ መሳሪያ ላይ ያለው የካርድዎን ቅጂ ያከማቻል።</translation>
+<translation id="5002932099480077015">የነቃ እንደሆነ Chrome ለበለጠ ፈጣን ቅጽ አሞላል ሲባል በዚህ መሣሪያ ላይ ያለው የካርድዎን ቅጂ ያከማቻል።</translation>
 <translation id="5011561501798487822">የተገኘ ቋንቋ</translation>
 <translation id="5015510746216210676">የማሽን ስም፦</translation>
 <translation id="5017554619425969104">እርስዎ የቀዱት ጽሁፍ</translation>
@@ -2235,7 +2235,7 @@
 <translation id="6895330447102777224">የእርስዎ ካርድ ተረጋግጧል</translation>
 <translation id="6897140037006041989">የተጠቀሚ ተወካይ</translation>
 <translation id="6898699227549475383">ድርጅት (O)</translation>
-<translation id="6899000063526916106">ባለ<ph name="NUMBER_OF_DIGITS" />-አኃዝ ኮድ ያስገቡ</translation>
+<translation id="6899000063526916106">ባለ<ph name="NUMBER_OF_DIGITS" />-አሃዝ ኮድ ያስገቡ</translation>
 <translation id="6907293445143367439"><ph name="SITE_NAME" /> ይህን እንዲያደርግ ይፍቀዱ፦</translation>
 <translation id="6907458757809079309">ብቃት</translation>
 <translation id="6910240653697687763"><ph name="URL" /> የእርስዎን MIDI መሳሪያዎች ሙሉ በሙሉ መቆጣጠር ይፈልጋል</translation>
@@ -2299,7 +2299,7 @@
 <translation id="706295145388601875">በChrome ቅንብሮች ውስጥ አድራሻዎችን ያክሉ እና ያቀናብሩ</translation>
 <translation id="7064851114919012435">የእውቂያ መረጃ</translation>
 <translation id="7067633076996245366">ሶል እና አር ኤንድ ቢ</translation>
-<translation id="7068733155164172741">ባለ<ph name="OTP_LENGTH" />-አኃዝ ኮድ ያስገቡ</translation>
+<translation id="7068733155164172741">ባለ<ph name="OTP_LENGTH" />-አሃዝ ኮድ ያስገቡ</translation>
 <translation id="70705239631109039">የእርስዎ ግንኙነት ደህንነት ሙሉ ለሙሉ አይደለም የተጠበቀው</translation>
 <translation id="7075452647191940183">ጥያቄ ከልክ በላይ ግዙፍ ነው</translation>
 <translation id="7079718277001814089">ይህ ጣቢያ ተንኮል-አዘል ዌር ይዟል</translation>
@@ -2632,7 +2632,7 @@
 <translation id="7882421473871500483">ቡናማ</translation>
 <translation id="7882995332186050355">የጭነት መኪናዎች እና ተጎታቾች</translation>
 <translation id="7887683347370398519">የእርስዎን CVC ይፈትሹ እና እንደገና ይሞክሩ</translation>
-<translation id="7887885240995164102">ወደ ስዕል-ውስጥ-ስዕል ይግቡ</translation>
+<translation id="7887885240995164102">ወደ ሥዕል-ውስጥ-ሥዕል ይግቡ</translation>
 <translation id="7888575728750733395">የህትመት ምስል ስራ ሐሳብ</translation>
 <translation id="7894280532028510793">የፊደል አጻጻፉ ትክክል ከሆነ <ph name="BEGIN_LINK" />የአውታረ መረብ ምርመራን ለማስኬድ ይሞክሩ<ph name="END_LINK" />።</translation>
 <translation id="7901831439558593470">7 x 9 ኢንች ፖስታ</translation>
@@ -3041,7 +3041,7 @@
 <translation id="9036306139374661733">ማይክሮፎን ይፈቀድ?</translation>
 <translation id="9038649477754266430">ገጾችን ይበልጥ በፍጥነት ለመጫን የግመታ አገልግሎትን ይጠቀሙ</translation>
 <translation id="9039213469156557790">በተጨማሪ፣ ይህ ገጽ ደህንነታቸው ያልተጠበቀ ሌሎች ንብረቶችን አካትቷል። እነዚህ ንብረቶች በሽግግር ወቅት በሌሎች ሊታዩ ይችላሉ፣ እናም የገጹን ባህሪ ለመለወጥ በአጥቂዎች ሊቀየሩ ይችላሉ።</translation>
-<translation id="9040464167025094690">የእኔን መሳሪያ አግኝ አዝራር፣ በGoogle መለያ ውስጥ መሳርያዎን ያግኙን ለመጎብኘት አስገባንን ይጫኑ</translation>
+<translation id="9040464167025094690">የእኔን መሣሪያ አግኝ አዝራር፣ በGoogle መለያ ውስጥ መሳርያዎን ያግኙን ለመጎብኘት አስገባንን ይጫኑ</translation>
 <translation id="9042617223719777575">ትልቅ የመያዝ አቅም</translation>
 <translation id="9044359186343685026">የንክኪ መታወቂያን ተጠቀም</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>

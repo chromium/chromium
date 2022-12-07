@@ -5315,7 +5315,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Ponownie włączono 1 potencjalnie niebezpieczne rozszerzenie}few{Ponownie włączono {NUM_EXTENSIONS} potencjalnie niebezpieczne rozszerzenia}many{Ponownie włączono {NUM_EXTENSIONS} potencjalnie niebezpiecznych rozszerzeń}other{Ponownie włączono {NUM_EXTENSIONS} potencjalnie niebezpiecznego rozszerzenia}}</translation>
 <translation id="5979353814339191480">Ta opcja dotyczy Chromebooków z pakietem danych lub modemem sieci mobilnej albo korzystających z tetheringu z przenośnym punktem dostępu</translation>
-<translation id="5979421442488174909">&amp;Przetłumacz na język <ph name="LANGUAGE" /></translation>
+<translation id="5979421442488174909">&amp;Przetłumacz na <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Aby dodać stronę do zakładek, kliknij gwiazdkę na pasku adresu</translation>
 <translation id="5981362776161841923">Aby zezwolić na rozszerzenie, zmień domyślne ustawienie poniżej.</translation>
 <translation id="5984222099446776634">Ostatnio odwiedzone</translation>

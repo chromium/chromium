@@ -30,7 +30,7 @@
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1147031633655575115">נכנסת כ-<ph name="USER" /></translation>
 <translation id="1154984953698510061">הצגת כרטיסיות אחרות</translation>
-<translation id="1161340988127985692">שליחת בקשה לפתיחת קישורים מאפליקציות אחרות במצב פרטי</translation>
+<translation id="1161340988127985692">הצגת בקשה לפתיחת קישורים מאפליקציות אחרות במצב פרטי</translation>
 <translation id="1164064664035028907">שימוש בסיסמה החזקה:</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1172898394251786223">השדה הבא</translation>
@@ -483,7 +483,7 @@
 <translation id="4808744395915275922">עדכונים</translation>
 <translation id="4818522717893377262">הוספת שפה…</translation>
 <translation id="481968316161811770">‏קובצי cookie, נתונים מאתרים</translation>
-<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ואחד נוסף}two{{domain} ו-{count} נוספים}many{{domain} ו-{count} נוספים}other{{domain} ו-{count} נוספים}}</translation>
+<translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ואחד נוסף}one{{domain} ו-{count} נוספים}two{{domain} ו-{count} נוספים}other{{domain} ו-{count} נוספים}}</translation>
 <translation id="4826218269716039351">חסימת צדדים שלישיים</translation>
 <translation id="4826726074642088322">שיתוף של הטקסט המודגש</translation>
 <translation id="48274138579728272">סימון כפריט שנקרא</translation>
@@ -584,7 +584,7 @@
 <translation id="5669335982068190158">‏יצאת מהחשבון במהלך האיפוס של iPhone. כדי להיכנס שוב לחשבון, יש להקיש על 'המשך' למטה.</translation>
 <translation id="5669528293118408608">www</translation>
 <translation id="567881659373499783">גרסה <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5690398455483874150">{count,plural, =1{‏כרגע מוצג חלון Chrome אחד}two{‏כרגע מוצגים {count} חלונות Chrome}many{‏כרגע מוצגים {count} חלונות Chrome}other{‏כרגע מוצגים {count} חלונות Chrome}}</translation>
+<translation id="5690398455483874150">{count,plural, =1{‏כרגע מוצג חלון Chrome אחד}one{‏כרגע מוצגים {count} חלונות Chrome}two{‏כרגע מוצגים {count} חלונות Chrome}other{‏כרגע מוצגים {count} חלונות Chrome}}</translation>
 <translation id="5701270923492462699">יש הרשאת גישה למצלמה</translation>
 <translation id="5704908597376970822">אי אפשר להיכנס.</translation>
 <translation id="5706552126692816153">פעילות אחרונה: לפני יום אחד</translation>
@@ -661,7 +661,7 @@
 <translation id="6187302354554850004">סונכרן לאחרונה: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">פריטים שלא נקראו</translation>
 <translation id="6196207969502475924">חיפוש קולי</translation>
-<translation id="6202364442240589072">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}two{סגירת {COUNT} כרטיסיות}many{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
+<translation id="6202364442240589072">{COUNT,plural, =1{סגירת כרטיסייה אחת ({COUNT})}one{סגירת {COUNT} כרטיסיות}two{סגירת {COUNT} כרטיסיות}other{סגירת {COUNT} כרטיסיות}}</translation>
 <translation id="6219550825416862075">שמחים שחזרת</translation>
 <translation id="6219688215832490856">לא לתרגם אף פעם</translation>
 <translation id="6223816392543092032">קבלת הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות בכל המכשירים.</translation>
@@ -893,7 +893,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">ייצוא סיסמאות...</translation>
 <translation id="794799177247607889">הפסקת רישום ביומן</translation>
-<translation id="7953440832920792856">{COUNT,plural, =0{אין סיסמאות שנחשפו}=1{סיסמה אחת ({COUNT}) שנחשפה}two{{COUNT} סיסמאות שנחשפו}many{{COUNT} סיסמאות שנחשפו}other{{COUNT} סיסמאות שנחשפו}}</translation>
+<translation id="7953440832920792856">{COUNT,plural, =0{אין סיסמאות שנחשפו}=1{סיסמה אחת ({COUNT}) שנחשפה}one{{COUNT} סיסמאות שנחשפו}two{{COUNT} סיסמאות שנחשפו}other{{COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="7959441099968534758">לכניסה אל הפיד</translation>
 <translation id="7961015016161918242">אף פעם</translation>
 <translation id="7966516440812255683">‏אתרים יכולים להשתמש בקובצי cookie כדי לשפר את חוויית הגלישה – למשל כדי למנוע את ניתוקך מהחשבון או כדי לזכור את הפריטים שהוספת לעגלת הקניות.
@@ -985,7 +985,7 @@
 <translation id="8654802032646794042">ביטול</translation>
 <translation id="8668210798914567634">דף זה נשמר ברשימת הקריאה שלך.</translation>
 <translation id="8680787084697685621">פרטי הכניסה לחשבון אינם מעודכנים.</translation>
-<translation id="8693663554456874301">{count,plural, =1{סגירת הכרטיסייה}two{סגירת הכרטיסיות}many{סגירת הכרטיסיות}other{סגירת הכרטיסיות}}</translation>
+<translation id="8693663554456874301">{count,plural, =1{סגירת הכרטיסייה}one{סגירת הכרטיסיות}two{סגירת הכרטיסיות}other{סגירת הכרטיסיות}}</translation>
 <translation id="8706588385081740091">סיסמאות</translation>
 <translation id="8717864919010420084">העתקת הקישור</translation>
 <translation id="8721297211384281569">התפריט 'כלים'</translation>
@@ -1007,7 +1007,7 @@
 <translation id="8840513115188359703">‏פעולה זו לא תוציא אותך מחשבון Google שלך.</translation>
 <translation id="8843129975935593190">הארגון שלך מגביל את מה שאפשר לסנכרן.</translation>
 <translation id="8849001918648564819">מוסתר</translation>
-<translation id="8868471676553493380">{count,plural, =1{כרטיסייה אחת ({count})}two{{count} כרטיסיות}many{{count} כרטיסיות}other{{count} כרטיסיות}}</translation>
+<translation id="8868471676553493380">{count,plural, =1{כרטיסייה אחת ({count})}one{{count} כרטיסיות}two{{count} כרטיסיות}other{{count} כרטיסיות}}</translation>
 <translation id="8870413625673593573">נסגרו לאחרונה</translation>
 <translation id="8876882697946675716">אפשר לסנכרן בין המכשירים</translation>
 <translation id="8877287418679067891">להגדרה כברירת מחדל בהגדרות…</translation>
