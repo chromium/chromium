@@ -102,8 +102,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, ProfileName) {
   // Change the name. Both the profile pref and the entry in
   // ProfileAttributesStorage should be updated.
   std::string name = "Supervised User Test Name";
-  settings->SetLocalSetting(supervised_users::kUserName,
-                            std::make_unique<base::Value>(name));
+  settings->SetLocalSetting(supervised_users::kUserName, base::Value(name));
   EXPECT_FALSE(prefs->IsUserModifiablePreference(prefs::kProfileName));
   EXPECT_EQ(name, prefs->GetString(prefs::kProfileName));
 
@@ -116,14 +115,12 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserServiceTestSupervised, ProfileName) {
 
   // Change the name once more.
   std::string new_name = "New Supervised User Test Name";
-  settings->SetLocalSetting(supervised_users::kUserName,
-                            std::make_unique<base::Value>(new_name));
+  settings->SetLocalSetting(supervised_users::kUserName, base::Value(new_name));
   EXPECT_EQ(new_name, prefs->GetString(prefs::kProfileName));
   EXPECT_EQ(new_name, base::UTF16ToUTF8(entry->GetName()));
 
   // Remove the setting.
-  settings->SetLocalSetting(supervised_users::kUserName,
-                            std::unique_ptr<base::Value>());
+  settings->RemoveLocalSetting(supervised_users::kUserName);
   EXPECT_EQ(original_name, prefs->GetString(prefs::kProfileName));
   EXPECT_EQ(original_name, base::UTF16ToUTF8(entry->GetName()));
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -23,5 +24,5 @@ void JNI_SupervisedUserSettingsBridge_SetFilteringBehavior(
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   supervised_user_settings_service->SetLocalSetting(
       supervised_users::kContentPackDefaultFilteringBehavior,
-      std::make_unique<base::Value>(setting));
+      base::Value(setting));
 }

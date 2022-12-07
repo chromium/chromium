@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -142,9 +143,12 @@ class SupervisedUserSettingsService : public KeyedService,
   // immediately.
   void SaveItem(const std::string& key, std::unique_ptr<base::Value> value);
 
-  // Sets the setting with the given |key| to a copy of the given |value|.
-  void SetLocalSetting(const std::string& key,
-                       std::unique_ptr<base::Value> value);
+  // Sets the setting with the given `key` to `value`.
+  void SetLocalSetting(base::StringPiece key, base::Value value);
+  void SetLocalSetting(base::StringPiece key, base::Value::Dict dict);
+
+  // Removes the setting for `key`.
+  void RemoveLocalSetting(base::StringPiece key);
 
   // Public for testing.
   static syncer::SyncData CreateSyncDataForSetting(const std::string& name,

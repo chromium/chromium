@@ -237,18 +237,14 @@ class SupervisedUserNavigationThrottleTest
 
     const base::Value::Dict& local_settings =
         settings_service->LocalSettingsForTest();
-    std::unique_ptr<base::Value> dict_to_insert;
+    base::Value::Dict dict_to_insert;
 
-    const base::Value* dict_value =
-        local_settings.Find(supervised_users::kContentPackManualBehaviorHosts);
-    if (dict_value) {
-      dict_to_insert = std::make_unique<base::Value>(dict_value->Clone());
-    } else {
-      dict_to_insert =
-          std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+    if (const base::Value::Dict* dict_value = local_settings.FindDict(
+            supervised_users::kContentPackManualBehaviorHosts)) {
+      dict_to_insert = dict_value->Clone();
     }
 
-    dict_to_insert->SetKey(host, base::Value(allowlist));
+    dict_to_insert.Set(host, allowlist);
     settings_service->SetLocalSetting(
         supervised_users::kContentPackManualBehaviorHosts,
         std::move(dict_to_insert));
@@ -327,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
       SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
   supervised_user_settings_service->SetLocalSetting(
       supervised_users::kContentPackDefaultFilteringBehavior,
-      std::make_unique<base::Value>(SupervisedUserURLFilter::BLOCK));
+      base::Value(SupervisedUserURLFilter::BLOCK));
 
   std::unique_ptr<WebContents> web_contents(
       WebContents::Create(WebContents::CreateParams(profile)));

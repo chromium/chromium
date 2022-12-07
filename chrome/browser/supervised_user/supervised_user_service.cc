@@ -314,9 +314,8 @@ void SupervisedUserService::
   // currently set indirectly by setting geolocation requests. Update Kids
   // Management server to set a new bit for extension permissions and update
   // this setter function.
-  GetSettingsService()->SetLocalSetting(
-      supervised_users::kGeolocationDisabled,
-      std::make_unique<base::Value>(!enabled));
+  GetSettingsService()->SetLocalSetting(supervised_users::kGeolocationDisabled,
+                                        base::Value(!enabled));
   profile_->GetPrefs()->SetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions, enabled);
 }

@@ -23,7 +23,6 @@
 
 namespace {
 
-using ::base::Value;
 using ::testing::Optional;
 
 class SupervisedUserPrefStoreFixture : public PrefStore::Observer {
@@ -175,11 +174,11 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_EQ(0u, fixture.changed_prefs()->size());
 
   // kSupervisedModeManualHosts can be configured by the custodian.
-  base::Value hosts(base::Value::Type::DICTIONARY);
-  hosts.SetBoolKey("example.com", true);
-  hosts.SetBoolKey("moose.org", false);
+  base::Value::Dict hosts;
+  hosts.Set("example.com", true);
+  hosts.Set("moose.org", false);
   service_.SetLocalSetting(supervised_users::kContentPackManualBehaviorHosts,
-                           std::make_unique<base::Value>(hosts.Clone()));
+                           hosts.Clone());
   EXPECT_EQ(1u, fixture.changed_prefs()->size());
 
   base::Value::Dict* manual_hosts =
@@ -192,7 +191,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   // custodian, overriding the hardcoded default.
   fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_users::kForceSafeSearch,
-                           std::make_unique<base::Value>(false));
+                           base::Value(false));
   EXPECT_EQ(1u, fixture.changed_prefs()->size());
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kForceGoogleSafeSearch),
@@ -216,7 +215,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 
   fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
-                           std::make_unique<base::Value>(false));
+                           base::Value(false));
   EXPECT_EQ(1u, fixture.changed_prefs()->size());
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kSupervisedUserExtensionsMayRequestPermissions),
@@ -229,7 +228,7 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
 
   fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
-                           std::make_unique<base::Value>(true));
+                           base::Value(true));
   EXPECT_EQ(1u, fixture.changed_prefs()->size());
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
                   prefs::kSupervisedUserExtensionsMayRequestPermissions),

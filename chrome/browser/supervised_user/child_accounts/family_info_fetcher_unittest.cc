@@ -52,24 +52,21 @@ namespace {
 
 std::string BuildGetFamilyProfileResponse(
     const FamilyInfoFetcher::FamilyProfile& family) {
-  base::DictionaryValue dict;
-  auto family_dict = std::make_unique<base::DictionaryValue>();
-  family_dict->SetKey("familyId", base::Value(family.id));
-  std::unique_ptr<base::DictionaryValue> profile_dict =
-      std::make_unique<base::DictionaryValue>();
-  profile_dict->SetKey("name", base::Value(family.name));
-  family_dict->SetKey("profile",
-                      base::Value::FromUniquePtrValue(std::move(profile_dict)));
-  dict.SetKey("family",
-              base::Value::FromUniquePtrValue(std::move(family_dict)));
+  base::Value::Dict dict;
+  base::Value::Dict family_dict;
+  family_dict.Set("familyId", family.id);
+  base::Value::Dict profile_dict;
+  profile_dict.Set("name", family.name);
+  family_dict.Set("profile", std::move(profile_dict));
+  dict.Set("family", std::move(family_dict));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;
 }
 
 std::string BuildEmptyGetFamilyProfileResponse() {
-  base::DictionaryValue dict;
-  dict.SetKey("family", base::DictionaryValue());
+  base::Value::Dict dict;
+  dict.Set("family", base::Value::Dict());
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;

@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
@@ -156,20 +157,18 @@ void SupervisedUserSettingsService::SetActive(bool active) {
 
   if (active_) {
     // Child account supervised users must be signed in.
-    SetLocalSetting(supervised_users::kSigninAllowed,
-                    std::make_unique<base::Value>(true));
+    SetLocalSetting(supervised_users::kSigninAllowed, base::Value(true));
 
     // Always allow cookies, to avoid website compatibility issues.
-    SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
-                    std::make_unique<base::Value>(true));
+    SetLocalSetting(supervised_users::kCookiesAlwaysAllowed, base::Value(true));
 
     // SafeSearch and GeolocationDisabled are controlled at the account level,
     // so don't override them client-side.
   } else {
-    SetLocalSetting(supervised_users::kSigninAllowed, nullptr);
-    SetLocalSetting(supervised_users::kCookiesAlwaysAllowed, nullptr);
-    SetLocalSetting(supervised_users::kForceSafeSearch, nullptr);
-    SetLocalSetting(supervised_users::kGeolocationDisabled, nullptr);
+    RemoveLocalSetting(supervised_users::kSigninAllowed);
+    RemoveLocalSetting(supervised_users::kCookiesAlwaysAllowed);
+    RemoveLocalSetting(supervised_users::kForceSafeSearch);
+    RemoveLocalSetting(supervised_users::kGeolocationDisabled);
   }
 
   InformSubscribers();
@@ -232,14 +231,20 @@ void SupervisedUserSettingsService::SaveItem(
   InformSubscribers();
 }
 
-void SupervisedUserSettingsService::SetLocalSetting(
-    const std::string& key,
-    std::unique_ptr<base::Value> value) {
-  if (value)
-    local_settings_.Set(key, base::Value::FromUniquePtrValue(std::move(value)));
-  else
-    local_settings_.Remove(key);
+void SupervisedUserSettingsService::SetLocalSetting(base::StringPiece key,
+                                                    base::Value value) {
+  local_settings_.Set(key, std::move(value));
+  InformSubscribers();
+}
 
+void SupervisedUserSettingsService::SetLocalSetting(base::StringPiece key,
+                                                    base::Value::Dict dict) {
+  local_settings_.Set(key, std::move(dict));
+  InformSubscribers();
+}
+
+void SupervisedUserSettingsService::RemoveLocalSetting(base::StringPiece key) {
+  local_settings_.Remove(key);
   InformSubscribers();
 }
 

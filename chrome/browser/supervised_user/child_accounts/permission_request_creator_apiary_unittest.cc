@@ -27,11 +27,10 @@ namespace {
 const char kEmail[] = "account@gmail.com";
 
 std::string BuildResponse() {
-  base::DictionaryValue dict;
-  auto permission_dict = std::make_unique<base::DictionaryValue>();
-  permission_dict->SetKey("id", base::Value("requestid"));
-  dict.SetKey("permissionRequest",
-              base::Value::FromUniquePtrValue(std::move(permission_dict)));
+  base::Value::Dict dict;
+  base::Value::Dict permission_dict;
+  permission_dict.Set("id", "requestid");
+  dict.Set("permissionRequest", std::move(permission_dict));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;

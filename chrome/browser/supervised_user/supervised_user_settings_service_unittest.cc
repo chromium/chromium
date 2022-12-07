@@ -22,6 +22,7 @@
 #include "components/sync/test/sync_error_factory_mock.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -83,7 +84,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   }
 
   void UploadSplitItem(const std::string& key, const std::string& value) {
-    split_items_.SetKey(key, base::Value(value));
+    split_items_.Set(key, value);
     settings_service_.SaveItem(
         SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName, key),
         std::make_unique<base::Value>(value));
@@ -107,7 +108,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
                                    base::CompareCase::SENSITIVE));
       std::string key =
           supervised_user_setting.name().substr(strlen(kSplitItemName) + 1);
-      expected_value = split_items_.FindKey(key);
+      expected_value = split_items_.Find(key);
       EXPECT_TRUE(expected_value);
     }
 
@@ -119,8 +120,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
     if (settings.empty()) {
       settings_.reset();
     } else {
-      settings_ = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(base::Value(settings.Clone())));
+      settings_ = settings.Clone();
     }
   }
 
@@ -174,10 +174,10 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   void TearDown() override { settings_service_.Shutdown(); }
 
   content::BrowserTaskEnvironment task_environment_;
-  base::DictionaryValue split_items_;
+  base::Value::Dict split_items_;
   std::unique_ptr<base::Value> atomic_setting_value_;
   SupervisedUserSettingsService settings_service_;
-  std::unique_ptr<base::DictionaryValue> settings_;
+  absl::optional<base::Value::Dict> settings_;
   base::CallbackListSubscription user_settings_subscription_;
 
   std::unique_ptr<syncer::FakeSyncChangeProcessor> sync_processor_;
@@ -186,8 +186,7 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
 TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   StartSyncing(syncer::SyncDataList());
   ASSERT_TRUE(settings_);
-  const base::Value* value = nullptr;
-  value = settings_->FindKey(kSettingsName);
+  const base::Value* value = settings_->Find(kSettingsName);
   EXPECT_FALSE(value);
 
   settings_.reset();
@@ -201,7 +200,8 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);
-  value = settings_->FindKey(kSettingsName);
+
+  value = settings_->Find(kSettingsName);
   ASSERT_TRUE(value);
   std::string string_value;
   EXPECT_TRUE(value->is_string());
@@ -214,17 +214,17 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   StartSyncing(syncer::SyncDataList());
   ASSERT_TRUE(settings_);
   const base::Value* value = nullptr;
-  value = settings_->FindKey(kSettingsName);
+  value = settings_->Find(kSettingsName);
   EXPECT_FALSE(value);
 
-  base::DictionaryValue dict;
-  dict.SetStringKey("foo", "bar");
-  dict.SetBoolKey("awesomesauce", true);
-  dict.SetIntKey("eaudecologne", 4711);
+  base::Value::Dict dict;
+  dict.Set("foo", "bar");
+  dict.Set("awesomesauce", true);
+  dict.Set("eaudecologne", 4711);
 
   settings_.reset();
   syncer::SyncChangeList change_list;
-  for (const auto item : dict.GetDict()) {
+  for (const auto item : dict) {
     syncer::SyncData data =
         SupervisedUserSettingsService::CreateSyncDataForSetting(
             SupervisedUserSettingsService::MakeSplitSettingKey(kSettingsName,
@@ -237,9 +237,9 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
       settings_service_.ProcessSyncChanges(FROM_HERE, change_list);
   EXPECT_FALSE(error.has_value()) << error.value().ToString();
   ASSERT_TRUE(settings_);
-  value = settings_->FindKey(kSettingsName);
-  ASSERT_TRUE(value);
-  EXPECT_EQ(value->GetDict(), dict);
+  const base::Value::Dict* settings_dict = settings_->FindDict(kSettingsName);
+  ASSERT_TRUE(settings_dict);
+  EXPECT_EQ(*settings_dict, dict);
 }
 
 TEST_F(SupervisedUserSettingsServiceTest, NotifyForWebsiteApprovals) {
@@ -293,7 +293,7 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
                   .empty());
 
   ASSERT_TRUE(settings_);
-  EXPECT_FALSE(settings_->FindKey(kSettingsName));
+  EXPECT_FALSE(settings_->Find(kSettingsName));
 
   settings_.reset();
 
@@ -303,10 +303,10 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
     sync_data.push_back(SupervisedUserSettingsService::CreateSyncDataForSetting(
         kSettingsName, base::Value(kSettingsValue)));
     // Adding 2 SplitSettings from dictionary.
-    base::DictionaryValue dict;
-    dict.SetStringKey("foo", "bar");
-    dict.SetIntKey("eaudecologne", 4711);
-    for (const auto item : dict.GetDict()) {
+    base::Value::Dict dict;
+    dict.Set("foo", "bar");
+    dict.Set("eaudecologne", 4711);
+    for (const auto item : dict) {
       sync_data.push_back(
           SupervisedUserSettingsService::CreateSyncDataForSetting(
               SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName,
@@ -330,11 +330,11 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
     UploadSplitItem("burp", "baz");
     UploadSplitItem("item", "second");
 
-    base::DictionaryValue dict;
-    dict.SetStringKey("foo", "burp");
-    dict.SetStringKey("item", "first");
+    base::Value::Dict dict;
+    dict.Set("foo", "burp");
+    dict.Set("item", "first");
     // Adding 2 SplitSettings from dictionary.
-    for (const auto item : dict.GetDict()) {
+    for (const auto item : dict) {
       sync_data.push_back(
           SupervisedUserSettingsService::CreateSyncDataForSetting(
               SupervisedUserSettingsService::MakeSplitSettingKey(kSplitItemName,
@@ -351,14 +351,13 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
 
 TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
   const base::Value* value = nullptr;
-  value = settings_->FindKey(kSettingsName);
+  value = settings_->Find(kSettingsName);
   EXPECT_FALSE(value);
 
   settings_.reset();
-  settings_service_.SetLocalSetting(
-      kSettingsName, std::make_unique<base::Value>(kSettingsValue));
+  settings_service_.SetLocalSetting(kSettingsName, base::Value(kSettingsValue));
   ASSERT_TRUE(settings_);
-  value = settings_->FindKey(kSettingsName);
+  value = settings_->Find(kSettingsName);
   ASSERT_TRUE(value);
   std::string string_value;
   EXPECT_TRUE(value->is_string());
@@ -430,8 +429,8 @@ TEST_F(SupervisedUserSettingsServiceTest, UploadItem) {
     VerifySyncDataItem(sync_data_item);
 
   // The uploaded items should not show up as settings.
-  EXPECT_FALSE(settings_->FindKey(kAtomicItemName));
-  EXPECT_FALSE(settings_->FindKey(kSplitItemName));
+  EXPECT_FALSE(settings_->Find(kAtomicItemName));
+  EXPECT_FALSE(settings_->Find(kSplitItemName));
 
   // Restarting sync should not create any new changes.
   settings_service_.StopSyncing(syncer::SUPERVISED_USER_SETTINGS);

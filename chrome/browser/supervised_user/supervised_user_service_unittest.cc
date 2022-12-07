@@ -199,10 +199,10 @@ class SupervisedUserServiceExtensionTestBase
 
  protected:
   scoped_refptr<const extensions::Extension> MakeThemeExtension() {
-    std::unique_ptr<base::DictionaryValue> source(new base::DictionaryValue());
-    source->SetStringKey(extensions::manifest_keys::kName, "Theme");
-    source->SetKey(extensions::manifest_keys::kTheme, base::DictionaryValue());
-    source->SetStringKey(extensions::manifest_keys::kVersion, "1.0");
+    base::Value::Dict source;
+    source.Set(extensions::manifest_keys::kName, "Theme");
+    source.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
+    source.Set(extensions::manifest_keys::kVersion, "1.0");
     extensions::ExtensionBuilder builder;
     scoped_refptr<const extensions::Extension> extension =
         builder.SetManifest(std::move(source)).Build();

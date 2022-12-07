@@ -58,7 +58,7 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
   EXPECT_CALL(mock_observer_,
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
-                           std::make_unique<base::Value>(true));
+                           base::Value(true));
 
   rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
@@ -74,7 +74,7 @@ TEST_F(SupervisedUserProviderTest, GeolocationTest) {
   EXPECT_CALL(mock_observer_,
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   service_.SetLocalSetting(supervised_users::kGeolocationDisabled,
-                           std::make_unique<base::Value>(false));
+                           base::Value(false));
 
   rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::GEOLOCATION, false);
@@ -97,7 +97,7 @@ TEST_F(SupervisedUserProviderTest, CookiesTest) {
   EXPECT_CALL(mock_observer_,
               OnContentSettingChanged(_, _, ContentSettingsType::COOKIES));
   service_.SetLocalSetting(supervised_users::kCookiesAlwaysAllowed,
-                           std::make_unique<base::Value>(false));
+                           base::Value(false));
 
   rule_iterator =
       provider_->GetRuleIterator(ContentSettingsType::COOKIES, false);
@@ -119,7 +119,7 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   EXPECT_CALL(mock_observer_, OnContentSettingChanged(
                                   _, _, ContentSettingsType::MEDIASTREAM_MIC));
   service_.SetLocalSetting(supervised_users::kCameraMicDisabled,
-                           std::make_unique<base::Value>(true));
+                           base::Value(true));
 
   rule_iterator = provider_->GetRuleIterator(
       ContentSettingsType::MEDIASTREAM_CAMERA, false);
@@ -148,7 +148,7 @@ TEST_F(SupervisedUserProviderTest, CameraMicTest) {
   EXPECT_CALL(mock_observer_, OnContentSettingChanged(
                                   _, _, ContentSettingsType::MEDIASTREAM_MIC));
   service_.SetLocalSetting(supervised_users::kCameraMicDisabled,
-                           std::make_unique<base::Value>(false));
+                           base::Value(false));
 
   rule_iterator = provider_->GetRuleIterator(
       ContentSettingsType::MEDIASTREAM_CAMERA, false);
