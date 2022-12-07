@@ -164,7 +164,7 @@ chrome_internal_verifier(
 chrome_internal_verifier(
     builder = "linux-chromeos-compile-chrome",
     tryjob = try_.job(
-        experiment_percentage = 5,
+        experiment_percentage = 50,
     ),
 )
 
