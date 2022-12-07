@@ -192,7 +192,8 @@ class RequestAdapter {
 
  private:
   const GURL url_;
-  const raw_ref<const net::HttpRequestHeaders> original_headers_;
+  const raw_ref<const net::HttpRequestHeaders, DanglingUntriaged>
+      original_headers_;
   const raw_ptr<net::HttpRequestHeaders> modified_headers_;
   const raw_ptr<std::vector<std::string>> headers_to_remove_;
 };

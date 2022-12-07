@@ -71,7 +71,7 @@ class InstallableAmbientBadgeInfoBarDelegate
   const std::u16string app_name_;
   const SkBitmap primary_icon_;
   const bool is_primary_icon_maskable_;
-  const raw_ref<const GURL> start_url_;
+  const raw_ref<const GURL, DanglingUntriaged> start_url_;
 };
 
 }  // namespace webapps
