@@ -955,9 +955,9 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
 
   view_tokens = scenic::ViewTokenPair::New();
   view_ref_pair = scenic::ViewRefPair::New();
-  frame->CreateViewWithViewRef(std::move(view_tokens.view_token),
-                               std::move(view_ref_pair.control_ref),
-                               CloneViewRef(view_ref_pair.view_ref));
+  frame2->CreateViewWithViewRef(std::move(view_tokens.view_token),
+                                std::move(view_ref_pair.control_ref),
+                                CloneViewRef(view_ref_pair.view_ref));
 
   view_spec.set_view_holder_token(std::move(view_tokens.view_holder_token));
   view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
