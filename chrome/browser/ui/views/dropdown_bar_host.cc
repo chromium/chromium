@@ -53,7 +53,7 @@ void DropdownBarHost::Init(views::View* host_view,
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_CONTROL);
   params.delegate = this;
   params.name = "DropdownBarHost";
-  params.parent = browser_view_->GetWidget()->GetNativeView();
+  params.parent = browser_view_->GetWidgetForAnchoring()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #if BUILDFLAG(IS_MAC)
   params.activatable = views::Widget::InitParams::Activatable::kYes;

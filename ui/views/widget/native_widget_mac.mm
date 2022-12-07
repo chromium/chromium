@@ -233,15 +233,7 @@ void NativeWidgetMac::InitNativeWidget(Widget::InitParams params) {
   // platform-specific corner cases.
   if (params.parent &&
       (!params.z_order || params.z_order == ui::ZOrderLevel::kNormal)) {
-    // In immersive fullscreen, bubbles will be shown under the toolbar by
-    // default. Fix it by using a higher z-order level.
-    // TODO(mek): Figure out how to make this work with remote remote_cocoa
-    // windows.
-    if (remote_cocoa::IsNSToolbarFullScreenWindow(
-            params.parent.GetNativeNSView().window)) {
-      params.z_order = ui::ZOrderLevel::kFloatingWindow;
-    } else if (auto* parent_widget =
-                   Widget::GetWidgetForNativeView(params.parent)) {
+    if (auto* parent_widget = Widget::GetWidgetForNativeView(params.parent)) {
       // If our parent is z-ordered above us, then float a bit higher.
       params.z_order =
           std::max(params.z_order.value_or(ui::ZOrderLevel::kNormal),

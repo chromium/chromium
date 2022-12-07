@@ -303,6 +303,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // update widget and compositor size.
   void UpdateWindowGeometry();
 
+  // Move `child_windows_` to `target`.
+  void MoveChildrenTo(NativeWidgetNSWindowBridge* target);
+
  private:
   friend class views::test::BridgedNativeWidgetTestApi;
 

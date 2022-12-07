@@ -330,8 +330,6 @@ void PermissionPromptBubbleView::Show() {
 
   // Set |parent_window| because some valid anchors can become hidden.
   DCHECK(browser_->window());
-  set_parent_window(
-      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
   UpdateAnchorPosition();
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
@@ -374,12 +372,18 @@ void PermissionPromptBubbleView::AddRequestLine(
 }
 
 void PermissionPromptBubbleView::UpdateAnchorPosition() {
-  DCHECK_EQ(browser_->window()->GetNativeWindow(), parent_window());
-
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
           browser_);
   SetAnchorView(configuration.anchor_view);
+  // In fullscreen, `anchor_view` may be nullptr because the toolbar is hidden,
+  // therefore anchor to the browser window instead.
+  if (configuration.anchor_view) {
+    set_parent_window(configuration.anchor_view->GetWidget()->GetNativeView());
+  } else {
+    set_parent_window(
+        platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+  }
   SetHighlightedButton(configuration.highlighted_button);
   if (!configuration.anchor_view)
     SetAnchorRect(bubble_anchor_util::GetPageInfoAnchorRect(browser_));

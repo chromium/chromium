@@ -54,6 +54,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   // Start observing child windows of overlay_widget_.
   void ObserveOverlayChildWindows();
 
+  // Reparent children of `source` to `target`.
+  void ReparentChildWindows(NSWindow* source, NSWindow* target);
+
   bool enabled_ = false;
 
   NSWindow* const browser_widget_;

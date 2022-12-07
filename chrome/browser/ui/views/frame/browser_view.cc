@@ -1269,6 +1269,14 @@ float BrowserView::GetTopControlsSlideBehaviorShownRatio() const {
   return 1.f;
 }
 
+views::Widget* BrowserView::GetWidgetForAnchoring() {
+#if BUILDFLAG(IS_MAC)
+  if (UsesImmersiveFullscreenMode())
+    return IsFullscreen() ? overlay_widget_.get() : GetWidget();
+#endif
+  return GetWidget();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView, BrowserWindow implementation:
 
@@ -3956,10 +3964,9 @@ void BrowserView::AddedToWidget() {
   // TODO(https://crbug.com/1036519): Remove BrowserViewLayout dependence on
   // Widget and move to the constructor.
   SetLayoutManager(std::make_unique<BrowserViewLayout>(
-      std::make_unique<BrowserViewLayoutDelegateImpl>(this),
-      GetWidget()->GetNativeView(), this, top_container_,
-      tab_strip_region_view_, tabstrip_, toolbar_, infobar_container_,
-      contents_container_, side_search_side_panel_,
+      std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,
+      top_container_, tab_strip_region_view_, tabstrip_, toolbar_,
+      infobar_container_, contents_container_, side_search_side_panel_,
       left_aligned_side_panel_separator_, unified_side_panel_,
       right_aligned_side_panel_separator_, lens_side_panel_,
       immersive_mode_controller_.get(), contents_separator_));
