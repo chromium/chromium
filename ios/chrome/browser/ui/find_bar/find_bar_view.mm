@@ -177,7 +177,7 @@ const CGFloat kButtonLength = 44;
       rightLabel, rightView,
       LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kLeading |
           LayoutSides::kTrailing,
-      ChromeDirectionalEdgeInsetsMake(0, kPadding, 0, kPadding));
+      NSDirectionalEdgeInsetsMake(0, kPadding, 0, kPadding));
   textField.rightView = rightView;
   textField.rightViewMode = UITextFieldViewModeAlways;
 }

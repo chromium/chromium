@@ -187,10 +187,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [view addSubview:description];
   self.tableView.tableHeaderView = view;
 
-  AddSameConstraintsWithInsets(description, view,
-                               ChromeDirectionalEdgeInsetsMake(
-                                   kDescriptionPadding, kDescriptionPadding,
-                                   kDescriptionPadding, kDescriptionPadding));
+  AddSameConstraintsWithInsets(
+      description, view,
+      NSDirectionalEdgeInsetsMake(kDescriptionPadding, kDescriptionPadding,
+                                  kDescriptionPadding, kDescriptionPadding));
 }
 
 @end

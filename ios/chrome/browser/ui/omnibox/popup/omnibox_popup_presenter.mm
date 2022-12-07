@@ -95,8 +95,8 @@ const CGFloat kPopoutOmniboxSideInsets = -8;
         // toolbar by 1pt.
         AddSameConstraintsWithInsets(
             viewController.view, _popupContainerView,
-            ChromeDirectionalEdgeInsetsMake(0, kPopoutOmniboxSideInsets, 0,
-                                            kPopoutOmniboxSideInsets));
+            NSDirectionalEdgeInsetsMake(0, kPopoutOmniboxSideInsets, 0,
+                                        kPopoutOmniboxSideInsets));
         _popupContainerView.backgroundColor = UIColor.redColor;
       }
     } else {

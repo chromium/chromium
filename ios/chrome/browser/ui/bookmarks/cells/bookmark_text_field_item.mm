@@ -127,7 +127,7 @@
       self.stackView, self.contentView,
       LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom |
           LayoutSides::kTop,
-      ChromeDirectionalEdgeInsetsMake(
+      NSDirectionalEdgeInsetsMake(
           kBookmarkCellVerticalInset, kBookmarkCellHorizontalLeadingInset,
           kBookmarkCellVerticalInset, kBookmarkCellHorizontalTrailingInset));
 

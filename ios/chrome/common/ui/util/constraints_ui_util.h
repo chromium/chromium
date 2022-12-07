@@ -34,22 +34,6 @@ constexpr bool IsLayoutSidesMaskSet(LayoutSides mask, LayoutSides flag) {
   return (mask & flag) == flag;
 }
 
-// Same as NSDirectionalEdgeInsets but available on iOS 10.
-struct ChromeDirectionalEdgeInsets {
-  CGFloat top, leading, bottom, trailing;  // specify amount to inset (positive)
-                                           // for each of the edges. values can
-                                           // be negative to 'outset'
-};
-
-inline ChromeDirectionalEdgeInsets ChromeDirectionalEdgeInsetsMake(
-    CGFloat top,
-    CGFloat leading,
-    CGFloat bottom,
-    CGFloat trailing) {
-  ChromeDirectionalEdgeInsets insets = {top, leading, bottom, trailing};
-  return insets;
-}
-
 // Defines a protocol for the edge anchor methods of UIView and UILayoutGuide.
 @protocol EdgeLayoutGuideProvider <NSObject>
 @property(nonatomic, readonly, strong) NSLayoutXAxisAnchor* leadingAnchor;
@@ -158,7 +142,7 @@ void AddSameConstraints(id<EdgeLayoutGuideProvider> view1,
 // `innerView` inset by `insets`.
 void AddSameConstraintsWithInsets(id<EdgeLayoutGuideProvider> innerView,
                                   id<EdgeLayoutGuideProvider> outerView,
-                                  ChromeDirectionalEdgeInsets insets);
+                                  NSDirectionalEdgeInsets insets);
 
 // Adds constraints to make `innerView` leading, trailing, top and bottom
 // anchors equals to `outerView` safe area (or view bounds) anchors.
@@ -174,14 +158,14 @@ void AddSameConstraintsToSides(id<EdgeLayoutGuideProvider> view1,
 // Constraints `side_flags` sides of `innerView` and `outerView` together, with
 // `innerView` inset by `insets`. Example usage:
 // AddSameConstraintsToSidesWithInsets(view1, view2,
-// LayoutSides::kTop|LayoutSides::kLeading, ChromeDirectionalEdgeInsets{10, 5,
+// LayoutSides::kTop|LayoutSides::kLeading, NSDirectionalEdgeInsets{10, 5,
 // 10, 5}) - This will constraint innerView to be inside of outerView, with
 // leading/trailing inset by 10 and top/bottom inset by 5.
 // Edge insets for sides not listed in `side_flags` are ignored.
 void AddSameConstraintsToSidesWithInsets(id<EdgeLayoutGuideProvider> innerView,
                                          id<EdgeLayoutGuideProvider> outerView,
                                          LayoutSides side_flags,
-                                         ChromeDirectionalEdgeInsets insets);
+                                         NSDirectionalEdgeInsets insets);
 
 // Adds an optional amount of padding to the top and bottom of a view using a
 // constraint with a lowered priority. One use case is with a collectionview or

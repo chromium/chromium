@@ -109,10 +109,10 @@
       self.stackView, self.contentView,
       LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom |
           LayoutSides::kTop,
-      ChromeDirectionalEdgeInsetsMake(
-          kBookmarkCellVerticalInset, kBookmarkCellHorizontalLeadingInset,
-          kBookmarkCellVerticalInset,
-          kBookmarkCellHorizontalAccessoryViewSpacing));
+      NSDirectionalEdgeInsetsMake(kBookmarkCellVerticalInset,
+                                  kBookmarkCellHorizontalLeadingInset,
+                                  kBookmarkCellVerticalInset,
+                                  kBookmarkCellHorizontalAccessoryViewSpacing));
 
   // Chevron accessory view.
   UIImageView* navigationChevronImage = [[UIImageView alloc]

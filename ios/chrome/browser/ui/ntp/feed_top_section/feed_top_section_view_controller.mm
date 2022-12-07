@@ -107,8 +107,7 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
     [self.promoViewContainer removeFromSuperview];
     self.promoViewContainer = nil;
     self.promoView = nil;
-    self.contentStack.directionalLayoutMargins =
-        NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+    self.contentStack.directionalLayoutMargins = NSDirectionalEdgeInsetsZero;
   }
   [self.ntpDelegate updateFeedLayout];
 }

@@ -167,10 +167,9 @@ const CGFloat kVerticalContentPadding = 70.0f;
   [effectView.contentView addSubview:button];
   backgroundView = effectView;
   AddSameConstraintsWithInsets(
-
       button, titleLabel,
-      ChromeDirectionalEdgeInsetsMake(-kButtonPaddingV, -kButtonPaddingH,
-                                      -kButtonPaddingV, -kButtonPaddingH));
+      NSDirectionalEdgeInsetsMake(-kButtonPaddingV, -kButtonPaddingH,
+                                  -kButtonPaddingV, -kButtonPaddingH));
 
   backgroundView.backgroundColor =
       [IncognitoReauthView blurButtonBackgroundColor];

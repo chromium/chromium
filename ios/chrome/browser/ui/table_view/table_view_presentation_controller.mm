@@ -133,8 +133,8 @@ const CGFloat kTableViewMaxWidth = 414.0;
       self.shadowContainer, self.shadowImage,
       LayoutSides::kTop | LayoutSides::kBottom | LayoutSides::kLeading |
           LayoutSides::kTrailing,
-      ChromeDirectionalEdgeInsetsMake(kShadowMargin, kShadowMargin,
-                                      kShadowMargin, kShadowMargin));
+      NSDirectionalEdgeInsetsMake(kShadowMargin, kShadowMargin, kShadowMargin,
+                                  kShadowMargin));
 
   self.tableViewContainer = [[UIView alloc] init];
   self.tableViewContainer.backgroundColor =

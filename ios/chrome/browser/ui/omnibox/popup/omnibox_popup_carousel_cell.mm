@@ -143,8 +143,8 @@ CAGradientLayer* CarouselGradientLayer() {
 
   AddSameConstraintsWithInsets(
       _suggestionsStackView, _scrollView,
-      ChromeDirectionalEdgeInsetsMake(kStackMargin, kStackMargin, kStackMargin,
-                                      kStackMargin));
+      NSDirectionalEdgeInsetsMake(kStackMargin, kStackMargin, kStackMargin,
+                                  kStackMargin));
 
   id<LayoutGuideProvider> contentGuide =
       self.shouldApplyLayoutMarginsGuide ? self.contentView.layoutMarginsGuide

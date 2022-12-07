@@ -234,8 +234,8 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
   heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   heightConstraint.active = YES;
 
-  ChromeDirectionalEdgeInsets stackViewInsets =
-      ChromeDirectionalEdgeInsetsMake(kAlertMarginTop, 0, 0, 0);
+  NSDirectionalEdgeInsets stackViewInsets =
+      NSDirectionalEdgeInsetsMake(kAlertMarginTop, 0, 0, 0);
   AddSameConstraintsWithInsets(stackView, scrollView, stackViewInsets);
 
   if (self.title.length) {
@@ -250,7 +250,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     [stackView addArrangedSubview:titleLabel];
     [stackView setCustomSpacing:kTitleInsetBottom afterView:titleLabel];
 
-    ChromeDirectionalEdgeInsets titleInsets = ChromeDirectionalEdgeInsetsMake(
+    NSDirectionalEdgeInsets titleInsets = NSDirectionalEdgeInsetsMake(
         0, kTitleInsetLeading, 0, kTitleInsetTrailing);
     AddSameConstraintsToSidesWithInsets(
         titleLabel, self.contentView,
@@ -269,7 +269,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     [stackView addArrangedSubview:messageLabel];
     [stackView setCustomSpacing:kMessageInsetBottom afterView:messageLabel];
 
-    ChromeDirectionalEdgeInsets messageInsets = ChromeDirectionalEdgeInsetsMake(
+    NSDirectionalEdgeInsets messageInsets = NSDirectionalEdgeInsetsMake(
         0, kMessageInsetLeading, 0, kMessageInsetTrailing);
     AddSameConstraintsToSidesWithInsets(
         messageLabel, self.contentView,
@@ -309,9 +309,9 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     }
     [stackView addArrangedSubview:stackHolder];
 
-    ChromeDirectionalEdgeInsets stackHolderContentInsets =
-        ChromeDirectionalEdgeInsetsMake(0, kTextfieldStackInsetLeading, 0,
-                                        kTextfieldStackInsetTrailing);
+    NSDirectionalEdgeInsets stackHolderContentInsets =
+        NSDirectionalEdgeInsetsMake(0, kTextfieldStackInsetLeading, 0,
+                                    kTextfieldStackInsetTrailing);
     AddSameConstraintsToSidesWithInsets(
         stackHolder, self.contentView,
         LayoutSides::kTrailing | LayoutSides::kLeading,
@@ -323,9 +323,8 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
     fieldStack.spacing = kTextfieldInset;
     fieldStack.alignment = UIStackViewAlignmentCenter;
     [stackHolder addSubview:fieldStack];
-    ChromeDirectionalEdgeInsets fieldStackContentInsets =
-        ChromeDirectionalEdgeInsetsMake(kTextfieldInset, 0.0, kTextfieldInset,
-                                        0.0);
+    NSDirectionalEdgeInsets fieldStackContentInsets =
+        NSDirectionalEdgeInsetsMake(kTextfieldInset, 0.0, kTextfieldInset, 0.0);
     AddSameConstraintsWithInsets(fieldStack, stackHolder,
                                  fieldStackContentInsets);
 
@@ -360,7 +359,7 @@ constexpr NSUInteger kUIViewAnimationCurveToOptionsShift = 16;
       textField.adjustsFontForContentSizeCategory = YES;
 
       [fieldStack addArrangedSubview:textField];
-      ChromeDirectionalEdgeInsets fieldInsets = ChromeDirectionalEdgeInsetsMake(
+      NSDirectionalEdgeInsets fieldInsets = NSDirectionalEdgeInsetsMake(
           0.0, kTextfieldInset, 0.0, kTextfieldInset);
       AddSameConstraintsToSidesWithInsets(
           textField, fieldStack, LayoutSides::kTrailing | LayoutSides::kLeading,

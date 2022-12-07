@@ -109,7 +109,7 @@ constexpr CGFloat kSymbolSize = 22;
 
   // Content size of the scrollview.
   AddSameConstraintsWithInsets(stackView, scrollView,
-                               ChromeDirectionalEdgeInsetsMake(0, 0, 20, 0));
+                               NSDirectionalEdgeInsetsMake(0, 0, 20, 0));
   // Scroll View constraints to the height of its content. Can be overridden.
   NSLayoutConstraint* heightConstraint = [scrollView.heightAnchor
       constraintEqualToAnchor:scrollView.contentLayoutGuide.heightAnchor];
