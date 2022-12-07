@@ -9806,6 +9806,7 @@ if (!is_android) {
         "../browser/ui/views/permissions/permission_bubble_interactive_uitest.cc",
         "../browser/ui/views/permissions/permission_chip_interactive_test.cc",
         "../browser/ui/views/sad_tab_view_interactive_uitest.cc",
+        "../browser/ui/views/side_panel/side_panel_interactive_uitest.cc",
         "../browser/ui/views/side_search/side_search_browser_controller_interactive_uitest.cc",
         "../browser/ui/views/side_search/side_search_browsertest.cc",
         "../browser/ui/views/side_search/side_search_browsertest.h",
