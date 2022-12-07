@@ -550,9 +550,9 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
     return waiter;
   }
 
-  void Navigate() {
+  void Navigate(std::string url) {
     Start();
-    Load("/lcp_type.html");
+    Load(url);
   }
 
   void AddImage(const std::string& imgSrc) {
@@ -611,7 +611,7 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
                  blink::LargestContentfulPaintType flagSet) {
     auto waiter = AddWaiterAndExpectation();
 
-    Navigate();
+    Navigate("/lcp_type.html");
 
     AddImage(imgSrc);
 
@@ -627,7 +627,7 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
   void TestText(std::string& text, blink::LargestContentfulPaintType flagSet) {
     auto waiter = AddWaiterAndExpectation();
 
-    Navigate();
+    Navigate("/lcp_type.html");
 
     AddText(text);
 
@@ -647,7 +647,7 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
                         blink::LargestContentfulPaintType flagSet) {
     auto waiter = AddWaiterAndExpectation(2);
 
-    Navigate();
+    Navigate("/lcp_type.html");
 
     if (elementOrder == ElementOrder::kTextFirst) {
       AddText(text);
@@ -666,6 +666,20 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
     }
 
     WaitForLcpEmission(expectedLCPEntryCount);
+
+    NavigateAway(std::move(waiter));
+
+    ExpectUKMPageLoadMetricFlagSetExactMatch(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flagSet));
+  }
+
+  void TestVideoDataURI(blink::LargestContentfulPaintType flagSet) {
+    auto waiter = AddWaiterAndExpectation();
+
+    Navigate("/lcp_type_video_data_uri.html");
+
+    WaitForLcpEmission();
 
     NavigateAway(std::move(waiter));
 
@@ -852,4 +866,12 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType_SVG) {
       "2Fsvg%3E";
 
   TestImage(imgSrc, flag_set);
+}
+
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, DataURIType_Video) {
+  auto flag_set = blink::LargestContentfulPaintType::kImage |
+                  blink::LargestContentfulPaintType::kVideo |
+                  blink::LargestContentfulPaintType::kDataURI;
+
+  TestVideoDataURI(flag_set);
 }
