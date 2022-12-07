@@ -149,7 +149,11 @@ class ActionView : public views::View {
   // MVP confirm that circle is not needed anymore.
   bool show_circle_ = false;
 
-  // TODO(cuicuiruan): This can be removed when removing the flag.
+  // TODO(b/260937747): Update or remove when removing flags
+  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
+  bool allow_reposition_;
+  // Corresponding to |kArcInputOverlayBeta| flag to turn on/off the editor
+  // feature of adding or removing actions.
   bool beta_;
 };
 

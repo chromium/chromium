@@ -58319,6 +58319,7 @@ from previous Chrome versions.
       label="EnableExternalKeyboardsInDiagnosticsApp:enabled"/>
   <int value="-1438279809" label="GamepadExtensions:disabled"/>
   <int value="-1437526584" label="HelpAppReleaseNotes:enabled"/>
+  <int value="-1437091873" label="ArcInputOverlayAlphaV2:disabled"/>
   <int value="-1436892902" label="FastPairSavedDevices:disabled"/>
   <int value="-1436885151" label="OsSettingsAppBadgingToggle:disabled"/>
   <int value="-1436251034" label="VoiceSearchOnLocalNtp:disabled"/>
@@ -60353,7 +60354,6 @@ from previous Chrome versions.
   <int value="-262368430" label="PersistShareHubOnAppSwitch:enabled"/>
   <int value="-262122630" label="ArcEnableDocumentsProviderInFilesApp:enabled"/>
   <int value="-261398170" label="ChromeLabs:enabled"/>
-  <int value="-258744541" label="ArcInputOverlayAlphaTwo:enabled"/>
   <int value="-258081634" label="AutofillAssistantDirectActions:disabled"/>
   <int value="-257600773" label="MessagesPreinstall:disabled"/>
   <int value="-257478609" label="TextfieldFocusOnTapUp:enabled"/>
@@ -61050,6 +61050,7 @@ from previous Chrome versions.
   <int value="157217034" label="enable-tab-for-desktop-share"/>
   <int value="157318016" label="AutomaticTabDiscarding:enabled"/>
   <int value="158490417" label="PhoneHubCameraRoll:enabled"/>
+  <int value="158889810" label="ArcInputOverlayAlphaV2:enabled"/>
   <int value="160429011" label="LensSearchOptimizations:enabled"/>
   <int value="160506687" label="ArcRtVcpuDualCore:disabled"/>
   <int value="160524775" label="PDFTwoUpView:disabled"/>
@@ -62387,7 +62388,6 @@ from previous Chrome versions.
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:disabled"/>
   <int value="956716414" label="GlobalMediaControlsPictureInPicture:disabled"/>
   <int value="957191538" label="EcheSWADebugMode:enabled"/>
-  <int value="961696262" label="ArcInputOverlayAlphaTwo:disabled"/>
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
   <int value="964613807" label="ContextualSearchTranslationModel:disabled"/>

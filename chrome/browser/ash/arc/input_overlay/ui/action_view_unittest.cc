@@ -133,7 +133,7 @@ class ActionViewTest : public views::ViewsTestBase {
         *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<AppDataProto>, std::string) {}));
-    touch_injector_->set_beta(true);
+    touch_injector_->set_allow_reposition(true);
     touch_injector_->ParseActions(
         *base::JSONReader::ReadAndReturnValueWithError(
             kValidJsonActionMoveKey));

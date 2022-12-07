@@ -5874,12 +5874,11 @@ const char kArcWindowPredictorDescription[] =
 
 const char kArcInputOverlayNameBeta[] = "Enable ARC Input Overlay Beta";
 const char kArcInputOverlayDescriptionBeta[] =
-    "Enable full editor feature for Gaming Input Overlay based on Alpha two, "
-    "so users can add and remove actions.";
+    "Enable full editor feature for Gaming Input Overlay including features in "
+    "Alpha V2, so users can add and remove actions.";
 
-const char kArcInputOverlayNameAlphaTwo[] =
-    "Enable ARC Input Overlay Alpha Two";
-const char kArcInputOverlayDescriptionAlphaTwo[] =
+const char kArcInputOverlayNameAlphaV2[] = "Enable ARC Input Overlay Alpha V2";
+const char kArcInputOverlayDescriptionAlphaV2[] =
     "Enable menu and action reposition feature for Gaming Input Overlay based "
     "on Alpha.";
 

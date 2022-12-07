@@ -360,7 +360,7 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
     x = std::max(0, (parent_size.width() - width()) / 2);
   }
   int y = entry_view_->y();
-  if (display_overlay_controller_->touch_injector()->beta() &&
+  if (display_overlay_controller_->touch_injector()->allow_reposition() &&
       (y + height() > parent_size.height())) {
     // Set the menu at the bottom if there is not enough margin on the bottom
     // side.

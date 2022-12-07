@@ -20,19 +20,19 @@ MenuEntryView::MenuEntryView(PressedCallback pressed_callback,
 MenuEntryView::~MenuEntryView() = default;
 
 bool MenuEntryView::OnMousePressed(const ui::MouseEvent& event) {
-  if (beta_)
+  if (allow_reposition_)
     OnDragStart(event);
   return views::Button::OnMousePressed(event);
 }
 
 bool MenuEntryView::OnMouseDragged(const ui::MouseEvent& event) {
-  if (beta_)
+  if (allow_reposition_)
     OnDragUpdate(event);
   return views::Button::OnMouseDragged(event);
 }
 
 void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (!beta_ || !is_dragging_) {
+  if (!allow_reposition_ || !is_dragging_) {
     views::Button::OnMouseReleased(event);
   } else {
     OnDragEnd();
@@ -40,7 +40,7 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
-  if (!beta_)
+  if (!allow_reposition_)
     return views::Button::OnGestureEvent(event);
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:

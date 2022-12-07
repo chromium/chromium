@@ -329,7 +329,6 @@ class TouchInjectorTest : public views::ViewsTestBase {
         *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
         base::BindLambdaForTesting(
             [&](std::unique_ptr<AppDataProto>, std::string) {}));
-    injector_->set_beta(true);
   }
 
   void TearDown() override {
@@ -868,6 +867,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   // Check whether AppDataProto is serialized correctly.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->set_allow_reposition(true);
   injector_->ParseActions(*json_value);
   // Simulate a menu entry position change.
   auto menu_entry_location_point = gfx::Point(5, 5);
@@ -911,7 +911,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
       *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<AppDataProto>, std::string) {}));
-  injector->set_beta(true);
+  injector->set_allow_reposition(true);
   injector->ParseActions(*json_value);
   injector->OnProtoDataAvailable(*proto);
   EXPECT_EQ(injector_->actions().size(), injector->actions().size());
@@ -929,6 +929,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
 TEST_F(TouchInjectorTest, TestAddAction) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->set_beta(true);
   injector_->ParseActions(*json_value);
   EXPECT_EQ(2u, injector_->actions().size());
 
@@ -1016,6 +1017,7 @@ TEST_F(TouchInjectorTest, TestAddAction) {
 TEST_F(TouchInjectorTest, TestDeleteAction) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
+  injector_->set_beta(true);
   injector_->ParseActions(*json_value);
   TouchInjectorResetAndAddTwoActions(injector_.get());
   ExpectActionSizes(/*size_pending_add_user_actions=*/0u,

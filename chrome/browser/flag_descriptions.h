@@ -3381,8 +3381,8 @@ extern const char kArcWindowPredictorDescription[];
 extern const char kArcInputOverlayNameBeta[];
 extern const char kArcInputOverlayDescriptionBeta[];
 
-extern const char kArcInputOverlayNameAlphaTwo[];
-extern const char kArcInputOverlayDescriptionAlphaTwo[];
+extern const char kArcInputOverlayNameAlphaV2[];
+extern const char kArcInputOverlayDescriptionAlphaV2[];
 
 extern const char kSecondaryGoogleAccountUsageName[];
 extern const char kSecondaryGoogleAccountUsageDescription[];

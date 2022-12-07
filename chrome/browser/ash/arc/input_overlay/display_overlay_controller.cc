@@ -446,7 +446,8 @@ views::Widget* DisplayOverlayController::GetOverlayWidget() {
 }
 
 gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
-  if (touch_injector_->beta() && touch_injector_->menu_entry_location()) {
+  if (touch_injector_->allow_reposition() &&
+      touch_injector_->menu_entry_location()) {
     auto normalized_location = touch_injector_->menu_entry_location();
     auto content_bounds = touch_injector_->content_bounds();
 

@@ -31,7 +31,7 @@ class MenuEntryView : public views::ImageButton {
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Used for testing.
-  void set_beta(bool beta) { beta_ = beta; }
+  void set_allow_reposition(bool allow) { allow_reposition_ = allow; }
 
  private:
   // Drag operations.
@@ -48,8 +48,10 @@ class MenuEntryView : public views::ImageButton {
   // If this view is in a dragging state.
   bool is_dragging_ = false;
 
-  // TODO(b/253646354): This can be removed when removing the flag.
-  bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();
+  // TODO(b/260937747): Update or remove when removing flags
+  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
+  bool allow_reposition_ = ash::features::IsArcInputOverlayAlphaV2Enabled() ||
+                           ash::features::IsArcInputOverlayBetaEnabled();
 };
 
 }  // namespace arc::input_overlay
