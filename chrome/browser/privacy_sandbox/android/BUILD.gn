@@ -38,6 +38,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/PrivacySandboxDialogNoticeROWV4.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/PrivacySandboxDialogUtils.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/PrivacySandboxSettingsFragmentV4.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/TopicsBlockedFragmentV4.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/v4/TopicsFragmentV4.java",
   ]
   deps = [
@@ -153,6 +154,7 @@ android_resources("java_resources") {
     "java/res/xml/privacy_sandbox_preferences_v3.xml",
     "java/res/xml/privacy_sandbox_preferences_v4.xml",
     "java/res/xml/spam_fraud_preference.xml",
+    "java/res/xml/topics_blocked_preference_v4.xml",
     "java/res/xml/topics_preference_v4.xml",
   ]
   deps = [

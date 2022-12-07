@@ -38,6 +38,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="blocked_topics"
         android:title="@string/settings_topics_page_blocked_topics_heading"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.v4.TopicsBlockedFragmentV4"
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference

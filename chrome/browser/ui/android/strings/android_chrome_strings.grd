@@ -1309,6 +1309,18 @@ Private state tokens improve privacy on the web and can’t be used to find out 
       <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING" translateable="false" desc="Title for the blocked Topics preference.">
         Integer faucibus metus
       </message>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION" translateable="false" desc="">
+        Donec fringilla justo vel ligula finibus, ut rutrum lectus vestibulum. Suspendisse vestibulum lorem lacinia nulla consequat auctor.
+      </message>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_DISABLED" translateable="false" desc="">
+        Donec commodo sem non augue blandit, ullamcorper aliquam enim fermentum
+      </message>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY" translateable="false" desc="">
+        Diam maecenas sed
+      </message>
+      <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_SUB_PAGE_TITLE" translateable="false" desc="">
+        Integer faucibus metus
+      </message>
       <!-- TODO(http://b/254412601): Format links.-->
       <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER" translateable="false" desc="Footer for the Topics preference page.">
         Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>justo nec ultricies semper<ph name="END_LINK_1">&lt;/link1&gt;</ph>, <ph name="BEGIN_LINK_2">&lt;link2&gt;</ph>eros mauris varius nibh<ph name="END_LINK_2">&lt;/link2&gt;</ph>, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
