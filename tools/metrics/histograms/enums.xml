@@ -68810,12 +68810,34 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <enum name="NaClAppTypeEnum">
+  <obsolete>
+    Deprecated in favor of NaClEmbedderTypeEnum.
+  </obsolete>
   <int value="0" label="PNaCl Open Web"/>
   <int value="1" label="PNaCl Hosted App"/>
   <int value="2" label="PNaCl Packaged App"/>
   <int value="3" label="NaCl Open Web"/>
   <int value="4" label="NaCl Hosted App"/>
   <int value="5" label="NaCl Packaged App"/>
+</enum>
+
+<enum name="NaClEmbedderTypeEnum">
+  <int value="0" label="PNaCl Open Web"/>
+  <int value="1" label="PNaCl Hosted App"/>
+  <int value="2" label="PNaCl Platform App"/>
+  <int value="3" label="PNaCl Legacy Packaged App"/>
+  <int value="4" label="PNaCl Browser MV2 Extension"/>
+  <int value="5" label="PNaCl Browser MV3 Extension"/>
+  <int value="6" label="PNaCl Login Screen MV2 Extension"/>
+  <int value="7" label="PNaCl Login Screen MV3 Extension"/>
+  <int value="8" label="NaCl Open Web"/>
+  <int value="9" label="NaCl Hosted App"/>
+  <int value="10" label="NaCl Platform App"/>
+  <int value="11" label="NaCl Legacy Packaged App"/>
+  <int value="12" label="NaCl Browser MV2 Extension"/>
+  <int value="13" label="NaCl Browser MV3 Extension"/>
+  <int value="14" label="NaCl Login Screen MV2 Extension"/>
+  <int value="15" label="NaCl Login Screen MV3 Extension"/>
 </enum>
 
 <enum name="NaClHelperStatus">

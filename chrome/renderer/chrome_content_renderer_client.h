@@ -252,8 +252,7 @@ class ChromeContentRendererClient
                                   bool is_nacl_unrestricted,
                                   const extensions::Extension* extension);
   static void ReportNaClAppType(bool is_pnacl,
-                                bool is_extension_or_app,
-                                bool is_hosted_app);
+                                const extensions::Extension* extension);
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -1065,8 +1065,7 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
 #endif
             break;
           }
-          ReportNaClAppType(is_pnacl_mime_type, extension,
-                            extension ? extension->is_hosted_app() : false);
+          ReportNaClAppType(is_pnacl_mime_type, extension);
         }
 #endif  // BUILDFLAG(ENABLE_NACL) && BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -1253,36 +1252,69 @@ bool ChromeContentRendererClient::IsNativeNaClAllowed(
 }
 
 // static
-void ChromeContentRendererClient::ReportNaClAppType(bool is_pnacl,
-                                                    bool is_extension_or_app,
-                                                    bool is_hosted_app) {
+void ChromeContentRendererClient::ReportNaClAppType(
+    bool is_pnacl,
+    const Extension* extension) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class NaClAppType {
     kPNaClOpenWeb = 0,
     kPNaClHostedApp = 1,
-    kPNaClPackagedApp = 2,
-    kNaClOpenWeb = 3,
-    kNaClHostedApp = 4,
-    kNaClPackagedApp = 5,
-    kMaxValue = kNaClPackagedApp
+    kPNaClPlatformApp = 2,
+    kPNaClLegacyPackagedApp = 3,
+    kPNaClMv2Extension = 4,
+    kPNaClMv3Extension = 5,
+    kPNaClLoginScreenMv2Extension = 6,
+    kPNaClLoginScreenMv3Extension = 7,
+    kNaClOpenWeb = 8,
+    kNaClHostedApp = 9,
+    kNaClPlatformApp = 10,
+    kNaClLegacyPackagedApp = 11,
+    kNaClMv2Extension = 12,
+    kNaClMv3Extension = 13,
+    kNaClLoginScreenMv2Extension = 14,
+    kNaClLoginScreenMv3Extension = 15,
+    kMaxValue = kNaClLoginScreenMv3Extension
   };
-  // If it's not an extension/app, it can't be hosted.
-  DCHECK(!is_hosted_app || is_extension_or_app);
-  // Not all of the remaining combinations are allowed by default (e.g.
-  // kNaClOpenWeb) but they can be used with the --enable-nacl flag.
+
+  // Not all combinations are allowed by default (e.g. kNaClOpenWeb), but they
+  // can be used with the --enable-nacl flag.
   NaClAppType app_type =
       is_pnacl ? NaClAppType::kPNaClOpenWeb : NaClAppType::kNaClOpenWeb;
-  if (is_extension_or_app) {
-    if (is_pnacl) {
-      app_type = is_hosted_app ? NaClAppType::kPNaClHostedApp
-                               : NaClAppType::kPNaClPackagedApp;
+  if (extension) {
+    if (extension->is_extension()) {
+      if (extension->manifest_version() >= 3) {
+        app_type = is_pnacl ? NaClAppType::kPNaClMv3Extension
+                            : NaClAppType::kNaClMv3Extension;
+      } else {
+        app_type = is_pnacl ? NaClAppType::kPNaClMv2Extension
+                            : NaClAppType::kNaClMv2Extension;
+      }
+    } else if (extension->is_hosted_app()) {
+      app_type =
+          is_pnacl ? NaClAppType::kPNaClHostedApp : NaClAppType::kNaClHostedApp;
+    } else if (extension->is_legacy_packaged_app()) {
+      app_type = is_pnacl ? NaClAppType::kPNaClLegacyPackagedApp
+                          : NaClAppType::kNaClLegacyPackagedApp;
+    } else if (extension->is_platform_app()) {
+      app_type = is_pnacl ? NaClAppType::kPNaClPlatformApp
+                          : NaClAppType::kNaClPlatformApp;
+    } else if (extension->is_login_screen_extension()) {
+      if (extension->manifest_version() >= 3) {
+        app_type = is_pnacl ? NaClAppType::kPNaClLoginScreenMv3Extension
+                            : NaClAppType::kNaClLoginScreenMv3Extension;
+      } else {
+        app_type = is_pnacl ? NaClAppType::kPNaClLoginScreenMv2Extension
+                            : NaClAppType::kNaClLoginScreenMv2Extension;
+      }
     } else {
-      app_type = is_hosted_app ? NaClAppType::kNaClHostedApp
-                               : NaClAppType::kNaClPackagedApp;
+      // We found an extension that is not covered by any metric
+      NOTREACHED() << "Invalid NaCl usage in extension. Extension name: "
+                   << extension->name() << ", type: " << extension->GetType();
     }
   }
-  base::UmaHistogramEnumeration("NaCl.AppType", app_type);
+
+  base::UmaHistogramEnumeration("NaCl.EmbedderType", app_type);
 }
 #endif  // BUILDFLAG(ENABLE_NACL)
 
