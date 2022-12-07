@@ -1,11 +1,13 @@
 <style>
   :host {
+    background-color: var(--entity-image-background-color);
     background-position: center;
     background-repeat: no-repeat;
+    border-radius: 5px;
     flex-shrink: 0;
-    height: var(--favicon-size);
-    margin-inline: 8px 24px;
-    width: var(--favicon-size);
+    height: 36px;
+    margin-inline: 0 12px;
+    width: 36px;
   }
 
   :host([in-side-panel_]) {
@@ -13,10 +15,8 @@
   }
 
   #page-image {
-    height: auto;
-    /* TODO(tommycli): This is just a hack to get the page image to a visible
-       size without disturbing the layout. Replace with real sizing logic. */
-    width: 300%;
+    border-radius: 5px;
+    height: 100%;
   }
 </style>
 
