@@ -31,8 +31,7 @@ bool SharedQuadState::Equals(const SharedQuadState& other) const {
          clip_rect == other.clip_rect &&
          are_contents_opaque == other.are_contents_opaque &&
          opacity == other.opacity && blend_mode == other.blend_mode &&
-         sorting_context_id == other.sorting_context_id &&
-         de_jelly_delta_y == other.de_jelly_delta_y;
+         sorting_context_id == other.sorting_context_id;
 }
 
 void SharedQuadState::SetAll(const SharedQuadState& other) {
@@ -94,7 +93,6 @@ void SharedQuadState::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetString("blend_mode", SkBlendMode_Name(blend_mode));
   value->SetInteger("sorting_context_id", sorting_context_id);
   value->SetBoolean("is_fast_rounded_corner", is_fast_rounded_corner);
-  value->SetDouble("de_jelly_delta_y", de_jelly_delta_y);
   TracedValue::MakeDictIntoImplicitSnapshotWithCategory(
       TRACE_DISABLED_BY_DEFAULT("viz.quads"), value, "viz::SharedQuadState",
       this);

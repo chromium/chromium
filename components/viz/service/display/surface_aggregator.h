@@ -105,9 +105,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   void set_output_is_secure(bool secure) { output_is_secure_ = secure; }
   void set_take_copy_requests(bool value) { take_copy_requests_ = value; }
 
-  // Only used with experimental de-jelly effect.
-  bool last_frame_had_jelly() const { return last_frame_had_jelly_; }
-
   // Set the color spaces for the created RenderPasses, which is propagated
   // to the output surface.
   void SetDisplayColorSpaces(const gfx::DisplayColorSpaces& color_spaces);
@@ -324,42 +321,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // potentially merge its root render pass. If so, returns true.
   static bool CanPotentiallyMergePass(const SurfaceDrawQuad& surface_quad);
 
-  // De-Jelly Effect:
-  // HandleDeJelly applies a de-jelly transform to quads in the root render
-  // pass.
-  void HandleDeJelly(Surface* surface);
-  // CreateDeJellyRenderPassQuads promotes skewed quads from the root render
-  // pass into |render_pass|. Skew is applied when |render_pass| is drawn.
-  void CreateDeJellyRenderPassQuads(
-      cc::ListContainer<DrawQuad>::Iterator* quad_iterator,
-      const cc::ListContainer<DrawQuad>::Iterator& end,
-      const gfx::Rect& jelly_clip,
-      float skew,
-      AggregatedRenderPass* render_pass);
-  // Appends quads directly to |root_pass|, applying |skew|.
-  void CreateDeJellyNormalQuads(
-      cc::ListContainer<DrawQuad>::Iterator* quad_iterator,
-      const cc::ListContainer<DrawQuad>::Iterator& end,
-      AggregatedRenderPass* root_pass,
-      float skew);
-  // Appends |render_pass| to |root_pass|, applying |skew|, |jelly_clip|,
-  // |opacity|, and |blend_mode|.
-  void AppendDeJellyRenderPass(
-      float skew,
-      const gfx::Rect& jelly_clip,
-      float opacity,
-      SkBlendMode blend_mode,
-      AggregatedRenderPass* root_pass,
-      std::unique_ptr<AggregatedRenderPass> render_pass);
-  // Appends quads from |quad_iterator| to |render_pass| for |state|.
-  void AppendDeJellyQuadsForSharedQuadState(
-      cc::ListContainer<DrawQuad>::Iterator* quad_iterator,
-      const cc::ListContainer<DrawQuad>::Iterator& end,
-      AggregatedRenderPass* render_pass,
-      const SharedQuadState* state);
-  // Update |last_frame_had_jelly_|, should be called once per frame.
-  void SetLastFrameHadJelly(bool had_jelly);
-
   // Logs the surface information for debugging purposes.
   void DebugLogSurface(const Surface* surface, bool will_draw);
 
@@ -376,9 +337,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
 
   // If true, per-surface damage rect list will be produced.
   const bool needs_surface_damage_rect_list_;
-
-  // Whether de-jelly may be active.
-  const bool de_jelly_enabled_;
 
   const ExtraPassForReadbackOption extra_pass_for_readback_option_;
 
@@ -468,13 +426,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // Used to annotate the aggregated frame for debugging.
   std::unique_ptr<FrameAnnotator> frame_annotator_;
 
-  // Variables used for de-jelly:
-  // The set of surfacees being drawn for the first time. Used to determine if
-  // de-jelly skew should be applied to a surface.
-  base::flat_set<SurfaceId> new_surfaces_;
-  // Whether the last drawn frame had de-jelly skew applied. Used in production
-  // on Android only.
-  bool last_frame_had_jelly_ = false;
   // Whether the last drawn frame had a color conversion pass applied. Used in
   // production on Windows only (does not interact with jelly).
   bool last_frame_had_color_conversion_pass_ = false;

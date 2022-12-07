@@ -1736,7 +1736,6 @@ base::Value SharedQuadStateToDict(const SharedQuadState& sqs) {
   dict.SetStringKey("blend_mode", BlendModeToString(sqs.blend_mode));
   dict.SetIntKey("sorting_context_id", sqs.sorting_context_id);
   dict.SetBoolKey("is_fast_rounded_corner", sqs.is_fast_rounded_corner);
-  dict.SetDoubleKey("de_jelly_delta_y", sqs.de_jelly_delta_y);
   return dict;
 }
 
@@ -1795,12 +1794,10 @@ bool SharedQuadStateFromDict(const base::Value::Dict& dict,
   absl::optional<int> sorting_context_id = dict.FindInt("sorting_context_id");
   absl::optional<bool> is_fast_rounded_corner =
       dict.FindBool("is_fast_rounded_corner");
-  absl::optional<double> de_jelly_delta_y = dict.FindDouble("de_jelly_delta_y");
 
   if (!quad_to_target_transform || !quad_layer_rect ||
       !visible_quad_layer_rect || !are_contents_opaque || !opacity ||
-      !blend_mode || !sorting_context_id || !is_fast_rounded_corner ||
-      !de_jelly_delta_y) {
+      !blend_mode || !sorting_context_id || !is_fast_rounded_corner) {
     return false;
   }
   gfx::Transform t_quad_to_target_transform;
@@ -1840,7 +1837,6 @@ bool SharedQuadStateFromDict(const base::Value::Dict& dict,
               are_contents_opaque.value(), static_cast<float>(opacity.value()),
               t_blend_mode, sorting_context_id.value());
   sqs->is_fast_rounded_corner = is_fast_rounded_corner.value();
-  sqs->de_jelly_delta_y = static_cast<float>(de_jelly_delta_y.value());
   return true;
 }
 

@@ -64,12 +64,6 @@ BASE_FEATURE(kSimpleFrameRateThrottling,
              "SimpleFrameRateThrottling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill-switch to disable de-jelly, even if flags/properties indicate it should
-// be enabled.
-BASE_FEATURE(kDisableDeJelly,
-             "DisableDeJelly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // When wide color gamut content from the web is encountered, promote our
 // display to wide color gamut if supported.

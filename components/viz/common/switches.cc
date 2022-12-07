@@ -16,10 +16,6 @@
 
 namespace switches {
 
-// Screen width is useful for debugging. Shipping implementations should detect
-// this.
-const char kDeJellyScreenWidth[] = "de-jelly-screen-width";
-
 // The default number of the BeginFrames to wait to activate a surface with
 // dependencies.
 const char kDeadlineToSynchronizeSurfaces[] =
@@ -31,9 +27,6 @@ const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";
 
 // Sets the number of max pending frames in the GL buffer queue to 1.
 const char kDoubleBufferCompositing[] = "double-buffer-compositing";
-
-// Experimental de-jelly support.
-const char kEnableDeJelly[] = "enable-de-jelly";
 
 // Enable compositing individual elements via hardware overlays when
 // permitted by device.

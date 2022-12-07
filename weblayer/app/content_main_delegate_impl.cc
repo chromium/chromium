@@ -198,7 +198,6 @@ absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
     &media::kPictureInPictureAPI,
 
-    &::features::kDisableDeJelly,
     &::features::kDynamicColorGamut,
 #else
     // WebOTP is supported only on Android in WebLayer.

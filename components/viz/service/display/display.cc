@@ -1115,10 +1115,9 @@ void Display::DidFinishFrame(const BeginFrameAck& ack) {
   for (auto& observer : observers_)
     observer.OnDisplayDidFinishFrame(ack);
 
-  // Prevent de-jelly skew or a delegated ink trail from staying on the screen
+  // Prevent a delegated ink trail from staying on the screen
   // for more than one frame by forcing a new frame to be produced.
-  if (aggregator_->last_frame_had_jelly() ||
-      !renderer_->GetDelegatedInkTrailDamageRect().IsEmpty()) {
+  if (!renderer_->GetDelegatedInkTrailDamageRect().IsEmpty()) {
     scheduler_->SetNeedsOneBeginFrame(true);
   }
 

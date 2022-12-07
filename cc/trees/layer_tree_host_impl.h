@@ -45,7 +45,6 @@
 #include "cc/scheduler/video_frame_controller.h"
 #include "cc/tiles/tile_manager.h"
 #include "cc/trees/animated_paint_worklet_tracker.h"
-#include "cc/trees/de_jelly_state.h"
 #include "cc/trees/frame_rate_estimator.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/layer_tree_host.h"
@@ -1303,9 +1302,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   AnimatedPaintWorkletTracker paint_worklet_tracker_;
 
   AverageLagTrackingManager lag_tracking_manager_;
-
-  // Helper for de-jelly logic.
-  DeJellyState de_jelly_state_;
 
   EventsMetricsManager events_metrics_manager_;
 

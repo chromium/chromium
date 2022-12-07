@@ -103,8 +103,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.version_info.Channel;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.components.version_info.VersionInfo;
-import org.chromium.components.viz.common.VizSwitches;
-import org.chromium.components.viz.common.display.DeJellyUtils;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
@@ -187,12 +185,6 @@ public class ProcessInitializationHandler {
                 new AccountManagerFacadeImpl(AppHooks.get().createAccountManagerDelegate()));
 
         setProcessStateSummaryForAnrs(false);
-
-        // De-jelly can also be controlled by a system property. As sandboxed processes can't
-        // read this property directly, convert it to the equivalent command line flag.
-        if (DeJellyUtils.externallyEnableDeJelly()) {
-            CommandLine.getInstance().appendSwitch(VizSwitches.ENABLE_DE_JELLY);
-        }
     }
 
     /**

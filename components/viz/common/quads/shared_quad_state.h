@@ -79,8 +79,6 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // This index points to the damage rect in the surface damage rect list where
   // the overlay quad belongs to. SetAll() doesn't update this data.
   absl::optional<size_t> overlay_damage_index;
-  // The amount to skew quads in this layer. For experimental de-jelly effect.
-  float de_jelly_delta_y = 0.0f;
 };
 
 }  // namespace viz

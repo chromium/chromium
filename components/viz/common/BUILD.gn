@@ -169,8 +169,6 @@ viz_component("common") {
     "constants.cc",
     "constants.h",
     "delegated_ink_prediction_configuration.h",
-    "display/de_jelly.cc",
-    "display/de_jelly.h",
     "display/overlay_strategy.cc",
     "display/overlay_strategy.h",
     "display/renderer_settings.cc",
@@ -356,10 +354,7 @@ viz_component("common") {
   }
 
   if (is_android) {
-    deps += [
-      ":common_jni_headers",
-      "//gpu/config",
-    ]
+    deps += [ "//gpu/config" ]
   }
 
   public_deps = [
@@ -451,24 +446,4 @@ viz_source_set("perf_tests") {
     "//testing/gtest",
     "//testing/perf",
   ]
-}
-
-if (is_android) {
-  android_library("common_java") {
-    deps = [
-      "//base:base_java",
-      "//base:jni_java",
-      "//build/android:build_java",
-    ]
-    sources = [
-      "java/src/org/chromium/components/viz/common/VizSwitches.java",
-      "java/src/org/chromium/components/viz/common/display/DeJellyUtils.java",
-    ]
-  }
-
-  generate_jni("common_jni_headers") {
-    sources = [
-      "java/src/org/chromium/components/viz/common/display/DeJellyUtils.java",
-    ]
-  }
 }

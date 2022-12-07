@@ -350,8 +350,6 @@ cc_component("cc") {
     "trees/compositor_mode.h",
     "trees/damage_tracker.cc",
     "trees/damage_tracker.h",
-    "trees/de_jelly_state.cc",
-    "trees/de_jelly_state.h",
     "trees/debug_rect_history.cc",
     "trees/debug_rect_history.h",
     "trees/draw_property_utils.cc",

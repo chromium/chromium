@@ -34,7 +34,6 @@ void DisplaySchedulerWebView::ForceImmediateSwapIfPossible() {
   NOTREACHED();
 }
 void DisplaySchedulerWebView::SetNeedsOneBeginFrame(bool needs_draw) {
-  // Used with De-Jelly and headless begin frames
   NOTREACHED();
 }
 void DisplaySchedulerWebView::DidSwapBuffers() {

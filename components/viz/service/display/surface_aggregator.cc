@@ -21,7 +21,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/math_util.h"
-#include "components/viz/common/display/de_jelly.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -189,8 +188,7 @@ SharedQuadState* CopyAndScaleSharedQuadState(
       source_sqs->are_contents_opaque, source_sqs->opacity,
       source_sqs->blend_mode, source_sqs->sorting_context_id);
   shared_quad_state->is_fast_rounded_corner =
-      mask_filter_info_ext.is_fast_rounded_corner,
-  shared_quad_state->de_jelly_delta_y = source_sqs->de_jelly_delta_y;
+      mask_filter_info_ext.is_fast_rounded_corner;
   return shared_quad_state;
 }
 
@@ -287,7 +285,6 @@ SurfaceAggregator::SurfaceAggregator(
       provider_(provider),
       aggregate_only_damaged_(aggregate_only_damaged),
       needs_surface_damage_rect_list_(needs_surface_damage_rect_list),
-      de_jelly_enabled_(DeJellyEnabled()),
       extra_pass_for_readback_option_(extra_pass_option) {
   DCHECK(manager_);
   DCHECK(provider_);
@@ -471,8 +468,7 @@ bool SurfaceAggregator::CanPotentiallyMergePass(
     const SurfaceDrawQuad& surface_quad) {
   const SharedQuadState* sqs = surface_quad.shared_quad_state;
   return surface_quad.allow_merge &&
-         base::IsApproximatelyEqual(sqs->opacity, 1.f, kOpacityEpsilon) &&
-         sqs->de_jelly_delta_y == 0;
+         base::IsApproximatelyEqual(sqs->opacity, 1.f, kOpacityEpsilon);
 }
 
 void SurfaceAggregator::OnSurfaceDestroyed(const SurfaceId& surface_id) {
@@ -747,8 +743,6 @@ void SurfaceAggregator::EmitSurfaceContent(
       surface_quad->is_reflection &&
       !scaled_quad_to_target_transform.IsIdentityOrTranslation();
 
-  // We cannot merge passes if de-jelly is being applied, as we must have a
-  // renderpass to skew.
   bool merge_pass =
       CanPotentiallyMergePass(*surface_quad) && !reflected_and_scaled &&
       copy_requests.empty() && combined_transform.Preserves2dAxisAlignment() &&
@@ -1287,14 +1281,6 @@ void SurfaceAggregator::CopyQuadsToPass(
               /*resolved_frame=*/nullptr);
         } else if (quad == quad_with_overlay_damage_index) {
           dest_shared_quad_state->overlay_damage_index = overlay_damage_index;
-        }
-
-        if (de_jelly_enabled_) {
-          // If a surface is being drawn for a second time, clear our
-          // |de_jelly_delta_y|, as de-jelly is only needed the first time
-          // a surface draws.
-          if (!new_surfaces_.count(surface->surface_id()))
-            dest_shared_quad_state->de_jelly_delta_y = 0.0f;
         }
 
         last_copied_source_shared_quad_state = quad->shared_quad_state;
@@ -1845,9 +1831,6 @@ gfx::Rect SurfaceAggregator::PrewalkSurface(ResolvedFrameData& resolved_frame,
   if (surface->IsVideoCaptureOnFromClient())
     result.video_capture_enabled = true;
 
-  if (de_jelly_enabled_ && surface->HasUndrawnActiveFrame())
-    new_surfaces_.insert(surface->surface_id());
-
   if (root_resolved_pass.aggregation().will_draw)
     surface->OnWillBeDrawn();
 
@@ -2066,11 +2049,6 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     last_pass->damage_rect.Intersect(prewalk_damage_rect);
   }
 
-  // Now that we've handled our main surface aggregation, apply de-jelly effect
-  // if enabled.
-  if (de_jelly_enabled_)
-    HandleDeJelly(surface);
-
   AddColorConversionPass();
   AddRootReadbackPass();
 
@@ -2137,7 +2115,6 @@ void SurfaceAggregator::ResetAfterAggregate() {
   display_trace_id_ = -1;
   has_pixel_moving_backdrop_filter_ = false;
   has_copy_requests_ = false;
-  new_surfaces_.clear();
   resolved_surface_ranges_.clear();
   contained_surfaces_.clear();
   contained_frame_sinks_.clear();
@@ -2250,279 +2227,6 @@ void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
       "viz", "SurfaceAggregator::TransformAndStoreDelegatedInkMetadata",
       TRACE_EVENT_SCOPE_THREAD, "original metadata", metadata->ToString(),
       "transformed metadata", delegated_ink_metadata_->ToString());
-}
-
-void SurfaceAggregator::HandleDeJelly(Surface* surface) {
-  TRACE_EVENT0("viz", "SurfaceAggregator::HandleDeJelly");
-
-  if (!DeJellyActive()) {
-    SetLastFrameHadJelly(false);
-    return;
-  }
-
-  // |jelly_clip| is the rect that contains all de-jelly'd quads. It is used as
-  // an approximation for the containing non-skewed clip rect.
-  gfx::Rect jelly_clip;
-  // |max_skew| represents the maximum skew applied to an element. To prevent
-  // tearing due to slight inaccuracies, we apply the max skew to all skewed
-  // elements.
-  float max_skew = 0.0f;
-
-  // Iterate over each SharedQuadState in the root render pass and compute
-  // |max_skew| and |jelly_clip|.
-  auto* root_render_pass = dest_pass_list_->back().get();
-  float screen_width = DeJellyScreenWidth();
-  for (SharedQuadState* state : root_render_pass->shared_quad_state_list) {
-    float delta_y = state->de_jelly_delta_y;
-    if (delta_y == 0.0f)
-      continue;
-
-    // We are going to de-jelly this SharedQuadState. Expand the max clip.
-    if (state->clip_rect) {
-      jelly_clip.Union(*state->clip_rect);
-    }
-
-    // Compute the skew angle and update |max_skew|.
-    float de_jelly_angle = gfx::RadToDeg(atan2(delta_y, screen_width));
-    float sign = de_jelly_angle / std::abs(de_jelly_angle);
-    max_skew = std::max(std::abs(de_jelly_angle), std::abs(max_skew)) * sign;
-  }
-
-  // Exit if nothing was skewed.
-  if (max_skew == 0.0f) {
-    SetLastFrameHadJelly(false);
-    return;
-  }
-
-  SetLastFrameHadJelly(true);
-
-  // Remove the existing root render pass and create a new one which we will
-  // re-copy skewed quads / render-passes to.
-  // TODO(ericrk): Handle backdrop filters?
-  // TODO(ericrk): This will end up skewing copy requests. Address if
-  // necessary.
-  auto old_root = std::move(dest_pass_list_->back());
-  dest_pass_list_->pop_back();
-  auto new_root = root_render_pass->Copy(root_render_pass->id);
-  new_root->copy_requests = std::move(old_root->copy_requests);
-
-  // Data tracking the current sub RenderPass (if any) which is being appended
-  // to. We can keep re-using a sub RenderPass if the skew has not changed and
-  // if we are in the typical kSrcOver blend mode.
-  std::unique_ptr<AggregatedRenderPass> sub_render_pass;
-  SkBlendMode sub_render_pass_blend_mode;
-  float sub_render_pass_opacity;
-
-  // Apply de-jelly to all quads, promoting quads into render passes as
-  // necessary.
-  for (auto it = root_render_pass->quad_list.begin();
-       it != root_render_pass->quad_list.end();) {
-    auto* state = it->shared_quad_state;
-    bool has_skew = state->de_jelly_delta_y != 0.0f;
-
-    // If we have a sub RenderPass which is not compatible with our current
-    // quad, we must flush and clear it.
-    if (sub_render_pass) {
-      if (!has_skew || sub_render_pass_blend_mode != state->blend_mode ||
-          state->blend_mode != SkBlendMode::kSrcOver) {
-        AppendDeJellyRenderPass(max_skew, jelly_clip, sub_render_pass_opacity,
-                                sub_render_pass_blend_mode, new_root.get(),
-                                std::move(sub_render_pass));
-        sub_render_pass.reset();
-      }
-    }
-
-    // Create a new render pass if we have a skewed quad which is clipped more
-    // than jelly_clip.
-    bool create_render_pass =
-        has_skew && state->clip_rect && state->clip_rect != jelly_clip;
-    if (!sub_render_pass && create_render_pass) {
-      sub_render_pass = std::make_unique<AggregatedRenderPass>(1, 1);
-      gfx::Transform skew_transform;
-      skew_transform.Skew(0.0f, max_skew);
-      // Ignore rectangles for now, these are updated in
-      // CreateDeJellyRenderPassQuads.
-      sub_render_pass->SetNew(render_pass_id_generator_.GenerateNextId(),
-                              gfx::Rect(), gfx::Rect(), skew_transform);
-      // If blend mode is not kSrcOver, we apply it in the render pass.
-      if (state->blend_mode != SkBlendMode::kSrcOver) {
-        sub_render_pass_opacity = state->opacity;
-        sub_render_pass_blend_mode = state->blend_mode;
-      } else {
-        sub_render_pass_opacity = 1.0f;
-        sub_render_pass_blend_mode = SkBlendMode::kSrcOver;
-      }
-    }
-
-    if (sub_render_pass) {
-      CreateDeJellyRenderPassQuads(&it, root_render_pass->quad_list.end(),
-                                   jelly_clip, max_skew, sub_render_pass.get());
-    } else {
-      float skew = has_skew ? max_skew : 0.0f;
-      CreateDeJellyNormalQuads(&it, root_render_pass->quad_list.end(),
-                               new_root.get(), skew);
-    }
-  }
-  if (sub_render_pass) {
-    AppendDeJellyRenderPass(max_skew, jelly_clip, sub_render_pass_opacity,
-                            sub_render_pass_blend_mode, new_root.get(),
-                            std::move(sub_render_pass));
-  }
-
-  dest_pass_list_->push_back(std::move(new_root));
-}
-
-void SurfaceAggregator::CreateDeJellyRenderPassQuads(
-    cc::ListContainer<DrawQuad>::Iterator* quad_iterator,
-    const cc::ListContainer<DrawQuad>::Iterator& end,
-    const gfx::Rect& jelly_clip,
-    float skew,
-    AggregatedRenderPass* render_pass) {
-  auto* quad = **quad_iterator;
-  const auto* state = quad->shared_quad_state;
-
-  // Heuristic - we may have over-clipped a quad. If a quad is clipped by the
-  // |jelly_clip|, but contains content beyond |jelly_clip|, un-clip the quad by
-  // MaxDeJellyHeight().
-  int un_clip_top = 0;
-  int un_clip_bottom = 0;
-  DCHECK(state->clip_rect);
-  if (state->clip_rect->y() <= jelly_clip.y()) {
-    un_clip_top = MaxDeJellyHeight();
-  }
-  if (state->clip_rect->bottom() >= jelly_clip.bottom()) {
-    un_clip_bottom = MaxDeJellyHeight();
-  }
-
-  // Compute the required renderpass rect in target space.
-  // First, find the un-transformed visible rect.
-  gfx::Rect render_pass_visible_rect = state->visible_quad_layer_rect;
-  // Next, if this is a RenderPass quad, find any filters and expand the
-  // visible rect.
-  if (quad->material == DrawQuad::Material::kCompositorRenderPass) {
-    auto target_id = AggregatedRenderPassId(uint64_t{
-        CompositorRenderPassDrawQuad::MaterialCast(quad)->render_pass_id});
-    for (auto& rp : *dest_pass_list_) {
-      if (rp->id == target_id) {
-        render_pass_visible_rect =
-            rp->filters.MapRect(state->visible_quad_layer_rect, SkMatrix());
-        break;
-      }
-    }
-  }
-  // Next, find the enclosing Rect for the transformed target space RectF.
-  render_pass_visible_rect =
-      state->quad_to_target_transform.MapRect(render_pass_visible_rect);
-  // Finally, expand by our un_clip amounts.
-  render_pass_visible_rect.Inset(
-      gfx::Insets::TLBR(-un_clip_top, 0, -un_clip_bottom, 0));
-
-  // Expand the |render_pass|'s rects.
-  render_pass->output_rect =
-      gfx::UnionRects(render_pass->output_rect, render_pass_visible_rect);
-  render_pass->damage_rect = render_pass->output_rect;
-
-  // Create a new SharedQuadState based on |state|.
-  {
-    auto* new_state = render_pass->CreateAndAppendSharedQuadState();
-    *new_state = *state;
-    // If blend mode is not kSrcOver, we apply it in the RenderPass.
-    if (state->blend_mode != SkBlendMode::kSrcOver) {
-      new_state->opacity = 1.0f;
-      new_state->blend_mode = SkBlendMode::kSrcOver;
-    }
-
-    // Expand our clip by un clip amounts.
-    new_state->clip_rect->Inset(
-        gfx::Insets::TLBR(-un_clip_top, 0, -un_clip_bottom, 0));
-  }
-
-  // Append all quads sharing |new_state|.
-  AppendDeJellyQuadsForSharedQuadState(quad_iterator, end, render_pass, state);
-}
-
-void SurfaceAggregator::CreateDeJellyNormalQuads(
-    cc::ListContainer<DrawQuad>::Iterator* quad_iterator,
-    const cc::ListContainer<DrawQuad>::Iterator& end,
-    AggregatedRenderPass* root_pass,
-    float skew) {
-  auto* quad = **quad_iterator;
-  const auto* state = quad->shared_quad_state;
-
-  // Crearte a new SharedQuadState on |root_pass| and apply skew if any.
-  SharedQuadState* new_state = root_pass->CreateAndAppendSharedQuadState();
-  *new_state = *state;
-  if (skew != 0.0f) {
-    gfx::Transform skew_transform;
-    skew_transform.Skew(0.0f, skew);
-    new_state->quad_to_target_transform =
-        skew_transform * new_state->quad_to_target_transform;
-  }
-
-  // Append all quads sharing |new_state|.
-  AppendDeJellyQuadsForSharedQuadState(quad_iterator, end, root_pass, state);
-}
-
-void SurfaceAggregator::AppendDeJellyRenderPass(
-    float skew,
-    const gfx::Rect& jelly_clip,
-    float opacity,
-    SkBlendMode blend_mode,
-    AggregatedRenderPass* root_pass,
-    std::unique_ptr<AggregatedRenderPass> render_pass) {
-  // Create a new quad for this renderpass and append it to the pass list.
-  auto* new_state = root_pass->CreateAndAppendSharedQuadState();
-  gfx::Transform transform;
-  new_state->SetAll(transform, render_pass->output_rect,
-                    render_pass->output_rect, gfx::MaskFilterInfo(), jelly_clip,
-                    false, opacity, blend_mode, 0);
-  auto* quad =
-      root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
-  quad->SetNew(new_state, render_pass->output_rect, render_pass->output_rect,
-               render_pass->id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(), gfx::PointF(),
-               gfx::RectF(gfx::SizeF(render_pass->output_rect.size())), false,
-               1.0f);
-  gfx::Transform skew_transform;
-  skew_transform.Skew(0.0f, skew);
-  new_state->quad_to_target_transform =
-      skew_transform * new_state->quad_to_target_transform;
-  dest_pass_list_->push_back(std::move(render_pass));
-}
-
-void SurfaceAggregator::AppendDeJellyQuadsForSharedQuadState(
-    cc::ListContainer<DrawQuad>::Iterator* quad_iterator,
-    const cc::ListContainer<DrawQuad>::Iterator& end,
-    AggregatedRenderPass* render_pass,
-    const SharedQuadState* state) {
-  auto* quad = **quad_iterator;
-  while (quad->shared_quad_state == state) {
-    // Since we're dealing with post-aggregated passes, we should not have any
-    // RenderPassDrawQuads.
-    DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
-    if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
-      const auto* pass_quad = AggregatedRenderPassDrawQuad::MaterialCast(quad);
-      render_pass->CopyFromAndAppendRenderPassDrawQuad(pass_quad);
-    } else {
-      render_pass->CopyFromAndAppendDrawQuad(quad);
-    }
-
-    ++(*quad_iterator);
-    if (*quad_iterator == end)
-      break;
-    quad = **quad_iterator;
-  }
-}
-
-void SurfaceAggregator::SetLastFrameHadJelly(bool had_jelly) {
-  // If we've just rendererd a jelly-free frame after one with jelly, we must
-  // damage the entire surface, as we may have removed jelly from an otherwise
-  // unchanged quad.
-  if (last_frame_had_jelly_ && !had_jelly) {
-    auto* root_pass = dest_pass_list_->back().get();
-    root_pass->damage_rect = root_pass->output_rect;
-  }
-  last_frame_had_jelly_ = had_jelly;
 }
 
 void SurfaceAggregator::DebugLogSurface(const Surface* surface,

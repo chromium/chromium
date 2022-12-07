@@ -1379,9 +1379,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   bool have_missing_animated_tiles = false;
   int num_of_layers_with_videos = 0;
 
-  // Advance our de-jelly state. This is a no-op if de-jelly is not active.
-  de_jelly_state_.AdvanceFrame(active_tree_.get());
-
   if (settings_.enable_compositing_based_throttling)
     throttle_decider_.Prepare();
   for (EffectTreeLayerListIterator it(active_tree());
@@ -1410,11 +1407,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
       if (render_surface->contributes_to_drawn_surface()) {
         render_surface->AppendQuads(draw_mode, target_render_pass,
                                     &append_quads_data);
-        if (settings_.allow_de_jelly_effect) {
-          de_jelly_state_.UpdateSharedQuadState(
-              active_tree_.get(), render_surface->TransformTreeIndex(),
-              target_render_pass);
-        }
       }
     } else if (it.state() == EffectTreeLayerListIterator::State::LAYER) {
       LayerImpl* layer = it.current_layer();
@@ -1428,11 +1420,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
         }
         layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
         layer->AppendQuads(target_render_pass, &append_quads_data);
-        if (settings_.allow_de_jelly_effect) {
-          de_jelly_state_.UpdateSharedQuadState(active_tree_.get(),
-                                                layer->transform_tree_index(),
-                                                target_render_pass);
-        }
       } else {
         if (settings_.enable_compositing_based_throttling)
           throttle_decider_.ProcessLayerNotToDraw(layer);

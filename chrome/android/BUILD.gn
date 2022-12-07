@@ -638,7 +638,6 @@ if (current_toolchain == default_toolchain) {
       "//components/variations:variations_java",
       "//components/variations/android:variations_java",
       "//components/version_info/android:version_constants_java",
-      "//components/viz/common:common_java",
       "//components/viz/service:service_java",
       "//components/webapk/android/libs/client:java",
       "//components/webapk/android/libs/common:java",
@@ -2666,7 +2665,6 @@ if (current_toolchain == default_toolchain) {
 
       # Deps needed for child processes.
       "//components/version_info/android:version_constants_java",
-      "//components/viz/common:common_java",
       "//components/viz/service:service_java",
       "//content/public/android:content_main_dex_java",
       "//media/base/android:media_java",

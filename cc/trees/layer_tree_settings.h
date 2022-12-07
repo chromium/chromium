@@ -181,9 +181,6 @@ class CC_EXPORT LayerTreeSettings {
   // Defaults to true.
   bool enable_occlusion = true;
 
-  // Whether experimental de-jelly effect is allowed.
-  bool allow_de_jelly_effect = false;
-
   // Whether the compositor should attempt to sync with the scroll handlers
   // before submitting a frame.
   bool enable_synchronized_scrolling = true;

@@ -712,7 +712,6 @@
             "shared_quad_state_list": [ {
                "are_contents_opaque": false,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -743,7 +742,6 @@
                   "x": 4,
                   "y": 81
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -768,7 +766,6 @@
             }, {
                "are_contents_opaque": false,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -793,7 +790,6 @@
             }, {
                "are_contents_opaque": true,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1404,7 +1400,6 @@
             "shared_quad_state_list": [ {
                "are_contents_opaque": false,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1435,7 +1430,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1466,7 +1460,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1497,7 +1490,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1528,7 +1520,6 @@
                   "x": 72,
                   "y": 57
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1559,7 +1550,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1590,7 +1580,6 @@
                   "x": 822,
                   "y": 960
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1621,7 +1610,6 @@
                   "x": 486,
                   "y": 980
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1652,7 +1640,6 @@
                   "x": 150,
                   "y": 980
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1683,7 +1670,6 @@
                   "x": 822,
                   "y": 666
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1714,7 +1700,6 @@
                   "x": 486,
                   "y": 666
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1745,7 +1730,6 @@
                   "x": 150,
                   "y": 666
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1776,7 +1760,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -1801,7 +1784,6 @@
             }, {
                "are_contents_opaque": true,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -2194,7 +2176,6 @@
             "shared_quad_state_list": [ {
                "are_contents_opaque": true,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -2225,7 +2206,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -2256,7 +2236,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -2287,7 +2266,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3534,7 +3512,6 @@
             "shared_quad_state_list": [ {
                "are_contents_opaque": false,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3559,7 +3536,6 @@
             }, {
                "are_contents_opaque": true,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3584,7 +3560,6 @@
             }, {
                "are_contents_opaque": true,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3615,7 +3590,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3646,7 +3620,6 @@
                   "x": 1057,
                   "y": 369
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3677,7 +3650,6 @@
                   "x": 999,
                   "y": 369
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3708,7 +3680,6 @@
                   "x": 941,
                   "y": 369
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3739,7 +3710,6 @@
                   "x": 883,
                   "y": 369
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3770,7 +3740,6 @@
                   "x": 825,
                   "y": 369
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3801,7 +3770,6 @@
                   "x": 546,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3832,7 +3800,6 @@
                   "x": 546,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3863,7 +3830,6 @@
                   "x": 546,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3894,7 +3860,6 @@
                   "x": 546,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3925,7 +3890,6 @@
                   "x": 281,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3956,7 +3920,6 @@
                   "x": 281,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -3987,7 +3950,6 @@
                   "x": 281,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4018,7 +3980,6 @@
                   "x": 17,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4049,7 +4010,6 @@
                   "x": 17,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4080,7 +4040,6 @@
                   "x": 17,
                   "y": 852
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4111,7 +4070,6 @@
                   "x": 17,
                   "y": 426
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4142,7 +4100,6 @@
                   "x": 17,
                   "y": 426
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4173,7 +4130,6 @@
                   "x": 17,
                   "y": 426
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4204,7 +4160,6 @@
                   "x": 17,
                   "y": 426
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4235,7 +4190,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4266,7 +4220,6 @@
                   "x": 78,
                   "y": 113
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4297,7 +4250,6 @@
                   "x": 78,
                   "y": 113
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4328,7 +4280,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4359,7 +4310,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4390,7 +4340,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4421,7 +4370,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4446,7 +4394,6 @@
             }, {
                "are_contents_opaque": true,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4572,7 +4519,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -4696,7 +4642,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -5763,7 +5708,6 @@
             "shared_quad_state_list": [ {
                "are_contents_opaque": false,
                "blend_mode": "kSrcOver",
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
@@ -5966,7 +5910,6 @@
                   "x": 0,
                   "y": 0
                },
-               "de_jelly_delta_y": 0.0,
                "is_fast_rounded_corner": false,
                "mask_filter_info": {
                   "rounded_corner_bounds": {
