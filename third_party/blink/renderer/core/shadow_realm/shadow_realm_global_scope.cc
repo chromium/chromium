@@ -45,6 +45,10 @@ void ShadowRealmGlobalScope::CountUse(mojom::blink::WebFeature feature) {}
 void ShadowRealmGlobalScope::CountDeprecation(
     mojom::blink::WebFeature feature) {}
 
+bool ShadowRealmGlobalScope::IsShadowRealmGlobalScope() const {
+  return true;
+}
+
 const KURL& ShadowRealmGlobalScope::Url() const {
   NOTREACHED();
   return url_;

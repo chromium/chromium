@@ -36,6 +36,7 @@ class CORE_EXPORT ShadowRealmGlobalScope final
   void CountDeprecation(mojom::blink::WebFeature feature) override;
 
   // ExecutionContext:
+  bool IsShadowRealmGlobalScope() const override;
   const KURL& Url() const override;
   const KURL& BaseURL() const override;
   KURL CompleteURL(const String& url) const override;

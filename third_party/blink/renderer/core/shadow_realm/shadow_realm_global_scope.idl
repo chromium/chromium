@@ -4,4 +4,6 @@
 
 // https://github.com/tc39/proposal-shadowrealm
 
-interface ShadowRealmGlobalScope {};
+[
+    Global=ShadowRealm
+] interface ShadowRealmGlobalScope {};
