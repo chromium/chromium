@@ -24,6 +24,12 @@ weblayer_resource_exclusion_exceptions = [
 
 # Copied from chrome_public_apk_tmpl.gni.
 
+# resource_values_filter_rules: Filters per-resource, after "aapt2 compile".
+# Before ":" matches .zip path.
+# After ":" matches resource name (e.g. "attr/selectorSize").
+#
+# resource_exclusion_regex: Filters per-file, before "aapt2 compile".
+
 # Remove unneeded entries from material design values.xml files.
 weblayer_resource_values_filter_rules = [
   "${_material_package}:[Bb]adge",
@@ -55,7 +61,7 @@ weblayer_resource_exclusion_regex +=
 # https://crbug.com/636448
 weblayer_resource_exclusion_regex += "|${_material_package}/layout"
 weblayer_resource_exclusion_regex +=
-    "|${_material_package}/color.*(calendar_|bottom_nav_|slider_)"
+    "|${_material_package}/color.*(calendar_|bottom_nav_|picker_|slider_)"
 weblayer_resource_exclusion_regex +=
     "|${_material_package}/drawable.*design_snackbar"
 weblayer_resource_exclusion_regex += "|${_material_package}/xml.*badge_"
