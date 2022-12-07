@@ -6192,6 +6192,13 @@
        null,
        {}
       ]
+     ],
+     "worker-termination.https.html": [
+      "b9b988b36c27e68bd0b1bb18763fb591f07d6845",
+      [
+       null,
+       {}
+      ]
      ]
     }
    },
@@ -259343,16 +259350,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "3e17f3bb68725a2da4ad181b09b09df55d8021d8",
-     []
-    ],
-    "mtime.json": [
-     "8072d84a1f54619d4614b11e4d73c5c2d788f244",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -377512,7 +377509,7 @@
       []
      ],
      "soft-navigation-helper.js": [
-      "0dd39d827e94bed5c497c1265b3419419cefaa75",
+      "d1a60c15ef406be36a05f602315561cc3225790e",
       []
      ]
     }
@@ -556576,7 +556573,7 @@
      ]
     ],
     "setactionhandler.html": [
-     "80dee47a4c28a5addd2929504f787e16934477f9",
+     "a9df51968c6a5ef2fc2efe81008408e61572fd01",
      [
       null,
       {}
@@ -588424,7 +588421,7 @@
       ]
      ],
      "cache-storage-buckets.https.any.js": [
-      "749b7c5efe8da15123eef984dab47c2d2f8d390f",
+      "0b5ef7b298df64d9df1a79fa7e1fe3cd00178333",
       [
        "service-workers/cache-storage/cache-storage-buckets.https.any.html",
        {
@@ -592868,7 +592865,7 @@
      ]
     ],
     "dropped-entries.tentative.html": [
-     "9c3ea473f2e8eb792a473bf771422696e0ff7239",
+     "a1db721837748ebdec23cd740936948458c9044c",
      [
       null,
       {
@@ -592905,11 +592902,21 @@
      ]
     ],
     "image-lcp-followed-by-two-image-softnavs-lcp.tentative.html": [
-     "09259b19eae7612643e925e27bf50109f1d3b557",
+     "7f5bafb5e685d9c07eb16663af823d0f06e9023e",
      [
       null,
       {
        "testdriver": true
+      }
+     ]
+    ],
+    "multiple-paint-entries-buffered.tentative.html": [
+     "f88fb9530129ab501a138a823b492c5661553091",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
       }
      ]
     ],
@@ -603458,7 +603465,7 @@
       ]
      ],
      "mousemove_prevent_default_action.tentative.html": [
-      "480535da23e43511db94176bcce0edcf364688fd",
+      "376a110fa5b965c5f6a7eb3df92bb5a8c1563afe",
       [
        null,
        {
