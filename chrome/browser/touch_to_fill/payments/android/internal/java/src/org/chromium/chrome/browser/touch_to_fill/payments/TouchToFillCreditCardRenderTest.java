@@ -54,8 +54,9 @@ import java.util.List;
 public class TouchToFillCreditCardRenderTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false).name("Default"),
-                    new ParameterSet().value(true).name("NightMode"));
+            Arrays.asList(new ParameterSet().value(false, false).name("Default"),
+                    new ParameterSet().value(false, true).name("RTL"),
+                    new ParameterSet().value(true, false).name("NightMode"));
 
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -100,9 +101,11 @@ public class TouchToFillCreditCardRenderTest {
     private BottomSheetController mBottomSheetController;
     private TouchToFillCreditCardCoordinator mCoordinator;
 
-    public TouchToFillCreditCardRenderTest(boolean nightModeEnabled) {
+    public TouchToFillCreditCardRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
+        setRtlForTesting(useRtlLayout);
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+        mRenderTestRule.setVariantPrefix(useRtlLayout ? "RTL" : "LTR");
     }
 
     @Before

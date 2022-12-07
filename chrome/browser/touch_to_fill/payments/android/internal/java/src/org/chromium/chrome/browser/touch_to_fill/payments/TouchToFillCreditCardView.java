@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * This class is responsible for rendering the bottom sheet which displays the
@@ -67,6 +68,11 @@ class TouchToFillCreditCardView implements BottomSheetContent {
         mBottomSheetController = bottomSheetController;
         mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
                 R.layout.touch_to_fill_credit_card_sheet, null);
+        // Apply RTL layout changes.
+        int layoutDirection = LocalizationUtils.isLayoutRtl() ? View.LAYOUT_DIRECTION_RTL
+                                                              : View.LAYOUT_DIRECTION_LTR;
+        mContentView.setLayoutDirection(layoutDirection);
+
         ImageView brandingIcon = mContentView.findViewById(R.id.branding_icon);
         brandingIcon.setImageDrawable(ResourcesCompat.getDrawable(mContentView.getResources(),
                 mOnlyLocalCards ? R.drawable.fre_product_logo : R.drawable.google_pay,
