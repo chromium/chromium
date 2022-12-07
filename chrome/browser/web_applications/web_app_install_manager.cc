@@ -145,25 +145,6 @@ bool WebAppInstallManager::IsAppIdAlreadyEnqueued(const AppId& app_id) const {
   return false;
 }
 
-void WebAppInstallManager::InstallWebAppsAfterSync(
-    std::vector<WebApp*> web_apps,
-    RepeatingInstallCallback callback) {
-  if (!started_)
-    return;
-
-  for (WebApp* web_app : web_apps) {
-    DCHECK(web_app->is_from_sync_and_pending_installation());
-    InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
-        web_app->app_id(), web_app->manifest_id(), web_app->start_url(),
-        web_app->sync_fallback_data().name, web_app->sync_fallback_data().scope,
-        web_app->sync_fallback_data().theme_color, web_app->user_display_mode(),
-        web_app->sync_fallback_data().icon_infos);
-    command_manager_->ScheduleCommand(std::make_unique<InstallFromSyncCommand>(
-        url_loader_.get(), profile_, data_retriever_factory_.Run(), params,
-        callback));
-  }
-}
-
 void WebAppInstallManager::EnqueueTask(std::unique_ptr<WebAppInstallTask> task,
                                        base::OnceClosure start_task) {
   DCHECK(web_contents_);

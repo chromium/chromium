@@ -18,7 +18,6 @@
 #include "base/types/pass_key.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/commands/install_from_sync_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_install_delegate.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/channel_info.h"
 #include "components/sync/base/model_type.h"
@@ -139,7 +137,6 @@ WebAppSyncBridge::~WebAppSyncBridge() = default;
 
 void WebAppSyncBridge::SetSubsystems(
     AbstractWebAppDatabaseFactory* database_factory,
-    SyncInstallDelegate* install_delegate,
     WebAppCommandManager* command_manager,
     WebAppCommandScheduler* command_scheduler) {
   DCHECK(database_factory);
@@ -147,7 +144,6 @@ void WebAppSyncBridge::SetSubsystems(
       database_factory,
       base::BindRepeating(&WebAppSyncBridge::ReportErrorToChangeProcessor,
                           base::Unretained(this)));
-  install_delegate_ = install_delegate;
   command_manager_ = command_manager;
   command_scheduler_ = command_scheduler;
 }
@@ -887,7 +883,9 @@ void WebAppSyncBridge::InstallWebAppsAfterSync(
                                                           callback);
     return;
   }
-  install_delegate_->InstallWebAppsAfterSync(std::move(web_apps), callback);
+  for (WebApp* web_app : web_apps) {
+    command_scheduler_->InstallFromSync(*web_app, base::DoNothing());
+  }
 }
 
 }  // namespace web_app

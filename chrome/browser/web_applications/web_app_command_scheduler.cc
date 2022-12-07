@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
+#include "chrome/browser/web_applications/commands/install_from_sync_command.h"
 #include "chrome/browser/web_applications/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_data_fetch_command.h"
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
@@ -59,7 +60,9 @@ std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
 
 WebAppCommandScheduler::WebAppCommandScheduler(Profile& profile,
                                                WebAppProvider* provider)
-    : profile_(profile), provider_(provider) {}
+    : profile_(profile),
+      provider_(provider),
+      url_loader_(std::make_unique<WebAppUrlLoader>()) {}
 
 WebAppCommandScheduler::~WebAppCommandScheduler() = default;
 
@@ -257,6 +260,21 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
       std::make_unique<InstallIsolatedWebAppCommand>(
           url_info, isolation_data, CreateIsolatedWebAppWebContents(*profile_),
           std::make_unique<WebAppUrlLoader>(), *profile_, std::move(callback)));
+}
+
+void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
+                                             OnceInstallCallback callback) {
+  DCHECK(web_app.is_from_sync_and_pending_installation());
+  InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
+      web_app.app_id(), web_app.manifest_id(), web_app.start_url(),
+      web_app.sync_fallback_data().name, web_app.sync_fallback_data().scope,
+      web_app.sync_fallback_data().theme_color, web_app.user_display_mode(),
+      web_app.sync_fallback_data().icon_infos);
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<InstallFromSyncCommand>(
+          url_loader_.get(), &profile_.get(),
+          std::make_unique<WebAppDataRetriever>(), params,
+          std::move(callback)));
 }
 
 void WebAppCommandScheduler::Uninstall(

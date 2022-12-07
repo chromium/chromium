@@ -204,8 +204,7 @@ class WebAppSyncBridgeTest : public WebAppTest {
         registrar_mutable_.get(), mock_processor_.CreateForwardingProcessor());
     database_factory_ = std::make_unique<FakeWebAppDatabaseFactory>();
 
-    sync_bridge_->SetSubsystems(database_factory_.get(), install_manager_.get(),
-                                command_manager_.get(),
+    sync_bridge_->SetSubsystems(database_factory_.get(), command_manager_.get(),
                                 command_scheduler_.get());
 
     install_manager_->Start();

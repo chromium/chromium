@@ -302,8 +302,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
-  sync_bridge_->SetSubsystems(database_factory_.get(), install_manager_.get(),
-                              command_manager_.get(), command_scheduler_.get());
+  sync_bridge_->SetSubsystems(database_factory_.get(), command_manager_.get(),
+                              command_scheduler_.get());
   icon_manager_->SetSubsystems(registrar_.get(), install_manager_.get());
   install_finalizer_->SetSubsystems(
       install_manager_.get(), registrar_.get(), ui_manager_.get(),

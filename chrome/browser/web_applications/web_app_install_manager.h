@@ -71,10 +71,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
   bool IsInstallingForWebContents(
       const content::WebContents* web_contents) const;
 
-  // SyncInstallDelegate:
-  void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
-                               RepeatingInstallCallback callback) override;
-
   virtual void AddObserver(WebAppInstallManagerObserver* observer);
   virtual void RemoveObserver(WebAppInstallManagerObserver* observer);
 

@@ -44,7 +44,6 @@ namespace web_app {
 
 class AbstractWebAppDatabaseFactory;
 class AppLock;
-class SyncInstallDelegate;
 class WebAppCommandManager;
 class WebAppDatabase;
 class WebAppRegistryUpdate;
@@ -73,7 +72,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   ~WebAppSyncBridge() override;
 
   void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
-                     SyncInstallDelegate* install_delegate,
                      WebAppCommandManager* command_manager,
                      WebAppCommandScheduler* command_scheduler_);
 
@@ -223,7 +221,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
-  raw_ptr<SyncInstallDelegate, DanglingUntriaged> install_delegate_;
   raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_;
   raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_;
 

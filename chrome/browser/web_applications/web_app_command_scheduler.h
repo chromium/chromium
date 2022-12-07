@@ -35,6 +35,7 @@ class IsolatedWebAppUrlInfo;
 class WebAppDataRetriever;
 class WebAppProvider;
 struct IsolationData;
+class WebApp;
 
 // The command scheduler is the main API to access the web app system. The
 // scheduler internally ensures:
@@ -126,6 +127,9 @@ class WebAppCommandScheduler {
                              const IsolationData& isolation_data,
                              InstallIsolatedWebAppCallback callback);
 
+  // Scheduler a command that installs a web app from sync.
+  void InstallFromSync(const WebApp& web_app, OnceInstallCallback callback);
+
   // Schedules a command that uninstalls a web app.
   void Uninstall(const AppId& app_id,
                  absl::optional<WebAppManagement::Type> external_install_source,
@@ -186,6 +190,7 @@ class WebAppCommandScheduler {
   raw_ptr<WebAppProvider, DanglingUntriaged> provider_;
 
   bool is_in_shutdown_ = false;
+  std::unique_ptr<WebAppUrlLoader> url_loader_;
 
   base::WeakPtrFactory<WebAppCommandScheduler> weak_ptr_factory_{this};
 };

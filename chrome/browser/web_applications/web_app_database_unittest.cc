@@ -74,9 +74,9 @@ class WebAppDatabaseTest : public WebAppTest {
     provider_->SetDatabaseFactory(std::move(database_factory));
     provider_->SetSyncBridge(std::move(sync_bridge));
 
-    sync_bridge_->SetSubsystems(
-        database_factory_, &provider_->GetInstallManager(),
-        &provider_->GetCommandManager(), &provider_->scheduler());
+    sync_bridge_->SetSubsystems(database_factory_,
+                                &provider_->GetCommandManager(),
+                                &provider_->scheduler());
 
     ON_CALL(mock_processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
