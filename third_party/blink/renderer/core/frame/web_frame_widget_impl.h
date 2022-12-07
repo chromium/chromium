@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FRAME_WIDGET_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_WEB_FRAME_WIDGET_IMPL_H_
 
+#include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -823,7 +824,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void PresentationCallbackForMeaningfulLayout(base::TimeTicks);
 
   void ForEachRemoteFrameControlledByWidget(
-      const base::RepeatingCallback<void(RemoteFrame*)>& callback);
+      base::FunctionRef<void(RemoteFrame*)> callback);
 
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
