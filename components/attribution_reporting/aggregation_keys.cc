@@ -114,4 +114,12 @@ AggregationKeys& AggregationKeys::operator=(const AggregationKeys&) = default;
 
 AggregationKeys& AggregationKeys::operator=(AggregationKeys&&) = default;
 
+base::Value::Dict AggregationKeys::ToJson() const {
+  base::Value::Dict dict;
+  for (auto [key, value] : keys_) {
+    dict.Set(key, HexEncodeAggregationKey(value));
+  }
+  return dict;
+}
+
 }  // namespace attribution_reporting

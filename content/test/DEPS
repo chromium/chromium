@@ -46,6 +46,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "attribution_simulator_impl.cc": [
+    "+components/attribution_reporting",
+  ],
   "attribution_simulator_input_parser.cc": [
     "+components/attribution_reporting",
   ],

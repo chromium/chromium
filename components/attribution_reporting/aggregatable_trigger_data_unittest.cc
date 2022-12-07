@@ -196,5 +196,35 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
   }
 }
 
+TEST(AggregatableTriggerDataTest, ToJson) {
+  const struct {
+    AggregatableTriggerData input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          AggregatableTriggerData(),
+          R"json({"key_piece":"0x0"})json",
+      },
+      {
+          *AggregatableTriggerData::Create(
+              /*key_piece=*/1,
+              /*source_keys=*/{"a", "b"},
+              /*filters=*/*Filters::Create({{"c", {}}}),
+              /*not_filters=*/*Filters::Create({{"d", {}}})),
+          R"json({
+            "key_piece":"0x1",
+            "source_keys": ["a", "b"],
+            "filters": {"c": []},
+            "not_filters": {"d": []}
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
 }  // namespace
 }  // namespace attribution_reporting

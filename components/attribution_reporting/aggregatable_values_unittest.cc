@@ -117,5 +117,26 @@ TEST(AggregatableValuesTest, Parse_KeyCount) {
                 TriggerRegistrationError::kAggregatableValuesTooManyKeys));
 }
 
+TEST(AggregatableValuesTest, ToJson) {
+  const struct {
+    AggregatableValues input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          AggregatableValues(),
+          R"json({})json",
+      },
+      {
+          *AggregatableValues::Create({{"a", 1}, {"b", 2}}),
+          R"json({"a":1,"b":2})json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
 }  // namespace
 }  // namespace attribution_reporting

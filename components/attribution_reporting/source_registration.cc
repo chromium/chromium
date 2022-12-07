@@ -28,6 +28,14 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
+constexpr char kAggregatableReportWindow[] = "aggregatable_report_window";
+constexpr char kAggregationKeys[] = "aggregation_keys";
+constexpr char kDestination[] = "destination";
+constexpr char kEventReportWindow[] = "event_report_window";
+constexpr char kExpiry[] = "expiry";
+constexpr char kFilterData[] = "filter_data";
+constexpr char kSourceEventId[] = "source_event_id";
+
 absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(
     const base::Value::Dict& registration,
     base::StringPiece key) {
@@ -36,9 +44,17 @@ absl::optional<base::TimeDelta> ParseTimeDeltaInSeconds(
   return absl::nullopt;
 }
 
+void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
+                                 base::StringPiece key,
+                                 absl::optional<base::TimeDelta> value) {
+  if (value) {
+    SerializeInt64(dict, key, value->InSeconds());
+  }
+}
+
 base::expected<SuitableOrigin, SourceRegistrationError> ParseDestination(
     const base::Value::Dict& registration) {
-  const base::Value* v = registration.Find("destination");
+  const base::Value* v = registration.Find(kDestination);
   if (!v)
     return base::unexpected(SourceRegistrationError::kDestinationMissing);
 
@@ -86,31 +102,31 @@ SourceRegistration::Parse(base::Value::Dict registration,
                             std::move(reporting_origin));
 
   base::expected<FilterData, SourceRegistrationError> filter_data =
-      FilterData::FromJSON(registration.Find("filter_data"));
+      FilterData::FromJSON(registration.Find(kFilterData));
   if (!filter_data.has_value())
     return base::unexpected(filter_data.error());
 
   result.filter_data = std::move(*filter_data);
 
   base::expected<AggregationKeys, SourceRegistrationError> aggregation_keys =
-      AggregationKeys::FromJSON(registration.Find("aggregation_keys"));
+      AggregationKeys::FromJSON(registration.Find(kAggregationKeys));
   if (!aggregation_keys.has_value())
     return base::unexpected(aggregation_keys.error());
 
   result.aggregation_keys = std::move(*aggregation_keys);
 
   result.source_event_id =
-      ParseUint64(registration, "source_event_id").value_or(0);
+      ParseUint64(registration, kSourceEventId).value_or(0);
 
   result.priority = ParsePriority(registration);
 
-  result.expiry = ParseTimeDeltaInSeconds(registration, "expiry");
+  result.expiry = ParseTimeDeltaInSeconds(registration, kExpiry);
 
   result.event_report_window =
-      ParseTimeDeltaInSeconds(registration, "event_report_window");
+      ParseTimeDeltaInSeconds(registration, kEventReportWindow);
 
   result.aggregatable_report_window =
-      ParseTimeDeltaInSeconds(registration, "aggregatable_report_window");
+      ParseTimeDeltaInSeconds(registration, kAggregatableReportWindow);
 
   result.debug_key = ParseDebugKey(registration);
 
@@ -132,6 +148,33 @@ SourceRegistration::Parse(base::StringPiece json,
     return base::unexpected(SourceRegistrationError::kRootWrongType);
 
   return Parse(std::move(*value).TakeDict(), std::move(reporting_origin));
+}
+
+base::Value::Dict SourceRegistration::ToJson() const {
+  base::Value::Dict dict;
+
+  dict.Set(kDestination, destination->Serialize());
+
+  if (!filter_data.filter_values().empty()) {
+    dict.Set(kFilterData, filter_data.ToJson());
+  }
+
+  if (!aggregation_keys.keys().empty()) {
+    dict.Set(kAggregationKeys, aggregation_keys.ToJson());
+  }
+
+  SerializeUint64(dict, kSourceEventId, source_event_id);
+  SerializePriority(dict, priority);
+
+  SerializeTimeDeltaInSeconds(dict, kExpiry, expiry);
+  SerializeTimeDeltaInSeconds(dict, kEventReportWindow, event_report_window);
+  SerializeTimeDeltaInSeconds(dict, kAggregatableReportWindow,
+                              aggregatable_report_window);
+
+  SerializeDebugKey(dict, debug_key);
+  SerializeDebugReporting(dict, debug_reporting);
+
+  return dict;
 }
 
 }  // namespace attribution_reporting

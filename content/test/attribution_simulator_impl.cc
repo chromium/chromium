@@ -35,6 +35,7 @@
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/values.h"
+#include "components/attribution_reporting/parsing_utils.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
@@ -177,7 +178,8 @@ struct AttributionReportJsonConverter {
       base::Value::List list;
       for (const auto& contribution : aggregatable_data->contributions) {
         base::Value::Dict dict;
-        dict.Set("key", HexEncodeAggregationKey(contribution.key()));
+        dict.Set("key", attribution_reporting::HexEncodeAggregationKey(
+                            contribution.key()));
         dict.Set("value", base::checked_cast<int>(contribution.value()));
 
         list.Append(std::move(dict));

@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -105,28 +104,6 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       "Conversions.AggregatableReport.DroppedKeysPercentage", 33, 1);
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.NumContributionsPerReport", 2, 1);
-}
-
-TEST(AggregatableAttributionUtilsTest, HexEncodeAggregationKey) {
-  const struct {
-    absl::uint128 input;
-    std::string output;
-  } kTestCases[] = {
-      {0, "0x0"},
-      {absl::MakeUint128(/*high=*/0,
-                         /*low=*/std::numeric_limits<uint64_t>::max()),
-       "0xffffffffffffffff"},
-      {absl::MakeUint128(/*high=*/1,
-                         /*low=*/std::numeric_limits<uint64_t>::max()),
-       "0x1ffffffffffffffff"},
-      {std::numeric_limits<absl::uint128>::max(),
-       "0xffffffffffffffffffffffffffffffff"},
-  };
-
-  for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(HexEncodeAggregationKey(test_case.input), test_case.output)
-        << test_case.input;
-  }
 }
 
 TEST(AggregatableAttributionUtilsTest,

@@ -12,12 +12,9 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace attribution_reporting {
 
@@ -41,6 +38,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValues {
   AggregatableValues& operator=(AggregatableValues&&);
 
   const Values& values() const { return values_; }
+
+  base::Value::Dict ToJson() const;
 
  private:
   explicit AggregatableValues(Values);

@@ -330,5 +330,56 @@ TEST(TriggerRegistrationTest, Parse_RecordsMetrics) {
       ElementsAre(Bucket(0, 1), Bucket(1, 2), Bucket(3, 1)));
 }
 
+TEST(TriggerRegistrationTest, ToJson) {
+  const auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://r.example");
+
+  const struct {
+    TriggerRegistration input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          TriggerRegistration(reporting_origin),
+          R"json({
+            "aggregation_coordinator_identifier": "aws-cloud",
+            "debug_reporting": false
+          })json",
+      },
+      {
+          TriggerRegistrationWith(
+              reporting_origin,
+              [](auto& r) {
+                r.aggregatable_dedup_key = 1;
+                r.aggregatable_trigger_data =
+                    *AggregatableTriggerDataList::Create(
+                        {AggregatableTriggerData()});
+                r.aggregatable_values = *AggregatableValues::Create({{"a", 2}});
+                r.debug_key = 3;
+                r.debug_reporting = true;
+                r.event_triggers =
+                    *EventTriggerDataList::Create({EventTriggerData()});
+                r.filters = *Filters::Create({{"b", {}}});
+                r.not_filters = *Filters::Create({{"c", {}}});
+              }),
+          R"json({
+            "aggregation_coordinator_identifier": "aws-cloud",
+            "aggregatable_deduplication_key": "1",
+            "aggregatable_trigger_data": [{"key_piece":"0x0"}],
+            "aggregatable_values": {"a": 2},
+            "debug_key": "3",
+            "debug_reporting": true,
+            "event_trigger_data": [{"priority":"0","trigger_data":"0"}],
+            "filters": {"b": []},
+            "not_filters": {"c": []}
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
 }  // namespace
 }  // namespace attribution_reporting

@@ -26,6 +26,9 @@ namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
+constexpr char kKeyPiece[] = "key_piece";
+constexpr char kSourceKeys[] = "source_keys";
+
 bool AreSourceKeysValid(const AggregatableTriggerData::Keys& source_keys) {
   if (source_keys.size() > kMaxAggregationKeysPerSourceOrTrigger)
     return false;
@@ -37,7 +40,7 @@ bool AreSourceKeysValid(const AggregatableTriggerData::Keys& source_keys) {
 
 base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
     const base::Value::Dict& registration) {
-  const base::Value* v = registration.Find("key_piece");
+  const base::Value* v = registration.Find(kKeyPiece);
   if (!v) {
     return base::unexpected(
         TriggerRegistrationError::kAggregatableTriggerDataKeyPieceMissing);
@@ -59,7 +62,7 @@ base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
 
 base::expected<AggregatableTriggerData::Keys, TriggerRegistrationError>
 ParseSourceKeys(base::Value::Dict& registration) {
-  base::Value* v = registration.Find("source_keys");
+  base::Value* v = registration.Find(kSourceKeys);
   if (!v)
     return AggregatableTriggerData::Keys();
 
@@ -97,6 +100,18 @@ ParseSourceKeys(base::Value::Dict& registration) {
   return source_keys;
 }
 
+void SerializeSourceKeysIfNotEmpty(base::Value::Dict& dict,
+                                   const AggregatableTriggerData::Keys& keys) {
+  if (keys.empty())
+    return;
+
+  base::Value::List list;
+  for (const std::string& key : keys) {
+    list.Append(key);
+  }
+  dict.Set(kSourceKeys, std::move(list));
+}
+
 }  // namespace
 
 // static
@@ -129,11 +144,11 @@ AggregatableTriggerData::FromJSON(base::Value& value) {
   if (!source_keys.has_value())
     return base::unexpected(source_keys.error());
 
-  auto filters = Filters::FromJSON(dict->Find("filters"));
+  auto filters = Filters::FromJSON(dict->Find(Filters::kFilters));
   if (!filters.has_value())
     return base::unexpected(filters.error());
 
-  auto not_filters = Filters::FromJSON(dict->Find("not_filters"));
+  auto not_filters = Filters::FromJSON(dict->Find(Filters::kNotFilters));
   if (!not_filters.has_value())
     return base::unexpected(not_filters.error());
 
@@ -167,5 +182,18 @@ AggregatableTriggerData::AggregatableTriggerData(AggregatableTriggerData&&) =
 
 AggregatableTriggerData& AggregatableTriggerData::operator=(
     AggregatableTriggerData&&) = default;
+
+base::Value::Dict AggregatableTriggerData::ToJson() const {
+  base::Value::Dict dict;
+
+  dict.Set(kKeyPiece, HexEncodeAggregationKey(key_piece_));
+
+  SerializeSourceKeysIfNotEmpty(dict, source_keys_);
+
+  filters_.SerializeIfNotEmpty(dict, Filters::kFilters);
+  not_filters_.SerializeIfNotEmpty(dict, Filters::kNotFilters);
+
+  return dict;
+}
 
 }  // namespace attribution_reporting

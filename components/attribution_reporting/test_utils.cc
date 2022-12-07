@@ -7,6 +7,7 @@
 #include <ostream>
 #include <tuple>
 
+#include "base/values.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -20,53 +21,13 @@
 
 namespace attribution_reporting {
 
-namespace {
-
-std::ostream& WriteFilterValues(std::ostream& out,
-                                const FilterValues& filter_values) {
-  out << "{";
-
-  const char* outer_separator = "";
-  for (const auto& [filter, values] : filter_values) {
-    out << outer_separator << filter << "=[";
-
-    const char* inner_separator = "";
-    for (const auto& value : values) {
-      out << inner_separator << value;
-      inner_separator = ", ";
-    }
-
-    out << "]";
-    outer_separator = ", ";
-  }
-
-  return out << "}";
-}
-
-template <typename T>
-std::ostream& WriteOptional(std::ostream& out, const absl::optional<T>& value) {
-  if (value)
-    return out << *value;
-
-  return out << "null";
-}
-
-}  // namespace
-
 bool operator==(const AggregationKeys& a, const AggregationKeys& b) {
   return a.keys() == b.keys();
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const AggregationKeys& aggregation_keys) {
-  out << "{";
-
-  const char* separator = "";
-  for (const auto& [key_id, key] : aggregation_keys.keys()) {
-    out << separator << key_id << ":" << key;
-    separator = ", ";
-  }
-  return out << "}";
+  return out << aggregation_keys.ToJson();
 }
 
 bool operator==(const FilterData& a, const FilterData& b) {
@@ -74,7 +35,7 @@ bool operator==(const FilterData& a, const FilterData& b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const FilterData& filter_data) {
-  return WriteFilterValues(out, filter_data.filter_values());
+  return out << filter_data.ToJson();
 }
 
 bool operator==(const Filters& a, const Filters& b) {
@@ -82,7 +43,7 @@ bool operator==(const Filters& a, const Filters& b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const Filters& filters) {
-  return WriteFilterValues(out, filters.filter_values());
+  return out << filters.ToJson();
 }
 
 bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
@@ -96,18 +57,8 @@ bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const SourceRegistration& s) {
-  out << "{source_event_id=" << s.source_event_id
-      << ",destination=" << s.destination
-      << ",reporting_origin=" << s.reporting_origin << ",expiry=";
-  WriteOptional(out, s.expiry) << ",event_report_window=";
-  WriteOptional(out, s.event_report_window) << ",aggregatable_report_window=";
-  WriteOptional(out, s.aggregatable_report_window)
-      << ",priority=" << s.priority << ",filter_data=" << s.filter_data
-      << ",debug_key=";
-  WriteOptional(out, s.debug_key)
-      << ",aggregation_keys=" << s.aggregation_keys
-      << ",debug_reporting=" << s.debug_reporting << "}";
-  return out;
+  return out << "{reporting_origin=" << s.reporting_origin
+             << ",json=" << s.ToJson() << "}";
 }
 
 bool operator==(const AggregatableValues& a, const AggregatableValues& b) {
@@ -115,13 +66,7 @@ bool operator==(const AggregatableValues& a, const AggregatableValues& b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const AggregatableValues& values) {
-  out << "{";
-  const char* separator = "";
-  for (const auto& [key, value] : values.values()) {
-    out << separator << key << ":" << value;
-    separator = ", ";
-  }
-  return out << "}";
+  return out << values.ToJson();
 }
 
 bool operator==(const AggregatableTriggerData& a,
@@ -135,16 +80,7 @@ bool operator==(const AggregatableTriggerData& a,
 
 std::ostream& operator<<(std::ostream& out,
                          const AggregatableTriggerData& trigger_data) {
-  out << "{key_piece=" << trigger_data.key_piece() << ",source_keys=[";
-
-  const char* separator = "";
-  for (const auto& key : trigger_data.source_keys()) {
-    out << separator << key;
-    separator = ", ";
-  }
-
-  return out << "],filters=" << trigger_data.filters()
-             << ",not_filters=" << trigger_data.not_filters() << "}";
+  return out << trigger_data.ToJson();
 }
 
 bool operator==(const EventTriggerData& a, const EventTriggerData& b) {
@@ -157,12 +93,7 @@ bool operator==(const EventTriggerData& a, const EventTriggerData& b) {
 
 std::ostream& operator<<(std::ostream& out,
                          const EventTriggerData& event_trigger) {
-  out << "{data=" << event_trigger.data
-      << ",priority=" << event_trigger.priority << ",dedup_key=";
-  WriteOptional(out, event_trigger.dedup_key)
-      << ",filters=" << event_trigger.filters
-      << ",not_filters=" << event_trigger.not_filters << "}";
-  return out;
+  return out << event_trigger.ToJson();
 }
 
 bool operator==(const TriggerRegistration& a, const TriggerRegistration& b) {
@@ -177,18 +108,8 @@ bool operator==(const TriggerRegistration& a, const TriggerRegistration& b) {
 }
 
 std::ostream& operator<<(std::ostream& out, const TriggerRegistration& reg) {
-  out << "{reporting_origin=" << reg.reporting_origin
-      << ",filters=" << reg.filters << ",not_filters=" << reg.not_filters
-      << ",debug_key=";
-  WriteOptional(out, reg.debug_key) << ",aggregatable_dedup_key=";
-  WriteOptional(out, reg.aggregatable_dedup_key)
-      << ",event_triggers=" << reg.event_triggers
-      << ",aggregatable_trigger_data=" << reg.aggregatable_trigger_data
-      << ",aggregatable_values=" << reg.aggregatable_values
-      << ",debug_reporting=" << reg.debug_reporting
-      << ",aggregation_coordinator=" << reg.aggregation_coordinator << "}";
-
-  return out;
+  return out << "{reporting_origin=" << reg.reporting_origin
+             << ",json=" << reg.ToJson() << "}";
 }
 
 bool operator==(const SuitableOrigin& a, const SuitableOrigin& b) {

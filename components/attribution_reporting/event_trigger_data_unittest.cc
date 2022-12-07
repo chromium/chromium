@@ -116,5 +116,39 @@ TEST(EventTriggerDataTest, FromJSON) {
   }
 }
 
+TEST(EventTriggerDataTest, ToJson) {
+  const struct {
+    EventTriggerData input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          EventTriggerData(),
+          R"json({
+            "trigger_data": "0",
+            "priority": "0",
+          })json",
+      },
+      {
+          EventTriggerData(/*data=*/1,
+                           /*priority=*/-2,
+                           /*dedup_key=*/3,
+                           /*filters=*/*Filters::Create({{"a", {}}}),
+                           /*not_filters=*/*Filters::Create({{"b", {}}})),
+          R"json({
+            "trigger_data": "1",
+            "priority": "-2",
+            "deduplication_key": "3",
+            "filters": {"a": []},
+            "not_filters": {"b": []}
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
 }  // namespace
 }  // namespace attribution_reporting

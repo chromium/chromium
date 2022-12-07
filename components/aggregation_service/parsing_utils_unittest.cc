@@ -30,5 +30,19 @@ TEST(AggregationServiceParsingUtilsTest, ParseAggregationCoordinator) {
   }
 }
 
+TEST(AggregationServiceParsingUtilsTest, SerializeAggregationCoordinator) {
+  const struct {
+    mojom::AggregationCoordinator coordinator;
+    const char* expected;
+  } kTestCases[] = {
+      {AggregationCoordinator::kAwsCloud, "aws-cloud"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(SerializeAggregationCoordinator(test_case.coordinator),
+              test_case.expected);
+  }
+}
+
 }  // namespace
 }  // namespace aggregation_service

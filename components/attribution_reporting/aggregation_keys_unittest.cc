@@ -164,5 +164,26 @@ TEST(AggregationKeysTest, FromJSON_RecordsMetric) {
               ElementsAre(Bucket(2, 1)));
 }
 
+TEST(AggregationKeysTest, ToJson) {
+  const struct {
+    AggregationKeys input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          AggregationKeys(),
+          R"json({})json",
+      },
+      {
+          *AggregationKeys::FromKeys({{"a", 1}, {"b", 15}}),
+          R"json({"a":"0x1","b":"0xf"})json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
 }  // namespace
 }  // namespace attribution_reporting

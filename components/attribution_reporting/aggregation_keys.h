@@ -10,13 +10,10 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace attribution_reporting {
 
@@ -40,6 +37,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregationKeys {
   AggregationKeys& operator=(AggregationKeys&&);
 
   const Keys& keys() const { return keys_; }
+
+  base::Value::Dict ToJson() const;
 
  private:
   explicit AggregationKeys(Keys keys);

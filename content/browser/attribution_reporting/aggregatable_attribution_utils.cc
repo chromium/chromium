@@ -5,7 +5,6 @@
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 
 #include <iterator>
-#include <sstream>
 #include <utility>
 #include <vector>
 
@@ -116,14 +115,6 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
       contributions.size());
 
   return contributions;
-}
-
-std::string HexEncodeAggregationKey(absl::uint128 value) {
-  std::ostringstream out;
-  out << "0x";
-  out.setf(out.hex, out.basefield);
-  out << value;
-  return out.str();
 }
 
 absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(

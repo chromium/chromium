@@ -133,5 +133,27 @@ TEST(AttributionReportingParsingUtilsTest, ParseInt64) {
   }
 }
 
+TEST(AttributionReportingParsingUtilsTest, HexEncodeAggregationKey) {
+  const struct {
+    absl::uint128 input;
+    const char* expected;
+  } kTestCases[] = {
+      {0, "0x0"},
+      {absl::MakeUint128(/*high=*/0,
+                         /*low=*/std::numeric_limits<uint64_t>::max()),
+       "0xffffffffffffffff"},
+      {absl::MakeUint128(/*high=*/1,
+                         /*low=*/std::numeric_limits<uint64_t>::max()),
+       "0x1ffffffffffffffff"},
+      {std::numeric_limits<absl::uint128>::max(),
+       "0xffffffffffffffffffffffffffffffff"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(HexEncodeAggregationKey(test_case.input), test_case.expected)
+        << test_case.input;
+  }
+}
+
 }  // namespace
 }  // namespace attribution_reporting

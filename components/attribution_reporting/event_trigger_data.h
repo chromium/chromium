@@ -9,15 +9,12 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "components/attribution_reporting/bounded_list.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}  // namespace  base
 
 namespace attribution_reporting {
 
@@ -55,6 +52,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
                    absl::optional<uint64_t> dedup_key,
                    Filters filters,
                    Filters not_filters);
+
+  base::Value::Dict ToJson() const;
 };
 
 using EventTriggerDataList =

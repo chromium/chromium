@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -106,5 +107,14 @@ AggregatableValues::AggregatableValues(AggregatableValues&&) = default;
 
 AggregatableValues& AggregatableValues::operator=(AggregatableValues&&) =
     default;
+
+base::Value::Dict AggregatableValues::ToJson() const {
+  base::Value::Dict dict;
+  for (auto [key, value] : values_) {
+    DCHECK(base::IsValueInRangeForNumericType<int>(value));
+    dict.Set(key, static_cast<int>(value));
+  }
+  return dict;
+}
 
 }  // namespace attribution_reporting

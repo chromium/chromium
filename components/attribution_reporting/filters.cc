@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
@@ -141,6 +142,18 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
   return FilterValues(base::sorted_unique, std::move(filter_values));
 }
 
+base::Value::Dict FilterValuesToJson(const FilterValues& filter_values) {
+  base::Value::Dict dict;
+  for (auto [key, values] : filter_values) {
+    base::Value::List list;
+    for (const auto& value : values) {
+      list.Append(value);
+    }
+    dict.Set(key, std::move(list));
+  }
+  return dict;
+}
+
 }  // namespace
 
 // static
@@ -200,6 +213,10 @@ FilterData& FilterData::operator=(const FilterData&) = default;
 
 FilterData& FilterData::operator=(FilterData&&) = default;
 
+base::Value::Dict FilterData::ToJson() const {
+  return FilterValuesToJson(filter_values_);
+}
+
 // static
 absl::optional<Filters> Filters::Create(FilterValues filter_values) {
   if (!IsValidForSourceOrTrigger(filter_values))
@@ -254,5 +271,16 @@ Filters::Filters(Filters&&) = default;
 Filters& Filters::operator=(const Filters&) = default;
 
 Filters& Filters::operator=(Filters&&) = default;
+
+base::Value::Dict Filters::ToJson() const {
+  return FilterValuesToJson(filter_values_);
+}
+
+void Filters::SerializeIfNotEmpty(base::Value::Dict& dict,
+                                  base::StringPiece key) const {
+  if (!filter_values_.empty()) {
+    dict.Set(key, ToJson());
+  }
+}
 
 }  // namespace attribution_reporting

@@ -10,16 +10,13 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "components/attribution_reporting/bounded_list.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace attribution_reporting {
 
@@ -53,6 +50,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
   const Filters& filters() const { return filters_; }
 
   const Filters& not_filters() const { return not_filters_; }
+
+  base::Value::Dict ToJson() const;
 
  private:
   AggregatableTriggerData(absl::uint128 key_piece,

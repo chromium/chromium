@@ -22,10 +22,10 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
+#include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
-#include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
@@ -88,8 +88,9 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       base::MakeFlatMap<std::string, std::string>(
           source.aggregation_keys().keys(), {},
           [](const auto& key) {
-            return std::make_pair(key.first,
-                                  HexEncodeAggregationKey(key.second));
+            return std::make_pair(
+                key.first,
+                attribution_reporting::HexEncodeAggregationKey(key.second));
           }),
       aggregatable_budget_consumed, aggregatable_dedup_keys,
       debug_reporting_enabled, attributability);
@@ -160,7 +161,8 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                 std::back_inserter(contributions),
                 [](const auto& contribution) {
                   return ai_mojom::AggregatableHistogramContribution::New(
-                      HexEncodeAggregationKey(contribution.key()),
+                      attribution_reporting::HexEncodeAggregationKey(
+                          contribution.key()),
                       contribution.value());
                 });
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
@@ -540,7 +542,8 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
     web_ui_trigger->aggregatable_triggers.emplace_back(
         absl::in_place,
         /*key_piece=*/
-        HexEncodeAggregationKey(aggregatable_trigger_data.key_piece()),
+        attribution_reporting::HexEncodeAggregationKey(
+            aggregatable_trigger_data.key_piece()),
         /*source_keys=*/aggregatable_trigger_data.source_keys(),
         /*filters=*/aggregatable_trigger_data.filters().filter_values(),
         /*not_filters=*/

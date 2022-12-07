@@ -42,6 +42,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   SourceRegistration(SourceRegistration&&);
   SourceRegistration& operator=(SourceRegistration&&);
 
+  base::Value::Dict ToJson() const;
+
   uint64_t source_event_id = 0;
   SuitableOrigin destination;
   SuitableOrigin reporting_origin;

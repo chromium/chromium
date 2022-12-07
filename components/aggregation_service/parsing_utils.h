@@ -19,6 +19,9 @@ COMPONENT_EXPORT(AGGREGATION_SERVICE)
 absl::optional<mojom::AggregationCoordinator> ParseAggregationCoordinator(
     const std::string& str);
 
+COMPONENT_EXPORT(AGGREGATION_SERVICE)
+std::string SerializeAggregationCoordinator(mojom::AggregationCoordinator);
+
 }  // namespace aggregation_service
 
 #endif  // COMPONENTS_AGGREGATION_SERVICE_PARSING_UTILS_H_

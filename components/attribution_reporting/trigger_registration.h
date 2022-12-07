@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/types/expected.h"
@@ -56,6 +54,8 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) TriggerRegistration {
 
   TriggerRegistration(TriggerRegistration&&);
   TriggerRegistration& operator=(TriggerRegistration&&);
+
+  base::Value::Dict ToJson() const;
 
   SuitableOrigin reporting_origin;
   Filters filters;

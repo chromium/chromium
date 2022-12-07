@@ -78,7 +78,7 @@ const struct {
   absl::optional<base::Value> json;
   base::expected<FilterData, SourceRegistrationError> expected_filter_data;
   base::expected<Filters, TriggerRegistrationError> expected_filters;
-} kTestCases[] = {
+} kParseTestCases[] = {
     {
         "Null",
         absl::nullopt,
@@ -186,7 +186,7 @@ TEST(FiltersTest, Create_LimitsFilterCount) {
 }
 
 TEST(FilterDataTest, FromJSON) {
-  for (auto& test_case : kTestCases) {
+  for (auto& test_case : kParseTestCases) {
     absl::optional<base::Value> json_copy =
         test_case.json ? absl::make_optional(test_case.json->Clone())
                        : absl::nullopt;
@@ -239,7 +239,7 @@ TEST(FilterDataTest, FromJSON_RecordsMetrics) {
 }
 
 TEST(FiltersTest, FromJSON) {
-  for (auto& test_case : kTestCases) {
+  for (auto& test_case : kParseTestCases) {
     absl::optional<base::Value> json_copy =
         test_case.json ? absl::make_optional(test_case.json->Clone())
                        : absl::nullopt;
@@ -266,6 +266,30 @@ TEST(FiltersTest, FromJSON) {
   {
     base::Value json = MakeFilterValuesWithValueLength(25);
     EXPECT_TRUE(Filters::FromJSON(&json).has_value());
+  }
+}
+
+TEST(FilterValuesTest, ToJson) {
+  const struct {
+    FilterValues input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          FilterValues(),
+          R"json({})json",
+      },
+      {
+          FilterValues({{"a", {}}, {"b", {"c"}}}),
+          R"json({"a":[],"b":["c"]})json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(FilterData::Create(test_case.input)->ToJson(),
+                base::test::IsJson(test_case.expected_json));
+
+    EXPECT_THAT(Filters::Create(test_case.input)->ToJson(),
+                base::test::IsJson(test_case.expected_json));
   }
 }
 
