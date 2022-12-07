@@ -71,7 +71,7 @@ int GetGroupWeight() {
     case Channel::CANARY:
     case Channel::DEV:
     case Channel::BETA:
-      return 0;
+      return 50;
     case Channel::STABLE:
       return 0;
   }
