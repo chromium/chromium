@@ -28,10 +28,7 @@ class FakeReadingListModelStorage
     virtual void FakeStorageDidRemoveEntry() = 0;
   };
 
-  // TODO(crbug.com/1386158): Remove inheritance from WriteBatch when
-  // GetWriteBatch() is removed.
-  class FakeScopedBatchUpdate : public ScopedBatchUpdate,
-                                public syncer::ModelTypeStore::WriteBatch {
+  class FakeScopedBatchUpdate : public ScopedBatchUpdate {
    public:
     explicit FakeScopedBatchUpdate(Observer* observer);
 
@@ -43,12 +40,6 @@ class FakeReadingListModelStorage
     void SaveEntry(const ReadingListEntry& entry) override;
     void RemoveEntry(const GURL& entry_url) override;
     syncer::MetadataChangeList* GetSyncMetadataChangeList() override;
-    syncer::ModelTypeStore::WriteBatch* GetWriteBatch() override;
-
-    // WriteBatch implementation.
-    void WriteData(const std::string& id, const std::string& value) override;
-    void DeleteData(const std::string& id) override;
-    syncer::MetadataChangeList* GetMetadataChangeList() override;
 
    private:
     const raw_ptr<Observer> observer_ = nullptr;

@@ -45,12 +45,6 @@ syncer::MetadataChangeList* ReadingListModelImpl::
   return storage_token_->GetSyncMetadataChangeList();
 }
 
-syncer::ModelTypeStore::WriteBatch*
-ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::GetWriteBatch() {
-  DCHECK(storage_token_);
-  return storage_token_->GetWriteBatch();
-}
-
 void ReadingListModelImpl::ScopedReadingListBatchUpdateImpl::
     ReadingListModelLoaded(const ReadingListModel* model) {}
 
@@ -313,6 +307,8 @@ void ReadingListModelImpl::SyncAddEntry(
     std::unique_ptr<ReadingListEntry> entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
+  DCHECK(IsPerformingBatchUpdates());
+
   // entry must not already exist.
   DCHECK(GetMutableEntryFromURL(entry->URL()) == nullptr);
   for (auto& observer : observers_)
@@ -321,8 +317,15 @@ void ReadingListModelImpl::SyncAddEntry(
   if (!entry->HasBeenSeen()) {
     SetUnseenFlag();
   }
-  GURL url = entry->URL();
+
+  // Write to the store.
+  if (storage_layer_) {
+    storage_layer_->EnsureBatchCreated()->SaveEntry(*entry);
+  }
+
+  const GURL url = entry->URL();
   entries_.emplace(url, std::move(*entry));
+
   for (auto& observer : observers_) {
     observer.ReadingListDidAddEntry(this, url, reading_list::ADDED_VIA_SYNC);
     observer.ReadingListDidApplyChanges(this);
@@ -333,9 +336,11 @@ ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
     std::unique_ptr<ReadingListEntry> entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  ReadingListEntry* existing_entry = GetMutableEntryFromURL(entry->URL());
+  DCHECK(IsPerformingBatchUpdates());
+
+  const GURL url = entry->URL();
+  ReadingListEntry* existing_entry = GetMutableEntryFromURL(url);
   DCHECK(existing_entry);
-  GURL url = entry->URL();
 
   for (auto& observer : observers_)
     observer.ReadingListWillMoveEntry(this, url);
@@ -349,6 +354,12 @@ ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
     // Only set the flag if a new unseen entry is added.
     SetUnseenFlag();
   }
+
+  // Write to the store.
+  if (storage_layer_) {
+    storage_layer_->EnsureBatchCreated()->SaveEntry(*existing_entry);
+  }
+
   for (auto& observer : observers_) {
     observer.ReadingListDidMoveEntry(this, url);
     observer.ReadingListDidApplyChanges(this);
@@ -358,6 +369,7 @@ ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
 }
 
 void ReadingListModelImpl::SyncRemoveEntry(const GURL& url) {
+  DCHECK(IsPerformingBatchUpdates());
   RemoveEntryByURLImpl(url, true);
 }
 
@@ -376,11 +388,14 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
   for (auto& observer : observers_)
     observer.ReadingListWillRemoveEntry(this, url);
 
-  if (storage_layer_ && !from_sync) {
+  if (storage_layer_) {
     std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
         storage_layer_->EnsureBatchCreated();
     batch->RemoveEntry(url);
-    sync_bridge_.DidRemoveEntry(*entry, batch->GetSyncMetadataChangeList());
+
+    if (!from_sync) {
+      sync_bridge_.DidRemoveEntry(*entry, batch->GetSyncMetadataChangeList());
+    }
   }
 
   UpdateEntryStateCountersOnEntryRemoval(*entry);

@@ -10,9 +10,6 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/time/clock.h"
-// TODO(crbug.com/1386158): ReadingListLocal should be fully abstracted within
-// ReadingListModelStorage.
-#include "components/reading_list/core/proto/reading_list.pb.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -109,9 +106,6 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
   std::unique_ptr<ReadingListModelImpl::ScopedReadingListBatchUpdateImpl>
       model_batch_updates = model_->BeginBatchUpdatesWithSyncMetadata();
 
-  syncer::ModelTypeStore::WriteBatch* write_batch =
-      model_batch_updates->GetWriteBatch();
-
   // Merge sync to local data.
   for (const auto& change : entity_changes) {
     synced_entries.insert(change->storage_key());
@@ -125,25 +119,10 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
         model_->GetEntryByURL(entry->URL());
 
     if (!existing_entry) {
-      // This entry is new. Add it to the store and model.
-      // Convert to local store format and write to store.
-      std::unique_ptr<reading_list::ReadingListLocal> entry_pb =
-          entry->AsReadingListLocal(clock_->Now());
-      write_batch->WriteData(entry->URL().spec(),
-                             entry_pb->SerializeAsString());
-
-      // Notify model about updated entry.
       delegate_->SyncAddEntry(std::move(entry));
     } else {
-      // Merge the local data and the sync data and store the result.
       ReadingListEntry* merged_entry =
           delegate_->SyncMergeEntry(std::move(entry));
-
-      // Write to the store.
-      std::unique_ptr<reading_list::ReadingListLocal> entry_local_pb =
-          merged_entry->AsReadingListLocal(clock_->Now());
-      write_batch->WriteData(merged_entry->URL().spec(),
-                             entry_local_pb->SerializeAsString());
 
       // Send to sync
       std::unique_ptr<sync_pb::ReadingListSpecifics> entry_sync_pb =
@@ -203,13 +182,8 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::ApplySyncChanges(
   std::unique_ptr<ReadingListModelImpl::ScopedReadingListBatchUpdateImpl>
       model_batch_updates = model_->BeginBatchUpdatesWithSyncMetadata();
 
-  syncer::ModelTypeStore::WriteBatch* write_batch =
-      model_batch_updates->GetWriteBatch();
-
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
-      write_batch->DeleteData(change->storage_key());
-      // Need to notify model that entry is deleted.
       delegate_->SyncRemoveEntry(GURL(change->storage_key()));
     } else {
       // Deserialize entry.
@@ -222,25 +196,10 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::ApplySyncChanges(
           model_->GetEntryByURL(entry->URL());
 
       if (!existing_entry) {
-        // This entry is new. Add it to the store and model.
-        // Convert to local store format and write to store.
-        std::unique_ptr<reading_list::ReadingListLocal> entry_pb =
-            entry->AsReadingListLocal(clock_->Now());
-        write_batch->WriteData(entry->URL().spec(),
-                               entry_pb->SerializeAsString());
-
-        // Notify model about updated entry.
         delegate_->SyncAddEntry(std::move(entry));
       } else {
         // Merge the local data and the sync data and store the result.
-        ReadingListEntry* merged_entry =
-            delegate_->SyncMergeEntry(std::move(entry));
-
-        // Write to the store.
-        std::unique_ptr<reading_list::ReadingListLocal> entry_local_pb =
-            merged_entry->AsReadingListLocal(clock_->Now());
-        write_batch->WriteData(merged_entry->URL().spec(),
-                               entry_local_pb->SerializeAsString());
+        delegate_->SyncMergeEntry(std::move(entry));
 
         // Note: Do NOT send the merged data back to Sync. Doing that could
         // cause ping-pong between two devices that disagree on the "correct"

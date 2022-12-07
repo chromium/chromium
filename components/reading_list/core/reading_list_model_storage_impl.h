@@ -47,7 +47,6 @@ class ReadingListModelStorageImpl : public ReadingListModelStorage {
     void SaveEntry(const ReadingListEntry& entry) override;
     void RemoveEntry(const GURL& entry_url) override;
     syncer::MetadataChangeList* GetSyncMetadataChangeList() override;
-    syncer::ModelTypeStore::WriteBatch* GetWriteBatch() override;
 
    private:
     const raw_ptr<ReadingListModelStorageImpl> store_;

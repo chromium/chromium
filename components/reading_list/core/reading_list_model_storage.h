@@ -13,7 +13,6 @@
 #include "base/types/expected.h"
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/model_type_store.h"
 
 class GURL;
 
@@ -75,10 +74,6 @@ class ReadingListModelStorage {
 
     // Allows modifications to sync metadata in storage.
     virtual syncer::MetadataChangeList* GetSyncMetadataChangeList() = 0;
-
-    // TODO(crbug.com/1386158): Remove this function once all direct
-    // interactions with storage are migrated.
-    virtual syncer::ModelTypeStore::WriteBatch* GetWriteBatch() = 0;
   };
 };
 

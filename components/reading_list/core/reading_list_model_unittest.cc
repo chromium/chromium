@@ -303,6 +303,9 @@ TEST_F(ReadingListModelTest, AddExistingEntry) {
 
 // Tests addin entry from sync.
 TEST_F(ReadingListModelTest, SyncAddEntry) {
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = model_->BeginBatchUpdates();
+
   auto entry = std::make_unique<ReadingListEntry>(
       GURL("http://example.com"), "sample", AdvanceAndGetTime(&clock_));
   entry->SetRead(true, AdvanceAndGetTime(&clock_));
@@ -310,7 +313,7 @@ TEST_F(ReadingListModelTest, SyncAddEntry) {
 
   model_->SyncAddEntry(std::move(entry));
   AssertObserverCount(0, 0, 0, 0, 0, 0, 1, 0, 1);
-  AssertStorageCount(0, 0);
+  AssertStorageCount(1, 0);
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(1ul, ReadSize());
   ClearCounts();
@@ -341,8 +344,11 @@ TEST_F(ReadingListModelTest, SyncMergeEntry) {
   EXPECT_EQ(1ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
 
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = model_->BeginBatchUpdates();
   ReadingListEntry* merged_entry =
       model_->SyncMergeEntry(std::move(sync_entry));
+
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(1ul, ReadSize());
   EXPECT_EQ(merged_entry->DistilledPath(),
@@ -385,6 +391,8 @@ TEST_F(ReadingListModelTest, RemoveEntryByUrl) {
 
 // Tests deleting entry from sync.
 TEST_F(ReadingListModelTest, RemoveSyncEntryByUrl) {
+  // DCHECKs verify that sync updates are issued as batch updates.
+  auto token = model_->BeginBatchUpdates();
   model_->AddEntry(GURL("http://example.com"), "sample",
                    reading_list::ADDED_VIA_CURRENT_APP);
   ClearCounts();
@@ -393,7 +401,7 @@ TEST_F(ReadingListModelTest, RemoveSyncEntryByUrl) {
   EXPECT_EQ(0ul, ReadSize());
   model_->SyncRemoveEntry(GURL("http://example.com"));
   AssertObserverCount(0, 0, 0, 0, 1, 0, 0, 0, 1);
-  AssertStorageCount(0, 0);
+  AssertStorageCount(0, 1);
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
   EXPECT_EQ(model_->GetEntryByURL(GURL("http://example.com")), nullptr);
@@ -407,7 +415,7 @@ TEST_F(ReadingListModelTest, RemoveSyncEntryByUrl) {
   EXPECT_EQ(1ul, ReadSize());
   model_->SyncRemoveEntry(GURL("http://example.com"));
   AssertObserverCount(0, 0, 0, 0, 1, 0, 0, 0, 1);
-  AssertStorageCount(0, 0);
+  AssertStorageCount(0, 1);
   EXPECT_EQ(0ul, UnreadSize());
   EXPECT_EQ(0ul, ReadSize());
   EXPECT_EQ(model_->GetEntryByURL(GURL("http://example.com")), nullptr);

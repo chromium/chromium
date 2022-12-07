@@ -32,23 +32,6 @@ syncer::MetadataChangeList* FakeReadingListModelStorage::FakeScopedBatchUpdate::
   return &sync_metadata_change_list;
 }
 
-syncer::ModelTypeStore::WriteBatch*
-FakeReadingListModelStorage::FakeScopedBatchUpdate::GetWriteBatch() {
-  return this;
-}
-
-void FakeReadingListModelStorage::FakeScopedBatchUpdate::WriteData(
-    const std::string& id,
-    const std::string& value) {}
-
-void FakeReadingListModelStorage::FakeScopedBatchUpdate::DeleteData(
-    const std::string& id) {}
-
-syncer::MetadataChangeList*
-FakeReadingListModelStorage::FakeScopedBatchUpdate::GetMetadataChangeList() {
-  return GetSyncMetadataChangeList();
-}
-
 FakeReadingListModelStorage::FakeReadingListModelStorage()
     : FakeReadingListModelStorage(/*observer=*/nullptr) {}
 

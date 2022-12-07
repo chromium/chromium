@@ -67,13 +67,6 @@ ReadingListModelStorageImpl::EnsureBatchCreated() {
   return std::make_unique<ScopedBatchUpdate>(this);
 }
 
-syncer::ModelTypeStore::WriteBatch*
-ReadingListModelStorageImpl::ScopedBatchUpdate::GetWriteBatch() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(store_->batch_);
-  return store_->batch_.get();
-}
-
 syncer::MetadataChangeList*
 ReadingListModelStorageImpl::ScopedBatchUpdate::GetSyncMetadataChangeList() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
