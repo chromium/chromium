@@ -503,7 +503,6 @@ crbug.com/915926 fast/events/touch/multi-touch-user-gesture.html [ Failure Pass 
 
 crbug.com/1303091 [ Linux ] compositing/overflow/paint-neg-z-order-descendants-into-scrolling-contents-layer.html [ Failure Pass ]
 
-
 # New OffscreenCanvas Tests that are breaking LayoutTest
 
 crbug.com/980969 http/tests/input/discard-events-to-unstable-iframe.html [ Failure Pass ]
@@ -1808,9 +1807,6 @@ crbug.com/1158554 external/wpt/css/css-conditional/at-supports-046.html [ Failur
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/textarea-scrollbar-width-none.html [ Failure ]
 crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Failure ]
-# Incorrect native scrollbar repaint
-
-# Failures on specific Mac bots
 
 # Failures from CSS3 Text (text-justify and text-indent: hanging/each-line) not being implemented.
 crbug.com/248894 external/wpt/css/css-pseudo/first-letter-allowed-properties.html [ Failure ]
@@ -6017,9 +6013,6 @@ crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ F
 # Flaky test
 crbug.com/1173439 http/tests/devtools/service-workers/service-worker-manager.js [ Pass Timeout ]
 
-# V8 roll
-
-
 # Temporarily disabled to unblock https://crrev.com/c/2979697
 crbug.com/1222114 http/tests/devtools/console/console-dir.js [ Failure Pass ]
 
@@ -6180,8 +6173,6 @@ crbug.com/1193979 [ Mac ] fast/events/tabindex-focus-blur-all.html [ Failure Pas
 # Sheriff 2021-04-13
 crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout ]
 
-# Sheriff 2021-04-14
-
 # Sheriff 2021-04-15
 crbug.com/1196118 plugins/mouse-move-over-plugin-in-frame.html [ Failure Pass ]
 crbug.com/1199528 http/tests/inspector-protocol/css/css-edit-redirected-css.js [ Failure Pass ]
@@ -6199,19 +6190,11 @@ crbug.com/1191990 http/tests/serviceworker/clients-openwindow.html [ Failure Pas
 # Image pixels are sometimes different on Fuchsia.
 crbug.com/1201123 [ Fuchsia ] tables/mozilla/bugs/bug1188.html [ Failure Pass ]
 
-# Sheriff 2021-04-26
-
-# Sheriff 2021-04-29
-
 # Appears to be timing out even when marked as Slow.
 crbug.com/1205184 [ Mac12 ] external/wpt/IndexedDB/interleaved-cursors-large.html [ Pass Timeout ]
 
 # Sheriff 2021-05-03
 crbug.com/1205012 external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/reporting-observer.html [ Pass Timeout ]
-
-# Sheriff 2021-05-10
-
-# Sheriff 2021-05-04
 
 # Blink_web_tests 2021-05-06
 crbug.com/1205669 [ Mac10.13 ] virtual/threaded/external/wpt/animation-worklet/idlharness.any.worker.html [ Failure ]
@@ -6500,8 +6483,6 @@ crbug.com/1197464 [ Mac ] plugins/refcount-leaks.html [ Failure Pass ]
 # Sheriff 2021-07-05
 crbug.com/1226445 [ Mac ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
 
-# Sheriff 2021-07-07
-
 # Sheriff 2021-07-12
 crbug.com/1228432 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-before-xr-session.https.html [ Pass Timeout ]
 
@@ -6594,8 +6575,6 @@ crbug.com/1194498 http/tests/misc/iframe-script-modify-attr.html [ Crash Failure
 
 # Sheriff 2021-08-23
 crbug.com/1242243 external/wpt/css/css-paint-api/parse-input-arguments-018.https.html [ Crash Failure Pass ]
-
-# Sheriff 2021-08-25
 
 # Sheriff 2021-08-26
 crbug.com/1243707 [ Debug Linux ] http/tests/inspector-protocol/target/auto-attach-related-sw.js [ Crash Pass ]
@@ -6798,8 +6777,6 @@ crbug.com/1233826 virtual/threaded/external/wpt/animation-worklet/worklet-animat
 crbug.com/930462 external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Failure Pass Timeout ]
 crbug.com/930462 virtual/threaded/external/wpt/animation-worklet/worklet-animation-pause-resume.https.html [ Crash Failure Pass Timeout ]
 
-# Sheriff 2021-09-29
-
 # Sheriff 2021-10-01
 crbug.com/1255221 http/tests/devtools/elements/styles-4/svg-style.js [ Failure Pass ]
 
@@ -6913,9 +6890,6 @@ crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/open-clos
 crbug.com/1275967 [ Linux ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
 crbug.com/1276207 virtual/gpu-rasterization/images/color-profile-image-object-fit.html [ Failure Pass ]
 crbug.com/1276290 [ Mac ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Crash Failure Pass Timeout ]
-
-# Sheriff 2021-12-03
-
 
 # Sheriff 2021-12-13
 crbug.com/1279586 [ Mac ] external/wpt/IndexedDB/idbobjectstore-rename-abort.html [ Failure ]
@@ -7376,8 +7350,6 @@ crbug.com/1225773 [ Linux ] external/wpt/html/webappapis/scripting/processing-mo
 
 # Flaky timeouts on WebKit Linux MSAN
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Pass Timeout ]
-
-# Sheriff 2022-08-03
 
 # Sheriff 2022-08-06
 crbug.com/1350337 [ Linux ] external/wpt/web-locks/query-ordering.tentative.https.html [ Failure Pass ]
@@ -8052,8 +8024,6 @@ crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.ht
 # Disabled to land devtools-frontend change:
 crbug.com/1376854 http/tests/devtools/elements/accessibility/autocomplete-attribute.js [ Crash Failure Pass Timeout ]
 crbug.com/1376854 http/tests/devtools/elements/styles-3/style-autocomplete.js [ Crash Failure Pass Timeout ]
-
-# WebRTC: temporarily disabled to allow new WebRTC stats to roll.
 
 # Sheriff 2022-10-20
 crbug.com/1376845 external/wpt/mediacapture-insertable-streams/MediaStreamTrackProcessor-backpressure.https.html [ Failure Pass ]
