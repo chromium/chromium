@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Cuando usas otra ventana no se prueban las teclas.</translation>
 <translation id="2493126929778606526">Tus mejores fotos seleccionadas automáticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Flotante</translation>
 <translation id="2505327257735685095">Actualiza la imagen del fondo de pantalla actual</translation>
 <translation id="2513396635448525189">Imagen de acceso</translation>
 <translation id="2517472476991765520">Buscar</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Presentación de diapositivas</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imágenes</translation>
+<translation id="4311195029067684288">Total</translation>
 <translation id="4333390807948134856">La tecla <ph name="KEY_NAME" /> está presionada</translation>
 <translation id="435692326371619097">Administra la configuración del APN de red. Los APN establecen una conexión entre Internet y una red móvil. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">No se ejecutó la rutina</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Se cargó <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4930320165497208503">Para configurar o actualizar una conexión, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Fecha</translation>
+<translation id="4937657825850660613">Mitad</translation>
 <translation id="4950314376641394653">Se actualizó el firmware del dispositivo <ph name="DEVICE_NAME" /> a la versión <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Parcial</translation>
 <translation id="498186245079027698">Revisa el escáner y vuelve a intentarlo. Asegúrate de que haya espacio suficiente en el almacenamiento local para guardar los archivos escaneados.</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
 <translation id="4987769320337599931">Firewall</translation>

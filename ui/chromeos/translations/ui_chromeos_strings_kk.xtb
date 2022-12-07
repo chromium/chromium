@@ -43,8 +43,10 @@
 <translation id="1378727793141957596">Google Drive жүйесіне қош келдіңіз!</translation>
 <translation id="1379911846207762492">Файлдарды офлайн режимде қолжетімді етіп, интернет байланысы болмаған кезде пайдалануыңызға болады.</translation>
 <translation id="1383876407941801731">Іздеу</translation>
+<translation id="1388045380422025115">Барлық түр</translation>
 <translation id="1395262318152388157">Ысырманы іздеу</translation>
 <translation id="1399511500114202393">Пайдаланушы сертификаты жоқ</translation>
+<translation id="1403008701842173542">Барлық жерде</translation>
 <translation id="1404323374378969387">Норвег тілі</translation>
 <translation id="1433628812591023318">Файлдарды Parallels Desktop-қа апару үшін "Windows файлдары" қалтасына орналастыру керек.</translation>
 <translation id="1435838927755162558">Қалтаны Parallels Desktop арқылы бөлісу</translation>
@@ -102,6 +104,7 @@
 <translation id="1834290891154666894">Енгізілген балама атау тақырыбы сәйкестігі жарамсыз.</translation>
 <translation id="1838709767668011582">Google сайты</translation>
 <translation id="1853795129690976061">Бұл қалта Linux арқылы бөлісілді.</translation>
+<translation id="1859422890169495746">Осы Chromebook</translation>
 <translation id="1864756863218646478">Файлды табу мүмкін емес.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, қоcылу</translation>
 <translation id="1920670151694390848">Малаялам (транслитерация)</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">Желіні реттеу</translation>
 <translation id="2325650632570794183">Бұл файл түріне қолдау көрсетілмеген. Бұл файл түрін ашатын қолданбаны табу үшін Chrome веб-дүкеніне кіріңіз.</translation>
 <translation id="2326539130272988168">Болгар</translation>
+<translation id="2337715497728194187">Bruschetta-мен бөлісу</translation>
 <translation id="23721837607121582">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="2377319039870049694">Тізім көрінісіне ауысу</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> қалта Linux жүйесімен бөлісілген</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">Желі аутентификация сертификатын қабылдамады</translation>
 <translation id="255937426064304553">АҚШ халықаралық</translation>
 <translation id="2563185590376525700">Бақа</translation>
+<translation id="2574327434504608656">1 қалтаны Bruschetta-мен бөлістіңіз.</translation>
 <translation id="2578394532502990878">Тамиль (фонетикалық)</translation>
 <translation id="2579959351793446050">Одия</translation>
 <translation id="2602810353103180630">Желі: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, әкімші бөгеген, мәліметтер</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> іске қосу</translation>
 <translation id="3408236822532681288">Неміс (Германия), NEO 2 пернетақтасымен</translation>
 <translation id="3414856743105198592">Алынбалы тасымалдаушыны пішімдеу әрекеті барлық деректерді өшіреді. Жалғастырасыз ба?</translation>
+<translation id="3435143625481187092">Bruschetta құрылғысына <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат беріңіз.</translation>
 <translation id="3437801641691368414">Жасалған уақыты</translation>
 <translation id="343907260260897561">Лезде басып шығаратын камера</translation>
 <translation id="3455931012307786678">Эстон</translation>
@@ -320,6 +326,7 @@
 <translation id="3801082500826908679">Фарер</translation>
 <translation id="3809272675881623365">Қоян</translation>
 <translation id="3810973564298564668">Басқару</translation>
+<translation id="3811408895933919563">Ағылшын (Пәкістан)</translation>
 <translation id="3811494700605067549">1 файл таңдалды</translation>
 <translation id="3817579325494460411">Берілмеген</translation>
 <translation id="3819448694985509187">PIN коды дұрыс емес. 1 әрекет қалды.</translation>
@@ -354,6 +361,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылжытылды.</translation>
 <translation id="4176286497474237543">Себетті қазір босату</translation>
 <translation id="4179621117429069925">Бұл элемент себетте</translation>
+<translation id="4181839429935094755"><ph name="NUMBER_OF_ITEMS" /> қалтаны Bruschetta-мен бөлістіңіз.</translation>
 <translation id="4186579485882418952">Офлайн режимде қолдану мүмкіндігін қосу</translation>
 <translation id="4193154014135846272">Google құжаты</translation>
 <translation id="4197674956721858839">Таңдалған файлдарды мұрағаттау</translation>
@@ -415,6 +423,7 @@
 <translation id="4646813851450205600">Чех (QWERTY пернетақтасымен)</translation>
 <translation id="4656777537938206294">Файлдарды офлайн режимде қолжетімді ету</translation>
 <translation id="4658782175094886150">Қардағы адам</translation>
+<translation id="466782788172479199">Bruschetta құрылғысына Google Drive дискісіндегі файлдарды пайдалануға рұқсат беріңіз. Өзгертулер барлық құрылғыда болады.</translation>
 <translation id="4669606053856530811">Бұл файлдар "<ph name="SOURCE_NAME" />" мүшелерімен бөлісілмейтін болса, олар кіру рұқсатынан айырылады</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">швед</translation>
@@ -448,6 +457,7 @@
 <translation id="4850886885716139402">Көрініс</translation>
 <translation id="485316830061041779">неміс</translation>
 <translation id="4867079195717347957">Бағанды кему ретімен сұрыптау үшін басыңыз.</translation>
+<translation id="4867297348137739678">Соңғы апта</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
 <translation id="4874569719830985133">Біржола жою</translation>
 <translation id="4880214202172289027">Дыбыс деңгейі ысырмасы</translation>
@@ -520,6 +530,7 @@
 <translation id="5330145655348521461">Бұл файлдар басқа жұмыс үстелінде ашылды. Оны көру үшін <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) мекенжайына жылжытыңыз.</translation>
 <translation id="5330512191124428349">Ақпарат алу</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> қоспағанда, файлдарды барлық URL мекенжайы арқылы пайдалану</translation>
+<translation id="5344246330454251646">Bruschetta-мен бөлісуді басқару</translation>
 <translation id="535792325654997756">Мысықтары бар адам</translation>
 <translation id="5358764674931277">Кадр жиілігі</translation>
 <translation id="5363339716524495120">Енгізу тілі – қытай</translation>
@@ -565,6 +576,7 @@
 <translation id="5700087501958648444">Аудиофайл ақпараты</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> файлы себетке жіберілді.</translation>
 <translation id="5724172041621205163">Тай (Pattachote пернетақтасымен)</translation>
+<translation id="57383366388012121">Соңғы ай</translation>
 <translation id="5756666464756035725">Венгр QWERTY пернетақтасы</translation>
 <translation id="5763377084591234761">Неміс (Швейцария)</translation>
 <translation id="5769519078756170258">Қамтылмайтын хост не домен</translation>
@@ -674,6 +686,7 @@
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6732801395666424405">Сертификаттар жүктелмеді</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">Қалтаны Bruschetta-мен бөлісу</translation>
 <translation id="6751256176799620176">1 қалта таңдалды</translation>
 <translation id="6755827872271341378">ChromeOS Flex құрылғысы</translation>
 <translation id="6790428901817661496">Ойнату</translation>
@@ -702,6 +715,7 @@
 <translation id="6935521024859866267">Төменгі жағын жоғары қаратып</translation>
 <translation id="6943836128787782965">HTTP сәтсіз аяқталды</translation>
 <translation id="6949408524333579394">Серб (транслитерация)</translation>
+<translation id="69548399407432279">Былтыр</translation>
 <translation id="6960565108681981554">Іске қосылмаған. Операторға хабарласыңыз.</translation>
 <translation id="696203921837389374">Мобильді деректер арқылы синхрондау</translation>
 <translation id="6965382102122355670">Жарайды</translation>
@@ -845,6 +859,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> аудиофайлы</translation>
 <translation id="8045462269890919536">румын</translation>
 <translation id="8049184478152619004">Жеке бөгеуден шығару кодын (PUK коды) енгізіңіз</translation>
+<translation id="8055538340801153769">Осы қалта</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> алынып жатыр…</translation>
 <translation id="8087576439476816834">Жүктеп алу: <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">Маған қолжетімді</translation>

@@ -43,8 +43,10 @@
 <translation id="1378727793141957596">Google Drive က ကြိုဆိုပါသည်!</translation>
 <translation id="1379911846207762492">အင်တာနက်ချိတ်ဆက်မှု မရှိသည့်အခါ ဖွင့်ကြည့်နိုင်ရန် ဖိုင်များကို အော့ဖ်လိုင်းသုံးနိုင်အောင် ပြုလုပ်နိုင်သည်။</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
+<translation id="1388045380422025115">အမျိုးအစားအားလုံး</translation>
 <translation id="1395262318152388157">ဆလိုက်ဒါးကို ရှာပါ</translation>
 <translation id="1399511500114202393">အသုံးပြုသူ အသိအမှတ်ပြုလက်မှတ် မရှိပါ</translation>
+<translation id="1403008701842173542">နေရာအနှံ့</translation>
 <translation id="1404323374378969387">နော်ဝေ</translation>
 <translation id="1433628812591023318">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ ရွှေ့ရပါမည်။</translation>
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
@@ -102,6 +104,7 @@
 <translation id="1834290891154666894">မှန်ကန်မှုမရှိသည့် အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု ထည့်သွင်းခြင်း</translation>
 <translation id="1838709767668011582">Google ဆိုက်</translation>
 <translation id="1853795129690976061">ဤဖိုင်တွဲကို Linux အား မျှဝေထားသည်</translation>
+<translation id="1859422890169495746">ဤ Chromebook</translation>
 <translation id="1864756863218646478">ဖိုင်ကို မတွေ့နိုင်ပါ။</translation>
 <translation id="1884013283844450420">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ ချိတ်ဆက်ရန်</translation>
 <translation id="1920670151694390848">မလေယာလမ် အက္ခရာဖလှယ်ခြင်း</translation>
@@ -153,6 +156,7 @@
 <translation id="2307462900900812319">ကွန်ရက် ပြုပြင်ရန်</translation>
 <translation id="2325650632570794183">ဤဖိုင်အမျိုးစားအား မထောက်ပံ့ပါ။ Chrome ဝက်ဘ်စတိုးသို့ဝင်ရောက်ကာ ဤဖိုင်အမျိုးစားကို ဖွင့်နိုင်သည့် အက်ပ် ကိုရှာပါ။</translation>
 <translation id="2326539130272988168">ဘူလ်ဂေးရီးယား</translation>
+<translation id="2337715497728194187">Bruschetta အား မျှဝေရန်</translation>
 <translation id="23721837607121582">မိုဘိုင်းပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">စာရင်းမြင်ကွင်းသို့ ပြောင်းရန်</translation>
 <translation id="2377590462528165447">Linux နှင့် ဖိုင်တွဲ <ph name="NUMBER_OF_ITEMS" /> ခု မျှဝေထားသည်</translation>
@@ -182,6 +186,7 @@
 <translation id="2544853746127077729">ကွန်ရက်မှ စစ်မှန်ကြောင်းသက်သေပြချက်လက်မှတ်ကို ငြင်းပယ်ခဲ့သည်</translation>
 <translation id="255937426064304553">US international</translation>
 <translation id="2563185590376525700">ဖား</translation>
+<translation id="2574327434504608656">ဖိုင်တွဲ ၁ ခုကို Bruschetta အား မျှဝေထားသည်</translation>
 <translation id="2578394532502990878">တမီးလ် အသံထွက်</translation>
 <translation id="2579959351793446050">အိုဒီယာ</translation>
 <translation id="2602810353103180630">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
@@ -275,6 +280,7 @@
 <translation id="3408072735282270043">စဖွင့်ရန်၊ <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Neo 2 ကီးဘုတ်ဖြင့် ဂျာမန် (ဂျာမနီ)</translation>
 <translation id="3414856743105198592">ဖြုတ်တပ်ရသော မီဒီယာကို ပြန်လည်ပြင်ဆင်ခြင်းသည် ဒေတာအားလုံးကို ဖျက်ပစ်လိမ့်မည်။သင်ရှေ့ဆက်လိုပါသလား?</translation>
+<translation id="3435143625481187092"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Bruschetta အား သုံးခွင့်ပေးမည်</translation>
 <translation id="3437801641691368414">ပြုလုပ်ခဲ့သည့်အချိန်</translation>
 <translation id="343907260260897561">ပုံအသင့်ထွက် ကင်မရာ</translation>
 <translation id="3455931012307786678">အက်စ်တိုနီးယား</translation>
@@ -320,6 +326,7 @@
 <translation id="3801082500826908679">ဖားရို့စ်</translation>
 <translation id="3809272675881623365">ယုန်</translation>
 <translation id="3810973564298564668">စီမံရန်</translation>
+<translation id="3811408895933919563">အင်္ဂလိပ် (ပါကစ္စတန်)</translation>
 <translation id="3811494700605067549">ဖိုင် ၁ ခုရွေးချယ်ထားသည်</translation>
 <translation id="3817579325494460411">ဖော်ပြမထားပါ</translation>
 <translation id="3819448694985509187">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် 1 ကြိမ် ကျန်သည်။</translation>
@@ -354,6 +361,7 @@
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
 <translation id="4176286497474237543">အမှိုက်ပုံးကို ယခုရှင်းရန်</translation>
 <translation id="4179621117429069925">ဤဖိုင်သည် အမှိုက်ပုံးထဲတွင် ရှိသည်</translation>
+<translation id="4181839429935094755">ဖိုင်တွဲ <ph name="NUMBER_OF_ITEMS" /> ခုကို Bruschetta အား မျှဝေထားသည်</translation>
 <translation id="4186579485882418952">အော့ဖ်လိုင်းသုံးရန်</translation>
 <translation id="4193154014135846272">Google စာရွက်စာတမ်း</translation>
 <translation id="4197674956721858839">ဇစ်ရွေးချက်မှု</translation>
@@ -415,6 +423,7 @@
 <translation id="4646813851450205600">Qwerty ကီးဘုတ်ဖြင့် ချက်</translation>
 <translation id="4656777537938206294">ဖိုင်များကို အော့ဖ်လိုင်းသုံးနိုင်ရန် ပြုလုပ်ခြင်း</translation>
 <translation id="4658782175094886150">နှင်းတောထဲကလူ</translation>
+<translation id="466782788172479199">သင်၏ Google Drive ရှိ ဖိုင်များကို Bruschetta အား သုံးခွင့်ပေးမည်။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားမည်။</translation>
 <translation id="4669606053856530811">ဤအရာများကို '<ph name="SOURCE_NAME" />' ၏ အဖွဲ့ဝင်များနှင့် မျှဝေထားခြင်း မရှိလျင် ၎င်းတို့သည် အသုံးပြုခွင့် ဆုံးရှုံးနိုင်ပါသည်။</translation>
 <translation id="467809019005607715">Google Slides</translation>
 <translation id="4690246192099372265">ဆွီဒင်</translation>
@@ -448,6 +457,7 @@
 <translation id="4850886885716139402">မြင်ကွင်း</translation>
 <translation id="485316830061041779">ဂျာမန်</translation>
 <translation id="4867079195717347957">ကော်လံကို ကြီးစဉ်ငယ်လိုက်စီရန် နှိပ်ပါ။</translation>
+<translation id="4867297348137739678">ယခင်သီတင်းပတ်</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ဘိုက်</translation>
 <translation id="4874569719830985133">အပြီးဖျက်ရန်</translation>
 <translation id="4880214202172289027">အတိုးအကျယ် ဆလိုက်ဒါး</translation>
@@ -520,6 +530,7 @@
 <translation id="5330145655348521461">ဤဖိုင်များကို အခြား ဒက်စ်တော့မှာ ဖွင့်ထားသည်။  ၎င်းကို ကြည့်ရန် <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)သို့ သွားပါ။</translation>
 <translation id="5330512191124428349">အချက်အလက်ရယူရန်</translation>
 <translation id="5337538975554986899"><ph name="NON_RESTRICTED_DESTINATIONS" /> မှအပ url အားလုံးက ဖိုင်အသုံးပြုနိုင်သည်</translation>
+<translation id="5344246330454251646">Bruschetta မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="535792325654997756">ကြောင်များနှင့်လူ</translation>
 <translation id="5358764674931277">ဖရိမ်ပြနှုန်း</translation>
 <translation id="5363339716524495120">လက်ကွက်ဘာသာစကားသည် Chinese ဖြစ်သည်</translation>
@@ -565,6 +576,7 @@
 <translation id="5700087501958648444">အသံအချက်အလက်</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> ကို အမှိုက်ပုံးသို့ ရွှေ့လိုက်သည်</translation>
 <translation id="5724172041621205163">Pattachote ကီးဘုတ်ဖြင့် ထိုင်း</translation>
+<translation id="57383366388012121">ယခင်လ</translation>
 <translation id="5756666464756035725">ဟန်ဂေရီ QWERTY</translation>
 <translation id="5763377084591234761">ဂျာမန် (ဆွစ်ဇာလန်)</translation>
 <translation id="5769519078756170258">ပယ်ရန် ဆာဗာပင်ရင်း သို့မဟုတ် ဒိုမိန်း</translation>
@@ -674,6 +686,7 @@
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="6732801395666424405">လက်မှတ်ကို တင်မပေးခဲ့</translation>
 <translation id="6736329909263487977"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]</translation>
+<translation id="6740270213273127264">ဖိုင်တွဲကို Bruschetta အား မျှဝေရန်</translation>
 <translation id="6751256176799620176">ဖိုင်တွဲ ၁ ခု ရွေးချယ်ထားသည်</translation>
 <translation id="6755827872271341378">ChromeOS Flex စက်</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
@@ -702,6 +715,7 @@
 <translation id="6935521024859866267">ဇောက်ထိုး မိုးမျှော်</translation>
 <translation id="6943836128787782965">HTTP မှာ မအောင်မြင်ခဲ့</translation>
 <translation id="6949408524333579394">ဆားဘီးယား အက္ခရာဖလှယ်ခြင်း</translation>
+<translation id="69548399407432279">မနှစ်က</translation>
 <translation id="6960565108681981554">ဖွင့်မထားပါ။ သင်၏ မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="696203921837389374">မိုဘိုင်း ဒေတာ ပေါ်မှာ စင့်က်လုပ်မှုကို ဖွင့်ပေးရန်</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -845,6 +859,7 @@
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> အသံ</translation>
 <translation id="8045462269890919536">ရောမ</translation>
 <translation id="8049184478152619004">ပင်နံပါတ် ပြန်ဖွင့်သည့် ကုဒ် (PUK) ထည့်ပါ</translation>
+<translation id="8055538340801153769">ဤဖိုင်တွဲ</translation>
 <translation id="807187749540895545"><ph name="FILE_NAME" /> ထုတ်ယူနေသည်…</translation>
 <translation id="8087576439476816834">ဒေါင်းလုဒ်လုပ်ရန်၊ <ph name="PROFILE_NAME" /></translation>
 <translation id="8106045200081704138">ကျွန်ုပ်အား မျှဝေထား</translation>

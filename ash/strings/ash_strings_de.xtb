@@ -666,6 +666,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4666082839192943839">Deaktiviere den Kamerazugriff auf diesem Gerät, um alle Kameras dauerhaft zu blockieren.</translation>
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4667099493359681081">„<ph name="FILENAME" />“ wird heruntergeladen</translation>
+<translation id="468293128311738995">Apps von deinem Smartphone</translation>
 <translation id="4690510401873698237">Ablage unten</translation>
 <translation id="4696813013609194136">Gerät mit Elterncode entsperren</translation>
 <translation id="4702647871202761252">Der Datenschutzbildschirm ist momentan deaktiviert</translation>
@@ -927,7 +928,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6121838516699723042">Download bestätigen: <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">In Gastsitzungen ist Google Assistant nicht verfügbar.</translation>
 <translation id="6129953537138746214">Leertaste</translation>
-<translation id="6134259848159370930">Auf deinem Gerät, in Apps, Einstellungen und im Web suchen.</translation>
 <translation id="6137566720514957455">Dialog „Entfernen“ für <ph name="USER_EMAIL_ADDRESS" /> öffnen</translation>
 <translation id="6141988275892716286">Download bestätigen</translation>
 <translation id="6154006699632741460">Peripheriegerät wird nicht unterstützt</translation>
@@ -1288,6 +1288,7 @@ Neuinstallation</translation>
 <translation id="8142441511840089262">Doppelklick</translation>
 <translation id="8142699993796781067">Privates Netzwerk</translation>
 <translation id="8144760705599030999">Speichere <ph name="NAME" /> unter <ph name="EMAIL" />, um das Gerät schneller mit anderen Geräten koppeln zu können</translation>
+<translation id="8144914663975476336">Aufnahmeformat auswählen</translation>
 <translation id="8149413265954228307">Bluetooth-Einstellungen anzeigen. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Drücke zum Schließen Strg + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatische Vervollständigung</translation>
@@ -1385,7 +1386,6 @@ Neuinstallation</translation>
 <translation id="8666856788528804727"><ph name="NAME" /> öffnen, um das Gerät einzurichten</translation>
 <translation id="8676770494376880701">Leistungsschwaches Ladegerät angeschlossen</translation>
 <translation id="8683506306463609433">Leistungsverfolgung ist aktiv</translation>
-<translation id="8685326675965865247">Du kannst auf deinem Gerät, in deinen Apps und Einstellungen sowie im Web suchen. Gehe mit den Pfeiltasten die entsprechenden Apps durch.</translation>
 <translation id="8703634754197148428">Aufnahme starten. Wenn die Aufnahme gestartet ist, kannst du Alt + Umschalttaste + L verwenden, um zur Ablage zu gehen – dort findest du die Schaltfläche zum Beenden der Aufnahme.</translation>
 <translation id="8721053961083920564">Ton ein- oder ausschalten. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Aufnahme vom ganzen Bildschirm</translation>

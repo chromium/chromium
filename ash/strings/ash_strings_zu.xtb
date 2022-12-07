@@ -667,6 +667,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="4666082839192943839">Vala ukufinyelela ikhamera kule divayisi ukuze uvimbele wonke amakhamera ngaso sonke isikhathi.</translation>
 <translation id="4666911709726371538">Izinhlelo zokusebenza eziningi</translation>
 <translation id="4667099493359681081">Idawuniloda i-<ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Ama-app kusukela kufoni yakho</translation>
 <translation id="4690510401873698237">Ishelufu phansi</translation>
 <translation id="4696813013609194136">Vula idivayisi ngekhodi yomzali</translation>
 <translation id="4702647871202761252">Isikrini sobumfihlo sivaliwe</translation>
@@ -928,7 +929,6 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="6121838516699723042">Qinisekisa ukudawuniloda i-<ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Umsizi we-Google awutholakali kuseshini yesihambeli.</translation>
 <translation id="6129953537138746214">Isikhala</translation>
-<translation id="6134259848159370930">Sesha idivayisi yakho, izinhlelo zokusebenza, amasethingi, newebhu.</translation>
 <translation id="6137566720514957455">Vula okuthi susa ibhokisi le-<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Qinisekisa ukulanda</translation>
 <translation id="6154006699632741460">Umgcele awusekelwe</translation>
@@ -1289,6 +1289,7 @@ Ukufaka okusha</translation>
 <translation id="8142441511840089262">Chofoza kabili</translation>
 <translation id="8142699993796781067">Inethiwekhi eyimfihlo</translation>
 <translation id="8144760705599030999">Londoloza i-<ph name="NAME" /> yakho ku-<ph name="EMAIL" /> ukuhlanganisa ngokusheshayo kwamanye amadivayisi wakho</translation>
+<translation id="8144914663975476336">Khetha ifomethi yokurekhoda</translation>
 <translation id="8149413265954228307">Bonisa Amasethingi e-Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Cindezela ku-Ctrl + W ukuze uvale.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Qedela ngokuzenzakalela</translation>
@@ -1386,7 +1387,6 @@ Ukufaka okusha</translation>
 <translation id="8666856788528804727">Vula i-<ph name="NAME" /> ukuze usethe idivayisi yakho</translation>
 <translation id="8676770494376880701">Ishaja yamandla amancane ixhunyiwe</translation>
 <translation id="8683506306463609433">Ukulandelela kokusebenza kuyasebenza</translation>
-<translation id="8685326675965865247">Sesha idivayisi yakho, izinhlelo zokusebenza, amasethingi, newebhu. Sebenzisa okhiye bomcibisholo ukuze uzulazulele izinhlelo zakho zokusebenza.</translation>
 <translation id="8703634754197148428">Qala ukurekhoda. Lapho ukurekhoda sekuqalile sebenzisa u-Alt + Shift + L ukuzulazula kushalofu bese uthola inkinobo yokumisa ukurekhoda</translation>
 <translation id="8721053961083920564">Guqula ivolumu. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Ukuthatha isikrini esigcwele</translation>

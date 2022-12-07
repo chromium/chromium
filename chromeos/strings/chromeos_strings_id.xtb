@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Tombol tidak diuji saat Anda sedang menggunakan jendela lain</translation>
 <translation id="2493126929778606526">Foto terbaik Anda, dipilih otomatis</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Float</translation>
 <translation id="2505327257735685095">Muat ulang gambar wallpaper saat ini</translation>
 <translation id="2513396635448525189">Gambar login</translation>
 <translation id="2517472476991765520">Pindai</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
+<translation id="4311195029067684288">Penuh</translation>
 <translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="435692326371619097">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Terisi <ph name="RATE" /> dalam <ph name="NUM_SECONDS" /> detik.</translation>
 <translation id="4930320165497208503">Untuk menyiapkan atau memperbarui koneksi, buka <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tanggal</translation>
+<translation id="4937657825850660613">Setengah</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> telah diupdate ke versi <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Sebagian</translation>
 <translation id="498186245079027698">Periksa pemindai, lalu coba lagi. Pastikan terdapat cukup ruang penyimpanan lokal untuk menyimpan file hasil pemindaian.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
 <translation id="4987769320337599931">Firewall</translation>

@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">I tasti non vengono testati quando utilizzi un'altra finestra</translation>
 <translation id="2493126929778606526">Le tue foto migliori selezionate automaticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Pulsante mobile</translation>
 <translation id="2505327257735685095">Aggiorna l'immagine di sfondo corrente</translation>
 <translation id="2513396635448525189">Immagine di accesso</translation>
 <translation id="2517472476991765520">Scansiona</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
+<translation id="4311195029067684288">Completo</translation>
 <translation id="4333390807948134856">Tasto <ph name="KEY_NAME" /> premuto</translation>
 <translation id="435692326371619097">Gestisci le impostazioni APN di rete. Gli APN stabiliscono una connessione tra una rete mobile e Internet. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Non eseguito</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Ricarica del <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="4930320165497208503">Per configurare o aggiornare una connessione, vai alle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4937657825850660613">Metà</translation>
 <translation id="4950314376641394653">Il firmware di <ph name="DEVICE_NAME" /> è stato aggiornato alla versione <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Parziale</translation>
 <translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
 <translation id="4985509611418653372">Esegui</translation>
 <translation id="4987769320337599931">Firewall</translation>

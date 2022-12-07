@@ -667,6 +667,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4666082839192943839">Zima ufikiaji wa kamera kwenye kifaa hiki ili uzuie kamera zote wakati wote.</translation>
 <translation id="4666911709726371538">Programu zaidi</translation>
 <translation id="4667099493359681081">Inapakua <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Programu zilizo kwenye simu yako</translation>
 <translation id="4690510401873698237">Rafu iko upande wa chini</translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
 <translation id="4702647871202761252">Skrini ya faragha imezimwa</translation>
@@ -928,7 +929,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="6121838516699723042">Thibitisha upakuaji <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Programu ya Mratibu wa Google haipatikani katika kipindi cha mgeni.</translation>
 <translation id="6129953537138746214">Nafasi</translation>
-<translation id="6134259848159370930">Tafuta kwenye wavuti, programu, mipangilio na kifaa chako.</translation>
 <translation id="6137566720514957455">Fungua kidirisha cha kuondoa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Thibitisha upakuaji</translation>
 <translation id="6154006699632741460">Kifaa ulichounganisha hakiwezi kutumika</translation>
@@ -1290,6 +1290,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8142441511840089262">Bofya mara mbili</translation>
 <translation id="8142699993796781067">Mtandao binafsi</translation>
 <translation id="8144760705599030999">Hifadhi <ph name="NAME" /> yako kwenye <ph name="EMAIL" /> ili uoanishe haraka na vifaa vyako vingine</translation>
+<translation id="8144914663975476336">Chagua muundo wa kurekodi</translation>
 <translation id="8149413265954228307">Onyesha mipangilio ya Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Bonyeza Ctrl + W ili ufunge.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Jaza kiotomatiki</translation>
@@ -1387,7 +1388,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8666856788528804727">Fungua <ph name="NAME" /> ili uweke mipangilio ya kifaa chako</translation>
 <translation id="8676770494376880701">Chaja ya nguvu ya chini imeunganishwa</translation>
 <translation id="8683506306463609433">Kipengele cha ufuatiliaji wa utendaji kinatumika</translation>
-<translation id="8685326675965865247">Tafuta kwenye programu, mipangilio, wavuti na kifaa chako. Tumia vitufe vya vishale ili upitie programu zako.</translation>
 <translation id="8703634754197148428">Anza kurekodi. Ukishaanza kurekodi, tumia vitufe vya Alt + Shift + L kwenda kwenye rafu ili upate kitufe cha kuacha kurekodi</translation>
 <translation id="8721053961083920564">Swichi ya Sauti. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Kupiga picha ya skrini nzima</translation>

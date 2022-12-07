@@ -1955,6 +1955,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="275662540872599901">ekran qapalıdır</translation>
 <translation id="2757161511365746634">Printerə baxın</translation>
 <translation id="2757338480560142065">Yadda saxlanılan parolun <ph name="WEBSITE" /> paroluna uyğun olduğuna əmin olun</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> üçün axtarış nəticələri tapılmadı</translation>
 <translation id="2762441749940182211">Kamera blok edildi</translation>
 <translation id="2764786626780673772">VPN detalları</translation>
 <translation id="2764920001292228569">Profil adı daxil edin</translation>
@@ -5263,6 +5264,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5886112770923972514">Yaxınlıqdakı Sürətli Birləşdirmə cihazlarını qoşun və tez ayarlayın</translation>
 <translation id="5886384907280980632">İndi deaktiv edin</translation>
 <translation id="5889282057229379085">Orta CA-ların maksimal sayı: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638"><ph name="BEGIN_LINK" />Sinxronizasiya parol ifadəniz<ph name="END_LINK" /> ilə sinxronizasiya edilmiş datanı şifrələyin. Google Pay'dən ödəniş metodları və ünvanlar şifrələnməyəcək. Chrome'dan baxış tarixçəsi sinxronlaşdırılmayacaq.</translation>
 <translation id="5891688036610113830">Tərcih edilən Wi-Fi şəbəkələri</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
 <translation id="5895335062901455404">Google Hesabınızla daxil olduğunuz zaman yadda saxlanılan tərcihləriniz və fəaliyyətiniz istənilən ChromeOS Flex cihazında hazır olacaq. Ayarlarda nələri sinxronlaşdıracağınızı seçə bilərsiniz.</translation>
@@ -6921,6 +6923,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7465635034594602553">Xəta baş verdi. Bir neçə dəqiqə gözləyib <ph name="APP_NAME" /> tətbiqini yenidən işə salın.</translation>
 <translation id="7465778193084373987">Netscape Sertifikat Ləğvetmə URL</translation>
 <translation id="7466431077154602932">Kompakt baxış</translation>
+<translation id="7466556884531675354">Qeyd saxlanmayıb</translation>
 <translation id="746861123368584540">Artırma yüklənib</translation>
 <translation id="7470424110735398630">Mübadilə buferinizə baxmaq icazəsi verilib</translation>
 <translation id="747114903913869239">Xəta: Artırmanı deşifrələmək mümkün deyil</translation>
@@ -7899,6 +7902,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8351316842353540018">Həmişə a11y seçimlərini göstərin</translation>
 <translation id="8351419472474436977">Bu artırma proksi ayarlarınız üzərində nəzarəti ələ aldı.</translation>
 <translation id="8351630282875799764">Batareya yığmır</translation>
+<translation id="8352287103893778223">Tab qrupu başlığı</translation>
 <translation id="835238322900896202">Tətbiq sistemdən silinərkən xəta baş verdi. Terminal vasitəsilə sistemdən silin.</translation>
 <translation id="8353683614194668312">Bunu bacarır:</translation>
 <translation id="8354034204605718473">Övladınızın PİN kodu əlavə edilib</translation>

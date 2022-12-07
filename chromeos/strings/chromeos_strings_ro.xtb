@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Tastele nu sunt testate când folosești altă fereastră</translation>
 <translation id="2493126929778606526">Cele mai bune fotografii, selectate automat</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Flotant</translation>
 <translation id="2505327257735685095">Actualizează imaginea de fundal actuală</translation>
 <translation id="2513396635448525189">Imagine de conectare</translation>
 <translation id="2517472476991765520">Scanează</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagini</translation>
+<translation id="4311195029067684288">Maxim</translation>
 <translation id="4333390807948134856">A fost apăsată tasta <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Gestionează setările APN ale rețelei. APN-urile stabilesc o conexiune între o rețea de date mobile și internet. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Nu a rulat</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">S-a încărcat cu <ph name="RATE" /> în <ph name="NUM_SECONDS" /> secunde.</translation>
 <translation id="4930320165497208503">Pentru a configura sau a actualiza o conexiune, accesează <ph name="BEGIN_LINK" />Setările<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4937657825850660613">Jumătate</translation>
 <translation id="4950314376641394653">Firmware-ul <ph name="DEVICE_NAME" /> a fost actualizat la versiunea <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Parțial</translation>
 <translation id="498186245079027698">Verifică scanerul și încearcă din nou. Asigură-te că există spațiu suficient la nivel local pentru a salva fișierele scanate.</translation>
 <translation id="4985509611418653372">Rulează</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -685,6 +689,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7415801143053185905">Latență foarte mare a solicitărilor HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
+<translation id="7458970041932198923">Conectează-te la o rețea și reîncarcă pagina pentru a vedea și a seta avatarele.</translation>
 <translation id="7469648432129124067">S-a detectat un portal</translation>
 <translation id="7481312909269577407">Înainte</translation>
 <translation id="7487067081878637334">Tehnologie</translation>
@@ -839,6 +844,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanează}=1{Scanează {NUMBER_OF_PAGES} pagină}few{Scanează {NUMBER_OF_PAGES} pagini}other{Scanează {NUMBER_OF_PAGES} de pagini}}</translation>
 <translation id="8997710128084572139">Nivelul bateriei dispozitivului este de <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
 <translation id="9003704114456258138">Frecvență</translation>
 <translation id="9025198690966128418">Folosește ca dispozitiv personal</translation>
 <translation id="9028832514430399253">Activează comutatorul pentru a selecta opțiunile pentru screensaver</translation>

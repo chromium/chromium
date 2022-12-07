@@ -1974,6 +1974,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="275662540872599901">mae'r sgrîn wedi'i diffodd</translation>
 <translation id="2757161511365746634">Gweld yr argraffydd</translation>
 <translation id="2757338480560142065">Gwnewch yn siŵr bod y cyfrinair rydych yn ei gadw yn cyd-fynd â'ch cyfrinair ar gyfer <ph name="WEBSITE" /></translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Dim canlyniadau chwilio wedi'u dychwelyd ar gyfer <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">Mae'r camera wedi'i rwystro</translation>
 <translation id="2764786626780673772">Manylion VPN</translation>
 <translation id="2764920001292228569">Rhowch enw proffil</translation>
@@ -5285,6 +5286,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5886112770923972514">Cysylltwch a gosodwch ddyfeisiau Paru Cyflym yn gyflym gerllaw</translation>
 <translation id="5886384907280980632">Diffodd nawr</translation>
 <translation id="5889282057229379085">Uchafswm y CA canolradd: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">Amgryptio data sydd wedi'u cysoni gyda'ch <ph name="BEGIN_LINK" />cyfrinymadrodd cysoni<ph name="END_LINK" /> eich hun. Ni fydd dulliau talu a chyfeiriadau o Google Pay yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.</translation>
 <translation id="5891688036610113830">Rhwydweithiau Wi-Fi a ffefrir</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
 <translation id="5895335062901455404">Bydd eich dewisiadau a'ch gweithgarwch sydd wedi'u cadw yn barod ar unrhyw ddyfais ChromeOS Flex pan fyddwch yn mewngofnodi i'ch Cyfrif Google. Gallwch ddewis beth i'w gysoni yn y Gosodiadau.</translation>
@@ -6953,6 +6955,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7465635034594602553">Aeth rywbeth o'i le. Arhoswch ychydig funudau a rhedwch <ph name="APP_NAME" /> eto.</translation>
 <translation id="7465778193084373987">URL Dirymu Tystysgrif Netscape</translation>
 <translation id="7466431077154602932">Gwedd gryno</translation>
+<translation id="7466556884531675354">Dim nodiadau wedi'u cadw</translation>
 <translation id="746861123368584540">Llwythwyd estyniad</translation>
 <translation id="7470424110735398630">Caniateir i weld eich clipfwrdd</translation>
 <translation id="747114903913869239">Gwall: Methu â dadgodio'r estyniad</translation>
@@ -7931,6 +7934,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8351316842353540018">Dangos dewisiadau a11y bob amser</translation>
 <translation id="8351419472474436977">Mae'r estyniad hwn wedi cymryd rheolaeth o'ch gosodiadau dirprwyol, sy'n golygu y gall newid, torri, neu glustfeinio ar unrhyw beth a wnewch ar-lein. Os nad ydych yn siŵr pam y digwyddodd y newid hwn, mae'n debyg nad ydych ei eisiau.</translation>
 <translation id="8351630282875799764">Nid yw'r batri yn gwefru</translation>
+<translation id="8352287103893778223">Enw'r grŵp tabiau</translation>
 <translation id="835238322900896202">Bu gwall wrth ddadosod. Dadosodwch drwy'r Derfynell.</translation>
 <translation id="8353683614194668312">Mae'n gallu:</translation>
 <translation id="8354034204605718473">Cafodd PIN eich plentyn ei ychwanegu</translation>

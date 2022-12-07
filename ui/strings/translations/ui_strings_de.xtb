@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Hohe Anzeigedichte verwenden</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2497284189126895209">Alle Dateien</translation>
-<translation id="2498950423397131220">Unverankert</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Die Kalibrierung ist abgeschlossen</translation>
 <translation id="252373100621549798">Display unbekannt</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Sprachausgabe starten</translation>
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4306392492252714209">Aus der Zwischenablage entfernen.</translation>
-<translation id="4311195029067684288">Vollständig</translation>
 <translation id="4491109536499578614">Bild</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4588090240171750605">Nach rechts blättern</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Erweiterung losgelöst</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{noch 1 Monat}other{noch # Monate}}</translation>
 <translation id="4888938634149558681">Anrufen</translation>
-<translation id="4937657825850660613">Hälfte</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 Sekunde}other{# Sekunden}}</translation>
 <translation id="4971687151119236543">Medien – vorheriger Titel</translation>
-<translation id="4971925105143343452">Teilweise</translation>
 <translation id="5046499563572181734">Hier tippen</translation>
 <translation id="5076340679995252485">&amp;Einfügen</translation>
-<translation id="5123162024343028706">Unverankert im Vordergrund</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Fehler beim Senden</translation>
 <translation id="528468243742722775">Ende</translation>

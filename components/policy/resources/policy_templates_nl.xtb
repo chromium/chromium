@@ -1407,6 +1407,9 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="2354439478396602136">App-aanbevelingen laten zien in de <ph name="PRODUCT_OS_NAME" />-launcher</translation>
 <translation id="2355876547176311490">Relayservers niet laten gebruiken door de host voor externe toegang</translation>
 <translation id="2358176879566587521">Dit beleid is verwijderd. Het werkt niet met deze versie van <ph name="PRODUCT_NAME" />. Ga naar https://support.google.com/chrome/a/answer/7643500 voor meer informatie</translation>
+<translation id="235987002603620567">NewBaseUrlInheritanceBehavior is een <ph name="PRODUCT_NAME" />-functie die zorgt dat <ph name="ABOUT_BLANK_PAGE" />- en <ph name="ABOUT_SRCDOC_PAGE" />-frames hun basis-URL-waarden consistent overnemen via momentopnamen van de basis-URL van hun initiator. Zie https://chromestatus.com/feature/5161101671530496 voor meer informatie.
+
+Als je het beleid niet toepast, kunnen gebruikers of <ph name="PRODUCT_NAME" />-varianten NewBaseUrlInheritanceBehavior niet aanzetten als er compatibiliteitsproblemen worden gevonden. Als je het beleid toepast of niet instelt, kan NewBaseUrlInheritanceBehavior worden aangezet.</translation>
 <translation id="2362469626417133796">Tijdvenster voor herstarten</translation>
 <translation id="2362539163677485510">De inschrijvingstoken voor het cloudbeleid</translation>
 <translation id="2363928351203698966">Als je het beleid instelt op een geldige waarde, gebruikt <ph name="PRODUCT_NAME" /> geen SSL/TLS-versies lager dan de opgegeven versie. Niet-herkende waarden worden genegeerd.
@@ -1520,7 +1523,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 
       Als dit beleid niet is ingesteld, staat de detectie van occlusie aan.</translation>
 <translation id="2462606868915618110">Vanaf M108 worden alle <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden synchroon aangeroepen.
-      Tot M110 zorgt dit beleid dat asynchroon aanroepen van<ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden opnieuw wordt aangezet.
+      Tot M110 zorgt dit beleid dat asynchroon aanroepen van <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden opnieuw wordt aangezet.
       Als je dit beleid toepast, worden <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden asynchroon aangeroepen.
       Als je dit beleid niet toepast of niet instelt, worden alle <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden synchroon aangeroepen.</translation>
 <translation id="2463034609187171371">DHE-coderingssuites in TLS aanzetten</translation>
@@ -2657,6 +2660,7 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
       verbinding met de Quirks Server om configuratiebestanden te downloaden.
 
       Als dit beleid is ingesteld op 'true' of niet is geconfigureerd, maakt <ph name="PRODUCT_OS_NAME" /> automatisch verbinding met de Quirks Server en worden configuratiebestanden (indien beschikbaar) gedownload en opslagen op het apparaat.  Dergelijke bestanden kunnen bijvoorbeeld worden gebruikt om de weergavekwaliteit van aangesloten beeldschermen te verbeteren.</translation>
+<translation id="3515196503924273265">Hiermee kun je de functie NewBaseUrlInheritanceBehavior aanzetten</translation>
 <translation id="351654132746710200">Nadat <ph name="LACROS_NAME" /> is uitgezet, wordt er geen gegevensmigratie uitgevoerd. De map <ph name="LACROS_NAME" /> wordt verwijderd en gebruikers blijven de resterende gegevens gebruiken.</translation>
 <translation id="3522257170445891912">Als je dit beleid instelt, wordt de inlogverificatie op een van de volgende manieren uitgevoerd (afhankelijk van de waarde van de instelling):
 
@@ -3747,6 +3751,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4611983465824842867">Geen waarschuwingen tonen en automatisch invullen niet uitzetten voor onveilige formulieren</translation>
 <translation id="4615003180013429835">Modus voor sitelijstparsering</translation>
 <translation id="4617338332148204752">De metatagcontrole in <ph name="PRODUCT_FRAME_NAME" /> overslaan</translation>
+<translation id="461901491675418689">De functie NewBaseUrlInheritanceBehavior is beschikbaar</translation>
 <translation id="4624006912948309924">Als je het beleid instelt, wordt bepaald welke app-ID's <ph name="PRODUCT_OS_NAME" /> toont als vastgezette apps in de Launcher-balk en kunnen deze niet worden gewijzigd door gebruikers.
 
 Geef Chrome-apps op basis van ID op, zoals pjkljhegncpnkpknbcohdijeoejaedia; Android-apps op basis van pakketnaam, zoals com.google.android.gm; web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals https://google.com/maps; en systeemweb-apps op basis van hun naam in snake case, zoals <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />.
@@ -7948,6 +7953,7 @@ Dit beleid biedt een overzicht van configuratie-ID's die zijn toegewezen aan VM-
       Als je dit beleid niet toepast, wordt het proces van de netwerkservice niet in een sandbox uitgevoerd. Als de netwerkservice niet in een sandbox wordt uitgevoerd, staan gebruikers bloot aan een groter beveiligingsrisico.
       Als je dit beleid niet instelt, wordt de standaardconfiguratie voor de netwerksandbox gebruikt. Dit verschilt afhankelijk van de <ph name="PRODUCT_NAME" />-release, actieve praktijktests en het platform.
       Dit beleid is bedoeld om bedrijven de flexibiliteit te bieden om de netwerksandbox uit te zetten als ze software van derden gebruiken die niet geschikt is voor het sandboxen van de netwerkservice.</translation>
+<translation id="8840243776706727185">De functie NewBaseUrlInheritanceBehavior staat uit</translation>
 <translation id="8842208363354615697">Toestaan dat de modus 'Alleen HTTPS' wordt aangezet</translation>
 <translation id="885147810817138322">Media-aanbevelingen tonen aan gebruikers</translation>
 <translation id="8852579753940989645">Code-integriteit van weergaveprogramma aanzetten</translation>

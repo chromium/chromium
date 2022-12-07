@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">使用其他視窗時，系統不會測試按鍵</translation>
 <translation id="2493126929778606526">自動精選最佳相片</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">浮動</translation>
 <translation id="2505327257735685095">重新整理目前的桌布圖片</translation>
 <translation id="2513396635448525189">登入圖片</translation>
 <translation id="2517472476991765520">掃描</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">播放投影片</translation>
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
+<translation id="4311195029067684288">完整</translation>
 <translation id="4333390807948134856">已按下 <ph name="KEY_NAME" /> 鍵</translation>
 <translation id="435692326371619097">管理網路 APN 設定。APN 會在行動網路和網際網路之間建立連線。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">未執行</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒內已充電 <ph name="RATE" />。</translation>
 <translation id="4930320165497208503">如要設定或更新連線，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />頁面。</translation>
 <translation id="4932733599132424254">日期</translation>
+<translation id="4937657825850660613">半邊</translation>
 <translation id="4950314376641394653">「<ph name="DEVICE_NAME" />」的韌體已更新至版本 <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">局部</translation>
 <translation id="498186245079027698">請檢查掃描器，然後再試一次。另請確認本機有足夠空間可以儲存掃描的檔案。</translation>
 <translation id="4985509611418653372">執行</translation>
 <translation id="4987769320337599931">防火牆</translation>

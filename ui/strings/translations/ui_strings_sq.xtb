@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Përdor dendësi të lartë</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2497284189126895209">Të gjithë skedarët</translation>
-<translation id="2498950423397131220">Pluskuesi</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibrimi përfundoi</translation>
 <translation id="252373100621549798">Ekran i panjohur</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Fillo të flasësh</translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4306392492252714209">Hiqe nga kujtesa e fragmenteve.</translation>
-<translation id="4311195029067684288">I plotë</translation>
 <translation id="4491109536499578614">Imazh</translation>
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
 <translation id="4588090240171750605">Lëvize djathtas</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Shtesa u zhgozhdua</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 muaj i mbetur}other{# muaj të mbetur}}</translation>
 <translation id="4888938634149558681">Bëj një telefonatë</translation>
-<translation id="4937657825850660613">Gjysmë</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekondë}other{# sekonda}}</translation>
 <translation id="4971687151119236543">Gjurma e mëparshme e medias</translation>
-<translation id="4971925105143343452">I pjesshëm</translation>
 <translation id="5046499563572181734">Trokit këtu</translation>
 <translation id="5076340679995252485">&amp;Ngjit</translation>
-<translation id="5123162024343028706">Plusko në krye</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Dërgimi dështoi</translation>
 <translation id="528468243742722775">Fundi</translation>

@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Use high density</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2497284189126895209">All Files</translation>
-<translation id="2498950423397131220">Float</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Calibration is completed</translation>
 <translation id="252373100621549798">Unknown Display</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Start Speaking</translation>
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4306392492252714209">Remove from clipboard.</translation>
-<translation id="4311195029067684288">Full</translation>
 <translation id="4491109536499578614">Image</translation>
 <translation id="4565377596337484307">Hide password</translation>
 <translation id="4588090240171750605">Scroll Right</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Extension unpinned</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 month left}other{# months left}}</translation>
 <translation id="4888938634149558681">Make call</translation>
-<translation id="4937657825850660613">Half</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 second}other{# seconds}}</translation>
 <translation id="4971687151119236543">Media Previous Track</translation>
-<translation id="4971925105143343452">Partial</translation>
 <translation id="5046499563572181734">Tap here</translation>
 <translation id="5076340679995252485">&amp;Paste</translation>
-<translation id="5123162024343028706">Float on top</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Failed to send</translation>
 <translation id="528468243742722775">End</translation>

@@ -1508,7 +1508,6 @@
 <translation id="4813512666221746211">ကွန်ရက် ပြဿနာ</translation>
 <translation id="4816492930507672669">စာမျက်နှာ ကွက်တိ လုပ်ပေးရန်</translation>
 <translation id="4819347708020428563">မှတ်ချက်များကို မူရင်းမြင်ကွင်းတွင် တည်းဖြတ်မလား။</translation>
-<translation id="4823325221257637040">စတင်နေသည်</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Sheet အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="4825507807291741242">စွမ်းအားပြည့်</translation>
 <translation id="483241715238664915">သတိပေးချက်များ ဖွင့်ရန်</translation>
@@ -1964,6 +1963,7 @@
 <translation id="5995727681868049093">သင်၏ Google Account တွင် သင့်အချက်အလက်၊ ပုဂ္ဂိုလ်ရေးနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံနိုင်သည်</translation>
 <translation id="5997247540087773573">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်အကောင့်များကို လုံခြုံစေရန် ‘Google စကားဝှက်မန်နေဂျာ’ က သင်သိမ်းထားသော စကားဝှက်များကို ယခုပြောင်းရန်နှင့် စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' အတွက် ရလဒ် <ph name="RESULT_COUNT" /> ခု</translation>
+<translation id="6005765687956866568">အော်တိုဖြည့်အချက်အလက်ကို ဖောင်မှ ဖယ်ရှားထားသည်</translation>
 <translation id="6006365096047131769">၃ x ၅ လက်မ</translation>
 <translation id="6006484371116297560">ဂန္ထဝင်</translation>
 <translation id="6008122969617370890">N မှ ၁ သို့ အစီအစဉ်</translation>
@@ -2272,6 +2272,7 @@
 <translation id="6826993739343257035">AR ကို ခွင့်ပြုမလား။</translation>
 <translation id="6828866289116430505">မျိုးရိုးဗီဇဗေဒ</translation>
 <translation id="6831043979455480757">ဘာသာပြန်ရန်</translation>
+<translation id="6832753933931306326">ဖောင်ကိုဖြည့်ထားသည်</translation>
 <translation id="6842196666980060516">၁၈၄ x ၂၆၀ မီလီမီတာ</translation>
 <translation id="6846340164947227603">အသွင်တု ကတ်နံပါတ်ကို အသုံးပြုပါ...</translation>
 <translation id="6852204201400771460">အက်ပ်ကို ပြန်လည်စတင်လိုပါသလား။</translation>
@@ -2727,6 +2728,7 @@
 <translation id="7950027195171824198">Chrome ဆက်တင်များတွင် သင်၏ကွတ်ကီး သတ်မှတ်ချက်များကို စီမံရန်</translation>
 <translation id="7951415247503192394">(32-bit)</translation>
 <translation id="7952192831285741665">ဥရောပ EDP</translation>
+<translation id="7952804540472583406">ကွန်ရက်သို့ <ph name="BEGIN_LINK" />လက်မှတ်ထိုးဝင်ခြင်း<ph name="END_LINK" />။</translation>
 <translation id="7953569069500808819">ထိပ်အစွန်းတွင် အပ်ချည်ဖြင့်ချုပ်ရန်</translation>
 <translation id="7956713633345437162">မိုဘိုင်း စာညှပ်များ</translation>
 <translation id="7961015016161918242">ဘယ်သောအခါမှ</translation>

@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Nid yw allweddi'n cael eu profi pan fyddwch yn defnyddio ffenestr arall</translation>
 <translation id="2493126929778606526">Eich lluniau gorau, wedi'u dewis yn awtomatig</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Arnofio</translation>
 <translation id="2505327257735685095">Ail-lwytho'r llun papur wal presennol</translation>
 <translation id="2513396635448525189">Llun mewngofnodi</translation>
 <translation id="2517472476991765520">Sganio</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Sioe sleidiau</translation>
 <translation id="4297501883039923494">Wedi stopio - Gwall anhysbys</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Llun</translation>
+<translation id="4311195029067684288">Llawn</translation>
 <translation id="4333390807948134856">Mae'r fysell <ph name="KEY_NAME" /> wedi'i phwyso</translation>
 <translation id="435692326371619097">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Ni Redwyd</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Wedi gwefru <ph name="RATE" /> mewn <ph name="NUM_SECONDS" /> eiliad.</translation>
 <translation id="4930320165497208503">I osod neu ddiweddaru cysylltiad, ewch i'r <ph name="BEGIN_LINK" />Gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dyddiad</translation>
+<translation id="4937657825850660613">Hanner</translation>
 <translation id="4950314376641394653">Mae caledwedd <ph name="DEVICE_NAME" /> wedi'i diweddaru i fersiwn <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Rhannol</translation>
 <translation id="498186245079027698">Gwiriwch y sganiwr a rhowch gynnig arall arni. Gwnewch yn siŵr bod digon o le lleol i gadw ffeiliau sydd wedi'u sganio.</translation>
 <translation id="4985509611418653372">Rhedeg</translation>
 <translation id="4987769320337599931">Wal dân</translation>

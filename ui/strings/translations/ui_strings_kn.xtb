@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">ಅಧಿಕ ಸಾಂದ್ರತೆಯನ್ನು ಬಳಸಿ</translation>
 <translation id="2482878487686419369">ಸೂಚನೆಗಳು</translation>
 <translation id="2497284189126895209">ಎಲ್ಲ ಫೈಲ್‌ಗಳು</translation>
-<translation id="2498950423397131220">ಫ್ಲೋಟ್</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">ಮಾಪನಾಂಕವು ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="252373100621549798">ಅಪರಿಚಿತ ಡಿಸ್‌ಪ್ಲೇ</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">ಮಾತನಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4289540628985791613">ಅವಲೋಕನ</translation>
 <translation id="4306392492252714209">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ತೆಗೆದುಹಾಕಿ.</translation>
-<translation id="4311195029067684288">ಪೂರ್ಣ</translation>
 <translation id="4491109536499578614">ಚಿತ್ರ</translation>
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="4588090240171750605">ಬಲಕ್ಕೆ ಸ್ಕ್ರೋಲ್ ಮಾಡಿ</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">ವಿಸ್ತರಣೆಯನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ತಿಂಗಳು ಉಳಿದಿದೆ}one{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}other{# ತಿಂಗಳುಗಳು ಉಳಿದಿವೆ}}</translation>
 <translation id="4888938634149558681">ಕರೆ ಮಾಡಿ</translation>
-<translation id="4937657825850660613">ಅರ್ಧ</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ಸೆಕೆಂಡ್}one{# ಸೆಕೆಂಡುಗಳು}other{# ಸೆಕೆಂಡುಗಳು}}</translation>
 <translation id="4971687151119236543">ಮೀಡಿಯಾದ ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
-<translation id="4971925105143343452">ಭಾಗಶಃ</translation>
 <translation id="5046499563572181734">ಇಲ್ಲಿ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5076340679995252485">&amp;ಅಂಟಿಸಿ</translation>
-<translation id="5123162024343028706">ಮೇಲೆ ತೇಲು</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ಕಳುಹಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>

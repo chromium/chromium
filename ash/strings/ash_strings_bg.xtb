@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">Забранете достъпа до камерата на това устройство, така че да блокирате камерите във всички случаи.</translation>
 <translation id="4666911709726371538">Още приложения</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> се изтегля</translation>
+<translation id="468293128311738995">Приложения от телефона ви</translation>
 <translation id="4690510401873698237">Лавицата е най-долу</translation>
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
@@ -928,7 +929,6 @@
 <translation id="6121838516699723042">Потвърждаване на изтеглянето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Асистент не се поддържа по време на сесия като гост.</translation>
 <translation id="6129953537138746214">Интервал</translation>
-<translation id="6134259848159370930">Търсете в устройството, приложенията, настройките и мрежата.</translation>
 <translation id="6137566720514957455">Отваряне на диалоговия прозорец за премахване на профила <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Потвърждаване на изтеглянето</translation>
 <translation id="6154006699632741460">Периферното устройство не се поддържа</translation>
@@ -1289,6 +1289,7 @@
 <translation id="8142441511840089262">Двукратно кликване</translation>
 <translation id="8142699993796781067">Частна мрежа</translation>
 <translation id="8144760705599030999">Запазване на <ph name="NAME" /> в(ъв) <ph name="EMAIL" /> за по-бързо сдвояване с другите ви устройства</translation>
+<translation id="8144914663975476336">Избиране на формат на записа</translation>
 <translation id="8149413265954228307">Показване на настройките за Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Натиснете Ctrl + W за затваряне.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автоматично довършване</translation>
@@ -1386,7 +1387,6 @@
 <translation id="8666856788528804727">За да настроите устройството си, отворете <ph name="NAME" /></translation>
 <translation id="8676770494376880701">Свързано е зарядно устройство с малка мощност</translation>
 <translation id="8683506306463609433">Проследяването на ефективността е активно</translation>
-<translation id="8685326675965865247">Търсете в устройството, приложенията, настройките и мрежата. Използвайте клавишите със стрелки, за да се придвижвате в приложенията.</translation>
 <translation id="8703634754197148428">Стартиране на записването. След като то започне, използвайте Alt + Shift + L, за да се придвижите до лавицата, където ще намерите бутона за спирането му</translation>
 <translation id="8721053961083920564">Превключване на звука. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Заснемане на целия екран</translation>

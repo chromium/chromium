@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">მაღალი სიმკვრივის გამოყენება</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="2497284189126895209">ყველა ფაილი</translation>
-<translation id="2498950423397131220">ლივლივი</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">კალიბრაცია დასრულდა</translation>
 <translation id="252373100621549798">უცნობი ეკრანი</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">დაიწყეთ ლაპარაკი</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4306392492252714209">გაცვლის ბუფერიდან ამოშლა.</translation>
-<translation id="4311195029067684288">მთლიანი</translation>
 <translation id="4491109536499578614">გამოსახულება</translation>
 <translation id="4565377596337484307">პაროლის დამალვა</translation>
 <translation id="4588090240171750605">გადაადგილება მარჯვნივ</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">გაფართოების ჩამაგრება მოიხსნა</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{დარჩენილია 1 თვე}other{დარჩენილია # თვე}}</translation>
 <translation id="4888938634149558681">დარეკვა</translation>
-<translation id="4937657825850660613">ნახევარი</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 წამი}other{# წამი}}</translation>
 <translation id="4971687151119236543">მედია წინა ჩანაწერი</translation>
-<translation id="4971925105143343452">ნაწილობრივი</translation>
 <translation id="5046499563572181734">შეეხეთ აქ</translation>
 <translation id="5076340679995252485">&amp;ჩასმა</translation>
-<translation id="5123162024343028706">წინა პლანზე დატოვება</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> პბაიტი</translation>
 <translation id="5278860589123563674">გაგზავნა ვერ მოხერხდა</translation>
 <translation id="528468243742722775">დასასრული</translation>

@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">ከፍተኛ ትፍገትን ተጠቀም</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2497284189126895209">ሁሉም ፋይሎች</translation>
-<translation id="2498950423397131220">ተንሳፋፊ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">ልኬት ማስተካከል ተጠናቅቋል</translation>
 <translation id="252373100621549798">ያልታወቀ ማሳያ</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">መናገር ይጀምሩ</translation>
 <translation id="4289540628985791613">ማጠቃለያ</translation>
 <translation id="4306392492252714209">ከቅንጥብ ሰሌዳ ላይ አስወግድ።</translation>
-<translation id="4311195029067684288">ሙሉ</translation>
 <translation id="4491109536499578614">ምስል</translation>
 <translation id="4565377596337484307">የይለፍ ቃል ደብቅ</translation>
 <translation id="4588090240171750605">ወደ ቀኝ ሸብልል</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">ቅጥያው ተነቅሏል</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 ወር ቀርቷል}one{# ወሮች ቀርተዋል}other{# ወሮች ቀርተዋል}}</translation>
 <translation id="4888938634149558681">ጥሪ ያድርጉ</translation>
-<translation id="4937657825850660613">ግማሽ</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ሰከንድ}one{# ሰከንዶች}other{# ሰከንዶች}}</translation>
 <translation id="4971687151119236543">የሚዲያ ቀዳሚ ትራክ</translation>
-<translation id="4971925105143343452">ከፊል</translation>
 <translation id="5046499563572181734">እዚህ መታ ያድርጉ</translation>
 <translation id="5076340679995252485">&amp;ለጥፍ</translation>
-<translation id="5123162024343028706">ከላይ ተንሳፈፍ</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ፔታ</translation>
 <translation id="5278860589123563674">መላክ አልተሳካም</translation>
 <translation id="528468243742722775">ጨርስ</translation>

@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Użyj dużej gęstości</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2497284189126895209">Wszystkie pliki</translation>
-<translation id="2498950423397131220">Pływający</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibracja została ukończona</translation>
 <translation id="252373100621549798">Nieznany wyświetlacz</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Zacznij mówić</translation>
 <translation id="4289540628985791613">Przegląd</translation>
 <translation id="4306392492252714209">Usuń ze schowka.</translation>
-<translation id="4311195029067684288">Pełne</translation>
 <translation id="4491109536499578614">Obraz</translation>
 <translation id="4565377596337484307">Ukryj hasło</translation>
 <translation id="4588090240171750605">Przewiń w prawo</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Rozszerzenie zostało odpięte</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Pozostał miesiąc}few{Pozostały # miesiące}many{Pozostało # miesięcy}other{Pozostało # miesiąca}}</translation>
 <translation id="4888938634149558681">Zadzwoń</translation>
-<translation id="4937657825850660613">Połowa</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}few{# sekundy}many{# sekund}other{# sekundy}}</translation>
 <translation id="4971687151119236543">Poprzedni utwór multimedialny</translation>
-<translation id="4971925105143343452">Częściowe</translation>
 <translation id="5046499563572181734">Kliknij tutaj</translation>
 <translation id="5076340679995252485">&amp;Wklej</translation>
-<translation id="5123162024343028706">Pokaż na wierzchu</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Nie udało się wysłać</translation>
 <translation id="528468243742722775">Zakończ</translation>

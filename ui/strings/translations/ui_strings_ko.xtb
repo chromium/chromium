@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">고밀도 사용</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2497284189126895209">모든 파일</translation>
-<translation id="2498950423397131220">플로팅</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">보정이 완료되었습니다.</translation>
 <translation id="252373100621549798">알 수 없는 디스플레이</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">말하기 시작</translation>
 <translation id="4289540628985791613">개요</translation>
 <translation id="4306392492252714209">클립보드에서 삭제합니다.</translation>
-<translation id="4311195029067684288">전체화면</translation>
 <translation id="4491109536499578614">이미지</translation>
 <translation id="4565377596337484307">비밀번호 숨김</translation>
 <translation id="4588090240171750605">오른쪽 스크롤</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">확장 프로그램 고정 해제됨</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1개월 남음}other{#개월 남음}}</translation>
 <translation id="4888938634149558681">전화 걸기</translation>
-<translation id="4937657825850660613">절반 분할</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1초}other{#초}}</translation>
 <translation id="4971687151119236543">미디어 이전 트랙</translation>
-<translation id="4971925105143343452">부분화면</translation>
 <translation id="5046499563572181734">여기를 탭하세요.</translation>
 <translation id="5076340679995252485">붙여넣기(&amp;P)</translation>
-<translation id="5123162024343028706">상단에 띄우기</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
 <translation id="5278860589123563674">전송 실패</translation>
 <translation id="528468243742722775">종료</translation>

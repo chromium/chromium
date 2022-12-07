@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Les touches ne sont pas testées lorsque vous utilisez une autre fenêtre</translation>
 <translation id="2493126929778606526">Vos meilleures photos, sélectionnées automatiquement</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />   <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Superposer</translation>
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
 <translation id="2517472476991765520">Rechercher</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Diaporama</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
+<translation id="4311195029067684288">Complet</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> enfoncée</translation>
 <translation id="435692326371619097">Gérez les paramètres de NPA du réseau. Les NPA établissent une connexion entre un réseau cellulaire et Internet. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">L'appareil s'est rechargé de <ph name="RATE" /> en <ph name="NUM_SECONDS" /> secondes.</translation>
 <translation id="4930320165497208503">Pour configurer ou mettre à jour une connexion, accédez à <ph name="BEGIN_LINK" />Paramètres<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4937657825850660613">Moitié</translation>
 <translation id="4950314376641394653">Le micrologiciel <ph name="DEVICE_NAME" /> a été mis à jour vers la version <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Partiel</translation>
 <translation id="498186245079027698">Vérifiez le numériseur et réessayez. Assurez-vous qu'il y a suffisamment d'espace local pour enregistrer les fichiers numérisés.</translation>
 <translation id="4985509611418653372">Exécuter</translation>
 <translation id="4987769320337599931">Pare-feu</translation>

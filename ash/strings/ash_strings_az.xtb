@@ -667,6 +667,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4666082839192943839">Bütün kameraları hər zaman bloklamaq üçün bu cihazda kamera girişini deaktiv edin.</translation>
 <translation id="4666911709726371538">Daha çox tətbiq</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> endirilir</translation>
+<translation id="468293128311738995">Telefonunuzdan tətbiqlər</translation>
 <translation id="4690510401873698237">Rəf aşağıdadır</translation>
 <translation id="4696813013609194136">Cihazı valideyn kodu ilə kiliddən çıxarın</translation>
 <translation id="4702647871202761252">Məxfilik ekranı deaktivdir</translation>
@@ -928,7 +929,6 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> endirilməsini təsdiq edin</translation>
 <translation id="612734058257491180">Google Assistent qonaq sessiyasında əlçatan deyil.</translation>
 <translation id="6129953537138746214">Boşluq</translation>
-<translation id="6134259848159370930">Cihaz, tətbiqlər, ayarlar və vebdə axtarın.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> üçün silinmə dialoqunu açın</translation>
 <translation id="6141988275892716286">Endirməni təsdiq edin</translation>
 <translation id="6154006699632741460">Əlavə cihaz dəstəklənmir</translation>
@@ -1289,6 +1289,7 @@ Yeni quraşdırma</translation>
 <translation id="8142441511840089262">2 dəfə klikləyin</translation>
 <translation id="8142699993796781067">Şəxsi şəbəkə</translation>
 <translation id="8144760705599030999">Digər cihazlarla sürətli birləşdirmək üçün <ph name="NAME" /> cihazınızı <ph name="EMAIL" /> hesabında yadda saxlayın</translation>
+<translation id="8144914663975476336">Səsyazma formatını seçin</translation>
 <translation id="8149413265954228307">Bluetooth ayarlarını göstərin. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Bağlamaq üçün Ctrl + W düymələrinə basın.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Avto-tamamlama</translation>
@@ -1386,7 +1387,6 @@ Yeni quraşdırma</translation>
 <translation id="8666856788528804727">Cihazınızı ayarlamaq üçün <ph name="NAME" /> tətbiqini açın</translation>
 <translation id="8676770494376880701">Enerjiyə qənaət edən şarjer qoşuldu</translation>
 <translation id="8683506306463609433">Performansın izlənməsi aktivdir</translation>
-<translation id="8685326675965865247">Cihaz, tətbiqlər, ayarlar və vebdə axtarın. Tətbiqləri axtarmaq üçün ox düymələrindən istifadə edin.</translation>
 <translation id="8703634754197148428">Yazmanı başladın. Yazma başladıqda Alt + Shift + L düymələri ilə rəfə keçin və yazmanın dayandırılması düyməsini tapın</translation>
 <translation id="8721053961083920564">Səsi aktiv edin. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tam ekran çəkimi</translation>

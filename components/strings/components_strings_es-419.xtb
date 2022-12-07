@@ -1508,7 +1508,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4813512666221746211">Error de red</translation>
 <translation id="4816492930507672669">Ajustar a la página</translation>
 <translation id="4819347708020428563">¿Quieres editar anotaciones en la vista predeterminada?</translation>
-<translation id="4823325221257637040">Iniciando</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para crear una nueva hoja de cálculo de Google rápidamente</translation>
 <translation id="4825507807291741242">Powerful</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
@@ -1964,6 +1963,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5995727681868049093">Administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
 <translation id="5997247540087773573">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de proteger tus cuentas, el Administrador de contraseñas de Google te recomienda cambiarla ahora y revisar las contraseñas guardadas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6005765687956866568">Se borró la información autocompletada del formulario</translation>
 <translation id="6006365096047131769">7.62 × 12.7 cm (3 × 5 in)</translation>
 <translation id="6006484371116297560">Clásico</translation>
 <translation id="6008122969617370890">Orden de N a 1</translation>
@@ -2273,6 +2273,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6826993739343257035">¿Queres permitir la RA?</translation>
 <translation id="6828866289116430505">Genética</translation>
 <translation id="6831043979455480757">Traducir</translation>
+<translation id="6832753933931306326">Se completó el formulario</translation>
 <translation id="6842196666980060516">184 × 260 mm</translation>
 <translation id="6846340164947227603">Usar un número de tarjeta virtual…</translation>
 <translation id="6852204201400771460">¿Deseas volver a cargar la app?</translation>
@@ -2727,6 +2728,7 @@ Detalles adicionales:
 <translation id="7950027195171824198">Administra tus preferencias de cookies en la configuración de Chrome</translation>
 <translation id="7951415247503192394">(32 bits)</translation>
 <translation id="7952192831285741665">EDP europeo</translation>
+<translation id="7952804540472583406">Cómo <ph name="BEGIN_LINK" />acceder<ph name="END_LINK" /> a la red.</translation>
 <translation id="7953569069500808819">Costura de borde superior</translation>
 <translation id="7956713633345437162">Favoritos del celular</translation>
 <translation id="7961015016161918242">Nunca</translation>

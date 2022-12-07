@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">সকলো সময়তে আটাইবোৰ কেমেৰা অৱৰোধ কৰিবলৈ এই ডিভাইচটোত কেমেৰাৰ এক্সেছ অফ কৰক।</translation>
 <translation id="4666911709726371538">অধিক এপ্‌</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ডাউনল’ড কৰি থকা হৈছে</translation>
+<translation id="468293128311738995">আপোনাৰ ফ’ন থকা এপ্</translation>
 <translation id="4690510401873698237">শ্বেল্ফ একেবাৰে তলিত আছে</translation>
 <translation id="4696813013609194136">অভিভাৱকৰ এক্সেছ ক'ডৰ সহায়ত ডিভাইচ আনলক কৰক</translation>
 <translation id="4702647871202761252">গোপনীয়তাৰ স্ক্ৰীনখন অফ আছে</translation>
@@ -928,7 +929,6 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনল’ড কৰিব বিচাৰে বুলি নিশ্চিত কৰক</translation>
 <translation id="612734058257491180">অতিথিৰ ছেশ্বনত Google Assistant উপলব্ধ নহয়।</translation>
 <translation id="6129953537138746214">স্পেচ</translation>
-<translation id="6134259848159370930">আপোনাৰ ডিভাইচ, এপ্‌, ছেটিংসমূহ আৰু ৱেব সন্ধান কৰক।</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />ৰ বাবে আঁতৰোৱাৰ ডায়লগ খোলক</translation>
 <translation id="6141988275892716286">ডাউনল’ড নিশ্চিত কৰক</translation>
 <translation id="6154006699632741460">আনুষংগিক সামগ্ৰী সমৰ্থিত নহয়</translation>
@@ -1289,6 +1289,7 @@
 <translation id="8142441511840089262">দুবাৰ ক্লিক</translation>
 <translation id="8142699993796781067">ব্যক্তিগত নেটৱর্ক</translation>
 <translation id="8144760705599030999">আপোনাৰ অন্য ডিভাইচসমূহৰ সৈতে দ্ৰুতভাৱে পেয়াৰ কৰিবলৈ <ph name="EMAIL" />ত আপোনাৰ <ph name="NAME" /> ছেভ কৰক</translation>
+<translation id="8144914663975476336">ৰেকৰ্ডিঙৰ ফৰ্মেট বাছনি কৰক</translation>
 <translation id="8149413265954228307">ব্লুটুথৰ ছেটিং দেখুৱাওক। <ph name="STATE_TEXT" />।</translation>
 <translation id="8152092012181020186">বন্ধ কৰিবলৈ Ctrl + W টিপক৷</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, স্বয়ংক্ৰিয়ভাৱে সম্পূৰ্ণ কৰা হৈছে</translation>
@@ -1386,7 +1387,6 @@
 <translation id="8666856788528804727">আপোনাৰ ডিভাইচটো ছেট আপ কৰিবলৈ <ph name="NAME" /> খোলক</translation>
 <translation id="8676770494376880701">কম শক্তিযুক্ত চ্চাৰ্জাৰ সংযোগ কৰা হৈছে</translation>
 <translation id="8683506306463609433">কার্যদক্ষতা ট্ৰে’চ কৰাটো সক্ৰিয় অৱস্থাত আছে</translation>
-<translation id="8685326675965865247">আপোনাৰ ডিভাইচ, এপ্‌, ছেটিংসমূহ আৰু ৱেব সন্ধান কৰক। আপোনাৰ এপ্‌সমূহ নেভিগে’ট কৰিবলৈ এৰ’ কীসমূহ ব্যৱহাৰ কৰক।</translation>
 <translation id="8703634754197148428">ৰেকৰ্ডিং আৰম্ভ কৰক। ৰেকৰ্ডিং আৰম্ভ হোৱাৰ পাছত, শ্বেল্‌ফটোলৈ যাবলৈ অল্‌ট + শ্বিফ্ট + এল ব্যৱহাৰ কৰক আৰু ৰেকৰ্ডিং বন্ধ কৰাৰ বুটামটো বিচাৰক</translation>
 <translation id="8721053961083920564">ভলিউম ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">সম্পূৰ্ণ স্ক্ৰীন কেপচাৰ</translation>

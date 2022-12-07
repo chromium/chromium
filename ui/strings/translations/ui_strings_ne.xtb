@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">उच्च घनत्व भएको डिस्प्ले प्रयोग गर्नुहोस्</translation>
 <translation id="2482878487686419369">सूचनाहरू</translation>
 <translation id="2497284189126895209">सबै फाइलहरू</translation>
-<translation id="2498950423397131220">फ्लोट</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">क्यालिब्रेसन सम्पन्न गरियो</translation>
 <translation id="252373100621549798">अज्ञात प्रदर्शन</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">बोल्न सुरु गर्नुहोस्</translation>
 <translation id="4289540628985791613">समीक्षा</translation>
 <translation id="4306392492252714209">क्लिपबोर्डबाट हटाउनुहोस्।</translation>
-<translation id="4311195029067684288">फुल स्क्रिन खोल्नुहोस्</translation>
 <translation id="4491109536499578614">छवि</translation>
 <translation id="4565377596337484307">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="4588090240171750605">दायाँ तिर स्क्रोल गर्नुहोस्</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">एक्स्टेन्सन अनपिन गरियो</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{१ महिना बाँकी}other{# महिना बाँकी}}</translation>
 <translation id="4888938634149558681">कल गर्नुहोस्</translation>
-<translation id="4937657825850660613">स्क्रिन दुई भागमा स्प्लिट गर्नुहोस्</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ १ सेकेन्ड}other{ # सेकेन्ड}}</translation>
 <translation id="4971687151119236543">मिडिया अघिल्लो ट्र्याक</translation>
-<translation id="4971925105143343452">स्क्रिनको केही भाग स्प्लिट गर्नुहोस्</translation>
 <translation id="5046499563572181734">यहाँ ट्याप गर्नुहोस्</translation>
 <translation id="5076340679995252485">&amp;टाँस्नुहोस्</translation>
-<translation id="5123162024343028706">माथि पिन गर्नुहोस्</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> पीबी</translation>
 <translation id="5278860589123563674">पठाउन सकिएन</translation>
 <translation id="528468243742722775">समाप्त</translation>

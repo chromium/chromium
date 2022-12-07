@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">تمام کیمروں کو ہمیشہ کے لیے اس آلے پر کیمرا تک رسائی کو آف کریں۔</translation>
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ڈاؤن لوڈ ہو رہی ہے</translation>
+<translation id="468293128311738995">آپ کے فون سے ایپس</translation>
 <translation id="4690510401873698237">شیلف نچلے حصے میں ہے</translation>
 <translation id="4696813013609194136">والدین کے کوڈ سے آلہ غیر مقفل کریں</translation>
 <translation id="4702647871202761252">رازداری کی اسکرین آف ہے</translation>
@@ -928,7 +929,6 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> ڈاؤن لوڈ کی توثیق کریں</translation>
 <translation id="612734058257491180">‏Google اسسٹنٹ مہمان سیشن میں دستیاب نہیں ہے۔</translation>
 <translation id="6129953537138746214">اسپیس</translation>
-<translation id="6134259848159370930">اپنا آلہ، ایپس، ترتیبات اور ویب تلاش کریں۔</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> کے لئے اکاؤنٹ ہٹائیں کا ڈائیلاگ کھولیں</translation>
 <translation id="6141988275892716286">ڈاؤن لوڈ کی توثیق کریں</translation>
 <translation id="6154006699632741460">پیریفرل تعاون یافتہ نہیں ہے</translation>
@@ -1288,6 +1288,7 @@
 <translation id="8142441511840089262">دو بار کلک کریں</translation>
 <translation id="8142699993796781067">نجی نیٹ ورک</translation>
 <translation id="8144760705599030999">اپنے دوسرے آلات کی فاسٹر پئیرنگ کے ليے <ph name="NAME" /> کو <ph name="EMAIL" /> پر محفوظ کریں</translation>
+<translation id="8144914663975476336">ریکارڈنگ فارمیٹ منتخب کریں</translation>
 <translation id="8149413265954228307">بلوٹوتھ کی ترتیبات دکھائیں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="8152092012181020186">‏بند کرنے کے لیے Ctrl + W‎ کو دبائیں۔</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />، خود کار تکمیل</translation>
@@ -1385,7 +1386,6 @@
 <translation id="8666856788528804727">اپنا آلہ سیٹ اپ کرنے کے لیے <ph name="NAME" /> کھولیں</translation>
 <translation id="8676770494376880701">کم پاور چارجر منسلک ہوگیا</translation>
 <translation id="8683506306463609433">کارکردگی کا پتا لگانا فعال ہے</translation>
-<translation id="8685326675965865247">اپنا آلہ، ایپس، ترتیبات اور ویب تلاش کریں۔ اپنی ایپس کو نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدیں استعمال کریں۔</translation>
 <translation id="8703634754197148428">‏ریکارڈنگ شروع کریں۔ ریکارڈنگ شروع ہونے کے بعد، شیلف پر نیویگیٹ کرنے کیلئے Alt + Shift + L استعمال کریں اور 'ریکارڈنگ بند کریں' بٹن تلاش کریں</translation>
 <translation id="8721053961083920564">والیوم ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">فُل اسکرین کیپچر</translation>

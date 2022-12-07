@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">قانوني</translation>
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
 <translation id="2407209115954268704">‏حالة قفل شريحة SIM</translation>
+<translation id="241419523391571119">أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
 <translation id="2414886740292270097">داكن</translation>
 <translation id="2418150275289244458">الفتح من خلال "الإعدادات"</translation>
 <translation id="2421798028054665193">الصورة في الصفحة رقم <ph name="CURRENT_PAGE" /> من إجمالي <ph name="TOTAL_PAGES" />.</translation>
@@ -175,6 +176,7 @@
 <translation id="2491955442992294626">لا يمكن اختبار المفاتيح أثناء استخدام نافذة أخرى.</translation>
 <translation id="2493126929778606526">أفضل الصور التي تم اختيارها تلقائيًا</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">تعويم</translation>
 <translation id="2505327257735685095">إعادة تحميل صورة الخلفية الحالية</translation>
 <translation id="2513396635448525189">صورة الملف الشخصي</translation>
 <translation id="2517472476991765520">فحص</translation>
@@ -205,6 +207,7 @@
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="2902312830803030883">مزيد من الإجراءات</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
+<translation id="2940811910881150316">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017079585324758401">الخلفية</translation>
@@ -285,6 +288,7 @@
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
 <translation id="3824259034819781947">إرفاق ملفات</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
+<translation id="3845880861638660475">‏اضغط على <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />مفتاح الخروج (Esc)<ph name="ESC_SHORTCUT_END" /> لإغلاق مربع الحوار.</translation>
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3862598938296403232">يجب إدخال وصف.</translation>
@@ -292,6 +296,7 @@
 <translation id="3866249974567520381">الوصف</translation>
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
 <translation id="3885327323343477505">تغيير شاشة الاستراحة</translation>
+<translation id="391412459402535266">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. يُرجى الانتقال إلى وضع "الكمبيوتر المحمول" لتتمكّن من إجراء الاختبار.</translation>
 <translation id="3923184630988645767">استخدام البيانات</translation>
 <translation id="3932043219784172185">لم يتم الاتصال بأي أجهزة</translation>
 <translation id="3941014780699102620">تعذّرت مطابقة المضيف.</translation>
@@ -304,6 +309,7 @@
 <translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
 <translation id="3993704782688964914">الجهاز <ph name="DEVICE_NAME" /> محدَّث الآن.</translation>
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
+<translation id="4021031199988160623">انتقِل إلى وضع "الكمبيوتر المحمول" لتتمكّن من اختبار لوحة المفاتيح.</translation>
 <translation id="4034824040120875894">الطابعة</translation>
 <translation id="4044093238444069296">تعذَّر الاتصال بالبوابة.</translation>
 <translation id="4046123991198612571">المقطع الصوتي التالي</translation>
@@ -336,6 +342,7 @@
 <translation id="4289849978083912975">عرض الشرائح</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
+<translation id="4311195029067684288">كامل</translation>
 <translation id="4333390807948134856">تم الضغط على المفتاح <ph name="KEY_NAME" />.</translation>
 <translation id="435692326371619097">‏يمكنك إدارة إعدادات اسم نقطة الوصول (APN) للشبكة. تنشئ أسماء نقاط الوصول (APN) اتصالاً بين شبكة الجوّال والإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">لم يتم التشغيل</translation>
@@ -415,7 +422,9 @@
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="4930320165497208503">لإعداد اتصال أو تعديله، انتقِل إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
+<translation id="4937657825850660613">تقسيم الشاشة إلى نصفين</translation>
 <translation id="4950314376641394653">تم تحديث البرامج الثابتة لجهاز <ph name="DEVICE_NAME" /> إلى الإصدار <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">جزئي</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
 <translation id="4985509611418653372">تشغيل</translation>
 <translation id="4987769320337599931">الجدار الناري</translation>

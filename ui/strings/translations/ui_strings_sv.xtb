@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Använd hög densitet</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
 <translation id="2497284189126895209">Alla filer</translation>
-<translation id="2498950423397131220">Flytande knapp</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibreringen är slutförd</translation>
 <translation id="252373100621549798">Okänd visning</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Börja tala</translation>
 <translation id="4289540628985791613">Översikt</translation>
 <translation id="4306392492252714209">Ta bort från urklipp.</translation>
-<translation id="4311195029067684288">Fullt</translation>
 <translation id="4491109536499578614">Bild</translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4588090240171750605">Scrolla åt höger</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Tillägget har lossats</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 månad kvar}other{# månader kvar}}</translation>
 <translation id="4888938634149558681">Ring</translation>
-<translation id="4937657825850660613">Halvskärm</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekund}other{# sekunder}}</translation>
 <translation id="4971687151119236543">Föregående spår</translation>
-<translation id="4971925105143343452">Delvis</translation>
 <translation id="5046499563572181734">Tryck här</translation>
 <translation id="5076340679995252485">K&amp;listra in</translation>
-<translation id="5123162024343028706">Visa ovanpå</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Det gick inte att skicka</translation>
 <translation id="528468243742722775">Avsluta</translation>

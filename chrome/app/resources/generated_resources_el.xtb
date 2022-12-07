@@ -205,6 +205,7 @@
 <translation id="117916940443676133">Το κλειδί ασφαλείας σας δεν προστατεύεται από PIN. Για να διαχειριστείτε τα δεδομένα σύνδεσης, δημιουργήστε ένα PIN.</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1183237619868651138">Δεν είναι δυνατή η εγκατάσταση του <ph name="EXTERNAL_CRX_FILE" /> σε τοπική κρυφή μνήμη.</translation>
+<translation id="1184709369107246085">Η εφαρμογή <ph name="APPLICATION_NAME" /> απαιτεί ένα έγκυρο URL <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">Μπορείτε επίσης να δοκιμάσετε να <ph name="GUEST_SIGNIN_LINK_START" />περιηγηθείτε ως επισκέπτης<ph name="GUEST_SIGNIN_LINK_END" /> για να διορθώσετε αυτό το σφάλμα δικτύου.</translation>
 <translation id="1186771945450942097">Κατάργηση επιβλαβούς λογισμικού</translation>
 <translation id="1187722533808055681">Έξοδος από την κατάσταση αδράνειας</translation>
@@ -2836,6 +2837,7 @@
 <translation id="3582057310199111521">Εισήχθη σε παραπλανητικό ιστότοπο και βρέθηκε σε παραβίαση δεδομένων</translation>
 <translation id="3582299299336701326">Κάντε τις φωτεινές οθόνες σκοτεινές και τις σκοτεινές οθόνες φωτεινές. Πατήστε Αναζήτηση + Ctrl + H για να ενεργοποιήσετε και να απενεργοποιήσετε την αντιστροφή χρωμάτων.</translation>
 <translation id="3584169441612580296">Ανάγνωση και αλλαγή φωτογραφιών, μουσικής και άλλων μέσων από τον υπολογιστή σας</translation>
+<translation id="3586787825263265024">Η εφαρμογή <ph name="APPLICATION_NAME" /> απαιτεί το OneDrive να είναι διαθέσιμο.</translation>
 <translation id="3586806079541226322">Δεν είναι δυνατό το άνοιγμα αυτού του αρχείου</translation>
 <translation id="3586931643579894722">Απόκρυψη λεπτομερειών</translation>
 <translation id="3587482841069643663">Όλες</translation>
@@ -3994,6 +3996,7 @@
 <translation id="4654236001025007561">Μοιραστείτε αρχεία με Chromebook και συσκευές Android που βρίσκονται γύρω σας</translation>
 <translation id="4657914796247705218">Ταχύτητα TrackPoint</translation>
 <translation id="4658285806588491142">Διατηρήστε το περιεχόμενο της οθόνης ιδιωτικό</translation>
+<translation id="4658648180588730283">Η εφαρμογή <ph name="APPLICATION_NAME" /> δεν είναι διαθέσιμη εκτός σύνδεσης.</translation>
 <translation id="465878909996028221">Για τις ανακατευθύνσεις προγράμματος περιήγησης υποστηρίζονται μόνο http, https και πρωτόκολλα αρχείων.</translation>
 <translation id="4659126640776004816">Αυτή η λειτουργία ενεργοποιείται όταν συνδέεστε στον Λογαριασμό σας Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Εικόνα}other{# εικόνες}}</translation>
@@ -4044,6 +4047,7 @@
 <translation id="4699357559218762027">(αυτόματη εκκίνηση)</translation>
 <translation id="4701025263201366865">Γονική σύνδεση</translation>
 <translation id="4701335814944566468">Προβλήθηκε χθες</translation>
+<translation id="4705624512518230041">Δεν είναι δυνατό το άνοιγμα αρχείων <ph name="FILE_NAMES" /> όταν το OneDrive δεν είναι διαθέσιμο</translation>
 <translation id="470644585772471629">Αντιστροφή χρωμάτων</translation>
 <translation id="4707337002099455863">Πάντα σε όλους τους ιστοτόπους</translation>
 <translation id="4708849949179781599">Έξοδος από το <ph name="PRODUCT_NAME" /></translation>
@@ -4511,6 +4515,7 @@
 <translation id="5160634252433617617">Κανονικό πληκτρολόγιο</translation>
 <translation id="5160857336552977725">Συνδεθείτε στη συσκευή σας <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Συσκευές USB από τον πάροχο <ph name="VENDOR_NAME" /></translation>
+<translation id="5162624292894372900">Δεν είναι δυνατό το άνοιγμα αρχείων <ph name="FILE_NAMES" /> όταν το Drive δεν είναι διαθέσιμο</translation>
 <translation id="5162905305237671850">Η συσκευή (<ph name="DEVICE_TYPE" />) αποκλείστηκε</translation>
 <translation id="5163910114647549394">Η καρτέλα μεταφέρθηκε στο τέλος της γραμμής καρτελών</translation>
 <translation id="5164530241085602114">Δεν επιτρέπονται οι ειδοποιήσεις για τον ιστότοπο <ph name="SITE" /></translation>
@@ -5284,6 +5289,7 @@
 <translation id="5886112770923972514">Συνδεθείτε και ρυθμίστε γρήγορα κοντινές συσκευές Γρήγορης σύζευξης</translation>
 <translation id="5886384907280980632">Απενεργοποίηση τώρα</translation>
 <translation id="5889282057229379085">Μέγιστος αριθμός ενδιάμεσων CA: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας <ph name="BEGIN_LINK" />φράση πρόσβασης συγχρονισμού<ph name="END_LINK" />. Οι τρόποι και οι διευθύνσεις πληρωμών από το Google Pay δεν θα κρυπτογραφούνται. Το ιστορικό περιήγησης από το Chrome δεν θα συγχρονίζεται.</translation>
 <translation id="5891688036610113830">Προτιμώμενα δίκτυα Wi-Fi</translation>
 <translation id="5895138241574237353">Επανεκκίνηση</translation>
 <translation id="5895335062901455404">Όταν συνδέεστε στον Λογαριασμό σας Google, οι αποθηκευμένες προτιμήσεις και η δραστηριότητά σας θα είναι έτοιμα σε οποιαδήποτε συσκευή ChromeOS Flex. Μπορείτε να επιλέξετε τα στοιχεία που θέλετε να συγχρονίζονται στις Ρυθμίσεις.</translation>
@@ -5420,6 +5426,7 @@
 <translation id="6016178549409952427">Πλοήγηση σε επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Επιβεβαιώστε τη λειτουργία Powerwash με επιστροφή σε προηγούμενη έκδοση</translation>
 <translation id="6016972670657536680">Επιλέξτε το κουμπί γλώσσας και πληκτρολογίου. Η τρέχουσα επιλεγμένη γλώσσα είναι τα <ph name="LANGUAGE" />.</translation>
+<translation id="6017503096330453612">Επιλέξτε Δοκιμάστε ξανά ή Άνοιγμα στο πρόγραμμα επεξεργασίας εκτός σύνδεσης, για να χρησιμοποιήσετε περιορισμένες επιλογές προβολής και επεξεργασίας.</translation>
 <translation id="6017514345406065928">Πράσινο</translation>
 <translation id="6019169947004469866">Περικοπή</translation>
 <translation id="6019851026059441029">Εκπληκτική - HD</translation>
@@ -6282,6 +6289,7 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Αποτυχία ρύθμισης αυτόματων ενημερώσεων για όλους τους χρήστες (σφάλμα προληπτικής εκτέλεσης: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Πολιτική απορρήτου Google</translation>
+<translation id="6830200424658853449">Άνοιγμα στο πρόγραμμα επεξεργασίας εκτός σύνδεσης</translation>
 <translation id="6831043979455480757">Μετάφραση</translation>
 <translation id="6832218595502288407">Στοίχιση στα αριστερά</translation>
 <translation id="6833479554815567477">Η καρτέλα καταργήθηκε από την ομάδα <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -6645,6 +6653,7 @@
 <translation id="7174199383876220879">Νέο! Ελέγξτε τη μουσική σας, τα βίντεο και περισσότερα.</translation>
 <translation id="7175037578838465313">Διαμόρφωση <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Έγινε φόρτωση από:</translation>
+<translation id="7177079607604198383">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και επιλέξτε Δοκιμάστε ξανά ή Άνοιγμα στο πρόγραμμα επεξεργασίας εκτός σύνδεσης, για να χρησιμοποιήσετε περιορισμένες επιλογές προβολής και επεξεργασίας.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
 <translation id="7180865173735832675">Προσαρμογή</translation>
 <translation id="7182791023900310535">Μετακίνηση του κωδικού πρόσβασής σας</translation>
@@ -7346,6 +7355,7 @@
 <translation id="783229689197954457">Εάν το Google εντοπίσει μια έκπτωση, θα εμφανίζεται σε αυτήν τη σελίδα</translation>
 <translation id="7833720883933317473">Οι αποθηκευμένες προσαρμοσμένες λέξεις θα εμφανίζονται εδώ</translation>
 <translation id="7835178595033117206">Ο σελιδοδείκτης καταργήθηκε</translation>
+<translation id="7836535163829106376">Δεν είναι δυνατό το άνοιγμα του URL για αρχεία <ph name="FILE_NAMES" /></translation>
 <translation id="7836850009646241041">Δοκιμάστε να αγγίξετε ξανά το κλειδί ασφαλείας σας</translation>
 <translation id="7837776265184002579">Η αρχική σελίδα σας άλλαξε σε <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Δεν ήταν δυνατή η αποθήκευση του δικτύου "<ph name="NETWORK_NAME" />" από τη συσκευή <ph name="DEVICE_NAME" /></translation>
@@ -7786,6 +7796,7 @@
 <translation id="822347941086490485">Εύρεση συσκευών HID…</translation>
 <translation id="8223573963214454788">Συνέχεια και διαγραφή δεδομένων</translation>
 <translation id="8225046344534779393">Ελέγξτε τη σύνδεση στο διαδίκτυο</translation>
+<translation id="8225173734540525852">Η εφαρμογή <ph name="APPLICATION_NAME" /> απαιτεί να είναι διαθέσιμο το Drive.</translation>
 <translation id="8225265270453771718">Μοιραστείτε ένα παράθυρο εφαρμογής</translation>
 <translation id="8226222018808695353">Απαγορευμένο</translation>
 <translation id="8226619461731305576">Ουρά</translation>
@@ -8122,6 +8133,7 @@
 <translation id="8549316893834449916">Θα χρησιμοποιείτε τον Λογαριασμό σας Google για να συνδεθείτε στο Chromebook. Είναι ο ίδιος λογαριασμός που χρησιμοποιείτε για το Gmail, το Drive, το YouTube κ.α.</translation>
 <translation id="8551388862522347954">Άδειες</translation>
 <translation id="8551588720239073785">Ρυθμίσεις ημερομηνίας και ώρας</translation>
+<translation id="8551647092888540776">Δεν είναι δυνατό το άνοιγμα αρχείων <ph name="FILE_NAMES" /> εκτός σύνδεσης</translation>
 <translation id="8552102814346875916">Αποθήκευση στη λίστα "Να διατηρούνται πάντα ενεργοί αυτοί οι ιστότοποι"</translation>
 <translation id="8553342806078037065">Διαχείριση άλλων ατόμων</translation>
 <translation id="8554899698005018844">Καμία γλώσσα</translation>

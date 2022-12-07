@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">Кои разширения сте инсталирали</translation>
 <translation id="1588438908519853928">Нормално</translation>
 <translation id="1592005682883173041">Достъп до локални данни</translation>
+<translation id="1593359183944365958">270 градуса</translation>
 <translation id="1594030484168838125">Избор</translation>
 <translation id="1596296697375291157">Трилъри, криминални и детективски филми</translation>
 <translation id="1599199147673445968">Нова карта? <ph name="BEGIN_LINK" />Въведете данните ѝ<ph name="END_LINK" /></translation>
@@ -338,6 +339,7 @@
 <translation id="1741613555002899862">Трябва да бъде посочено посредством валиден низ, когато за правилото DnsOverHttpsMode е зададено <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Браузърът ви е управляван</translation>
 <translation id="1746113442205726301">Изместване на изображението по оста Y</translation>
+<translation id="1746531169546376413">0 градуса</translation>
 <translation id="17513872634828108">Отворени раздели</translation>
 <translation id="1752021286346845558">Пощенска кутия 8</translation>
 <translation id="1753068535428855445">Запознанства и лични обяви</translation>
@@ -1507,7 +1509,6 @@
 <translation id="4813512666221746211">Грешка в мрежата</translation>
 <translation id="4816492930507672669">Да се побере в страницата</translation>
 <translation id="4819347708020428563">Искате ли да редактирате поясненията в стандартния изглед?</translation>
-<translation id="4823325221257637040">Стартира се</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да създадете бързо таблица в Google Таблици</translation>
 <translation id="4825507807291741242">Впечатляващо</translation>
 <translation id="483241715238664915">Включване на предупрежденията</translation>
@@ -1799,6 +1800,7 @@
 <translation id="5540969246441091044">Конни спортове</translation>
 <translation id="5541086400771735334">Пощенска кутия 7</translation>
 <translation id="5541546772353173584">Добавяне на имейл адрес</translation>
+<translation id="5543722831081909240">180 градуса</translation>
 <translation id="5545756402275714221">Статии за вас</translation>
 <translation id="5551890439174915351">100 x 200 мм</translation>
 <translation id="5552137475244467770">Chrome периодично проверява паролите ви в списъци, които са били публикувани онлайн. Когато го прави, паролите и потребителските ви имена са шифровани, така че да не могат да бъдат прочетени от никого, включително от Google.</translation>
@@ -1963,6 +1965,7 @@
 <translation id="5995727681868049093">Управление на информацията ви и настройките за поверителност и сигурност в профила ви в Google</translation>
 <translation id="5997247540087773573">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, Google Мениджър на пароли ви препоръчва да я промените сега и да проверите запазените си пароли.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> резултата за „<ph name="SEARCH_TEXT" />“</translation>
+<translation id="6005765687956866568">Автоматично попълнената информация е изчистена от формуляра</translation>
 <translation id="6006365096047131769">3 x 5 инча</translation>
 <translation id="6006484371116297560">Класическа тема</translation>
 <translation id="6008122969617370890">Подредба от N до 1</translation>
@@ -2188,6 +2191,7 @@
 <translation id="6591833882275308647">Устройството ви <ph name="DEVICE_TYPE" /> не е управлявано</translation>
 <translation id="6592952801936330159">Бутон „Управление на настройките за сайтовете“. Натиснете Enter, за да управлявате разрешенията и съхраняваните данни от сайтовете от настройките на Chrome</translation>
 <translation id="6596325263575161958">Опции за шифроване</translation>
+<translation id="6597665340361269064">90 градуса</translation>
 <translation id="6599642189720630047">Проследявани продукти</translation>
 <translation id="6611723696964473273">Икономически новини</translation>
 <translation id="6612010098632894193">Онлайн видео</translation>
@@ -2272,6 +2276,7 @@
 <translation id="6826993739343257035">Да се разреши ли AR?</translation>
 <translation id="6828866289116430505">Генетика</translation>
 <translation id="6831043979455480757">Превод</translation>
+<translation id="6832753933931306326">Формулярът бе попълнен</translation>
 <translation id="6842196666980060516">184 x 260 мм</translation>
 <translation id="6846340164947227603">Използване на номер на виртуална карта...</translation>
 <translation id="6852204201400771460">Искате ли да презаредите приложението?</translation>
@@ -2726,6 +2731,7 @@
 <translation id="7950027195171824198">Управление на предпочитанията ви за „бисквитките“ от настройките на Chrome</translation>
 <translation id="7951415247503192394">(32 бита)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952804540472583406"><ph name="BEGIN_LINK" />Влизате в профила си<ph name="END_LINK" /> в мрежата.</translation>
 <translation id="7953569069500808819">Зашиване на горния ръб</translation>
 <translation id="7956713633345437162">Мобилни отметки</translation>
 <translation id="7961015016161918242">Никога</translation>
@@ -2843,6 +2849,7 @@
 <translation id="8241707690549784388">Страницата, която търсите, използва въведената от вас информация. Ако се върнете на тази страница, действията, които вече сте изпълнили, може да бъдат повторени. Искате ли да продължите?</translation>
 <translation id="8241712895048303527">Блокиране за този сайт</translation>
 <translation id="8242426110754782860">Продължаване</translation>
+<translation id="8245703462678310750">Натиснете и задръжте |<ph name="ACCELERATOR" />|, за да излезете от режима на цял екран и да видите изтеглянето.</translation>
 <translation id="8249296373107784235">Прекратяване</translation>
 <translation id="8249463483885748674">Стандартизирани тестове и тестове за прием</translation>
 <translation id="8252991034201168845">Бутон „Управление на настройките за достъпност“. Натиснете Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS</translation>

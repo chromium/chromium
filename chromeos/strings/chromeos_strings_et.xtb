@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Klahve ei testita, kui kasutate teist akent</translation>
 <translation id="2493126929778606526">Teie parimad fotod, valitud automaatselt</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Hõljutamine</translation>
 <translation id="2505327257735685095">Praeguse taustapildi värskendamine</translation>
 <translation id="2513396635448525189">Profiilipilt</translation>
 <translation id="2517472476991765520">Kontrolli</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Slaidiseanss</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> pilti</translation>
+<translation id="4311195029067684288">Täielik</translation>
 <translation id="4333390807948134856">Klahv <ph name="KEY_NAME" /> on alla vajutatud</translation>
 <translation id="435692326371619097">Hallake võrgu APN-ide seadeid. APN-id loovad ühenduse mobiilsidevõrgu ja interneti vahel. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Laeti <ph name="RATE" /> <ph name="NUM_SECONDS" /> sekundi jooksul.</translation>
 <translation id="4930320165497208503">Ühenduse seadistamiseks või värskendamiseks avage leht <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Kuupäev</translation>
+<translation id="4937657825850660613">Pool</translation>
 <translation id="4950314376641394653">Seadme <ph name="DEVICE_NAME" /> püsivara on värskendatud versioonile <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Osaline</translation>
 <translation id="498186245079027698">Kontrollige skannerit ja proovige uuesti. Veenduge, et skannitud failide salvestamiseks oleks piisavalt kohalikku ruumi.</translation>
 <translation id="4985509611418653372">Käitati</translation>
 <translation id="4987769320337599931">Tulemüür</translation>

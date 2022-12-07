@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Skicka feedbackrapport</translation>
 <translation id="2407209115954268704">Status för SIM-lås</translation>
+<translation id="241419523391571119">Öppna locket igen för att testa</translation>
 <translation id="2414886740292270097">Mörk</translation>
 <translation id="2418150275289244458">Öppna i inställningarna</translation>
 <translation id="2421798028054665193">Bild <ph name="CURRENT_PAGE" /> av <ph name="TOTAL_PAGES" /></translation>
@@ -175,6 +176,7 @@
 <translation id="2491955442992294626">Inga tangenter testas när du använder ett annat fönster</translation>
 <translation id="2493126929778606526">Dina bästa bilder, utvalda automatiskt</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Flytande knapp</translation>
 <translation id="2505327257735685095">Uppdatera den aktuella bakgrundsbilden</translation>
 <translation id="2513396635448525189">Inloggningsbild</translation>
 <translation id="2517472476991765520">Sök</translation>
@@ -205,6 +207,7 @@
 <translation id="2878387241690264070"><ph name="RATE" /> urladdat på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="2902312830803030883">Fler åtgärder</translation>
 <translation id="2926057806159140518">Ange användarnamn och lösenord eller läs av QR-koden</translation>
+<translation id="2940811910881150316">Det gick inte att testa enheten. Öppna locket igen för att testa.</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
 <translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="3017079585324758401">Bakgrund</translation>
@@ -285,6 +288,7 @@
 <translation id="3820172043799983114">Ogiltig pinkod</translation>
 <translation id="3824259034819781947">Bifoga filer</translation>
 <translation id="3838338534323494292">Nytt lösenord</translation>
+<translation id="3845880861638660475">Tryck på <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> för att stänga dialogrutan.</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="3862598938296403232">Beskrivning krävs</translation>
@@ -292,6 +296,7 @@
 <translation id="3866249974567520381">Beskrivning</translation>
 <translation id="387301095347517405">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
 <translation id="3885327323343477505">Ändra skärmsläckare</translation>
+<translation id="391412459402535266">Det gick inte att testa enheten. Byt till laptopläge för att testa.</translation>
 <translation id="3923184630988645767">Dataanvändning</translation>
 <translation id="3932043219784172185">Det finns ingen ansluten enhet</translation>
 <translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
@@ -304,6 +309,7 @@
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> har nu uppdaterats</translation>
 <translation id="4003384961948020559">Misslyckades – utmatningsfacket är fullt</translation>
+<translation id="4021031199988160623">Byt till laptopläge för att testa</translation>
 <translation id="4034824040120875894">Skrivare</translation>
 <translation id="4044093238444069296">Det gick inte att kontakta gateway</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
@@ -336,6 +342,7 @@
 <translation id="4289849978083912975">Bildspel</translation>
 <translation id="4297501883039923494">Har stoppats – okänt fel</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
+<translation id="4311195029067684288">Fullt</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> har tryckts ned</translation>
 <translation id="435692326371619097">Hantera APN-inställningar för nätverket. APN upprättar en anslutning mellan ett mobilnätverk och internet. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Har inte körts</translation>
@@ -415,7 +422,9 @@
 <translation id="4921665434385737356">Har laddat <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">Öppna <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" /> om du vill konfigurera eller uppdatera en anslutning.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4937657825850660613">Halvskärm</translation>
 <translation id="4950314376641394653">Firmware på <ph name="DEVICE_NAME" /> har uppdaterats till version <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Delvis</translation>
 <translation id="498186245079027698">Kontrollera skannern och försök igen. Kontrollera att utrymmet lokalt räcker för att spara de skannade filerna.</translation>
 <translation id="4985509611418653372">Kör</translation>
 <translation id="4987769320337599931">Brandvägg</translation>

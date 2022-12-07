@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Toetsen worden niet getest als je een ander venster gebruikt</translation>
 <translation id="2493126929778606526">Je beste foto's, automatisch geselecteerd</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Zwevend</translation>
 <translation id="2505327257735685095">De huidige achtergrondafbeelding vernieuwen</translation>
 <translation id="2513396635448525189">Inlogafbeelding</translation>
 <translation id="2517472476991765520">Scannen</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Diavoorstelling</translation>
 <translation id="4297501883039923494">Gestopt: onbekende fout</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> afbeeldingen</translation>
+<translation id="4311195029067684288">Volledig</translation>
 <translation id="4333390807948134856">Er is op de toets <ph name="KEY_NAME" /> gedrukt</translation>
 <translation id="435692326371619097">Beheer de APN-instellingen voor het netwerk. APN's maken verbinding tussen een mobiel netwerk en internet. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Niet uitgevoerd</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="RATE" /> opgeladen in <ph name="NUM_SECONDS" /> seconden.</translation>
 <translation id="4930320165497208503">Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> als je een verbinding wilt instellen of updaten.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4937657825850660613">Half</translation>
 <translation id="4950314376641394653">Firmware voor <ph name="DEVICE_NAME" /> is geüpdatet naar versie <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Gedeeltelijk</translation>
 <translation id="498186245079027698">Check de scanner en probeer het opnieuw. Zorg dat er voldoende lokale ruimte is om gescande bestanden op te slaan.</translation>
 <translation id="4985509611418653372">Uitvoeren</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -685,6 +689,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7415801143053185905">Zeer hoge HTTP-vertraging</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scannen voltooid. 1 pagina gescand.}other{Scannen voltooid. {NUMBER_OF_PAGES} pagina's gescand.}}</translation>
+<translation id="7458970041932198923">Maak verbinding met een netwerk en laad de pagina opnieuw om avatars te bekijken en in te stellen.</translation>
 <translation id="7469648432129124067">Portal waargenomen</translation>
 <translation id="7481312909269577407">Vooruit</translation>
 <translation id="7487067081878637334">Technologie</translation>
@@ -839,6 +844,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Pagina {NUMBER_OF_PAGES} scannen}other{Pagina {NUMBER_OF_PAGES} scannen}}</translation>
 <translation id="8997710128084572139">Apparaat heeft nog <ph name="BATTERY_PERCENTAGE" />% batterijlading.</translation>
+<translation id="8998289560386111590">Niet beschikbaar op je apparaat</translation>
 <translation id="9003704114456258138">Frequentie</translation>
 <translation id="9025198690966128418">Gebruiken als persoonlijk apparaat</translation>
 <translation id="9028832514430399253">Gebruik de schakelaar om de screensaveropties te selecteren</translation>

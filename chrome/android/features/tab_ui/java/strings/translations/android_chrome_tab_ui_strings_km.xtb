@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">បិទ​ផ្ទាំងឯកជន​ទាំងអស់ឬ?</translation>
 <translation id="1657719826150349398">ផ្លាស់ទី​ផ្ទាំង​ចុះក្រោម</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{ផ្ទាំង <ph name="TABS_COUNT_ONE" />}other{ផ្ទាំង <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{ចំណាំ​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{ចំណាំ​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="2118649612461486615">ព័ត៌មានអំពីហាង</translation>
 <translation id="2162620598375156287">ឥឡូវនេះ <ph name="CURRENT_PRICE" /> នៅលើ <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{បំបែក​ក្រុម​ផ្ទាំង}other{បំបែក​ក្រុម​ផ្ទាំង}}</translation>
 <translation id="2277224997687551299">កែ​ឈ្មោះក្រុម</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{លុបផ្ទាំង <ph name="TABS_COUNT_ONE" /> ដែល​បានជ្រើសរើស​ពីក្រុម។}other{លុបផ្ទាំង <ph name="TABS_COUNT_MANY" /> ដែល​បានជ្រើសរើស​ពីក្រុម។}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ចំណាំ​ផ្ទាំង}other{ចំណាំ​ផ្ទាំង}}</translation>
 <translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{បង្រួមផ្ទាំង <ph name="TABS_COUNT_ONE" />។}other{បង្រួមក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" />ផ្ទាំង។}}</translation>
 <translation id="2569352796411618312">ការណែនាំ៖ ផ្ទាំង <ph name="NUMBER_OF_TABS" /> របស់អ្នក​មិនត្រូវបាន​ប្រើទេ​នាពេល​ថ្មីៗនេះ។ បិទផ្ទាំង​ទាំងនោះឬ?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">រំកិល​ផ្ទាំង​ឡើងលើ</translation>
 <translation id="8304833501377495048">កុំបង្ហាញរបារផ្ទាំងម្ដងទៀតឬ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="8398929769197326728">ថតថ្មី - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ពង្រីកក្រុមផ្ទាំង​ដែលមាន <ph name="NUMBER_OF_TABS" />ផ្ទាំង។</translation>
 <translation id="8714939927607906138">តម្លៃ​ទាប​ជាង​មុន</translation>
 <translation id="8749939518995770034">បានបិទរបារផ្ទាំង</translation>

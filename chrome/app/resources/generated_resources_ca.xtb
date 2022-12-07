@@ -1956,6 +1956,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="275662540872599901">pantalla desactivada</translation>
 <translation id="2757161511365746634">Consulta la impressora</translation>
 <translation id="2757338480560142065">Assegura't que la contrasenya que estàs desant coincideixi amb la contrasenya de: <ph name="WEBSITE" /></translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> No s'ha tornat cap resultat de cerca per a <ph name="SEARCH_QUERY" /></translation>
 <translation id="2762441749940182211">La càmera està bloquejada</translation>
 <translation id="2764786626780673772">Detalls de la VPN</translation>
 <translation id="2764920001292228569">Introdueix un nom per al perfil</translation>
@@ -5909,6 +5910,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6508248480704296122">Relacionada amb <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Aplicació: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Llicència per a recursos multimèdia</translation>
+<translation id="6511279028091289182">Determina com es connecta a llocs web amb una connexió segura. Utilitza un proveïdor de serveis gestionat a <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="6511827214781912955">Et recomanem que suprimeixis <ph name="FILENAME" /> perquè els altres usuaris que utilitzen aquest dispositiu no puguin veure les teves contrasenyes.</translation>
 <translation id="6512808201725371249">Ja hi ha una contrasenya d'aquest compte desada al teu gestor de contrasenyes de Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome utilitzarà dades mòbils si no esteu connectat a una altra xarxa.</translation>
@@ -5978,6 +5980,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6568283005472142698">Cerca de pestanyes</translation>
 <translation id="65711204837946324">Necessita permís per poder baixar-lo</translation>
 <translation id="6571772921213691236">Edita les dades d'inici de sessió</translation>
+<translation id="657229725818377235">Obtén més protecció contra baixades i llocs web perillosos</translation>
 <translation id="6573096386450695060">Permet sempre</translation>
 <translation id="6573497332121198392">No es pot suprimir la drecera</translation>
 <translation id="657402800789773160">&amp;Torna a carregar aquesta pàgina</translation>
@@ -6922,6 +6925,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7465635034594602553">S'ha produït un error. Espera uns quants minuts i torna a executar <ph name="APP_NAME" />.</translation>
 <translation id="7465778193084373987">URL de revocació de certificats de Netscape</translation>
 <translation id="7466431077154602932">Visualització compacta</translation>
+<translation id="7466556884531675354">No s'ha desat cap nota</translation>
 <translation id="746861123368584540">L'extensió s'ha carregat</translation>
 <translation id="7470424110735398630">Amb permís per veure el porta-retalls</translation>
 <translation id="747114903913869239">Error: no s'ha pogut descodificar l'extensió</translation>
@@ -7902,6 +7906,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8351316842353540018">Mostra sempre les opcions d'accessibilitat</translation>
 <translation id="8351419472474436977">Aquesta extensió ha passat a controlar la configuració del servidor intermediari. Això vol dir que pot modificar, desfer o espiar qualsevol acció que feu en línia. Si no esteu segur del motiu d'aquest canvi, és possible que no el vulgueu aplicar.</translation>
 <translation id="8351630282875799764">La bateria no s'està carregant</translation>
+<translation id="8352287103893778223">Títol del grup de pestanyes</translation>
 <translation id="835238322900896202">S'ha produït un error durant la desinstal·lació. Executa la desinstal·lació a través del terminal.</translation>
 <translation id="8353683614194668312">Pot:</translation>
 <translation id="8354034204605718473">S'ha afegit el PIN del teu fill</translation>

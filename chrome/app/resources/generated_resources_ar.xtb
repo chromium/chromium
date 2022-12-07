@@ -5915,6 +5915,7 @@
 <translation id="6508248480704296122">ذات صلة بـ <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">التطبيق: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">ترخيص الوسائط</translation>
+<translation id="6511279028091289182">تحدِّد هذه الميزة طريقة الاتصال بالمواقع الإلكترونية بشكل آمن. ويعتمد ذلك على مقدِّم خدمة مُدار ومسجّل على الرابط <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="6511827214781912955">ننصحك بحذف الملف "<ph name="FILENAME" />"، حتى لا يتمكّن مستخدمو هذا الجهاز الآخرون من الاطّلاع على كلمات مرورك.</translation>
 <translation id="6512808201725371249">‏هناك كلمة مرور لهذا الحساب محفوظة حاليًا في "مدير كلمات المرور في Google" (<ph name="USER_EMAIL" />).</translation>
 <translation id="6513247462497316522">‏سيستخدم Google Chrome بيانات الجوال إذا لم تكن متصلاً بشبكة أخرى.</translation>
@@ -5984,6 +5985,7 @@
 <translation id="6568283005472142698">البحث عن علامات تبويب</translation>
 <translation id="65711204837946324">يجب الحصول على إذن لإجراء عملية التنزيل.</translation>
 <translation id="6571772921213691236">تعديل بيانات تسجيل الدخول</translation>
+<translation id="657229725818377235">عزِّز حماية جهازك من المواقع الإلكترونية الضارّة وعمليات التنزيل الخطيرة.</translation>
 <translation id="6573096386450695060">السماح دومًا</translation>
 <translation id="6573497332121198392">تتعذَّر إزالة الاختصار.</translation>
 <translation id="657402800789773160">إ&amp;عادة تحميل هذه الصفحة</translation>

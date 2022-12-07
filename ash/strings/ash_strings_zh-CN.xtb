@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">如果您这样做，系统便会始终禁止使用所有摄像头。</translation>
 <translation id="4666911709726371538">更多应用</translation>
 <translation id="4667099493359681081">正在下载 <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">您手机中的应用</translation>
 <translation id="4690510401873698237">任务栏位于屏幕底部</translation>
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
@@ -928,7 +929,6 @@
 <translation id="6121838516699723042">确认下载“<ph name="FILENAME" />”</translation>
 <translation id="612734058257491180">无法在访客会话中使用 Google 助理。</translation>
 <translation id="6129953537138746214">空格</translation>
-<translation id="6134259848159370930">搜索您的设备、应用、设置和网站。</translation>
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除帐号”对话框</translation>
 <translation id="6141988275892716286">确认下载</translation>
 <translation id="6154006699632741460">不支持外围设备</translation>
@@ -1286,6 +1286,7 @@
 <translation id="8142441511840089262">双击</translation>
 <translation id="8142699993796781067">专用网络</translation>
 <translation id="8144760705599030999">将您的“<ph name="NAME" />”保存到 <ph name="EMAIL" />，即可更快速地与您的其他设备配对</translation>
+<translation id="8144914663975476336">选择录制格式</translation>
 <translation id="8149413265954228307">显示蓝牙设置。<ph name="STATE_TEXT" />。</translation>
 <translation id="8152092012181020186">按 Ctrl + W 即可关闭。</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />，自动填充</translation>
@@ -1383,7 +1384,6 @@
 <translation id="8666856788528804727">请打开“<ph name="NAME" />”以设置您的设备</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>
 <translation id="8683506306463609433">正在跟踪性能</translation>
-<translation id="8685326675965865247">搜索您的设备、应用、设置和网站。使用箭头键可浏览各个应用。</translation>
 <translation id="8703634754197148428">开始录制。录制开始后，使用 Alt + Shift + L 可转到任务栏并从中找到“停止录制”按钮</translation>
 <translation id="8721053961083920564">开启/关闭声音。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">截取整个屏幕</translation>

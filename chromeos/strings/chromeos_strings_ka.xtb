@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">კლავიშების ტესტირება ვერ მოხერხდება, როცა სხვა ფანჯარას იყენებთ</translation>
 <translation id="2493126929778606526">ავტომატურად არჩეული თქვენი საუკეთესო ფოტოები</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">ლივლივი</translation>
 <translation id="2505327257735685095">ფონის ამჟამინდელი სურათის განახლება</translation>
 <translation id="2513396635448525189">შესვლის სურათი</translation>
 <translation id="2517472476991765520">სკანირება</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">სლაიდშოუ</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> სურათი</translation>
+<translation id="4311195029067684288">მთლიანი</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> კლავიში დაჭერილია</translation>
 <translation id="435692326371619097">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="RATE" /> დაიტენა <ph name="NUM_SECONDS" /> წამში.</translation>
 <translation id="4930320165497208503">კავშირის დასაყენებლად ან გასაახლებლად გადადით <ph name="BEGIN_LINK" />პარამეტრებზე<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">თარიღი</translation>
+<translation id="4937657825850660613">ნახევარი</translation>
 <translation id="4950314376641394653">ჩაშენებული პროგრამული უზრუნველყოფა <ph name="DEVICE_NAME" /> განახლდა ვერსიამდე <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">ნაწილობრივი</translation>
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4985509611418653372">გაშვება</translation>
 <translation id="4987769320337599931">ქსელის დაცვა</translation>

@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">Les extensions que vous avez installées</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Accès aux données locales</translation>
+<translation id="1593359183944365958">270 degrés</translation>
 <translation id="1594030484168838125">Choisir</translation>
 <translation id="1596296697375291157">Films à suspense, policiers et mystères</translation>
 <translation id="1599199147673445968">Nouvelle carte? <ph name="BEGIN_LINK" />Entrer les détails de la carte<ph name="END_LINK" /></translation>
@@ -338,6 +339,7 @@
 <translation id="1741613555002899862">Doit être indiquée et être une chaîne valide lorsque la politique DnsOverHttpsMode est définie à <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Votre navigateur est géré</translation>
 <translation id="1746113442205726301">Décalage Y de l'image</translation>
+<translation id="1746531169546376413">0 degré</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1752021286346845558">Boîte aux lettres 8</translation>
 <translation id="1753068535428855445">Rencontres et services personnels</translation>
@@ -1507,7 +1509,6 @@
 <translation id="4813512666221746211">Erreur réseau</translation>
 <translation id="4816492930507672669">Ajuster à la page</translation>
 <translation id="4819347708020428563">Modifier les annotations dans la vue par défaut?</translation>
-<translation id="4823325221257637040">À compter du</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une feuille Google</translation>
 <translation id="4825507807291741242">Puissant</translation>
 <translation id="483241715238664915">Activer les avertissements</translation>
@@ -1799,6 +1800,7 @@
 <translation id="5540969246441091044">Sports équestres</translation>
 <translation id="5541086400771735334">Boîte aux lettres 7</translation>
 <translation id="5541546772353173584">Ajouter une adresse de courriel</translation>
+<translation id="5543722831081909240">180 degrés</translation>
 <translation id="5545756402275714221">Articles pour vous</translation>
 <translation id="5551890439174915351">100 mm x 200 mm</translation>
 <translation id="5552137475244467770">Chrome vérifie régulièrement que vos mots de passe ne figurent pas dans les listes qui ont été publiées en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
@@ -2189,6 +2191,7 @@
 <translation id="6591833882275308647">Votre <ph name="DEVICE_TYPE" /> n'est pas géré</translation>
 <translation id="6592952801936330159">Bouton Gérer les paramètres du site, appuyez sur Entrée afin de gérer les autorisations et les données stockées pour les sites dans les paramètres de Chrome</translation>
 <translation id="6596325263575161958">Options de chiffrement</translation>
+<translation id="6597665340361269064">90 degrés</translation>
 <translation id="6599642189720630047">Produits suivis</translation>
 <translation id="6611723696964473273">Actualités économiques</translation>
 <translation id="6612010098632894193">Vidéo en ligne</translation>

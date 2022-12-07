@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Korkea tiheys</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2497284189126895209">Kaikki tiedostot</translation>
-<translation id="2498950423397131220">Kelluva</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibrointi on valmis.</translation>
 <translation id="252373100621549798">Tuntematon näyttö</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Aloita puhuminen</translation>
 <translation id="4289540628985791613">Yleiskatsaus</translation>
 <translation id="4306392492252714209">Poista leikepöydältä.</translation>
-<translation id="4311195029067684288">Täynnä</translation>
 <translation id="4491109536499578614">Kuva</translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4588090240171750605">Vieritä oikealle</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Laajennus irrotettu</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 kuukausi jäljellä}other{# kuukautta jäljellä}}</translation>
 <translation id="4888938634149558681">Soita</translation>
-<translation id="4937657825850660613">Puolikas</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunti}other{# sekuntia}}</translation>
 <translation id="4971687151119236543">Media: edellinen kappale</translation>
-<translation id="4971925105143343452">Osittainen</translation>
 <translation id="5046499563572181734">Napauta tätä</translation>
 <translation id="5076340679995252485">&amp;Liitä</translation>
-<translation id="5123162024343028706">Kiinnitä ylös</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Pt</translation>
 <translation id="5278860589123563674">Lähetys epäonnistui</translation>
 <translation id="528468243742722775">Loppu</translation>

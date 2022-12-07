@@ -666,6 +666,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4666082839192943839">Désactivez l'accès à l'appareil photo sur cet appareil pour bloquer tous les appareils photo en permanence.</translation>
 <translation id="4666911709726371538">Plus d'applications</translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours</translation>
+<translation id="468293128311738995">Applis de votre téléphone</translation>
 <translation id="4690510401873698237">Étagère en bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
@@ -927,7 +928,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistant Google n'est pas disponible dans une session Invité.</translation>
 <translation id="6129953537138746214">Espace</translation>
-<translation id="6134259848159370930">Effectuez des recherches sur votre appareil, dans vos applications et paramètres, et sur le Web.</translation>
 <translation id="6137566720514957455">Ouvrir la boîte de dialogue de suppression du compte <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirmer le téléchargement</translation>
 <translation id="6154006699632741460">Périphérique non compatible</translation>
@@ -1288,6 +1288,7 @@ Nouvelle installation</translation>
 <translation id="8142441511840089262">Double-clic</translation>
 <translation id="8142699993796781067">Réseau privé</translation>
 <translation id="8144760705599030999">Enregistrez "<ph name="NAME" />" avec votre compte <ph name="EMAIL" /> pour une association plus rapide avec vos autres appareils</translation>
+<translation id="8144914663975476336">Sélectionner un format d'enregistrement</translation>
 <translation id="8149413265954228307">Afficher les paramètres Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Appuyez sur Ctrl+W pour fermer l'élément.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, saisie semi-automatique</translation>
@@ -1385,7 +1386,6 @@ Nouvelle installation</translation>
 <translation id="8666856788528804727">Ouvrez <ph name="NAME" /> pour configurer votre appareil</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8683506306463609433">Suivi des performances actif</translation>
-<translation id="8685326675965865247">Effectuez des recherches sur votre appareil, dans vos applications et sur le Web. Utilisez les touches fléchées pour naviguer dans vos applications.</translation>
 <translation id="8703634754197148428">Démarrez l'enregistrement. Une fois l'enregistrement démarré, appuyez sur Alt+Maj+L pour aller à la barre d'accès et trouver le bouton pour arrêter l'enregistrement.</translation>
 <translation id="8721053961083920564">Activer/désactiver le volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Capture plein écran</translation>

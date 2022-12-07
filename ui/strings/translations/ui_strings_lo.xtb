@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">ໃຊ້ຄວາມເຂັ້ມສູງ</translation>
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="2497284189126895209">ທຸກໄຟລ໌</translation>
-<translation id="2498950423397131220">ລອຍ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">ການປັບຕັ້ງຄ່າສຳເລັດແລ້ວ</translation>
 <translation id="252373100621549798">ການສະແດງທີ່ບໍ່ຮູ້ຈັກ</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">ເລີ່ມ​ຕົ້ນ​ເວົ້າ</translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
 <translation id="4306392492252714209">ລຶບອອກຈາກຄລິບບອດ.</translation>
-<translation id="4311195029067684288">ເຕັມ</translation>
 <translation id="4491109536499578614">ຮູບ​</translation>
 <translation id="4565377596337484307">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="4588090240171750605">ເລື່ອນໄປທາງຂວາ</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">ຖອນໝຸດສ່ວນຂະຫຍາຍແລ້ວ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{ຍັງເຫຼືອ 1 ເດືອນ}other{ຍັງເຫຼືອ # ເດືອນ}}</translation>
 <translation id="4888938634149558681">ໂທອອກ</translation>
-<translation id="4937657825850660613">ເຄິ່ງໜຶ່ງ</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 ວິ​ນາ​ທີ}other{# ວິ​ນາ​ທີ}}</translation>
 <translation id="4971687151119236543">ເພງຜ່ານມາຂອງມີເດຍ</translation>
-<translation id="4971925105143343452">ບາງສ່ວນ</translation>
 <translation id="5046499563572181734">ແຕະບ່ອນນີ້</translation>
 <translation id="5076340679995252485">ແປະໃສ່</translation>
-<translation id="5123162024343028706">ລອຍຢູ່ທາງເທິງ</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ສົ່ງບໍ່ສຳເລັດ</translation>
 <translation id="528468243742722775">ສິ້ນສຸດ</translation>

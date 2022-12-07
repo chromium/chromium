@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Да се затворят ли всички раздели в режим „инкогнито“?</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Запазване на отметка към <ph name="TABS_COUNT_ONE" /> избран раздел}other{Запазване на отметка към <ph name="TABS_COUNT_MANY" /> избрани раздела}}</translation>
 <translation id="2118649612461486615">Информация за магазина</translation>
 <translation id="2162620598375156287">Сега цената е <ph name="CURRENT_PRICE" /> в(ъв) <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Разгрупиране на раздела}other{Разгрупиране на разделите}}</translation>
 <translation id="2277224997687551299">Редактиране на името на групата</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Премахване на <ph name="TABS_COUNT_ONE" /> избран раздел от групата.}other{Премахване на <ph name="TABS_COUNT_MANY" /> избрани раздела от групата.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Отметка към раздела}other{Отметка към разделите}}</translation>
 <translation id="2479148705183875116">Към настройките</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="2569352796411618312">Предложение: <ph name="NUMBER_OF_TABS" /> от разделите ви не са използвани наскоро. Искате ли да ги затворите?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Преместване на раздела нагоре</translation>
 <translation id="8304833501377495048">Лентата с раздели да се скрие ли за постоянно?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затваряне на избрания <ph name="TABS_COUNT_ONE" /> раздел}other{Затваряне на избраните <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
+<translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Разгъване на групата с раздели с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="8714939927607906138">По-ниска цена</translation>
 <translation id="8749939518995770034">Затворихте лентата с раздели</translation>

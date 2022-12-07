@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">As teclas não são testadas quando está a usar outra janela</translation>
 <translation id="2493126929778606526">As suas melhores fotos selecionadas automaticamente.</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Flutuante</translation>
 <translation id="2505327257735685095">Atualizar a imagem de fundo atual</translation>
 <translation id="2513396635448525189">Imagem de início de sessão</translation>
 <translation id="2517472476991765520">Digitalizar</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Apresentação de diapositivos</translation>
 <translation id="4297501883039923494">Parada – Erro desconhecido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
+<translation id="4311195029067684288">Completo</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
 <translation id="435692326371619097">Faça a gestão das definições do APN (Nome do Ponto de Acesso) da rede. Os APNs estabelecem uma ligação entre uma rede móvel e a Internet. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Não foi executada.</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Carregou <ph name="RATE" /> em <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4930320165497208503">Para configurar ou atualizar uma ligação, aceda a <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4937657825850660613">Metade</translation>
 <translation id="4950314376641394653">O firmware <ph name="DEVICE_NAME" /> foi atualizado para a versão <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Parcial</translation>
 <translation id="498186245079027698">Verifique o scanner e tente novamente. Certifique-se de que existe espaço local suficiente para guardar os ficheiros digitalizados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -685,6 +689,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Digitalização concluída. 1 página digitalizada}other{Digitalização concluída. {NUMBER_OF_PAGES} páginas digitalizadas}}</translation>
+<translation id="7458970041932198923">Ligue-se a uma rede e atualize a página para ver e definir avatares.</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
@@ -839,6 +844,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analisar}=1{Analisar página {NUMBER_OF_PAGES}}other{Analisar página {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">O dispositivo tem <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
+<translation id="8998289560386111590">Não disponível no seu dispositivo</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="9025198690966128418">Usar como dispositivo pessoal</translation>
 <translation id="9028832514430399253">Ative o botão para selecionar as opções de proteção de ecrã</translation>

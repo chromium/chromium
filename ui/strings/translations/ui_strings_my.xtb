@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">သိပ်သည်းဆအမြင့် သုံးရန်</translation>
 <translation id="2482878487686419369">အကြောင်းကြားစာ</translation>
 <translation id="2497284189126895209">ဖိုင်များ အားလုံး</translation>
-<translation id="2498950423397131220">ဖော့</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">စံကိုက်ချိန်ညှိ ပြီးပါပြီ</translation>
 <translation id="252373100621549798">မသိရ  ပြကွက်</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">စတင် စကားပြော</translation>
 <translation id="4289540628985791613">အကျဉ်းချုပ်</translation>
 <translation id="4306392492252714209">ကလစ်ဘုတ်မှ ဖယ်ရှားလိုက်သည်။</translation>
-<translation id="4311195029067684288">အပြည့်</translation>
 <translation id="4491109536499578614">ပုံ</translation>
 <translation id="4565377596337484307">စကားဝှက်ကို ဖျောက်ရန်</translation>
 <translation id="4588090240171750605">ညာဖက်သို့ ရွှေ့ရန်</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">‘နောက်ဆက်တွဲ’ ပင်ဖြုတ်ပြီးပြီ</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{၁ လ ကျန်သည်}other{# လ ကျန်သည်}}</translation>
 <translation id="4888938634149558681">ဖုန်းခေါ်ရန်</translation>
-<translation id="4937657825850660613">တစ်ဝက်</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{၁ စက္ကန့်}other{# စက္ကန့်}}</translation>
 <translation id="4971687151119236543">မီဒီယာ ယခင်သီချင်းပုဒ်</translation>
-<translation id="4971925105143343452">တစ်စိတ်တစ်ပိုင်း</translation>
 <translation id="5046499563572181734">ဤနေရာကို တို့ပါ</translation>
 <translation id="5076340679995252485">&amp;ကူးထည့်ရန်</translation>
-<translation id="5123162024343028706">Float on top</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ပို့၍ မရပါ</translation>
 <translation id="528468243742722775">အဆုံး</translation>

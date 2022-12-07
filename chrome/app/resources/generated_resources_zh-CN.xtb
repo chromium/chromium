@@ -1948,6 +1948,7 @@
 <translation id="275662540872599901">已关闭屏幕</translation>
 <translation id="2757161511365746634">查看打印机</translation>
 <translation id="2757338480560142065">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> 未返回任何与“<ph name="SEARCH_QUERY" />”相符的搜索结果</translation>
 <translation id="2762441749940182211">已禁止使用摄像头</translation>
 <translation id="2764786626780673772">VPN 详细信息</translation>
 <translation id="2764920001292228569">输入个人资料名称</translation>
@@ -3898,7 +3899,7 @@
 <translation id="4594577641390224176">想要查看系统简介页面？请访问</translation>
 <translation id="4595560905247879544">只有管理员（<ph name="CUSTODIAN_NAME" />）可以修改应用和扩展程序。</translation>
 <translation id="4596295440756783523">您有证书可标识以下服务器</translation>
-<translation id="4598345735110653698">管理密钥</translation>
+<translation id="4598345735110653698">管理通行密钥</translation>
 <translation id="4598556348158889687">存储空间管理</translation>
 <translation id="4598776695426288251">可通过多部设备使用 Wi-Fi</translation>
 <translation id="4600071396330666617">建议数量</translation>
@@ -5253,6 +5254,7 @@
 <translation id="5886112770923972514">连接并快速设置附近的快速配对设备</translation>
 <translation id="5886384907280980632">立即关闭</translation>
 <translation id="5889282057229379085">中级 CA 证书数目的上限为：<ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">使用您自己的<ph name="BEGIN_LINK" />同步口令<ph name="END_LINK" />加密已同步的数据。Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。</translation>
 <translation id="5891688036610113830">首选的 WLAN 网络</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5895335062901455404">无论是在哪部 ChromeOS Flex 设备上，您只需登录自己的 Google 帐号，便能使用您保存的偏好设置和活动记录。您可在“设置”中选择要同步的内容。</translation>
@@ -6912,6 +6914,7 @@
 <translation id="7465635034594602553">出了点问题。请在几分钟后重新运行 <ph name="APP_NAME" />。</translation>
 <translation id="7465778193084373987">Netscape 证书吊销网址</translation>
 <translation id="7466431077154602932">精简视图</translation>
+<translation id="7466556884531675354">未保存任何备注</translation>
 <translation id="746861123368584540">扩展程序已加载完毕</translation>
 <translation id="7470424110735398630">允许查看您的剪贴板</translation>
 <translation id="747114903913869239">错误：无法对扩展程序进行解码</translation>
@@ -7891,6 +7894,7 @@
 <translation id="8351316842353540018">始终显示无障碍设置选项</translation>
 <translation id="8351419472474436977">此扩展程序控制了您的代理设置，也就是说，它可以更改、破坏或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
 <translation id="8351630282875799764">电池无法充电</translation>
+<translation id="8352287103893778223">标签页分组标题</translation>
 <translation id="835238322900896202">卸载时出错。请通过终端进行卸载。</translation>
 <translation id="8353683614194668312">该程序可以：</translation>
 <translation id="8354034204605718473">您孩子的 PIN 码已添加完毕</translation>

@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">ใช้ความหนาแน่นสูง</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2497284189126895209">ไฟล์ทั้งหมด</translation>
-<translation id="2498950423397131220">ลอย</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">การปรับเทียบเสร็จสมบูรณ์</translation>
 <translation id="252373100621549798">หน้าจอที่ไม่รู้จัก</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">เริ่มพูด</translation>
 <translation id="4289540628985791613">ภาพรวม</translation>
 <translation id="4306392492252714209">นำออกจากคลิปบอร์ด</translation>
-<translation id="4311195029067684288">เต็ม</translation>
 <translation id="4491109536499578614">รูปภาพ</translation>
 <translation id="4565377596337484307">ซ่อนรหัสผ่าน</translation>
 <translation id="4588090240171750605">เลื่อนทางขวา</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">เลิกปักหมุดส่วนขยายแล้ว</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{เหลือ 1 เดือน}other{เหลือ # เดือน}}</translation>
 <translation id="4888938634149558681">โทรออก</translation>
-<translation id="4937657825850660613">ครึ่งหนึ่ง</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 วินาที}other{# วินาที}}</translation>
 <translation id="4971687151119236543">แทร็กก่อนหน้าของสื่อ</translation>
-<translation id="4971925105143343452">บางส่วน</translation>
 <translation id="5046499563572181734">แตะที่นี่</translation>
 <translation id="5076340679995252485">&amp;วาง</translation>
-<translation id="5123162024343028706">ลอยอยู่ด้านบน</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">ส่งไม่สำเร็จ</translation>
 <translation id="528468243742722775">สิ้นสุด</translation>

@@ -1507,7 +1507,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4813512666221746211">Ağ hatası</translation>
 <translation id="4816492930507672669">Sayfaya sığdır</translation>
 <translation id="4819347708020428563">Ek açıklamalar varsayılan görünümde düzenlensin mi?</translation>
-<translation id="4823325221257637040">Başlatılıyor</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, hızlıca yeni bir Google E-Tablosu oluşturmak için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="4825507807291741242">Güçlü</translation>
 <translation id="483241715238664915">Uyarıları açın</translation>
@@ -2843,6 +2842,7 @@ Ek ayrıntılar:
 <translation id="8241707690549784388">Aradığınız sayfa, girdiğiniz bilgileri kullandı. O sayfaya dönmeniz, gerçekleştirdiğiniz işlemlerin tekrarlanmasına yol açabilir. Devam etmek istiyor musunuz?</translation>
 <translation id="8241712895048303527">Bu sitede engelle</translation>
 <translation id="8242426110754782860">Devam et</translation>
+<translation id="8245703462678310750">Tam ekrandan çıkıp indirme işlemini görmek için |<ph name="ACCELERATOR" />| tuşuna basılı tutun.</translation>
 <translation id="8249296373107784235">İptal Et</translation>
 <translation id="8249463483885748674">Standart testler ve giriş sınavları</translation>
 <translation id="8252991034201168845">Erişilebilirlik ayarlarını yönetin düğmesi, ChromeOS ayarlarında erişilebilirlik araçlarınızı kişiselleştirmek için Enter'a basın</translation>

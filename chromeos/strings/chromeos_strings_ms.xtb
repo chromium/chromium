@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Perundangan</translation>
 <translation id="2391082728065870591">Hantar Laporan Maklum balas</translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
+<translation id="241419523391571119">Buka semula penutup untuk menguji</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2418150275289244458">Buka dalam tetapan</translation>
 <translation id="2421798028054665193">Imej <ph name="CURRENT_PAGE" /> daripada <ph name="TOTAL_PAGES" /></translation>
@@ -175,6 +176,7 @@
 <translation id="2491955442992294626">Kekunci tidak diuji apabila anda menggunakan tetingkap lain</translation>
 <translation id="2493126929778606526">Foto terbaik anda, dipilih secara automatik</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Apungan</translation>
 <translation id="2505327257735685095">Muatkan semula imej kertas dinding semasa</translation>
 <translation id="2513396635448525189">Imej log masuk</translation>
 <translation id="2517472476991765520">Imbas</translation>
@@ -205,6 +207,7 @@
 <translation id="2878387241690264070">Dinyahcas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="2902312830803030883">Lagi tindakan</translation>
 <translation id="2926057806159140518">Masukkan nama pengguna dan kata laluan anda atau imbas kod QR anda</translation>
+<translation id="2940811910881150316">Tidak dapat menguji peranti. Buka semula penutup untuk menguji.</translation>
 <translation id="3008341117444806826">MUAT SEMULA</translation>
 <translation id="3009958530611748826">Pilih folder untuk menyimpan imbasan</translation>
 <translation id="3017079585324758401">Latar belakang</translation>
@@ -285,6 +288,7 @@
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="3824259034819781947">Lampirkan fail</translation>
 <translation id="3838338534323494292">Kata laluan baharu</translation>
+<translation id="3845880861638660475">Tekan <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> untuk menutup dialog.</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3862598938296403232">Perihalan diperlukan</translation>
@@ -292,6 +296,7 @@
 <translation id="3866249974567520381">Huraian</translation>
 <translation id="387301095347517405">Bilangan kali bateri anda telah melalui kitaran pengecasan penuh</translation>
 <translation id="3885327323343477505">Tukar penyelamat skrin</translation>
+<translation id="391412459402535266">Tidak dapat menguji peranti. Tukar kepada mod komputer riba untuk menguji.</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3941014780699102620">Gagal untuk menyelesaikan hos</translation>
@@ -304,6 +309,7 @@
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
 <translation id="3993704782688964914">Kini <ph name="DEVICE_NAME" /> anda terkini</translation>
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
+<translation id="4021031199988160623">Tukar kepada mod komputer riba untuk menguji</translation>
 <translation id="4034824040120875894">Pencetak</translation>
 <translation id="4044093238444069296">Tidak dapat menghubungi get laluan</translation>
 <translation id="4046123991198612571">Lagu seterusnya</translation>
@@ -336,6 +342,7 @@
 <translation id="4289849978083912975">Tayangan slaid</translation>
 <translation id="4297501883039923494">Dihentikan - Ralat tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imej</translation>
+<translation id="4311195029067684288">Penuh</translation>
 <translation id="4333390807948134856">Kekunci <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="435692326371619097">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dan Internet. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
@@ -415,7 +422,9 @@
 <translation id="4921665434385737356">Dicas <ph name="RATE" /> dalam masa <ph name="NUM_SECONDS" /> saat.</translation>
 <translation id="4930320165497208503">Untuk menyediakan atau mengemas kini sambungan, pergi ke <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tarikh</translation>
+<translation id="4937657825850660613">Separuh</translation>
 <translation id="4950314376641394653">Perisian tegar <ph name="DEVICE_NAME" /> telah dikemas kini kepada versi <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Separa</translation>
 <translation id="498186245079027698">Periksa pengimbas dan cuba lagi. Pastikan terdapat ruang setempat yang mencukupi untuk menyimpan fail yang diimbas.</translation>
 <translation id="4985509611418653372">Jalankan</translation>
 <translation id="4987769320337599931">Tembok api</translation>

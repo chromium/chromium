@@ -928,7 +928,6 @@
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктеп алуды растау</translation>
 <translation id="612734058257491180">Google Assistant қонақ сеансында жұмыс істемейді.</translation>
 <translation id="6129953537138746214">Бос орын</translation>
-<translation id="6134259848159370930">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеңіз.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын өшіру диалогтік терезесін ашу</translation>
 <translation id="6141988275892716286">Жүктеп алуды растау</translation>
 <translation id="6154006699632741460">Перифериялық құрылғыға қолдау жоқ</translation>
@@ -1289,6 +1288,7 @@
 <translation id="8142441511840089262">Екі рет басу</translation>
 <translation id="8142699993796781067">Жеке желі</translation>
 <translation id="8144760705599030999">Басқа құрылғыларыңызбен жылдамырақ жұптау үшін <ph name="NAME" /> құрылғысын <ph name="EMAIL" /> аккаунтына сақтаңыз.</translation>
+<translation id="8144914663975476336">Жазба форматын таңдау</translation>
 <translation id="8149413265954228307">Bluetooth параметрлерін көрсету. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Жабу үшін Ctrl + W пернелер тіркесімін басыңыз.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Автоматты толтыру</translation>
@@ -1386,7 +1386,6 @@
 <translation id="8666856788528804727">Құрылғыны орнату үшін <ph name="NAME" /> қолданбасын ашыңыз</translation>
 <translation id="8676770494376880701">Төмен қуат зарядтағышы қосылды</translation>
 <translation id="8683506306463609433">Жұмыс өнімділігін қадағалау функциясы іске қосылды</translation>
-<translation id="8685326675965865247">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеңіз. Қолданбадан қолданбаға өту үшін көрсеткі пернелерін пайдаланыңыз.</translation>
 <translation id="8703634754197148428">Жазуды бастаңыз. Бейне жазу басталған кезде, Alt + Shift + L пернелер тіркесімін басып, сөреге өтіңіз, онда жазуды тоқтатуға арналған түймені таба аласыз</translation>
 <translation id="8721053961083920564">Дыбыс деңгейін ауыстыру. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Толық экранды түсіру</translation>

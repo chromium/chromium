@@ -1506,7 +1506,6 @@
 <translation id="4813512666221746211">നെറ്റ്‌വര്‍ക്ക് പിശക്</translation>
 <translation id="4816492930507672669">പേജിന് യുക്തമാക്കുക</translation>
 <translation id="4819347708020428563">ഡിഫോൾട്ട് കാഴ്‌ചയിൽ കുറിപ്പുകൾ എഡിറ്റ് ചെയ്യണോ?</translation>
-<translation id="4823325221257637040">ആരംഭിക്കുന്നു</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, പുതിയൊരു Google Sheet വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="4825507807291741242">ശക്തമായത്</translation>
 <translation id="483241715238664915">മുന്നറിയിപ്പുകൾ ഓണാക്കുക</translation>
@@ -1962,6 +1961,7 @@
 <translation id="5995727681868049093">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യുക</translation>
 <translation id="5997247540087773573">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, ഇപ്പോൾ തന്നെ അവ മാറ്റാനും സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാനും Google Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' എന്നതിനായി <ph name="RESULT_COUNT" /> ഫലങ്ങള്‍</translation>
+<translation id="6005765687956866568">സ്വയമേവ പൂരിപ്പിച്ച വിവരങ്ങൾ ഫോമിൽ നിന്ന് മായ്‌ച്ചു</translation>
 <translation id="6006365096047131769">3 x 5 ഇഞ്ച്</translation>
 <translation id="6006484371116297560">ക്ലാസിക്</translation>
 <translation id="6008122969617370890">N-1 ക്രമത്തിൽ</translation>
@@ -2271,6 +2271,7 @@
 <translation id="6826993739343257035">AR അനുവദിക്കണോ?</translation>
 <translation id="6828866289116430505">ജനിതകശാസ്‌ത്രം</translation>
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
+<translation id="6832753933931306326">ഫോം പൂരിപ്പിച്ചു</translation>
 <translation id="6842196666980060516">184 x 260 മി.മീ</translation>
 <translation id="6846340164947227603">വെർച്വൽ കാർഡ് നമ്പർ ഉപയോഗിക്കുക...</translation>
 <translation id="6852204201400771460">ആപ്പ് റീലോഡ് ചെയ്യണോ?</translation>
@@ -2723,6 +2724,7 @@
 <translation id="7950027195171824198">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ കുക്കി മുൻഗണനകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="7951415247503192394">(32-ബിറ്റ്)</translation>
 <translation id="7952192831285741665">യൂറോപ്യൻ EDP</translation>
+<translation id="7952804540472583406">നെറ്റ്‌വർക്കിലേക്ക് <ph name="BEGIN_LINK" />സൈൻ ഇൻ ചെയ്യുന്നു<ph name="END_LINK" />.</translation>
 <translation id="7953569069500808819">മുകളിൽ അരിക് കൂട്ടിച്ചേർക്കൽ</translation>
 <translation id="7956713633345437162">മൊബൈൽ ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="7961015016161918242">ഒരിക്കലും</translation>

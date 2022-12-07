@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Tuma Ripoti ya Maoni</translation>
 <translation id="2407209115954268704">Hali ya Kufunga SIM</translation>
+<translation id="241419523391571119">Fungua tena kifuniko ili ujaribu</translation>
 <translation id="2414886740292270097">Giza</translation>
 <translation id="2418150275289244458">Fungua katika mipangilio</translation>
 <translation id="2421798028054665193">Picha ya <ph name="CURRENT_PAGE" /> kati ya <ph name="TOTAL_PAGES" /></translation>
@@ -175,6 +176,7 @@
 <translation id="2491955442992294626">Funguo hazijaribiwi unapotumia dirisha lingine</translation>
 <translation id="2493126929778606526">Picha zako bora zaidi, zilizochaguliwa kiotomatiki</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Inayoelea</translation>
 <translation id="2505327257735685095">Onyesha upya picha ya sasa ya mandhari</translation>
 <translation id="2513396635448525189">Picha ya kuingia kwenye akaunti</translation>
 <translation id="2517472476991765520">Tafuta</translation>
@@ -205,6 +207,7 @@
 <translation id="2878387241690264070">Imetumia <ph name="RATE" /> ya chaji ndani ya sekunde <ph name="NUM_SECONDS" />.</translation>
 <translation id="2902312830803030883">Vitendo zaidi</translation>
 <translation id="2926057806159140518">Weka neno lako la mtumiaji na nenosiri au uchanganue msimbo wako wa QR</translation>
+<translation id="2940811910881150316">Huwezi kujaribu kifaa. Fungua tena kifuniko ili ujaribu.</translation>
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
 <translation id="3009958530611748826">Chagua folda utakapohifadhi</translation>
 <translation id="3017079585324758401">Mandhari ya nyuma</translation>
@@ -285,6 +288,7 @@
 <translation id="3820172043799983114">PIN si sahihi</translation>
 <translation id="3824259034819781947">Ambatisha faili</translation>
 <translation id="3838338534323494292">Nenosiri jipya</translation>
+<translation id="3845880861638660475">Bonyeza <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> kisha <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> ili ufunge kidirisha.</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3858860766373142691">Jina</translation>
 <translation id="3862598938296403232">Ni sharti ujaze maelezo</translation>
@@ -292,6 +296,7 @@
 <translation id="3866249974567520381">Maelezo</translation>
 <translation id="387301095347517405">Mara ambazo betri yako imekamilisha mzunguko kamili wa chaji</translation>
 <translation id="3885327323343477505">Badilisha taswira ya skrini</translation>
+<translation id="391412459402535266">Huwezi kujaribu kifaa. Badilisha utumie hali ya kompyuta ya kupakata ili ujaribu.</translation>
 <translation id="3923184630988645767">Matumizi ya data</translation>
 <translation id="3932043219784172185">Hakuna kifaa kilichounganishwa</translation>
 <translation id="3941014780699102620">Imeshindwa kusuluhisha seva pangishi</translation>
@@ -304,6 +309,7 @@
 <translation id="39823212440917567">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku <ph name="NUMBER_OF_DAYS" /> zitaondolewa</translation>
 <translation id="3993704782688964914">Sasa <ph name="DEVICE_NAME" /> imesasishwa</translation>
 <translation id="4003384961948020559">Haijakamilika - Sehemu ya kutoa karatasi imejaa</translation>
+<translation id="4021031199988160623">Badilisha utumie hali ya kompyuta ya kupakata ili ujaribu</translation>
 <translation id="4034824040120875894">Printa</translation>
 <translation id="4044093238444069296">Imeshindwa kuwasiliana na lango</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
@@ -336,6 +342,7 @@
 <translation id="4289849978083912975">Onyesho la slaidi</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
 <translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
+<translation id="4311195029067684288">Imejaa</translation>
 <translation id="4333390807948134856">Kitufe cha <ph name="KEY_NAME" /> kimebonyezwa</translation>
 <translation id="435692326371619097">Simamia mipangilio ya APN ya mtandao. APN huanzisha muunganisho kati ya mtandao wa simu na Intaneti. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Usitekeleze</translation>
@@ -415,7 +422,9 @@
 <translation id="4921665434385737356">Imechaji <ph name="RATE" /> baada ya sekunde <ph name="NUM_SECONDS" />.</translation>
 <translation id="4930320165497208503">Ili uweke au usasishe muunganisho, nenda kwenye <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Tarehe</translation>
+<translation id="4937657825850660613">Nusu</translation>
 <translation id="4950314376641394653">Programu dhibiti ya <ph name="DEVICE_NAME" /> imesasishwa na sasa inatumia toleo la <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Kiasi</translation>
 <translation id="498186245079027698">Kagua kichanganuzi kisha ujaribu tena. Hakikisha kuna nafasi ya kutosha kwenye kompyuta yako ya kuhifadhi faili zilizochanganuliwa.</translation>
 <translation id="4985509611418653372">Tekeleza</translation>
 <translation id="4987769320337599931">Kinga mtandao</translation>

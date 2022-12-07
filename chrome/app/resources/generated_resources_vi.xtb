@@ -205,6 +205,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="117916940443676133">Bạn chưa thiết lập mã PIN để bảo vệ khóa bảo mật. Để quản lý dữ liệu đăng nhập, trước tiên, hãy tạo một mã PIN.</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1183237619868651138">Không thể cài đặt <ph name="EXTERNAL_CRX_FILE" /> trong bộ nhớ đệm cục bộ.</translation>
+<translation id="1184709369107246085">Ứng dụng <ph name="APPLICATION_NAME" /> cần URL <ph name="APPLICATION_NAME" /> hợp lệ.</translation>
 <translation id="1185924365081634987">Bạn cũng có thể thử <ph name="GUEST_SIGNIN_LINK_START" />duyệt với tư cách khách<ph name="GUEST_SIGNIN_LINK_END" /> để khắc phục lỗi mạng này.</translation>
 <translation id="1186771945450942097">Xóa phần mềm độc hại</translation>
 <translation id="1187722533808055681">Đánh thức khỏi chế độ rảnh</translation>
@@ -2836,6 +2837,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3582057310199111521">Bạn đã nhập mật khẩu vào trang web lừa đảo và mật khẩu này được phát hiện thấy trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3582299299336701326">Làm tối màn hình sáng và làm sáng màn hình tối. Nhấn tổ hợp phím Tìm kiếm + Ctrl + H để bật và tắt tính năng đảo màu.</translation>
 <translation id="3584169441612580296">Đọc và thay đổi ảnh, nhạc và phương tiện khác từ máy tính của bạn</translation>
+<translation id="3586787825263265024">Ứng dụng <ph name="APPLICATION_NAME" /> cần có OneDrive.</translation>
 <translation id="3586806079541226322">Không thể mở tệp này</translation>
 <translation id="3586931643579894722">Ẩn chi tiết</translation>
 <translation id="3587482841069643663">Tất cả</translation>
@@ -3994,6 +3996,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4654236001025007561">Chia sẻ tệp với Chromebook và thiết bị Android ở gần bạn</translation>
 <translation id="4657914796247705218">Tốc độ TrackPoint</translation>
 <translation id="4658285806588491142">Giữ màn hình của bạn ở chế độ riêng tư</translation>
+<translation id="4658648180588730283">Ứng dụng <ph name="APPLICATION_NAME" /> không dùng được khi không có mạng.</translation>
 <translation id="465878909996028221">Chỉ hỗ trợ chuyển hướng trình duyệt cho các giao thức http, https và tệp.</translation>
 <translation id="4659126640776004816">Khi bạn đăng nhập vào Tài khoản Google của mình, tính năng này sẽ được bật.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Hình ảnh}other{# hình ảnh}}</translation>
@@ -4044,6 +4047,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4699357559218762027">(tự động chạy)</translation>
 <translation id="4701025263201366865">Hoạt động đăng nhập của cha mẹ</translation>
 <translation id="4701335814944566468">Vừa xem hôm qua</translation>
+<translation id="4705624512518230041">Không thể mở <ph name="FILE_NAMES" /> khi không có OneDrive</translation>
 <translation id="470644585772471629">Đảo màu</translation>
 <translation id="4707337002099455863">Luôn cho phép trên mọi trang web</translation>
 <translation id="4708849949179781599">Thoát <ph name="PRODUCT_NAME" /></translation>
@@ -4511,6 +4515,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5160634252433617617">Bàn phím vật lý</translation>
 <translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="5161251470972801814">Các thiết bị USB của <ph name="VENDOR_NAME" /></translation>
+<translation id="5162624292894372900">Không thể mở <ph name="FILE_NAMES" /> khi không có Drive</translation>
 <translation id="5162905305237671850">Thiết bị <ph name="DEVICE_TYPE" /> đã bị chặn</translation>
 <translation id="5163910114647549394">Đã di chuyển thẻ tới cuối dải thẻ</translation>
 <translation id="5164530241085602114">Không cho phép <ph name="SITE" /> gửi thông báo</translation>
@@ -5420,6 +5425,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6016178549409952427">Chuyển đến nội dung bổ sung <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Xác nhận Powerwash quay lại phiên bản trước</translation>
 <translation id="6016972670657536680">Chọn nút bàn phím và ngôn ngữ. Ngôn ngữ hiện được chọn là <ph name="LANGUAGE" />.</translation>
+<translation id="6017503096330453612">Chọn "Thử lại" hoặc chọn "Mở trong trình chỉnh sửa ngoại tuyến" để sử dụng các tuỳ chọn chỉnh sửa và xem hạn chế.</translation>
 <translation id="6017514345406065928">Xanh lục</translation>
 <translation id="6019169947004469866">Cắt</translation>
 <translation id="6019851026059441029">Tuyệt vời – HD</translation>
@@ -6282,6 +6288,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Không thiết lập được cập nhật tự động cho tất cả người dùng (lỗi thực thi kiểm tra <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Chính sách quyền riêng tư của Google</translation>
+<translation id="6830200424658853449">Mở trong trình chỉnh sửa ngoại tuyến</translation>
 <translation id="6831043979455480757">Dịch</translation>
 <translation id="6832218595502288407">Căn trái</translation>
 <translation id="6833479554815567477">Đã di chuyển thẻ khỏi nhóm <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -6645,6 +6652,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7174199383876220879">Mới! Điều khiển nhạc, video và nhiều nội dung khác.</translation>
 <translation id="7175037578838465313">Định cấu hình <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Được tải từ:</translation>
+<translation id="7177079607604198383">Hãy kiểm tra kết nối Internet rồi chọn "Thử lại" hoặc chọn "Mở trong trình chỉnh sửa ngoại tuyến" để sử dụng các tuỳ chọn chỉnh sửa và xem hạn chế.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
 <translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7182791023900310535">Di chuyển mật khẩu của bạn</translation>
@@ -7346,6 +7354,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="783229689197954457">Nếu Google tìm thấy một chương trình chiết khấu, bạn sẽ thấy thông tin đó trên trang này</translation>
 <translation id="7833720883933317473">Các từ tùy chỉnh đã lưu sẽ xuất hiện ở đây</translation>
 <translation id="7835178595033117206">Đã xóa dấu trang</translation>
+<translation id="7836535163829106376">Không thể mở URL cho <ph name="FILE_NAMES" /></translation>
 <translation id="7836850009646241041">Thử chạm lại vào khóa bảo mật</translation>
 <translation id="7837776265184002579">Trang chủ của bạn đã được thay đổi thành <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Không lưu được "<ph name="NETWORK_NAME" />" qua <ph name="DEVICE_NAME" /></translation>
@@ -7786,6 +7795,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="822347941086490485">Đang tìm thiết bị HID...</translation>
 <translation id="8223573963214454788">Tiếp tục và xoá dữ liệu</translation>
 <translation id="8225046344534779393">Kiểm tra kết nối Internet</translation>
+<translation id="8225173734540525852">Ứng dụng <ph name="APPLICATION_NAME" /> cần có Drive.</translation>
 <translation id="8225265270453771718">Chia sẻ cửa sổ ứng dụng</translation>
 <translation id="8226222018808695353">Bị cấm</translation>
 <translation id="8226619461731305576">Hàng đợi</translation>
@@ -8122,6 +8132,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8549316893834449916">Bạn sẽ dùng Tài khoản Google để đăng nhập vào Chromebook. Đây cũng chính là tài khoản bạn dùng cho Gmail, Drive, YouTube và nhiều sản phẩm khác.</translation>
 <translation id="8551388862522347954">Giấy phép</translation>
 <translation id="8551588720239073785">Cài đặt ngày và giờ</translation>
+<translation id="8551647092888540776">Không thể mở <ph name="FILE_NAMES" /> khi không có mạng</translation>
 <translation id="8552102814346875916">Lưu vào danh sách "luôn duy trì các trang web này ở trạng thái hoạt động"</translation>
 <translation id="8553342806078037065">Quản lý những người khác</translation>
 <translation id="8554899698005018844">Không có ngôn ngữ nào</translation>

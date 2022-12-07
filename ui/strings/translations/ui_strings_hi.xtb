@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">ज़्यादा सघनता का इस्तेमाल करें</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2497284189126895209">सभी फ़ाइलें</translation>
-<translation id="2498950423397131220">फ़्लोट</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">कैलिब्रेशन पूरा हो गया</translation>
 <translation id="252373100621549798">अनजान डिस्प्ले</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">बोलना प्रारंभ करें</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4306392492252714209">क्लिपबोर्ड से हटाएं.</translation>
-<translation id="4311195029067684288">पूर्ण</translation>
 <translation id="4491109536499578614">इमेज</translation>
 <translation id="4565377596337484307">पासवर्ड छिपाएं</translation>
 <translation id="4588090240171750605">दाएं स्क्रोल करें</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">एक्सटेंशन अनपिन किया गया</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 माह शेष}one{# माह शेष}other{# माह शेष}}</translation>
 <translation id="4888938634149558681">कॉल करें</translation>
-<translation id="4937657825850660613">स्क्रीन को आधे हिस्सों में बाटें</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 सेकंड}one{# सेकंड}other{# सेकंड}}</translation>
 <translation id="4971687151119236543">मीडिया पिछला ट्रैक</translation>
-<translation id="4971925105143343452">आंशिक</translation>
 <translation id="5046499563572181734">यहां टैप करें</translation>
 <translation id="5076340679995252485">&amp;चिपकाएं</translation>
-<translation id="5123162024343028706">ऊपर की तरफ़ दिखता रहे</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">भेजा नहीं जा सका</translation>
 <translation id="528468243742722775">खत्म</translation>

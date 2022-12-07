@@ -1507,7 +1507,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4813512666221746211">Gabim në rrjet</translation>
 <translation id="4816492930507672669">Përshtate me faqen</translation>
 <translation id="4819347708020428563">Të redaktohen shënimet në pamjen e parazgjedhur?</translation>
-<translation id="4823325221257637040">Po hapet</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp Tab pastaj Enter për të krijuar shpejt një "Fletë të re të Google</translation>
 <translation id="4825507807291741242">I fuqishëm</translation>
 <translation id="483241715238664915">Aktivizo paralajmërimet</translation>
@@ -2842,6 +2841,7 @@ Detaje shtesë:
 <translation id="8241707690549784388">Faqja që po kërkon i përdori informacionet që fute. Kthimi tek ajo faqe mund të bëjë që çdo veprim që bëre të përsëritet përsëri. Dëshiron që të vazhdosh?</translation>
 <translation id="8241712895048303527">Blloko në këtë sajt</translation>
 <translation id="8242426110754782860">Vazhdo</translation>
+<translation id="8245703462678310750">Shtyp dhe mbaj shtypur |<ph name="ACCELERATOR" />| për të dalë nga ekrani i plotë dhe për të parë shkarkimin.</translation>
 <translation id="8249296373107784235">Ndërprite</translation>
 <translation id="8249463483885748674">Testet e standardizuara dhe të pranimit</translation>
 <translation id="8252991034201168845">Butoni "Menaxho cilësimet e qasshmërisë"; shtyp "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e ChromeOS</translation>

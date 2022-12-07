@@ -929,7 +929,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistentul Google nu este disponibil într-o sesiune pentru invitați.</translation>
 <translation id="6129953537138746214">Spațiu</translation>
-<translation id="6134259848159370930">Caută pe dispozitiv, în aplicații, în setări și pe web.</translation>
 <translation id="6137566720514957455">Deschide fereastra de dialog Elimină pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirmă descărcarea</translation>
 <translation id="6154006699632741460">Dispozitivul periferic nu este acceptat</translation>
@@ -1290,6 +1289,7 @@ Instalare nouă</translation>
 <translation id="8142441511840089262">Dublu clic</translation>
 <translation id="8142699993796781067">Rețea privată</translation>
 <translation id="8144760705599030999">Salvează <ph name="NAME" /> în <ph name="EMAIL" /> pentru asocierea mai rapidă cu celelalte dispozitive</translation>
+<translation id="8144914663975476336">Selectează formatul înregistrării</translation>
 <translation id="8149413265954228307">Afișează setările Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Apasă Ctrl + W pentru a închide.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, completare automată</translation>
@@ -1387,7 +1387,6 @@ Instalare nouă</translation>
 <translation id="8666856788528804727">Deschide <ph name="NAME" /> pentru a configura dispozitivul</translation>
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>
 <translation id="8683506306463609433">Urmărirea performanțelor este activă</translation>
-<translation id="8685326675965865247">Caută pe dispozitiv, în aplicații, în setări și pe web. Folosește tastele săgeată ca să navighezi în aplicațiile tale.</translation>
 <translation id="8703634754197148428">Pornește înregistrarea. După ce a început înregistrarea, apasă pe Alt + Shift + L pentru a naviga la raft și caută butonul de oprire a înregistrării</translation>
 <translation id="8721053961083920564">Activează sau dezactivează volumul: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captură pe ecran complet</translation>

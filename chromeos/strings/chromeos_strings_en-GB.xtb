@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Keys aren't tested when you're using another window</translation>
 <translation id="2493126929778606526">Your best photos, selected automatically</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Float</translation>
 <translation id="2505327257735685095">Refresh the current wallpaper image</translation>
 <translation id="2513396635448525189">Login image</translation>
 <translation id="2517472476991765520">Scan</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
+<translation id="4311195029067684288">Full</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> key pressed</translation>
 <translation id="435692326371619097">Manage network APN settings. APNs establish a connection between a mobile network and the Internet. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Not run</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Charged <ph name="RATE" /> in <ph name="NUM_SECONDS" /> seconds.</translation>
 <translation id="4930320165497208503">To set up or update a connection, go to <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Date</translation>
+<translation id="4937657825850660613">Half</translation>
 <translation id="4950314376641394653">Firmware <ph name="DEVICE_NAME" /> has been updated to version <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Partial</translation>
 <translation id="498186245079027698">Check the scanner and try again. Make sure that there is enough local space to save scanned files.</translation>
 <translation id="4985509611418653372">Run</translation>
 <translation id="4987769320337599931">Firewall</translation>

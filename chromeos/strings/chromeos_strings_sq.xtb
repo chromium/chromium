@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Dërgo raportin e komenteve</translation>
 <translation id="2407209115954268704">Statusi i kyçjes së kartës SIM</translation>
+<translation id="241419523391571119">Rihap kapakun për të kryer testin</translation>
 <translation id="2414886740292270097">E errët</translation>
 <translation id="2418150275289244458">Hape te cilësimet</translation>
 <translation id="2421798028054665193">Imazhi <ph name="CURRENT_PAGE" /> nga <ph name="TOTAL_PAGES" /></translation>
@@ -175,6 +176,7 @@
 <translation id="2491955442992294626">Çelësat nuk testohen kur ti je duke përdorur një dritare tjetër</translation>
 <translation id="2493126929778606526">Fotografitë e tua më të mira, të zgjedhura automatikisht</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Pluskuesi</translation>
 <translation id="2505327257735685095">Rifresko imazhin aktual të sfondit</translation>
 <translation id="2513396635448525189">Imazhi i identifikimit</translation>
 <translation id="2517472476991765520">Skano</translation>
@@ -205,6 +207,7 @@
 <translation id="2878387241690264070">U shkarkua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="2902312830803030883">Më shumë veprime</translation>
 <translation id="2926057806159140518">Fut emrin e përdoruesit dhe fjalëkalimin ose skano kodin tënd QR</translation>
+<translation id="2940811910881150316">Pajisja nuk mund të testohet. Rihap kapakun për ta provuar.</translation>
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3017079585324758401">Sfondi</translation>
@@ -285,6 +288,7 @@
 <translation id="3820172043799983114">Kodi PIN i pavlefshëm</translation>
 <translation id="3824259034819781947">Bashkëngjit skedarët</translation>
 <translation id="3838338534323494292">Fjalëkalimi i ri</translation>
+<translation id="3845880861638660475">Shtyp <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> për ta mbyllur dialogun.</translation>
 <translation id="385051799172605136">Prapa</translation>
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3862598938296403232">Kërkohet përshkrimi</translation>
@@ -292,6 +296,7 @@
 <translation id="3866249974567520381">Përshkrimi</translation>
 <translation id="387301095347517405">Numri i herëve që bateria ka kryer një cikël të plotë karikimi</translation>
 <translation id="3885327323343477505">Ndrysho mbrojtësin e ekranit</translation>
+<translation id="391412459402535266">Pajisja nuk mund të testohet. Kalo te modaliteti i laptopit për të kryer testin.</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
 <translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
@@ -304,6 +309,7 @@
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> tani është përditësuar</translation>
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
+<translation id="4021031199988160623">Kalo te modaliteti i laptopit për të kryer testin</translation>
 <translation id="4034824040120875894">Printeri</translation>
 <translation id="4044093238444069296">Portëkalimi nuk mund të kontaktohet</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
@@ -336,6 +342,7 @@
 <translation id="4289849978083912975">Shfaqje me rrëshqitje</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
+<translation id="4311195029067684288">I plotë</translation>
 <translation id="4333390807948134856">Tasti <ph name="KEY_NAME" /> është i shtypur</translation>
 <translation id="435692326371619097">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
@@ -415,7 +422,9 @@
 <translation id="4921665434385737356">U karikua <ph name="RATE" /> në <ph name="NUM_SECONDS" /> sekonda.</translation>
 <translation id="4930320165497208503">Për të konfiguruar ose përditësuar një lidhje, shko te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4937657825850660613">Gjysmë</translation>
 <translation id="4950314376641394653">Firmueri <ph name="DEVICE_NAME" /> është përditësuar në versionin <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">I pjesshëm</translation>
 <translation id="498186245079027698">Kontrollo skanerin dhe provo përsëri. Sigurohu që të jetë hapësirë lokale të mjaftueshme për të ruajtur skedarët e skanuar.</translation>
 <translation id="4985509611418653372">Ekzekuto</translation>
 <translation id="4987769320337599931">Mur mbrojtës</translation>

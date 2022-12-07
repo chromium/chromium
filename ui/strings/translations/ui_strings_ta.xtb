@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">அதிக அடர்த்தியைப் பயன்படுத்து</translation>
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="2497284189126895209">அனைத்து கோப்புகளும்</translation>
-<translation id="2498950423397131220">மிதக்கும்</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">அளவுத்திருத்தம் முடிந்தது</translation>
 <translation id="252373100621549798">அறியாதது</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">பேச்சைத் தொடங்கு</translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
 <translation id="4306392492252714209">கிளிப்போர்டிலிருந்து அகற்றும்.</translation>
-<translation id="4311195029067684288">முழு</translation>
 <translation id="4491109536499578614">படம்</translation>
 <translation id="4565377596337484307">கடவுச்சொல்லை மறைக்கும்</translation>
 <translation id="4588090240171750605">வலப்புறம் நகர்த்து</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">நீட்டிப்பு அகற்றப்பட்டது</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 மாதம் உள்ளது}other{# மாதங்கள் உள்ளன}}</translation>
 <translation id="4888938634149558681">அழை</translation>
-<translation id="4937657825850660613">அரைப்பகுதி</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 நொடி}other{# நொடிகள்}}</translation>
 <translation id="4971687151119236543">ஊடகத்தின் முந்தைய டிராக்</translation>
-<translation id="4971925105143343452">பகுதி சார்ந்த</translation>
 <translation id="5046499563572181734">இங்கே தட்டவும்</translation>
 <translation id="5076340679995252485">&amp;ஒட்டு</translation>
-<translation id="5123162024343028706">மேலே பின் செய்</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> பெ.பை</translation>
 <translation id="5278860589123563674">அனுப்ப முடியவில்லை</translation>
 <translation id="528468243742722775">நிறுத்து</translation>

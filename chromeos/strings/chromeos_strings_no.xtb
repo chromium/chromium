@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Taster blir ikke testet når du bruker andre vinduer</translation>
 <translation id="2493126929778606526">De beste bildene dine, valgt automatisk</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Løsne</translation>
 <translation id="2505327257735685095">Last inn det nåværende bakgrunnsbildet på nytt</translation>
 <translation id="2513396635448525189">Påloggingsbilde</translation>
 <translation id="2517472476991765520">Skann</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Lysbildefremvisning</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
+<translation id="4311195029067684288">Full</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-tasten trykkes på</translation>
 <translation id="435692326371619097">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Ikke kjørt</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Ladet <ph name="RATE" /> på <ph name="NUM_SECONDS" /> sekunder.</translation>
 <translation id="4930320165497208503">For å konfigurere eller oppdatere en tilkobling, gå til <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dato</translation>
+<translation id="4937657825850660613">Halv</translation>
 <translation id="4950314376641394653">Fastvaren for <ph name="DEVICE_NAME" /> er oppdatert til versjon <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Delvis</translation>
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4985509611418653372">Kjør</translation>
 <translation id="4987769320337599931">Brannmur</translation>
@@ -685,6 +689,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7415801143053185905">Svært høy HTTP-tidsforsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanningen er fullført. 1 side er skannet}other{Skanningen er fullført. {NUMBER_OF_PAGES} sider er skannet}}</translation>
+<translation id="7458970041932198923">Koble til et nettverk og last inn siden på nytt for å se og angi brukerbilder.</translation>
 <translation id="7469648432129124067">Oppdaget en portal</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7487067081878637334">Teknologi</translation>
@@ -839,6 +844,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skann}=1{Skann side {NUMBER_OF_PAGES}}other{Skann side {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Enheten har <ph name="BATTERY_PERCENTAGE" /> % batteri.</translation>
+<translation id="8998289560386111590">Ikke tilgjengelig på enheten din</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9025198690966128418">Bruk som personlig enhet</translation>
 <translation id="9028832514430399253">Slå på av/på-knappen for å velge skjermspareralternativene</translation>

@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">As teclas non se someten a probas se estás usando outra ventá</translation>
 <translation id="2493126929778606526">As túas mellores fotos, seleccionadas automaticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Punto flotante</translation>
 <translation id="2505327257735685095">Actualizar imaxe de fondo de pantalla actual</translation>
 <translation id="2513396635448525189">Imaxe de inicio de sesión</translation>
 <translation id="2517472476991765520">Buscar</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Presentación</translation>
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imaxes</translation>
+<translation id="4311195029067684288">Completa</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
 <translation id="435692326371619097">Xestiona a configuración do APN da rede. Os APN establecen unha conexión entre unha rede de telefonía móbil e Internet. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Non se executou</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Cargouse un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segundos.</translation>
 <translation id="4930320165497208503">Para axustar ou actualizar unha conexión, vai a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4937657825850660613">Metade</translation>
 <translation id="4950314376641394653">O firmware do dispositivo (<ph name="DEVICE_NAME" />) actualizouse coa versión <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Parcial</translation>
 <translation id="498186245079027698">Comproba o escáner e téntao de novo. Asegúrate de que exista espazo local suficiente para gardar os ficheiros escaneados.</translation>
 <translation id="4985509611418653372">Executar</translation>
 <translation id="4987769320337599931">Firewall</translation>

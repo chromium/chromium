@@ -667,6 +667,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4666082839192943839">Inaktivera kameraåtkomst på den här enheten om du vill blockera alla kameror hela tiden.</translation>
 <translation id="4666911709726371538">Fler appar</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
+<translation id="468293128311738995">Appar från telefonen</translation>
 <translation id="4690510401873698237">Hyllan längst ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
 <translation id="4702647871202761252">Integritetsskärmen är inaktiverad</translation>
@@ -928,7 +929,6 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
 <translation id="6129953537138746214">Blanksteg</translation>
-<translation id="6134259848159370930">Sök på enheten, i appar, inställningar och på webben.</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Bekräfta nedladdning</translation>
 <translation id="6154006699632741460">Tillbehöret stöds inte</translation>
@@ -1386,7 +1386,6 @@ Nyligen installerad</translation>
 <translation id="8666856788528804727">Öppna <ph name="NAME" /> och konfigurera enheten där</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8683506306463609433">Prestandaspårning är aktiv</translation>
-<translation id="8685326675965865247">Sök på enheten, i appar, inställningar och på webben. Flytta mellan apparna med piltangenterna.</translation>
 <translation id="8703634754197148428">Starta inspelning. När inspelningen har startats trycker du på Alt + Skift + L för att navigera till hyllan där du hittar knappen för att stoppa inspelningen</translation>
 <translation id="8721053961083920564">Ljud på/av. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Skärmbild/skärminspelning av hela skärmen</translation>

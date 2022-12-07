@@ -4197,6 +4197,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="5290940294294002042">ユーザーが有効または無効にできるプラグインのリストを指定する</translation>
 <translation id="5293044154216294358">このポリシーを True に設定した場合、ユーザーが恐竜ゲームをプレイすることを許可します。このポリシーを False に設定した場合、ユーザーはデバイスがオフラインのときに恐竜のイースター エッグゲームをプレイできません。このポリシーを未設定のままにした場合、ユーザーは登録されている <ph name="PRODUCT_OS_NAME" /> ではゲームをプレイできませんが、他の環境ではプレイできます。</translation>
 <translation id="5293285950307241933">すべてのローカル ユーザー データを消去する</translation>
+<translation id="5293875928467750789">このポリシーでは、ユーザーがログインしたときに、デバイス キーボードのデフォルトの明るさの割合として使用する値を設定します。</translation>
 <translation id="529457411593078576">CCT の初回実行時の利用規約を有効にする</translation>
 <translation id="5297948043665200363">アカウントの認証が無効になった後もユーザーがログイン状態を維持できるようにする</translation>
 <translation id="5298949392804966105">管理対象アカウントに制限を課さない</translation>
@@ -6238,6 +6239,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
       通常、このポリシーはフィッシング対策のため無効になっています。</translation>
 <translation id="7403217961820363141">Chrome 履歴ページにジャーニーを表示する</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
+<translation id="7406276857470642718">外部 IdP を使用して SAML で認証されたユーザーの設定を管理する</translation>
 <translation id="7407441173422042771">このポリシーでは、<ph name="PRODUCT_NAME" /> でのネットワーク予測を制御します。DNS のプリフェッチ、TCP、SSL の事前接続、ウェブページの事前レンダリングを制御できます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
@@ -6628,6 +6630,7 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="7832225468415136704">Chrome クリーンアップによるシステムの定期的なスキャンを許可せず、手動スキャンを無効にする</translation>
 <translation id="7833148823006528332">Android アプリの識別子（例: Gmail の場合は "com.google.android.gm"）</translation>
 <translation id="7835218570504220753">自動クリックを無効にする</translation>
+<translation id="7837834961221899821">キーボードのデフォルトの明るさ</translation>
 <translation id="7839180815400079700"><ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> が有効な場合に、<ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> では電力ピークシフトの曜日を設定できます。
 
       このポリシーを未設定のままにした場合、電力ピークシフトは無効になります。

@@ -5913,6 +5913,7 @@
 <translation id="6508248480704296122">Կապված է <ph name="NAME_PH" />-ի հետ</translation>
 <translation id="6508261954199872201">Հավելված` <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Մեդիա արտոնագիր</translation>
+<translation id="6511279028091289182">Սահմանում է, թե ինչպես միանալ կայքերին ապահով կապի միջոցով։ Անհրաժեշտ է նշել ծառայություններ մատուցողին հետևյալ ձևանմուշում՝ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />։</translation>
 <translation id="6511827214781912955">Խորհուրդ ենք տալիս ջնջել <ph name="FILENAME" /> ֆայլը, որպեսզի այս սարքի մյուս օգտատերերը չկարողանան տեսնել ձեր գաղտնաբառերը</translation>
 <translation id="6512808201725371249">Այս հաշվի գաղտնաբառն արդեն պահված է Google գաղտնաբառերի կառավարիչում (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Եթե կապակցված չեք այլ ցանցի, Google Chrome-ը կօգտագործի տվյալների փոխանցման բջջային ցանցը:</translation>
@@ -5982,6 +5983,7 @@
 <translation id="6568283005472142698">Որոնում ներդիրներում</translation>
 <translation id="65711204837946324">Ներբեռնելու համար պահանջվում է թույլտվություն</translation>
 <translation id="6571772921213691236">Մուտքի տվյալների փոփոխում</translation>
+<translation id="657229725818377235">Ստացեք ավելի լավ պաշտպանություն վտանգավոր կայքերից և ֆայլերից</translation>
 <translation id="6573096386450695060">Միշտ թույլատրել</translation>
 <translation id="6573497332121198392">Չհաջողվեց հեռացնել դյուրանցումը</translation>
 <translation id="657402800789773160">&amp;Վերաբեռնել այս էջը</translation>

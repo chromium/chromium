@@ -1507,7 +1507,6 @@
 <translation id="4813512666221746211">네트워크 오류</translation>
 <translation id="4816492930507672669">페이지 맞춤</translation>
 <translation id="4819347708020428563">기본 뷰에서 주석을 수정할까요?</translation>
-<translation id="4823325221257637040">시작</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 빠르게 새 Google 시트 만들기</translation>
 <translation id="4825507807291741242">강력함</translation>
 <translation id="483241715238664915">경고 켜기</translation>
@@ -1963,6 +1962,7 @@
 <translation id="5995727681868049093">Google 계정에서 정보, 개인 정보 보호 및 보안 설정 관리</translation>
 <translation id="5997247540087773573">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하고 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' 검색결과 <ph name="RESULT_COUNT" />개</translation>
+<translation id="6005765687956866568">양식에서 자동 완성 정보가 삭제되었습니다</translation>
 <translation id="6006365096047131769">3x5인치</translation>
 <translation id="6006484371116297560">기본</translation>
 <translation id="6008122969617370890">N-to-1 순서</translation>
@@ -2272,6 +2272,7 @@
 <translation id="6826993739343257035">AR을 허용하시겠습니까?</translation>
 <translation id="6828866289116430505">유전학</translation>
 <translation id="6831043979455480757">번역</translation>
+<translation id="6832753933931306326">양식이 작성되었습니다</translation>
 <translation id="6842196666980060516">184x260mm</translation>
 <translation id="6846340164947227603">가상 카드 번호 사용...</translation>
 <translation id="6852204201400771460">앱을 새로고침하시겠습니까?</translation>
@@ -2725,6 +2726,7 @@
 <translation id="7950027195171824198">Chrome 설정에서 쿠키 환경설정 관리</translation>
 <translation id="7951415247503192394">(32비트)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952804540472583406">네트워크에 <ph name="BEGIN_LINK" />로그인<ph name="END_LINK" />합니다.</translation>
 <translation id="7953569069500808819">상단 에지 스티치</translation>
 <translation id="7956713633345437162">모바일 북마크</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
@@ -2842,6 +2844,7 @@
 <translation id="8241707690549784388">찾고 있는 페이지에서 사용자가 입력한 정보를 사용했습니다. 해당 페이지로 돌아가면 기존 작업을 반복할 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="8241712895048303527">이 사이트에서 차단</translation>
 <translation id="8242426110754782860">계속</translation>
+<translation id="8245703462678310750">|<ph name="ACCELERATOR" />|를 길게 눌러서 전체 화면을 종료하고 다운로드를 확인합니다.</translation>
 <translation id="8249296373107784235">중단</translation>
 <translation id="8249463483885748674">표준 시험 및 입학 시험</translation>
 <translation id="8252991034201168845">접근성 설정 관리 버튼, ChromeOS 설정의 접근성 도구를 맞춤설정하려면 Enter를 누르세요</translation>

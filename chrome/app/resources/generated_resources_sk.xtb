@@ -203,6 +203,7 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="117916940443676133">Váš bezpečnostný kľúč nie je chránený kódom PIN. Ak chcete spravovať prihlasovacie údaje, najprv vytvorte PIN.</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1183237619868651138">Súbor <ph name="EXTERNAL_CRX_FILE" /> nie je možné nainštalovať v miestnej vyrovnávacej pamäti</translation>
+<translation id="1184709369107246085">Aplikácia <ph name="APPLICATION_NAME" /> vyžaduje platnú webovú adresu aplikácie <ph name="APPLICATION_NAME" />.</translation>
 <translation id="1185924365081634987">Ak chcete túto chybu siete odstrániť, môžete tiež skúsiť <ph name="GUEST_SIGNIN_LINK_START" />prehliadanie v režime hosťa<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
 <translation id="1186771945450942097">Odstránenie škodlivého softvéru</translation>
 <translation id="1187722533808055681">Prebudenia z nečinnosti</translation>
@@ -2822,6 +2823,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3582057310199111521">Zadané na podvodnom webe a nájdené v rámci porušenia ochrany údajov</translation>
 <translation id="3582299299336701326">Svetlé obrazovky môžete stmaviť a tmavé zosvetliť. Inverziu farieb zapnete alebo vypnete klávesovou skratkou Hľadať + Ctrl + H.</translation>
 <translation id="3584169441612580296">Čítať a meniť fotky, hudbu a ďalšie médiá z tohto počítača</translation>
+<translation id="3586787825263265024">Aplikácia <ph name="APPLICATION_NAME" /> vyžaduje, aby bola k dispozícii služba OneDrive.</translation>
 <translation id="3586806079541226322">Súbor nie je možné otvoriť</translation>
 <translation id="3586931643579894722">Skryť podrobnosti</translation>
 <translation id="3587482841069643663">Všetko</translation>
@@ -3979,6 +3981,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4654236001025007561">Zdieľajte súbory s Chromebookmi a zariadeniami s Androidom okolo vás</translation>
 <translation id="4657914796247705218">Rýchlosť TrackPointu</translation>
 <translation id="4658285806588491142">Uchovajte si obsah obrazovky v súkromí</translation>
+<translation id="4658648180588730283">Aplikácia <ph name="APPLICATION_NAME" /> nie je k dispozícii offline.</translation>
 <translation id="465878909996028221">Presmerovania prehliadača podporujú iba protokoly http, https a file.</translation>
 <translation id="4659126640776004816">Keď sa prihlásite do svojho účtu Google, táto funkcia je zapnutá.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Obrázok}few{# obrázky}many{# images}other{# obrázkov}}</translation>
@@ -4029,6 +4032,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4699357559218762027">(automaticky spustené)</translation>
 <translation id="4701025263201366865">Prihlásenie rodiča</translation>
 <translation id="4701335814944566468">Zobrazené včera</translation>
+<translation id="4705624512518230041"><ph name="FILE_NAMES" /> nemožno otvoriť, keď nie je k dispozícii OneDrive</translation>
 <translation id="470644585772471629">Inverzia farieb</translation>
 <translation id="4707337002099455863">Vždy zapnuté na všetkých weboch</translation>
 <translation id="4708849949179781599">Ukončiť aplikáciu <ph name="PRODUCT_NAME" /></translation>
@@ -4496,6 +4500,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5160634252433617617">Fyzická klávesnica</translation>
 <translation id="5160857336552977725">Prihláste sa do svojho zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Zariadenia USB od dodávateľa <ph name="VENDOR_NAME" /></translation>
+<translation id="5162624292894372900"><ph name="FILE_NAMES" /> nemožno otvoriť, keď nie je k dispozícii Disk</translation>
 <translation id="5162905305237671850">Zariadenie <ph name="DEVICE_TYPE" /> je blokované</translation>
 <translation id="5163910114647549394">Karta bola presunutá na koniec panela kariet</translation>
 <translation id="5164530241085602114">Web <ph name="SITE" /> nemá povolené upozornenia</translation>
@@ -5268,6 +5273,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5886112770923972514">Pripájajte sa k zariadeniam s rýchlym párovaním v okolí a rýchlo ich nastavujte</translation>
 <translation id="5886384907280980632">Vypnúť</translation>
 <translation id="5889282057229379085">Maximálny počet sprostredkujúcich certifikačných autorít: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">Šifrovať synchronizované údaje pomocou vlastnej <ph name="BEGIN_LINK" />prístupovej frázy synchronizácie<ph name="END_LINK" />. Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.</translation>
 <translation id="5891688036610113830">Preferované siete Wi-Fi</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5895335062901455404">Vaše uložené predvoľby a aktivita budú k dispozícii v ľubovoľnom zariadení so systémom Chrome OS Flex, keď sa prihlásite účtom Google. Položky, ktoré chcete synchronizovať, môžete vybrať v Nastaveniach.</translation>
@@ -5404,6 +5410,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6016178549409952427">Prechod na ďalší obsah, <ph name="CURRENT_ELEMENT" />. prvok z <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Potvrdenie obnovenia Powerwash s návratom k predchádzajúcej verzii</translation>
 <translation id="6016972670657536680">Tlačidlo pre výber jazyka a klávesnice. Aktuálne je vybratý jazyk <ph name="LANGUAGE" />.</translation>
+<translation id="6017503096330453612">Vyberte Skúsiť znova alebo zvoľte Otvoriť v offline editore a použite možnosti obmedzeného zobrazenia a úprav.</translation>
 <translation id="6017514345406065928">Zelená</translation>
 <translation id="6019169947004469866">Orezať</translation>
 <translation id="6019851026059441029">Výborná – HD</translation>
@@ -6270,6 +6277,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Nepodarilo sa nastaviť automatické aktualizácie pre všetkých používateľov (chyba pri vykonávaní predbežnej kontroly: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Pravidlá ochrany súkromia Google</translation>
+<translation id="6830200424658853449">Otvoriť v offline editore</translation>
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6832218595502288407">Zarovnať doľava</translation>
 <translation id="6833479554815567477">Karta bola odstránená zo skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
@@ -6633,6 +6641,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7174199383876220879">Novinka! Ovládajte svoju hudbu, videá a ďalší obsah.</translation>
 <translation id="7175037578838465313">Konfigurácia siete <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Načítané z:</translation>
+<translation id="7177079607604198383">Skontrolujte internetové pripojenie a vyberte Skúsiť znova. Prípadne zvoľte Otvoriť v offline editore a použite možnosti obmedzeného zobrazenia a úprav.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
 <translation id="7180865173735832675">Prispôsobiť</translation>
 <translation id="7182791023900310535">Presuňte svoje heslo</translation>
@@ -7333,6 +7342,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="783229689197954457">Ak Google nájde zľavu, zobrazí ju na tejto stránke</translation>
 <translation id="7833720883933317473">Tu sa zobrazia uložené vlastné slová</translation>
 <translation id="7835178595033117206">Záložka bola odstránená</translation>
+<translation id="7836535163829106376">Webová adresu súborov <ph name="FILE_NAMES" /> sa nedá otvoriť</translation>
 <translation id="7836850009646241041">Skúste znova klepnúť na svoj bezpečnostný kľúč</translation>
 <translation id="7837776265184002579">Vaša domovská stránka bola zmenená na <ph name="URL" />.</translation>
 <translation id="7838838951812478896"><ph name="NETWORK_NAME" /> sa nepodarilo uložiť v zariadení <ph name="DEVICE_NAME" /></translation>
@@ -7773,6 +7783,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="822347941086490485">Hľadajú sa zariadenia HID…</translation>
 <translation id="8223573963214454788">Pokračovať a odstrániť údaje</translation>
 <translation id="8225046344534779393">Skontrolujte internetové pripojenie</translation>
+<translation id="8225173734540525852">Aplikácia <ph name="APPLICATION_NAME" /> vyžaduje, aby bol k dispozícii Disk.</translation>
 <translation id="8225265270453771718">Zdieľanie okna aplikácie</translation>
 <translation id="8226222018808695353">Zakázané</translation>
 <translation id="8226619461731305576">Poradie</translation>
@@ -8108,6 +8119,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8549316893834449916">Do Chromebooku sa prihlásite svojím účtom Google. Je to ten istý účet, ktorý používate s Gmailom, Diskom, službou YouTube a ďalšími.</translation>
 <translation id="8551388862522347954">Licencie</translation>
 <translation id="8551588720239073785">Nastavenia dátumu a času</translation>
+<translation id="8551647092888540776"><ph name="FILE_NAMES" /> nemožno otvoriť v režime offline</translation>
 <translation id="8552102814346875916">Pridať do zoznamu Vždy nechať tieto weby aktívne</translation>
 <translation id="8553342806078037065">Spravovať ďalšie osoby</translation>
 <translation id="8554899698005018844">Žiadny jazyk</translation>

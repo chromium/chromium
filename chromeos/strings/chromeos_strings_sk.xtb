@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Klávesy nie sú testované, keď používate iné okno</translation>
 <translation id="2493126929778606526">Vaše najlepšie fotky, vybrané automaticky</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Nastaviť ako plávajúce</translation>
 <translation id="2505327257735685095">Obnoviť aktuálny obrázok tapety</translation>
 <translation id="2513396635448525189">Obrázok na prihlasovacej obrazovke</translation>
 <translation id="2517472476991765520">Skenovať</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Prezentácia</translation>
 <translation id="4297501883039923494">Zastavené – neznáma chyba</translation>
 <translation id="4300073214558989">Počet obrázkov: <ph name="IMAGE_COUNT" /></translation>
+<translation id="4311195029067684288">Úplné</translation>
 <translation id="4333390807948134856">Bol stlačený kláves <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Spravujte nastavenia názvov prístupových bodov (APN) siete. Názvy prístupových bodov umožňujú nadviazať pripojenie medzi mobilnou sieťou a internetom. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Nebolo spustené</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Nabité na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Ak chcete nastaviť alebo aktualizovať pripojenie, prejdite do <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Dátum</translation>
+<translation id="4937657825850660613">Polovica</translation>
 <translation id="4950314376641394653">Firmvér zariadenia <ph name="DEVICE_NAME" /> bol aktualizovaný na verziu <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Čiastočné</translation>
 <translation id="498186245079027698">Skontrolujte skener a skúste to znova. Uistite sa, že na uloženie naskenovaných súborov je v zariadení dostatok priestoru.</translation>
 <translation id="4985509611418653372">Spustiť</translation>
 <translation id="4987769320337599931">Firewall</translation>
@@ -685,6 +689,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skenovanie je dokončené. Bola naskenovaná 1 strana.}few{Skenovanie je dokončené. Boli naskenované {NUMBER_OF_PAGES} strany.}many{Skenovanie je dokončené. {NUMBER_OF_PAGES} pages scanned}other{Skenovanie je dokončené. Bolo naskenovaných {NUMBER_OF_PAGES} strán.}}</translation>
+<translation id="7458970041932198923">Ak chcete zobraziť a nastaviť avatary, pripojte sa k sieti a znova načítajte stránku.</translation>
 <translation id="7469648432129124067">Bol rozpoznaný portál</translation>
 <translation id="7481312909269577407">Dopredu</translation>
 <translation id="7487067081878637334">Technológia</translation>
@@ -839,6 +844,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenovať}=1{Skenovať {NUMBER_OF_PAGES} stránku}few{Skenovať {NUMBER_OF_PAGES} stránky}many{Skenovať {NUMBER_OF_PAGES} stránky}other{Skenovať {NUMBER_OF_PAGES} stránok}}</translation>
 <translation id="8997710128084572139">Úroveň batérie zariadenia je <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998289560386111590">V zariadení nie je k dispozícii</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9025198690966128418">Používať ako osobné zariadenie</translation>
 <translation id="9028832514430399253">Zapnutím prepínača vyberiete možnosti šetriča obrazovky</translation>

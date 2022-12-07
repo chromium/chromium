@@ -1950,6 +1950,7 @@
 <translation id="275662540872599901">画面オフ</translation>
 <translation id="2757161511365746634">プリンタの表示</translation>
 <translation id="2757338480560142065">保存するパスワードが <ph name="WEBSITE" /> のパスワードと一致していることを確認してください</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" />「<ph name="SEARCH_QUERY" />」に一致する検索結果はありませんでした</translation>
 <translation id="2762441749940182211">カメラがブロックされています</translation>
 <translation id="2764786626780673772">VPN の詳細</translation>
 <translation id="2764920001292228569">プロフィールに名前を付けてください</translation>
@@ -5256,6 +5257,7 @@
 <translation id="5886112770923972514">近くにあるファスト ペアリング デバイスを接続して、すばやくセットアップする</translation>
 <translation id="5886384907280980632">今すぐオフにする</translation>
 <translation id="5889282057229379085">中間認証局の最大数: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">同期データを<ph name="BEGIN_LINK" />同期パスフレーズ<ph name="END_LINK" />で暗号化します。Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。</translation>
 <translation id="5891688036610113830">優先 Wi-Fi ネットワーク</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5895335062901455404">保存した設定とアクティビティは、Google アカウントでログインする他の ChromeOS Flex デバイスで使用できるようになります。同期する項目は [設定] で選択できます。</translation>
@@ -6913,6 +6915,7 @@
 <translation id="7465635034594602553">エラーが発生しました。数分後にもう一度 <ph name="APP_NAME" /> を実行してください。</translation>
 <translation id="7465778193084373987">Netscape 証明書取り消し URL</translation>
 <translation id="7466431077154602932">コンパクト表示</translation>
+<translation id="7466556884531675354">メモが保存されていません</translation>
 <translation id="746861123368584540">拡張機能を読み込みました</translation>
 <translation id="7470424110735398630">クリップボードの読み取りを許可するサイト</translation>
 <translation id="747114903913869239">エラー: 拡張機能をデコードできません</translation>
@@ -7891,6 +7894,7 @@
 <translation id="8351316842353540018">ユーザー補助設定オプションを常に表示する</translation>
 <translation id="8351419472474436977">この拡張機能によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
 <translation id="8351630282875799764">充電は行われていません</translation>
+<translation id="8352287103893778223">タブグループのタイトル</translation>
 <translation id="835238322900896202">アンインストール中にエラーが発生しました。ターミナルからアンインストールしてください。</translation>
 <translation id="8353683614194668312">次の権限にアクセス可能:</translation>
 <translation id="8354034204605718473">お子様の PIN を追加しました</translation>

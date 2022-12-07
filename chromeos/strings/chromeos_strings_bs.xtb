@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Ključevi se ne testiraju kada koristite drugi prozor</translation>
 <translation id="2493126929778606526">Vaše najbolje fotografije, automatski odabrane</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Plutajući</translation>
 <translation id="2505327257735685095">Osvježavanje trenutne pozadinske slike</translation>
 <translation id="2513396635448525189">Slika prilikom prijave</translation>
 <translation id="2517472476991765520">Skeniraj</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Prezentacija</translation>
 <translation id="4297501883039923494">Zaustavljeno – nepoznata greška</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> slike/a</translation>
+<translation id="4311195029067684288">Potpuno</translation>
 <translation id="4333390807948134856">Pritisnuta je tipka <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Upravljajte mrežnim postavkama za APN. APN-ovi uspostavljaju vezu između mobilne mreže i interneta. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Napunjeno <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Da postavite ili ažurirate vezu, idite u <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4937657825850660613">Napola</translation>
 <translation id="4950314376641394653">Firmver uređaja <ph name="DEVICE_NAME" /> je ažuriran na verziju <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Djelomičnо</translation>
 <translation id="498186245079027698">Provjerite skener i pokušajte ponovo. Vodite računa da ima dovoljno prostora na uređaju da sačuvate skenirane fajlove.</translation>
 <translation id="4985509611418653372">Pokreni</translation>
 <translation id="4987769320337599931">Zaštitni zid</translation>
@@ -685,6 +689,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7415801143053185905">Veoma visoka HTTP latentnost</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skeniranje je završeno. Skenirana je 1 stranica}one{Skeniranje je završeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je završeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je završeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
+<translation id="7458970041932198923">Povežite se s mrežom i ponovo učitajte stranicu da pregledate i postavite avatare.</translation>
 <translation id="7469648432129124067">Otkriven je portal</translation>
 <translation id="7481312909269577407">Proslijedi</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
@@ -839,6 +844,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skeniraj}=1{Skeniraj {NUMBER_OF_PAGES}. stranicu}one{Skeniraj {NUMBER_OF_PAGES}. stranicu}few{Skeniraj {NUMBER_OF_PAGES}. stranicu}other{Skeniraj {NUMBER_OF_PAGES}. stranicu}}</translation>
 <translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>
+<translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="9025198690966128418">Koristi kao lični uređaj</translation>
 <translation id="9028832514430399253">Uključite prebacivač da odaberete opcije čuvara ekrana</translation>

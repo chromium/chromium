@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">استفاده از تراکم بالا</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2497284189126895209">همه فایل‌ها</translation>
-<translation id="2498950423397131220">شناور</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">کالیبراسیون تمام شد</translation>
 <translation id="252373100621549798">نمایش ناشناس</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">شروع صحبت</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
 <translation id="4306392492252714209">برداشتن از بریده‌دان.</translation>
-<translation id="4311195029067684288">پر</translation>
 <translation id="4491109536499578614">تصویر</translation>
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
 <translation id="4588090240171750605">پیمایش به راست</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">سنجاق افزونه برداشته شد</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{۱ ماه باقی مانده است}one{# ماه باقی مانده است}other{# ماه باقی مانده است}}</translation>
 <translation id="4888938634149558681">برقراری تماس</translation>
-<translation id="4937657825850660613">نیمه</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{۱ ثانیه}one{# ثانیه}other{# ثانیه}}</translation>
 <translation id="4971687151119236543">آهنگ قبلی رسانه</translation>
-<translation id="4971925105143343452">عمودی</translation>
 <translation id="5046499563572181734">در اینجا ضربه بزنید</translation>
 <translation id="5076340679995252485">&amp;جاگذاری</translation>
-<translation id="5123162024343028706">شناور در بالا</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> پتابایت</translation>
 <translation id="5278860589123563674">ارسال نشد</translation>
 <translation id="528468243742722775">پایان</translation>

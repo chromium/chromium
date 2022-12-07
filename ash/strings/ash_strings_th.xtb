@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">ปิดการเข้าถึงกล้องในอุปกรณ์นี้เพื่อบล็อกกล้องทั้งหมดตลอดเวลา</translation>
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4667099493359681081">กำลังดาวน์โหลด <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">แอปจากโทรศัพท์ของคุณ</translation>
 <translation id="4690510401873698237">ชั้นวางอยู่ด้านล่าง</translation>
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
@@ -928,7 +929,6 @@
 <translation id="6121838516699723042">ยืนยันการดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">ใช้ Google Assistant ในเซสชันผู้เยี่ยมชมไม่ได้</translation>
 <translation id="6129953537138746214">ช่องว่าง</translation>
-<translation id="6134259848159370930">ค้นหาอุปกรณ์ แอป การตั้งค่า และเว็บ</translation>
 <translation id="6137566720514957455">เปิดกล่องโต้ตอบการนำออกของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">ยืนยันการดาวน์โหลด</translation>
 <translation id="6154006699632741460">ไม่รองรับอุปกรณ์ต่อพ่วง</translation>
@@ -1289,6 +1289,7 @@
 <translation id="8142441511840089262">ดับเบิลคลิก</translation>
 <translation id="8142699993796781067">เครือข่ายส่วนบุคคล</translation>
 <translation id="8144760705599030999">บันทึก <ph name="NAME" /> ลงใน <ph name="EMAIL" /> เพื่อให้จับคู่กับอุปกรณ์อื่นๆ ของคุณได้รวดเร็วยิ่งขึ้น</translation>
+<translation id="8144914663975476336">เลือกรูปแบบการบันทึก</translation>
 <translation id="8149413265954228307">แสดงการตั้งค่าบลูทูธ <ph name="STATE_TEXT" /></translation>
 <translation id="8152092012181020186">กด Ctrl + W เพื่อปิด</translation>
 <translation id="8152264887680882389"><ph name="TEXT" /> เติมข้อความอัตโนมัติ</translation>
@@ -1386,7 +1387,6 @@
 <translation id="8666856788528804727">เปิด <ph name="NAME" /> เพื่อตั้งค่าอุปกรณ์</translation>
 <translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
 <translation id="8683506306463609433">ใช้งานการติดตามประสิทธิภาพอยู่</translation>
-<translation id="8685326675965865247">ค้นหาอุปกรณ์ แอป การตั้งค่า และเว็บ ใช้แป้นลูกศรเพื่อไปยังส่วนต่างๆ ของแอป</translation>
 <translation id="8703634754197148428">เริ่มบันทึก เมื่อการบันทึกเริ่มต้น ให้ใช้ Alt + Shift + L เพื่อไปที่แถบและหาปุ่มหยุดบันทึก</translation>
 <translation id="8721053961083920564">สลับเปิด/ปิดระดับเสียง <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">จับภาพแบบเต็มหน้าจอ</translation>

@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">আপুনি আন এখন ৱিণ্ড’ ব্যৱহাৰ কৰি থাকোঁতে কীসমূহ পৰীক্ষা কৰা নহয়</translation>
 <translation id="2493126929778606526">স্বয়ংক্ৰিয়ভাৱে বাছনি কৰা আপোনাৰ শ্ৰেষ্ঠ ফট’সমূহ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">ওপঙা</translation>
 <translation id="2505327257735685095">বর্তমানৰ ৱালপেপাৰৰ প্ৰতিচ্ছবিখন ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="2513396635448525189">লগইনৰ প্ৰতিচ্ছবি</translation>
 <translation id="2517472476991765520">স্কেন কৰক</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">শ্লাইড শ্ব’</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
+<translation id="4311195029067684288">পূৰ্ণ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কীটো টিপিছে</translation>
 <translation id="435692326371619097">নেটৱৰ্ক এপিএনৰ ছেটিং পৰিচালনা কৰক। এপিএনে এটা চেলুলাৰ নেটৱৰ্ক আৰু ইণ্টাৰনেটৰ মাজত এটা সংযোগ স্থাপন কৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">নাই চলা</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ছেকেণ্ডত <ph name="RATE" /> চাৰ্জ হৈছে।</translation>
 <translation id="4930320165497208503">কোনো সংযোগ ছেট আপ কৰিবলৈ অথবা আপডে’ট কৰিবলৈ, <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="4932733599132424254">তাৰিখ</translation>
+<translation id="4937657825850660613">আধা</translation>
 <translation id="4950314376641394653">ফাৰ্মৱেৰ <ph name="DEVICE_NAME" /> সংস্কৰণ <ph name="VERSION" />লৈ আপডে’ট কৰা হ’ল</translation>
+<translation id="4971925105143343452">আংশিক</translation>
 <translation id="498186245079027698">স্কেনাৰটো পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। স্কেন কৰা ফাইল ছেভ কৰিবলৈ পৰ্যাপ্ত পৰিমাণে স্থানীয় খালী ঠাই থকাটো নিশ্চিত কৰক।</translation>
 <translation id="4985509611418653372">চলাওক</translation>
 <translation id="4987769320337599931">ফায়াৰৱাল</translation>

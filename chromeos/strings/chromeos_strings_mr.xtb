@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">तुम्ही दुसरी विंडो वापरत असताना, कीची चाचणी केली जात नाही</translation>
 <translation id="2493126929778606526">तुमचे सर्वोत्तम फोटो, आपोआप निवडले</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">फ्लोट</translation>
 <translation id="2505327257735685095">सध्याची वॉलपेपर इमेज रिफ्रेश करा</translation>
 <translation id="2513396635448525189">लॉगिन इमेज</translation>
 <translation id="2517472476991765520">स्कॅन करा</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">स्लाइड शो</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
+<translation id="4311195029067684288">पूर्ण</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की दाबली</translation>
 <translation id="435692326371619097">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APN हे मोबाइल नेटवर्क आणि इंटरनेट यांदरम्यान कनेक्शन जोडतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंदांत <ph name="RATE" /> शुल्क आकारले.</translation>
 <translation id="4930320165497208503">कनेक्शन सेट किंवा अपडेट करण्यासाठी, <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> वर जा.</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="4937657825850660613">अर्धा</translation>
 <translation id="4950314376641394653">फर्मवेअर <ph name="DEVICE_NAME" /> हे <ph name="VERSION" /> आवृत्तीवर अपडेट केले गेले आहे</translation>
+<translation id="4971925105143343452">अंशिक</translation>
 <translation id="498186245079027698">स्कॅनर तपासा आणि पुन्हा प्रयत्न करा. स्कॅन केलेल्या फाइल सेव्ह करण्यासाठी पुरेशी स्थानिक जागा उपलब्ध असल्याची खात्री करा.</translation>
 <translation id="4985509611418653372">रन</translation>
 <translation id="4987769320337599931">फायरवॉल</translation>

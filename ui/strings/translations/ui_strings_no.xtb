@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Bruk høy tetthet</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2497284189126895209">Alle filer</translation>
-<translation id="2498950423397131220">Løsne</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibreringen er ferdig</translation>
 <translation id="252373100621549798">Ukjent skjerm</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Begynn å snakke</translation>
 <translation id="4289540628985791613">Oversikt</translation>
 <translation id="4306392492252714209">Fjern fra utklippstavlen.</translation>
-<translation id="4311195029067684288">Full</translation>
 <translation id="4491109536499578614">Bilde</translation>
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4588090240171750605">Rull mot høyre</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Utvidelsen er løsnet</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 måned igjen}other{# måneder igjen}}</translation>
 <translation id="4888938634149558681">Ring</translation>
-<translation id="4937657825850660613">Halv</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekund}other{# sekunder}}</translation>
 <translation id="4971687151119236543">Media – forrige spor</translation>
-<translation id="4971925105143343452">Delvis</translation>
 <translation id="5046499563572181734">Trykk her</translation>
 <translation id="5076340679995252485">&amp;Lim inn</translation>
-<translation id="5123162024343028706">Fest øverst</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Kunne ikke sende</translation>
 <translation id="528468243742722775">Avslutt</translation>

@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Když používáte jiné okno, klíče nejsou testovány</translation>
 <translation id="2493126929778606526">Vaše nejlepší fotky, vybrané automaticky</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Plovoucí</translation>
 <translation id="2505327257735685095">Obnovit aktuální tapetu</translation>
 <translation id="2513396635448525189">Obrázek přihlášení</translation>
 <translation id="2517472476991765520">Naskenovat</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Prezentace</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
+<translation id="4311195029067684288">Plné</translation>
 <translation id="4333390807948134856">Klávesa <ph name="KEY_NAME" /> byla stisknuta</translation>
 <translation id="435692326371619097">Spravovat nastavení názvů přístupových bodů sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Nespuštěno</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Nabito na <ph name="RATE" /> za <ph name="NUM_SECONDS" /> s.</translation>
 <translation id="4930320165497208503">Pokud chcete nastavit nebo aktualizovat připojení, přejděte do sekce <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4937657825850660613">Polovina</translation>
 <translation id="4950314376641394653">Firmware zařízení <ph name="DEVICE_NAME" /> byl aktualizován na verzi <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Částečné</translation>
 <translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
 <translation id="4985509611418653372">Spustit</translation>
 <translation id="4987769320337599931">Firewall</translation>

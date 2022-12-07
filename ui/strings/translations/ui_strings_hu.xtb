@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Magas sűrűség használata</translation>
 <translation id="2482878487686419369">Értesítések</translation>
 <translation id="2497284189126895209">Minden fájl</translation>
-<translation id="2498950423397131220">Lebegő</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">A kalibrálás befejeződött</translation>
 <translation id="252373100621549798">Ismeretlen kijelző</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Beszéd megkezdése</translation>
 <translation id="4289540628985791613">Áttekintés</translation>
 <translation id="4306392492252714209">Eltávolítás a vágólapról.</translation>
-<translation id="4311195029067684288">Teljes</translation>
 <translation id="4491109536499578614">Kép</translation>
 <translation id="4565377596337484307">Jelszó elrejtése</translation>
 <translation id="4588090240171750605">Görgetés jobbra</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Bővítmény kitűzése feloldva</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{hátralévő idő: 1 hónap}other{hátralévő idő: # hónap}}</translation>
 <translation id="4888938634149558681">Hívás indítása</translation>
-<translation id="4937657825850660613">Fél</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 másodperc}other{# másodperc}}</translation>
 <translation id="4971687151119236543">Előző szám</translation>
-<translation id="4971925105143343452">Részleges</translation>
 <translation id="5046499563572181734">Koppintson ide</translation>
 <translation id="5076340679995252485">&amp;Beillesztés</translation>
-<translation id="5123162024343028706">Lebegés az oldal fölött</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Sikertelen küldés</translation>
 <translation id="528468243742722775">Befejezés</translation>

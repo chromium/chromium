@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">ଆପଣ ଅନ୍ୟ ୱିଣ୍ଡୋ ବ୍ୟବହାର କରିବା ବେଳେ କୀ'ଗୁଡ଼ିକୁ ପରୀକ୍ଷା କରାଯାଏ ନାହିଁ</translation>
 <translation id="2493126929778606526">ସ୍ୱଚାଳିତ ଭାବେ ଚୟନିତ, ଆପଣଙ୍କର ଶ୍ରେଷ୍ଠ ଫଟୋଗୁଡ଼ିକ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">ଫ୍ଲୋଟ</translation>
 <translation id="2505327257735685095">ବର୍ତ୍ତମାନର ୱାଲପେପର୍ ଛବିକୁ ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
 <translation id="2513396635448525189">ଲଗଇନ୍ ଛବି</translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">ସ୍ଲାଇଡ ଶୋ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />ଟି ଛବି</translation>
+<translation id="4311195029067684288">ସମ୍ପୂର୍ଣ୍ଣ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> କୀ'କୁ ଦବାଯାଇଛି</translation>
 <translation id="435692326371619097">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">ଚାଲୁନାହିଁ</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> ସେକେଣ୍ଡରେ <ph name="RATE" /> ଚାର୍ଜ ହୋଇଛି</translation>
 <translation id="4930320165497208503">ଏକ ସଂଯୋଗ ସେଟ ଅପ କିମ୍ବା ଅପଡେଟ କରିବାକୁ, <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="4932733599132424254">ତାରିଖ</translation>
+<translation id="4937657825850660613">ଅଧା</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> ଫାର୍ମୱେରକୁ ସଂସ୍କରଣ <ph name="VERSION" />ରେ ଅପଡେଟ କରାଯାଇଛି</translation>
+<translation id="4971925105143343452">ଆଂଶିକ</translation>
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4985509611418653372">ଚଲାନ୍ତୁ</translation>
 <translation id="4987769320337599931">ଫାୟାରୱାଲ୍</translation>
@@ -685,6 +689,7 @@
 <translation id="7415801143053185905">HTTPର ବହୁତ ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। 1ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}other{ସ୍କାନ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଯାଇଛି। {NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠାକୁ ସ୍କାନ୍ କରାଯାଇଛି}}</translation>
+<translation id="7458970041932198923">ଅବତାରଗୁଡ଼ିକୁ ଦେଖି ସେଟ କରିବା ପାଇଁ ଦୟାକରି ଏକ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="7469648432129124067">ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7481312909269577407">ଅଗ୍ରଗତି</translation>
 <translation id="7487067081878637334">ଟେକ୍ନୋଲୋଜି</translation>
@@ -839,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ସ୍କାନ୍ କରନ୍ତୁ}=1{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}other{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}}</translation>
 <translation id="8997710128084572139">ଡିଭାଇସରେ <ph name="BATTERY_PERCENTAGE" />% ବ୍ୟାଟେରୀ ଚାର୍ଜ ଅଛି।</translation>
+<translation id="8998289560386111590">ଆପଣଙ୍କ ଡିଭାଇସରେ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="9003704114456258138">ଫ୍ରିକ୍ୱେନ୍ସୀ</translation>
 <translation id="9025198690966128418">ଏକ ବ୍ୟକ୍ତିଗତ ଡିଭାଇସ ଭାବେ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="9028832514430399253">ସ୍କ୍ରିନ ସେଭର ବିକଳ୍ପଗୁଡ଼ିକୁ ଚୟନ କରିବା ପାଇଁ ଟୋଗଲ ଚାଲୁ କରନ୍ତୁ</translation>

@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Utiliser haute densité</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2497284189126895209">Tous les fichiers</translation>
-<translation id="2498950423397131220">Superposer</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Le calibrage est terminé</translation>
 <translation id="252373100621549798">Écran inconnu</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Commencer la lecture</translation>
 <translation id="4289540628985791613">Aperçu</translation>
 <translation id="4306392492252714209">Retirer du presse-papiers.</translation>
-<translation id="4311195029067684288">Complet</translation>
 <translation id="4491109536499578614">Image</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4588090240171750605">Défilement vers la droite</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Épinglage de l'extension annulée</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Un mois restant}one{# mois restant}other{# mois restants}}</translation>
 <translation id="4888938634149558681">Faire un appel</translation>
-<translation id="4937657825850660613">Moitié</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 seconde}one{# seconde}other{# secondes}}</translation>
 <translation id="4971687151119236543">Titre précédent</translation>
-<translation id="4971925105143343452">Partiel</translation>
 <translation id="5046499563572181734">Touchez ici</translation>
 <translation id="5076340679995252485">C&amp;oller</translation>
-<translation id="5123162024343028706">Flotter par-dessus</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> Po</translation>
 <translation id="5278860589123563674">Échec de l'envoi</translation>
 <translation id="528468243742722775">Fin</translation>

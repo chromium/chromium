@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Таныг өөр цонх ашиглаж байх үед товчийг шалгадаггүй</translation>
 <translation id="2493126929778606526">Автоматаар сонгогдсон таны шилдэг зургууд</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Хөвөх</translation>
 <translation id="2505327257735685095">Одоогийн дэлгэцийн зургийг сэргээх</translation>
 <translation id="2513396635448525189">Нэвтрэх зураг</translation>
 <translation id="2517472476991765520">Шалгах</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Слайд харуулалт</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> зураг</translation>
+<translation id="4311195029067684288">Бүтэн</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> товчлуур дарагдаагүй</translation>
 <translation id="435692326371619097">Сүлжээний APN тохиргоог удирдана уу. APN үүрэн холбооны сүлжээ болон интернэтийн хооронд холболт тогтоодог. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Ажилдаггүй</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэглэсэн.</translation>
 <translation id="4930320165497208503">Холболт тохируулах эсвэл шинэчлэхийн тулд <ph name="BEGIN_LINK" />Тохиргоо<ph name="END_LINK" /> руу очно уу.</translation>
 <translation id="4932733599132424254">Огноо</translation>
+<translation id="4937657825850660613">Хагас</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> жижиг программыг <ph name="VERSION" /> хувилбар луу шинэчилсэн байна</translation>
+<translation id="4971925105143343452">Хэсэгчилсэн</translation>
 <translation id="498186245079027698">Сканнерыг шалгаад дахин оролдоно уу. Скан хийсэн файлуудыг хадгалах хангалттай дотоод зай байгаа эсэхийг шалгана уу.</translation>
 <translation id="4985509611418653372">Ажиллуулах</translation>
 <translation id="4987769320337599931">Галт хана</translation>

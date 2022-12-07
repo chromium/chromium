@@ -667,6 +667,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4666082839192943839">Diffoddwch fynediad at y camera ar y ddyfais hon i rwystro pob camera drwy'r amser.</translation>
 <translation id="4666911709726371538">Rhagor o apiau</translation>
 <translation id="4667099493359681081">Wrthi'n lawrlwytho <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Apiau o'ch ffôn</translation>
 <translation id="4690510401873698237">Silff ar y gwaelod</translation>
 <translation id="4696813013609194136">Datgloi'r ddyfais gyda chod rhiant</translation>
 <translation id="4702647871202761252">Mae'r Sgrîn Breifatrwydd wedi'i diffodd</translation>
@@ -928,7 +929,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6121838516699723042">Cadarnhau lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Nid yw Google Assistant ar gael mewn sesiwn westai.</translation>
 <translation id="6129953537138746214">Bwlch</translation>
-<translation id="6134259848159370930">Chwilio eich dyfais, eich apiau, eich gosodiadau, a'r we.</translation>
 <translation id="6137566720514957455">Agor deialog tynnu ar gyfer <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Cadarnhau lawrlwytho</translation>
 <translation id="6154006699632741460">Ni chefnogir y perifferol</translation>
@@ -1289,6 +1289,7 @@ Gosodiad newydd</translation>
 <translation id="8142441511840089262">Clicio dwywaith</translation>
 <translation id="8142699993796781067">Rhwydwaith preifat</translation>
 <translation id="8144760705599030999">Gallwch gadw eich <ph name="NAME" /> i <ph name="EMAIL" /> ar gyfer paru cyflymach at eich dyfeisiau eraill</translation>
+<translation id="8144914663975476336">Dewiswch fformat recordio</translation>
 <translation id="8149413265954228307">Dangos gosodiadau Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pwyswch Ctrl + W i gau.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Awtogwblhau</translation>
@@ -1386,7 +1387,6 @@ Gosodiad newydd</translation>
 <translation id="8666856788528804727">Agorwch <ph name="NAME" /> i osod eich dyfais</translation>
 <translation id="8676770494376880701">Mae gwefrydd pŵer isel wedi'i gysylltu</translation>
 <translation id="8683506306463609433">Mae olrhain perfformiad yn weithredol</translation>
-<translation id="8685326675965865247">Chwilio eich dyfais, eich apiau, eich gosodiadau, a'r we. Defnyddiwch y bysellau saeth i lywio'ch apiau.</translation>
 <translation id="8703634754197148428">Dechrau recordio. Ar ôl i'r recordio ddechrau, gallwch ddefnyddio Alt + Shift + L i lywio i'r silff i ddod o hyd i'r botwm stopio recordio</translation>
 <translation id="8721053961083920564">Toglo Lefel y Sain. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tynnu sgrinlun sgrîn lawn</translation>

@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Senda ábendingaskýrslu</translation>
 <translation id="2407209115954268704">Staða SIM-láss</translation>
+<translation id="241419523391571119">Opnaðu lokið aftur til að prófa</translation>
 <translation id="2414886740292270097">Dökkt</translation>
 <translation id="2418150275289244458">Opna í stillingum</translation>
 <translation id="2421798028054665193">Mynd <ph name="CURRENT_PAGE" /> af <ph name="TOTAL_PAGES" /></translation>
@@ -175,6 +176,7 @@
 <translation id="2491955442992294626">Lyklar eru ekki prófaðir þegar þú notar annan glugga</translation>
 <translation id="2493126929778606526">Bestu myndirnar þínar, valdar sjálfkrafa</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Fljótandi hnappur</translation>
 <translation id="2505327257735685095">Endurnýja núverandi veggfóðursmynd</translation>
 <translation id="2513396635448525189">Innskráningarmynd</translation>
 <translation id="2517472476991765520">Leita</translation>
@@ -205,6 +207,7 @@
 <translation id="2878387241690264070">Afhleðsla nam <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="2902312830803030883">Fleiri aðgerðir</translation>
 <translation id="2926057806159140518">Sláðu inn notandanafn og aðgangsorð eða skannaðu QR-kóðann</translation>
+<translation id="2940811910881150316">Ekki hægt að prófa tæki. Opnaðu lokið aftur til að prófa.</translation>
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="3017079585324758401">Bakgrunnur</translation>
@@ -285,6 +288,7 @@
 <translation id="3820172043799983114">Ógilt PIN-númer.</translation>
 <translation id="3824259034819781947">Hengja skrár við</translation>
 <translation id="3838338534323494292">Nýtt aðgangsorð</translation>
+<translation id="3845880861638660475">Ýttu samtímis á <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> og <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> til að loka glugganum.</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3862598938296403232">Lýsing er áskilin</translation>
@@ -292,6 +296,7 @@
 <translation id="3866249974567520381">Lýsing</translation>
 <translation id="387301095347517405">Fjöldi skipta sem rafhlaðan hefur tæmst og verið fullhlaðin aftur</translation>
 <translation id="3885327323343477505">Breyta skjávara</translation>
+<translation id="391412459402535266">Ekki hægt að prófa tæki. Skiptu yfir í fartölvustillingu til að prófa</translation>
 <translation id="3923184630988645767">Gagnanotkun</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3941014780699102620">Ekki tókst að ákvarða hýsil</translation>
@@ -304,6 +309,7 @@
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> er nú uppfært</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
+<translation id="4021031199988160623">Skiptu yfir í fartölvustillingu til að prófa</translation>
 <translation id="4034824040120875894">Prentari</translation>
 <translation id="4044093238444069296">Ekki er hægt að tengjast gátt</translation>
 <translation id="4046123991198612571">Næsta lag</translation>
@@ -336,6 +342,7 @@
 <translation id="4289849978083912975">Skyggnusýning</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
+<translation id="4311195029067684288">Allur</translation>
 <translation id="4333390807948134856">Ýtt var á lykilinn <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Stjórna stillingum aðgangsstaðar netkerfis. Aðgangsstaðir tengja saman farsímakerfi og internetið. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Ekki keyra</translation>
@@ -415,7 +422,9 @@
 <translation id="4921665434385737356">Hlóð <ph name="RATE" /> á <ph name="NUM_SECONDS" /> sekúndum.</translation>
 <translation id="4930320165497208503">Opnaðu <ph name="BEGIN_LINK" />stillingarnar<ph name="END_LINK" /> til að setja upp eða uppfæra tengingu.</translation>
 <translation id="4932733599132424254">Dagsetning</translation>
+<translation id="4937657825850660613">Hálfur</translation>
 <translation id="4950314376641394653">Fastbúnaður <ph name="DEVICE_NAME" /> var uppfærður í útgáfu <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Hluti</translation>
 <translation id="498186245079027698">Athugaðu skannann og reyndu aftur. Gakktu úr skugga um að nægilegt pláss sé á tækinu fyrir skannaðar skrár.</translation>
 <translation id="4985509611418653372">Keyra</translation>
 <translation id="4987769320337599931">Eldveggur</translation>

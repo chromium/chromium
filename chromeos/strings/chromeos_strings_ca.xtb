@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Envia un informe de suggeriments</translation>
 <translation id="2407209115954268704">Estat de bloqueig de la SIM</translation>
+<translation id="241419523391571119">Torna a obrir la tapa per fer la prova</translation>
 <translation id="2414886740292270097">Fosc</translation>
 <translation id="2418150275289244458">Obre a Configuració</translation>
 <translation id="2421798028054665193">Imatge <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
@@ -175,6 +176,7 @@
 <translation id="2491955442992294626">Les tecles no es proven quan fas servir una altra finestra</translation>
 <translation id="2493126929778606526">Les teves millors fotos, seleccionades automàticament</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
+<translation id="2498950423397131220">Flotant</translation>
 <translation id="2505327257735685095">Actualitza la imatge actual del fons de pantalla</translation>
 <translation id="2513396635448525189">Imatge d'inici de sessió</translation>
 <translation id="2517472476991765520">Escaneja</translation>
@@ -205,6 +207,7 @@
 <translation id="2878387241690264070">S'ha descarregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="2902312830803030883">Més accions</translation>
 <translation id="2926057806159140518">Introdueix el nom d'usuari i la contrasenya o bé escaneja el codi QR</translation>
+<translation id="2940811910881150316">No es pot provar el dispositiu. Torna a obrir la tapa per fer la prova.</translation>
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3017079585324758401">Fons</translation>
@@ -285,6 +288,7 @@
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="3824259034819781947">Adjunta fitxers</translation>
 <translation id="3838338534323494292">Contrasenya nova</translation>
+<translation id="3845880861638660475">Prem <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" />+<ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> per tancar el quadre de diàleg.</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3862598938296403232">La descripció és obligatòria</translation>
@@ -292,6 +296,7 @@
 <translation id="3866249974567520381">Descripció</translation>
 <translation id="387301095347517405">El nombre de vegades que la bateria s'ha carregat completament</translation>
 <translation id="3885327323343477505">Canvia l'estalvi de pantalla</translation>
+<translation id="391412459402535266">No es pot provar el dispositiu. Canvia al mode de portàtil per fer la prova.</translation>
 <translation id="3923184630988645767">Ús de dades</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
@@ -304,6 +309,7 @@
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="3993704782688964914">El dispositiu <ph name="DEVICE_NAME" /> s'acaba d'actualitzar</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
+<translation id="4021031199988160623">Canvia al mode de portàtil per fer la prova</translation>
 <translation id="4034824040120875894">Impressora</translation>
 <translation id="4044093238444069296">No es pot contactar amb la passarel·la</translation>
 <translation id="4046123991198612571">Pista següent</translation>
@@ -336,6 +342,7 @@
 <translation id="4289849978083912975">Presentació de diapositives</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
+<translation id="4311195029067684288">Complet</translation>
 <translation id="4333390807948134856">S'ha premut la tecla <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">Gestiona la configuració de l'APN de la xarxa. Els APN defineixen una connexió entre una xarxa mòbil i Internet. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">No s'ha executat</translation>
@@ -415,7 +422,9 @@
 <translation id="4921665434385737356">S'ha carregat un <ph name="RATE" /> en <ph name="NUM_SECONDS" /> segons.</translation>
 <translation id="4930320165497208503">Per configurar o actualitzar una connexió, ves a <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
+<translation id="4937657825850660613">Meitat</translation>
 <translation id="4950314376641394653">El microprogramari del dispositiu <ph name="DEVICE_NAME" /> s'ha actualitzat a la versió <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Parcial</translation>
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4985509611418653372">Executa</translation>
 <translation id="4987769320337599931">Tallafoc</translation>

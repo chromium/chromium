@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Fechar todos os separadores de navegação anónima?</translation>
 <translation id="1657719826150349398">Mover o separador para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador selecionado aos marcadores}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores selecionados aos marcadores}}</translation>
 <translation id="2118649612461486615">Informações da loja</translation>
 <translation id="2162620598375156287">Agora a <ph name="CURRENT_PRICE" /> em <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupar separador}other{Desagrupar separadores}}</translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Remova <ph name="TABS_COUNT_ONE" /> separador selecionado do grupo.}other{Remova <ph name="TABS_COUNT_MANY" /> separadores selecionados do grupo.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Adic. separ. aos marcadores}other{Adic. separ. aos marcadores}}</translation>
 <translation id="2479148705183875116">Aceder às Definições</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Reduza <ph name="TABS_COUNT_ONE" /> separador.}other{Reduza o grupo de separadores com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="2569352796411618312">Sugestão: <ph name="NUMBER_OF_TABS" /> dos seus separadores não foram utilizados recentemente. Pretende fechá-los?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Mover separador para cima</translation>
 <translation id="8304833501377495048">Não mostrar a Faixa de separadores novamente?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
+<translation id="8398929769197326728">Nova pasta – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Expandir o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores</translation>
 <translation id="8714939927607906138">Preço mais baixo</translation>
 <translation id="8749939518995770034">Faixa de separadores fechada</translation>

@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Gumamit ng mataas na density</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2497284189126895209">Lahat ng Mga File</translation>
-<translation id="2498950423397131220">Float</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Nakumpleto na ang pag-calibrate</translation>
 <translation id="252373100621549798">Hindi Kilalang Display</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Simulan ang Pagsasalita</translation>
 <translation id="4289540628985791613">Pangkalahatang-ideya</translation>
 <translation id="4306392492252714209">Alisin sa clipboard.</translation>
-<translation id="4311195029067684288">Buo</translation>
 <translation id="4491109536499578614">Larawan</translation>
 <translation id="4565377596337484307">Itago ang password</translation>
 <translation id="4588090240171750605">Mag-scroll Pakanan</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Na-unpin ang extension</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 buwan ang natitira}one{# buwan ang natitira}other{# na buwan ang natitira}}</translation>
 <translation id="4888938634149558681">Tumawag</translation>
-<translation id="4937657825850660613">Kalahati</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 segundo}one{# segundo}other{# na segundo}}</translation>
 <translation id="4971687151119236543">Nakaraang Track ng Media</translation>
-<translation id="4971925105143343452">Hindi Buo</translation>
 <translation id="5046499563572181734">Mag-tap dito</translation>
 <translation id="5076340679995252485">&amp;Ilagay</translation>
-<translation id="5123162024343028706">Umibabaw</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> (na) PB</translation>
 <translation id="5278860589123563674">Hindi naipadala</translation>
 <translation id="528468243742722775">Tapusin</translation>

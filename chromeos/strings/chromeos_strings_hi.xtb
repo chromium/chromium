@@ -163,6 +163,7 @@
 <translation id="2380886658946992094">कानूनी</translation>
 <translation id="2391082728065870591">सुझाव, शिकायत या राय की रिपोर्ट भेजें</translation>
 <translation id="2407209115954268704">सिम लॉक स्टेटस</translation>
+<translation id="241419523391571119">जांच करने के लिए लिड को फिर से खोलें</translation>
 <translation id="2414886740292270097">गहरा</translation>
 <translation id="2418150275289244458">'सेटिंग' में जाकर खोलें</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" /> में से <ph name="CURRENT_PAGE" /> की इमेज</translation>
@@ -173,6 +174,7 @@
 <translation id="2491955442992294626">दूसरी विंडो इस्तेमाल करने पर बटनों की जांच नहीं की जाती है</translation>
 <translation id="2493126929778606526">आपकी सबसे अच्छी फ़ोटो, अपने-आप चुन ली गईं</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">फ़्लोट</translation>
 <translation id="2505327257735685095">मौजूदा वॉलपेपर रीफ़्रेश करें</translation>
 <translation id="2513396635448525189">लॉगिन इमेज बदलें</translation>
 <translation id="2517472476991765520">स्कैन करें</translation>
@@ -203,6 +205,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> डिस्चार्ज हुई.</translation>
 <translation id="2902312830803030883">और क्रियाएं</translation>
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
+<translation id="2940811910881150316">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए लिड को फिर से खोलें.</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
@@ -283,6 +286,7 @@
 <translation id="3820172043799983114">गलत पिन</translation>
 <translation id="3824259034819781947">फ़ाइलें अटैच करें</translation>
 <translation id="3838338534323494292">नया पासवर्ड</translation>
+<translation id="3845880861638660475">डायलॉग बॉक्स बंद करने के लिए, <ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> के साथ <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" /> दबाएं.</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3862598938296403232">ब्यौरा देना ज़रूरी है</translation>
@@ -290,6 +294,7 @@
 <translation id="3866249974567520381">वर्णन</translation>
 <translation id="387301095347517405">इतनी बार आपकी बैटरी पूरी चार्ज हुई है</translation>
 <translation id="3885327323343477505">स्क्रीन सेवर बदलें</translation>
+<translation id="391412459402535266">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए, लैपटॉप मोड पर स्विच करें.</translation>
 <translation id="3923184630988645767">डेटा खर्च</translation>
 <translation id="3932043219784172185">कोई भी डिवाइस कनेक्ट नहीं है</translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
@@ -302,6 +307,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="3993704782688964914">अब आपका <ph name="DEVICE_NAME" /> अप-टू-डेट है</translation>
 <translation id="4003384961948020559">प्रिंट नहीं हो पाया - प्रिंटर आउटपुट फ़ुल है</translation>
+<translation id="4021031199988160623">जांच करने के लिए, लैपटॉप मोड पर स्विच करें</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
 <translation id="4044093238444069296">गेटवे से संपर्क नहीं किया जा सकता</translation>
 <translation id="4046123991198612571">अगला ट्रैक</translation>
@@ -334,6 +340,7 @@
 <translation id="4289849978083912975">स्लाइड शो</translation>
 <translation id="4297501883039923494">बंद हो गया - अज्ञात गड़बड़ी</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
+<translation id="4311195029067684288">पूर्ण</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> दबाया गया</translation>
 <translation id="435692326371619097">नेटवर्क APN सेटिंग मैनेज करें. एपीएन, मोबाइल नेटवर्क और इंटरनेट के बीच कनेक्शन बनाते हैं. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">चल नहीं पाया</translation>
@@ -411,7 +418,9 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> सेकंड में <ph name="RATE" /> चार्ज हुई.</translation>
 <translation id="4930320165497208503">किसी कनेक्शन को सेट अप या अपडेट करने के लिए, <ph name="BEGIN_LINK" />सेटिंग पर जाएं<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">तारीख</translation>
+<translation id="4937657825850660613">स्क्रीन को आधे हिस्सों में बाटें</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> फ़र्मवेयर को <ph name="VERSION" /> पर अपडेट कर दिया गया है</translation>
+<translation id="4971925105143343452">आंशिक</translation>
 <translation id="498186245079027698">स्कैनर की जांच करके फिर से कोशिश करें. पक्का करें कि स्कैन की गई फ़ाइलों को सेव करने के लिए, डिवाइस में खाली जगह हो.</translation>
 <translation id="4985509611418653372">चलाएं</translation>
 <translation id="4987769320337599931">फ़ायरवॉल</translation>
@@ -675,6 +684,7 @@
 <translation id="7415801143053185905">एचटीटीपी अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{स्कैन करने की प्रोसेस पूरी हुई. 1 पेज स्कैन हो गया}one{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गया}other{स्कैन करने की प्रोसेस पूरी हुई. {NUMBER_OF_PAGES} पेज स्कैन हो गए}}</translation>
+<translation id="7458970041932198923">अवतार देखने और उन्हें सेट करने के लिए, किसी नेटवर्क से कनेक्ट करें और पेज को फिर से लोड करें.</translation>
 <translation id="7469648432129124067">पोर्टल पहचाना गया</translation>
 <translation id="7481312909269577407">आगे जाएं</translation>
 <translation id="7487067081878637334">तकनीक</translation>
@@ -828,6 +838,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्कैन करें}=1{{NUMBER_OF_PAGES} स्कैन करें}one{{NUMBER_OF_PAGES} स्कैन करें}other{{NUMBER_OF_PAGES} स्कैन करें}}</translation>
 <translation id="8997710128084572139">डिवाइस में <ph name="BATTERY_PERCENTAGE" />% बैटरी बची है.</translation>
+<translation id="8998289560386111590">यह मोड आपके डिवाइस पर उपलब्ध नहीं है</translation>
 <translation id="9003704114456258138">आवृत्ति</translation>
 <translation id="9025198690966128418">निजी डिवाइस के तौर पर इस्तेमाल करें</translation>
 <translation id="9028832514430399253">स्क्रीन सेवर के विकल्प चुनने के लिए, टॉगल करने की सुविधा चालू करें</translation>

@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">表示間隔を狭くする</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2497284189126895209">すべてのファイル</translation>
-<translation id="2498950423397131220">フロート</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">キャリブレーションが完了しました</translation>
 <translation id="252373100621549798">不明なディスプレイ</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">読み上げを開始</translation>
 <translation id="4289540628985791613">概要</translation>
 <translation id="4306392492252714209">クリップボードから削除します。</translation>
-<translation id="4311195029067684288">100%</translation>
 <translation id="4491109536499578614">画像</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4588090240171750605">右にスクロール</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">拡張機能の固定を解除しました</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{残り 1 か月}other{残り # か月}}</translation>
 <translation id="4888938634149558681">電話をかける</translation>
-<translation id="4937657825850660613">半分</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="4971687151119236543">メディアの前のトラック</translation>
-<translation id="4971925105143343452">一部</translation>
 <translation id="5046499563572181734">ここをタップしてください</translation>
 <translation id="5076340679995252485">貼り付け(&amp;P)</translation>
-<translation id="5123162024343028706">上部に表示</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">送信できませんでした</translation>
 <translation id="528468243742722775">終了</translation>

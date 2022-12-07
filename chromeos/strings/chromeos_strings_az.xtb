@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Başqa pəncərədən istifadə etdiyiniz zaman açarlar sınaqdan keçirilmir</translation>
 <translation id="2493126929778606526">Avtomatik seçilmiş ən yaxşı fotolarınız</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Üzən</translation>
 <translation id="2505327257735685095">Cari divar kağızı şəklini yeniləyin</translation>
 <translation id="2513396635448525189">Giriş şəkli</translation>
 <translation id="2517472476991765520">Skan edin</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Slayd şou</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
+<translation id="4311195029067684288">Tam</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> düyməsi basılıb</translation>
 <translation id="435692326371619097">Şəbəkə APN ayarlarını idarə edin. APN-lər mobil şəbəkə ilə internet arasında əlaqə yaradır. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">İşə salınmayıb</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> saniyədə <ph name="RATE" /> şarj edilib.</translation>
 <translation id="4930320165497208503">Bağlantını ayarlamaq və ya güncəlləmək üçün <ph name="BEGIN_LINK" />Ayarlara<ph name="END_LINK" /> keçin.</translation>
 <translation id="4932733599132424254">Tarix</translation>
+<translation id="4937657825850660613">Yarı</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> cihazı <ph name="VERSION" /> versiyaya güncəllənib</translation>
+<translation id="4971925105143343452">Qismən</translation>
 <translation id="498186245079027698">Skaneri yoxlayın və yenidən cəhd edin. Skan edilmiş faylları saxlamaq üçün diskdə kifayət qədər yer olduğuna əmin olun.</translation>
 <translation id="4985509611418653372">İşə salın</translation>
 <translation id="4987769320337599931">Qoruyucu divar</translation>

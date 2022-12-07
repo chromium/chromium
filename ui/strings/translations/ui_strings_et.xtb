@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Kasuta kõrget tihedust</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2497284189126895209">Kõik failid</translation>
-<translation id="2498950423397131220">Hõljutamine</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibreerimine on lõpetatud</translation>
 <translation id="252373100621549798">Tundmatu ekraan</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Alusta rääkimist</translation>
 <translation id="4289540628985791613">Ülevaade</translation>
 <translation id="4306392492252714209">Eemalda lõikelaualt.</translation>
-<translation id="4311195029067684288">Täielik</translation>
 <translation id="4491109536499578614">Image</translation>
 <translation id="4565377596337484307">Peida parool</translation>
 <translation id="4588090240171750605">Keri paremale</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Laiendus on vabastatud</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 kuu jäänud}other{# kuud jäänud}}</translation>
 <translation id="4888938634149558681">Helista</translation>
-<translation id="4937657825850660613">Pool</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekund}other{# sekundit}}</translation>
 <translation id="4971687151119236543">Meediumi eelmine lugu</translation>
-<translation id="4971925105143343452">Osaline</translation>
 <translation id="5046499563572181734">Puudutage siin</translation>
 <translation id="5076340679995252485">&amp;Kleebi</translation>
-<translation id="5123162024343028706">Hõljuta kõige peal</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Saatmine ebaõnnestus</translation>
 <translation id="528468243742722775">Lõpeta</translation>

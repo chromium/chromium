@@ -667,6 +667,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4666082839192943839">Vypněte v tomto zařízení přístup ke kamerám a zablokujte všechny kamery.</translation>
 <translation id="4666911709726371538">Další aplikace</translation>
 <translation id="4667099493359681081">Stahování souboru <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Aplikace z telefonu</translation>
 <translation id="4690510401873698237">Polička dole</translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
@@ -928,7 +929,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="6121838516699723042">Potvrzení stahování <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
 <translation id="6129953537138746214">Mezera</translation>
-<translation id="6134259848159370930">Prohledejte zařízení, aplikace, nastavení a internet.</translation>
 <translation id="6137566720514957455">Otevřít dialogové okno odstranění účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Potvrzení stahování</translation>
 <translation id="6154006699632741460">Periferní zařízení není podporováno</translation>
@@ -1289,6 +1289,7 @@ Nová instalace</translation>
 <translation id="8142441511840089262">Dvojité kliknutí</translation>
 <translation id="8142699993796781067">Soukromá síť</translation>
 <translation id="8144760705599030999">Uložte si zařízení <ph name="NAME" /> do účtu <ph name="EMAIL" />, aby ho bylo možné rychleji spárovat s jinými zařízeními</translation>
+<translation id="8144914663975476336">Vyberte formát nahrávky</translation>
 <translation id="8149413265954228307">Zobrazit nastavení Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Zavřete stisknutím kláves Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatické doplnění</translation>
@@ -1386,7 +1387,6 @@ Nová instalace</translation>
 <translation id="8666856788528804727">Pokud chcete nastavit zařízení, otevřete aplikaci <ph name="NAME" /></translation>
 <translation id="8676770494376880701">Byla připojena nabíječka s nízkým napětím</translation>
 <translation id="8683506306463609433">Trasování výkonu je aktivní</translation>
-<translation id="8685326675965865247">Prohledejte zařízení, aplikace, nastavení a internet. Mezi aplikacemi se můžete pohybovat pomocí kláves.</translation>
 <translation id="8703634754197148428">Zahájit nahrávání. Po zahájení nahrávání můžete stisknutím kláves Alt + Shift + L přejít na poličku a najít tlačítko Zastavit nahrávání</translation>
 <translation id="8721053961083920564">Zapnout či vypnout zvuk. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Záznam celé obrazovky</translation>

@@ -1972,6 +1972,7 @@
 <translation id="275662540872599901">화면 꺼짐</translation>
 <translation id="2757161511365746634">프린터 보기</translation>
 <translation id="2757338480560142065">저장하려는 비밀번호가 <ph name="WEBSITE" />의 비밀번호와 일치하는지 확인하세요.</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" />에 대한 검색결과가 없습니다.</translation>
 <translation id="2762441749940182211">카메라 차단됨</translation>
 <translation id="2764786626780673772">VPN 세부정보</translation>
 <translation id="2764920001292228569">프로필 이름을 입력하세요.</translation>
@@ -5281,6 +5282,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5886112770923972514">근처의 빠른 페어링 기기를 연결하고 간단히 설정합니다</translation>
 <translation id="5886384907280980632">지금 끄기</translation>
 <translation id="5889282057229379085">중간 인증기관(CA)의 최대 개수: <ph name="NUM_INTERMEDIATE_CA" />개</translation>
+<translation id="5889629805140803638">나만의 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />로 동기화 데이터를 암호화합니다. Google Pay 결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.</translation>
 <translation id="5891688036610113830">선호하는 Wi-Fi 네트워크</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5895335062901455404">Google 계정으로 로그인할 경우 모든 ChromeOS Flex 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요.</translation>
@@ -5926,6 +5928,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6508248480704296122"><ph name="NAME_PH" /> 관련</translation>
 <translation id="6508261954199872201">애플리케이션:<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">미디어 라이선스</translation>
+<translation id="6511279028091289182">보안 연결을 통해 웹사이트에 연결하는 방법을 지정합니다. <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />에서 관리형 서비스 제공업체를 사용합니다.</translation>
 <translation id="6511827214781912955">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 파일을 삭제해 보세요.</translation>
 <translation id="6512808201725371249">이 계정의 비밀번호가 Google 비밀번호 관리자(<ph name="USER_EMAIL" />)에 이미 저장되어 있습니다.</translation>
 <translation id="6513247462497316522">다른 네트워크에 연결되어 있지 않을 경우 Chrome은 모바일 데이터를 사용합니다.</translation>
@@ -5995,6 +5998,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6568283005472142698">탭 검색</translation>
 <translation id="65711204837946324">다운로드 권한 필요</translation>
 <translation id="6571772921213691236">로그인 데이터 수정</translation>
+<translation id="657229725818377235">위험한 웹사이트 및 다운로드로부터 사용자를 더욱 안전하게 보호합니다.</translation>
 <translation id="6573096386450695060">항상 허용</translation>
 <translation id="6573497332121198392">바로가기를 삭제할 수 없음</translation>
 <translation id="657402800789773160">페이지 새로고침(&amp;R)</translation>
@@ -6939,6 +6943,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7465635034594602553">문제가 발생했습니다. 잠시 후 <ph name="APP_NAME" /> 앱을 다시 실행해 주세요.</translation>
 <translation id="7465778193084373987">Netscape Certificate Revocation URL</translation>
 <translation id="7466431077154602932">간단히 보기</translation>
+<translation id="7466556884531675354">저장된 메모 없음</translation>
 <translation id="746861123368584540">확장 프로그램 로드됨</translation>
 <translation id="7470424110735398630">클립보드 보기가 허용됨</translation>
 <translation id="747114903913869239">오류: 확장 프로그램을 디코딩할 수 없음</translation>
@@ -7919,6 +7924,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8351316842353540018">항상 접근성 옵션 표시</translation>
 <translation id="8351419472474436977">이 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경 및 중단하고 엿볼 수 있게 되었음을 의미합니다. 이와 같이 변경된 이유가 확실하지 않다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>
 <translation id="8351630282875799764">배터리가 충전되고 있지 않음</translation>
+<translation id="8352287103893778223">탭 그룹 제목</translation>
 <translation id="835238322900896202">제거 중 오류가 발생했습니다. 터미널을 통해 제거해 주세요.</translation>
 <translation id="8353683614194668312">앱의 권한:</translation>
 <translation id="8354034204605718473">자녀의 PIN 추가됨</translation>

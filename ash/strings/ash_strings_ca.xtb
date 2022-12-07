@@ -667,6 +667,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4666082839192943839">Desactiva l'accés a la càmera en aquest dispositiu per bloquejar sempre totes les càmeres.</translation>
 <translation id="4666911709726371538">Més aplicacions</translation>
 <translation id="4667099493359681081">S'està baixant <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Aplicacions del telèfon</translation>
 <translation id="4690510401873698237">El prestatge és a la part inferior</translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
@@ -928,7 +929,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
 <translation id="6129953537138746214">Espai</translation>
-<translation id="6134259848159370930">Cerca al dispositiu, en aplicacions, a la configuració i al web.</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirma la baixada</translation>
 <translation id="6154006699632741460">Perifèric no admès</translation>
@@ -1383,7 +1383,6 @@ Instal·lació nova</translation>
 <translation id="8666856788528804727">Obre <ph name="NAME" /> per configurar el dispositiu</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
-<translation id="8685326675965865247">Fes cerques al dispositiu, en aplicacions, a la configuració i al web. Fes servir les tecles de fletxa per navegar per les aplicacions.</translation>
 <translation id="8703634754197148428">Inicia la gravació. Quan la gravació hagi començat, prem Alt+Maj+L per navegar fins al prestatge i trobar el botó per aturar-la.</translation>
 <translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de pantalla completa</translation>

@@ -667,6 +667,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4666082839192943839">Nonaktifkan akses kamera di perangkat ini untuk memblokir semua kamera sepanjang waktu.</translation>
 <translation id="4666911709726371538">Aplikasi lainnya</translation>
 <translation id="4667099493359681081">Mendownload <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Aplikasi dari ponsel Anda</translation>
 <translation id="4690510401873698237">Rak di bagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
 <translation id="4702647871202761252">Layar privasi nonaktif</translation>
@@ -928,7 +929,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6121838516699723042">Konfirmasi download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asisten Google tidak tersedia dalam sesi tamu.</translation>
 <translation id="6129953537138746214">Spasi</translation>
-<translation id="6134259848159370930">Telusuri perangkat, aplikasi, setelan, dan web.</translation>
 <translation id="6137566720514957455">Buka dialog hapus untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Konfirmasi download</translation>
 <translation id="6154006699632741460">Periferal tidak didukung</translation>
@@ -1289,6 +1289,7 @@ Baru diinstal</translation>
 <translation id="8142441511840089262">Klik dua kali</translation>
 <translation id="8142699993796781067">Jaringan pribadi</translation>
 <translation id="8144760705599030999">Simpan <ph name="NAME" /> Anda ke <ph name="EMAIL" /> untuk penyambungan yang lebih cepat ke perangkat lain</translation>
+<translation id="8144914663975476336">Pilih format rekaman</translation>
 <translation id="8149413265954228307">Tampilkan setelan Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Tekan Ctrl + W untuk menutup.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Dilengkapi otomatis</translation>
@@ -1386,7 +1387,6 @@ Baru diinstal</translation>
 <translation id="8666856788528804727">Buka <ph name="NAME" /> untuk menyiapkan perangkat Anda</translation>
 <translation id="8676770494376880701">Pengisi daya rendah terpasang</translation>
 <translation id="8683506306463609433">Pelacakan performa aktif</translation>
-<translation id="8685326675965865247">Telusuri perangkat, aplikasi, setelan, dan web Anda. Gunakan tombol panah untuk membuka berbagai bagian aplikasi.</translation>
 <translation id="8703634754197148428">Mulai merekam. Setelah perekaman dimulai, gunakan Alt + Shift + L untuk menuju rak dan temukan tombol hentikan perekaman</translation>
 <translation id="8721053961083920564">Ubah Volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tangkapan layar penuh</translation>

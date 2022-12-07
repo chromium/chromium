@@ -5933,7 +5933,7 @@
 <translation id="6508248480704296122">同 <ph name="NAME_PH" /> 相關</translation>
 <translation id="6508261954199872201">應用程式：<ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">媒體授權</translation>
-<translation id="6511279028091289182">安全 DNS 會判斷如何透過安全連線連上網站。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的代管服務供應商</translation>
+<translation id="6511279028091289182">判斷如何透過安全連線連接網站。這會使用位於 <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> 的受管服務供應商</translation>
 <translation id="6511827214781912955">建議刪除「<ph name="FILENAME" />」，讓此裝置的其他使用者無法查看您的密碼</translation>
 <translation id="6512808201725371249">此帳戶的密碼已儲存在「Google 密碼管理工具」中 (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">如果您沒有連線至其他網絡，Google Chrome 將使用流動數據網絡連線。</translation>
@@ -6003,7 +6003,7 @@
 <translation id="6568283005472142698">分頁搜尋</translation>
 <translation id="65711204837946324">需要下載權限</translation>
 <translation id="6571772921213691236">編輯登入資料</translation>
-<translation id="657229725818377235">進一步防範不安全的網站和下載內容</translation>
+<translation id="657229725818377235">進一步防範危險網站和下載檔案</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573497332121198392">無法移除捷徑</translation>
 <translation id="657402800789773160">重新載入這個網頁(&amp;R)</translation>

@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">കൂടിയ സാന്ദ്രത ഉപയോഗിക്കുക</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2497284189126895209">എല്ലാ ഫയലുകളും</translation>
-<translation id="2498950423397131220">ഫ്ലോട്ട് ചെയ്യുക</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">കാലിബറേഷൻ പൂർത്തിയായി</translation>
 <translation id="252373100621549798">അജ്ഞാത പ്രദർശനം</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">സംഭാഷണം ആരംഭിക്കുക</translation>
 <translation id="4289540628985791613">അവലോകനം</translation>
 <translation id="4306392492252714209">ക്ലിപ്പ്ബോർഡിൽ നിന്ന് നീക്കം ചെയ്യുക.</translation>
-<translation id="4311195029067684288">പൂർണ്ണം</translation>
 <translation id="4491109536499578614">ചിത്രം</translation>
 <translation id="4565377596337484307">പാസ്‌വേഡ് മറയ്ക്കുക</translation>
 <translation id="4588090240171750605">വലത്തോട്ട് സ്ക്രോള്‍ ചെയ്യുക</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">വിപുലീകരണം അൺപിൻ ചെയ്തു</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{ഒരു മാസം ശേഷിക്കുന്നു}other{# മാസം ശേഷിക്കുന്നു}}</translation>
 <translation id="4888938634149558681">കോൾ ചെയ്യുക</translation>
-<translation id="4937657825850660613">പകുതി</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{ഒരു സെക്കന്‍ഡ്}other{# സെക്കൻഡ്}}</translation>
 <translation id="4971687151119236543">മുമ്പത്തെ മീഡിയാ ട്രാക്ക്</translation>
-<translation id="4971925105143343452">ഭാഗികം</translation>
 <translation id="5046499563572181734">ഇവിടെ ടാപ്പുചെയ്യുക</translation>
 <translation id="5076340679995252485">&amp;ഒട്ടിക്കുക</translation>
-<translation id="5123162024343028706">മുകളിൽ പിൻ ചെയ്യുക</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">അയയ്ക്കാനായില്ല</translation>
 <translation id="528468243742722775">അവസാനിപ്പിക്കുക</translation>

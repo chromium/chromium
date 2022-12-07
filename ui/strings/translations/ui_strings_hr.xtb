@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">Koristi visoku gustoću</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2497284189126895209">Sve datoteke</translation>
-<translation id="2498950423397131220">Plutanje</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibracija je gotova</translation>
 <translation id="252373100621549798">Nepoznati zaslon</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">Počni govoriti</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4306392492252714209">Ukloni iz međuspremnika.</translation>
-<translation id="4311195029067684288">Potpuno</translation>
 <translation id="4491109536499578614">Slika</translation>
 <translation id="4565377596337484307">Sakrij zaporku</translation>
 <translation id="4588090240171750605">Pomakni se desno</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">Proširenje je otkvačeno</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Još mjesec dana}one{Još # mjesec}few{Još # mjeseca}other{Još # mjeseci}}</translation>
 <translation id="4888938634149558681">Uputi poziv</translation>
-<translation id="4937657825850660613">Pola</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekunda}one{# sekunda}few{# sekunde}other{# sekundi}}</translation>
 <translation id="4971687151119236543">Prethodni zapis Medija</translation>
-<translation id="4971925105143343452">Djelomičnо</translation>
 <translation id="5046499563572181734">Dodirnite ovdje</translation>
 <translation id="5076340679995252485">&amp;Zalijepi</translation>
-<translation id="5123162024343028706">Pluta na vrhu</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">Slanje nije uspjelo</translation>
 <translation id="528468243742722775">Završi</translation>

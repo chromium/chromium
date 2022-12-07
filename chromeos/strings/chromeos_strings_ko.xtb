@@ -165,6 +165,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">의견 보고서 보내기</translation>
 <translation id="2407209115954268704">SIM 잠금 상태</translation>
+<translation id="241419523391571119">테스트하려면 덮개를 다시 엽니다.</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2418150275289244458">설정에서 열기</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />페이지 중 <ph name="CURRENT_PAGE" />에 있는 이미지</translation>
@@ -175,6 +176,7 @@
 <translation id="2491955442992294626">다른 창을 사용 중일 때는 키가 테스트되지 않습니다.</translation>
 <translation id="2493126929778606526">가장 잘 나온 사진이 자동으로 선별됩니다.</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">플로팅</translation>
 <translation id="2505327257735685095">현재 배경화면 이미지 새로고침</translation>
 <translation id="2513396635448525189">로그인 이미지</translation>
 <translation id="2517472476991765520">검색</translation>
@@ -205,6 +207,7 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" />초 내에 <ph name="RATE" /> 방전됨</translation>
 <translation id="2902312830803030883">추가 작업</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
+<translation id="2940811910881150316">기기를 테스트할 수 없습니다. 테스트하려면 덮개를 다시 엽니다.</translation>
 <translation id="3008341117444806826">새로고침</translation>
 <translation id="3009958530611748826">저장 폴더 선택</translation>
 <translation id="3017079585324758401">배경</translation>
@@ -285,6 +288,7 @@
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="3824259034819781947">파일 첨부</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
+<translation id="3845880861638660475"><ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />를 눌러 대화상자를 닫습니다.</translation>
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3862598938296403232">설명은 필수 항목입니다.</translation>
@@ -292,6 +296,7 @@
 <translation id="3866249974567520381">설명</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
 <translation id="3885327323343477505">화면 보호기 변경</translation>
+<translation id="391412459402535266">기기를 테스트할 수 없습니다. 테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
 <translation id="3932043219784172185">연결된 기기 없음</translation>
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
@@ -304,6 +309,7 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> 버전이 최신임</translation>
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
+<translation id="4021031199988160623">테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="4034824040120875894">프린터</translation>
 <translation id="4044093238444069296">게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
@@ -336,6 +342,7 @@
 <translation id="4289849978083912975">슬라이드쇼</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
+<translation id="4311195029067684288">전체화면</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> 키를 눌렀습니다.</translation>
 <translation id="435692326371619097">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
@@ -415,7 +422,9 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" />초 동안 <ph name="RATE" /> 충전했습니다.</translation>
 <translation id="4930320165497208503">연결을 설정하거나 업데이트하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />으로 이동하세요.</translation>
 <translation id="4932733599132424254">날짜</translation>
+<translation id="4937657825850660613">절반 분할</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> 펌웨어가 <ph name="VERSION" /> 버전으로 업데이트되었습니다</translation>
+<translation id="4971925105143343452">부분화면</translation>
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
 <translation id="4985509611418653372">실행</translation>
 <translation id="4987769320337599931">방화벽</translation>

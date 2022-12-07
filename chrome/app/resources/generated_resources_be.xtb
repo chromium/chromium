@@ -5914,6 +5914,7 @@
 <translation id="6508248480704296122">Датычыцца <ph name="NAME_PH" /></translation>
 <translation id="6508261954199872201">Праграма: <ph name="APP_NAME" /></translation>
 <translation id="6509207748479174212">Мультымедыйная ліцэнзія</translation>
+<translation id="6511279028091289182">Вызначае, як устанаўліваць бяспечнае падключэнне да вэб-сайтаў. Для гэтага выкарыстоўваецца пастаўшчык паслуг пад кіраваннем (<ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />).</translation>
 <translation id="6511827214781912955">Рэкамендуем выдаліць файл "<ph name="FILENAME" />", каб іншыя карыстальнікі прылады не змаглі пабачыць вашы паролі</translation>
 <translation id="6512808201725371249">Пароль для гэтага ўліковага запісу ўжо захаваны ў Менеджары пароляў Google (<ph name="USER_EMAIL" />)</translation>
 <translation id="6513247462497316522">Google Chrome будзе выкарыстоўваць мабільную перадачу даных, калі вы не падключаны да іншай сеткі.</translation>
@@ -5983,6 +5984,7 @@
 <translation id="6568283005472142698">Пошук па ўкладках</translation>
 <translation id="65711204837946324">Для спампоўвання гэтага элемента патрабуецца дазвол</translation>
 <translation id="6571772921213691236">Змяненне даных для ўваходу</translation>
+<translation id="657229725818377235">Забяспечце сабе ўзмоцненую абарону ад небяспечных вэб-сайтаў і спамповак</translation>
 <translation id="6573096386450695060">Заўсёды дазваляць</translation>
 <translation id="6573497332121198392">Не ўдалося выдаліць ярлык</translation>
 <translation id="657402800789773160">&amp;Перазагрузіць старонку</translation>

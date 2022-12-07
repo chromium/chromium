@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Đóng tất cả thẻ ẩn danh?</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Đánh dấu <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đánh dấu <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="2118649612461486615">Thông tin cửa hàng</translation>
 <translation id="2162620598375156287">Hiện có giá <ph name="CURRENT_PRICE" /> trên <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Bỏ thẻ khỏi nhóm}other{Bỏ thẻ khỏi nhóm}}</translation>
 <translation id="2277224997687551299">Chỉnh sửa tên nhóm</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Xóa <ph name="TABS_COUNT_ONE" /> thẻ đã chọn khỏi nhóm.}other{Xóa <ph name="TABS_COUNT_MANY" /> thẻ đã chọn khỏi nhóm.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Đánh dấu thẻ}other{Đánh dấu các thẻ}}</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Thu gọn <ph name="TABS_COUNT_ONE" /> thẻ.}other{Thu gọn nhóm thẻ có <ph name="TABS_COUNT_MANY" /> thẻ.}}</translation>
 <translation id="2569352796411618312">Đề xuất: Gần đây, bạn không sử dụng <ph name="NUMBER_OF_TABS" /> thẻ. Bạn có muốn đóng các thẻ này không?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Chuyển thẻ lên trên</translation>
 <translation id="8304833501377495048">Không hiện lại dải thẻ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Đóng <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đóng <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
+<translation id="8398929769197326728">Thư mục mới – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Mở rộng nhóm thẻ có <ph name="NUMBER_OF_TABS" /> thẻ.</translation>
 <translation id="8714939927607906138">Giá thấp hơn</translation>
 <translation id="8749939518995770034">Đã đóng dải thẻ</translation>

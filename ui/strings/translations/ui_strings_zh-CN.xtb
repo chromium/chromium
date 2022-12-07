@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">使用高密度</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2497284189126895209">所有文件</translation>
-<translation id="2498950423397131220">悬浮</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">已完成校准</translation>
 <translation id="252373100621549798">未知展示广告</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">开始讲话</translation>
 <translation id="4289540628985791613">概述</translation>
 <translation id="4306392492252714209">从剪贴板中移除。</translation>
-<translation id="4311195029067684288">全屏</translation>
 <translation id="4491109536499578614">图片</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4588090240171750605">向右滚动</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">已取消固定该扩展程序</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{还有 1 个月的时间}other{还有 # 个月的时间}}</translation>
 <translation id="4888938634149558681">致电</translation>
-<translation id="4937657825850660613">分成两半</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="4971687151119236543">媒体上一曲</translation>
-<translation id="4971925105143343452">局部</translation>
 <translation id="5046499563572181734">点按此处</translation>
 <translation id="5076340679995252485">粘贴(&amp;P)</translation>
-<translation id="5123162024343028706">固定在顶部</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">发送失败</translation>
 <translation id="528468243742722775">结束</translation>

@@ -930,7 +930,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6121838516699723042">Conferma download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
 <translation id="6129953537138746214">Spazio</translation>
-<translation id="6134259848159370930">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web.</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Conferma download</translation>
 <translation id="6154006699632741460">Periferica non supportata</translation>
@@ -1291,6 +1290,7 @@ Nuova installazione</translation>
 <translation id="8142441511840089262">Doppio clic</translation>
 <translation id="8142699993796781067">Rete privata</translation>
 <translation id="8144760705599030999">Salva <ph name="NAME" /> nell'account <ph name="EMAIL" /> per velocizzare l'accoppiamento con gli altri dispositivi</translation>
+<translation id="8144914663975476336">Seleziona il formato di registrazione</translation>
 <translation id="8149413265954228307">Mostra le impostazioni Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Premi CTRL + W per chiudere.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, completamento automatico</translation>
@@ -1388,7 +1388,6 @@ Nuova installazione</translation>
 <translation id="8666856788528804727">Apri <ph name="NAME" /> per configurare il tuo dispositivo</translation>
 <translation id="8676770494376880701">Caricabatterie a basso consumo collegato</translation>
 <translation id="8683506306463609433">Traccia delle prestazioni attiva</translation>
-<translation id="8685326675965865247">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web. Usa i tasti freccia per esplorare le tue app.</translation>
 <translation id="8703634754197148428">Avvia registrazione. Dopo aver avviato la registrazione, utilizza i tasti Alt + Maiusc + L per accedere alla barra delle app e individuare il pulsante per interrompere la registrazione</translation>
 <translation id="8721053961083920564">Attiva/disattiva volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Acquisizione schermo intero</translation>

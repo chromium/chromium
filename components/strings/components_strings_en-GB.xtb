@@ -271,6 +271,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1586541204584340881">Which extensions you have installed</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Local Data Access</translation>
+<translation id="1593359183944365958">270 degrees</translation>
 <translation id="1594030484168838125">Choose</translation>
 <translation id="1596296697375291157">Thriller, crime and mystery movies</translation>
 <translation id="1599199147673445968">New card? <ph name="BEGIN_LINK" />Enter card details<ph name="END_LINK" /></translation>
@@ -338,6 +339,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1741613555002899862">Must be specified and a valid string when DnsOverHttpsMode is <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Your browser is managed</translation>
 <translation id="1746113442205726301">Image Y shift</translation>
+<translation id="1746531169546376413">0 degrees</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
 <translation id="1753068535428855445">Dating and personals</translation>
@@ -1507,7 +1509,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4813512666221746211">Network error</translation>
 <translation id="4816492930507672669">Fit to page</translation>
 <translation id="4819347708020428563">Edit annotations in default view?</translation>
-<translation id="4823325221257637040">Starting</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Sheet quickly</translation>
 <translation id="4825507807291741242">Powerful</translation>
 <translation id="483241715238664915">Turn on warnings</translation>
@@ -1799,6 +1800,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5540969246441091044">Equestrian</translation>
 <translation id="5541086400771735334">Mailbox 7</translation>
 <translation id="5541546772353173584">Add Email</translation>
+<translation id="5543722831081909240">180 degrees</translation>
 <translation id="5545756402275714221">Articles for You</translation>
 <translation id="5551890439174915351">100 mm x 200 mm</translation>
 <translation id="5552137475244467770">Chrome periodically checks your passwords against lists that have been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
@@ -2189,6 +2191,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6591833882275308647">Your <ph name="DEVICE_TYPE" /> is not managed</translation>
 <translation id="6592952801936330159">Manage site settings button, press Enter to manage permissions and data stored across sites in Chrome settings</translation>
 <translation id="6596325263575161958">Encryption options</translation>
+<translation id="6597665340361269064">90 degrees</translation>
 <translation id="6599642189720630047">Tracked products</translation>
 <translation id="6611723696964473273">Economy news</translation>
 <translation id="6612010098632894193">Online video</translation>

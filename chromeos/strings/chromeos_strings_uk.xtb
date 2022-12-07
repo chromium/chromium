@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Якщо відкрити інше вікно, клавіші не будуть перевірятися</translation>
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Плаваюча кнопка</translation>
 <translation id="2505327257735685095">Оновити поточний фоновий малюнок</translation>
 <translation id="2513396635448525189">Зображення облікового запису</translation>
 <translation id="2517472476991765520">Сканувати</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Слайд-шоу</translation>
 <translation id="4297501883039923494">Зупинено – невідома помилка</translation>
 <translation id="4300073214558989">Зображень: <ph name="IMAGE_COUNT" /></translation>
+<translation id="4311195029067684288">Повністю</translation>
 <translation id="4333390807948134856">Клавішу "<ph name="KEY_NAME" />" натиснено</translation>
 <translation id="435692326371619097">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею й Інтернетом. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Не виконано</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Акумулятор зарядився на <ph name="RATE" /> за <ph name="NUM_SECONDS" /> с.</translation>
 <translation id="4930320165497208503">Щоб налаштувати або оновити з’єднання, перейдіть у <ph name="BEGIN_LINK" />Налаштування<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Дата</translation>
+<translation id="4937657825850660613">Половина</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" />: мікропрограму пристрою оновлено до версії <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Частково</translation>
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4985509611418653372">Виконати</translation>
 <translation id="4987769320337599931">Брандмауер</translation>
@@ -685,6 +689,7 @@
 <translation id="7415801143053185905">Дуже велика затримка HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканування завершено. Відскановано 1 сторінку}one{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінку}few{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}many{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінок}other{Сканування завершено. Відскановано {NUMBER_OF_PAGES} сторінки}}</translation>
+<translation id="7458970041932198923">Щоб переглядати й налаштовувати аватари, підключіться до мережі й оновіть сторінку.</translation>
 <translation id="7469648432129124067">Виявлено портал</translation>
 <translation id="7481312909269577407">Переслати</translation>
 <translation id="7487067081878637334">Технології</translation>
@@ -839,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканувати}=1{Сканувати сторінку ({NUMBER_OF_PAGES})}one{Сканувати сторінки ({NUMBER_OF_PAGES})}few{Сканувати сторінки ({NUMBER_OF_PAGES})}many{Сканувати сторінки ({NUMBER_OF_PAGES})}other{Сканувати сторінки ({NUMBER_OF_PAGES})}}</translation>
 <translation id="8997710128084572139">Рівень заряду акумулятора пристрою – <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998289560386111590">Недоступно на вашому пристрої</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9025198690966128418">Використовувати як особистий пристрій</translation>
 <translation id="9028832514430399253">Увімкніть перемикач, щоб вибрати варіанти заставки</translation>

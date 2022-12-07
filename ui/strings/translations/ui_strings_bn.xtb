@@ -53,7 +53,6 @@
 <translation id="2445449901874883781">উচ্চ রেজোলিউশন ব্যবহার করুন</translation>
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2497284189126895209">সব ফাইল</translation>
-<translation id="2498950423397131220">ফ্লোট</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">ক্রমাঙ্কন সম্পূর্ণ হয়েছে</translation>
 <translation id="252373100621549798">অজানা প্রদর্শন</translation>
@@ -104,7 +103,6 @@
 <translation id="4289300219472526559">কথা বলা শুরু করুন</translation>
 <translation id="4289540628985791613">ওভারভিউ</translation>
 <translation id="4306392492252714209">ক্লিপবোর্ড থেকে সরান।</translation>
-<translation id="4311195029067684288">পূর্ণ</translation>
 <translation id="4491109536499578614">ছবি</translation>
 <translation id="4565377596337484307">পাসওয়ার্ড লুকান</translation>
 <translation id="4588090240171750605">ডান দিকে স্ক্রল করুন</translation>
@@ -112,13 +110,10 @@
 <translation id="4746179598275229723">এক্সটেনশন আনপিন করা হয়েছে</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{১ মাস বাকি}one{# মাস বাকি}other{# মাস বাকি}}</translation>
 <translation id="4888938634149558681">কল করুন</translation>
-<translation id="4937657825850660613">হাফ</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{১ সেকেন্ড}one{# সেকেন্ড}other{# সেকেন্ড}}</translation>
 <translation id="4971687151119236543">মিডিয়া পূর্ববর্তী ট্র্যাক</translation>
-<translation id="4971925105143343452">আংশিক</translation>
 <translation id="5046499563572181734">এখানে আলতো চাপুন</translation>
 <translation id="5076340679995252485">&amp;পেস্ট করুন</translation>
-<translation id="5123162024343028706">'উপরে দেখা যাবে' বোতাম</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5278860589123563674">পাঠানো যায়নি</translation>
 <translation id="528468243742722775">শেষ</translation>

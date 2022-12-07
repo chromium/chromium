@@ -176,6 +176,7 @@
 <translation id="2491955442992294626">Η δοκιμή των πλήκτρων δεν πραγματοποιείται όταν χρησιμοποιείτε άλλο παράθυρο</translation>
 <translation id="2493126929778606526">Οι καλύτερες αυτόματα επιλεγμένες φωτογραφίες σας</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2498950423397131220">Κινούμενο</translation>
 <translation id="2505327257735685095">Ανανέωση της τρέχουσας εικόνας ταπετσαρίας</translation>
 <translation id="2513396635448525189">Εικόνα σύνδεσης</translation>
 <translation id="2517472476991765520">Σάρωση</translation>
@@ -341,6 +342,7 @@
 <translation id="4289849978083912975">Προβολή διαφανειών</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> εικόνες</translation>
+<translation id="4311195029067684288">Πλήρης</translation>
 <translation id="4333390807948134856">Το πλήκτρο <ph name="KEY_NAME" /> πατήθηκε</translation>
 <translation id="435692326371619097">Διαχείριση ρυθμίσεων APN δικτύου. Τα APN δημιουργούν μια σύνδεση μεταξύ ενός δικτύου κινητής τηλεφωνίας και του διαδικτύου. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="4378373042927530923">Δεν εκτελέστηκε</translation>
@@ -420,7 +422,9 @@
 <translation id="4921665434385737356">Φόρτιση κατά <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="4930320165497208503">Για να ρυθμίσετε ή να ενημερώσετε μια σύνδεση, μεταβείτε στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Ημερομηνία</translation>
+<translation id="4937657825850660613">Μισό</translation>
 <translation id="4950314376641394653">Το υλικολογισμικό της συσκευής <ph name="DEVICE_NAME" /> έχει ενημερωθεί στην έκδοση <ph name="VERSION" /></translation>
+<translation id="4971925105143343452">Μερική</translation>
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4985509611418653372">Εκτέλεση</translation>
 <translation id="4987769320337599931">Τείχος προστασίας</translation>
@@ -685,6 +689,7 @@
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Η σάρωση ολοκληρώθηκε. Σαρώθηκε 1 σελίδα.}other{Η σάρωση ολοκληρώθηκε. Σαρώθηκαν {NUMBER_OF_PAGES} σελίδες.}}</translation>
+<translation id="7458970041932198923">Συνδεθείτε σε ένα δίκτυο και επαναλάβετε τη φόρτωση της σελίδας για να δείτε και να ορίσετε avatar.</translation>
 <translation id="7469648432129124067">Εντοπίστηκε πύλη</translation>
 <translation id="7481312909269577407">Προώθηση</translation>
 <translation id="7487067081878637334">Τεχνολογία</translation>
@@ -839,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Σάρωση}=1{Σάρωση σελίδας {NUMBER_OF_PAGES}}other{Σάρωση σελίδας {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Η μπαταρία της συσκευής βρίσκεται στο <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998289560386111590">Δεν διατίθεται στη συσκευή σας</translation>
 <translation id="9003704114456258138">Συχνότητα</translation>
 <translation id="9025198690966128418">Χρήση ως προσωπική συσκευή</translation>
 <translation id="9028832514430399253">Ενεργοποιήστε την εναλλαγή για να ορίσετε τις επιλογές προφύλαξης οθόνης</translation>
