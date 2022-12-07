@@ -18,6 +18,14 @@ FederatedIdentityPermissionContextFactory::GetForProfile(
 }
 
 // static
+FederatedIdentityPermissionContext*
+FederatedIdentityPermissionContextFactory::GetForProfileIfExists(
+    content::BrowserContext* profile) {
+  return static_cast<FederatedIdentityPermissionContext*>(
+      GetInstance()->GetServiceForBrowserContext(profile, false));
+}
+
+// static
 FederatedIdentityPermissionContextFactory*
 FederatedIdentityPermissionContextFactory::GetInstance() {
   static base::NoDestructor<FederatedIdentityPermissionContextFactory> instance;
@@ -43,6 +51,8 @@ FederatedIdentityPermissionContextFactory::BuildServiceInstanceFor(
 
 void FederatedIdentityPermissionContextFactory::BrowserContextShutdown(
     content::BrowserContext* context) {
-  GetForProfile(Profile::FromBrowserContext(context))
-      ->FlushScheduledSaveSettingsCalls();
+  auto* federated_identity_permission_context =
+      GetForProfileIfExists(Profile::FromBrowserContext(context));
+  if (federated_identity_permission_context)
+    federated_identity_permission_context->FlushScheduledSaveSettingsCalls();
 }

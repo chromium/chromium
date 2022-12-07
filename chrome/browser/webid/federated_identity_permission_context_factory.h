@@ -17,6 +17,8 @@ class FederatedIdentityPermissionContextFactory
  public:
   static FederatedIdentityPermissionContext* GetForProfile(
       content::BrowserContext* profile);
+  static FederatedIdentityPermissionContext* GetForProfileIfExists(
+      content::BrowserContext* profile);
   static FederatedIdentityPermissionContextFactory* GetInstance();
 
  private:
