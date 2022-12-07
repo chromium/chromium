@@ -620,7 +620,7 @@ try_.builder(
     branch_selector = branches.STANDARD_MILESTONE,
     cores = "8|16",
     mirrors = [
-        "ci/Android arm64 Builder (dbg)",
+        "ci/Android arm64 Builder All Targets (dbg)",
     ],
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,

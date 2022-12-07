@@ -85,10 +85,6 @@
         {
           "builder": "android_arm64_dbg_recipe",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_compile_dbg",
-          "group": "tryserver.chromium.android"
         }
       ]
     }

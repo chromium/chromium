@@ -319,10 +319,6 @@
           "group": "tryserver.chromium.android"
         },
         {
-          "builder": "android_compile_dbg",
-          "group": "tryserver.chromium.android"
-        },
-        {
           "builder": "android_unswarmed_pixel_aosp",
           "group": "tryserver.chromium.android"
         },
