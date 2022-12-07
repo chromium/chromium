@@ -82,6 +82,9 @@ bool RawDrawImageBackingFactory::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
+  if (format.is_multi_plane()) {
+    return false;
+  }
   if (!CanUseRawDrawImageBacking(usage, gr_context_type)) {
     return false;
   }

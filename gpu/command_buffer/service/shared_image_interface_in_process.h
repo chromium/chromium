@@ -89,6 +89,14 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                             uint32_t usage,
                             base::span<const uint8_t> pixel_data) override;
 
+  Mailbox CreateSharedImage(viz::SharedImageFormat format,
+                            const gfx::Size& size,
+                            const gfx::ColorSpace& color_space,
+                            GrSurfaceOrigin surface_origin,
+                            SkAlphaType alpha_type,
+                            uint32_t usage,
+                            gfx::GpuMemoryBufferHandle buffer_handle) override;
+
   // |usage| is a combination of |SharedImageUsage| bits that describes which
   // API(s) the image will be used with. Format and size are derived from the
   // GpuMemoryBuffer. |gpu_memory_buffer_manager| is the manager that created

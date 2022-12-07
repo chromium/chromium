@@ -70,6 +70,14 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          uint32_t usage,
                          base::span<const uint8_t> pixel_data);
   bool CreateSharedImage(const Mailbox& mailbox,
+                         viz::SharedImageFormat si_format,
+                         const gfx::Size& size,
+                         const gfx::ColorSpace& color_space,
+                         GrSurfaceOrigin surface_origin,
+                         SkAlphaType alpha_type,
+                         uint32_t usage,
+                         gfx::GpuMemoryBufferHandle buffer_handle);
+  bool CreateSharedImage(const Mailbox& mailbox,
                          int client_id,
                          gfx::GpuMemoryBufferHandle handle,
                          gfx::BufferFormat format,

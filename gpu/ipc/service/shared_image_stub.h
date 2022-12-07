@@ -78,6 +78,8 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   void OnCreateSharedImage(mojom::CreateSharedImageParamsPtr params);
   void OnCreateSharedImageWithData(
       mojom::CreateSharedImageWithDataParamsPtr params);
+  void OnCreateSharedImageWithBuffer(
+      mojom::CreateSharedImageWithBufferParamsPtr params);
   void OnCreateGMBSharedImage(mojom::CreateGMBSharedImageParamsPtr params);
   void OnUpdateSharedImage(const Mailbox& mailbox,
                            uint32_t release_id,

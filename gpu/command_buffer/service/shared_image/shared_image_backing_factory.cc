@@ -11,6 +11,19 @@ SharedImageBackingFactory::SharedImageBackingFactory() = default;
 
 SharedImageBackingFactory::~SharedImageBackingFactory() = default;
 
+std::unique_ptr<SharedImageBacking>
+SharedImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gfx::GpuMemoryBufferHandle handle) {
+  return nullptr;
+}
+
 base::WeakPtr<SharedImageBackingFactory>
 SharedImageBackingFactory::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

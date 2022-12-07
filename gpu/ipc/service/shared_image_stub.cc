@@ -78,6 +78,11 @@ void SharedImageStub::ExecuteDeferredRequest(
           std::move(request->get_create_shared_image_with_data()));
       break;
 
+    case mojom::DeferredSharedImageRequest::Tag::kCreateSharedImageWithBuffer:
+      OnCreateSharedImageWithBuffer(
+          std::move(request->get_create_shared_image_with_buffer()));
+      break;
+
     case mojom::DeferredSharedImageRequest::Tag::kCreateGmbSharedImage:
       OnCreateGMBSharedImage(std::move(request->get_create_gmb_shared_image()));
       break;
@@ -253,6 +258,40 @@ void SharedImageStub::OnCreateSharedImageWithData(
   if (params->done_with_shm) {
     upload_memory_mapping_ = base::ReadOnlySharedMemoryMapping();
     upload_memory_ = base::ReadOnlySharedMemoryRegion();
+  }
+
+  sync_point_client_state_->ReleaseFenceSync(params->release_id);
+}
+
+void SharedImageStub::OnCreateSharedImageWithBuffer(
+    mojom::CreateSharedImageWithBufferParamsPtr params) {
+  TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImageWithBuffer", "width",
+               params->size.width(), "height", params->size.height());
+
+  // TODO(kylechar): Add support for single-planar formats and remove this.
+  if (!params->format.is_multi_plane()) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format.";
+    OnError();
+    return;
+  }
+  if (!params->mailbox.IsSharedImage()) {
+    LOG(ERROR) << "SharedImageStub: Trying to create a SharedImage with a "
+                  "non-SharedImage mailbox.";
+    OnError();
+    return;
+  }
+
+  if (!MakeContextCurrent()) {
+    OnError();
+    return;
+  }
+  if (!factory_->CreateSharedImage(
+          params->mailbox, params->format, params->size, params->color_space,
+          params->surface_origin, params->alpha_type, params->usage,
+          std::move(params->buffer_handle))) {
+    LOG(ERROR) << "SharedImageStub: Unable to create shared image";
+    OnError();
+    return;
   }
 
   sync_point_client_state_->ReleaseFenceSync(params->release_id);

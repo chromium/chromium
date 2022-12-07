@@ -120,6 +120,11 @@ bool AngleVulkanImageBackingFactory::IsSupported(
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
+
+  if (format.is_multi_plane()) {
+    return false;
+  }
+
   if (!CanUseAngleVulkanImageBacking(usage))
     return false;
 

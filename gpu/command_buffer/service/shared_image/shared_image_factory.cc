@@ -360,6 +360,51 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   return RegisterBacking(std::move(backing));
 }
 
+bool SharedImageFactory::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gfx::GpuMemoryBufferHandle buffer_handle) {
+  // Only use this for new multi-planar path for now. All legacy multi-planar
+  // and single planar GMBs can go through CreateSharedImage() that takes
+  // BufferPlane parameter.
+  DCHECK(format.is_multi_plane());
+
+  gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
+
+  SharedImageBackingFactory* factory = nullptr;
+  if (backing_factory_for_testing_) {
+    factory = backing_factory_for_testing_;
+  } else {
+    factory = GetFactoryByUsage(usage, format, size, {}, gmb_type);
+  }
+
+  if (!factory) {
+    LogGetFactoryFailed(usage, format, gmb_type);
+    return false;
+  }
+
+  // TODO(kylechar): Might need to get `client_id` from caller and pass it along
+  // for mac.
+  auto backing = factory->CreateSharedImage(mailbox, format, size, color_space,
+                                            surface_origin, alpha_type, usage,
+                                            std::move(buffer_handle));
+  if (backing) {
+    DVLOG(1) << "CreateSharedImageWithBuffer[" << backing->GetName()
+             << "] size=" << size.ToString()
+             << " usage=" << CreateLabelForSharedImageUsage(usage)
+             << " format=" << format.ToString()
+             << " gmb_type=" << GmbTypeToString(gmb_type);
+
+    backing->OnWriteSucceeded();
+  }
+  return RegisterBacking(std::move(backing));
+}
+
 bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            int client_id,
                                            gfx::GpuMemoryBufferHandle handle,

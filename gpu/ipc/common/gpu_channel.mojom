@@ -464,6 +464,9 @@ union DeferredSharedImageRequest {
   // See CreateSharedImageWithDataParams.
   CreateSharedImageWithDataParams create_shared_image_with_data;
 
+  // See CreateSharedImageWithBufferParams.
+  CreateSharedImageWithBufferParams create_shared_image_with_buffer;
+
   // See CreateGMBSharedImageParams.
   CreateGMBSharedImageParams create_gmb_shared_image;
 
@@ -593,6 +596,38 @@ struct CreateSharedImageWithDataParams {
   // If `true`, this is the last usage of the current image upload shared memory
   // region, so the region can be discarded after servicing this request.
   bool done_with_shm;
+
+  // Which corner is considered the origin of the new image.
+  skia.mojom.SurfaceOrigin surface_origin;
+
+  // Indicates how the alpha component of each pixel is interpreted.
+  skia.mojom.AlphaType alpha_type;
+};
+
+// Creates a new shared image with an existing GPU memory buffer.
+// If format is multi-planar then `buffer_handle` contains all the planes.
+struct CreateSharedImageWithBufferParams {
+  // The mailbox used to identify the shared image.
+  Mailbox mailbox;
+
+  // A handle to the existing GPU memory buffer.
+  gfx.mojom.GpuMemoryBufferHandle buffer_handle;
+
+  // The pixel format of the image.
+  viz.mojom.SharedImageFormat format;
+
+  // Size in pixels.
+  gfx.mojom.Size size;
+
+  // Color space.
+  gfx.mojom.ColorSpace color_space;
+
+  // Usage flags corresponding to values defined in
+  // gpu/command_buffer/common/shared_image_usage.h.
+  uint32 usage;
+
+  // The fence to release once the image is created.
+  uint32 release_id;
 
   // Which corner is considered the origin of the new image.
   skia.mojom.SurfaceOrigin surface_origin;

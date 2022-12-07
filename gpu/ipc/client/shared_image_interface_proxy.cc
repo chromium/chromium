@@ -160,6 +160,45 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 }
 
 Mailbox SharedImageInterfaceProxy::CreateSharedImage(
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gfx::GpuMemoryBufferHandle buffer_handle) {
+  // IO surface needs sync token.
+  DCHECK_NE(buffer_handle.type, gfx::IO_SURFACE_BUFFER);
+
+  // TODO(kylechar): Verify buffer_handle works for size+format.
+
+  auto mailbox = Mailbox::GenerateForSharedImage();
+
+  auto params = mojom::CreateSharedImageWithBufferParams::New();
+  params->mailbox = mailbox;
+  params->buffer_handle = std::move(buffer_handle);
+  params->size = size;
+  params->format = format;
+  params->color_space = color_space;
+  params->usage = usage;
+  params->surface_origin = surface_origin;
+  params->alpha_type = alpha_type;
+
+  base::AutoLock lock(lock_);
+  params->release_id = ++next_release_id_;
+  // Note: we enqueue and send the IPC under the lock to guarantee
+  // monotonicity of the release ids as seen by the service.
+  last_flush_id_ = host_->EnqueueDeferredMessage(
+      mojom::DeferredRequestParams::NewSharedImageRequest(
+          mojom::DeferredSharedImageRequest::NewCreateSharedImageWithBuffer(
+              std::move(params))));
+  host_->EnsureFlush(last_flush_id_);
+
+  AddMailbox(mailbox, usage);
+  return mailbox;
+}
+
+Mailbox SharedImageInterfaceProxy::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gfx::BufferPlane plane,

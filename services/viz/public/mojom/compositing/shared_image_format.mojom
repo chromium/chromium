@@ -16,7 +16,8 @@ enum Subsampling { k420 };
 enum ChannelFormat { k8, k10, k16, k16F };
 
 // A struct for multiplanar format that is defined by the PlaneConfig,
-// Subsampling and ChannelFormat it holds.
+// Subsampling and ChannelFormat it holds. This corresponds to an inner struct
+// of viz::SharedImageFormat so it's not intended to be used external.
 struct MultiplanarFormat {
   PlaneConfig plane_config;
   Subsampling subsampling;

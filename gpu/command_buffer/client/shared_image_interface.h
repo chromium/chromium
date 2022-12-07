@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
@@ -17,6 +18,7 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 #if !BUILDFLAG(IS_NACL)
 #include "ui/gfx/native_pixmap.h"
@@ -31,7 +33,6 @@
 namespace gfx {
 class ColorSpace;
 class GpuFence;
-class GpuMemoryBuffer;
 class Size;
 }  // namespace gfx
 
@@ -77,6 +78,26 @@ class GPU_EXPORT SharedImageInterface {
                                     SkAlphaType alpha_type,
                                     uint32_t usage,
                                     base::span<const uint8_t> pixel_data) = 0;
+
+  // Creates a shared image out an existing buffer. The buffer described by
+  // `buffer_handle` must hold all planes based `format` and `size. `usage` is a
+  // combination of |SharedImageUsage| bits that describes which API(s) the
+  // image will be used with.
+  //
+  // SharedImageInterface keeps ownership of the image until
+  // `DestroySharedImage()` is called or the interface itself is destroyed (e.g.
+  // the GPU channel is lost).
+  //
+  // NOTE: `format` must be a multi-planar format. This is temporary until
+  // support is added for single-planar formats here.
+  virtual Mailbox CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gfx::GpuMemoryBufferHandle buffer_handle) = 0;
 
   // Creates a shared image out of a GpuMemoryBuffer, using |color_space|.
   // |usage| is a combination of |SharedImageUsage| bits that describes which
