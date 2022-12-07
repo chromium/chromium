@@ -304,7 +304,12 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
            font_description.IsSyntheticItalic()) &&
               font_description.GetFontSynthesisStyle() ==
                   FontDescription::kAutoFontSynthesisStyle,
-          font_description.TextRendering(), font_description.Orientation());
+          font_description.TextRendering(),
+          font_description.GetFontVariantAlternates()
+              ? font_description.GetFontVariantAlternates()
+                    ->GetResolvedFontFeatures()
+              : ResolvedFontFeatures(),
+          font_description.Orientation());
 
   font_platform_data->SetAvoidEmbeddedBitmaps(
       BitmapGlyphsBlockList::ShouldAvoidEmbeddedBitmapsForTypeface(*typeface));

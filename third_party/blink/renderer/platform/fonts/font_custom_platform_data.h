@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/variable_axes_names.h"
+#include "third_party/blink/renderer/platform/fonts/resolved_font_features.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -76,6 +77,7 @@ class PLATFORM_EXPORT FontCustomPlatformData
       const FontSelectionCapabilities&,
       const OpticalSizing& optical_sizing,
       TextRenderingMode text_rendering,
+      const ResolvedFontFeatures& resolved_font_features,
       FontOrientation = FontOrientation::kHorizontal,
       const FontVariationSettings* = nullptr,
       const FontPalette* = nullptr);

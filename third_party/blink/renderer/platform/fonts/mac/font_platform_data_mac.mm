@@ -168,6 +168,7 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
     bool synthetic_bold,
     bool synthetic_italic,
     TextRenderingMode text_rendering,
+    ResolvedFontFeatures resolved_font_features,
     FontOrientation orientation,
     OpticalSizing optical_sizing,
     FontVariationSettings* variation_settings) {
@@ -184,10 +185,11 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
 
   auto make_typeface_fontplatformdata = [&typeface, &size, &synthetic_bold,
                                          &synthetic_italic, &text_rendering,
+                                         resolved_font_features,
                                          &orientation]() {
     return std::make_unique<FontPlatformData>(
         std::move(typeface), std::string(), size, synthetic_bold,
-        synthetic_italic, text_rendering, orientation);
+        synthetic_italic, text_rendering, resolved_font_features, orientation);
   };
 
   wtf_size_t valid_configured_axes =

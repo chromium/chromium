@@ -122,7 +122,8 @@ TEST_F(FontPlatformDataTest, GeometricPrecision) {
   const auto create_font_platform_data = [&]() {
     return FontPlatformData(typeface, name,
                             /* text_size */ 10, /* synthetic_bold */ false,
-                            /* synthetic_italic */ false, kGeometricPrecision);
+                            /* synthetic_italic */ false, kGeometricPrecision,
+                            {});
   };
 
   FontCache::SetDeviceScaleFactor(1.0f);

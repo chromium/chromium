@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_MAC_FONT_PLATFORM_DATA_MAC_H_
 
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
+#include "third_party/blink/renderer/platform/fonts/resolved_font_features.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -65,6 +66,7 @@ std::unique_ptr<FontPlatformData> FontPlatformDataFromNSFont(
     bool synthetic_bold,
     bool synthetic_italic,
     TextRenderingMode text_rendering,
+    ResolvedFontFeatures resolved_font_features,
     FontOrientation,
     OpticalSizing,
     FontVariationSettings*);

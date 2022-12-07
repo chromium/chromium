@@ -487,6 +487,11 @@ void RuleSet::AddFontPaletteValuesRule(StyleRuleFontPaletteValues* rule) {
   font_palette_values_rules_.push_back(rule);
 }
 
+void RuleSet::AddFontFeatureValuesRule(StyleRuleFontFeatureValues* rule) {
+  need_compaction_ = true;
+  font_feature_values_rules_.push_back(rule);
+}
+
 void RuleSet::AddPositionFallbackRule(StyleRulePositionFallback* rule) {
   need_compaction_ = true;
   position_fallback_rules_.push_back(rule);
@@ -520,6 +525,11 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
       // TODO(https://crbug.com/1170794): Handle cascade layers for
       // @font-palette-values.
       AddFontPaletteValuesRule(font_palette_values_rule);
+    } else if (auto* font_feature_values_rule =
+                   DynamicTo<StyleRuleFontFeatureValues>(rule)) {
+      // TODO(crbug.com/1394327): Handle cascade layers for
+      // @font-feature-values.
+      AddFontFeatureValuesRule(font_feature_values_rule);
     } else if (auto* keyframes_rule = DynamicTo<StyleRuleKeyframes>(rule)) {
       keyframes_rule->SetCascadeLayer(cascade_layer);
       AddKeyframesRule(keyframes_rule);
@@ -962,6 +972,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(page_rules_);
   visitor->Trace(font_face_rules_);
   visitor->Trace(font_palette_values_rules_);
+  visitor->Trace(font_feature_values_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);

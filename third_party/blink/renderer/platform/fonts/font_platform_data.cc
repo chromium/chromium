@@ -81,7 +81,8 @@ FontPlatformData::FontPlatformData(const FontPlatformData& source)
       synthetic_italic_(source.synthetic_italic_),
       avoid_embedded_bitmaps_(source.avoid_embedded_bitmaps_),
       text_rendering_(source.text_rendering_),
-      orientation_(source.orientation_)
+      orientation_(source.orientation_),
+      resolved_font_features_(source.resolved_font_features_)
 #if !BUILDFLAG(IS_MAC)
       ,
       style_(source.style_)
@@ -100,6 +101,7 @@ FontPlatformData::FontPlatformData(const FontPlatformData& src, float text_size)
                        src.synthetic_bold_,
                        src.synthetic_italic_,
                        src.text_rendering_,
+                       src.resolved_font_features_,
                        src.orientation_) {
 }
 
@@ -109,6 +111,7 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
                                    bool synthetic_bold,
                                    bool synthetic_italic,
                                    TextRenderingMode text_rendering,
+                                   ResolvedFontFeatures resolved_font_features,
                                    FontOrientation orientation)
     : typeface_(typeface),
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
@@ -118,7 +121,8 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
       synthetic_bold_(synthetic_bold),
       synthetic_italic_(synthetic_italic),
       text_rendering_(text_rendering),
-      orientation_(orientation) {
+      orientation_(orientation),
+      resolved_font_features_(std::move(resolved_font_features)) {
 #if !BUILDFLAG(IS_MAC)
   style_ = WebFontRenderStyle::GetDefault();
 #if !BUILDFLAG(IS_WIN)
@@ -175,6 +179,7 @@ bool FontPlatformData::operator==(const FontPlatformData& a) const {
          synthetic_italic_ == a.synthetic_italic_ &&
          avoid_embedded_bitmaps_ == a.avoid_embedded_bitmaps_ &&
          text_rendering_ == a.text_rendering_ &&
+         resolved_font_features_ == a.resolved_font_features_ &&
 #if !BUILDFLAG(IS_MAC)
          style_ == a.style_ &&
 #endif

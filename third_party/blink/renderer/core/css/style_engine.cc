@@ -2092,6 +2092,7 @@ enum RuleSetFlags {
   kLayerRules = 1 << 5,
   kFontPaletteValuesRules = 1 << 6,
   kPositionFallbackRules = 1 << 7,
+  kFontFeatureValuesRules = 1 << 8
 };
 
 const unsigned kRuleSetFlagsAll = ~0u;
@@ -2106,6 +2107,8 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
       flags |= kFontFaceRules;
     if (!rule_set->FontPaletteValuesRules().empty())
       flags |= kFontPaletteValuesRules;
+    if (!rule_set->FontFeatureValuesRules().empty())
+      flags |= kFontFeatureValuesRules;
     if (rule_set->NeedsFullRecalcForRuleSetInvalidation())
       flags |= kFullRecalcRules;
     if (!rule_set->PropertyRules().empty())
@@ -2291,7 +2294,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
     MarkCounterStylesNeedUpdate();
   }
 
-  if (changed_rule_flags & (kPropertyRules | kFontPaletteValuesRules)) {
+  if (changed_rule_flags &
+      (kPropertyRules | kFontPaletteValuesRules | kFontFeatureValuesRules)) {
     if (changed_rule_flags & kPropertyRules) {
       ClearPropertyRules();
       AtRuleCascadeMap cascade_map(GetDocument());
@@ -2302,6 +2306,12 @@ void StyleEngine::ApplyUserRuleSetChanges(
     if (changed_rule_flags & kFontPaletteValuesRules) {
       font_palette_values_rule_map_.clear();
       AddFontPaletteValuesRulesFromSheets(new_style_sheets);
+      MarkFontsNeedUpdate();
+    }
+
+    if (changed_rule_flags & kFontFeatureValuesRules) {
+      font_feature_values_rule_map_.clear();
+      AddFontFeatureValuesRulesFromSheets(new_style_sheets);
       MarkFontsNeedUpdate();
     }
 
@@ -2424,6 +2434,17 @@ void StyleEngine::ApplyRuleSetChanges(
     }
   }
 
+  if ((changed_rule_flags & kFontFeatureValuesRules) ||
+      rebuild_at_font_palette_values_map) {
+    // TODO(https://crbug.com/1382722): Support @font-feature-values in shadow
+    // trees and support scoping correctly.
+    if (tree_scope.RootNode().IsDocumentNode()) {
+      font_feature_values_rule_map_.clear();
+      AddFontFeatureValuesRulesFromSheets(active_user_style_sheets_);
+      AddFontFeatureValuesRulesFromSheets(new_style_sheets);
+    }
+  }
+
   if (tree_scope.RootNode().IsDocumentNode()) {
     bool has_rebuilt_font_face_cache = false;
     if (rebuild_font_face_cache) {
@@ -2432,6 +2453,7 @@ void StyleEngine::ApplyRuleSetChanges(
     }
     if ((changed_rule_flags & kFontFaceRules) ||
         (changed_rule_flags & kFontPaletteValuesRules) ||
+        (changed_rule_flags & kFontFeatureValuesRules) ||
         has_rebuilt_font_face_cache) {
       GetFontSelector()->FontFaceInvalidated(
           FontInvalidationReason::kGeneralInvalidation);
@@ -2614,6 +2636,14 @@ void StyleEngine::AddFontPaletteValuesRulesFromSheets(
   }
 }
 
+void StyleEngine::AddFontFeatureValuesRulesFromSheets(
+    const ActiveStyleSheetVector& sheets) {
+  for (const ActiveStyleSheet& active_sheet : sheets) {
+    if (RuleSet* rule_set = active_sheet.second)
+      AddFontFeatureValuesRules(*rule_set);
+  }
+}
+
 bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
   if (!font_selector_)
     return false;
@@ -2669,6 +2699,16 @@ void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
   }
 }
 
+void StyleEngine::AddFontFeatureValuesRules(const RuleSet& rule_set) {
+  const HeapVector<Member<StyleRuleFontFeatureValues>>
+      font_feature_values_rules = rule_set.FontFeatureValuesRules();
+  for (auto& rule : font_feature_values_rules) {
+    for (auto& font_family : rule->GetFamilies()) {
+      font_feature_values_rule_map_.Set(String(font_family).FoldCase(), rule);
+    }
+  }
+}
+
 void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
                                    const RuleSet& rule_set,
                                    bool is_user_style) {
@@ -2716,6 +2756,18 @@ StyleRuleFontPaletteValues* StyleEngine::FontPaletteValuesForNameAndFamily(
   auto it = font_palette_values_rule_map_.find(
       std::make_pair(palette_name, String(family_name).FoldCase()));
   if (it == font_palette_values_rule_map_.end())
+    return nullptr;
+
+  return it->value.Get();
+}
+
+StyleRuleFontFeatureValues* StyleEngine::FontFeatureValuesForFamily(
+    AtomicString font_family) {
+  if (font_feature_values_rule_map_.empty() || font_family.empty())
+    return nullptr;
+
+  auto it = font_feature_values_rule_map_.find(String(font_family).FoldCase());
+  if (it == font_feature_values_rule_map_.end())
     return nullptr;
 
   return it->value.Get();
@@ -3498,6 +3550,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(active_user_style_sheets_);
   visitor->Trace(keyframes_rule_map_);
   visitor->Trace(font_palette_values_rule_map_);
+  visitor->Trace(font_feature_values_rule_map_);
   visitor->Trace(user_counter_style_map_);
   visitor->Trace(user_cascade_layer_map_);
   visitor->Trace(inspector_style_sheet_);

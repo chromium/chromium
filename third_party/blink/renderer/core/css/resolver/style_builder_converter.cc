@@ -817,11 +817,11 @@ StyleBuilderConverter::ConvertFontVariantAlternates(StyleResolverState&,
   // identifier or a list of 1 or more elements if it's non normal.
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNormal);
-    return alternates;
+    return nullptr;
   }
 
   if (value.IsPendingSystemFontValue())
-    return alternates;
+    return nullptr;
 
   // If it's not the single normal identifier, it has to be a list.
   for (const CSSValue* alternate : To<CSSValueList>(value)) {
@@ -865,6 +865,10 @@ StyleBuilderConverter::ConvertFontVariantAlternates(StyleResolverState&,
       alternates->SetHistoricalForms();
     }
   }
+
+  if (alternates->IsNormal())
+    return nullptr;
+
   return alternates;
 }
 

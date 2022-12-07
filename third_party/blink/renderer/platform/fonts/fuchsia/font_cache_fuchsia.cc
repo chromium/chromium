@@ -69,7 +69,7 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   auto font_data = std::make_unique<FontPlatformData>(
       std::move(typeface), std::string(), font_description.EffectiveFontSize(),
       synthetic_bold, synthetic_italic, font_description.TextRendering(),
-      font_description.Orientation());
+      ResolvedFontFeatures(), font_description.Orientation());
 
   return FontDataFromFontPlatformData(font_data.get(), kDoNotRetain);
 }

@@ -37,6 +37,7 @@
 #include "third_party/blink/public/platform/web_font_render_style.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
+#include "third_party/blink/renderer/platform/fonts/resolved_font_features.h"
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -82,6 +83,7 @@ class PLATFORM_EXPORT FontPlatformData {
                    bool synthetic_bold,
                    bool synthetic_italic,
                    TextRenderingMode text_rendering,
+                   ResolvedFontFeatures resolved_font_features,
                    FontOrientation = FontOrientation::kHorizontal);
   ~FontPlatformData();
 
@@ -105,6 +107,9 @@ class PLATFORM_EXPORT FontPlatformData {
   unsigned GetHash() const;
 
   FontOrientation Orientation() const { return orientation_; }
+  const ResolvedFontFeatures& ResolvedFeatures() const {
+    return resolved_font_features_;
+  }
   bool IsVerticalAnyUpright() const {
     return blink::IsVerticalAnyUpright(orientation_);
   }
@@ -174,6 +179,7 @@ class PLATFORM_EXPORT FontPlatformData {
   bool avoid_embedded_bitmaps_ = false;
   TextRenderingMode text_rendering_ = TextRenderingMode::kAutoTextRendering;
   FontOrientation orientation_ = FontOrientation::kHorizontal;
+  ResolvedFontFeatures resolved_font_features_;
 
  private:
 #if !BUILDFLAG(IS_MAC)

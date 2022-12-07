@@ -18,10 +18,11 @@ class DummyFontFaceSource : public CSSFontFaceSource {
   scoped_refptr<SimpleFontData> CreateFontData(
       const FontDescription&,
       const FontSelectionCapabilities&) override {
-    return SimpleFontData::Create(FontPlatformData(
-        SkTypeface::MakeDefault(), /* name */ std::string(),
-        /* text_size */ 0, /* synthetic_bold */ false,
-        /* synthetic_italic */ false, TextRenderingMode::kAutoTextRendering));
+    return SimpleFontData::Create(
+        FontPlatformData(SkTypeface::MakeDefault(), /* name */ std::string(),
+                         /* text_size */ 0, /* synthetic_bold */ false,
+                         /* synthetic_italic */ false,
+                         TextRenderingMode::kAutoTextRendering, {}));
   }
 
   DummyFontFaceSource() = default;

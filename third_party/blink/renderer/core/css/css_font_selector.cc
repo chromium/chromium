@@ -124,6 +124,44 @@ scoped_refptr<FontData> CSSFontSelector::GetFontData(
     }
   }
 
+  if (request_description.GetFontVariantAlternates()) {
+    StyleRuleFontFeatureValues* font_feature_values =
+        document.GetStyleEngine().FontFeatureValuesForFamily(family_name);
+    scoped_refptr<FontVariantAlternates> new_alternates = nullptr;
+    if (font_feature_values) {
+      new_alternates = request_description.GetFontVariantAlternates()->Resolve(
+          [font_feature_values](AtomicString alias) {
+            return font_feature_values->ResolveStylistic(alias);
+          },
+          [font_feature_values](AtomicString alias) {
+            return font_feature_values->ResolveStyleset(alias);
+          },
+          [font_feature_values](AtomicString alias) {
+            return font_feature_values->ResolveCharacterVariant(alias);
+          },
+          [font_feature_values](AtomicString alias) {
+            return font_feature_values->ResolveSwash(alias);
+          },
+          [font_feature_values](AtomicString alias) {
+            return font_feature_values->ResolveOrnaments(alias);
+          },
+          [font_feature_values](AtomicString alias) {
+            return font_feature_values->ResolveAnnotation(alias);
+          });
+    } else {
+      // If no StyleRuleFontFeature alias table values for this font was found,
+      // it still needs a resolve call to convert historical-forms state (which
+      // is not looked-up against StyleRuleFontFeatureValues) to an internal
+      // feature.
+      auto no_lookup = [](AtomicString) -> Vector<uint32_t> { return {}; };
+      new_alternates = request_description.GetFontVariantAlternates()->Resolve(
+          no_lookup, no_lookup, no_lookup, no_lookup, no_lookup, no_lookup);
+    }
+
+    if (new_alternates)
+      request_description.SetFontVariantAlternates(new_alternates);
+  }
+
   if (!font_family.FamilyIsGeneric()) {
     if (CSSSegmentedFontFace* face =
             font_face_cache_->Get(request_description, family_name)) {
