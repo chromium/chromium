@@ -111,6 +111,26 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
 )
 
+try_.orchestrator_builder(
+    name = "android-arm64-rel-inverse-fyi",
+    mirrors = [
+        "ci/Android Release (Nexus 5X)",  # Nexus 5X on Nougat
+        "ci/android-pie-arm64-rel",  # Pixel 1, 2 on Pie
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    experiments = {
+        "chromium_rts.inverted_rts": 100,
+        "chromium_rts.inverted_rts_bail_early": 100,
+    },
+    compilator = "android-arm64-rel-compilator",
+    check_for_flakiness = True,
+    use_orchestrator_pool = True,
+)
+
 try_.compilator_builder(
     name = "android-arm64-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
@@ -411,56 +431,6 @@ try_.builder(
     tryjob = try_.job(
         experiment_percentage = 3,
     ),
-)
-
-# TODO(crbug.com/1367393): Remove after android-arm64-rel is fully enabled.
-try_.orchestrator_builder(
-    name = "android-pie-arm64-rel",
-    mirrors = [
-        "ci/android-pie-arm64-rel",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    compilator = "android-pie-arm64-rel-compilator",
-    check_for_flakiness = True,
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    #tryjob = try_.job(),
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
-)
-
-try_.orchestrator_builder(
-    name = "android-pie-arm64-rel-inverse-fyi",
-    mirrors = [
-        "ci/android-pie-arm64-rel",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    experiments = {
-        "chromium_rts.inverted_rts": 100,
-        "chromium_rts.inverted_rts_bail_early": 100,
-    },
-    compilator = "android-pie-arm64-rel-compilator",
-    check_for_flakiness = True,
-    use_orchestrator_pool = True,
-)
-
-try_.compilator_builder(
-    name = "android-pie-arm64-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    check_for_flakiness = True,
-    goma_backend = None,
-    main_list_view = "try",
-    # TODO (gatong): Remove once we've migrated to n2s
-    cores = "16|32",
 )
 
 try_.builder(

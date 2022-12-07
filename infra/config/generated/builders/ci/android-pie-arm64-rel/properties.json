@@ -49,11 +49,7 @@
           "group": "tryserver.chromium.android"
         },
         {
-          "builder": "android-pie-arm64-rel",
-          "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android-pie-arm64-rel-inverse-fyi",
+          "builder": "android-arm64-rel-inverse-fyi",
           "group": "tryserver.chromium.android"
         }
       ]

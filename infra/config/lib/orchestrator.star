@@ -36,7 +36,7 @@ _COMPILATOR = nodes.create_node_type_with_builder_ref("compilator")
 # compilator.
 _EXPERIMENTAL_ORCHESTRATOR_NAMES_BY_COMPILATOR_NAME = {
     "try/android-nougat-x86-rel-compilator": ["try/android-nougat-x86-rel-inverse-fyi"],
-    "try/android-pie-arm64-rel-compilator": ["try/android-pie-arm64-rel-inverse-fyi"],
+    "try/android-arm64-rel-compilator": ["try/android-arm64-rel-inverse-fyi"],
     "try/linux_chromium_asan_rel_ng-compilator": ["try/linux_chromium_asan_rel_ng-inverse-fyi"],
     "try/linux_chromium_tsan_rel_ng-compilator": ["try/linux_chromium_tsan_rel_ng-inverse-fyi"],
     "try/linux-rel-compilator": ["try/linux-rel-inverse-fyi"],
@@ -140,7 +140,7 @@ def _get_compilator(bucket_name, builder):
     ]
 
     if len(orchestrator_nodes) != 1:
-        fail("compilator should have exactly 1 referring orchestrator, got: {}".format(
+        fail("compilator should have exactly 1 referring orchestrator, got: {}, {}".format(
             _builder_name(node),
             [_builder_name(n) for n in orchestrator_nodes],
         ))

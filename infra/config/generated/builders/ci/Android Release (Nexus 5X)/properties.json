@@ -49,6 +49,10 @@
           "group": "tryserver.chromium.android"
         },
         {
+          "builder": "android-arm64-rel-inverse-fyi",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "gpu-try-android-m-nexus-5x-64",
           "group": "tryserver.chromium.android"
         }
