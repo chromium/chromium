@@ -1,0 +1,68 @@
+This is a testharness.js-based test.
+Found 64 tests; 62 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS SVGAltGlyphElement interface must be removed
+PASS SVGAltGlyphDefElement interface must be removed
+PASS SVGAltGlyphItemElement interface must be removed
+PASS SVGAnimatedPathData interface must be removed
+PASS SVGColor interface must be removed
+PASS SVGColorProfileElement interface must be removed
+PASS SVGColorProfileRule interface must be removed
+PASS SVGCursorElement interface must be removed
+PASS SVGDocument interface must be removed
+PASS SVGElementInstanceList interface must be removed
+PASS SVGExternalResourcesRequired interface must be removed
+PASS SVGFontElement interface must be removed
+PASS SVGFontFaceElement interface must be removed
+PASS SVGFontFaceSrcElement interface must be removed
+PASS SVGFontFaceUriElement interface must be removed
+PASS SVGFontFaceFormatElement interface must be removed
+PASS SVGGlyphElement interface must be removed
+PASS SVGGlyphRefElement interface must be removed
+PASS SVGHKernElement interface must be removed
+PASS SVGICCColor interface must be removed
+PASS SVGLangSpace interface must be removed
+PASS SVGLocatable interface must be removed
+PASS SVGMissingGlyphElement interface must be removed
+PASS SVGTransformable interface must be removed
+PASS SVGTRefElement interface must be removed
+PASS SVGPaint interface must be removed
+PASS SVGPathSeg interface must be removed
+PASS SVGStylable interface must be removed
+PASS SVGVKernElement interface must be removed
+PASS SVGViewSpec interface must be removed
+PASS SVGZoomEvent interface must be removed
+PASS GetSVGDocument mixin interface must not be exposed
+PASS SVGAnimatedPoints mixin interface must not be exposed
+PASS SVGElementInstance mixin interface must not be exposed
+PASS SVGFilterPrimitiveStandardAttributes mixin interface must not be exposed
+PASS SVGFitToViewBox mixin interface must not be exposed
+PASS SVGTests mixin interface must not be exposed
+PASS SVGURIReference mixin interface must not be exposed
+PASS SVGZoomAndPan mixin interface must not be exposed
+PASS SVGElement.prototype.getPresentationAttribute must be removed
+PASS SVGElement.prototype.xmlbase must be removed
+PASS SVGElement.prototype.xmllang must be removed
+PASS SVGElement.prototype.xmlspace must be removed
+FAIL SVGGraphicsElement.prototype.farthestViewportElement must be removed assert_false: expected false got true
+PASS SVGGraphicsElement.prototype.getTransformToElement must be removed
+PASS SVGGraphicsElement.prototype.hasExtension must be removed
+FAIL SVGGraphicsElement.prototype.nearestViewportElement must be removed assert_false: expected false got true
+PASS SVGGraphicsElement.prototype.requiredFeatures must be removed
+PASS SVGSVGElement.prototype.currentView must be removed
+PASS SVGSVGElement.prototype.pixelUnitToMillimeterX must be removed
+PASS SVGSVGElement.prototype.pixelUnitToMillimeterY must be removed
+PASS SVGSVGElement.prototype.screenPixelToMillimeterX must be removed
+PASS SVGSVGElement.prototype.screenPixelToMillimeterY must be removed
+PASS SVGSVGElement.prototype.useCurrentView must be removed
+PASS SVGSVGElement.prototype.viewport must be removed
+PASS SVGViewElement.prototype.viewTarget must be removed
+PASS SVGPathElement.prototype.getPointAtLength must be moved to SVGGeometryElement.prototype
+PASS SVGPathElement.prototype.getTotalLength must be moved to SVGGeometryElement.prototype
+PASS SVGPathElement.prototype.pathLength must be moved to SVGGeometryElement.prototype
+PASS SVGClipPathElement must not implement SVGUnitTypes
+PASS SVGFilterElement must not implement SVGUnitTypes
+PASS SVGGradientElement must not implement SVGUnitTypes
+PASS SVGMaskElement must not implement SVGUnitTypes
+PASS SVGPatternElement must not implement SVGUnitTypes
+Harness: the test ran to completion.
+

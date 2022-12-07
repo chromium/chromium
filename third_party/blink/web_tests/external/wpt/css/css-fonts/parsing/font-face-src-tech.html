@@ -53,9 +53,10 @@
     { src: 'url("foo.ttf") dummy("opentype") tech(variations)', valid: false },
     { src: 'url("foo.ttf") dummy("opentype") dummy(variations)', valid: false },
     { src: 'url("foo.ttf") format(opentype) tech(features-opentype) dummy(something)', valid: false },
-    // Valid value after unparseable value must be ignored.
-    { src: 'url("foo.ttf") format(dummy), url("foo.ttf") tech(variations)', valid: false },
-    { src: 'url("foo.ttf") tech(color, url("bar.html")', valid: false },
+    // A parsing error in one component does not make the entire descriptor invalid.
+    { src: 'url("foo.ttf") format(dummy), url("foo.ttf") tech(variations)', valid: true },
+    // check_same_tech isn't currently smart enough to handle this.
+    { src: 'url("foo.ttf") tech(color), url("bar.html")', dontcomparetech: true, valid: true },
   ];
 
   // Assert that the two arguments have the same set of keywords in the tech() function,
