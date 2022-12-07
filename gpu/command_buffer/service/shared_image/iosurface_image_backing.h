@@ -191,19 +191,20 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
     : public SharedImageBacking,
       public IOSurfaceBackingEGLState::Client {
  public:
-  IOSurfaceImageBacking(
-      gfx::ScopedIOSurface io_surface,
-      uint32_t io_surface_plane,
-      gfx::BufferFormat io_surface_format,
-      gfx::GenericSharedMemoryId io_surface_id,
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      uint32_t usage,
-      const GLTextureImageBackingHelper::InitializeGLTextureParams& params);
+  IOSurfaceImageBacking(gfx::ScopedIOSurface io_surface,
+                        uint32_t io_surface_plane,
+                        gfx::BufferFormat io_surface_format,
+                        gfx::GenericSharedMemoryId io_surface_id,
+                        const Mailbox& mailbox,
+                        viz::SharedImageFormat format,
+                        const gfx::Size& size,
+                        const gfx::ColorSpace& color_space,
+                        GrSurfaceOrigin surface_origin,
+                        SkAlphaType alpha_type,
+                        uint32_t usage,
+                        GLenum gl_target,
+                        bool framebuffer_attachment_angle,
+                        bool is_cleared);
   IOSurfaceImageBacking(const IOSurfaceImageBacking& other) = delete;
   IOSurfaceImageBacking& operator=(const IOSurfaceImageBacking& other) = delete;
   ~IOSurfaceImageBacking() override;
@@ -264,6 +265,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   const gfx::BufferFormat io_surface_format_;
   const gfx::GenericSharedMemoryId io_surface_id_;
 
+  const GLenum gl_target_;
+  const bool framebuffer_attachment_angle_;
+
   // Used to determine whether to release the texture in EndAccess() in use
   // cases that need to ensure IOSurface synchronization.
   uint num_ongoing_read_accesses_ = 0;
@@ -273,8 +277,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   scoped_refptr<IOSurfaceBackingEGLState> RetainGLTexture();
   void ReleaseGLTexture(IOSurfaceBackingEGLState* egl_state, bool have_context);
-
-  const GLTextureImageBackingHelper::InitializeGLTextureParams gl_params_;
 
   // This is the cleared rect used by ClearedRect and SetClearedRect when
   // |texture_| is nullptr.

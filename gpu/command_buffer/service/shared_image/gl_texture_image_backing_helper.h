@@ -72,17 +72,6 @@ class ScopedUnpackState {
 // Common helper functions for GLTextureImageBacking and GLImageBacking.
 class GPU_GLES2_EXPORT GLTextureImageBackingHelper {
  public:
-  // These parameters are used to explicitly initialize a GL texture.
-  struct InitializeGLTextureParams {
-    GLenum target = 0;
-    GLenum internal_format = 0;
-    GLenum format = 0;
-    GLenum type = 0;
-    bool is_cleared = false;
-    bool framebuffer_attachment_angle = false;
-    bool has_immutable_storage = false;
-  };
-
   // At destriction time, restore `target`'s binding as of construction time. If
   // `new_binding` is non-zero, then bind `target` to it at construction time.
   // TODO(crbug.com/1367187): Fold into gl::ScopedRestoreTexture.

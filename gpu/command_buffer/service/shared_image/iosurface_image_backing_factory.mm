@@ -44,10 +44,6 @@
 namespace gpu {
 
 namespace {
-
-using InitializeGLTextureParams =
-    GLTextureImageBackingHelper::InitializeGLTextureParams;
-
 base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
     id<MTLDevice> mtl_device,
     IOSurfaceRef io_surface,
@@ -485,13 +481,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
       (usage & (SHARED_IMAGE_USAGE_RASTER |
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
 
-  InitializeGLTextureParams params;
-  params.target = target;
-  params.internal_format = image->GetInternalFormat();
-  params.format = image->GetDataFormat();
-  params.type = image->GetDataType();
-  params.is_cleared = true;
-  params.framebuffer_attachment_angle =
+  const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
   auto si_format = viz::SharedImageFormat::SinglePlane(plane_format);
@@ -500,7 +490,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
       image_io_surface->io_surface(), image_io_surface->io_surface_plane(),
       image_io_surface->format(), image_io_surface->io_surface_id(), mailbox,
       si_format, plane_size, color_space, surface_origin, alpha_type, usage,
-      params);
+      target, framebuffer_attachment_angle, /*is_cleared=*/true);
 }
 
 scoped_refptr<gl::GLImage> IOSurfaceImageBackingFactory::MakeGLImage(
@@ -620,22 +610,16 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
       IOSurfaceSetColorSpace(io_surface, color_space);
   }
 
-  InitializeGLTextureParams params;
-  params.target = target;
-  params.internal_format =
-      gl::BufferFormatToGLInternalFormat(io_surface_format);
-  params.format = format_info.gl_format;
-  params.type = format_info.gl_type;
-  params.is_cleared = !pixel_data.empty();
-  params.has_immutable_storage = false;
-  params.framebuffer_attachment_angle =
+  const bool is_cleared = !pixel_data.empty();
+  const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
   DCHECK(!format_info.swizzle);
   DCHECK(use_passthrough_);
   auto result = std::make_unique<IOSurfaceImageBacking>(
       io_surface, io_surface_plane, io_surface_format, io_surface_id, mailbox,
-      format, size, color_space, surface_origin, alpha_type, usage, params);
+      format, size, color_space, surface_origin, alpha_type, usage, target,
+      framebuffer_attachment_angle, is_cleared);
   if (!pixel_data.empty()) {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
     result->InitializePixels(format_info.adjusted_format, format_info.gl_type,

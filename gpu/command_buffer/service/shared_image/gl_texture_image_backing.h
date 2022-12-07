@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_GL_TEXTURE_IMAGE_BACKING_H_
 
-#include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
+#include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 
 namespace gl {
@@ -34,8 +34,9 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
   ~GLTextureImageBacking() override;
 
   void InitializeGLTexture(
-      GLuint service_id,
-      const GLTextureImageBackingHelper::InitializeGLTextureParams& params);
+      const GLCommonImageBackingFactory::FormatInfo& format_info,
+      bool is_cleared,
+      bool framebuffer_attachment_angle);
   void SetCompatibilitySwizzle(
       const gles2::Texture::CompatibilitySwizzle* swizzle);
 

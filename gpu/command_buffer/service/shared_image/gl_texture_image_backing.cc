@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_repack_utils.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_common_representations.h"
+#include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
@@ -445,28 +446,33 @@ std::unique_ptr<SkiaImageRepresentation> GLTextureImageBacking::ProduceSkia(
 }
 
 void GLTextureImageBacking::InitializeGLTexture(
-    GLuint service_id,
-    const GLTextureImageBackingHelper::InitializeGLTextureParams& params) {
+    const GLCommonImageBackingFactory::FormatInfo& format_info,
+    bool is_cleared,
+    bool framebuffer_attachment_angle) {
+  format_desc_.target = GL_TEXTURE_2D;
+  format_desc_.data_format = format_info.gl_format;
+  format_desc_.data_type = format_info.gl_type;
+  format_desc_.image_internal_format = format_info.image_internal_format;
+  format_desc_.storage_internal_format = format_info.storage_internal_format;
+
   GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-      params.target, service_id, params.framebuffer_attachment_angle,
+      format_desc_.target, /*service_id=*/0, framebuffer_attachment_angle,
       IsPassthrough() ? &passthrough_texture_ : nullptr,
       IsPassthrough() ? nullptr : &texture_);
 
-  format_desc_.data_format = params.format;
-  format_desc_.data_type = params.type;
-  format_desc_.target = params.target;
-  format_desc_.image_internal_format = params.internal_format;
-
   if (IsPassthrough()) {
-    passthrough_texture_->SetEstimatedSize(
-        viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
-    SetClearedRect(params.is_cleared ? gfx::Rect(size()) : gfx::Rect());
+    passthrough_texture_->SetEstimatedSize(GetEstimatedSize());
+    SetClearedRect(is_cleared ? gfx::Rect(size()) : gfx::Rect());
   } else {
-    texture_->SetLevelInfo(params.target, 0, params.internal_format,
-                           size().width(), size().height(), 1, 0, params.format,
-                           params.type,
-                           params.is_cleared ? gfx::Rect(size()) : gfx::Rect());
-    texture_->SetImmutable(true, params.has_immutable_storage);
+    // TODO(piman): We pretend the texture was created in an ES2 context, so
+    // that it can be used in other ES2 contexts, and so we have to pass
+    // gl_format as the internal format in the LevelInfo.
+    // https://crbug.com/628064
+    texture_->SetLevelInfo(format_desc_.target, 0, format_desc_.data_format,
+                           size().width(), size().height(), /*depth=*/1, 0,
+                           format_desc_.data_format, format_desc_.data_type,
+                           is_cleared ? gfx::Rect(size()) : gfx::Rect());
+    texture_->SetImmutable(true, format_info.supports_storage);
   }
 }
 

@@ -80,15 +80,6 @@ class GPU_GLES2_EXPORT GLTextureImageBackingFactory
                    GrContextType gr_context_type,
                    base::span<const uint8_t> pixel_data) override;
 
-  static std::unique_ptr<SharedImageBacking> CreateSharedImageForTest(
-      const Mailbox& mailbox,
-      GLenum target,
-      GLuint service_id,
-      bool is_cleared,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      uint32_t usage);
-
  private:
   std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(
       const Mailbox& mailbox,

@@ -34,9 +34,6 @@ namespace {
 
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
-using InitializeGLTextureParams =
-    GLTextureImageBackingHelper::InitializeGLTextureParams;
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -330,7 +327,9 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    const InitializeGLTextureParams& params)
+    GLenum gl_target,
+    bool framebuffer_attachment_angle,
+    bool is_cleared)
     : SharedImageBacking(
           mailbox,
           format,
@@ -345,8 +344,9 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
       io_surface_plane_(io_surface_plane),
       io_surface_format_(io_surface_format),
       io_surface_id_(io_surface_id),
-      gl_params_(params),
-      cleared_rect_(params.is_cleared ? gfx::Rect(size) : gfx::Rect()),
+      gl_target_(gl_target),
+      framebuffer_attachment_angle_(framebuffer_attachment_angle),
+      cleared_rect_(is_cleared ? gfx::Rect(size) : gfx::Rect()),
       weak_factory_(this) {
   DCHECK(io_surface_);
 
@@ -385,15 +385,15 @@ IOSurfaceImageBacking::RetainGLTexture() {
   // Allocate the GL texture.
   scoped_refptr<gles2::TexturePassthrough> gl_texture;
   GLTextureImageBackingHelper::MakeTextureAndSetParameters(
-      gl_params_.target, 0 /* service_id */,
-      gl_params_.framebuffer_attachment_angle, &gl_texture, nullptr);
+      gl_target_, /*service_id=*/0, framebuffer_attachment_angle_, &gl_texture,
+      nullptr);
 
   // Set the IOSurface to be initially unbound from the GL texture.
   gl_texture->SetEstimatedSize(
       viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
   gl_texture->set_bind_pending();
 
-  return new IOSurfaceBackingEGLState(this, egl_display, gl_params_.target,
+  return new IOSurfaceBackingEGLState(this, egl_display, gl_target_,
                                       gl_texture);
 }
 

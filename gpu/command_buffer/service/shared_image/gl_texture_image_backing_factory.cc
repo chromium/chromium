@@ -24,9 +24,6 @@ namespace {
 
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
-using InitializeGLTextureParams =
-    GLTextureImageBackingHelper::InitializeGLTextureParams;
-
 }  // anonymous namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -93,28 +90,6 @@ GLTextureImageBackingFactory::CreateSharedImage(
     uint32_t usage) {
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
-}
-
-std::unique_ptr<SharedImageBacking>
-GLTextureImageBackingFactory::CreateSharedImageForTest(
-    const Mailbox& mailbox,
-    GLenum target,
-    GLuint service_id,
-    bool is_cleared,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    uint32_t usage) {
-  auto result = std::make_unique<GLTextureImageBacking>(
-      mailbox, format, size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, usage, false /* is_passthrough */);
-  InitializeGLTextureParams params;
-  params.target = target;
-  params.internal_format = GLInternalFormat(format);
-  params.format = GLDataFormat(format);
-  params.type = GLDataType(format);
-  params.is_cleared = is_cleared;
-  result->InitializeGLTexture(service_id, params);
-  return std::move(result);
 }
 
 bool GLTextureImageBackingFactory::IsSupported(
@@ -193,27 +168,18 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   const FormatInfo& format_info = GetFormatInfo(format);
   GLenum target = GL_TEXTURE_2D;
 
+  const bool is_cleared = !pixel_data.empty();
   const bool for_framebuffer_attachment =
       (usage & (SHARED_IMAGE_USAGE_RASTER |
                 SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
-
-  InitializeGLTextureParams params;
-  params.target = target;
-  // TODO(piman): We pretend the texture was created in an ES2 context, so that
-  // it can be used in other ES2 contexts, and so we have to pass gl_format as
-  // the internal format in the LevelInfo. https://crbug.com/628064
-  params.internal_format = format_info.gl_format;
-  params.format = format_info.gl_format;
-  params.type = format_info.gl_type;
-  params.is_cleared = !pixel_data.empty();
-  params.has_immutable_storage = format_info.supports_storage;
-  params.framebuffer_attachment_angle =
+  const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
   auto result = std::make_unique<GLTextureImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       use_passthrough_);
-  result->InitializeGLTexture(0, params);
+  result->InitializeGLTexture(format_info, is_cleared,
+                              framebuffer_attachment_angle);
 
   gl::GLApi* api = gl::g_current_gl_context;
   ScopedRestoreTexture scoped_restore(api, target);
