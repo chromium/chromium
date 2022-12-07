@@ -25,6 +25,10 @@
       dark: '$cros.ref.primary80',
       generate_per_mode: true,
     },
+    'inverse-primary': {
+      light: '$cros.ref.primary80',
+      dark: '$cros.ref.primary40',
+    },
     'on-primary': {
       light: '$cros.ref.primary100',
       dark:  '$cros.ref.primary20',
@@ -261,6 +265,10 @@
       light: '$cros.ref.neutral10',
       dark: '$cros.ref.neutral90',
       generate_per_mode: true,
+    },
+    'inverse-on-surface': {
+      light: '$cros.ref.neutral95',
+      dark: '$cros.ref.neutral10',
     },
     'on-surface-bodytext': {
       light: '$cros.ref.neutral40',
