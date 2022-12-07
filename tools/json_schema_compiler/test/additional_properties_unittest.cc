@@ -15,15 +15,16 @@ namespace ap = test::api::additional_properties;
 TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     AdditionalPropertiesTypePopulate) {
   {
-    base::Value list_value(base::Value::Type::LIST);
+    base::Value::List list_value;
     list_value.Append("asdf");
     list_value.Append(4);
-    base::Value type_value(base::Value::Type::DICTIONARY);
-    type_value.SetStringPath("string", "value");
-    type_value.SetIntPath("other", 9);
-    type_value.SetKey("another", std::move(list_value));
+    base::Value::Dict type_value;
+    type_value.Set("string", "value");
+    type_value.Set("other", 9);
+    type_value.Set("another", std::move(list_value));
     auto type = std::make_unique<ap::AdditionalPropertiesType>();
-    ASSERT_TRUE(ap::AdditionalPropertiesType::Populate(type_value, type.get()));
+    ASSERT_TRUE(ap::AdditionalPropertiesType::Populate(
+        base::Value(type_value.Clone()), type.get()));
     EXPECT_EQ(type->additional_properties, type_value);
   }
   {
@@ -31,8 +32,8 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     type_dict.Set("string", 3);
     base::Value type_value(std::move(type_dict));
     auto type = std::make_unique<ap::AdditionalPropertiesType>();
-    EXPECT_FALSE(
-        ap::AdditionalPropertiesType::Populate(type_value, type.get()));
+    EXPECT_FALSE(ap::AdditionalPropertiesType::Populate(
+        base::Value(type_value.Clone()), type.get()));
   }
 }
 
@@ -58,9 +59,9 @@ TEST(JsonSchemaCompilerAdditionalPropertiesTest,
 
   base::Value::List expected;
   {
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetIntKey("integer", 5);
-    dict.SetStringKey("key", "value");
+    base::Value::Dict dict;
+    dict.Set("integer", 5);
+    dict.Set("key", "value");
     expected.Append(std::move(dict));
   }
 

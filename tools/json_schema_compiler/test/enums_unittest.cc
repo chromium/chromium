@@ -105,7 +105,7 @@ TEST(JsonSchemaCompilerEnumsTest, ReturnsEnumCreate) {
   {
     enums::Enumeration state = enums::ENUMERATION_ONE;
     base::Value results(enums::ReturnsEnum::Results::Create(state));
-    base::Value expected(base::Value::Type::LIST);
+    base::Value::List expected;
     expected.Append("one");
     EXPECT_EQ(expected, results);
   }
@@ -115,7 +115,7 @@ TEST(JsonSchemaCompilerEnumsTest, ReturnsTwoEnumsCreate) {
   {
     base::Value results(enums::ReturnsTwoEnums::Results::Create(
         enums::ENUMERATION_ONE, enums::OTHER_ENUMERATION_HAM));
-    base::Value expected(base::Value::Type::LIST);
+    base::Value::List expected;
     expected.Append("one");
     expected.Append("ham");
     EXPECT_EQ(expected, results);
@@ -260,7 +260,7 @@ TEST(JsonSchemaCompilerEnumsTest, OnEnumFiredCreate) {
   {
     enums::Enumeration some_enum = enums::ENUMERATION_ONE;
     base::Value results(enums::OnEnumFired::Create(some_enum));
-    base::Value expected(base::Value::Type::LIST);
+    base::Value::List expected;
     expected.Append("one");
     EXPECT_EQ(expected, results);
   }
@@ -270,7 +270,7 @@ TEST(JsonSchemaCompilerEnumsTest, OnTwoEnumsFiredCreate) {
   {
     base::Value results(enums::OnTwoEnumsFired::Create(
         enums::ENUMERATION_ONE, enums::OTHER_ENUMERATION_HAM));
-    base::Value expected(base::Value::Type::LIST);
+    base::Value::List expected;
     expected.Append("one");
     expected.Append("ham");
     EXPECT_EQ(expected, results);

@@ -116,7 +116,7 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
                                             std::string("of"),
                                             std::string("strings"));
 
-  base::Value strings_value(base::Value::Type::LIST);
+  base::Value::List strings_value;
   for (const auto& string : strings)
     strings_value.Append(string);
 
@@ -137,7 +137,7 @@ TEST(JsonSchemaCompilerChoicesTest, PopulateChoiceType) {
 }
 
 TEST(JsonSchemaCompilerChoicesTest, ChoiceTypeToValue) {
-  base::Value strings_value(base::Value::Type::LIST);
+  base::Value::List strings_value;
   strings_value.Append("list");
   strings_value.Append("of");
   strings_value.Append("strings");
@@ -160,7 +160,7 @@ TEST(JsonSchemaCompilerChoicesTest, ReturnChoices) {
 
     base::Value results_value(results.ToValue());
 
-    base::Value expected(base::Value::Type::LIST);
+    base::Value::List expected;
     expected.Append(1);
     expected.Append(2);
 

@@ -61,7 +61,7 @@ void PopulateManifestKeys(base::StringPiece manifest_json,
 
 TEST(JsonSchemaCompilerSimpleTest, IncrementIntegerResultCreate) {
   base::Value results(simple_api::IncrementInteger::Results::Create(5));
-  base::Value expected(base::Value::Type::LIST);
+  base::Value::List expected;
   expected.Append(5);
   EXPECT_EQ(expected, results);
 }
@@ -147,7 +147,7 @@ TEST(JsonSchemaCompilerSimpleTest, OptionalBeforeRequired) {
 
 TEST(JsonSchemaCompilerSimpleTest, NoParamsResultCreate) {
   base::Value results(simple_api::OptionalString::Results::Create());
-  base::Value expected(base::Value::Type::LIST);
+  base::Value::List expected;
   EXPECT_EQ(expected, results);
 }
 
@@ -185,7 +185,7 @@ TEST(JsonSchemaCompilerSimpleTest, GetTestType) {
 TEST(JsonSchemaCompilerSimpleTest, OnIntegerFiredCreate) {
   {
     base::Value results(simple_api::OnIntegerFired::Create(5));
-    base::Value expected(base::Value::Type::LIST);
+    base::Value::List expected;
     expected.Append(5);
     EXPECT_EQ(expected, results);
   }
@@ -194,7 +194,7 @@ TEST(JsonSchemaCompilerSimpleTest, OnIntegerFiredCreate) {
 TEST(JsonSchemaCompilerSimpleTest, OnStringFiredCreate) {
   {
     base::Value results(simple_api::OnStringFired::Create("yo dawg"));
-    base::Value expected(base::Value::Type::LIST);
+    base::Value::List expected;
     expected.Append("yo dawg");
     EXPECT_EQ(expected, results);
   }

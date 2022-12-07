@@ -17,9 +17,9 @@ TEST(JsonSchemaCompilerReturnsAsyncTest, ReturnsObjectResultCreate) {
   base::Value results(
       test::api::returns_async::SupportsPromises::Results::Create(some_object));
 
-  base::Value expected_dict = base::Value(base::Value::Type::DICTIONARY);
-  expected_dict.SetKey("state", base::Value("foo"));
-  base::Value expected = base::Value(base::Value::Type::LIST);
+  base::Value::Dict expected_dict;
+  expected_dict.Set("state", "foo");
+  base::Value::List expected;
   expected.Append(std::move(expected_dict));
   EXPECT_EQ(expected, results);
 }
