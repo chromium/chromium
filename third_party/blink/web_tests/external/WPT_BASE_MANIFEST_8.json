@@ -3943,6 +3943,13 @@
        {}
       ]
      ],
+     "bold-in-output.html": [
+      "43d78ec4e99289056c1d575f30695b1143d8181e",
+      [
+       null,
+       {}
+      ]
+     ],
      "contenteditable-will-be-blurred-by-focus-event-listener.html": [
       "a887b1de90e63e0da24a3872b32727282690b896",
       [
@@ -251020,6 +251027,34 @@
         {}
        ]
       ],
+      "floats": {
+       "floating-inside-mathml-with-block-display.html": [
+        "f398094e15aca3197639fef8edf95f7ec02372b3",
+        [
+         null,
+         [
+          [
+           "/mathml/relations/css-styling/floats/floating-inside-mathml-with-block-display-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "floating-math.html": [
+        "1de54ccdcf8dc3c20ff15ca0291e536b3d2606ab",
+        [
+         null,
+         [
+          [
+           "/mathml/relations/css-styling/floats/floating-math-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      },
       "legacy-scriptminsize-attribute.html": [
        "0ce87b61477b5b1a4151e2b7958cd4e35697c790",
        [
@@ -287306,7 +287341,7 @@
       []
      ],
      "font-shorthand-serialization-prevention-expected.txt": [
-      "f30f9aa946d5ee851844ab8a08d0db8f102fdbf8",
+      "77c053b8372b72d8ad1f54048c004ec78cc0e1a9",
       []
      ],
      "font-shorthand-serialization-prevention.html.ini": [
@@ -288013,7 +288048,7 @@
        []
       ],
       "font-variant-serialization-expected.txt": [
-       "3b48e087e9e65204fe02c6af11eb86b54ffb7509",
+       "5f67e4b6f6d2ac5effb9107a521024c2ab7e0499",
        []
       ],
       "font-variant-serialization.html.ini": [
@@ -288021,7 +288056,7 @@
        []
       ],
       "font-variant-valid-expected.txt": [
-       "367061dce35f87e8de5c2c1c55c3741425945d9f",
+       "4fb80571d3ae631a51dffa7c72b4320f3f517966",
        []
       ],
       "font-variant-valid.html.ini": [
@@ -327250,7 +327285,7 @@
       []
      ],
      "font-variant-shorthand-serialization-expected.txt": [
-      "60543dd5671170b29619c7fd2cf3f2364ff51fad",
+      "c0228eb7f35fd4620edb19bbf280c4203980753f",
       []
      ],
      "font-variant-shorthand-serialization.html.ini": [
@@ -333542,7 +333577,7 @@
       []
      ],
      "removeformat-expected.txt": [
-      "a7d25f0dca7ea62b1e94c89c680ea367849b05d0",
+      "b7d784a786c5a12b7c1b8e492cb363b2b57a79ee",
       []
      ],
      "removeformat.html.ini": [
@@ -364564,6 +364599,16 @@
        "111ea79e243a83880783b5ab46ae6d989ead1f32",
        []
       ],
+      "floats": {
+       "floating-inside-mathml-with-block-display-ref.html": [
+        "8f25c9db06551a8caa07c94bac1a120acf5d1b47",
+        []
+       ],
+       "floating-math-ref.html": [
+        "c82f39564421819c960d8c25ba42a2814ab7cdcd",
+        []
+       ]
+      },
       "ignored-properties-001.html.ini": [
        "e8a8277188ec5d90a57116e14dfd5fcffdfa8909",
        []
@@ -372994,10 +373039,6 @@
     ],
     "feature-policy.https-expected.txt": [
      "54ed00de803e12c4bb9429803e7b62daf5fc4a2b",
-     []
-    ],
-    "getdisplaymedia-framerate.https-expected.txt": [
-     "eaab5fe13d8b533f017468bdd81656be79ebdc62",
      []
     ],
     "getdisplaymedia-framerate.https.html.ini": [
@@ -431007,7 +431048,7 @@
        ]
       ],
       "unsupported-axis.html": [
-       "28e111f915b771d50457fcce8689f0303442b208",
+       "caee4bc39cdd021a0d59f85214d8539eb6487d72",
        [
         null,
         {}
@@ -554093,6 +554134,15 @@
         {}
        ]
       ],
+      "floats": {
+       "not-floating-001.html": [
+        "7166dea5f8d7be6500bbf856693454e0c5ddd1bb",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "ignored-properties-001.html": [
        "0966d96917a6b75121842d5de1af6953ee5110ac",
        [
@@ -584597,7 +584647,7 @@
      ]
     ],
     "getdisplaymedia-framerate.https.html": [
-     "18797fb94c1d6ffa70c61f47eb2da4e20ead1431",
+     "c17b25d9873e5d482d7152fd8f519ee75028dbee",
      [
       null,
       {
