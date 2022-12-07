@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
+#include "build/branding_buildflags.h"
 #include "chrome/updater/test_scope.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
@@ -337,6 +338,13 @@ TEST_F(AppCommandRunnerTest, RunAppCommandFormat) {
   }
 }
 
+TEST_F(AppCommandRunnerTest, CheckChromeBrandedName) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_EQ(
+  {L"Google Chrome", L"" BROWSER_PRODUCT_NAME_STRING);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 TEST_F(AppCommandRunnerTest, RunProcessLauncherFormat) {
   if (!IsSystemInstall(GetTestScope()))
     return;
@@ -352,10 +360,30 @@ TEST_F(AppCommandRunnerTest, RunProcessLauncherFormat) {
       {L"foo", L"1.0.0.0", L"cmd1", {L"/c", L"exit 7"}, 7, E_INVALIDARG},
       {L"foo", L"110.0.5434.0", L"cmd", {L"/c", L"exit 7"}, 7, E_INVALIDARG},
       {L"Chrome", L"110.0.5434.0", L"cmd", {L"/c", L"exit 7"}, 7, E_INVALIDARG},
-      {L"Google Chrome", L"110.0.5434.0", L"cmd", {L"/c", L"exit 7"}, 7, S_OK},
-      {L"Google Chrome Beta", L"1.0.0.0", L"cmd", {L"/c", L"exit 7"}, 7, S_OK},
-      {L"Google Chrome Dev", L"110.0.0.0", L"cmd", {L"/c", L"exit 7"}, 7, S_OK},
-      {L"Google Chrome SxS", L"110.0.0.0", L"cmd", {L"/c", L"exit 7"}, 7, S_OK},
+      {L"" BROWSER_PRODUCT_NAME_STRING,
+       L"110.0.5434.0",
+       L"cmd",
+       {L"/c", L"exit 7"},
+       7,
+       S_OK},
+      {L"" BROWSER_PRODUCT_NAME_STRING L" Beta",
+       L"1.0.0.0",
+       L"cmd",
+       {L"/c", L"exit 7"},
+       7,
+       S_OK},
+      {L"" BROWSER_PRODUCT_NAME_STRING " Dev",
+       L"110.0.0.0",
+       L"cmd",
+       {L"/c", L"exit 7"},
+       7,
+       S_OK},
+      {L"" BROWSER_PRODUCT_NAME_STRING " SxS",
+       L"110.0.0.0",
+       L"cmd",
+       {L"/c", L"exit 7"},
+       7,
+       S_OK},
   };
 
   for (const auto& test_case : test_cases) {
@@ -419,7 +447,7 @@ TEST_F(AppCommandRunnerTest, RunBothFormats) {
 
     if (test_case.cmd_id_processlauncher) {
       CreateLaunchCmdElevatedRegistry(
-          kAppId1, L"Google Chrome", L"1.0.0.0",
+          kAppId1, L"" BROWSER_PRODUCT_NAME_STRING, L"1.0.0.0",
           test_case.cmd_id_processlauncher,
           base::StrCat(
               {cmd_exe_command_line_.GetCommandLineString(), L" ",

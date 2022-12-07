@@ -1150,8 +1150,9 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
 
   // Succeeds when the command is present in the registry.
   base::ScopedTempDir temp_dir;
-  SetupLaunchCommandElevated(kAppId1, L"Google Chrome", L"1.0.0.0", kCommandId,
-                             L" /c \"exit 5420\"", temp_dir);
+  SetupLaunchCommandElevated(kAppId1, L"" BROWSER_PRODUCT_NAME_STRING,
+                             L"1.0.0.0", kCommandId, L" /c \"exit 5420\"",
+                             temp_dir);
 
   // Succeeds when the command is present in the registry.
   ASSERT_HRESULT_SUCCEEDED(

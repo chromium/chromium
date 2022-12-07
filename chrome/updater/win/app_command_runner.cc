@@ -24,6 +24,7 @@
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
@@ -68,10 +69,12 @@ HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
                                         const std::wstring& command_id,
                                         std::wstring& command_format) {
   constexpr wchar_t kAllowedLegacyProcessLauncherAppNameSubstring[] =
-      L"Google Chrome";
+      L"" BROWSER_PRODUCT_NAME_STRING;
   constexpr char kAllowedLegacyProcessLauncherMaxAppVersion[] = "110.0.5435.0";
   constexpr wchar_t kAllowedLegacyProcessLauncherCommandId[] = L"cmd";
 
+  std::wstring pv;
+  std::wstring name;
   if (command_id == kAllowedLegacyProcessLauncherCommandId) {
     base::win::RegKey app_key;
     HRESULT hr = HRESULT_FROM_WIN32(
@@ -80,8 +83,6 @@ HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
     if (FAILED(hr))
       return hr;
 
-    std::wstring pv;
-    std::wstring name;
     app_key.ReadValue(kRegValuePV, &pv);
     app_key.ReadValue(kRegValueName, &name);
     const base::Version app_version(base::WideToASCII(pv));
@@ -100,7 +101,7 @@ HRESULT LoadLegacyProcessLauncherFormat(const std::wstring& app_id,
       << __func__
       << "Legacy ProcessLauncher format not supported, use more secure "
          "AppCommand format: "
-      << app_id << ": " << command_id;
+      << app_id << ": " << pv << ": " << name << ": " << command_id;
   return E_INVALIDARG;
 }
 
