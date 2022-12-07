@@ -239,7 +239,9 @@ public class CoreImpl implements Core {
         if (handles != null && !handles.isEmpty()) {
             handlesBuffer = allocateDirectBuffer(handles.size() * HANDLE_SIZE);
             for (Handle handle : handles) {
-                handlesBuffer.putLong(getMojoHandle(handle));
+                // NOTE: Handles are closed by native code regardless of whether writeMessage()
+                // succeeds below, so we unconditionally release them here.
+                handlesBuffer.putLong(handle.releaseNativeHandle());
             }
             handlesBuffer.position(0);
         }
@@ -247,14 +249,6 @@ public class CoreImpl implements Core {
                 bytes, bytes == null ? 0 : bytes.limit(), handlesBuffer, flags.getFlags());
         if (mojoResult != MojoResult.OK) {
             throw new MojoException(mojoResult);
-        }
-        // Success means the handles have been invalidated.
-        if (handles != null) {
-            for (Handle handle : handles) {
-                if (handle.isValid()) {
-                    ((HandleBase) handle).invalidateHandle();
-                }
-            }
         }
     }
 
