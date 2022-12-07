@@ -1028,6 +1028,23 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantAlternates(
   return value_list;
 }
 
+CSSIdentifierValue* ComputedStyleUtils::ValueForFontVariantPosition(
+    const ComputedStyle& style) {
+  FontDescription::FontVariantPosition variant_position =
+      style.GetFontDescription().VariantPosition();
+  switch (variant_position) {
+    case FontDescription::kNormalVariantPosition:
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+    case FontDescription::kSubVariantPosition:
+      return CSSIdentifierValue::Create(CSSValueID::kSub);
+    case FontDescription::kSuperVariantPosition:
+      return CSSIdentifierValue::Create(CSSValueID::kSuper);
+    default:
+      NOTREACHED();
+      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  }
+}
+
 CSSIdentifierValue* ValueForFontStretchAsKeyword(const ComputedStyle& style) {
   FontSelectionValue stretch_value = style.GetFontDescription().Stretch();
   CSSValueID value_id = CSSValueID::kInvalid;

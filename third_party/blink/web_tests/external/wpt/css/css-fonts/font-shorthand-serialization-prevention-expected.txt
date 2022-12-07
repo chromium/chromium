@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 202 tests; 151 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 202 tests; 156 PASS, 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setting font-family to sans-serif should not prevent the font shorthand from serializing in specified style
 PASS Setting font-family to sans-serif should not prevent the font shorthand from serializing in computed style
 PASS Setting font-variant to initial should prevent the font shorthand from serializing in specified style
@@ -90,15 +90,15 @@ PASS Setting font-variant-ligatures to normal should not prevent the font shorth
 PASS Setting font-variant-ligatures to normal should not prevent the font shorthand from serializing in computed style
 PASS Setting font-variant-ligatures to none should prevent the font shorthand from serializing in specified style
 PASS Setting font-variant-ligatures to none should prevent the font shorthand from serializing in computed style
-FAIL Setting font-variant-position to initial should prevent the font shorthand from serializing in specified style assert_equals: expected "" but got "16px serif"
+PASS Setting font-variant-position to initial should prevent the font shorthand from serializing in specified style
 PASS Setting font-variant-position to initial should not prevent the font shorthand from serializing in computed style
-FAIL Setting font-variant-position to inherit should prevent the font shorthand from serializing in specified style assert_equals: expected "" but got "16px serif"
+PASS Setting font-variant-position to inherit should prevent the font shorthand from serializing in specified style
 PASS Setting font-variant-position to inherit should not prevent the font shorthand from serializing in computed style
-FAIL Setting font-variant-position to unset should prevent the font shorthand from serializing in specified style assert_equals: expected "" but got "16px serif"
+PASS Setting font-variant-position to unset should prevent the font shorthand from serializing in specified style
 PASS Setting font-variant-position to unset should not prevent the font shorthand from serializing in computed style
-FAIL Setting font-variant-position to revert should prevent the font shorthand from serializing in specified style assert_equals: expected "" but got "16px serif"
+PASS Setting font-variant-position to revert should prevent the font shorthand from serializing in specified style
 PASS Setting font-variant-position to revert should not prevent the font shorthand from serializing in computed style
-FAIL Setting font-variant-position to revert-layer should prevent the font shorthand from serializing in specified style assert_equals: expected "" but got "16px serif"
+PASS Setting font-variant-position to revert-layer should prevent the font shorthand from serializing in specified style
 PASS Setting font-variant-position to revert-layer should not prevent the font shorthand from serializing in computed style
 PASS Setting font-variant-position to normal should not prevent the font shorthand from serializing in specified style
 PASS Setting font-variant-position to normal should not prevent the font shorthand from serializing in computed style

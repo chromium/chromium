@@ -949,44 +949,6 @@ inline FontSmoothingMode CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(
-    FontDescription::FontVariantPosition variant_position)
-    : CSSValue(kIdentifierClass) {
-  switch (variant_position) {
-    case FontDescription::kNormalVariantPosition:
-      value_id_ = CSSValueID::kNormal;
-      return;
-    case FontDescription::kSubVariantPosition:
-      value_id_ = CSSValueID::kSub;
-      return;
-    case FontDescription::kSuperVariantPosition:
-      value_id_ = CSSValueID::kSuper;
-      return;
-  }
-
-  NOTREACHED();
-  value_id_ = CSSValueID::kNormal;
-}
-
-template <>
-inline FontDescription::FontVariantPosition CSSIdentifierValue::ConvertTo()
-    const {
-  switch (value_id_) {
-    case CSSValueID::kNormal:
-      return FontDescription::kNormalVariantPosition;
-    case CSSValueID::kSub:
-      return FontDescription::kSubVariantPosition;
-    case CSSValueID::kSuper:
-      return FontDescription::kSuperVariantPosition;
-    default:
-      break;
-  }
-
-  NOTREACHED();
-  return FontDescription::kNormalVariantPosition;
-}
-
-template <>
 inline CSSIdentifierValue::CSSIdentifierValue(TextRenderingMode e)
     : CSSValue(kIdentifierClass) {
   switch (e) {

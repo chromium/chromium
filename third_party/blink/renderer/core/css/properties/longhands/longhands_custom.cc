@@ -3272,8 +3272,7 @@ const CSSValue* FontVariantPosition::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   DCHECK(RuntimeEnabledFeatures::FontVariantPositionEnabled());
-  return CSSIdentifierValue::Create(
-      style.GetFontDescription().VariantPosition());
+  return ComputedStyleUtils::ValueForFontVariantPosition(style);
 }
 
 const CSSValue* ForcedColorAdjust::CSSValueFromComputedStyleInternal(

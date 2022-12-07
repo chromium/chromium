@@ -16,6 +16,7 @@ element.style { ()
         font-variant-numeric: normal;
         font-variant-east-asian: normal;
         font-variant-alternates: normal;
+        font-variant-position: normal;
         font-weight: normal;
         font-stretch: normal;
         font-size: 10px;

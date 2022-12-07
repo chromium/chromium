@@ -1364,6 +1364,7 @@
       font: true,
       name_for_methods: "VariantPosition",
       type_name: "FontDescription::FontVariantPosition",
+      converter: "ConvertFontVariantPosition",
       priority: "High",
       keywords: ["normal", "sub", "super"],
       typedom_types: ["Keyword"],
@@ -6794,16 +6795,18 @@
       name: "font",
       longhands: [
         "font-style", "font-variant-ligatures", "font-variant-caps",
-        "font-variant-numeric", "font-variant-east-asian", "font-variant-alternates", "font-weight",
-        "font-stretch", "font-size", "line-height", "font-family"
+        "font-variant-numeric", "font-variant-east-asian", "font-variant-alternates",
+        "font-variant-position", "font-weight", "font-stretch", "font-size",
+        "line-height", "font-family"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
       name: "font-variant",
       longhands: [
-        "font-variant-ligatures", "font-variant-caps", "font-variant-alternates",
-        "font-variant-numeric", "font-variant-east-asian"
+        "font-variant-ligatures", "font-variant-caps",
+        "font-variant-alternates", "font-variant-numeric",
+        "font-variant-east-asian", "font-variant-position"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       is_descriptor: true,

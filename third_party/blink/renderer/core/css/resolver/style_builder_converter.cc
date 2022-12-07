@@ -329,6 +329,31 @@ FontDescription::FamilyDescription StyleBuilderConverter::ConvertFontFamily(
       &state.GetDocument());
 }
 
+FontDescription::FontVariantPosition
+StyleBuilderConverter::ConvertFontVariantPosition(StyleResolverState&,
+                                                  const CSSValue& value) {
+  // When the font shorthand is specified, font-variant-position property should
+  // be reset to it's initial value. In this case, the CSS parser uses a special
+  // value CSSPendingSystemFontValue to defer resolution of system font
+  // properties. The auto generated converter does not handle this incoming
+  // value.
+  if (value.IsPendingSystemFontValue())
+    return FontDescription::kNormalVariantPosition;
+
+  CSSValueID value_id = To<CSSIdentifierValue>(value).GetValueID();
+  switch (value_id) {
+    case CSSValueID::kNormal:
+      return FontDescription::kNormalVariantPosition;
+    case CSSValueID::kSub:
+      return FontDescription::kSubVariantPosition;
+    case CSSValueID::kSuper:
+      return FontDescription::kSuperVariantPosition;
+    default:
+      NOTREACHED();
+      return FontDescription::kNormalVariantPosition;
+  }
+}
+
 scoped_refptr<FontFeatureSettings>
 StyleBuilderConverter::ConvertFontFeatureSettings(StyleResolverState& state,
                                                   const CSSValue& value) {

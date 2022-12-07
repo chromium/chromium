@@ -163,6 +163,9 @@ class StyleBuilderConverter {
       const CSSValue&);
   static FontVariantEastAsian ConvertFontVariantEastAsian(StyleResolverState&,
                                                           const CSSValue&);
+  static FontDescription::FontVariantPosition ConvertFontVariantPosition(
+      StyleResolverState&,
+      const CSSValue&);
   static StyleSelfAlignmentData ConvertSelfOrDefaultAlignmentData(
       StyleResolverState&,
       const CSSValue&);

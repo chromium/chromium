@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -1340,6 +1341,12 @@ bool ConsumeFont(bool important,
         *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   }
+  if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontVariantPosition, CSSPropertyID::kFont,
+        *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  }
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFontWeight, CSSPropertyID::kFont,
@@ -1446,6 +1453,12 @@ bool FontVariant::ParseShorthand(
           *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
           css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
     }
+    if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
+      css_parsing_utils::AddProperty(
+          CSSPropertyID::kFontVariantPosition, CSSPropertyID::kFontVariant,
+          *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+          css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    }
     return range.AtEnd();
   }
 
@@ -1454,6 +1467,7 @@ bool FontVariant::ParseShorthand(
   FontVariantNumericParser numeric_parser;
   FontVariantEastAsianParser east_asian_parser;
   FontVariantAlternatesParser alternates_parser;
+  CSSIdentifierValue* position_value = nullptr;
   do {
     FontVariantLigaturesParser::ParseResult ligatures_parse_result =
         ligatures_parser.ConsumeLigature(range);
@@ -1498,6 +1512,13 @@ bool FontVariant::ParseShorthand(
           return false;
         caps_value = css_parsing_utils::ConsumeIdent(range);
         break;
+      case CSSValueID::kSub:
+      case CSSValueID::kSuper:
+        // Only one position value permitted in font-variant grammar.
+        if (position_value)
+          return false;
+        position_value = css_parsing_utils::ConsumeIdent(range);
+        break;
       default:
         return false;
     }
@@ -1526,6 +1547,14 @@ bool FontVariant::ParseShorthand(
         CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFontVariant,
         *alternates_parser.FinalizeValue(), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  }
+  if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontVariantPosition, CSSPropertyID::kFontVariant,
+        position_value ? *position_value
+                       : *CSSIdentifierValue::Create(CSSValueID::kNormal),
+        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+        properties);
   }
   return true;
 }

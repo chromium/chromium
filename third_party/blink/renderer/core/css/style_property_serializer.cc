@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/properties/css_property_instances.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/css_to_style_map.h"
@@ -699,6 +700,7 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
       case CSSPropertyID::kFontVariantNumeric:
       case CSSPropertyID::kFontVariantEastAsian:
       case CSSPropertyID::kFontVariantAlternates:
+      case CSSPropertyID::kFontVariantPosition:
       case CSSPropertyID::kFontWeight:
         result.Append(' ');
         break;
@@ -1029,6 +1031,10 @@ String StylePropertySerializer::FontVariantValue() const {
                                      result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantEastAsian(),
                                      result);
+  if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
+    AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantPosition(),
+                                       result);
+  }
 
   if (result.empty()) {
     return "normal";
