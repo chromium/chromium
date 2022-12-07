@@ -946,7 +946,13 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, BackOnErrorScreen) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, RetryOnErrorScreen) {
+// TODO(crbug.com/1399073): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_RetryOnErrorScreen DISABLED_RetryOnErrorScreen
+#else
+#define MAYBE_RetryOnErrorScreen RetryOnErrorScreen
+#endif
+IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
   // Simulate online setup failure.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
