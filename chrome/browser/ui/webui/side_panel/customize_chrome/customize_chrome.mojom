@@ -5,6 +5,7 @@
 module side_panel.mojom;
 
 import "skia/public/mojom/skcolor.mojom";
+import "url/mojom/url.mojom";
 
 struct ChromeColor {
   // Localized string of the color name.
@@ -13,6 +14,16 @@ struct ChromeColor {
   skia.mojom.SkColor background;
   // The background color.
   skia.mojom.SkColor foreground;
+};
+
+// A collection of background images.
+struct BackgroundCollection {
+  // Collection identifier.
+  string id;
+  // Localized string of the collection name.
+  string label;
+  // URL to a preview image for the collection. Can point to untrusted content.
+  url.mojom.Url preview_image_url;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -33,6 +44,9 @@ interface CustomizeChromePageHandler {
 
   // Returns the chrome colors used in the customize chrome side panel.
   GetChromeColors() => (array<ChromeColor> colors);
+
+  // Returns the collections of background images.
+  GetBackgroundCollections() => (array<BackgroundCollection> collections);
 };
 
 // WebUI-side handler for requests from the browser.

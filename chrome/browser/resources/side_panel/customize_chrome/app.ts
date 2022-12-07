@@ -12,6 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './app.html.js';
 import {AppearanceElement} from './appearance.js';
 import {CategoriesElement} from './categories.js';
+import {BackgroundCollection} from './customize_chrome.mojom-webui.js';
 import {ThemesElement} from './themes.js';
 
 export enum CustomizeChromePage {
@@ -44,7 +45,7 @@ export class AppElement extends PolymerElement {
         type: String,
         value: CustomizeChromePage.OVERVIEW,
       },
-      selectedCategory_: {
+      selectedCollection_: {
         type: Object,
         value: null,
       },
@@ -52,9 +53,7 @@ export class AppElement extends PolymerElement {
   }
 
   private page_: CustomizeChromePage;
-  // Will make this a more specific object when the
-  // handler is updated to support collections/categories.
-  private selectedCategory_: object|null;
+  private selectedCollection_: BackgroundCollection|null;
 
   private onBackClick_() {
     switch (this.page_) {
@@ -71,8 +70,8 @@ export class AppElement extends PolymerElement {
     this.page_ = CustomizeChromePage.CATEGORIES;
   }
 
-  private onCategorySelect_(event: CustomEvent<object>) {
-    this.selectedCategory_ = event.detail;
+  private onCollectionSelect_(event: CustomEvent<BackgroundCollection>) {
+    this.selectedCollection_ = event.detail;
     this.page_ = CustomizeChromePage.THEMES;
   }
 

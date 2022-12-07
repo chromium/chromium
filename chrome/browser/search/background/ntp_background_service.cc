@@ -366,6 +366,11 @@ void NtpBackgroundService::OnNextImageInfoFetchComplete(
   NotifyObservers(FetchComplete::NEXT_IMAGE_INFO);
 }
 
+const std::vector<CollectionInfo>& NtpBackgroundService::collection_info()
+    const {
+  return collection_info_;
+}
+
 void NtpBackgroundService::AddObserver(NtpBackgroundServiceObserver* observer) {
   observers_.AddObserver(observer);
 }

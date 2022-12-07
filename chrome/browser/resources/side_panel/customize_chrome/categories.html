@@ -1,7 +1,12 @@
 <button on-click="onBackClick_" id="backButton">
   Go Back
 </button>
-<p>Category List</p>
-<button on-click="onCategoryClick_" class="category">
-  Select Category
-</button>
+<h1>Themes</h1>
+<dom-repeat id="collectionsRepeat" items="[[collections_]]">
+  <template>
+    <div class="tile" tabindex="0" role="button"
+        on-click="onCollectionClick_">
+      <div class="label">[[item.label]]</div>
+    </div>
+  </template>
+</dom-repeat>

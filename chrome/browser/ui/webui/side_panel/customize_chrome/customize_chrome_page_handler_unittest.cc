@@ -8,6 +8,9 @@
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
+#include "chrome/browser/search/background/ntp_background_data.h"
+#include "chrome/browser/search/background/ntp_background_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_colors.h"
@@ -17,6 +20,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,26 +47,77 @@ class MockPage : public side_panel::mojom::CustomizeChromePage {
   mojo::Receiver<side_panel::mojom::CustomizeChromePage> receiver_{this};
 };
 
+class MockNtpBackgroundService : public NtpBackgroundService {
+ public:
+  explicit MockNtpBackgroundService(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : NtpBackgroundService(url_loader_factory) {}
+  MOCK_CONST_METHOD0(collection_info, std::vector<CollectionInfo>&());
+  MOCK_METHOD0(FetchCollectionInfo, void());
+  MOCK_METHOD1(AddObserver, void(NtpBackgroundServiceObserver*));
+};
+
+std::unique_ptr<TestingProfile> MakeTestingProfile(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      NtpBackgroundServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            return std::make_unique<
+                testing::NiceMock<MockNtpBackgroundService>>(
+                url_loader_factory);
+          },
+          url_loader_factory));
+  profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
+  auto profile = profile_builder.Build();
+  return profile;
+}
+
 }  // namespace
 
 class CustomizeChromePageHandlerTest : public testing::Test {
  public:
   CustomizeChromePageHandlerTest()
-      : handler_(mojo::PendingReceiver<
-                     side_panel::mojom::CustomizeChromePageHandler>(),
-                 mock_page_.BindAndGetRemote(),
-                 web_contents_factory_.CreateWebContents(&profile_)) {}
+      : profile_(MakeTestingProfile(
+            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+                &test_url_loader_factory_))),
+        mock_ntp_background_service_(static_cast<MockNtpBackgroundService*>(
+            NtpBackgroundServiceFactory::GetForProfile(profile_.get()))) {}
 
-  TestingProfile& profile() { return profile_; }
-  CustomizeChromePageHandler& handler() { return handler_; }
+  void SetUp() override {
+    EXPECT_CALL(mock_ntp_background_service(), AddObserver)
+        .Times(1)
+        .WillOnce(testing::SaveArg<0>(&ntp_background_service_observer_));
+    handler_ = std::make_unique<CustomizeChromePageHandler>(
+        mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
+        mock_page_.BindAndGetRemote(),
+        web_contents_factory_.CreateWebContents(profile_.get()));
+    mock_page_.FlushForTesting();
+    EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
+  }
+
+  TestingProfile& profile() { return *profile_; }
+  CustomizeChromePageHandler& handler() { return *handler_; }
+  MockNtpBackgroundService& mock_ntp_background_service() {
+    return *mock_ntp_background_service_;
+  }
+  NtpBackgroundServiceObserver& ntp_background_service_observer() {
+    return *ntp_background_service_observer_;
+  }
 
  private:
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  raw_ptr<MockNtpBackgroundService> mock_ntp_background_service_;
   content::TestWebContentsFactory web_contents_factory_;
   testing::NiceMock<MockPage> mock_page_;
-  CustomizeChromePageHandler handler_;
+  NtpBackgroundServiceObserver* ntp_background_service_observer_;
+  std::unique_ptr<CustomizeChromePageHandler> handler_;
 };
 
 TEST_F(CustomizeChromePageHandlerTest, SetMostVisitedSettings) {
@@ -121,4 +178,36 @@ TEST_F(CustomizeChromePageHandlerTest, GetChromeColors) {
                   .frame_color,
               colors[i]->foreground);
   }
+}
+
+TEST_F(CustomizeChromePageHandlerTest, GetBackgroundCollections) {
+  std::vector<CollectionInfo> test_collection_info;
+  CollectionInfo test_collection;
+  test_collection.collection_id = "test_id";
+  test_collection.collection_name = "test_name";
+  test_collection.preview_image_url = GURL("https://test.jpg");
+  test_collection_info.push_back(test_collection);
+  ON_CALL(mock_ntp_background_service(), collection_info())
+      .WillByDefault(testing::ReturnRef(test_collection_info));
+
+  std::vector<side_panel::mojom::BackgroundCollectionPtr> collections;
+  base::MockCallback<
+      CustomizeChromePageHandler::GetBackgroundCollectionsCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&collections](std::vector<side_panel::mojom::BackgroundCollectionPtr>
+                             collections_arg) {
+            collections = std::move(collections_arg);
+          }));
+  EXPECT_CALL(mock_ntp_background_service(), FetchCollectionInfo).Times(1);
+  handler().GetBackgroundCollections(callback.Get());
+  ntp_background_service_observer().OnCollectionInfoAvailable();
+
+  EXPECT_EQ(collections.size(), test_collection_info.size());
+  EXPECT_EQ(test_collection_info[0].collection_id, collections[0]->id);
+  EXPECT_EQ(test_collection_info[0].collection_name, collections[0]->label);
+  EXPECT_EQ(test_collection_info[0].preview_image_url,
+            collections[0]->preview_image_url);
 }

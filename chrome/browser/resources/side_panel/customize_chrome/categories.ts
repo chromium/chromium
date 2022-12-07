@@ -1,9 +1,11 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './categories.html.js';
+import {BackgroundCollection, CustomizeChromePageHandlerInterface} from './customize_chrome.mojom-webui.js';
+import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface CategoriesElement {
   $: {
@@ -21,11 +23,26 @@ export class CategoriesElement extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      collections_: Array,
+    };
   }
 
-  private onCategoryClick_() {
-    this.dispatchEvent(new CustomEvent<object>('category-select'));
+  private collections_: BackgroundCollection[];
+
+  private pageHandler_: CustomizeChromePageHandlerInterface;
+
+  constructor() {
+    super();
+    this.pageHandler_ = CustomizeChromeApiProxy.getInstance().handler;
+    this.pageHandler_.getBackgroundCollections().then(({collections}) => {
+      this.collections_ = collections;
+    });
+  }
+
+  private onCollectionClick_(e: DomRepeatEvent<BackgroundCollection>) {
+    this.dispatchEvent(new CustomEvent<BackgroundCollection>(
+        'collection-select', {detail: e.model.item}));
   }
 
   private onBackClick_() {

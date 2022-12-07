@@ -41,7 +41,7 @@ class NtpBackgroundService : public KeyedService {
 
   // Requests an asynchronous fetch from the network. After the update
   // completes, OnCollectionInfoAvailable will be called on the observers.
-  void FetchCollectionInfo();
+  virtual void FetchCollectionInfo();
 
   // Requests an asynchronous fetch of metadata about images in the specified
   // collection. After the update completes, OnCollectionImagesAvailable will be
@@ -61,7 +61,7 @@ class NtpBackgroundService : public KeyedService {
 
   // Add/remove observers. All observers must unregister themselves before the
   // NtpBackgroundService is destroyed.
-  void AddObserver(NtpBackgroundServiceObserver* observer);
+  virtual void AddObserver(NtpBackgroundServiceObserver* observer);
   void RemoveObserver(NtpBackgroundServiceObserver* observer);
 
   // Check that |url| is contained in collection_images.
@@ -83,9 +83,7 @@ class NtpBackgroundService : public KeyedService {
   const GURL& GetThumbnailUrl(const GURL& image_url);
 
   // Returns the currently cached CollectionInfo, if any.
-  const std::vector<CollectionInfo>& collection_info() const {
-    return collection_info_;
-  }
+  virtual const std::vector<CollectionInfo>& collection_info() const;
 
   // Returns the currently cached CollectionImages, if any.
   const std::vector<CollectionImage>& collection_images() const {
