@@ -4875,21 +4875,6 @@
             ]
         }
     ],
-    "GoogleLensIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "LensContextMenuModal_20220201",
-                    "enable_features": [
-                        "UseLensToSearchForImage"
-                    ]
-                }
-            ]
-        }
-    ],
     "GoogleLensTabletIntegration": [
         {
             "platforms": [

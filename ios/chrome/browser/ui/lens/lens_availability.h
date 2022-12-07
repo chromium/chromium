@@ -11,7 +11,8 @@
 enum class LensSupportStatus {
   LensSearchSupported = 0,
   NonGoogleSearchEngine = 1,
-  kMaxValue = NonGoogleSearchEngine,
+  DeviceFormFactorTablet = 2,
+  kMaxValue = DeviceFormFactorTablet,
 };
 
 extern const char kIOSLensSupportStatusHistogram[];

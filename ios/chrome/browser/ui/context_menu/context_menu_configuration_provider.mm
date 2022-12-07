@@ -52,6 +52,7 @@
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -261,7 +262,9 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
         ios::provider::IsLensSupported() &&
         base::FeatureList::IsEnabled(kUseLensToSearchForImage);
     const BOOL useLens =
-        lensEnabled && search_engines::SupportsSearchImageWithLens(service);
+        lensEnabled && search_engines::SupportsSearchImageWithLens(service) &&
+        ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+
     if (useLens) {
       UIAction* searchImageWithLensAction =
           [actionFactory actionToSearchImageUsingLensWithBlock:^{
@@ -272,7 +275,10 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
       [menuElements addObject:searchImageWithLensAction];
       UMA_HISTOGRAM_ENUMERATION(kIOSLensSupportStatusHistogram,
                                 LensSupportStatus::LensSearchSupported);
-    } else if (lensEnabled) {
+    } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      UMA_HISTOGRAM_ENUMERATION(kIOSLensSupportStatusHistogram,
+                                LensSupportStatus::DeviceFormFactorTablet);
+    } else {
       UMA_HISTOGRAM_ENUMERATION(kIOSLensSupportStatusHistogram,
                                 LensSupportStatus::NonGoogleSearchEngine);
     }

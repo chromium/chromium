@@ -52573,7 +52573,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <summary>Whether lens is supported and if not the reason why.</summary>
   <int value="0" label="Lens Search Supported"/>
   <int value="1" label="Not Google Search Engine"/>
-  <int value="2" label="Unsupported Legacy OS"/>
+  <int value="2" label="Device was a tablet"/>
 </enum>
 
 <enum name="IOSLensWebUploadStatus">
