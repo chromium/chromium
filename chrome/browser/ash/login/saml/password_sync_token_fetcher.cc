@@ -211,6 +211,11 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
           "order to sync user's password and update the token."
         data: "Access token and token_type."
         destination: GOOGLE_OWNED_SERVICE
+      }
+      policy {
+        cookies_allowed: NO
+        policy_exception_justification:
+          "No policies implemented yet."
       })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   switch (request_type_) {

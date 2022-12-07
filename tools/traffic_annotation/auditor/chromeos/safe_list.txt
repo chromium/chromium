@@ -17,7 +17,6 @@ all,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
 all,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.cc
 all,chrome/browser/search/background/ntp_background_service.cc
 all,chrome/browser/apps/app_service/webapk/webapk_install_task.cc
-all,chrome/browser/ash/login/saml/password_sync_token_fetcher.cc
 all,chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.cc
 all,chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service.cc
 all,chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher_impl.cc
