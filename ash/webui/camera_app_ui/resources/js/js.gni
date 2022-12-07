@@ -16,7 +16,6 @@ compile_js_files = [
   "device/camera_operation.ts",
   "device/capture_candidate_preferrer.ts",
   "device/capture_candidate.ts",
-  "device/device_info_updater.ts",
   "device/index.ts",
   "device/mode/index.ts",
   "device/mode/mode_base.ts",

@@ -27,7 +27,6 @@ import {
   FakeCameraCaptureCandidate,
 } from './capture_candidate.js';
 import {CaptureCandidatePreferrer} from './capture_candidate_preferrer.js';
-import {DeviceInfoUpdater} from './device_info_updater.js';
 import {Modes, Video} from './mode/index.js';
 import {Preview} from './preview.js';
 import {StreamConstraints} from './stream_constraints.js';
@@ -365,7 +364,6 @@ export class OperationScheduler {
   private pendingReconfigureWaiters: Array<CancelableEvent<boolean>> = [];
 
   constructor(
-      private readonly infoUpdater: DeviceInfoUpdater,
       private readonly listener: EventListener,
       preview: Preview,
       defaultFacing: Facing|null,
@@ -379,7 +377,8 @@ export class OperationScheduler {
         defaultFacing,
     );
     this.capturer = new Capturer(this.modes);
-    this.infoUpdater.addDeviceChangeListener((info) => {
+    StreamManager.getInstance().addRealDeviceChangeListener((devices) => {
+      const info = new CameraInfo(devices);
       if (this.ongoingOperationType !== null) {
         this.pendingUpdateInfo = info;
         return;

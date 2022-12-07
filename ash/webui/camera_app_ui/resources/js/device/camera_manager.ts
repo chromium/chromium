@@ -35,7 +35,6 @@ import {windowController} from '../window_controller.js';
 
 import {EventListener, OperationScheduler} from './camera_operation.js';
 import {VideoCaptureCandidate} from './capture_candidate.js';
-import {DeviceInfoUpdater} from './device_info_updater.js';
 import {Preview} from './preview.js';
 import {
   CameraConfig,
@@ -100,8 +99,6 @@ export class CameraManager implements EventListener {
 
   private watchdog: ResumeStateWatchdog|null = null;
 
-  private readonly infoUpdater = new DeviceInfoUpdater();
-
   private readonly cameraUIs: CameraUI[] = [];
 
   private readonly preview: Preview;
@@ -116,7 +113,6 @@ export class CameraManager implements EventListener {
     });
 
     this.scheduler = new OperationScheduler(
-        this.infoUpdater,
         this,
         this.preview,
         defaultFacing,

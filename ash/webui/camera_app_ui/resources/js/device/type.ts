@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../assert.js';
+import {assert, assertExists, assertInstanceof} from '../assert.js';
+import {DeviceOperator} from '../mojo/device_operator.js';
 import {
   AspectRatioSet,
   Facing,
@@ -15,6 +16,7 @@ import {
 import {Camera3DeviceInfo} from './camera3_device_info.js';
 import {CaptureCandidate} from './capture_candidate.js';
 import {CaptureHandler} from './mode/index.js';
+import {DeviceInfo} from './stream_manager.js';
 
 /**
  * All supported constant fps options of video recording.
@@ -30,13 +32,19 @@ export interface ModeConstraints {
 export type CameraViewUI = CaptureHandler;
 
 export class CameraInfo {
+  readonly devicesInfo: MediaDeviceInfo[];
+
+  readonly camera3DevicesInfo: Camera3DeviceInfo[]|null;
+
   private readonly idToDeviceInfo: Map<string, MediaDeviceInfo>;
 
   private readonly idToCamera3DeviceInfo: Map<string, Camera3DeviceInfo>|null;
 
-  constructor(
-      readonly devicesInfo: MediaDeviceInfo[],
-      readonly camera3DevicesInfo: Camera3DeviceInfo[]|null) {
+  constructor(rawDevicesInfo: DeviceInfo[]) {
+    this.devicesInfo = rawDevicesInfo.map((d) => d.v1Info);
+    this.camera3DevicesInfo = (DeviceOperator.isSupported()) ?
+        rawDevicesInfo.map((d) => assertExists(d.v3Info)) :
+        null;
     this.idToDeviceInfo = new Map(this.devicesInfo.map((d) => [d.deviceId, d]));
     this.idToCamera3DeviceInfo = this.camera3DevicesInfo &&
         new Map(this.camera3DevicesInfo.map((d) => [d.deviceId, d]));
