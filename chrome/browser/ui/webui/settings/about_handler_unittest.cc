@@ -116,7 +116,7 @@ TEST_F(AboutHandlerTest, EndOfLifeMessageInAboutDetailsSubpage) {
   SetEolDateUtc("15 May 2023");
   EXPECT_EQ(
       "This device will get automatic software and security updates "
-      "until May 2023. <a target=\"_blank\" href=\"http://support.google"
+      "until May 2023. <a target=\"_blank\" href=\"https://support.google"
       ".com/chrome/a?p=auto-update-policy\">Learn more</a>",
       CallGetEndOfLifeInfoAndReturnString(false /*=has_eol_passed*/));
 
