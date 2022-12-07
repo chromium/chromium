@@ -236,6 +236,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     SnapshotTabHelper::CreateForWebState(web_state);
     PagePlaceholderTabHelper::CreateForWebState(web_state);
     PrintTabHelper::CreateForWebState(web_state);
+    ChromeIOSTranslateClient::CreateForWebState(web_state);
   }
 
   InfobarBadgeTabHelper::CreateForWebState(web_state);
@@ -250,8 +251,6 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   OfflinePageTabHelper::CreateForWebState(
       web_state, ReadingListModelFactory::GetForBrowserState(browser_state));
   PermissionsOverlayTabHelper::CreateForWebState(web_state);
-
-  ChromeIOSTranslateClient::CreateForWebState(web_state);
 
   RepostFormTabHelper::CreateForWebState(web_state);
   NetExportTabHelper::CreateForWebState(web_state);
