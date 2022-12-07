@@ -115,10 +115,19 @@ class WebAppProvider : public KeyedService {
   // Web App sub components. These should only be accessed after
   // `on_registry_ready()` is signaled.
 
-  // The app registry model.
+  // Unsafe access to the app registry model. For safe access use locks (see
+  // chrome/browser/web_applications/locks/ for more info).
+  WebAppRegistrar& registrar_unsafe();
+  const WebAppRegistrar& registrar_unsafe() const;
+  // Deprecated use registrar_unsafe instead.
+  // TODO(b/260863458): Remove registrar accessor.
   WebAppRegistrar& registrar();
   const WebAppRegistrar& registrar() const;
-  // The app registry controller.
+  // Unsafe access to the app registry controller. For safe access use locks
+  // (see chrome/browser/web_applications/locks/ for more info).
+  WebAppSyncBridge& sync_bridge_unsafe();
+  // Deprecated use sync_bridge_unsafe instead.
+  // TODO(b/260864090): Remove sync_bridge accessor.
   WebAppSyncBridge& sync_bridge();
   // UIs can use WebAppInstallManager for user-initiated Web Apps install.
   WebAppInstallManager& install_manager();

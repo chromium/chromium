@@ -141,19 +141,31 @@ void WebAppProvider::Start() {
   StartImpl();
 }
 
-WebAppRegistrar& WebAppProvider::registrar() {
+WebAppRegistrar& WebAppProvider::registrar_unsafe() {
   CheckIsConnected();
   return *registrar_;
+}
+
+const WebAppRegistrar& WebAppProvider::registrar_unsafe() const {
+  CheckIsConnected();
+  return *registrar_;
+}
+
+WebAppRegistrar& WebAppProvider::registrar() {
+  return registrar_unsafe();
 }
 
 const WebAppRegistrar& WebAppProvider::registrar() const {
+  return registrar_unsafe();
+}
+
+WebAppSyncBridge& WebAppProvider::sync_bridge_unsafe() {
   CheckIsConnected();
-  return *registrar_;
+  return *sync_bridge_;
 }
 
 WebAppSyncBridge& WebAppProvider::sync_bridge() {
-  CheckIsConnected();
-  return *sync_bridge_;
+  return sync_bridge_unsafe();
 }
 
 WebAppInstallManager& WebAppProvider::install_manager() {
