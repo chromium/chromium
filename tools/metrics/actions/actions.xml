@@ -18900,6 +18900,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileLanguageDetailsSettingsBack">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when user goes back from Language Details Settings to root Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileLanguageDetailsSettingsClose">
+  <owner>noemies@google.com</owner>
+  <description>
+    Reported when Language Details Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileLocationBarTapped">
   <owner>stkhapugin@chromium.org</owner>
   <owner>rkgibson@google.com</owner>

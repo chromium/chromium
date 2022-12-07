@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/settings/language/cells/language_item.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_data_source.h"
@@ -37,7 +38,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface LanguageDetailsTableViewController ()
+@interface LanguageDetailsTableViewController () {
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
+}
 
 // The model data passed to this instance.
 @property(nonatomic, strong) LanguageItem* languageItem;
@@ -129,6 +133,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
       languageDetailsTableViewController:self
                  didSelectOfferTranslate:(type == ItemTypeOfferTranslate)
                             languageCode:self.languageItem.languageCode];
+}
+
+#pragma mark - SettingsControllerProtocol
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobileLanguageDetailsSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobileLanguageDetailsSettingsBack"));
+}
+
+- (void)settingsWillBeDismissed {
+  DCHECK(!_settingsAreDismissed);
+
+  _settingsAreDismissed = YES;
 }
 
 @end
