@@ -36,18 +36,20 @@
 <cr-dialog id="apnDetailDialog"
     close-text="[[i18n('close')]]" show-on-attach>
   <div id="apnDetailDialogTitle" slot="title">
-    [[i18n('apnDetailAddApnDialogTitle')]]
+    [[getDialogTitle_(mode)]]
   </div>
   <div slot="body">
     <!-- TODO(b/162365553): Add validation for the input box settings. -->
     <cr-input id="apnInput" value="{{apn_}}" label="[[i18n('apn')]]"
-        type="text">
+        type="text" disabled="[[isUiElementDisabled_(mode)]]">
     </cr-input>
     <cr-input id="usernameInput" value="{{username_}}"
-        label="[[i18n('OncCellular-APN-Username')]]" type="text">
+        label="[[i18n('OncCellular-APN-Username')]]" type="text"
+        disabled="[[isUiElementDisabled_(mode)]]">
     </cr-input>
     <cr-input id="passwordInput" value="{{password_}}"
-        label="[[i18n('OncCellular-APN-Password')]]" type="password">
+        label="[[i18n('OncCellular-APN-Password')]]" type="password"
+        disabled="[[isUiElementDisabled_(mode)]]">
     </cr-input>
     <cr-expand-button id="advancedSettingsBtn"
         class="advanced-settings cr-row"
@@ -55,20 +57,21 @@
       <div>[[i18n('apnDetailAdvancedSettings')]]</div>
     </cr-expand-button>
     <iron-collapse opened="[[advancedSettingsExpanded_]]">
-    <!-- TODO(b/162365553): Add validation. -->
+      <!-- TODO(b/162365553): Add validation. -->
       <div id="authenticationTypeSelection" class="dropdown-section">
         <div id="authenticationTypeLabel" class="cr-form-field-label">
           [[i18n('apnDetailAuthType')]]
         </div>
         <select id="authTypeDropDown" class="select-field md-select"
             value="{{selectedAuthType_::change}}"
+            disabled="[[isUiElementDisabled_(mode)]]"
             aria-labelledby="authenticationTypeLabel">
           <template is="dom-repeat"
               items="[[AuthenticationTypes]]">
-              <option value="[[item]]"
-                  selected="[[isSelectedAuthType_(item)]]">
-                [[getAuthTypeLocalizedLabel_(item)]]
-              </option>
+            <option value="[[item]]"
+                selected="[[isSelectedAuthType_(item)]]">
+              [[getAuthTypeLocalizedLabel_(item)]]
+            </option>
           </template>
         </select>
       </div>
@@ -77,13 +80,17 @@
       </div>
       <div id="checkboxContainer" class="checkbox-section">
         <cr-checkbox id="apnDefaultTypeCheckbox"
-            aria-labelledby="apnDefaultTypelabel" checked>
+            aria-labelledby="apnDefaultTypelabel"
+            disabled="[[isUiElementDisabled_(mode)]]"
+            checked="{{isDefaultApnType_}}">
           <div id="apnDefaultTypelabel" class="checkbox-text-area">
             [[i18n('apnDetailApnTypeDefault')]]
           </div>
         </cr-checkbox>
         <cr-checkbox id="apnAttachTypeCheckbox"
-            aria-labelledby="apnAttachTypeLabel">
+            disabled="[[isUiElementDisabled_(mode)]]"
+            aria-labelledby="apnAttachTypeLabel"
+            checked="{{isAttachApnType_}}">
           <div id="apnAttachTypeLabel" class="checkbox-text-area">
             [[i18n('apnDetailApnTypeAttach')]]
           </div>
@@ -93,30 +100,39 @@
         <div id="ipTypeLabel" class="cr-form-field-label">
           [[i18n('apnDetailIpType')]]
         </div>
-          <select id="ipTypeDropDown" class="md-select select-field"
-              value="{{selectedIpType_::change}}"
-              aria-labelledby="ipTypeLabel">
-            <template is="dom-repeat"
-                items="[[IpTypes]]">
-              <option value="[[item]]"
-                  selected="[[isSelectedIpType_(item)]]">
-                [[getIpTypeLocalizedLabel_(item)]]
-              </option>
-            </template>
+        <select id="ipTypeDropDown" class="md-select select-field"
+            value="{{selectedIpType_::change}}"
+            disabled="[[isUiElementDisabled_(mode)]]"
+            aria-labelledby="ipTypeLabel">
+          <template is="dom-repeat"
+              items="[[IpTypes]]">
+            <option value="[[item]]"
+                selected="[[isSelectedIpType_(item)]]">
+              [[getIpTypeLocalizedLabel_(item)]]
+            </option>
+          </template>
         </select>
       </div>
     </iron-collapse>
     <div class="cr-row-line cr-row"></div>
   </div>
   <div slot="button-container">
-    <cr-button id="apnDetailCancelBtn" class="cancel-button"
-        on-click="onCancelClicked_">
-      [[i18n('cancel')]]
-    </cr-button>
-    <!-- TODO(b/162365553): Disable Add button unless validated -->
-    <cr-button id="apnDetailAddBtn" class="action-button"
-        on-click="onAddClicked_">
-      [[i18n('add')]]
-    </cr-button>
+    <template is="dom-if" if="[[isUiElementVisible_(mode)]]" restamp>
+      <cr-button id="apnDetailCancelBtn" class="cancel-button"
+          on-click="onCancelClicked_">
+        [[i18n('cancel')]]
+      </cr-button>
+      <!-- TODO(b/162365553): Disable Add button unless validated -->
+      <cr-button id="apnDetailAddBtn" class="action-button"
+          on-click="onAddClicked_">
+        [[i18n('add')]]
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[isUiElementDisabled_(mode)]]" restamp>
+      <cr-button id="apnDoneBtn" class="action-button"
+          on-click="onCancelClicked_">
+        [[i18n('done')]]
+      </cr-button>
+    </template>
   </div>
 </cr-dialog>

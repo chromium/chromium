@@ -11,6 +11,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {ApnProperties, ApnState, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -81,7 +82,20 @@ class ApnListItem extends ApnListItemBase {
    * TODO(b/162365553): Implement.
    * @private
    */
-  onDetailsClicked_() {}
+  onDetailsClicked_() {
+    assert(!!this.guid);
+    assert(!!this.apn);
+
+    this.dispatchEvent(new CustomEvent('show-apn-detail-dialog', {
+      composed: true,
+      bubbles: true,
+      detail: /** @type {!ApnEventData} */ ({
+        apn: this.apn,
+        mode: ApnDetailDialogMode.VIEW,
+        guid: this.guid,
+      }),
+    }));
+  }
 
   /**
    * Disables the selected APN.

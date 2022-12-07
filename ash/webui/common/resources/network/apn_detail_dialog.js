@@ -22,6 +22,7 @@ import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnType, CrosNetworkCon
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './apn_detail_dialog.html.js';
+import {ApnDetailDialogMode} from './cellular_utils.js';
 import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
 
 const AuthenticationTypes = [
@@ -57,6 +58,18 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
 
   static get properties() {
     return {
+      /** @type {ApnProperties|undefined} */
+      apnProperties: {
+        type: Object,
+        observer: 'onApnPropertiesUpdated_',
+      },
+
+      /** @type {ApnDetailDialogMode} */
+      mode: {
+        type: Object,
+        value: ApnDetailDialogMode.CREATE,
+      },
+
       guid: {type: String},
 
       /** @private */
@@ -79,9 +92,7 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
         readOnly: true,
       },
 
-      /**
-       * @private
-       */
+      /** @private */
       selectedAuthType_: {
         type: String,
         value: AuthenticationTypes[0].toString(),
@@ -110,6 +121,18 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
         type: String,
         value: '',
       },
+
+      /** @private */
+      isDefaultApnType_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /** @private */
+      isAttachApnType_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -120,6 +143,28 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
+  }
+
+  /**
+   * Observer method used to fill the apn detail dialog, with the provided apn.
+   * @private
+   */
+  onApnPropertiesUpdated_() {
+    this.apn_ = /** @type {string}*/ (this.apnProperties.accessPointName);
+    this.username_ = /** @type {string}*/ (this.apnProperties.username);
+    this.password_ = /** @type {string}*/ (this.apnProperties.password);
+    this.selectedIpType_ = this.apnProperties.ipType.toString();
+    this.selectedAuthType_ = this.apnProperties.authenticationType.toString();
+    this.isDefaultApnType_ = false;
+    this.isAttachApnType_ = false;
+
+    for (const apnType of this.apnProperties.apnTypes) {
+      if (apnType === ApnType.kDefault) {
+        this.isDefaultApnType_ = true;
+      } else if (apnType === ApnType.kAttach) {
+        this.isAttachApnType_ = true;
+      }
+    }
   }
 
   /**
@@ -155,17 +200,31 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
   }
 
   /**
+   * @private
+   */
+  getDialogTitle_() {
+    switch (this.mode) {
+      case ApnDetailDialogMode.CREATE:
+        return this.i18n('apnDetailAddApnDialogTitle');
+      case ApnDetailDialogMode.VIEW:
+        return this.i18n('apnDetailViewApnDialogTitle');
+      case ApnDetailDialogMode.EDIT:
+        // TODO(b/162365553): Add edit mode for the apn detail dialog.
+        return '';
+    }
+  }
+  /**
    * Maps the checkboxes to an array of {@link ApnType}.
    * @returns {Array<ApnType>}
    * @private
    */
   getSelectedApnTypes_() {
     const apnTypes = [];
-    if (this.$.apnDefaultTypeCheckbox.checked) {
+    if (this.isDefaultApnType_) {
       apnTypes.push(ApnType.kDefault);
     }
 
-    if (this.$.apnAttachTypeCheckbox.checked) {
+    if (this.isAttachApnType_) {
       apnTypes.push(ApnType.kAttach);
     }
     return apnTypes;
@@ -217,6 +276,20 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
    */
   isSelectedAuthType_(item) {
     return Number(this.selectedAuthType_) === item;
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  isUiElementDisabled_() {
+    return this.mode === ApnDetailDialogMode.VIEW;
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  isUiElementVisible_() {
+    return this.mode === ApnDetailDialogMode.CREATE;
   }
 }
 

@@ -6,6 +6,7 @@ import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/apn_list_item.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
+import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ApnState, CrosNetworkConfigRemote} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
@@ -13,6 +14,16 @@ import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_con
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+/** @type {!ApnEventData} */
+const TEST_APN_EVENT_DATA = {
+  apn: {
+    name: 'test_apn',
+  },
+  guid: 'test-guid',
+  mode: ApnDetailDialogMode.VIEW,
+};
 
 suite('ApnListItemTest', function() {
   /** @type {ApnListItemElement} */
@@ -195,4 +206,21 @@ suite('ApnListItemTest', function() {
         ApnState.kDisabled,
         managedProps.result.typeProperties.cellular.customApnList[0].state);
   });
+
+  test(
+      'Clicking APN details button triggers a show-apn-detail-dialog event ',
+      async function() {
+        apnListItem.apn = TEST_APN_EVENT_DATA.apn;
+        apnListItem.guid = TEST_APN_EVENT_DATA.guid;
+
+        const apnDetailsClickedEvent =
+            eventToPromise('show-apn-detail-dialog', window);
+        assertTrue(!!apnListItem.$.detailsButton);
+        apnListItem.$.detailsButton.click();
+        const eventData = await apnDetailsClickedEvent;
+
+        assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
+        assertEquals(TEST_APN_EVENT_DATA.guid, eventData.detail.guid);
+        assertEquals(TEST_APN_EVENT_DATA.mode, eventData.detail.mode);
+      });
 });

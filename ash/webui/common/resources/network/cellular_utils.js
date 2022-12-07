@@ -6,8 +6,27 @@ import 'chrome://resources/ash/common/network/onc_mojo.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {DeviceStateProperties, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, DeviceStateProperties, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+
+/**
+ * TODO(b/162365553): Implement Edit mode.
+ * @enum {string}
+ */
+export const ApnDetailDialogMode = {
+  CREATE: 'create',
+  EDIT: 'edit',
+  VIEW: 'view',
+};
+
+/**
+ * @typedef {{
+ *   apn: !ApnProperties,
+ *   mode: !ApnDetailDialogMode,
+ *   guid: !string
+ * }}
+ */
+export let ApnEventData;
 
 /**
  * Checks if the device has a cellular network with connectionState not

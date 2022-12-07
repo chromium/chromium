@@ -3705,6 +3705,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SETTINGS_ADD_APN_DIALOG_TITLE" desc="Title for the dialog that creates a new custom APN">
         Add a new APN
       </message>
+      <message name="IDS_SETTINGS_VIEW_APN_DIALOG_TITLE" desc="Title for the dialog for viewing an APN">
+        APN details
+      </message>
       <message name="IDS_SETTINGS_APN_INPUT_LABEL" desc="Label for the input field where the APN is specified">
         APN
       </message>
