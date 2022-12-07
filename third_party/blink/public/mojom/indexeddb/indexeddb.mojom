@@ -150,15 +150,6 @@ enum IDBTransactionMode {
   VersionChange,
 };
 
-enum IDBStatus {
-  OK,
-  NotFound,
-  Corruption,
-  NotSupported,
-  InvalidArgument,
-  IOError,
-};
-
 // These values need to match core/dom/exception_code.h
 enum IDBException {
   kNoError = 0,
@@ -477,7 +468,4 @@ interface IDBFactory {
   // immediately.
   DeleteDatabase(pending_associated_remote<IDBCallbacks> pending_callbacks,
                  mojo_base.mojom.String16 name, bool force_close);
-
-  AbortTransactionsAndCompactDatabase() => (IDBStatus status);
-  AbortTransactionsForDatabase() => (IDBStatus status);
 };

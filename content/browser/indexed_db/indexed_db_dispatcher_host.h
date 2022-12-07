@@ -120,12 +120,6 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
                           pending_callbacks,
                       const std::u16string& name,
                       bool force_close) override;
-  void AbortTransactionsAndCompactDatabase(
-      AbortTransactionsAndCompactDatabaseCallback callback) override;
-  void AbortTransactionsForDatabase(
-      AbortTransactionsForDatabaseCallback callback) override;
-
-  void InvalidateWeakPtrsAndClearBindings();
 
   base::SequencedTaskRunner* IDBTaskRunner() const;
 

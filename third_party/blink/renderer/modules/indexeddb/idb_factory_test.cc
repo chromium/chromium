@@ -75,16 +75,6 @@ class BackendFactoryWithMockedDatabaseInfo : public mojom::blink::IDBFactory {
     NOTREACHED();
   }
 
-  void AbortTransactionsAndCompactDatabase(
-      AbortTransactionsAndCompactDatabaseCallback callback) override {
-    NOTREACHED();
-  }
-
-  void AbortTransactionsForDatabase(
-      AbortTransactionsForDatabaseCallback callback) override {
-    NOTREACHED();
-  }
-
   void GetDatabaseInfo(mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
                            pending_callbacks) override {
     callbacks_ptr_->Bind(std::move(pending_callbacks));

@@ -93,18 +93,16 @@ class MODULES_EXPORT WebIDBCursor final {
   Vector<std::unique_ptr<IDBValue>> prefetch_values_;
 
   // Number of continue calls that would qualify for a pre-fetch.
-  int continue_count_;
+  int continue_count_ = 0;
 
   // Number of items used from the last prefetch.
-  int used_prefetches_;
+  int used_prefetches_ = 0;
 
   // Number of onsuccess handlers we are waiting for.
-  int pending_onsuccess_callbacks_;
+  int pending_onsuccess_callbacks_ = 0;
 
   // Number of items to request in next prefetch.
-  int prefetch_amount_;
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  int prefetch_amount_ = kMinPrefetchAmount;
 
   base::WeakPtrFactory<WebIDBCursor> weak_factory_{this};
 };

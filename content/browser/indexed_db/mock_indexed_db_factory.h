@@ -50,24 +50,6 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                     const storage::BucketLocator& bucket_locator,
                     const base::FilePath& data_directory,
                     bool force_close));
-  MOCK_METHOD2(AbortTransactionsAndCompactDatabaseProxy,
-               void(base::OnceCallback<void(leveldb::Status)>* callback,
-                    const storage::BucketLocator& bucket_locator));
-  void AbortTransactionsAndCompactDatabase(
-      base::OnceCallback<void(leveldb::Status)> callback,
-      const storage::BucketLocator& bucket_locator) override {
-    base::OnceCallback<void(leveldb::Status)>* callback_ref = &callback;
-    AbortTransactionsAndCompactDatabaseProxy(callback_ref, bucket_locator);
-  }
-  MOCK_METHOD2(AbortTransactionsForDatabaseProxy,
-               void(base::OnceCallback<void(leveldb::Status)>* callback,
-                    const storage::BucketLocator& bucket_locator));
-  void AbortTransactionsForDatabase(
-      base::OnceCallback<void(leveldb::Status)> callback,
-      const storage::BucketLocator& bucket_locator) override {
-    base::OnceCallback<void(leveldb::Status)>* callback_ref = &callback;
-    AbortTransactionsForDatabaseProxy(callback_ref, bucket_locator);
-  }
 
   MOCK_METHOD1(HandleBackingStoreFailure,
                void(const storage::BucketLocator& bucket_locator));

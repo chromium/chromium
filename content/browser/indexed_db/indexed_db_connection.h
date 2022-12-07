@@ -79,9 +79,6 @@ class CONTENT_EXPORT IndexedDBConnection {
 
   IndexedDBTransaction* GetTransaction(int64_t id) const;
 
-  base::WeakPtr<IndexedDBTransaction> AddTransactionForTesting(
-      std::unique_ptr<IndexedDBTransaction> transaction);
-
   // We ignore calls where the id doesn't exist to facilitate the AbortAll call.
   // TODO(dmurph): Change that so this doesn't need to ignore unknown ids.
   void RemoveTransaction(int64_t id);
@@ -92,8 +89,6 @@ class CONTENT_EXPORT IndexedDBConnection {
   }
 
  private:
-  void ClearStateAfterClose();
-
   const int32_t id_;
 
   // Keeps the factory for this bucket alive.

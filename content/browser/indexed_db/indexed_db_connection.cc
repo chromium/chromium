@@ -177,25 +177,9 @@ IndexedDBTransaction* IndexedDBConnection::GetTransaction(int64_t id) const {
   return it->second.get();
 }
 
-base::WeakPtr<IndexedDBTransaction>
-IndexedDBConnection::AddTransactionForTesting(
-    std::unique_ptr<IndexedDBTransaction> transaction) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!base::Contains(transactions_, transaction->id()));
-  base::WeakPtr<IndexedDBTransaction> transaction_ptr =
-      transaction->ptr_factory_.GetWeakPtr();
-  transactions_[transaction->id()] = std::move(transaction);
-  return transaction_ptr;
-}
-
 void IndexedDBConnection::RemoveTransaction(int64_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   transactions_.erase(id);
-}
-
-void IndexedDBConnection::ClearStateAfterClose() {
-  callbacks_ = nullptr;
-  bucket_state_handle_.Release();
 }
 
 }  // namespace content

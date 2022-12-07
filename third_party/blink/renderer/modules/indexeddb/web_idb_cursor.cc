@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_dispatcher.h"
@@ -20,12 +19,7 @@ WebIDBCursor::WebIDBCursor(
     mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
     int64_t transaction_id,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : transaction_id_(transaction_id),
-      continue_count_(0),
-      used_prefetches_(0),
-      pending_onsuccess_callbacks_(0),
-      prefetch_amount_(kMinPrefetchAmount),
-      task_runner_(task_runner) {
+    : transaction_id_(transaction_id) {
   cursor_.Bind(std::move(cursor_info), std::move(task_runner));
   IndexedDBDispatcher::RegisterCursor(this);
 }
@@ -307,16 +301,6 @@ void WebIDBCursor::ResetPrefetchCache() {
   prefetch_values_.clear();
 
   pending_onsuccess_callbacks_ = 0;
-}
-
-mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks>
-WebIDBCursor::GetCallbacksProxy(
-    std::unique_ptr<WebIDBCallbacks> callbacks_impl) {
-  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> pending_callbacks;
-  mojo::MakeSelfOwnedAssociatedReceiver(
-      std::move(callbacks_impl),
-      pending_callbacks.InitWithNewEndpointAndPassReceiver(), task_runner_);
-  return pending_callbacks;
 }
 
 }  // namespace blink

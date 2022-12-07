@@ -386,38 +386,6 @@ void IndexedDBFactoryImpl::DeleteDatabase(
   }
 }
 
-void IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase(
-    base::OnceCallback<void(leveldb::Status)> callback,
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("IndexedDB",
-               "IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase");
-  auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end()) {
-    std::move(callback).Run(leveldb::Status::OK());
-    return;
-  }
-  it->second->AbortAllTransactions(true);
-  RunTasksForBucket(it->second->AsWeakPtr());
-  std::move(callback).Run(leveldb::Status::OK());
-}
-
-void IndexedDBFactoryImpl::AbortTransactionsForDatabase(
-    base::OnceCallback<void(leveldb::Status)> callback,
-    const storage::BucketLocator& bucket_locator) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT0("IndexedDB",
-               "IndexedDBFactoryImpl::AbortTransactionsForDatabase");
-  auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end()) {
-    std::move(callback).Run(leveldb::Status::OK());
-    return;
-  }
-  it->second->AbortAllTransactions(false);
-  RunTasksForBucket(it->second->AsWeakPtr());
-  std::move(callback).Run(leveldb::Status::OK());
-}
-
 void IndexedDBFactoryImpl::HandleBackingStoreFailure(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -951,11 +919,6 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
           /*is_disk_full=*/false};
 }
 
-void IndexedDBFactoryImpl::RemoveBucketState(
-    const storage::BucketLocator& bucket_locator) {
-  factories_per_bucket_.erase(bucket_locator.id);
-}
-
 void IndexedDBFactoryImpl::OnDatabaseError(
     const storage::BucketLocator& bucket_locator,
     leveldb::Status status,
@@ -1043,15 +1006,6 @@ bool IndexedDBFactoryImpl::IsBackingStoreOpen(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Contains(factories_per_bucket_, bucket_locator.id);
-}
-
-bool IndexedDBFactoryImpl::IsBackingStorePendingClose(
-    const storage::BucketLocator& bucket_locator) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator.id);
-  if (it == factories_per_bucket_.end())
-    return false;
-  return it->second->IsClosing();
 }
 
 bool IndexedDBFactoryImpl::OnMemoryDump(

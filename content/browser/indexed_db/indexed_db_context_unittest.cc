@@ -181,24 +181,6 @@ TEST_F(IndexedDBContextTest, GetDefaultBucketError) {
   example_remote->DeleteDatabase(mock_callbacks->CreateInterfacePtrAndBind(),
                                  u"database_name", /*force_close=*/true);
   loop_3.Run();
-
-  // IDBFactory::AbortTransactionsAndCompactDatabase
-  base::RunLoop loop_4;
-  example_remote->AbortTransactionsAndCompactDatabase(
-      base::BindLambdaForTesting([&](blink::mojom::IDBStatus status) {
-        EXPECT_EQ(status, blink::mojom::IDBStatus::NotFound);
-        loop_4.Quit();
-      }));
-  loop_4.Run();
-
-  // IDBFactory::AbortTransactionsForDatabase
-  base::RunLoop loop_5;
-  example_remote->AbortTransactionsForDatabase(
-      base::BindLambdaForTesting([&](blink::mojom::IDBStatus status) {
-        EXPECT_EQ(status, blink::mojom::IDBStatus::NotFound);
-        loop_5.Quit();
-      }));
-  loop_5.Run();
 }
 
 }  // namespace content

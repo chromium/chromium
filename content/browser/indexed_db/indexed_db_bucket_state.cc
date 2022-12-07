@@ -164,51 +164,6 @@ IndexedDBBucketState::~IndexedDBBucketState() {
   leveldb_destruct_event.Wait();
 }
 
-void IndexedDBBucketState::AbortAllTransactions(bool compact) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Because finishing all transactions could cause a database to be destructed
-  // (which would mutate the database_ map), save the keys beforehand and use
-  // those.
-  std::vector<std::u16string> database_names;
-  database_names.reserve(databases_.size());
-  for (const auto& pair : databases_) {
-    database_names.push_back(pair.first);
-  }
-
-  base::WeakPtr<IndexedDBBucketState> weak_ptr = AsWeakPtr();
-  for (const std::u16string& database_name : database_names) {
-    auto it = databases_.find(database_name);
-    if (it == databases_.end())
-      continue;
-
-    // Calling FinishAllTransactions can destruct the IndexedDBConnection &
-    // modify the IndexedDBDatabase::connection() list. To prevent UAFs, start
-    // by taking a WeakPtr of all connections, and then iterate that list.
-    std::vector<base::WeakPtr<IndexedDBConnection>> weak_connections;
-    weak_connections.reserve(it->second->connections().size());
-    for (IndexedDBConnection* connection : it->second->connections())
-      weak_connections.push_back(connection->GetWeakPtr());
-
-    for (base::WeakPtr<IndexedDBConnection> connection : weak_connections) {
-      if (connection) {
-        leveldb::Status status =
-            connection->AbortAllTransactions(IndexedDBDatabaseError(
-                blink::mojom::IDBException::kUnknownError,
-                "Aborting all transactions for the origin."));
-        if (!status.ok()) {
-          // This call should delete this object.
-          tear_down_callback().Run(status);
-          return;
-        }
-      }
-    }
-  }
-
-  if (compact)
-    backing_store_->Compact();
-}
-
 void IndexedDBBucketState::ForceClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // To avoid re-entry, the `db_destruction_weak_factory_` is invalidated so

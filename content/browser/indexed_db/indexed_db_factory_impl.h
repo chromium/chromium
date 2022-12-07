@@ -79,13 +79,6 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
                       const base::FilePath& data_directory,
                       bool force_close) override;
 
-  void AbortTransactionsAndCompactDatabase(
-      base::OnceCallback<void(leveldb::Status)> callback,
-      const storage::BucketLocator& bucket_locator) override;
-  void AbortTransactionsForDatabase(
-      base::OnceCallback<void(leveldb::Status)> callback,
-      const storage::BucketLocator& bucket_locator) override;
-
   void HandleBackingStoreFailure(
       const storage::BucketLocator& bucket_locator) override;
   void HandleBackingStoreCorruption(
@@ -199,8 +192,6 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
       bool is_first_attempt,
       bool create_if_missing);
 
-  void RemoveBucketState(const storage::BucketLocator& bucket_locator);
-
   // Called when the database has been deleted on disk.
   void OnDatabaseDeleted(const storage::BucketLocator& bucket_locator);
 
@@ -212,8 +203,6 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   bool IsDatabaseOpen(const storage::BucketLocator& bucket_locator,
                       const std::u16string& name) const;
   bool IsBackingStoreOpen(const storage::BucketLocator& bucket_locator) const;
-  bool IsBackingStorePendingClose(
-      const storage::BucketLocator& bucket_locator) const;
 
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
@@ -234,7 +223,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   OnDatabaseDeletedCallback call_on_database_deleted_for_testing_;
 
   // Weak pointers from this factory are used to bind the
-  // RemoveBucketState() function, which deletes the
+  // RunTasksForBucket() function, which deletes the
   // IndexedDBBucketState object. This allows those weak pointers to be
   // invalidated during force close & shutdown to prevent re-entry (see
   // ContextDestroyed()).

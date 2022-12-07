@@ -110,8 +110,6 @@ class CONTENT_EXPORT IndexedDBBucketState {
 
   ~IndexedDBBucketState();
 
-  void AbortAllTransactions(bool compact);
-
   void ForceClose();
 
   bool IsClosing() const {
