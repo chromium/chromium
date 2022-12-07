@@ -37,8 +37,8 @@
       'linux-chrome': 'official_reclient',
       'linux-chromeos-chrome': 'official_reclient_chromeos_include_unwind_tables',
       'mac-chrome': 'official_reclient_mac',
-      'win-chrome': 'official_goma_x86',
-      'win64-chrome': 'official_goma_x64',
+      'win-chrome': 'official_reclient_x86',
+      'win64-chrome': 'official_reclient_x64',
     },
     'chrome.pgo': {
       'android-arm32-pgo': 'official_reclient_android_arm32_pgo',
@@ -3346,8 +3346,16 @@
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
+    'official_reclient_x64': [
+      'official', 'reclient', 'x64',
+    ],
+
     'official_reclient_x64_pgo': [
       'official', 'reclient', 'x64', 'no_symbols', 'pgo_phase_1', 'release'
+    ],
+
+    'official_reclient_x86': [
+      'official', 'reclient', 'x86',
     ],
 
     'official_reclient_x86_pgo': [
