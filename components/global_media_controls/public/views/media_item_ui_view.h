@@ -64,6 +64,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
+  // views::View:
+  void OnGestureEvent(ui::GestureEvent* event) override;
+
   // views::FocusChangeListener:
   void OnWillChangeFocus(views::View* focused_before,
                          views::View* focused_now) override {}
@@ -88,7 +91,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   // views::SlideOutControllerDelegate:
   ui::Layer* GetSlideOutLayer() override;
   void OnSlideStarted() override {}
-  void OnSlideChanged(bool in_progress) override {}
+  void OnSlideChanged(bool in_progress) override;
   void OnSlideOut() override;
 
   // global_media_controls::MediaItemUI:
@@ -101,6 +104,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
 
   const std::u16string& GetTitle() const;
 
+  // Set the scroll view that is currently holding this item.
+  void SetScrollView(views::ScrollView* scroll_view);
+
   views::ImageButton* GetDismissButtonForTesting();
 
   media_message_center::MediaNotificationViewImpl* view_for_testing() {
@@ -111,6 +117,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
     return device_selector_view_;
   }
   MediaItemUIFooter* footer_view_for_testing() { return footer_view_; }
+  views::SlideOutController* slide_out_controller_for_testing() {
+    return slide_out_controller_.get();
+  }
 
   bool is_playing_for_testing() { return is_playing_; }
   bool is_expanded_for_testing() { return is_expanded_; }
@@ -132,6 +141,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   raw_ptr<views::View> swipeable_container_ = nullptr;
 
   std::u16string title_;
+
+  // The scroll view that is currently holding this item.
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // Always "visible" so that it reserves space in the header so that the
   // dismiss button can appear without forcing things to shift.
@@ -159,6 +171,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIView
   bool is_playing_ = false;
 
   bool is_expanded_ = false;
+
+  bool is_sliding_ = false;
 
   base::ObserverList<global_media_controls::MediaItemUIObserver> observers_;
 

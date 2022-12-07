@@ -20,7 +20,10 @@
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/gesture_event_details.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/animation/slide_out_controller.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
@@ -350,6 +353,37 @@ TEST_F(MediaItemUIViewTest, SendsClicks) {
   // It should also notify its observers when the header is clicked.
   EXPECT_CALL(observer(), OnMediaItemUIClicked(kTestNotificationId));
   SimulateHeaderClicked();
+}
+
+TEST_F(MediaItemUIViewTest, GestureScrollDisabledWhenSlidingOut) {
+  auto* scroll_view = new views::ScrollView();
+  item_ui()->SetScrollView(scroll_view);
+
+  // Vertical scroll bar should be enabled initially.
+  EXPECT_EQ(scroll_view->GetVerticalScrollBarMode(),
+            views::ScrollView::ScrollBarMode::kEnabled);
+
+  // Send a gesture scroll update event with some horizontal value.
+  gfx::Point point;
+  ui::GestureEvent gesture_scroll_update(
+      point.x(), point.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, /*delta_x=*/1.0,
+                              /*delta_y=*/0.0));
+  item_ui()->slide_out_controller_for_testing()->OnGestureEvent(
+      &gesture_scroll_update);
+
+  // Vertical scroll bar should be disabled because of the sliding.
+  EXPECT_EQ(scroll_view->GetVerticalScrollBarMode(),
+            views::ScrollView::ScrollBarMode::kDisabled);
+
+  // Slide ending should re-enabled the vertical scroll bar.
+  ui::GestureEvent gesture_scroll_end(
+      point.x(), point.y(), 0, ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
+  item_ui()->slide_out_controller_for_testing()->OnGestureEvent(
+      &gesture_scroll_end);
+  EXPECT_EQ(scroll_view->GetVerticalScrollBarMode(),
+            views::ScrollView::ScrollBarMode::kEnabled);
 }
 
 TEST_F(MediaItemUIViewTest, MetadataTest) {

@@ -74,6 +74,7 @@ void MediaItemUIListView::ShowItem(const std::string& id,
     }
   }
 
+  item->SetScrollView(this);
   items_[id] = contents()->AddChildView(std::move(item));
 
   contents()->InvalidateLayout();

@@ -31,6 +31,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -185,6 +186,11 @@ void MediaItemUIView::OnMouseExited(const ui::MouseEvent& event) {
   UpdateDismissButtonVisibility();
 }
 
+void MediaItemUIView::OnGestureEvent(ui::GestureEvent* event) {
+  if (scroll_view_ && event->IsScrollGestureEvent())
+    scroll_view_->OnGestureEvent(event);
+}
+
 void MediaItemUIView::OnDidChangeFocus(views::View* focused_before,
                                        views::View* focused_now) {
   UpdateDismissButtonVisibility();
@@ -278,6 +284,22 @@ ui::Layer* MediaItemUIView::GetSlideOutLayer() {
   return swipeable_container_->layer();
 }
 
+void MediaItemUIView::OnSlideChanged(bool in_progress) {
+  // Make sure we are only scrolling in one dimension.
+  if (scroll_view_ && in_progress && !is_sliding_ &&
+      slide_out_controller_->GetGestureAmount()) {
+    is_sliding_ = true;
+    scroll_view_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kDisabled);
+  }
+
+  if (!in_progress && scroll_view_ && is_sliding_) {
+    is_sliding_ = false;
+    scroll_view_->SetVerticalScrollBarMode(
+        views::ScrollView::ScrollBarMode::kEnabled);
+  }
+}
+
 void MediaItemUIView::OnSlideOut() {
   DismissNotification();
 }
@@ -294,6 +316,10 @@ void MediaItemUIView::RemoveObserver(
 
 const std::u16string& MediaItemUIView::GetTitle() const {
   return title_;
+}
+
+void MediaItemUIView::SetScrollView(views::ScrollView* scroll_view) {
+  scroll_view_ = scroll_view;
 }
 
 views::ImageButton* MediaItemUIView::GetDismissButtonForTesting() {
