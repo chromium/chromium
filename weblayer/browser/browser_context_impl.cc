@@ -239,10 +239,10 @@ BrowserContextImpl::GetOriginTrialsControllerDelegate() {
   return OriginTrialsFactory::GetForBrowserContext(this);
 }
 
-download::InProgressDownloadManager*
-BrowserContextImpl::RetriveInProgressDownloadManager() {
+std::unique_ptr<download::InProgressDownloadManager>
+BrowserContextImpl::RetrieveInProgressDownloadManager() {
   // Override this to provide a connection to the wake lock service.
-  auto* download_manager = new download::InProgressDownloadManager(
+  auto download_manager = std::make_unique<download::InProgressDownloadManager>(
       nullptr, path_,
       path_.empty() ? nullptr
                     : GetDefaultStoragePartition()->GetProtoDatabaseProvider(),

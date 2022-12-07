@@ -118,8 +118,8 @@ class AwBrowserContext : public content::BrowserContext,
       override;
   content::ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
-  download::InProgressDownloadManager* RetriveInProgressDownloadManager()
-      override;
+  std::unique_ptr<download::InProgressDownloadManager>
+  RetrieveInProgressDownloadManager() override;
   content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
       override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(

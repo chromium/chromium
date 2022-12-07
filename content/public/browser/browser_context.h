@@ -294,8 +294,8 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   // Retrieves the InProgressDownloadManager associated with this object if
   // available
-  virtual download::InProgressDownloadManager*
-  RetriveInProgressDownloadManager();
+  virtual std::unique_ptr<download::InProgressDownloadManager>
+  RetrieveInProgressDownloadManager();
 
   // Utility function useful for embedders. Only needs to be called if
   // 1) The embedder needs to use a new salt, and

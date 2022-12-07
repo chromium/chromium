@@ -296,7 +296,7 @@ DownloadManagerImpl::DownloadManagerImpl(BrowserContext* browser_context)
       browser_context_(browser_context),
       delegate_(nullptr),
       in_progress_manager_(
-          browser_context_->RetriveInProgressDownloadManager()),
+          browser_context_->RetrieveInProgressDownloadManager()),
       next_download_id_(download::DownloadItem::kInvalidId),
       is_history_download_id_retrieved_(false),
       should_persist_new_download_(false),

@@ -486,9 +486,9 @@ AwBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
   return nullptr;
 }
 
-download::InProgressDownloadManager*
-AwBrowserContext::RetriveInProgressDownloadManager() {
-  return new download::InProgressDownloadManager(
+std::unique_ptr<download::InProgressDownloadManager>
+AwBrowserContext::RetrieveInProgressDownloadManager() {
+  return std::make_unique<download::InProgressDownloadManager>(
       nullptr, base::FilePath(), nullptr,
       base::BindRepeating(&IgnoreOriginSecurityCheck),
       base::BindRepeating(&content::DownloadRequestUtils::IsURLSafe),

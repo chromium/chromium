@@ -322,8 +322,8 @@ media::learning::LearningSession* BrowserContext::GetLearningSession() {
   return impl()->GetLearningSession();
 }
 
-download::InProgressDownloadManager*
-BrowserContext::RetriveInProgressDownloadManager() {
+std::unique_ptr<download::InProgressDownloadManager>
+BrowserContext::RetrieveInProgressDownloadManager() {
   return nullptr;
 }
 

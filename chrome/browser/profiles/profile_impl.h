@@ -95,8 +95,8 @@ class ProfileImpl : public Profile {
   content::ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
   std::string GetMediaDeviceIDSalt() override;
-  download::InProgressDownloadManager* RetriveInProgressDownloadManager()
-      override;
+  std::unique_ptr<download::InProgressDownloadManager>
+  RetrieveInProgressDownloadManager() override;
   content::FileSystemAccessPermissionContext*
   GetFileSystemAccessPermissionContext() override;
   content::ContentIndexProvider* GetContentIndexProvider() override;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_MANAGER_SERVICE_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -180,8 +181,8 @@ class DownloadManagerService
       const JavaParamRef<jstring>& jtarget_path);
 
   // Retrives the in-progress manager and give up the ownership.
-  download::InProgressDownloadManager* RetriveInProgressDownloadManager(
-      content::BrowserContext* context);
+  std::unique_ptr<download::InProgressDownloadManager>
+  RetrieveInProgressDownloadManager(content::BrowserContext* context);
 
   // Gets a download item from DownloadManager or InProgressManager.
   download::DownloadItem* GetDownload(const std::string& download_guid,
