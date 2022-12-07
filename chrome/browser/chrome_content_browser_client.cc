@@ -1433,15 +1433,18 @@ bool DoesGaiaOriginRequireDedicatedProcess() {
 
 void HandleExpandedPaths(
     std::unique_ptr<enterprise_connectors::FilesScanData> fsd,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     enterprise_connectors::ContentAnalysisDelegate::Data dialog_data,
     enterprise_connectors::AnalysisConnector connector,
     std::vector<base::FilePath> paths,
     ChromeContentBrowserClient::IsClipboardPasteContentAllowedCallback
         callback) {
+  if (!web_contents)
+    return;
+
   dialog_data.paths = fsd->expanded_paths();
   enterprise_connectors::ContentAnalysisDelegate::CreateForWebContents(
-      web_contents, std::move(dialog_data),
+      web_contents.get(), std::move(dialog_data),
       base::BindOnce(
           [](std::unique_ptr<enterprise_connectors::FilesScanData> fsd,
              std::vector<base::FilePath> paths,
@@ -6826,9 +6829,9 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
     auto fsd = std::make_unique<enterprise_connectors::FilesScanData>(paths);
     auto* fsd_ptr = fsd.get();
     fsd_ptr->ExpandPaths(base::BindOnce(&HandleExpandedPaths, std::move(fsd),
-                                        web_contents, std::move(dialog_data),
-                                        connector, std::move(paths),
-                                        std::move(callback)));
+                                        web_contents->GetWeakPtr(),
+                                        std::move(dialog_data), connector,
+                                        std::move(paths), std::move(callback)));
   } else {
     dialog_data.text.push_back(data);
     HandleStringData(web_contents, std::move(dialog_data), connector,
