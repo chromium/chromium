@@ -38,7 +38,8 @@ namespace {
 void ShowInProgressDownloads(Profile* profile) {
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(profile);
-  if (download_core_service->NonMaliciousDownloadCount() > 0) {
+  if (download_core_service &&
+      download_core_service->NonMaliciousDownloadCount() > 0) {
     chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     chrome::ShowDownloads(displayer.browser());
   }

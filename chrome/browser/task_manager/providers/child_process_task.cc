@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/process_resource_usage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -81,6 +82,12 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
         // profile or the profile path from the child process host if any.
         auto loaded_profiles = profile_manager->GetLoadedProfiles();
         for (auto* profile : loaded_profiles) {
+          // Some profiles cannot have extensions, such as the System Profile.
+          if (extensions::ChromeContentBrowserClientExtensionsPart::
+                  AreExtensionsDisabledForProfile(profile)) {
+            continue;
+          }
+
           const extensions::ExtensionSet& enabled_extensions =
               extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
           const extensions::Extension* extension =

@@ -80,6 +80,11 @@ void NotificationTriggerScheduler::TriggerNotificationsForStoragePartition(
 void NotificationTriggerScheduler::TriggerNotificationsForProfile(
     Profile* profile) {
   auto* service = PlatformNotificationServiceFactory::GetForProfile(profile);
+  // Service might not be available for some irregular profiles, like the System
+  // Profile.
+  if (!service)
+    return;
+
   base::Time next_trigger = service->ReadNextTriggerTimestamp();
 
   // Skip this profile if there are no pending notifications.

@@ -497,7 +497,7 @@ void ChromeInternalLogSource::PopulatePowerApiLogs(
   std::string info;
   for (auto* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    // Some profiles cannot have entesions, such as the System Profile.
+    // Some profiles cannot have extensions, such as the System Profile.
     if (extensions::ChromeContentBrowserClientExtensionsPart::
             AreExtensionsDisabledForProfile(profile)) {
       continue;

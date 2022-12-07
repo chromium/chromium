@@ -1124,6 +1124,9 @@ int ProcessMemoryMetricsEmitter::GetNumberOfExtensions(base::ProcessId pid) {
     extensions::ProcessMap* process_map = extensions::ProcessMap::Get(profile);
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(profile);
+    if (!process_map || !registry)
+      continue;
+
     std::set<std::string> extension_ids =
         process_map->GetExtensionsInProcess(rph_id);
     for (const std::string& extension_id : extension_ids) {

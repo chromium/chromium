@@ -85,6 +85,12 @@ UserScriptListener::UserScriptListener() {
   if (g_browser_process->profile_manager()) {
     for (auto* profile :
          g_browser_process->profile_manager()->GetLoadedProfiles()) {
+      // Some profiles cannot have extensions, such as the System Profile.
+      if (extensions::ChromeContentBrowserClientExtensionsPart::
+              AreExtensionsDisabledForProfile(profile)) {
+        continue;
+      }
+
       extension_registry_observations_.AddObservation(
           ExtensionRegistry::Get(profile));
     }

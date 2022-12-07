@@ -382,7 +382,7 @@ int ExtensionsMetricsProvider::HashExtension(const std::string& extension_id,
 
 std::unique_ptr<extensions::ExtensionSet>
 ExtensionsMetricsProvider::GetInstalledExtensions(Profile* profile) {
-  // Some profiles cannot have entesions, such as the System Profile.
+  // Some profiles cannot have extensions, such as the System Profile.
   if (!profile || extensions::ChromeContentBrowserClientExtensionsPart::
                       AreExtensionsDisabledForProfile(profile)) {
     return nullptr;
