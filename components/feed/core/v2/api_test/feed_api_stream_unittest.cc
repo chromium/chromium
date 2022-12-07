@@ -1097,6 +1097,19 @@ TEST_F(FeedApiTest, ShouldMakeFeedQueryRequestConsumesQuota) {
   ASSERT_EQ(LoadStreamStatus::kCannotLoadFromNetworkThrottled, status);
 }
 
+TEST_F(FeedApiTest, SingleWebFeedShouldIgnoreQuota) {
+  LoadStreamStatus status = LoadStreamStatus::kNoStatus;
+  for (int i = 0; i < 50; i++) {
+    status =
+        stream_
+            ->ShouldMakeFeedQueryRequest(StreamType(StreamKind::kSingleWebFeed),
+                                         LoadType::kInitialLoad)
+            .load_stream_status;
+  }
+
+  ASSERT_EQ(LoadStreamStatus::kNoStatus, status);
+}
+
 TEST_F(FeedApiTest, LoadStreamFromStore) {
   // Fill the store with stream data that is just barely fresh, and verify it
   // loads.

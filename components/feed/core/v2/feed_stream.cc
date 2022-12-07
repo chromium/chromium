@@ -938,10 +938,25 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
             feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_NO_INTERNET};
   }
 
-  if (consume_quota &&
-      !request_throttler_.RequestQuota((load_type != LoadType::kLoadMore)
-                                           ? NetworkRequestType::kFeedQuery
-                                           : NetworkRequestType::kNextPage)) {
+  NetworkRequestType request_type;
+  switch (stream_type.GetKind()) {
+    case StreamKind::kUnknown:
+      DLOG(ERROR) << "Unknown stream kind";
+      [[fallthrough]];
+    case StreamKind::kForYou:
+      request_type = (load_type != LoadType::kLoadMore)
+                         ? NetworkRequestType::kFeedQuery
+                         : NetworkRequestType::kNextPage;
+      break;
+    case StreamKind::kFollowing:
+      request_type = NetworkRequestType::kWebFeedListContents;
+      break;
+    case StreamKind::kSingleWebFeed:
+      request_type = NetworkRequestType::kSingleWebFeedListContents;
+      break;
+  }
+
+  if (consume_quota && !request_throttler_.RequestQuota(request_type)) {
     return {LoadStreamStatus::kCannotLoadFromNetworkThrottled,
             feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER};
   }
