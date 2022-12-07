@@ -5,8 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_COMPOUND_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_COMPOUND_IMAGE_BACKING_H_
 
+#include "base/containers/enum_set.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -33,12 +33,20 @@ enum class SharedImageAccessStream {
   kVaapi
 };
 
+// Used to represent what access streams a backing can be used for.
+using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
+                                      SharedImageAccessStream::kSkia,
+                                      SharedImageAccessStream::kVaapi>;
+
 // A compound backing that combines a shared memory backing and real GPU
 // backing. The real GPU backing must implement `UploadFromMemory()` and not
 // have it's own shared memory segment.
 // TODO(crbug.com/1293509): Support multiple GPU backings.
 class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
  public:
+  using CreateBackingCallback =
+      base::OnceCallback<void(std::unique_ptr<SharedImageBacking>&)>;
+
   static bool IsValidSharedMemoryBufferFormat(const gfx::Size& size,
                                               gfx::BufferFormat buffer_format,
                                               gfx::BufferPlane plane);
@@ -99,6 +107,26 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
  private:
   friend class CompoundImageBackingTest;
 
+  // Holds one element, aka SharedImageBacking and related information, that
+  // makes up the compound.
+  struct ElementHolder {
+   public:
+    ElementHolder();
+    ElementHolder(const ElementHolder& other) = delete;
+    ElementHolder& operator=(const ElementHolder& other) = delete;
+    ~ElementHolder();
+
+    // Returns the backing. Will invoke `create_callback` to create backing if
+    // required.
+    SharedImageBacking* GetBacking();
+
+    AccessStreamSet access_streams;
+    uint32_t content_id_ = 0;
+
+    CreateBackingCallback create_callback;
+    std::unique_ptr<SharedImageBacking> backing;
+  };
+
   CompoundImageBacking(
       const Mailbox& mailbox,
       viz::SharedImageFormat format,
@@ -117,24 +145,39 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
                     base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t client_tracing_id) override;
 
-  // The first call will attempt to allocate `gpu_backing_`. This can fail
-  // so `gpu_backing_` may be null afterwards.
-  void LazyAllocateGpuBacking();
+  // Returns a SkPixmap for shared memory backing.
+  SkPixmap GetSharedMemoryPixmap();
+
+  // Returns the element used for access stream.
+  ElementHolder& GetElement(SharedImageAccessStream stream);
+
+  // Returns the backing used for access steam. Note that backing might be null
+  // sometimes, eg. the create callback failed to produce a backing.
+  SharedImageBacking* GetBacking(SharedImageAccessStream stream);
+
+  bool HasLatestContent(ElementHolder& element);
+
+  // Sets the element used for `stream` as having the latest content. If
+  // `write_access` is true then only that element has the latest content.
+  void SetLatestContent(SharedImageAccessStream stream, bool write_access);
+
+  // Runs CreateSharedImage() on `factory` and stores the result in `backing`.
+  // If successful this will update the estimated size of compound backing.
+  void LazyCreateBacking(base::WeakPtr<SharedImageBackingFactory> factory,
+                         std::unique_ptr<SharedImageBacking>& backing);
 
   const SurfaceHandle surface_handle_;
-  const bool allow_shm_overlays_;
 
-  std::unique_ptr<SharedImageBacking> shm_backing_;
+  uint32_t latest_content_id_ = 1;
 
-  // This will store backing factory to allocate `gpu_backing_` with. It must
-  // be a WeakPtr as the backing can outlive the factory that created it. This
-  // will be reset after lazy allocation is attempted.
-  base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory_;
-  std::unique_ptr<SharedImageBacking> gpu_backing_;
-
-  // Keeps track of if shared memory or GPU backing has latest pixels.
-  bool shm_has_latest_content_ = true;
-  bool gpu_has_latest_content_ = false;
+  // Holds all of the "element" backings that make up this compound backing. For
+  // each there is a backing, set of streams and tracking for latest content.
+  //
+  // It's expected that for each access stream there is exactly one element used
+  // to access it. Note that it's possible the backing for a given access stream
+  // can't actually support that type of usage, in which case the backing will
+  // be null or the ProduceX() call will just fail.
+  std::array<ElementHolder, 2> elements_;
 };
 
 }  // namespace gpu

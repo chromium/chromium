@@ -19,7 +19,10 @@
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
+
+#if BUILDFLAG(IS_WIN)
 #include "ui/gl/gl_image.h"
+#endif
 
 namespace gpu {
 namespace {
@@ -96,30 +99,25 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
 class CompoundImageBackingTest : public testing::Test {
  public:
   bool HasGpuBacking(CompoundImageBacking* backing) {
-    return !!backing->gpu_backing_;
+    return !!backing->elements_[1].backing;
   }
 
-  bool GpuBackingFactoryIsValid(CompoundImageBacking* backing) {
-    return !!backing->gpu_backing_factory_;
-  }
-
-  bool GpuBackingFactoryIsCleared(CompoundImageBacking* backing) {
-    return !backing->gpu_backing_factory_ &&
-           !backing->gpu_backing_factory_.WasInvalidated();
+  bool HasGpuCreateBackingCallback(CompoundImageBacking* backing) {
+    return !backing->elements_[1].create_callback.is_null();
   }
 
   TestImageBacking* GetGpuBacking(CompoundImageBacking* backing) {
-    auto* gpu_backing = backing->gpu_backing_.get();
+    auto* gpu_backing = backing->elements_[1].backing.get();
     DCHECK_EQ(gpu_backing->GetType(), SharedImageBackingType::kTest);
     return static_cast<TestImageBacking*>(gpu_backing);
   }
 
   bool GetShmHasLatestContent(CompoundImageBacking* backing) {
-    return backing->shm_has_latest_content_;
+    return backing->elements_[0].content_id_ == backing->latest_content_id_;
   }
 
   bool GetGpuHasLatestContent(CompoundImageBacking* backing) {
-    return backing->gpu_has_latest_content_;
+    return backing->elements_[1].content_id_ == backing->latest_content_id_;
   }
 
   // Create a compound backing containing shared memory + GPU backing.
@@ -306,7 +304,6 @@ TEST_F(CompoundImageBackingTest, ReadbackToMemory) {
   EXPECT_TRUE(GetGpuHasLatestContent(compound_backing));
 }
 
-#if BUILDFLAG(IS_WIN)
 TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
   auto backing = CreateCompoundBacking(/*allow_shm_overlays=*/true);
   auto* compound_backing = static_cast<CompoundImageBacking*>(backing.get());
@@ -317,13 +314,15 @@ TEST_F(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess) {
       manager_.ProduceOverlay(compound_backing->mailbox(), &tracker_);
   auto access = overlay_rep->BeginScopedReadAccess();
 
+#if BUILDFLAG(IS_WIN)
   // This should produce a GLImageMemory but there will still be no GPU backing.
   auto* gl_image = access->gl_image();
   ASSERT_TRUE(gl_image);
   EXPECT_EQ(gl_image->GetType(), gl::GLImage::Type::MEMORY);
+#endif
+
   EXPECT_FALSE(HasGpuBacking(compound_backing));
 }
-#endif
 
 TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
   auto backing = CreateCompoundBacking();
@@ -334,7 +333,7 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
   // The compound backing shouldn't have GPU backing yet and should have
   // a valid factory to create one.
   EXPECT_FALSE(HasGpuBacking(compound_backing));
-  EXPECT_TRUE(GpuBackingFactoryIsValid(compound_backing));
+  EXPECT_TRUE(HasGpuCreateBackingCallback(compound_backing));
 
   test_factory_.SetAllocationsShouldFail(true);
 
@@ -347,7 +346,7 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsCreate) {
 
   // The backing factory to create GPU backing should be reset so creation is
   // not retried.
-  EXPECT_TRUE(GpuBackingFactoryIsCleared(compound_backing));
+  EXPECT_FALSE(HasGpuCreateBackingCallback(compound_backing));
 }
 
 TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
@@ -359,7 +358,7 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
   // The compound backing shouldn't have GPU backing yet and should have
   // a valid factory to create one.
   EXPECT_FALSE(HasGpuBacking(compound_backing));
-  EXPECT_TRUE(GpuBackingFactoryIsValid(compound_backing));
+  EXPECT_TRUE(HasGpuCreateBackingCallback(compound_backing));
 
   test_factory_.InvalidateWeakPtrsForTesting();
 
@@ -372,7 +371,7 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
 
   // The backing factory to create GPU backing should be reset to avoid logging
   // about destroyed image multiple times.
-  EXPECT_TRUE(GpuBackingFactoryIsCleared(compound_backing));
+  EXPECT_FALSE(HasGpuCreateBackingCallback(compound_backing));
 }
 
 }  // namespace gpu

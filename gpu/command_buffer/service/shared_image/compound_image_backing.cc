@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image/compound_image_backing.h"
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -37,6 +38,8 @@ namespace {
 BASE_FEATURE(kSkipReadbackToSharedMemory,
              "SkipReadbackToSharedMemory",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr AccessStreamSet kMemoryStreamSet = {SharedImageAccessStream::kMemory};
 
 // Unique GUIDs for child backings.
 base::trace_event::MemoryAllocatorDumpGuid GetSubBackingGUIDForTracing(
@@ -254,10 +257,8 @@ class WrappedOverlayCompoundImageRepresentation
       SharedImageManager* manager,
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
-      SharedImageAccessStream access_stream,
       std::unique_ptr<OverlayImageRepresentation> wrapped)
       : OverlayImageRepresentation(manager, backing, tracker),
-        access_stream_(access_stream),
         wrapped_(std::move(wrapped)) {
     DCHECK(wrapped_);
   }
@@ -268,7 +269,8 @@ class WrappedOverlayCompoundImageRepresentation
 
   // OverlayImageRepresentation implementation.
   bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) final {
-    compound_backing()->NotifyBeginAccess(access_stream_, AccessMode::kRead);
+    compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kOverlay,
+                                          AccessMode::kRead);
 
     return wrapped_->BeginReadAccess(acquire_fence);
   }
@@ -280,7 +282,6 @@ class WrappedOverlayCompoundImageRepresentation
 #endif
 
  private:
-  const SharedImageAccessStream access_stream_;
   std::unique_ptr<OverlayImageRepresentation> wrapped_;
 };
 
@@ -366,12 +367,20 @@ CompoundImageBacking::CompoundImageBacking(
                          usage,
                          shm_backing->GetEstimatedSize(),
                          /*is_thread_safe=*/false),
-      surface_handle_(surface_handle),
-      allow_shm_overlays_(allow_shm_overlays),
-      shm_backing_(std::move(shm_backing)),
-      gpu_backing_factory_(std::move(gpu_backing_factory)) {
-  DCHECK(shm_backing_);
-  DCHECK_EQ(size, shm_backing_->size());
+      surface_handle_(surface_handle) {
+  DCHECK(shm_backing);
+  DCHECK_EQ(size, shm_backing->size());
+  elements_[0].backing = std::move(shm_backing);
+  elements_[0].access_streams = kMemoryStreamSet;
+  if (allow_shm_overlays)
+    elements_[0].access_streams.Put(SharedImageAccessStream::kOverlay);
+  elements_[0].content_id_ = latest_content_id_;
+
+  elements_[1].create_callback =
+      base::BindOnce(&CompoundImageBacking::LazyCreateBacking,
+                     base::Unretained(this), std::move(gpu_backing_factory));
+  elements_[1].access_streams =
+      base::Difference(AccessStreamSet::All(), kMemoryStreamSet);
 }
 
 CompoundImageBacking::~CompoundImageBacking() = default;
@@ -384,33 +393,35 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageAccessStream stream,
   // TODO(kylechar): Keep track of access to the compound backing as we
   // only want to update a backing if it's not currently being accessed.
 
-  if (stream == SharedImageAccessStream::kMemory) {
+  auto& access_element = GetElement(stream);
+
+  if (access_element.access_streams.Has(SharedImageAccessStream::kMemory)) {
     DCHECK_EQ(mode, RepresentationAccessMode::kRead);
     return;
   }
 
-  if (!gpu_has_latest_content_) {
-    DCHECK(shm_has_latest_content_);
-    DCHECK(gpu_backing_);
+  auto& shm_element = GetElement(SharedImageAccessStream::kMemory);
+  DCHECK_NE(&shm_element, &access_element);
 
-    auto& wrapper = static_cast<SharedMemoryImageBacking*>(shm_backing_.get())
-                        ->shared_memory_wrapper();
-    DCHECK(wrapper.IsValid());
+  bool updated_backing = false;
 
-    SkPixmap pixmap(shm_backing_->AsSkImageInfo(), wrapper.GetMemory(),
-                    wrapper.GetStride());
+  if (!HasLatestContent(access_element)) {
+    DCHECK(HasLatestContent(shm_element));
 
-    if (gpu_backing_->UploadFromMemory(pixmap)) {
-      gpu_has_latest_content_ = true;
+    auto* gpu_backing = access_element.GetBacking();
+    SkPixmap pixmap = GetSharedMemoryPixmap();
+    if (gpu_backing && gpu_backing->UploadFromMemory(pixmap)) {
+      updated_backing = true;
     } else {
       DLOG(ERROR) << "Failed to upload from shared memory to GPU backing";
     }
   }
 
-  if (mode == RepresentationAccessMode::kWrite) {
-    // On GPU write access set shared memory contents as stale.
-    shm_has_latest_content_ = false;
-  }
+  // If a backing was updated or this is write access update what has the latest
+  // content.
+  bool is_write_access = mode == RepresentationAccessMode::kWrite;
+  if (updated_backing || is_write_access)
+    SetLatestContent(stream, is_write_access);
 }
 
 SharedImageBackingType CompoundImageBacking::GetType() const {
@@ -419,30 +430,28 @@ SharedImageBackingType CompoundImageBacking::GetType() const {
 
 void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   DCHECK(!in_fence);
-  shm_has_latest_content_ = true;
-  gpu_has_latest_content_ = false;
+  SetLatestContent(SharedImageAccessStream::kMemory,
+                   /*write_access=*/true);
 }
 
 bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
+  auto& shm_element = GetElement(SharedImageAccessStream::kMemory);
+
   // If shared memory already contains the latest content skip readback.
-  if (shm_has_latest_content_ &&
+  if (HasLatestContent(shm_element) &&
       base::FeatureList::IsEnabled(kSkipReadbackToSharedMemory)) {
     return true;
   }
 
-  auto& wrapper = static_cast<SharedMemoryImageBacking*>(shm_backing_.get())
-                      ->shared_memory_wrapper();
-  DCHECK(wrapper.IsValid());
-
-  SkPixmap pixmap(shm_backing_->AsSkImageInfo(), wrapper.GetMemory(),
-                  wrapper.GetStride());
-
-  if (!gpu_backing_->ReadbackToMemory(pixmap)) {
+  auto* gpu_backing = elements_[1].GetBacking();
+  SkPixmap pixmap = GetSharedMemoryPixmap();
+  if (!gpu_backing || !gpu_backing->ReadbackToMemory(pixmap)) {
     DLOG(ERROR) << "Failed to copy from GPU backing to shared memory";
     return false;
   }
 
-  shm_has_latest_content_ = true;
+  SetLatestContent(SharedImageAccessStream::kMemory, /*write_access=*/false);
+
   return true;
 }
 
@@ -459,12 +468,12 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     WGPUDevice device,
     WGPUBackendType backend_type,
     std::vector<WGPUTextureFormat> view_formats) {
-  LazyAllocateGpuBacking();
-  if (!gpu_backing_)
+  auto* backing = GetBacking(SharedImageAccessStream::kDawn);
+  if (!backing)
     return nullptr;
 
-  auto real_rep = gpu_backing_->ProduceDawn(
-      manager, tracker, device, backend_type, std::move(view_formats));
+  auto real_rep = backing->ProduceDawn(manager, tracker, device, backend_type,
+                                       std::move(view_formats));
   if (!real_rep)
     return nullptr;
 
@@ -475,11 +484,11 @@ std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
 std::unique_ptr<GLTextureImageRepresentation>
 CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker) {
-  LazyAllocateGpuBacking();
-  if (!gpu_backing_)
+  auto* backing = GetBacking(SharedImageAccessStream::kGL);
+  if (!backing)
     return nullptr;
 
-  auto real_rep = gpu_backing_->ProduceGLTexture(manager, tracker);
+  auto real_rep = backing->ProduceGLTexture(manager, tracker);
   if (!real_rep)
     return nullptr;
 
@@ -490,11 +499,11 @@ CompoundImageBacking::ProduceGLTexture(SharedImageManager* manager,
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 CompoundImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                   MemoryTypeTracker* tracker) {
-  LazyAllocateGpuBacking();
-  if (!gpu_backing_)
+  auto* backing = GetBacking(SharedImageAccessStream::kGL);
+  if (!backing)
     return nullptr;
 
-  auto real_rep = gpu_backing_->ProduceGLTexturePassthrough(manager, tracker);
+  auto real_rep = backing->ProduceGLTexturePassthrough(manager, tracker);
   if (!real_rep)
     return nullptr;
 
@@ -507,12 +516,12 @@ std::unique_ptr<SkiaImageRepresentation> CompoundImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  LazyAllocateGpuBacking();
-  if (!gpu_backing_)
+  auto* backing = GetBacking(SharedImageAccessStream::kSkia);
+  if (!backing)
     return nullptr;
 
   auto real_rep =
-      gpu_backing_->ProduceSkia(manager, tracker, std::move(context_state));
+      backing->ProduceSkia(manager, tracker, std::move(context_state));
   if (!real_rep)
     return nullptr;
 
@@ -523,28 +532,16 @@ std::unique_ptr<SkiaImageRepresentation> CompoundImageBacking::ProduceSkia(
 std::unique_ptr<OverlayImageRepresentation>
 CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {
-  if (allow_shm_overlays_) {
-    // The client has stated it wants shared memory backed overlays.
-    auto real_rep = shm_backing_->ProduceOverlay(manager, tracker);
-    if (!real_rep)
-      return nullptr;
-
-    return std::make_unique<WrappedOverlayCompoundImageRepresentation>(
-        manager, this, tracker, SharedImageAccessStream::kMemory,
-        std::move(real_rep));
-  }
-
-  LazyAllocateGpuBacking();
-  if (!gpu_backing_)
+  auto* backing = GetBacking(SharedImageAccessStream::kOverlay);
+  if (!backing)
     return nullptr;
 
-  auto real_rep = gpu_backing_->ProduceOverlay(manager, tracker);
+  auto real_rep = backing->ProduceOverlay(manager, tracker);
   if (!real_rep)
     return nullptr;
 
   return std::make_unique<WrappedOverlayCompoundImageRepresentation>(
-      manager, this, tracker, SharedImageAccessStream::kOverlay,
-      std::move(real_rep));
+      manager, this, tracker, std::move(real_rep));
 }
 
 void CompoundImageBacking::OnMemoryDump(
@@ -570,54 +567,103 @@ void CompoundImageBacking::OnMemoryDump(
   // Add dumps nested under `dump_name` for child backings owned by compound
   // image. These get different shared GUIDs to add ownership edges with GPU
   // texture or shared memory.
-  auto shm_client_guid = GetSubBackingGUIDForTracing(mailbox(), 1);
-  std::string shm_dump_name =
-      base::StringPrintf("%s/shared_memory", dump_name.c_str());
-  shm_backing_->OnMemoryDump(shm_dump_name, shm_client_guid, pmd,
-                             client_tracing_id);
+  for (int i = 0; i < static_cast<int>(elements_.size()); ++i) {
+    auto* backing = elements_[i].backing.get();
+    if (!backing)
+      continue;
 
-  if (gpu_backing_) {
-    auto gpu_client_guid = GetSubBackingGUIDForTracing(mailbox(), 2);
-    std::string gpu_dump_name = base::StringPrintf("%s/gpu", dump_name.c_str());
-    gpu_backing_->OnMemoryDump(gpu_dump_name, gpu_client_guid, pmd,
-                               client_tracing_id);
+    auto element_client_guid = GetSubBackingGUIDForTracing(mailbox(), i + 1);
+    std::string element_dump_name =
+        base::StringPrintf("%s/element_%d", dump_name.c_str(), i);
+    backing->OnMemoryDump(element_dump_name, element_client_guid, pmd,
+                          client_tracing_id);
   }
 }
 
-void CompoundImageBacking::LazyAllocateGpuBacking() {
-  if (gpu_backing_)
-    return;
+SkPixmap CompoundImageBacking::GetSharedMemoryPixmap() {
+  auto* shm_backing = GetElement(SharedImageAccessStream::kMemory).GetBacking();
+  DCHECK(shm_backing);
 
-  if (!gpu_backing_factory_) {
-    if (gpu_backing_factory_.WasInvalidated()) {
-      // The SharedImageFactory must no longer exist so the compound shared
-      // image must already have been destroyed.
-      LOG(ERROR) << "Can't allocate backing after image has been destroyed";
-      gpu_backing_factory_.reset();
-    }
+  auto& wrapper = static_cast<SharedMemoryImageBacking*>(shm_backing)
+                      ->shared_memory_wrapper();
+  DCHECK(wrapper.IsValid());
+
+  return SkPixmap(shm_backing->AsSkImageInfo(), wrapper.GetMemory(),
+                  wrapper.GetStride());
+}
+
+CompoundImageBacking::ElementHolder& CompoundImageBacking::GetElement(
+    SharedImageAccessStream stream) {
+  for (auto& element : elements_) {
+    // For each access stream there should be exactly one element where this
+    // returns true.
+    if (element.access_streams.Has(stream))
+      return element;
+  }
+
+  NOTREACHED();
+  return elements_.back();
+}
+
+SharedImageBacking* CompoundImageBacking::GetBacking(
+    SharedImageAccessStream stream) {
+  return GetElement(stream).GetBacking();
+}
+
+void CompoundImageBacking::LazyCreateBacking(
+    base::WeakPtr<SharedImageBackingFactory> factory,
+    std::unique_ptr<SharedImageBacking>& backing) {
+  if (!factory) {
+    DLOG(ERROR) << "Can't allocate backing after image has been destroyed";
     return;
   }
 
-  gpu_backing_ = gpu_backing_factory_->CreateSharedImage(
+  backing = factory->CreateSharedImage(
       mailbox(), format(), surface_handle_, size(), color_space(),
       surface_origin(), alpha_type(), usage() | SHARED_IMAGE_USAGE_CPU_UPLOAD,
       /*is_thread_safe=*/false);
-  if (!gpu_backing_) {
-    LOG(ERROR) << "Failed to allocate GPU backing";
-    gpu_backing_factory_.reset();
+  if (!backing) {
+    DLOG(ERROR) << "Failed to allocate GPU backing";
     return;
   }
 
-  gpu_backing_->SetNotRefCounted();
-  gpu_backing_->SetClearedRect(gfx::Rect(size()));
+  backing->SetNotRefCounted();
+  backing->SetCleared();
 
   // Update peak GPU memory tracking with the new estimated size.
-  size_t estimated_size = shm_backing_->GetEstimatedSize();
-  if (gpu_backing_)
-    estimated_size += gpu_backing_->GetEstimatedSize();
+  size_t estimated_size = 0;
+  for (auto& element : elements_) {
+    if (element.backing)
+      estimated_size += element.backing->GetEstimatedSize();
+  }
 
   AutoLock auto_lock(this);
   UpdateEstimatedSize(estimated_size);
+}
+
+bool CompoundImageBacking::HasLatestContent(ElementHolder& element) {
+  return element.content_id_ == latest_content_id_;
+}
+
+void CompoundImageBacking::SetLatestContent(SharedImageAccessStream stream,
+                                            bool write_access) {
+  if (write_access)
+    ++latest_content_id_;
+
+  auto& element = GetElement(stream);
+  DCHECK(element.backing);
+  element.content_id_ = latest_content_id_;
+}
+
+CompoundImageBacking::ElementHolder::ElementHolder() = default;
+CompoundImageBacking::ElementHolder::~ElementHolder() = default;
+
+SharedImageBacking* CompoundImageBacking::ElementHolder::GetBacking() {
+  if (create_callback) {
+    std::move(create_callback).Run(backing);
+  }
+
+  return backing.get();
 }
 
 }  // namespace gpu
