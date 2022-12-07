@@ -5,7 +5,6 @@
 #ifndef BASE_TRACE_EVENT_HEAP_PROFILER_H_
 #define BASE_TRACE_EVENT_HEAP_PROFILER_H_
 
-#include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 
@@ -13,14 +12,6 @@
 // usage in the heap profiler. This is in addition to the macros defined in
 // trace_event.h and are specific to heap profiler. This file also defines
 // implementation details of these macros.
-
-// Implementation detail: heap profiler macros create temporary variables to
-// keep instrumentation overhead low. These macros give each temporary variable
-// a unique name based on the line number to prevent name collisions.
-#define INTERNAL_HEAP_PROFILER_UID3(a, b) heap_profiler_unique_##a##b
-#define INTERNAL_HEAP_PROFILER_UID2(a, b) INTERNAL_HEAP_PROFILER_UID3(a, b)
-#define INTERNAL_HEAP_PROFILER_UID(name_prefix) \
-  INTERNAL_HEAP_PROFILER_UID2(name_prefix, __LINE__)
 
 // Scoped tracker for task execution context in the heap profiler.
 #define TRACE_HEAP_PROFILER_API_SCOPED_TASK_EXECUTION \
@@ -38,9 +29,10 @@
 // A scoped ignore event used to tell heap profiler to ignore all the
 // allocations in the scope. It is useful to exclude allocations made for
 // tracing from the heap profiler dumps.
-#define HEAP_PROFILER_SCOPED_IGNORE                                          \
-  trace_event_internal::HeapProfilerScopedIgnore INTERNAL_HEAP_PROFILER_UID( \
-      scoped_ignore)
+// TODO(https://crbug.com/1378619): This is a no-op since
+// AllocationContextTracker::GetContextSnapshot was removed. Clean up the call
+// sites.
+#define HEAP_PROFILER_SCOPED_IGNORE ((void)0)
 
 namespace trace_event_internal {
 
@@ -77,28 +69,6 @@ inline const char* HeapProfilerCurrentTaskContext() {
       GetInstanceForCurrentThread()
           ->TaskContext();
 }
-
-class BASE_EXPORT HeapProfilerScopedIgnore {
- public:
-  inline HeapProfilerScopedIgnore() {
-    using base::trace_event::AllocationContextTracker;
-    if (UNLIKELY(
-            AllocationContextTracker::capture_mode() !=
-            AllocationContextTracker::CaptureMode::DISABLED)) {
-      AllocationContextTracker::GetInstanceForCurrentThread()
-          ->begin_ignore_scope();
-    }
-  }
-  inline ~HeapProfilerScopedIgnore() {
-    using base::trace_event::AllocationContextTracker;
-    if (UNLIKELY(
-            AllocationContextTracker::capture_mode() !=
-            AllocationContextTracker::CaptureMode::DISABLED)) {
-      AllocationContextTracker::GetInstanceForCurrentThread()
-          ->end_ignore_scope();
-    }
-  }
-};
 
 }  // namespace trace_event_internal
 
