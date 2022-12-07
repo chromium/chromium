@@ -20,8 +20,6 @@ namespace content {
 
 namespace {
 
-// Used in Media.Audio.Render.StreamBrokerDisconnectReason2 histogram, matches
-// StreamBrokerDisconnectReason2 enum.
 enum class StreamBrokerDisconnectReason {
   kDefault = 0,
   kPlatformError,
