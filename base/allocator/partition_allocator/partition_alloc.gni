@@ -80,8 +80,9 @@ assert(!enable_pointer_compression_support || glue_core_pools,
 declare_args() {
   # The supported platforms are supposed to match `_is_brp_supported`, but we
   # enable the feature on Linux early because it's most widely used for security
-  # research
-  use_asan_backup_ref_ptr = is_asan && (is_win || is_android || is_linux)
+  # research. ASAN BRP is not supported in Chromium-external builds.
+  use_asan_backup_ref_ptr =
+      build_with_chromium && is_asan && (is_win || is_android || is_linux)
 }
 
 # AsanBackupRefPtr is not supported outside Chromium. The implementation is
