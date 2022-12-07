@@ -351,6 +351,11 @@ class PermissionUmaUtil {
 
   static void RecordEmbargoStatus(PermissionEmbargoStatus embargo_status);
 
+  // Recorded when a permission prompt creation is in progress.
+  static void RecordPermissionPromptAttempt(
+      const std::vector<PermissionRequest*>& requests,
+      bool IsLocationBarEditingOrEmpty);
+
   // UMA specifically for when permission prompts are shown. This should be
   // roughly equivalent to the metrics above, however it is
   // useful to have separate UMA to a few reasons:

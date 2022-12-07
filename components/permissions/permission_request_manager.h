@@ -74,6 +74,13 @@ class PermissionRequestManager
    public:
     virtual void OnPromptAdded() {}
     virtual void OnPromptRemoved() {}
+    // Called when recreation of the permission prompt is not possible. It means
+    // that `PermissionRequestManager` is ready to display a prompt but the UI
+    // layer was not able to display it.
+    virtual void OnPromptRecreateViewFailed() {}
+    // Called when permission prompt creation was aborted because the current
+    // tab is no longer visible, hance it is not possible to display a prompt.
+    virtual void OnPromptCreationFailedHiddenTab() {}
     // Called when the current batch of requests have been handled and the
     // prompt is no longer visible. Note that there might be some queued
     // permission requests that will get shown after this. This differs from
@@ -117,6 +124,13 @@ class PermissionRequestManager
   void RemoveObserver(Observer* observer);
 
   bool IsRequestInProgress() const;
+
+  // Returns `true` if a permission request is in progress but a prompt view is
+  // nullptr.
+  bool CanRestorePrompt();
+
+  // Recreates a permission prompt.
+  void RestorePrompt();
 
   // Do NOT use this methods in production code. Use this methods in browser
   // tests that need to accept or deny permissions when requested in
@@ -313,6 +327,8 @@ class PermissionRequestManager
 
   void NotifyPromptAdded();
   void NotifyPromptRemoved();
+  void NotifyPromptRecreateFailed();
+  void NotifyPromptCreationFailedHiddenTab();
   void NotifyRequestDecided(permissions::PermissionAction permission_action);
 
   void StorePermissionActionForUMA(const GURL& origin,

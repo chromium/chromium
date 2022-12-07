@@ -89,6 +89,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search_engines/template_url.h"
@@ -833,6 +834,15 @@ void LocationBarView::Update(WebContents* contents) {
     qr_generator_icon->SetVisible(false);
 
   OnChanged();  // NOTE: Calls Layout().
+
+  // A permission prompt may be suspended due to an invalid state (empty or
+  // editing location bar). Restore the suspended prompt if possible.
+  if (contents && !IsEditingOrEmpty()) {
+    auto* permission_request_manager =
+        permissions::PermissionRequestManager::FromWebContents(contents);
+    if (permission_request_manager->CanRestorePrompt())
+      permission_request_manager->RestorePrompt();
+  }
 }
 
 void LocationBarView::ResetTabState(WebContents* contents) {

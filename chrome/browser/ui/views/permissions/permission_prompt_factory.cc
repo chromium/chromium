@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
 #include "content/public/browser/web_contents.h"
 
@@ -46,8 +47,10 @@ LocationBarView* GetLocationBarView(Browser* browser) {
 // A permission request should be auto-ignored if a user interacts with the
 // LocationBar. The only exception is the NTP page where the user needs to press
 // on a microphone icon to get a permission request.
-bool ShouldIgnorePermissionRequest(content::WebContents* web_contents,
-                                   Browser* browser) {
+bool ShouldIgnorePermissionRequest(
+    content::WebContents* web_contents,
+    Browser* browser,
+    permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(web_contents);
   DCHECK(browser);
 
@@ -58,7 +61,12 @@ bool ShouldIgnorePermissionRequest(content::WebContents* web_contents,
   }
 
   LocationBarView* location_bar = GetLocationBarView(browser);
-  return location_bar && location_bar->IsEditingOrEmpty();
+  bool can_display_prompt = location_bar && location_bar->IsEditingOrEmpty();
+
+  permissions::PermissionUmaUtil::RecordPermissionPromptAttempt(
+      delegate->Requests(), can_display_prompt);
+
+  return can_display_prompt;
 }
 
 bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
@@ -168,7 +176,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   }
 
   // Auto-ignore the permission request if a user is typing into location bar.
-  if (ShouldIgnorePermissionRequest(web_contents, browser)) {
+  if (ShouldIgnorePermissionRequest(web_contents, browser, delegate)) {
     return nullptr;
   }
 

@@ -26,6 +26,16 @@ void PermissionRequestObserver::OnRequestsFinalized() {
   loop_.Quit();
 }
 
+void PermissionRequestObserver::OnPromptRecreateViewFailed() {
+  is_view_recreate_failed_ = true;
+  loop_.Quit();
+}
+
+void PermissionRequestObserver::OnPromptCreationFailedHiddenTab() {
+  is_prompt_show_failed_hidden_tab_ = true;
+  loop_.Quit();
+}
+
 void PermissionRequestObserver::OnPermissionRequestManagerDestructed() {
   observation_.Reset();
 }

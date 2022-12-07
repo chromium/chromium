@@ -38,6 +38,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -60,7 +61,6 @@
 #include "url/origin.h"
 
 namespace {
-
 const char* kPermissionsKillSwitchFieldStudy =
     permissions::PermissionContextBase::kPermissionsKillSwitchFieldStudy;
 const char* kPermissionsKillSwitchBlockedValue =
@@ -291,7 +291,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(2, bubble_factory()->TotalRequestCount());
 }
 
-// Requests before the load should not be bundled with a request after the load.
+// Requests before the load should not be bundled with a request after the
+// load.
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
                        RequestsBeforeAfterLoad) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -307,9 +308,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(1, bubble_factory()->TotalRequestCount());
 }
 
-// Navigating twice to the same URL should be equivalent to refresh. This means
-// showing the bubbles twice.
-// http://crbug.com/512849 flaky
+// Navigating twice to the same URL should be equivalent to refresh. This
+// means showing the bubbles twice. http://crbug.com/512849 flaky
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, DISABLED_NavTwice) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -329,9 +329,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, DISABLED_NavTwice) {
   EXPECT_EQ(2, bubble_factory()->TotalRequestCount());
 }
 
-// Navigating twice to the same URL with a hash should be navigation within the
-// page. This means the bubble is only shown once.
-// http://crbug.com/512849 flaky
+// Navigating twice to the same URL with a hash should be navigation within
+// the page. This means the bubble is only shown once. http://crbug.com/512849
+// flaky
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
                        DISABLED_NavTwiceWithHash) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -376,9 +376,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
 
 // Prompts are only shown for active tabs and (on Desktop) hidden on tab
 // switching
-// Flaky on bots crbug.com/1003747.
-IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
-                       DISABLED_MultipleTabs) {
+IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest, MultipleTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -399,10 +397,27 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   ASSERT_EQ(2, tab_strip_model->count());
   ASSERT_EQ(1, tab_strip_model->active_index());
 
-  // Request geolocation in foreground tab, prompt should be shown.
-  ExecuteScriptAndGetValue(
-      tab_strip_model->GetWebContentsAt(1)->GetPrimaryMainFrame(),
-      "navigator.geolocation.getCurrentPosition(function(){});");
+  constexpr char kRequestNotifications[] = R"(
+      new Promise(resolve => {
+        Notification.requestPermission().then(function (permission) {
+          resolve(permission)
+        });
+      })
+      )";
+
+  {
+    permissions::PermissionRequestObserver observer(
+        tab_strip_model->GetWebContentsAt(1));
+
+    // Request permission in foreground tab, prompt should be shown.
+    EXPECT_TRUE(content::ExecJs(
+        tab_strip_model->GetWebContentsAt(1)->GetPrimaryMainFrame(),
+        kRequestNotifications,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    observer.Wait();
+  }
+
   EXPECT_EQ(1, bubble_factory_1->show_count());
   EXPECT_FALSE(bubble_factory_0->is_visible());
   EXPECT_TRUE(bubble_factory_1->is_visible());
@@ -416,11 +431,21 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_FALSE(bubble_factory_0->is_visible());
   EXPECT_TRUE(bubble_factory_1->is_visible());
 
-  // Request notification in background tab. No prompt is shown until the tab
-  // itself is activated.
-  ExecuteScriptAndGetValue(
-      tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame(),
-      "Notification.requestPermission()");
+  {
+    permissions::PermissionRequestObserver observer(
+        tab_strip_model->GetWebContentsAt(0));
+
+    // Request notification in background tab. No prompt is shown until the
+    // tab itself is activated.
+    EXPECT_TRUE(content::ExecJs(
+        tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame(),
+        kRequestNotifications,
+        content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+    observer.Wait();
+    EXPECT_TRUE(observer.is_prompt_show_failed_hidden_tab());
+  }
+
   EXPECT_FALSE(bubble_factory_0->is_visible());
   EXPECT_EQ(2, bubble_factory_1->show_count());
 
@@ -430,36 +455,37 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   EXPECT_EQ(2, bubble_factory_1->show_count());
 }
 
-// Regularly timing out in Windows, Linux and macOS Debug Builds.
-// https://crbug.com/931657
 IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
-                       DISABLED_BackgroundTabNavigation) {
+                       BackgroundTabNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), embedded_test_server()->GetURL("/empty.html"), 1);
 
-  // Request camera, prompt should be shown.
+  // Request Notifications, prompt should be shown.
   ExecuteScriptAndGetValue(
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
-      "navigator.getUserMedia({video: true}, ()=>{}, ()=>{})");
+      "Notification.requestPermission()");
   bubble_factory()->WaitForPermissionBubble();
   EXPECT_TRUE(bubble_factory()->is_visible());
   EXPECT_EQ(1, bubble_factory()->show_count());
 
-  // SetUp() only creates a mock prompt factory for the first tab but this test
-  // doesn't request any permissions in the second tab so it doesn't need one.
+  // SetUp() only creates a mock prompt factory for the first tab but this
+  // test doesn't request any permissions in the second tab so it doesn't need
+  // one.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("/empty.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Navigate background tab, prompt should be removed.
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+
   ExecuteScriptAndGetValue(
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
       "window.location = 'simple.html'");
-  content::TestNavigationObserver observer(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
+
   observer.Wait();
   EXPECT_FALSE(bubble_factory()->is_visible());
 
@@ -742,6 +768,11 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       WarningReason::kAbusiveContent);
 
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/empty.html"), 1);
+
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   permissions::MockPermissionRequest request_quiet(
       permissions::RequestType::kNotifications);
@@ -753,9 +784,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   auto disposition_from_prompt_bubble =
       manager->view_for_testing()->GetPromptDisposition();
 
-  // There will be no instance of PermissionPromptImpl after a tab marked as
-  // HIDDEN.
-  manager->OnVisibilityChanged(content::Visibility::HIDDEN);
+  // There will be no instance of PermissionPromptImpl after a new tab is opened
+  // and existing tab marked as HIDDEN.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), embedded_test_server()->GetURL("/empty.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   absl::optional<permissions::PermissionPromptDisposition> disposition =
       manager->current_request_prompt_disposition_for_testing();
@@ -764,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerQuietUiBrowserTest,
   EXPECT_EQ(disposition.value(), disposition_from_prompt_bubble);
 
   //  DCHECK failure if Closing executed on HIDDEN PermissionRequestManager.
-  manager->OnVisibilityChanged(content::Visibility::VISIBLE);
+  browser()->tab_strip_model()->ActivateTabAt(0);
   manager->Dismiss();
   base::RunLoop().RunUntilIdle();
 }
@@ -912,10 +946,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithBackForwardCacheBrowserTest,
   content::RenderFrameHostWrapper rfh_b(GetActiveMainFrame());
 
   // Mic, camera, and pan/tilt/zoom requests are grouped if they come from the
-  // same origin. Make sure this will not include requests from a cached frame.
-  // Note pages will not be cached when navigating within the same origin, so we
-  // have different urls in the navigations above but use the same (default) url
-  // for the MockPermissionRequest here.
+  // same origin. Make sure this will not include requests from a cached
+  // frame. Note pages will not be cached when navigating within the same
+  // origin, so we have different urls in the navigations above but use the
+  // same (default) url for the MockPermissionRequest here.
   permissions::MockPermissionRequest req_a_1(
       permissions::RequestType::kCameraPanTiltZoom,
       permissions::PermissionRequestGestureType::GESTURE);
@@ -1098,8 +1132,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithPrerenderingTest,
 
   base::RunLoop().RunUntilIdle();
 
-  // Permission request from main frame should be granted, similar request from
-  // prerender should be denied.
+  // Permission request from main frame should be granted, similar request
+  // from prerender should be denied.
   EXPECT_TRUE(request_1.granted());
   EXPECT_TRUE(request_2->cancelled());
   EXPECT_TRUE(deleted_observer.deleted());
@@ -1183,8 +1217,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
       })();
     )";
 
-  // The result of query 'geolocation' permission in the fenced frame should be
-  // 'denied'.
+  // The result of query 'geolocation' permission in the fenced frame should
+  // be 'denied'.
   EXPECT_EQ("denied", content::EvalJs(fenced_frame_host, kQueryPermission));
 
   const char kQueryCurrentPosition[] = R"(

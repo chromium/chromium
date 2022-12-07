@@ -979,6 +979,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Permissions.Prompt.{PermissionType}.{Gesture}.Attempt"
+    enum="Boolean" expires_after="2023-10-26">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>Recorded when a permission prompt creation is in progress.</summary>
+  <token key="PermissionType" variants="AllPermissionTypes"/>
+  <token key="Gesture">
+    <variant name="Gesture"/>
+    <variant name="NoGesture"/>
+    <variant name="Unknown"/>
+  </token>
+</histogram>
+
 <histogram name="Permissions.QuietChip.TimeToInteraction" units="ms"
     expires_after="2023-05-07">
   <owner>elklm@chromium.org</owner>

@@ -495,6 +495,46 @@ void PermissionUmaUtil::RecordEmbargoStatus(
                                 embargo_status, PermissionEmbargoStatus::NUM);
 }
 
+void PermissionUmaUtil::RecordPermissionPromptAttempt(
+    const std::vector<PermissionRequest*>& requests,
+    bool IsLocationBarEditingOrEmpty) {
+  DCHECK(!requests.empty());
+
+  RequestTypeForUma request_type = RequestTypeForUma::MULTIPLE;
+  PermissionRequestGestureType gesture_type =
+      PermissionRequestGestureType::UNKNOWN;
+  if (requests.size() == 1) {
+    request_type = GetUmaValueForRequestType(requests[0]->request_type());
+    gesture_type = requests[0]->GetGestureType();
+  }
+
+  std::string permission_type = GetPermissionRequestString(request_type);
+
+  std::string gesture;
+
+  switch (gesture_type) {
+    case PermissionRequestGestureType::UNKNOWN: {
+      gesture = "Unknown";
+      break;
+    }
+    case PermissionRequestGestureType::GESTURE: {
+      gesture = "Gesture";
+      break;
+    }
+    case PermissionRequestGestureType::NO_GESTURE: {
+      gesture = "NoGesture";
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
+
+  std::string histogram_name =
+      "Permissions.Prompt." + permission_type + "." + gesture + ".Attempt";
+
+  base::UmaHistogramBoolean(histogram_name, IsLocationBarEditingOrEmpty);
+}
+
 void PermissionUmaUtil::PermissionPromptShown(
     const std::vector<PermissionRequest*>& requests) {
   DCHECK(!requests.empty());
