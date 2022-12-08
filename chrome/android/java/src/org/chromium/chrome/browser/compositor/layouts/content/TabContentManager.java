@@ -303,12 +303,15 @@ public class TabContentManager {
             topMargin = params.topMargin;
         }
 
+        int width = (int) ((viewToDraw.getMeasuredWidth() + leftMargin) * mThumbnailScale);
+        int height = (int) ((viewToDraw.getMeasuredHeight() + topMargin - overlayTranslateY)
+                * mThumbnailScale);
+        if (width <= 0 || height <= 0) {
+            return null;
+        }
+
         try {
-            bitmap = Bitmap.createBitmap(
-                    (int) ((viewToDraw.getMeasuredWidth() + leftMargin) * mThumbnailScale),
-                    (int) ((viewToDraw.getMeasuredHeight() + topMargin - overlayTranslateY)
-                            * mThumbnailScale),
-                    Bitmap.Config.ARGB_8888);
+            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         } catch (OutOfMemoryError ex) {
             return null;
         }
