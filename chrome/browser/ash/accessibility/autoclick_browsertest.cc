@@ -44,6 +44,12 @@ class AutoclickBrowserTest : public InProcessBrowserTest {
   AutoclickBrowserTest(const AutoclickBrowserTest&) = delete;
   AutoclickBrowserTest& operator=(const AutoclickBrowserTest&) = delete;
 
+  void OnFocusRingChanged() {
+    if (loop_runner_ && loop_runner_->running()) {
+      loop_runner_->Quit();
+    }
+  }
+
  protected:
   AutoclickBrowserTest() = default;
   ~AutoclickBrowserTest() override = default;
@@ -174,6 +180,11 @@ class AutoclickBrowserTest : public InProcessBrowserTest {
     generator_->MoveMouseTo(bounds.CenterPoint());
   }
 
+  void WaitForFocusRingChanged() {
+    loop_runner_ = std::make_unique<base::RunLoop>();
+    loop_runner_->Run();
+  }
+
   base::WeakPtr<AutoclickBrowserTest> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -184,6 +195,7 @@ class AutoclickBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::OnceClosure pref_change_waiter_;
+  std::unique_ptr<base::RunLoop> loop_runner_;
   base::WeakPtrFactory<AutoclickBrowserTest> weak_ptr_factory_{this};
 };
 
@@ -272,14 +284,11 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
                   {IDC_CONTENT_CONTEXT_COPY, IDC_CONTENT_CONTEXT_PASTE}));
 }
 
-// TODO(b/261462562): Fix flaky crash and enable.
 IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
-                       DISABLED_ScrollHoverHighlightsScrollableArea) {
+                       ScrollHoverHighlightsScrollableArea) {
   // Create a callback for the focus ring observer.
-  base::RunLoop runner;
-  base::RepeatingCallback<void()> callback =
-      base::BindLambdaForTesting([&runner]() { runner.Quit(); });
-  AccessibilityManager::Get()->SetFocusRingObserverForTest(callback);
+  AccessibilityManager::Get()->SetFocusRingObserverForTest(base::BindRepeating(
+      &AutoclickBrowserTest::OnFocusRingChanged, GetWeakPtr()));
 
   LoadURLAndAutoclick(R"(
       data:text/html;charset=utf-8,
@@ -301,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(AutoclickBrowserTest,
   SetAutoclickEventType(AutoclickEventType::kScroll);
 
   HoverOverHtmlElement("test_textarea");
-  runner.Run();
+  WaitForFocusRingChanged();
 
   focus_ring_group = controller->GetFocusRingGroupForTesting(focus_ring_id);
   ASSERT_NE(nullptr, focus_ring_group);
