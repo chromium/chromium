@@ -28,6 +28,9 @@ class CONTENT_EXPORT PrefetchedMainframeResponseContainer {
 
   const net::IsolationInfo& isolation_info() { return isolation_info_; }
 
+  // Returns reference to the response head.
+  const network::mojom::URLResponseHead* GetHead() { return head_.get(); }
+
   // Releases the ownership of the response head from |this| and gives it to the
   // caller.
   network::mojom::URLResponseHeadPtr ReleaseHead();

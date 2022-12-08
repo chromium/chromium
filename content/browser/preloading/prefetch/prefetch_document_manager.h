@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "net/http/http_no_vary_search_data.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "url/gurl.h"
 
@@ -81,12 +83,18 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // page load is completed.
   void OnEligibilityCheckComplete(bool is_eligible);
 
+  // Called when the head is available in the prefetched response.
+  void OnPrefetchedHeadReceived(const GURL& url);
+
   // Updates metrics when the response for a prefetch requested by this page
   // load is received.
   void OnPrefetchSuccessful();
 
   // Whether the prefetch attempt for target |url| failed or discarded
   bool IsPrefetchAttemptFailedOrDiscarded(const GURL& url);
+
+  // Helper function to get the |NoVarySearchHelper| associated with |this|.
+  const NoVarySearchHelper& GetNoVarySearchHelper() const;
 
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
 
@@ -116,6 +124,10 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   // Metrics related to the prefetches requested by this page load.
   PrefetchReferringPageMetrics referring_page_metrics_;
+
+  // NoVarySearchHelper that manages NoVarySearch data and url matching.
+  // Used through the getter GetNoVarySearchHelper
+  NoVarySearchHelper no_vary_search_helper_;
 
   base::WeakPtrFactory<PrefetchDocumentManager> weak_method_factory_{this};
 

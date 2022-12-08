@@ -24,7 +24,17 @@ class HttpResponseHeaders;
 class NET_EXPORT_PRIVATE HttpNoVarySearchData {
  public:
   HttpNoVarySearchData(const HttpNoVarySearchData&);
+  HttpNoVarySearchData(HttpNoVarySearchData&&);
   ~HttpNoVarySearchData();
+  HttpNoVarySearchData& operator=(const HttpNoVarySearchData&);
+  HttpNoVarySearchData& operator=(HttpNoVarySearchData&&);
+
+  static HttpNoVarySearchData CreateFromNoVaryParams(
+      const std::vector<std::string>& no_vary_params,
+      bool vary_on_key_order);
+  static HttpNoVarySearchData CreateFromVaryParams(
+      const std::vector<std::string>& vary_params,
+      bool vary_on_key_order);
 
   // Parse No-Vary-Search from response headers.
   //
@@ -46,6 +56,7 @@ class NET_EXPORT_PRIVATE HttpNoVarySearchData {
 
  private:
   HttpNoVarySearchData();
+
   static absl::optional<HttpNoVarySearchData> ParseNoVarySearchDictionary(
       const structured_headers::Dictionary& dict);
 

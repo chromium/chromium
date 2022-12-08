@@ -25,6 +25,8 @@
 #include "content/test/test_content_browser_client.h"
 #include "net/base/load_flags.h"
 #include "net/base/proxy_server.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -322,6 +324,11 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     for (const auto& header : headers) {
       head->headers->AddHeader(header.first, header.second);
     }
+    if (!head->parsed_headers) {
+      head->parsed_headers = network::PopulateParsedHeaders(
+          head->headers.get(), request->request.url);
+    }
+
     network::URLLoaderCompletionStatus status(net_error);
     test_url_loader_factory_.AddResponse(request->request.url, std::move(head),
                                          body, status);
@@ -484,9 +491,10 @@ TEST_F(PrefetchServiceTest, SuccessCase) {
             PrefetchStatus::kPrefetchSuccessful);
   EXPECT_TRUE(serveable_prefetch_container->HasValidPrefetchedResponse(
       base::TimeDelta::Max()));
-  EXPECT_TRUE(serveable_prefetch_container->ReleasePrefetchedResponse()
-                  ->ReleaseHead()
-                  ->was_in_prefetch_cache);
+  auto prefetched_response =
+      serveable_prefetch_container->ReleasePrefetchedResponse();
+  EXPECT_TRUE(prefetched_response->GetHead());
+  EXPECT_TRUE(prefetched_response->ReleaseHead()->was_in_prefetch_cache);
 }
 
 TEST_F(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
@@ -2230,6 +2238,53 @@ TEST_F(PrefetchServiceAlwaysMakeDecoyRequestTest,
 }
 
 // TODO(https://crbug.com/1299059): Add test for incognito mode.
+
+class PrefetchServiceNoVarySearchTest : public PrefetchServiceTest {
+ public:
+  void InitScopedFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {content::features::kPrefetchUseContentRefactor,
+         network::features::kPrefetchNoVarySearch},
+        {});
+  }
+};
+
+// TODO(crbug.com/1396460): Test flaky on lacros trybots.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_NoVarySearchSuccessCase DISABLED_NoVarySearchSuccessCase
+#else
+#define MAYBE_NoVarySearchSuccessCase NoVarySearchSuccessCase
+#endif
+TEST_F(PrefetchServiceNoVarySearchTest, MAYBE_NoVarySearchSuccessCase) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  MakePrefetchOnMainFrame(GURL("https://example.com/?a=1"),
+                          PrefetchType(/*use_isolated_network_context=*/true,
+                                       /*use_prefetch_proxy=*/true));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyCommonRequestState(GURL("https://example.com/?a=1"),
+                           /*use_prefetch_proxy=*/true);
+  MakeResponseAndWait(
+      net::HTTP_OK, net::OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/true,
+      {{"X-Testing", "Hello World"}, {"No-Vary-Search", R"(params=("a"))"}},
+      kHTMLBody);
+
+  Navigate(GURL("https://example.com"), main_rfh()->GetGlobalId());
+
+  base::WeakPtr<PrefetchContainer> serveable_prefetch_container =
+      prefetch_service_->GetPrefetchToServe(GURL("https://example.com"));
+  ASSERT_TRUE(serveable_prefetch_container);
+  EXPECT_EQ(serveable_prefetch_container->GetURL(),
+            GURL("https://example.com/?a=1"));
+  EXPECT_TRUE(serveable_prefetch_container->HasPrefetchStatus());
+  EXPECT_EQ(serveable_prefetch_container->GetPrefetchStatus(),
+            PrefetchStatus::kPrefetchSuccessful);
+  EXPECT_TRUE(serveable_prefetch_container->HasValidPrefetchedResponse(
+      base::TimeDelta::Max()));
+}
 
 }  // namespace
 }  // namespace content

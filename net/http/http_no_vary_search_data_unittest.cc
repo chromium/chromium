@@ -13,12 +13,91 @@
 #include "base/strings/string_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace net {
 
 namespace {
+
+using testing::IsEmpty;
+using testing::UnorderedElementsAreArray;
+
+TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsNonEmptyVaryOnKeyOrder) {
+  const auto no_vary_search =
+      HttpNoVarySearchData::CreateFromNoVaryParams({"a"}, true);
+  EXPECT_THAT(no_vary_search.no_vary_params(),
+              UnorderedElementsAreArray({"a"}));
+  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_TRUE(no_vary_search.vary_on_key_order());
+  EXPECT_TRUE(no_vary_search.vary_by_default());
+}
+
+TEST(HttpNoVarySearchCreateTest,
+     CreateFromNoVaryParamsNonEmptyNoVaryOnKeyOrder) {
+  const auto no_vary_search =
+      HttpNoVarySearchData::CreateFromNoVaryParams({"a"}, false);
+  EXPECT_THAT(no_vary_search.no_vary_params(),
+              UnorderedElementsAreArray({"a"}));
+  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_FALSE(no_vary_search.vary_on_key_order());
+  EXPECT_TRUE(no_vary_search.vary_by_default());
+}
+
+TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsEmptyNoVaryOnKeyOrder) {
+  const auto no_vary_search =
+      HttpNoVarySearchData::CreateFromNoVaryParams({}, false);
+  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_FALSE(no_vary_search.vary_on_key_order());
+  EXPECT_TRUE(no_vary_search.vary_by_default());
+}
+
+TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsEmptyVaryOnKeyOrder) {
+  const auto no_vary_search =
+      HttpNoVarySearchData::CreateFromNoVaryParams({}, true);
+  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_TRUE(no_vary_search.vary_on_key_order());
+  EXPECT_TRUE(no_vary_search.vary_by_default());
+}
+
+TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyVaryOnKeyOrder) {
+  const auto no_vary_search =
+      HttpNoVarySearchData::CreateFromVaryParams({"a"}, true);
+  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.vary_params(), UnorderedElementsAreArray({"a"}));
+  EXPECT_TRUE(no_vary_search.vary_on_key_order());
+  EXPECT_FALSE(no_vary_search.vary_by_default());
+}
+
+TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsNonEmptyNoVaryOnKeyOrder) {
+  const auto no_vary_search =
+      HttpNoVarySearchData::CreateFromVaryParams({"a"}, false);
+  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.vary_params(), UnorderedElementsAreArray({"a"}));
+  EXPECT_FALSE(no_vary_search.vary_on_key_order());
+  EXPECT_FALSE(no_vary_search.vary_by_default());
+}
+
+TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyNoVaryOnKeyOrder) {
+  const auto no_vary_search =
+      HttpNoVarySearchData::CreateFromVaryParams({}, false);
+  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_FALSE(no_vary_search.vary_on_key_order());
+  EXPECT_FALSE(no_vary_search.vary_by_default());
+}
+
+TEST(HttpNoVarySearchCreateTest, CreateFromVaryParamsEmptyVaryOnKeyOrder) {
+  const auto no_vary_search =
+      HttpNoVarySearchData::CreateFromVaryParams({}, true);
+  EXPECT_THAT(no_vary_search.no_vary_params(), IsEmpty());
+  EXPECT_THAT(no_vary_search.vary_params(), IsEmpty());
+  EXPECT_TRUE(no_vary_search.vary_on_key_order());
+  EXPECT_FALSE(no_vary_search.vary_by_default());
+}
 
 struct TestData {
   const char* raw_headers;

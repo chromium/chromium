@@ -1544,7 +1544,7 @@
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesReferrerPolicyKey,SpeculationRulesDocumentRules",
-      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor",
+      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor,PrefetchNoVarySearch",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Jul 1, 2023"

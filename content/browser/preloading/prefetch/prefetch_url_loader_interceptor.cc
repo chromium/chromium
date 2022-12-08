@@ -93,9 +93,18 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
   DCHECK(!loader_callback_);
   loader_callback_ = std::move(callback);
   url_ = tenative_resource_request.url;
-
   base::WeakPtr<PrefetchContainer> prefetch_container = GetPrefetch(url_);
-  DCHECK(!prefetch_container || prefetch_container->GetURL() == url_);
+// The |url_| might be different from |prefetch_container->GetURL()| because
+// of No-Vary-Search non-exact url match.
+#if DCHECK_IS_ON()
+  if (prefetch_container) {
+    GURL::Replacements replacements;
+    replacements.ClearRef();
+    replacements.ClearQuery();
+    DCHECK_EQ(url_.ReplaceComponents(replacements),
+              prefetch_container->GetURL().ReplaceComponents(replacements));
+  }
+#endif
   if (!prefetch_container ||
       !prefetch_container->HasValidPrefetchedResponse(
           PrefetchCacheableDuration()) ||

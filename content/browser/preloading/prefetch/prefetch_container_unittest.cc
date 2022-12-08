@@ -107,6 +107,7 @@ TEST_F(PrefetchContainerTest, CreatePrefetchContainer) {
   EXPECT_EQ(prefetch_container.GetPrefetchContainerKey(),
             std::make_pair(GlobalRenderFrameHostId(1234, 5678),
                            GURL("https://test.com")));
+  EXPECT_FALSE(prefetch_container.GetHead());
 }
 
 TEST_F(PrefetchContainerTest, PrefetchStatus) {
@@ -154,6 +155,7 @@ TEST_F(PrefetchContainerTest, ValidResponse) {
 
   EXPECT_FALSE(prefetch_container.HasValidPrefetchedResponse(base::Minutes(1)));
   EXPECT_TRUE(prefetch_container.HasValidPrefetchedResponse(base::Minutes(3)));
+  EXPECT_TRUE(prefetch_container.GetHead());
 }
 
 TEST_F(PrefetchContainerTest, CookieListener) {

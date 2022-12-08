@@ -977,6 +977,7 @@ void PrefetchService::HandlePrefetchedResponse(
 }
 
 void PrefetchService::PrepareToServe(
+    const GURL& url,
     base::WeakPtr<PrefetchContainer> prefetch_container) {
   // Ensure |this| has this prefetch.
   if (all_prefetches_.find(prefetch_container->GetPrefetchContainerKey()) ==
@@ -997,12 +998,13 @@ void PrefetchService::PrepareToServe(
 
   // If there is already a prefetch with the same URL as |prefetch_container| in
   // |prefetches_ready_to_serve_|, then don't do anything.
-  if (prefetches_ready_to_serve_.find(prefetch_container->GetURL()) !=
-      prefetches_ready_to_serve_.end())
+  if (prefetches_ready_to_serve_.find(url) !=
+      prefetches_ready_to_serve_.end()) {
     return;
+  }
 
   // Move prefetch into |prefetches_ready_to_serve_|.
-  prefetches_ready_to_serve_[prefetch_container->GetURL()] = prefetch_container;
+  prefetches_ready_to_serve_[url] = prefetch_container;
 
   // Start the process of copying cookies from the isolated network context used
   // to make the prefetch to the default network context.

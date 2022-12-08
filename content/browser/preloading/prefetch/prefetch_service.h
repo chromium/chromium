@@ -74,9 +74,13 @@ class CONTENT_EXPORT PrefetchService {
 
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Called when a navigation to the URL associated with |prefetch_container| is
-  // likely to occur in the immediate future.
-  void PrepareToServe(base::WeakPtr<PrefetchContainer> prefetch_container);
+  // Called when a navigation to `url` that will be served by
+  // `prefetch_container` is likely to occur in the immediate future.
+  // |url| and |prefetch_container->GetURL()| might not be the same
+  // because of No-Vary-Search non-exact url match.
+  virtual void PrepareToServe(
+      const GURL& url,
+      base::WeakPtr<PrefetchContainer> prefetch_container);
 
   // Returns the prefetch with |url| that is ready to serve. In order for a
   // prefetch to be ready to serve, |PrepareToServe| must have been previously

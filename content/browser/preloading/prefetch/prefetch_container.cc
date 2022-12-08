@@ -236,6 +236,12 @@ void PrefetchContainer::OnPrefetchProbeResult(
   }
 }
 
+void PrefetchContainer::OnPrefetchedResponseHeadReceived() {
+  if (prefetch_document_manager_) {
+    prefetch_document_manager_->OnPrefetchedHeadReceived(GetURL());
+  }
+}
+
 void PrefetchContainer::OnPrefetchComplete() {
   if (!loader_)
     return;
@@ -276,17 +282,23 @@ void PrefetchContainer::TakePrefetchedResponse(
   DCHECK(!prefetched_response_);
   DCHECK(!is_decoy_);
 
-  if (prefetch_document_manager_)
-    prefetch_document_manager_->OnPrefetchSuccessful();
-
   prefetch_received_time_ = base::TimeTicks::Now();
   prefetched_response_ = std::move(prefetched_response);
+
+  OnPrefetchedResponseHeadReceived();
+  if (prefetch_document_manager_) {
+    prefetch_document_manager_->OnPrefetchSuccessful();
+  }
 }
 
 std::unique_ptr<PrefetchedMainframeResponseContainer>
 PrefetchContainer::ReleasePrefetchedResponse() {
   prefetch_received_time_.reset();
   return std::move(prefetched_response_);
+}
+
+const network::mojom::URLResponseHead* PrefetchContainer::GetHead() {
+  return prefetched_response_ ? prefetched_response_->GetHead() : nullptr;
 }
 
 }  // namespace content

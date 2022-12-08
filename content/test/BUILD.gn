@@ -2343,6 +2343,7 @@ test("content_unittests") {
     "../browser/picture_in_picture/picture_in_picture_service_impl_unittest.cc",
     "../browser/preloading/anchor_element_interaction_host_impl_unittest.cc",
     "../browser/preloading/preconnector_unittest.cc",
+    "../browser/preloading/prefetch/no_vary_search_helper_unittest.cc",
     "../browser/preloading/prefetch/prefetch_canary_checker_unittest.cc",
     "../browser/preloading/prefetch/prefetch_container_unittest.cc",
     "../browser/preloading/prefetch/prefetch_cookie_listener_unittest.cc",

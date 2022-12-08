@@ -160,6 +160,11 @@ class CONTENT_EXPORT PrefetchContainer {
   // Whether or not |this| has a prefetched response.
   bool HasValidPrefetchedResponse(base::TimeDelta cacheable_duration) const;
 
+  // Called when |this| has received prefetched response's head.
+  // Once this is called, we should be able to call GetHead() and receive a
+  // non-null result.
+  void OnPrefetchedResponseHeadReceived();
+
   // |this| takes ownership of the given |prefetched_response|.
   void TakePrefetchedResponse(
       std::unique_ptr<PrefetchedMainframeResponseContainer>
@@ -169,6 +174,10 @@ class CONTENT_EXPORT PrefetchContainer {
   // the caller.
   std::unique_ptr<PrefetchedMainframeResponseContainer>
   ReleasePrefetchedResponse();
+
+  // Returns the head of the prefetched response. If there is no valid response,
+  // then returns null.
+  const network::mojom::URLResponseHead* GetHead();
 
   // Returns the time between the prefetch request was sent and the time the
   // response headers were received. Not set if the prefetch request hasn't been
