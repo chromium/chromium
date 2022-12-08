@@ -308,7 +308,6 @@
 <translation id="168693727862418163">Bu siyasət dəyəri sxem əsasında doğrulanmadı və nəzərə alınmayacaq.</translation>
 <translation id="168841957122794586">Server sertifikatının kriptoqrafik açarı zəifdir.</translation>
 <translation id="1697532407822776718">Hər şey hazırdır!</translation>
-<translation id="1699570257714336246">Əskik məlumat var</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoom səviyyələri</translation>
@@ -1159,7 +1158,6 @@
 <translation id="3961148744525529027">Ödəniş səhifəsi yarım açıqdır</translation>
 <translation id="3962859241508114581">Əvvəlki trek</translation>
 <translation id="3963721102035795474">Oxu Rejimi</translation>
-<translation id="3963837677003247395">Manual olaraq davam edilsin?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Yoxdur}=1{1 saytdan }other{# saytdan }}</translation>
 <translation id="3969052498612555048">Kodunuzu tapa bilmirsiniz? <ph name="BEGIN_LINK" />Yeni kod əldə edin<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Hesablanır...</translation>
@@ -1936,7 +1934,6 @@
 <translation id="5937560539988385583">Səhifə tərcümə edildi</translation>
 <translation id="5938153366081463283">Virtual kart əlavə edin</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> açılır…</translation>
 <translation id="5947508410139465809">Yüklədiyiniz və ya əlavə etdiyiniz fayllar təhlil üçün Google Cloud'a və ya üçüncü tərəflərə göndərilir. Məsələn, onlar həssas data və ya zərərli proqrama görə skanlana və şirkət siyasətlərinə əsasən saxlana bilər.</translation>
 <translation id="5951495562196540101">Müştəri hesabı (toplu lisenziya əlçatandır) ilə qeydiyyatdan keçmək mümkün deyil.</translation>
 <translation id="5953516610448771166">Canlı Altyazı bu media üçün əlçatan deyil. Altyazıları əldə etmək üçün bu saytda <ph name="CONTENT_SETTINGS" /> ayarını blok edin.</translation>
@@ -2073,7 +2070,6 @@
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{Cihazınız indi yenidən başladılacaq}=1{Cihazınız 1 saniyə ərzində yenidən başladılacaq}other{Cihazınız # saniyə ərzində yenidən başladılacaq}}</translation>
 <translation id="6301104306974789820">Qiymət izləmə bildirişləri alın</translation>
-<translation id="6302269476990306341">Google Assistent Chrome'da dayanmağa başlayır</translation>
 <translation id="6305205051461490394"><ph name="URL" /> əlçatmazdır.</translation>
 <translation id="6311165245110979290">Virtual kart əlçatandır</translation>
 <translation id="6312113039770857350">Veb səhifə əlçatan deyil</translation>
@@ -2329,7 +2325,6 @@
 <translation id="6971439137020188025">Slaydda cəld yeni Google təqdimatı yaradın</translation>
 <translation id="6972629891077993081">HID cihazları</translation>
 <translation id="6973656660372572881">Fiskə edilmiş proksi serverlər və .pac skript URL-lər göstərilib.</translation>
-<translation id="6973932557599545801">Artıq kömək edə bilmirəm, özünüz davam edin.</translation>
 <translation id="6973988895180423160">3,5 x 5 düym</translation>
 <translation id="6978236010531171013">İstənilən halda paylaşın</translation>
 <translation id="6979158407327259162">Google Disk</translation>
@@ -2525,7 +2520,6 @@
 <translation id="7451311239929941790">Problem haqqında <ph name="BEGIN_LINK" />ətraflı məlumat<ph name="END_LINK" /> əldə edilir.</translation>
 <translation id="7455133967321480974">Qlobal defolt istifadə edin (Blok)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">Göstərilənlər seçdiklərinizdən fərqlidir. Davam edilsin?</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="7463075493919226237">Avstraliya futbolu</translation>
 <translation id="7465963048299965912">10 x 13 düym</translation>
@@ -3214,7 +3208,6 @@
 <translation id="937457230470581909">Zooparklar, akvariumlar və qoruqlar</translation>
 <translation id="939736085109172342">Yeni qovluq</translation>
 <translation id="940053046584497293">Səyahət və nəqliyyat</translation>
-<translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="945855313015696284">Aşağıdakı məlumatı yoxlayın və yanlış kartları silin</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Google Sayt'da cəld yeni sayt yaradın</translation>
 <translation id="950736567201356821">Yuxarıdan üçlü deşik açın</translation>

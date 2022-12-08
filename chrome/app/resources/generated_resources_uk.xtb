@@ -1975,6 +1975,7 @@
 <translation id="275662540872599901">екран вимкнено</translation>
 <translation id="2757161511365746634">Переглянути відомості принтера</translation>
 <translation id="2757338480560142065">Переконайтеся, що новий пароль збігається з паролем для веб-сайту <ph name="WEBSITE" /></translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> За пошуковим запитом "<ph name="SEARCH_QUERY" />" не знайдено результатів</translation>
 <translation id="2762441749940182211">Заборонено використовувати камеру</translation>
 <translation id="2764786626780673772">Дані про VPN</translation>
 <translation id="2764920001292228569">Введіть назву профілю</translation>
@@ -2873,6 +2874,7 @@
 <translation id="3616741288025931835">&amp;Очистити дані веб-перегляду...</translation>
 <translation id="3617891479562106823">Фони недоступні. Повторіть спробу пізніше.</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3620136223548713675">Геолокація</translation>
 <translation id="3621807901162200696">Сприяти покращенню функцій і підвищенню продуктивності ОС Chrome</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{додаток}one{# додаток}few{# додатки}many{# додатків}other{# додатка}}</translation>
 <translation id="362333465072914957">Очікуємо на сертифікат від центру сертифікації</translation>
@@ -6957,6 +6959,7 @@
 <translation id="7465635034594602553">Сталася помилка. Зачекайте кілька хвилин і запустіть додаток <ph name="APP_NAME" /> ще раз.</translation>
 <translation id="7465778193084373987">URL-адреса відкликання сертифіката Netscape</translation>
 <translation id="7466431077154602932">Компактний перегляд</translation>
+<translation id="7466556884531675354">Немає збережених нотаток</translation>
 <translation id="746861123368584540">Розширення завантажено</translation>
 <translation id="7470424110735398630">Дозволено переглядати буфер обміну</translation>
 <translation id="747114903913869239">Помилка: не вдається розшифрувати розширення</translation>
@@ -7938,6 +7941,7 @@
 <translation id="8351316842353540018">Завжди показувати параметри спеціальних можливостей</translation>
 <translation id="8351419472474436977">Розширення керує налаштуваннями проксі-сервера, тобто може змінювати та переривати будь-які ваші дії онлайн, а також стежити за ними. Якщо ви не знаєте причини такої зміни, імовірно, вона небажана.</translation>
 <translation id="8351630282875799764">Акумулятор не заряджається</translation>
+<translation id="8352287103893778223">Назва групи вкладок</translation>
 <translation id="835238322900896202">Під час видалення сталася помилка. Видаліть додаток через Terminal.</translation>
 <translation id="8353683614194668312">Дозволи</translation>
 <translation id="8354034204605718473">PIN-код дитини додано</translation>

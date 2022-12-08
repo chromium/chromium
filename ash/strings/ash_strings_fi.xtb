@@ -667,6 +667,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4666082839192943839">Laita kameran pääsyoikeus pois päältä tällä laitteella estääksesi kaikki kamerat aina.</translation>
 <translation id="4666911709726371538">Lisää sovelluksia</translation>
 <translation id="4667099493359681081">Ladataan: <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Puhelimesi sovellukset</translation>
 <translation id="4690510401873698237">Hylly alareunassa</translation>
 <translation id="4696813013609194136">Avaa lukitus vanhemman koodilla</translation>
 <translation id="4702647871202761252">Näytönsuoja on pois päältä</translation>
@@ -923,7 +924,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6103838137565245112">järjestelmä</translation>
 <translation id="6107292179555508368">Mikrofonin ja kameran pääsyoikeudet ovat poissa päältä tällä laitteella</translation>
 <translation id="6114505516289286752">Puhetiedostot (<ph name="LANGUAGE" />) ladattu</translation>
-<translation id="6116825164611323644">Pääsy kameraan on pois päältä tällä laitteella</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Vahvista lataus: <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Assistantia ei voi käyttää Vierailija-käyttökerralla.</translation>
@@ -1288,6 +1288,7 @@ Uusi asennus</translation>
 <translation id="8142441511840089262">Kaksoisklikkaus</translation>
 <translation id="8142699993796781067">Yksityinen verkko</translation>
 <translation id="8144760705599030999">Tallenna <ph name="NAME" /> tilille <ph name="EMAIL" />, jotta laiteparin muodostaminen muiden laitteidesi kanssa sujuu nopeammin</translation>
+<translation id="8144914663975476336">Valitse tallennusmuoto</translation>
 <translation id="8149413265954228307">Näytä Bluetooth-asetukset. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Sulje painamalla Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automaattinen täydennys</translation>
@@ -1392,7 +1393,6 @@ Uusi asennus</translation>
 <translation id="8734991477317290293">Sillä voidaan yrittää kaapata näppäinpainalluksesi</translation>
 <translation id="8735678380411481005">Näppäimistön taustavalon väri</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Salli pääsy kameraan, jotta sovellukset ja verkkosivut, joilla on kameralupa, voivat käyttää tähän laitteeseen liitettyjä kameroita.</translation>
 <translation id="8755498163081687682">Vahvista henkilöllisyytesi: <ph name="ORIGIN_NAME" /> haluaa vahvistaa henkilöllisyytesi</translation>
 <translation id="875593634123171288">Näytä VPN-asetukset</translation>
 <translation id="8759408218731716181">Useisiin tileihin kirjautumista ei sallita</translation>

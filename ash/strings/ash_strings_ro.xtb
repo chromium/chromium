@@ -924,7 +924,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6107292179555508368">Accesul la microfon și la camera foto este dezactivat pe acest dispozitiv</translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>
-<translation id="6116825164611323644">Accesul la camera foto este dezactivat pe acest dispozitiv</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistentul Google nu este disponibil într-o sesiune pentru invitați.</translation>
@@ -1395,7 +1394,6 @@ Instalare nouă</translation>
 <translation id="8735678380411481005">Culoarea retroiluminării tastaturii</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Activează accesul la camera foto pentru a permite aplicațiilor și paginilor web cu permisiunea pentru cameră să utilizeze camerele foto conectate la acest dispozitiv.</translation>
 <translation id="8755498163081687682">Confirmă-ți identitatea: <ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="875593634123171288">Afișează setările VPN</translation>
 <translation id="8759408218731716181">Nu se poate configura conectarea multiplă</translation>

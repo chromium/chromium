@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">எல்லாக் கேமராக்களையும் எப்போதும் தடுத்து வைத்திருக்க, இந்தச் சாதனத்தில் கேமரா அணுகலை முடக்குங்கள்.</translation>
 <translation id="4666911709726371538">மேலும் ஆப்ஸ்</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குகிறது</translation>
+<translation id="468293128311738995">உங்கள் மொபைலில் உள்ள ஆப்ஸ்</translation>
 <translation id="4690510401873698237">ஷெல்ஃப் கீழே உள்ளது</translation>
 <translation id="4696813013609194136">பெற்றோர் குறியீட்டின் மூலம் சாதனத்தை அன்லாக் செய்தல்</translation>
 <translation id="4702647871202761252">தனிப்பட்ட திரை முடக்கப்பட்டுள்ளது</translation>
@@ -923,7 +924,6 @@
 <translation id="6103838137565245112">சிஸ்டம்</translation>
 <translation id="6107292179555508368">மைக்ரோஃபோன் மற்றும் கேமராவுக்கான அணுகல்கள் இந்தச் சாதனத்தில் முடக்கப்பட்டுள்ளன</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> மொழிக்கான பேச்சு அறிதல் ஃபைல்கள் பதிவிறக்கப்பட்டன</translation>
-<translation id="6116825164611323644">இந்தச் சாதனத்தில் கேமரா அணுகல் முடக்கப்பட்டுள்ளது</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவதை உறுதிப்படுத்து</translation>
 <translation id="612734058257491180">கெஸ்ட் அமர்வில் Google அசிஸ்டண்ட்டைப் பயன்படுத்த இயலாது.</translation>
@@ -1288,6 +1288,7 @@
 <translation id="8142441511840089262">இரு கிளிக்</translation>
 <translation id="8142699993796781067">தனிப்பட்ட நெட்வொர்க்</translation>
 <translation id="8144760705599030999">பிற சாதனங்களுடன் இனி விரைவாக இணைக்க, உங்கள் <ph name="NAME" /> சாதனத்தை <ph name="EMAIL" /> கணக்கில் சேமிக்கவும்</translation>
+<translation id="8144914663975476336">ரெக்கார்டிங் வடிவத்தைத் தேர்ந்தெடுக்கலாம்</translation>
 <translation id="8149413265954228307">புளூடூத் அமைப்புகளைக் காட்டும். <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">மூடுவதற்கு Ctrl + W விசைகளை அழுத்தவும்.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, தானே நிரப்பியது</translation>
@@ -1393,7 +1394,6 @@
 <translation id="8735678380411481005">கீபோர்டு பேக்லைட் வண்ணம்</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">கேமராவைப் பயன்படுத்த அனுமதிக்கப்பட்டுள்ள ஆப்ஸிலும் இணையப் பக்கங்களிலும் இந்தச் சாதனத்தில் இணைக்கப்பட்டுள்ள கேமராக்களைப் பயன்படுத்த கேமரா அணுகலை இயக்கவும்.</translation>
 <translation id="8755498163081687682">உங்கள் அடையாளத்தைச் சரிபாருங்கள்: இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
 <translation id="875593634123171288">VPN அமைப்புகளைக் காண்பிக்கும்</translation>
 <translation id="8759408218731716181">பல உள்நுழைவை அமைக்க முடியாது</translation>

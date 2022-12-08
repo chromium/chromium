@@ -923,7 +923,6 @@
 <translation id="6103838137565245112">系統</translation>
 <translation id="6107292179555508368">此裝置已停用麥克風和相機的存取權</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
-<translation id="6116825164611323644">此裝置的相機存取權已關閉</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">確認下載 <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">「Google 助理」不適用於訪客工作階段。</translation>
@@ -1393,7 +1392,6 @@
 <translation id="8735678380411481005">鍵盤背光顏色</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">開啟相機存取權，允許任何具有相機權限的應用程式和網頁使用連接至此裝置的相機。</translation>
 <translation id="8755498163081687682">驗證你嘅身份：<ph name="ORIGIN_NAME" /> 要求確認你嘅身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
 <translation id="8759408218731716181">無法設定多重登入</translation>

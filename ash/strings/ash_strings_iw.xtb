@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">כדי לחסום את כל המצלמות כל הזמן, צריך להשבית את הגישה למצלמה במכשיר הזה.</translation>
 <translation id="4666911709726371538">עוד אפליקציות</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> בהורדה</translation>
+<translation id="468293128311738995">אפליקציות מהטלפון שלך</translation>
 <translation id="4690510401873698237">המדף בחלק התחתון</translation>
 <translation id="4696813013609194136">ביטול נעילת המכשיר באמצעות קוד הורה</translation>
 <translation id="4702647871202761252">מסך הפרטיות כבוי</translation>
@@ -923,7 +924,6 @@
 <translation id="6103838137565245112">מערכת</translation>
 <translation id="6107292179555508368">הרשאות הגישה למיקרופון ולמצלמה מושבתות במכשיר הזה</translation>
 <translation id="6114505516289286752">הורדת קובצי הדיבור של <ph name="LANGUAGE" /> הסתיימה</translation>
-<translation id="6116825164611323644">הגישה למצלמה מושבתת במכשיר הזה</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">אישור ההורדה של <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏Google Assistant לא זמינה בגלישה כאורח.</translation>
@@ -1023,6 +1023,7 @@
 <translation id="6670153871843998651">שולחן עבודה 3</translation>
 <translation id="6671495933530132209">העתקת התמונה</translation>
 <translation id="6671661918848783005">‏אי אפשר לבטל את נעילת ה-Chromebook</translation>
+<translation id="6683022854667115063">אוזניות</translation>
 <translation id="6696025732084565524">למקלדת הניתנת לניתוק דרוש עדכון קריטי</translation>
 <translation id="6700713906295497288">‏לחצן תפריט IME</translation>
 <translation id="6707693040195709527">מועד שינוי המכשיר לגרסה קודמת כבר חלף</translation>
@@ -1289,6 +1290,7 @@
 <translation id="8142441511840089262">לחיצה כפולה</translation>
 <translation id="8142699993796781067">רשת פרטית</translation>
 <translation id="8144760705599030999">שמירה של <ph name="NAME" /> בחשבון <ph name="EMAIL" /> מאפשרת התאמה מהירה יותר למכשירים אחרים</translation>
+<translation id="8144914663975476336">בחירת הפורמט להקלטה</translation>
 <translation id="8149413265954228307">‏צפייה בהגדרות Bluetooth‏. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">‏כדי לסגור, יש להקיש על Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, השלמה אוטומטית</translation>
@@ -1394,7 +1396,6 @@
 <translation id="8735678380411481005">הצבע של התאורה האחורית של המקלדת</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">עליך להעניק גישה למצלמה כדי לאפשר לאפליקציות ולדפי אינטרנט עם הרשאת גישה למצלמה להשתמש במצלמות שמחוברות למכשיר הזה.</translation>
 <translation id="8755498163081687682">אימות הזהות שלך: על מנת להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
 <translation id="875593634123171288">‏צפייה בהגדרות VPN</translation>
 <translation id="8759408218731716181">לא ניתן להגדיר כניסה עם מספר חשבונות</translation>

@@ -924,7 +924,6 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6107292179555508368">Akses mikrofon dan kamera nonaktif di perangkat ini</translation>
 <translation id="6114505516289286752">File ucapan bahasa <ph name="LANGUAGE" /> didownload</translation>
-<translation id="6116825164611323644">Akses kamera nonaktif di perangkat ini</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Konfirmasi download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asisten Google tidak tersedia dalam sesi tamu.</translation>
@@ -1395,7 +1394,6 @@ Baru diinstal</translation>
 <translation id="8735678380411481005">Warna lampu latar keyboard</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Aktifkan akses kamera untuk mengizinkan aplikasi dan halaman web yang memiliki izin kamera untuk menggunakan kamera yang terhubung ke perangkat ini.</translation>
 <translation id="8755498163081687682">Verifikasi identitas Anda: <ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
 <translation id="875593634123171288">Tampilkan setelan VPN</translation>
 <translation id="8759408218731716181">Tidak dapat menyiapkan fitur masuk banyak akun</translation>

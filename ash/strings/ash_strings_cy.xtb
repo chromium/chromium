@@ -924,7 +924,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6107292179555508368">Mae'r mynediadau meicroffon a chamera wedi'u diffodd ar y ddyfais hon</translation>
 <translation id="6114505516289286752">Wedi lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" /></translation>
-<translation id="6116825164611323644">Mae mynediad at y camera wedi'i ddiffodd ar y ddyfais hon</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Cadarnhau lawrlwytho <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Nid yw Google Assistant ar gael mewn sesiwn westai.</translation>
@@ -1395,7 +1394,6 @@ Gosodiad newydd</translation>
 <translation id="8735678380411481005">Lliw ôl-olau bysellfwrdd</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Trowch mynediad at y camera ymlaen i ganiatáu i apiau a thudalennau gwe gyda'r caniatâd camera ddefnyddio'r camera(âu) sydd wedi'u cysylltu â'r ddyfais hon.</translation>
 <translation id="8755498163081687682">Cadarnhewch eich hunaniaeth: Hoffai <ph name="ORIGIN_NAME" /> gadarnhau mai chi sydd yno</translation>
 <translation id="875593634123171288">Dangos gosodiadau VPN</translation>
 <translation id="8759408218731716181">Ni ellir gosod mewngofnodi o sawl cyfrif</translation>

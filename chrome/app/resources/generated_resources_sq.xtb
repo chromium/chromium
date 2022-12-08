@@ -203,6 +203,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="117916940443676133">Çelësi yt i sigurisë nuk është i mbrojtur me një kod PIN. Për të menaxhuar të dhënat e identifikimit, në fillim krijo një kod PIN.</translation>
 <translation id="1181037720776840403">Hiq</translation>
 <translation id="1183237619868651138"><ph name="EXTERNAL_CRX_FILE" /> nuk mund të instalohet në memorien specifike lokale.</translation>
+<translation id="1184709369107246085">Aplikacioni "<ph name="APPLICATION_NAME" />" kërkon një URL të vlefshme të "<ph name="APPLICATION_NAME" />".</translation>
 <translation id="1185924365081634987">Mund të provosh po ashtu që të <ph name="GUEST_SIGNIN_LINK_START" />shfletosh si vizitor<ph name="GUEST_SIGNIN_LINK_END" /> për të rregulluar këtë gabim të rrjetit.</translation>
 <translation id="1186771945450942097">Hiq softuerin keqdashës</translation>
 <translation id="1187722533808055681">Zgjimet nga gjendja e qetë</translation>
@@ -1954,6 +1955,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="275662540872599901">ekrani joaktiv</translation>
 <translation id="2757161511365746634">Shiko printerinView printer</translation>
 <translation id="2757338480560142065">Sigurohu që fjalëkalimi që po ruan përputhet me fjalëkalimin tënd për <ph name="WEBSITE" />.</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Nuk u morën rezultate kërkimi për "<ph name="SEARCH_QUERY" />"</translation>
 <translation id="2762441749940182211">Kamera është bllokuar</translation>
 <translation id="2764786626780673772">Detajet e lidhjes VPN</translation>
 <translation id="2764920001292228569">Fut një emër profili</translation>
@@ -2818,6 +2820,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3582057310199111521">Është futur në një sajt mashtrues dhe është gjendur në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="3582299299336701326">Errëson ekranet e ndritshme dhe ndriçon ekranet e errëta. Shtyp "Kërko" + Ctrl + H për të aktivizuar dhe çaktivizuar anasjelljen e ngjyrës.</translation>
 <translation id="3584169441612580296">Lexo dhe ndrysho fotografi, muzikë dhe media të tjera nga kompjuteri yt</translation>
+<translation id="3586787825263265024">Aplikacioni "<ph name="APPLICATION_NAME" />" kërkon që OneDrive të jetë i disponueshëm.</translation>
 <translation id="3586806079541226322">Ky skedar nuk mund të hapet</translation>
 <translation id="3586931643579894722">Fshih detajet</translation>
 <translation id="3587482841069643663">Të gjitha</translation>
@@ -2851,6 +2854,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3616741288025931835">&amp;Pastro të dhënat e shfletimit...</translation>
 <translation id="3617891479562106823">Sfondet nuk disponohen. Provo sërish më vonë.</translation>
 <translation id="3619115746895587757">Kapuçino</translation>
+<translation id="3620136223548713675">Vendndodhja gjeografike</translation>
 <translation id="3621807901162200696">Ndihmo në përmirësimin e veçorive dhe performancës së ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{një aplikacion}other{# aplikacione}}</translation>
 <translation id="362333465072914957">Në pritje të lëshimit të certifikatës nga autoriteti i certifikatave</translation>
@@ -3975,6 +3979,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4654236001025007561">Ndaji skedarët me pajisjet Chromebook dhe Android rrotull teje</translation>
 <translation id="4657914796247705218">Shpejtësia e TrackPoint</translation>
 <translation id="4658285806588491142">Mbaje ekranin tënd privat</translation>
+<translation id="4658648180588730283">Aplikacioni "<ph name="APPLICATION_NAME" />" nuk është i disponueshëm jashtë linje.</translation>
 <translation id="465878909996028221">Për ridrejtimet e shfletuesve mbështeten vetëm protokollet http, https dhe të skedarëve.</translation>
 <translation id="4659126640776004816">Kur identifikohesh në "Llogarinë tënde të Google", kjo veçori është e aktivizuar.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imazh}other{# imazhe}}</translation>
@@ -4025,6 +4030,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4699357559218762027">(nisur automatikisht)</translation>
 <translation id="4701025263201366865">Identifikimi i prindit</translation>
 <translation id="4701335814944566468">Shikuar dje</translation>
+<translation id="4705624512518230041"><ph name="FILE_NAMES" /> nuk mund të hapet kur OneDrive nuk është i disponueshëm</translation>
 <translation id="470644585772471629">Anasjellja e ngjyrës</translation>
 <translation id="4707337002099455863">Gjithmonë në të gjitha sajtet</translation>
 <translation id="4708849949179781599">Dil nga <ph name="PRODUCT_NAME" /></translation>
@@ -4492,6 +4498,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5160634252433617617">Tastiera fizike</translation>
 <translation id="5160857336552977725">Identifikohu në <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Pajisjet USB nga <ph name="VENDOR_NAME" /></translation>
+<translation id="5162624292894372900"><ph name="FILE_NAMES" /> nuk mund të hapet kur "Disku" nuk është i disponueshëm</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> është bllokuar</translation>
 <translation id="5163910114647549394">Skeda u zhvendos në fund të shiritit të skedave</translation>
 <translation id="5164530241085602114">Njoftimet nuk lejohen për <ph name="SITE" /></translation>
@@ -5264,6 +5271,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5886112770923972514">Lidhu dhe konfiguro me shpejtësi pajisjet në afërsi me "Çiftimin e sigurt"</translation>
 <translation id="5886384907280980632">Çaktivizo tani</translation>
 <translation id="5889282057229379085">Numri maksimal i autoriteteve ndërmjetëse të certifikatave: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">Enkripto të gjitha të dhënat e sinkronizuara me <ph name="BEGIN_LINK" />frazën tënde të kalimit për sinkronizimin<ph name="END_LINK" />. Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.</translation>
 <translation id="5891688036610113830">Rrjetet e preferuara Wi-Fi</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5895335062901455404">Aktiviteti dhe preferencat e tua të ruajtura do të jenë gati në çdo pajisje Chrome OS Flex kur identifikohesh me "Llogarinë tënde të Google". Mund të zgjedhësh çfarë të sinkronizosh te "Cilësimet".</translation>
@@ -5400,6 +5408,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6016178549409952427">Navigo te përmbajtja shtesë <ph name="CURRENT_ELEMENT" /> nga <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Konfirmo Powerwash me kthim në versionin e mëparshëm.</translation>
 <translation id="6016972670657536680">Zgjidh butonin e gjuhës dhe të tastierës. Gjuha e zgjedhur aktualisht është <ph name="LANGUAGE" />.</translation>
+<translation id="6017503096330453612">Zgjidh "Provo përsëri" ose zgjidh "Hape në modifikuesin jashtë linje" për të përdorur opsionet e kufizuara të shikimit dhe modifikimit.</translation>
 <translation id="6017514345406065928">E gjelbër</translation>
 <translation id="6019169947004469866">Prite</translation>
 <translation id="6019851026059441029">E shkëlqyer - HD</translation>
@@ -6262,6 +6271,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Dështoi në konfigurimin e përditësimeve automatike për të gjithë përdoruesit (gabimi i ekzekutimit të kontrollit përfundimtar: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Politika e privatësisë së Google</translation>
+<translation id="6830200424658853449">Hape në modifikuesin jashtë linje</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6832218595502288407">Drejtvendos majtas</translation>
 <translation id="6833479554815567477">Skeda u zhvendos nga grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -6625,6 +6635,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7174199383876220879">E re! Kontrollo muzikën, videot e tua etj.</translation>
 <translation id="7175037578838465313">Konfiguro <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Ngarkuar nga:</translation>
+<translation id="7177079607604198383">Kontrollo lidhjen tënde të internetit dhe zgjidh "Provo përsëri", ose zgjidh "Hape në modifikuesin jashtë linje" për të përdorur opsionet e kufizuara të shikimit dhe modifikimit.</translation>
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7180865173735832675">Personalizo</translation>
 <translation id="7182791023900310535">Lëviz fjalëkalimin</translation>
@@ -6924,6 +6935,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7465635034594602553">Ndodhi një gabim. Prit disa minuta dhe ekzekutoje përsëri <ph name="APP_NAME" />.</translation>
 <translation id="7465778193084373987">URL-ja e revokimit të certifikatës së Netscape</translation>
 <translation id="7466431077154602932">Pamja kompakte</translation>
+<translation id="7466556884531675354">Nuk ka shënime të ruajtura</translation>
 <translation id="746861123368584540">U ngarkua shtesa</translation>
 <translation id="7470424110735398630">Lejohen të shikojnë kujtesën tënde të fragmenteve</translation>
 <translation id="747114903913869239">Gabim: Shtesa nuk mund të dekodohet</translation>
@@ -7324,6 +7336,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="783229689197954457">Nëse Google gjen një ulje çmimi, do ta shikosh atë në këtë faqe</translation>
 <translation id="7833720883933317473">Fjalët e personalizuara të ruajtura do të shfaqen këtu</translation>
 <translation id="7835178595033117206">Faqeshënuesi u hoq</translation>
+<translation id="7836535163829106376">URL-ja për <ph name="FILE_NAMES" /> nuk mund të hapet</translation>
 <translation id="7836850009646241041">Provo të prekësh çelësin tënd të sigurisë përsëri</translation>
 <translation id="7837776265184002579">Faqja bazë u ndryshua në <ph name="URL" />.</translation>
 <translation id="7838838951812478896">"<ph name="NETWORK_NAME" />" nuk mund të ruhej nga <ph name="DEVICE_NAME" /></translation>
@@ -7763,6 +7776,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="822347941086490485">Po gjen pajisje HID...</translation>
 <translation id="8223573963214454788">Vazhdo dhe fshi të dhënat</translation>
 <translation id="8225046344534779393">Kontrollo lidhjen me internetin</translation>
+<translation id="8225173734540525852">Aplikacioni "<ph name="APPLICATION_NAME" />" kërkon që "Disku" të jetë i disponueshëm.</translation>
 <translation id="8225265270453771718">Ndaj një dritare të aplikacionit</translation>
 <translation id="8226222018808695353">Ndalohet</translation>
 <translation id="8226619461731305576">Vendos në radhë</translation>
@@ -7901,6 +7915,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8351316842353540018">Shfaq gjithmonë opsionet e qashmërisë</translation>
 <translation id="8351419472474436977">Kjo shtesë ka marrë nën kontroll cilësimet e përfaqësuesit tënd, që do të thotë se mund të ndryshojë, shkelë ose përgjojë çdo gjë që ti bën në internet. Nëse s'je i sigurt se pse ndodhi ky ndryshim, ndoshta nuk e do.</translation>
 <translation id="8351630282875799764">Bateria nuk po karikohet</translation>
+<translation id="8352287103893778223">Titulli i grupit të skedave</translation>
 <translation id="835238322900896202">Ndodhi një gabim gjatë çinstalimit. Çinstaloje përmes terminalit.</translation>
 <translation id="8353683614194668312">Ai mundet:</translation>
 <translation id="8354034204605718473">PIN-i i fëmijës tënd u shtua</translation>
@@ -8098,6 +8113,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8549316893834449916">Për t'u identifikuar në pajisjen tënde Chromebook do të përdorësh "Llogarinë tënde të Google", të njëjtën llogari që përdor për Gmail, "Diskun", YouTube etj.</translation>
 <translation id="8551388862522347954">Licencat</translation>
 <translation id="8551588720239073785">Cilësimet e datës dhe orës</translation>
+<translation id="8551647092888540776"><ph name="FILE_NAMES" /> nuk mund të hapet kur je jashtë linje</translation>
 <translation id="8552102814346875916">Ruaj te lista "Mbaji gjithmonë aktive këto sajte"</translation>
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>
 <translation id="8554899698005018844">Nuk ka gjuhë</translation>

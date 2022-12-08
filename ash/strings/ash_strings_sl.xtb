@@ -924,7 +924,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6107292179555508368">Dostop do mikrofona in kamere je izklopljen v tej napravi</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
-<translation id="6116825164611323644">Dostop do kamere je izklopljen v tej napravi</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Potrditev prenosa datoteke <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Pomočnik Google ni na voljo v gostujoči seji.</translation>
@@ -1289,6 +1288,7 @@ Nova namestitev</translation>
 <translation id="8142441511840089262">Dvoklik</translation>
 <translation id="8142699993796781067">Zasebno omrežje</translation>
 <translation id="8144760705599030999">Shranite napravo <ph name="NAME" /> v račun <ph name="EMAIL" /> za hitrejše seznanjanje z drugimi vašimi napravami</translation>
+<translation id="8144914663975476336">Izbira oblike zapisa za snemanje</translation>
 <translation id="8149413265954228307">Prikaz nastavitev Bluetootha. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pritisnite Ctrl + W, če ga želite zapreti.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, samodokončanje</translation>
@@ -1394,7 +1394,6 @@ Nova namestitev</translation>
 <translation id="8735678380411481005">Barva osvetlitve tipkovnice</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Omogočite dostop do kamere, če želite aplikacijam in spletnim stranem, ki imajo dovoljenje za uporabo kamer, dovolite uporabo kamer, povezanih s to napravo.</translation>
 <translation id="8755498163081687682">Preverjanje identitete: Spletno mesto <ph name="ORIGIN_NAME" /> želi potrditi, ali ste to res vi.</translation>
 <translation id="875593634123171288">Prikaz nastavitev omrežja VPN</translation>
 <translation id="8759408218731716181">Prijave z več računi ni mogoče nastaviti</translation>

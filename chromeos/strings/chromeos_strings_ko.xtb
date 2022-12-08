@@ -689,6 +689,7 @@
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{스캔이 완료되었습니다. 1페이지가 스캔되었습니다}other{스캔이 완료되었습니다. {NUMBER_OF_PAGES}페이지가 스캔되었습니다}}</translation>
+<translation id="7458970041932198923">아바타를 보고 설정하려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7487067081878637334">테크놀로지</translation>
@@ -791,7 +792,7 @@
 <translation id="8483248364096924578">IP 주소</translation>
 <translation id="8491311378305535241">Android 앱에서 방화벽으로 인해 HTTP 웹사이트에 연결할 수 없습니다.</translation>
 <translation id="8498220429738806196">트래픽 카운터</translation>
-<translation id="8503813439785031346">사용자이름</translation>
+<translation id="8503813439785031346">사용자 이름</translation>
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
@@ -843,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{스캔}=1{{NUMBER_OF_PAGES}페이지 스캔}other{{NUMBER_OF_PAGES}페이지 스캔}}</translation>
 <translation id="8997710128084572139">기기 배터리 잔량이 <ph name="BATTERY_PERCENTAGE" />%입니다.</translation>
+<translation id="8998289560386111590">내 기기에서 사용할 수 없음</translation>
 <translation id="9003704114456258138">주파수</translation>
 <translation id="9025198690966128418">개인용 기기로 사용</translation>
 <translation id="9028832514430399253">전환 스위치를 사용하여 화면 보호기 옵션을 선택하세요.</translation>

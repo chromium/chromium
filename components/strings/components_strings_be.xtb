@@ -308,7 +308,6 @@
 <translation id="168693727862418163">Не ўдалося пацвердзіць адпаведнасць значэння палітыкі схеме, таму яно будзе ігнаравацца.</translation>
 <translation id="168841957122794586">У сертыфіката сервера слабы крыптаграфічны ключ.</translation>
 <translation id="1697532407822776718">Усё гатова!</translation>
-<translation id="1699570257714336246">Звесткі адсутнічаюць</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Узроўні маштабавання</translation>
@@ -1162,7 +1161,6 @@
 <translation id="3961148744525529027">Аркуш апрацоўшчыка плацяжоў адкрыты напалову</translation>
 <translation id="3962859241508114581">Папярэдні трэк</translation>
 <translation id="3963721102035795474">Рэжым чытання</translation>
-<translation id="3963837677003247395">Працягнуць уручную?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Няма}=1{З 1 сайта }one{З # сайта }few{З # сайтаў }many{З # сайтаў }other{З # сайта }}</translation>
 <translation id="3969052498612555048">Не знайшлі код? <ph name="BEGIN_LINK" />Атрымайце новы<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
@@ -1939,7 +1937,6 @@
 <translation id="5937560539988385583">Старонка перакладзена</translation>
 <translation id="5938153366081463283">Дадаць віртуальную картку</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347">Адкрываецца <ph name="SITE_NAME" />…</translation>
 <translation id="5947508410139465809">Запампаваныя або далучаныя файлы перасылаюцца для аналізу ў Google Cloud або трэцім бакам: у прыватнасці, яны могуць быць правераны на наяўнасць канфідэнцыяльных даных або шкодных праграм альбо адпраўлены на захоўванне ў адпаведнасці з палітыкамі кампаніі.</translation>
 <translation id="5951495562196540101">Не ўдалося зарэгістраваць з дапамогай уліковага запісу спажыўца (даступна пакетная ліцэнзія).</translation>
 <translation id="5953516610448771166">Імгненныя субцітры для гэтага медыяфайла недаступныя. Каб атрымаць субцітры, заблакіруйце для гэтага сайта <ph name="CONTENT_SETTINGS" />.</translation>
@@ -1961,6 +1958,7 @@
 <translation id="5995727681868049093">Кіраваць параметрамі даных, прыватнасці і бяспекі ва Уліковым запісе Google</translation>
 <translation id="5997247540087773573">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Каб абараніць свае ўліковыя запісы, зараз жа змяніце яго і праверце захаваныя паролі ў Менеджары пароляў Google.</translation>
 <translation id="6000758707621254961">Вынікаў па запыце "<ph name="SEARCH_TEXT" />": <ph name="RESULT_COUNT" /></translation>
+<translation id="6005765687956866568">Унесеная з дапамогай функцыі аўтазапаўнення інфармацыя выдалена з формы</translation>
 <translation id="6006365096047131769">3 x 5 цаляў</translation>
 <translation id="6006484371116297560">Класічная</translation>
 <translation id="6008122969617370890">Парадак "ад N да 1"</translation>
@@ -2075,7 +2073,6 @@
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{Прылада будзе перазапушчана зараз}=1{Прылада будзе перазапушчана праз 1 секунду}one{Прылада будзе перазапушчана праз # секунду}few{Прылада будзе перазапушчана праз # секунды}many{Прылада будзе перазапушчана праз # секунд}other{Прылада будзе перазапушчана праз # секунды}}</translation>
 <translation id="6301104306974789820">Атрымліваць апавяшчэнні аб змяненні цаны</translation>
-<translation id="6302269476990306341">Памочнік Google у Chrome спыняецца</translation>
 <translation id="6305205051461490394">Сайт <ph name="URL" /> недаступны.</translation>
 <translation id="6311165245110979290">Віртуальная картка даступная</translation>
 <translation id="6312113039770857350">Вэб-старонка недаступная</translation>
@@ -2270,6 +2267,7 @@
 <translation id="6826993739343257035">Дазволіць AR?</translation>
 <translation id="6828866289116430505">Генетыка</translation>
 <translation id="6831043979455480757">Перакласці</translation>
+<translation id="6832753933931306326">Форма была запоўнена</translation>
 <translation id="6842196666980060516">184 x 260 мм</translation>
 <translation id="6846340164947227603">Выкарыстаць нумар віртуальнай карткі...</translation>
 <translation id="6852204201400771460">Перазагрузіць праграму?</translation>
@@ -2330,7 +2328,6 @@
 <translation id="6971439137020188025">Хутка стварыць новую прэзентацыю Google у праграме "Прэзентацыі"</translation>
 <translation id="6972629891077993081">Прылады HID</translation>
 <translation id="6973656660372572881">Вызначаюцца і фіксаваныя проксі-серверы, і URL-адрас сцэнарыя .pac.</translation>
-<translation id="6973932557599545801">На жаль, дапамагчы не ўдалося. Працягвайце самастойна.</translation>
 <translation id="6973988895180423160">3,5 x 5 цаляў</translation>
 <translation id="6978236010531171013">Усё роўна абагуліць</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
@@ -2527,7 +2524,6 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
 <translation id="7455133967321480974">Выкарыстоўваць глабальныя стандартныя налады (заблакіраваць)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">Паказана не тое, што выбіралі вы. Працягнуць?</translation>
 <translation id="7461924472993315131">PIN-код</translation>
 <translation id="7463075493919226237">Аўстралійскі футбол</translation>
 <translation id="7465963048299965912">10 x 13 цаляў</translation>
@@ -2725,6 +2721,7 @@
 <translation id="7950027195171824198">Кіруйце параметрамі файлаў cookie праз налады Chrome</translation>
 <translation id="7951415247503192394">(32-бітная версія)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952804540472583406"><ph name="BEGIN_LINK" />Уваход<ph name="END_LINK" /> у сетку.</translation>
 <translation id="7953569069500808819">Сшыванне па краі зверху</translation>
 <translation id="7956713633345437162">Мабільныя закладкі</translation>
 <translation id="7961015016161918242">Ніколі</translation>
@@ -3215,7 +3212,6 @@
 <translation id="937457230470581909">Заапаркі, акіянарыумы і запаведнікі</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="940053046584497293">Турызм і паездкі</translation>
-<translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="945855313015696284">Праверце інфармацыю ніжэй і выдаліце няправільныя карткі</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб хутка стварыць новы сайт з дапамогай Google Сайтаў, націсніце Tab, затым Enter</translation>
 <translation id="950736567201356821">Тры дзіркі зверху</translation>

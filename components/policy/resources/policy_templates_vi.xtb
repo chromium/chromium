@@ -1783,9 +1783,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Để biết thông tin chi tiết về các mẫu URL trang web hợp lệ, vui lòng truy cập https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />. Chính sách này chỉ đối chiếu dựa trên nguồn gốc, nên mọi đường dẫn trong mẫu URL sẽ bị bỏ qua.
 
       Nếu bạn không đặt chính sách này cho một trang web, thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), còn không thì quyền kiểm soát sẽ tuân theo chế độ mặc định của trình duyệt và cho phép người dùng chọn quyền này trên từng trang web.</translation>
-<translation id="2725855586003209701">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ báo cáo danh sách người dùng thiết bị đã đăng nhập gần đây.
-
-      Nếu bạn đặt chính sách này thành Tắt, thiết bị đã đăng ký sẽ không báo cáo danh sách người dùng.</translation>
 <translation id="2730200383593984228">Cho phép người dùng chưa liên kết sử dụng ứng dụng Android</translation>
 <translation id="2730419309754848345">Lựa chọn In tệp PDF dưới dạng hình ảnh mặc định</translation>
 <translation id="2731299561202635374">Chính sách này sẽ kiểm soát quy trình kiểm tra URL theo thời gian thực để xác định các URL không an toàn.

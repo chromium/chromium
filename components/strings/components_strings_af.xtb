@@ -308,7 +308,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="168693727862418163">Hierdie beleidwaarde kon nie teen die skema bekragtig word nie en sal geïgnoreer word.</translation>
 <translation id="168841957122794586">Die bedienersertifikaat bevat 'n swak kriptografiese sleutel.</translation>
 <translation id="1697532407822776718">Als is nou reg!</translation>
-<translation id="1699570257714336246">Inligting ontbreek</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoemvlakke</translation>
@@ -1163,7 +1162,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3961148744525529027">Betalinghanteerdersigblad is halfoop</translation>
 <translation id="3962859241508114581">Vorige snit</translation>
 <translation id="3963721102035795474">Lesermodus</translation>
-<translation id="3963837677003247395">Gaan self voort?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Geen}=1{Van 1 werf af }other{Van # werwe af }}</translation>
 <translation id="3969052498612555048">Kan jy nie jou kode kry nie? <ph name="BEGIN_LINK" />Kry nuwe kode<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Bereken tans …</translation>
@@ -1940,7 +1938,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5937560539988385583">Bladsy is vertaal</translation>
 <translation id="5938153366081463283">Voeg virtuele kaart by</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347">Maak tans <ph name="SITE_NAME" /> oop …</translation>
 <translation id="5947508410139465809">Lêers wat jy oplaai of aanheg, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word.</translation>
 <translation id="5951495562196540101">Kan nie met 'n verbruikerrekening inskryf nie (verpakte lisensie beskikbaar).</translation>
 <translation id="5953516610448771166">Intydse Onderskrifte is nie beskikbaar vir hierdie media nie. Blokkeer <ph name="CONTENT_SETTINGS" /> vir hierdie werf om onderskrifte te kry.</translation>
@@ -2077,7 +2074,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{Jou toestel sal nou herbegin}=1{Jou toestel sal oor 1 sekonde herbegin}other{Jou toestel sal oor # sekondes herbegin}}</translation>
 <translation id="6301104306974789820">Kry prysnasporingkennisgewings</translation>
-<translation id="6302269476990306341">Google Assistent in Chrome stop tans</translation>
 <translation id="6305205051461490394"><ph name="URL" /> is onbereikbaar.</translation>
 <translation id="6311165245110979290">Virtuele kaart is beskikbaar</translation>
 <translation id="6312113039770857350">Webbladsy is nie beskikbaar nie</translation>
@@ -2333,7 +2329,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6971439137020188025">Skep vinnig 'n nuwe Google-aanbieding in Skyfies</translation>
 <translation id="6972629891077993081">HID-toestelle</translation>
 <translation id="6973656660372572881">Sowel vaste instaanbedieners as 'n .pac-skrip is gespesifiseer.</translation>
-<translation id="6973932557599545801">Jammer dat ek nie kan help nie; gaan asseblief op jou eie voort.</translation>
 <translation id="6973988895180423160">3,5x5 dm.</translation>
 <translation id="6978236010531171013">Deel in elk geval</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2529,7 +2524,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> oor hierdie probleem.</translation>
 <translation id="7455133967321480974">Gebruik globale verstek (Blokkeer)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">Die vertoning verskil van wat jy gekies het. Gaan voort?</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="7463075493919226237">Australiese voetbal</translation>
 <translation id="7465963048299965912">10x13 dm.</translation>
@@ -3218,7 +3212,6 @@ Bykomende besonderhede:
 <translation id="937457230470581909">Dieretuine, akwariums en reservate</translation>
 <translation id="939736085109172342">Nuwe vouer</translation>
 <translation id="940053046584497293">Reis en vervoer</translation>
-<translation id="945522503751344254">Stuur terugvoer</translation>
 <translation id="945855313015696284">Gaan die inligting hieronder na en vee ongeldige kaarte uit</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om vinnig 'n nuwe werf in Google Sites te skep</translation>
 <translation id="950736567201356821">Tripelpons bo</translation>

@@ -1962,6 +1962,7 @@
 <translation id="275662540872599901">الشاشة متوقفة</translation>
 <translation id="2757161511365746634">عرض الطابعة</translation>
 <translation id="2757338480560142065">يُرجى التأكد من أن كلمة المرور التي تحتفظ بها تُطابِق كلمة مرور <ph name="WEBSITE" />.</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> لم يتم عرض نتائج بحث عن "<ph name="SEARCH_QUERY" />".</translation>
 <translation id="2762441749940182211">تم حظر استخدام الكاميرا</translation>
 <translation id="2764786626780673772">‏تفاصيل الشبكة الافتراضية الخاصة (VPN)</translation>
 <translation id="2764920001292228569">يُرجى إدخال اسم للملف الشخصي.</translation>
@@ -2859,6 +2860,7 @@
 <translation id="3616741288025931835">&amp;محو بيانات التصفح...</translation>
 <translation id="3617891479562106823">الخلفيات غير متاحة. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3619115746895587757">كابتشينو</translation>
+<translation id="3620136223548713675">رصد الموقع الجغرافي</translation>
 <translation id="3621807901162200696">‏المساعدة على تحسين ميزات نظام التشغيل Chrome وأدائه</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{تطبيق واحد}zero{# تطبيق}two{تطبيقان}few{# تطبيقات}many{# تطبيقًا}other{# تطبيق}}</translation>
 <translation id="362333465072914957">‏في انتظار إصدار شهادة CA</translation>
@@ -5270,6 +5272,7 @@
 <translation id="5886112770923972514">الاتصال بالأجهزة القريبة التي تستخدم ميزة "الإقران السريع" وضبط إعداداتها بسرعة</translation>
 <translation id="5886384907280980632">الإيقاف الآن</translation>
 <translation id="5889282057229379085">‏أقصى عدد من المراجع المصدقة المتوسطة (CA): <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">‏يمكنك استخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> لتشفير البيانات التي تمت مزامنتها. ولن يتم تشفير طُرق الدفع والعناوين من Google Pay، أو مزامنة سجلّ التصفُّح من Chrome.</translation>
 <translation id="5891688036610113830">‏شبكات Wi-Fi المفضَّلة</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5895335062901455404">‏ستكون إعداداتك المفضّلة وبيانات نشاطك المحفوظة جاهزة على أي جهاز يعمل بنظام التشغيل ChromeOS Flex عند تسجيل الدخول باستخدام حسابك على Google. ويمكنك اختيار ما تريد مزامنته من خلال "الإعدادات".</translation>
@@ -6939,6 +6942,7 @@
 <translation id="7465635034594602553">حدث خطأ. يُرجى الانتظار بضع دقائق، ثم إعادة تشغيل <ph name="APP_NAME" />.</translation>
 <translation id="7465778193084373987">‏عنوان URL لإبطال شهادة Netscape</translation>
 <translation id="7466431077154602932">العرض المكثّف</translation>
+<translation id="7466556884531675354">ما مِن ملاحظات محفوظة.</translation>
 <translation id="746861123368584540">تم تحميل الإضافة.</translation>
 <translation id="7470424110735398630">المواقع الإلكترونية التي يُسمح لها بالاطّلاع على الحافظة</translation>
 <translation id="747114903913869239">خطأ: تعذر فك ترميز الإضافة</translation>
@@ -7919,6 +7923,7 @@
 <translation id="8351316842353540018">عرض خيارات إمكانية الوصول دائمًا</translation>
 <translation id="8351419472474436977">أصبح بإمكان هذه الإضافة التحكم في إعدادات الخادم الوكيل التابعة لك، مما يعني أن بإمكانها تغيير أي إجراء لك على الإنترنت أو قطعه أو التجسس عليه. إذا كنت غير متيقن من سبب حدوث هذا التغيير، فأنت لا ترغب فيه على الأرجح.</translation>
 <translation id="8351630282875799764">البطارية لا تشحن</translation>
+<translation id="8352287103893778223">عنوان مجموعة علامات التبويب</translation>
 <translation id="835238322900896202">حدث خطأ أثناء إلغاء التثبيت. يُرجى إلغاء التثبيت من خلال الوحدة الطرفية.</translation>
 <translation id="8353683614194668312">يمكنه:</translation>
 <translation id="8354034204605718473">تمت إضافة رقم التعريف الشخصي لطفلك</translation>

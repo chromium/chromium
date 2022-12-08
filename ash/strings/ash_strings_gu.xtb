@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">તમામ કૅમેરાને હંમેશાં બ્લૉક કરવા માટે આ ડિવાઇસ પર કૅમેરાનો ઍક્સેસ બંધ કરો.</translation>
 <translation id="4666911709726371538">વધુ ઍપ</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ડાઉનલોડ કરી રહ્યાં છીએ</translation>
+<translation id="468293128311738995">તમારા ફોન પરની ઍપ</translation>
 <translation id="4690510401873698237">શેલ્ફ સૌથી નીચે છે</translation>
 <translation id="4696813013609194136">માતાપિતાના કોડ વડે ડિવાઇસને અનલૉક કરો</translation>
 <translation id="4702647871202761252">પ્રાઇવસી સ્ક્રીન બંધ છે</translation>
@@ -923,7 +924,6 @@
 <translation id="6103838137565245112">સિસ્ટમ</translation>
 <translation id="6107292179555508368">આ ડિવાઇસ પર માઇક્રોફોન અને કૅમેરાની ઍક્સેસ બંધ છે</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> સ્પીચ ફાઇલ ડાઉનલોડ કરી</translation>
-<translation id="6116825164611323644">આ ડિવાઇસ પર કૅમેરાનો ઍક્સેસ બંધ કરવામાં આવ્યો છે</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> માટે ડાઉનલોડ કરવું કન્ફર્મ કરો</translation>
 <translation id="612734058257491180">અતિથિ સત્રમાં Google Assistant ઉપલબ્ધ હોતું નથી.</translation>
@@ -1394,7 +1394,6 @@
 <translation id="8735678380411481005">કીબોર્ડની બૅકલાઇટનો રંગ</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">કૅમેરા પરવાનગી ધરાવતી ઍપ અને વેબપેજ આ ડિવાઇસ સાથે કનેક્ટેડ કૅમેરાનો ઉપયોગ કરી શકે તે માટે કૅમેરાનો ઍક્સેસ ચાલુ કરો.</translation>
 <translation id="8755498163081687682">તમારી ઓળખની ચકાસણી કરો: આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
 <translation id="875593634123171288">VPN સેટિંગ બતાવો</translation>
 <translation id="8759408218731716181">બહુવિધ સાઇન-ઇન સેટ કરી શકતાં નથી</translation>

@@ -100,6 +100,7 @@
 <translation id="1447641497144572814">Заштитникот на екран започнува</translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
 <translation id="1460620680449458626">Звукот е исклучен.</translation>
+<translation id="14648076227129703">Ова дозволува пристап до камерата за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата</translation>
 <translation id="1467432559032391204">Лево</translation>
 <translation id="146902737843070955">Администраторот ја побара променава</translation>
 <translation id="147310119694673958">Батерија на телефонот <ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -159,6 +160,7 @@
 <translation id="1797271123677381264">Ја заборавивте лозинката</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="1812997170047690955">Што има на мојот екран?</translation>
+<translation id="1816896987747843206">Ова дозволува пристап до камерата за сите апликации и веб-сајтови со дозвола за камерата</translation>
 <translation id="1823280932251546115">Фиока за статусот, време <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -599,6 +601,7 @@
 <translation id="4316910396681052118">СИТЕ АПЛИКАЦИИ</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Кратенката од тастатура Ctrl + Alt + Стрелка нагоре се промени. За да го користите копчето Home, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Стрелка налево.</translation>
+<translation id="4324840740119394760">Ова дозволува пристап до камерата за <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозвола за камерата</translation>
 <translation id="4333628967105022692">Lacros не е поддржан кога се најавени повеќе корисници.</translation>
 <translation id="4338109981321384717">Лупа</translation>
 <translation id="4351433414020964307">„Помошникот“ се вчитува…</translation>
@@ -792,6 +795,7 @@
 <translation id="5356963482258194581">Сменете на темна и светла тема. Кликнете со десното копче на работната површина и изберете „Тапети и стил“.</translation>
 <translation id="536019650977002321">Вашиот администратор не дозволува снимање аудио. Контактирајте со администраторот за повеќе информации.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Одете на оваа картичка</translation>
+<translation id="5377367976106153749">Да се вклучи пристапот до камерата?</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
 <translation id="5391307769715781764">Да се замени зачуваната работна површина?</translation>
 <translation id="5393156353051693207">Допрете и задржете каде било за да ги преуредите апликациите</translation>
@@ -925,7 +929,6 @@
 <translation id="6103838137565245112">систем</translation>
 <translation id="6107292179555508368">Пристапите до микрофонот и камерата се исклучени на уредов</translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
-<translation id="6116825164611323644">Пристапот до камерата е исклучен на уредов</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потврдете го преземањето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">„Помошникот на Google“ не е достапен во гостинска сесија.</translation>
@@ -1396,7 +1399,6 @@
 <translation id="8735678380411481005">Боја на заднинско светло на тастатура</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Вклучете го пристапот до камерата за да дозволите апликациите и веб-страниците со дозвола за камера да ги користат камерите поврзани со уредов.</translation>
 <translation id="8755498163081687682">Потврдете го вашиот идентитет: <ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
 <translation id="875593634123171288">Прикажи ги поставките за VPN</translation>
 <translation id="8759408218731716181">Не може да се постават повеќе најави</translation>

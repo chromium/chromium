@@ -688,6 +688,7 @@
 <translation id="7415801143053185905">HTTP တုံ့ပြန်ချိန် အလွန်ကြာနေသည်</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ 1 မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်၍ ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
+<translation id="7458970041932198923">ချန်နယ်ပုံများကို ကြည့်ရန်နှင့် သတ်မှတ်ရန် ကွန်ရက်ချိတ်ဆက်ပြီး စာမျက်နှာကို ပြန်လည်စတင်ပါ။</translation>
 <translation id="7469648432129124067">စာမျက်နှာကို တွေ့ရှိသည်</translation>
 <translation id="7481312909269577407">ရှေ့သို့</translation>
 <translation id="7487067081878637334">နည်းပညာ</translation>
@@ -842,6 +843,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{စကင်ဖတ်ရန်}=1{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}other{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}}</translation>
 <translation id="8997710128084572139">ကိရိယာတွင် ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />% ရှိသည်။</translation>
+<translation id="8998289560386111590">သင့်စက်တွင် မရနိုင်ပါ</translation>
 <translation id="9003704114456258138">ကြိမ်နှုန်း</translation>
 <translation id="9025198690966128418">ပုဂ္ဂိုလ်ရေးသီးသန့်စက်အဖြစ် သုံးစွဲရန်</translation>
 <translation id="9028832514430399253">စကရင်နားချိန်ပုံ ရွေးရန် ခလုတ်ဖွင့်ပါ</translation>

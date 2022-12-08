@@ -1783,9 +1783,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Para obtener información detallada sobre los patrones de URL de sitios válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Los comodines (<ph name="WILDCARD_VALUE" />) están permitidos. Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.
 
       Si esta política no se establece para un sitio, se le aplicará la política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" />, si se ha definido. En caso contrario, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.</translation>
-<translation id="2725855586003209701">Si se habilita la política o no se establece, los dispositivos registrados informarán sobre la lista de usuarios de dispositivos que hayan iniciado sesión recientemente.
-
-      Si se inhabilita la política, los dispositivos registrados no informarán sobre la lista de usuarios.</translation>
 <translation id="2730200383593984228">Permitir que los usuarios no afiliados utilicen aplicaciones Android</translation>
 <translation id="2730419309754848345">Imprimir PDF como imagen de forma predeterminada</translation>
 <translation id="2731299561202635374">Esta política controla la comprobación de URLs en tiempo real para identificar URL no seguras.

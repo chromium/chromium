@@ -689,6 +689,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Numérisation terminée. 1 page a été numérisée.}one{Numérisation terminée. {NUMBER_OF_PAGES} page a été numérisée.}other{Numérisation terminée. {NUMBER_OF_PAGES} pages ont été numérisées.}}</translation>
+<translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7487067081878637334">Technologie</translation>
@@ -843,6 +844,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Numériser}=1{Numériser la page {NUMBER_OF_PAGES}}one{Numériser la page {NUMBER_OF_PAGES}}other{Numériser les pages {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Le niveau de la pile de l'appareil est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998289560386111590">Non accessible sur votre appareil</translation>
 <translation id="9003704114456258138">Fréquence</translation>
 <translation id="9025198690966128418">Utiliser comme un appareil personnel</translation>
 <translation id="9028832514430399253">Activez le commutateur pour sélectionner les options de l'écran de veille</translation>

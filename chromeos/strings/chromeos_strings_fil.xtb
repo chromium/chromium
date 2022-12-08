@@ -689,6 +689,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7415801143053185905">Napakataas na latency ng HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
+<translation id="7458970041932198923">Kumonekta sa isang network at i-reload ang page para tumingin at magtakda ng mga avatar.</translation>
 <translation id="7469648432129124067">May na-detect na portal</translation>
 <translation id="7481312909269577407">Sumulong</translation>
 <translation id="7487067081878637334">Teknolohiya</translation>
@@ -843,6 +844,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{I-scan}=1{I-scan ang page {NUMBER_OF_PAGES}}one{I-scan ang page {NUMBER_OF_PAGES}}other{I-scan ang page {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">May <ph name="BATTERY_PERCENTAGE" />% baterya ang device.</translation>
+<translation id="8998289560386111590">Hindi available sa iyong device</translation>
 <translation id="9003704114456258138">Frequency</translation>
 <translation id="9025198690966128418">Gamitin bilang personal na device</translation>
 <translation id="9028832514430399253">I-on ang toggle para piliin ang mga opsyon ng screen saver</translation>

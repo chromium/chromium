@@ -309,7 +309,6 @@
 <translation id="168693727862418163">此政策值未能根据其架构进行验证，因此会被忽略。</translation>
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
-<translation id="1699570257714336246">缺少信息</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">缩放级别</translation>
@@ -1161,7 +1160,6 @@
 <translation id="3961148744525529027">付款处理程序工作表已在下半屏中打开</translation>
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3963721102035795474">阅读器模式</translation>
-<translation id="3963837677003247395">以手动方式继续？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{无}=1{来自 1 个网站}other{来自 # 个网站}}</translation>
 <translation id="3969052498612555048">找不到动态密码？<ph name="BEGIN_LINK" />获取新的动态密码<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">正在计算...</translation>
@@ -1939,7 +1937,6 @@
 <translation id="5937560539988385583">网页翻译完毕</translation>
 <translation id="5938153366081463283">添加虚拟卡</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347">正在打开 <ph name="SITE_NAME" />…</translation>
 <translation id="5947508410139465809">系统会将您上传或附加的文件发送给 Google Cloud 或第三方以供分析。例如，可能会通过扫描来确定文件是否包含敏感数据或恶意软件，并且可能会根据公司政策存储这些文件。</translation>
 <translation id="5951495562196540101">无法通过消费者帐号注册（有封装的许可）。</translation>
 <translation id="5953516610448771166">此媒体无法使用实时字幕功能。如需获取字幕，请屏蔽该网站的<ph name="CONTENT_SETTINGS" />。</translation>
@@ -2075,7 +2072,6 @@
 <translation id="6295618774959045776">CVC：</translation>
 <translation id="6300452962057769623">{0,plural, =0{您的设备将立即重启}=1{您的设备将在 1 秒后重启}other{您的设备将在 # 秒后重启}}</translation>
 <translation id="6301104306974789820">接收价格跟踪通知</translation>
-<translation id="6302269476990306341">Chrome 中的 Google 助理即将停止工作</translation>
 <translation id="6305205051461490394">无法访问 <ph name="URL" />。</translation>
 <translation id="6311165245110979290">有可用的虚拟卡</translation>
 <translation id="6312113039770857350">网页无法打开</translation>
@@ -2332,7 +2328,6 @@
 <translation id="6971439137020188025">在 Google 幻灯片中快速创建新的 Google 演示文稿</translation>
 <translation id="6972629891077993081">HID 设备</translation>
 <translation id="6973656660372572881">固定代理服务器和 .pac 脚本网址均已指定。</translation>
-<translation id="6973932557599545801">抱歉，我已是爱莫能助，请您自行继续操作。</translation>
 <translation id="6973988895180423160">3.5 x 5 英寸</translation>
 <translation id="6978236010531171013">仍然共享</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
@@ -2528,7 +2523,6 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />此问题。</translation>
 <translation id="7455133967321480974">使用全局默认设置（阻止）</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">此处显示的放映时间不同于您的选择。继续？</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="7463075493919226237">澳式足球</translation>
 <translation id="7465963048299965912">10 x 13 英寸</translation>
@@ -3218,7 +3212,6 @@
 <translation id="937457230470581909">动物园、水族馆与保护区</translation>
 <translation id="939736085109172342">新建文件夹</translation>
 <translation id="940053046584497293">旅行与交通</translation>
-<translation id="945522503751344254">发送反馈</translation>
 <translation id="945855313015696284">请查看下面的信息，并删除所有无效卡片</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可在 Google 协作平台中快速创建新网站</translation>
 <translation id="950736567201356821">三孔（顶部）</translation>

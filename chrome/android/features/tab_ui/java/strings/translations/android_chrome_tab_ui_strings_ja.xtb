@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">すべてのシークレット タブを閉じますか？</translation>
 <translation id="1657719826150349398">タブを下に移動</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをブックマークに追加}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをブックマークに追加}}</translation>
 <translation id="2118649612461486615">ストア情報</translation>
 <translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{タブのグループ化を解除する}other{タブのグループ化を解除する}}</translation>
 <translation id="2277224997687551299">グループ名を編集</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをグループから削除します。}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをグループから削除します。}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{タブをブックマークに追加}other{タブをブックマークに追加}}</translation>
 <translation id="2479148705183875116">設定に移動</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブを折りたたみます。}other{タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを折りたたみます。}}</translation>
 <translation id="2569352796411618312">提案: しばらく使用していないタブが <ph name="NUMBER_OF_TABS" /> 個あります。これらのタブを閉じますか？</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">タブを上に移動</translation>
 <translation id="8304833501377495048">次回からタブバーを表示しないよう設定しますか？</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを閉じます}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを閉じます}}</translation>
+<translation id="8398929769197326728">新しいフォルダ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを展開します。</translation>
 <translation id="8714939927607906138">値下げ</translation>
 <translation id="8749939518995770034">タブバーを閉じました</translation>

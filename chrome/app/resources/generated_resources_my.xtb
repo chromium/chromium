@@ -205,6 +205,7 @@
 <translation id="117916940443676133">သင့်လုံခြုံရေးကီးကို ပင်နံပါတ်ဖြင့် ကာကွယ်မထားပါ။ လက်မှတ်ထိုးဝင်ခြင်း ဒေတာများကို စီမံရန် ပင်နံပါတ် ဦးစွာသတ်မှတ်ပါ။</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="1183237619868651138">ဒေသတွင်း ကရှ်တွင် <ph name="EXTERNAL_CRX_FILE" /> အား မတပ်ဆင်နိုင်ပါ။</translation>
+<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> အပလီကေးရှင်းက မှန်ကန်သည့် <ph name="APPLICATION_NAME" /> URL လိုအပ်သည်။</translation>
 <translation id="1185924365081634987">သင်သည် <ph name="GUEST_SIGNIN_LINK_START" />ဧည့်သည် အဖြစ် ဝင်ကြည့်ရန်<ph name="GUEST_SIGNIN_LINK_END" /> ကြိုးစားကြည့်ကာ ဒီကွန်ရက် အမှားကို ပြင်ပေနိုင်သည်။</translation>
 <translation id="1186771945450942097">အန္တရာယ်ဖြစ်စေနိုင်သော ဆော့ဖ်ဝဲကို ဖယ်ရှားရန်</translation>
 <translation id="1187722533808055681">နားနေရာမှ နိုးလာ</translation>
@@ -2834,6 +2835,7 @@
 <translation id="3582057310199111521">လိမ်လည်သည့်ဝဘ်ဆိုက်တွင် ထည့်သွင်းထားပြီး ဒေတာပေါက်ကြားမှုတွင် တွေ့ရှိရသည်</translation>
 <translation id="3582299299336701326">ဖန်သားပြင်ကို အလင်းမှ အမှောင်သို့၊ အမှောင်မှ အလင်းသို့ ပြောင်းနိုင်သည်။ အရောင်ပြောင်းပြန်ပြုလုပ်ခြင်း ဖွင့်၊ ပိတ် လုပ်ရန် Search + Ctrl + H ကို နှိပ်ပါ။</translation>
 <translation id="3584169441612580296">ဓာတ်ပုံများ၊ ဂီတ၊ နှင့် အခြား မီဒီယာကို သင့် ကွန်ပျူတာမှ ဖတ်ပါ၊ ပြောင်းလဲပါ။</translation>
+<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> အပလီကေးရှင်း သုံးနိုင်ရန် OneDrive လိုအပ်သည်။</translation>
 <translation id="3586806079541226322">ဤဖိုင်ကို ဖွင့်၍မရပါ</translation>
 <translation id="3586931643579894722">အသေးစိတ်များ ဝှက်ထားရန်</translation>
 <translation id="3587482841069643663">အားလုံး</translation>
@@ -2867,6 +2869,7 @@
 <translation id="3616741288025931835">ဘရောက်လုပ်ထားသည့် အချက်လက်များ ရှင်းလင်းရန်...</translation>
 <translation id="3617891479562106823">နောက်ခံပုံများ မရရှိနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3619115746895587757">ကာပူချီနို</translation>
+<translation id="3620136223548713675">ပထဝီတည်နေရာ</translation>
 <translation id="3621807901162200696">ChromeOS ဝန်ဆောင်မှုများနှင့် စွမ်းဆောင်ရည် ပိုကောင်းလာအောင် ကူညီရန်</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{အက်ပ်တစ်ခု}other{အက်ပ် # ခု}}</translation>
 <translation id="362333465072914957">အသိအမှတ်ပြုလက်မှတ် ထုတ်ပေးရန် CA ကို စောင့်နေသည်</translation>
@@ -3991,6 +3994,7 @@
 <translation id="4654236001025007561">သင့်အနီးရှိ Chromebook နှင့် Android စက်များအား ဖိုင်များမျှဝေပါ</translation>
 <translation id="4657914796247705218">TrackPoint မြန်နှုန်း</translation>
 <translation id="4658285806588491142">ဖန်သားပြင်ကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း</translation>
+<translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> အပလီကေးရှင်းက အော့ဖ်လိုင်းမရနိုင်ပါ။</translation>
 <translation id="465878909996028221">ဘရောင်ဇာ တစ်ဆင့်ပြန်ညွှန်ပြခြင်းများအတွက် http၊ https နှင့် ဖိုင်ပရိုတိုကောများကိုသာ ပံ့ပိုးထားပါသည်။</translation>
 <translation id="4659126640776004816">သင့် Google Account သို့ လက်မှတ်ထိုးဝင်သည့်အခါ ဤဝန်ဆောင်မှုကို ဖွင့်ထားသည်။</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{ပုံ}other{# ပုံ}}</translation>
@@ -4041,6 +4045,7 @@
 <translation id="4699357559218762027">(အလိုအလျောက်-စရန်)</translation>
 <translation id="4701025263201366865">မိဘ လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="4701335814944566468">မနေ့က ကြည့်ထားသည်</translation>
+<translation id="4705624512518230041">OneDrive မရနိုင်ပါက <ph name="FILE_NAMES" /> ကိုဖွင့်၍မရပါ</translation>
 <translation id="470644585772471629">အရောင် ပြောင်းပြန်ပြုလုပ်ရန်</translation>
 <translation id="4707337002099455863">ဝဘ်ဆိုက်အားလုံးတွင် အမြဲတမ်းဖွင့်ထားရန်</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />ကို ရပ်ပစ်ရန်</translation>
@@ -4508,6 +4513,7 @@
 <translation id="5160634252433617617">စက်၏ ကီးဘုတ်</translation>
 <translation id="5160857336552977725">သင့်<ph name="DEVICE_TYPE" /> သို့ လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> မှ USB ကိရိယာများ</translation>
+<translation id="5162624292894372900">Drive မရနိုင်ပါက <ph name="FILE_NAMES" /> ကိုဖွင့်၍မရပါ</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ကို ပိတ်ထားလိုက်ပါပြီ</translation>
 <translation id="5163910114647549394">တဘ်အတန်း၏အဆုံးသို့ တဘ်ကို ရွှေ့လိုက်သည်</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> အတွက် အကြောင်းကြားချက်ကို ခွင့်ပြုမထားပါ</translation>
@@ -5416,6 +5422,7 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> ခုအနက် အကြောင်းအရာအပို <ph name="CURRENT_ELEMENT" /> သို့ သွားရန်</translation>
 <translation id="6016551720757758985">ယခင်ဗားရှင်းသို့ ပြန်သွားရန် Powerwash အား အတည်ပြုခြင်း</translation>
 <translation id="6016972670657536680">ဘာသာစကားနှင့် ကီးဘုတ်ခလုတ်ကို ရွေးပါ။ လက်ရှိရွေးထားသည့် ဘာသာစကားသည် <ph name="LANGUAGE" /> ဖြစ်သည်။</translation>
+<translation id="6017503096330453612">‘‘ထပ်စမ်းကြည့်ရန်’’ ကိုရွေးပါ (သို့) ကန့်သတ်ထားသည့် ကြည့်ရှုခြင်းနှင့် တည်းဖြတ်မှုရွေးစရာများသုံးရန် ‘‘အော့ဖ်လိုင်း တည်းဖြတ်စနစ်တွင်ဖွင့်ရန်’’ ကိုရွေးပါ။</translation>
 <translation id="6017514345406065928">အစိမ်းရောင်</translation>
 <translation id="6019169947004469866">ဖြတ်ရန်</translation>
 <translation id="6019851026059441029">အလွန်ကောင်း - HD</translation>
@@ -6277,6 +6284,7 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">အသုံးပြုသူများ အားလုံးအတွက် အလိုအလျောက်အပ်ဒိတ်များ စနစထည့်သွင်းမှု ပြုလုပ်ခြင်း မအောင်မြင်ပါ (လေယာဉ်မထွက်မီ စတင်ခြင်း ချွတ်ယွင်းချက် − <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ</translation>
+<translation id="6830200424658853449">အော့ဖ်လိုင်း တည်းဖြတ်စနစ်တွင်ဖွင့်ရန်</translation>
 <translation id="6831043979455480757">ဘာသာပြန်ရန်</translation>
 <translation id="6832218595502288407">ဘယ်သို့ ကပ်ရန်</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> အုပ်စုမှ တဘ်ကို ဖယ်ရှားလိုက်သည် - <ph name="GROUP_CONTENTS" /></translation>
@@ -6640,6 +6648,7 @@
 <translation id="7174199383876220879">အသစ်။ သင်၏ သီချင်း၊ ဗီဒီယိုနှင့် အခြားအရာများကို ထိန်းချုပ်ပါ။</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ကို စီစဉ်သတ်မှတ်ရန်</translation>
 <translation id="7175353351958621980">မှ တင်ခဲ့သည်:</translation>
+<translation id="7177079607604198383">သင့်အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ‘‘ထပ်စမ်းကြည့်ရန်’’ ကိုရွေးပါ (သို့) ကန့်သတ်ထားသည့် ကြည့်ရှုခြင်းနှင့် တည်းဖြတ်မှုရွေးစရာများသုံးရန် ‘‘အော့ဖ်လိုင်း တည်းဖြတ်စနစ်တွင်ဖွင့်ရန်’’ ကိုရွေးပါ။</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
 <translation id="7180865173735832675">ပြုပြင်ရန်</translation>
 <translation id="7182791023900310535">သင့်စကားဝှက် ရွှေ့ရန်</translation>
@@ -7341,6 +7350,7 @@
 <translation id="783229689197954457">Google သည် လျှော့ဈေးကိုတွေ့ပါက ၎င်းကို ဤစာမျက်နှာတွင် ပြပါမည်</translation>
 <translation id="7833720883933317473">သိမ်းဆည်းထားသော စိတ်ကြိုက်စကားလုံးများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="7835178595033117206">ဝဘ်လိပ်စာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
+<translation id="7836535163829106376"><ph name="FILE_NAMES" /> အတွက် URL ကိုဖွင့်၍မရပါ</translation>
 <translation id="7836850009646241041">သင့်လုံခြုံရေးကီးကို ထပ်ထိကြည့်ပါ</translation>
 <translation id="7837776265184002579">သင်၏ ပင်မစာမျက်နှာကို <ph name="URL" /> သို့ ပြောင်းထားပါသည်။</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> ထံမှ '<ph name="NETWORK_NAME" />' ကို သိမ်း၍မရပါ</translation>
@@ -7780,6 +7790,7 @@
 <translation id="822347941086490485">HID စက်များ ရှာနေသည်...</translation>
 <translation id="8223573963214454788">ရှေ့ဆက်ပြီး ဒေတာဖျက်ရန်</translation>
 <translation id="8225046344534779393">အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
+<translation id="8225173734540525852"><ph name="APPLICATION_NAME" /> အပလီကေးရှင်း သုံးနိုင်ရန် Drive လိုအပ်သည်။</translation>
 <translation id="8225265270453771718">အပလီကေးရှင်း ဝင်းဒိုး မျှဝေခြင်း</translation>
 <translation id="8226222018808695353">တားမြစ်ထားသည်</translation>
 <translation id="8226619461731305576">တန်းစီစာရင်း</translation>
@@ -8116,6 +8127,7 @@
 <translation id="8549316893834449916">သင့် Chromebook သို့ လက်မှတ်ထိုးဝင်ရန် Gmail၊ Drive၊ YouTube နှင့် အခြားအရာများအတွက် အသုံးပြုသော သင်၏ Google Account ကို အသုံးပြုရမည်။</translation>
 <translation id="8551388862522347954">လိုင်စင်များ</translation>
 <translation id="8551588720239073785">ရက်စွဲနှင့် အချိန်ဆက်တင်များ</translation>
+<translation id="8551647092888540776">အော့ဖ်လိုင်းဖြစ်နေစဉ် <ph name="FILE_NAMES" /> ကိုဖွင့်၍မရပါ</translation>
 <translation id="8552102814346875916">“အမြဲဖွင့်ထားရမည့် ဝဘ်ဆိုက်များ” စာရင်းတွင် သိမ်းရန်</translation>
 <translation id="8553342806078037065">အခြားလူများကို စီမံခန့်ခွဲရန်</translation>
 <translation id="8554899698005018844">ဘာသာစကား ရွေးမထားပါ</translation>

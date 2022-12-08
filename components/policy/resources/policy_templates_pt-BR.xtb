@@ -1412,6 +1412,9 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="2354439478396602136">Mostrar recomendações de apps no acesso rápido do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2355876547176311490">Desativar o uso de servidores de redirecionamento pelo host de acesso remoto</translation>
 <translation id="2358176879566587521">Esta política foi removida. Ela não é compatível com esta versão do <ph name="PRODUCT_NAME" />. Leia mais em https://support.google.com/chrome/a/answer/7643500</translation>
+<translation id="235987002603620567">O NewBaseUrlInheritanceBehavior é um recurso do <ph name="PRODUCT_NAME" /> que faz com que os frames <ph name="ABOUT_BLANK_PAGE" /> e <ph name="ABOUT_SRCDOC_PAGE" /> herdem os valores do URL base de maneira consistente por snapshots do URL base do iniciador. Confira mais detalhes em https://chromestatus.com/feature/5161101671530496.
+
+Quando a política é desativada, ela impede que usuários ou variações do <ph name="PRODUCT_NAME" /> ativem o recurso NewBaseUrlInheritanceBehavior caso problemas de compatibilidade sejam descobertos. Quando ativada ou deixada sem definição, ela permite a ativação do recurso NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Janela de tempo de reinicialização</translation>
 <translation id="2362539163677485510">Token de registro da política de nuvem</translation>
 <translation id="2363928351203698966">Se a política for definida com um valor válido, o <ph name="PRODUCT_NAME" /> não usará versões SSL/TLS anteriores à versão especificada. Valores não reconhecidos serão ignorados.
@@ -1783,9 +1786,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Para ver informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.
 
       Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> será aplicada, se configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
-<translation id="2725855586003209701">Se a política for definida como "Ativada" ou não for definida, os dispositivos registrados informarão a lista de usuários que fizeram login recentemente.
-
-      Se a política for definida como "Desativada", os dispositivos registrados não informarão a lista de usuários.</translation>
 <translation id="2730200383593984228">Permitir o acesso de usuários não afiliados aos apps Android</translation>
 <translation id="2730419309754848345">Padrão para imprimir PDF como imagem</translation>
 <translation id="2731299561202635374">Esta política controla a verificação de URLs em tempo real para identificar os que são perigosos.
@@ -2696,6 +2696,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
       Quando esta política for definida como falsa, o dispositivo não tentará entrar em contato com o servidor Quirks para fazer o download dos arquivos de configuração.
 
       Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> entrará em contato automaticamente com o servidor Quirks, fará o download dos arquivos de configuração, se eles estiverem disponíveis, e os armazenará no dispositivo.  Esses arquivos podem ser usados, por exemplo, para melhorar a qualidade de exibição de monitores acoplados.</translation>
+<translation id="3515196503924273265">Permite ativar o recurso NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Depois que a opção <ph name="LACROS_NAME" /> for desativada, a migração de dados não vai ser realizada. A pasta <ph name="LACROS_NAME" /> será removida, e os usuários vão continuar usando os dados restantes.</translation>
 <translation id="3522257170445891912">Quando esta política é definida, o fluxo de autenticação de login acontece em uma das seguintes formas, dependendo do valor da configuração:
 
@@ -3820,6 +3821,7 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="4611983465824842867">Não mostrar avisos nem desativar o preenchimento automático em formulários não seguros</translation>
 <translation id="4615003180013429835">Modo de análise da lista de sites</translation>
 <translation id="4617338332148204752">Ignorar a verificação de metatags em <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="461901491675418689">Recurso NewBaseUrlInheritanceBehavior disponível</translation>
 <translation id="4624006912948309924">A definição da política estabelece quais identificadores de aplicativo do <ph name="PRODUCT_OS_NAME" /> são mostrados como apps fixados na barra de acesso rápido, e eles não podem ser editados pelos usuários.
 
 Especifique os apps do Chrome pelos IDs deles (como pjkljhegncpnkpknbcohdijeoejaedia),
@@ -8075,6 +8077,7 @@ para essa VM. É possível instalar várias VMs de uma configuração no mesmo d
       Se esta política for desativada, o processo de serviço de rede será executado fora do sandbox. Essa opção deixa os usuários vulneráveis a riscos de segurança relacionados à execução do serviço de rede fora do sandbox.
       Se a política não for definida, será usada a configuração padrão para o sandbox de rede. Ela pode variar dependendo da versão do <ph name="PRODUCT_NAME" />, da execução de testes de campo e da plataforma.
       Esta política tem como objetivo oferecer às empresas flexibilidade para desativar o sandbox de rede, caso elas usem um software de terceiros que interfira nesse tipo de sandbox.</translation>
+<translation id="8840243776706727185">Recurso NewBaseUrlInheritanceBehavior desativado</translation>
 <translation id="8842208363354615697">Permitir que o HTTPS-Only Mode seja ativado</translation>
 <translation id="885147810817138322">Exibir recomendações de mídia aos usuários</translation>
 <translation id="8852579753940989645">Ativar integridade do código renderizador</translation>

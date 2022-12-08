@@ -1411,6 +1411,9 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
 <translation id="2354439478396602136">Afficher des recommandations d'applis dans le lanceur de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2355876547176311490">Désactiver l'utilisation des serveurs de relais pour l'hôte d'accès à distance</translation>
 <translation id="2358176879566587521">Cette règle est supprimée. Elle n'est pas compatible avec cette version de <ph name="PRODUCT_NAME" />. Pour en savoir plus, rendez-vous sur https://support.google.com/chrome/a/answer/7643500.</translation>
+<translation id="235987002603620567">NewBaseUrlInheritanceBehavior est une fonctionnalité <ph name="PRODUCT_NAME" /> qui entraîne l'héritage systématique des valeurs d'URL de base par les frames <ph name="ABOUT_BLANK_PAGE" /> et <ph name="ABOUT_SRCDOC_PAGE" /> via des instantanés de l'URL de base de leur créateur. Pour en savoir plus, consultez https://chromestatus.com/feature/5161101671530496.
+
+Si la règle est désactivée, elle empêche les utilisateurs ou les variantes de <ph name="PRODUCT_NAME" /> d'activer NewBaseUrlInheritanceBehavior si des problèmes de compatibilité sont détectés. Si la règle est activée ou n'est pas configurée, NewBaseUrlInheritanceBehavior peut être activée.</translation>
 <translation id="2362469626417133796">Fenêtre de redémarrage</translation>
 <translation id="2362539163677485510">Jeton d'enregistrement des règles relatives au cloud</translation>
 <translation id="2363928351203698966">Si cette règle est définie sur une valeur valide, <ph name="PRODUCT_NAME" /> n'utilise pas de versions SSL/TLS antérieures à celle spécifiée. Les valeurs non reconnues sont ignorées.
@@ -1782,9 +1785,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés. Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.
 
       Si cette règle n'est pas définie pour un site, alors la règle <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> s'applique au site (si elle est définie). Sinon, les paramètres par défaut du navigateur s'appliquent, et les utilisateurs peuvent définir l'autorisation pour chaque site.</translation>
-<translation id="2725855586003209701">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés communiquent la liste des utilisateurs qui se sont récemment connectés.
-
-      Si cette règle est désactivée, les appareils enregistrés ne communiquent pas cette liste.</translation>
 <translation id="2730200383593984228">Autoriser les utilisateurs non affiliés à utiliser des applis Android</translation>
 <translation id="2730419309754848345">Imprimer le document PDF en tant qu'image par défaut</translation>
 <translation id="2731299561202635374">Cette règle permet de gérer la détection en temps réel des URL dangereuses.
@@ -2686,6 +2686,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
       Si cette règle est définie sur "False", l'appareil n'essaiera pas de contacter Quirks Server pour télécharger les fichiers de configuration.
 
       Si cette règle est définie sur "True" ou si elle n'est pas définie, <ph name="PRODUCT_OS_NAME" /> contactera automatiquement Quirks Server pour télécharger les fichiers de configuration, s'ils sont disponibles, et les enregistrer sur l'appareil  Ces fichiers pourront, par exemple, être utilisés pour améliorer la qualité d'affichage des moniteurs connectés.</translation>
+<translation id="3515196503924273265">Permet d'activer la fonctionnalité NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Une fois <ph name="LACROS_NAME" /> désactivé, la migration des données n'est pas effectuée. Le dossier <ph name="LACROS_NAME" /> est supprimé, et les utilisateurs continuent d'utiliser les données restantes.</translation>
 <translation id="3522257170445891912">Si cette règle est configurée, l'authentification s'effectue de l'une des deux façons suivantes, selon la valeur du paramètre :
 
@@ -3788,6 +3789,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
 <translation id="4611983465824842867">Ne pas afficher d'avertissements ni désactiver la saisie automatique sur les formulaires non sécurisés</translation>
 <translation id="4615003180013429835">Mode d'analyse de la liste des sites</translation>
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="461901491675418689">Fonctionnalité NewBaseUrlInheritanceBehavior disponible</translation>
 <translation id="4624006912948309924">Permet de définir quels identifiants d'appli <ph name="PRODUCT_OS_NAME" /> affiche en tant qu'applis épinglées dans la barre du Lanceur d'applis. Notez que les utilisateurs ne peuvent pas les modifier.
 
 Spécifiez les applis Chrome par leur ID (par exemple, pjkljhegncpnkpknbcohdijeoejaedia), les applis Android par leur nom de package (par exemple, com.google.android.gm), les applis Web par l'URL utilisée dans <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (par exemple, https://google.com/maps) et les applis Web système par leur nom snake case (par exemple, <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />).
@@ -8008,6 +8010,7 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
       Si elle est désactivée, celui-ci sera exécuté sans bac à sable. Les utilisateurs sont alors exposés à des risques de sécurité supplémentaires liés à l'exécution du service réseau hors bac à sable.
       Si cette règle n'est pas définie, la configuration par défaut pour le bac à sable réseau sera utilisée. Celle-ci peut varier en fonction de la version de <ph name="PRODUCT_NAME" />, des tests en conditions réelles en cours et de la plate-forme.
       Cette règle vise à donner aux entreprises la possibilité de désactiver le bac à sable réseau si la configuration des logiciels tiers qu'elles utilisent interfère avec le bac à sable.</translation>
+<translation id="8840243776706727185">Fonctionnalité NewBaseUrlInheritanceBehavior désactivée</translation>
 <translation id="8842208363354615697">Autoriser l'activation du mode HTTPS uniquement</translation>
 <translation id="885147810817138322">Proposer à l'utilisateur des recommandations de contenus multimédias</translation>
 <translation id="8852579753940989645">Activer la règle d'intégrité du code du moteur de rendu</translation>

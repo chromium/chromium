@@ -689,6 +689,7 @@
 <translation id="7415801143053185905">HTTP-н маш өндөр хоцролт</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скан хийж дууссан. 1 хуудсыг скан хийсэн}other{Скан хийж дууссан. {NUMBER_OF_PAGES} хуудсыг скан хийсэн}}</translation>
+<translation id="7458970041932198923">Аватар зургийг харах болон тохируулахын тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
 <translation id="7469648432129124067">Портал илэрсэн</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7487067081878637334">Технологи</translation>
@@ -843,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скан хийх}=1{{NUMBER_OF_PAGES} хуудас скан хийх}other{{NUMBER_OF_PAGES} хуудас скан хийх}}</translation>
 <translation id="8997710128084572139">Төхөөрөмжийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
+<translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
 <translation id="9003704114456258138">Давтамж</translation>
 <translation id="9025198690966128418">Хувийн төхөөрөмжөөр ашиглах</translation>
 <translation id="9028832514430399253">Дэлгэц амраагчийн сонголтыг сонгохын тулд асаах/унтраахыг асаана уу</translation>

@@ -667,6 +667,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4666082839192943839">Lai vienmēr bloķētu visas kameras, izslēdziet piekļuvi kamerai šajā ierīcē.</translation>
 <translation id="4666911709726371538">Citas lietotnes</translation>
 <translation id="4667099493359681081">Notiek faila <ph name="FILENAME" /> lejupielāde</translation>
+<translation id="468293128311738995">Lietotnes no jūsu tālruņa</translation>
 <translation id="4690510401873698237">Plaukts tiek rādīts apakšā</translation>
 <translation id="4696813013609194136">Ierīces atbloķēšana, ievadot vecāku kodu</translation>
 <translation id="4702647871202761252">Konfidencialitātes ekrāns ir izslēgts</translation>
@@ -923,7 +924,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6103838137565245112">sistēma</translation>
 <translation id="6107292179555508368">Šajā ierīcē ir izslēgta piekļuve mikrofonam un kamerai</translation>
 <translation id="6114505516289286752">Lejupielādēti runas faili šādā valodā: <ph name="LANGUAGE" /></translation>
-<translation id="6116825164611323644">Piekļuve kamerai ir izslēgta šajā ierīcē</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Faila <ph name="FILENAME" /> lejupielādes apstiprināšana</translation>
 <translation id="612734058257491180">Google asistents nav pieejams viesa sesijā.</translation>
@@ -1288,6 +1288,7 @@ Jauna instalācija</translation>
 <translation id="8142441511840089262">Veikt dubultklikšķi</translation>
 <translation id="8142699993796781067">Privāts tīkls</translation>
 <translation id="8144760705599030999">Saglabājiet ierīci (<ph name="NAME" />) kontā <ph name="EMAIL" /> ātrākai savienošanai pārī ar citām savām ierīcēm.</translation>
+<translation id="8144914663975476336">Atlasiet ieraksta formātu</translation>
 <translation id="8149413265954228307">Rādīt Bluetooth iestatījumus. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Lai aizvērtu cilnes lapu, vienlaikus nospiediet taustiņus Ctrl un W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automātiski pabeigts</translation>
@@ -1393,7 +1394,6 @@ Jauna instalācija</translation>
 <translation id="8735678380411481005">Taustiņu izgaismojuma krāsa</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />.
         <ph name="SCREEN_SHARE_STATUS" />.</translation>
-<translation id="8752416742247198423">Ieslēdziet piekļuvi kamerai, lai ļautu lietotnēm un tīmekļa lapām ar kameras atļauju izmantot ar šo ierīci savienotās kameras.</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>
 <translation id="8759408218731716181">Nevar iestatīt vairākkārtēju pierakstīšanos.</translation>

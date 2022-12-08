@@ -308,7 +308,6 @@
 <translation id="168693727862418163">ဤမူဝါဒသည် ၎င်း၏ စီမံချက်နှင့်တိုက်၍ အချက်အလက်များကို အတည်ပြု၍မရသောကြောင့် လျစ်လျူရှုသွားပါမည်။</translation>
 <translation id="168841957122794586">ဆာဗာ အသိမှတ်ပြုလက်မှတ်တွင် အားနည်းသည့် ကုဒ်ရေးခြင်းကီး ပါဝင်နေသည်!</translation>
 <translation id="1697532407822776718">သင်သည် အားလုံးကို သတ်မှတ်ပြီးသွားပြီ!</translation>
-<translation id="1699570257714336246">အချက်အလက်များ လိုအပ်နေသည်</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">ဇူးမ်အဆင့်များ</translation>
@@ -1163,7 +1162,6 @@
 <translation id="3961148744525529027">ငွေပေးချေမှု ကိုင်တွယ်သည့်စနစ်စာမျက်နှာကို တစ်ဝက်ဖွင့်ထားသည်</translation>
 <translation id="3962859241508114581">ယခင်တစ်ပုဒ်</translation>
 <translation id="3963721102035795474">စာဖတ်သူ မုဒ်</translation>
-<translation id="3963837677003247395">ကိုယ်တိုင် ဆက်လုပ်မလား။</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{ဝဘ်ဆိုက် ၁ ခုမှ }other{ဝဘ်ဆိုက် # ခုမှ }}</translation>
 <translation id="3969052498612555048">သင့်ကုဒ်ကို ရှာမတွေ့ဘူးလား။ <ph name="BEGIN_LINK" />ကုဒ်အသစ် ရယူရန်<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
@@ -1941,7 +1939,6 @@
 <translation id="5937560539988385583">စာမျက်နှာကို ဘာသာပြန်ပြီးပြီ</translation>
 <translation id="5938153366081463283">ပကတိအသွင်ကတ် ထည့်ရန်</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> ကို ဖွင့်နေသည်…</translation>
 <translation id="5947508410139465809">သင်အပ်လုဒ်လုပ်သည့် (သို့) တွဲချိတ်သည့် ဖိုင်များကို စိတ်ဖြာလေ့လာရန် Google Cloud (သို့) ပြင်ပအဖွဲ့များသို့ ပို့သည်။ ဥပမာအားဖြင့် ၎င်းတို့က သတိထားရမည့်ဒေတာ (သို့) မဲလ်ဝဲကို ရှာဖွေနိုင်ပြီး ကုမ္ပဏီမူဝါဒများအရ သိမ်းနိုင်သည်။</translation>
 <translation id="5951495562196540101">အသုံးပြုသူ အကောင့်ဖြင့် စာရင်းသွင်း၍ မရပါ (ပက်ကေ့ချ်လုပ်ထားသော လိုင်စင်ကို ရနိုင်သည်)။</translation>
 <translation id="5953516610448771166">‘တိုက်ရိုက်စာတန်း’ ကို ဤမီဒီယာအတွက် မရနိုင်ပါ။ စာတန်းများရရှိရန် <ph name="CONTENT_SETTINGS" /> ကို ဤဝဘ်ဆိုက်အတွက် ပိတ်ထားနိုင်သည်။</translation>
@@ -2077,7 +2074,6 @@
 <translation id="6295618774959045776">CVC-</translation>
 <translation id="6300452962057769623">{0,plural, =0{သင့်စက်ကို ယခုပြန်စမည်}=1{သင့်စက်ကို 1 စက္ကန့်အတွင်း ပြန်စမည်}other{သင့်စက်ကို # စက္ကန့်အတွင်း ပြန်စမည်}}</translation>
 <translation id="6301104306974789820">ဈေးနှုန်းစောင့်ကြည့်မှု အကြောင်းကြားချက်များ ရယူရန်</translation>
-<translation id="6302269476990306341">Chrome အတွင်းရှိ Google Assistant ရပ်တန့်နေသည်</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ကိုဆက်သွယ်၍မရနိုင်ပါ။</translation>
 <translation id="6311165245110979290">ပကတိအသွင်ကတ် ရနိုင်သည်</translation>
 <translation id="6312113039770857350">ဝဘ်စာမျက်နှာ မရှိ</translation>
@@ -2333,7 +2329,6 @@
 <translation id="6971439137020188025">Slides တွင် Google တင်ပြမှုအသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="6972629891077993081">HID စက်များ</translation>
 <translation id="6973656660372572881">တိကျသည့် ပရောက်စီဆာဗာနှင့် .pac script URL တို့နှစ်ခုလုံး သတ်မှတ်ပြီးပါပြီ။</translation>
-<translation id="6973932557599545801">ကျွန်ုပ် ကူညီ၍မရပါ၊ ကိုယ်တိုင် ဆက်လုပ်ပါ။</translation>
 <translation id="6973988895180423160">၃.၅ x ၅ လက်မ</translation>
 <translation id="6978236010531171013">မည်သို့ပင်ဖြစ်စေ မျှဝေရန်</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2530,7 +2525,6 @@
 <translation id="7451311239929941790">ဤပြဿနာအကြောင်း <ph name="BEGIN_LINK" />ပိုမိုလေ့လာပါ<ph name="END_LINK" />။</translation>
 <translation id="7455133967321480974">အထွေထွေ ပုံသေကို သုံးရန် (ပိတ်ဆို့ရန်)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">ဤစစ်ထုတ်မှုက သင်ရွေးထားသည့်အရာနှင့် မတူပါ။ ရှေ့ဆက်လိုပါသလား။</translation>
 <translation id="7461924472993315131">ပင်နံပါတ်</translation>
 <translation id="7463075493919226237">ဩစတြေးလျ ဘောလုံး</translation>
 <translation id="7465963048299965912">၁၀ x ၁၃ လက်မ</translation>
@@ -3220,7 +3214,6 @@
 <translation id="937457230470581909">တိရစ္ဆာန်ရုံ၊ ငါးပြတိုက်နှင့် ထိန်းသိမ်းထားရှိမှုများ</translation>
 <translation id="939736085109172342">ဖိုင်တွဲအသစ်</translation>
 <translation id="940053046584497293">ခရီးသွားခြင်းနှင့် ပို့ဆောင်ရေး</translation>
-<translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="945855313015696284">အောက်ပါအချက်အလက်များကို စစ်ဆေးပြီး မမှန်ကန်သည့် ကတ်များကို ဖျက်ပါ</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Google Sites တွင် ဝဘ်ဆိုက်အသစ် အမြန်ပြုလုပ်ရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="950736567201356821">ထိပ်တွင် သုံးချက်ဖောက်ရန်</translation>

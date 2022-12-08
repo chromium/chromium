@@ -100,6 +100,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1447641497144572814">Čuvar ekrana se pokreće</translation>
 <translation id="1455242230282523554">Prikaži postavke jezika</translation>
 <translation id="1460620680449458626">Zvuk je isključen.</translation>
+<translation id="14648076227129703">To omogućuje pristup kameri za aplikacije <ph name="APP1_NAME" /> i <ph name="APP2_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
 <translation id="1467432559032391204">Lijevo</translation>
 <translation id="146902737843070955">Vaš administrator je zatražio ovu promjenu</translation>
 <translation id="147310119694673958">Baterija telefona: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -159,6 +160,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1797271123677381264">Zaboravljena lozinka</translation>
 <translation id="181103072419391116">Jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="1812997170047690955">Šta je na ekranu?</translation>
+<translation id="1816896987747843206">To omogućuje pristup kameri za sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
 <translation id="1823280932251546115">Statusna traka, vrijeme <ph name="TIME" />,
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
@@ -598,6 +600,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4316910396681052118">SVE APLIKACIJE</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4322742403972824594">Prečica na tastaturi Ctrl + Alt + strelica nagore je promijenjena. Da koristite tipku Home, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu ulijevo.</translation>
+<translation id="4324840740119394760">To omogućuje pristup kameri za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web-lokacije s dopuštenjem za kameru</translation>
 <translation id="4333628967105022692">Preglednik Lacros nije podržan dok je istovremeno prijavljeno više korisnika.</translation>
 <translation id="4338109981321384717">Lupa</translation>
 <translation id="4351433414020964307">Asistent se učitava…</translation>
@@ -791,6 +794,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5356963482258194581">Prebacite se između tamne i svijetle teme. Kliknite desnim klikom na radnoj površini i odaberite pozadinsku sliku i stil.</translation>
 <translation id="536019650977002321">Vaš administrator ne dozvoljava snimanje zvuka. Kontaktirajte administratora da dobijete više informacija.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Idite na ovu karticu</translation>
+<translation id="5377367976106153749">Želite li uključiti pristup kameri?</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
 <translation id="5391307769715781764">Zamijeniti sačuvanu radnu površinu?</translation>
 <translation id="5393156353051693207">Dodirnite i zadržite bilo gdje da promijenite redoslijed aplikacija</translation>
@@ -924,7 +928,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6107292179555508368">Pristup mikrofonu i kameri je isključen na uređaju</translation>
 <translation id="6114505516289286752">Fajlovi govora na jeziku <ph name="LANGUAGE" /> su preuzeti</translation>
-<translation id="6116825164611323644">Pristup kameri je isključen na ovom uređaju</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrđivanje preuzimanja fajla <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Asistent nije dostupan u sesiji gosta.</translation>
@@ -1395,7 +1398,6 @@ Nova instalacija</translation>
 <translation id="8735678380411481005">Boja pozadinskog svjetla tastature</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Uključite pristup kameri da aplikacijama i web stranicama koje imaju odobrenje za kameru dozvolite upotrebu kamere povezane s ovim uređajem.</translation>
 <translation id="8755498163081687682">Potvrdite identitet: <ph name="ORIGIN_NAME" /> želi potvrditi vaš identitet</translation>
 <translation id="875593634123171288">Prikaži postavke VPN mreže</translation>
 <translation id="8759408218731716181">Nije moguće postaviti višestruku prijavu</translation>

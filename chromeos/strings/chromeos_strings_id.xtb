@@ -689,6 +689,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7415801143053185905">Latensi HTTP sangat tinggi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Pemindaian selesai. 1 halaman dipindai}other{Pemindaian selesai. {NUMBER_OF_PAGES} halaman dipindai}}</translation>
+<translation id="7458970041932198923">Hubungkan ke jaringan dan muat ulang halaman untuk melihat dan menyetel avatar.</translation>
 <translation id="7469648432129124067">Portal terdeteksi</translation>
 <translation id="7481312909269577407">Maju</translation>
 <translation id="7487067081878637334">Teknologi</translation>
@@ -843,6 +844,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Pindai}=1{Pindai halaman {NUMBER_OF_PAGES}}other{Pindai halaman {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Perangkat memiliki <ph name="BATTERY_PERCENTAGE" />% daya baterai.</translation>
+<translation id="8998289560386111590">Tidak tersedia di perangkat Anda</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9025198690966128418">Gunakan sebagai perangkat pribadi</translation>
 <translation id="9028832514430399253">Aktifkan tombol untuk memilih opsi screensaver</translation>

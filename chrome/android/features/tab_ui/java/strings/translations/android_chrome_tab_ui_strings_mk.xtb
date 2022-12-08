@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Да се затворат сите картички „Инкогнито“?</translation>
 <translation id="1657719826150349398">Премести ја картичката надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Обележи <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Обележи <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Обележи <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
 <translation id="2118649612461486615">Информации за продавницата</translation>
 <translation id="2162620598375156287">Сега <ph name="CURRENT_PRICE" /> на <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Одгрупирај ја картичката}one{Одгрупирај ги картичките}other{Одгрупирај ги картичките}}</translation>
 <translation id="2277224997687551299">Изменете го името на групата</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Отстрани <ph name="TABS_COUNT_ONE" /> избрана картичка од групата.}one{Отстрани <ph name="TABS_COUNT_MANY" /> избрана картичка од групата.}other{Отстрани <ph name="TABS_COUNT_MANY" /> избрани картички од групата.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Обележи ја картичката}one{Обележи ги картичките}other{Обележи ги картичките}}</translation>
 <translation id="2479148705183875116">Одете во „Поставки“</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Собери <ph name="TABS_COUNT_ONE" /> картичка.}one{Собери ја групата со <ph name="TABS_COUNT_MANY" /> картичка.}other{Собери ја групата со <ph name="TABS_COUNT_MANY" /> картички.}}</translation>
 <translation id="2569352796411618312">Предлог: <ph name="NUMBER_OF_TABS" /> ваши картички не се користени во последно време. Дали да се затворат?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Помести картичка нагоре</translation>
 <translation id="8304833501377495048">Да не се прикажува лентата за картички повторно?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затвори <ph name="TABS_COUNT_ONE" /> избрана картичка}one{Затвори <ph name="TABS_COUNT_MANY" /> избрана картичка}other{Затвори <ph name="TABS_COUNT_MANY" /> избрани картички}}</translation>
+<translation id="8398929769197326728">Нова папка - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Прошири ја групата со <ph name="NUMBER_OF_TABS" /> картички.</translation>
 <translation id="8714939927607906138">Пониска цена</translation>
 <translation id="8749939518995770034">Лентата за картички е затворена</translation>

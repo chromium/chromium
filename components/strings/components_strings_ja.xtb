@@ -271,6 +271,7 @@
 <translation id="1586541204584340881">インストールした拡張機能</translation>
 <translation id="1588438908519853928">ノーマル</translation>
 <translation id="1592005682883173041">ローカルデータへのアクセス</translation>
+<translation id="1593359183944365958">270°</translation>
 <translation id="1594030484168838125">選択</translation>
 <translation id="1596296697375291157">スリラー、犯罪、ミステリー映画</translation>
 <translation id="1599199147673445968">カード情報を更新する場合は、<ph name="BEGIN_LINK" />こちらで入力してください<ph name="END_LINK" /></translation>
@@ -308,7 +309,6 @@
 <translation id="168693727862418163">このポリシーの値は、スキーマの検証でエラーとなったため無視されます。</translation>
 <translation id="168841957122794586">サーバー証明書に脆弱な暗号鍵が含まれています。</translation>
 <translation id="1697532407822776718">設定が完了しました。</translation>
-<translation id="1699570257714336246">情報が不足しています</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">ズームレベル</translation>
@@ -338,6 +338,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode が「<ph name="SECURE_DNS_MODE_SECURE" />」の場合は、有効な文字列を指定する必要があります。</translation>
 <translation id="1745880797583122200">ご使用のブラウザは管理されています</translation>
 <translation id="1746113442205726301">画像の Y 軸移動</translation>
+<translation id="1746531169546376413">0°</translation>
 <translation id="17513872634828108">開いているタブ</translation>
 <translation id="1752021286346845558">用紙受け 8</translation>
 <translation id="1753068535428855445">出会い</translation>
@@ -1163,7 +1164,6 @@
 <translation id="3961148744525529027">支払いハンドラのシートが半分開いています</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3963721102035795474">リーダーモード</translation>
-<translation id="3963837677003247395">手動で続行しますか？</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{なし}=1{1 件のサイトから}other{# 件のサイトから}}</translation>
 <translation id="3969052498612555048">コードが表示されない場合は、<ph name="BEGIN_LINK" />新しいコードを取得<ph name="END_LINK" />してください</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -1798,6 +1798,7 @@
 <translation id="5540969246441091044">馬術</translation>
 <translation id="5541086400771735334">用紙受け 7</translation>
 <translation id="5541546772353173584">メールの追加</translation>
+<translation id="5543722831081909240">180°</translation>
 <translation id="5545756402275714221">おすすめの記事</translation>
 <translation id="5551890439174915351">100x200 mm</translation>
 <translation id="5552137475244467770">Chrome では、定期的にパスワードをオンライン上の公開リストと照合し、確認しています。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>
@@ -1940,7 +1941,6 @@
 <translation id="5937560539988385583">ページが翻訳されました</translation>
 <translation id="5938153366081463283">仮想カードを追加する</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> を開いています…</translation>
 <translation id="5947508410139465809">アップロードまたは添付したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存される場合があります。</translation>
 <translation id="5951495562196540101">一般ユーザー向けアカウントでは登録できません（ライセンス パッケージが利用可能です）。</translation>
 <translation id="5953516610448771166">このメディアでは自動字幕起こしを使用できません。字幕を使用するには、このサイトで <ph name="CONTENT_SETTINGS" /> をブロックしてください。</translation>
@@ -2077,7 +2077,6 @@
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{デバイスは今すぐ再起動されます}=1{デバイスは 1 秒後に再起動されます}other{デバイスは # 秒後に再起動されます}}</translation>
 <translation id="6301104306974789820">価格トラッキングの通知を受け取る</translation>
-<translation id="6302269476990306341">Chrome の Google アシスタントを停止しています</translation>
 <translation id="6305205051461490394"><ph name="URL" /> にアクセスできません。</translation>
 <translation id="6311165245110979290">仮想カードを利用できます</translation>
 <translation id="6312113039770857350">ウェブページへのアクセス不可</translation>
@@ -2188,6 +2187,7 @@
 <translation id="6591833882275308647">ご使用の <ph name="DEVICE_TYPE" /> は管理されていません</translation>
 <translation id="6592952801936330159">サイトの設定を管理するボタンです。Enter キーを押して、Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
 <translation id="6596325263575161958">暗号化オプション</translation>
+<translation id="6597665340361269064">90°</translation>
 <translation id="6599642189720630047">トラッキングしている商品</translation>
 <translation id="6611723696964473273">経済ニュース</translation>
 <translation id="6612010098632894193">オンライン動画</translation>
@@ -2333,7 +2333,6 @@
 <translation id="6971439137020188025">スライドで新しい Google プレゼンテーションをすばやく作成します</translation>
 <translation id="6972629891077993081">HID デバイス</translation>
 <translation id="6973656660372572881">固定プロキシ サーバーと .pac スクリプト URL の両方が指定されています。</translation>
-<translation id="6973932557599545801">自動入力できません。残りの入力はご自身で行ってください。</translation>
 <translation id="6973988895180423160">3.5x5 インチ（L 判）</translation>
 <translation id="6978236010531171013">このまま共有</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
@@ -2529,7 +2528,6 @@
 <translation id="7451311239929941790">この問題について<ph name="BEGIN_LINK" />詳細を確認<ph name="END_LINK" />する</translation>
 <translation id="7455133967321480974">グローバルのデフォルト値（[ブロック]）を使用</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">スクリーニングが選択内容と異なっています。続行しますか？</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="7463075493919226237">オーストラリアン フットボール</translation>
 <translation id="7465963048299965912">10x13 インチ</translation>
@@ -3219,7 +3217,6 @@
 <translation id="937457230470581909">動物園、水族館、自然保護地域</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
 <translation id="940053046584497293">旅行、交通</translation>
-<translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="945855313015696284">下記の情報を確認し、無効なカードがあれば削除してください</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Google サイトで新しいサイトをすばやく作成します</translation>
 <translation id="950736567201356821">3 穴パンチ（上）</translation>

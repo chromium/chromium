@@ -205,6 +205,7 @@
 <translation id="117916940443676133">ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಕೀಯನ್ನು ಪಿನ್‌ ಮೂಲಕ ಸಂರಕ್ಷಿಸಿಲ್ಲ. ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಲು, ಮೊದಲು ಪಿನ್ ರಚಿಸಿ.</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1183237619868651138"><ph name="EXTERNAL_CRX_FILE" /> ಅನ್ನು ಸ್ಥಳೀಯ ಕ್ಯಾಷ್‌ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> ಆ್ಯಪ್‌ಗೆ ಮಾನ್ಯವಾದ <ph name="APPLICATION_NAME" /> URL ನ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="1185924365081634987">ಈ ನೆಟ್‌ವರ್ಕ್‌ ದೋಷವನ್ನು ಬಗೆಹರಿಸಲು <ph name="GUEST_SIGNIN_LINK_START" />ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡುವುದನ್ನು<ph name="GUEST_SIGNIN_LINK_END" /> ಕೂಡಾ ನೀವು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="1186771945450942097">ಹಾನಿಕಾರಕ ಸಾಫ್ಟ್‌ವೇರ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1187722533808055681">ತಟಸ್ಥದ ಎಚ್ಚರಿಸುವಿಕೆಗಳು</translation>
@@ -2829,6 +2830,7 @@
 <translation id="3582057310199111521">ವಂಚಕ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಲಾಗಿದೆ ಮತ್ತು ಡೇಟಾ ಉಲ್ಲಂಘಿಸಿದ ಪಟ್ಟಿಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="3582299299336701326">ಬೆಳಕಿನ ಪರದೆಗಳನ್ನು ಡಾರ್ಕ್ ಮಾಡಿ, ಮತ್ತು ಡಾರ್ಕ್ ಸ್ಕ್ರೀನ್‌ಗಳನ್ನು ಲೈಟ್ ಮಾಡಿ. ಬಣ್ಣ ವಿಲೋಮವನ್ನು ಆನ್ ಮತ್ತು ಆಫ್ ಮಾಡಲು Search + Ctrl + H ಒತ್ತಿರಿ.</translation>
 <translation id="3584169441612580296">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಫೋಟೋಗಳು, ಸಂಗೀತ, ಮತ್ತು ಇತರ ಮಾಧ್ಯಮವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಿಸಿ</translation>
+<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ಆ್ಯಪ್‌ಗೆ OneDrive ಲಭ್ಯವಿರಬೇಕು.</translation>
 <translation id="3586806079541226322">ಈ ಫೈಲ್ ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3586931643579894722">ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
@@ -2862,6 +2864,7 @@
 <translation id="3616741288025931835">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು &amp;ತೆರವುಗೊಳಿಸಿ...</translation>
 <translation id="3617891479562106823">ಹಿನ್ನೆಲೆಗಳ ಕಸ್ಟಮೈಸೇಶನ್‌ ಲಭ್ಯವಿಲ್ಲ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3619115746895587757">ಕ್ಯಾಪಚಿನೊ</translation>
+<translation id="3620136223548713675">ಜಿಯೋಲೊಕೇಶನ್</translation>
 <translation id="3621807901162200696">ChromeOS ನ ವೈಶಿಷ್ಟ್ಯಗಳು ಹಾಗೂ ಕೆಲಸ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ಒಂದು ಆ್ಯಪ್}one{# ಆ್ಯಪ್‌ಗಳು}other{# ಆ್ಯಪ್‌ಗಳು}}</translation>
 <translation id="362333465072914957">ಪ್ರಮಾಣಪತ್ರ ಒದಗಿಸಲು CA ಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -3987,6 +3990,7 @@
 <translation id="4654236001025007561">ನಿಮ್ಮ ಸುತ್ತಲಿನ Chromebook ಗಳು ಮತ್ತು Android ಸಾಧನಗಳ ಜೊತೆಗೆ ಫೈಲ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4657914796247705218">TrackPoint ವೇಗ</translation>
 <translation id="4658285806588491142">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸಿ</translation>
+<translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> ಆ್ಯಪ್ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="465878909996028221">http, https ಮತ್ತು ಫೈಲ್ ಪ್ರೊಟೊಕಾಲ್‌ಗಳು ಮಾತ್ರವೇ ಬ್ರೌಸರ್ ಮರುನಿರ್ದೇಶನಗಳಿಗೆ ಬೆಂಬಲಿತವಾಗಿವೆ.</translation>
 <translation id="4659126640776004816">ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಈ ವೈಶಿಷ್ಟ್ಯವು ಆನ್ ಆಗುತ್ತದೆ.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{ಚಿತ್ರ}one{# ಚಿತ್ರಗಳು}other{# ಚಿತ್ರಗಳು}}</translation>
@@ -4037,6 +4041,7 @@
 <translation id="4699357559218762027">(ಆಟೋ-ಲಾಂಚ್ ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="4701025263201366865">ಪೋಷಕರ ಸೈನ್ ಇನ್</translation>
 <translation id="4701335814944566468">ನಿನ್ನೆ ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
+<translation id="4705624512518230041">OneDrive ಲಭ್ಯವಿಲ್ಲದಿದ್ದಾಗ, <ph name="FILE_NAMES" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="470644585772471629">ಬಣ್ಣ ವಿಲೋಮ</translation>
 <translation id="4707337002099455863">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ಆನ್ ಇರುತ್ತದೆ</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> ನಿರ್ಗಮಿಸಿ</translation>
@@ -4505,6 +4510,7 @@
 <translation id="5160634252433617617">ಭೌತಿಕ ಕೀಬೋರ್ಡ್</translation>
 <translation id="5160857336552977725">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನದಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> ಅವರ USB ಸಾಧನಗಳು</translation>
+<translation id="5162624292894372900">Drive ಲಭ್ಯವಿಲ್ಲದಿದ್ದಾಗ, <ph name="FILE_NAMES" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5163910114647549394">ಟ್ಯಾಬ್‌ಸ್ಟ್ರಿಪ್‌ನ ಕೊನೆಗೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> ಗಾಗಿ ಅಧಿಸೂಚನೆಗಳಿಗೆ ಅನುಮತಿಯಿಲ್ಲ</translation>
@@ -5415,6 +5421,7 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> ರಲ್ಲಿ <ph name="CURRENT_ELEMENT" /> ಹೆಚ್ಚುವರಿ ವಿಷಯಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಿ</translation>
 <translation id="6016551720757758985">ಹಿಂದಿನ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗುವ ಮೂಲಕ ಪವರ್‌ವಾಶ್‌ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6016972670657536680">ಭಾಷೆ ಮತ್ತು ಕೀಬೋರ್ಡ್ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ. ಪ್ರಸ್ತುತ ಆಯ್ಕೆಮಾಡಿದ ಭಾಷೆ <ph name="LANGUAGE" /> ಇದಾಗಿದೆ.</translation>
+<translation id="6017503096330453612">"ಪುನಃ ಪ್ರಯತ್ನಿಸಿ" ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ಸೀಮಿತ ವೀಕ್ಷಣೆ ಮತ್ತು ಎಡಿಟಿಂಗ್ ಆಯ್ಕೆಗಳನ್ನು ಬಳಸಲು "ಆಫ್‌ಲೈನ್ ಎಡಿಟರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ" ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="6017514345406065928">ಹಸಿರು</translation>
 <translation id="6019169947004469866">ಕ್ರಾಪ್</translation>
 <translation id="6019851026059441029">ಅತ್ಯುತ್ತಮ - HD</translation>
@@ -6279,6 +6286,7 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">ಎಲ್ಲ ಬಳಕೆದಾರರಿಗೆ ಸ್ವಯಂಚಾಲಿತ ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಹೊಂದಿಸುವುದು ವಿಫಲವಾಗಿದೆ (ಪ್ರೀಫ್ಲೈಟ್ ಅನುಷ್ಠಾನ ದೋಷ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google ಗೌಪ್ಯತೆ ನೀತಿ</translation>
+<translation id="6830200424658853449">ಆಫ್‌ಲೈನ್ ಎಡಿಟರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6832218595502288407">ಎಡಕ್ಕೆ ಹೊಂದಿಸಿ</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
@@ -6643,6 +6651,7 @@
 <translation id="7174199383876220879">ಹೊಸತು! ನಿಮ್ಮ ಸಂಗೀತ, ವೀಡಿಯೊಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳನ್ನು ನಿಯಂತ್ರಿಸಿ.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ಅನ್ನು ಕಾನ್ಫಿಗರ್‌ ಮಾಡಿ</translation>
 <translation id="7175353351958621980">ಇದರಿಂದ ಲೋಡ್ ಮಾಡಲಾಗಿದೆ:</translation>
+<translation id="7177079607604198383">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು "ಪುನಃ ಪ್ರಯತ್ನಿಸಿ" ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ಸೀಮಿತ ವೀಕ್ಷಣೆ ಮತ್ತು ಎಡಿಟಿಂಗ್ ಆಯ್ಕೆಗಳನ್ನು ಬಳಸಲು "ಆಫ್‌ಲೈನ್ ಎಡಿಟರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ" ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="7180865173735832675">ಕಸ್ಟಮೈಸ್</translation>
 <translation id="7182791023900310535">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸರಿಸಿ</translation>
@@ -7343,6 +7352,7 @@
 <translation id="783229689197954457">Google ಗೆ ರಿಯಾಯಿತಿ ಕಂಡುಬಂದರೆ, ನೀವು ಅದನ್ನು ಈ ಪುಟದಲ್ಲಿ ನೋಡಬಹುದು</translation>
 <translation id="7833720883933317473">ಉಳಿಸಲಾದ ಕಸ್ಟಮ್ ಪದಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="7835178595033117206">ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
+<translation id="7836535163829106376"><ph name="FILE_NAMES" /> ಗಾಗಿ URL ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7836850009646241041">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಯನ್ನು ಪುನಃ ಸ್ಪರ್ಶಿಸಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7837776265184002579">ನಿಮ್ಮ ಮುಖಪುಟವನ್ನು <ph name="URL" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> ನಿಂದ '<ph name="NETWORK_NAME" />' ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -7780,6 +7790,7 @@
 <translation id="822347941086490485">HID ಸಾಧನಗಳನ್ನು ಹುಡುಕಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8223573963214454788">ಮುಂದುವರಿಸಿ ಮತ್ತು ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="8225046344534779393">ಇಂಟರ್ನೆಟ್ ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
+<translation id="8225173734540525852"><ph name="APPLICATION_NAME" /> ಆ್ಯಪ್‌ಗೆ Drive ಲಭ್ಯವಿರಬೇಕು.</translation>
 <translation id="8225265270453771718">ಅಪ್ಲಿಕೇಶನ್ ವಿಂಡೋ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8226222018808695353">ನಿಷೇಧಿತ</translation>
 <translation id="8226619461731305576">ಸರತಿ</translation>
@@ -8116,6 +8127,7 @@
 <translation id="8549316893834449916">ನೀವು Gmail, Drive, YouTube ಮತ್ತು ಇನ್ನಷ್ಟವುಗಳಿಗೆ ಬಳಸುವ ಅದೇ ಖಾತೆಯನ್ನು ನಿಮ್ಮ Chromebook ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ಬಳಸುತ್ತೀರಿ.</translation>
 <translation id="8551388862522347954">ಪರವಾನಗಿಗಳು</translation>
 <translation id="8551588720239073785">ದಿನಾಂಕ ಮತ್ತು ಸಮಯದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
+<translation id="8551647092888540776">ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗ <ph name="FILE_NAMES" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8552102814346875916">"ಯಾವಾಗಲೂ ಈ ಸೈಟ್‌ಗಳನ್ನು ಸಕ್ರಿಯವಾಗಿರಿಸಿಕೊಳ್ಳಿ" ಎಂಬ ಪಟ್ಟಿಯಲ್ಲಿ ಉಳಿಸಿ</translation>
 <translation id="8553342806078037065">ಇತರ ವ್ಯಕ್ತಿಗಳನ್ನು ನಿರ್ವಹಿಸು</translation>
 <translation id="8554899698005018844">ಭಾಷೆ ನಮೂದಿಸಿಲ್ಲ</translation>

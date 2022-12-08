@@ -924,7 +924,6 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6107292179555508368">Os acessos ao microfone e à câmera estão desativados neste dispositivo</translation>
 <translation id="6114505516289286752">Download de arquivos de fala em <ph name="LANGUAGE" /> concluído</translation>
-<translation id="6116825164611323644">O acesso à câmera está desativado neste dispositivo</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmar o download de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Google Assistente não está disponível em uma sessão de visitante.</translation>
@@ -1395,7 +1394,6 @@ Nova instalação</translation>
 <translation id="8735678380411481005">Cor da luz de fundo do teclado</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Conceda acesso à câmera para que apps e páginas da Web com permissão usem as câmeras conectadas a este dispositivo.</translation>
 <translation id="8755498163081687682">Verifique sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar que é você</translation>
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>
 <translation id="8759408218731716181">Não é possível configurar o login múltiplo</translation>

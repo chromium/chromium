@@ -203,6 +203,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="117916940443676133">Votre clé de sécurité n'est pas protégée par un NIP. Pour gérer les données de connexion, commencez par créer un NIP.</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1183237619868651138">Impossible d'installer <ph name="EXTERNAL_CRX_FILE" /> dans le cache local.</translation>
+<translation id="1184709369107246085">L'application <ph name="APPLICATION_NAME" /> nécessite une URL <ph name="APPLICATION_NAME" /> valide.</translation>
 <translation id="1185924365081634987">Vous pouvez également essayer de <ph name="GUEST_SIGNIN_LINK_START" />naviguer en tant qu'invité<ph name="GUEST_SIGNIN_LINK_END" /> pour corriger cette erreur réseau.</translation>
 <translation id="1186771945450942097">Supprimer le logiciel nuisible</translation>
 <translation id="1187722533808055681">Sorties de veille</translation>
@@ -2823,6 +2824,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3582057310199111521">Entré sur un site trompeur et trouvé dans une violation de données</translation>
 <translation id="3582299299336701326">Assombrissez les écrans clairs et éclaircissez les écrans sombres. Appuyez sur Rechercher+Ctrl+H pour activer et désactiver l'inversion des couleurs.</translation>
 <translation id="3584169441612580296">Lire et modifier les photos, la musique et les autres médias stockés sur votre ordinateur</translation>
+<translation id="3586787825263265024">L'application <ph name="APPLICATION_NAME" /> nécessite que OneDrive soit accessible.</translation>
 <translation id="3586806079541226322">Impossible d'ouvrir ce fichier</translation>
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587482841069643663">Tous</translation>
@@ -2856,6 +2858,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3616741288025931835">Effa&amp;cer les données de navigation…</translation>
 <translation id="3617891479562106823">Les arrière-plans ne sont pas disponibles. Réessayez plus tard.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3620136223548713675">Géolocalisation</translation>
 <translation id="3621807901162200696">Contribuer à améliorer les fonctionnalités et les performances de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{une application}one{# application}other{# applications}}</translation>
 <translation id="362333465072914957">En attente de la publication du certificat par l'autorité correspondante</translation>
@@ -3980,6 +3983,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4654236001025007561">Partagez des fichiers avec des Chromebook et des appareils Android à proximité</translation>
 <translation id="4657914796247705218">Vitesse du TrackPoint</translation>
 <translation id="4658285806588491142">Protéger la confidentialité de votre écran</translation>
+<translation id="4658648180588730283">L'application <ph name="APPLICATION_NAME" /> n'est pas accessible en mode hors ligne.</translation>
 <translation id="465878909996028221">Seuls les protocoles http, https et de fichiers sont pris en charge pour les redirections de navigateur.</translation>
 <translation id="4659126640776004816">Lorsque vous vous connecterez à votre compte Google, cette fonctionnalité sera activée.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Image}one{# image}other{# images}}</translation>
@@ -4030,6 +4034,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4699357559218762027">(lancement automatique)</translation>
 <translation id="4701025263201366865">Connexion d'un parent</translation>
 <translation id="4701335814944566468">Consulté hier</translation>
+<translation id="4705624512518230041">Impossible d'ouvrir <ph name="FILE_NAMES" /> lorsque OneDrive n'est pas accessible</translation>
 <translation id="470644585772471629">Inversion des couleurs</translation>
 <translation id="4707337002099455863">Toujours activée sur tous les sites</translation>
 <translation id="4708849949179781599">Quitter <ph name="PRODUCT_NAME" /></translation>
@@ -4497,6 +4502,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5160634252433617617">Clavier physique</translation>
 <translation id="5160857336552977725">Connexion à votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Appareils USB par <ph name="VENDOR_NAME" /></translation>
+<translation id="5162624292894372900">Impossible d'ouvrir <ph name="FILE_NAMES" /> lorsque Disque n'est pas accessible</translation>
 <translation id="5162905305237671850">L'appareil <ph name="DEVICE_TYPE" /> a été bloqué</translation>
 <translation id="5163910114647549394">Onglet déplacé à la fin de la barre d'onglets</translation>
 <translation id="5164530241085602114">Les notifications ne sont pas autorisées pour <ph name="SITE" /></translation>
@@ -5406,6 +5412,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6016178549409952427">Naviguer vers l'élément de contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmez la fonctionnalité Powerwash avec un retour à la version précédente</translation>
 <translation id="6016972670657536680">Sélectionnez une langue et une touche du clavier. Langue actuellement sélectionnée : <ph name="LANGUAGE" />.</translation>
+<translation id="6017503096330453612">Choisissez « Réessayer », ou choisissez « Ouvrir dans l'éditeur hors ligne » pour utiliser les options d'affichage et d'édition limitées.</translation>
 <translation id="6017514345406065928">Vert</translation>
 <translation id="6019169947004469866">Cadrer</translation>
 <translation id="6019851026059441029">Excellente – HD</translation>
@@ -6270,6 +6277,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">Impossible de configurer les mises à jour automatiques pour tous les utilisateurs (erreur d'exécution des vérifications : <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Politique de confidentialité de Google</translation>
+<translation id="6830200424658853449">Ouvrir dans l'éditeur hors ligne</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6832218595502288407">Aligner à gauche</translation>
 <translation id="6833479554815567477">Onglet retiré du groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
@@ -6633,6 +6641,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7174199383876220879">Nouveau! Commandez votre musique, vos vidéos et plus encore.</translation>
 <translation id="7175037578838465313">Configurer <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Chargé de :</translation>
+<translation id="7177079607604198383">Vérifiez votre connexion Internet et choisissez « Réessayer », ou choisissez « Ouvrir dans l'éditeur hors ligne » pour utiliser les options d'affichage et d'édition limitées.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
 <translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7182791023900310535">Déplacer votre mot de passe</translation>
@@ -7334,6 +7343,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="783229689197954457">Si Google trouve un rabais, vous le verrez sur cette page</translation>
 <translation id="7833720883933317473">Les mots personnalisés enregistrés s'afficheront ici</translation>
 <translation id="7835178595033117206">Favori supprimé</translation>
+<translation id="7836535163829106376">Impossible d'ouvrir l'URL de <ph name="FILE_NAMES" /></translation>
 <translation id="7836850009646241041">Essayez de toucher votre clé de sécurité à nouveau</translation>
 <translation id="7837776265184002579">Votre page d'accueil a été remplacée par <ph name="URL" />.</translation>
 <translation id="7838838951812478896">Impossible d'enregistrer « <ph name="NETWORK_NAME" /> » à partir de <ph name="DEVICE_NAME" /></translation>
@@ -7773,6 +7783,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="822347941086490485">Recherche d'appareils HID en cours…</translation>
 <translation id="8223573963214454788">Continuer et supprimer des données</translation>
 <translation id="8225046344534779393">Vérifiez la connexion Internet</translation>
+<translation id="8225173734540525852">L'application <ph name="APPLICATION_NAME" /> nécessite que Disque soit accessible.</translation>
 <translation id="8225265270453771718">Partager la fenêtre d'une application</translation>
 <translation id="8226222018808695353">Interdit</translation>
 <translation id="8226619461731305576">File d'attente</translation>
@@ -8109,6 +8120,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8549316893834449916">Vous utiliserez votre compte Google pour vous connecter à votre Chromebook. Il s'agit du même compte que vous utilisez pour Gmail, Disque, YouTube et d'autres produits.</translation>
 <translation id="8551388862522347954">Licences</translation>
 <translation id="8551588720239073785">Paramètres de date et d'heure</translation>
+<translation id="8551647092888540776">Impossible d'ouvrir <ph name="FILE_NAMES" /> en mode hors ligne</translation>
 <translation id="8552102814346875916">Enregistrer dans la liste « Toujours garder ces sites actifs »</translation>
 <translation id="8553342806078037065">Gérer d'autres personnes</translation>
 <translation id="8554899698005018844">Aucune langue</translation>

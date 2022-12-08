@@ -924,7 +924,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6107292179555508368">Prieiga prie mikrofono ir fotoaparato išjungta šiame įrenginyje</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> kalbos failai atsisiųsti</translation>
-<translation id="6116825164611323644">Prieiga prie fotoaparato išjungta šiame įrenginyje</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">„<ph name="FILENAME" />“ atsisiuntimo patvirtinimas</translation>
 <translation id="612734058257491180">„Google Assistant“ nepasiekiamas svečio sesijoje.</translation>
@@ -1395,7 +1394,6 @@ Naujas įdiegimas</translation>
 <translation id="8735678380411481005">Klaviatūros apšvietimo spalva</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Įjunkite prieigą prie fotoaparato, kad leistumėte programoms ir tinklalapiams, turintiems leidimą pasiekti fotoaparatą, naudoti prie šio įrenginio prijungtą (-us) fotoaparatą (-us).</translation>
 <translation id="8755498163081687682">Patvirtinkite savo tapatybę: <ph name="ORIGIN_NAME" /> norėtų patvirtinti, kad tai jūs</translation>
 <translation id="875593634123171288">Rodyti VPN nustatymus</translation>
 <translation id="8759408218731716181">Negalima nustatyti kelių paskyrų</translation>

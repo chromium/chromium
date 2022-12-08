@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">Бардык камераларды биротоло бөгөттөө үчүн бул түзмөктө камераны колдонуу мүмкүнчүлүгүн өчүрүңүз.</translation>
 <translation id="4666911709726371538">Дагы башка колдонмолор</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктөлүп алынууда</translation>
+<translation id="468293128311738995">Телефонуңуздагы колдонмолор</translation>
 <translation id="4690510401873698237">Текче экрандын ылдый жагында</translation>
 <translation id="4696813013609194136">Түзмөктүн кулпусун ата-эненин коду менен ачуу</translation>
 <translation id="4702647871202761252">Купуялык экраны өчүк</translation>
@@ -923,7 +924,6 @@
 <translation id="6103838137565245112">тутум</translation>
 <translation id="6107292179555508368">Бул түзмөктө микрофон менен камераны колдонуу мүмкүндүгү өчүк</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> тилиндеги кеп файлдары жүктөлүп алынды</translation>
-<translation id="6116825164611323644">Бул түзмөктө камераны колдонуу мүмкүндүгү өчүк</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктөп алууну ырастаңыз</translation>
 <translation id="612734058257491180">Google Жардамчысы конок сеансында жеткиликсиз.</translation>
@@ -1288,6 +1288,7 @@
 <translation id="8142441511840089262">Эки жолу чыкылдатуу</translation>
 <translation id="8142699993796781067">Жеке тармак</translation>
 <translation id="8144760705599030999"><ph name="NAME" /> түзмөгүн <ph name="EMAIL" /> аккаунтуңузга сактап койсоңуз, башка түзмөктөр менен ыкчам туташа аласыз</translation>
+<translation id="8144914663975476336">Жаздыруу форматын тандоо</translation>
 <translation id="8149413265954228307">Bluetooth параметрлерин көрсөтүү. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Жабуу үчүн Ctrl + W баскычтарын басыңыз.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автотолтуруу</translation>
@@ -1393,7 +1394,6 @@
 <translation id="8735678380411481005">Баскычтоптун жарыгынын түсү</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Бул түзмөккө туташтырылган камераны(-ларды) колдонууга уруксат берилген колдонмолор жана веб-баракчалар үчүн камераны колдонуу параметрин иштетиңиз.</translation>
 <translation id="8755498163081687682">Өздүгүңүздү ырастаңыз: <ph name="ORIGIN_NAME" /> өздүгүңүздү ырастоону суранып жатат</translation>
 <translation id="875593634123171288">VPN жөндөөлөрүн көрсөтүү</translation>
 <translation id="8759408218731716181">Бир нече профиль менен кирүүнү орнотууга болбойт</translation>

@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
 <translation id="1657719826150349398">Ilipat ang tab sa ibaba</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{I-bookmark ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{I-bookmark ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{I-bookmark ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="2118649612461486615">Impormasyon ng store</translation>
 <translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> ngayon sa <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{I-ungroup ang tab}one{I-ungroup ang mga tab}other{I-ungroup ang mga tab}}</translation>
 <translation id="2277224997687551299">I-edit ang pangalan ng grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Alisin ang <ph name="TABS_COUNT_ONE" /> piniling tab sa grupo.}one{Alisin ang <ph name="TABS_COUNT_MANY" /> piniling tab sa grupo.}other{Alisin ang <ph name="TABS_COUNT_MANY" /> na piniling tab sa grupo.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{I-bookmark ang tab}one{I-bookmark ang mga tab}other{I-bookmark ang mga tab}}</translation>
 <translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="2569352796411618312">Suhestyon: <ph name="NUMBER_OF_TABS" /> sa iyong mga tab ang hindi nagamit nitong nakaraan. Isara ang mga ito?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>
 <translation id="8304833501377495048">Huwag ipakita ulit ang tabstrip?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
+<translation id="8398929769197326728">Bagong Folder - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">I-expand ang grupo ng tab na may <ph name="NUMBER_OF_TABS" /> (na) tab.</translation>
 <translation id="8714939927607906138">Mas mababang presyo</translation>
 <translation id="8749939518995770034">Nakasarang tabstrip</translation>

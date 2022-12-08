@@ -308,7 +308,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="168693727862418163">Vërtetimi i kësaj vlere të politikës kundrejt skemës së saj dështoi dhe do të shpërfillet.</translation>
 <translation id="168841957122794586">Certifikata e serverit përmban një çelës të dobët kriptografik.</translation>
 <translation id="1697532407822776718">Je gati!</translation>
-<translation id="1699570257714336246">Mungon informacion</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Nivelet e zmadhimit</translation>
@@ -1163,7 +1162,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3961148744525529027">Fleta e përpunuesit të pagesës është gjysmë e hapur</translation>
 <translation id="3962859241508114581">Kënga e mëparshme</translation>
 <translation id="3963721102035795474">Modaliteti i lexuesit</translation>
-<translation id="3963837677003247395">Dëshiron të vazhdosh manualisht?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt }other{Nga # sajte }}</translation>
 <translation id="3969052498612555048">Nuk mund ta gjesh kodin tënd? <ph name="BEGIN_LINK" />Merr kod të ri<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Po llogarit...</translation>
@@ -1940,7 +1938,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5937560539988385583">Faqja u përkthye</translation>
 <translation id="5938153366081463283">Shto kartë virtuale</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347">Po hap <ph name="SITE_NAME" />…</translation>
 <translation id="5947508410139465809">Skedarët që ngarkon ose bashkëngjit dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë.</translation>
 <translation id="5951495562196540101">Nuk mund të regjistrohesh me një llogari konsumatori (ofrohet një licencë paketë).</translation>
 <translation id="5953516610448771166">"Titrat në çast" nuk ofrohen për këtë media. Për të marrë titrat, blloko <ph name="CONTENT_SETTINGS" /> për këtë sajt.</translation>
@@ -1962,6 +1959,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5995727681868049093">Menaxho informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google"</translation>
 <translation id="5997247540087773573">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve i Google" rekomandon ta ndryshosh atë tani dhe të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> rezultate për "<ph name="SEARCH_TEXT" />"</translation>
+<translation id="6005765687956866568">Informacionet e plotësuara automatikisht u pastruan nga formulari</translation>
 <translation id="6006365096047131769">3 x 5 inç</translation>
 <translation id="6006484371116297560">Klasike</translation>
 <translation id="6008122969617370890">Renditja N deri në 1</translation>
@@ -2075,7 +2073,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{Pajisja do të riniset tani}=1{Pajisja do të riniset pas 1 sekonde}other{Pajisja do të riniset pas # sekondash}}</translation>
 <translation id="6301104306974789820">Merr njoftime për monitorimin e çmimeve</translation>
-<translation id="6302269476990306341">"Asistenti i Google" në Chrome po ndalon</translation>
 <translation id="6305205051461490394"><ph name="URL" /> është i paarritshëm.</translation>
 <translation id="6311165245110979290">Karta virtuale është e disponueshme</translation>
 <translation id="6312113039770857350">Faqja e uebit nuk është e disponueshme</translation>
@@ -2270,6 +2267,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6826993739343257035">Të lejohet AR?</translation>
 <translation id="6828866289116430505">Gjenetika</translation>
 <translation id="6831043979455480757">Përkthe</translation>
+<translation id="6832753933931306326">Formulari u plotësua</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
 <translation id="6846340164947227603">Përdor një numër karte virtuale...</translation>
 <translation id="6852204201400771460">Dëshiron ta ringarkosh aplikacionin?</translation>
@@ -2330,7 +2328,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6971439137020188025">Krijo shpejt një prezantim të ri të Google në Slides</translation>
 <translation id="6972629891077993081">Pajisjet HID</translation>
 <translation id="6973656660372572881">Janë specifikuar serverë përfaqësues fiksë dhe një URL e skriptit .pac.</translation>
-<translation id="6973932557599545801">Më vjen keq që nuk mund të të ndihmoj. Vazhdo vetë.</translation>
 <translation id="6973988895180423160">3,5 x 5 inç</translation>
 <translation id="6978236010531171013">Ndaj gjithsesi</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
@@ -2526,7 +2523,6 @@ Detaje shtesë:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /> rreth këtij problemi.</translation>
 <translation id="7455133967321480974">Përdor parazgjedhjen globale (blloko)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">Shfaqja është ndryshe nga ajo që zgjodhe. Dëshiron të vazhdosh?</translation>
 <translation id="7461924472993315131">Gozhdoje</translation>
 <translation id="7463075493919226237">Futbolli australian</translation>
 <translation id="7465963048299965912">10 x 13 inç</translation>
@@ -2724,6 +2720,7 @@ Detaje shtesë:
 <translation id="7950027195171824198">Menaxho preferencat e tua për kukit te cilësimet e Chrome</translation>
 <translation id="7951415247503192394">(32-bitësh)</translation>
 <translation id="7952192831285741665">EDP (evropiane)</translation>
+<translation id="7952804540472583406"><ph name="BEGIN_LINK" />Identifikimi<ph name="END_LINK" /> në rrjet.</translation>
 <translation id="7953569069500808819">Qepje anësore lart</translation>
 <translation id="7956713633345437162">Faqeshënuesit celularë</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
@@ -3214,7 +3211,6 @@ Detaje shtesë:
 <translation id="937457230470581909">Kopshtet zoologjike, akuariumet dhe rezervuarët</translation>
 <translation id="939736085109172342">Dosje e re</translation>
 <translation id="940053046584497293">Udhëtimi dhe transporti</translation>
-<translation id="945522503751344254">Dërgo komente</translation>
 <translation id="945855313015696284">Kontrollo informacionin më poshtë dhe fshi çdo kartë të pavlefshme</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />,shtyp Tab pastaj Enter për të krijuar shpejt një sajt të ri në Google Sites</translation>
 <translation id="950736567201356821">Tri shpime lart</translation>

@@ -666,6 +666,7 @@
 <translation id="4666082839192943839">برای اینکه همه دوربین‌ها همیشه مسدود شوند، دسترسی دوربین را در این دستگاه خاموش کنید.</translation>
 <translation id="4666911709726371538">برنامه‌های بیشتر</translation>
 <translation id="4667099493359681081">درحال بارگیری <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">برنامه‌های تلفن شما</translation>
 <translation id="4690510401873698237">قفسه در پایین است</translation>
 <translation id="4696813013609194136">باز کردن قفل دستگاه با کد والدین</translation>
 <translation id="4702647871202761252">صفحه حریم خصوصی خاموش است</translation>
@@ -922,7 +923,6 @@
 <translation id="6103838137565245112">سیستم</translation>
 <translation id="6107292179555508368">دسترسی میکروفون و دوربین در این دستگاه خاموش است</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
-<translation id="6116825164611323644">دسترسی به دوربین در این دستگاه خاموش است</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">تأیید بارگیری <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
@@ -1392,7 +1392,6 @@
 <translation id="8734991477317290293">ممکن است تلاش کند ضربه‌کلیدهای شما را به سرقت ببرد</translation>
 <translation id="8735678380411481005">رنگ نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />، <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">دسترسی به دوربین را روشن کنید تا برنامه‌ها و صفحه‌های وب دارای اجازه دوربین بتوانند از دوربین(های) متصل به این دستگاه استفاده کنند.</translation>
 <translation id="8755498163081687682">هویتتان را به‌تأیید برسانید: <ph name="ORIGIN_NAME" /> می‌خواهید تأیید کند این فرد شما هستید</translation>
 <translation id="875593634123171288">‏نمایش تنظیمات VPN</translation>
 <translation id="8759408218731716181">تنظیم ورود چندگانه به سیستم ممکن نیست</translation>

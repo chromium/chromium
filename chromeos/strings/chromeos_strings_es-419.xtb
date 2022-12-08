@@ -689,6 +689,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Se completó el escaneo. Se escaneó 1 página}other{Se completó el escaneo. Se escanearon {NUMBER_OF_PAGES} páginas}}</translation>
+<translation id="7458970041932198923">Conéctate a una red y vuelve a cargar la página para ver y configurar los avatares.</translation>
 <translation id="7469648432129124067">Se detectó un portal</translation>
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="7487067081878637334">Tecnología</translation>
@@ -843,6 +844,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analizar}=1{Analizar {NUMBER_OF_PAGES} página}other{Analizar {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="8997710128084572139">Nivel de batería del dispositivo <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9025198690966128418">Usar como dispositivo personal</translation>
 <translation id="9028832514430399253">Activa el botón para seleccionar las opciones del protector de pantalla</translation>

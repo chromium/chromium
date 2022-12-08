@@ -924,7 +924,6 @@
 <translation id="6103838137565245112">സിസ്റ്റം</translation>
 <translation id="6107292179555508368">ഈ ഉപകരണത്തിൽ മൈക്രോഫോണിന്റെയും ക്യാമറയുടെയും ആക്‌സസുകൾ ഓഫാണ്</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>
-<translation id="6116825164611323644">ഈ ഉപകരണത്തിൽ ക്യാമറ ആക്‌സസ് ഓഫാണ്</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">ഡൗൺലോഡ് സ്ഥിരീകരിക്കുക <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">അതിഥി സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
@@ -1395,7 +1394,6 @@
 <translation id="8735678380411481005">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് നിറം</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">ഈ ഉപകരണത്തിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്ന ക്യാമറ(കൾ) ഉപയോഗിക്കാൻ ക്യാമറ അനുമതിയുള്ള ആപ്പുകളെയും വെബ്‌പേജുകളെയും അനുവദിക്കാൻ ക്യാമറ ആക്‌സസ് ഓണാക്കുക.</translation>
 <translation id="8755498163081687682">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക: ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ <ph name="ORIGIN_NAME" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="875593634123171288">VPN ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="8759408218731716181">ഒന്നിലധികം സൈൻ ഇൻ സജ്ജമാക്കാനാവില്ല</translation>

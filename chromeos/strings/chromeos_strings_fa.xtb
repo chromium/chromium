@@ -689,6 +689,7 @@
 <translation id="7415801143053185905">‏تأخیر خیلی زیاد HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اسکن کامل شد. ۱ صفحه اسکن شد}one{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}other{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}}</translation>
+<translation id="7458970041932198923">لطفاً برای مشاهده و تنظیم چهره‌نماها، به شبکه متصل شوید و صفحه را مجدداً بار کنید.</translation>
 <translation id="7469648432129124067">درگاهی شناسایی شد</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
 <translation id="7487067081878637334">فناوری</translation>
@@ -843,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{اسکن}=1{اسکن کردن صفحه {NUMBER_OF_PAGES}}one{اسکن کردن صفحه {NUMBER_OF_PAGES}}other{اسکن کردن صفحه {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">باتری دستگاه <ph name="BATTERY_PERCENTAGE" />٪ شارژ دارد.</translation>
+<translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="9003704114456258138">فرکانس</translation>
 <translation id="9025198690966128418">استفاده به‌عنوان دستگاه شخصی</translation>
 <translation id="9028832514430399253">برای انتخاب گزینه‌های محافظ صفحه‌نمایش، کلید تغییر وضعیت را روشن کنید</translation>

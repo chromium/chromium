@@ -205,7 +205,7 @@
 <translation id="117916940443676133">您的安全密鑰並未受 PIN 保護。請先建立 PIN 以管理登入資料。</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1183237619868651138">無法在本機快取中安裝 <ph name="EXTERNAL_CRX_FILE" />。</translation>
-<translation id="1184709369107246085">必須要能存取「<ph name="APPLICATION_NAME" />」網址才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
+<translation id="1184709369107246085">需要可存取「<ph name="APPLICATION_NAME" />」網址才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="1185924365081634987">您也可以嘗試<ph name="GUEST_SIGNIN_LINK_START" />以訪客身分瀏覽<ph name="GUEST_SIGNIN_LINK_END" />，藉此修正網絡問題。</translation>
 <translation id="1186771945450942097">移除有害的軟件</translation>
 <translation id="1187722533808055681">閒置喚醒</translation>
@@ -2837,7 +2837,7 @@
 <translation id="3582057310199111521">曾在欺詐網站上輸入，並於資料外洩事件中發現</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更您電腦中的相片、音樂及其他媒體</translation>
-<translation id="3586787825263265024">必須要能存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
+<translation id="3586787825263265024">需要可存取 OneDrive 才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="3586806079541226322">無法開啟此檔案</translation>
 <translation id="3586931643579894722">隱藏詳情</translation>
 <translation id="3587482841069643663">全部</translation>
@@ -2871,6 +2871,7 @@
 <translation id="3616741288025931835">清除瀏覽數據(&amp;C)…</translation>
 <translation id="3617891479562106823">無法自訂背景，請稍候再試。</translation>
 <translation id="3619115746895587757">泡沫咖啡</translation>
+<translation id="3620136223548713675">地理位置</translation>
 <translation id="3621807901162200696">協助改善 Chrome OS 的功能和效能</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 個應用程式}other{# 個應用程式}}</translation>
 <translation id="362333465072914957">正在等待 CA 發出憑證</translation>
@@ -4515,7 +4516,7 @@
 <translation id="5160634252433617617">實體鍵盤</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">來自「<ph name="VENDOR_NAME" />」的 USB 裝置</translation>
-<translation id="5162624292894372900">如果無法存取 Google 雲端硬碟，系統就無法開啟「<ph name="FILE_NAMES" />」</translation>
+<translation id="5162624292894372900">如果無法存取「雲端硬碟」，系統就無法開啟「<ph name="FILE_NAMES" />」</translation>
 <translation id="5162905305237671850">已封鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">分頁移咗去分頁欄嘅最尾</translation>
 <translation id="5164530241085602114">已禁止 <ph name="SITE" /> 傳送通知</translation>
@@ -5422,7 +5423,7 @@
 <translation id="6016178549409952427">導覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 以重設為上個版本</translation>
 <translation id="6016972670657536680">選取語言和鍵盤按鈕。目前選取的語言為<ph name="LANGUAGE" />。</translation>
-<translation id="6017503096330453612">你可以選擇「再試一次」或「在離線編輯器中開啟」。如果選擇後者，可以使用有限的查看和編輯選項。</translation>
+<translation id="6017503096330453612">您可選擇「再試一次」或「在離線編輯器中開啟」。如果選擇後者，可使用有限的查看和編輯選項。</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019169947004469866">剪裁</translation>
 <translation id="6019851026059441029">極佳 - 高清畫質</translation>
@@ -6650,7 +6651,7 @@
 <translation id="7174199383876220879">新功能！控制音樂、影片及其他內容。</translation>
 <translation id="7175037578838465313">設定「<ph name="NAME" />」</translation>
 <translation id="7175353351958621980">載入來源：</translation>
-<translation id="7177079607604198383">請檢查網際網路連線並選擇「再試一次」。你也能選擇「在離線編輯器中開啟」，這樣可以使用有限的查看和編輯選項。</translation>
+<translation id="7177079607604198383">請檢查互聯網連線並選擇「再試一次」。您亦能選擇「在離線編輯器中開啟」以使用有限的查看和編輯選項。</translation>
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7182791023900310535">遷移密碼</translation>
@@ -7793,7 +7794,7 @@
 <translation id="822347941086490485">正在尋找 HID 裝置…</translation>
 <translation id="8223573963214454788">繼續並刪除資料</translation>
 <translation id="8225046344534779393">檢查互聯網連線</translation>
-<translation id="8225173734540525852">必須要能存取 Google 雲端硬碟才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
+<translation id="8225173734540525852">需要可存取「雲端硬碟」才能使用「<ph name="APPLICATION_NAME" />」應用程式。</translation>
 <translation id="8225265270453771718">分享應用程式視窗</translation>
 <translation id="8226222018808695353">禁止</translation>
 <translation id="8226619461731305576">佇列</translation>

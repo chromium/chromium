@@ -924,7 +924,6 @@
 <translation id="6103838137565245112">სისტემა</translation>
 <translation id="6107292179555508368">მიკროფონსა და კამერაზე წვდომა გამორთულია ამ მოწყობილობაზე</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
-<translation id="6116825164611323644">კამერაზე წვდომა გამორთულია ამ მოწყობილობაზე</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">დაადასტურეთ ჩამოტვირთვა <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google ასისტენტი მიუწვდომელია სტუმრის სესიაში.</translation>
@@ -1289,6 +1288,7 @@
 <translation id="8142441511840089262">ორმაგი დაწკაპუნება</translation>
 <translation id="8142699993796781067">პირადი ქსელი</translation>
 <translation id="8144760705599030999">თქვენს სხვა მოწყობილობებთან უფრო სწრაფად დაწყვილებისთვის შეინახეთ <ph name="NAME" /> <ph name="EMAIL" />-ში</translation>
+<translation id="8144914663975476336">ჩანაწერის ფორმატის არჩევა</translation>
 <translation id="8149413265954228307">Bluetooth-ის პარამეტრების ჩვენება. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">დასახურად დააჭირეთ კლავიშთა კომბინაციას: Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ავტომატური დასრულება</translation>
@@ -1394,7 +1394,6 @@
 <translation id="8735678380411481005">კლავიატურის ფონური განათების ფერი</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">ჩართეთ კამერაზე წვდომა, რათა აპებსა და ვებსაიტებს, რომლებსაც კამერაზე წვდომის ნებართვა აქვს, შეეძლოს ამ მოწყობილობასთან დაკავშირებული კამერების გამოყენება.</translation>
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>
 <translation id="8759408218731716181">მრავლობითი შესვლის დაყენება შეუძლებელია</translation>

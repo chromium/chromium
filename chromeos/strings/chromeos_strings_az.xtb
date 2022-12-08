@@ -688,6 +688,7 @@
 <translation id="7415801143053185905">Çox yüksək HTTP gecikməsi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skanlama tamamlanıb. 1 səhifə skanlanıb}other{Skanlama tamamlanıb. {NUMBER_OF_PAGES} səhifə skanlanıb}}</translation>
+<translation id="7458970041932198923">Səhifəni görmək və avatarlar ayarlamaq üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="7469648432129124067">Portal aşkarlanıb</translation>
 <translation id="7481312909269577407">İrəli</translation>
 <translation id="7487067081878637334">Texnologiya</translation>
@@ -842,6 +843,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skan edin}=1{Bu səhifəni skan edin: {NUMBER_OF_PAGES}}other{Bu səhifəni skan edin: {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Cihazın batareya səviyyəsi: <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998289560386111590">Cihazınızda əlçatan deyil</translation>
 <translation id="9003704114456258138">Tezlik</translation>
 <translation id="9025198690966128418">Şəxsi cihaz kimi istifadə edin</translation>
 <translation id="9028832514430399253">Ekran qoruyucu seçimlərini etmək üçün keçiricini aktiv edin</translation>

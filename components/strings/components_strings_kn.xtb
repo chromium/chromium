@@ -270,6 +270,7 @@
 <translation id="1586541204584340881">ನೀವು ಯಾವ ವಿಸ್ತರಣೆಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="1588438908519853928">ಸಾಮಾನ್ಯ</translation>
 <translation id="1592005682883173041">ಸ್ಥಳೀಯ ಡೇಟಾ ಪ್ರವೇಶ</translation>
+<translation id="1593359183944365958">270 ಡಿಗ್ರಿಗಳು</translation>
 <translation id="1594030484168838125">ಆರಿಸಿ</translation>
 <translation id="1596296697375291157">ಥ್ರಿಲ್ಲರ್, ಕ್ರೈಂ ಮತ್ತು ರಹಸ್ಯಮಯ ಚಲನಚಿತ್ರಗಳು</translation>
 <translation id="1599199147673445968">ಹೊಸ ಕಾರ್ಡ್? <ph name="BEGIN_LINK" />ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ<ph name="END_LINK" /></translation>
@@ -307,7 +308,6 @@
 <translation id="168693727862418163">ಈ ನೀತಿ ಮೌಲ್ಯವನ್ನು ಅದರ ರೂಪುರೇಷೆ ವಿರುದ್ಧ ಮೌಲ್ಯೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ ಮತ್ತು ಅದನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="168841957122794586">ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವು ದುರ್ಬಲ ಕ್ರಿಪ್ಟೋಗ್ರಾಫಿಕ್ ಕೀಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="1697532407822776718">ನೀವು ಎಲ್ಲ ರೀತಿಯಲ್ಲಿಯೂ ಸಿದ್ಧರಾಗಿರುವಿರಿ!</translation>
-<translation id="1699570257714336246">ಮಾಹಿತಿ ಕಾಣೆಯಾಗಿದೆ</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">ಝೂಮ್ ಹಂತಗಳು</translation>
@@ -337,6 +337,7 @@
 <translation id="1741613555002899862">DnsOverHttpsMode ಕಾರ್ಯನೀತಿಯು <ph name="SECURE_DNS_MODE_SECURE" /> ಆಗಿದ್ದಾಗ, ಮಾನ್ಯವಾದ ಸ್ಟ್ರಿಂಗ್ ಅನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಬೇಕು.</translation>
 <translation id="1745880797583122200">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="1746113442205726301">ಚಿತ್ರ Y ಶಿಫ್ಟ್</translation>
+<translation id="1746531169546376413">0 ಡಿಗ್ರಿಗಳು</translation>
 <translation id="17513872634828108">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="1752021286346845558">ಮೇಲ್‌ಬಾಕ್ಸ್ 8</translation>
 <translation id="1753068535428855445">ಡೇಟಿಂಗ್ ಮತ್ತು ಪರ್ಸನಲ್ಸ್</translation>
@@ -1159,7 +1160,6 @@
 <translation id="3961148744525529027">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್ ಶೀಟ್ ಅರ್ಧ ತೆರೆದಿದೆ</translation>
 <translation id="3962859241508114581">ಹಿಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="3963721102035795474">ರೀಡರ್‌ ಮೋಡ್‌</translation>
-<translation id="3963837677003247395">ಹಸ್ತಚಾಲಿತವಾಗಿ ಮುಂದುವರಿಸಬೇಕೆ?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಸೈಟ್‌ನಿಂದ }one{# ಸೈಟ್‌ಗಳಿಂದ }other{# ಸೈಟ್‌ಗಳಿಂದ }}</translation>
 <translation id="3969052498612555048">ನಿಮ್ಮ ಕೋಡ್ ಹುಡುಕಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲವೇ? <ph name="BEGIN_LINK" />ಹೊಸ ಕೋಡ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -1794,6 +1794,7 @@
 <translation id="5540969246441091044">ಕುದುರೆ ಸವಾರಿ</translation>
 <translation id="5541086400771735334">ಮೇಲ್‌ಬಾಕ್ಸ್ 7</translation>
 <translation id="5541546772353173584">ಇಮೇಲ್ ಸೇರಿಸಿ</translation>
+<translation id="5543722831081909240">180 ಡಿಗ್ರಿಗಳು</translation>
 <translation id="5545756402275714221">ನಿಮಗಾಗಿ ಲೇಖನಗಳು</translation>
 <translation id="5551890439174915351">100 x 200 ಮಿಮೀ</translation>
 <translation id="5552137475244467770">Chrome, ನಿಯತಕಾಲಿಕವಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರಕಟಿಸಲಾದ ಪಟ್ಟಿಗಳಿಗೆ ಹೋಲಿಸಿ ಪರಿಶೀಲಿಸುತ್ತದೆ. ಪರಿಶೀಲಿಸುವಾಗ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಬಳಕೆದಾರರ ಹೆಸರುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಅವುಗಳನ್ನು Google ಸೇರಿದಂತೆ ಯಾರಿಂದಲೂ ಓದಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
@@ -1936,7 +1937,6 @@
 <translation id="5937560539988385583">ಪುಟವನ್ನು ಅನುವಾದಿಸಲಾಗಿದೆ</translation>
 <translation id="5938153366081463283">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> ತೆರೆಯಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="5947508410139465809">ನೀವು ಅಪ್‌ಲೋಡ್ ಮಾಡುವ ಅಥವಾ ಲಗತ್ತಿಸುವ ಫೈಲ್‌ಗಳನ್ನು ವಿಶ್ಲೇಷಣೆಗಾಗಿ Google Cloud ಅಥವಾ ಥರ್ಡ್-ಪಾರ್ಟಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಉದಾಹರಣೆಗೆ, ಅವುಗಳನ್ನು ಸೂಕ್ಷ್ಮವಾದ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಅಥವಾ ಮಾಲ್‌ವೇರ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಬಹುದು ಹಾಗೂ ಕಂಪನಿಯ ನೀತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಸಂಗ್ರಹಿಸಬಹುದು.</translation>
 <translation id="5951495562196540101">ಗ್ರಾಹಕರ ಖಾತೆಯ ಮೂಲಕ ನೋಂದಣಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ (ಪ್ಯಾಕೇಜ್ ಮಾಡಲಾದ ಪರವಾನಗಿ ಲಭ್ಯವಿದೆ).</translation>
 <translation id="5953516610448771166">ಈ ಮೀಡಿಯಾಗೆ ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಲಭ್ಯವಿಲ್ಲ. ಕ್ಯಾಪ್ಶನ್‌ಗಳನ್ನು ಪಡೆಯಲು, ಈ ಸೈಟ್‌ಗಾಗಿ <ph name="CONTENT_SETTINGS" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಿ.</translation>
@@ -2072,7 +2072,6 @@
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{ನಿಮ್ಮ ಸಾಧನವು ಈಗ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}=1{ನಿಮ್ಮ ಸಾಧನವು 1 ಸೆಕೆಂಡ್‌ನಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}one{ನಿಮ್ಮ ಸಾಧನವು # ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}other{ನಿಮ್ಮ ಸಾಧನವು # ಸೆಕೆಂಡ್‌ಗಳಲ್ಲಿ ಮರುಪ್ರಾರಂಭವಾಗುತ್ತದೆ}}</translation>
 <translation id="6301104306974789820">ಬೆಲೆಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವ ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಿ</translation>
-<translation id="6302269476990306341">Chrome ನಲ್ಲಿನ Google Assistant ನಿಲ್ಲುತ್ತಿದೆ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ತಲುಪಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="6311165245110979290">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="6312113039770857350">ವೆಬ್‌ಪುಟ ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -2183,6 +2182,7 @@
 <translation id="6591833882275308647">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು ನಿರ್ವಹಿಸಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="6592952801936330159">ಸೈಟ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಬಟನ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ, Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿನ ಸೈಟ್‌ಗಳಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗಿರುವ ಅನುಮತಿಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಲು Enter ಒತ್ತಿ</translation>
 <translation id="6596325263575161958">ಎನ್‌ಕ್ರಿಫ್ಶನ್ ಆಯ್ಕೆಗಳು</translation>
+<translation id="6597665340361269064">90 ಡಿಗ್ರಿಗಳು</translation>
 <translation id="6599642189720630047">ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾದ ಉತ್ಪನ್ನಗಳು</translation>
 <translation id="6611723696964473273">ಆರ್ಥಿಕತೆ ಕುರಿತಾದ ಸುದ್ದಿ</translation>
 <translation id="6612010098632894193">ಆನ್‌ಲೈನ್ ವೀಡಿಯೊ</translation>
@@ -2328,7 +2328,6 @@
 <translation id="6971439137020188025">Slides ನಲ್ಲಿ ಹೊಸ Google ಪ್ರಸ್ತುತಿಯನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="6972629891077993081">HID ಸಾಧನಗಳು</translation>
 <translation id="6973656660372572881">ಹೊಂದಿಸಿದ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್‌ಗಳು ಮತ್ತು .pac ಸ್ಕ್ರಿಪ್ಟ್ URL ಎರಡನ್ನೂ ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ.</translation>
-<translation id="6973932557599545801">ಕ್ಷಮಿಸಿ, ನನ್ನಿಂದ ಸಹಾಯ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ, ನಿಮ್ಮ ವಿವೇಚನೆಗೆ ತಕ್ಕಂತೆ ಮುಂದುವರಿಸಿ.</translation>
 <translation id="6973988895180423160">3.5 x 5 ಇಂಚು</translation>
 <translation id="6978236010531171013">ಹೇಗಾದರೂ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2523,7 +2522,6 @@
 <translation id="7451311239929941790">ಈ ಸಮಸ್ಯೆಯ ಕುರಿತು <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯುವಿಕೆ<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">ಜಾಗತಿಕ ಡಿಫಾಲ್ಟ್ ಬಳಸಿ (ನಿರ್ಬಂಧಿಸಿ)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">ವೀಕ್ಷಣೆ ಅವಧಿಯು ನೀವು ಆಯ್ಕೆ ಮಾಡಿರುವುದಕ್ಕಿಂತಲೂ ಭಿನ್ನವಾಗಿದೆ. ಮುಂದುವರಿಯುವುದೇ?</translation>
 <translation id="7461924472993315131">ಪಿನ್</translation>
 <translation id="7463075493919226237">ಆಸ್ಟ್ರೇಲಿಯನ್ ಫುಟ್‌ಬಾಲ್</translation>
 <translation id="7465963048299965912">10 x 13 ಇಂಚು</translation>
@@ -3213,7 +3211,6 @@
 <translation id="937457230470581909">ಮೃಗಾಲಯಗಳು, ಅಕ್ವೇರಿಯಮ್‌ಗಳು ಮತ್ತು ಅಭಯಾರಣ್ಯಗಳು</translation>
 <translation id="939736085109172342">ಹೊಸ ಫೋಲ್ಡರ್</translation>
 <translation id="940053046584497293">ಪ್ರಯಾಣ ಮತ್ತು ಸಾಗಾಣಿಕೆ</translation>
-<translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="945855313015696284">ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಯಾವುದೇ ಅಮಾನ್ಯ ಕಾರ್ಡ್‌ಗಳನ್ನು ಅಳಿಸಿ</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites ನಲ್ಲಿ ಹೊಸ ಸೈಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="950736567201356821">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಮೂರು ತೂತು ಮಾಡಿ</translation>

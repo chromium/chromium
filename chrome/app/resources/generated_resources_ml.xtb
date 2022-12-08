@@ -205,6 +205,7 @@
 <translation id="117916940443676133">പിൻ ഉപയോഗിച്ച് നിങ്ങളുടെ സുരക്ഷാ കീ പരിരക്ഷിച്ചിട്ടില്ല. സൈൻ ഇൻ ഡാറ്റ മാനേജ് ചെയ്യാൻ, ആദ്യം ഒരു പിൻ സൃഷ്‌ടിക്കുക.</translation>
 <translation id="1181037720776840403">നീക്കംചെയ്യൂ</translation>
 <translation id="1183237619868651138">പ്രാദേശിക കാഷെയിൽ <ph name="EXTERNAL_CRX_FILE" /> ഇൻസ്റ്റാൾ ചെയ്യാനാവില്ല.</translation>
+<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> എന്ന ആപ്പിന് സാധുതയുള്ള ഒരു <ph name="APPLICATION_NAME" /> URL ആവശ്യമാണ്.</translation>
 <translation id="1185924365081634987">ഈ നെറ്റ്‌വർക്ക് പിശക് പരിഹരിക്കാൻ നിങ്ങൾക്ക് <ph name="GUEST_SIGNIN_LINK_START" />അതിഥിയായി ബ്രൗസ് ചെയ്യുന്നതിന്<ph name="GUEST_SIGNIN_LINK_END" /> പരീക്ഷിക്കാം.</translation>
 <translation id="1186771945450942097">ദോഷകരമായ സോഫ്‌റ്റ്‌വെയർ നീക്കംചെയ്യുക</translation>
 <translation id="1187722533808055681">നിഷ്‌ക്രിയാവസ്ഥയിൽ നിന്ന് സജീവമാകൽ</translation>
@@ -2820,6 +2821,7 @@
 <translation id="3582057310199111521">വഞ്ചനാപരമായ സൈറ്റിൽ നൽകിയതിനാൽ ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തി</translation>
 <translation id="3582299299336701326">ലൈറ്റ് സ്ക്രീനുകൾ ഡാർക്ക് ആക്കാനും ഡാർക്ക് സ്ക്രീനുകൾ ലൈറ്റ് ആക്കാനും. നിറം വിപരീതമാക്കൽ ഓണാക്കാനും ഓഫാക്കാനും Search + Ctrl + H അമർത്തുക.</translation>
 <translation id="3584169441612580296">നിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ നിന്ന് ഫോട്ടോകൾ, സംഗീതം, മറ്റ് മീഡിയ എന്നിവ വായിക്കുക, മാറ്റുക</translation>
+<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ആപ്പ് ലഭ്യമാകണമെങ്കിൽ OneDrive ആവശ്യമാണ്.</translation>
 <translation id="3586806079541226322">ഈ ഫയൽ തുറക്കാനാവില്ല</translation>
 <translation id="3586931643579894722">വിശദാംശങ്ങൾ മറയ്‌ക്കുക‍‌</translation>
 <translation id="3587482841069643663">എല്ലാം</translation>
@@ -2853,6 +2855,7 @@
 <translation id="3616741288025931835">&amp;ബ്രൌസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക...</translation>
 <translation id="3617891479562106823">പശ്ചാത്തലങ്ങൾ ലഭ്യമല്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3619115746895587757">കാപ്പുചീനോ</translation>
+<translation id="3620136223548713675">ജിയോലൊക്കേഷൻ</translation>
 <translation id="3621807901162200696">ChromeOS ഫീച്ചറുകളും പ്രകടനവും മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{ഒരു ആപ്പ്}other{# ആപ്പുകൾ}}</translation>
 <translation id="362333465072914957">സര്‍ട്ടിഫിക്കറ്റ് ഇഷ്യൂ ചെയ്യാൻ CA-ക്കായി കാത്തിരിക്കുന്നു</translation>
@@ -3976,6 +3979,7 @@
 <translation id="4654236001025007561">നിങ്ങൾക്ക് ചുറ്റുമുള്ള Chromebook-കളുമായും Android ഉപകരണങ്ങളുമായും ഫയലുകൾ പങ്കിടുക</translation>
 <translation id="4657914796247705218">TrackPoint വേഗത</translation>
 <translation id="4658285806588491142">നിങ്ങളുടെ സ്ക്രീൻ സ്വകാര്യമാക്കി വയ്ക്കുക</translation>
+<translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> ആപ്പ് ഓഫ്‌ലൈനിൽ ലഭ്യമല്ല.</translation>
 <translation id="465878909996028221">http, https എന്നിവയും ഫയൽ പ്രോട്ടോകോളുകളും മാത്രമേ ബ്രൗസർ റീഡയറക്റ്റുകളിൽ പിന്തുണയ്ക്കൂ.</translation>
 <translation id="4659126640776004816">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്യുമ്പോൾ ഈ ഫീച്ചർ ഓണാകും.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{ചിത്രം}other{# ചിത്രങ്ങൾ}}</translation>
@@ -4026,6 +4030,7 @@
 <translation id="4699357559218762027">(സ്വയമേവ-സമാരംഭിച്ചു)</translation>
 <translation id="4701025263201366865">രക്ഷിതാവിനുള്ള സൈൻ ഇൻ</translation>
 <translation id="4701335814944566468">ഇന്നലെ കണ്ടു</translation>
+<translation id="4705624512518230041">OneDrive ലഭ്യമല്ലാത്തപ്പോൾ <ph name="FILE_NAMES" /> തുറക്കാനാകില്ല</translation>
 <translation id="470644585772471629">നിറം വിപരീതമാക്കൽ</translation>
 <translation id="4707337002099455863">എപ്പോഴും എല്ലാ സൈറ്റിലും</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> പുറത്തുകടക്കുക</translation>
@@ -4493,6 +4498,7 @@
 <translation id="5160634252433617617">ഫിസിക്കൽ കീബോർഡ്</translation>
 <translation id="5160857336552977725">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> എന്നതിൽ നിന്നുള്ള USB ഉപകരണം</translation>
+<translation id="5162624292894372900">Drive ലഭ്യമല്ലാത്തപ്പോൾ <ph name="FILE_NAMES" /> തുറക്കാനാകില്ല</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> ബ്ലോക്ക് ചെയ്യപ്പെട്ടിരിക്കുന്നു</translation>
 <translation id="5163910114647549394">ടാബ്, ടാബ്‌സ്ട്രിപ്പിന്റെ അവസാനഭാഗത്തേക്ക് നീക്കി</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> എന്നതിന് അറിയിപ്പുകൾ അനുവദനീയമല്ല</translation>
@@ -5403,6 +5409,7 @@
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />-ൽ <ph name="CURRENT_ELEMENT" />-ാമത്തെ അധിക ഉള്ളടക്കത്തിലേക്ക് നാവിഗേറ്റ് ചെയ്യുക</translation>
 <translation id="6016551720757758985">മുൻ പതിപ്പിലേക്ക് പോകുന്നതിലൂടെ പവർവാഷ് സ്ഥിരീകരിക്കുക</translation>
 <translation id="6016972670657536680">ഭാഷയും കീബോർഡും ബട്ടൺ തിരഞ്ഞെടുക്കുക. നിലവിൽ തിരഞ്ഞെടുത്ത ഭാഷ <ph name="LANGUAGE" /> ആണ്.</translation>
+<translation id="6017503096330453612">"വീണ്ടും ശ്രമിക്കുക" തിരഞ്ഞെടുക്കുക, അല്ലെങ്കിൽ പരിമിതമായ കാഴ്‌ചയും എഡിറ്റിംഗ് ഓപ്‌ഷനുകളും ഉപയോഗിക്കുന്നതിന് "ഓഫ്‌ലൈൻ എഡിറ്ററിൽ തുറക്കുക" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6017514345406065928">പച്ച</translation>
 <translation id="6019169947004469866">കത്രിക്കുക</translation>
 <translation id="6019851026059441029">മികച്ചത് - HD</translation>
@@ -6266,6 +6273,7 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">എല്ലാ ഉപയോക്താക്കൾക്കുമായി സ്വയമേയുള്ള അപ്‌ഡേറ്റുകൾ സജ്ജമാക്കാനായില്ല (പ്രീഫ്ലൈറ്റ് എക്‌സിക്യൂഷൻ പിശക്: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google സ്വകാര്യതാ നയം</translation>
+<translation id="6830200424658853449">ഓഫ്‌ലൈൻ എഡിറ്ററിൽ തുറക്കുക</translation>
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6832218595502288407">ഇടതുഭാഗത്ത് അലൈൻ ചെയ്യുക</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> ഗ്രൂപ്പിൽ നിന്ന് ടാബ് നീക്കം ചെയ്തു - <ph name="GROUP_CONTENTS" /></translation>
@@ -6629,6 +6637,7 @@
 <translation id="7174199383876220879">പുതിയത്! നിങ്ങളുടെ സംഗീതം, വീഡിയോകൾ എന്നിവയും മറ്റും നിയന്ത്രിക്കുക.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> കോൺഫിഗർ ചെയ്യുക</translation>
 <translation id="7175353351958621980">ഇതില്‍നിന്ന് ലോഡ് ചെയ്തത്:</translation>
+<translation id="7177079607604198383">നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച ശേഷം "വീണ്ടും ശ്രമിക്കുക" തിരഞ്ഞെടുക്കുക, അല്ലെങ്കിൽ പരിമിതമായ കാഴ്‌ചയും എഡിറ്റിംഗ് ഓപ്‌ഷനുകളും ഉപയോഗിക്കുന്നതിന് "ഓഫ്‌ലൈൻ എഡിറ്ററിൽ തുറക്കുക" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="7180865173735832675">ഇച്ഛാനുസൃതമാക്കുക</translation>
 <translation id="7182791023900310535">നിങ്ങളുടെ പാസ്‍വേഡ് നീക്കുക</translation>
@@ -7330,6 +7339,7 @@
 <translation id="783229689197954457">Google ഡിസ്‌കൗണ്ട് കണ്ടെത്തിയാൽ നിങ്ങൾക്കത് ഈ പേജിൽ കാണാം</translation>
 <translation id="7833720883933317473">സംരക്ഷിച്ച ഇഷ്‌ടാനുസൃത പദങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="7835178595033117206">ബുക്ക്‌മാര്‍ക്ക് നീക്കം ചെയ്‌തു</translation>
+<translation id="7836535163829106376"><ph name="FILE_NAMES" /> എന്നതിനുള്ള URL തുറക്കാനാകുന്നില്ല</translation>
 <translation id="7836850009646241041">നിങ്ങളുടെ സുരക്ഷാ കീയിൽ വീണ്ടും സ്‌പർശിച്ച് ശ്രമിക്കുക</translation>
 <translation id="7837776265184002579">നിങ്ങളുടെ ഹോം പേജ് <ph name="URL" /> എന്നതിലേക്ക് മാറ്റിയിരിക്കുന്നു.</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് '<ph name="NETWORK_NAME" />' സംരക്ഷിക്കാനായില്ല</translation>
@@ -7770,6 +7780,7 @@
 <translation id="822347941086490485">HID ഉപകരണങ്ങൾ കണ്ടെത്തുന്നു...</translation>
 <translation id="8223573963214454788">ഡാറ്റ ഇല്ലാതാക്കി തുടരുക</translation>
 <translation id="8225046344534779393">ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിക്കുക</translation>
+<translation id="8225173734540525852"><ph name="APPLICATION_NAME" /> ആപ്പ് ലഭ്യമാകണമെങ്കിൽ Drive ആവശ്യമാണ്.</translation>
 <translation id="8225265270453771718">ഒരു ആപ്പ് വിൻഡോ പങ്കിടുക</translation>
 <translation id="8226222018808695353">നിരോധിക്കപ്പെട്ടത്</translation>
 <translation id="8226619461731305576">ക്യൂവിൽ</translation>
@@ -8106,6 +8117,7 @@
 <translation id="8549316893834449916">Chromebook-ലേക്ക് സെെൻ ഇൻ ചെയ്യാൻ, Gmail, Drive, YouTube തുടങ്ങിയവയ്ക്ക് ഉപയോഗിക്കുന്ന അതേ Google അക്കൗണ്ട് നിങ്ങൾ ഉപയോഗിക്കും.</translation>
 <translation id="8551388862522347954">ലൈസന്‍സുകള്‍</translation>
 <translation id="8551588720239073785">തീയതി, സമയ ക്രമീകരണം</translation>
+<translation id="8551647092888540776">ഓഫ്‌ലൈനായിരിക്കുമ്പോൾ <ph name="FILE_NAMES" /> തുറക്കാനാകില്ല</translation>
 <translation id="8552102814346875916">"ഈ സൈറ്റുകൾ എപ്പോഴും സജീവമായി നിലനിർത്തുക" ലിസ്റ്റിലേക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="8553342806078037065">മറ്റുള്ളവരെ മാനേജുചെയ്യുക</translation>
 <translation id="8554899698005018844">ഭാഷയില്ല</translation>

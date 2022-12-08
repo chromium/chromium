@@ -688,6 +688,7 @@
 <translation id="7415801143053185905">ಅತ್ಯಧಿಕ HTTP ವಿಳಂಬ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="7458970041932198923">ಅವತಾರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಸೆಟ್ ಮಾಡಲು ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ ಮತ್ತು ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="7469648432129124067">ಪೋರ್ಟಲ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7481312909269577407">ಫಾರ್ವರ್ಡ್</translation>
 <translation id="7487067081878637334">ತಂತ್ರಜ್ಞಾನ</translation>
@@ -842,6 +843,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ಸ್ಕ್ಯಾನ್}=1{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}one{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}other{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">ಸಾಧನದಲ್ಲಿ <ph name="BATTERY_PERCENTAGE" />% ರಷ್ಟು ಬ್ಯಾಟರಿ ಇದೆ.</translation>
+<translation id="8998289560386111590">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="9003704114456258138">ಫ್ರೀಕ್ವೆನ್ಸಿ</translation>
 <translation id="9025198690966128418">ವೈಯಕ್ತಿಕ ಸಾಧನವಾಗಿ ಬಳಸಿ</translation>
 <translation id="9028832514430399253">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆಯ್ಕೆಗಳನ್ನು ಆರಿಸಲು ಟಾಗಲ್ ಆನ್ ಮಾಡಿ</translation>

@@ -1250,6 +1250,7 @@
 <translation id="2114896190328250491">Фотографија на <ph name="NAME" /></translation>
 <translation id="2114995631896158695">Не е вметната SIM-картичка</translation>
 <translation id="2116619964159595185">Сајтовите обично се поврзуваат со уреди со Bluetooth за функции како поставување или синхронизирање ознаки со ниска потрошувачка на енергија, следач на здравје/фитнес или паметна светилка</translation>
+<translation id="2117655453726830283">Следен слајд</translation>
 <translation id="2119349053129246860">Отвори во <ph name="APP" /></translation>
 <translation id="2119461801241504254">„Безбедно прелистување“ е вклучено и ве заштитува од штетни сајтови и преземања</translation>
 <translation id="2120297377148151361">Активност и интеракции</translation>
@@ -2352,6 +2353,7 @@
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 потенцијално штетна екстензија е исклучена. Може и да ја отстраните.}one{{NUM_EXTENSIONS} потенцијално штетна екстензија е исклучена. Може и да ги отстраните.}other{{NUM_EXTENSIONS} потенцијално штетни екстензии се исклучени. Може и да ги отстраните.}}</translation>
 <translation id="3101126716313987672">Затемни светло</translation>
 <translation id="3101709781009526431">Датум и време</translation>
+<translation id="310297983047869047">Претходен слајд</translation>
 <translation id="3103451787721578293">Внесете причина за прикачување на податоциве:</translation>
 <translation id="3105339775057145050">Последно неуспешно ажурирање</translation>
 <translation id="3105796011181310544">Да се врати на Google?</translation>
@@ -2872,6 +2874,7 @@
 <translation id="3616741288025931835">&amp;Исчисти податоци од прелистување...</translation>
 <translation id="3617891479562106823">Заднините се недостапни. Обидете се повторно подоцна.</translation>
 <translation id="3619115746895587757">Капучино</translation>
+<translation id="3620136223548713675">Геолокација</translation>
 <translation id="3621807901162200696">Помогнете да се подобрат функциите и изведбата на Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="362333465072914957">Се чека CA да издаде сертификат</translation>
@@ -5288,6 +5291,7 @@
 <translation id="5886009770935151472">Прст 1</translation>
 <translation id="5886112770923972514">Поврзете се и брзо поставувајте уреди со „Брзо спарување“ во близина</translation>
 <translation id="5886384907280980632">Исклучи сега</translation>
+<translation id="5888889603768021126">Најавен со</translation>
 <translation id="5889282057229379085">Максимален број посредни ЦА: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5889629805140803638">Шифрирајте ги синхронизираните податоци со сопствена <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" />. Начините на плаќање и адресите од Google Pay нема да бидат шифрирани. Историјата на прелистување од Chrome нема да се синхронизира.</translation>
 <translation id="5891688036610113830">Претпочитани Wi-Fi мрежи</translation>

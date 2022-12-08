@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">დაიხუროს ყველა ინკოგნიტო ჩანართი?</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის სანიშნეებში დამატება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის სანიშნეებში დამატება}}</translation>
 <translation id="2118649612461486615">მაღაზიის ინფორმაცია</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" />-ზე ახლა <ph name="CURRENT_PRICE" /> ღირს</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ჩანართის დაჯგუფების გაუქმება}other{ჩანართების დაჯგუფების გაუქმება}}</translation>
 <translation id="2277224997687551299">ჯგუფის სახელის რედაქტირება</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის ამოშლა ჯგუფიდან.}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის ამოშლა ჯგუფიდან.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ჩანართის დამატება სანიშნეებში}other{ჩანართების დამატება სანიშნეებში}}</translation>
 <translation id="2479148705183875116">პარამეტრებზე გადასვლა</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ჩაკეცვა.}other{ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის ჩაკეცვა.}}</translation>
 <translation id="2569352796411618312">შემოთავაზება: თქვენი <ph name="NUMBER_OF_TABS" /> ჩანართი ბოლო დროს არ გამოგიყენებიათ. გსურთ მათი დახურვა?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ჩანართის ზემოთ გადატანა</translation>
 <translation id="8304833501377495048">აღარ გამოჩნდეს ჩანართების ზოლი?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დახურვა}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დახურვა}}</translation>
+<translation id="8398929769197326728">ახალი საქაღალდე — <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ჩანართების <ph name="NUMBER_OF_TABS" />-ჩანართიანი ჯგუფის გაფართოება.</translation>
 <translation id="8714939927607906138">უფრო დაბალი ფასი</translation>
 <translation id="8749939518995770034">ჩანართების ზოლი დახურულია</translation>

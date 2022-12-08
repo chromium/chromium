@@ -924,7 +924,6 @@
 <translation id="6103838137565245112">система</translation>
 <translation id="6107292179555508368">Достъпът до микрофона и камерата е изключен на това устройство</translation>
 <translation id="6114505516289286752">Файловете за говор на <ph name="LANGUAGE" /> бяха изтеглени</translation>
-<translation id="6116825164611323644">Достъпът до камерата е изключен на това устройство</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потвърждаване на изтеглянето на <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Асистент не се поддържа по време на сесия като гост.</translation>
@@ -1395,7 +1394,6 @@
 <translation id="8735678380411481005">Цвят на фоновото осветление на клавиатурата</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Разрешете достъпа до камерата, за да могат приложенията и уеб страниците със съответните разрешения да използват камерите, свързани с това устройство.</translation>
 <translation id="8755498163081687682">Потвърждаване на самоличността ви: <ph name="ORIGIN_NAME" /> иска да потвърди, че това сте вие</translation>
 <translation id="875593634123171288">Показване на настройките за VPN</translation>
 <translation id="8759408218731716181">Централизираният вход не може да се настрои</translation>

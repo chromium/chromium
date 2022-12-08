@@ -310,7 +310,6 @@
 <translation id="168693727862418163">ఈ పాలసీ విలువ దాని స్కీమాకు వ్యతిరేకంగా వాలిడేట్ చేయడంలో విఫలమైంది, కాబట్టి విస్మరించబడుతుంది.</translation>
 <translation id="168841957122794586">సర్వర్ ప్రమాణపత్రం బలహీన క్రిప్టోగ్రాఫిక్ కీని కలిగి ఉంది.</translation>
 <translation id="1697532407822776718">మీరు సిద్ధంగా ఉన్నారు!</translation>
-<translation id="1699570257714336246">సమాచారం సరిగ్గా లేదు</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">లెటర్</translation>
 <translation id="1706625117072057435">జూమ్ స్థాయిలు</translation>
@@ -1165,7 +1164,6 @@
 <translation id="3961148744525529027">చెల్లింపు హ్యాండ్లర్ షీట్ సగం తెరవబడింది</translation>
 <translation id="3962859241508114581">మునుపటి ట్రాక్</translation>
 <translation id="3963721102035795474">పాఠకుని మోడ్</translation>
-<translation id="3963837677003247395">మాన్యువల్‌గా కొనసాగించాలా?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ఏవీ కాదు}=1{1 సైట్ నుండి }other{# సైట్‌ల నుండి }}</translation>
 <translation id="3969052498612555048">మీ కోడ్‌ను కనుగొనలేకపోయారా? <ph name="BEGIN_LINK" />కొత్త కోడ్‌ను పొందండి<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
@@ -1942,7 +1940,6 @@
 <translation id="5937560539988385583">పేజీ అనువదించండి</translation>
 <translation id="5938153366081463283">వర్చువల్ కార్డ్‌ను జోడించండి</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> తెరవబడుతోంది…</translation>
 <translation id="5947508410139465809">మీరు అప్‌లోడ్ లేదా జోడించిన ఫైల్స్ Google క్లౌడ్ లేదా థర్డ్ పార్టీలకు విశ్లేషణ కోసం పంపబడతాయి. ఉదాహరణకు, అవి సున్నితమైన డేటా లేదా మాల్వేర్ కోసం స్కాన్ చేయబడవచ్చు, కంపెనీ పాలసీని బట్టి స్టోర్ చేయబడవచ్చు.</translation>
 <translation id="5951495562196540101">వినియోగదారు ఖాతాతో నమోదు చేయడం సాధ్యపడదు (ప్యాకేజ్డ్ లైసెన్స్ అందుబాటులో ఉంది).</translation>
 <translation id="5953516610448771166">ఈ మీడియాకు లైవ్ క్యాప్షన్ అందుబాటులో లేదు. క్యాప్షన్‌లను పొందడానికి, ఈ సైట్ <ph name="CONTENT_SETTINGS" />ను బ్లాక్ చేయండి.</translation>
@@ -2079,7 +2076,6 @@
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{మీ పరికరం ఇప్పుడు రీస్టార్ట్ అవుతుంది}=1{మీ పరికరం 1 సెకనులో రీస్టార్ట్ అవుతుంది}other{మీ పరికరం # సెకన్లలో రీస్టార్ట్ అవుతుంది}}</translation>
 <translation id="6301104306974789820">ధర ట్రాకింగ్ నోటిఫికేషన్‌లను పొందండి</translation>
-<translation id="6302269476990306341">Chromeలో Google Assistant ఆపివేయబడుతోంది</translation>
 <translation id="6305205051461490394"><ph name="URL" />ని చేరుకోలేకపోయాము.</translation>
 <translation id="6311165245110979290">వర్చువల్ కార్డ్ అందుబాటులో ఉంది</translation>
 <translation id="6312113039770857350">వెబ్‌పేజీ అందుబాటులో లేదు</translation>
@@ -2335,7 +2331,6 @@
 <translation id="6971439137020188025">Slidesలో త్వరగా కొత్త Google ప్రెజెంటేషన్‌ను క్రియేట్ చేయండి</translation>
 <translation id="6972629891077993081">HID పరికరాలు</translation>
 <translation id="6973656660372572881">రెండు స్థిర ప్రాక్సీ సర్వర్లు మరియు ఒక .pac స్క్రిప్ట్ URL పేర్కొనబడ్డాయి.</translation>
-<translation id="6973932557599545801">క్షమించండి నేను సహాయం చేయలేకపోయాను, దయచేసి మీరే స్వంతంగా కొనసాగండి.</translation>
 <translation id="6973988895180423160">3.5 x 5 అంగుళాలు</translation>
 <translation id="6978236010531171013">ఏదేమైనా షేర్ చేయండి</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2531,7 +2526,6 @@
 <translation id="7451311239929941790">ఈ సమస్య గురించి <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">సార్వజనీన డిఫాల్ట్‌ను ఉపయోగించు (బ్లాక్ చేయండి)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">మీరు ఎంచుకున్నది మరియు స్క్రీనింగ్ చేస్తున్నది వేరుగా ఉన్నాయి. కొనసాగించాలా?</translation>
 <translation id="7461924472993315131">పిన్ చేయి</translation>
 <translation id="7463075493919226237">ఆస్ట్రేలియన్ ఫుట్‌బాల్</translation>
 <translation id="7465963048299965912">10 x 13 అంగుళాలు</translation>
@@ -3220,7 +3214,6 @@
 <translation id="937457230470581909">జూలు, అక్వేరియమ్‌లు &amp; సంరక్షణ కేంద్రాలు</translation>
 <translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>
 <translation id="940053046584497293">ట్రావెల్ &amp; ట్రాన్స్‌పోర్టేషన్</translation>
-<translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 <translation id="945855313015696284">ఈ కింది వివరాలను ఒక్కసారి పరిశీలించి చెల్లని కార్డ్‌లు ఏమైనా ఉంటే తొలగించండి</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sitesలో త్వరగా కొత్త సైట్‌ను క్రియేట్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="950736567201356821">ఎగువ భాగంలో మూడు రంధ్రాలు</translation>

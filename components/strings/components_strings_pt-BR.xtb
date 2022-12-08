@@ -271,6 +271,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1586541204584340881">quais extensões você instalou;</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Acesso a dados locais</translation>
+<translation id="1593359183944365958">270 graus</translation>
 <translation id="1594030484168838125">Escolher</translation>
 <translation id="1596296697375291157">Filmes de suspense, crime e mistério</translation>
 <translation id="1599199147673445968">Novo cartão? <ph name="BEGIN_LINK" />Insira os detalhes dele<ph name="END_LINK" /></translation>
@@ -308,7 +309,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="168693727862418163">Houve uma falha na validação do valor da política em relação ao esquema, e ele será ignorado.</translation>
 <translation id="168841957122794586">O certificado do servidor contém uma chave de criptografia fraca.</translation>
 <translation id="1697532407822776718">Pronto.</translation>
-<translation id="1699570257714336246">Faltam algumas informações</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Carta</translation>
 <translation id="1706625117072057435">Níveis de zoom</translation>
@@ -338,6 +338,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1745880797583122200">Seu navegador é gerenciado</translation>
 <translation id="1746113442205726301">Mudança Y na imagem</translation>
+<translation id="1746531169546376413">0 grau</translation>
 <translation id="17513872634828108">Guias abertas</translation>
 <translation id="1752021286346845558">Caixa de e-mails 8</translation>
 <translation id="1753068535428855445">Namoro e assuntos pessoais</translation>
@@ -1163,7 +1164,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3961148744525529027">A página do gerenciador de pagamento está parcialmente aberta</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963721102035795474">Modo leitor</translation>
-<translation id="3963837677003247395">Continuar manualmente?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Nenhum}=1{1 site }one{# site }other{# sites }}</translation>
 <translation id="3969052498612555048">Não encontrou o código? <ph name="BEGIN_LINK" />Gerar novo código<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -1798,6 +1798,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5540969246441091044">Hipismo</translation>
 <translation id="5541086400771735334">Caixa de e-mails 7</translation>
 <translation id="5541546772353173584">Adicione um E-mail</translation>
+<translation id="5543722831081909240">180 graus</translation>
 <translation id="5545756402275714221">Artigos para você</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">O Chrome verifica periodicamente se suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
@@ -1940,7 +1941,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5937560539988385583">Página traduzida</translation>
 <translation id="5938153366081463283">Adicionar cartão virtual</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347">Abrindo <ph name="SITE_NAME" />…</translation>
 <translation id="5947508410139465809">Os arquivos transferidos por upload ou anexados são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware e podem ser armazenados com base nas políticas da empresa.</translation>
 <translation id="5951495562196540101">Não é possível fazer a inscrição com a conta pessoal (pacote de licença disponível).</translation>
 <translation id="5953516610448771166">O recurso Legenda instantânea não está disponível para esse tipo de mídia. Se quiser ver legendas, bloqueie a configuração <ph name="CONTENT_SETTINGS" /> para este site.</translation>
@@ -2077,7 +2077,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{Seu dispositivo será reiniciado agora}=1{Seu dispositivo será reiniciado em 1 segundo}one{Seu dispositivo será reiniciado em # segundo}other{Seu dispositivo será reiniciado em # segundos}}</translation>
 <translation id="6301104306974789820">Receber notificações de acompanhamento de preço</translation>
-<translation id="6302269476990306341">Parando o Google Assistente no Chrome</translation>
 <translation id="6305205051461490394">Não é possível acessar <ph name="URL" />.</translation>
 <translation id="6311165245110979290">Cartão virtual disponível</translation>
 <translation id="6312113039770857350">Página da Web não disponível</translation>
@@ -2188,6 +2187,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6591833882275308647">Seu <ph name="DEVICE_TYPE" /> não é gerenciado</translation>
 <translation id="6592952801936330159">Botão "Gerenciar configurações do site". Pressione "Enter" para gerenciar as permissões e os dados armazenados em sites nas configurações do Chrome</translation>
 <translation id="6596325263575161958">Opções de criptografia</translation>
+<translation id="6597665340361269064">90 graus</translation>
 <translation id="6599642189720630047">Produtos monitorados</translation>
 <translation id="6611723696964473273">Notícias de economia</translation>
 <translation id="6612010098632894193">Vídeo on-line</translation>
@@ -2333,7 +2333,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6971439137020188025">Criar rapidamente um novo arquivo no Apresentações Google</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
 <translation id="6973656660372572881">Ambos os servidores proxy fixo e um URL de script .pac foram especificados.</translation>
-<translation id="6973932557599545801">Não posso ajudar. Você está por conta própria.</translation>
 <translation id="6973988895180423160">3,5 x 5 pol.</translation>
 <translation id="6978236010531171013">Compartilhar mesmo assim</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2529,7 +2528,6 @@ Mais detalhes:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /> sobre esse problema.</translation>
 <translation id="7455133967321480974">Usar padrão global (Bloquear)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">A exibição na tela está diferente da que você selecionou. Continuar?</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="7463075493919226237">Futebol australiano</translation>
 <translation id="7465963048299965912">10 x 13 pol.</translation>
@@ -3220,7 +3218,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="937457230470581909">Zoológicos, aquários e reservas</translation>
 <translation id="939736085109172342">Nova pasta</translation>
 <translation id="940053046584497293">Viagem e transporte</translation>
-<translation id="945522503751344254">Enviar comentários</translation>
 <translation id="945855313015696284">Verifique as informações abaixo e exclua todos os cartões inválidos</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo site no Google Sites</translation>
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>

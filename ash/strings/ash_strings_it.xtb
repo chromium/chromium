@@ -925,7 +925,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6107292179555508368">Gli accessi a microfono e fotocamera sono disattivati su questo dispositivo</translation>
 <translation id="6114505516289286752">File di contenuti vocali scaricati per questa la lingua: <ph name="LANGUAGE" /></translation>
-<translation id="6116825164611323644">Non è stato concesso l'accesso alla fotocamera su questo dispositivo</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Conferma download <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
@@ -1395,7 +1394,6 @@ Nuova installazione</translation>
 <translation id="8734991477317290293">Potrebbe essere un tentativo di rubare i tasti premuti</translation>
 <translation id="8735678380411481005">Colore della retroilluminazione della tastiera</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Concedi l'accesso alla fotocamera per consentire alle app e alle pagine web autorizzate di utilizzare le fotocamere collegate a questo dispositivo.</translation>
 <translation id="8755498163081687682">Verifica la tua identità come richiesto da <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">Mostra impostazioni VPN</translation>
 <translation id="8759408218731716181">Impossibile impostare l'accesso simultaneo</translation>

@@ -924,7 +924,6 @@
 <translation id="6103838137565245112">সিস্টেম</translation>
 <translation id="6107292179555508368">এই ডিভাইসে মাইক্রোফোন এবং ক্যামেরা অ্যাক্সেস বন্ধ আছে</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> স্পিচ ফাইল ডাউনলোড করা হয়েছে</translation>
-<translation id="6116825164611323644">এই ডিভাইসে ক্যামেরা অ্যাক্সেস বিকল্প বন্ধ আছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনলোড নিশ্চিত করুন</translation>
 <translation id="612734058257491180">Google অ্যাসিস্ট্যান্ট কোনও গেস্ট সেশনে উপলভ্য নয়।</translation>
@@ -1395,7 +1394,6 @@
 <translation id="8735678380411481005">কীবোর্ড ব্যাকলাইটের রঙ</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">এই ডিভাইসের সাথে সংযুক্ত ক্যামেরা ব্যবহার করার জন্য ক্যামেরার অনুমতি সহ অ্যাপ এবং ওয়েবপেজে অনুমতি দিতে ক্যামেরা অ্যাক্সেস চালু করুন।</translation>
 <translation id="8755498163081687682">আপনার পরিচয় যাচাই করুন: <ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>
 <translation id="8759408218731716181">একাধিক সাইন-ইন সেট-আপ করা যাবে না</translation>

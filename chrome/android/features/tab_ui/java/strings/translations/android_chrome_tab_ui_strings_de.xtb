@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Alle Inkognitotabs schließen?</translation>
 <translation id="1657719826150349398">Tab nach unten verschieben</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab als Lesezeichen speichern}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs als Lesezeichen speichern}}</translation>
 <translation id="2118649612461486615">Händlerinfo</translation>
 <translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tab-Gruppierung aufheben}other{Tab-Gruppierung aufheben}}</translation>
 <translation id="2277224997687551299">Gruppenname bearbeiten</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab aus der Gruppe entfernen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs aus der Gruppe entfernen}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Tab zu Lesezeichen hinzufügen}other{Tabs zu Lesezeichen hinzufügen}}</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="2569352796411618312">Vorschlag: <ph name="NUMBER_OF_TABS" /> von deinen Tabs wurden längere Zeit nicht verwendet. Möchtest du sie schließen?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>
 <translation id="8304833501377495048">Tableiste nicht mehr anzeigen?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab schließen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs schließen}}</translation>
+<translation id="8398929769197326728">Neuer Ordner – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Tabgruppe mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren</translation>
 <translation id="8714939927607906138">Günstigerer Preis</translation>
 <translation id="8749939518995770034">Tableiste geschlossen</translation>

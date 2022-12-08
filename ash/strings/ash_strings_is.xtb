@@ -667,6 +667,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4666082839192943839">Slökktu á aðgangi að myndavél í tækinu til að hafa alltaf lokað fyrir allar myndavélar.</translation>
 <translation id="4666911709726371538">Fleiri forrit</translation>
 <translation id="4667099493359681081">Sækir <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Forrit úr símanum</translation>
 <translation id="4690510401873698237">Hilla neðst</translation>
 <translation id="4696813013609194136">Opna tæki með kóða foreldris</translation>
 <translation id="4702647871202761252">Slökkt er á persónuverndarskjá</translation>
@@ -923,7 +924,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6103838137565245112">kerfi</translation>
 <translation id="6107292179555508368">Slökkt er á aðgangi hljóðnema og myndavélar í þessu tæki</translation>
 <translation id="6114505516289286752">Talskrár sóttar fyrir: <ph name="LANGUAGE" /></translation>
-<translation id="6116825164611323644">Slökkt er á aðgangi að myndavél í tækinu</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Staðfesta niðurhal <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google hjálparinn er ekki í boði í gestalotu.</translation>
@@ -1394,7 +1394,6 @@ Ný uppsetning</translation>
 <translation id="8735678380411481005">Litur baklýsingar lyklaborðs</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Kveiktu á aðgangi að myndavél til að leyfa forritum og vefsíðum með myndavélarheimild að nota myndavélina/-vélarnar sem eru tengdar tækinu.</translation>
 <translation id="8755498163081687682">Staðfestu hver þú ert: <ph name="ORIGIN_NAME" /> vill staðfesta að þetta sért þú</translation>
 <translation id="875593634123171288">Sýna VPN-stillingar</translation>
 <translation id="8759408218731716181">Ekki er hægt að setja upp margar innskráningar</translation>

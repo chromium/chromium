@@ -203,6 +203,7 @@
 <translation id="117916940443676133">તમારી સુરક્ષા કી પિન વડે સુરક્ષિત નથી. સાઇન-ઇન ડેટા મેનેજ કરવા માટે, પહેલાં પિન બનાવો.</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
 <translation id="1183237619868651138">સ્થાનિક કૅશ મેમરીમાં <ph name="EXTERNAL_CRX_FILE" />ને ઇન્સ્ટૉલ કરી શકતાં નથી.</translation>
+<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> ઍપ્લિકેશન માટે માન્ય <ph name="APPLICATION_NAME" /> URL હોવું જરૂરી છે.</translation>
 <translation id="1185924365081634987">આ નેટવર્ક ભૂલને સુધારવા માટે તમે <ph name="GUEST_SIGNIN_LINK_START" />અતિથિ તરીકે બ્રાઉઝ કરો<ph name="GUEST_SIGNIN_LINK_END" /> ને પણ અજમાવી શકો છો.</translation>
 <translation id="1186771945450942097">નુકસાનકારક સૉફ્ટવેર દૂર કરો</translation>
 <translation id="1187722533808055681">નિષ્ક્રિય વેકઅપ્સ</translation>
@@ -1954,6 +1955,7 @@
 <translation id="275662540872599901">સ્ક્રીન બંધ છે</translation>
 <translation id="2757161511365746634">પ્રિન્ટર જુઓ</translation>
 <translation id="2757338480560142065"><ph name="WEBSITE" /> માટેના તમારા પાસવર્ડ સાથે, તમે સાચવી રહ્યાં છો તે પાસવર્ડ મેળ ખાતો હોવાની ખાતરી કરો</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> માટે કોઈ શોધ પરિણામો મળ્યા નથી</translation>
 <translation id="2762441749940182211">કૅમેરા બ્લૉક કર્યો</translation>
 <translation id="2764786626780673772">VPNની વિગતો</translation>
 <translation id="2764920001292228569">પ્રોફાઇલ નામ દાખલ કરો</translation>
@@ -2818,6 +2820,7 @@
 <translation id="3582057310199111521">છેતરામણી સાઇટ પર પાસવર્ડ દાખલ કરવામાં આવ્યો અને ડેટા ઉલ્લંઘન જોવા મળ્યું</translation>
 <translation id="3582299299336701326">આછી સ્ક્રીનને ઘેરી અને ઘેરી સ્ક્રીનને આછી બનાવો. વિપરીત રંગમાં બદલવાની સુવિધા ચાલુ અને બંધ કરવા માટે Search + Ctrl + H કી દબાવો.</translation>
 <translation id="3584169441612580296">વાંચો અને તમારા કમ્પ્યુટરમાંથી ફોટો, સંગીત અને અન્ય મીડિયા બદલો</translation>
+<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> ઍપ્લિકેશન માટે OneDrive ઉપલબ્ધ હોવી જરૂરી છે.</translation>
 <translation id="3586806079541226322">આ ફાઇલ ખોલી શકાતી નથી</translation>
 <translation id="3586931643579894722">વિગતો છુપાવો</translation>
 <translation id="3587482841069643663">બધા</translation>
@@ -2851,6 +2854,7 @@
 <translation id="3616741288025931835">બ્રાઉઝિંગ ડેટા &amp;સાફ કરો...</translation>
 <translation id="3617891479562106823">બૅકગ્રાઉન્ડ અનુપલબ્ધ છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="3619115746895587757">કૅપુચિનો</translation>
+<translation id="3620136223548713675">ભૌગોલિક સ્થાન</translation>
 <translation id="3621807901162200696">ChromeOSની સુવિધાઓ અને કાર્યપ્રદર્શનને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{એક ઍપ}one{# ઍપ}other{# ઍપ}}</translation>
 <translation id="362333465072914957">CA પ્રમાણપત્ર જારી કરે તેની રાહ જોઈ રહ્યાં છીએ</translation>
@@ -3975,6 +3979,7 @@
 <translation id="4654236001025007561">તમારી આસપાસની Chromebook અને Android ડિવાઇસ સાથે ફાઇલો શેર કરો</translation>
 <translation id="4657914796247705218">TrackPointની ઝડપ</translation>
 <translation id="4658285806588491142">તમારી સ્ક્રીનને ખાનગી રાખો</translation>
+<translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> ઍપ્લિકેશન ઑફલાઇન ઉપલબ્ધ નથી.</translation>
 <translation id="465878909996028221">બ્રાઉઝર રીડાયરેક્ટ માટે માત્ર http, https અને ફાઇલ પ્રોટોકૉલ સમર્થિત છે.</translation>
 <translation id="4659126640776004816">જ્યારે તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો છો, ત્યારે આ સુવિધા ચાલુ કરવામાં આવે છે.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{છબી}one{# છબી}other{# છબી}}</translation>
@@ -4025,6 +4030,7 @@
 <translation id="4699357559218762027">(સ્વતઃ-લોંચ કરેલું)</translation>
 <translation id="4701025263201366865">માતાપિતા સાઇન ઇન કરે</translation>
 <translation id="4701335814944566468">ગઈકાલે જોઈ હતી</translation>
+<translation id="4705624512518230041">OneDrive ઉપલબ્ધ ન હોય ત્યારે <ph name="FILE_NAMES" /> ખોલી શકાતી નથી</translation>
 <translation id="470644585772471629">વિપરીત રંગમાં બદલવું</translation>
 <translation id="4707337002099455863">હંમેશાં બધી સાઇટ પર પરવાનગી આપો</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> છોડો</translation>
@@ -4492,6 +4498,7 @@
 <translation id="5160634252433617617">વાસ્તવિક કીબોર્ડ</translation>
 <translation id="5160857336552977725">તમારા <ph name="DEVICE_TYPE" /> પર સાઇન ઇન કરો</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" />ના USB ડિવાઇસ</translation>
+<translation id="5162624292894372900">Drive ઉપલબ્ધ ન હોય ત્યારે <ph name="FILE_NAMES" /> ખોલી શકાતી નથી</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> બ્લૉક કરવામાં આવ્યું છે</translation>
 <translation id="5163910114647549394">ટૅબને ટૅબસ્ટ્રિપના અંતમાં ખસેડી</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> માટે નોટિફિકેશનની મંજૂરી નથી</translation>
@@ -5403,6 +5410,7 @@ USB ડિવાઇસ</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />માંથી વધારાના <ph name="CURRENT_ELEMENT" /> કન્ટેન્ટ પર નૅવિગેટ કરો</translation>
 <translation id="6016551720757758985">અગાઉના વર્ઝન પર પાછા ફરવાની સાથે Powerwashની ખાતરી કરો</translation>
 <translation id="6016972670657536680">ભાષા અને કીબોર્ડ બટન પસંદ કરો. હાલમાં પસંદ કરેલ ભાષા <ph name="LANGUAGE" /> છે.</translation>
+<translation id="6017503096330453612">જોવા અને ફેરફાર કરવાના મર્યાદિત વિકલ્પોનો ઉપયોગ કરવા માટે, "ફરી પ્રયાસ કરો" પસંદ કરો અથવા "ઑફલાઇન એડિટરમાં ખોલો" પસંદ કરો.</translation>
 <translation id="6017514345406065928">લીલો</translation>
 <translation id="6019169947004469866">ક્રોપ</translation>
 <translation id="6019851026059441029">શ્રેષ્ઠ - HD</translation>
@@ -6267,6 +6275,7 @@ USB ડિવાઇસ</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">તમામ વપરાશકર્તાઓ માટે સ્વચલિત અપડેટ્સને સેટ કરવામાં નિષ્ફળ થયાં (પ્રીફ્લાઇટ અમલીકરણની ભૂલ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google પ્રાઇવસી પૉલિસી</translation>
+<translation id="6830200424658853449">ઑફલાઇન એડિટરમાં ખોલો</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
 <translation id="6832218595502288407">ડાબે સંરેખિત કરો</translation>
 <translation id="6833479554815567477">ગ્રૂપ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" />માંથી ટૅબને કાઢી નાખવામાં આવી</translation>
@@ -6630,6 +6639,7 @@ USB ડિવાઇસ</translation>
 <translation id="7174199383876220879">નવું! તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> ગોઠવો</translation>
 <translation id="7175353351958621980">અહીંથી લોડ કરેલું:</translation>
+<translation id="7177079607604198383">જોવા અને ફેરફાર કરવાના મર્યાદિત વિકલ્પોનો ઉપયોગ કરવા માટે, તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને "ફરી પ્રયાસ કરો" પસંદ કરો અથવા "ઑફલાઇન એડિટરમાં ખોલો" પસંદ કરો.</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
 <translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
 <translation id="7182791023900310535">તમારો પાસવર્ડ ખસેડો</translation>
@@ -6929,6 +6939,7 @@ USB ડિવાઇસ</translation>
 <translation id="7465635034594602553">કંઈક ખોટું થયું. કૃપા કરીને થોડી વાર રાહ જુઓ અને <ph name="APP_NAME" /> ફરીથી ચલાવો.</translation>
 <translation id="7465778193084373987">નેટસ્કેપ પ્રમાણપત્ર રિવોકેશન URL</translation>
 <translation id="7466431077154602932">કૉમ્પેક્ટ વ્યૂ</translation>
+<translation id="7466556884531675354">કોઈ નોંધ સાચવી નથી</translation>
 <translation id="746861123368584540">એક્સ્ટેન્શન લોડ કર્યું</translation>
 <translation id="7470424110735398630">તમારું ક્લિપબોર્ડ જોવાની મંજૂરી છે</translation>
 <translation id="747114903913869239">ભૂલ: એક્સટેન્શનને ડિકોડ કરવામાં અક્ષમ</translation>
@@ -7329,6 +7340,7 @@ USB ડિવાઇસ</translation>
 <translation id="783229689197954457">જો Googleને કોઈ છૂટ મળશે, તો તમને તે આ પેજ પર દેખાશે</translation>
 <translation id="7833720883933317473">સાચવેલ કસ્ટમ શબ્દો અહીં દેખાશે</translation>
 <translation id="7835178595033117206">બુકમાર્ક કાઢી નાખ્યું</translation>
+<translation id="7836535163829106376"><ph name="FILE_NAMES" />નું URL ખોલી શકાતું નથી</translation>
 <translation id="7836850009646241041">તમારી સિક્યુરિટી કીને ફરી સ્પર્શ કરી જુઓ</translation>
 <translation id="7837776265184002579">તમારું હોમપેજ, <ph name="URL" /> પર બદલ્યું હતું.</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" />માંથી '<ph name="NETWORK_NAME" />'ની લૉગ ઇન વિગત સાચવી શક્યા નથી</translation>
@@ -7764,6 +7776,7 @@ USB ડિવાઇસ</translation>
 <translation id="822347941086490485">HID ડિવાઇસ શોધી રહ્યાં છીએ...</translation>
 <translation id="8223573963214454788">આગળ વધો અને ડેટા ડિલીટ કરો</translation>
 <translation id="8225046344534779393">ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
+<translation id="8225173734540525852"><ph name="APPLICATION_NAME" /> ઍપ્લિકેશન માટે Drive ઉપલબ્ધ હોવી જરૂરી છે.</translation>
 <translation id="8225265270453771718">ઍપ્લિકેશન વિંડો શેર કરો</translation>
 <translation id="8226222018808695353">પ્રતિબંધિત</translation>
 <translation id="8226619461731305576">કતારમાં</translation>
@@ -7902,6 +7915,7 @@ USB ડિવાઇસ</translation>
 <translation id="8351316842353540018">હંમેશાં ઍક્સેસિબિલિટીનાં વિકલ્પો બતાવો</translation>
 <translation id="8351419472474436977">આ એક્સ્ટેન્શને તમારા પ્રૉક્સી સેટિંગનું નિયંત્રણ લઈ લીધું છે, એનો અર્થ છે કે તમે જે કંઈ પણ ઓનલાઇન કરો છો એને એ બદલી, ભંગ કરી કે છુપાઈને પારકી વાતો સાંભળી શકે છે. આ ફેરફાર કેમ થયો એ અંગે જો તમને ખાતરી નથી, તો સંભવિત રૂપે એ તમને જોઈતું નહિ હોય.</translation>
 <translation id="8351630282875799764">બૅટરી ચાર્જ નથી થઈ રહી</translation>
+<translation id="8352287103893778223">ટૅબ-ગ્રૂપનું શીર્ષક</translation>
 <translation id="835238322900896202">અનઇન્સ્ટૉલેશન દરમિયાન ભૂલ આવી. કૃપા કરીને ટર્મિનલ મારફતે અનઇન્સ્ટૉલ કરો.</translation>
 <translation id="8353683614194668312">તે આ કરી શકે છે:</translation>
 <translation id="8354034204605718473">તમારા બાળકનો પિન ઉમેરવામાં આવ્યો છે</translation>
@@ -8099,6 +8113,7 @@ USB ડિવાઇસ</translation>
 <translation id="8549316893834449916">તમારા Chromebookમાં સાઇન ઇન કરવા માટે તમે તમારા Google એકાઉન્ટનો ઉપયોગ કરી શકો છો – Gmail, Drive, YouTube અને બીજા ઘણા માટે તમે ઉપયોગમાં લેતા એકાઉન્ટ વડે જ.</translation>
 <translation id="8551388862522347954">લાઇસેંસીસ</translation>
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>
+<translation id="8551647092888540776"><ph name="FILE_NAMES" /> ઑફલાઇન હોય ત્યારે ખોલી શકાતી નથી</translation>
 <translation id="8552102814346875916">"આ સાઇટને હંમેશાં સક્રિય રાખો" સૂચિમાં સાચવો</translation>
 <translation id="8553342806078037065">અન્ય લોકોને મેનેજ કરો</translation>
 <translation id="8554899698005018844">કોઈ ભાષા નથી</translation>

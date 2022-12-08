@@ -668,6 +668,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4666082839192943839">Lülitage selles seadmes kaamerale juurdepääs välja, et kõiki kaameraid kogu aeg blokeerida.</translation>
 <translation id="4666911709726371538">Rohkem rakendusi</translation>
 <translation id="4667099493359681081">Faili <ph name="FILENAME" /> allalaadimine</translation>
+<translation id="468293128311738995">Rakendused teie telefonist</translation>
 <translation id="4690510401873698237">Riiul asub allpool</translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
 <translation id="4702647871202761252">Privaatsuskuva on väljas</translation>
@@ -924,7 +925,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6103838137565245112">süsteem</translation>
 <translation id="6107292179555508368">Juurdepääs mikrofonile ja kaamerale on selles seadmes välja lülitatud</translation>
 <translation id="6114505516289286752">Kõnefailid <ph name="LANGUAGE" /> keeles laaditi alla</translation>
-<translation id="6116825164611323644">Juurdepääs kaamerale on selles seadmes välja lülitatud</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Allalaadimise kinnitamine (<ph name="FILENAME" />)</translation>
 <translation id="612734058257491180">Google'i assistent ei ole külastajaseansis saadaval.</translation>
@@ -1289,6 +1289,7 @@ Uus installimine</translation>
 <translation id="8142441511840089262">Topeltklikk</translation>
 <translation id="8142699993796781067">Privaatvõrk</translation>
 <translation id="8144760705599030999">Salvestage seade <ph name="NAME" /> kontole <ph name="EMAIL" />, et saaksite selle oma teiste seadmetega kiiremini siduda</translation>
+<translation id="8144914663975476336">Salvestamisvormingu valimine</translation>
 <translation id="8149413265954228307">Bluetoothi seadete kuvamine. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Sulgemiseks vajutage klahvikombinatsiooni Ctrl + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automaatne täitmine</translation>
@@ -1394,7 +1395,6 @@ Uus installimine</translation>
 <translation id="8735678380411481005">Klaviatuuri taustavalguse värv</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Lülitage sisse juurdepääs kaamerale, et kaameraloaga rakendused ja veebilehed saaksid selle seadmega ühendatud kaameraid kasutada.</translation>
 <translation id="8755498163081687682">Kinnitage oma isik: <ph name="ORIGIN_NAME" /> soovib teie isiku kinnitada</translation>
 <translation id="875593634123171288">Kuvab VPN-i seaded</translation>
 <translation id="8759408218731716181">Mitmesse kontosse sisselogimist ei saa häälestada</translation>

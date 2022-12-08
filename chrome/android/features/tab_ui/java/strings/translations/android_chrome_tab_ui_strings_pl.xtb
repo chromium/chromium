@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Zamknąć wszystkie karty incognito?</translation>
 <translation id="1657719826150349398">Przesuń kartę w dół</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> kart}other{<ph name="TABS_COUNT_MANY" /> karty}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Dodaj do zakładek <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Dodaj do zakładek <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="2118649612461486615">Informacje o sklepie</translation>
 <translation id="2162620598375156287">Teraz za <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Usuń kartę z grupy}few{Usuń karty z grupy}many{Usuń karty z grupy}other{Usuń karty z grupy}}</translation>
 <translation id="2277224997687551299">Edytuj nazwę grupy</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Usuń <ph name="TABS_COUNT_ONE" /> wybraną kartę z grupy.}few{Usuń <ph name="TABS_COUNT_MANY" /> wybrane karty z grupy.}many{Usuń <ph name="TABS_COUNT_MANY" /> wybranych kart z grupy.}other{Usuń <ph name="TABS_COUNT_MANY" /> wybranej karty z grupy.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Dodaj kartę do zakładek}few{Dodaj karty do zakładek}many{Dodaj karty do zakładek}other{Dodaj karty do zakładek}}</translation>
 <translation id="2479148705183875116">Otwórz Ustawienia</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Zwiń <ph name="TABS_COUNT_ONE" /> kartę.}few{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}many{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> kartami.}other{Zwiń grupę kart z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="2569352796411618312">Sugestia: od jakiegoś czasu nie używasz <ph name="NUMBER_OF_TABS" /> kart. Zamknąć je?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Przesuń kartę w górę</translation>
 <translation id="8304833501377495048">Nie pokazywać ponownie paska kart?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zamknij <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Zamknij <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Zamknij <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Zamknij <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
+<translation id="8398929769197326728">Nowy folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Rozwiń grupę kart z <ph name="NUMBER_OF_TABS" /> kartami.</translation>
 <translation id="8714939927607906138">Niższa cena</translation>
 <translation id="8749939518995770034">Zamknięto pasek kart</translation>

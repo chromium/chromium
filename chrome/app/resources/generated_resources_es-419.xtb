@@ -203,6 +203,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="117916940443676133">Tu llave de seguridad no está protegida con un PIN. Para administrar los datos de acceso, crea uno.</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1183237619868651138">No se puede instalar <ph name="EXTERNAL_CRX_FILE" /> en la memoria caché local.</translation>
+<translation id="1184709369107246085">La aplicación <ph name="APPLICATION_NAME" /> requiere una URL <ph name="APPLICATION_NAME" /> válida.</translation>
 <translation id="1185924365081634987">También puedes intentar <ph name="GUEST_SIGNIN_LINK_START" />navegar como invitado<ph name="GUEST_SIGNIN_LINK_END" /> para solucionar este error de red.</translation>
 <translation id="1186771945450942097">Quitar software dañino</translation>
 <translation id="1187722533808055681">Reactivaciones</translation>
@@ -227,7 +228,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="120069043972472860">Pésima</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1201564082781748151">Se pueden restablecer los datos locales si olvidas la contraseña</translation>
-<translation id="1202116106683864634">¿Confirmas que deseas borrar esta clave de acceso?</translation>
+<translation id="1202116106683864634">¿Confirmas que deseas borrar esta llave de acceso?</translation>
 <translation id="1202596434010270079">Se actualizó la aplicación de kiosco. Desconecta el dispositivo USB.</translation>
 <translation id="120368089816228251">Nota musical</translation>
 <translation id="1203942045716040624">Trabajador compartido: <ph name="SCRIPT_URL" /></translation>
@@ -251,7 +252,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1223484782328004593"><ph name="APP_NAME" /> requiere una licencia</translation>
 <translation id="1223853788495130632">El administrador recomienda un valor específico para esta configuración.</translation>
 <translation id="1225177025209879837">Procesando la solicitud...</translation>
-<translation id="1227660082540388410">Edita la clave de acceso</translation>
+<translation id="1227660082540388410">Edita la llave de acceso</translation>
 <translation id="1227993798763400520">No se pudo transmitir el contenido, vuelve a intentarlo</translation>
 <translation id="1230417814058465809">Se activó la protección estándar. Para obtener más seguridad, usa la protección mejorada.</translation>
 <translation id="1231733316453485619">¿Quieres activar la sincronización?</translation>
@@ -782,7 +783,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1709106626015023981"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (resolución nativa)</translation>
 <translation id="1709217939274742847">Elige un ticket para usar en la autenticación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Configuración de red</translation>
-<translation id="1709916727352927457">Borra la clave de acceso</translation>
+<translation id="1709916727352927457">Borra la llave de acceso</translation>
 <translation id="1709972045049031556">No se puede compartir</translation>
 <translation id="1711935594505774770">Esta acción borrará todos los datos y cookies almacenados por <ph name="SITE_GROUP_NAME" />, sus sitios secundarios y sus apps instaladas</translation>
 <translation id="1714644264617423774">Permite habilitar las funciones de accesibilidad para que tu dispositivo sea más fácil de usar. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -2818,6 +2819,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3582057310199111521">Se ingresó en un sitio engañoso y se encontró en una violación de la seguridad de los datos</translation>
 <translation id="3582299299336701326">Oscurece las pantallas claras y aclara las oscuras. Presiona Búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
+<translation id="3586787825263265024">La aplicación <ph name="APPLICATION_NAME" /> requiere que OneDrive esté disponible.</translation>
 <translation id="3586806079541226322">No se puede abrir este archivo.</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587482841069643663">Todos</translation>
@@ -2851,6 +2853,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3616741288025931835">Eliminar datos de navega&amp;ción...</translation>
 <translation id="3617891479562106823">Los fondos no están disponibles. Vuelve a intentarlo más tarde.</translation>
 <translation id="3619115746895587757">Capuchino</translation>
+<translation id="3620136223548713675">Ubicación geográfica</translation>
 <translation id="3621807901162200696">Ayudar a mejorar las funciones y el rendimiento de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{una app}other{# apps}}</translation>
 <translation id="362333465072914957">Esperando que la CA emita un certificado</translation>
@@ -3907,7 +3910,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4594577641390224176">¿Buscas la página de información del sistema? Visita</translation>
 <translation id="4595560905247879544">Solo el administrador (<ph name="CUSTODIAN_NAME" />) puede modificar las apps y extensiones.</translation>
 <translation id="4596295440756783523">Tienes certificados archivados que identifican estos servidores</translation>
-<translation id="4598345735110653698">Administrar claves de acceso</translation>
+<translation id="4598345735110653698">Administrar llaves de acceso</translation>
 <translation id="4598556348158889687">Administración de almacenamiento</translation>
 <translation id="4598776695426288251">Wi-Fi disponible mediante varios dispositivos</translation>
 <translation id="4600071396330666617">Número de sugerencias</translation>
@@ -3975,6 +3978,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4654236001025007561">Comparte archivos con Chromebooks y dispositivos Android que tengas cerca</translation>
 <translation id="4657914796247705218">Velocidad de TrackPoint</translation>
 <translation id="4658285806588491142">Mantén la privacidad de tu pantalla</translation>
+<translation id="4658648180588730283">La aplicación <ph name="APPLICATION_NAME" /> no está disponible sin conexión.</translation>
 <translation id="465878909996028221">Solo se admiten los protocolos http, https y de archivo para las redirecciones a navegadores.</translation>
 <translation id="4659126640776004816">Esta función se activa cuando accedes a tu Cuenta de Google.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imagen}other{# imágenes}}</translation>
@@ -4025,6 +4029,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4699357559218762027">(con inicio automático)</translation>
 <translation id="4701025263201366865">Se requiere el acceso del padre o la madre</translation>
 <translation id="4701335814944566468">Visto ayer</translation>
+<translation id="4705624512518230041">No se puede abrir <ph name="FILE_NAMES" /> cuando OneDrive no está disponible</translation>
 <translation id="470644585772471629">Inversión de colores</translation>
 <translation id="4707337002099455863">Siempre en todos los sitios</translation>
 <translation id="4708849949179781599">Salir <ph name="PRODUCT_NAME" /></translation>
@@ -4492,6 +4497,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5160634252433617617">Teclado físico</translation>
 <translation id="5160857336552977725">Accede a tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5161251470972801814">Dispositivos USB de <ph name="VENDOR_NAME" /></translation>
+<translation id="5162624292894372900">No se puede abrir <ph name="FILE_NAMES" /> cuando Drive no está disponible</translation>
 <translation id="5162905305237671850">Se bloqueó <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">Se movió la pestaña al final de la barra de pestañas</translation>
 <translation id="5164530241085602114">No se permiten notificaciones para <ph name="SITE" /></translation>
@@ -5372,7 +5378,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5979084224081478209">Revisar contraseñas</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Volviste a activar 1 extensión potencialmente dañina}other{Volviste a activar {NUM_EXTENSIONS} extensiones potencialmente dañinas}}</translation>
 <translation id="5979353814339191480">Esta opción se aplica a las Chromebooks que tienen un plan de datos o una llave de red móvil, o que se conectan mediante un hotspot portátil</translation>
-<translation id="5979421442488174909">&amp;Traducir a <ph name="LANGUAGE" /></translation>
+<translation id="5979421442488174909">&amp;Traducir al <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Para agregar páginas a Favoritos, haz clic en la estrella que se encuentra en la barra de direcciones</translation>
 <translation id="5981362776161841923">Para permitir una extensión, cambia tu configuración predeterminada a continuación.</translation>
 <translation id="5984222099446776634">Visitados recientemente</translation>
@@ -5401,6 +5407,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6016178549409952427">Navega a contenido adicional: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmar Powerwash con retorno a la versión anterior</translation>
 <translation id="6016972670657536680">Selecciona el botón de idioma y teclado. Actualmente, el idioma seleccionado es <ph name="LANGUAGE" />.</translation>
+<translation id="6017503096330453612">Selecciona "Volver a intentarlo" o "Abrir en el editor sin conexión" para usar las opciones de edición y visualización limitadas.</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019169947004469866">Recortar</translation>
 <translation id="6019851026059441029">Excelente (HD)</translation>
@@ -5622,7 +5629,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6227280783235722609">extensión</translation>
 <translation id="6229849828796482487">Desconectar la red Wi-Fi</translation>
 <translation id="6230165830166519105">Probar otro método</translation>
-<translation id="6231782223312638214">Sugerida</translation>
+<translation id="6231782223312638214">Sugerido</translation>
 <translation id="6231881193380278751">Agregar un parámetro de consulta en la URL para actualizar automáticamente la página: chrome://device-log/?refresh=&lt;sec&gt;</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6232116551750539448">Se perdió la conexión a <ph name="NAME" />.</translation>
@@ -6263,6 +6270,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">No se pudieron configurar actualizaciones automáticas para todos los usuarios (error de ejecución preliminar: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Política de Privacidad de Google</translation>
+<translation id="6830200424658853449">Abrir en el editor sin conexión</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6832218595502288407">Alinear a la izquierda</translation>
 <translation id="6833479554815567477">Se quitó la pestaña del grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
@@ -6626,6 +6634,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7174199383876220879">Ahora puedes controlar tu música, video y más.</translation>
 <translation id="7175037578838465313">Configurar <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Cargados desde:</translation>
+<translation id="7177079607604198383">Revisa tu conexión a Internet y elige la opción "Volver a intentarlo" o "Abrir en el editor sin conexión" para usar las opciones de edición y visualización limitadas.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182791023900310535">Mover tu contraseña</translation>
@@ -7327,6 +7336,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="783229689197954457">Si Google encuentra un descuento, lo verás en esta página.</translation>
 <translation id="7833720883933317473">Las palabras personalizadas guardadas aparecerán aquí</translation>
 <translation id="7835178595033117206">Se quitó el favorito</translation>
+<translation id="7836535163829106376">No se puede abrir la URL de <ph name="FILE_NAMES" /></translation>
 <translation id="7836850009646241041">Vuelve a tocar tu llave de seguridad</translation>
 <translation id="7837776265184002579">Tu página principal se cambió a <ph name="URL" />.</translation>
 <translation id="7838838951812478896">No se pudo guardar "<ph name="NETWORK_NAME" />" de <ph name="DEVICE_NAME" /></translation>
@@ -7767,6 +7777,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="822347941086490485">Buscando dispositivos HID…</translation>
 <translation id="8223573963214454788">Continuar y borrar datos</translation>
 <translation id="8225046344534779393">Comprueba la conexión a Internet.</translation>
+<translation id="8225173734540525852">La aplicación <ph name="APPLICATION_NAME" /> requiere que Drive esté disponible.</translation>
 <translation id="8225265270453771718">Compartir la ventana de una aplicación</translation>
 <translation id="8226222018808695353">Prohibido</translation>
 <translation id="8226619461731305576">Cola</translation>
@@ -8103,6 +8114,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8549316893834449916">Usarás tu Cuenta de Google para acceder a la Chromebook; es la misma que usas para Gmail, Drive, YouTube y otros servicios.</translation>
 <translation id="8551388862522347954">Licencias</translation>
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
+<translation id="8551647092888540776">No se puede abrir <ph name="FILE_NAMES" /> sin conexión</translation>
 <translation id="8552102814346875916">Guardar en la lista "Mantener estos sitios siempre activos"</translation>
 <translation id="8553342806078037065">Administrar otras personas</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>

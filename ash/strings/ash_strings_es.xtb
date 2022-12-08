@@ -925,7 +925,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6107292179555508368">Los accesos al micrófono y a la cámara están desactivados en este dispositivo</translation>
 <translation id="6114505516289286752">Archivos de voz en <ph name="LANGUAGE" /> descargados</translation>
-<translation id="6116825164611323644">El acceso a la cámara está desactivado en este dispositivo</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmar descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
@@ -1290,6 +1289,7 @@ Nueva instalación</translation>
 <translation id="8142441511840089262">Doble clic</translation>
 <translation id="8142699993796781067">Red privada</translation>
 <translation id="8144760705599030999">Guarda <ph name="NAME" /> en <ph name="EMAIL" /> para un emparejamiento rápido con tus otros dispositivos</translation>
+<translation id="8144914663975476336">Seleccionar formato de grabación</translation>
 <translation id="8149413265954228307">Mostrar ajustes de Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Pulsa Ctrl + W para cerrar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autocompletar</translation>
@@ -1395,7 +1395,6 @@ Nueva instalación</translation>
 <translation id="8735678380411481005">Color de retroiluminación del teclado</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Activa el acceso a la cámara para que las aplicaciones y las páginas web con permiso para acceder a la cámara puedan usar las cámaras conectadas a este dispositivo.</translation>
 <translation id="8755498163081687682">Verifica tu identidad: <ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="875593634123171288">Muestra la configuración de VPN</translation>
 <translation id="8759408218731716181">No se puede configurar el inicio de sesión múltiple</translation>

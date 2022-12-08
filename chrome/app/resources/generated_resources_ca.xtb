@@ -203,6 +203,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="117916940443676133">La clau de seguretat no està protegida amb un PIN. Per gestionar les dades d'inici de sessió, primer crea un PIN.</translation>
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="1183237619868651138">No es pot instal·lar <ph name="EXTERNAL_CRX_FILE" /> a la memòria cau local.</translation>
+<translation id="1184709369107246085">L'aplicació <ph name="APPLICATION_NAME" /> requereix un URL de <ph name="APPLICATION_NAME" /> vàlid.</translation>
 <translation id="1185924365081634987">També podeu provar de <ph name="GUEST_SIGNIN_LINK_START" />navegar com a convidat<ph name="GUEST_SIGNIN_LINK_END" /> per corregir aquest error de la xarxa.</translation>
 <translation id="1186771945450942097">Suprimeix el programari nociu</translation>
 <translation id="1187722533808055681">Activacions en estat de repòs</translation>
@@ -2821,6 +2822,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3582057310199111521">S'ha introduït en un lloc web enganyós i s'ha trobat en una violació de les dades</translation>
 <translation id="3582299299336701326">Enfosqueix les pantalles clares i il·lumina'n les fosques. Prem Cerca+Ctrl+H per activar i desactivar la inversió de colors.</translation>
 <translation id="3584169441612580296">Accedeix a fotos, a música i a altres fitxers multimèdia de l'ordinador i modifica'ls</translation>
+<translation id="3586787825263265024">L'aplicació <ph name="APPLICATION_NAME" /> requereix que OneDrive estigui disponible.</translation>
 <translation id="3586806079541226322">No es pot obrir aquest fitxer</translation>
 <translation id="3586931643579894722">Oculta els detalls</translation>
 <translation id="3587482841069643663">Tots</translation>
@@ -2854,6 +2856,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3616741288025931835">&amp;Elimina les dades de navegació...</translation>
 <translation id="3617891479562106823">Els fons de pantalla no estan disponibles. Torna-ho a provar més tard.</translation>
 <translation id="3619115746895587757">Caputxino</translation>
+<translation id="3620136223548713675">Geolocalització</translation>
 <translation id="3621807901162200696">Ajuda a millorar les funcions i el rendiment de Chrome OS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{1 aplicació}other{# aplicacions}}</translation>
 <translation id="362333465072914957">S'està esperant que l'entitat emissora de certificats n'emeti un</translation>
@@ -3977,6 +3980,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4654236001025007561">Comparteix fitxers amb dispositius Chromebook i Android a prop teu</translation>
 <translation id="4657914796247705218">Velocitat del TrackPoint</translation>
 <translation id="4658285806588491142">Mantén la pantalla en privat</translation>
+<translation id="4658648180588730283">L'aplicació <ph name="APPLICATION_NAME" /> no està disponible sense connexió.</translation>
 <translation id="465878909996028221">Les redireccions del navegador només admeten els protocols http, https i de fitxers.</translation>
 <translation id="4659126640776004816">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Imatge}other{# imatges}}</translation>
@@ -4027,6 +4031,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4699357559218762027">(inici automàtic)</translation>
 <translation id="4701025263201366865">Inici de sessió dels pares</translation>
 <translation id="4701335814944566468">Es va veure ahir</translation>
+<translation id="4705624512518230041">No es pot obrir <ph name="FILE_NAMES" /> si OneDrive no està disponible</translation>
 <translation id="470644585772471629">Inversió de colors</translation>
 <translation id="4707337002099455863">Sempre en tots els llocs web</translation>
 <translation id="4708849949179781599">Surt de <ph name="PRODUCT_NAME" /></translation>
@@ -4494,6 +4499,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5160634252433617617">Teclat físic</translation>
 <translation id="5160857336552977725">Inicieu la sessió al vostre dispositiu (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="5161251470972801814">Dispositius USB fabricats per <ph name="VENDOR_NAME" /></translation>
+<translation id="5162624292894372900">No es pot obrir <ph name="FILE_NAMES" /> si Drive no està disponible</translation>
 <translation id="5162905305237671850">El dispositiu <ph name="DEVICE_TYPE" /> s'ha bloquejat</translation>
 <translation id="5163910114647549394">La pestanya s'ha mogut al final de la barra de pestanyes</translation>
 <translation id="5164530241085602114">No es permeten les notificacions per a <ph name="SITE" /></translation>
@@ -5266,6 +5272,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5886112770923972514">Connecta i configura ràpidament els dispositius amb Vinculació ràpida que siguin a prop</translation>
 <translation id="5886384907280980632">Desactiva ara</translation>
 <translation id="5889282057229379085">Nombre màxim de CA intermèdies: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">Encripta les dades sincronitzades amb la teva <ph name="BEGIN_LINK" />frase de contrasenya de sincronització<ph name="END_LINK" />. Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.</translation>
 <translation id="5891688036610113830">Xarxes Wi-Fi preferides</translation>
 <translation id="5895138241574237353">Reinicia</translation>
 <translation id="5895335062901455404">Les teves preferències i activitat desades estaran preparades en qualsevol dispositiu ChromeOS Flex quan hi iniciïs la sessió amb el teu Compte de Google. Per decidir què vols sincronitzar, ves a Configuració.</translation>
@@ -5401,6 +5408,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6016178549409952427">Navega pel contingut addicional, <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmació de Powerwash amb retorn a la versió anterior</translation>
 <translation id="6016972670657536680">Botó per seleccionar l’idioma i el teclat. L'idioma seleccionat actualment és: <ph name="LANGUAGE" />.</translation>
+<translation id="6017503096330453612">Tria Torna-ho a provar o Obre a l'editor sense connexió per utilitzar opcions de visualització i d'edició limitades.</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6019169947004469866">Retalla</translation>
 <translation id="6019851026059441029">Excel·lent: HD</translation>
@@ -6263,6 +6271,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">No s'han pogut configurar actualitzacions automàtiques per a tots els usuaris (error de comprovació preliminar: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Política de privadesa de Google</translation>
+<translation id="6830200424658853449">Obre a l'editor sense connexió</translation>
 <translation id="6831043979455480757">Tradueix</translation>
 <translation id="6832218595502288407">Alinea a l'esquerra</translation>
 <translation id="6833479554815567477">La pestanya s'ha suprimit del grup <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" /></translation>
@@ -6626,6 +6635,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7174199383876220879">Novetat! Controla la música, els vídeos i molt més.</translation>
 <translation id="7175037578838465313">Configura <ph name="NAME" /></translation>
 <translation id="7175353351958621980">Carregat des de:</translation>
+<translation id="7177079607604198383">Comprova la connexió a Internet i tria Torna-ho a provar o Obre a l'editor sense connexió per utilitzar opcions de visualització i d'edició limitades.</translation>
 <translation id="7180611975245234373">Actualitza</translation>
 <translation id="7180865173735832675">Personalitza</translation>
 <translation id="7182791023900310535">Mou la contrasenya</translation>
@@ -7327,6 +7337,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="783229689197954457">Si Google troba un descompte, el veuràs en aquesta pàgina</translation>
 <translation id="7833720883933317473">Les paraules personalitzades desades es mostraran aquí</translation>
 <translation id="7835178595033117206">L'adreça d'interès s'ha suprimit</translation>
+<translation id="7836535163829106376">No es pot obrir l'URL per a <ph name="FILE_NAMES" /></translation>
 <translation id="7836850009646241041">Torna a tocar la clau de seguretat</translation>
 <translation id="7837776265184002579">La pàgina d'inici ha canviat a <ph name="URL" />.</translation>
 <translation id="7838838951812478896">No s'ha pogut desar "<ph name="NETWORK_NAME" />" del dispositiu <ph name="DEVICE_NAME" /></translation>
@@ -7767,6 +7778,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="822347941086490485">S'estan cercant dispositius d'interfície humana...</translation>
 <translation id="8223573963214454788">Continua i suprimeix les dades</translation>
 <translation id="8225046344534779393">Comprova la connexió a Internet</translation>
+<translation id="8225173734540525852">L'aplicació <ph name="APPLICATION_NAME" /> requereix que Drive estigui disponible.</translation>
 <translation id="8225265270453771718">Comparteix la finestra d'una aplicació</translation>
 <translation id="8226222018808695353">Prohibit</translation>
 <translation id="8226619461731305576">Cua</translation>
@@ -8104,6 +8116,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8549316893834449916">Utilitzaràs el teu Compte de Google per iniciar la sessió al Chromebook. És el mateix compte que fas servir per a Gmail, Drive i YouTube, entre d'altres.</translation>
 <translation id="8551388862522347954">Llicències</translation>
 <translation id="8551588720239073785">Configuració de data i hora</translation>
+<translation id="8551647092888540776">No es pot obrir <ph name="FILE_NAMES" /> sense connexió</translation>
 <translation id="8552102814346875916">Desa a la llista Mantén aquests llocs web sempre actius</translation>
 <translation id="8553342806078037065">Gestiona altres usuaris</translation>
 <translation id="8554899698005018844">Cap idioma</translation>

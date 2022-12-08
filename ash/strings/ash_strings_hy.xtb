@@ -666,6 +666,7 @@
 <translation id="4666082839192943839">Անջատեք տեսախցիկն օգտագործելու թույլտվությունն այս սարքում՝ բոլոր տեսախցիկները մշտապես արգելափակելու համար։</translation>
 <translation id="4666911709726371538">Այլ հավելվածներ</translation>
 <translation id="4667099493359681081">Ներբեռնում՝ <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Հավելվածներ ձեր հեռախոսից</translation>
 <translation id="4690510401873698237">Դարակը ներքևում է</translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
 <translation id="4702647871202761252">Գաղտնիության էկրանն անջատված է</translation>
@@ -922,7 +923,6 @@
 <translation id="6103838137565245112">համակարգ</translation>
 <translation id="6107292179555508368">Խոսափողի և տեսախցիկի օգտագործման թույլտվություններն անջատված են այս սարքում</translation>
 <translation id="6114505516289286752">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ճանաչման ֆայլերը ներբեռնվեցին</translation>
-<translation id="6116825164611323644">Տեսախցիկի հասանելիությունն անջատված է այս սարքում</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />։ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Հաստատեք <ph name="FILENAME" /> ֆայլի ներբեռնումը</translation>
 <translation id="612734058257491180">Google Օգնականը հասանելի չէ հյուրի աշխատաշրջանում:</translation>
@@ -1286,6 +1286,7 @@
 <translation id="8142441511840089262">Կրկնակի սեղմում</translation>
 <translation id="8142699993796781067">Մասնավոր ցանց</translation>
 <translation id="8144760705599030999">Ավելացրեք սարքը (<ph name="NAME" />) <ph name="EMAIL" /> հաշվում, որպեսզի ավելի արագ կարողանաք զուգակցել այն ձեր մյուս սարքերի հետ</translation>
+<translation id="8144914663975476336">Ընտրել ձայնագրման ձևաչափ</translation>
 <translation id="8149413265954228307">Ցուցադրել Bluetooth-ի կարգավորումները։ <ph name="STATE_TEXT" />։</translation>
 <translation id="8152092012181020186">Փակելու համար սեղմեք Ctrl+W։</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, ինքնալրացում</translation>
@@ -1391,7 +1392,6 @@
 <translation id="8735678380411481005">Ստեղնաշարի հետնալույսի գույն</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Հասանելի դարձրեք տեսախցիկը, որպեսզի հավելվածներն ու վեբ էջերը կարողանան օգտագործել այս սարքին միացված տեսախցիկ(ներ)ը։</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="875593634123171288">Ցուցադրել VPN-ի կարգավորումները</translation>
 <translation id="8759408218731716181">Հնարավոր չէ կարգավորել բազմակի մուտքը</translation>

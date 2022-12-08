@@ -308,7 +308,6 @@
 <translation id="168693727862418163">यो नीतिको मान यसको स्किमासँग मिलेन। त्यसकारण यसलाई बेवास्ता गरिने छ।</translation>
 <translation id="168841957122794586">सर्भर प्रमाणपत्रले कमजोर क्रिप्टोग्राफिक कुञ्जी समावेश गर्छ।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
-<translation id="1699570257714336246">जानकारी छुटेको छ</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">जुमका स्तरहरू</translation>
@@ -1160,7 +1159,6 @@
 <translation id="3961148744525529027">भुक्तानी ह्यान्ड्लरसम्बन्धी पाना आधा खुला छ</translation>
 <translation id="3962859241508114581">अघिल्लो ट्र्याक</translation>
 <translation id="3963721102035795474">पाठक मोड:</translation>
-<translation id="3963837677003247395">म्यानुअल रूपमा जारी राख्ने हो?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइटबाट }other{# साइटहरूबाट }}</translation>
 <translation id="3969052498612555048">तपाईंले आफ्नो कोड भेट्टाउन सक्नुभएन? <ph name="BEGIN_LINK" />नयाँ कोड प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
@@ -1937,7 +1935,6 @@
 <translation id="5937560539988385583">पेज अनुवाद गरिएको छ</translation>
 <translation id="5938153366081463283">भर्चुअल कार्ड लिंक गर्नुहोस्</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> खोलिँदै…</translation>
 <translation id="5947508410139465809">तपाईंले अपलोड वा एट्याच गर्ने फाइलहरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्ष समक्ष पठाइन्छन्। उदाहरणका लागि, ती फाइलमा संवेदनशील डेटा वा मालवेयर छन् कि छैनन् भनी जाँच गरिन सक्छ र कम्पनीका नीतिका आधारमा ती फाइल भण्डारण गरिन सक्छ।</translation>
 <translation id="5951495562196540101">उपभोक्ताको खातामार्फत दर्ता गर्न सकिँदैन (प्याकेजसहितको इजाजतपत्र उपलब्ध छ)।</translation>
 <translation id="5953516610448771166">यो मिडियामा लाइभ क्याप्सन उपलब्ध छैन। क्याप्सनहरू प्राप्त गर्न यो साइटमा <ph name="CONTENT_SETTINGS" /> ब्लक गर्नुहोस्।</translation>
@@ -2074,7 +2071,6 @@
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{तपाईंको डिभाइस अब रिस्टार्ट हुने छ}=1{तपाईंको डिभाइस १ सेकेन्डमा रिस्टार्ट हुने छ}other{तपाईंको डिभाइस # सेकेन्डमा रिस्टार्ट हुने छ}}</translation>
 <translation id="6301104306974789820">तपाईंले ट्र्याक गरेका उत्पादनको मूल्य घटेका खण्डमा सूचना प्राप्त गर्नुहोस्</translation>
-<translation id="6302269476990306341">Chrome को Google सहायक रोकिँदै छ</translation>
 <translation id="6305205051461490394"><ph name="URL" /> पहुँच गर्न सकिँदैन।</translation>
 <translation id="6311165245110979290">भर्चुअल कार्ड उपलब्ध छ</translation>
 <translation id="6312113039770857350">वेबपृष्ठ उपलब्ध छैन</translation>
@@ -2330,7 +2326,6 @@
 <translation id="6971439137020188025">Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउनुहोस्</translation>
 <translation id="6972629891077993081">HID यन्त्रहरू</translation>
 <translation id="6973656660372572881">दुवै तय प्रोक्सी सर्भर र एक .Pac स्क्रिप्ट यूआरएल निर्दिष्ट गरिएको छ।</translation>
-<translation id="6973932557599545801">माफ गर्नुहोस्, म मद्दत गर्न सक्दिन, कृपया अब आफैँ अघि बढ्नुहोस्।</translation>
 <translation id="6973988895180423160">३.५ x ५ इन्च</translation>
 <translation id="6978236010531171013">जे भए तापनि सेयर गर्नुहोस्</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
@@ -2526,7 +2521,6 @@
 <translation id="7451311239929941790">यस समस्या बारे <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7455133967321480974">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (ब्लक)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">यो स्क्रिनिङ तपाईंले चयन गर्नुभएको भन्दा फरक छ। जारी राख्ने हो?</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="7463075493919226237">अस्ट्रेलियाली फुटबल</translation>
 <translation id="7465963048299965912">१० x १३ इन्च</translation>
@@ -3215,7 +3209,6 @@
 <translation id="937457230470581909">चिडियाखाना, एक्वारियम तथा आरक्षहरू</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="940053046584497293">यात्रा तथा यातायात</translation>
-<translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="945855313015696284">तल दिइएको जानकारीको जाँच गर्नुहोस् र सबै अमान्य कार्ड मेट्नुहोस्</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>

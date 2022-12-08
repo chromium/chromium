@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">બધી છૂપી ટૅબ બંધ કરીએ?</translation>
 <translation id="1657719826150349398">ટૅબને નીચે ખસેડો</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બુકમાર્ક કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બુકમાર્ક કરો}}</translation>
 <translation id="2118649612461486615">સ્ટોરની માહિતી</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ટૅબ અનગ્રૂપ કરો}one{ટૅબ અનગ્રૂપ કરો}other{ટૅબ અનગ્રૂપ કરો}}</translation>
 <translation id="2277224997687551299">ગ્રૂપના નામમાં ફેરફાર કરો</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> ટૅબ કાઢી નાખો.}one{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}other{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ટૅબને બુકમાર્ક કરો}one{ટૅબને બુકમાર્ક કરો}other{ટૅબને બુકમાર્ક કરો}}</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ નાની કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને નાનું કરો.}}</translation>
 <translation id="2569352796411618312">સૂચન: હજુ સુધી તમારા ટૅબમાંથી <ph name="NUMBER_OF_TABS" /> ટૅબનો ઉપયોગ કરવામાં આવ્યો નથી. તેને બંધ કરીએ?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8304833501377495048">ટૅબ સ્ટ્રિપ ફરીથી ન બતાવીએ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{પસંદ કરેલા <ph name="TABS_COUNT_ONE" /> ટૅબને બંધ કરો}one{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબને બંધ કરો}}</translation>
+<translation id="8398929769197326728">નવું ફોલ્ડર - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા ટૅબ ગ્રૂપને મોટું કરો.</translation>
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
 <translation id="8749939518995770034">ટૅબ સ્ટ્રિપ બંધ કરી</translation>

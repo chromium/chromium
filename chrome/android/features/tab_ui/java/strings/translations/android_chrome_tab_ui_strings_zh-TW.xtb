@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">要關閉所有無痕分頁嗎？</translation>
 <translation id="1657719826150349398">將分頁向下移</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{已將 <ph name="TABS_COUNT_ONE" /> 個選取的分頁加入書籤}other{已將 <ph name="TABS_COUNT_MANY" /> 個選取的分頁加入書籤}}</translation>
 <translation id="2118649612461486615">商店資訊</translation>
 <translation id="2162620598375156287">「<ph name="SOURCE_WEBSITE" />」目前售價　<ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{將分頁移出群組}other{將分頁移出群組}}</translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{從群組中移除 <ph name="TABS_COUNT_ONE" /> 個已選取的分頁。}other{從群組中移除 <ph name="TABS_COUNT_MANY" /> 個已選取的分頁。}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{將分頁加入書籤}other{將分頁加入書籤}}</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的分頁群組。}}</translation>
 <translation id="2569352796411618312">建議：你有 <ph name="NUMBER_OF_TABS" /> 個分頁最近沒有使用過。要關閉這些分頁嗎？</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="8304833501377495048">不再顯示分頁列嗎？</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選分頁}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選分頁}}</translation>
+<translation id="8398929769197326728">新資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">展開包含 <ph name="NUMBER_OF_TABS" /> 個分頁的分頁群組。</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8749939518995770034">已關閉分頁列</translation>

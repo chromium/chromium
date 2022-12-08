@@ -308,7 +308,6 @@
 <translation id="168693727862418163">ഈ നയ മൂല്യം അതിന്റെ സ്‌കീമയുമായി സാധൂകരിക്കാൻ കഴിയാത്തതിനാൽ അത് അവഗണിക്കപ്പെടും.</translation>
 <translation id="168841957122794586">സെർവർ സർട്ടിഫിക്കറ്റിൽ ഒരു ദുർബലമായ ഗൂഢഭാഷ കീ ഉൾപ്പെടുന്നു.</translation>
 <translation id="1697532407822776718">എല്ലാം സജ്ജമായിക്കഴിഞ്ഞു!</translation>
-<translation id="1699570257714336246">വിവരങ്ങൾ സമ്പൂർണ്ണമല്ല</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">ലെറ്റർ</translation>
 <translation id="1706625117072057435">സൂം ലെവലുകൾ</translation>
@@ -1162,7 +1161,6 @@
 <translation id="3961148744525529027">പേയ്മെന്റ് കൈകാര്യം ചെയ്യുന്ന ഷീറ്റ് പകുതിയായി തുറന്നിരിക്കുന്നു</translation>
 <translation id="3962859241508114581">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="3963721102035795474">റീഡർ മോഡ്</translation>
-<translation id="3963837677003247395">നേരിട്ട് തുടരണോ?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റിൽ നിന്ന് }other{# സൈറ്റുകളിൽ നിന്ന് }}</translation>
 <translation id="3969052498612555048">നിങ്ങളുടെ കോഡ് കണ്ടെത്താനാകുന്നില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
@@ -1939,7 +1937,6 @@
 <translation id="5937560539988385583">പേജ് വിവർത്തനം ചെയ്‌തു</translation>
 <translation id="5938153366081463283">വെർച്വൽ കാർഡ് ചേർക്കുക</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> തുറക്കുന്നു…</translation>
 <translation id="5947508410139465809">നിങ്ങൾ അപ്‌ലോഡ് ചെയ്യുന്നതോ അറ്റാച്ച് ചെയ്യുന്നതോ ആയ ഫയലുകൾ വിശകലനത്തിനായി Google Cloud-ലേക്കോ മൂന്നാം കക്ഷികൾക്കോ അയയ്ക്കുന്നു. ഉദാഹരണത്തിന്, സെൻസിറ്റീവായിട്ടുള്ള വ്യക്തിപരമായ ഡാറ്റയോ മാൽവെയറോ ഉണ്ടോയെന്നറിയാൻ അവ സ്‌കാൻ ചെയ്‌തേക്കാം, കൂടാതെ കമ്പനിയുടെ നയങ്ങൾ അടിസ്ഥാനമാക്കി അവ സംഭരിച്ചേക്കാം.</translation>
 <translation id="5951495562196540101">ഉപയോക്തൃ അക്കൗണ്ട് ഉപയോഗിച്ച് എൻറോൾ ചെയ്യാനാവില്ല (പാക്കേജ് ചെയ്‌ത ലൈസൻസ് ലഭ്യമാണ്).</translation>
 <translation id="5953516610448771166">ഈ മീഡിയയ്ക്ക് തത്സമയ ക്യാപ്ഷൻ ലഭ്യമല്ല. ക്യാപ്ഷനുകൾ നേടാൻ, ഈ സൈറ്റിനുള്ള <ph name="CONTENT_SETTINGS" /> ബ്ലോക്ക് ചെയ്യുക.</translation>
@@ -2076,7 +2073,6 @@
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{നിങ്ങളുടെ ഉപകരണം ഇപ്പോൾ റീസ്റ്റാർട്ട് ചെയ്യും}=1{നിങ്ങളുടെ ഉപകരണം 1 സെക്കൻഡിൽ റീസ്റ്റാർട്ട് ചെയ്യും}other{നിങ്ങളുടെ ഉപകരണം # സെക്കൻഡിൽ റീസ്റ്റാർട്ട് ചെയ്യും}}</translation>
 <translation id="6301104306974789820">നിരക്ക് ട്രാക്ക് ചെയ്യലുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ നേടുക</translation>
-<translation id="6302269476990306341">Chrome സ്വമേധയാ പൂരിപ്പിക്കൽ നിർത്തുന്നതിലെ Google അസിസ്‌റ്റന്റ് സാന്നിധ്യം</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ലഭ്യമല്ല.</translation>
 <translation id="6311165245110979290">വെർച്വൽ കാർഡ് ലഭ്യമാണ്</translation>
 <translation id="6312113039770857350">വെബ്പേജ് ലഭ്യമല്ല</translation>
@@ -2332,7 +2328,6 @@
 <translation id="6971439137020188025">Slides-ൽ പുതിയൊരു Google അവതരണം വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="6972629891077993081">HID ഉപകരണങ്ങൾ</translation>
 <translation id="6973656660372572881">സ്ഥിരമായ പ്രോക്‌സി സെർവറുകളും ഒരു സ്‌ക്രിപ്റ്റ് URL-ഉം വ്യക്തമാക്കിയിരിക്കുന്നു.</translation>
-<translation id="6973932557599545801">ക്ഷമിക്കണം, എനിക്ക് സഹായിക്കാൻ കഴിയില്ല, സ്വയം പൂരിപ്പിക്കുക.</translation>
 <translation id="6973988895180423160">3.5 x 5 ഇഞ്ച്</translation>
 <translation id="6978236010531171013">എന്തായാലും പങ്കിടുക</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2526,7 +2521,6 @@
 <translation id="7451311239929941790">ഈ പ്രശ്‌നത്തെക്കുറിച്ച് <ph name="BEGIN_LINK" />കൂടുതലറിയുന്നു<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">ആഗോള ഡിഫോൾട്ട് ഉപയോഗിക്കുക (ബ്ലോക്ക് ചെയ്യുക)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">നിങ്ങൾ തിരഞ്ഞെടുത്തതിൽ നിന്ന് വ്യത്യസ്‌തമാണ് ഈ സ്ക്രീനിംഗ്. തുടരണോ?</translation>
 <translation id="7461924472993315131">പിൻ ചെയ്യുക</translation>
 <translation id="7463075493919226237">ഓസ്ട്രേലിയൻ ഫുട്ബോൾ</translation>
 <translation id="7465963048299965912">10 x 13 ഇഞ്ച്</translation>
@@ -3215,7 +3209,6 @@
 <translation id="937457230470581909">മൃഗശാലകൾ, അക്വേറിയങ്ങൾ, വന്യമൃഗസങ്കേതം</translation>
 <translation id="939736085109172342">പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="940053046584497293">യാത്രയും ഗതാഗതവും</translation>
-<translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="945855313015696284">ചുവടെയുള്ള വിവരം പരിശോധിച്ച്, അസാധുവായ കാര്‍ഡുകളുണ്ടെങ്കിൽ അവ ഇല്ലാതാക്കുക</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites-ൽ പുതിയൊരു സൈറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="950736567201356821">മുകളിൽ മൂന്ന് തവണ പഞ്ച് ചെയ്യുക</translation>

@@ -924,7 +924,6 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6103838137565245112">systeem</translation>
 <translation id="6107292179555508368">Microfoon- en cameratoegang staan uit op dit apparaat</translation>
 <translation id="6114505516289286752">Spraakbestanden in het <ph name="LANGUAGE" /> gedownload</translation>
-<translation id="6116825164611323644">Cameratoegang staat uit op dit apparaat</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Downloaden van <ph name="FILENAME" /> bevestigen</translation>
 <translation id="612734058257491180">De Google Assistent is niet beschikbaar in een gastsessie.</translation>
@@ -1392,7 +1391,6 @@ Nieuwe installatie</translation>
 <translation id="8735678380411481005">Achtergrondverlichtingskleur van het toetsenbord</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
 <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Zet cameratoegang aan om apps en webpagina's met camerarechten toe te staan de camera('s) te gebruiken die zijn verbonden met dit apparaat.</translation>
 <translation id="8755498163081687682">Je identiteit verifiëren: <ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
 <translation id="875593634123171288">VPN-instellingen bekijken</translation>
 <translation id="8759408218731716181">Kan toegang tot meerdere accounts niet instellen</translation>

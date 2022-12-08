@@ -689,6 +689,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7415801143053185905">La latència d'HTTP és molt alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat 1 pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines}}</translation>
+<translation id="7458970041932198923">Connecta't a una xarxa i torna a carregar la pàgina per veure i definir avatars.</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7481312909269577407">Endavant</translation>
 <translation id="7487067081878637334">Tecnologia</translation>
@@ -843,6 +844,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escaneja}=1{Escaneja {NUMBER_OF_PAGES} pàgina}other{Escaneja {NUMBER_OF_PAGES} pàgines}}</translation>
 <translation id="8997710128084572139">El dispositiu té un <ph name="BATTERY_PERCENTAGE" />% de bateria.</translation>
+<translation id="8998289560386111590">No disponible al teu dispositiu</translation>
 <translation id="9003704114456258138">Freqüència</translation>
 <translation id="9025198690966128418">Utilitza com a dispositiu personal</translation>
 <translation id="9028832514430399253">Activa el commutador per seleccionar les opcions d'estalvi de pantalla</translation>

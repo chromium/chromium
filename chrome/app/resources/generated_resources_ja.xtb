@@ -203,6 +203,7 @@
 <translation id="117916940443676133">セキュリティ キーは PIN で保護されていません。ログインデータを管理するには、まず PIN を作成してください。</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1183237619868651138">ローカル キャッシュの <ph name="EXTERNAL_CRX_FILE" /> はインストールできません。</translation>
+<translation id="1184709369107246085">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、有効な <ph name="APPLICATION_NAME" /> URL が必要です。</translation>
 <translation id="1185924365081634987">このネットワーク エラーを解決するには、<ph name="GUEST_SIGNIN_LINK_START" />ゲストとしてブラウジング<ph name="GUEST_SIGNIN_LINK_END" />もお試しください。</translation>
 <translation id="1186771945450942097">有害なソフトウェアの削除</translation>
 <translation id="1187722533808055681">アイドル状態からの復帰</translation>
@@ -2576,7 +2577,7 @@
 <translation id="3359256513598016054">証明書ポリシーの制約</translation>
 <translation id="3360297538363969800">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}other{<ph name="DEVICE_NAME" /> が <ph name="ATTACHMENTS" />を共有しています。}}</translation>
-<translation id="3361954577771524115">アプリを使用する</translation>
+<translation id="3361954577771524115">アプリから</translation>
 <translation id="3363202073972776113">この新しいプロフィールは組織によって管理されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3364986687961713424">管理者からのメッセージ: <ph name="ADMIN_MESSAGE" /></translation>
 <translation id="3365598184818502391">Ctrl キーまたは Alt キーのいずれかを使用してください</translation>
@@ -2814,6 +2815,7 @@
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
 <translation id="3582299299336701326">明るい画面が暗くなり、暗い画面が明るくなります。色反転のオンとオフを切り替えるには、検索+Ctrl+H キーを押します。</translation>
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
+<translation id="3586787825263265024">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、OneDrive へのアクセスが必要です。</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
 <translation id="3586931643579894722">詳細を非表示</translation>
 <translation id="3587482841069643663">すべて</translation>
@@ -2847,6 +2849,7 @@
 <translation id="3616741288025931835">閲覧履歴を消去(&amp;C)...</translation>
 <translation id="3617891479562106823">背景を利用できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3619115746895587757">カプチーノ</translation>
+<translation id="3620136223548713675">位置情報</translation>
 <translation id="3621807901162200696">Chrome OS の機能とパフォーマンスの改善に協力する</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{アプリ}other{# 件のアプリ}}</translation>
 <translation id="362333465072914957">CA による証明書の発行を待機しています</translation>
@@ -3970,6 +3973,7 @@
 <translation id="4654236001025007561">近くの Chromebook や Android デバイスとファイルを共有できます</translation>
 <translation id="4657914796247705218">トラック ポイントの速度</translation>
 <translation id="4658285806588491142">画面を非公開のままにする</translation>
+<translation id="4658648180588730283">アプリケーション <ph name="APPLICATION_NAME" /> はオフラインではご利用いただけません。</translation>
 <translation id="465878909996028221">ブラウザのリダイレクトでは、http、https、file プロトコルのみサポートされています。</translation>
 <translation id="4659126640776004816">この機能は Google アカウントにログインすると有効になります。</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{画像}other{# 件の画像}}</translation>
@@ -4020,6 +4024,7 @@
 <translation id="4699357559218762027">（自動起動済み）</translation>
 <translation id="4701025263201366865">保護者のログイン</translation>
 <translation id="4701335814944566468">昨日表示</translation>
+<translation id="4705624512518230041">OneDrive にアクセスできない場合、<ph name="FILE_NAMES" /> を開くことはできません</translation>
 <translation id="470644585772471629">色反転</translation>
 <translation id="4707337002099455863">すべてのサイトで常に許可</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> を終了</translation>
@@ -4487,6 +4492,7 @@
 <translation id="5160634252433617617">物理キーボード</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> にログインしてください</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> の USB デバイス</translation>
+<translation id="5162624292894372900">Google ドライブにアクセスできない場合、<ph name="FILE_NAMES" /> を開くことはできません</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> をブロックしました</translation>
 <translation id="5163910114647549394">タブをタブバーの右端に移動しました</translation>
 <translation id="5164530241085602114"><ph name="SITE" /> では通知が許可されていません</translation>
@@ -5394,6 +5400,7 @@
 <translation id="6016178549409952427">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目に移動します</translation>
 <translation id="6016551720757758985">Powerwash を実行して以前のバージョンに戻すことを確認</translation>
 <translation id="6016972670657536680">言語とキーボードのボタンを選択します。現在選択している言語は <ph name="LANGUAGE" /> です。</translation>
+<translation id="6017503096330453612">[再試行] または [オフライン エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="6017514345406065928">緑</translation>
 <translation id="6019169947004469866">トリミング</translation>
 <translation id="6019851026059441029">大変良い - HD</translation>
@@ -6254,6 +6261,7 @@
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">すべてのユーザーで自動更新を行うよう設定できませんでした（プリフライト実行エラー: <ph name="ERROR_NUMBER" />）</translation>
 <translation id="682971198310367122">Google プライバシー ポリシー</translation>
+<translation id="6830200424658853449">オフライン エディタで開く</translation>
 <translation id="6831043979455480757">翻訳</translation>
 <translation id="6832218595502288407">左揃え</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
@@ -6617,6 +6625,7 @@
 <translation id="7174199383876220879">New! 音楽や動画などを操作できます。</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> の設定</translation>
 <translation id="7175353351958621980">ロード元:</translation>
+<translation id="7177079607604198383">インターネット接続を確認して、[再試行] または [オフライン エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7182791023900310535">パスワードを移動</translation>
@@ -7316,6 +7325,7 @@
 <translation id="783229689197954457">割引情報が見つかった場合は、このページに表示されます</translation>
 <translation id="7833720883933317473">保存したカスタムの単語がここに表示されます</translation>
 <translation id="7835178595033117206">ブックマークを削除しました</translation>
+<translation id="7836535163829106376"><ph name="FILE_NAMES" /> の URL を開けません</translation>
 <translation id="7836850009646241041">もう一度セキュリティ キーをタッチしてください</translation>
 <translation id="7837776265184002579">ホームページが <ph name="URL" /> に変更されました。</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" /> から「<ph name="NETWORK_NAME" />」を保存できませんでした</translation>
@@ -7756,6 +7766,7 @@
 <translation id="822347941086490485">HID デバイスを検出しています...</translation>
 <translation id="8223573963214454788">続行（データは削除されます）</translation>
 <translation id="8225046344534779393">インターネット接続をご確認ください</translation>
+<translation id="8225173734540525852">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、Google ドライブへのアクセスが必要です。</translation>
 <translation id="8225265270453771718">アプリケーション ウィンドウの共有</translation>
 <translation id="8226222018808695353">アクセスできません</translation>
 <translation id="8226619461731305576">キュー</translation>
@@ -8092,6 +8103,7 @@
 <translation id="8549316893834449916">Chromebook には Google アカウント（Gmail、ドライブ、YouTube などで使用しているのと同じアカウント）を使用してログインします。</translation>
 <translation id="8551388862522347954">ライセンス</translation>
 <translation id="8551588720239073785">日時の設定</translation>
+<translation id="8551647092888540776">オフラインで <ph name="FILE_NAMES" /> を開くことはできません</translation>
 <translation id="8552102814346875916">常にアクティブにするサイトのリストに保存</translation>
 <translation id="8553342806078037065">他のユーザーを管理</translation>
 <translation id="8554899698005018844">言語設定なし</translation>

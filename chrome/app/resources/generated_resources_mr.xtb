@@ -1970,6 +1970,7 @@
 <translation id="275662540872599901">स्क्रीन बंद</translation>
 <translation id="2757161511365746634">प्रिंटर पहा</translation>
 <translation id="2757338480560142065">तुम्ही सेव्ह करत असलेला पासवर्ड तुमच्या <ph name="WEBSITE" /> च्या पासवर्डशी जुळत असल्याची खात्री करा</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> साठी कोणतेही शोध परिणाम मिळाले नाहीत</translation>
 <translation id="2762441749940182211">कॅमेरा ब्लॉक केला आहे</translation>
 <translation id="2764786626780673772">VPN चे तपशील</translation>
 <translation id="2764920001292228569">प्रोफाइलचे नाव एंटर करा</translation>
@@ -2867,6 +2868,7 @@
 <translation id="3616741288025931835">ब्राउझिंग डेटा &amp;साफ करा...</translation>
 <translation id="3617891479562106823">बॅकग्राउंड अनुपलब्ध आहेत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="3619115746895587757">कॅपिचिनो</translation>
+<translation id="3620136223548713675">भौगोलिक स्थान</translation>
 <translation id="3621807901162200696">ChromeOS च्या वैशिष्ट्यांमध्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{अ‍ॅप}other{# अ‍ॅप्स}}</translation>
 <translation id="362333465072914957">CA ने सर्टिफिकेट जारी करण्याची प्रतीक्षा करत आहे</translation>
@@ -6941,6 +6943,7 @@
 <translation id="7465635034594602553">काहीतरी चूक झाली. कृपया काही मिनिटे थांबा आणि <ph name="APP_NAME" /> पुन्हा रन करा.</translation>
 <translation id="7465778193084373987">Netscape सर्टिफिकेट रिव्होकीकरण URL</translation>
 <translation id="7466431077154602932">संक्षिप्त दृश्य</translation>
+<translation id="7466556884531675354">कोणत्याही टिपा सेव्ह केलेल्या नाहीत</translation>
 <translation id="746861123368584540">एक्स्टेंशन लोड केले</translation>
 <translation id="7470424110735398630">तुमचा क्लिपबोर्ड पाहण्याची अनुमती आहे</translation>
 <translation id="747114903913869239">एरर: एक्स्टेंशन डीकोड करता आले नाही</translation>
@@ -7918,6 +7921,7 @@
 <translation id="8351316842353540018">a11y पर्याय नेहमी दाखवा</translation>
 <translation id="8351419472474436977">या एक्स्टेंशनने तुमच्या प्रॉक्सी सेटिंग्जचे नियंत्रण घेतले आहे, याचा अर्थ ही बदलू शकते, खंडित होवू शकते किंवा तुम्ही ऑनलाइन करता ती कोणतीहीगोष्ट चोरून एकू शकतो. हा बदल का झाला, याबद्दल तुम्ही निश्चित नसल्यास, तुम्हाला कदाचित तो नको आहे.</translation>
 <translation id="8351630282875799764">बॅटरी चार्ज होत नाही</translation>
+<translation id="8352287103893778223">टॅब गट शीर्षक</translation>
 <translation id="835238322900896202">अनइंस्टॉलेशन करताना एरर आली. कृपया टर्मिनलमधून अनइंस्टॉल करा.</translation>
 <translation id="8353683614194668312">ते करू शकते:</translation>
 <translation id="8354034204605718473">तुमच्या लहान मुलाचा पिन जोडण्यात आला आहे</translation>

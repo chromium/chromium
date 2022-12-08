@@ -984,6 +984,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1871463148436682760">Nicely done!</translation>
 <translation id="1871534214638631766">Show related info when you right-click or long press on content</translation>
 <translation id="1871615898038944731">Your <ph name="DEVICE_TYPE" /> is up to date</translation>
+<translation id="1873920700418191231">Allow permissions again for <ph name="WEBSITE" /></translation>
 <translation id="1874248162548993294">Allowed to show any ads</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{Move tab to another window}other{Move tabs to another window}}</translation>
 <translation id="1875386316419689002">This tab is connected to a HID device.</translation>
@@ -2871,6 +2872,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3616741288025931835">&amp;Clear Browsing Data...</translation>
 <translation id="3617891479562106823">Backgrounds are unavailable. Try again later.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
+<translation id="3620136223548713675">Geolocation</translation>
 <translation id="3621807901162200696">Help improve Chrome OS features and performance</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{an app}other{# apps}}</translation>
 <translation id="362333465072914957">Waiting for the CA to issue a certificate</translation>
@@ -4419,6 +4421,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5070710277167211639">Upgrade navigations to HTTPS and warn you before loading sites that don't support it</translation>
 <translation id="5070773577685395116">Didn't get it?</translation>
+<translation id="5071295820492622726">Back to recent downloads</translation>
 <translation id="5071892329440114717">Show standard protection details</translation>
 <translation id="5072836811783999860">Show managed bookmarks</translation>
 <translation id="5072900412896857127">Google Play Terms of Service cannot be loaded. Please check your network connection and retry.</translation>
@@ -6741,6 +6744,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7260186537988033909">Kiosk and signage device enrolment complete</translation>
 <translation id="7261851165551049223">Use TouchID when filling passwords</translation>
 <translation id="7262004276116528033">This sign-in service is hosted by <ph name="SAML_DOMAIN" /></translation>
+<translation id="7263162347647986485">{NUM_SITES,plural, =1{Permissions removed for 1 site}other{Permissions removed for {NUM_SITES} sites}}</translation>
 <translation id="7264695323040866038">Always use the <ph name="APP" /> app to open supported web links?</translation>
 <translation id="7267044199012331848">Couldn't install the virtual machine. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Keep lifting your finger to add the different parts of your fingerprint</translation>
@@ -7353,6 +7357,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">If Google finds a discount, you will see it on this page</translation>
 <translation id="7833720883933317473">Saved custom words will appear here</translation>
+<translation id="78339340649759914">{NUM_SITES,plural, =1{To protect your data, permissions were removed from this site, which you haven't visited in two months}other{To protect your data, permissions were removed from sites that you haven't visited in two months}}</translation>
 <translation id="7835178595033117206">Bookmark removed</translation>
 <translation id="7836535163829106376">Can't open the URL for <ph name="FILE_NAMES" /></translation>
 <translation id="7836850009646241041">Try touching your security key again</translation>
@@ -7856,6 +7861,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8271379370373330993">Parents, the next few steps are for you. You can hand the <ph name="DEVICE_TYPE" /> back to the child after account setup.</translation>
 <translation id="8272194309885535896">Download Image</translation>
 <translation id="8272443605911821513">Manage your extensions by clicking Extensions in the "More tools" menu.</translation>
+<translation id="8272786333453048167">Allow again</translation>
 <translation id="8273905181216423293">Download now</translation>
 <translation id="8274921654076766238">Magnifier follows keyboard focus</translation>
 <translation id="8274924778568117936">Don’t turn off or close your <ph name="DEVICE_TYPE" /> until the update finishes. Your <ph name="DEVICE_TYPE" /> will restart after installation completes.</translation>
@@ -8082,6 +8088,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8492822722330266509">Sites can send pop-ups and use redirects</translation>
 <translation id="8492960370534528742">Google Cast feedback</translation>
 <translation id="8493236660459102203">Microphone:</translation>
+<translation id="849488240089599592">Back to Recent downloads</translation>
 <translation id="8496717697661868878">Run This Plug-in</translation>
 <translation id="8497219075884839166">Windows Utilities</translation>
 <translation id="8498214519255567734">Make it easier to look at your screen or read in dim light</translation>
@@ -8255,6 +8262,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8665110742939124773">You've entered an incorrect access code. Try again.</translation>
 <translation id="8665180165765946056">Backup complete</translation>
 <translation id="866611985033792019">Trust this certificate for identifying email users</translation>
+<translation id="8666321716757704924">Permissions allowed again for <ph name="WEBSITE" /></translation>
 <translation id="8666759526542103597">About browser-based ad personalisation</translation>
 <translation id="8667328578593601900"><ph name="FULLSCREEN_ORIGIN" /> is now full screen and has disabled your mouse cursor.</translation>
 <translation id="8667760277771450375">We’re exploring ways to restrict cross-site tracking while enabling sites to stop ad spam and fraud.</translation>

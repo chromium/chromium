@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">Вимкніть доступ до камери на цьому пристрої, щоб інші камери були постійно заблоковані.</translation>
 <translation id="4666911709726371538">Більше додатків</translation>
 <translation id="4667099493359681081">Завантажується файл <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Додатки з вашого телефона</translation>
 <translation id="4690510401873698237">Полицю розміщено внизу</translation>
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
 <translation id="4702647871202761252">Екран конфіденційності вимкнено</translation>
@@ -923,7 +924,6 @@
 <translation id="6103838137565245112">система</translation>
 <translation id="6107292179555508368">На цьому пристрої не надано доступ до мікрофона й камери</translation>
 <translation id="6114505516289286752">Файли живих субтитрів завантажено (<ph name="LANGUAGE" />)</translation>
-<translation id="6116825164611323644">Доступ до камери вимкнено на цьому пристрої</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Підтвердити завантаження файлу <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Асистент недоступний під час сеансу в режимі "Гість".</translation>
@@ -1394,7 +1394,6 @@
 <translation id="8735678380411481005">Колір підсвічування клавіатури</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Надайте доступ до камери, щоб додатки й веб-сторінки з відповідним дозволом могли використовувати камери, підключені до цього пристрою.</translation>
 <translation id="8755498163081687682">Потрібне підтвердження: сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
 <translation id="875593634123171288">Показати налаштування VPN</translation>
 <translation id="8759408218731716181">Не вдається налаштувати паралельний вхід</translation>

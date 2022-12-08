@@ -561,6 +561,7 @@
 <translation id="6189418609903030344">Емкость батареи со временем уменьшается</translation>
 <translation id="6191293864534840972">Некорректно указаны серверы доменных имен.</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
+<translation id="6223066887782788441">Выйти из полноэкранного режима</translation>
 <translation id="6223752125779001553">Нет доступных сканеров.</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6235460611964961764">Выполнять сброс показателя вручную</translation>
@@ -689,10 +690,12 @@
 <translation id="7415801143053185905">очень большое время ожидания HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Сканирование завершено. Отсканирована 1 страница.}one{Сканирование завершено. Отсканирована {NUMBER_OF_PAGES} страница.}few{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}many{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страниц.}other{Сканирование завершено. Отсканировано {NUMBER_OF_PAGES} страницы.}}</translation>
+<translation id="7458970041932198923">Чтобы просматривать и настраивать аватары, подключитесь к сети и обновите страницу.</translation>
 <translation id="7469648432129124067">Обнаружен сетевой портал.</translation>
 <translation id="7481312909269577407">Вперед</translation>
 <translation id="7487067081878637334">Технологии</translation>
 <translation id="7490813197707563893">MAC-адрес</translation>
+<translation id="7491478667760509108">Выйти из плавающего режима</translation>
 <translation id="7497215489070763236">Серверный сертификат ЦС</translation>
 <translation id="7502658306369382406">Адрес IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -843,6 +846,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}many{Сканировать {NUMBER_OF_PAGES} страниц}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
 <translation id="8997710128084572139">Устройство заряжено на <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998289560386111590">Недоступно на вашем устройстве</translation>
 <translation id="9003704114456258138">Частота</translation>
 <translation id="9025198690966128418">Использовать как личное устройство</translation>
 <translation id="9028832514430399253">Чтобы настроить заставку, активируйте переключатель.</translation>

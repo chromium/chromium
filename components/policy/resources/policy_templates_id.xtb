@@ -1415,6 +1415,9 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
 <translation id="2354439478396602136">Tampilkan rekomendasi aplikasi di peluncur <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2355876547176311490">Nonaktifkan penggunaan server relai oleh host akses jarak jauh</translation>
 <translation id="2358176879566587521">Kebijakan ini dihapus. Kebijakan ini tidak kompatibel dengan versi <ph name="PRODUCT_NAME" /> ini. Baca selengkapnya di https://support.google.com/chrome/a/answer/7643500</translation>
+<translation id="235987002603620567">NewBaseUrlInheritanceBehavior adalah fitur <ph name="PRODUCT_NAME" /> yang menyebabkan frame <ph name="ABOUT_BLANK_PAGE" /> dan <ph name="ABOUT_SRCDOC_PAGE" /> secara konsisten mewarisi nilai URL dasarnya melalui snapshot URL dasar inisiator. Untuk mengetahui detail selengkapnya, lihat https://chromestatus.com/feature/5161101671530496.
+
+Jika disetel ke nonaktif, kebijakan ini akan mencegah pengguna atau variasi <ph name="PRODUCT_NAME" /> mengaktifkan NewBaseUrlInheritanceBehavior, jika ditemukan masalah kompatibilitas. Jika disetel ke aktif atau tidak disetel, kebijakan ini akan mengaktifkan NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Interval waktu peluncuran kembali</translation>
 <translation id="2362539163677485510">Token pendaftaran kebijakan cloud</translation>
 <translation id="2363928351203698966">Jika kebijakan disetel ke nilai yang valid, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS lebih rendah dari versi yang ditentukan. Nilai yang tidak dikenal akan diabaikan.
@@ -1786,9 +1789,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Untuk informasi selengkapnya tentang pola URL situs yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan. Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.
 
       Tidak menyetel kebijakan ini untuk suatu situs akan membuat kebijakan dari <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> berlaku untuk situs tersebut, jika disetel, atau izin akan mengikuti setelan default browser dan memungkinkan pengguna memilih izin ini untuk setiap situs.</translation>
-<translation id="2725855586003209701">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan daftar pengguna perangkat yang login baru-baru ini.
-
-      Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan daftar pengguna.</translation>
 <translation id="2730200383593984228">Izinkan pengguna yang tidak terafiliasi menggunakan aplikasi Android</translation>
 <translation id="2730419309754848345">Mencetak PDF sebagai Gambar secara Default</translation>
 <translation id="2731299561202635374">Kebijakan ini mengontrol pemeriksaan URL secara real time untuk mengidentifikasi URL yang tidak aman.
@@ -2705,6 +2705,7 @@ Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna 
       Jika kebijakan ini ditetapkan ke False, perangkat tidak akan mencoba menghubungi Quirks Server untuk mendownload file konfigurasi.
 
       Jika kebijakan ini ditetapkan ke True atau tidak dikonfigurasi, maka <ph name="PRODUCT_OS_NAME" /> akan otomatis menghubungi Quirks Server dan mendownload file konfigurasi, jika tersedia, dan menyimpannya di perangkat. File tersebut dapat digunakan, misalnya, untuk meningkatkan kualitas tampilan monitor yang ditambahkan.</translation>
+<translation id="3515196503924273265">Memungkinkan pengaktifan fitur NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Setelah <ph name="LACROS_NAME" /> dinonaktifkan, migrasi data tidak akan dilakukan. Folder <ph name="LACROS_NAME" /> akan dihapus dan pengguna akan terus menggunakan data yang tersisa.</translation>
 <translation id="3522257170445891912">Jika kebijakan ini disetel, alur autentikasi login akan menggunakan salah satu cara berikut, bergantung pada nilai setelan:
 
@@ -3829,6 +3830,7 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
 <translation id="4611983465824842867">Jangan menampilkan peringatan atau menonaktifkan isi otomatis pada formulir yang tidak aman</translation>
 <translation id="4615003180013429835">Mode penguraian sitelist</translation>
 <translation id="4617338332148204752">Lewati pemeriksaan tag meta pada <ph name="PRODUCT_FRAME_NAME" /></translation>
+<translation id="461901491675418689">Fitur NewBaseUrlInheritanceBehavior tersedia</translation>
 <translation id="4624006912948309924">Menyetel kebijakan akan menetapkan ID aplikasi mana yang ditampilkan oleh <ph name="PRODUCT_OS_NAME" /> sebagai aplikasi tersemat di kotak peluncur, dan pengguna tidak dapat mengubahnya.
 
 Tentukan aplikasi Chrome menurut ID-nya, seperti pjkljhegncpnkpknbcohdijeoejaedia;
@@ -8095,6 +8097,7 @@ VM tersebut. Beberapa VM dapat diinstal dari konfigurasi yang sama di perangkat 
       Jika kebijakan ini disetel ke nonaktif, proses layanan jaringan akan berjalan di luar sandbox. Hal ini akan membuat pengguna rentan terhadap risiko keamanan tambahan terkait proses menjalankan layanan jaringan di luar sandbox.
       Jika kebijakan ini tidak disetel, konfigurasi default untuk sandbox jaringan akan digunakan. Konfigurasi default ini dapat bervariasi bergantung pada rilis <ph name="PRODUCT_NAME" />, uji coba kolom yang sedang berjalan, dan platform.
       Kebijakan ini dimaksudkan untuk memberikan fleksibilitas kepada perusahaan guna menonaktifkan sandbox jaringan jika perusahaan menggunakan software pihak ketiga yang mengganggu sandbox layanan jaringan.</translation>
+<translation id="8840243776706727185">Fitur NewBaseUrlInheritanceBehavior dinonaktifkan</translation>
 <translation id="8842208363354615697">Mengizinkan pengaktifan Mode Khusus HTTPS</translation>
 <translation id="885147810817138322">Tampilkan rekomendasi media kepada pengguna</translation>
 <translation id="8852579753940989645">Mengaktifkan Integritas Kode Perender</translation>

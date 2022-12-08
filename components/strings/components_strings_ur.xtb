@@ -309,7 +309,6 @@
 <translation id="168693727862418163">اس پالیسی کی قدر اس کے سکیما کو توثیق کرنے میں ناکام ہو گئی اور اسے نظر انداز کر دیا جائے گا۔</translation>
 <translation id="168841957122794586">سرور سرٹیفکیٹ میں ایک ہفتے کی کرپٹوگرافک کلید شامل ہے۔</translation>
 <translation id="1697532407822776718">آپ بالکل ٹھیک ہیں!</translation>
-<translation id="1699570257714336246">معلومات موجود نہیں ہے</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">زوم کی سطحیں</translation>
@@ -1165,7 +1164,6 @@
 <translation id="3961148744525529027">ادائیگی ہینڈلر کی شیٹ آدھی کھلی ہے</translation>
 <translation id="3962859241508114581">پچھلا ٹریک</translation>
 <translation id="3963721102035795474">ریڈر وض‏ع</translation>
-<translation id="3963837677003247395">دستی طور پر جاری رکھیں؟</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 سائٹ سے }other{# سائٹس سے }}</translation>
 <translation id="3969052498612555048">آپ کا کوڈ نہیں مل سکا؟ <ph name="BEGIN_LINK" />نیا کوڈ حاصل کریں<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
@@ -1727,6 +1725,7 @@
 <translation id="5334013548165032829">مفصل سسٹم لاگز</translation>
 <translation id="5334145288572353250">پتہ محفوظ کریں؟</translation>
 <translation id="5335920952954443287">دھڑکتا دل</translation>
+<translation id="5337569431717511221">‏Chrome کو بطور ڈیفالٹ براؤزر بٹن سیٹ کریں، Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے Enter دبائیں</translation>
 <translation id="5340250774223869109">ایپلیکیشن مسدود ہے</translation>
 <translation id="534295439873310000">‏NFC آلات</translation>
 <translation id="5344579389779391559">یہ صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
@@ -1942,7 +1941,6 @@
 <translation id="5937560539988385583">صفحہ کا ترجمہ ہو گیا</translation>
 <translation id="5938153366081463283">ورچوئل کارڈ شامل کریں</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> کھل رہی ہے…</translation>
 <translation id="5947508410139465809">‏جن فائلز کو آپ اپ لوڈ یا منسلک کرتے ہیں وہ Google کلاؤڈ یا تیسرے فریق کو تجزیہ کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کیلئے اسکین کیا جا سکتا ہے اور کمپنی کی پالیسیوں کی بنیاد پر اسٹور کیا جا سکتا ہے۔</translation>
 <translation id="5951495562196540101">صارف اکاؤنٹ کے ذریعے اندراج نہیں کر سکتے (پیکیج شدہ لائسنس دستیاب ہے)۔</translation>
 <translation id="5953516610448771166">اس میڈیا کے لیے لائیو کیپشن دستیاب نہیں ہے۔ کیپشنز حاصل کرنے کے لیے، <ph name="CONTENT_SETTINGS" /> کو اس سائٹ کے لیے مسدود کریں۔</translation>
@@ -2080,7 +2078,6 @@
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{آپ کا آلہ ابھی ری اسٹارٹ ہوگا}=1{آپ کا آلہ 1 سیکنڈ میں ری اسٹارٹ ہوگا}other{آپ کا آلہ # سیکنڈ میں ری اسٹارٹ ہوگا}}</translation>
 <translation id="6301104306974789820">قیمت کی ٹریکنگ سے متعلق اطلاعات حاصل کریں</translation>
-<translation id="6302269476990306341">‏Chrome میں Google اسسٹنٹ موقوف کی جا ر ہی ہے</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ناقابل رسائی ہے۔</translation>
 <translation id="6311165245110979290">ورچوئل کارڈ دستیاب ہے</translation>
 <translation id="6312113039770857350">ویب صفحہ دستیاب نہیں ہے</translation>
@@ -2336,7 +2333,6 @@
 <translation id="6971439137020188025">‏Slides میں تیزی سے ایک نئی Google پیشکش تخلیق کریں</translation>
 <translation id="6972629891077993081">‏HID آلات</translation>
 <translation id="6973656660372572881">‏فکس کردہ پراکسی سرورز اور ‎.pac اسکرپٹ URL دونوں کا تعین کیا گیا ہے۔</translation>
-<translation id="6973932557599545801">معذرت، میں مدد کرنے سے قاصر ہوں، براہ کرم اپنے طور پر جاری رکھیں۔</translation>
 <translation id="6973988895180423160">‏‎3.5 x 5 انچ</translation>
 <translation id="6978236010531171013">بہر حال اشتراک کریں</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2424,6 +2420,7 @@
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7201591969684833065">آپ کا منتظم یہ دیکھ سکتا ہے:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، نجی طور پر براؤز کرنے کے لیے ایک نیا پوشیدگی ٹیب کھولنے کی خاطر ٹیب، پھر اینٹر دبائیں</translation>
+<translation id="7203375778433816396">‏Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> سیکیورٹی کے معیارات کی پابندی نہیں کرتا ہے۔</translation>
 <translation id="7210993021468939304">‏کنٹینر کے اندر Linux کی سرگرمی اور کنٹینر کے اندر Linux ایپ کو انسٹال کرکے چلا سکتا ہے</translation>
 <translation id="721197778055552897">اس مسئلہ کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" />۔</translation>
@@ -2532,7 +2529,6 @@
 <translation id="7451311239929941790">اس مسئلہ کے بارے میں <ph name="BEGIN_LINK" />مزید جاننے کی<ph name="END_LINK" />۔</translation>
 <translation id="7455133967321480974">گلوبل ڈیفالٹ استعمال کریں (مسدود کریں)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">اسکریننگ آپ کی منتخب کردہ تفصیلات سے مختلف ہے۔ جاری رکھیں؟</translation>
 <translation id="7461924472993315131">پن کریں</translation>
 <translation id="7463075493919226237">آسٹریلیائی فٹبال</translation>
 <translation id="7465963048299965912">‏‎10 x 13 انچ</translation>
@@ -2572,6 +2568,7 @@
 <translation id="7537536606612762813">لازمی</translation>
 <translation id="7542403920425041731">آپ کے توثیق کرنے کے بعد، اس سائٹ کے ساتھ آپ کے کارڈ کی تفصیلات کا اشتراک کیا جائے گا۔</translation>
 <translation id="7542995811387359312">خودکار کریڈٹ کارڈ فلنگ کو غیر فعال کر دیا گیا ہے کیونکہ یہ فارم ایک محفوظ کنکشن استعمال نہیں کرتا ہے۔</translation>
+<translation id="7546409722674205727"><ph name="APP_NAME" /> کی شروعات</translation>
 <translation id="7548892272833184391">کنکشن کی خرابیاں ٹھیک کریں</translation>
 <translation id="7549584377607005141">ٹھیک سے ڈسپلے کیے جانے کیلئے یہ ویب صفحہ آپ کی جانب سے پہلے داخل کردہ ڈیٹا کا تقاضہ کرتا ہے۔ آپ اس ڈیٹا کو دوبارہ بھیج سکتے ہیں لیکن ایسا کرنے سے آپ کسی ایسی کارروائی کو دوہرائیں گے جسے اس صفحہ نے پہلے انجام دیا ہے۔</translation>
 <translation id="7550637293666041147">‏آپ کے آلے کا صارف نام اور Chrome کا صارف نام</translation>
@@ -2757,6 +2754,7 @@
 <translation id="8009843239480947060">‏‎10 x 11 انچ</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{یہ کارڈ اور اس کا بلنگ پتہ محفوظ ہو جائے گا۔ <ph name="USER_EMAIL" /> میں سائن ان ہونے پر آپ اس کا استعمال کر سکیں گے۔}other{یہ کارڈز اور ان کے بلنگ پتے محفوظ ہو جائیں گے۔ <ph name="USER_EMAIL" /> میں سائن ان ہونے پر آپ ان کا استعمال کر سکیں گے۔}}</translation>
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
+<translation id="8023231537967344568">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے ٹیب پھر Enter دبائیں</translation>
 <translation id="8025119109950072390">اس سائٹ پر موجود حملہ آور کوئی خطرناک کام انجام دینے جیسے سافٹ ویئر انسٹال کرنے یا آپ کی ذاتی معلومات (مثلاً، پاس ورڈز، فون نمبرز یا کریڈٹ کارڈز) کا افشاء کرنے کے جال میں آپ کو پھنسا سکتے ہیں۔</translation>
 <translation id="8026334261755873520">براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="8027077570865220386">ٹرے 15</translation>
@@ -3222,7 +3220,6 @@
 <translation id="937457230470581909">چڑیا گھر، ماہی خانے اور ذخائر</translation>
 <translation id="939736085109172342">نیا فولڈر</translation>
 <translation id="940053046584497293">سفر اور نقل و حمل</translation>
-<translation id="945522503751344254">تاثرات بھیجیں</translation>
 <translation id="945855313015696284">مندرجہ ذیل معلومات چیک کریں اور کسی بھی غلط کارڈ کو حذف کریں</translation>
 <translation id="947370374845726940">‏<ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />، Google Sites میں تیزی سے ایک نئی سائٹ تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="950736567201356821">اوپر تین بار سوراخ</translation>

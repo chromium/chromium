@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">ಎಲ್ಲಾ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಬೇಕೇ?</translation>
 <translation id="1657719826150349398">ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}one{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}other{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ}}</translation>
 <translation id="2118649612461486615">ಸ್ಟೋರ್‌ನ ಮಾಹಿತಿ</translation>
 <translation id="2162620598375156287">ಇದೀಗ <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> ನಲ್ಲಿ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ಟ್ಯಾಬ್‌ನ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}one{ಟ್ಯಾಬ್‌ಗಳ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}other{ಟ್ಯಾಬ್‌ಗಳ ಗುಂಪನ್ನು ರದ್ದುಮಾಡಿ}}</translation>
 <translation id="2277224997687551299">ಗುಂಪಿನ ಹೆಸರನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ಗುಂಪಿನಿಂದ ಆಯ್ದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ.}one{ಗುಂಪಿನಿಂದ ಆಯ್ದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ.}other{ಗುಂಪಿನಿಂದ ಆಯ್ದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಟ್ಯಾಬ್}one{ಬುಕ್‌ಮಾರ್ಕ್ ಟ್ಯಾಬ್‌ಗಳು}other{ಬುಕ್‌ಮಾರ್ಕ್ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="2479148705183875116">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಕುಗ್ಗಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಕುಗ್ಗಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಕುಗ್ಗಿಸಿ.}}</translation>
 <translation id="2569352796411618312">ಸಲಹೆ: ನೀವು ಈ ನಡುವೆ ಬಳಸದ <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳಿವೆ. ಅವುಗಳನ್ನು ಮುಚ್ಚಬೇಕೆ?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ಟ್ಯಾಬ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="8304833501377495048">ಪುನಃ ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌ ಅನ್ನು ತೋರಿಸಬಾರದೇ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{ಆಯ್ಕೆಮಾಡಿದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
+<translation id="8398929769197326728">ಹೊಸ ಫೋಲ್ಡರ್‌ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಿ.</translation>
 <translation id="8714939927607906138">ಕಡಿಮೆ ಬೆಲೆ</translation>
 <translation id="8749939518995770034">ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌</translation>

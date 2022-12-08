@@ -680,6 +680,7 @@
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ቅኝት ተጠናቅቋል። 1 ገጽ ተቃኝቷል}one{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}other{ቅኝት ተጠናቅቋል። {NUMBER_OF_PAGES} ገጾች ተቃኝተዋል}}</translation>
+<translation id="7458970041932198923">እባክዎ ገጹን ለማየት እና አምሳያዎችን ለማዋቀር ከአውታረ መረብ ጋር ይገናኙ።</translation>
 <translation id="7469648432129124067">መግቢያ ተገኝቷል</translation>
 <translation id="7481312909269577407">ወደ ፊት</translation>
 <translation id="7487067081878637334">ቴክኖሎጂ</translation>
@@ -832,6 +833,7 @@
 <translation id="8983038754672563810">ኤችኤስፒኤ</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ቃኝ}=1{ገጽ {NUMBER_OF_PAGES} ቃኝ}one{ገጽ {NUMBER_OF_PAGES} ቃኝ}other{ገጽ {NUMBER_OF_PAGES} ቃኝ}}</translation>
 <translation id="8997710128084572139">መሣሪያ <ph name="BATTERY_PERCENTAGE" />% ባትሪ አለው።</translation>
+<translation id="8998289560386111590">መሣሪያዎ ላይ አይገኝም</translation>
 <translation id="9003704114456258138">ተደጋጋሚነት</translation>
 <translation id="9025198690966128418">እንደ የግል መሣሪያ ተጠቀም</translation>
 <translation id="9028832514430399253">የማያ ገጽ አሳራፊ አማራጮችን ለመምረጥ መቀያየሪያውን ያብሩ</translation>

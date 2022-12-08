@@ -667,6 +667,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4666082839192943839">Tüm kameraları her zaman engellemek için bu cihazda kamera erişimini kapatın.</translation>
 <translation id="4666911709726371538">Diğer uygulamalar</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> indiriliyor</translation>
+<translation id="468293128311738995">Telefonunuzdaki uygulamalar</translation>
 <translation id="4690510401873698237">Raf, ekranın alt tarafında</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
@@ -923,7 +924,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6107292179555508368">Bu cihazda mikrofon ve kamera erişimi kapalı</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> dosyaları indirildi</translation>
-<translation id="6116825164611323644">Bu cihazda kamera erişimi kapalı</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> dosyasının indirilmesini onaylayın</translation>
 <translation id="612734058257491180">Google Asistan, misafir oturumunda kullanılamaz.</translation>
@@ -1288,6 +1288,7 @@ Yeni yüklenmiş</translation>
 <translation id="8142441511840089262">Çift tıklama</translation>
 <translation id="8142699993796781067">Özel ağ</translation>
 <translation id="8144760705599030999">Diğer cihazlarınızla daha hızlı eşlemek için <ph name="NAME" /> cihazını <ph name="EMAIL" /> adresine kaydedin</translation>
+<translation id="8144914663975476336">Kayıt biçimini seçin</translation>
 <translation id="8149413265954228307">Bluetooth ayarlarını göster. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Kapatmak için Ctrl + W tuşlarına basın.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, Otomatik tamamlama</translation>
@@ -1393,7 +1394,6 @@ Yeni yüklenmiş</translation>
 <translation id="8735678380411481005">Klavye arka ışığı rengi</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Kamera izni olan uygulamaların ve web sayfalarının bu cihaza bağlı kameraları kullanmasına izin vermek için kamera erişimini açın.</translation>
 <translation id="8755498163081687682">Kimliğinizi doğrulayın: <ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="875593634123171288">VPN ayarlarını göster</translation>
 <translation id="8759408218731716181">Çoklu oturum açma kurulamıyor</translation>

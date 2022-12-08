@@ -1781,9 +1781,6 @@ Voor een URL-patroon wordt deze indeling gehanteerd (https://support.google.com/
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.
 
       Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> van toepassing op de site (als dit is ingesteld), anders worden de standaardinstellingen van de browser gevolgd en kunnen gebruikers per site kiezen of ze dit recht willen verlenen.</translation>
-<translation id="2725855586003209701">Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met apparaatgebruikers die onlangs zijn ingelogd.
-
-      Als je het beleid niet toepast, rapporteren ingeschreven apparaten de lijst met gebruikers niet.</translation>
 <translation id="2730200383593984228">Toestaan dat niet-gelieerde gebruikers Android-apps gebruiken</translation>
 <translation id="2730419309754848345">Pdf standaard afdrukken als afbeelding</translation>
 <translation id="2731299561202635374">Dit beleid beheert realtime checks om niet-beveiligde URL's te identificeren.

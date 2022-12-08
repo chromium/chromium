@@ -924,7 +924,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6107292179555508368">Els accessos al micròfon i a la càmera estan desactivats en aquest dispositiu</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
-<translation id="6116825164611323644">L'accés a la càmera està desactivat en aquest dispositiu</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
@@ -1286,6 +1285,7 @@ Instal·lació nova</translation>
 <translation id="8142441511840089262">Fes doble clic</translation>
 <translation id="8142699993796781067">Xarxa privada</translation>
 <translation id="8144760705599030999">Desa el dispositiu <ph name="NAME" /> a <ph name="EMAIL" /> perquè es vinculi ràpidament als teus altres dispositius</translation>
+<translation id="8144914663975476336">Selecciona el format de gravació</translation>
 <translation id="8149413265954228307">Mostra la configuració del Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Prem Ctrl+W per tancar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, compleció automàtica</translation>
@@ -1391,7 +1391,6 @@ Instal·lació nova</translation>
 <translation id="8735678380411481005">Color de la retroil·luminació del teclat</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Activa l'accés a la càmera per permetre que les aplicacions i les pàgines web que tinguin permís per accedir a la càmera utilitzin les càmeres connectades a aquest dispositiu.</translation>
 <translation id="8755498163081687682">Verifica la teva identitat: <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="875593634123171288">Mostra la configuració de la VPN</translation>
 <translation id="8759408218731716181">No es pot configurar l'inici de sessió múltiple</translation>

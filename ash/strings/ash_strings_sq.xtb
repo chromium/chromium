@@ -667,6 +667,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4666082839192943839">Çaktivizo qasjen te kamera në këtë pajisje për të bllokuar të gjitha kamerat gjatë të gjithë kohës.</translation>
 <translation id="4666911709726371538">Aplikacione të tjera</translation>
 <translation id="4667099493359681081">Po shkarkon <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Aplikacionet nga telefoni yt</translation>
 <translation id="4690510401873698237">Rafti në fund</translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
 <translation id="4702647871202761252">Ekrani i privatësisë është joaktiv</translation>
@@ -923,7 +924,6 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6103838137565245112">sistemi</translation>
 <translation id="6107292179555508368">Qasja te mikrofoni dhe qasja te kamera janë joaktive në këtë pajisje</translation>
 <translation id="6114505516289286752">Skedarët e ligjërimit në <ph name="LANGUAGE" /> u shkarkuan</translation>
-<translation id="6116825164611323644">Qasja te kamera është joaktive në këtë pajisje</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Konfirmo shkarkimin e <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">"Asistenti i Google" nuk ofrohet në një sesion për vizitorët.</translation>
@@ -1288,6 +1288,7 @@ Instalim i ri</translation>
 <translation id="8142441511840089262">Kliko dy herë</translation>
 <translation id="8142699993796781067">Rrjet privat</translation>
 <translation id="8144760705599030999">Ruaj <ph name="NAME" /> te <ph name="EMAIL" /> për një çiftim më të shpejtë me pajisjet e tua të tjera</translation>
+<translation id="8144914663975476336">Zgjidh formatin e regjistrimit</translation>
 <translation id="8149413265954228307">Shfaq cilësimet e Bluetooth-it. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Shtyp Ctrl + W për ta mbyllur</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, plotësimi automatik</translation>
@@ -1393,7 +1394,6 @@ Instalim i ri</translation>
 <translation id="8735678380411481005">Ngjyra e dritës së sfondit të tastierës</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Aktivizo qasjen te kamera për të lejuar që aplikacionet dhe faqet e uebit me lejen e kamerës të përdorin kamerat e lidhura me këtë pajisje.</translation>
 <translation id="8755498163081687682">Verifiko identitetin tënd: <ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="875593634123171288">Shfaq cilësimet e VPN</translation>
 <translation id="8759408218731716181">Identifikimi i shumëfishtë nuk mund të konfigurohet</translation>

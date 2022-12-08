@@ -205,6 +205,7 @@
 <translation id="117916940443676133">보안 키가 PIN으로 보호되어 있지 않습니다. 로그인 데이터를 관리하려면 PIN을 만드세요.</translation>
 <translation id="1181037720776840403">삭제</translation>
 <translation id="1183237619868651138">로컬 캐시에 <ph name="EXTERNAL_CRX_FILE" />을(를) 설치할 수 없습니다.</translation>
+<translation id="1184709369107246085"><ph name="APPLICATION_NAME" /> 애플리케이션을 사용하려면 유효한 <ph name="APPLICATION_NAME" /> URL이 있어야 합니다.</translation>
 <translation id="1185924365081634987"><ph name="GUEST_SIGNIN_LINK_START" />게스트로 로그인<ph name="GUEST_SIGNIN_LINK_END" />하여 네트워크 오류를 수정할 수도 있습니다.</translation>
 <translation id="1186771945450942097">유해한 소프트웨어 삭제</translation>
 <translation id="1187722533808055681">유휴 상태 해제</translation>
@@ -2837,6 +2838,7 @@
 <translation id="3582057310199111521">사기성 사이트에 입력되었으며 정보 유출이 발견됨</translation>
 <translation id="3582299299336701326">밝은 화면을 어둡게 하고 어두운 화면을 밝게 합니다. 색상 반전을 사용 설정 또는 중지하려면 검색 + Ctrl + H를 누르세요.</translation>
 <translation id="3584169441612580296">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 변경</translation>
+<translation id="3586787825263265024"><ph name="APPLICATION_NAME" /> 애플리케이션을 사용하려면 OneDrive를 사용할 수 있어야 합니다.</translation>
 <translation id="3586806079541226322">파일을 열 수 없음</translation>
 <translation id="3586931643579894722">세부정보 숨기기</translation>
 <translation id="3587482841069643663">전체</translation>
@@ -2870,6 +2872,7 @@
 <translation id="3616741288025931835">인터넷 사용 기록 삭제(&amp;C)...</translation>
 <translation id="3617891479562106823">배경을 사용할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3619115746895587757">카푸치노</translation>
+<translation id="3620136223548713675">위치정보</translation>
 <translation id="3621807901162200696">ChromeOS의 기능 및 성능 개선에 참여</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{앱 1개}other{앱 #개}}</translation>
 <translation id="362333465072914957">CA에서 인증서를 발급할 때까지 기다리는 중</translation>
@@ -3993,6 +3996,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4654236001025007561">파일을 근처의 Chromebook 및 Android 기기와 공유합니다.</translation>
 <translation id="4657914796247705218">TrackPoint 속도</translation>
 <translation id="4658285806588491142">화면을 비공개로 유지하세요</translation>
+<translation id="4658648180588730283"><ph name="APPLICATION_NAME" /> 애플리케이션은 오프라인에서 사용할 수 없습니다.</translation>
 <translation id="465878909996028221">http, https 및 파일 프로토콜에만 브라우저 리디렉션이 지원됩니다.</translation>
 <translation id="4659126640776004816">Google 계정에 로그인하면 이 기능이 사용 설정됩니다.</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{이미지}other{이미지 #개}}</translation>
@@ -4043,6 +4047,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4699357559218762027">(자동 실행)</translation>
 <translation id="4701025263201366865">부모 로그인</translation>
 <translation id="4701335814944566468">어제 확인함</translation>
+<translation id="4705624512518230041">OneDrive를 사용할 수 없는 경우 <ph name="FILE_NAMES" /> 파일을 열 수 없음</translation>
 <translation id="470644585772471629">색상 반전</translation>
 <translation id="4707337002099455863">항상 모든 사이트에서 사용</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> 종료</translation>
@@ -4510,6 +4515,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5160634252433617617">물리적 키보드</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" />에 로그인</translation>
 <translation id="5161251470972801814">USB 기기(업체: <ph name="VENDOR_NAME" />)</translation>
+<translation id="5162624292894372900">Drive를 사용할 수 없는 경우 <ph name="FILE_NAMES" /> 파일을 열 수 없음</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 차단됨</translation>
 <translation id="5163910114647549394">탭스트립 끝으로 탭을 이동함</translation>
 <translation id="5164530241085602114"><ph name="SITE" />의 알림이 허용되지 않습니다.</translation>
@@ -5419,6 +5425,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠로 이동</translation>
 <translation id="6016551720757758985">이전 버전으로 돌아가서 Powerwash 확인</translation>
 <translation id="6016972670657536680">언어 및 키보드 버튼을 선택하세요. 현재 선택된 언어는 <ph name="LANGUAGE" />입니다.</translation>
+<translation id="6017503096330453612">'다시 시도'를 선택하거나 '오프라인 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="6017514345406065928">녹색</translation>
 <translation id="6019169947004469866">자르기</translation>
 <translation id="6019851026059441029">훌륭함 - HD</translation>
@@ -6281,6 +6288,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="682871081149631693">QuickFix</translation>
 <translation id="6828860976882136098">모든 사용자에 대해 자동 업데이트를 설정하지 못했습니다(프리플라이트 실행 오류: <ph name="ERROR_NUMBER" />).</translation>
 <translation id="682971198310367122">Google 개인정보처리방침</translation>
+<translation id="6830200424658853449">오프라인 편집기에서 열기</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="6832218595502288407">왼쪽 정렬</translation>
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> 그룹에서 탭이 삭제됨 - <ph name="GROUP_CONTENTS" /></translation>
@@ -6644,6 +6652,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7174199383876220879">New! 음악, 동영상 등의 항목을 제어할 수 있습니다.</translation>
 <translation id="7175037578838465313"><ph name="NAME" /> 설정</translation>
 <translation id="7175353351958621980">로드 위치:</translation>
+<translation id="7177079607604198383">인터넷 연결을 확인하고 '다시 시도'를 선택하거나 '오프라인 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="7180611975245234373">새로고침</translation>
 <translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7182791023900310535">비밀번호 이동</translation>
@@ -7345,6 +7354,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="783229689197954457">Google에서 할인 가격을 찾으면 이 페이지에 표시됩니다.</translation>
 <translation id="7833720883933317473">저장한 맞춤 단어가 여기에 표시됩니다.</translation>
 <translation id="7835178595033117206">북마크가 삭제됨</translation>
+<translation id="7836535163829106376"><ph name="FILE_NAMES" /> URL을 열 수 없음</translation>
 <translation id="7836850009646241041">보안 키 다시 터치해 보기</translation>
 <translation id="7837776265184002579">홈페이지가 <ph name="URL" />(으)로 변경되었습니다.</translation>
 <translation id="7838838951812478896"><ph name="DEVICE_NAME" />의 '<ph name="NETWORK_NAME" />'이(가) 저장되지 않음</translation>
@@ -7786,6 +7796,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="822347941086490485">HID 기기를 찾는 중...</translation>
 <translation id="8223573963214454788">계속하여 데이터 삭제</translation>
 <translation id="8225046344534779393">인터넷 연결 상태 확인</translation>
+<translation id="8225173734540525852"><ph name="APPLICATION_NAME" /> 애플리케이션을 사용하려면 Drive를 사용할 수 있어야 합니다.</translation>
 <translation id="8225265270453771718">애플리케이션 창 공유</translation>
 <translation id="8226222018808695353">금지됨</translation>
 <translation id="8226619461731305576">대기열</translation>
@@ -8078,7 +8089,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8498395510292172881">Chrome에서 계속 읽기</translation>
 <translation id="8499083585497694743">마이크 음소거 해제</translation>
 <translation id="8502536196501630039">Google Play의 앱을 사용하려면 먼저 앱을 복원해야 합니다. 일부 데이터가 삭제되었을 수 있습니다.</translation>
-<translation id="8503813439785031346">사용자이름</translation>
+<translation id="8503813439785031346">사용자 이름</translation>
 <translation id="850382998924680137">오늘 조회함</translation>
 <translation id="8507227974644337342">화면 해상도</translation>
 <translation id="850875081535031620">유해한 소프트웨어가 발견되지 않음</translation>
@@ -8122,6 +8133,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8549316893834449916">Gmail, 드라이브, YouTube 등에 사용하는 계정과 동일한 Google 계정으로 Chromebook에 로그인합니다.</translation>
 <translation id="8551388862522347954">라이선스</translation>
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
+<translation id="8551647092888540776">오프라인 상태에서 <ph name="FILE_NAMES" /> 파일을 열 수 없음</translation>
 <translation id="8552102814346875916">'다음 사이트를 항상 활성 상태로 유지' 목록에 저장</translation>
 <translation id="8553342806078037065">다른 사용자 관리</translation>
 <translation id="8554899698005018844">언어가 없음</translation>

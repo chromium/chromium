@@ -271,6 +271,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1586541204584340881">Welche Erweiterungen du installiert hast</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1592005682883173041">Zugriff auf lokale Daten</translation>
+<translation id="1593359183944365958">270°</translation>
 <translation id="1594030484168838125">Auswählen</translation>
 <translation id="1596296697375291157">Thriller, Krimis und Mystery-Filme</translation>
 <translation id="1599199147673445968">Neue Karte? <ph name="BEGIN_LINK" />Kartendetails eingeben<ph name="END_LINK" /></translation>
@@ -308,7 +309,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="168693727862418163">Die Richtlinienwertprüfung des Schemas ist fehlgeschlagen. Der Richtlinienwert wird ignoriert.</translation>
 <translation id="168841957122794586">Das Serverzertifikat weist einen schwachen kryptografischen Schlüssel auf.</translation>
 <translation id="1697532407822776718">Fertig!</translation>
-<translation id="1699570257714336246">Fehlende Informationen</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Zoomstufen</translation>
@@ -338,6 +338,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1741613555002899862">Muss angegeben werden und ein gültiger String sein, wenn "DnsOverHttpsMode" auf <ph name="SECURE_DNS_MODE_SECURE" /> gesetzt ist.</translation>
 <translation id="1745880797583122200">Dein Browser wird verwaltet</translation>
 <translation id="1746113442205726301">Y-Verschiebung des Bilds</translation>
+<translation id="1746531169546376413">0°</translation>
 <translation id="17513872634828108">Geöffnete Tabs</translation>
 <translation id="1752021286346845558">Ablage 8</translation>
 <translation id="1753068535428855445">Dating und Partnervermittlung</translation>
@@ -1161,7 +1162,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3961148744525529027">Das Dokument zur Zahlungsabwicklung ist zur Hälfte geöffnet</translation>
 <translation id="3962859241508114581">Vorheriger Titel</translation>
 <translation id="3963721102035795474">Lesemodus</translation>
-<translation id="3963837677003247395">Manuell fortfahren?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Keine}=1{Von 1 Website }other{Von # Websites }}</translation>
 <translation id="3969052498612555048">Du kannst deinen Code nicht finden? <ph name="BEGIN_LINK" />Neuen Code anfordern<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
@@ -1796,6 +1796,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5540969246441091044">Reitsport</translation>
 <translation id="5541086400771735334">Ablage 7</translation>
 <translation id="5541546772353173584">E-Mail-Adresse hinzufügen</translation>
+<translation id="5543722831081909240">180°</translation>
 <translation id="5545756402275714221">Artikel für mich</translation>
 <translation id="5551890439174915351">100 × 200 mm</translation>
 <translation id="5552137475244467770">Chrome prüft in regelmäßigen Abständen, ob deine Passwörter auf Listen erscheinen, die online veröffentlicht wurden. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
@@ -1938,7 +1939,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5937560539988385583">Seite übersetzt</translation>
 <translation id="5938153366081463283">Virtuelle Karte hinzufügen</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347"><ph name="SITE_NAME" /> wird geöffnet…</translation>
 <translation id="5947508410139465809">Dateien, die du hochlädst oder anhängst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie können beispielsweise auf sensible Daten oder Malware geprüft und gemäß den Unternehmensrichtlinien gespeichert werden.</translation>
 <translation id="5951495562196540101">Registrierung mit Kundenkonto nicht möglich (Paketlizenz verfügbar).</translation>
 <translation id="5953516610448771166">Die Funktion „Automatische Untertitel“ ist für diesen Inhalt nicht verfügbar. Wenn du Untertitel nutzen möchtest, blockiere <ph name="CONTENT_SETTINGS" /> für diese Website.</translation>
@@ -2075,7 +2075,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6300452962057769623">{0,plural, =0{Dein Gerät startet jetzt neu}=1{Dein Gerät startet in 1 Sekunde neu}other{Dein Gerät startet in # Sekunden neu}}</translation>
 <translation id="6301104306974789820">Benachrichtigungen zur Preisbeobachtung erhalten</translation>
-<translation id="6302269476990306341">Google Assistant für Chrome wird beendet</translation>
 <translation id="6305205051461490394"><ph name="URL" /> ist nicht erreichbar.</translation>
 <translation id="6311165245110979290">Virtuelle Karte verfügbar</translation>
 <translation id="6312113039770857350">Webseite nicht verfügbar</translation>
@@ -2186,6 +2185,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6591833882275308647">Dein <ph name="DEVICE_TYPE" /> wird nicht verwaltet</translation>
 <translation id="6592952801936330159">Schaltfläche zum Verwalten der Website-Einstellungen – drücke die Eingabetaste, um Berechtigungen und gespeicherte Daten von Websites in den Chrome-Einstellungen zu verwalten</translation>
 <translation id="6596325263575161958">Verschlüsselungsoptionen</translation>
+<translation id="6597665340361269064">90°</translation>
 <translation id="6599642189720630047">Beobachtete Produkte</translation>
 <translation id="6611723696964473273">Wirtschaftsnachrichten</translation>
 <translation id="6612010098632894193">Onlinevideos</translation>
@@ -2331,7 +2331,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6971439137020188025">Schnell eine neue Präsentation in Google Präsentationen erstellen</translation>
 <translation id="6972629891077993081">HID-Geräte</translation>
 <translation id="6973656660372572881">Sowohl feste Proxyserver als auch eine PAC-Skript-URL sind festgelegt.</translation>
-<translation id="6973932557599545801">Ich kann dir leider nicht helfen. Bitte fahre alleine fort.</translation>
 <translation id="6973988895180423160">3,5 × 5 Zoll</translation>
 <translation id="6978236010531171013">Trotzdem freigeben</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2527,7 +2526,6 @@ Weitere Details:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu diesem Problem.</translation>
 <translation id="7455133967321480974">Globalen Standard verwenden (Blockieren)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">Die Filmvorführung entspricht nicht deiner Auswahl. Möchtest du fortfahren?</translation>
 <translation id="7461924472993315131">Anpinnen</translation>
 <translation id="7463075493919226237">Australian Football</translation>
 <translation id="7465963048299965912">10 × 13 Zoll</translation>
@@ -3218,7 +3216,6 @@ Weitere Details:
 <translation id="937457230470581909">Zoos, Aquarien und Parks</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="940053046584497293">Reisen und Transport</translation>
-<translation id="945522503751344254">Feedback geben</translation>
 <translation id="945855313015696284">Lies dir die unten stehenden Informationen durch und lösche ungültige Karten</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um schnell eine neue Website in Google Sites zu erstellen</translation>
 <translation id="950736567201356821">Dreifache Lochung oben</translation>

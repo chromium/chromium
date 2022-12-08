@@ -688,6 +688,7 @@
 <translation id="7415801143053185905">Meget stor HTTP-forsinkelse</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Scanningen er gennemført. 1 side blev scannet}one{Scanningen er gennemført. {NUMBER_OF_PAGES} side blev scannet}other{Scanningen er gennemført. {NUMBER_OF_PAGES} sider blev scannet}}</translation>
+<translation id="7458970041932198923">Opret forbindelse til et netværk, og genindlæs siden for at se og angive avatarer.</translation>
 <translation id="7469648432129124067">En portal blev registreret</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7487067081878637334">Teknologi</translation>
@@ -842,6 +843,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scan}=1{Scan side {NUMBER_OF_PAGES}}one{Scan page {NUMBER_OF_PAGES}}other{Scan siderne {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Enheden har <ph name="BATTERY_PERCENTAGE" /> % batteri.</translation>
+<translation id="8998289560386111590">Ikke tilgængelig på din enhed</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9025198690966128418">Brug som en personlig enhed</translation>
 <translation id="9028832514430399253">Aktivér kontakten for at vælge en pauseskærm</translation>

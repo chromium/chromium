@@ -1397,6 +1397,9 @@
 <translation id="2354439478396602136">在 <ph name="PRODUCT_OS_NAME" /> 啟動器中顯示推薦應用程式</translation>
 <translation id="2355876547176311490">停用遠端存取主機所使用的轉送伺服器</translation>
 <translation id="2358176879566587521">這項政策已遭到移除，因此與這個版本的 <ph name="PRODUCT_NAME" /> 不相容。詳情請參閱 https://support.google.com/chrome/a/answer/7643500</translation>
+<translation id="235987002603620567">NewBaseUrlInheritanceBehavior 這項 <ph name="PRODUCT_NAME" /> 功能可讓 <ph name="ABOUT_BLANK_PAGE" /> 和 <ph name="ABOUT_SRCDOC_PAGE" /> 頁框透所屬啟動器的基礎網址快照一致地沿用其基礎網址值。詳情請參閱 https://chromestatus.com/feature/5161101671530496。
+
+如果將這項政策設為停用，使用者或 <ph name="PRODUCT_NAME" /> 變化版本在系統發現相容性問題時都無法啟用 NewBaseUrlInheritanceBehavior。如果將這項政策設為啟用或未設定，系統就會允許啟用 NewBaseUrlInheritanceBehavior。</translation>
 <translation id="2362469626417133796">重新啟動時間範圍</translation>
 <translation id="2362539163677485510">雲端政策註冊權杖</translation>
 <translation id="2363928351203698966">如果將這項政策設為有效值，<ph name="PRODUCT_NAME" /> 只會使用指定版本以上的安全資料傳輸層 (SSL)/傳輸層安全標準 (TLS) 版本。系統會忽略無法辨識的值。
@@ -1769,9 +1772,6 @@
       如要進一步瞭解有效的網站網址模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。你也可以使用萬用字元 (<ph name="WILDCARD_VALUE" />)。這項政策只會根據來源進行比對，因此會忽略網址模式中的路徑。
 
       如果尚未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> 已設定的政策；如果已針對某個網站設定這項政策，則網站會依照瀏覽器的預設權限設定，使用者可依網站選擇這項權限。</translation>
-<translation id="2725855586003209701">如果將這項政策設為啟用或不設定，已註冊的裝置會回報近期登入的裝置使用者清單。
-
-      如果將這項政策設為停用，已註冊的裝置不會回報使用者清單。</translation>
 <translation id="2730200383593984228">允許無關聯使用者使用 Android 應用程式</translation>
 <translation id="2730419309754848345">預設以圖片形式列印 PDF</translation>
 <translation id="2731299561202635374">這項政策可控管即時檢查網址以識別不安全網址的功能。
@@ -2640,6 +2640,7 @@
       連線並下載設定檔。
 
       如果將這項政策設為 True 或不設定，<ph name="PRODUCT_OS_NAME" />會自動連線至 Quirks Server，並下載可用的設定檔，然後儲存到裝置上。這類檔案的用途可能包括改善外接螢幕的顯示品質。</translation>
+<translation id="3515196503924273265">允許啟用 NewBaseUrlInheritanceBehavior 功能</translation>
 <translation id="351654132746710200"><ph name="LACROS_NAME" /> 停用後，系統將不會再遷移資料。系統會移除「<ph name="LACROS_NAME" />」資料夾，而使用者會繼續使用剩餘的資料。</translation>
 <translation id="3522257170445891912">如果設定這項政策，系統會根據設定值，採用下列其中一種登入驗證流程：如果設為 GAIA，系統會透過一般的 GAIA 驗證流程完成登入程序。如果設為 SAML_INTERSTITIAL，系統預設會自動重新導向至 SAML IdP。使用者仍可返回一般的 GAIA 登入流程。注意：系統不會再顯示 <ph name="PRODUCT_NAME" /> 版本 99 之前的額外使用者確認畫面。如果未設定 SAML IdP，且這項政策已設為 SAML_INTERSTITIAL，系統重新導向將會失敗，並傳回錯誤 400。</translation>
 <translation id="3524204464536655762">不允許任何網站透過 WebUSB API 要求存取 USB 裝置</translation>
@@ -3721,6 +3722,7 @@
 <translation id="4611983465824842867">不在不安全表單上顯示警告或停用自動填入功能</translation>
 <translation id="4615003180013429835">網站清單剖析模式</translation>
 <translation id="4617338332148204752">在 <ph name="PRODUCT_FRAME_NAME" /> 內略過中繼標記檢查</translation>
+<translation id="461901491675418689">NewBaseUrlInheritanceBehavior 功能已可使用</translation>
 <translation id="4624006912948309924">如果設定這項政策，就能修正 <ph name="PRODUCT_OS_NAME" /> 會在啟動器列中將哪些應用程式 ID 顯示為固定的應用程式，而且使用者無法進行變更。
 
 如要指定 Chrome 應用程式，可以使用應用程式的 ID，例如 pjkljhegncpnkpknbcohdijeoejaedia；如要指定 Android 應用程式，可以使用應用程式的套件名稱，例如 com.google.android.gm；如要指定網頁應用程式，可以使用「<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />」中所使用的網址，例如 https://google.com/maps；如要指定系統網頁應用程式，可以使用應用程式的蛇形命名名稱，例如 <ph name="PINNED_LAUNCHER_APPS_POLICY_SYSTEM_WEB_APP_EXAMPLE" />。
@@ -7883,6 +7885,7 @@
       如果停用這項政策，系統將不採用沙箱機制執行網路服務程序。如果不採用沙箱機制執行網路服務，可能會讓使用者面臨額外的安全性風險。
       如果不設定這項政策，系統會使用網路沙箱的預設設定。這可能會因 <ph name="PRODUCT_NAME" /> 版本、目前執行的實測和平台而異。
       設置這項政策是為了讓企業能彈性停用網路沙箱，避免第三方軟體干擾網路服務沙箱運作。</translation>
+<translation id="8840243776706727185">NewBaseUrlInheritanceBehavior 功能已停用</translation>
 <translation id="8842208363354615697">允許啟用僅限 HTTPS 模式</translation>
 <translation id="885147810817138322">向使用者顯示媒體推薦內容</translation>
 <translation id="8852579753940989645">啟用轉譯器程式碼完整性功能</translation>

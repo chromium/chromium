@@ -689,6 +689,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
+<translation id="7458970041932198923">Povežite se z omrežjem in znova naložite stran, če si želite ogledati in nastaviti avatarje.</translation>
 <translation id="7469648432129124067">Zaznan je portal</translation>
 <translation id="7481312909269577407">Naprej</translation>
 <translation id="7487067081878637334">Tehnologija</translation>
@@ -843,6 +844,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Optično preberi}=1{Optično preberi stran {NUMBER_OF_PAGES}}one{Optično preberi stran {NUMBER_OF_PAGES}}two{Optično preberi stran {NUMBER_OF_PAGES}}few{Optično preberi stran {NUMBER_OF_PAGES}}other{Optično preberi stran {NUMBER_OF_PAGES}}}</translation>
 <translation id="8997710128084572139">Raven napolnjenosti baterije naprave <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="8998289560386111590">Ni na voljo v vaši napravi</translation>
 <translation id="9003704114456258138">Frekvenca</translation>
 <translation id="9025198690966128418">Uporabi kot osebno napravo</translation>
 <translation id="9028832514430399253">Vklopite preklop, če želite izbrati možnosti ohranjevalnika zaslona.</translation>

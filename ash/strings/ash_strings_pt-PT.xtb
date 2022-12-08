@@ -924,7 +924,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6107292179555508368">O acesso ao microfone e à câmara está desativado neste dispositivo</translation>
 <translation id="6114505516289286752">Ficheiros de voz em <ph name="LANGUAGE" /> transferidos</translation>
-<translation id="6116825164611323644">O acesso à câmara está desativado neste dispositivo</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmar transferência de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Assistente Google não está disponível em sessões de convidado.</translation>
@@ -1395,7 +1394,6 @@ Nova instalação</translation>
 <translation id="8735678380411481005">Cor da retroiluminação do teclado</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Ative o acesso à câmara para permitir que as apps e as páginas Web com autorização de acesso à câmara usem as câmaras associadas a este dispositivo.</translation>
 <translation id="8755498163081687682">Valide a sua identidade: <ph name="ORIGIN_NAME" /> pretende confirmar a sua identidade.</translation>
 <translation id="875593634123171288">Mostrar definições da VPN</translation>
 <translation id="8759408218731716181">Não é possível configurar o início de sessão integrado</translation>

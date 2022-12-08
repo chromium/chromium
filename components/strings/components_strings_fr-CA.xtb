@@ -309,7 +309,6 @@
 <translation id="168693727862418163">La validation de la valeur de cette politique par rapport à son schéma a échoué. La politique sera ignorée.</translation>
 <translation id="168841957122794586">Le certificat du serveur contient une clé de chiffrement faible.</translation>
 <translation id="1697532407822776718">Vous êtes prêt!</translation>
-<translation id="1699570257714336246">Renseignements manquants</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Lettre</translation>
 <translation id="1706625117072057435">Niveaux de zoom</translation>
@@ -1165,7 +1164,6 @@
 <translation id="3961148744525529027">La feuille du module de traitement du paiement est ouverte à moitié</translation>
 <translation id="3962859241508114581">Chanson précédente</translation>
 <translation id="3963721102035795474">Mode Lecteur</translation>
-<translation id="3963837677003247395">Poursuivre manuellement?</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Aucun}=1{À partir de 1 site }one{À partir de # site }other{À partir de # sites }}</translation>
 <translation id="3969052498612555048">Vous ne trouvez pas votre code? <ph name="BEGIN_LINK" />Obtenir un nouveau code<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
@@ -1943,7 +1941,6 @@
 <translation id="5937560539988385583">Page traduite</translation>
 <translation id="5938153366081463283">Ajouter une carte virtuelle</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347">Ouverture du site <ph name="SITE_NAME" /> en cours…</translation>
 <translation id="5947508410139465809">Les fichiers que vous téléversez ou joignez sont envoyés à Google Cloud ou à des tiers afin d'être analysés. Par exemple, ils peuvent être analysés à la recherche de données confidentielles ou de logiciels malveillants et peuvent être stockés en fonction des politiques de l'entreprise.</translation>
 <translation id="5951495562196540101">Impossible de s'inscrire avec un compte de consommateur (licence empaquetée disponible).</translation>
 <translation id="5953516610448771166">Les sous-titres instantanés ne sont pas offerts pour ce contenu. Pour afficher des sous-titres, bloquez <ph name="CONTENT_SETTINGS" /> pour ce site.</translation>
@@ -2080,7 +2077,6 @@
 <translation id="6295618774959045776">Code CVC :</translation>
 <translation id="6300452962057769623">{0,plural, =0{Votre appareil va redémarrer maintenant}=1{Votre appareil va redémarrer dans 1 seconde}one{Votre appareil va redémarrer dans # seconde}other{Votre appareil va redémarrer dans # secondes}}</translation>
 <translation id="6301104306974789820">Recevoir les notifications de suivi de prix</translation>
-<translation id="6302269476990306341">Arrêt de l'Assistant Google dans Chrome en cours…</translation>
 <translation id="6305205051461490394">Impossible d'accéder à <ph name="URL" />.</translation>
 <translation id="6311165245110979290">Carte virtuelle disponible</translation>
 <translation id="6312113039770857350">La page Web n'est pas disponible</translation>
@@ -2337,7 +2333,6 @@
 <translation id="6971439137020188025">Créer rapidement une présentation Google dans Présentations</translation>
 <translation id="6972629891077993081">Appareils HID</translation>
 <translation id="6973656660372572881">Des serveurs mandataires fixes et une URL de script .pac sont spécifiés.</translation>
-<translation id="6973932557599545801">Désolée, je ne suis plus en mesure de vous aider, veuillez continuer par vous-même.</translation>
 <translation id="6973988895180423160">3,5 po x 5 po</translation>
 <translation id="6978236010531171013">Partager quand même</translation>
 <translation id="6979158407327259162">Google Disque</translation>
@@ -2533,7 +2528,6 @@ Détails supplémentaires :
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur ce problème.</translation>
 <translation id="7455133967321480974">Utiliser le paramètre global par défaut (« Bloquer »)</translation>
 <translation id="745640750744109667">A0 x 3</translation>
-<translation id="7460618730930299168">Le contenu présenté est différent de celui que vous aviez sélectionné. Continuer?</translation>
 <translation id="7461924472993315131">NIP</translation>
 <translation id="7463075493919226237">Football australien</translation>
 <translation id="7465963048299965912">10 po x 13 po</translation>
@@ -3222,7 +3216,6 @@ Détails supplémentaires :
 <translation id="937457230470581909">Zoos, aquariums et réserves naturelles</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="940053046584497293">Voyages et transports</translation>
-<translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="945855313015696284">Vérifiez les renseignements ci-dessous et supprimez les cartes incorrectes</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer un site dans Google Sites rapidement</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>

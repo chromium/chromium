@@ -924,7 +924,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="6103838137565245112">hệ thống</translation>
 <translation id="6107292179555508368">Quyền truy cập vào micrô và máy ảnh trên thiết bị này đều đang tắt</translation>
 <translation id="6114505516289286752">Đã tải tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>
-<translation id="6116825164611323644">Quyền truy cập vào máy ảnh đang tắt trên thiết bị này</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Xác nhận tải <ph name="FILENAME" /> xuống</translation>
 <translation id="612734058257491180">Bạn không thể dùng Trợ lý Google trong phiên khách.</translation>
@@ -1395,7 +1394,6 @@ Mới cài đặt</translation>
 <translation id="8735678380411481005">Màu đèn nền bàn phím</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Bật quyền truy cập vào máy ảnh để cho phép các ứng dụng và trang web có quyền này dùng (các) máy ảnh được kết nối với thiết bị.</translation>
 <translation id="8755498163081687682">Xác minh danh tính của bạn: <ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>
 <translation id="875593634123171288">Hiển thị các tùy chọn cài đặt VPN</translation>
 <translation id="8759408218731716181">Không thể thiết lập đăng nhập nhiều tài khoản</translation>

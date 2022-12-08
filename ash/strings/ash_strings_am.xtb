@@ -665,6 +665,7 @@
 <translation id="4666082839192943839">ሁሉንም ካሜራዎች ሁልጊዜ ለማገድ የካሜራውን መዳረሻ በዚህ መሣሪያ ላይ ያጥፉ።</translation>
 <translation id="4666911709726371538">ተጨማሪ መተግበሪያዎች</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" />ን በማውረድ ላይ</translation>
+<translation id="468293128311738995">መተግበሪያዎች ከስልክዎ</translation>
 <translation id="4690510401873698237">መደርደሪያ ከታች</translation>
 <translation id="4696813013609194136">በወላጅ ኮድ መሣሪያን ክፈት</translation>
 <translation id="4702647871202761252">የግላዊነት ማያ ገጽ ጠፍቷል</translation>
@@ -921,7 +922,6 @@
 <translation id="6103838137565245112">ሥርዓት</translation>
 <translation id="6107292179555508368">ማይክሮፎን እና የካሜራ መዳረሻዎች በዚህ መሣሪያ ላይ ጠፍተዋል</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> የንግግር ፋይሎች ወርደዋል</translation>
-<translation id="6116825164611323644">በዚህ መሣሪያ ላይ የካሜራ መዳረሻ ጠፍቷል</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />። <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ማውረድን ያረጋግጡ</translation>
 <translation id="612734058257491180">የGoogle ረዳቱ በእንግዳ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
@@ -1283,6 +1283,7 @@
 <translation id="8142441511840089262">ድርብ ጠቅታ</translation>
 <translation id="8142699993796781067">የግል አውታረ መረብ</translation>
 <translation id="8144760705599030999">ከሌሎች መሣሪያዎችዎ ጋር በፍጥነት ለማጣመር የእርስዎ <ph name="NAME" />ን ወደ <ph name="EMAIL" /> ላይ ያስቀምጡ</translation>
+<translation id="8144914663975476336">የመቅዳት ቅርጸትን ይምረጡ</translation>
 <translation id="8149413265954228307">የብሉቱዝ ቅንብሮችን አሳይ። <ph name="STATE_TEXT" />።</translation>
 <translation id="8152092012181020186">ለመዝጋት Ctrl + W ይጫኑ።</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />፣ ራስሰር ሙላ</translation>
@@ -1388,7 +1389,6 @@
 <translation id="8735678380411481005">የቁልፍ ሰሌዳ የጀርባ ብርሃን ቀለም</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />፣
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">የካሜራ ፈቃድ ያላቸው መተግበሪያዎች እና ድረ-ገጾች ከዚህ መሣሪያ ጋር የተገናኘውን ካሜራ(ዎች) እንዲጠቀሙ ለመፍቀድ የካሜራ መዳረሻን ያብሩ።</translation>
 <translation id="8755498163081687682">የእርስዎን ማንነት ያረጋግጡ፦ <ph name="ORIGIN_NAME" /> እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="875593634123171288">የቪፒኤን ቅንብሮችን አሳይ</translation>
 <translation id="8759408218731716181">ባለብዙ መለያ መግቢያን ማዋቀር አልተቻለም</translation>

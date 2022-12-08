@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">ସମସ୍ତ ଇନକଗ୍ନିଟୋ ଟାବକୁ ବନ୍ଦ କରିବେ?</translation>
 <translation id="1657719826150349398">ଟାବ୍‍କୁ ତଳକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}}</translation>
 <translation id="2118649612461486615">ଷ୍ଟୋର୍ ସୂଚନା</translation>
 <translation id="2162620598375156287">ବର୍ତ୍ତମାନ <ph name="SOURCE_WEBSITE" />ରେ <ph name="CURRENT_PRICE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର ନାହିଁ}other{ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କର ନାହିଁ}}</translation>
 <translation id="2277224997687551299">ଗ୍ରୁପ ନାମ ଏଡିଟ୍ କରନ୍ତୁ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ଗ୍ରୁପରୁ <ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ।}other{ଗ୍ରୁପରୁ <ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ କାଢ଼ି ଦିଅନ୍ତୁ।}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}other{ଟାବକୁ ବୁକମାର୍କ କରନ୍ତୁ}}</translation>
 <translation id="2479148705183875116">ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍ ସଙ୍କୁଚିତ କରନ୍ତୁ।}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ।}}</translation>
 <translation id="2569352796411618312">ପ୍ରସ୍ତାବ: ଆପଣଙ୍କର <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ନିକଟରେ ବ୍ୟବହୃତ ହୋଇନାହିଁ। ସେଗୁଡ଼ିକୁ ବନ୍ଦ କରିବେ?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="8304833501377495048">ଟାବ୍ ଷ୍ଟ୍ରିପ୍ ପୁଣି ଦେଖାଇବେ ନାହିଁ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}}</translation>
+<translation id="8398929769197326728">ନୂଆ ଫୋଲ୍ଡର - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରନ୍ତୁ।</translation>
 <translation id="8714939927607906138">କମ୍ ଦାମ୍</translation>
 <translation id="8749939518995770034">ବନ୍ଦ କରାଯାଇଥିବା ଟାବ୍ ଷ୍ଟ୍ରିପ୍</translation>

@@ -308,7 +308,6 @@
 <translation id="168693727862418163">Կանոնը կանտեսվի, քանի որ դրա արժեքը չի համապատասխանում սխեմային։</translation>
 <translation id="168841957122794586">Սերվերի վկայագիրը թույլ գաղտնագրման բանալի ունի:</translation>
 <translation id="1697532407822776718">Տեղակայումը բարեհաջող ավարտված է:</translation>
-<translation id="1699570257714336246">Տեղեկություններ չկան</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706625117072057435">Մասշտաբավորման մակարդակներ</translation>
@@ -1163,7 +1162,6 @@
 <translation id="3961148744525529027">Վճարման մշակման թերթը կիսով չափ բացված է</translation>
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3963721102035795474">Ընթերցողի ռեժիմ</translation>
-<translation id="3963837677003247395">Լրացնե՞լ ձեռքով</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Ոչինչ չկա}=1{1 կայքից }one{# կայքից }other{# կայքից }}</translation>
 <translation id="3969052498612555048">Չե՞ք կարողանում գտնել ձեր կոդը։ <ph name="BEGIN_LINK" />Ստանալ նոր կոդ<ph name="END_LINK" /></translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
@@ -1941,7 +1939,6 @@
 <translation id="5937560539988385583">Էջը թարգմանված է</translation>
 <translation id="5938153366081463283">Ավելացրեք վիրտուալ քարտ</translation>
 <translation id="5938793338444039872">Troy</translation>
-<translation id="5946937721014915347">Բացվում է <ph name="SITE_NAME" /> կայքը…</translation>
 <translation id="5947508410139465809">Ձեր վերբեռնած կամ կցած ֆայլերը ուղարկվում են Google Cloud կամ գործընկեր կազմակերպություններին՝ վերլուծության նպատակով։ Օրինակ՝ դրանցում կարող է ստուգվել խիստ անձնական տվյալների կամ վնասագրերի առկայությունը, և դրանք կարող են պահվել կազմակերպության կանոններին համաձայն։</translation>
 <translation id="5951495562196540101">Հնարավոր չէ գրանցվել սովորական հաշվով (հասանելի է փաթեթով արտոնագիր)։</translation>
 <translation id="5953516610448771166">Կենդանի ենթագրերը հասանելի չեն այս մեդիա բովադնակության համար։ Ենթագրեր ստանալու համար արգելափակեք <ph name="CONTENT_SETTINGS" />ն այս կայքի համար</translation>
@@ -1963,6 +1960,7 @@
 <translation id="5995727681868049093">Կառավարել տվյալները, գաղտնիությունն ու անվտանգությունը Google հաշվում</translation>
 <translation id="5997247540087773573">Գաղտնաբառը, որը հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Ձեր հաշիվները պաշտպանելու համար Google գաղտնաբառերի կառավարիչը խորհուրդ է տալիս անհապաղ փոխել այն և ստուգել պահված գաղտնաբառերը։</translation>
 <translation id="6000758707621254961">«<ph name="SEARCH_TEXT" />»-ի որոնման <ph name="RESULT_COUNT" /> արդյունք</translation>
+<translation id="6005765687956866568">Ինքնալրացված տեղեկությունները ջնջվել են ձևից</translation>
 <translation id="6006365096047131769">3 x 5 դյույմ</translation>
 <translation id="6006484371116297560">Դասական</translation>
 <translation id="6008122969617370890">N-ից 1 հերթականությամբ</translation>
@@ -2077,7 +2075,6 @@
 <translation id="6295618774959045776">CVC կոդ՝</translation>
 <translation id="6300452962057769623">{0,plural, =0{Սարքը հիմա կվերագործարկվի}=1{Սարքը կվերագործարկվի 1 վայրկյանից}one{Սարքը կվերագործարկվի # վայրկյանից}other{Սարքը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6301104306974789820">Ստանալ ծանուցումներ գների հետագծման մասին</translation>
-<translation id="6302269476990306341">Google Օգնականը Chrome-ում կանջատվի</translation>
 <translation id="6305205051461490394"><ph name="URL" />-ն անհասանելի է:</translation>
 <translation id="6311165245110979290">Հասանելի է վիրտուալ քարտ</translation>
 <translation id="6312113039770857350">Կայքէջն անհասանելի է</translation>
@@ -2272,6 +2269,7 @@
 <translation id="6826993739343257035">Թույլատրե՞լ AR պարամետրը</translation>
 <translation id="6828866289116430505">Գենետիկա</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
+<translation id="6832753933931306326">Ձևն ինքնալրացվել է</translation>
 <translation id="6842196666980060516">184 x 260 մմ</translation>
 <translation id="6846340164947227603">Օգտագործել վիրտուալ քարտի համարը</translation>
 <translation id="6852204201400771460">Կրկին բեռնե՞լ հավելվածը</translation>
@@ -2332,7 +2330,6 @@
 <translation id="6971439137020188025">Արագ ստեղծել Google ներկայացում Սլայդներում</translation>
 <translation id="6972629891077993081">HID սարքեր</translation>
 <translation id="6973656660372572881">Նշված են և ֆիքսված պրոքսի-սերվերները, և PAC սկրիպտների URL-ը:</translation>
-<translation id="6973932557599545801">Այլևս չեմ կարող օգնել ձեզ: Շարունակեք ինքնուրույն:</translation>
 <translation id="6973988895180423160">3,5 x 5 դյույմ</translation>
 <translation id="6978236010531171013">Կիսվել</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -2528,7 +2525,6 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> այս խնդրի մասին:</translation>
 <translation id="7455133967321480974">Օգտագործել համընդհանուր կանխադրվածը (Արգելափակել)</translation>
 <translation id="745640750744109667">A0x3</translation>
-<translation id="7460618730930299168">Այս աշխատաշրջանի կարգավորումները տարբերվում են ձեր ընտրած աշխատաշրջանի կարգավորումներից: Շարունակե՞լ</translation>
 <translation id="7461924472993315131">Ամրացնել</translation>
 <translation id="7463075493919226237">Ավստրալիական ֆուտբոլ</translation>
 <translation id="7465963048299965912">10 x 13 դյույմ</translation>
@@ -2726,6 +2722,7 @@
 <translation id="7950027195171824198">Կառավարեք քուքիների պարամետրերը Chrome-ի կարգավորումներում</translation>
 <translation id="7951415247503192394">(32 բիթանոց)</translation>
 <translation id="7952192831285741665">European EDP</translation>
+<translation id="7952804540472583406"><ph name="BEGIN_LINK" />Մուտք<ph name="END_LINK" /> ցանց։</translation>
 <translation id="7953569069500808819">Եզրակար վերևում</translation>
 <translation id="7956713633345437162">Բջջային էջանիշներ</translation>
 <translation id="7961015016161918242">Երբեք</translation>
@@ -3216,7 +3213,6 @@
 <translation id="937457230470581909">Կենդանաբանական այգիներ, ակվարիումներ և արգելոցներ</translation>
 <translation id="939736085109172342">Նոր պանակ</translation>
 <translation id="940053046584497293">Ճանապարհորդություն և տրանսպորտ</translation>
-<translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="945855313015696284">Ստուգեք ստորև ներկայացված տեղեկությունները և ջնջեք անվավեր քարտերը</translation>
 <translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Google Կայքերում արագ կայք ստեղծելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="950736567201356821">Երեք անցք վերևում</translation>

@@ -668,6 +668,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="4666082839192943839">Ha azt szeretné, hogy az összes kamera, mindig le legyen tiltva, kapcsolja ki az eszköz kamerájához való hozzáférést.</translation>
 <translation id="4666911709726371538">További alkalmazások</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> letöltése</translation>
+<translation id="468293128311738995">Alkalmazások a telefonjáról</translation>
 <translation id="4690510401873698237">A polc alul található</translation>
 <translation id="4696813013609194136">Zárolás feloldása szülői kóddal</translation>
 <translation id="4702647871202761252">Az adatvédelmi képernyő ki van kapcsolva</translation>
@@ -924,7 +925,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6103838137565245112">rendszer</translation>
 <translation id="6107292179555508368">A mikrofon- és a kamera-hozzáférés ki van kapcsolva ezen az eszközön</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nyelvű beszédfájlok letöltve</translation>
-<translation id="6116825164611323644">A kamera-hozzáférés ki van kapcsolva ezen az eszközön</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">A(z) <ph name="FILENAME" /> fájl letöltésének megerősítése</translation>
 <translation id="612734058257491180">A Google Segéd nem áll rendelkezésre Vendég-munkafolyamatban.</translation>
@@ -1289,6 +1289,7 @@ Frissen telepítve</translation>
 <translation id="8142441511840089262">Dupla kattintás</translation>
 <translation id="8142699993796781067">Privát hálózat</translation>
 <translation id="8144760705599030999">Mentse <ph name="NAME" /> eszközét a fiókjába (<ph name="EMAIL" />) a többi eszközével való gyorsabb párosítás érdekében</translation>
+<translation id="8144914663975476336">Felvételi formátum kiválasztása</translation>
 <translation id="8149413265954228307">Bluetooth-beállítások megjelenítése. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">A bezáráshoz nyomja meg a Ctrl + W billentyűkódot.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, automatikus kiegészítés</translation>
@@ -1394,7 +1395,6 @@ Frissen telepítve</translation>
 <translation id="8735678380411481005">Billentyűzet háttérvilágításának színe</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Kapcsolja be a kamerához való hozzáférést, ha engedélyezni szeretné a kamerahasználati engedéllyel rendelkező alkalmazások és weboldalak számára az eszközhöz csatlakoztatott kamera vagy kamerák használatát.</translation>
 <translation id="8755498163081687682">Igazolja személyazonosságát, a következő szeretne meggyőződni a személyazonosságáról: <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">VPN-beállítások megjelenítése</translation>
 <translation id="8759408218731716181">Nem lehet beállítani a többfiókos bejelentkezést</translation>

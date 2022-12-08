@@ -668,6 +668,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4666082839192943839">Para bloquear todas as cámaras continuamente, desactiva o acceso ás cámaras neste dispositivo.</translation>
 <translation id="4666911709726371538">Máis aplicacións</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Aplicacións do teu teléfono</translation>
 <translation id="4690510401873698237">O estante está na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
 <translation id="4702647871202761252">A pantalla de privacidade está desactivada</translation>
@@ -924,7 +925,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6103838137565245112">sistema</translation>
 <translation id="6107292179555508368">Os accesos ao micrófono e á cámara están desactivados neste dispositivo</translation>
 <translation id="6114505516289286752">Descargáronse os ficheiros de voz en <ph name="LANGUAGE" /></translation>
-<translation id="6116825164611323644">O acceso á cámara está desactivado neste dispositivo</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmar descarga de <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">O Asistente de Google non está dispoñible cando se utiliza unha sesión de convidado.</translation>
@@ -1289,6 +1289,7 @@ Nova instalación</translation>
 <translation id="8142441511840089262">Dobre clic</translation>
 <translation id="8142699993796781067">Rede privada</translation>
 <translation id="8144760705599030999">Garda o dispositivo (<ph name="NAME" />) en <ph name="EMAIL" /> para vinculalo máis rápido aos teus outros dispositivos</translation>
+<translation id="8144914663975476336">Selecciona o formato de gravación</translation>
 <translation id="8149413265954228307">Mostrar a configuración do Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Preme Ctrl+W para pechar.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autocompletar</translation>
@@ -1394,7 +1395,6 @@ Nova instalación</translation>
 <translation id="8735678380411481005">Cor de retroiluminación do teclado</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Activa o acceso á cámara para que as aplicacións e páxinas web que teñan permiso poidan usar as cámaras conectadas a este dispositivo.</translation>
 <translation id="8755498163081687682">Verificar identidade: <ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="875593634123171288">Mostrar a configuración da VPN</translation>
 <translation id="8759408218731716181">Erro ao configurar o inicio de sesión múltiple</translation>

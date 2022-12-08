@@ -689,6 +689,7 @@
 <translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{ஸ்கேன் செய்யப்பட்டது. ஒரு பக்கம் ஸ்கேன் செய்யப்பட்டது}other{ஸ்கேன் செய்யப்பட்டது. {NUMBER_OF_PAGES} பக்கங்கள் ஸ்கேன் செய்யப்பட்டன}}</translation>
+<translation id="7458970041932198923">தோற்றப் படங்களைப் பார்க்க மற்றும் அமைக்க நெட்வொர்க்கில் இணைத்து பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="7481312909269577407">அடுத்த பக்கம்</translation>
 <translation id="7487067081878637334">தொழில்நுட்பம்</translation>
@@ -843,6 +844,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ஸ்கேன் செய்}=1{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}other{{NUMBER_OF_PAGES} பக்கங்களை ஸ்கேன் செய்}}</translation>
 <translation id="8997710128084572139">சாதனத்தின் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998289560386111590">உங்கள் சாதனத்தில் இல்லை</translation>
 <translation id="9003704114456258138">அதிர்வெண்</translation>
 <translation id="9025198690966128418">தனிப்பட்ட சாதனமாகப் பயன்படுத்து</translation>
 <translation id="9028832514430399253">ஸ்கிரீன் சேவர் விருப்பங்களைத் தேர்ந்தெடுக்க நிலைமாற்றும் பட்டனை இயக்கவும்</translation>

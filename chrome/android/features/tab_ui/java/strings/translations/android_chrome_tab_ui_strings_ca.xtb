@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{Afegeix <ph name="TABS_COUNT_ONE" /> pestanya seleccionada a les adreces d'interès}other{Afegeix <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades a les adreces d'interès}}</translation>
 <translation id="2118649612461486615">Informació de la botiga</translation>
 <translation id="2162620598375156287">Ara costa <ph name="CURRENT_PRICE" /> a <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Desagrupa la pestanya}other{Desagrupa les pestanyes}}</translation>
 <translation id="2277224997687551299">Edita el nom del grup</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Suprimeix <ph name="TABS_COUNT_ONE" /> pestanya seleccionada del grup.}other{Suprimeix <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades del grup.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Pestanya d'adreces d'interès}other{Pestanyes d'adreces d'interès}}</translation>
 <translation id="2479148705183875116">Ves a Configuració</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="2569352796411618312">Suggeriment: <ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Mou la pestanya cap amunt</translation>
 <translation id="8304833501377495048">No vols que es torni a mostrar la barra de pestanyes?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanca <ph name="TABS_COUNT_ONE" /> pestanya seleccionada}other{Tanca les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
+<translation id="8398929769197326728">Carpeta nova : <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Desplega el grup format per <ph name="NUMBER_OF_TABS" /> pestanyes.</translation>
 <translation id="8714939927607906138">Preu més baix</translation>
 <translation id="8749939518995770034">Barra de pestanyes tancada</translation>

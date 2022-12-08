@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">ປິດແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນທັງໝົດບໍ?</translation>
 <translation id="1657719826150349398">ຍ້າຍແຖບລົງ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_ONE" /> ແຖບ}other{ບຸກມາກແຖບທີ່ເລືອກໄວ້ <ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="2118649612461486615">ຂໍ້​ມູນ​ຮ້ານ​ຄ້າ</translation>
 <translation id="2162620598375156287">ຕອນນີ້ <ph name="CURRENT_PRICE" /> ຢູ່ <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ຍົກເລີກການຈັດກຸ່ມແຖບ}other{ຍົກເລີກການຈັດກຸ່ມແຖບ}}</translation>
 <translation id="2277224997687551299">ແກ້ໄຂຊື່ກຸ່ມ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ລຶບ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກອອກຈາກກຸ່ມ.}other{ລຶບ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກອອກຈາກກຸ່ມ.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{ແຖບບຸກມາກ}other{ແຖບບຸກມາກ}}</translation>
 <translation id="2479148705183875116">ໄປທີ່ການຕັ້ງຄ່າ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ຫຍໍ້ <ph name="TABS_COUNT_ONE" /> ແຖບລົງ.}other{ຫຍໍ້ກຸ່ມແຖບທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບແລ້ວ.}}</translation>
 <translation id="2569352796411618312">ການແນະນຳ: ທ່ານບໍ່ໄດ້ໃຊ້ແຖບຂອງທ່ານ <ph name="NUMBER_OF_TABS" /> ແຖບມາໄລຍະໜຶ່ງແລ້ວ. ປິດພວກມັນບໍ?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">ຍ້າຍແຖບຂຶ້ນເທິງ</translation>
 <translation id="8304833501377495048">ຫ້າມສະແດງລາຍແຖບອີກບໍ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ປິດ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກ}other{ປິດ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກ}}</translation>
+<translation id="8398929769197326728">ໂຟນເດີໃໝ່ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ຂະຫຍາຍກຸ່ມແຖບທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ.</translation>
 <translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>
 <translation id="8749939518995770034">ປິດລາຍແຖບແລ້ວ</translation>

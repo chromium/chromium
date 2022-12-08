@@ -689,6 +689,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7415801143053185905">Väga pikk HTTP latentsusaeg</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Skannimine on lõpetatud. Skanniti üks leht.}other{Skannimine on lõpetatud. Skanniti {NUMBER_OF_PAGES} lehte}}</translation>
+<translation id="7458970041932198923">Avataride vaatamiseks ja määramiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
 <translation id="7469648432129124067">Tuvastati portaal</translation>
 <translation id="7481312909269577407">Edasta</translation>
 <translation id="7487067081878637334">Tehnoloogia</translation>
@@ -843,6 +844,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanni}=1{Skanni {NUMBER_OF_PAGES}. lehte}other{Skanni {NUMBER_OF_PAGES}. lehte}}</translation>
 <translation id="8997710128084572139">Seadme aku laetus on <ph name="BATTERY_PERCENTAGE" />%.</translation>
+<translation id="8998289560386111590">Pole teie seadmes saadaval</translation>
 <translation id="9003704114456258138">Sagedus</translation>
 <translation id="9025198690966128418">Isikliku seadme kasutamine</translation>
 <translation id="9028832514430399253">Ekraanisäästja valikute tegemiseks lülitage lüliti sisse</translation>

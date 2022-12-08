@@ -667,6 +667,7 @@
 <translation id="4666082839192943839">Запретите доступ к камерам на этом устройстве, чтобы заблокировать все камеры.</translation>
 <translation id="4666911709726371538">Больше приложений</translation>
 <translation id="4667099493359681081">Скачивание файла <ph name="FILENAME" /></translation>
+<translation id="468293128311738995">Приложения на вашем телефоне</translation>
 <translation id="4690510401873698237">Временное хранилище размещено в нижней части экрана</translation>
 <translation id="4696813013609194136">Требуется родительский код доступа</translation>
 <translation id="4702647871202761252">Экран конфиденциальности отключен</translation>
@@ -923,7 +924,6 @@
 <translation id="6103838137565245112">система</translation>
 <translation id="6107292179555508368">На этом устройстве запрещен доступ к камере и микрофону</translation>
 <translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
-<translation id="6116825164611323644">Доступ к камере отключен на этом устройстве</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Подтвердите скачивание файла <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">В рамках гостевого сеанса Google Ассистент недоступен.</translation>
@@ -1288,6 +1288,7 @@
 <translation id="8142441511840089262">Двойное нажатие кнопкой мыши</translation>
 <translation id="8142699993796781067">Частные сети</translation>
 <translation id="8144760705599030999">Для более быстрого подключения к другим своим устройствам добавьте <ph name="NAME" /> в аккаунт <ph name="EMAIL" />.</translation>
+<translation id="8144914663975476336">Выбрать формат записи</translation>
 <translation id="8149413265954228307">Показать настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Нажмите Ctrl + W, чтобы закрыть вкладку.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, автозаполнение</translation>
@@ -1393,7 +1394,6 @@
 <translation id="8735678380411481005">Цвет подсветки клавиатуры</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Разрешите доступ к камере, чтобы приложения и веб-страницы могли использовать камеры этого устройства или подключенные к нему.</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности</translation>
 <translation id="875593634123171288">Показать настройки VPN</translation>
 <translation id="8759408218731716181">Не удалось настроить множественный вход</translation>

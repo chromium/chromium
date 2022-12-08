@@ -925,7 +925,6 @@
 <translation id="6103838137565245112">సిస్టమ్</translation>
 <translation id="6107292179555508368">ఈ పరికరంలో మైక్రోఫోన్, కెమెరా యాక్సెస్‌లు రెండూ ఆఫ్‌లో ఉన్నాయి</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్‌లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
-<translation id="6116825164611323644">ఈ పరికరంలో కెమెరా యాక్సెస్ ఆఫ్ చేయబడింది</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="612734058257491180">అతిథి సెషన్‌లో Google Assistant పని చేయదు.</translation>
@@ -1396,7 +1395,6 @@
 <translation id="8735678380411481005">కీబోర్డ్ బ్యాక్‌లైట్ రంగు</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">కెమెరా యాక్సెస్‌ను ఆన్ చేయండి, తద్వారా కెమెరా అనుమతి ఉన్న యాప్‌లు, వెబ్‌పేజీలు ఈ పరికరానికి కనెక్ట్ చేయబడిన కెమెరా(ల)ను ఉపయోగించగలవు.</translation>
 <translation id="8755498163081687682">మీ గుర్తింపును వెరిఫై చేయండి: <ph name="ORIGIN_NAME" /> అది మీరేనని నిర్ధారించాలనుకుంటుంది</translation>
 <translation id="875593634123171288">VPN సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="8759408218731716181">బహుళ సైన్-ఇన్‌ను సెటప్ చేయలేరు</translation>

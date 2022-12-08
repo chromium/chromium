@@ -9,11 +9,13 @@
 <translation id="1499635324672558517">Барлық инкогнито қойындысы жабылсын ба?</translation>
 <translation id="1657719826150349398">Қойындыны төмен жылжыту</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
+<translation id="2050597508048557928">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таңдалған қойындыға бетбелгі қою}other{<ph name="TABS_COUNT_MANY" /> таңдалған қойындыға бетбелгі қою}}</translation>
 <translation id="2118649612461486615">Дүкен туралы ақпарат</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтындағы қазіргі бағасы – <ph name="CURRENT_PRICE" />.</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Қойындыны топтан шығару}other{Қойындыларды топтан шығару}}</translation>
 <translation id="2277224997687551299">Топтың атауын өзгерту</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан өшіру.}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан өшіру.}}</translation>
+<translation id="2330212241471632770">{TABS_COUNT,plural, =1{Қойындыға бетбелгі қою}other{Қойындыларға бетбелгі қою}}</translation>
 <translation id="2479148705183875116">Параметрлерге өту</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жию.}}</translation>
 <translation id="2569352796411618312">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
@@ -95,6 +97,7 @@
 <translation id="8205266828577616993">Қойындыны жоғары жылжыту</translation>
 <translation id="8304833501377495048">Қойындылар жолағы қайта көрсетілмесін бе?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны жабу}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны жабу}}</translation>
+<translation id="8398929769197326728">Жаңа қалта – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Қойындылар тобына <ph name="NUMBER_OF_TABS" /> қойынды қосыңыз.</translation>
 <translation id="8714939927607906138">Арзанырақ</translation>
 <translation id="8749939518995770034">Жабық қойындылар жолағы</translation>

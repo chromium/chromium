@@ -1960,6 +1960,7 @@
 <translation id="275662540872599901">තිරය ක්‍රියාවිරහිතයි</translation>
 <translation id="2757161511365746634">මුද්‍රණ යන්ත්‍රය බලන්න</translation>
 <translation id="2757338480560142065">ඔබ සුරකින මුරපදය <ph name="WEBSITE" /> සඳහා වන ඔබේ මුරපදයට ගැළපෙන බව සහතික කර ගන්න</translation>
+<translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> සඳහා සෙවීම් ප්‍රතිඵල කිසිවක් ලබා දුන්නේ නැත</translation>
 <translation id="2762441749940182211">කැමරාව අවහිරයි</translation>
 <translation id="2764786626780673772">VPN විස්තර</translation>
 <translation id="2764920001292228569">පැතිකඩ නමක් ඇතුළු කරන්න</translation>
@@ -2857,6 +2858,7 @@
 <translation id="3616741288025931835">ශවේෂණ දත්ත හිස් කරන්න</translation>
 <translation id="3617891479562106823">පසුබිම් නොතිබේ. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="3619115746895587757">කපුචිනෝ</translation>
+<translation id="3620136223548713675">භූ ස්ථානය</translation>
 <translation id="3621807901162200696">ChromeOS විශේෂාංග සහ ක්‍රියාකාරිත්වය වැඩි දියුණු කිරීමට උදවු කරන්න</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{යෙදුමක්}one{යෙදුම් #}other{යෙදුම් #}}</translation>
 <translation id="362333465072914957">CA විසින් සහතිකයක් නිකුත් වීම බලාපොරොත්තු වේ</translation>
@@ -5272,6 +5274,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5886112770923972514">සමීපව වේගවත් යුගල උපාංග සම්බන්ධ කර ඉක්මනින් පිහිටුවන්න</translation>
 <translation id="5886384907280980632">දැන් ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="5889282057229379085">අතරමැදි CAs හි උපරිම සංඛ්‍යාව: <ph name="NUM_INTERMEDIATE_CA" /></translation>
+<translation id="5889629805140803638">ඔබගේම <ph name="BEGIN_LINK" />සමමුහුර්ත මුර-වැකිකඩ<ph name="END_LINK" /> සමග සමමුහුර්ත කළ දත්ත සංකේතනය කරන්න Google Pay වෙතින් ගෙවීම් ක්‍රම සහ ලිපින සංකේතනය කරනු නොලැබේ. Chrome වෙතින් බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහුර්ත නොවනු ඇත.</translation>
 <translation id="5891688036610113830">කැමති Wi-Fi ජාල</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
 <translation id="5895335062901455404">ඔබ ඔබගේ Google ගිණුම සමඟ පුරන විට ඔබගේ සුරකින ලද මනාප සහ ක්‍රියාකාරකම් ඕනෑම ChromeOS Flex උපාංගයක සූදානම් කරනු ඇත. ඔබට සැකසීම් තුළ සමමුහුර්ත කළ යුතු දෙය තෝරා ගත හැකිය.</translation>
@@ -6932,6 +6935,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7465635034594602553">යමක් වැරදිණි. විනාඩි කිහිපයක් රැඳී සිට, <ph name="APP_NAME" /> ධාවන කිරීමට නැවත උත්සාහ කරන්න.</translation>
 <translation id="7465778193084373987">Netscape සහතිකය අවලංගු කිරීමේ URL</translation>
 <translation id="7466431077154602932">සංයුක්ත දසුන</translation>
+<translation id="7466556884531675354">සටහන් කිසිවක් සුරැක නැත</translation>
 <translation id="746861123368584540">දිගුව පූරණය කරන ලදි</translation>
 <translation id="7470424110735398630">ඔබගේ පසුරු පුවරුව බැලීමට ඉඩ දේ</translation>
 <translation id="747114903913869239">දෝෂය: දිගුව විසංකේතනය කිරීමට නොහැකියිය</translation>
@@ -7909,6 +7913,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8351316842353540018">සැම විටම a11y විකල්ප පෙන්වන්න</translation>
 <translation id="8351419472474436977">මෙම දිගුව ඔබගේ ප්‍රොක්සි සැකසීම්වල පාලනය ගෙන ඇත, ඉන් අදහස් වන්නේ ඔබ සබැඳිව කරන ඕනෑම දෙයක් වෙනස් කිරීමට, බිඳී යාමට, හෝ හොරෙන් අසා සිටීමට හැකි බවයි. මෙම වෙනස් වීම සිදු වූයේ ඇයිදැයි ඔබට ව්ශ්වාස නැතිනම්, ඔබට බොහෝ විට එය අවශ්‍ය නොවිය හැක.</translation>
 <translation id="8351630282875799764">බැටරිය ආරෝපණ නොවේ</translation>
+<translation id="8352287103893778223">පටිති-සමූහයේ මාතෘකාව</translation>
 <translation id="835238322900896202">අස්ථාපනය අතරතුරු දෝෂයක් සිදු විය. පර්යන්තය හරහා අස්ථාපන කරන්න.</translation>
 <translation id="8353683614194668312">එයට හැක:</translation>
 <translation id="8354034204605718473">ඔබගේ දරුවාගේ PIN අංකය එක් කර ඇත</translation>

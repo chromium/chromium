@@ -925,7 +925,6 @@
 <translation id="6103838137565245112">систем</translation>
 <translation id="6107292179555508368">Энэ төхөөрөмж дээр микрофон болон камерын хандалтууд унтраалттай байна</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> дээрх ярианы файлуудыг татсан</translation>
-<translation id="6116825164611323644">Энэ төхөөрөмж дээр камерын хандалтыг унтраасан</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" />-н таталтыг баталгаажуулах</translation>
 <translation id="612734058257491180">Зочны сургалтад Google Туслах боломжгүй байна.</translation>
@@ -1397,7 +1396,6 @@
 <translation id="8735678380411481005">Гарын арын гэрлийн өнгө</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
-<translation id="8752416742247198423">Камерын зөвшөөрөлтэй аппууд болон веб хуудаснуудад энэ төхөөрөмжтэй холбогдсон камеруудыг ашиглахыг зөвшөөрөхийн тулд камерын хандалтыг асаана уу.</translation>
 <translation id="8755498163081687682">Өөрийгөө баталгаажуулах: <ph name="ORIGIN_NAME" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="875593634123171288">VPN тохиргоог харуулах</translation>
 <translation id="8759408218731716181">Олон хэрэглэгчтэй нэвтрэх эрхийг суулгаж чадахгүй байна</translation>
