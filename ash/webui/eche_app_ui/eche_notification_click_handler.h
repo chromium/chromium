@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/notification_click_handler.h"
 #include "chromeos/ash/components/phonehub/notification_interaction_handler.h"
+#include "chromeos/ash/components/phonehub/phone_model.h"
 
 namespace ash {
 
@@ -47,6 +48,7 @@ class EcheNotificationClickHandler : public phonehub::NotificationClickHandler,
   bool IsClickable(FeatureStatus status);
 
   phonehub::NotificationInteractionHandler* handler_;
+  phonehub::PhoneModel* phone_model_;
   FeatureStatusProvider* feature_status_provider_;
   LaunchAppHelper* launch_app_helper_;
   bool is_click_handler_set_ = false;

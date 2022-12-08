@@ -29,8 +29,8 @@ class LaunchedAppInfo {
     ~Builder();
 
     std::unique_ptr<LaunchedAppInfo> Build() {
-      return base::WrapUnique(
-          new LaunchedAppInfo(package_name_, visible_name_, user_id_, icon_));
+      return base::WrapUnique(new LaunchedAppInfo(
+          package_name_, visible_name_, user_id_, icon_, phone_name_));
     }
     Builder& SetPackageName(const std::string& package_name) {
       package_name_ = package_name;
@@ -52,11 +52,17 @@ class LaunchedAppInfo {
       return *this;
     }
 
+    Builder& SetPhoneName(const std::u16string& phone_name) {
+      phone_name_ = phone_name;
+      return *this;
+    }
+
    private:
     std::string package_name_;
     std::u16string visible_name_;
     absl::optional<int64_t> user_id_;
     gfx::Image icon_;
+    std::u16string phone_name_;
   };
 
   LaunchedAppInfo() = delete;
@@ -68,18 +74,21 @@ class LaunchedAppInfo {
   std::u16string visible_name() const { return visible_name_; }
   absl::optional<int64_t> user_id() const { return user_id_; }
   gfx::Image icon() const { return icon_; }
+  std::u16string phone_name() const { return phone_name_; }
 
  protected:
   LaunchedAppInfo(const std::string& package_name,
                   const std::u16string& visible_name,
                   const absl::optional<int64_t>& user_id,
-                  const gfx::Image& icon);
+                  const gfx::Image& icon,
+                  const std::u16string& phone_name);
 
  private:
   std::string package_name_;
   std::u16string visible_name_;
   absl::optional<int64_t> user_id_;
   gfx::Image icon_;
+  std::u16string phone_name_;
 };
 
 // Factory to create a single EcheAppManager.
@@ -101,7 +110,8 @@ class EcheAppManagerFactory : public ProfileKeyedServiceFactory {
                             const std::string& package_name,
                             const std::u16string& visible_name,
                             const absl::optional<int64_t>& user_id,
-                            const gfx::Image& icon);
+                            const gfx::Image& icon,
+                            const std::u16string& phone_name);
 
   void SetLastLaunchedAppInfo(
       std::unique_ptr<LaunchedAppInfo> last_launched_app_info);

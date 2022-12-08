@@ -81,7 +81,8 @@ class EcheAlertGeneratorTest : public testing::Test {
                                  const std::string& package_name,
                                  const std::u16string& visible_name,
                                  const absl::optional<int64_t>& user_id,
-                                 const gfx::Image& icon) {
+                                 const gfx::Image& icon,
+                                 const std::u16string& phone_name) {
     // Do nothing.
   }
 

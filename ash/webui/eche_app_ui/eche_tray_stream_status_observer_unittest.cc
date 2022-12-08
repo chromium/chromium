@@ -96,7 +96,7 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
 };
 
 TEST_F(EcheTrayStreamStatusObserverTest, LaunchBubble) {
-  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1",
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1", u"your phone",
                base::BindOnce(&GracefulCloseFunction),
                base::BindRepeating(&GracefulGoBackFunction));
 
@@ -114,7 +114,7 @@ TEST_F(EcheTrayStreamStatusObserverTest, OnStartStreaming) {
   // The bubble should not be created if LaunchBubble be called before.
   EXPECT_FALSE(eche_tray()->get_bubble_wrapper_for_test());
 
-  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1",
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1", u"your phone",
                base::BindOnce(&GracefulCloseFunction),
                base::BindRepeating(&GracefulGoBackFunction));
 
@@ -134,7 +134,7 @@ TEST_F(EcheTrayStreamStatusObserverTest, OnStartStreaming) {
 }
 
 TEST_F(EcheTrayStreamStatusObserverTest, OnStreamStatusChanged) {
-  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1",
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1", u"your phone",
                base::BindOnce(&GracefulCloseFunction),
                base::BindRepeating(&GracefulGoBackFunction));
   OnStreamStatusChanged(mojom::StreamStatus::kStreamStatusStarted);
@@ -156,7 +156,7 @@ TEST_F(EcheTrayStreamStatusObserverTest,
        StartGracefulCloseWhenFeatureStatusToIneligible) {
   ResetUnloadWebContent();
   SetStatus(FeatureStatus::kConnecting);
-  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1",
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1", u"your phone",
                base::BindOnce(&GracefulCloseFunction),
                base::BindRepeating(&GracefulGoBackFunction));
   OnStreamStatusChanged(mojom::StreamStatus::kStreamStatusStarted);
@@ -179,7 +179,7 @@ TEST_F(EcheTrayStreamStatusObserverTest,
        StartGracefulCloseWhenFeatureDependent) {
   ResetUnloadWebContent();
   SetStatus(FeatureStatus::kConnecting);
-  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1",
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1", u"your phone",
                base::BindOnce(&GracefulCloseFunction),
                base::BindRepeating(&GracefulGoBackFunction));
   OnStreamStatusChanged(mojom::StreamStatus::kStreamStatusStarted);
@@ -202,7 +202,7 @@ TEST_F(EcheTrayStreamStatusObserverTest,
        StartGracefulCloseWhenFeatureDisabled) {
   ResetUnloadWebContent();
   SetStatus(FeatureStatus::kConnecting);
-  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1",
+  LaunchBubble(GURL("http://google.com"), gfx::Image(), u"app 1", u"your phone",
                base::BindOnce(&GracefulCloseFunction),
                base::BindRepeating(&GracefulGoBackFunction));
   OnStreamStatusChanged(mojom::StreamStatus::kStreamStatusStarted);

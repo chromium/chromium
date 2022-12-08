@@ -182,7 +182,8 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // Returns true if the bubble is loaded or initialized successfully.
   bool LoadBubble(const GURL& url,
                   const gfx::Image& icon,
-                  const std::u16string& visible_name);
+                  const std::u16string& visible_name,
+                  const std::u16string& phone_name);
 
   // Destroys the view inclusing the web view.
   // Note: `CloseBubble` only hides the view.
@@ -199,7 +200,7 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   // Set up the params and init the bubble.
   // Note: This function makes the bubble active and makes the
   // TrayBackgroundView's background inkdrop activate.
-  void InitBubble();
+  void InitBubble(const std::u16string& phone_name);
 
   // Starts graceful close to ensure the connection resource is released before
   // the window is closed.
@@ -243,7 +244,8 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
 
   // Creates the header of the bubble that includes a back arrow,
   // close, and minimize buttons.
-  std::unique_ptr<views::View> CreateBubbleHeaderView();
+  std::unique_ptr<views::View> CreateBubbleHeaderView(
+      const std::u16string& phone_name);
 
   void StopLoadingAnimation();
   void StartLoadingAnimation();

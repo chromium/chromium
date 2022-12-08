@@ -5716,6 +5716,9 @@ New install
       <message name="IDS_ASH_ECHE_TOAST_TABLET_MODE_NOT_SUPPORTED" desc="A toast message that we show when user tries to switch to tablet mode.">
         Can't stream apps in tablet mode. Try again in laptop mode.
       </message>
+      <message name="ID_ASH_ECHE_APP_STREAMING_BUBBLE_TITLE" desc="The title appear on the top of app streaming bubble">
+        From <ph name="PHONE_NAME">$1<ex>Pixel 7</ex></ph>
+      </message>
 
       <!-- Deferred update dialog -->
       <message name="IDS_DEFERRED_UPDATE_DIALOG_TITLE" desc="Title of the dialog for notifying deferred update available to be applied.">

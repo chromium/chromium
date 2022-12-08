@@ -68,7 +68,8 @@ class LaunchAppHelper {
       const std::string& package_name,
       const std::u16string& visible_name,
       const absl::optional<int64_t>& user_id,
-      const gfx::Image& icon)>;
+      const gfx::Image& icon,
+      const std::u16string& phone_name)>;
 
   // Enum representing potential reasons why an app is forbidden to launch.
   enum class AppLaunchProhibitedReason {
@@ -112,7 +113,8 @@ class LaunchAppHelper {
                      const std::string& package_name,
                      const std::u16string& visible_name,
                      const absl::optional<int64_t>& user_id,
-                     const gfx::Image& icon) const;
+                     const gfx::Image& icon,
+                     const std::u16string& phone_name) const;
 
  private:
   bool IsScreenLockRequired() const;

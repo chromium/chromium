@@ -31,7 +31,8 @@ class Callback {
       const std::string& package_name,
       const std::u16string& visible_name,
       const absl::optional<int64_t>& user_id,
-      const gfx::Image& icon) {
+      const gfx::Image& icon,
+      const std::u16string& phone_name) {
     launchEcheApp_ = true;
   }
 
@@ -111,9 +112,10 @@ class LaunchAppHelperTest : public ash::AshTestBase {
                      const std::string& package_name,
                      const std::u16string& visible_name,
                      const absl::optional<int64_t>& user_id,
-                     const gfx::Image& icon) {
+                     const gfx::Image& icon,
+                     const std::u16string& phone_name) {
     launch_app_helper_->LaunchEcheApp(notification_id, package_name,
-                                      visible_name, user_id, icon);
+                                      visible_name, user_id, icon, phone_name);
   }
 
   void ShowNotification(
@@ -173,9 +175,10 @@ TEST_F(LaunchAppHelperTest, LaunchEcheApp) {
   const std::string package_name = "package_name";
   const std::u16string visible_name = u"visible_name";
   const absl::optional<int64_t> user_id = 0;
+  const std::u16string phone_name = u"your phone";
 
   LaunchEcheApp(notification_id, package_name, visible_name, user_id,
-                gfx::Image());
+                gfx::Image(), phone_name);
 
   EXPECT_TRUE(Callback::getLaunchEcheApp());
 }

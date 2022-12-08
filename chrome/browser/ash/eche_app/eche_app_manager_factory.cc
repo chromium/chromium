@@ -67,6 +67,7 @@ void LaunchWebApp(const std::string& package_name,
                   const std::u16string& visible_name,
                   const absl::optional<int64_t>& user_id,
                   const gfx::Image& icon,
+                  const std::u16string& phone_name,
                   Profile* profile) {
   EcheAppManagerFactory::GetInstance()->SetLastLaunchedAppInfo(
       LaunchedAppInfo::Builder()
@@ -74,6 +75,7 @@ void LaunchWebApp(const std::string& package_name,
           .SetVisibleName(visible_name)
           .SetUserId(user_id)
           .SetIcon(icon)
+          .SetPhoneName(phone_name)
           .Build());
   std::u16string url;
   // Use hash mark(#) to send params to webui so we don't need to reload the
@@ -101,7 +103,7 @@ void LaunchWebApp(const std::string& package_name,
   }
   const auto gurl = GURL(url);
 
-  return LaunchBubble(gurl, icon, visible_name,
+  return LaunchBubble(gurl, icon, visible_name, phone_name,
                       base::BindOnce(&EnsureStreamClose, profile),
                       base::BindRepeating(&StreamGoBack, profile));
 }
@@ -112,7 +114,7 @@ void RelaunchLast(Profile* profile) {
   EcheAppManagerFactory::LaunchEcheApp(
       profile, absl::nullopt, last_launched_app_info->package_name(),
       last_launched_app_info->visible_name(), last_launched_app_info->user_id(),
-      last_launched_app_info->icon());
+      last_launched_app_info->icon(), last_launched_app_info->phone_name());
 }
 
 }  // namespace
@@ -121,11 +123,13 @@ LaunchedAppInfo::~LaunchedAppInfo() = default;
 LaunchedAppInfo::LaunchedAppInfo(const std::string& package_name,
                                  const std::u16string& visible_name,
                                  const absl::optional<int64_t>& user_id,
-                                 const gfx::Image& icon) {
+                                 const gfx::Image& icon,
+                                 const std::u16string& phone_name) {
   package_name_ = package_name;
   visible_name_ = visible_name;
   user_id_ = user_id;
   icon_ = icon;
+  phone_name_ = phone_name;
 }
 
 LaunchedAppInfo::Builder::Builder() = default;
@@ -192,9 +196,10 @@ void EcheAppManagerFactory::LaunchEcheApp(
     const std::string& package_name,
     const std::u16string& visible_name,
     const absl::optional<int64_t>& user_id,
-    const gfx::Image& icon) {
+    const gfx::Image& icon,
+    const std::u16string& phone_name) {
   LaunchWebApp(package_name, notification_id, visible_name, user_id, icon,
-               profile);
+               phone_name, profile);
   EcheAppManagerFactory::GetInstance()
       ->CloseConnectionOrLaunchErrorNotifications();
 }

@@ -139,7 +139,7 @@ TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
 
   eche_tray()->SetVisiblePreferred(true);
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(eche_tray()->is_active());
@@ -176,7 +176,7 @@ TEST_F(EcheTrayTest, EcheTrayShowBubbleAndTapTwice) {
 TEST_F(EcheTrayTest, EcheTrayIconResize) {
   eche_tray()->SetVisiblePreferred(true);
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   int image_width = phone_hub_tray()
@@ -196,7 +196,7 @@ TEST_F(EcheTrayTest, EcheTrayIconResize) {
 
 TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged) {
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -215,7 +215,7 @@ TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged) {
 // should be ignored.
 TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged_SameWidget) {
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -232,7 +232,7 @@ TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged_SameWidget) {
 // visible parameter is false, hence we should not do anything.
 TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged_NonVisible) {
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -254,7 +254,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
   // Allow us to create the bubble but it is not visible until we need this
   // bubble to show up.
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
 
   EXPECT_FALSE(eche_tray()->is_active());
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
@@ -282,7 +282,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChanged) {
   // Allow us to create the bubble but it is not visible until we need this
   // bubble to show up.
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
 
   EXPECT_FALSE(eche_tray()->is_active());
   EXPECT_TRUE(eche_tray()->get_bubble_wrapper_for_test());
@@ -310,7 +310,7 @@ TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButStreamStatusChanged) {
 
 TEST_F(EcheTrayTest, EcheTrayMinimizeButtonClicked) {
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -327,7 +327,7 @@ TEST_F(EcheTrayTest, EcheTrayCloseButtonClicked) {
   ResetUnloadWebContent();
   eche_tray()->SetGracefulCloseCallback(base::BindOnce(&UnloadWebContent));
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   ClickButton(eche_tray()->GetCloseButtonForTesting());
@@ -340,7 +340,7 @@ TEST_F(EcheTrayTest, EcheTrayBackButtonClicked) {
   eche_tray()->SetGracefulGoBackCallback(
       base::BindRepeating(&WebContentGoBack));
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   ClickButton(eche_tray()->GetArrowBackButtonForTesting());
@@ -354,7 +354,7 @@ TEST_F(EcheTrayTest, EcheTrayBackButtonClicked) {
 
 TEST_F(EcheTrayTest, AcceleratorKeyHandled_Minimize) {
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -381,7 +381,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_W) {
   ResetUnloadWebContent();
   eche_tray()->SetGracefulCloseCallback(base::BindOnce(&UnloadWebContent));
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -396,7 +396,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_W) {
 
 TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_C) {
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -414,7 +414,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_C) {
 
 TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_V) {
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -432,7 +432,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_V) {
 
 TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_X) {
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -453,7 +453,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_BROWSER_BACK_KEY) {
   eche_tray()->SetGracefulGoBackCallback(
       base::BindRepeating(&WebContentGoBack));
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_BROWSER_BACK, 0);
@@ -465,7 +465,7 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Esc) {
   ResetUnloadWebContent();
   eche_tray()->SetGracefulCloseCallback(base::BindOnce(&UnloadWebContent));
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_TRUE(
@@ -482,7 +482,7 @@ TEST_F(EcheTrayTest, EcheTrayOnDisplayConfigurationChanged) {
   UpdateDisplay("800x600");
   gfx::Size expected_eche_size = eche_tray()->CalculateSizeForEche();
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_EQ(expected_eche_size.width(),
@@ -506,7 +506,7 @@ TEST_F(EcheTrayTest, EcheTrayOnDisplayConfigurationChanged) {
 TEST_F(EcheTrayTest, EcheTrayKeyboardShowHideUpdateBubbleBounds) {
   gfx::Size expected_eche_size = eche_tray()->CalculateSizeForEche();
   eche_tray()->LoadBubble(GURL("http://google.com"), CreateTestImage(),
-                          u"app 1");
+                          u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
   EXPECT_EQ(expected_eche_size.width(),

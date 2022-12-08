@@ -395,7 +395,8 @@ void EcheTray::SetIcon(const gfx::Image& icon,
 
 bool EcheTray::LoadBubble(const GURL& url,
                           const gfx::Image& icon,
-                          const std::u16string& visible_name) {
+                          const std::u16string& visible_name,
+                          const std::u16string& phone_name) {
   if (Shell::Get()->IsInTabletMode()) {
     ash::ToastManager::Get()->Show(ash::ToastData(
         kEcheTrayTabletModeNotSupportedId,
@@ -417,7 +418,7 @@ bool EcheTray::LoadBubble(const GURL& url,
     ShowBubble();
     return true;
   }
-  InitBubble();
+  InitBubble(phone_name);
   StartLoadingAnimation();
   auto* phone_hub_tray = GetPhoneHubTray();
   if (phone_hub_tray) {
@@ -477,7 +478,7 @@ void EcheTray::HideBubble() {
   shelf()->UpdateAutoHideState();
 }
 
-void EcheTray::InitBubble() {
+void EcheTray::InitBubble(const std::u16string& phone_name) {
   base::UmaHistogramEnumeration(
       "Eche.StreamEvent",
       eche_app::mojom::StreamStatus::kStreamStatusInitializing);
@@ -504,7 +505,8 @@ void EcheTray::InitBubble() {
   bubble_view->SetCanActivate(true);
   bubble_view->SetBorder(views::CreateEmptyBorder(kBubblePadding));
 
-  auto* header_view = bubble_view->AddChildView(CreateBubbleHeaderView());
+  auto* header_view =
+      bubble_view->AddChildView(CreateBubbleHeaderView(phone_name));
 
   // We need the header be always visible with the same size.
   static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
@@ -585,7 +587,8 @@ void EcheTray::OnArrowBackActivated() {
   }
 }
 
-std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
+std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView(
+    const std::u16string& phone_name) {
   auto header = std::make_unique<views::View>();
   header->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(gfx::Insets::VH(0, kHeaderHorizontalInteriorMargins))
@@ -601,10 +604,11 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
                    kEcheArrowBackIcon, IDS_APP_ACCNAME_BACK));
 
   views::Label* title = header->AddChildView(std::make_unique<views::Label>(
-      std::u16string(), views::style::CONTEXT_DIALOG_TITLE,
-      views::style::STYLE_PRIMARY,
+      l10n_util::GetStringFUTF16(ID_ASH_ECHE_APP_STREAMING_BUBBLE_TITLE,
+                                 phone_name),
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY,
       gfx::DirectionalityMode::DIRECTIONALITY_AS_URL));
-  title->SetMultiLine(true);
+  title->SetMultiLine(false);
   title->SetAllowCharacterBreak(true);
   title->SetProperty(
       views::kFlexBehaviorKey,
@@ -612,7 +616,7 @@ std::unique_ptr<views::View> EcheTray::CreateBubbleHeaderView() {
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width =*/true)
           .WithWeight(1));
-  title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
   // Add minimize button
   minimize_button_ = header->AddChildView(CreateButton(

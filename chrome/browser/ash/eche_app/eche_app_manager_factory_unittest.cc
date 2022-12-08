@@ -158,9 +158,10 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   const int64_t user_id = 1;
   const char16_t visible_name_1[] = u"Fake App 1";
   const char package_name_1[] = "com.fakeapp1";
+  const char16_t phone_name[] = u"your phone";
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name_1,
-      visible_name_1, user_id, gfx::Image());
+      visible_name_1, user_id, gfx::Image(), phone_name);
   // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   // Eche icon should be visible after launch.
@@ -172,7 +173,7 @@ TEST_F(EcheAppManagerFactoryTest, LaunchEcheApp) {
   const char package_name_2[] = "com.fakeapp2";
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name_2,
-      visible_name_2, user_id, gfx::Image());
+      visible_name_2, user_id, gfx::Image(), phone_name);
   // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(widget, eche_tray()->GetBubbleWidget());
@@ -183,10 +184,11 @@ TEST_F(EcheAppManagerFactoryTest, LaunchedAppInfo) {
   const std::u16string visible_name = u"Fake App";
   const std::string package_name = "com.fakeapp";
   const gfx::Image icon = gfx::test::CreateImage(100, 100);
+  const std::u16string phone_name = u"your phone";
 
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name,
-      visible_name, user_id, icon);
+      visible_name, user_id, icon, phone_name);
 
   std::unique_ptr<LaunchedAppInfo> launched_app_info =
       EcheAppManagerFactory::GetInstance()->GetLastLaunchedAppInfo();
@@ -205,9 +207,10 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   const int64_t user_id = 1;
   const char16_t visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
+  const char16_t phone_name[] = u"your phone";
   EcheAppManagerFactory::LaunchEcheApp(
       GetProfile(), /*notification_id=*/absl::nullopt, package_name,
-      visible_name, user_id, gfx::Image());
+      visible_name, user_id, gfx::Image(), phone_name);
   // Wait for Eche Tray to load Eche Web to complete
   base::RunLoop().RunUntilIdle();
   // Eche tray should be visible when streaming is active, not ative when

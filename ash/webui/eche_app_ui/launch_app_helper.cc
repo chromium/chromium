@@ -87,9 +87,10 @@ void LaunchAppHelper::LaunchEcheApp(absl::optional<int64_t> notification_id,
                                     const std::string& package_name,
                                     const std::u16string& visible_name,
                                     const absl::optional<int64_t>& user_id,
-                                    const gfx::Image& icon) const {
+                                    const gfx::Image& icon,
+                                    const std::u16string& phone_name) const {
   launch_eche_app_function_.Run(notification_id, package_name, visible_name,
-                                user_id, icon);
+                                user_id, icon, phone_name);
 }
 
 }  // namespace eche_app

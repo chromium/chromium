@@ -391,7 +391,8 @@ TEST_F(PhoneHubUiControllerTest, TimerExpiresBluetoothDisconnectedView) {
 TEST_F(PhoneHubUiControllerTest, HandleBubbleOpenedShouldCloseEcheBubble) {
   EcheTray* eche_tray =
       StatusAreaWidgetTestHelper::GetStatusAreaWidget()->eche_tray();
-  eche_tray->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1");
+  eche_tray->LoadBubble(GURL("http://google.com"), gfx::Image(), u"app 1",
+                        u"your phone");
   eche_tray->ShowBubble();
   EXPECT_TRUE(
       eche_tray->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());

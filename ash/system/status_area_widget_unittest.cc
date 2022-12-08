@@ -705,7 +705,8 @@ TEST_F(StatusAreaWidgetEcheTest, EcheTrayShowHide) {
   gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   image_skia.MakeThreadSafe();
   status_area->eche_tray()->LoadBubble(GURL("http://google.com"),
-                                       gfx::Image(image_skia), u"app 1");
+                                       gfx::Image(image_skia), u"app 1",
+                                       u"your phone");
   status_area->eche_tray()->ShowBubble();
 
   // Auto-hidden shelf would be forced to be visible.

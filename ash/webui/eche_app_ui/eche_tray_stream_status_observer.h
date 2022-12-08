@@ -25,6 +25,7 @@ namespace eche_app {
 void LaunchBubble(const GURL& url,
                   const gfx::Image& icon,
                   const std::u16string& visible_name,
+                  const std::u16string& phone_name,
                   EcheTray::GracefulCloseCallback graceful_close_callback,
                   EcheTray::GracefulGoBackCallback graceful_go_back_callback);
 
