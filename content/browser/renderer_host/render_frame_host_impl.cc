@@ -5491,12 +5491,12 @@ void RenderFrameHostImpl::TakeFocus(bool reverse) {
 void RenderFrameHostImpl::UpdateTargetURL(
     const GURL& url,
     blink::mojom::LocalMainFrameHost::UpdateTargetURLCallback callback) {
-  // Prerendering pages should not reach this code since the renderer only calls
-  // this when the mouse over the URL or keyboard focuses the URL.
-  if (lifecycle_state_ == LifecycleStateImpl::kPrerendering) {
-    mojo::ReportBadMessage("Unexpected UpdateTargetURL from renderer");
+  // An inactive document should ignore to update the target url.
+  if (!IsActive()) {
+    std::move(callback).Run();
     return;
   }
+
   delegate_->UpdateTargetURL(this, url);
   std::move(callback).Run();
 }

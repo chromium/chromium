@@ -8698,4 +8698,45 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kActivated);
 }
 
+class UpdateTargetURLDelegate : public WebContentsDelegate {
+ public:
+  explicit UpdateTargetURLDelegate(WebContents* web_contents) {
+    web_contents->SetDelegate(this);
+  }
+
+  UpdateTargetURLDelegate(const UpdateTargetURLDelegate&) = delete;
+  UpdateTargetURLDelegate& operator=(const UpdateTargetURLDelegate&) = delete;
+
+  bool is_updated_target_url() { return is_updated_target_url_; }
+
+ private:
+  void UpdateTargetURL(WebContents* source, const GURL& url) override {
+    is_updated_target_url_ = true;
+  }
+
+  bool is_updated_target_url_ = false;
+};
+
+// Tests that text autosizer works per page.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FocusChangeInPrerenderedPage) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/simple_links.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerender_frame_host =
+      GetPrerenderedMainFrameHost(host_id);
+
+  UpdateTargetURLDelegate delegate(shell()->web_contents());
+
+  // No crash.
+  EXPECT_TRUE(ExecJs(prerender_frame_host,
+                     "document.getElementById('same_site_link').focus();"));
+
+  // The prerendered page should not update the target url.
+  EXPECT_FALSE(delegate.is_updated_target_url());
+}
+
 }  // namespace content
