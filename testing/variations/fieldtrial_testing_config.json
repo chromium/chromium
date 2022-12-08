@@ -3445,6 +3445,28 @@
             ]
         }
     ],
+    "DIPSPersistedDatabase": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "persisted_database": "true"
+                    },
+                    "enable_features": [
+                        "DIPS"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultOfflineExperience": [
         {
             "platforms": [
