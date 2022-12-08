@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -511,21 +512,16 @@ AndroidDeviceManager::Device::~Device() {
                                 std::move(provider_), std::move(serial_)));
 }
 
-AndroidDeviceManager::HandlerThread*
-AndroidDeviceManager::HandlerThread::instance_ = nullptr;
-
 // static
-scoped_refptr<AndroidDeviceManager::HandlerThread>
+AndroidDeviceManager::HandlerThread*
 AndroidDeviceManager::HandlerThread::GetInstance() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!instance_)
-    new HandlerThread();
-  return instance_;
+  static base::NoDestructor<AndroidDeviceManager::HandlerThread> s_instance;
+  return s_instance.get();
 }
 
 AndroidDeviceManager::HandlerThread::HandlerThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  instance_ = this;
   thread_ = new base::Thread(kDevToolsAdbBridgeThreadName);
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
@@ -548,7 +544,6 @@ void AndroidDeviceManager::HandlerThread::StopThread(
 
 AndroidDeviceManager::HandlerThread::~HandlerThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  instance_ = nullptr;
   if (!thread_)
     return;
   // Shut down thread on a thread other than UI so it can join a thread.

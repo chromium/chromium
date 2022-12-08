@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -228,18 +229,17 @@ class AndroidDeviceManager {
   typedef std::vector<DeviceDescriptor> DeviceDescriptors;
 
  private:
-  class HandlerThread : public base::RefCountedThreadSafe<HandlerThread> {
+  class HandlerThread {
    public:
-    static scoped_refptr<HandlerThread> GetInstance();
+    static HandlerThread* GetInstance();
     scoped_refptr<base::SingleThreadTaskRunner> message_loop();
 
    private:
-    friend class base::RefCountedThreadSafe<HandlerThread>;
-    static HandlerThread* instance_;
+    friend class base::NoDestructor<HandlerThread>;
     static void StopThread(base::Thread* thread);
 
     HandlerThread();
-    virtual ~HandlerThread();
+    ~HandlerThread();
     base::Thread* thread_;
   };
 
@@ -250,7 +250,7 @@ class AndroidDeviceManager {
 
   typedef std::map<std::string, base::WeakPtr<Device> > DeviceWeakMap;
 
-  scoped_refptr<HandlerThread> handler_thread_;
+  raw_ptr<HandlerThread> handler_thread_;
   DeviceProviders providers_;
   DeviceWeakMap devices_;
 
