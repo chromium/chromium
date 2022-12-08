@@ -1547,23 +1547,27 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearWebAppData) {
                                                       GURL("http://some.url"));
   auto last_launch_time = base::Time() + base::Seconds(10);
   provider->sync_bridge().SetAppLastLaunchTime(web_app_id, last_launch_time);
-  EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_launch_time(),
-            last_launch_time);
+  EXPECT_EQ(
+      provider->registrar_unsafe().GetAppById(web_app_id)->last_launch_time(),
+      last_launch_time);
   auto last_badging_time = base::Time() + base::Seconds(20);
   provider->sync_bridge().SetAppLastBadgingTime(web_app_id, last_badging_time);
-  EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_badging_time(),
-            last_badging_time);
+  EXPECT_EQ(
+      provider->registrar_unsafe().GetAppById(web_app_id)->last_badging_time(),
+      last_badging_time);
 
   // Run RemoveEmbedderData, and wait for it to complete.
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_HISTORY, false);
 
   // Verify that web app's last launch time is cleared.
-  EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_launch_time(),
-            base::Time());
+  EXPECT_EQ(
+      provider->registrar_unsafe().GetAppById(web_app_id)->last_launch_time(),
+      base::Time());
   // Verify that web app's last badging time is cleared.
-  EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_badging_time(),
-            base::Time());
+  EXPECT_EQ(
+      provider->registrar_unsafe().GetAppById(web_app_id)->last_badging_time(),
+      base::Time());
 
   EXPECT_EQ(constants::DATA_TYPE_HISTORY, GetRemovalMask());
 }
