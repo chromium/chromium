@@ -25,6 +25,7 @@ build_webui("build") {
     "actions.ts",
     "bookmarks.ts",
     "api_listener.ts",
+    "bookmarks_api_proxy.ts",
     "browser_proxy.ts",
     "constants.ts",
     "debouncer.ts",

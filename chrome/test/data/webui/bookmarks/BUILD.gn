@@ -36,6 +36,7 @@ ts_library("build_ts") {
     "reducers_test.ts",
     "router_test.js",
     "store_test.js",
+    "test_bookmarks_api_proxy.ts",
     "test_browser_proxy.ts",
     "test_command_manager.ts",
     "test_store.ts",
