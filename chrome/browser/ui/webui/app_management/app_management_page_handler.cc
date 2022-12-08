@@ -179,7 +179,7 @@ AppManagementPageHandler::AppManagementPageHandler(
   // There's no need to update twice.
 #if !BUILDFLAG(IS_CHROMEOS)
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-  registrar_observation_.Observe(&provider->registrar());
+  registrar_observation_.Observe(&provider->registrar_unsafe());
 #endif
 }
 
@@ -339,7 +339,7 @@ void AppManagementPageHandler::SetWindowMode(const std::string& app_id,
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
 
   // Changing window mode is not allowed for isolated web apps.
-  if (provider->registrar().IsIsolated(app_id)) {
+  if (provider->registrar_unsafe().IsIsolated(app_id)) {
     NOTREACHED();
   } else {
     if (base::FeatureList::IsEnabled(apps::kAppServiceWithoutMojom)) {
@@ -541,7 +541,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 
 #if !BUILDFLAG(IS_CHROMEOS)
   auto* provider = web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
-  app->hide_window_mode = provider->registrar().IsIsolated(app->id);
+  app->hide_window_mode = provider->registrar_unsafe().IsIsolated(app->id);
 #endif
 
   app->publisher_id = update.PublisherId();
