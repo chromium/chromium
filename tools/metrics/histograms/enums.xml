@@ -59087,6 +59087,7 @@ from previous Chrome versions.
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-841549378" label="DisableLacrosTtsSupport:disabled"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
+  <int value="-839544057" label="WebRtcCombinedNetworkAndWorkerThread:enabled"/>
   <int value="-838719204"
       label="ForceMajorVersionInMinorPositionInUserAgent:disabled"/>
   <int value="-837650216" label="DisableCryptAuthV1DeviceSync:disabled"/>
@@ -62054,6 +62055,7 @@ from previous Chrome versions.
   <int value="923947923" label="ReadPrinterCapabilitiesWithXps:disabled"/>
   <int value="924769517" label="AppServiceAdaptiveIcon:disabled"/>
   <int value="925712999" label="V8Orinoco:enabled"/>
+  <int value="925950257" label="WebRtcCombinedNetworkAndWorkerThread:disabled"/>
   <int value="926844887" label="QuickDim:disabled"/>
   <int value="926852901" label="DataReductionProxyMainMenu:disabled"/>
   <int value="928900043" label="OmniboxLooseMaxLimitOnDedicatedRows:disabled"/>

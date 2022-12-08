@@ -358,6 +358,8 @@ public final class ProductionSupportedFlagList {
                             + "on this device."),
             Flag.baseFeature(AwFeatures.WEBVIEW_IMAGE_DRAG,
                     "If enabled, images can be dragged out from Webview"),
+            Flag.baseFeature(BlinkFeatures.WEB_RTC_COMBINED_NETWORK_AND_WORKER_THREAD,
+                    "Combines WebRTC's worker thread and network thread onto a single thread."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
