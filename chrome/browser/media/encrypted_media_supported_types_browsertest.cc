@@ -137,12 +137,12 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
  protected:
   EncryptedMediaSupportedTypesTest() {
-    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
-    disabled_features_.push_back(features::kChromeWhatsNewUI);
-
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     EnableFeature(media::kPlatformHEVCDecoderSupport);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+
+    // TODO(crbug.com/1243903): WhatsNewUI might be causing timeouts.
+    DisableFeature(features::kChromeWhatsNewUI);
 
     audio_webm_codecs_.push_back("vorbis");
 
@@ -243,6 +243,11 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   // Enables a feature without parameters.
   void EnableFeature(const base::Feature& feature) {
     enabled_features_.push_back({feature, {}});
+  }
+
+  // Disable a feature.
+  void DisableFeature(const base::Feature& feature) {
+    disabled_features_.push_back(feature);
   }
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
@@ -579,6 +584,7 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
     EnableFeature(media::kPlatformEncryptedDolbyVision);
 #endif
+    DisableFeature(media::kHardwareSecureDecryptionExperiment);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
