@@ -36,8 +36,14 @@
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -55,6 +61,7 @@ namespace {
 
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::NiceMock;
 using testing::UnorderedElementsAre;
 
 MATCHER_P2(MatchesLogin, username, password, "") {
@@ -71,6 +78,23 @@ MATCHER_P3(MatchesLoginAndRealm, username, password, signon_realm, "") {
 const char kTestUserEmail[] = "user@email.com";
 const char kExampleHostname[] = "www.example.com";
 const char kExamplePslHostname[] = "psl.example.com";
+
+class SyncActiveWithoutPasswordsChecker
+    : public SingleClientStatusChangeChecker {
+ public:
+  explicit SyncActiveWithoutPasswordsChecker(syncer::SyncServiceImpl* service)
+      : SingleClientStatusChangeChecker(service) {}
+
+  ~SyncActiveWithoutPasswordsChecker() override = default;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    // DEVICE_INFO is another arbitrary type supported for signed-in users,
+    // just so we rule out no type at all is active.
+    return !service()->GetActiveDataTypes().Has(syncer::PASSWORDS) &&
+           service()->GetActiveDataTypes().Has(syncer::DEVICE_INFO);
+  }
+};
 
 // Note: This helper applies to ChromeOS too, but is currently unused there. So
 // define it out to prevent a compile error due to the unused function.
@@ -938,5 +962,50 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
                 IdentityManagerFactory::GetForProfile(GetProfile(0))),
             kExpectedUsername);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+class PasswordManagerSyncTestWithPolicy : public PasswordManagerSyncTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    PasswordManagerSyncTest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  NiceMock<policy::MockConfigurationPolicyProvider>* policy_provider() {
+    return &policy_provider_;
+  }
+
+ private:
+  NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
+                       PRE_SyncTypesListDisabled) {
+  ASSERT_TRUE(SetupClients());
+  SetupSyncTransportWithPasswordAccountStorage();
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithPolicy,
+                       SyncTypesListDisabled) {
+  // Disable passwords via the kSyncTypesListDisabled policy. The PRE_ test is
+  // required because the policy is only applied on startup.
+  base::Value::List disabled_types;
+  disabled_types.Append("passwords");
+  policy::PolicyMap policies;
+  policies.Set(policy::key::kSyncTypesListDisabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(std::move(disabled_types)), nullptr);
+  policy_provider()->UpdateChromePolicy(policies);
+
+  ASSERT_TRUE(SetupClients());
+
+  SyncActiveWithoutPasswordsChecker(GetSyncService(0)).Wait();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
