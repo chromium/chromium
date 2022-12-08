@@ -155,10 +155,8 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
     : popup_contents_view_(popup_contents_view),
       model_(model),
       model_index_(model_index) {
-  int bottom_margin = OmniboxFieldTrial::IsUniformRowHeightEnabled()
-                          ? OmniboxFieldTrial::kSuggestionVerticalMargin.Get()
-                          : ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
+  int bottom_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kStart)
       .SetCollapseMargins(true)

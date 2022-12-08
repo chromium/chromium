@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
@@ -264,7 +265,8 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
     // calculator answers are 2-line but not deemphasized.
     const bool deemphasize =
         match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
-        OmniboxMatchCellView::ShouldDisplayImage(match_);
+        OmniboxMatchCellView::ShouldDisplayImage(match_) &&
+        !OmniboxFieldTrial::IsUniformRowHeightEnabled();
     suggestion_view_->description()->SetTextWithStyling(
         match_.description, match_.description_class, deemphasize);
   }

@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/common/color_parser.h"
@@ -47,7 +48,14 @@ static constexpr int kAnswerImageSize = 24;
 
 // The edge length of the entity suggestions images.
 static constexpr int kEntityImageSize = 32;
-// TODO: set image size to 28 px if UniformRowHeight feature is enabled.
+// The edge length of the entity suggestions if the
+// kUniformRowHeight flag is enabled
+static constexpr int kEntityImageSizeSmall = 28;
+
+int GetEntityImageSize() {
+  return OmniboxFieldTrial::IsUniformRowHeightEnabled() ? kEntityImageSizeSmall
+                                                        : kEntityImageSize;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // PlaceholderImageSource:
@@ -261,7 +269,10 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
           GetOmniboxBackgroundColorId(result_view->GetThemeState()));
       content::ParseHexColorString(match.image_dominant_color, &color);
       color = SkColorSetA(color, 0x40);  // 25% transparency (arbitrary).
-      constexpr gfx::Size size(kEntityImageSize, kEntityImageSize);
+
+      const auto size_px = GetEntityImageSize();
+
+      gfx::Size size(size_px, size_px);
       answer_image_view_->SetImageSize(size);
       answer_image_view_->SetImage(
           gfx::CanvasImageSource::MakeImageSkia<PlaceholderImageSource>(size,
@@ -285,8 +296,9 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
   if (width == height)
     return;
   const int max = std::max(width, height);
-  width = kEntityImageSize * width / max;
-  height = kEntityImageSize * height / max;
+  int imageSize = GetEntityImageSize();
+  width = imageSize * width / max;
+  height = imageSize * height / max;
   answer_image_view_->SetImageSize(gfx::Size(width, height));
 }
 
@@ -294,8 +306,8 @@ gfx::Insets OmniboxMatchCellView::GetInsets() const {
   const bool single_line = layout_style_ == LayoutStyle::ONE_LINE_SUGGESTION;
 
   const int vertical_margin =
-      OmniboxFieldTrial::IsUniformRowHeightEnabled()
-          ? OmniboxFieldTrial::kSuggestionVerticalMargin.Get()
+      OmniboxFieldTrial::IsUniformRowHeightEnabled() && has_image_
+          ? OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get()
           : ChromeLayoutProvider::Get()->GetDistanceMetric(
                 single_line ? DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING
                             : DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING);
@@ -369,7 +381,11 @@ bool OmniboxMatchCellView::GetCanProcessEventsWithinSubtree() const {
 }
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
-  int height = content_view_->GetLineHeight() + GetInsets().height();
+  int contentHeight = content_view_->GetLineHeight();
+  int height = OmniboxFieldTrial::IsUniformRowHeightEnabled() && has_image_
+                   ? std::max(contentHeight, kEntityImageSizeSmall) +
+                         GetInsets().height()
+                   : contentHeight + GetInsets().height();
   if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)
     height += description_view_->GetHeightForWidth(width() - GetTextIndent());
   // Width is not calculated because it's not needed by current callers.

@@ -641,10 +641,10 @@ bool OmniboxFieldTrial::IsUniformRowHeightEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
 }
 
-const base::FeatureParam<int> OmniboxFieldTrial::kSuggestionVerticalMargin(
+const base::FeatureParam<int> OmniboxFieldTrial::kRichSuggestionVerticalMargin(
     &omnibox::kUniformRowHeight,
-    "OmniboxSuggestionVerticalMargin",
-    8);
+    "OmniboxRichSuggestionVerticalMargin",
+    4);
 
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
