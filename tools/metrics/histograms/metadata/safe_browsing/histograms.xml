@@ -110,30 +110,6 @@ chromium-metrics-reviews@google.com.
       summary="url allowlist on client side phishing detection"/>
 </variants>
 
-<histogram name="SafeBrowsing.AdvancedProtection.APTokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="2022-12-18">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    For users known to be already enrolled in Advanced Protection, records the
-    service error of refreshing OAuth2 access token during fetching the user's
-    advanced protection status. Logged once a day and will retry on transient
-    failures. This is a subset of
-    SafeBrowsing.AdvancedProtection.TokenFetchStatus.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.AdvancedProtection.TokenFetchStatus"
-    enum="GoogleServiceAuthError" expires_after="2023-03-05">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the service error of refreshing OAuth2 access token during fetching
-    the user's advanced protection status. Logged at startup for all users, once
-    a day for AP users, and will retry on transient failures.
-  </summary>
-</histogram>
-
 <histogram
     name="SafeBrowsing.Android.RealTimeAllowlist.InstallerLoadFromDiskPbFileEmpty"
     units="bool" expires_after="2023-10-26">

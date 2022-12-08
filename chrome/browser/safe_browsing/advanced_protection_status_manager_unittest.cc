@@ -31,11 +31,6 @@ static const char* kIdTokenAdvancedProtectionDisabled =
     "eyAic2VydmljZXMiOiBbXSB9"  // payload: { "services": [] }
     ".dummy-signature";
 
-static const char* kAPTokenFetchStatusMetric =
-    "SafeBrowsing.AdvancedProtection.APTokenFetchStatus";
-static const char* kTokenFetchStatusMetric =
-    "SafeBrowsing.AdvancedProtection.TokenFetchStatus";
-
 // Helper class that ensure RegisterProfilePrefs() is called on the test
 // PrefService's registry before the IdentityTestEnvironment constructor
 // is invoked.
@@ -128,11 +123,6 @@ TEST_F(AdvancedProtectionStatusManagerTest,
                           /* is_transient_error = */ true);
   EXPECT_FALSE(aps_manager.IsUnderAdvancedProtection());
 
-  EXPECT_THAT(histograms.GetAllSamples(kTokenFetchStatusMetric),
-              testing::ElementsAre(base::Bucket(3 /*CONNECTION_FAILED*/, 1)));
-  EXPECT_THAT(histograms.GetAllSamples(kAPTokenFetchStatusMetric),
-              testing::IsEmpty());
-
   // A retry should be scheduled.
   EXPECT_TRUE(aps_manager.IsRefreshScheduled());
   EXPECT_FALSE(
@@ -158,12 +148,6 @@ TEST_F(AdvancedProtectionStatusManagerTest,
   MakeOAuthTokenFetchFail(account_id,
                           /* is_transient_error = */ false);
   EXPECT_FALSE(aps_manager.IsUnderAdvancedProtection());
-
-  EXPECT_THAT(
-      histograms.GetAllSamples(kTokenFetchStatusMetric),
-      testing::ElementsAre(base::Bucket(1 /*INVALID_GAIA_CREDENTIALS*/, 1)));
-  EXPECT_THAT(histograms.GetAllSamples(kAPTokenFetchStatusMetric),
-              testing::IsEmpty());
 
   // No retry should be scheduled.
   EXPECT_FALSE(aps_manager.IsRefreshScheduled());
@@ -192,11 +176,6 @@ TEST_F(AdvancedProtectionStatusManagerTest, SignedInLongTimeAgoNotUnderAP) {
   EXPECT_FALSE(aps_manager.IsRefreshScheduled());
   EXPECT_TRUE(
       pref_service_.HasPrefPath(prefs::kAdvancedProtectionLastRefreshInUs));
-
-  EXPECT_THAT(histograms.GetAllSamples(kTokenFetchStatusMetric),
-              testing::ElementsAre(base::Bucket(0 /*NONE*/, 1)));
-  EXPECT_THAT(histograms.GetAllSamples(kAPTokenFetchStatusMetric),
-              testing::IsEmpty());
 
   aps_manager.UnsubscribeFromSigninEvents();
 }
