@@ -1,0 +1,11 @@
+Tests the data of advanced painting instrumentation trace events
+Recording started
+Tracing complete
+Got a LayerTreeHostImpl Event:
+type of device_viewport_size: object
+type of layers: object
+Got a DisplayItemList Event
+type of params: object
+type of layer_rect: object
+type of skp64: string
+
