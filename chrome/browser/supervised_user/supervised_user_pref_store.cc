@@ -19,6 +19,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/common/chrome_switches.h"
@@ -28,7 +29,6 @@
 #include "components/prefs/pref_value_map.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/supervised_user/core/common/features.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace {

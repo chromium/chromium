@@ -329,7 +329,6 @@
       <part file="soda_strings.grdp" />
       <part file="ssl_errors_strings.grdp" />
       <part file="subresource_filter_strings.grdp" />
-      <part file="supervised_user_strings.grdp" />
       <part file="sync_ui_strings.grdp" />
       <part file="translate_strings.grdp" />
       <part file="tab_groups_strings.grdp" />

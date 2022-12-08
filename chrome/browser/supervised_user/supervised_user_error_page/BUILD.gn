@@ -1,8 +1,12 @@
-# Copyright 2022 The Chromium Authors
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("browser") {
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+static_library("supervised_user_error_page") {
   sources = [
     "supervised_user_error_page.cc",
     "supervised_user_error_page.h",
@@ -10,10 +14,10 @@ static_library("browser") {
 
   deps = [
     "//base",
-    "//components/resources:components_resources",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources_grit",
+    "//chrome/browser/supervised_user/supervised_user_features",
     "//components/signin/public/base",
-    "//components/strings:components_strings_grit",
-    "//components/supervised_user/core/common",
     "//ui/base",
     "//url",
   ]
@@ -23,12 +27,12 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "supervised_user_error_page_unittest.cc" ]
   deps = [
-    ":browser",
+    ":supervised_user_error_page",
     "//base",
     "//base/test:test_support",
-    "//components/resources:components_resources",
-    "//components/strings:components_strings_grit",
-    "//components/supervised_user/core/common",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:resources_grit",
+    "//chrome/browser/supervised_user/supervised_user_features",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

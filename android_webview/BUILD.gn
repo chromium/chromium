@@ -16,7 +16,6 @@ import("//chrome/android/chrome_public_apk_tmpl.gni")
 import("//chrome/android/trichrome.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
-import("//components/supervised_user/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -1114,7 +1113,6 @@ grit("generate_components_resources") {
   defines = [
     "enable_printing=$enable_printing",
     "safe_browsing_mode=$safe_browsing_mode",
-    "enable_supervised_users=$enable_supervised_users",
   ]
 
   # See :generate_webui_resources for an explanation of the allowlist

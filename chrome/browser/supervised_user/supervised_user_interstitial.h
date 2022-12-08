@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "url/gurl.h"
 
 namespace content {

@@ -30,9 +30,6 @@ dev_ui_components_resources.grd.
       <if expr="is_android">
         <part file="android_system_error_page_resources.grdp" />
       </if>
-      <if expr="enable_supervised_users">
-        <part file="supervised_user_resources.grdp" />
-      </if>
     </includes>
   </release>
 </grit>
