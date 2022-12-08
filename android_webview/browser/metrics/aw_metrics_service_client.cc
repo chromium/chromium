@@ -64,6 +64,11 @@ const int kPackageNameLimitRatePerMille = 100;  // (10% of UMA clients)
 
 AwMetricsServiceClient* g_aw_metrics_service_client = nullptr;
 
+bool IsAppPackageNameServerSideAllowlistEnabled() {
+  return base::FeatureList::IsEnabled(
+      android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
+}
+
 }  // namespace
 
 const base::TimeDelta kRecordAppDataDirectorySizeDelay = base::Seconds(10);
@@ -122,9 +127,15 @@ std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
 }
 
 bool AwMetricsServiceClient::ShouldRecordPackageName() {
+  // Record app package name when app consent, user consent,
+  // and server-side allowlist is used
+  if (IsAppPackageNameServerSideAllowlistEnabled()) {
+    return true;
+  }
   base::UmaHistogramEnumeration(
       "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
       package_name_record_status_);
+
   if (!cached_package_name_record_.has_value() ||
       !cached_package_name_record_.value().IsAppPackageNameAllowed()) {
     return false;

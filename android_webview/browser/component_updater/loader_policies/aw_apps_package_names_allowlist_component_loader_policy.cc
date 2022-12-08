@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/components/aw_apps_package_names_allowlist_component_utils.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
@@ -270,6 +271,12 @@ void LoadPackageNamesAllowlistComponent(
     AwMetricsServiceClient* metrics_service_client) {
   DCHECK(metrics_service_client);
 
+  // Prevent loading of client-side allowlist if using server-side allowlist
+  if (base::FeatureList::IsEnabled(
+          android_webview::features::
+              kWebViewAppsPackageNamesServerSideAllowlist)) {
+    return;
+  }
   absl::optional<AppPackageNameLoggingRule> cached_record =
       metrics_service_client->GetCachedAppPackageNameLoggingRule();
   base::Time last_update =

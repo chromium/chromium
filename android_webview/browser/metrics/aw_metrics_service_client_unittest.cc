@@ -69,7 +69,6 @@ class AwMetricsServiceClientTest : public testing::Test {
         prefs_(std::make_unique<TestingPrefServiceSimple>()),
         client_(std::make_unique<AwMetricsServiceTestClient>(
             std::make_unique<AwMetricsServiceClientTestDelegate>())) {
-    // Required by MetricsService.
     base::SetRecordActionTaskRunner(task_runner_);
     AwMetricsServiceTestClient::RegisterMetricsPrefs(prefs_->registry());
     client_->Initialize(prefs_.get());
@@ -203,6 +202,18 @@ TEST_F(AwMetricsServiceClientTest,
   histogram_tester.ExpectUniqueSample(
       "Android.WebView.Metrics.PackagesAllowList.TimeToExpire",
       expiry_time.InHours(), 1);
+}
+
+TEST_F(
+    AwMetricsServiceClientTest,
+    TestServerSideAllowlist_TestShouldRecordPackageNameWithServerSideAllowlistEnabled) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      android_webview::features::kWebViewAppsPackageNamesServerSideAllowlist);
+
+  AwMetricsServiceClient* client = GetClient();
+  EXPECT_TRUE(client->ShouldRecordPackageName());
+  EXPECT_FALSE(client->GetCachedAppPackageNameLoggingRule().has_value());
 }
 
 TEST_F(AwMetricsServiceClientTest,

@@ -9,6 +9,8 @@ source_set("metrics") {
     "aw_metrics_service_accessor.h",
     "aw_metrics_service_client.cc",
     "aw_metrics_service_client.h",
+    "aw_server_side_allowlist_metrics_provider.cc",
+    "aw_server_side_allowlist_metrics_provider.h",
     "renderer_process_metrics_provider.cc",
     "renderer_process_metrics_provider.h",
     "visibility_metrics_logger.cc",

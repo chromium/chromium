@@ -196,6 +196,9 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // should use `GetAppPackageNameIfLoggable`.
   std::string GetAppPackageName();
 
+  // Returns the installer type of the app.
+  virtual InstallerPackageType GetInstallerPackageType();
+
  protected:
   // Called by MaybeStartMetrics() to allow embedder specific initialization.
   virtual void OnMetricsStart() = 0;
@@ -221,9 +224,6 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   // indicate reporting is disabled. Sampling is due to storage/bandwidth
   // considerations.
   virtual bool IsInSample() const;
-
-  // Returns the installer type of the app.
-  virtual InstallerPackageType GetInstallerPackageType();
 
   // Determines if the embedder app is the type of app for which we may log the
   // package name. If this returns false, GetAppPackageNameIfLoggable() must
