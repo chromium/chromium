@@ -143,6 +143,7 @@ bool CoreTabHelper::IsSidePanelEnabled() {
 
 bool CoreTabHelper::IsSidePanelEnabledFor3PDse() {
   return IsSidePanelEnabled() &&
+         !search::DefaultSearchProviderIsGoogle(GetTemplateURLService()) &&
          base::FeatureList::IsEnabled(features::kUnifiedSidePanel) &&
          lens::features::GetEnableImageSearchUnifiedSidePanelFor3PDse();
 }
