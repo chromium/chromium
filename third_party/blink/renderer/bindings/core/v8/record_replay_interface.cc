@@ -2334,11 +2334,11 @@ static void SetDataProperty(v8::Isolate* isolate,
 // `gActiveNetworkRequests` when the request is first seen.  Removed
 // when the request finishes or fails.
 struct NetworkRequestStatus {
-  bool response_received;
   size_t response_data_received;
+  size_t request_data_sent;
   NetworkRequestStatus()
-  : response_received(false),
-    response_data_received(0)
+  : response_data_received(0),
+    request_data_sent(0)
   {}
 };
 // Map of active network requests.
@@ -2433,6 +2433,59 @@ static void HandleNetworkPrepareRequestEvent(const base::DictionaryValue& info) 
   gCurrentNetworkRequestEvent = nullptr;
 }
 
+static void HandleNetworkRequestDataFormEvent(const base::DictionaryValue& info) {
+  CHECK(gActiveNetworkRequests);
+  std::string request_id = *info.FindPath("requestId")->GetIfString();
+  auto request_info = gActiveNetworkRequests->find(request_id);
+  if (request_info == gActiveNetworkRequests->end()) {
+    recordreplay::Print("Unknown request for request data: %s",
+      request_id.c_str());
+    return;
+  }
+
+  // If we're receiving a RequestData.Form event, all the
+  // request data is present and none should have been already received.
+  CHECK(request_info->second.request_data_sent == 0);
+
+  { // Send a "request-body" network request event.
+    base::DictionaryValue requestBodyEvent;
+    requestBodyEvent.SetString("kind", "request-body");
+
+    gCurrentNetworkRequestEvent = &requestBodyEvent;
+    recordreplay::OnNetworkRequestEvent(request_id.c_str());
+    gCurrentNetworkRequestEvent = nullptr;
+  }
+
+  std::string stream_id = "request-" + request_id;
+
+  // Call StreamStart API.
+  recordreplay::OnNetworkStreamStart(
+    stream_id.c_str(), "request-data", request_id.c_str()
+  );
+
+  // Call StreamData API.
+  size_t length = *info.FindPath("dataLength")->GetIfDouble();
+
+  CHECK(length >= 0);
+  gCurrentNetworkStreamData->clear();
+  const std::string *data_base64 = info.FindPath("data")->GetIfString();
+  if (data_base64) {
+    const uint8_t* data =
+      reinterpret_cast<const uint8_t *>(data_base64->c_str());
+    gCurrentNetworkStreamData->insert(
+      gCurrentNetworkStreamData->begin(),
+      data,
+      data + data_base64->length()
+    );
+    size_t offset = request_info->second.response_data_received;
+    recordreplay::OnNetworkStreamData(
+      stream_id.c_str(), offset, length, /* bookmark = */ 0
+    );
+    gCurrentNetworkStreamData->clear();
+  }
+  request_info->second.request_data_sent += length;
+}
+
 static std::string MakeRequestIdentifier(uint64_t identifier) {
   char request_id[64];
   snprintf(request_id, 64, "%d.%lu", (int) getpid(), identifier);
@@ -2444,14 +2497,13 @@ static void HandleNetworkDidReceiveResponseEvent(const base::DictionaryValue& in
   uint64_t identifier =
     *info.FindPath("identifier")->GetIfDouble();
   std::string request_id = MakeRequestIdentifier(identifier);
-  auto requestInfo = gActiveNetworkRequests->find(request_id);
-  if (requestInfo == gActiveNetworkRequests->end()) {
+  auto request_info = gActiveNetworkRequests->find(request_id);
+  if (request_info == gActiveNetworkRequests->end()) {
     recordreplay::Print("Unknown request received response: %s",
       request_id.c_str());
     return;
   }
 
-  gActiveNetworkRequests->insert({ request_id, NetworkRequestStatus() });
   base::DictionaryValue event;
   event.SetString("kind", "response");
   event.Set("responseHeaders", std::unique_ptr<base::Value>(
@@ -2506,8 +2558,8 @@ static void HandleNetworkDidFailLoadingEvent(const base::DictionaryValue& info) 
   uint64_t identifier =
     *info.FindPath("identifier")->GetIfDouble();
   std::string request_id = MakeRequestIdentifier(identifier);
-  auto requestInfo = gActiveNetworkRequests->find(request_id);
-  if (requestInfo == gActiveNetworkRequests->end()) {
+  auto request_info = gActiveNetworkRequests->find(request_id);
+  if (request_info == gActiveNetworkRequests->end()) {
     recordreplay::Print("Unknown request failed loading: %s",
       request_id.c_str());
     return;
@@ -2674,6 +2726,8 @@ static void HandleBrowserEvent(const char* name, const char* payload) {
   assert(!val.is_dict() && "Browser event JSON is not a dictionary");
   if (!strcmp(name, "Network.PrepareRequest")) {
     HandleNetworkPrepareRequestEvent(base::Value::AsDictionaryValue(val));
+  } else if (!strcmp(name, "Network.RequestData.Form")) {
+    HandleNetworkRequestDataFormEvent(base::Value::AsDictionaryValue(val));
   } else if (!strcmp(name, "Network.DidReceiveResponse")) {
     HandleNetworkDidReceiveResponseEvent(base::Value::AsDictionaryValue(val));
   } else if (!strcmp(name, "Network.DidFinishLoading")) {
