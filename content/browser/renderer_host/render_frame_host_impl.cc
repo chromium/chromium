@@ -4073,6 +4073,9 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
     const blink::FramePolicy& frame_policy,
     std::string frame_name,
     std::string frame_unique_name) {
+  DCHECK(lifecycle_state_ == LifecycleStateImpl::kActive ||
+         lifecycle_state_ == LifecycleStateImpl::kPrerendering);
+
   // Initialize the RenderFrameHost for the new node.  We always create child
   // frames in the same SiteInstance as the current frame, and they can swap to
   // a different one if they navigate away.
@@ -4085,7 +4088,8 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
   // about the new frame.  Create a proxy for the child frame in all
   // SiteInstances that have a proxy for the frame's parent, since all frames
   // in a frame tree should have the same set of proxies.
-  frame_tree_node_->render_manager()->CreateProxiesForChildFrame(child.get());
+  CHECK(owner_);
+  owner_->GetRenderFrameHostManager().CreateProxiesForChildFrame(child.get());
 
   // When the child is added, it hasn't committed any navigation yet - its
   // initial empty document should inherit the origin of its parent (the origin
