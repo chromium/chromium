@@ -8,9 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -210,6 +213,14 @@ void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
   // update those sinks with activity information.
   devices_.clear();
 
+#if !defined(OFFICIAL_BUILD)
+  // Optionally add fake cast devices for manual UI testing.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kQsAddFakeCastDevices)) {
+    AddFakeCastDevices();
+  }
+#endif
+
   for (const media_router::MediaSink& sink : device_cache()->sinks()) {
     ash::SinkAndRoute device;
     device.sink.id = sink.id();
@@ -270,3 +281,17 @@ void CastConfigControllerMediaRouter::OnUserProfileLoaded(
   device_cache_.reset();
   RequestDeviceRefresh();
 }
+
+#if !defined(OFFICIAL_BUILD)
+void CastConfigControllerMediaRouter::AddFakeCastDevices() {
+  // Add enough devices that the UI menu will scroll.
+  for (int i = 1; i <= 10; i++) {
+    ash::SinkAndRoute device;
+    device.sink.id = "fake_sink_id_" + base::NumberToString(i);
+    device.sink.name = "Fake Sink " + base::NumberToString(i);
+    device.sink.domain = "example.com";
+    device.sink.sink_icon_type = ash::SinkIconType::kCast;
+    devices_.push_back(std::move(device));
+  }
+}
+#endif  // defined(OFFICIAL_BUILD)

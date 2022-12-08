@@ -132,12 +132,6 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
     view_to_sink_map_[container] = sink.id;
   }
 
-  if (features::IsQsRevampEnabled()) {
-    // TODO(b/252872586): Implement an empty state of the cast detailed view.
-    // The following line shows a fake entry.
-    AddScrollListItem(scroll_content(), kSystemMenuCastGenericIcon, u"Device");
-  }
-
   scroll_content()->SizeToPreferredSize();
   scroller()->Layout();
 }

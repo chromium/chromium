@@ -797,6 +797,9 @@ const char kPublicAccountsSamlAclUrl[] = "public-accounts-saml-acl-url";
 // Adds fake Bluetooth devices to the quick settings menu for UI testing.
 const char kQsAddFakeBluetoothDevices[] = "qs-add-fake-bluetooth-devices";
 
+// Adds fake Cast devices to the quick settings menu for UI testing.
+const char kQsAddFakeCastDevices[] = "qs-add-fake-cast-devices";
+
 // The name of the per-model directory which contains per-region
 // subdirectories with regulatory label files for this model.
 // The per-model directories (if there are any) are located under
