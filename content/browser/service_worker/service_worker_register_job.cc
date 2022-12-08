@@ -32,10 +32,12 @@
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_registry.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
@@ -515,6 +517,26 @@ void ServiceWorkerRegisterJob::OnScriptFetchCompleted(
     return;
   }
   DCHECK(version->client_security_state());
+
+  GURL final_response_url = WorkerScriptFetcher::DetermineFinalResponseUrl(
+      version->script_url(), main_script_load_params.get());
+
+  network::mojom::IPAddressSpace response_address_space =
+      network::CalculateResourceAddressSpace(
+          final_response_url,
+          main_script_load_params->response_head->remote_endpoint);
+
+  auto* requesting_render_frame_host =
+      RenderFrameHostImpl::FromID(requesting_frame_id_);
+  // requesting_render_frame_host can be null in many payment tests
+  if (requesting_render_frame_host &&
+      network::IsLessPublicAddressSpace(
+          response_address_space,
+          creator_policy_container_policies_.ip_address_space)) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        requesting_render_frame_host,
+        blink::mojom::WebFeature::kPrivateNetworkAccessFetchedWorkerScript);
+  }
 
   version->set_main_script_load_params(std::move(main_script_load_params));
   StartWorkerForUpdate(std::move(version));
