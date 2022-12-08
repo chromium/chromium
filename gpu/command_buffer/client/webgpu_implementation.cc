@@ -23,61 +23,60 @@ namespace gpu {
 namespace webgpu {
 
 #if BUILDFLAG(USE_DAWN)
-class DawnWireServices : public APIChannel {
- private:
-  friend class base::RefCounted<DawnWireServices>;
-  ~DawnWireServices() override { GetProcs().instanceRelease(wgpu_instance_); }
+DawnWireServices::~DawnWireServices() {
+  GetProcs().instanceRelease(wgpu_instance_);
+}
 
- public:
-  DawnWireServices(WebGPUImplementation* webgpu_implementation,
-                   WebGPUCmdHelper* helper,
-                   MappedMemoryManager* mapped_memory,
-                   std::unique_ptr<TransferBuffer> transfer_buffer)
-      : memory_transfer_service_(mapped_memory),
-        serializer_(webgpu_implementation,
-                    helper,
-                    &memory_transfer_service_,
-                    std::move(transfer_buffer)),
-        wire_client_(dawn::wire::WireClientDescriptor{
-            &serializer_,
-            &memory_transfer_service_,
-        }),
-        wgpu_instance_(wire_client_.ReserveInstance().instance) {
-    DCHECK(wgpu_instance_);
-  }
+DawnWireServices::DawnWireServices(
+    WebGPUImplementation* webgpu_implementation,
+    WebGPUCmdHelper* helper,
+    MappedMemoryManager* mapped_memory,
+    std::unique_ptr<TransferBuffer> transfer_buffer)
+    : memory_transfer_service_(mapped_memory),
+      serializer_(webgpu_implementation,
+                  helper,
+                  &memory_transfer_service_,
+                  std::move(transfer_buffer)),
+      wire_client_(dawn::wire::WireClientDescriptor{
+          &serializer_,
+          &memory_transfer_service_,
+      }),
+      wgpu_instance_(wire_client_.ReserveInstance().instance) {
+  DCHECK(wgpu_instance_);
+}
 
-  const DawnProcTable& GetProcs() const override {
-    return dawn::wire::client::GetProcs();
-  }
+const DawnProcTable& DawnWireServices::GetProcs() const {
+  return dawn::wire::client::GetProcs();
+}
 
-  WGPUInstance GetWGPUInstance() const override { return wgpu_instance_; }
+WGPUInstance DawnWireServices::GetWGPUInstance() const {
+  return wgpu_instance_;
+}
 
-  dawn::wire::WireClient* wire_client() { return &wire_client_; }
-  DawnClientSerializer* serializer() { return &serializer_; }
-  DawnClientMemoryTransferService* memory_transfer_service() {
-    return &memory_transfer_service_;
-  }
+dawn::wire::WireClient* DawnWireServices::wire_client() {
+  return &wire_client_;
+}
+DawnClientSerializer* DawnWireServices::serializer() {
+  return &serializer_;
+}
+DawnClientMemoryTransferService* DawnWireServices::memory_transfer_service() {
+  return &memory_transfer_service_;
+}
 
-  void Disconnect() override {
-    disconnected_ = true;
-    wire_client_.Disconnect();
-    serializer_.Disconnect();
-    memory_transfer_service_.Disconnect();
-  }
+void DawnWireServices::Disconnect() {
+  disconnected_ = true;
+  wire_client_.Disconnect();
+  serializer_.Disconnect();
+  memory_transfer_service_.Disconnect();
+}
 
-  bool IsDisconnected() const { return disconnected_; }
+bool DawnWireServices::IsDisconnected() const {
+  return disconnected_;
+}
 
-  void FreeMappedResources(WebGPUCmdHelper* helper) {
-    memory_transfer_service_.FreeHandles(helper);
-  }
-
- private:
-  bool disconnected_ = false;
-  DawnClientMemoryTransferService memory_transfer_service_;
-  DawnClientSerializer serializer_;
-  dawn::wire::WireClient wire_client_;
-  WGPUInstance wgpu_instance_;
-};
+void DawnWireServices::FreeMappedResources(WebGPUCmdHelper* helper) {
+  memory_transfer_service_.FreeHandles(helper);
+}
 #endif
 
 // Include the auto-generated part of this file. We split this because it means
