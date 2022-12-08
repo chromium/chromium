@@ -3305,7 +3305,7 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
       continue;
 
     std::set<AXPlatformNode*> target_ids =
-        GetDelegate()->GetReverseRelations(relation.attribute);
+        GetDelegate()->GetSourceNodesForReverseRelations(relation.attribute);
     for (AXPlatformNode* target : target_ids) {
       AddRelationToSet(relation_set, relation.reverse_relation.value(), target);
     }
@@ -3324,7 +3324,7 @@ AtkRelationSet* AXPlatformNodeAuraLinux::GetAtkRelations() {
       continue;
 
     std::set<AXPlatformNode*> reverse_target_ids =
-        GetDelegate()->GetReverseRelations(relation.attribute);
+        GetDelegate()->GetSourceNodesForReverseRelations(relation.attribute);
     for (AXPlatformNode* target : reverse_target_ids) {
       AddRelationToSet(relation_set, relation.reverse_relation.value(), target);
     }

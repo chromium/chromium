@@ -864,13 +864,13 @@ bool TestAXNodeWrapper::HasVisibleCaretOrSelection() const {
   return node_->HasVisibleCaretOrSelection();
 }
 
-std::set<AXPlatformNode*> TestAXNodeWrapper::GetReverseRelations(
+std::set<AXPlatformNode*> TestAXNodeWrapper::GetSourceNodesForReverseRelations(
     ax::mojom::IntAttribute attr) {
   DCHECK(IsNodeIdIntAttribute(attr));
   return GetNodesForNodeIds(tree_->GetReverseRelations(attr, GetData().id));
 }
 
-std::set<AXPlatformNode*> TestAXNodeWrapper::GetReverseRelations(
+std::set<AXPlatformNode*> TestAXNodeWrapper::GetSourceNodesForReverseRelations(
     ax::mojom::IntListAttribute attr) {
   DCHECK(IsNodeIdIntListAttribute(attr));
   return GetNodesForNodeIds(tree_->GetReverseRelations(attr, GetData().id));

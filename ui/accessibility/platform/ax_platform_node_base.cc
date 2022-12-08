@@ -839,7 +839,7 @@ bool AXPlatformNodeBase::IsStructuredAnnotation() const {
   // The node represents a structured annotation if it can trace back to a
   // target node that is being annotated.
   std::set<AXPlatformNode*> reverse_relations =
-      GetDelegate()->GetReverseRelations(
+      GetDelegate()->GetSourceNodesForReverseRelations(
           ax::mojom::IntListAttribute::kDetailsIds);
 
   return !reverse_relations.empty();

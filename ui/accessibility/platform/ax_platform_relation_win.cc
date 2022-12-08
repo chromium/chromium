@@ -175,7 +175,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
        int_attributes_with_reverse_relations) {
     std::wstring relation = GetIA2ReverseRelationFromIntAttr(int_attribute);
     std::set<AXPlatformNode*> targets =
-        delegate->GetReverseRelations(int_attribute);
+        delegate->GetSourceNodesForReverseRelations(int_attribute);
     // Erase reflexive relations.
     targets.erase(node);
     if (targets.size()) {
@@ -222,7 +222,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
     std::wstring relation =
         GetIA2ReverseRelationFromIntListAttr(intlist_attribute);
     std::set<AXPlatformNode*> targets =
-        delegate->GetReverseRelations(intlist_attribute);
+        delegate->GetSourceNodesForReverseRelations(intlist_attribute);
     // Erase reflexive relations.
     targets.erase(node);
     if (targets.size()) {

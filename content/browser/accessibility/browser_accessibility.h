@@ -446,9 +446,9 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       ax::mojom::IntAttribute attr) override;
   std::vector<ui::AXPlatformNode*> GetTargetNodesForRelation(
       ax::mojom::IntListAttribute attr) override;
-  std::set<ui::AXPlatformNode*> GetReverseRelations(
+  std::set<ui::AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntAttribute attr) override;
-  std::set<ui::AXPlatformNode*> GetReverseRelations(
+  std::set<ui::AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntListAttribute attr) override;
   absl::optional<int> GetPosInSet() const override;
   absl::optional<int> GetSetSize() const override;

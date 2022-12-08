@@ -501,7 +501,7 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForRelation(
 SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForReverseRelation(
     const ax::mojom::IntListAttribute& attribute) {
   std::set<AXPlatformNode*> reverse_relations =
-      GetDelegate()->GetReverseRelations(attribute);
+      GetDelegate()->GetSourceNodesForReverseRelations(attribute);
 
   std::vector<int32_t> id_list;
   std::transform(
@@ -2485,7 +2485,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_Target(
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ANNOTATION_GET_TARGET);
   UIA_VALIDATE_CALL_1_ARG(target);
   std::set<AXPlatformNode*> reverse_relations =
-      GetDelegate()->GetReverseRelations(
+      GetDelegate()->GetSourceNodesForReverseRelations(
           ax::mojom::IntListAttribute::kDetailsIds);
 
   // If there is no reverse relation target, IAnnotationProvider

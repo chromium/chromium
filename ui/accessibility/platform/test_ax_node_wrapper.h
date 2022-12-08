@@ -146,9 +146,9 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   bool ShouldIgnoreHoveredStateForTesting() override;
   const ui::AXUniqueId& GetUniqueId() const override;
   bool HasVisibleCaretOrSelection() const override;
-  std::set<AXPlatformNode*> GetReverseRelations(
+  std::set<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntAttribute attr) override;
-  std::set<AXPlatformNode*> GetReverseRelations(
+  std::set<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntListAttribute attr) override;
   bool IsOrderedSetItem() const override;
   bool IsOrderedSet() const override;

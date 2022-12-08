@@ -500,17 +500,13 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   // Given an attribute which could be used to establish a reverse relationship
   // between this node and a set of other nodes (AKA the source nodes), return
   // the list of source nodes if any.
-  //
-  // TODO(accessibility): Rename this to `GetSourceNodesForReverseRelation`.
-  virtual std::set<AXPlatformNode*> GetReverseRelations(
+  virtual std::set<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntAttribute attr);
 
   // Given an attribute which could be used to establish a reverse relationship
   // between this node and a set of other nodes (AKA the source nodes), return
   // the list of source nodes if any.
-  //
-  // TODO(accessibility): Rename this to `GetSourceNodesForReverseRelation`.
-  virtual std::set<AXPlatformNode*> GetReverseRelations(
+  virtual std::set<AXPlatformNode*> GetSourceNodesForReverseRelations(
       ax::mojom::IntListAttribute attr);
 
   // Returns the string representation of the unique ID assigned by the author,

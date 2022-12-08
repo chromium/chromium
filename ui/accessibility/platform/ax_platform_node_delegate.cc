@@ -443,7 +443,8 @@ bool AXPlatformNodeDelegate::HasVisibleCaretOrSelection() const {
   return IsDescendantOfAtomicTextField();
 }
 
-std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetReverseRelations(
+std::set<AXPlatformNode*>
+AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
     ax::mojom::IntAttribute attr) {
   // TODO(accessibility) Implement these if views ever use relations more
   // widely. The use so far has been for the Omnibox to the suggestion
@@ -453,7 +454,8 @@ std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetReverseRelations(
   return std::set<AXPlatformNode*>();
 }
 
-std::set<AXPlatformNode*> AXPlatformNodeDelegate::GetReverseRelations(
+std::set<AXPlatformNode*>
+AXPlatformNodeDelegate::GetSourceNodesForReverseRelations(
     ax::mojom::IntListAttribute attr) {
   return std::set<AXPlatformNode*>();
 }

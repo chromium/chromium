@@ -876,7 +876,8 @@ BrowserAccessibility::GetTargetNodesForRelation(
   return nodes;
 }
 
-std::set<ui::AXPlatformNode*> BrowserAccessibility::GetReverseRelations(
+std::set<ui::AXPlatformNode*>
+BrowserAccessibility::GetSourceNodesForReverseRelations(
     ax::mojom::IntAttribute attr) {
   DCHECK(manager_);
   DCHECK(ui::IsNodeIdIntAttribute(attr));
@@ -884,7 +885,8 @@ std::set<ui::AXPlatformNode*> BrowserAccessibility::GetReverseRelations(
       manager_->ax_tree()->GetReverseRelations(attr, GetData().id));
 }
 
-std::set<ui::AXPlatformNode*> BrowserAccessibility::GetReverseRelations(
+std::set<ui::AXPlatformNode*>
+BrowserAccessibility::GetSourceNodesForReverseRelations(
     ax::mojom::IntListAttribute attr) {
   DCHECK(manager_);
   DCHECK(ui::IsNodeIdIntListAttribute(attr));
