@@ -29,7 +29,7 @@ bool DoesOriginContainAnyInstalledWebApp(
   // that WebAppProvider is started.
   if (!provider || !provider->on_registry_ready().is_signaled())
     return false;
-  return provider->registrar().DoesScopeContainAnyApp(origin);
+  return provider->registrar_unsafe().DoesScopeContainAnyApp(origin);
 #endif
 }
 
@@ -44,7 +44,7 @@ std::set<GURL> GetOriginsWithInstalledWebApps(
   // that WebAppProvider is started.
   if (!provider || !provider->on_registry_ready().is_signaled())
     return std::set<GURL>();
-  const web_app::WebAppRegistrar& registrar = provider->registrar();
+  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   auto app_ids = registrar.GetAppIds();
   std::set<GURL> installed_origins;
   for (auto& app_id : app_ids) {
