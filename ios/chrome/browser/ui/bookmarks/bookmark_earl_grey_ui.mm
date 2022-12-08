@@ -437,9 +437,22 @@ id<GREYMatcher> SearchIconButton() {
                                           IDS_IOS_BOOKMARK_EMPTY_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
 
+  // First make sure the empty message is visible at all, so the user knows it
+  // exists.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_BOOKMARK_EMPTY_MESSAGE))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_minimumVisiblePercent(0.25)];
+
+  // Then make sure that scrolling the bookmark table view makes the empty
+  // message sufficiently visible.
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(l10n_util::GetNSString(
+                                              IDS_IOS_BOOKMARK_EMPTY_MESSAGE)),
+                                          grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kBookmarkHomeTableViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
 }
 
 - (void)verifyEmptyBackgroundIsAbsent {
