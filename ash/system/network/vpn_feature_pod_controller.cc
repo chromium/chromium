@@ -73,15 +73,19 @@ FeaturePodButton* VPNFeaturePodController::CreateButton() {
 std::unique_ptr<FeatureTile> VPNFeaturePodController::CreateTile() {
   DCHECK(features::IsQsRevampEnabled());
   DCHECK(!tile_);
-  auto tile =
-      std::make_unique<FeatureTile>(/*controller=*/this, /*is_togglable=*/true);
+  auto tile = std::make_unique<FeatureTile>(
+      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                          weak_ptr_factory_.GetWeakPtr()));
   tile_ = tile.get();
   tile_->SetVectorIcon(kUnifiedMenuVpnIcon);
   tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_SHORT));
   const std::u16string tooltip =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_TOOLTIP);
   tile_->SetTooltipText(tooltip);
-  tile_->SetDrillInButtonTooltipText(tooltip);
+  tile_->CreateDrillInButton(
+      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      tooltip);
   // Init the tile with invisible state. `Update()` will update visibility.
   tile_->SetVisible(false);
   Update();

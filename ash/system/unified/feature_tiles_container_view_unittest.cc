@@ -14,6 +14,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/views/test/views_test_utils.h"
@@ -36,8 +37,10 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   }
 
   std::unique_ptr<FeatureTile> CreateTile() override {
-    auto tile = std::make_unique<FeatureTile>(/*controller=*/this,
-                                              /*togglable=*/true, type_);
+    auto tile = std::make_unique<FeatureTile>(
+        base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                            weak_ptr_factory_.GetWeakPtr()),
+        /*togglable=*/true, type_);
     tile->SetVectorIcon(vector_icons::kDogfoodIcon);
     return tile;
   }
@@ -51,6 +54,8 @@ class MockFeaturePodController : public FeaturePodControllerBase {
 
  private:
   FeatureTile::TileType type_;
+
+  base::WeakPtrFactory<MockFeaturePodController> weak_ptr_factory_{this};
 };
 
 }  // namespace

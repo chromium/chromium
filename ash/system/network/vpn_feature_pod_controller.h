@@ -9,6 +9,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
@@ -43,6 +44,8 @@ class ASH_EXPORT VPNFeaturePodController : public FeaturePodControllerBase,
   // Owned by views hierarchy.
   FeaturePodButton* button_ = nullptr;
   FeatureTile* tile_ = nullptr;
+
+  base::WeakPtrFactory<VPNFeaturePodController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

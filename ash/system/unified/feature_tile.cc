@@ -8,8 +8,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/unified/feature_pod_controller_base.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -49,8 +49,8 @@ constexpr gfx::Insets kCompactIconContainerInteriorMargin(
 
 }  // namespace
 
-// Constructor for prototype tile without a controller.
-// TODO(b/252871301): Remove when applying controllers to each feature tile.
+// Constructor for prototype tiles without a callback.
+// TODO(b/252871301): Remove when having implemented each feature tile.
 FeatureTile::FeatureTile(TileType type)
     : Button(PressedCallback()), type_(type) {
   UpdateColors();
@@ -68,40 +68,14 @@ FeatureTile::FeatureTile(TileType type)
   SetVectorIcon(vector_icons::kDogfoodIcon);
 }
 
-FeatureTile::FeatureTile(FeaturePodControllerBase* controller,
+FeatureTile::FeatureTile(base::RepeatingCallback<void()> callback,
                          bool is_togglable,
                          TileType type)
-    : Button(base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
-                                 base::Unretained(controller))),
-      is_togglable_(is_togglable),
-      type_(type) {
-  DCHECK(controller);
+    : Button(callback), is_togglable_(is_togglable), type_(type) {
   UpdateColors();
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kButtonRadius);
   CreateChildViews();
-
-  if (type == TileType::kCompact)
-    return;
-
-  drill_container_ = AddChildView(std::make_unique<views::LabelButton>(
-      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
-                          base::Unretained(controller))));
-  drill_container_->SetLayoutManager(std::make_unique<FlexLayout>())
-      ->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  drill_container_->SetPreferredSize(kDrillContainerSize);
-  drill_container_->SetFocusBehavior(FocusBehavior::NEVER);
-  // TODO(b/259280052): Make the `drill_in_button_` an ImageView so we do not
-  // receive a callback since it is already applied to `drill_container_`.
-  // Apply focus to the view only when the button type is "Toggle + Drill-in".
-  drill_in_button_ =
-      drill_container_->AddChildView(std::make_unique<IconButton>(
-          base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
-                              base::Unretained(controller)),
-          IconButton::Type::kSmall, &kQuickSettingsRightArrowIcon,
-          /*togglable=*/false,
-          /*has_border=*/false));
 }
 
 void FeatureTile::CreateChildViews() {
@@ -162,6 +136,36 @@ void FeatureTile::CreateChildViews() {
   }
 }
 
+void FeatureTile::CreateDrillInButton(base::RepeatingCallback<void()> callback,
+                                      const std::u16string& tooltip_text) {
+  DCHECK_EQ(type_, TileType::kPrimary);
+
+  auto drill_in_button = std::make_unique<views::LabelButton>(callback);
+  drill_in_button->SetLayoutManager(std::make_unique<FlexLayout>())
+      ->SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  drill_in_button->SetPreferredSize(kDrillContainerSize);
+  drill_in_button->SetFocusBehavior(FocusBehavior::NEVER);
+  drill_in_button->SetTooltipText(tooltip_text);
+
+  auto drill_in_arrow =
+      std::make_unique<IconButton>(callback, IconButton::Type::kXSmall,
+                                   &kQuickSettingsRightArrowIcon, tooltip_text,
+                                   /*togglable=*/false,
+                                   /*has_border=*/false);
+
+  // Focus behavior is set on this view, but we let its parent view
+  // `drill_in_button_` handle the button events.
+  drill_in_arrow->SetCanProcessEventsWithinSubtree(false);
+
+  // Only buttons with Toggle + Drill-in behavior can focus the drill-in arrow.
+  if (!is_togglable_)
+    drill_in_arrow->SetFocusBehavior(FocusBehavior::NEVER);
+
+  drill_in_button_ = AddChildView(std::move(drill_in_button));
+  drill_in_button_->AddChildView(std::move(drill_in_arrow));
+}
+
 void FeatureTile::UpdateColors() {
   ui::ColorId background_color_id =
       toggled_ ? cros_tokens::kCrosSysSystemPrimaryContainer
@@ -204,13 +208,7 @@ void FeatureTile::SetSubLabelVisibility(bool visible) {
 void FeatureTile::SetDrillInButtonTooltipText(const std::u16string& text) {
   // Only primary tiles have a drill-in button.
   DCHECK(drill_in_button_);
-  drill_container_->SetTooltipText(text);
   drill_in_button_->SetTooltipText(text);
-}
-
-void FeatureTile::SetDrillInButtonVisibility(bool visible) {
-  DCHECK(drill_in_button_);
-  drill_container_->SetVisible(visible);
 }
 
 BEGIN_METADATA(FeatureTile, views::Button)

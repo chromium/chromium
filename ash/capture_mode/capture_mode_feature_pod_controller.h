@@ -9,6 +9,7 @@
 
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
@@ -36,6 +37,8 @@ class CaptureModeFeaturePodController : public FeaturePodControllerBase {
   UnifiedSystemTrayController* const tray_controller_;
 
   FeaturePodButton* button_ = nullptr;
+
+  base::WeakPtrFactory<CaptureModeFeaturePodController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -6,14 +6,11 @@
 #define ASH_SYSTEM_UNIFIED_FEATURE_TILE_H_
 
 #include "ash/ash_export.h"
-#include "ash/style/icon_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
-
-class FeaturePodControllerBase;
 
 // The main button used in FeatureTilesContainerView, which acts as an entry
 // point for features in QuickSettingsView.
@@ -45,13 +42,17 @@ class ASH_EXPORT FeatureTile : public views::Button {
     kMaxValue = kCompact,
   };
 
-  // Constructor that doesn't receive a controller and applies placeholder icons
-  // and titles.
-  // TODO(b/252871301): Remove when applying controllers to each feature tile.
+  // Constructor for prototype tiles without a callback. Applies placeholder
+  // icons and titles.
+  // TODO(b/252871301): Remove when having implemented each feature tile.
   explicit FeatureTile(TileType type = TileType::kPrimary);
 
-  // The controller must outlive this object.
-  explicit FeatureTile(FeaturePodControllerBase* controller,
+  // Constructor for FeatureTiles. `callback` will be called when interacting
+  // with the main part of the button, which accounts for the whole tile.
+  // For primary tiles with drill-in, `callback` is called when interacting with
+  // the left side of the button, since the right side holds the drill-in
+  // button.
+  explicit FeatureTile(base::RepeatingCallback<void()> callback,
                        bool is_togglable = true,
                        TileType type = TileType::kPrimary);
   FeatureTile(const FeatureTile&) = delete;
@@ -61,6 +62,12 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Creates child views of Feature Tile. The constructed view will vary
   // depending on the button's `type_`.
   void CreateChildViews();
+
+  // Creates the `drill_container_` which holds the `drill_in_button_`.
+  // `callback` is called when interacting with the right side of the button
+  // where the drill-in button exists.
+  void CreateDrillInButton(base::RepeatingCallback<void()> callback,
+                           const std::u16string& tooltip_text);
 
   TileType tile_type() { return type_; }
 
@@ -87,10 +94,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the tooltip text of `drill_container_` and `drill_in_button_`.
   void SetDrillInButtonTooltipText(const std::u16string& text);
 
-  // Sets visibility of `drill_container_` and `drill_in_button_`.
-  void SetDrillInButtonVisibility(bool visible);
-
-  views::LabelButton* drill_container() { return drill_container_; }
+  views::LabelButton* drill_in_button() { return drill_in_button_; }
 
  private:
   friend class NotificationCounterViewTest;
@@ -99,8 +103,7 @@ class ASH_EXPORT FeatureTile : public views::Button {
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;
   views::Label* sub_label_ = nullptr;
-  views::LabelButton* drill_container_ = nullptr;
-  IconButton* drill_in_button_ = nullptr;
+  views::LabelButton* drill_in_button_ = nullptr;
 
   // Whether this button is togglable.
   bool is_togglable_ = false;

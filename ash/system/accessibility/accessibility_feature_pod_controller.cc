@@ -51,8 +51,10 @@ FeaturePodButton* AccessibilityFeaturePodController::CreateButton() {
 
 std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile() {
   DCHECK(features::IsQsRevampEnabled());
-  auto feature_tile = std::make_unique<FeatureTile>(/*controller=*/this,
-                                                    /*is_togglable=*/false);
+  auto feature_tile = std::make_unique<FeatureTile>(
+      base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*is_togglable=*/false);
   feature_tile->SetVectorIcon(kUnifiedMenuAccessibilityIcon);
   feature_tile->SetLabel(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY));
@@ -60,7 +62,10 @@ std::unique_ptr<FeatureTile> AccessibilityFeaturePodController::CreateTile() {
   const std::u16string tooltip_text =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY_TOOLTIP);
   feature_tile->SetTooltipText(tooltip_text);
-  feature_tile->SetDrillInButtonTooltipText(tooltip_text);
+  feature_tile->CreateDrillInButton(
+      base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                          weak_ptr_factory_.GetWeakPtr()),
+      tooltip_text);
   return feature_tile;
 }
 

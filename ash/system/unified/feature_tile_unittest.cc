@@ -11,6 +11,7 @@
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/views/test/views_test_utils.h"
@@ -37,8 +38,10 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   }
 
   std::unique_ptr<FeatureTile> CreateTile() override {
-    auto tile =
-        std::make_unique<FeatureTile>(/*controller=*/this, togglable_, type_);
+    auto tile = std::make_unique<FeatureTile>(
+        base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
+                            weak_ptr_factory_.GetWeakPtr()),
+        togglable_, type_);
     tile->SetVectorIcon(vector_icons::kDogfoodIcon);
     tile_ = tile.get();
     return tile;
@@ -68,6 +71,15 @@ class MockFeaturePodController : public FeaturePodControllerBase {
     was_label_pressed_ = true;
   }
 
+  // FeaturePodController elements in production know if they need to create a
+  // drill-in button, but here we create it after creating the base button.
+  void CreateDrillInButton() {
+    tile_->CreateDrillInButton(
+        base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,
+                            weak_ptr_factory_.GetWeakPtr()),
+        u"Tooltip text");
+  }
+
   bool WasIconPressed() { return was_icon_pressed_; }
   bool WasLabelPressed() { return was_label_pressed_; }
 
@@ -78,6 +90,8 @@ class MockFeaturePodController : public FeaturePodControllerBase {
   bool togglable_ = false;
   bool toggled_ = false;
   FeatureTile::TileType type_ = FeatureTile::TileType::kPrimary;
+
+  base::WeakPtrFactory<MockFeaturePodController> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -116,11 +130,7 @@ TEST_F(FeatureTileTest, PrimaryTile_LaunchSurface) {
       /*togglable=*/false, FeatureTile::TileType::kPrimary);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  // Hide drill-in button.
-  tile->SetDrillInButtonVisibility(false);
-
-  ASSERT_TRUE(tile->drill_container());
-  EXPECT_FALSE(tile->drill_container()->GetVisible());
+  EXPECT_FALSE(tile->drill_in_button());
 
   // Ensure icon hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
@@ -138,11 +148,7 @@ TEST_F(FeatureTileTest, PrimaryTile_Toggle) {
       /*togglable=*/true, FeatureTile::TileType::kPrimary);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  // Hide drill-in button.
-  tile->SetDrillInButtonVisibility(false);
-
-  ASSERT_TRUE(tile->drill_container());
-  EXPECT_FALSE(tile->drill_container()->GetVisible());
+  EXPECT_FALSE(tile->drill_in_button());
 
   // Ensure icon hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
@@ -165,15 +171,16 @@ TEST_F(FeatureTileTest, PrimaryTile_DrillIn) {
       /*togglable=*/false, FeatureTile::TileType::kPrimary);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  // Expect drill-in button visible.
-  ASSERT_TRUE(tile->drill_container());
-  EXPECT_TRUE(tile->drill_container()->GetVisible());
+  mock_controller->CreateDrillInButton();
+  views::test::RunScheduledLayout(tile);
+  ASSERT_TRUE(tile->drill_in_button());
+  EXPECT_TRUE(tile->drill_in_button()->GetVisible());
 
   // Ensure icon hasn't been pressed.
   EXPECT_FALSE(tile->IsToggled());
   EXPECT_FALSE(mock_controller->WasIconPressed());
 
-  LeftClickOn(tile->drill_container());
+  LeftClickOn(tile->drill_in_button());
 
   // Ensure icon was pressed and button does not toggle after clicking it.
   EXPECT_TRUE(mock_controller->WasIconPressed());
@@ -187,9 +194,10 @@ TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
       /*togglable=*/true, FeatureTile::TileType::kPrimary);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
 
-  // Expect drill-in button visible.
-  ASSERT_TRUE(tile->drill_container());
-  EXPECT_TRUE(tile->drill_container()->GetVisible());
+  mock_controller->CreateDrillInButton();
+  views::test::RunScheduledLayout(tile);
+  ASSERT_TRUE(tile->drill_in_button());
+  EXPECT_TRUE(tile->drill_in_button()->GetVisible());
 
   // Ensure icon is not pressed or toggled.
   EXPECT_FALSE(tile->IsToggled());
@@ -203,7 +211,7 @@ TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
 
   EXPECT_FALSE(mock_controller->WasLabelPressed());
 
-  LeftClickOn(tile->drill_container());
+  LeftClickOn(tile->drill_in_button());
 
   // Ensure `WasLabelPressed` after clicking drill-in button.
   EXPECT_TRUE(mock_controller->WasLabelPressed());
