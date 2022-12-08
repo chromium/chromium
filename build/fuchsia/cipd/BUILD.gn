@@ -151,6 +151,7 @@ template("cipd_archive") {
     sources = []
   }
   sources += get_target_outputs(":${target_name}_license")
+  sources += get_target_outputs(":${target_name}_license_spdx")
 
   fuchsia_cipd_package("${target_name}${_archive_suffix}") {
     package = "${package_base_path}/${package_subdirectory}/${targetarch}/${invoker.target_name}"
