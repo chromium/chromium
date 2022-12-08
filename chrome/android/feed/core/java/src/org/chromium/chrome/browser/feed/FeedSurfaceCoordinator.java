@@ -586,6 +586,13 @@ public class FeedSurfaceCoordinator
         getFeatureEngagementTracker().notifyEvent(EventConstants.FEED_SWIPE_REFRESHED);
     }
 
+    public void nonSwipeRefresh() {
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.startRefreshingAtTheBottom();
+        }
+        onRefresh();
+    }
+
     void updateReloadButtonVisibility(boolean isReloading) {
         Toolbar toolbar = mToolbarSupplier.get();
         if (toolbar != null) {
