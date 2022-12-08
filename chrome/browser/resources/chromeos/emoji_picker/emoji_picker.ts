@@ -64,6 +64,7 @@ export class EmojiPicker extends PolymerElement {
       v2Enabled: {type: Boolean, value: false, reflectToAttribute: true},
       searchExtensionEnabled: {type: Boolean, value: false},
       incognito: {type: Boolean, value: true},
+      gifSupport: {type: Boolean, value: false},
     };
   }
   private category: CategoryEnum;
@@ -77,6 +78,7 @@ export class EmojiPicker extends PolymerElement {
   private v2Enabled: boolean;
   private searchExtensionEnabled: boolean;
   private incognito: boolean;
+  private gifSupport: boolean;
 
   private scrollTimeout: number|null;
   private groupScrollTimeout: number|null;
@@ -297,6 +299,7 @@ export class EmojiPicker extends PolymerElement {
     this.v2Enabled = featureList.includes(Feature.EMOJI_PICKER_EXTENSION);
     this.searchExtensionEnabled =
         featureList.includes(Feature.EMOJI_PICKER_SEARCH_EXTENSION);
+    this.gifSupport = featureList.includes(Feature.EMOJI_PICKER_GIF_SUPPORT);
   }
 
   fetchOrderingData(url: string): Promise<EmojiGroupData> {
