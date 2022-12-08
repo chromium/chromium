@@ -828,11 +828,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Incognito.TimeSpent" units="ms" expires_after="2023-10-16">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>thegreenfrog@chromium.org</owner>
+  <owner>qpubert@google.com</owner>
   <summary>
     The time incognito profile is displayed to the user. Incognito sessions
     during less than 10 seconds are not reported. Incognito session paused for
-    less than 10 seconds is resumed.
+    less than 10 seconds is resumed. (Incorrectly reported between M92 and
+    M107).
   </summary>
 </histogram>
 
