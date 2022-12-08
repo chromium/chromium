@@ -207,7 +207,8 @@ suite('PeoplePageTests', function() {
     await waitAfterNextRender(peoplePage);
 
     // Make the sync page configurable.
-    const syncPage = peoplePage.shadowRoot.querySelector('settings-sync-page');
+    const syncPage =
+        peoplePage.shadowRoot.querySelector('os-settings-sync-page');
     assert(syncPage);
     syncPage.syncPrefs = {
       customPassphraseAllowed: true,
@@ -227,7 +228,7 @@ suite('PeoplePageTests', function() {
     // Flush to make sure the dropdown expands.
     flush();
     const deepLinkElement =
-        syncPage.shadowRoot.querySelector('settings-sync-encryption-options')
+        syncPage.shadowRoot.querySelector('os-settings-sync-encryption-options')
             .shadowRoot.querySelector('#encryptionRadioGroup')
             .buttons_[0]
             .shadowRoot.querySelector('#button');

@@ -1,0 +1,24 @@
+<style include="settings-shared">
+  :host(.list-frame) settings-toggle-button {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  :host(.list-frame) settings-toggle-button:first-of-type {
+    border-top: none;
+  }
+</style>
+<!-- On ChromeOS OS settings show the toggle for metrics reporting. -->
+<settings-toggle-button class="hr"
+    pref="{{prefs.cros.metrics.reportingEnabled}}"
+    label="$i18n{enablePersonalizationLogging}"
+    sub-label="$i18n{enablePersonalizationLoggingDesc}">
+</settings-toggle-button>
+<settings-toggle-button id="spellCheckControl"
+    class="hr"
+    pref="{{prefs.spellcheck.use_spelling_service}}"
+    on-settings-boolean-control-change="onUseSpellingServiceToggle_"
+    label="$i18n{spellingPref}"
+    sub-label="$i18n{spellingDescription}"
+    hidden="[[!showSpellCheckControlToggle_(prefs.spellcheck.dictionaries)]]">
+</settings-toggle-button>

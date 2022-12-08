@@ -36,23 +36,12 @@
     </template>
 <if expr="_google_chrome">
 <if expr="chromeos_ash">
-    <!-- On ChromeOS OS settings show the toggle for metrics reporting. -->
-    <template is="dom-if" if="[[!showMetricsReportingAsLink_()]]" restamp>
-      <settings-toggle-button class="hr"
-          pref="{{prefs.cros.metrics.reportingEnabled}}"
-          label="$i18n{enablePersonalizationLogging}"
-          sub-label="$i18n{enablePersonalizationLoggingDesc}">
-      </settings-toggle-button>
-    </template>
-
     <!-- Ash Browser settings show a link to the OS settings instead. -->
-    <template is="dom-if" if="[[showMetricsReportingAsLink_()]]" restamp>
-      <cr-link-row class="hr"
-          label="$i18n{enablePersonalizationLogging}"
-          sub-label="$i18n{enablePersonalizationLoggingDesc}"
-          on-click="onMetricsReportingLinkClick_" external>
-      </cr-link-row>
-    </template>
+    <cr-link-row class="hr"
+        label="$i18n{enablePersonalizationLogging}"
+        sub-label="$i18n{enablePersonalizationLoggingDesc}"
+        on-click="onMetricsReportingLinkClick_" external>
+    </cr-link-row>
 </if><!-- chromeos -->
 <if expr="not chromeos_ash">
     <settings-toggle-button id="metricsReportingControl"
@@ -70,15 +59,14 @@
     </settings-toggle-button>
 </if><!-- not chromeos -->
 </if><!-- _google_chrome -->
-    <template is="dom-if" if="[[showUrlCollectionToggle_()]]" restamp>
-      <settings-toggle-button id="urlCollectionToggle"
-          class="hr"
-          pref="{{prefs.url_keyed_anonymized_data_collection.enabled}}"
-          label="$i18n{urlKeyedAnonymizedDataCollection}"
-          sub-label="$i18n{urlKeyedAnonymizedDataCollectionDesc}">
-      </settings-toggle-button>
-    </template>
+    <settings-toggle-button id="urlCollectionToggle"
+        class="hr"
+        pref="{{prefs.url_keyed_anonymized_data_collection.enabled}}"
+        label="$i18n{urlKeyedAnonymizedDataCollection}"
+        sub-label="$i18n{urlKeyedAnonymizedDataCollectionDesc}">
+    </settings-toggle-button>
 <if expr="_google_chrome">
+<if expr="not chromeos_ash">
     <settings-toggle-button id="spellCheckControl"
         class="hr"
         pref="{{prefs.spellcheck.use_spelling_service}}"
@@ -87,7 +75,7 @@
         sub-label="$i18n{spellingDescription}"
         hidden="[[!showSpellCheckControlToggle_(prefs.spellcheck.dictionaries)]]">
     </settings-toggle-button>
-
+</if>
 <if expr="chromeos_ash">
     <!-- On ChromeOS the toggle for spellcheck is shown in the OS settings,
          and Ash Browser settings show a link to the OS settings instead. -->

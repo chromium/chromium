@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * 'os-settings-sync-page' is the settings page containing sync settings.
+ */
+
 import '//resources/js/util_ts.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -14,42 +19,32 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import './sync_account_control.js';
-import './sync_encryption_options.js';
-import '../privacy_page/personalization_options.js';
-import '../settings_shared.css.js';
-import '../settings_vars.css.js';
-// <if expr="not chromeos_ash">
-import '//resources/cr_elements/cr_toast/cr_toast.js';
-
+// <if expr="_google_chrome">
+import './os_personalization_options.js';
 // </if>
+import './os_sync_encryption_options.js';
+import '../../settings_shared.css.js';
+import '../../settings_vars.css.js';
 
-import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {WebUiListenerMixin, WebUiListenerMixinInterface} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
-import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
-import {FocusConfig} from '../focus_config.js';
-import {loadTimeData} from '../i18n_setup.js';
-// <if expr="chromeos_ash">
-import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
-// </if>
+import {FocusConfig} from '../../focus_config.js';
+import {loadTimeData} from '../../i18n_setup.js';
 
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 
-import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
-// <if expr="chromeos_ash">
-import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
-// </if>
+import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../../people_page/sync_browser_proxy.js';
+import {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';
+import {OsSettingsSyncEncryptionOptionsElement} from './os_sync_encryption_options.js';
 
-import {getTemplate} from './sync_page.html.js';
+import {getTemplate} from './os_sync_page.html.js';
 
-// TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
-// Settings.
 interface SyncRoutes {
   BASIC: Route;
   PEOPLE: Route;
@@ -64,26 +59,21 @@ function getSyncRoutes(): SyncRoutes {
   return router.getRoutes() as SyncRoutes;
 }
 
-export interface SettingsSyncPageElement {
+export interface OsSettingsSyncPageElement {
   $: {
     encryptionCollapse: IronCollapseElement,
   };
 }
 
-/**
- * @fileoverview
- * 'settings-sync-page' is the settings page containing sync settings.
- */
-
-const SettingsSyncPageElementBase =
+const OsSettingsSyncPageElementBase =
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))) as {
       new (): PolymerElement & WebUiListenerMixinInterface &
           I18nMixinInterface & RouteObserverMixinInterface,
     };
 
-export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
+export class OsSettingsSyncPageElement extends OsSettingsSyncPageElementBase {
   static get is() {
-    return 'settings-sync-page';
+    return 'os-settings-sync-page';
   }
 
   static get template() {
@@ -123,9 +113,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
       /**
        * Dictionary defining page visibility.
-       * TODO(dpapad): Restore the type information here
-       * (PrivacyPageVisibility), when this file is no longer shared with
-       * chrome://os-settings.
        */
       pageVisibility: Object,
 
@@ -191,13 +178,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
             'syncPrefs.trustedVaultKeysRequired)',
       },
 
-      // <if expr="not chromeos_ash">
-      showSetupCancelDialog_: {
-        type: Boolean,
-        value: false,
-      },
-      // </if>
-
       enterPassphraseLabel_: {
         type: String,
         computed: 'computeEnterPassphraseLabel_(syncPrefs.encryptAllData,' +
@@ -230,10 +210,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;
-
-  // <if expr="not chromeos_ash">
-  private showSetupCancelDialog_: boolean;
-  // </if>
 
   private enterPassphraseLabel_: TrustedHTML;
   private existingPassphraseLabel_: TrustedHTML;
@@ -316,21 +292,29 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
-  // <if expr="chromeos_ash">
-  getEncryptionOptions(): SettingsSyncEncryptionOptionsElement|null {
-    return this.shadowRoot!.querySelector('settings-sync-encryption-options');
+  getEncryptionOptions(): OsSettingsSyncEncryptionOptionsElement|null {
+    return this.shadowRoot!.querySelector(
+        'os-settings-sync-encryption-options');
   }
 
-  getPersonalizationOptions(): SettingsPersonalizationOptionsElement|null {
-    return this.shadowRoot!.querySelector('settings-personalization-options');
+  getPersonalizationOptions(): OsSettingsPersonalizationOptionsElement|null {
+// <if expr="_google_chrome">
+    return null;
+// </if>
+// <if expr="not _google_chrome">
+    return this.shadowRoot!.querySelector(
+        'os-settings-personalization-options');
+// </if>
   }
-  // </if>
 
-  // <if expr="is_chromeos">
   private shouldShowLacrosSideBySideWarning_(): boolean {
     return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
   }
-  // </if>
+
+  private showActivityControls_(): boolean {
+    // Should be hidden in OS settings.
+    return false;
+  }
 
   private computeSignedIn_(): boolean {
     return !!this.syncStatus.signedIn;
@@ -350,36 +334,13 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   private onFocusConfigChange_() {
-    this.focusConfig.set(getSyncRoutes().SYNC_ADVANCED!.path, () => {
+    this.focusConfig.set(getSyncRoutes().OS_SYNC.path, () => {
       const toFocus =
           this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
       assert(toFocus);
       focusWithoutInk(toFocus);
     });
   }
-
-  // <if expr="not chromeos_ash">
-  private onSetupCancelDialogBack_() {
-    this.shadowRoot!.querySelector<CrDialogElement>(
-                        '#setupCancelDialog')!.cancel();
-    chrome.metricsPrivate.recordUserAction(
-        'Signin_Signin_CancelCancelAdvancedSyncSettings');
-  }
-
-  private onSetupCancelDialogConfirm_() {
-    this.setupCancelConfirmed_ = true;
-    this.shadowRoot!.querySelector<CrDialogElement>(
-                        '#setupCancelDialog')!.close();
-    const router = Router.getInstance();
-    router.navigateTo(getSyncRoutes().BASIC);
-    chrome.metricsPrivate.recordUserAction(
-        'Signin_Signin_ConfirmCancelAdvancedSyncSettings');
-  }
-
-  private onSetupCancelDialogClose_() {
-    this.showSetupCancelDialog_ = false;
-  }
-  // </if>
 
   override currentRouteChanged() {
     const router = Router.getInstance();
@@ -400,33 +361,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       this.onNavigateAwayFromPage_();
       return;
     }
-
-    // <if expr="not chromeos_ash">
-    const userActionCancelsSetup = this.syncStatus &&
-        this.syncStatus.firstSetupInProgress && this.didAbort_;
-    if (userActionCancelsSetup && !this.setupCancelConfirmed_) {
-      chrome.metricsPrivate.recordUserAction(
-          'Signin_Signin_BackOnAdvancedSyncSettings');
-      // Show the 'Cancel sync?' dialog.
-      // Yield so that other |currentRouteChanged| observers are called,
-      // before triggering another navigation (and another round of observers
-      // firing). Triggering navigation from within an observer leads to some
-      // undefined behavior and runtime errors.
-      requestAnimationFrame(() => {
-        router.navigateTo(getSyncRoutes().SYNC);
-        this.showSetupCancelDialog_ = true;
-        // Flush to make sure that the setup cancel dialog is attached.
-        flush();
-        this.shadowRoot!.querySelector<CrDialogElement>(
-                            '#setupCancelDialog')!.showModal();
-      });
-      return;
-    }
-
-    // Reset variable.
-    this.setupCancelConfirmed_ = false;
-
-    // </if>
 
     this.onNavigateAwayFromPage_();
   }
@@ -491,12 +425,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private handleSyncPrefsChanged_(syncPrefs: SyncPrefs) {
     this.syncPrefs = syncPrefs;
     this.pageStatus_ = PageStatus.CONFIGURE;
-  }
-
-  private onActivityControlsClick_() {
-    chrome.metricsPrivate.recordUserAction('Sync_OpenActivityControlsPage');
-    this.browserProxy_.openActivityControlsUrl();
-    window.open(loadTimeData.getString('activityControlsUrl'));
   }
 
   private onSyncDashboardLinkClick_() {
@@ -609,7 +537,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         return;
       case PageStatus.DONE:
         if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
-          router.navigateTo(getSyncRoutes().PEOPLE!);
+          router.navigateTo(getSyncRoutes().OS_PEOPLE);
         }
         return;
       case PageStatus.PASSPHRASE_FAILED:
@@ -635,17 +563,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
-  private shouldShowSyncAccountControl_(): boolean {
-    // <if expr="chromeos_ash">
-    return false;
-    // </if>
-    // <if expr="not chromeos_ash">
-    return this.syncStatus !== undefined &&
-        !!this.syncStatus.syncSystemEnabled &&
-        loadTimeData.getBoolean('signinAllowed');
-    // </if>
-  }
-
   private computeShowExistingPassphraseBelowAccount_(): boolean {
     return this.syncStatus !== undefined && !!this.syncStatus.signedIn &&
         this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
@@ -653,24 +570,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private onSyncAdvancedClick_() {
     const router = Router.getInstance();
-    router.navigateTo(getSyncRoutes().SYNC_ADVANCED!);
-  }
-
-  /**
-   * @param e The event passed from settings-sync-account-control.
-   */
-  private onSyncSetupDone_(e: CustomEvent<boolean>) {
-    if (e.detail) {
-      this.didAbort_ = false;
-      chrome.metricsPrivate.recordUserAction(
-          'Signin_Signin_ConfirmAdvancedSyncSettings');
-    } else {
-      this.setupCancelConfirmed_ = true;
-      chrome.metricsPrivate.recordUserAction(
-          'Signin_Signin_CancelAdvancedSyncSettings');
-    }
-    const router = Router.getInstance();
-    router.navigateTo(getSyncRoutes().BASIC);
+    router.navigateTo(getSyncRoutes().OS_SYNC);
   }
 
   /**
@@ -689,8 +589,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-sync-page': SettingsSyncPageElement;
+    'os-settings-sync-page': OsSettingsSyncPageElement;
   }
 }
 
-customElements.define(SettingsSyncPageElement.is, SettingsSyncPageElement);
+customElements.define(OsSettingsSyncPageElement.is, OsSettingsSyncPageElement);

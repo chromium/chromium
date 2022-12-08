@@ -65,11 +65,6 @@ export class SettingsPersonalizationOptionsElement extends
         notify: true,
       },
 
-      /**
-       * TODO(dpapad): Restore actual type !PrivacyPageVisibility after this
-       * file is no longer reused by chrome://os-settings. Dictionary defining
-       * page visibility.
-       */
       pageVisibility: Object,
 
       syncStatus: Object,
@@ -129,12 +124,6 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private showPriceEmailNotificationsToggle_(): boolean {
-    // <if expr="chromeos_ash">
-    if (loadTimeData.getBoolean('isOSSettings')) {
-      // Should be hidden in OS settings.
-      return false;
-    }
-    // </if>
     // Only show the toggle when the user signed in.
     return loadTimeData.getBoolean('changePriceEmailNotificationsEnabled') &&
         !!this.syncStatus && !!this.syncStatus.signedIn;
@@ -214,12 +203,6 @@ export class SettingsPersonalizationOptionsElement extends
   // </if>
 
   private showSearchSuggestToggle_(): boolean {
-    // <if expr="chromeos_ash">
-    if (loadTimeData.getBoolean('isOSSettings')) {
-      // Should be hidden in OS settings.
-      return false;
-    }
-    // </if>
     if (this.pageVisibility === undefined) {
       // pageVisibility isn't defined in non-Guest profiles (crbug.com/1288911).
       return true;
@@ -228,24 +211,10 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   // <if expr="chromeos_ash">
-  private showMetricsReportingAsLink_(): boolean {
-    return !loadTimeData.getBoolean('isOSSettings');
-  }
-
   private onMetricsReportingLinkClick_() {
     window.location.href = loadTimeData.getString('osSyncSetupSettingsUrl');
   }
   // </if>
-
-  private showUrlCollectionToggle_(): boolean {
-    // <if expr="chromeos_ash">
-    // Should be hidden in OS settings.
-    if (loadTimeData.getBoolean('isOSSettings')) {
-      return false;
-    }
-    // </if>
-    return true;
-  }
 
   // <if expr="_google_chrome">
   private onUseSpellingServiceToggle_(event: Event) {
@@ -256,24 +225,16 @@ export class SettingsPersonalizationOptionsElement extends
     }
   }
 
+  // <if expr="not chromeos_ash">
   private showSpellCheckControlToggle_(): boolean {
-    // <if expr="chromeos_ash">
-    if (!loadTimeData.getBoolean('isOSSettings')) {
-      // The toggle should be hidden in Ash Browser settings page
-      // (it shows a link to the OS Settings page instead).
-      return false;
-    }
-    // </if>
     return (
         !!(this.prefs as {spellcheck?: any}).spellcheck &&
         (this.getPref('spellcheck.dictionaries').value as string[]).length > 0);
   }
+  // </if><!-- not chromeos -->
 
   // <if expr="chromeos_ash">
   private showSpellCheckControlLink_(): boolean {
-    if (loadTimeData.getBoolean('isOSSettings')) {
-      return false;  // Should be hidden in OS settings.
-    }
     return (
         !!(this.prefs as {spellcheck?: any}).spellcheck &&
         (this.getPref('spellcheck.dictionaries').value as string[]).length > 0);
@@ -286,12 +247,6 @@ export class SettingsPersonalizationOptionsElement extends
   // </if><!-- _google_chrome -->
 
   private shouldShowDriveSuggest_(): boolean {
-    // <if expr="chromeos_ash">
-    if (loadTimeData.getBoolean('isOSSettings')) {
-      // Should be hidden in OS settings.
-      return false;
-    }
-    // </if>
     return loadTimeData.getBoolean('driveSuggestAvailable') &&
         !!this.syncStatus && !!this.syncStatus.signedIn &&
         this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE;

@@ -1,0 +1,43 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  .delete-profile-warning {
+    padding-bottom: 10px;
+    padding-inline-end: var(--cr-section-padding);
+    /* In order to line up with the checkbox text. */
+    padding-inline-start: calc(var(--cr-section-padding) + 32px);
+    padding-top: 10px;
+  }
+
+  #wideFooter {
+    /* Override the cr-dialog footer padding. */
+    padding: 0;
+  }
+
+  #dialog-body {
+    /* Add space for the link focus ring. See https://crbug.com/916939. */
+    padding-bottom: 2px;
+  }
+</style>
+
+<cr-dialog id="dialog" ignore-enter-key close-text="$i18n{close}">
+  <div slot="title">$i18n{syncDisconnectTitle}</div>
+  <div id="dialog-body" slot="body">
+    <div inner-h-t-m-l="[[
+        getDisconnectExplanationHtml_(syncStatus.domain)]]">
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="disconnectCancel" class="cancel-button"
+        on-click="onDisconnectCancel_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="disconnectConfirm" class="action-button"
+        hidden="[[syncStatus.domain]]" on-click="onDisconnectConfirm_">
+      $i18n{syncDisconnect}
+    </cr-button>
+    <cr-button id="disconnectManagedProfileConfirm"
+        class="action-button" hidden="[[!syncStatus.domain]]"
+        on-click="onDisconnectConfirm_">
+      $i18n{syncDisconnectConfirm}
+    </cr-button>
+  </div>
+</cr-dialog>

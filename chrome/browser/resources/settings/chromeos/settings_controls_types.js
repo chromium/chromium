@@ -83,10 +83,10 @@ SettingsPersonalizationOptionsElement.prototype.getSearchSuggestToggle =
  * @constructor
  * @extends {HTMLElement}
  */
-function SettingsSyncEncryptionOptionsElement() {}
+function OsSettingsSyncEncryptionOptionsElement() {}
 
 /** @return {?HTMLElement} */
-SettingsSyncEncryptionOptionsElement.prototype.getEncryptionsRadioButtons =
+OsSettingsSyncEncryptionOptionsElement.prototype.getEncryptionsRadioButtons =
     function() {};
 
 
@@ -94,13 +94,13 @@ SettingsSyncEncryptionOptionsElement.prototype.getEncryptionsRadioButtons =
  * @constructor
  * @extends {HTMLElement}
  */
-function SettingsSyncPageElement() {}
+function OsSettingsSyncPageElement() {}
 
 /** @return {?SettingsPersonalizationOptionsElement} */
-SettingsSyncPageElement.prototype.getPersonalizationOptions = function() {};
+OsSettingsSyncPageElement.prototype.getPersonalizationOptions = function() {};
 
-/** @return {?SettingsSyncEncryptionOptionsElement} */
-SettingsSyncPageElement.prototype.getEncryptionOptions = function() {};
+/** @return {?OsSettingsSyncEncryptionOptionsElement} */
+OsSettingsSyncPageElement.prototype.getEncryptionOptions = function() {};
 
 /**
  * Must be kept in sync with the return values of getSyncErrorAction in
