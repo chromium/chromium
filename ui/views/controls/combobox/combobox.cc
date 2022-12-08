@@ -147,7 +147,7 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
 
   if (features::IsChromeRefresh2023()) {
     // TODO(crbug.com/1392549): Replace placeholder color id.
-    SetBackgroundColorId(ui::kColorAlertHighSeverity);
+    SetBackgroundColorId(ui::kColorSubtleAccent);
   } else {
     SetBackgroundColorId(ui::kColorTextfieldBackground);
   }
@@ -342,7 +342,7 @@ gfx::Size Combobox::CalculatePreferredSize() const {
 
   // If an arrow is being shown, add extra width to include that arrow.
   if (should_show_arrow_) {
-    width += kComboboxArrowContainerWidth;
+    width += GetComboboxArrowContainerWidthAndMargins();
   }
 
   const int height = LayoutProvider::GetControlHeightForFont(
@@ -595,7 +595,7 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   int text_width = gfx::GetStringWidth(text, font_list);
   int available_width = width() - x - insets.right();
   if (should_show_arrow_) {
-    available_width -= kComboboxArrowContainerWidth;
+    available_width -= GetComboboxArrowContainerWidthAndMargins();
   }
   text_width = std::min(text_width, available_width);
 
@@ -604,11 +604,20 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   canvas->DrawStringRect(text, font_list, text_color, text_bounds);
 
   // Draw the arrow.
+  // TODO(crbug.com/1392549): Replace placeholder spacing and color values for
+  // ChromeRefresh2023.
   if (should_show_arrow_) {
-    gfx::Rect arrow_bounds(width() - kComboboxArrowContainerWidth, 0,
-                           kComboboxArrowContainerWidth, height());
+    gfx::Rect arrow_bounds(width() - GetComboboxArrowContainerWidthAndMargins(),
+                           0, kComboboxArrowContainerWidth, height());
     arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
     AdjustBoundsForRTLUI(&arrow_bounds);
+
+    if (features::IsChromeRefresh2023()) {
+      PaintComboboxArrowBackground(
+          GetColorProvider()->GetColor(ui::kColorAlertHighSeverity), canvas,
+          gfx::PointF(width() - GetComboboxArrowContainerWidthAndMargins(),
+                      (height() - kComboboxArrowContainerWidth) / 2.0f));
+    }
     PaintComboboxArrow(text_color, arrow_bounds, canvas);
   }
 }

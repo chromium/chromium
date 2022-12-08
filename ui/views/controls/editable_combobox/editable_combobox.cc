@@ -26,6 +26,7 @@
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
@@ -107,6 +108,12 @@ class Arrow : public Button {
     canvas->ClipRect(GetContentsBounds());
     gfx::Rect arrow_bounds = GetLocalBounds();
     arrow_bounds.ClampToCenteredSize(ComboboxArrowSize());
+    if (features::IsChromeRefresh2023()) {
+      PaintComboboxArrowBackground(
+          GetColorProvider()->GetColor(ui::kColorAlertHighSeverity), canvas,
+          gfx::PointF(arrow_bounds.x() - kComboboxArrowPaddingWidth,
+                      (height() - kComboboxArrowContainerWidth) / 2.0f));
+    }
     // Make sure the arrow use the same color as the text in the combobox.
     PaintComboboxArrow(style::GetColor(*this, style::CONTEXT_TEXTFIELD,
                                        GetEnabled() ? style::STYLE_PRIMARY
@@ -422,8 +429,9 @@ void EditableCombobox::RevealPasswords(bool revealed) {
 void EditableCombobox::Layout() {
   View::Layout();
   if (arrow_) {
-    gfx::Rect arrow_bounds(/*x=*/width() - kComboboxArrowContainerWidth,
-                           /*y=*/0, kComboboxArrowContainerWidth, height());
+    gfx::Rect arrow_bounds(
+        /*x=*/width() - GetComboboxArrowContainerWidthAndMargins(),
+        /*y=*/0, kComboboxArrowContainerWidth, height());
     arrow_->SetBoundsRect(arrow_bounds);
   }
 }
