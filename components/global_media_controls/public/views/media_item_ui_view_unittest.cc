@@ -355,7 +355,15 @@ TEST_F(MediaItemUIViewTest, SendsClicks) {
   SimulateHeaderClicked();
 }
 
-TEST_F(MediaItemUIViewTest, GestureScrollDisabledWhenSlidingOut) {
+// TODO(crbug/1318789): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_GestureScrollDisabledWhenSlidingOut \
+  DISABLED_GestureScrollDisabledWhenSlidingOut
+#else
+#define MAYBE_GestureScrollDisabledWhenSlidingOut \
+  GestureScrollDisabledWhenSlidingOut
+#endif
+TEST_F(MediaItemUIViewTest, MAYBE_GestureScrollDisabledWhenSlidingOut) {
   auto* scroll_view = new views::ScrollView();
   item_ui()->SetScrollView(scroll_view);
 
