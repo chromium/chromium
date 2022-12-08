@@ -164,7 +164,6 @@ void ChromeSetting::HandleFunction(const std::string& method_name,
   if (!access_checker_->HasAccessOrThrowError(context, full_name))
     return;
 
-  std::unique_ptr<base::ListValue> converted_arguments;
   v8::Local<v8::Function> callback;
   std::string error;
   const APISignature* signature = type_refs_->GetTypeMethodSignature(full_name);
@@ -176,8 +175,8 @@ void ChromeSetting::HandleFunction(const std::string& method_name,
     return;
   }
 
-  parse_result.arguments_list->GetList().Insert(
-      parse_result.arguments_list->GetList().begin(), base::Value(pref_name_));
+  parse_result.arguments_list->Insert(parse_result.arguments_list->begin(),
+                                      base::Value(pref_name_));
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
       context, full_name, std::move(parse_result.arguments_list),

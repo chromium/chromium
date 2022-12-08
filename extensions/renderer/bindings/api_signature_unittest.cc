@@ -531,7 +531,6 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     std::vector<v8::Local<v8::Value>> v8_args =
         StringToV8Vector(context, "[1, null]");
     v8::Local<v8::Function> callback;
-    std::unique_ptr<base::ListValue> parsed;
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
     EXPECT_FALSE(parse_result.error);
@@ -627,7 +626,6 @@ TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
     std::vector<v8::Local<v8::Value>> v8_args =
         StringToV8Vector(context, "[1, null]");
     v8::Local<v8::Function> callback;
-    std::unique_ptr<base::ListValue> parsed;
     APISignature::JSONParseResult parse_result =
         int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
                                                                   v8_args);
@@ -661,7 +659,6 @@ TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
     std::vector<v8::Local<v8::Value>> v8_args =
         StringToV8Vector(context, "[1, null]");
     v8::Local<v8::Function> callback;
-    std::unique_ptr<base::ListValue> parsed;
     APISignature::JSONParseResult parse_result =
         int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
                                                                   v8_args);

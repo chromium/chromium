@@ -443,7 +443,7 @@ APIRequestHandler::~APIRequestHandler() {}
 v8::Local<v8::Promise> APIRequestHandler::StartRequest(
     v8::Local<v8::Context> context,
     const std::string& method,
-    std::unique_ptr<base::Value> arguments_list,
+    std::unique_ptr<base::Value::List> arguments_list,
     binding::AsyncResponseType async_type,
     v8::Local<v8::Function> callback,
     v8::Local<v8::Function> custom_callback,

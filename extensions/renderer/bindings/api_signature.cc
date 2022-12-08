@@ -441,7 +441,7 @@ APISignature::JSONParseResult BaseValueArgumentParser::ParseArguments(
     result.error = TakeError();
   } else {
     result.arguments_list =
-        std::make_unique<base::Value>(std::move(list_value_));
+        std::make_unique<base::Value::List>(std::move(list_value_));
     result.callback = callback_;
     result.async_type = async_type();
   }
@@ -662,7 +662,7 @@ APISignature::JSONParseResult APISignature::ConvertArgumentsIgnoringSchema(
     json.Append(base::Value::FromUniquePtrValue(std::move(converted)));
   }
 
-  result.arguments_list = std::make_unique<base::Value>(std::move(json));
+  result.arguments_list = std::make_unique<base::Value::List>(std::move(json));
   return result;
 }
 

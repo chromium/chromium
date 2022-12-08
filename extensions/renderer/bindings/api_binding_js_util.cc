@@ -87,7 +87,6 @@ void APIBindingJSUtil::SendRequest(
     options_dict.Get("customCallback", &custom_callback);
   }
 
-  std::unique_ptr<base::ListValue> converted_arguments;
   v8::Local<v8::Function> callback;
 
   // Some APIs (like fileSystem and contextMenus) don't provide arguments that

@@ -9,14 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "v8/include/v8.h"
-
-namespace base {
-class Value;
-}
 
 namespace extensions {
 class APITypeReferenceMap;
@@ -108,7 +105,7 @@ class APISignature {
     // The parsed JSON arguments, with null-filled optional arguments filled in.
     // Populated if parsing was successful. Does not include the callback (if
     // any).
-    std::unique_ptr<base::Value> arguments_list;
+    std::unique_ptr<base::Value::List> arguments_list;
 
     // The callback, if one was provided.
     v8::Local<v8::Function> callback;

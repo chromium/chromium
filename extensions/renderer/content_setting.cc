@@ -211,8 +211,8 @@ void ContentSetting::HandleFunction(const std::string& method_name,
     }
   }
 
-  parse_result.arguments_list->GetList().Insert(
-      parse_result.arguments_list->GetList().begin(), base::Value(pref_name_));
+  parse_result.arguments_list->Insert(parse_result.arguments_list->begin(),
+                                      base::Value(pref_name_));
 
   v8::Local<v8::Promise> promise = request_handler_->StartRequest(
       context, "contentSettings." + method_name,

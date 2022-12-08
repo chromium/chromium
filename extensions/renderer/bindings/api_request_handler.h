@@ -41,7 +41,7 @@ class APIRequestHandler {
     std::string method_name;
     bool has_async_response_handler = false;
     bool has_user_gesture = false;
-    std::unique_ptr<base::Value> arguments_list;
+    std::unique_ptr<base::Value::List> arguments_list;
   };
 
   // Details about a newly-added request to provide as a return to callers.
@@ -75,7 +75,7 @@ class APIRequestHandler {
   v8::Local<v8::Promise> StartRequest(
       v8::Local<v8::Context> context,
       const std::string& method,
-      std::unique_ptr<base::Value> arguments_list,
+      std::unique_ptr<base::Value::List> arguments_list,
       binding::AsyncResponseType async_type,
       v8::Local<v8::Function> callback,
       v8::Local<v8::Function> custom_callback,
