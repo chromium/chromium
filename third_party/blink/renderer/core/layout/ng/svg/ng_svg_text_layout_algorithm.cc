@@ -320,7 +320,9 @@ void NGSvgTextLayoutAlgorithm::ResolveTextLength(
                                 }) -
          1;
     // 2.4.4. Find the per-character adjustment small-delta = delta/n.
-    float character_delta = n != 0 ? delta / n : delta;
+    // character_delta should be 0 if n==0 because it means we have no
+    // adjustable characters for this textLength.
+    float character_delta = n != 0 ? delta / n : 0;
     // 2.4.5. Let shift = 0.
     shift = 0.0f;
     // 2.4.6. For each index k in the range [i,j]:
