@@ -192,9 +192,9 @@ void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
   if (!web_app_provider)
     return;
 
-  web_app_registrar_ = &web_app_provider->registrar();
+  web_app_registrar_ = &web_app_provider->registrar_unsafe();
   web_app_sync_bridge_ = &web_app_provider->sync_bridge();
-  app_registrar_observation_.Observe(&web_app_provider->registrar());
+  app_registrar_observation_.Observe(&web_app_provider->registrar_unsafe());
   install_manager_observation_.Observe(&web_app_provider->install_manager());
   InitializePageOrdinalMap(web_app_registrar_->GetAppIds());
 }

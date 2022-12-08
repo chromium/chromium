@@ -299,7 +299,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     auto* provider = web_app::WebAppProvider::GetForWebApps(
         Profile::FromBrowserContext(context));
     DCHECK(provider);
-    const web_app::WebAppRegistrar& registrar = provider->registrar();
+    const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
 
     extensions::api::management::ExtensionInfo info;
     info.id = app_id;
@@ -361,7 +361,7 @@ void LaunchWebApp(const web_app::AppId& app_id, Profile* profile) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
   absl::optional<web_app::UserDisplayMode> display_mode =
-      provider->registrar().GetAppUserDisplayMode(app_id);
+      provider->registrar_unsafe().GetAppUserDisplayMode(app_id);
   auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
   if (display_mode == web_app::UserDisplayMode::kBrowser)
     launch_container = apps::LaunchContainer::kLaunchContainerTab;
@@ -571,7 +571,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
 
   // Launch the app if web_app_url happens to match start_url. If not, the app
   // could still be installed with different start_url.
-  if (provider->registrar().IsLocallyInstalled(web_app_url)) {
+  if (provider->registrar_unsafe().IsLocallyInstalled(web_app_url)) {
     LaunchWebApp(
         web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, web_app_url),
         profile);

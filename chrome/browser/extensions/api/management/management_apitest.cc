@@ -258,20 +258,20 @@ class InstallReplacementWebAppApiTest : public ExtensionManagementApiTest {
     web_app::AppId web_app_id =
         web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
-    EXPECT_FALSE(provider->registrar().IsLocallyInstalled(start_url));
+    EXPECT_FALSE(provider->registrar_unsafe().IsLocallyInstalled(start_url));
     EXPECT_EQ(0, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
     RunTest(manifest, web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
-    EXPECT_TRUE(provider->registrar().IsLocallyInstalled(start_url));
+    EXPECT_TRUE(provider->registrar_unsafe().IsLocallyInstalled(start_url));
     EXPECT_EQ(1, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
     // Call API again. It should launch the app.
     RunTest(manifest, web_app_url, kInstallReplacementWebApp,
             true /* from_webstore */);
-    EXPECT_TRUE(provider->registrar().IsLocallyInstalled(start_url));
+    EXPECT_TRUE(provider->registrar_unsafe().IsLocallyInstalled(start_url));
     EXPECT_EQ(2, static_cast<int>(
                      provider->ui_manager().GetNumWindowsForApp(web_app_id)));
 
