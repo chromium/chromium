@@ -52,6 +52,7 @@
     "beforematch",
     "beforepaste",
     "beforeprint",
+    "beforetoggle",
     "beforeunload",
     "beforexrselect",
     "beginEvent",

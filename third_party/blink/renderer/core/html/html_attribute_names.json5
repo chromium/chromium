@@ -164,6 +164,7 @@
     "onbeforeinput",
     "onbeforepaste",
     "onbeforeprint",
+    "onbeforetoggle",
     "onbeforeunload",
     "onblur",
     "oncancel",

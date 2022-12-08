@@ -14,7 +14,9 @@ test(() => {
   requestAnimationFrame(() => {++frameCount;});
   const popover = document.querySelector('[popover]');
   const testText = 'Show Event Occurred';
-  popover.addEventListener('popovershow',() => {
+  popover.addEventListener('beforetoggle',(e) => {
+    if (e.newState !== "open")
+      return;
     popover.textContent = testText;
   })
   popover.offsetHeight;
@@ -25,5 +27,5 @@ test(() => {
   assert_equals(popover.textContent,testText);
   assert_equals(frameCount,0,'nothing should be rendered before the popover is updated');
   popover.hidePopover(); // Cleanup
-},'Ensure the `show` event can be used to populate content before the popover renders');
+},'Ensure the `beforetoggle` event can be used to populate content before the popover renders');
 </script>

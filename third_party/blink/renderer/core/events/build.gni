@@ -13,6 +13,8 @@ blink_core_sources_events = [
   "before_print_event.h",
   "before_text_inserted_event.cc",
   "before_text_inserted_event.h",
+  "before_toggle_event.cc",
+  "before_toggle_event.h",
   "before_unload_event.cc",
   "before_unload_event.h",
   "clipboard_event.cc",

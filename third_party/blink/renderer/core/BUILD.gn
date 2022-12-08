@@ -530,6 +530,7 @@ generate_event_interfaces("core_event_interfaces") {
     "events/animation_event.idl",
     "events/animation_playback_event.idl",
     "events/before_create_policy_event.idl",
+    "events/before_toggle_event.idl",
     "events/before_unload_event.idl",
     "events/clipboard_event.idl",
     "events/composition_event.idl",

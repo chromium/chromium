@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/before_toggle_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -440,6 +441,8 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kBeforeinput, nullptr},
       {html_names::kOnbeforepasteAttr, kNoWebFeature,
        event_type_names::kBeforepaste, nullptr},
+      {html_names::kOnbeforetoggleAttr, kNoWebFeature,
+       event_type_names::kBeforetoggle, nullptr},
       {html_names::kOnblurAttr, kNoWebFeature, event_type_names::kBlur,
        nullptr},
       {html_names::kOncancelAttr, kNoWebFeature, event_type_names::kCancel,
@@ -565,10 +568,6 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
        event_type_names::kPointerup, nullptr},
       {html_names::kOnprogressAttr, kNoWebFeature, event_type_names::kProgress,
        nullptr},
-      {html_names::kOnpopoverhideAttr, kNoWebFeature,
-       event_type_names::kPopoverhide, nullptr},
-      {html_names::kOnpopovershowAttr, kNoWebFeature,
-       event_type_names::kPopovershow, nullptr},
       {html_names::kOnratechangeAttr, kNoWebFeature,
        event_type_names::kRatechange, nullptr},
       {html_names::kOnresetAttr, kNoWebFeature, event_type_names::kReset,
@@ -1319,13 +1318,19 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
     return exception_state.ThrowDOMException(exception_code, error);
   }
 
-  // Fire the popovershow event (bubbles, cancelable).
-  Event* event = Event::CreateCancelableBubble(event_type_names::kPopovershow);
+  // Fire the "opening" beforetoggle event.
+  auto* event = BeforeToggleEvent::CreateBubble(
+      event_type_names::kBeforetoggle, Event::Cancelable::kYes,
+      /*current_state*/ "closed", /*new_state*/ "open");
+  DCHECK(event->bubbles());
+  DCHECK(event->cancelable());
+  DCHECK_EQ(event->currentState(), "closed");
+  DCHECK_EQ(event->newState(), "open");
   event->SetTarget(this);
   if (DispatchEvent(*event) != DispatchEventResult::kNotCanceled)
     return;
 
-  // The 'popovershow' event handler could have changed this popover, e.g. by
+  // The 'beforetoggle' event handler could have changed this popover, e.g. by
   // changing its type, removing it from the document, or calling showPopover().
   if (!HasPopoverAttribute() || !isConnected() || popoverOpen())
     return;
@@ -1343,8 +1348,8 @@ void HTMLElement::showPopover(ExceptionState& exception_state) {
                          HidePopoverFocusBehavior::kNone,
                          HidePopoverForcingLevel::kHideAfterAnimations);
 
-    // The 'popoverhide' event handlers could have changed this popover, e.g. by
-    // changing its type, removing it from the document, or calling
+    // The 'beforetoggle' event handlers could have changed this popover, e.g.
+    // by changing its type, removing it from the document, or calling
     // showPopover().
     if (!HasPopoverAttribute() || !isConnected() || popoverOpen() ||
         PopoverType() != original_type)
@@ -1455,7 +1460,7 @@ void HTMLElement::hidePopover(ExceptionState& exception_state) {
 // 1. Capture any already-running animations via getAnimations(), including
 //    animations on descendant elements.
 // 2. Remove the `:open` pseudo class.
-// 3. Fire the 'popoverhide' event.
+// 3. Fire the 'beforetoggle' event.
 // 4. If the hidePopover() call is *not* the result of the popover being "forced
 //    out" of the top layer, e.g. by a modal dialog or fullscreen element:
 //   a. Restore focus to the previously-focused element.
@@ -1475,8 +1480,8 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
     // Hide any popovers above us in the stack.
     HideAllPopoversUntil(this, document, focus_behavior, forcing_level);
 
-    // The 'popoverhide' event handlers could have changed this popover, e.g. by
-    // changing its type, removing it from the document, or calling
+    // The 'beforetoggle' event handlers could have changed this popover, e.g.
+    // by changing its type, removing it from the document, or calling
     // hidePopover().
     if (!HasPopoverAttribute() || !isConnected() ||
         GetPopoverData()->visibilityState() !=
@@ -1505,8 +1510,14 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   GetPopoverData()->setInvoker(nullptr);
   GetPopoverData()->setNeedsRepositioningForSelectMenu(false);
 
-  // Fire the popoverhide event (bubbles, not cancelable).
-  Event* event = Event::CreateBubble(event_type_names::kPopoverhide);
+  // Fire the "closing" beforetoggle event.
+  auto* event = BeforeToggleEvent::CreateBubble(
+      event_type_names::kBeforetoggle, Event::Cancelable::kNo,
+      /*current_state*/ "open", /*new_state*/ "closed");
+  DCHECK(event->bubbles());
+  DCHECK(!event->cancelable());
+  DCHECK_EQ(event->currentState(), "open");
+  DCHECK_EQ(event->newState(), "closed");
   event->SetTarget(this);
   if (force_hide) {
     // Stop matching `:open` now:
@@ -1527,7 +1538,7 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kTransitioning);
   PseudoStateChanged(CSSSelector::kPseudoOpen);
 
-  // The 'popoverhide' event handler could have changed this popover, e.g. by
+  // The 'beforetoggle' event handler could have changed this popover, e.g. by
   // changing its type, removing it from the document, or calling showPopover().
   if (!isConnected() || !HasPopoverAttribute() ||
       GetPopoverData()->visibilityState() !=

@@ -35,6 +35,7 @@
     attribute EventHandler onabort;
     attribute EventHandler onbeforeinput;
     [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
+    [RuntimeEnabled=HTMLPopoverAttribute] attribute EventHandler onbeforetoggle;
     attribute EventHandler onblur;
     attribute EventHandler oncancel;
     attribute EventHandler oncanplay;
