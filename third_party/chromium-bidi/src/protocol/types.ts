@@ -18,7 +18,7 @@
 import {EventResponseClass} from './event';
 import {z as zod, ZodType} from 'zod';
 import {InvalidArgumentException} from './error';
-import {log, LogType} from '../../../utils/log';
+import {log, LogType} from '../utils/log';
 
 const logParser = log(LogType.commandParser);
 const MAX_INT = 9007199254740991 as const;

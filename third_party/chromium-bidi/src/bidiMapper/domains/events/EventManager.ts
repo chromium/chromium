@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import {CommonDataTypes, Message} from '../protocol/bidiProtocolTypes';
-import {type BidiServer} from '../../BidiServer';
+import type {CommonDataTypes, Message} from '../../../protocol/types';
+import type {BidiServer} from '../../BidiServer';
 import {OutgoingBidiMessage} from '../../OutgoindBidiMessage';
 import {SubscriptionManager} from './SubscriptionManager';
 import {IdWrapper} from '../../../utils/idWrapper';

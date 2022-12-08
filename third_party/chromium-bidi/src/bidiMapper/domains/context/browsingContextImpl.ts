@@ -16,15 +16,14 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {BrowsingContext} from '../protocol/bidiProtocolTypes';
+import {BrowsingContext} from '../../../protocol/types';
 import {CdpClient} from '../../CdpConnection';
 import {IEventManager} from '../events/EventManager';
 import {Deferred} from '../../../utils/deferred';
-import {UnknownException} from '../protocol/error';
+import {UnknownException} from '../../../protocol/error';
 import {LogManager} from '../log/logManager';
 import {Realm, RealmType} from '../script/realm';
 import {BrowsingContextStorage} from './browsingContextStorage';
-import LoadEvent = BrowsingContext.LoadEvent;
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {
@@ -324,7 +323,7 @@ export class BrowsingContextImpl {
           case 'load':
             this.#targetDefers.Page.lifecycleEvent.load.resolve(params);
             await this.#eventManager.registerEvent(
-              new LoadEvent({
+              new BrowsingContext.LoadEvent({
                 context: this.contextId,
                 navigation: this.#loaderId,
                 url: this.#url,

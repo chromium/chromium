@@ -15,20 +15,16 @@
  * limitations under the License.
  */
 
-import {log, LogType} from '../utils/log';
 import {EventEmitter} from '../utils/EventEmitter';
 
-import {ITransport} from '../utils/transport';
-import {Message} from './domains/protocol/bidiProtocolTypes';
+import {BidiTransport} from './BidiTransport';
+import type {Message} from '../protocol/types';
 import {ProcessingQueue} from '../utils/processingQueue';
-import ErrorCode = Message.ErrorCode;
 import {OutgoingBidiMessage} from './OutgoindBidiMessage';
 import {EventManager} from './domains/events/EventManager';
 import {CommandProcessor} from './CommandProcessor';
 import {CdpConnection} from './CdpConnection';
 import {BrowsingContextStorage} from './domains/context/browsingContextStorage';
-
-const logBidi = log(LogType.bidi);
 
 type BidiServerEvents = {
   message: Message.RawCommandRequest;
@@ -36,11 +32,11 @@ type BidiServerEvents = {
 
 export class BidiServer extends EventEmitter<BidiServerEvents> {
   #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
-  #transport: ITransport;
+  #transport: BidiTransport;
   #commandProcessor: CommandProcessor;
 
   private constructor(
-    bidiTransport: ITransport,
+    bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
     selfTargetId: string
   ) {
@@ -64,7 +60,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   }
 
   public static async createAndStart(
-    bidiTransport: ITransport,
+    bidiTransport: BidiTransport,
     cdpConnection: CdpConnection,
     selfTargetId: string
   ): Promise<BidiServer> {
@@ -94,9 +90,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
       message['channel'] = messageEntry.channel;
     }
 
-    const messageStr = JSON.stringify(message);
-    logBidi('sent > ' + messageStr);
-    await this.#transport.sendMessage(messageStr);
+    await this.#transport.sendMessage(message);
   };
 
   /**
@@ -110,118 +104,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     this.#transport.close();
   }
 
-  #handleIncomingMessage = async (messageStr: string) => {
-    logBidi('received < ' + messageStr);
-
-    let messageObj;
-    try {
-      messageObj = BidiServer.#parseBidiMessage(messageStr);
-    } catch (e: any) {
-      // Transport-level error does not provide channel.
-      this.#respondWithError(messageStr, 'invalid argument', e.message, null);
-      return;
-    }
-
-    this.#commandProcessor.processCommand(messageObj);
+  #handleIncomingMessage = async (message: Message.RawCommandRequest) => {
+    this.#commandProcessor.processCommand(message);
   };
-
-  #respondWithError(
-    plainCommandData: string,
-    errorCode: ErrorCode,
-    errorMessage: string,
-    channel: string | null
-  ) {
-    const errorResponse = BidiServer.#getErrorResponse(
-      plainCommandData,
-      errorCode,
-      errorMessage
-    );
-    this.emitOutgoingMessage(
-      OutgoingBidiMessage.createResolved(errorResponse, channel)
-    );
-  }
-
-  static #getJsonType(value: any) {
-    if (value === null) {
-      return 'null';
-    }
-    if (Array.isArray(value)) {
-      return 'array';
-    }
-    return typeof value;
-  }
-
-  static #getErrorResponse(
-    messageStr: string,
-    errorCode: ErrorCode,
-    errorMessage: string
-  ): Message.OutgoingMessage {
-    // TODO: this is bizarre per spec. We reparse the payload and
-    // extract the ID, regardless of what kind of value it was.
-    let messageId = undefined;
-    try {
-      const messageObj = JSON.parse(messageStr);
-      if (
-        BidiServer.#getJsonType(messageObj) === 'object' &&
-        'id' in messageObj
-      ) {
-        messageId = messageObj.id;
-      }
-    } catch {}
-
-    return {
-      id: messageId,
-      error: errorCode,
-      message: errorMessage,
-      // TODO: optional stacktrace field.
-    };
-  }
-
-  static #parseBidiMessage(messageStr: string): Message.RawCommandRequest {
-    let messageObj: any;
-    try {
-      messageObj = JSON.parse(messageStr);
-    } catch {
-      throw new Error('Cannot parse data as JSON');
-    }
-
-    const parsedType = BidiServer.#getJsonType(messageObj);
-    if (parsedType !== 'object') {
-      throw new Error(`Expected JSON object but got ${parsedType}`);
-    }
-
-    // Extract amd validate id, method and params.
-    const {id, method, params} = messageObj;
-
-    const idType = BidiServer.#getJsonType(id);
-    if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
-      // TODO: should uint64_t be the upper limit?
-      // https://tools.ietf.org/html/rfc7049#section-2.1
-      throw new Error(`Expected unsigned integer but got ${idType}`);
-    }
-
-    const methodType = BidiServer.#getJsonType(method);
-    if (methodType !== 'string') {
-      throw new Error(`Expected string method but got ${methodType}`);
-    }
-
-    const paramsType = BidiServer.#getJsonType(params);
-    if (paramsType !== 'object') {
-      throw new Error(`Expected object params but got ${paramsType}`);
-    }
-
-    let channel = messageObj.channel;
-    if (channel !== undefined) {
-      const channelType = BidiServer.#getJsonType(channel);
-      if (channelType !== 'string') {
-        throw new Error(`Expected string channel but got ${channelType}`);
-      }
-      // Empty string channel is considered as no channel provided.
-      if (channel === '') {
-        channel = undefined;
-      }
-    }
-
-    return {id, method, params, channel};
-  }
 }

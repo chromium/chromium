@@ -16,10 +16,10 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {CommonDataTypes, Script} from '../protocol/bidiProtocolTypes';
+import type {CommonDataTypes, Script} from '../../../protocol/types';
 import {ScriptEvaluator} from './scriptEvaluator';
 import {BrowsingContextStorage} from '../context/browsingContextStorage';
-import {NoSuchFrameException} from '../protocol/error';
+import {NoSuchFrameException} from '../../../protocol/error';
 import {CdpClient} from '../../CdpConnection';
 
 export enum RealmType {

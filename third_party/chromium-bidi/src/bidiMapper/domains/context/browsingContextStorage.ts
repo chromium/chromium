@@ -16,7 +16,7 @@
  */
 
 import {BrowsingContextImpl} from './browsingContextImpl';
-import {NoSuchFrameException} from '../protocol/error';
+import {NoSuchFrameException} from '../../../protocol/error';
 
 export class BrowsingContextStorage {
   static #contexts: Map<string, BrowsingContextImpl> = new Map();

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-/**
- * The entry point to the BiDi Mapper namespace.
- * Other modules should only access exports defined in this file.
- * TODO: eslint rule for this.
- */
+import type {Message} from '../protocol/types';
 
-export {CdpConnection, CdpClient} from './CdpConnection';
-export {BidiServer} from './BidiServer';
-export {BidiTransport} from './BidiTransport';
+export interface BidiTransport {
+  setOnMessage: (
+    handler: (message: Message.RawCommandRequest) => Promise<void>
+  ) => void;
+  sendMessage: (message: Message.OutgoingMessage) => Promise<void>;
+  close(): void;
+}

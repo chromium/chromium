@@ -6,6 +6,7 @@
   },
   "references": [
     {"path": "../bidiMapper/tsconfig.json"},
+    {"path": "../protocol/tsconfig.json"},
     {"path": "../cdp/tsconfig.json"},
     {"path": "../utils/tsconfig.json"}
   ]

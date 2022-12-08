@@ -16,7 +16,7 @@
  */
 
 import {CdpClient} from '../../CdpConnection';
-import {CommonDataTypes, Log, Script} from '../protocol/bidiProtocolTypes';
+import {CommonDataTypes, Log, Script} from '../../../protocol/types';
 import {getRemoteValuesText} from './logHelper';
 import {Protocol} from 'devtools-protocol';
 import {Realm} from '../script/realm';

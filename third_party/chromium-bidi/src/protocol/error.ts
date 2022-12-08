@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {Message} from './bidiProtocolTypes';
+import {Message} from './types';
 
 export class ErrorResponseClass implements Message.ErrorResult {
   protected constructor(

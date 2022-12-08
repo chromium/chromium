@@ -17,10 +17,10 @@
 
 import {log, LogType} from '../../../utils/log';
 import {CdpClient, CdpConnection} from '../../CdpConnection';
-import {BrowsingContext, CDP, Script} from '../protocol/bidiProtocolTypes';
+import type {BrowsingContext, CDP, Script} from '../../../protocol/types';
 import Protocol from 'devtools-protocol';
 import {IEventManager} from '../events/EventManager';
-import {InvalidArgumentException} from '../protocol/error';
+import {InvalidArgumentException} from '../../../protocol/error';
 import {BrowsingContextImpl} from './browsingContextImpl';
 import {Realm} from '../script/realm';
 import {BrowsingContextStorage} from './browsingContextStorage';

@@ -19,13 +19,16 @@
 
 import {CdpConnection} from '../cdp';
 import {BidiServer} from '../bidiMapper/BidiServer';
-import {ITransport} from '../utils/transport';
+import {BidiTransport} from '../bidiMapper/bidiMapper';
 
 import {log, LogType} from '../utils/log';
 import {MapperTabPage} from './mapperTabPage';
 import {OutgoingBidiMessage} from '../bidiMapper/OutgoindBidiMessage';
+import type {Message} from '../protocol/types';
+import {ITransport} from '../utils/transport';
 
 const logSystem = log(LogType.system);
+const logBidi = log(LogType.bidi);
 
 declare global {
   interface Window {
@@ -97,28 +100,154 @@ function _createCdpConnection() {
 }
 
 async function _createBidiServer(selfTargetId: string) {
-  class WindowBidiTransport implements ITransport {
-    private _onMessage: ((message: string) => void) | null = null;
+  class WindowBidiTransport implements BidiTransport {
+    private _onMessage: ((message: Message.RawCommandRequest) => void) | null =
+      null;
 
     constructor() {
-      window.onBidiMessage = (message: string) => {
+      window.onBidiMessage = (messageStr: string) => {
+        logBidi('received < ', messageStr);
+        let messageObj;
+        try {
+          messageObj = WindowBidiTransport.#parseBidiMessage(messageStr);
+        } catch (e: any) {
+          // Transport-level error does not provide channel.
+          this.#respondWithError(
+            messageStr,
+            'invalid argument',
+            e.message,
+            null
+          );
+          return;
+        }
         if (this._onMessage) {
-          this._onMessage.call(null, message);
+          this._onMessage.call(null, messageObj);
         }
       };
     }
 
-    setOnMessage(onMessage: (message: string) => Promise<void>): void {
+    setOnMessage(
+      onMessage: (message: Message.RawCommandRequest) => Promise<void>
+    ): void {
       this._onMessage = onMessage;
     }
 
-    async sendMessage(message: string): Promise<void> {
-      window.sendBidiResponse(message);
+    async sendMessage(message: Message.OutgoingMessage): Promise<void> {
+      const messageStr = JSON.stringify(message);
+      logBidi('sent > ', messageStr);
+      window.sendBidiResponse(messageStr);
     }
 
     close() {
       this._onMessage = null;
       window.onBidiMessage = null;
+    }
+
+    #respondWithError(
+      plainCommandData: string,
+      errorCode: Message.ErrorCode,
+      errorMessage: string,
+      channel: string | null
+    ) {
+      const errorResponse = WindowBidiTransport.#getErrorResponse(
+        plainCommandData,
+        errorCode,
+        errorMessage
+      );
+
+      if (channel) {
+        // TODO: get rid of any, same code existed in BidiServer.
+        this.sendMessage({
+          ...errorResponse,
+          channel,
+        } as any);
+      } else {
+        this.sendMessage(errorResponse);
+      }
+    }
+
+    static #getJsonType(value: any) {
+      if (value === null) {
+        return 'null';
+      }
+      if (Array.isArray(value)) {
+        return 'array';
+      }
+      return typeof value;
+    }
+
+    static #getErrorResponse(
+      messageStr: string,
+      errorCode: Message.ErrorCode,
+      errorMessage: string
+    ): Message.OutgoingMessage {
+      // TODO: this is bizarre per spec. We reparse the payload and
+      // extract the ID, regardless of what kind of value it was.
+      let messageId = undefined;
+      try {
+        const messageObj = JSON.parse(messageStr);
+        if (
+          WindowBidiTransport.#getJsonType(messageObj) === 'object' &&
+          'id' in messageObj
+        ) {
+          messageId = messageObj.id;
+        }
+      } catch {}
+
+      return {
+        id: messageId,
+        error: errorCode,
+        message: errorMessage,
+        // TODO: optional stacktrace field.
+      };
+    }
+
+    static #parseBidiMessage(messageStr: string): Message.RawCommandRequest {
+      let messageObj: any;
+      try {
+        messageObj = JSON.parse(messageStr);
+      } catch {
+        throw new Error('Cannot parse data as JSON');
+      }
+
+      const parsedType = WindowBidiTransport.#getJsonType(messageObj);
+      if (parsedType !== 'object') {
+        throw new Error(`Expected JSON object but got ${parsedType}`);
+      }
+
+      // Extract amd validate id, method and params.
+      const {id, method, params} = messageObj;
+
+      const idType = WindowBidiTransport.#getJsonType(id);
+      if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
+        // TODO: should uint64_t be the upper limit?
+        // https://tools.ietf.org/html/rfc7049#section-2.1
+        throw new Error(`Expected unsigned integer but got ${idType}`);
+      }
+
+      const methodType = WindowBidiTransport.#getJsonType(method);
+      if (methodType !== 'string') {
+        throw new Error(`Expected string method but got ${methodType}`);
+      }
+
+      const paramsType = WindowBidiTransport.#getJsonType(params);
+      if (paramsType !== 'object') {
+        throw new Error(`Expected object params but got ${paramsType}`);
+      }
+
+      let channel = messageObj.channel;
+      if (channel !== undefined) {
+        const channelType = WindowBidiTransport.#getJsonType(channel);
+        if (channelType !== 'string') {
+          throw new Error(`Expected string channel but got ${channelType}`);
+        }
+        // Empty string channel is considered as no channel provided.
+        if (channel === '') {
+          channel = undefined;
+        }
+      }
+
+      return {id, method, params, channel};
     }
   }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import {CommonDataTypes} from '../protocol/bidiProtocolTypes';
+import type {CommonDataTypes} from '../../../protocol/types';
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;

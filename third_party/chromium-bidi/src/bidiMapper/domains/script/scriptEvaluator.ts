@@ -16,9 +16,9 @@
  */
 
 import {Protocol} from 'devtools-protocol';
-import {CommonDataTypes, Script} from '../protocol/bidiProtocolTypes';
+import type {CommonDataTypes, Script} from '../../../protocol/types';
 import {Realm} from './realm';
-import {InvalidArgumentException} from '../protocol/error';
+import {InvalidArgumentException} from '../../../protocol/error';
 
 export class ScriptEvaluator {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`

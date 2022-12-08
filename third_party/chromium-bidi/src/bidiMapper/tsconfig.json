@@ -4,6 +4,7 @@
     "outDir": "../../lib/cjs/bidiMapper"
   },
   "references": [
+    {"path": "../protocol/tsconfig.json"},
     {"path": "../cdp/tsconfig.json"},
     {"path": "../utils/tsconfig.json"}
   ]

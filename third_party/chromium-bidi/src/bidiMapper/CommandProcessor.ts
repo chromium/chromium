@@ -22,7 +22,7 @@ import {
   Message,
   Script,
   Session,
-} from './domains/protocol/bidiProtocolTypes';
+} from '../protocol/types';
 import {CdpConnection} from './CdpConnection';
 import {OutgoingBidiMessage} from './OutgoindBidiMessage';
 import {IEventManager} from './domains/events/EventManager';
@@ -30,7 +30,7 @@ import {
   ErrorResponseClass,
   UnknownCommandException,
   UnknownException,
-} from './domains/protocol/error';
+} from '../protocol/error';
 import {EventEmitter} from '../utils/EventEmitter';
 
 type CommandProcessorEvents = {
