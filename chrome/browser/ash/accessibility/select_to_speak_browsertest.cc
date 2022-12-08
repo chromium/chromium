@@ -220,6 +220,9 @@ class SelectToSpeakTest : public InProcessBrowserTest {
         module.selectToSpeak.setOnLoadDesktopCallbackForTest(() => {
             window.domAutomationController.send('ready');
           });
+        // Set enhanced network voices dialog as shown, because the pref
+        // change takes some time to propagate.
+        module.selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
       })();
     )JS");
     std::string result =

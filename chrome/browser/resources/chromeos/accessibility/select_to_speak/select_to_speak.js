@@ -1784,7 +1784,7 @@ export class SelectToSpeak {
   }
 
   /**
-   * Used by C++ tests to ensure STS load is competed.
+   * Used by C++ tests to ensure STS load is completed.
    * @param {!function()} callback Callback for when desktop is loaded from
    * automation.
    */
