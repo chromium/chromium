@@ -844,12 +844,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ChangeMedia) {
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Polar bears are the largest carnivores on land", GetLabelText());
 
-  // Close the bubble. Check that the bubble is still visible with media 1.
+  // Close the bubble. Check that the bubble is still closed.
   ClickButton(GetCloseButton());
   EXPECT_FALSE(IsWidgetVisible());
   OnPartialTranscription("A snail can sleep for two years", media_1.get());
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("A snail can sleep for two years", GetLabelText());
+  EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_EQ("", GetLabelText());
 
   // Send a transcription from media 0. Check that the bubble is still closed.
   OnPartialTranscription("carnivores on land", media_0);

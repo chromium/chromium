@@ -5,7 +5,9 @@
 #include "components/live_caption/views/caption_bubble_controller_views.h"
 
 #include <memory>
+#include <set>
 #include <string>
+#include <unordered_map>
 
 #include "base/bind.h"
 #include "components/live_caption/caption_bubble_context.h"
@@ -103,9 +105,35 @@ void CaptionBubbleControllerViews::UpdateCaptionStyle(
 void CaptionBubbleControllerViews::SetActiveModel(
     CaptionBubbleContext* caption_bubble_context) {
   if (!caption_bubble_models_.count(caption_bubble_context)) {
-    caption_bubble_models_.emplace(
+    auto caption_bubble_model = std::make_unique<CaptionBubbleModel>(
         caption_bubble_context,
-        std::make_unique<CaptionBubbleModel>(caption_bubble_context));
+        base::BindRepeating(
+            &CaptionBubbleControllerViews::OnSessionEnded,
+            // Unretained is safe because |CaptionBubbleControllerViews|
+            // owns |caption_bubble_model|.
+            base::Unretained(this)));
+
+    if (base::Contains(closed_sessions_,
+                       caption_bubble_context->GetSessionId())) {
+      caption_bubble_model->Close();
+    }
+
+    caption_bubble_models_.emplace(caption_bubble_context,
+                                   std::move(caption_bubble_model));
+  }
+
+  if (!caption_bubble_session_observers_.count(
+          caption_bubble_context->GetSessionId())) {
+    std::unique_ptr<CaptionBubbleSessionObserver> observer =
+        caption_bubble_context->GetCaptionBubbleSessionObserver();
+
+    if (observer) {
+      observer->SetEndSessionCallback(
+          base::BindRepeating(&CaptionBubbleControllerViews::OnSessionReset,
+                              base::Unretained(this)));
+      caption_bubble_session_observers_.emplace(
+          caption_bubble_context->GetSessionId(), std::move(observer));
+    }
   }
 
   CaptionBubbleModel* caption_bubble_model =
@@ -114,6 +142,27 @@ void CaptionBubbleControllerViews::SetActiveModel(
     active_model_ = caption_bubble_model;
     caption_bubble_->SetModel(active_model_);
   }
+}
+
+void CaptionBubbleControllerViews::OnSessionEnded(
+    const std::string& session_id) {
+  // Close all other CaptionBubbleModels that share this WebContents identifier.
+  for (const auto& caption_bubble_model : caption_bubble_models_) {
+    if (caption_bubble_model.first->GetSessionId() == session_id) {
+      caption_bubble_model.second->Close();
+    }
+  }
+
+  closed_sessions_.insert(session_id);
+}
+
+void CaptionBubbleControllerViews::OnSessionReset(
+    const std::string& session_id) {
+  if (base::Contains(closed_sessions_, session_id)) {
+    closed_sessions_.erase(session_id);
+  }
+
+  caption_bubble_session_observers_.erase(session_id);
 }
 
 bool CaptionBubbleControllerViews::IsWidgetVisibleForTesting() {

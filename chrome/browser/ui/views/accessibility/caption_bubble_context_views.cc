@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/accessibility/caption_bubble_session_observer_views.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 
@@ -22,7 +24,10 @@ CaptionBubbleContextBrowser::Create(content::WebContents* web_contents) {
 
 CaptionBubbleContextViews::CaptionBubbleContextViews(
     content::WebContents* web_contents)
-    : CaptionBubbleContextBrowser(web_contents), web_contents_(web_contents) {}
+    : CaptionBubbleContextBrowser(web_contents),
+      web_contents_(web_contents),
+      web_contents_observer_(
+          std::make_unique<CaptionBubbleSessionObserverViews>(web_contents)) {}
 
 CaptionBubbleContextViews::~CaptionBubbleContextViews() = default;
 
@@ -35,6 +40,10 @@ absl::optional<gfx::Rect> CaptionBubbleContextViews::GetBounds() const {
   if (context_widget)
     context_bounds = context_widget->GetClientAreaBoundsInScreen();
   return context_bounds;
+}
+
+const std::string CaptionBubbleContextViews::GetSessionId() const {
+  return web_contents_->GetBrowserContext()->UniqueId();
 }
 
 void CaptionBubbleContextViews::Activate() {
@@ -63,4 +72,11 @@ bool CaptionBubbleContextViews::IsActivatable() const {
   return true;
 }
 
+std::unique_ptr<CaptionBubbleSessionObserver>
+CaptionBubbleContextViews::GetCaptionBubbleSessionObserver() {
+  if (web_contents_observer_)
+    return std::move(web_contents_observer_);
+
+  return nullptr;
+}
 }  // namespace captions

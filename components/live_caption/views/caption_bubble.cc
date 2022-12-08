@@ -698,7 +698,7 @@ void CaptionBubble::BackToTabButtonPressed() {
 void CaptionBubble::CloseButtonPressed() {
   LogSessionEvent(SessionEvent::kCloseButtonClicked);
   if (model_)
-    model_->Close();
+    model_->CloseButtonPressed();
 }
 
 void CaptionBubble::ExpandOrCollapseButtonPressed() {

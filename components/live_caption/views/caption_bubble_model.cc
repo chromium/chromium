@@ -17,8 +17,9 @@ constexpr int kMaxLines = 9;
 
 namespace captions {
 
-CaptionBubbleModel::CaptionBubbleModel(CaptionBubbleContext* context)
-    : context_(context) {
+CaptionBubbleModel::CaptionBubbleModel(CaptionBubbleContext* context,
+                                       OnCaptionBubbleClosedCallback callback)
+    : caption_bubble_closed_callback_(callback), context_(context) {
   DCHECK(context_);
 }
 
@@ -62,14 +63,14 @@ void CaptionBubbleModel::SetPartialText(const std::string& partial_text) {
   }
 }
 
+void CaptionBubbleModel::CloseButtonPressed() {
+  caption_bubble_closed_callback_.Run(context_->GetSessionId());
+  Close();
+}
+
 void CaptionBubbleModel::Close() {
   is_closed_ = true;
   ClearText();
-}
-
-void CaptionBubbleModel::Open() {
-  is_closed_ = false;
-  OnTextChanged();
 }
 
 void CaptionBubbleModel::OnError(

@@ -5,14 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_VIEWS_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
+
+#include <string>
+
+#include "base/memory/raw_ptr.h"
 
 namespace content {
 class WebContents;
 }
 
 namespace captions {
+
+class CaptionBubbleSessionObserverViews;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Context for Views
@@ -29,11 +34,16 @@ class CaptionBubbleContextViews : public CaptionBubbleContextBrowser {
 
   // CaptionBubbleContextBrowser:
   absl::optional<gfx::Rect> GetBounds() const override;
+  const std::string GetSessionId() const override;
   void Activate() override;
   bool IsActivatable() const override;
+  std::unique_ptr<CaptionBubbleSessionObserver>
+  GetCaptionBubbleSessionObserver() override;
 
  private:
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
+
+  std::unique_ptr<CaptionBubbleSessionObserver> web_contents_observer_;
 };
 
 }  // namespace captions

@@ -7,8 +7,11 @@
 #include "ash/shell.h"
 #include "ash/wm/work_area_insets.h"
 
-namespace ash {
-namespace captions {
+namespace {
+constexpr char kAshSessionId[] = "ash";
+}  // namespace
+
+namespace ash::captions {
 
 CaptionBubbleContextAsh::CaptionBubbleContextAsh() = default;
 
@@ -19,9 +22,17 @@ absl::optional<gfx::Rect> CaptionBubbleContextAsh::GetBounds() const {
       ->user_work_area_bounds();
 }
 
+const std::string CaptionBubbleContextAsh::GetSessionId() const {
+  return std::string(kAshSessionId);
+}
+
 bool CaptionBubbleContextAsh::IsActivatable() const {
   return false;
 }
 
-}  // namespace captions
-}  // namespace ash
+std::unique_ptr<::captions::CaptionBubbleSessionObserver>
+CaptionBubbleContextAsh::GetCaptionBubbleSessionObserver() {
+  return nullptr;
+}
+
+}  // namespace ash::captions

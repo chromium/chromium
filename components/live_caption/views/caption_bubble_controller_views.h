@@ -6,10 +6,12 @@
 #define COMPONENTS_LIVE_CAPTION_VIEWS_CAPTION_BUBBLE_CONTROLLER_VIEWS_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/live_caption/caption_bubble_controller.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +25,7 @@ namespace captions {
 
 class CaptionBubble;
 class CaptionBubbleModel;
+class CaptionBubbleSessionObserver;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Controller for Views
@@ -70,6 +73,12 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // already exist.
   void SetActiveModel(CaptionBubbleContext* caption_bubble_context);
 
+  // Called when the user closes the caption bubble.
+  void OnSessionEnded(const std::string& session_id);
+
+  // Called on a cross-origin navigation or reload.
+  void OnSessionReset(const std::string& session_id);
+
   bool IsWidgetVisibleForTesting() override;
   std::string GetBubbleLabelTextForTesting() override;
 
@@ -84,6 +93,18 @@ class CaptionBubbleControllerViews : public CaptionBubbleController {
   // received.
   std::unordered_map<CaptionBubbleContext*, std::unique_ptr<CaptionBubbleModel>>
       caption_bubble_models_;
+
+  // A collection of closed session identifiers that should not display
+  // captions. Identifiers are removed from this collection when a user
+  // refreshes the page or navigates away.
+  std::set<std::string> closed_sessions_;
+
+  // Mapping of unique session identifiers to the observer that observes the
+  // sessions.
+  std::unordered_map<std::string, std::unique_ptr<CaptionBubbleSessionObserver>>
+      caption_bubble_session_observers_;
+
+  base::WeakPtrFactory<CaptionBubbleControllerViews> weak_factory_{this};
 };
 }  // namespace captions
 

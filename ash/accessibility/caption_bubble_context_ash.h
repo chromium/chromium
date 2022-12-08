@@ -8,8 +8,10 @@
 #include "ash/ash_export.h"
 #include "components/live_caption/caption_bubble_context.h"
 
-namespace ash {
-namespace captions {
+#include <memory>
+#include <string>
+
+namespace ash::captions {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Context for Ash
@@ -26,11 +28,13 @@ class ASH_EXPORT CaptionBubbleContextAsh
 
   // ::captions::CaptionBubbleContext:
   absl::optional<gfx::Rect> GetBounds() const override;
+  const std::string GetSessionId() const override;
   void Activate() override {}
   bool IsActivatable() const override;
+  std::unique_ptr<::captions::CaptionBubbleSessionObserver>
+  GetCaptionBubbleSessionObserver() override;
 };
 
-}  // namespace captions
-}  // namespace ash
+}  // namespace ash::captions
 
 #endif  // ASH_ACCESSIBILITY_CAPTION_BUBBLE_CONTEXT_ASH_H_

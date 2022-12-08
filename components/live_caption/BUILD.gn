@@ -9,6 +9,7 @@ if (!is_android) {
     sources = [
       "caption_bubble_context.h",
       "caption_bubble_controller.h",
+      "caption_bubble_session_observer.h",
       "live_caption_controller.cc",
       "live_caption_controller.h",
       "live_translate_controller.cc",
