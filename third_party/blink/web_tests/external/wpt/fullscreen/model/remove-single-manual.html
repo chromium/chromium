@@ -2,6 +2,8 @@
 <title>Remove the single element on the fullscreen element stack</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="../trusted-click.js"></script>
 <div id="log"></div>
 <div id="single"></div>
@@ -26,6 +28,6 @@ async_test(function(t)
             assert_equals(event.target, document);
         });
     });
-    trusted_request(t, single);
+    trusted_request(single);
 });
 </script>

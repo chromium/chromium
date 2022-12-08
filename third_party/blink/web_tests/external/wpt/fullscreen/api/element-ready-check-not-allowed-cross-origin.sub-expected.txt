@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Cross-origin element ready check with no allowfullscreen or allow attribute assert_false: cross-origin-default frame entered fullscreen, but allowfullscreen was not set expected false got true
+Harness: the test ran to completion.
+

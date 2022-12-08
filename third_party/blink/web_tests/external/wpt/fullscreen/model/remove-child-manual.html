@@ -2,6 +2,8 @@
 <title>Remove the child of the fullscreen element</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="../trusted-click.js"></script>
 <div id="log"></div>
 <div id="parent">
@@ -14,7 +16,7 @@ async_test(function(t)
         Promise.resolve(document.exitFullscreen()).catch(() => {});
     });
     var parent = document.getElementById("parent");
-    trusted_request(t, parent);
+    trusted_request(parent);
     document.onfullscreenchange = t.step_func(function()
     {
         assert_equals(document.fullscreenElement, parent);

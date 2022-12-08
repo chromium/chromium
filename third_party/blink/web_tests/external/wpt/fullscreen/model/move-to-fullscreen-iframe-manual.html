@@ -2,6 +2,8 @@
 <title>Moving fullscreen document's body into a fullscreen iframe</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="../trusted-click.js"></script>
 <iframe allowfullscreen></iframe>
 <script>
@@ -12,7 +14,7 @@ window.onload = function() {
     const iframeDoc = iframe.contentDocument;
 
     // Enter fullscreen for the iframe's body element.
-    trusted_request(t, iframeDoc.body, iframeDoc.body);
+    trusted_request(iframeDoc.body, iframeDoc.body);
     document.onfullscreenchange = t.step_func(() => {
       assert_equals(document.fullscreenElement, iframe, "document's initial fullscreen element");
       assert_equals(iframeDoc.fullscreenElement, iframeDoc.body, "iframe's initial fullscreen element");

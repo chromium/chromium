@@ -2,6 +2,8 @@
 <title>:fullscreen pseudo-class</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="../trusted-click.js"></script>
 <div><div></div></div>
 <script>
@@ -10,7 +12,7 @@ async_test(t => {
   const inner = outer.firstChild;
 
   // First request fullscreen for the outer element.
-  trusted_request(t, outer);
+  trusted_request(outer);
   document.onfullscreenchange = t.step_func(() => {
     assert_equals(document.fullscreenElement, outer);
     assert_true(outer.matches(':fullscreen'),
@@ -19,7 +21,7 @@ async_test(t => {
                  'inner:fullscreen in simple fullscreen');
 
     // Then request fullscreen for the inner element.
-    trusted_request(t, inner);
+    trusted_request(inner);
     document.onfullscreenchange = t.step_func_done(() => {
       // Although inner is the fullscreen element, both elements match the
       // selector, as both have their fullscreen flag set.
