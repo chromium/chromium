@@ -78,6 +78,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "APP_START_URL_MIGRATION";
     case KeepAliveOrigin::APP_GET_INFO:
       return out << "APP_GET_INFO";
+    case KeepAliveOrigin::WEB_APP_LAUNCH:
+      return out << "WEB_APP_LAUNCH";
     case KeepAliveOrigin::SESSION_DATA_DELETER:
       return out << "SESSION_DATA_DELETER";
   }

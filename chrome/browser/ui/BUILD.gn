@@ -5611,6 +5611,8 @@ static_library("ui") {
       "views/javascript_app_modal_event_blocker.h",
       "web_applications/app_browser_controller.cc",
       "web_applications/app_browser_controller.h",
+      "web_applications/commands/launch_web_app_command.cc",
+      "web_applications/commands/launch_web_app_command.h",
       "web_applications/diagnostics/app_type_initialized_event.cc",
       "web_applications/diagnostics/app_type_initialized_event.h",
       "web_applications/diagnostics/callback_utils.h",

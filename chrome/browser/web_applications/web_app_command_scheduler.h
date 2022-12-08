@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 class GURL;
@@ -186,10 +187,37 @@ class WebAppCommandScheduler {
                                const base::Time& end_time,
                                base::OnceClosure done);
 
+  // Launches the given app. This call also uses keep-alives to guarantee that
+  // the browser and profile will not destruct before the launch is complete.
+  void LaunchApp(const AppId& app_id,
+                 const base::CommandLine& command_line,
+                 const base::FilePath& current_directory,
+                 const absl::optional<GURL>& url_handler_launch_url,
+                 const absl::optional<GURL>& protocol_handler_launch_url,
+                 const absl::optional<GURL>& file_launch_url,
+                 const std::vector<base::FilePath>& launch_files,
+                 LaunchWebAppCallback callback);
+
+  // Used to launch apps with a custom launch params. This does not respect the
+  // configuration of the app, and will respect whatever the params say.
+  void LaunchAppWithCustomParams(apps::AppLaunchParams params,
+                                 LaunchWebAppCallback callback);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 
  private:
+  void LaunchApp(apps::AppLaunchParams params,
+                 LaunchWebAppWindowSetting option,
+                 LaunchWebAppCallback callback);
+
+  void LaunchAppWithKeepAlives(
+      apps::AppLaunchParams params,
+      LaunchWebAppWindowSetting option,
+      LaunchWebAppCallback callback,
+      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+      std::unique_ptr<ScopedKeepAlive> browser_keep_alive);
+
   bool IsShuttingDown() const;
 
   const raw_ref<Profile> profile_;

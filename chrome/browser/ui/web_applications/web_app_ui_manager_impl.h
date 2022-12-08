@@ -75,6 +75,12 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       content::WebContents* web_contents,
       web_app::AppIdentityDialogCallback callback) override;
 
+  base::Value LaunchWebApp(apps::AppLaunchParams params,
+                           LaunchWebAppWindowSetting launch_setting,
+                           Profile& profile,
+                           LaunchWebAppCallback callback,
+                           AppLock& lock) override;
+
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;

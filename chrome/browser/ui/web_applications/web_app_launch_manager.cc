@@ -34,17 +34,6 @@
 
 namespace web_app {
 
-namespace {
-
-WebAppLaunchManager::OpenApplicationCallback&
-GetOpenApplicationCallbackForTesting() {
-  static base::NoDestructor<WebAppLaunchManager::OpenApplicationCallback>
-      callback;
-  return *callback;
-}
-
-}  // namespace
-
 WebAppLaunchManager::WebAppLaunchManager(Profile* profile)
     : profile_(profile),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile)) {}
@@ -128,6 +117,13 @@ void WebAppLaunchManager::SetOpenApplicationCallbackForTesting(
   GetOpenApplicationCallbackForTesting() = std::move(callback);
 }
 
+// static
+WebAppLaunchManager::OpenApplicationCallback&
+WebAppLaunchManager::GetOpenApplicationCallbackForTesting() {
+  static base::NoDestructor<WebAppLaunchManager::OpenApplicationCallback>
+      callback;
+  return *callback;
+}
 void WebAppLaunchManager::LaunchWebApplication(
     apps::AppLaunchParams&& params,
     base::OnceCallback<void(Browser* browser, apps::LaunchContainer container)>

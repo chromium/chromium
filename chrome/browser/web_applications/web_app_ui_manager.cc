@@ -5,7 +5,10 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 
 namespace web_app {
 
@@ -33,11 +36,63 @@ GetIdentityUpdateDialogActionForTesting() {  // IN-TEST
   return g_auto_resolve_app_identity_update_dialog_for_testing;
 }
 
+// static
+apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
+    const AppId& app_id,
+    const base::CommandLine& command_line,
+    const base::FilePath& current_directory,
+    const absl::optional<GURL>& url_handler_launch_url,
+    const absl::optional<GURL>& protocol_handler_launch_url,
+    const absl::optional<GURL>& file_launch_url,
+    const std::vector<base::FilePath>& launch_files) {
+  // At most one of these parameters should be non-empty.
+  DCHECK_LE(url_handler_launch_url.has_value() +
+                protocol_handler_launch_url.has_value() + !launch_files.empty(),
+            1);
+
+  apps::LaunchSource launch_source = apps::LaunchSource::kFromCommandLine;
+
+  if (url_handler_launch_url.has_value()) {
+    launch_source = apps::LaunchSource::kFromUrlHandler;
+  } else if (!launch_files.empty()) {
+    DCHECK(file_launch_url.has_value());
+    launch_source = apps::LaunchSource::kFromFileManager;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
+      command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
+    launch_source = apps::LaunchSource::kFromOsLogin;
+  } else if (protocol_handler_launch_url.has_value()) {
+    launch_source = apps::LaunchSource::kFromProtocolHandler;
+  }
+
+  apps::AppLaunchParams params(app_id,
+                               apps::LaunchContainer::kLaunchContainerNone,
+                               WindowOpenDisposition::UNKNOWN, launch_source);
+  params.command_line = command_line;
+  params.current_directory = current_directory;
+  params.launch_files = launch_files;
+  params.url_handler_launch_url = url_handler_launch_url;
+  params.protocol_handler_launch_url = protocol_handler_launch_url;
+  if (file_launch_url) {
+    params.override_url = *file_launch_url;
+  } else {
+    params.override_url = GURL(command_line.GetSwitchValueASCII(
+        switches::kAppLaunchUrlForShortcutsMenuItem));
+  }
+
+  return params;
+}
+
 WebAppUiManager::WebAppUiManager() = default;
 
 WebAppUiManager::~WebAppUiManager() {
   for (WebAppUiManagerObserver& observer : observers_)
     observer.OnWebAppUiManagerDestroyed();
+}
+
+base::WeakPtr<WebAppUiManager> WebAppUiManager::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WebAppUiManager::AddObserver(WebAppUiManagerObserver* observer) {

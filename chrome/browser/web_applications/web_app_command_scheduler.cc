@@ -11,6 +11,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
@@ -38,7 +39,9 @@
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -398,6 +401,92 @@ void WebAppCommandScheduler::ScheduleCallbackWithLock(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<CallbackCommand<LockType>>(
           operation_name, std::move(lock_description), std::move(callback)));
+}
+
+void WebAppCommandScheduler::LaunchApp(
+    const AppId& app_id,
+    const base::CommandLine& command_line,
+    const base::FilePath& current_directory,
+    const absl::optional<GURL>& url_handler_launch_url,
+    const absl::optional<GURL>& protocol_handler_launch_url,
+    const absl::optional<GURL>& file_launch_url,
+    const std::vector<base::FilePath>& launch_files,
+    LaunchWebAppCallback callback) {
+  LaunchApp(WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
+                app_id, command_line, current_directory, url_handler_launch_url,
+                protocol_handler_launch_url, file_launch_url, launch_files),
+            LaunchWebAppWindowSetting::kOverrideWithWebAppConfig,
+            std::move(callback));
+}
+
+void WebAppCommandScheduler::LaunchAppWithCustomParams(
+    apps::AppLaunchParams params,
+    LaunchWebAppCallback callback) {
+  LaunchApp(std::move(params), LaunchWebAppWindowSetting::kUseLaunchParams,
+            std::move(callback));
+}
+
+void WebAppCommandScheduler::LaunchApp(apps::AppLaunchParams params,
+                                       LaunchWebAppWindowSetting option,
+                                       LaunchWebAppCallback callback) {
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), nullptr, nullptr,
+                                  apps::LaunchContainer::kLaunchContainerNone));
+    return;
+  }
+  // Off the record profiles cannot be 'kept alive'.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+      profile_->IsOffTheRecord()
+          ? nullptr
+          : std::make_unique<ScopedProfileKeepAlive>(
+                &profile_.get(), ProfileKeepAliveOrigin::kAppWindow);
+  std::unique_ptr<ScopedKeepAlive> browser_keep_alive =
+      std::make_unique<ScopedKeepAlive>(KeepAliveOrigin::WEB_APP_LAUNCH,
+                                        KeepAliveRestartOption::ENABLED);
+
+  auto launch_with_keep_alives = base::BindOnce(
+      &WebAppCommandScheduler::LaunchAppWithKeepAlives,
+      weak_ptr_factory_.GetWeakPtr(), std::move(params), std::move(option),
+      std::move(callback), std::move(profile_keep_alive),
+      std::move(browser_keep_alive));
+  // Because we are accessing the WebAppUiManager, we should wait until the
+  // provider has started to actually create the command.
+  if (!provider_->is_registry_ready()) {
+    provider_->on_registry_ready().Post(FROM_HERE,
+                                        std::move(launch_with_keep_alives));
+    return;
+  }
+  std::move(launch_with_keep_alives).Run();
+}
+
+void WebAppCommandScheduler::LaunchAppWithKeepAlives(
+    apps::AppLaunchParams params,
+    LaunchWebAppWindowSetting launch_setting,
+    LaunchWebAppCallback callback,
+    std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+    std::unique_ptr<ScopedKeepAlive> browser_keep_alive) {
+  DCHECK(provider_->is_registry_ready());
+
+  // Decorate the callback to ensure the keep alives are kept alive during the
+  // execution of the launch.
+  callback = std::move(callback).Then(base::BindOnce(
+      [](std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
+         std::unique_ptr<ScopedKeepAlive> browser_keep_alive) {},
+      std::move(profile_keep_alive), std::move(browser_keep_alive)));
+
+  // Unretained is safe because this callback is lives on the WebAppProvider
+  // (via the WebAppCommandManager), which is a Profile KeyedService. It is
+  // destructed when the profile is shutting down as well. So it is impossible
+  // for this callback to be run with the WebAppUiManager being destructed.
+  AppId app_id = params.app_id;
+  ScheduleCallbackWithLock(
+      "LaunchApp",
+      std::make_unique<AppLockDescription, base::flat_set<AppId>>({app_id}),
+      base::BindOnce(&WebAppUiManager::LaunchWebApp,
+                     base::Unretained(&provider_->ui_manager()),
+                     std::move(params), launch_setting, std::ref(*profile_),
+                     std::move(callback)));
 }
 
 bool WebAppCommandScheduler::IsShuttingDown() const {

@@ -11,6 +11,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -110,6 +111,17 @@ void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
   }
 
   std::move(callback).Run(identity_update_dialog_action_for_testing.value());
+}
+
+base::Value FakeWebAppUiManager::LaunchWebApp(
+    apps::AppLaunchParams params,
+    LaunchWebAppWindowSetting launch_setting,
+    Profile& profile,
+    LaunchWebAppCallback callback,
+    AppLock& lock) {
+  std::move(callback).Run(nullptr, nullptr,
+                          apps::LaunchContainer::kLaunchContainerNone);
+  return base::Value("FakeWebAppUiManager::LaunchWebApp");
 }
 
 }  // namespace web_app

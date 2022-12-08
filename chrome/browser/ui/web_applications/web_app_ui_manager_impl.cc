@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/commands/launch_web_app_command.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
@@ -430,6 +431,16 @@ void WebAppUiManagerImpl::ShowWebAppIdentityUpdateDialog(
   chrome::ShowWebAppIdentityUpdateDialog(
       app_id, title_change, icon_change, old_title, new_title, old_icon,
       new_icon, web_contents, std::move(callback));
+}
+
+base::Value WebAppUiManagerImpl::LaunchWebApp(
+    apps::AppLaunchParams params,
+    LaunchWebAppWindowSetting launch_setting,
+    Profile& profile,
+    LaunchWebAppCallback callback,
+    AppLock& lock) {
+  return ::web_app::LaunchWebApp(std::move(params), launch_setting, profile,
+                                 std::move(callback), lock);
 }
 
 void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {

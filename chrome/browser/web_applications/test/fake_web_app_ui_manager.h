@@ -60,6 +60,12 @@ class FakeWebAppUiManager : public WebAppUiManager {
       content::WebContents* web_contents,
       AppIdentityDialogCallback callback) override;
 
+  base::Value LaunchWebApp(apps::AppLaunchParams params,
+                           LaunchWebAppWindowSetting launch_setting,
+                           Profile& profile,
+                           LaunchWebAppCallback callback,
+                           AppLock& lock) override;
+
  private:
   std::map<AppId, size_t> app_id_to_num_windows_map_;
   std::map<AppId, AppId> uninstall_and_replace_map_;

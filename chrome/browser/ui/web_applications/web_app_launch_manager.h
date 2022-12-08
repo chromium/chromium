@@ -61,6 +61,9 @@ class WebAppLaunchManager {
   static void SetOpenApplicationCallbackForTesting(
       OpenApplicationCallback callback);
 
+  // Created temporarily while this class is migrated to the command system.
+  static OpenApplicationCallback& GetOpenApplicationCallbackForTesting();
+
  private:
   virtual void LaunchWebApplication(
       apps::AppLaunchParams&& params,
