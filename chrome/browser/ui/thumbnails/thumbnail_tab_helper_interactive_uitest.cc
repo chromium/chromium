@@ -173,8 +173,15 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
   WaitForAndVerifyThumbnail(browser(), 1);
 }
 
+// TODO(crbug.com/1399402): Times out on MSan bot.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_TabDiscardPreservesScreenshot \
+  DISABLED_TabDiscardPreservesScreenshot
+#else
+#define MAYBE_TabDiscardPreservesScreenshot TabDiscardPreservesScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
-                       TabDiscardPreservesScreenshot) {
+                       MAYBE_TabDiscardPreservesScreenshot) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url2_, WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
