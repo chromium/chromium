@@ -864,6 +864,10 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 - (void)handleFeedSelected:(FeedType)feedType {
   DCHECK([self isFollowingFeedAvailable]);
 
+  if (self.selectedFeed == feedType) {
+    return;
+  }
+
   self.selectedFeed = feedType;
 
   // Saves scroll position before changing feed.
