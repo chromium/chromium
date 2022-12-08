@@ -111,6 +111,16 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
     DCHECK(finish_flow_callback_.value());
   }
 
+  void Init() override {
+    // Stop with the sign-in navigation and show a spinner instead. The spinner
+    // will be shown until TurnSyncOnHelper figures out whether it's a
+    // managed account and whether sync is disabled by policies (which in some
+    // cases involves fetching policies and can take a couple of seconds).
+    host()->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/true));
+
+    ProfilePickerSignedInFlowController::Init();
+  }
+
   void FinishAndOpenBrowser(PostHostClearedCallback callback) override {
     // Do nothing if this has already been called. Note that this can get called
     // first time from a special case handling (such as the Settings link) and
