@@ -4293,7 +4293,7 @@
   {
     "name": "ios-media-permissions-control",
     "owners": ["ginnyhuang","bling-flags@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 112
   },
   {
     "name": "ios-new-post-restore-experience",
