@@ -98,34 +98,20 @@ void MediaQuery::Trace(Visitor* visitor) const {
 }
 
 MediaQuery::RestrictorType MediaQuery::Restrictor() const {
-  if (BehaveAsNotAll())
-    return RestrictorType::kNot;
   return restrictor_;
 }
 
 const MediaQueryExpNode* MediaQuery::ExpNode() const {
-  if (BehaveAsNotAll())
-    return nullptr;
   return exp_node_.Get();
 }
 
 const String& MediaQuery::MediaType() const {
-  if (BehaveAsNotAll()) {
-    DEFINE_STATIC_LOCAL(const AtomicString, all, ("all"));
-    return all;
-  }
   return media_type_;
 }
 
 // https://drafts.csswg.org/cssom/#compare-media-queries
 bool MediaQuery::operator==(const MediaQuery& other) const {
   return CssText() == other.CssText();
-}
-
-bool MediaQuery::BehaveAsNotAll() const {
-  if (RuntimeEnabledFeatures::CSSMediaQueries4Enabled())
-    return false;
-  return has_unknown_;
 }
 
 // https://drafts.csswg.org/cssom/#serialize-a-list-of-media-queries

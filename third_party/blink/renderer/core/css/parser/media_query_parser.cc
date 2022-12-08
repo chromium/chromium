@@ -338,7 +338,7 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
     return MakeGarbageCollected<MediaQueryFeatureExpNode>(exp);
   }
 
-  if (!IsMediaQueries4SyntaxEnabled() || !feature_set.SupportsRange())
+  if (!feature_set.SupportsRange())
     return nullptr;
 
   // Otherwise <mf-range>:
@@ -416,7 +416,7 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeCondition(
     CSSParserTokenRange& range,
     ConditionMode mode) {
   // <media-not>
-  if (IsNotKeywordEnabled() && ConsumeIfIdent(range, "not"))
+  if (ConsumeIfIdent(range, "not"))
     return MediaQueryExpNode::Not(ConsumeInParens(range));
 
   // Otherwise:
@@ -429,7 +429,7 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeCondition(
       result = MediaQueryExpNode::And(result, ConsumeInParens(range));
     }
   } else if (result && AtIdent(range.Peek(), "or") &&
-             mode == ConditionMode::kNormal && IsMediaQueries4SyntaxEnabled()) {
+             mode == ConditionMode::kNormal) {
     while (result && ConsumeIfIdent(range, "or")) {
       result = MediaQueryExpNode::Or(result, ConsumeInParens(range));
     }
@@ -450,11 +450,9 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeInParens(
     CSSParserTokenRange original_block = block;
 
     // ( <media-condition> )
-    if (IsMediaQueries4SyntaxEnabled()) {
-      const MediaQueryExpNode* condition = ConsumeCondition(block);
-      if (condition && block.AtEnd())
-        return MediaQueryExpNode::Nested(condition);
-    }
+    const MediaQueryExpNode* condition = ConsumeCondition(block);
+    if (condition && block.AtEnd())
+      return MediaQueryExpNode::Nested(condition);
     block = original_block;
 
     // ( <media-feature> )
@@ -565,23 +563,6 @@ MediaQuerySet* MediaQueryParser::ParseImpl(CSSParserTokenRange range) {
   } while (!range.AtEnd() && ConsumeUntilCommaInclusive(range));
 
   return MakeGarbageCollected<MediaQuerySet>(std::move(queries));
-}
-
-bool MediaQueryParser::IsNotKeywordEnabled() const {
-  // Support for 'not' was shipped for kMediaConditionParser before
-  // RuntimeEnabledFeatures::CSSMediaQueries4 existed, hence it's always
-  // enabled for that parser type.
-  return (parser_type_ == kMediaConditionParser) ||
-         IsMediaQueries4SyntaxEnabled();
-}
-
-bool MediaQueryParser::IsMediaQueries4SyntaxEnabled() const {
-  switch (syntax_level_) {
-    case SyntaxLevel::kAuto:
-      return RuntimeEnabledFeatures::CSSMediaQueries4Enabled();
-    case SyntaxLevel::kLevel4:
-      return true;
-  }
 }
 
 }  // namespace blink

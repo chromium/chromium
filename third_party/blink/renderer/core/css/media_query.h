@@ -65,7 +65,6 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
 
  private:
   MediaQuery& operator=(const MediaQuery&) = delete;
-  bool BehaveAsNotAll() const;
 
   String media_type_;
   String serialization_cache_;

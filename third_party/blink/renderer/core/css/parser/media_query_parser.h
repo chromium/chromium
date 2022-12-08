@@ -154,14 +154,6 @@ class CORE_EXPORT MediaQueryParser {
 
   MediaQuerySet* ParseImpl(CSSParserTokenRange);
 
-  // True if <media-not> is enabled.
-  bool IsNotKeywordEnabled() const;
-
-  // Media Queries Level 4 added 'or', 'not', nesting, and ranges. These
-  // features are normally controlled by a runtime flag, but are always
-  // enabled by ContainerQueryParser.
-  bool IsMediaQueries4SyntaxEnabled() const;
-
   ParserType parser_type_;
   CSSParserMode mode_;
   const ExecutionContext* execution_context_;

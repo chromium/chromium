@@ -48,9 +48,6 @@ MediaQueryList::MediaQueryList(ExecutionContext* context,
 MediaQueryList::~MediaQueryList() = default;
 
 String MediaQueryList::media() const {
-  if (media_->HasUnknown()) {
-    UseCounter::Count(GetExecutionContext(), WebFeature::kCSSMatchMediaUnknown);
-  }
   return media_->MediaText();
 }
 

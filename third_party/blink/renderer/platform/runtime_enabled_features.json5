@@ -765,13 +765,6 @@
       implied_by: ["MathMLCore"],
     },
     {
-      // Support for Media Queries Level 4 syntax.
-      //
-      // https://drafts.csswg.org/mediaqueries-4/#mq-syntax
-      name: "CSSMediaQueries4",
-      status: "stable",
-    },
-    {
       name: "CSSMixBlendModePlusLighter",
       status: "stable"
     },

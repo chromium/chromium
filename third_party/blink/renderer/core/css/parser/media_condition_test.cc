@@ -61,23 +61,4 @@ TEST(MediaConditionParserTest, Basic) {
   }
 }
 
-// Support for the 'not' keyword for ParseMediaCondition predates the
-// CSSMediaQueries4 flag, so enabling/disabling that flag must not affect
-// 'not' parsing.
-TEST(MediaConditionParserTest, NotKeyword_CSSMediaQueries4) {
-  String input = "not (min-width: 500px)";
-  CSSTokenizer tokenizer(input);
-  const auto tokens = tokenizer.TokenizeToEOF();
-
-  Vector<bool> flag_values = {true, false};
-  for (bool flag : flag_values) {
-    ScopedCSSMediaQueries4ForTest media_queries_4_flag(flag);
-
-    MediaQuerySet* media_condition_query_set =
-        MediaQueryParser::ParseMediaCondition(CSSParserTokenRange(tokens),
-                                              nullptr);
-    EXPECT_EQ(input, media_condition_query_set->MediaText());
-  }
-}
-
 }  // namespace blink

@@ -64,7 +64,6 @@ class CORE_EXPORT MediaQuerySet : public GarbageCollected<MediaQuerySet> {
   }
 
   String MediaText() const;
-  bool HasUnknown() const;
 
  private:
   HeapVector<Member<const MediaQuery>> queries_;

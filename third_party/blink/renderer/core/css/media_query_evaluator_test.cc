@@ -1078,8 +1078,6 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
 }
 
 TEST(MediaQueryEvaluatorTest, CSSMediaQueries4) {
-  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
-
   MediaValuesCached::MediaValuesCachedData data;
   data.viewport_width = 500;
   data.viewport_height = 500;
@@ -1147,21 +1145,13 @@ TEST(MediaQueryEvaluatorTest, GeneralEnclosed) {
       {"not ((unknown: 1px) and (width))", false},
   };
 
-  // Run the same tests twice (CSSMediaQueries4 on/off).
-  Vector<bool> flag_values = {true, false};
-  for (bool flag : flag_values) {
-    ScopedCSSMediaQueries4ForTest media_queries_4_flag(flag);
-
-    for (const MediaQueryEvaluatorTestCase& test : tests) {
-      SCOPED_TRACE(String(test.input));
-      String input(test.input);
-      MediaQuerySet* query_set =
-          MediaQueryParser::ParseMediaQuerySet(input, nullptr);
-      ASSERT_TRUE(query_set);
-      // Always expect `false` with CSSMediaQueries4 disabled, otherwise
-      // expect `test.output`.
-      EXPECT_EQ(flag && test.output, media_query_evaluator.Eval(*query_set));
-    }
+  for (const MediaQueryEvaluatorTestCase& test : tests) {
+    SCOPED_TRACE(String(test.input));
+    String input(test.input);
+    MediaQuerySet* query_set =
+        MediaQueryParser::ParseMediaQuerySet(input, nullptr);
+    ASSERT_TRUE(query_set);
+    EXPECT_EQ(test.output, media_query_evaluator.Eval(*query_set));
   }
 }
 

@@ -242,8 +242,6 @@ TEST(MediaQuerySetTest, Basic) {
 }
 
 TEST(MediaQuerySetTest, CSSMediaQueries4) {
-  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
-
   MediaQuerySetTestCase test_cases[] = {
       {"(width: 100px) or (width: 200px)", nullptr},
       {"(width: 100px)or (width: 200px)", "(width: 100px) or (width: 200px)"},
@@ -307,8 +305,6 @@ TEST(MediaQuerySetTest, CSSMediaQueries4) {
 
 // https://drafts.csswg.org/mediaqueries-4/#typedef-general-enclosed
 TEST(MediaQuerySetTest, GeneralEnclosed) {
-  ScopedCSSMediaQueries4ForTest media_queries_4_flag(true);
-
   const char* unknown_cases[] = {
       "()",
       "( )",
@@ -387,50 +383,6 @@ TEST(MediaQuerySetTest, GeneralEnclosed) {
   for (const char* input : invalid_cases) {
     SCOPED_TRACE(String(input));
     TestMediaQuery(input, "not all", *MediaQuerySet::Create(input, nullptr));
-  }
-}
-
-TEST(MediaQuerySetTest, BehindRuntimeFlag) {
-  ScopedForcedColorsForTest forced_colors_flag(false);
-  ScopedMediaQueryNavigationControlsForTest navigation_controls_flag(false);
-  ScopedCSSFoldablesForTest foldables_flag(false);
-  ScopedDevicePostureForTest device_posture_flag(false);
-  ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
-
-  // The first string represents the input string, the second string represents
-  // the output string.
-  MediaQuerySetTestCase test_cases[] = {
-      {"(forced-colors)", "not all"},
-      {"(navigation-controls)", "not all"},
-      {"(horizontal-viewport-segments)", "not all"},
-      {"(vertical-viewport-segments)", "not all"},
-      {"(device-posture)", "not all"},
-      {"(shape: rect)", "not all"},
-      {"(forced-colors: none)", "not all"},
-      {"(navigation-controls: none)", "not all"},
-      {"(horizontal-viewport-segments: 1)", "not all"},
-      {"(vertical-viewport-segments: 1)", "not all"},
-      {"(device-posture:none)", "not all"},
-      {"(width: 100px) or (width: 200px)", "not all"},
-      {"((width: 100px))", "not all"},
-      {"not (orientation)", "not all"},
-      {"(width < 10px)", "not all"},
-      {"(width <= 10px)", "not all"},
-      {"(width = 10px)", "not all"},
-      {"(width > 10px)", "not all"},
-      {"(width >= 10px)", "not all"},
-      {"(10px < width)", "not all"},
-      {"(10px < width < 20px)", "not all"},
-      {"()", "not all"},
-      {"(unknown)", "not all"},
-      {"unknown()", "not all"},
-      {"(1px)", "not all"},
-  };
-
-  for (const MediaQuerySetTestCase& test : test_cases) {
-    SCOPED_TRACE(String(test.input));
-    TestMediaQuery(test.input, test.output,
-                   *MediaQuerySet::Create(test.input, nullptr));
   }
 }
 

@@ -152,14 +152,6 @@ String MediaQuerySet::MediaText() const {
   return text.ReleaseString();
 }
 
-bool MediaQuerySet::HasUnknown() const {
-  for (const auto& media_query : QueryVector()) {
-    if (media_query->HasUnknown())
-      return true;
-  }
-  return false;
-}
-
 MediaList::MediaList(CSSStyleSheet* parent_sheet)
     : parent_style_sheet_(parent_sheet), parent_rule_(nullptr) {
   DCHECK(Owner());
@@ -171,8 +163,6 @@ MediaList::MediaList(CSSRule* parent_rule)
 }
 
 String MediaList::mediaText(ExecutionContext* execution_context) const {
-  if (Queries()->HasUnknown())
-    UseCounter::Count(execution_context, WebFeature::kCSSMediaListUnknown);
   return MediaTextInternal();
 }
 

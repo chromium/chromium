@@ -53,8 +53,6 @@ String CSSMediaRule::cssText() const {
 }
 
 String CSSMediaRule::conditionText() const {
-  if (MediaQueries() && MediaQueries()->HasUnknown())
-    CountUse(WebFeature::kCSSOMMediaConditionUnknown);
   return ConditionTextInternal();
 }
 
