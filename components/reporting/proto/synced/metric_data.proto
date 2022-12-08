@@ -438,11 +438,6 @@ enum MetricEventType {
 
 // App telemetry data.
 message AppTelemetry {
-  // App id.
-  optional string app_id = 1;
-  // Type of app being observed.
-  optional apps.ApplicationType app_type = 2;
-
   oneof app_metric_data {
     // App installation data.
     AppInstallData app_install_data = 3;
@@ -450,9 +445,11 @@ message AppTelemetry {
     AppUninstallData app_uninstall_data = 4;
     // App launch data.
     AppLaunchData app_launch_data = 5;
-    // App usage data
+    // App usage data.
     AppUsageData app_usage_data = 6;
   }
+
+  reserved 1, 2;
 }
 
 // App installation data.
@@ -463,24 +460,49 @@ message AppInstallData {
   optional apps.ApplicationInstallReason app_install_reason = 2;
   // App installation time depending on the app lifecycle.
   optional apps.ApplicationInstallTime app_install_time = 3;
+  // App id.
+  optional string app_id = 4;
+  // Type of app.
+  optional apps.ApplicationType app_type = 5;
 }
 
 // App launch data.
 message AppLaunchData {
   // App launch source.
   optional apps.ApplicationLaunchSource app_launch_source = 1;
+  // App id.
+  optional string app_id = 2;
+  // Type of app.
+  optional apps.ApplicationType app_type = 3;
 }
 
 // App usage data.
 message AppUsageData {
-  // App foreground running time (in milliseconds).
-  optional int64 running_time_ms = 1;
+  message AppUsage {
+    // App foreground running time (in milliseconds).
+    optional int64 running_time_ms = 1;
+    // App id.
+    optional string app_id = 2;
+    // Type of app.
+    optional apps.ApplicationType app_type = 3;
+    // Application instance id. This will be unique per window/instance.
+    optional string app_instance_id = 4;
+  }
+
+  // Usage data that also includes other app metadata.
+  repeated AppUsage app_usage = 2;
+
+  reserved 1;
 }
 
 // App uninstall data.
 message AppUninstallData {
   // App uninstall source.
   optional apps.ApplicationUninstallSource app_uninstall_source = 1;
+  // App id.
+  optional string app_id = 2;
+  // Type of app.
+  optional apps.ApplicationType app_type = 3;
 }
 
 message PeripheralsTelemetry {

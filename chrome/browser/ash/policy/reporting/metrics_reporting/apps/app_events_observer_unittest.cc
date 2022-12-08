@@ -139,17 +139,14 @@ TEST_P(AppEventsObserverTest, OnAppInstalled) {
     EXPECT_THAT(result.event_data().type(), Eq(MetricEventType::APP_INSTALLED));
     ASSERT_TRUE(result.has_telemetry_data());
     ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
-
-    const AppTelemetry& app_telemetry_data =
-        result.telemetry_data().app_telemetry();
-    EXPECT_THAT(app_telemetry_data.app_id(), StrEq(app_id));
-    EXPECT_THAT(
-        app_telemetry_data.app_type(),
-        Eq(::apps::ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER));
-    ASSERT_TRUE(app_telemetry_data.has_app_install_data());
+    ASSERT_TRUE(result.telemetry_data().app_telemetry().has_app_install_data());
 
     const AppInstallData& app_install_data =
         result.telemetry_data().app_telemetry().app_install_data();
+    EXPECT_THAT(app_install_data.app_id(), StrEq(app_id));
+    EXPECT_THAT(
+        app_install_data.app_type(),
+        Eq(::apps::ApplicationType::APPLICATION_TYPE_STANDALONE_BROWSER));
     EXPECT_THAT(
         app_install_data.app_install_reason(),
         Eq(::apps::ApplicationInstallReason::APPLICATION_INSTALL_REASON_USER));
@@ -184,16 +181,13 @@ TEST_P(AppEventsObserverTest, OnAppLaunched) {
     EXPECT_THAT(result.event_data().type(), Eq(MetricEventType::APP_LAUNCHED));
     ASSERT_TRUE(result.has_telemetry_data());
     ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
-
-    const AppTelemetry& app_telemetry_data =
-        result.telemetry_data().app_telemetry();
-    EXPECT_THAT(app_telemetry_data.app_id(), StrEq(kTestAppId));
-    EXPECT_THAT(app_telemetry_data.app_type(),
-                Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
-    ASSERT_TRUE(app_telemetry_data.has_app_launch_data());
+    ASSERT_TRUE(result.telemetry_data().app_telemetry().has_app_launch_data());
 
     const AppLaunchData& app_launch_data =
         result.telemetry_data().app_telemetry().app_launch_data();
+    EXPECT_THAT(app_launch_data.app_id(), StrEq(kTestAppId));
+    EXPECT_THAT(app_launch_data.app_type(),
+                Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
     EXPECT_THAT(app_launch_data.app_launch_source(),
                 Eq(::apps::ApplicationLaunchSource::
                        APPLICATION_LAUNCH_SOURCE_COMMAND_LINE));
@@ -222,16 +216,14 @@ TEST_P(AppEventsObserverTest, OnAppUninstalled) {
                 Eq(MetricEventType::APP_UNINSTALLED));
     ASSERT_TRUE(result.has_telemetry_data());
     ASSERT_TRUE(result.telemetry_data().has_app_telemetry());
-
-    const AppTelemetry& app_telemetry_data =
-        result.telemetry_data().app_telemetry();
-    EXPECT_THAT(app_telemetry_data.app_id(), StrEq(kTestAppId));
-    EXPECT_THAT(app_telemetry_data.app_type(),
-                Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
-    ASSERT_TRUE(app_telemetry_data.has_app_uninstall_data());
+    ASSERT_TRUE(
+        result.telemetry_data().app_telemetry().has_app_uninstall_data());
 
     const AppUninstallData& app_uninstall_data =
         result.telemetry_data().app_telemetry().app_uninstall_data();
+    EXPECT_THAT(app_uninstall_data.app_id(), StrEq(kTestAppId));
+    EXPECT_THAT(app_uninstall_data.app_type(),
+                Eq(::apps::ApplicationType::APPLICATION_TYPE_ARC));
     EXPECT_THAT(app_uninstall_data.app_uninstall_source(),
                 Eq(::apps::ApplicationUninstallSource::
                        APPLICATION_UNINSTALL_SOURCE_APP_LIST));

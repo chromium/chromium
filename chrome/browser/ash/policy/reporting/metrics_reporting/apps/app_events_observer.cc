@@ -92,14 +92,12 @@ void AppEventsObserver::OnAppInstalled(const std::string& app_id,
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(MetricEventType::APP_INSTALLED);
 
-  AppTelemetry* const app_telemetry_data =
-      metric_data.mutable_telemetry_data()->mutable_app_telemetry();
-  app_telemetry_data->set_app_id(app_id);
-  app_telemetry_data->set_app_type(
+  auto* const app_install_data = metric_data.mutable_telemetry_data()
+                                     ->mutable_app_telemetry()
+                                     ->mutable_app_install_data();
+  app_install_data->set_app_id(app_id);
+  app_install_data->set_app_type(
       ::apps::ConvertAppTypeToProtoApplicationType(app_type));
-
-  AppInstallData* const app_install_data =
-      app_telemetry_data->mutable_app_install_data();
   app_install_data->set_app_install_source(
       ::apps::ConvertInstallSourceToProtoApplicationInstallSource(
           app_install_source));
@@ -124,14 +122,12 @@ void AppEventsObserver::OnAppLaunched(const std::string& app_id,
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(MetricEventType::APP_LAUNCHED);
 
-  AppTelemetry* const app_telemetry_data =
-      metric_data.mutable_telemetry_data()->mutable_app_telemetry();
-  app_telemetry_data->set_app_id(app_id);
-  app_telemetry_data->set_app_type(
+  auto* const app_launch_data = metric_data.mutable_telemetry_data()
+                                    ->mutable_app_telemetry()
+                                    ->mutable_app_launch_data();
+  app_launch_data->set_app_id(app_id);
+  app_launch_data->set_app_type(
       ::apps::ConvertAppTypeToProtoApplicationType(app_type));
-
-  AppLaunchData* const app_launch_data =
-      app_telemetry_data->mutable_app_launch_data();
   app_launch_data->set_app_launch_source(
       ::apps::ConvertLaunchSourceToProtoApplicationLaunchSource(
           app_launch_source));
@@ -151,14 +147,12 @@ void AppEventsObserver::OnAppUninstalled(
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(MetricEventType::APP_UNINSTALLED);
 
-  AppTelemetry* const app_telemetry_data =
-      metric_data.mutable_telemetry_data()->mutable_app_telemetry();
-  app_telemetry_data->set_app_id(app_id);
-  app_telemetry_data->set_app_type(
+  auto* const app_uninstall_data = metric_data.mutable_telemetry_data()
+                                       ->mutable_app_telemetry()
+                                       ->mutable_app_uninstall_data();
+  app_uninstall_data->set_app_id(app_id);
+  app_uninstall_data->set_app_type(
       ::apps::ConvertAppTypeToProtoApplicationType(app_type));
-
-  AppUninstallData* const app_uninstall_data =
-      app_telemetry_data->mutable_app_uninstall_data();
   app_uninstall_data->set_app_uninstall_source(
       ::apps::ConvertUninstallSourceToProtoApplicationUninstallSource(
           app_uninstall_source));
