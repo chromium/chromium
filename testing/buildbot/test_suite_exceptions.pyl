@@ -4024,6 +4024,12 @@
           'Release_x64',
         ],
       },
+      'win11-wpt-content-shell-fyi-rel': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+      },
     },
   },
 }

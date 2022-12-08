@@ -105976,7 +105976,9 @@
       {
         "args": [
           "--log-wptreport",
-          "--xvfb"
+          "--xvfb",
+          "--target",
+          "Release_x64"
         ],
         "experiment_percentage": 100,
         "isolate_name": "wpt_tests_isolate_content_shell",
