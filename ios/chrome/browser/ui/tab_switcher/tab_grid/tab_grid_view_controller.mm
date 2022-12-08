@@ -2018,6 +2018,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (!self.scrimView.superview) {
     [self.scrollContentView addSubview:self.scrimView];
     AddSameConstraints(self.scrimView, self.view.superview);
+    [self.view layoutIfNeeded];
   }
   self.currentPageViewController.accessibilityElementsHidden = YES;
   __weak __typeof(self) weakSelf = self;
@@ -2028,7 +2029,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           return;
         strongSelf.scrimView.hidden = NO;
         strongSelf.scrimView.alpha = 1.0f;
-        [strongSelf.view layoutIfNeeded];
       }
       completion:^(BOOL finished) {
         TabGridViewController* strongSelf = weakSelf;
