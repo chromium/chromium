@@ -102,6 +102,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FileBrowser.ArchiveSize.{Extension}" units="100MiB"
     expires_after="2022-12-01">
+  <obsolete>
+    Became obsolete on 2022-12-01 as we've collected enough data to understand
+    the user impact of attempting to open large slow mounters without progress
+    reporting.
+  </obsolete>
   <owner>msalomao@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
