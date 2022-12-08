@@ -170,24 +170,23 @@ Status ParseWebViewsInfo(const std::string& data, WebViewsInfo* views_info) {
   for (const base::Value& info_value : value->GetList()) {
     if (!info_value.is_dict())
       return Status(kUnknownError, "DevTools contains non-dictionary item");
-    const base::DictionaryValue& info =
-        base::Value::AsDictionaryValue(info_value);
-    std::string id;
-    if (!info.GetString("id", &id))
+    const base::Value::Dict& info = info_value.GetDict();
+    const std::string* id = info.FindString("id");
+    if (!id)
       return Status(kUnknownError, "DevTools did not include id");
-    std::string type_as_string;
-    if (!info.GetString("type", &type_as_string))
+    const std::string* type_as_string = info.FindString("type");
+    if (!type_as_string)
       return Status(kUnknownError, "DevTools did not include type");
-    std::string url;
-    if (!info.GetString("url", &url))
+    const std::string* url = info.FindString("url");
+    if (!url)
       return Status(kUnknownError, "DevTools did not include url");
-    std::string debugger_url;
-    info.GetString("webSocketDebuggerUrl", &debugger_url);
+    const std::string* debugger_url = info.FindString("webSocketDebuggerUrl");
     WebViewInfo::Type type;
-    Status status = ParseType(type_as_string, &type);
+    Status status = ParseType(*type_as_string, &type);
     if (status.IsError())
       return status;
-    temp_views_info.push_back(WebViewInfo(id, debugger_url, url, type));
+    temp_views_info.push_back(
+        WebViewInfo(*id, debugger_url ? *debugger_url : "", *url, type));
   }
   *views_info = WebViewsInfo(temp_views_info);
   return Status(kOk);
