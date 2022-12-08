@@ -11,6 +11,7 @@ import com.ark.browser.utils.PrefsHelper;
 import org.chromium.url.GURL;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,6 +38,10 @@ public class UserAgentManager {
             this.name = name;
             this.userAgent = userAgent;
             this.isMobile = isMobile;
+        }
+
+        public String getName() {
+            return name;
         }
 
         public String getString() {
@@ -67,6 +72,10 @@ public class UserAgentManager {
     private static final ConcurrentHashMap<String, Integer> HOST_UA_MAPPING = new ConcurrentHashMap<>();
 
     private static int sDefaultUserAgentIndex = -1;
+
+    public static UserAgent[] getUserAgentArray() {
+        return ARRAY_USER_AGENT;
+    }
 
     public static String[] getUserAgentNames() {
         String[] items = new String[ARRAY_USER_AGENT.length];

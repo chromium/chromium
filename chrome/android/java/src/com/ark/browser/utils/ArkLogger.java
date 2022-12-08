@@ -4,8 +4,8 @@ import java.util.Locale;
 
 public class ArkLogger {
 
-    private static final String TAG_PREFIX = "Ark_%s";
-    private static final String TAG_PREFIX_OBJECT = "Ark_%s@%s";
+    private static final String TAG_PREFIX = "ArkBrowser_%s";
+    private static final String TAG_PREFIX_OBJECT = "ArkBrowser_%s@%s";
 
     public static void d(Object tag, String messageTemplate, Object... args) {
         Throwable tr = getThrowableToLog(args);

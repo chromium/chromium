@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="56dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_round_accent"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:textColor="@color/_dialog_text_major_color"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            />
+
+        <FrameLayout
+            android:id="@+id/fl_check_box"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="?android:attr/actionBarItemBackground"
+            android:visibility="gone"
+            >
+
+            <com.zpj.widget.checkbox.ZCheckBox
+                android:id="@+id/check_box"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                app:z_checkbox_border_size="2dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_gravity="center"
+                />
+
+        </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/btn_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_close"
+            android:background="?android:attr/actionBarItemBackground"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/_fl_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:orientation="vertical"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never" />
+
+        <View style="@style/layout_shadow_bottom"
+            android:id="@+id/view_shadow_bottom"
+            />
+
+        <View style="@style/layout_shadow_up"
+            android:id="@+id/view_shadow_up"
+            android:layout_gravity="bottom"
+            android:visibility="gone"
+            />
+
+    </FrameLayout>
+
+    <include layout="@layout/_dialog_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:visibility="gone"
+        />
+
+</LinearLayout>

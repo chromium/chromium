@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+
+<!--    <FrameLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
+
+<!--        <View-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="4dp"-->
+<!--            android:background="?attr/backgroundShadowUp">-->
+
+<!--        </View>-->
+
+<!--        <ProgressBar-->
+<!--            android:id="@+id/cool_progress_bar"-->
+<!--            style="?android:attr/progressBarStyleHorizontal"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="2dp"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            />-->
+
+<!--    </FrameLayout>-->
+
+    <FrameLayout
+        android:id="@+id/custom_bottom_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/view_shadow_up"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+        <LinearLayout android:id="@+id/bottom_loaded_view"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            >
+
+            <ImageView
+                android:id="@+id/btn_tools"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="6dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_tools"
+                android:background="?android:attr/actionBarItemBackground"/>
+
+            <LinearLayout
+                android:id="@+id/title_bar"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:background="@drawable/bg_search_round"
+                android:paddingHorizontal="2dp"
+                android:layout_marginVertical="2dp"
+                >
+
+                <ImageView
+                    android:id="@+id/btn_star"
+                    android:contentDescription="@null"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="6dp"
+                    android:paddingHorizontal="6dp"
+                    android:src="@drawable/ic_add_bookmark"/>
+
+                <TextView android:id="@+id/loading_title"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:padding="2dp"
+                    android:gravity="center"
+                    android:text="title"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textColor="@color/google_black_400"
+                    android:visibility="visible"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"
+                    />
+
+                <ImageView
+                    android:id="@+id/loading_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingVertical="6dp"
+                    android:paddingHorizontal="6dp"
+                    android:src="@drawable/ic_cancel"/>
+
+                <ImageView
+                    android:contentDescription="@null"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:padding="6dp"
+                    android:background="?android:attr/actionBarItemBackground"
+                    android:visibility="gone"/>
+
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/btn_menu"
+                android:contentDescription="@null"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="6dp"
+                android:src="@drawable/ic_menu_min"
+                android:background="?android:attr/actionBarItemBackground"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+</LinearLayout>

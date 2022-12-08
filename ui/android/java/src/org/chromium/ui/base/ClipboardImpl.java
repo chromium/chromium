@@ -374,6 +374,11 @@ public class ClipboardImpl
     }
 
     @Override
+    public boolean setTextFromUser(String text) {
+        return setPrimaryClipNoException(ClipData.newPlainText("text", text));
+    }
+
+    @Override
     void setHTMLText(final String html, final String text) {
         setPrimaryClipNoException(ClipData.newHtmlText("html", text, html));
     }

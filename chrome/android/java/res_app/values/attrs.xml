@@ -59,6 +59,12 @@
 
     </declare-styleable>
 
+    <declare-styleable name="CoolIndicator">
+        <attr name="wrapShiftDrawable" format="boolean"/>
+        <attr name="shiftDuration" format="reference"/>
+        <attr name="shiftInterpolator" format="reference"/>
+    </declare-styleable>
+
 
     <attr name="backgroundColor" format="color" />
     <attr name="backgroundColorDark" format="color" />

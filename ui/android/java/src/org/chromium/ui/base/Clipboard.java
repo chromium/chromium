@@ -235,6 +235,11 @@ public class Clipboard {
         Log.w(TAG, "setHTMLText is a no-op because Clipboard service isn't available");
     }
 
+    public boolean setTextFromUser(final String text) {
+        // do nothing
+        return false;
+    }
+
     /**
      * Setting the clipboard's current primary clip to an image.
      * This method requires background work and might not be immediately committed upon returning

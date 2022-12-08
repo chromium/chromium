@@ -190,7 +190,9 @@ android_resources("chrome_app_java_resources") {
   sources += [
     "//chrome/android/java/res_app/drawable/bg_bottom_popup_dark.xml",
     "//chrome/android/java/res_app/drawable/bg_bottom_popup_light.xml",
+    "//chrome/android/java/res_app/drawable/bg_cool_indicator.xml",
     "//chrome/android/java/res_app/drawable/bg_round_accent.xml",
+    "//chrome/android/java/res_app/drawable/bg_search_round.xml",
     "//chrome/android/java/res_app/drawable/shadow_line_bottom_light.xml",
     "//chrome/android/java/res_app/drawable/shadow_line_bottom_dark.xml",
     "//chrome/android/java/res_app/drawable/shadow_line_up_light.xml",
@@ -199,7 +201,9 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/main.xml",
     "//chrome/android/java/res_app/layout/activity_browser.xml",
 
+    "//chrome/android/java/res_app/layout/fragment_dialog_clipboard_intercept.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_exit.xml",
+    "//chrome/android/java/res_app/layout/fragment_dialog_layout_center_impl_list.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_main_menu.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_share.xml",
     "//chrome/android/java/res_app/layout/fragment_main.xml",
@@ -208,6 +212,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/item_collection.xml",
     "//chrome/android/java/res_app/layout/item_download.xml",
     "//chrome/android/java/res_app/layout/item_menu.xml",
+    "//chrome/android/java/res_app/layout/layout_controller.xml",
     "//chrome/android/java/res_app/layout/layout_dialog_header.xml",
     "//chrome/android/java/res_app/layout/layout_menu.xml",
     "//chrome/android/java/res_app/layout/layout_smart_search.xml",
@@ -249,6 +254,8 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_vconsole.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_enter_arrow.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_bookmark.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_cancel.png",
+    "//chrome/android/java/res_app/drawable-xxhdpi/ic_add_bookmark.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_close.webp",
 
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_browser_engine_360.png",
@@ -264,6 +271,7 @@ android_resources("chrome_app_java_resources") {
 
     "//chrome/android/java/res_app/values/attrs.xml",
     "//chrome/android/java/res_app/values/colors.xml",
+    "//chrome/android/java/res_app/values/strings.xml",
     "//chrome/android/java/res_app/values/styles.xml",
 
     "//chrome/android/java/res_chromium/drawable-hdpi/fre_product_logo.png",

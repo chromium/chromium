@@ -92,6 +92,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/dialog/ShareDialog.java",
 
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
+  "java/src/com/ark/browser/ui/widget/BottomController.java",
   "java/src/com/ark/browser/ui/widget/CheckBoxItem.java",
   "java/src/com/ark/browser/ui/widget/DialogHeaderLayout.java",
   "java/src/com/ark/browser/ui/widget/DrawableTintTextView.java",
@@ -99,6 +100,9 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/widget/ShadowLayout.java",
   "java/src/com/ark/browser/ui/widget/SmartSearchPanel.java",
   "java/src/com/ark/browser/ui/widget/StatusBarView.java",
+  "java/src/com/ark/browser/ui/widget/indicator/CoolIndicator.java",
+  "java/src/com/ark/browser/ui/widget/indicator/DrawableWrapper.java",
+  "java/src/com/ark/browser/ui/widget/indicator/ShiftDrawable.java",
   "java/src/com/ark/browser/ui/widget/swiperefresh/SwipeRefreshLayout.java",
 
   "java/src/com/ark/browser/utils/ArkLogger.java",

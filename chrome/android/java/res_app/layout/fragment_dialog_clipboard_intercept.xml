@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <View
+        android:layout_width="56dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_round_accent"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_clipboard_intercept"
+        android:textColor="?attr/textColorMajor"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="24dp"
+        />
+
+    <com.ark.browser.ui.widget.DrawableTintTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_clipboard_intercept_tip"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:layout_marginHorizontal="24dp"
+        android:textColor="?attr/textColorMajor"
+        android:drawableStart="@drawable/ic_drive_file_24dp"
+        android:drawablePadding="8dp"
+        app:drawable_tint_color="?attr/textColorMajor"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="8dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="16dp"
+        android:background="@drawable/bg_round_accent"
+        android:orientation="vertical"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            >
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="12dp"
+                android:background="@color/colorPrimary"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawablePadding="4dp"
+                android:text="拦截内容"
+                android:gravity="center_vertical"
+                android:textColor="?attr/textColorMajor"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_share"
+                app:srcCompat="@drawable/ic_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:layout_marginEnd="12dp"
+                android:tint="?attr/textColorMajor"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_copy"
+                app:srcCompat="@drawable/ic_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:tint="?attr/textColorMajor"
+                />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?attr/backgroundColor"
+            android:layout_marginVertical="8dp"
+            />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+
+            <TextView
+                android:id="@+id/tv_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="https://www.baidu.com"
+                android:minLines="2"
+                android:textSize="16sp"
+                android:textColor="?attr/textColorMajor"
+                />
+
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
+
+    <include layout="@layout/_dialog_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        />
+
+</LinearLayout>

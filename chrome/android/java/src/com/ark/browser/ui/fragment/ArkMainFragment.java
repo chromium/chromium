@@ -5,15 +5,10 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.ArkCompositorViewHolder;
 import com.ark.browser.ArkNavigationHandler;
 import com.ark.browser.ArkWindowAndroid;
@@ -22,10 +17,9 @@ import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.fragment.base.BaseFragment;
-import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
+import com.ark.browser.ui.widget.BottomController;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
-import com.zpj.toast.ZToast;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
@@ -53,8 +47,10 @@ public class ArkMainFragment extends BaseFragment implements
     private static final String TAG = "ArkMainFragment";
 
     private ArkCompositorViewHolder mViewHolder;
-    private ProgressBar mProgressBar;
-    private EditText mUrlBar;
+//    private ProgressBar mProgressBar;
+//    private EditText mUrlBar;
+
+    private BottomController mBottomController;
 
     private boolean isViewCreated = false;
     private Runnable mOpenPage;
@@ -158,49 +154,51 @@ public class ArkMainFragment extends BaseFragment implements
 
         getWindowAndroid().setAnimationPlaceholderView(mViewHolder.getCompositorView());
 
-        ImageView btnBack = findViewById(R.id.btn_back);
-        ImageView btnForward = findViewById(R.id.btn_forward);
+        mBottomController = new BottomController(view);
 
-        btnBack.setOnClickListener(v -> {
-            if (TabListManager.getInstance().getCurrentTabList().goBack()) {
-                return;
-            }
-            ZToast.warning("cant go back!");
-        });
-
-        btnForward.setOnClickListener(v -> {
-            if (TabListManager.getInstance().getCurrentTabList().goForward()) {
-                return;
-            }
-            ZToast.warning("cant go forward!");
-        });
-
-        mProgressBar = findViewById(R.id.progress_bar);
-        mProgressBar.setMax(100);
-
-        mUrlBar = findViewById(R.id.et_url);
-        mUrlBar.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                LoadUrlParams params = new LoadUrlParams(mUrlBar.getText().toString()
-                        , PageTransition.LINK);
-                TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
-            }
-            return false;
-        });
-
-        ImageView btnRefresh = findViewById(R.id.btn_refresh);
-        btnRefresh.setOnClickListener(v -> {
-            Tab tab = getActivityTab();
-            if (tab != null) {
-                tab.reload();
-            }
-        });
-
-        ImageView btnMenu = findViewById(R.id.btn_menu);
-        btnMenu.setOnClickListener(v -> {
-//            MainMenuDialog.show((ArkBrowserActivity)_mActivity)
-            start(new MainMenuDialog());
-        });
+//        ImageView btnBack = findViewById(R.id.btn_back);
+//        ImageView btnForward = findViewById(R.id.btn_forward);
+//
+//        btnBack.setOnClickListener(v -> {
+//            if (TabListManager.getInstance().getCurrentTabList().goBack()) {
+//                return;
+//            }
+//            ZToast.warning("cant go back!");
+//        });
+//
+//        btnForward.setOnClickListener(v -> {
+//            if (TabListManager.getInstance().getCurrentTabList().goForward()) {
+//                return;
+//            }
+//            ZToast.warning("cant go forward!");
+//        });
+//
+//        mProgressBar = findViewById(R.id.progress_bar);
+//        mProgressBar.setMax(100);
+//
+//        mUrlBar = findViewById(R.id.et_url);
+//        mUrlBar.setOnEditorActionListener((v, actionId, event) -> {
+//            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+//                LoadUrlParams params = new LoadUrlParams(mUrlBar.getText().toString()
+//                        , PageTransition.LINK);
+//                TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
+//            }
+//            return false;
+//        });
+//
+//        ImageView btnRefresh = findViewById(R.id.btn_refresh);
+//        btnRefresh.setOnClickListener(v -> {
+//            Tab tab = getActivityTab();
+//            if (tab != null) {
+//                tab.reload();
+//            }
+//        });
+//
+//        ImageView btnMenu = findViewById(R.id.btn_menu);
+//        btnMenu.setOnClickListener(v -> {
+////            MainMenuDialog.show((ArkBrowserActivity)_mActivity)
+//            start(new MainMenuDialog());
+//        });
     }
 
     @Override
@@ -308,48 +306,48 @@ public class ArkMainFragment extends BaseFragment implements
                 @Override
                 public void onLoadProgressChanged(Tab tab, float progress) {
                     super.onLoadProgressChanged(tab, progress);
-                    ArkLogger.d(TAG, "onLoadProgressChanged tab=" + tab.getId() + " progress=" + progress);
-                    if (progress >= 1f) {
-                        mProgressBar.setVisibility(View.GONE);
-                    } else {
-                        mProgressBar.setVisibility(View.VISIBLE);
-                        mProgressBar.setProgress((int) (progress * 100));
-                    }
+//                    ArkLogger.d(TAG, "onLoadProgressChanged tab=" + tab.getId() + " progress=" + progress);
+//                    if (progress >= 1f) {
+//                        mProgressBar.setVisibility(View.GONE);
+//                    } else {
+//                        mProgressBar.setVisibility(View.VISIBLE);
+//                        mProgressBar.setProgress((int) (progress * 100));
+//                    }
                 }
 
                 @Override
                 public void onUrlUpdated(Tab tab) {
                     super.onUrlUpdated(tab);
-                    if (tab == null) {
-                        return;
-                    }
-                    mUrlBar.setText(tab.getUrl().getSpec());
+//                    if (tab == null) {
+//                        return;
+//                    }
+//                    mUrlBar.setText(tab.getUrl().getSpec());
                 }
 
                 @Override
                 public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
                     super.onLoadStarted(tab, toDifferentDocument);
-                    ArkLogger.d(TAG, "onLoadStarted tab=" + tab.getId());
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    mProgressBar.setProgress(0);
+//                    ArkLogger.d(TAG, "onLoadStarted tab=" + tab.getId());
+//                    mProgressBar.setVisibility(View.VISIBLE);
+//                    mProgressBar.setProgress(0);
                 }
 
                 @Override
                 public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                    mProgressBar.setVisibility(View.GONE);
+//                    mProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onPageLoadStarted(Tab tab, GURL url) {
                     super.onPageLoadStarted(tab, url);
-                    ArkLogger.d(TAG, "onPageLoadStarted tab=" + tab.getId());
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    mProgressBar.setProgress(0);
+//                    ArkLogger.d(TAG, "onPageLoadStarted tab=" + tab.getId());
+//                    mProgressBar.setVisibility(View.VISIBLE);
+//                    mProgressBar.setProgress(0);
                 }
 
                 @Override
                 public void onPageLoadFinished(Tab tab, GURL url) {
-                    mProgressBar.setVisibility(View.GONE);
+//                    mProgressBar.setVisibility(View.GONE);
                 }
             };
 
@@ -369,17 +367,20 @@ public class ArkMainFragment extends BaseFragment implements
 
             @Override
             public void onPageAttached(@NonNull Tab page) {
-                page.addObserver(observer);
-                if (!page.isLoading()) {
-                    mProgressBar.setVisibility(View.GONE);
-                }
-                mUrlBar.setText(page.getUrl().getSpec());
+                ArkLogger.e(TAG, "onPageAttached");
+//                page.addObserver(observer);
+//                if (!page.isLoading()) {
+//                    mProgressBar.setVisibility(View.GONE);
+//                }
+//                mUrlBar.setText(page.getUrl().getSpec());
+                mBottomController.onPageAttached(page);
             }
 
             @Override
             public void onPageDetached(@NonNull Tab page) {
-                page.removeObserver(observer);
-                mProgressBar.setVisibility(View.GONE);
+//                page.removeObserver(observer);
+//                mProgressBar.setVisibility(View.GONE);
+                mBottomController.onPageDetached(page);
             }
 
             @Override

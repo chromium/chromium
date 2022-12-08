@@ -82,86 +82,116 @@
                 android:layout_height="match_parent"
                 android:clipChildren="false" />
 
-            <ProgressBar
-                android:id="@+id/progress_bar"
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="?attr/backgroundShadowUp"
+                android:layout_gravity="bottom"/>
+
+<!--            <ProgressBar-->
+<!--                android:id="@+id/cool_progress_bar"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="2dp"-->
+<!--                android:layout_gravity="start|bottom"-->
+<!--                style="?android:attr/progressBarStyleHorizontal"-->
+<!--                />-->
+
+            <com.ark.browser.ui.widget.indicator.CoolIndicator
+                android:id="@+id/cool_progress_bar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_gravity="start|bottom"
-                style="?android:attr/progressBarStyleHorizontal"
+                android:progressDrawable="@drawable/bg_cool_indicator"
+                android:layout_gravity="bottom"
                 />
 
         </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 
 
-        <LinearLayout
+<!--        <com.ark.browser.ui.widget.BottomController-->
+<!--            android:id="@+id/bottom_controller"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            />-->
+
+        <include layout="@layout/layout_controller"
+            android:id="@+id/bottom_controller"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal"
-            android:background="#ffffff"
-            android:paddingHorizontal="6dp"
-            android:elevation="2dp"
-            >
+            android:layout_gravity="bottom"/>
 
-            <ImageView
-                android:id="@+id/btn_back"
-                android:contentDescription="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:src="@drawable/btn_back"
-                android:background="?android:attr/actionBarItemBackground"/>
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="bottom"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:background="#ffffff"-->
+<!--            android:paddingHorizontal="6dp"-->
+<!--            android:elevation="2dp"-->
+<!--            >-->
 
-            <ImageView
-                android:id="@+id/btn_forward"
-                android:contentDescription="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:src="@drawable/btn_forward"
-                android:background="?android:attr/actionBarItemBackground"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/btn_back"-->
+<!--                android:contentDescription="@null"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:padding="8dp"-->
+<!--                android:src="@drawable/btn_back"-->
+<!--                android:background="?android:attr/actionBarItemBackground"/>-->
 
-            <AutoCompleteTextView
-                android:id="@+id/et_url"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:minHeight="42dp"
-                android:padding="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:selectAllOnFocus="true"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:hint="请输入链接"
-                android:textColor="#000000"
-                android:textColorHint="#cccccc"
-                android:textSize="14sp"
-                android:text="www.baidu.com"
-                android:background="@android:color/transparent"
-                />
+<!--            <ImageView-->
+<!--                android:id="@+id/btn_forward"-->
+<!--                android:contentDescription="@null"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:padding="8dp"-->
+<!--                android:src="@drawable/btn_forward"-->
+<!--                android:background="?android:attr/actionBarItemBackground"/>-->
 
-            <ImageView
-                android:id="@+id/btn_refresh"
-                android:contentDescription="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:src="@drawable/ic_refresh"
-                android:tint="#000000"
-                android:background="?android:attr/actionBarItemBackground"/>
+<!--            <AutoCompleteTextView-->
+<!--                android:id="@+id/et_url"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:minHeight="42dp"-->
+<!--                android:padding="8dp"-->
+<!--                android:textAppearance="?android:attr/textAppearanceMedium"-->
+<!--                android:selectAllOnFocus="true"-->
+<!--                android:imeOptions="actionSearch"-->
+<!--                android:inputType="text"-->
+<!--                android:maxLines="1"-->
+<!--                android:ellipsize="end"-->
+<!--                android:hint="请输入链接"-->
+<!--                android:textColor="#000000"-->
+<!--                android:textColorHint="#cccccc"-->
+<!--                android:textSize="14sp"-->
+<!--                android:text="www.baidu.com"-->
+<!--                android:background="@android:color/transparent"-->
+<!--                />-->
 
-            <ImageView
-                android:id="@+id/btn_menu"
-                android:contentDescription="@null"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:src="@drawable/ic_menu"
-                android:background="?android:attr/actionBarItemBackground"/>
+<!--            <ImageView-->
+<!--                android:id="@+id/btn_refresh"-->
+<!--                android:contentDescription="@null"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:padding="8dp"-->
+<!--                android:src="@drawable/ic_refresh"-->
+<!--                android:tint="#000000"-->
+<!--                android:background="?android:attr/actionBarItemBackground"/>-->
 
-        </LinearLayout>
+<!--            <ImageView-->
+<!--                android:id="@+id/btn_menu"-->
+<!--                android:contentDescription="@null"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:padding="8dp"-->
+<!--                android:src="@drawable/ic_menu"-->
+<!--                android:background="?android:attr/actionBarItemBackground"/>-->
+
+<!--        </LinearLayout>-->
 
     </LinearLayout>
 

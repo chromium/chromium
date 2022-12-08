@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="text_ok">确认</string>
+    <string name="text_cancel">取消</string>
+    <string name="text_open">打开</string>
+    <string name="text_close">关闭</string>
+    <string name="text_copy">复制</string>
+    <string name="text_add">添加</string>
+    <string name="text_edit">编辑</string>
+    <string name="text_save">保存</string>
+
+    <string name="text_download">下载</string>
+
+    <string name="text_bookmarks_select_folder">选择书签文件夹</string>
+
+
+    <string name="text_external_open_app">打开外部应用</string>
+    <string name="text_external_link">外部链接</string>
+    <string name="text_external_open_app_tip">网页请求打开外部应用，是否允许？</string>
+
+    <string name="text_clipboard_intercept_tip">监听到该网页正在尝试写入粘贴板，是否拦截？</string>
+    <string name="text_clipboard_intercept">粘贴板劫持</string>
+
+</resources>
