@@ -34,6 +34,7 @@ using pASurfaceControl_createFromWindow =
     ASurfaceControl* (*)(ANativeWindow* parent, const char* name);
 using pASurfaceControl_create = ASurfaceControl* (*)(ASurfaceControl* parent,
                                                      const char* name);
+using pASurfaceControl_fromJava = ASurfaceControl* (*)(JNIEnv*, jobject);
 using pASurfaceControl_release = void (*)(ASurfaceControl*);
 
 // ASurfaceTransaction enums
@@ -218,6 +219,7 @@ struct SurfaceControlMethods {
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_createFromWindow);
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_create);
+    LOAD_FUNCTION_MAYBE(main_dl_handle, ASurfaceControl_fromJava);
     LOAD_FUNCTION(main_dl_handle, ASurfaceControl_release);
 
     LOAD_FUNCTION(main_dl_handle, ASurfaceTransaction_create);
@@ -256,6 +258,7 @@ struct SurfaceControlMethods {
   // Surface methods.
   pASurfaceControl_createFromWindow ASurfaceControl_createFromWindowFn;
   pASurfaceControl_create ASurfaceControl_createFn;
+  pASurfaceControl_fromJava ASurfaceControl_fromJavaFn;
   pASurfaceControl_release ASurfaceControl_releaseFn;
 
   // Transaction methods.
@@ -548,6 +551,11 @@ bool SurfaceControl::SupportsSetFrameTimeline() {
              nullptr;
 }
 
+bool SurfaceControl::SupportsSurfacelessControl() {
+  return IsSupported() &&
+         !!SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn;
+}
+
 void SurfaceControl::SetStubImplementationForTesting() {
   SurfaceControlMethods::GetImpl(/*load_functions=*/false).InitWithStubs();
 }
@@ -580,6 +588,19 @@ SurfaceControl::Surface::Surface(ANativeWindow* parent, const char* name) {
                                                                       name);
   if (!owned_surface_)
     LOG(ERROR) << "Failed to create ASurfaceControl : " << name;
+  surface_ = owned_surface_;
+}
+
+SurfaceControl::Surface::Surface(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_surface_control) {
+  CHECK(SupportsSurfacelessControl());
+  owned_surface_ = SurfaceControlMethods::Get().ASurfaceControl_fromJavaFn(
+      env, j_surface_control.obj());
+  if (!owned_surface_) {
+    LOG(ERROR) << "Failed to obtain ASurfaceControl from java";
+    return;
+  }
   surface_ = owned_surface_;
 }
 
