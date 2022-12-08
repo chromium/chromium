@@ -7,8 +7,8 @@ Only one build configuration is currently supported.
 
 1. Install chromium tree and depot_tools per https://www.chromium.org/developers/how-tos/get-the-code
    * Warning: Do not use `--no-history` (since it will make it difficult to cast the git re-wiring magic spells below).
-1. Change to and pull our (instead of the original) origins for chromium, V8 etc.
-   * NOTE: The `gclient sync` here ensures that other third party dependencies are at the right point for our chromium fork, and not upstream tip.
+1. Change to and pull our (instead of the original) origin for chromium.
+   * NOTE: The `gclient sync` here updates all subrepositories to the correct point, including both repositories we've modified and ones we haven't.  See "Setting dependency revisions" below for more.
    * NOTE: After `git pull`, you might see "You are not currently on a branch. Please specify which branch you want to merge with.". In this case, `git switch master-or-main` will ignore any merge-related hassles, and instead tracks and switches to the remote `master-or-main` locally ([more info here](https://stackoverflow.com/a/9537923)).
    ```
    cd /path/to/chromium/src
@@ -17,21 +17,6 @@ Only one build configuration is currently supported.
    git pull
    git switch master
    gclient sync
-   cd ./v8
-   git remote set-url origin https://github.com/replayio/chromium-v8.git
-   git branch -D master
-   git pull
-   git switch master
-   cd ../third_party/webrtc
-   git remote set-url origin https://github.com/replayio/chromium-webrtc.git
-   git branch -D master
-   git pull
-   git switch main
-   cd ../../third_party/skia
-   git remote set-url origin https://github.com/replayio/chromium-skia.git
-   git branch -D master
-   git pull
-   git switch main
    ```
 1. Setup engflow:
    ```
@@ -164,3 +149,7 @@ git push
 ```
 
 FIXME add instructions for other chromium repositories we've forked.
+
+# Setting dependency revisions
+
+The revision to use for dependent repositories is specified in the `DEPS` file and updated to by running `gclient sync`.  Whenever the revision to use for any dependencies we've modified changes, this file needs to be updated.  Look for `v8_revision`, `skia_revision`, or the revision associated with `https://github.com/replayio/chromium-webrtc.git`.
