@@ -95,17 +95,19 @@ class BackForwardCacheActiveSizeTest : public ::testing::Test {
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {{features::kBackForwardCache,
           {{"cache_size", "6"}, {"foreground_cache_size", "2"}}}},
-        {});
+        /*disabled_features=*/
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {{features::kBackForwardCacheMemoryControls}});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1395431): re-enable when bug is fixed.
-TEST_F(BackForwardCacheActiveSizeTest, DISABLED_ActiveCacheSize) {
+TEST_F(BackForwardCacheActiveSizeTest, ActiveCacheSize) {
   EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
   EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 2u);
   EXPECT_TRUE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
@@ -119,19 +121,21 @@ class BackForwardCacheOverwriteSizeTest : public ::testing::Test {
  protected:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
         {{kBackForwardCacheSize,
           {{"cache_size", "8"}, {"foreground_cache_size", "4"}}},
          {features::kBackForwardCache,
           {{"cache_size", "6"}, {"foreground_cache_size", "2"}}}},
-        {});
+        /*disabled_features=*/
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {{features::kBackForwardCacheMemoryControls}});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1395431): re-enable when bug is fixed.
-TEST_F(BackForwardCacheOverwriteSizeTest, DISABLED_OverwrittenCacheSize) {
+TEST_F(BackForwardCacheOverwriteSizeTest, OverwrittenCacheSize) {
   EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 8u);
   EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 4u);
   EXPECT_TRUE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
