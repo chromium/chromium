@@ -187,7 +187,8 @@ const CGFloat kSymbolToolbarPointSize = 24;
       UIImage* image = SymbolWithPalette(
           CustomSymbolWithPointSize(kNewTabSymbol, kSymbolToolbarPointSize), @[
             [UIColor colorNamed:kGrey600Color],
-            [UIColor colorNamed:kGrey200Color]
+            [self.toolbarConfiguration
+                locationBarBackgroundColorWithVisibility:1]
           ]);
       newTabButton = [ToolbarButton toolbarButtonWithImage:image];
     } else {
