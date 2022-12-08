@@ -44,35 +44,22 @@ from blinkpy.web_tests.port import factory
 from blinkpy.web_tests.port import linux
 from blinkpy.web_tests.port import server_process
 
-# Modules loaded dynamically in _import_fuchsia_runner().
-# pylint: disable=invalid-name
-fuchsia_target = None
-qemu_target = None
-symbolizer = None
-
-# pylint: enable=invalid-name
-
 
 # Imports Fuchsia runner modules. This is done dynamically only when FuchsiaPort
 # is instantiated to avoid dependency on Fuchsia runner on other platforms.
 def _import_fuchsia_runner():
-    sys.path.insert(0, os.path.join(get_chromium_src_dir(), 'build/fuchsia'))
+    sys.path.insert(0,
+                    os.path.join(get_chromium_src_dir(), 'build/fuchsia/test'))
 
     # pylint: disable=import-error
     # pylint: disable=invalid-name
     # pylint: disable=redefined-outer-name
-    global ConnectPortForwardingTask
-    from common import ConnectPortForwardingTask
-    global _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
-    from common_args import _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
-    global fuchsia_target
-    import target as fuchsia_target
-    global qemu_target
-    import qemu_target
-    global symbolizer
-    import symbolizer
-    global ffx_session
-    import ffx_session
+    global SDK_ROOT, SDK_TOOLS_DIR, run_continuous_ffx_command, run_ffx_command
+    from common import SDK_ROOT, SDK_TOOLS_DIR, run_continuous_ffx_command, run_ffx_command
+    global get_ssh_prefix
+    from compatible_utils import get_ssh_prefix
+    global port_forward
+    from test_server import port_forward
     # pylint: enable=import-error
     # pylint: enable=invalid-name
     # pylint: disable=redefined-outer-name
@@ -123,73 +110,55 @@ class SubprocessOutputLogger(object):
 
 
 class _TargetHost(object):
-    def __init__(self, build_path, ports_to_forward, target):
-        try:
-            self._pkg_repo = None
-            self._target = target
-            self._ffx_session_context = ffx_session.FfxSession(
-                self._target._log_manager)
-            self._ffx_session = self._ffx_session_context.__enter__()
-            self._target.Start()
-            self._setup_target(build_path, ports_to_forward)
-        except:
-            self.cleanup()
-            raise
+    def __init__(self, ports_to_forward, target_id):
+        self._target_id = target_id
+        self._setup_target(ports_to_forward)
 
-    def _setup_target(self, build_path, ports_to_forward):
+    def _setup_target(self, ports_to_forward):
         # Tell SSH to forward all server ports from the Fuchsia device to
         # the host.
+
+        self._host_port_pair = run_ffx_command(
+            ('target', 'get-ssh-address'),
+            self._target_id,
+            capture_output=True).stdout.strip()
+        self._proxy = self._port_forward_list(ports_to_forward)
+
+    def _port_forward_list(self, ports):
+        """Reverse forward all ports listed in |ports| to the device."""
+
+        ssh_prefix = get_ssh_prefix(self._host_port_pair)
         forwarding_flags = [
             '-O',
             'forward',  # Send SSH mux control signal.
             '-N',  # Don't execute command
             '-T'  # Don't allocate terminal.
         ]
-        for port in ports_to_forward:
-            forwarding_flags += ['-R', '%d:localhost:%d' % (port, port)]
-        self._proxy = self._target.RunCommandPiped([],
-                                                   ssh_args=forwarding_flags,
-                                                   stdout=subprocess.PIPE,
-                                                   stderr=subprocess.STDOUT)
-
-        package_path = os.path.join(build_path, CONTENT_SHELL_PACKAGE_PATH)
-        self._target.StartSystemLog([package_path])
-
-        self._pkg_repo = self._target.GetPkgRepo()
-        self._pkg_repo.__enter__()
-
-        self._target.InstallPackage([package_path])
-
-        # Process will be forked for each worker, which may make QemuTarget
-        # unusable (e.g. waitpid() for qemu process returns ECHILD after
-        # fork() ). Save command runner before fork()ing, to use it later to
-        # connect to the target.
-        self.target_command_runner = self._target.GetCommandRunner()
+        for port in ports:
+            forwarding_flags += ['-R', f'{port}:localhost:{port}']
+        return subprocess.Popen(ssh_prefix + forwarding_flags,
+                                stdout=subprocess.PIPE,
+                                stderr=open('/dev/null'))
 
     def run_command(self, command):
-        return self.target_command_runner.RunCommandPiped(
-            command,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+        ssh_prefix = get_ssh_prefix(self._host_port_pair)
+        return subprocess.Popen(ssh_prefix + command,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
 
     def run_test_component(self, url, cmd_line):
         # TODO(crbug.com/1381116): migrate off of `ffx test run` when possible
-        return self._ffx_session.test_run(self._target.GetFfxTarget(), url,
-                                          cmd_line)
-
-    def cleanup(self):
-        self._ffx_session = None
-        self._ffx_session_context.__exit__(None, None, None)
-        try:
-            if self._pkg_repo:
-                self._pkg_repo.__exit__(None, None, None)
-        finally:
-            if self._target:
-                self._target.Stop()
+        command = ['test', 'run', url, '--']
+        command.extend(cmd_line)
+        return run_continuous_ffx_command(command,
+                                          self._target_id,
+                                          encoding=None,
+                                          stdout=subprocess.PIPE,
+                                          stderr=subprocess.STDOUT)
 
     def setup_forwarded_port(self, port):
-        return ConnectPortForwardingTask(self._target, port)
+        return port_forward(self._host_port_pair, port)
 
 
 class FuchsiaPort(base.Port):
@@ -220,6 +189,31 @@ class FuchsiaPort(base.Port):
         self._target_host = target_host
         self._zircon_logger = None
         _import_fuchsia_runner()
+        self._symbolizer = os.path.join(SDK_TOOLS_DIR, 'symbolizer')
+        self._build_id_dir = os.path.join(SDK_ROOT, '.build-id')
+
+    def run_symbolizer(self, input_fd, output_fd, ids_txt_paths):
+        """Starts a symbolizer process.
+
+        input_fd: Input file to be symbolized.
+        output_fd: Output file for symbolizer stdout and stderr.
+        ids_txt_paths: Path to the ids.txt files which map build IDs to
+                        unstripped binaries on the filesystem.
+        Returns a Popen object for the started process."""
+
+        symbolizer_cmd = [
+            self._symbolizer, '--omit-module-lines', '--build-id-dir',
+            self._build_id_dir
+        ]
+        for ids_txt in ids_txt_paths:
+            symbolizer_cmd.extend(['--ids-txt', ids_txt])
+
+        logging.debug('Running "%s".' % ' '.join(symbolizer_cmd))
+        return subprocess.Popen(symbolizer_cmd,
+                                stdin=input_fd,
+                                stdout=output_fd,
+                                stderr=subprocess.STDOUT,
+                                close_fds=True)
 
     def _driver_class(self):
         return ChromiumFuchsiaDriver
@@ -243,37 +237,21 @@ class FuchsiaPort(base.Port):
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
         try:
-            target_args = InitializeTargetArgs()
-            target_args.out_dir = self._build_path()
-            target_args.target_cpu = self._target_cpu()
-            target_args.fuchsia_out_dir = self.get_option('fuchsia_out_dir')
-            target_args.custom_image = self.get_option('custom_image')
-            target_args.ssh_config = self.get_option('fuchsia_ssh_config')
-            target_args.host = self.get_option('fuchsia_host')
-            target_args.port = self.get_option('fuchsia_port')
-            target_args.node_name = self.get_option('fuchsia_node_name')
-            target_args.cpu_cores = self._cpu_cores()
-            target_args.logs_dir = self.get_option('logs_dir')
-            target = _LoadTargetClass(
-                _GetPathToBuiltinTarget(
-                    self._target_device)).CreateFromArgs(target_args)
-            self._target_host = _TargetHost(self._build_path(),
-                                            self.SERVER_PORTS, target)
+            target_id = self.get_option('fuchsia_target_id')
+            self._target_host = _TargetHost(self.SERVER_PORTS, target_id)
 
             if self.get_option('zircon_logging'):
                 klog_proc = self._target_host.run_command(['dlog', '-f'])
-                symbolized_klog_proc = symbolizer.RunSymbolizer(klog_proc.stdout,
-                    subprocess.PIPE, [self.get_build_ids_path()])
+                symbolized_klog_proc = self.run_symbolizer(
+                    klog_proc.stdout, subprocess.PIPE,
+                    [self.get_build_ids_path()])
                 self._zircon_logger = SubprocessOutputLogger(symbolized_klog_proc,
                     'Zircon')
-
-        except fuchsia_target.FuchsiaTargetException as e:
-            _log.error('Failed to start qemu: %s.', str(e))
+        except:
             return exit_codes.NO_DEVICES_EXIT_STATUS
 
     def clean_up_test_run(self):
         if self._target_host:
-            self._target_host.cleanup()
             self._target_host = None
 
     def child_kwargs(self):
@@ -430,7 +408,7 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         proc.stdout = stdout_pipe
 
         # Run symbolizer to filter the stderr stream.
-        self._symbolizer_proc = symbolizer.RunSymbolizer(
+        self._symbolizer_proc = self._port.run_symbolizer(
             merged_stdout_stderr, subprocess.PIPE,
             [self._port.get_build_ids_path()])
         proc.stderr = self._symbolizer_proc.stdout

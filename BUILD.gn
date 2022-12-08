@@ -1254,9 +1254,19 @@ if (!is_ios) {
 
   _common_web_test_script = "//testing/scripts/run_isolated_script_test.py"
 
-  _common_web_test_args = [ "@WrappedPath(" + rebase_path(
-                                "//third_party/blink/tools/run_web_tests.py",
-                                root_build_dir) + ")" ]
+  if (is_fuchsia) {
+    _common_web_test_args = [
+      "@WrappedPath(" +
+          rebase_path("//build/fuchsia/test/run_test.py", root_build_dir) + ")",
+      "blink",
+      "--out-dir",
+      "@WrappedPath(.)",
+    ]
+  } else {
+    _common_web_test_args = [ "@WrappedPath(" + rebase_path(
+                                  "//third_party/blink/tools/run_web_tests.py",
+                                  root_build_dir) + ")" ]
+  }
   if (is_debug) {
     _common_web_test_args += [ "--debug" ]
   } else {
@@ -1270,6 +1280,15 @@ if (!is_ios) {
     _common_web_test_args += [
       "--platform",
       "android",
+    ]
+  }
+
+  if (is_fuchsia) {
+    _common_web_test_args += [
+      "--platform",
+      "fuchsia",
+      "--jobs",
+      "1",
     ]
   }
 
@@ -1402,7 +1421,10 @@ if (!is_ios) {
         data += [ "//third_party/blink/web_tests/platform/linux/" ]
       }
       if (is_fuchsia) {
-        data += [ "//third_party/blink/web_tests/platform/fuchsia/" ]
+        data += [
+          "//third_party/blink/web_tests/platform/fuchsia/",
+          "$root_gen_dir/package_metadata/content_shell.meta",
+        ]
       }
     } else if (is_mac) {
       data += [
@@ -1470,7 +1492,10 @@ if (!is_ios) {
         data += [ "//third_party/blink/web_tests/platform/linux/" ]
       }
       if (is_fuchsia) {
-        data += [ "//third_party/blink/web_tests/platform/fuchsia/" ]
+        data += [
+          "//third_party/blink/web_tests/platform/fuchsia/",
+          "$root_gen_dir/package_metadata/content_shell.meta",
+        ]
       }
     } else if (is_mac) {
       data += [

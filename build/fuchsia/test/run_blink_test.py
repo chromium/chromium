@@ -29,8 +29,8 @@ class BlinkTestRunner(TestRunner):
         return False
 
     def run_test(self):
-        test_cmd = [_BLINK_TEST_SCRIPT]
-        test_cmd.append('--platform=fuchsia')
+        test_cmd = [_BLINK_TEST_SCRIPT, '-t', os.path.basename(self._out_dir)]
+
         if self._test_args:
             test_cmd.extend(self._test_args)
         return subprocess.run(test_cmd, check=True)

@@ -167,17 +167,9 @@ def parse_args(args):
             '--fuchsia-ssh-config',
             help=('The path to the SSH configuration used for '
                   'connecting to the target device.')),
-        optparse.make_option('--fuchsia-host',
-                             help=('The IP of the target device. Optional.')),
-        optparse.make_option(
-            '--fuchsia-port',
-            type=int,
-            default=None,
-            help=('The port of the SSH service running on the '
-                  'device. Optional.')),
-        optparse.make_option('--fuchsia-node-name',
+        optparse.make_option('--fuchsia-target-id',
                              help=('The node-name of the device to boot or '
-                                   'deploy to. Optional')),
+                                   'deploy to.')),
         optparse.make_option(
             '--fuchsia-host-ip',
             help=('The IP address of the test host observed by the Fuchsia '
