@@ -218,6 +218,11 @@ class PageSpecificContentSettings
       const GURL& url,
       bool blocked_by_policy);
 
+  static void BrowsingDataAccessed(content::RenderFrameHost* rfh,
+                                   BrowsingDataModel::DataKey data_key,
+                                   BrowsingDataModel::StorageType storage_type,
+                                   bool blocked);
+
   // Called when content access is blocked in the renderer process.
   static void ContentBlocked(int render_process_id,
                              int render_frame_id,
@@ -352,6 +357,9 @@ class PageSpecificContentSettings
                        bool blocked_by_policy,
                        privacy_sandbox::CanonicalTopic topic);
   void OnTrustTokenAccessed(const url::Origin api_origin, bool blocked);
+  void OnBrowsingDataAccessed(BrowsingDataModel::DataKey data_key,
+                              BrowsingDataModel::StorageType storage_type,
+                              bool blocked);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   void OnProtectedMediaIdentifierPermissionSet(const GURL& requesting_frame,

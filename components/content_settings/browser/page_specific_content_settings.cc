@@ -486,6 +486,17 @@ void PageSpecificContentSettings::StorageAccessed(StorageType storage_type,
 }
 
 // static
+void PageSpecificContentSettings::BrowsingDataAccessed(
+    content::RenderFrameHost* rfh,
+    BrowsingDataModel::DataKey data_key,
+    BrowsingDataModel::StorageType storage_type,
+    bool blocked) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
+  settings->OnBrowsingDataAccessed(data_key, storage_type, blocked);
+}
+
+// static
 void PageSpecificContentSettings::ContentBlocked(int render_process_id,
                                                  int render_frame_id,
                                                  ContentSettingsType type) {
@@ -847,6 +858,25 @@ void PageSpecificContentSettings::OnTrustTokenAccessed(
   }
   MaybeUpdateParent(&PageSpecificContentSettings::OnTrustTokenAccessed,
                     api_origin, blocked);
+  MaybeNotifySiteDataObservers();
+}
+
+void PageSpecificContentSettings::OnBrowsingDataAccessed(
+    BrowsingDataModel::DataKey data_key,
+    BrowsingDataModel::StorageType storage_type,
+    bool blocked) {
+  auto& model =
+      blocked ? blocked_browsing_data_model_ : allowed_browsing_data_model_;
+
+  // The size isn't relevant here and won't be displayed in the UI.
+  model->AddBrowsingData(data_key, storage_type, /*storage_size=*/0);
+  if (blocked) {
+    OnContentBlocked(ContentSettingsType::COOKIES);
+  } else {
+    OnContentAllowed(ContentSettingsType::COOKIES);
+  }
+  MaybeUpdateParent(&PageSpecificContentSettings::OnBrowsingDataAccessed,
+                    data_key, storage_type, blocked);
   MaybeNotifySiteDataObservers();
 }
 

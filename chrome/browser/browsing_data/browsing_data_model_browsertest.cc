@@ -13,12 +13,14 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -104,6 +106,7 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
             field_trial_param.GetName(
                 network::features::TrustTokenOriginTrialSpec::
                     kOriginTrialNotRequired)}}},
+         {features::kPrivacySandboxAdsAPIsOverride, {}},
          {blink::features::kSharedStorageAPI, {}},
          {blink::features::kInterestGroupStorage, {}},
          {blink::features::kAdInterestGroupAPI, {}},
@@ -148,7 +151,7 @@ class BrowsingDataModelBrowserTest : public InProcessBrowserTest {
 
   net::EmbeddedTestServer* https_test_server() { return https_server_.get(); }
 
-  GURL test_url() { return https_server_->GetURL("a.test", "/echo"); }
+  GURL test_url() { return https_server_->GetURL(kTestHost, "/echo"); }
 
   network::test::TrustTokenRequestHandler request_handler_;
 
@@ -199,6 +202,40 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   // Rebuild Browsing Data Model and verify entries are empty.
   browsing_data_model = BuildBrowsingDataModel();
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+}
+
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       SharedStorageAccessReportedCorrectly) {
+  // Navigate to test page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
+  auto* content_settings =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+
+  // Validate that the allowed browsing data model is empty.
+  ValidateBrowsingDataEntries(content_settings->allowed_browsing_data_model(),
+                              {});
+
+  // Create a SharedStorage entry.
+  std::string command = R"(
+  (async () => {
+    try {
+      await window.sharedStorage.set('age-group', 1);
+      return true;
+    } catch {
+      return false;
+    }
+  })();)";
+  EXPECT_EQ(true, EvalJs(web_contents(), command));
+
+  // Validate that the allowed browsing data model is populated with
+  // SharedStorage entry for `kTestHost`.
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  ValidateBrowsingDataEntries(content_settings->allowed_browsing_data_model(),
+                              {{kTestHost,
+                                blink::StorageKey(testOrigin),
+                                {BrowsingDataModel::StorageType::kSharedStorage,
+                                 /*storage_size=*/0, /*cookie_count=*/0}}});
 }
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest, TrustTokenIssuance) {

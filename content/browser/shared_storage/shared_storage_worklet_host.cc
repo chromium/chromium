@@ -865,7 +865,8 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
 
 bool SharedStorageWorkletHost::IsSharedStorageAllowed() {
   return GetContentClient()->browser()->IsSharedStorageAllowed(
-      browser_context_, main_frame_origin_, shared_storage_origin_);
+      &(document_service_->render_frame_host()), main_frame_origin_,
+      shared_storage_origin_);
 }
 
 }  // namespace content

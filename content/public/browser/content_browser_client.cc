@@ -507,7 +507,7 @@ bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
 }
 
 bool ContentBrowserClient::IsSharedStorageAllowed(
-    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin) {
   // TODO(crbug.com/1325103): Change this to false and override in
