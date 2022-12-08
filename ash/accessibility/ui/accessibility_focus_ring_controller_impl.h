@@ -49,6 +49,8 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
   void SetHighlights(const std::vector<gfx::Rect>& rects,
                      SkColor color) override;
   void HideHighlights() override;
+  void SetFocusRingObserverForTesting(
+      base::RepeatingCallback<void()> observer) override;
 
   // Draw a ring around the mouse cursor. It fades out automatically.
   void SetCursorRing(const gfx::Point& location);
@@ -114,6 +116,8 @@ class ASH_EXPORT AccessibilityFocusRingControllerImpl
   std::unique_ptr<AccessibilityHighlightLayer> highlight_layer_;
   SkColor highlight_color_ = SK_ColorBLACK;
   float highlight_opacity_ = 0.f;
+
+  base::RepeatingCallback<void()> focus_ring_observer_for_test_;
 
   bool no_fade_for_testing_ = false;
 };

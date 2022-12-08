@@ -2020,15 +2020,10 @@ void AccessibilityManager::SetFocusRing(
     std::unique_ptr<AccessibilityFocusRingInfo> focus_ring) {
   AccessibilityFocusRingController::Get()->SetFocusRing(focus_ring_id,
                                                         std::move(focus_ring));
-
-  if (focus_ring_observer_for_test_)
-    focus_ring_observer_for_test_.Run();
 }
 
 void AccessibilityManager::HideFocusRing(std::string focus_ring_id) {
   AccessibilityFocusRingController::Get()->HideFocusRing(focus_ring_id);
-  if (focus_ring_observer_for_test_)
-    focus_ring_observer_for_test_.Run();
 }
 
 void AccessibilityManager::SetHighlights(
@@ -2117,7 +2112,8 @@ void AccessibilityManager::SetBrailleControllerForTest(
 
 void AccessibilityManager::SetFocusRingObserverForTest(
     base::RepeatingCallback<void()> observer) {
-  focus_ring_observer_for_test_ = observer;
+  AccessibilityFocusRingController::Get()->SetFocusRingObserverForTesting(
+      observer);
 }
 
 void AccessibilityManager::SetHighlightsObserverForTest(

@@ -615,7 +615,6 @@ class AccessibilityManager
   bool dictation_triggered_by_user_ = false;
   bool ignore_dictation_locale_pref_change_ = false;
 
-  base::RepeatingCallback<void()> focus_ring_observer_for_test_;
   base::RepeatingCallback<void()> highlights_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
   base::RepeatingCallback<void(const gfx::Rect&)>

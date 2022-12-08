@@ -3628,6 +3628,7 @@ if (!is_android) {
         "../browser/ash/accessibility/accessibility_common_browsertest.cc",
         "../browser/ash/accessibility/accessibility_extension_api_browsertest.cc",
         "../browser/ash/accessibility/accessibility_extension_channel_browsertest.cc",
+        "../browser/ash/accessibility/accessibility_highlights_browsertest.cc",
         "../browser/ash/accessibility/accessibility_manager_browsertest.cc",
         "../browser/ash/accessibility/accessibility_test_utils.cc",
         "../browser/ash/accessibility/accessibility_test_utils.h",

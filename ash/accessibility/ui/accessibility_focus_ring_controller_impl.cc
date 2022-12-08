@@ -92,6 +92,11 @@ void AccessibilityFocusRingControllerImpl::HideHighlights() {
   UpdateHighlightFromHighlightRects();
 }
 
+void AccessibilityFocusRingControllerImpl::SetFocusRingObserverForTesting(
+    base::RepeatingCallback<void()> observer) {
+  focus_ring_observer_for_test_ = std::move(observer);
+}
+
 void AccessibilityFocusRingControllerImpl::UpdateHighlightFromHighlightRects() {
   if (!highlight_layer_)
     highlight_layer_ = std::make_unique<AccessibilityHighlightLayer>(this);
@@ -104,6 +109,9 @@ void AccessibilityFocusRingControllerImpl::OnLayerChange(
   animation_info->change_time = base::TimeTicks::Now();
   if (animation_info->opacity == 0)
     animation_info->start_time = animation_info->change_time;
+
+  if (focus_ring_observer_for_test_)
+    focus_ring_observer_for_test_.Run();
 }
 
 void AccessibilityFocusRingControllerImpl::SetCursorRing(
