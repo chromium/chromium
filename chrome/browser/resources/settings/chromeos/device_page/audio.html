@@ -138,6 +138,18 @@
             </template>
           </select>
         </div>
+        <div id="audioInputDeviceSubsection">
+          <div id="audioInputGainLabel">Volume</div>
+          <div>
+            <!--TODO(b/260277007): Replace icon once mic-on and mic-off icons
+                available. -->
+            <cr-icon-button id="audioInputGainMuteButton" iron-icon="cr:mic">
+            </cr-icon-button>
+            <cr-slider id ="audioInputGainVolumeSlider" min="0" max="100"
+                value="50">
+            </cr-slider>
+          </div>
+        </div>
       </div>
     </div>
   </div>

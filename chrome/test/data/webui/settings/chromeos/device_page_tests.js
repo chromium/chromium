@@ -553,6 +553,16 @@ suite('SettingsDevicePage', function() {
       const deviceSubsectionDropdown =
           audioPage.shadowRoot.querySelector('#audioInputDeviceDropdown');
       assertTrue(isVisible(deviceSubsectionDropdown));
+      const inputGainSubsectionHeader =
+          audioPage.shadowRoot.querySelector('#audioInputGainLabel');
+      assertTrue(isVisible(inputGainSubsectionHeader), 'audioInputGainLabel');
+      assertEquals('Volume', inputGainSubsectionHeader.textContent);
+      const inputVolumeButton =
+          audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
+      assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
+      const inputVolumeSlider =
+          audioPage.shadowRoot.querySelector('#audioInputGainVolumeSlider');
+      assertTrue(isVisible(inputVolumeSlider), 'audioInputGainVolumeSlider');
     });
   });
 
