@@ -98,15 +98,6 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
-<histogram name="WebRTC.ApplicationPercentPacketsDiscarded" units="%"
-    expires_after="M81">
-  <owner>guoweis@chromium.org</owner>
-  <summary>
-    The percentage of packets discarded by WebRTC's socket layer due to
-    EWOULDBLOCKs when WebRTC IpcPacketSocket's throttling mechanism kicks in.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.Audio.Agc.InputClippingRate" units="%"
     expires_after="2023-12-31">
   <owner>silen@chromium.org</owner>
