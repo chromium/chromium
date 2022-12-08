@@ -4,6 +4,7 @@
 
 package org.chromium.base;
 
+import android.content.pm.ApplicationInfo;
 import android.os.Build;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -30,14 +31,30 @@ public class JNIUtils {
         if (!splitName.isEmpty()) {
             boolean isInstalled = BundleUtils.isIsolatedSplitInstalled(splitName);
             Log.i(TAG, "Init JNI Classloader for %s. isInstalled=%b", splitName, isInstalled);
-            if (isInstalled) {
-                return BundleUtils.getOrCreateSplitClassLoader(splitName);
-            } else {
-                assert (!BundleUtils.isBundle()
-                        || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)
+
+            if (!isInstalled && BundleUtils.isBundle()
+                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                // Address race condition on global ApplicationInfo being updated.
+                // https://crbug.com/1395191
+                ApplicationInfo globalAppInfo =
+                        ContextUtils.getApplicationContext().getApplicationInfo();
+                ApplicationInfo freshAppInfo =
+                        PackageUtils.getApplicationPackageInfo(0).applicationInfo;
+                globalAppInfo.splitNames = freshAppInfo.splitNames;
+                globalAppInfo.splitSourceDirs = freshAppInfo.splitSourceDirs;
+                globalAppInfo.splitPublicSourceDirs = freshAppInfo.splitPublicSourceDirs;
+
+                isInstalled = BundleUtils.isIsolatedSplitInstalled(splitName);
+                Log.i(TAG, "Init JNI Classloader for %s. isInstalled=%b", splitName, isInstalled);
+                assert isInstalled
                     : "Should not hit splitcompat mode for Android T+. You might have a "
                       + "generate_jni() target that declares split_name, but includes "
                       + "a .java file from the base split (https://crbug.com/1394148).";
+            }
+
+            if (isInstalled) {
+                return BundleUtils.getOrCreateSplitClassLoader(splitName);
+            } else {
                 // Split was installed by PlayCore in "compat" mode, meaning that our base module's
                 // ClassLoader was patched to add the splits' dex file to it.
             }
