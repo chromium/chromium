@@ -86,8 +86,9 @@ absl::optional<web_app::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
   web_app::AppId app_id = browser->app_controller()->app_id();
   auto* web_app_provider =
       web_app::WebAppProvider::GetForWebApps(browser->profile());
-  if (!web_app_provider || !web_app_provider->registrar().IsUrlInAppScope(
-                               web_contents->GetLastCommittedURL(), app_id)) {
+  if (!web_app_provider ||
+      !web_app_provider->registrar_unsafe().IsUrlInAppScope(
+          web_contents->GetLastCommittedURL(), app_id)) {
     return absl::nullopt;
   }
 
