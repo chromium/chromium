@@ -29,9 +29,18 @@ class InteractionToNextPaintTest : public MetricIntegrationTest {
                                 base::StringPiece metric_name,
                                 int64_t* extracted_value);
 
+  // This function extract the maximum duration for EventTiming from
+  // trace data.
+  int ExtractMaxInteractionDurationFromTrace(TraceEventVector events);
+
   // This function will extract and compare the INP values in TraceAnalyzer
   // and UKM.
   bool VerifyUKMAndTraceData(TraceAnalyzer& analyzer);
+
+  // Create Performance Observers to observe first input and events in the
+  // program. We are leveraging the Performance Observer to ensure we
+  // received the input in renderer.
+  void InjectWaitJavaScript();
 };
 
 bool InteractionToNextPaintTest::ExtractUKMPageLoadMetric(
@@ -49,17 +58,10 @@ bool InteractionToNextPaintTest::ExtractUKMPageLoadMetric(
   return true;
 }
 
-bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
-    TraceAnalyzer& analyzer) {
-  TraceEventVector events;
-
-  // Extract the events by name EventTiming.
-  analyzer.FindEvents(Query::EventNameIs("EventTiming"), &events);
-  int sizeOfEvents = (int)events.size();
-
-  // max_duration is used to record the maximum duration out of
-  // pointerdown, pointerup and click.
+int InteractionToNextPaintTest::ExtractMaxInteractionDurationFromTrace(
+    TraceEventVector events) {
   int max_duration = 0;
+  int sizeOfEvents = (int)events.size();
   for (int i = 0; i < sizeOfEvents; i++) {
     auto* traceEvent = events[i];
 
@@ -81,6 +83,19 @@ bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
       }
     }
   }
+  return max_duration;
+}
+
+bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
+    TraceAnalyzer& analyzer) {
+  TraceEventVector events;
+
+  // Extract the events by name EventTiming.
+  analyzer.FindEvents(Query::EventNameIs("EventTiming"), &events);
+
+  // max_duration is used to record the maximum duration out of
+  // pointerdown, pointerup and click.
+  int max_duration = ExtractMaxInteractionDurationFromTrace(events);
 
   // Extract the UKM INP values from ukm_recorder.
   int64_t INP_numOfInteraction_value;
@@ -124,21 +139,7 @@ bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
   return true;
 }
 
-IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnPage) {
-  // Add waiter to wait for the interaction is arrived in browser.
-  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-      web_contents());
-  waiter->AddNumInteractionsExpectation(1);
-
-  // Start tracing to record tracing data.
-  StartTracing({"devtools.timeline"});
-  LoadHTML(R"HTML(
-  <p>Sample website</p>
-  )HTML");
-
-  // Create a Performance Observer to observe first input in the program
-  // and the promise will resolve when it observes first input. We are
-  // leveraging the Performance Observer to ensure we received a input.
+void InteractionToNextPaintTest::InjectWaitJavaScript() {
   EXPECT_TRUE(ExecJs(web_contents(), R"(
    waitForClick = async () => {
       const observePromise = new Promise(resolve => {
@@ -172,7 +173,23 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnPage) {
       return await eventPromise;
     };
   )"));
+}
 
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnPage) {
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddNumInteractionsExpectation(1);
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+  LoadHTML(R"HTML(
+  <p>Sample website</p>
+  )HTML");
+
+  // Create Performance Observers to observe first input and events in the
+  // program.
+  InjectWaitJavaScript();
   ASSERT_TRUE(EvalJs(web_contents(), "waitForEvents()").ExtractBool());
 
   // We should wait for the main frame's hit-test data to be ready before
@@ -185,6 +202,46 @@ IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnPage) {
   // Simulate a click on div which has no renderer actions as our interaction.
   content::SimulateMouseClick(web_contents(), 0,
                               blink::WebMouseEvent::Button::kLeft);
+
+  // Start the waitForClick Performance Observer.
+  ASSERT_TRUE(EvalJs(web_contents(), "waitForClick()").ExtractBool());
+  ASSERT_TRUE(EvalJs(web_contents(), "runwaitForEvents()").ExtractBool());
+  waiter->Wait();
+
+  // Navigate to blank page to ensure the data gets flushed from renderer to
+  // browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  auto analyzer = StopTracingAndAnalyze();
+  ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnButton) {
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddNumInteractionsExpectation(1);
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+  LoadHTML(R"HTML(
+    <button id="button">Click me</button>
+  )HTML");
+
+  // Create Performance Observers to observe first input and events in the
+  // program.
+  InjectWaitJavaScript();
+
+  ASSERT_TRUE(EvalJs(web_contents(), "waitForEvents()").ExtractBool());
+  // We should wait for the main frame's hit-test data to be ready before
+  // sending the click event below to avoid flakiness.
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
+  // Ensure the compositor thread is aware of the mouse events.
+  content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
+  frame_observer.Wait();
+
+  // Simulate a click on button which has default browser-driven presentation.
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "button");
 
   // Start the waitForClick Performance Observer.
   ASSERT_TRUE(EvalJs(web_contents(), "waitForClick()").ExtractBool());
