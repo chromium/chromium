@@ -346,6 +346,7 @@ class EventRouter : public KeyedService,
   friend class SystemInfoAPITest;
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, MultipleEventRouterObserver);
   FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatch);
+  FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatchCallback);
   FRIEND_TEST_ALL_PREFIXES(
       DeveloperPrivateApiUnitTest,
       UpdateHostAccess_UnrequestedHostsDispatchUpdateEvents);
@@ -533,6 +534,14 @@ class EventRouter : public KeyedService,
   base::WeakPtrFactory<EventRouter> weak_factory_{this};
 };
 
+// Describes the process an |Event| was dispatched to.
+struct EventTarget {
+  ExtensionId extension_id;
+  int render_process_id;
+  int64_t service_worker_version_id;
+  int worker_thread_id;
+};
+
 struct Event {
   // This callback should return true if the event should be dispatched to the
   // given context and extension, and false otherwise.
@@ -543,6 +552,8 @@ struct Event {
       const base::Value::Dict*,
       std::unique_ptr<base::Value::List>* event_args_out,
       mojom::EventFilteringInfoPtr* event_filtering_info_out)>;
+
+  using DidDispatchCallback = base::RepeatingCallback<void(const EventTarget&)>;
 
   // The identifier for the event, for histograms. In most cases this
   // correlates 1:1 with |event_name|, in some cases events will generate
@@ -580,6 +591,9 @@ struct Event {
   // NOTE: the Extension argument to this may be NULL because it's possible for
   // this event to be dispatched to non-extension processes, like WebUI.
   WillDispatchCallback will_dispatch_callback;
+
+  // If specified, this is called after dispatching an event to each target.
+  DidDispatchCallback did_dispatch_callback;
 
   // TODO(lazyboy): This sets |restrict_to_browser_context| to nullptr, this
   // will dispatch the event to unrelated profiles, not just incognito. Audit

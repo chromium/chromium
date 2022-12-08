@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
@@ -17,12 +18,14 @@
 #include "extensions/browser/event_listener_map.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/test_event_router_observer.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/features/simple_feature.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-blink-forward.h"
 
 using base::DictionaryValue;
 using base::ListValue;
@@ -155,6 +158,26 @@ std::unique_ptr<base::Value::Dict> CreateHostSuffixFilter(
 }
 
 }  // namespace
+
+bool operator<(const EventTarget& e1, const EventTarget& e2) {
+  return std::tie(e1.extension_id, e1.render_process_id,
+                  e1.service_worker_version_id, e1.worker_thread_id) <
+         std::tie(e2.extension_id, e2.render_process_id,
+                  e2.service_worker_version_id, e2.worker_thread_id);
+}
+
+bool operator==(const EventTarget& e1, const EventTarget& e2) {
+  return std::tie(e1.extension_id, e1.render_process_id,
+                  e1.service_worker_version_id, e1.worker_thread_id) ==
+         std::tie(e2.extension_id, e2.render_process_id,
+                  e2.service_worker_version_id, e2.worker_thread_id);
+}
+
+std::ostream& operator<<(std::ostream& os, const EventTarget& e) {
+  return os << "EventTarget{" << e.extension_id << "," << e.render_process_id
+            << "," << e.service_worker_version_id << "," << e.worker_thread_id
+            << "}";
+}
 
 class EventRouterTest : public ExtensionsTest {
  public:
@@ -625,6 +648,113 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   EXPECT_EQ(0u, observer.dispatched_events().size());
   event_router()->DispatchEventToURL(webui1, event("api.other"));
   EXPECT_EQ(0u, observer.dispatched_events().size());
+}
+
+TEST_F(EventRouterDispatchTest, TestDispatchCallback) {
+  std::string ext1 = "ext1";
+  std::string ext2 = "ext2";
+  std::string ext3 = "ext3";
+  std::string event_name = "testapi.onEvent";
+  FeatureProvider provider;
+  auto feature = std::make_unique<SimpleFeature>();
+  feature->set_name("test feature");
+  provider.AddFeature(event_name, std::move(feature));
+  ExtensionAPI::GetSharedInstance()->RegisterDependencyProvider("api",
+                                                                &provider);
+  auto add_extension = [&](const std::string& id) {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("test extension")
+            .SetManifestVersion(3)
+            .SetID(id)
+            .Build();
+    ExtensionRegistry::Get(browser_context())->AddEnabled(extension);
+  };
+  add_extension(ext1);
+  add_extension(ext2);
+  add_extension(ext3);
+
+  std::vector<extensions::EventTarget> dispatched;
+  auto create_event = [&](const std::string& name) {
+    auto event = std::make_unique<extensions::Event>(
+        extensions::events::FOR_TEST, name, base::Value::List());
+    return event;
+  };
+
+  auto create_event_with_callback = [&](const std::string& name) {
+    auto e = create_event(name);
+    e->did_dispatch_callback =
+        base::BindLambdaForTesting([&](const extensions::EventTarget& target) {
+          dispatched.push_back(target);
+        });
+    // To ensure did_dispatch_callback is copied properly.
+    return e->DeepCopy();
+  };
+
+  auto process1 =
+      std::make_unique<content::MockRenderProcessHost>(browser_context());
+  auto process2 =
+      std::make_unique<content::MockRenderProcessHost>(browser_context());
+  auto process3 =
+      std::make_unique<content::MockRenderProcessHost>(browser_context());
+  auto process4 =
+      std::make_unique<content::MockRenderProcessHost>(browser_context());
+
+  // Register all extensions for the event:
+  // 1) single listener for ext1
+  event_router()->AddEventListener(event_name, process1.get(), ext1);
+  // 2) two listeners for two processes for ext2
+  event_router()->AddEventListener(event_name, process2.get(), ext2);
+  event_router()->AddEventListener(event_name, process3.get(), ext2);
+  // 3) service worker listeners for ext3
+  const int sw_version_id = 10;
+  const int sw_thread_id = 100;
+  event_router()->AddServiceWorkerEventListener(
+      event_name, process4.get(), ext3, GURL(), sw_version_id, sw_thread_id);
+
+  // Dispatch without callback set.
+  event_router()->DispatchEventToExtension(ext1, create_event(event_name));
+  event_router()->DispatchEventToExtension(ext2, create_event(event_name));
+  event_router()->DispatchEventToExtension(ext3, create_event(event_name));
+
+  EXPECT_EQ(0u, dispatched.size());
+  dispatched.clear();
+
+  // Dispatch with a post-dispatch callback set.
+  event_router()->DispatchEventToExtension(
+      ext1, create_event_with_callback(event_name));
+  event_router()->DispatchEventToExtension(
+      ext2, create_event_with_callback(event_name));
+  event_router()->DispatchEventToExtension(
+      ext3, create_event_with_callback(event_name));
+
+  const int sw_invalid_version_id =
+      blink::mojom::kInvalidServiceWorkerVersionId;
+  std::vector<EventTarget> expected{
+      {ext1, process1->GetID(), sw_invalid_version_id, kMainThreadId},
+      {ext2, process2->GetID(), sw_invalid_version_id, kMainThreadId},
+      {ext2, process3->GetID(), sw_invalid_version_id, kMainThreadId},
+      {ext3, process4->GetID(), sw_version_id, sw_thread_id},
+  };
+  std::sort(std::begin(dispatched), std::end(dispatched));
+  EXPECT_EQ(dispatched, expected);
+  dispatched.clear();
+
+  // Repeat the same event, but with broadcast: should have the same dispatch
+  // targets.
+  event_router()->BroadcastEvent(create_event_with_callback(event_name));
+
+  std::sort(std::begin(dispatched), std::end(dispatched));
+  EXPECT_EQ(dispatched, expected);
+  dispatched.clear();
+
+  // No listeners registered for 'api.other' event.
+  event_router()->DispatchEventToExtension(
+      ext1, create_event_with_callback("api.other"));
+  event_router()->DispatchEventToExtension(
+      ext2, create_event_with_callback("api.other"));
+  event_router()->DispatchEventToExtension(
+      ext3, create_event_with_callback("api.other"));
+  EXPECT_EQ(0u, dispatched.size());
 }
 
 }  // namespace extensions

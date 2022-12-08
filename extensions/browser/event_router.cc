@@ -1082,6 +1082,12 @@ void EventRouter::DispatchEventToProcess(
                            std::move(event_args_to_use), event.user_gesture,
                            std::move(filter_info));
 
+  if (!event.did_dispatch_callback.is_null()) {
+    event.did_dispatch_callback.Run(EventTarget{extension_id, process->GetID(),
+                                                service_worker_version_id,
+                                                worker_thread_id});
+  }
+
   for (TestObserver& observer : test_observers_)
     observer.OnDidDispatchEventToProcess(event);
 
@@ -1393,6 +1399,7 @@ std::unique_ptr<Event> Event::DeepCopy() const {
                               restrict_to_browser_context, event_url,
                               user_gesture, filter_info.Clone());
   copy->will_dispatch_callback = will_dispatch_callback;
+  copy->did_dispatch_callback = did_dispatch_callback;
   return copy;
 }
 
