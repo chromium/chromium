@@ -12,6 +12,7 @@ export function showScrollingEffects(event, page) {
   const content = page.shadowRoot.querySelector('#content');
   const navButtons = page.shadowRoot.querySelector('#navButtons');
   const shadowElevation = page.shadowRoot.querySelector('#shadowElevation');
+  const separator = page.shadowRoot.querySelector('#separator');
 
   shadowElevation.classList.toggle(
       'elevation-shadow-scrolling', content.scrollTop > 0);
@@ -19,8 +20,8 @@ export function showScrollingEffects(event, page) {
   shadowShield.classList.toggle(
       'scrolling-shield',
       content.scrollTop + content.clientHeight < content.scrollHeight);
-  content.classList.toggle(
-      'content-scrolling-end',
+  separator.classList.toggle(
+      'separator-scrolling-end',
       content.scrollTop + content.clientHeight == content.scrollHeight &&
           content.scrollTop > 0);
 }

@@ -61,8 +61,12 @@
       padding-inline-start: var(--feedback-padding-inline-start);
     }
 
-    .content-scrolling-end {
-      border-bottom: 1px solid var(--cros-separator-color);
+    #separator {
+      height: 1px;
+    }
+
+    .separator-scrolling-end {
+      background-color: var(--cros-separator-color);
     }
 
     .page-title {
@@ -244,13 +248,14 @@
       bottom: 92px;
       height: 48px;
       left: 0;
+      pointer-events: none;
       position: absolute;
       right: 0;
     }
 
     .scrolling-shield {
       background: linear-gradient(to bottom,
-          rgba(var(--cros-bg-color-rgb),0), rgba(var(--cros-bg-color-rgb),1))
+          rgba(var(--cros-bg-color-rgb),0), rgba(var(--cros-bg-color-rgb),1));
     }
   </style>
 </template>
