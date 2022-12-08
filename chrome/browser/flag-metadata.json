@@ -6985,7 +6985,7 @@
   {
     "name": "view-transition",
     "owners": [ "khushalsagar", "vmpstr", "chrishtr" ],
-    "expiry_milestone" : 110
+    "expiry_milestone" : 118
   },
   {
     "name": "view-transition-on-navigation",
