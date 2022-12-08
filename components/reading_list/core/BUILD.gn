@@ -21,7 +21,6 @@ source_set("core") {
     "reading_list_pref_names.h",
     "reading_list_sync_bridge.cc",
     "reading_list_sync_bridge.h",
-    "reading_list_sync_bridge_delegate.h",
   ]
   deps = [
     "//components/keyed_service/core",

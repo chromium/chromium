@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/reading_list/core/reading_list_sync_bridge_delegate.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
@@ -24,6 +23,7 @@ class ModelTypeChangeProcessor;
 class MutableDataBatch;
 }  // namespace syncer
 
+class ReadingListEntry;
 class ReadingListModelImpl;
 
 // Sync bridge implementation for READING_LIST model type. Takes care of
@@ -39,11 +39,8 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
 
   ~ReadingListSyncBridge() override;
 
-  // TODO(crbug.com/1386158): Remove ReadingListSyncBridgeDelegate altogether
-  // since it represents the same object as |model|, except in unit-tests.
   void ModelReadyToSync(
       ReadingListModelImpl* model,
-      ReadingListSyncBridgeDelegate* delegate,
       std::unique_ptr<syncer::MetadataBatch> sync_metadata_batch);
   void ReportError(const syncer::ModelError& error);
 
@@ -141,15 +138,12 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   // should be.
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
-  void SetDelegateForTest(ReadingListSyncBridgeDelegate* delegate);
-
  private:
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);
 
   const raw_ptr<base::Clock> clock_;
   raw_ptr<ReadingListModelImpl> model_ = nullptr;
-  raw_ptr<ReadingListSyncBridgeDelegate> delegate_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

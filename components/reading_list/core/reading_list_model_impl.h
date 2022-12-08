@@ -16,7 +16,6 @@
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "components/reading_list/core/reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_sync_bridge.h"
-#include "components/reading_list/core/reading_list_sync_bridge_delegate.h"
 
 namespace base {
 class Clock;
@@ -29,8 +28,7 @@ class ModelTypeChangeProcessor;
 }  // namespace syncer
 
 // Concrete implementation of a reading list model using in memory lists.
-class ReadingListModelImpl : public ReadingListModel,
-                             public ReadingListSyncBridgeDelegate {
+class ReadingListModelImpl : public ReadingListModel {
  public:
   using ReadingListEntries = std::map<GURL, ReadingListEntry>;
 
@@ -89,11 +87,10 @@ class ReadingListModelImpl : public ReadingListModel,
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;
 
-  // ReadingListSyncBridgeDelegate implementation.
-  void SyncAddEntry(std::unique_ptr<ReadingListEntry> entry) override;
-  ReadingListEntry* SyncMergeEntry(
-      std::unique_ptr<ReadingListEntry> entry) override;
-  void SyncRemoveEntry(const GURL& url) override;
+  // API specifically for changes received via sync.
+  void SyncAddEntry(std::unique_ptr<ReadingListEntry> entry);
+  ReadingListEntry* SyncMergeEntry(std::unique_ptr<ReadingListEntry> entry);
+  void SyncRemoveEntry(const GURL& url);
 
   class ScopedReadingListBatchUpdateImpl : public ScopedReadingListBatchUpdate,
                                            public ReadingListModelObserver {
@@ -143,11 +140,14 @@ class ReadingListModelImpl : public ReadingListModel,
   // Returns the |storage_layer_| of the model.
   ReadingListModelStorage* StorageLayer();
 
+  // Add |entry| to the model, which must not exist before, and notify the sync
+  // bridge if |source| is not ADDED_VIA_SYNC.
+  void AddEntryImpl(std::unique_ptr<ReadingListEntry> entry,
+                    reading_list::EntrySource source);
+
   // Remove entry |url| and propagate to the sync bridge if |from_sync| is
   // false.
   void RemoveEntryByURLImpl(const GURL& url, bool from_sync);
-
-  void RebuildIndex() const;
 
   // Update the 3 counts above considering addition/removal of |entry|.
   void UpdateEntryStateCountersOnEntryRemoval(const ReadingListEntry& entry);

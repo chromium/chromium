@@ -246,9 +246,10 @@ TEST_F(ReadingListModelTest, ModelLoadFailure) {
 
   AssertObserverCount(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  // TODO(crbug.com/1386158): Ideally it should be verified that the sync
-  // processor is in an error state. This isn't possible currently as these
-  // tests don't instantiate a bridge.
+  EXPECT_TRUE(model_->GetModelTypeSyncBridge()
+                  ->change_processor()
+                  ->GetError()
+                  .has_value());
 }
 
 // Tests adding entry.

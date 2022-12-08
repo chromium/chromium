@@ -82,7 +82,7 @@ ReadingListModelImpl::ReadingListModelImpl(
     // this test-only path. After all tests, can trivially adopt a fake.
     CHECK_IS_TEST();
     loaded_ = true;
-    sync_bridge_.ModelReadyToSync(/*model=*/this, /*delegate=*/this,
+    sync_bridge_.ModelReadyToSync(/*model=*/this,
                                   std::make_unique<syncer::MetadataBatch>());
   }
 }
@@ -274,24 +274,7 @@ void ReadingListModelImpl::SyncAddEntry(
   DCHECK(loaded());
   DCHECK(IsPerformingBatchUpdates());
 
-  // entry must not already exist.
-  DCHECK(GetMutableEntryFromURL(entry->URL()) == nullptr);
-  for (auto& observer : observers_)
-    observer.ReadingListWillAddEntry(this, *entry);
-  UpdateEntryStateCountersOnEntryInsertion(*entry);
-
-  // Write to the store.
-  if (storage_layer_) {
-    storage_layer_->EnsureBatchCreated()->SaveEntry(*entry);
-  }
-
-  const GURL url = entry->URL();
-  entries_.emplace(url, std::move(*entry));
-
-  for (auto& observer : observers_) {
-    observer.ReadingListDidAddEntry(this, url, reading_list::ADDED_VIA_SYNC);
-    observer.ReadingListDidApplyChanges(this);
-  }
+  AddEntryImpl(std::move(entry), reading_list::ADDED_VIA_SYNC);
 }
 
 ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
@@ -326,7 +309,10 @@ ReadingListEntry* ReadingListModelImpl::SyncMergeEntry(
 }
 
 void ReadingListModelImpl::SyncRemoveEntry(const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(loaded());
   DCHECK(IsPerformingBatchUpdates());
+
   RemoveEntryByURLImpl(url, true);
 }
 
@@ -374,6 +360,7 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
   DCHECK(IsUrlSupported(url));
+
   std::unique_ptr<ReadingListModelImpl::ScopedReadingListBatchUpdate>
       scoped_model_batch_updates;
   if (GetEntryByURL(url)) {
@@ -383,29 +370,13 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
 
   std::string trimmed_title = base::CollapseWhitespaceASCII(title, false);
 
-  ReadingListEntry entry(url, trimmed_title, clock_->Now());
+  auto entry =
+      std::make_unique<ReadingListEntry>(url, trimmed_title, clock_->Now());
   if (!estimated_read_time.is_zero()) {
-    entry.SetEstimatedReadTime(estimated_read_time);
-  }
-  for (auto& observer : observers_)
-    observer.ReadingListWillAddEntry(this, entry);
-  UpdateEntryStateCountersOnEntryInsertion(entry);
-
-  auto it = entries_.emplace(url, std::move(entry)).first;
-  const ReadingListEntry* entry_ptr = &it->second;
-
-  if (storage_layer_) {
-    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
-        storage_layer_->EnsureBatchCreated();
-    batch->SaveEntry(*GetEntryByURL(url));
-    sync_bridge_.DidAddOrUpdateEntry(*entry_ptr,
-                                     batch->GetSyncMetadataChangeList());
+    entry->SetEstimatedReadTime(estimated_read_time);
   }
 
-  for (auto& observer : observers_) {
-    observer.ReadingListDidAddEntry(this, url, source);
-    observer.ReadingListDidApplyChanges(this);
-  }
+  AddEntryImpl(std::move(entry), source);
 
   return entries_.at(url);
 }
@@ -653,7 +624,7 @@ void ReadingListModelImpl::StoreLoaded(
   DCHECK_EQ(read_entry_count_ + unread_entry_count_, entries_.size());
   loaded_ = true;
 
-  sync_bridge_.ModelReadyToSync(/*model=*/this, /*delegate=*/this,
+  sync_bridge_.ModelReadyToSync(/*model=*/this,
                                 std::move(result_or_error.value().second));
 
   base::UmaHistogramCounts1000("ReadingList.Unread.Count.OnModelLoaded",
@@ -684,4 +655,38 @@ ReadingListSyncBridge* ReadingListModelImpl::GetModelTypeSyncBridge() {
 
 ReadingListModelStorage* ReadingListModelImpl::StorageLayer() {
   return storage_layer_.get();
+}
+
+void ReadingListModelImpl::AddEntryImpl(std::unique_ptr<ReadingListEntry> entry,
+                                        reading_list::EntrySource source) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(entry);
+  DCHECK(loaded());
+  DCHECK(GetMutableEntryFromURL(entry->URL()) == nullptr);
+
+  const GURL url = entry->URL();
+
+  for (auto& observer : observers_) {
+    observer.ReadingListWillAddEntry(this, *entry);
+  }
+
+  UpdateEntryStateCountersOnEntryInsertion(*entry);
+
+  auto it = entries_.emplace(url, std::move(*entry)).first;
+  const ReadingListEntry* entry_ptr = &it->second;
+
+  if (storage_layer_) {
+    std::unique_ptr<ReadingListModelStorage::ScopedBatchUpdate> batch =
+        storage_layer_->EnsureBatchCreated();
+    batch->SaveEntry(*GetEntryByURL(url));
+    if (source != reading_list::ADDED_VIA_SYNC) {
+      sync_bridge_.DidAddOrUpdateEntry(*entry_ptr,
+                                       batch->GetSyncMetadataChangeList());
+    }
+  }
+
+  for (auto& observer : observers_) {
+    observer.ReadingListDidAddEntry(this, url, source);
+    observer.ReadingListDidApplyChanges(this);
+  }
 }

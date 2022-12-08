@@ -29,15 +29,12 @@ ReadingListSyncBridge::~ReadingListSyncBridge() {
 
 void ReadingListSyncBridge::ModelReadyToSync(
     ReadingListModelImpl* model,
-    ReadingListSyncBridgeDelegate* delegate,
     std::unique_ptr<syncer::MetadataBatch> sync_metadata_batch) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model);
-  DCHECK(delegate);
   DCHECK(!model_);
 
   model_ = model;
-  delegate_ = delegate;
   change_processor()->ModelReadyToSync(std::move(sync_metadata_batch));
 }
 
@@ -119,10 +116,9 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeSyncData(
         model_->GetEntryByURL(entry->URL());
 
     if (!existing_entry) {
-      delegate_->SyncAddEntry(std::move(entry));
+      model_->SyncAddEntry(std::move(entry));
     } else {
-      ReadingListEntry* merged_entry =
-          delegate_->SyncMergeEntry(std::move(entry));
+      ReadingListEntry* merged_entry = model_->SyncMergeEntry(std::move(entry));
 
       // Send to sync
       std::unique_ptr<sync_pb::ReadingListSpecifics> entry_sync_pb =
@@ -184,7 +180,7 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::ApplySyncChanges(
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
-      delegate_->SyncRemoveEntry(GURL(change->storage_key()));
+      model_->SyncRemoveEntry(GURL(change->storage_key()));
     } else {
       // Deserialize entry.
       const sync_pb::ReadingListSpecifics& specifics =
@@ -196,10 +192,10 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::ApplySyncChanges(
           model_->GetEntryByURL(entry->URL());
 
       if (!existing_entry) {
-        delegate_->SyncAddEntry(std::move(entry));
+        model_->SyncAddEntry(std::move(entry));
       } else {
         // Merge the local data and the sync data and store the result.
-        delegate_->SyncMergeEntry(std::move(entry));
+        model_->SyncMergeEntry(std::move(entry));
 
         // Note: Do NOT send the merged data back to Sync. Doing that could
         // cause ping-pong between two devices that disagree on the "correct"
@@ -240,11 +236,6 @@ void ReadingListSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   }
 
   std::move(callback).Run(std::move(batch));
-}
-
-void ReadingListSyncBridge::SetDelegateForTest(
-    ReadingListSyncBridgeDelegate* delegate) {
-  delegate_ = delegate;
 }
 
 void ReadingListSyncBridge::AddEntryToBatch(syncer::MutableDataBatch* batch,
