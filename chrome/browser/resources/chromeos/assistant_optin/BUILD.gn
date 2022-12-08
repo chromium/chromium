@@ -143,7 +143,7 @@ js_type_check("closure_compile") {
 js_library("assistant_loading") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/assistant_optin/assistant_loading.js" ]
   deps = [
-    "../login/components/behaviors:oobe_i18n_behavior.m",
+    "../login/components/behaviors:oobe_i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
@@ -152,7 +152,7 @@ js_library("assistant_loading") {
 js_library("assistant_optin_flow") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/assistant_optin/assistant_optin_flow.js" ]
   deps = [
-    "../login/components/behaviors:oobe_i18n_behavior.m",
+    "../login/components/behaviors:oobe_i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
@@ -161,7 +161,7 @@ js_library("assistant_optin_flow") {
 js_library("assistant_related_info") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/assistant_optin/assistant_related_info.js" ]
   deps = [
-    "../login/components/behaviors:oobe_i18n_behavior.m",
+    "../login/components/behaviors:oobe_i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
@@ -170,7 +170,7 @@ js_library("assistant_related_info") {
 js_library("assistant_value_prop") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/assistant_optin/assistant_value_prop.js" ]
   deps = [
-    "../login/components/behaviors:oobe_i18n_behavior.m",
+    "../login/components/behaviors:oobe_i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
@@ -179,7 +179,7 @@ js_library("assistant_value_prop") {
 js_library("voice_match_entry.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/assistant_optin/voice_match_entry.m.js" ]
   deps = [
-    "../login/components/behaviors:oobe_i18n_behavior.m",
+    "../login/components/behaviors:oobe_i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":voice_match_entry_module" ]
@@ -189,7 +189,7 @@ js_library("assistant_voice_match.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/assistant_optin/assistant_voice_match.m.js" ]
   deps = [
     "../login/components/behaviors:multi_step_behavior.m",
-    "../login/components/behaviors:oobe_i18n_behavior.m",
+    "../login/components/behaviors:oobe_i18n_behavior",
     "//ash/webui/common/resources:util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",

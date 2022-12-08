@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-// #import {SanitizeInnerHtmlOpts} from 'chrome://resources/ash/common/parse_html_subset.js';
-// #import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {SanitizeInnerHtmlOpts} from 'chrome://resources/ash/common/parse_html_subset.js';
 // clang-format on
 
 /**
@@ -53,10 +52,10 @@ const OobeI18nBehaviorImpl = {
  */
 OobeI18nBehaviorImpl.Proto;
 /** @polymerBehavior */
-/* #export */ const OobeI18nBehavior = [I18nBehavior, OobeI18nBehaviorImpl];
+export const OobeI18nBehavior = [I18nBehavior, OobeI18nBehaviorImpl];
 
 /** @interface */
-/* #export */ class OobeI18nBehaviorInterface extends I18nBehaviorInterface {
+export class OobeI18nBehaviorInterface extends I18nBehaviorInterface {
   /**
    * @param {string} id The ID of the string to translate.
    * @param {...string|number} var_args

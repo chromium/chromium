@@ -41,7 +41,7 @@ js_library("auto_enrollment_check") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
@@ -52,7 +52,7 @@ js_library("demo_preferences") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -68,7 +68,7 @@ js_library("demo_setup") {
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -82,7 +82,7 @@ js_library("enable_debugging") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_loading_dialog",
@@ -115,7 +115,7 @@ js_library("hid_detection") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
@@ -142,7 +142,7 @@ js_library("oobe_network") {
     "../../components:network_select_login",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
@@ -155,7 +155,7 @@ js_library("packaged_license") {
   deps = [
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -168,7 +168,7 @@ js_library("update") {
     "../../components:oobe_slide",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_back_button",
     "../../components/buttons:oobe_next_button",
     "../../components/dialogs:oobe_adaptive_dialog",
@@ -187,7 +187,7 @@ js_library("welcome") {
     "../../components:oobe_types",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_adaptive_dialog",
     "../../components/dialogs:oobe_modal_dialog",
@@ -205,7 +205,7 @@ js_library("welcome_dialog") {
   deps = [
     "../../components:long_touch_detector.m",
     "../../components:oobe_cr_lottie",
-    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_icon_button",
     "../../components/buttons:oobe_text_button",
     "../../components/dialogs:oobe_modal_dialog",
