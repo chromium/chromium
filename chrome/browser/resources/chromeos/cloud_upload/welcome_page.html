@@ -2,6 +2,14 @@
   a {
     color: var(--cros-text-color-prominent);
   }
+
+  .subtitle {
+    font-weight: 600;
+  }
+
+  ol {
+    padding-inline-start: 20px;
+  }
 </style>
 
 <!-- TODO(b/254586358): Use localized strings -->
@@ -9,16 +17,21 @@
   <use href="images/welcome.svg#EXPORT_image"></use>
 </svg>
 <div slot="title">
-  Set up Microsoft 365 for Chromebook
+  Set up Microsoft 365 for your Chromebook
 </div>
 <div slot="body">
-  <p>
-    You can open, edit, and save Word, Excel, and PowerPoint files on your
-    Chromebook by installing the Microsoft 365 app. You'll need to connect to
-    Microsoft OneDrive cloud storage and use a Microsoft account. A
-    subscription may be required for some features.
+  <p class="subtitle">
+    How it works:
   </p>
-  <p>View <a href="#">Microsoft terms and conditions.</a></p>
+  <ol>
+    <li>Install Microsoft 365</li>
+    <li>Connect to Microsoft OneDrive</li>
+    <li>Files will move to OneDrive when opening in Microsoft 365</li>
+  </ol>
+  <p>
+    A subscription may be required.
+    View <a href="#">Microsoft terms and conditions.</a>
+  </p>
 </div>
 <div slot="button-container">
   <cr-button class="cancel-button">Cancel</cr-button>

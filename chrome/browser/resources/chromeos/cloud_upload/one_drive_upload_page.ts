@@ -53,7 +53,7 @@ export class OneDriveUploadPageElement extends BaseSetupPageElement {
     // TODO(b/251046341): Show multiple files.
     if (this.fileNames.length > 0) {
       fileContainerElement.hidden = false;
-      fileNameElement.innerText = `File name: ${this.fileNames[0]}`;
+      fileNameElement.innerText = this.fileNames[0] || '';
     }
 
     uploadButton.addEventListener('click', () => this.onUploadButtonClick());
