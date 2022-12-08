@@ -542,7 +542,7 @@ void FrameTreeNode::TransferNavigationRequestOwnership(
   render_frame_host->SetNavigationRequest(std::move(navigation_request_));
 }
 
-void FrameTreeNode::CreatedNavigationRequest(
+void FrameTreeNode::TakeNavigationRequest(
     std::unique_ptr<NavigationRequest> navigation_request) {
   // This is never called when navigating to a Javascript URL. For the loading
   // state, this matches what Blink is doing: Blink doesn't send throbber

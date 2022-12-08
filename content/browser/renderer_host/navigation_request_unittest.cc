@@ -215,7 +215,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         nullptr /* entry */, false /* is_form_submission */,
         nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
         false /* is_pdf */);
-    main_test_rfh()->frame_tree_node()->CreatedNavigationRequest(
+    main_test_rfh()->frame_tree_node()->TakeNavigationRequest(
         std::move(request));
     GetNavigationRequest()->StartNavigation();
   }

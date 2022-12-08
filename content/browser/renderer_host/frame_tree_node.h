@@ -316,7 +316,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // NavigationRequest of this frame. This corresponds to the start of a new
   // navigation. If there was an ongoing navigation request before calling this
   // function, it is canceled. |navigation_request| should not be null.
-  void CreatedNavigationRequest(
+  void TakeNavigationRequest(
       std::unique_ptr<NavigationRequest> navigation_request);
 
   // Resets the navigation request owned by `this` (which shouldn't have reached

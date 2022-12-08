@@ -4111,7 +4111,7 @@ NavigationControllerImpl::LoadPostCommitErrorPage(
           false /* is_pdf */);
   navigation_request->set_post_commit_error_page_html(error_page_html);
   navigation_request->set_net_error(error);
-  node->CreatedNavigationRequest(std::move(navigation_request));
+  node->TakeNavigationRequest(std::move(navigation_request));
   DCHECK(node->navigation_request());
 
   // Calling BeginNavigation may destroy the NavigationRequest.

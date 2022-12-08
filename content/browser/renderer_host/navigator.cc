@@ -741,7 +741,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   bool is_pending_entry =
       controller_.GetPendingEntry() &&
       (nav_entry_id == controller_.GetPendingEntry()->GetUniqueID());
-  frame_tree_node->CreatedNavigationRequest(std::move(request));
+  frame_tree_node->TakeNavigationRequest(std::move(request));
   DCHECK(frame_tree_node->navigation_request());
 
   // Have the current renderer execute its beforeunload event if needed. If it
@@ -1033,7 +1033,7 @@ void Navigator::OnBeginNavigation(
   if (navigation_entry)
     navigation_entry->SetIsOverridingUserAgent(override_user_agent);
 
-  frame_tree_node->CreatedNavigationRequest(
+  frame_tree_node->TakeNavigationRequest(
       NavigationRequest::CreateRendererInitiated(
           frame_tree_node, navigation_entry, std::move(common_params),
           std::move(begin_params), controller_.GetLastCommittedEntryIndex(),
@@ -1098,7 +1098,7 @@ void Navigator::RestartNavigationAsCrossDocument(
     return;
 
   navigation_request->ResetForCrossDocumentRestart();
-  frame_tree_node->CreatedNavigationRequest(std::move(navigation_request));
+  frame_tree_node->TakeNavigationRequest(std::move(navigation_request));
   frame_tree_node->navigation_request()->BeginNavigation();
   // DO NOT USE THE NAVIGATION REQUEST BEYOND THIS POINT. It might have been
   // destroyed in BeginNavigation().
