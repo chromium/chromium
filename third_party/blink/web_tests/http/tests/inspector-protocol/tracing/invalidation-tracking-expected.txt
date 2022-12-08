@@ -1,0 +1,108 @@
+Tests the data of invalidation tracking trace events
+Recording started
+Tracing complete
+ScheduleStyleInvalidationTracking
+Object: {
+	args: {
+		data: {
+			frame: string
+			invalidatedSelectorId: string
+			invalidationSet: string
+			nodeId: number
+			nodeName: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+StyleRecalcInvalidationTracking
+Array: [
+	{
+		args: {
+			data: {
+				extraData: string
+				frame: string
+				nodeId: number
+				nodeName: string
+				reason: string
+				subtree: boolean
+			}
+		}
+		cat: string
+		name: string
+		ph: string
+		pid: number
+		s: string
+		tid: number
+		ts: number
+	}
+	{
+		args: {
+			data: {
+				extraData: string
+				frame: string
+				nodeId: number
+				nodeName: string
+				reason: string
+				subtree: boolean
+			}
+		}
+		cat: string
+		name: string
+		ph: string
+		pid: number
+		s: string
+		tid: number
+		ts: number
+	}
+]
+StyleInvalidatorInvalidationTracking
+Object: {
+	args: {
+		data: {
+			frame: string
+			invalidationList: [
+				{
+					id: string
+					tagNames: [
+						string,
+					]
+				}
+			]
+			nodeId: number
+			nodeName: string
+			reason: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+LayoutInvalidationTracking
+Object: {
+	args: {
+		data: {
+			frame: string
+			nodeId: number
+			nodeName: string
+			reason: string
+		}
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+
