@@ -487,7 +487,7 @@ export class QuickViewController {
    * @private
    */
   async onMetadataLoaded_(entry, items, fileTasks, canDelete) {
-    const tasks = fileTasks.getTaskItems();
+    const tasks = fileTasks.getAnnotatedTasks();
 
     const params =
         await this.getQuickViewParameters_(entry, items, tasks, canDelete);

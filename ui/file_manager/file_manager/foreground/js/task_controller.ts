@@ -22,7 +22,7 @@ import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
-import {AnnotatedTask, FileTasks, TaskPickerType} from './file_tasks.js';
+import {AnnotatedTask, FileTasks, getDefaultTask, TaskPickerType} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';
@@ -201,7 +201,7 @@ export class TaskController {
    */
   private updateTasksDropdown_(fileTasks: FileTasks) {
     const combobutton = this.ui_.taskMenuButton;
-    const tasks = fileTasks.getTaskItems();
+    const tasks = fileTasks.getAnnotatedTasks();
 
     combobutton.hidden =
         tasks.length == 0 || fileTasks.entries.some(e => e.isDirectory);
@@ -268,7 +268,7 @@ export class TaskController {
    * @return Created array can be used to feed combobox, menus and so on.
    */
   createItems(fileTasks: FileTasks): DropdownItem[] {
-    const tasks = fileTasks.getTaskItems();
+    const tasks = fileTasks.getAnnotatedTasks();
     const items = [];
 
     // Create items.
@@ -364,13 +364,11 @@ export class TaskController {
       // Compare entries while ignoring changes inside directories.
       if (!util.isSameEntries(this.lastSelectedEntries_, selection.entries)) {
         // Update the context menu if selection changed.
-        this.updateContextMenuTaskItems_(
-            {tasks: [], policyDefaultHandlerStatus: undefined});
+        this.updateContextMenuTaskItems_([]);
       }
     } else {
       // Update context menu.
-      this.updateContextMenuTaskItems_(
-          {tasks: [], policyDefaultHandlerStatus: undefined});
+      this.updateContextMenuTaskItems_([]);
     }
     this.lastSelectedEntries_ = selection.entries;
   }
@@ -410,10 +408,9 @@ export class TaskController {
       const tasks = await this.getFileTasks();
       // Update the DOM.
       this.display_(tasks);
-      const openTaskItems = tasks.getTaskItems();
-      const policyDefaultHandlerStatus = tasks.getPolicyDefaultHandlerStatus();
+      const openTaskItems = tasks.getAnnotatedTasks();
       this.updateContextMenuTaskItems_(
-          {tasks: openTaskItems, policyDefaultHandlerStatus});
+          openTaskItems, tasks.getPolicyDefaultHandlerStatus());
       if (window.IN_TEST) {
         this.ui_.taskMenuButton.toggleAttribute('get-tasks-completed', true);
       }
@@ -479,9 +476,13 @@ export class TaskController {
    * @param openTasks List of OPEN tasks.
    */
   private updateContextMenuTaskItems_(
-      openTasks: chrome.fileManagerPrivate.ResultingTasks) {
-    const taskCount = openTasks.tasks.length;
-    const defaultTask = FileTasks.getDefaultTask(openTasks, this.taskHistory_);
+      tasks: AnnotatedTask[],
+      policyDefaultHandlerStatus?:
+          chrome.fileManagerPrivate.PolicyDefaultHandlerStatus) {
+    const taskCount = tasks.length;
+    const defaultTask =
+        getDefaultTask(tasks, policyDefaultHandlerStatus, this.taskHistory_);
+
     if (taskCount > 0) {
       if (defaultTask) {
         const menuItem = this.ui_.defaultTaskMenuItem;
@@ -506,8 +507,7 @@ export class TaskController {
           menuItem.setIconEndHidden(true);
         }
 
-        menuItem.toggleManagedIcon(
-            /*visible=*/ !!openTasks.policyDefaultHandlerStatus);
+        menuItem.toggleManagedIcon(/*visible=*/ !!policyDefaultHandlerStatus);
 
         menuItem.label = defaultTask.title;
         menuItem.descriptor = defaultTask.descriptor;

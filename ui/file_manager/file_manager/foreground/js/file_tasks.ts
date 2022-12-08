@@ -19,6 +19,7 @@ import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {FileData} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
@@ -107,10 +108,12 @@ export class FileTasks {
               task.descriptor, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
 
-    resultingTasks.tasks =
-        FileTasks.annotateTasks_(resultingTasks.tasks, entries);
+    const tasks = annotateTasks(resultingTasks.tasks, entries);
+    resultingTasks.tasks = tasks;
 
-    const defaultTask = FileTasks.getDefaultTask(resultingTasks, taskHistory);
+    const defaultTask = getDefaultTask(
+        tasks, resultingTasks.policyDefaultHandlerStatus, taskHistory);
+
 
     return new FileTasks(
         volumeManager, metadataModel, directoryModel, ui,
@@ -126,9 +129,9 @@ export class FileTasks {
     return this.defaultTask_;
   }
 
-  /** Gets task items.  */
-  getTaskItems(): chrome.fileManagerPrivate.FileTask[] {
-    return this.resultingTasks_.tasks;
+  getAnnotatedTasks(): AnnotatedTask[] {
+    // resultingTasks_.tasks is annotated at create().
+    return this.resultingTasks_.tasks as AnnotatedTask[];
   }
 
   /** Gets the policy default handler status.  */
@@ -295,87 +298,6 @@ export class FileTasks {
       default:
         return false;
     }
-  }
-
-  /**
-   * Annotates tasks returned from the API.
-   * @param tasks Input tasks from the API.
-   * @param entries List of entries for the tasks.
-   * @private
-   */
-  private static annotateTasks_(
-      tasks: chrome.fileManagerPrivate.FileTask[],
-      entries: Entry[]): chrome.fileManagerPrivate.FileTask[] {
-    const result = [];
-    for (const task of (tasks as AnnotatedTask[])) {
-      const {appId, taskType, actionId} = task.descriptor;
-      const parsedActionId = parseActionId(actionId);
-
-      // Skip internal Files app's handlers.
-      if (isFilesAppId(appId) &&
-          (parsedActionId === 'select' || parsedActionId === 'open')) {
-        continue;
-      }
-
-      // Tweak images, titles of internal tasks.
-      if (isFilesAppId(appId) && (taskType === 'app' || taskType === 'web')) {
-        if (parsedActionId === 'mount-archive') {
-          task.iconType = 'archive';
-          task.title = str('MOUNT_ARCHIVE');
-        } else if (parsedActionId === 'open-hosted-generic') {
-          if (entries.length > 1) {
-            task.iconType = 'generic';
-          } else {  // Use specific icon.
-            task.iconType = FileType.getIcon(entries[0]!);
-          }
-          task.title = str('TASK_OPEN');
-        } else if (parsedActionId === 'open-hosted-gdoc') {
-          task.iconType = 'gdoc';
-          task.title = str('TASK_OPEN_GDOC');
-        } else if (parsedActionId === 'open-hosted-gsheet') {
-          task.iconType = 'gsheet';
-          task.title = str('TASK_OPEN_GSHEET');
-        } else if (parsedActionId === 'open-hosted-gslides') {
-          task.iconType = 'gslides';
-          task.title = str('TASK_OPEN_GSLIDES');
-        } else if (parsedActionId === 'open-web-drive-office-word') {
-          task.iconType = 'gdoc';
-          task.title = str('TASK_OPEN_GDOC');
-        } else if (parsedActionId === 'open-web-drive-office-excel') {
-          task.iconType = 'gsheet';
-          task.title = str('TASK_OPEN_GSHEET');
-        } else if (parsedActionId === 'upload-office-to-drive') {
-          task.iconType = 'generic';
-          task.title = 'Upload to Drive';
-        } else if (parsedActionId === 'open-web-drive-office-powerpoint') {
-          task.iconType = 'gslides';
-          task.title = str('TASK_OPEN_GSLIDES');
-        } else if (parsedActionId === 'open-in-office') {
-          task.iconUrl =
-              toFilesAppURL('foreground/images/files/ui/ms365.svg').toString();
-          task.title = str('TASK_OPEN_MICROSOFT_365');
-        } else if (parsedActionId === 'install-linux-package') {
-          task.iconType = 'crostini';
-          task.title = str('TASK_INSTALL_LINUX_PACKAGE');
-        } else if (parsedActionId === 'import-crostini-image') {
-          task.iconType = 'tini';
-          task.title = str('TASK_IMPORT_CROSTINI_IMAGE');
-        } else if (parsedActionId === 'view-pdf') {
-          task.iconType = 'pdf';
-          task.title = str('TASK_VIEW');
-        } else if (parsedActionId === 'view-in-browser') {
-          task.iconType = 'generic';
-          task.title = str('TASK_VIEW');
-        }
-      }
-      if (!task.iconType && taskType === 'web-intent') {
-        task.iconType = 'generic';
-      }
-
-      result.push(task);
-    }
-
-    return result;
   }
 
   /**
@@ -875,57 +797,6 @@ export class FileTasks {
         });
   }
 
-  /**
-   * Gets the default task from tasks. In case there is no such task (i.e. all
-   * tasks are generic file handlers), then return null.
-   *
-   * @param resultingTasks The list of tasks from where to choose the default
-   *     task.
-   * @return the default task, or null if no default task found.
-   */
-  static getDefaultTask(
-      resultingTasks: chrome.fileManagerPrivate.ResultingTasks,
-      taskHistory: TaskHistory): chrome.fileManagerPrivate.FileTask|null {
-    const {tasks, policyDefaultHandlerStatus} = resultingTasks;
-
-    // If policy assignment is incorrect, then no default should be set.
-    if (policyDefaultHandlerStatus &&
-        policyDefaultHandlerStatus ===
-            chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
-                .INCORRECT_ASSIGNMENT) {
-      return null;
-    }
-
-    // 1. Default app set for MIME or file extension by user, or built-in app.
-    for (const task of tasks) {
-      if (task.isDefault) {
-        return task;
-      }
-    }
-
-    // If policy assignment is marked as correct, then by this moment we
-    // should've already found the default.
-    assert(
-        !(policyDefaultHandlerStatus &&
-          policyDefaultHandlerStatus ===
-              chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
-                  .DEFAULT_HANDLER_ASSIGNED_BY_POLICY));
-
-    const nonGenericTasks = tasks.filter(t => !t.isGenericFileHandler);
-    if (nonGenericTasks.length === 0) {
-      return null;
-    }
-
-    // 2. Most recently executed or sole non-generic task.
-    const latest = nonGenericTasks[0]!;
-    if (nonGenericTasks.length == 1 ||
-        taskHistory.getLastExecutedTime(latest.descriptor)) {
-      return latest;
-    }
-
-    return null;
-  }
-
   private static async getPvmSharedDir_(volumeManager: VolumeManager):
       Promise<DirectoryEntry> {
     const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(
@@ -939,7 +810,7 @@ export class FileTasks {
 }
 
 /** The task descriptor of 'Install Linux package'. */
-const INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
+export const INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR = {
   appId: LEGACY_FILES_EXTENSION_ID,
   taskType: 'app',
   actionId: 'install-linux-package',
@@ -1028,4 +899,134 @@ function isMyFilesEntry(entry: Entry, volumeManager: VolumeManager): boolean {
   const location = volumeManager.getLocationInfo(entry);
   return !!location &&
       location.rootType === VolumeManagerCommon.RootType.DOWNLOADS;
+}
+
+/**
+ * Annotates tasks returned from the API.
+ * @param tasks Input tasks from the API.
+ * @param entries List of entries for the tasks.
+ */
+export function annotateTasks(
+    tasks: chrome.fileManagerPrivate.FileTask[],
+    entries: Entry[]|FileData[]): AnnotatedTask[] {
+  const result: AnnotatedTask[] = [];
+  for (const task of tasks) {
+    const {appId, taskType, actionId} = task.descriptor;
+    const parsedActionId = parseActionId(actionId);
+
+    // Skip internal Files app's handlers.
+    if (isFilesAppId(appId) &&
+        (parsedActionId === 'select' || parsedActionId === 'open')) {
+      continue;
+    }
+
+    // Tweak images, titles of internal tasks.
+    const annotateTask: AnnotatedTask = {...task, iconType: ''};
+    if (isFilesAppId(appId) && (taskType === 'app' || taskType === 'web')) {
+      if (parsedActionId === 'mount-archive') {
+        annotateTask.iconType = 'archive';
+        annotateTask.title = str('MOUNT_ARCHIVE');
+      } else if (parsedActionId === 'open-hosted-generic') {
+        if (entries.length > 1) {
+          annotateTask.iconType = 'generic';
+        } else {  // Use specific icon.
+          annotateTask.iconType = FileType.getIcon(entries[0]!);
+        }
+        annotateTask.title = str('TASK_OPEN');
+      } else if (parsedActionId === 'open-hosted-gdoc') {
+        annotateTask.iconType = 'gdoc';
+        annotateTask.title = str('TASK_OPEN_GDOC');
+      } else if (parsedActionId === 'open-hosted-gsheet') {
+        annotateTask.iconType = 'gsheet';
+        annotateTask.title = str('TASK_OPEN_GSHEET');
+      } else if (parsedActionId === 'open-hosted-gslides') {
+        annotateTask.iconType = 'gslides';
+        annotateTask.title = str('TASK_OPEN_GSLIDES');
+      } else if (parsedActionId === 'open-web-drive-office-word') {
+        annotateTask.iconType = 'gdoc';
+        annotateTask.title = str('TASK_OPEN_GDOC');
+      } else if (parsedActionId === 'open-web-drive-office-excel') {
+        annotateTask.iconType = 'gsheet';
+        annotateTask.title = str('TASK_OPEN_GSHEET');
+      } else if (parsedActionId === 'upload-office-to-drive') {
+        annotateTask.iconType = 'generic';
+        annotateTask.title = 'Upload to Drive';
+      } else if (parsedActionId === 'open-web-drive-office-powerpoint') {
+        annotateTask.iconType = 'gslides';
+        annotateTask.title = str('TASK_OPEN_GSLIDES');
+      } else if (parsedActionId === 'open-in-office') {
+        annotateTask.iconUrl =
+            toFilesAppURL('foreground/images/files/ui/ms365.svg').toString();
+        annotateTask.title = str('TASK_OPEN_MICROSOFT_365');
+      } else if (parsedActionId === 'install-linux-package') {
+        annotateTask.iconType = 'crostini';
+        annotateTask.title = str('TASK_INSTALL_LINUX_PACKAGE');
+      } else if (parsedActionId === 'import-crostini-image') {
+        annotateTask.iconType = 'tini';
+        annotateTask.title = str('TASK_IMPORT_CROSTINI_IMAGE');
+      } else if (parsedActionId === 'view-pdf') {
+        annotateTask.iconType = 'pdf';
+        annotateTask.title = str('TASK_VIEW');
+      } else if (parsedActionId === 'view-in-browser') {
+        annotateTask.iconType = 'generic';
+        annotateTask.title = str('TASK_VIEW');
+      }
+    }
+    if (!annotateTask.iconType && taskType === 'web-intent') {
+      annotateTask.iconType = 'generic';
+    }
+
+    result.push(annotateTask);
+  }
+
+  return result;
+}
+
+/**
+ * Gets the default task from tasks. In case there is no such task (i.e. all
+ * tasks are generic file handlers), then return null.
+ */
+export function getDefaultTask(
+    tasks: AnnotatedTask[],
+    policyDefaultHandlerStatus:
+        chrome.fileManagerPrivate.PolicyDefaultHandlerStatus|undefined,
+    taskHistory: TaskHistory): AnnotatedTask|null {
+  const INCORRECT_ASSIGNMENT =
+      chrome.fileManagerPrivate.PolicyDefaultHandlerStatus.INCORRECT_ASSIGNMENT;
+  const DEFAULT_HANDLER_ASSIGNED_BY_POLICY =
+      chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
+          .DEFAULT_HANDLER_ASSIGNED_BY_POLICY;
+
+  // If policy assignment is incorrect, then no default should be set.
+  if (policyDefaultHandlerStatus &&
+      policyDefaultHandlerStatus === INCORRECT_ASSIGNMENT) {
+    return null;
+  }
+
+  // 1. Default app set for MIME or file extension by user, or built-in app.
+  for (const task of tasks) {
+    if (task.isDefault) {
+      return task;
+    }
+  }
+
+  // If policy assignment is marked as correct, then by this moment we
+  // should've already found the default.
+  console.assert(
+      !(policyDefaultHandlerStatus &&
+        policyDefaultHandlerStatus === DEFAULT_HANDLER_ASSIGNED_BY_POLICY));
+
+  const nonGenericTasks = tasks.filter(t => !t.isGenericFileHandler);
+  if (nonGenericTasks.length === 0) {
+    return null;
+  }
+
+  // 2. Most recently executed or sole non-generic task.
+  const latest = nonGenericTasks[0]!;
+  if (nonGenericTasks.length == 1 ||
+      taskHistory.getLastExecutedTime(latest.descriptor)) {
+    return latest;
+  }
+
+  return null;
 }
