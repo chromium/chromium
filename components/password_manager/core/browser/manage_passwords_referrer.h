@@ -58,11 +58,11 @@ enum class ManagePasswordsReferrer {
   // Corresponds to the situation when Chrome opens native Password Manager UI
   // when navigating to specified website.
   kPasswordsGoogleWebsite = 13,
-  // Corresponds to the user clicking the "Check your passwords any time in
-  // password manager" after a successful automated password change run.
-  // Only used on Desktop.
-  kAutomatedPasswordChangeSuccessLink = 14,
-  // On Mac and Win after enenabling Biometric authentication before filling
+
+  // Deprecated as part of APC removal.
+  // kAutomatedPasswordChangeSuccessLink = 14,
+
+  // On Mac and Win after enabling Biometric authentication before filling
   // a confirmation dialog is shown with an instructions on how to control the
   // feature from settings.
   kBiometricAuthenticationBeforeFillingDialog = 15,
