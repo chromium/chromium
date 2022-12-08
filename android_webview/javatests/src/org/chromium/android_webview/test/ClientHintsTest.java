@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Test suite for AwClientHintsControllerDelegate.
  * TODO(crbug.com/921655): Test Critical-CH header.
- * TODO(crbug.com/921655): Test all existing client hints.
  */
 @DoNotBatch(reason = "These tests conflict with each other.")
 @RunWith(AwJUnit4ClassRunner.class)
@@ -67,6 +66,98 @@ public class ClientHintsTest {
     public void
     testClientHintsEnabled() throws Throwable {
         setupAndVerifyClientHintBehavior(true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
+            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void
+    testAllClientHints() throws Throwable {
+        // Initial test setup.
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final AwContents contents =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                        .getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(contents);
+        contents.getSettings().setJavaScriptEnabled(true);
+        final AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        // Please keep these here (and below) in the same order as web_client_hints_types.mojom.
+        final String url = server.getURL(
+                "/client-hints-header?accept-ch=device-memory,dpr,width,viewport-width,"
+                + "rtt,downlink,ect,sec-ch-lang,sec-ch-ua,sec-ch-ua-arch,sec-ch-ua-platform,"
+                + "sec-ch-ua-model,sec-ch-ua-mobile,sec-ch-ua-full-version,"
+                + "sec-ch-ua-platform-version,sec-ch-prefers-color-scheme,"
+                + "sec-ch-ua-bitness,sec-ch-ua-reduced,sec-ch-viewport-height,"
+                + "sec-ch-device-memory,sec-ch-dpr,sec-ch-width,sec-ch-viewport-width,"
+                + "sec-ch-ua-full-version-list,sec-ch-ua-full,sec-ch-ua-wow64,save-data,"
+                + "sec-ch-prefers-reduced-motion");
+
+        // Load twice to be sure hints are returned, then parse the results.
+        loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
+        loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
+        String textContent =
+                mActivityTestRule.getJavaScriptResultBodyTextContent(contents, contentsClient)
+                        .replaceAll("\\\\\"", "\"");
+        JSONObject jsonObject = new JSONObject(textContent);
+        // If you're here because this line broke, please update this test to verify whichever
+        // client hints were added or removed and don't just modify the number below.
+        Assert.assertEquals(27, jsonObject.length());
+
+        // All client hints must be verified for default behavior.
+        Assert.assertTrue(jsonObject.getInt("device-memory") > 0);
+        Assert.assertTrue(jsonObject.getDouble("dpr") > 0);
+        // This is only set for subresources.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("width"));
+        Assert.assertTrue(jsonObject.getInt("viewport-width") > 0);
+        Assert.assertEquals(0, jsonObject.getInt("rtt"));
+        Assert.assertEquals(0, jsonObject.getInt("downlink"));
+        // This is the holdback value (the default in some cases).
+        Assert.assertEquals("4g", jsonObject.getString("ect"));
+        // This client hint was removed.
+        Assert.assertFalse(jsonObject.has("sec-ch-lang"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-arch"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-platform"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-model"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-mobile"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-full-version"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-platform-version"));
+        Assert.assertEquals("light", jsonObject.getString("sec-ch-prefers-color-scheme"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-bitness"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-reduced"));
+        Assert.assertTrue(jsonObject.getInt("sec-ch-viewport-height") > 0);
+        Assert.assertTrue(jsonObject.getInt("sec-ch-device-memory") > 0);
+        Assert.assertTrue(jsonObject.getDouble("sec-ch-dpr") > 0);
+        // This is only set for subresources.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-width"));
+        Assert.assertTrue(jsonObject.getInt("sec-ch-viewport-width") > 0);
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals(
+                "HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-full-version-list"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-full"));
+        // User agent client hints are inactive on android webview.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-wow64"));
+        // This client hint isn't sent when data-saver is off.
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("save-data"));
+        Assert.assertEquals("no-preference", jsonObject.getString("sec-ch-prefers-reduced-motion"));
+
+        // Cleanup after test.
+        clearCookies();
+        server.stopAndDestroyServer();
     }
 
     private void setupAndVerifyClientHintBehavior(boolean isPersisted) throws Throwable {
