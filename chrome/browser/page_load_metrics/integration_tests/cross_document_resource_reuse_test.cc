@@ -30,6 +30,6 @@ IN_PROC_BROWSER_TEST_F(CrossDocumentResourceReuseTest,
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
   ExpectUniqueUMABucketCount(
-      "Blink.MemoryCache.CrossDocumentCachedResource",
+      "Blink.MemoryCache.CrossDocumentCachedResource2",
       static_cast<base::Histogram::Sample>(blink::ResourceType::kImage), 1);
 }

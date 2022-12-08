@@ -110,7 +110,7 @@ constexpr base::TimeDelta kKeepaliveLoadersTimeout = base::Seconds(30);
 static constexpr base::TimeDelta kUnusedPreloadTimeout = base::Seconds(3);
 
 static constexpr char kCrossDocumentCachedResource[] =
-    "Blink.MemoryCache.CrossDocumentCachedResource";
+    "Blink.MemoryCache.CrossDocumentCachedResource2";
 
 #define RESOURCE_HISTOGRAM_PREFIX "Blink.MemoryCache.RevalidationPolicy."
 
@@ -1161,7 +1161,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
 
   // in_cached_resources_map is checked to detect Resources shared across
   // Documents, in the same way as features::kScopeMemoryCachePerContext.
-  if (policy == RevalidationPolicy::kUse && !in_cached_resources_map) {
+  if (!is_static_data && policy == RevalidationPolicy::kUse &&
+      !in_cached_resources_map) {
     base::UmaHistogramEnumeration(kCrossDocumentCachedResource,
                                   resource->GetType());
   }

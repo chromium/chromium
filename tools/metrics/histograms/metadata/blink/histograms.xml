@@ -2078,17 +2078,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.MemoryCache.CrossDocumentCachedResource"
+<histogram name="Blink.MemoryCache.CrossDocumentCachedResource2"
     enum="ResourceType" expires_after="2023-06-04">
   <owner>gjc@chromium.org</owner>
   <owner>blink-network-dev@chromium.org</owner>
   <summary>
-    Type of cached resources reused across Documents when loading a new document
-    in the same renderer. Recorded by the ResourceFetcher when a resource is
-    requested for a new document. If the resource is available from the memory
-    cache and previously loaded by a different document, the resource will be
-    considered as reused. Repetitive requests to the same url in a document will
-    be counted only once.
+    Type of cached non-static resources reused across Documents when loading a
+    new document in the same renderer. Recorded by the ResourceFetcher when a
+    resource is requested for a new document and is not static. If the resource
+    is available from the memory cache and previously loaded by a different
+    document, the resource will be considered as reused. Repetitive requests to
+    the same url in a document will be counted only once.
   </summary>
 </histogram>
 
