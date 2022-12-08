@@ -9,13 +9,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "v8/include/v8.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 class ListenerTracker;
@@ -33,7 +30,7 @@ class APIEventListeners {
   using ListenersUpdated =
       base::RepeatingCallback<void(const std::string& event_name,
                                    binding::EventListenersChanged,
-                                   const base::DictionaryValue* filter,
+                                   const base::Value::Dict* filter,
                                    bool update_lazy_listeners,
                                    v8::Local<v8::Context> context)>;
 

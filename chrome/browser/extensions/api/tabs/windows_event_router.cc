@@ -36,15 +36,15 @@ namespace {
 
 bool ControllerVisibleToListener(WindowController* window_controller,
                                  const Extension* extension,
-                                 const base::DictionaryValue* listener_filter) {
+                                 const base::Value::Dict* listener_filter) {
   if (!window_controller)
     return false;
 
   // If there is no filter the visibility is based on the extension.
   const base::Value::List* filter_value = nullptr;
   if (listener_filter) {
-    filter_value = listener_filter->GetDict().FindList(
-        extensions::tabs_constants::kWindowTypesKey);
+    filter_value =
+        listener_filter->FindList(extensions::tabs_constants::kWindowTypesKey);
   }
 
   // TODO(https://crbug.com/807313): Remove this.
@@ -64,12 +64,12 @@ bool WillDispatchWindowEvent(
     BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    const base::DictionaryValue* listener_filter,
+    const base::Value::Dict* listener_filter,
     std::unique_ptr<base::Value::List>* event_args_out,
     mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   bool has_filter =
       listener_filter &&
-      listener_filter->FindKey(extensions::tabs_constants::kWindowTypesKey);
+      listener_filter->contains(extensions::tabs_constants::kWindowTypesKey);
   // TODO(https://crbug.com/807313): Remove this.
   bool allow_dev_tools_windows = has_filter;
   if (!window_controller->IsVisibleToTabsAPIForExtension(
@@ -95,14 +95,14 @@ bool WillDispatchWindowFocusedEvent(
     BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    const base::DictionaryValue* listener_filter,
+    const base::Value::Dict* listener_filter,
     std::unique_ptr<base::Value::List>* event_args_out,
     mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   int window_id = extension_misc::kUnknownWindowId;
   Profile* new_active_context = nullptr;
   bool has_filter =
       listener_filter &&
-      listener_filter->FindKey(extensions::tabs_constants::kWindowTypesKey);
+      listener_filter->contains(extensions::tabs_constants::kWindowTypesKey);
 
   // We might not have a window controller if the focus moves away
   // from chromium's windows.

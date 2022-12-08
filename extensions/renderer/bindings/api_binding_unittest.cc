@@ -147,7 +147,7 @@ bool DisallowPromises(v8::Local<v8::Context> context) {
 
 void OnEventListenersChanged(const std::string& event_name,
                              binding::EventListenersChanged change,
-                             const base::DictionaryValue* filter,
+                             const base::Value::Dict* filter,
                              bool was_manual,
                              v8::Local<v8::Context> context) {}
 

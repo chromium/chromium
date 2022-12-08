@@ -11,6 +11,7 @@
 
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
+#include "base/values.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/public/renderer/worker_thread.h"
 #include "extensions/common/activation_sequence.h"
@@ -119,7 +120,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                                     const std::string& event_name,
                                     int64_t service_worker_version_id,
                                     int worker_thread_id,
-                                    base::Value filter,
+                                    base::Value::Dict filter,
                                     bool add_lazy_listener);
 
   // Posts mojom::EventRouter::RemoveListenerForServiceWorker to the IO thread
@@ -143,7 +144,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
                                        const std::string& event_name,
                                        int64_t service_worker_version_id,
                                        int worker_thread_id,
-                                       base::Value filter,
+                                       base::Value::Dict filter,
                                        bool remove_lazy_listener);
 
   // NOTE: This must be called on the IO thread because it can call

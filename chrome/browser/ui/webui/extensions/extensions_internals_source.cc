@@ -423,7 +423,7 @@ void AddEventListenerData(extensions::EventRouter* event_router,
       listener_data.Set(kIsLazyKey, listener_entry->IsLazy());
       listener_data.Set(kListenerUrlKey, listener_entry->listener_url().spec());
       // Add the filter if one exists.
-      base::Value* const filter = listener_entry->filter();
+      base::Value::Dict* const filter = listener_entry->filter();
       if (filter) {
         listener_data.Set(kFilterKey, filter->Clone());
       }

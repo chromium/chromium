@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
@@ -108,7 +109,7 @@ class NativeExtensionBindingsSystem {
   // to |send_event_listener_ipc_|.
   void OnEventListenerChanged(const std::string& event_name,
                               binding::EventListenersChanged change,
-                              const base::DictionaryValue* filter,
+                              const base::Value::Dict* filter,
                               bool was_manual,
                               v8::Local<v8::Context> context);
 

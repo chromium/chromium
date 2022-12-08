@@ -168,7 +168,7 @@ class EventRouter : public KeyedService,
 
   void AddFilteredListenerForMainThread(mojom::EventListenerParamPtr param,
                                         const std::string& name,
-                                        base::Value filter,
+                                        base::Value::Dict filter,
                                         bool add_lazy_listener) override;
 
   void AddFilteredListenerForServiceWorker(const std::string& extension_id,
@@ -176,7 +176,7 @@ class EventRouter : public KeyedService,
                                            const std::string& name,
                                            int64_t service_worker_version_id,
                                            int32_t worker_thread_id,
-                                           base::Value filter,
+                                           base::Value::Dict filter,
                                            bool add_lazy_listener) override;
 
   void RemoveListenerForMainThread(mojom::EventListenerParamPtr param,
@@ -197,7 +197,7 @@ class EventRouter : public KeyedService,
 
   void RemoveFilteredListenerForMainThread(mojom::EventListenerParamPtr param,
                                            const std::string& name,
-                                           base::Value filter,
+                                           base::Value::Dict filter,
                                            bool remove_lazy_listener) override;
 
   void RemoveFilteredListenerForServiceWorker(
@@ -206,7 +206,7 @@ class EventRouter : public KeyedService,
       const std::string& name,
       int64_t service_worker_version_id,
       int32_t worker_thread_id,
-      base::Value filter,
+      base::Value::Dict filter,
       bool remove_lazy_listener) override;
 
   // Removes an extension as an event listener for |event_name|.
@@ -261,7 +261,7 @@ class EventRouter : public KeyedService,
       content::RenderProcessHost* process,
       mojom::EventListenerParamPtr param,
       absl::optional<ServiceWorkerIdentifier> sw_identifier,
-      const base::DictionaryValue& filter,
+      const base::Value::Dict& filter,
       bool add_lazy_listener);
 
   // If |remove_lazy_listener| is true also remove the lazy version of this
@@ -271,7 +271,7 @@ class EventRouter : public KeyedService,
       content::RenderProcessHost* process,
       mojom::EventListenerParamPtr param,
       absl::optional<ServiceWorkerIdentifier> sw_identifier,
-      const base::DictionaryValue& filter,
+      const base::Value::Dict& filter,
       bool remove_lazy_listener);
 
   // Returns true if there is at least one listener for the given event.
@@ -439,26 +439,25 @@ class EventRouter : public KeyedService,
                               int64_t service_worker_version_id,
                               int worker_thread_id,
                               const Event& event,
-                              const base::DictionaryValue* listener_filter,
+                              const base::Value::Dict* listener_filter,
                               bool did_enqueue);
 
   // Adds a filter to an event.
   void AddFilterToEvent(const std::string& event_name,
                         const std::string& extension_id,
                         bool is_for_service_worker,
-                        const base::DictionaryValue* filter);
+                        const base::Value::Dict* filter);
 
   // Removes a filter from an event.
   void RemoveFilterFromEvent(const std::string& event_name,
                              const std::string& extension_id,
                              bool is_for_service_worker,
-                             const base::DictionaryValue* filter);
+                             const base::Value::Dict* filter);
 
   // Returns the dictionary of event filters that the given extension has
   // registered.
-  const base::DictionaryValue* GetFilteredEvents(
-      const std::string& extension_id,
-      RegisteredEventType type);
+  const base::Value::Dict* GetFilteredEvents(const std::string& extension_id,
+                                             RegisteredEventType type);
 
   // Track the dispatched events that have not yet sent an ACK from the
   // renderer.
@@ -541,7 +540,7 @@ struct Event {
       content::BrowserContext*,
       Feature::Context,
       const Extension*,
-      const base::DictionaryValue*,
+      const base::Value::Dict*,
       std::unique_ptr<base::Value::List>* event_args_out,
       mojom::EventFilteringInfoPtr* event_filtering_info_out)>;
 

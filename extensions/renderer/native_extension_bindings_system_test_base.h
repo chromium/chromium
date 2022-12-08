@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension.h"
@@ -25,10 +26,6 @@
 #include "v8/include/v8-forward.h"
 
 struct ExtensionHostMsg_APIActionOrEvent_Params;
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace content {
 class MockRenderThread;
@@ -74,12 +71,12 @@ class TestIPCMessageSender : public IPCMessageSender {
   MOCK_METHOD4(SendAddFilteredEventListenerIPC,
                void(ScriptContext* context,
                     const std::string& event_name,
-                    const base::DictionaryValue& filter,
+                    const base::Value::Dict& filter,
                     bool is_lazy));
   MOCK_METHOD4(SendRemoveFilteredEventListenerIPC,
                void(ScriptContext* context,
                     const std::string& event_name,
-                    const base::DictionaryValue& filter,
+                    const base::Value::Dict& filter,
                     bool remove_lazy_listener));
 
   MOCK_METHOD4(SendOpenMessageChannel,

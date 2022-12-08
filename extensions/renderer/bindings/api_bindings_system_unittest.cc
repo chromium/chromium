@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
-#include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
@@ -208,7 +207,7 @@ void APIBindingsSystemTest::OnAPIRequest(
 void APIBindingsSystemTest::OnEventListenersChanged(
     const std::string& event_name,
     binding::EventListenersChanged changed,
-    const base::DictionaryValue* filter,
+    const base::Value::Dict* filter,
     bool was_manual,
     v8::Local<v8::Context> context) {}
 

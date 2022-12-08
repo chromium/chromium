@@ -19,7 +19,7 @@ extern const char kEventFilterServiceTypeKey[];
 // MatchNonURLCriteria() - URL matching is handled by EventFilter.
 class EventMatcher {
  public:
-  EventMatcher(std::unique_ptr<base::DictionaryValue> filter, int routing_id);
+  EventMatcher(std::unique_ptr<base::Value::Dict> filter, int routing_id);
 
   EventMatcher(const EventMatcher&) = delete;
   EventMatcher& operator=(const EventMatcher&) = delete;
@@ -46,9 +46,7 @@ class EventMatcher {
 
   int GetRoutingID() const;
 
-  base::DictionaryValue* value() const {
-    return filter_.get();
-  }
+  base::Value::Dict* value() const { return filter_.get(); }
 
  private:
   // Contains a dictionary that corresponds to a single event filter, eg:
@@ -56,7 +54,7 @@ class EventMatcher {
   // {url: [{hostSuffix: 'google.com'}]}
   //
   // The valid filter keys are event-specific.
-  const std::unique_ptr<base::DictionaryValue> filter_;
+  const std::unique_ptr<base::Value::Dict> filter_;
 
   const int routing_id_;
 };

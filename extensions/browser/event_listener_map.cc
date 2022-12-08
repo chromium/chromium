@@ -10,15 +10,12 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/values.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/constants.h"
 #include "ipc/ipc_message.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-using base::DictionaryValue;
 
 namespace extensions {
 
@@ -29,7 +26,7 @@ std::unique_ptr<EventListener> EventListener::ForExtension(
     const std::string& event_name,
     const std::string& extension_id,
     content::RenderProcessHost* process,
-    std::unique_ptr<base::DictionaryValue> filter) {
+    std::unique_ptr<base::Value::Dict> filter) {
   // The process parameter is nullptr when creating lazy listener.
   // TODO(richardzh): Update lazy listener creation to either calling
   // ForExtensionServiceWorker instead, or update this method signature to add a
@@ -48,7 +45,7 @@ std::unique_ptr<EventListener> EventListener::ForURL(
     const std::string& event_name,
     const GURL& listener_url,
     content::RenderProcessHost* process,
-    std::unique_ptr<base::DictionaryValue> filter) {
+    std::unique_ptr<base::Value::Dict> filter) {
   // Use only the origin to identify the event listener, e.g. chrome://settings
   // for chrome://settings/accounts, to avoid multiple events being triggered
   // for the same process. See crbug.com/536858 for details. // TODO(devlin): If
@@ -68,7 +65,7 @@ std::unique_ptr<EventListener> EventListener::ForExtensionServiceWorker(
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
     int worker_thread_id,
-    std::unique_ptr<base::DictionaryValue> filter) {
+    std::unique_ptr<base::Value::Dict> filter) {
   return base::WrapUnique(new EventListener(
       event_name, extension_id, service_worker_scope, process, browser_context,
       true, service_worker_version_id, worker_thread_id, std::move(filter)));
@@ -96,10 +93,10 @@ bool EventListener::Equals(const EventListener* other) const {
 }
 
 std::unique_ptr<EventListener> EventListener::Copy() const {
-  std::unique_ptr<DictionaryValue> filter_copy;
-  if (filter_)
-    filter_copy = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(filter_->Clone()));
+  std::unique_ptr<base::Value::Dict> filter_copy;
+  if (filter_) {
+    filter_copy = std::make_unique<base::Value::Dict>(filter_->Clone());
+  }
   return base::WrapUnique(new EventListener(
       event_name_, extension_id_, listener_url_, process_, browser_context_,
       is_for_service_worker_, service_worker_version_id_, worker_thread_id_,
@@ -129,7 +126,7 @@ EventListener::EventListener(const std::string& event_name,
                              bool is_for_service_worker,
                              int64_t service_worker_version_id,
                              int worker_thread_id,
-                             std::unique_ptr<DictionaryValue> filter)
+                             std::unique_ptr<base::Value::Dict> filter)
     : event_name_(event_name),
       extension_id_(extension_id),
       listener_url_(listener_url),
@@ -138,8 +135,7 @@ EventListener::EventListener(const std::string& event_name,
       is_for_service_worker_(is_for_service_worker),
       service_worker_version_id_(service_worker_version_id),
       worker_thread_id_(worker_thread_id),
-      filter_(std::move(filter)),
-      matcher_id_(-1) {
+      filter_(std::move(filter)) {
   if (!IsLazy()) {
     DCHECK_EQ(is_for_service_worker, worker_thread_id != kMainThreadId);
     DCHECK_EQ(is_for_service_worker,
@@ -159,7 +155,7 @@ bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {
     return false;
   if (listener->filter()) {
     std::unique_ptr<EventMatcher> matcher(
-        ParseEventMatcher(listener->filter()));
+        ParseEventMatcher(*listener->filter()));
     MatcherID id = event_filter_.AddEventMatcher(listener->event_name(),
                                                  std::move(matcher));
     listener->set_matcher_id(id);
@@ -175,10 +171,9 @@ bool EventListenerMap::AddListener(std::unique_ptr<EventListener> listener) {
 }
 
 std::unique_ptr<EventMatcher> EventListenerMap::ParseEventMatcher(
-    DictionaryValue* filter_dict) {
+    const base::Value::Dict& filter_dict) {
   return std::make_unique<EventMatcher>(
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(filter_dict->Clone())),
+      std::make_unique<base::Value::Dict>(filter_dict.Clone()),
       MSG_ROUTING_NONE);
 }
 
@@ -290,8 +285,7 @@ void EventListenerMap::LoadUnfilteredLazyListeners(
     const std::string& extension_id,
     const std::set<std::string>& event_names) {
   for (const auto& name : event_names) {
-    AddListener(EventListener::ForExtension(
-        name, extension_id, nullptr, std::unique_ptr<DictionaryValue>()));
+    AddListener(EventListener::ForExtension(name, extension_id, nullptr, {}));
   }
 }
 
@@ -314,16 +308,14 @@ void EventListenerMap::LoadFilteredLazyListeners(
     content::BrowserContext* browser_context,
     const std::string& extension_id,
     bool is_for_service_worker,
-    const DictionaryValue& filtered) {
-  for (const auto item : filtered.GetDict()) {
+    const base::Value::Dict& filtered) {
+  for (const auto item : filtered) {
     // We skip entries if they are malformed.
     if (!item.second.is_list())
       continue;
     for (const base::Value& filter_value : item.second.GetList()) {
       if (!filter_value.is_dict())
         continue;
-      const base::DictionaryValue* filter =
-          static_cast<const base::DictionaryValue*>(&filter_value);
       if (is_for_service_worker) {
         AddListener(EventListener::ForExtensionServiceWorker(
             item.first, extension_id, nullptr, browser_context,
@@ -333,13 +325,13 @@ void EventListenerMap::LoadFilteredLazyListeners(
             // https://crbug.com/773103.
             Extension::GetBaseURLFromExtensionId(extension_id),
             blink::mojom::kInvalidServiceWorkerVersionId, kMainThreadId,
-            base::DictionaryValue::From(
-                base::Value::ToUniquePtrValue(filter->Clone()))));
+            std::make_unique<base::Value::Dict>(
+                filter_value.GetDict().Clone())));
       } else {
-        AddListener(EventListener::ForExtension(
-            item.first, extension_id, nullptr,
-            base::DictionaryValue::From(
-                base::Value::ToUniquePtrValue(filter->Clone()))));
+        AddListener(
+            EventListener::ForExtension(item.first, extension_id, nullptr,
+                                        std::make_unique<base::Value::Dict>(
+                                            filter_value.GetDict().Clone())));
       }
     }
   }

@@ -23,10 +23,9 @@ LazyEventDispatcher::LazyEventDispatcher(BrowserContext* browser_context,
 
 LazyEventDispatcher::~LazyEventDispatcher() {}
 
-void LazyEventDispatcher::Dispatch(
-    const Event& event,
-    const LazyContextId& dispatch_context,
-    const base::DictionaryValue* listener_filter) {
+void LazyEventDispatcher::Dispatch(const Event& event,
+                                   const LazyContextId& dispatch_context,
+                                   const base::Value::Dict* listener_filter) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
                                    .GetByID(dispatch_context.extension_id());
@@ -49,7 +48,7 @@ bool LazyEventDispatcher::QueueEventDispatch(
     const Event& event,
     const LazyContextId& dispatch_context,
     const Extension* extension,
-    const base::DictionaryValue* listener_filter) {
+    const base::Value::Dict* listener_filter) {
   if (!EventRouter::CanDispatchEventToBrowserContext(
           dispatch_context.browser_context(), extension, event)) {
     return false;

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
@@ -31,7 +30,6 @@
 #include "extensions/common/features/feature.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 
-using base::DictionaryValue;
 using base::Value;
 using content::WebContents;
 using zoom::ZoomController;
@@ -46,7 +44,7 @@ bool WillDispatchTabUpdatedEvent(
     content::BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    const base::DictionaryValue* listener_filter,
+    const base::Value::Dict* listener_filter,
     std::unique_ptr<base::Value::List>* event_args_out,
     mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
@@ -76,7 +74,7 @@ bool WillDispatchTabCreatedEvent(
     content::BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    const base::DictionaryValue* listener_filter,
+    const base::Value::Dict* listener_filter,
     std::unique_ptr<base::Value::List>* event_args_out,
     mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =

@@ -5,7 +5,6 @@
 #include "extensions/renderer/bindings/listener_tracker.h"
 
 #include "base/check.h"
-#include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/value_counter.h"
 
@@ -36,7 +35,7 @@ bool ListenerTracker::RemoveUnfilteredListener(
 std::pair<bool, int> ListenerTracker::AddFilteredListener(
     const std::string& context_owner_id,
     const std::string& event_name,
-    std::unique_ptr<base::DictionaryValue> filter,
+    std::unique_ptr<base::Value::Dict> filter,
     int routing_id) {
   int filter_id = event_filter_.AddEventMatcher(
       event_name,
@@ -50,26 +49,24 @@ std::pair<bool, int> ListenerTracker::AddFilteredListener(
     counts = std::make_unique<ValueCounter>();
 
   const EventMatcher* matcher = event_filter_.GetEventMatcher(filter_id);
-  bool was_first_of_kind = counts->Add(*matcher->value());
+  bool was_first_of_kind = counts->Add(base::Value(matcher->value()->Clone()));
   return std::make_pair(was_first_of_kind, filter_id);
 }
 
-std::pair<bool, std::unique_ptr<base::DictionaryValue>>
+std::pair<bool, std::unique_ptr<base::Value::Dict>>
 ListenerTracker::RemoveFilteredListener(const std::string& context_owner_id,
                                         const std::string& event_name,
                                         int filter_id) {
   EventMatcher* matcher = event_filter_.GetEventMatcher(filter_id);
   DCHECK(matcher);
-  std::unique_ptr<base::DictionaryValue> filter_copy =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(matcher->value()->Clone()));
 
   FilteredEventListenerKey key(context_owner_id, event_name);
   FilteredListeners::const_iterator counts = filtered_listeners_.find(key);
 
   bool was_last_of_kind = false;
   DCHECK(counts != filtered_listeners_.end());
-  if (counts->second->Remove(*matcher->value())) {
+  base::Value filter_copy = base::Value(matcher->value()->Clone());
+  if (counts->second->Remove(filter_copy)) {
     if (counts->second->is_empty()) {
       // Clean up if there are no more filters.
       filtered_listeners_.erase(counts);
@@ -78,7 +75,9 @@ ListenerTracker::RemoveFilteredListener(const std::string& context_owner_id,
   }
 
   event_filter_.RemoveEventMatcher(filter_id);
-  return std::make_pair(was_last_of_kind, std::move(filter_copy));
+  return std::make_pair(
+      was_last_of_kind,
+      std::make_unique<base::Value::Dict>(std::move(filter_copy).TakeDict()));
 }
 
 std::set<int> ListenerTracker::GetMatchingFilteredListeners(

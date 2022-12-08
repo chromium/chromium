@@ -49,7 +49,7 @@ interface EventRouter {
   AddFilteredListenerForMainThread(
       EventListenerParam param,
       string event_name,
-      mojo_base.mojom.DeprecatedDictionaryValue filter,
+      mojo_base.mojom.DictionaryValue filter,
       bool add_lazy_listener);
 
   // Notifies the browser that the given extension added a listener for a
@@ -60,7 +60,7 @@ interface EventRouter {
       string event_name,
       int64 service_worker_version_id,
       int32 worker_thread_id,
-      mojo_base.mojom.DeprecatedDictionaryValue filter,
+      mojo_base.mojom.DictionaryValue filter,
       bool add_lazy_listener);
 
   // Notifies the browser that the given |extension_id| or |listener_url|
@@ -97,7 +97,7 @@ interface EventRouter {
   RemoveFilteredListenerForMainThread(
       EventListenerParam param,
       string event_name,
-      mojo_base.mojom.DeprecatedDictionaryValue filter,
+      mojo_base.mojom.DictionaryValue filter,
       bool remove_lazy_listener);
 
   // Notifies the browser that the given extension is no longer interested in
@@ -109,7 +109,7 @@ interface EventRouter {
       string event_name,
       int64 service_worker_version_id,
       int32 worker_thread_id,
-      mojo_base.mojom.DeprecatedDictionaryValue filter,
+      mojo_base.mojom.DictionaryValue filter,
       bool remove_lazy_listener);
 
 };

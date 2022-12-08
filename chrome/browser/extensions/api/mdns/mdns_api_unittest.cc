@@ -47,8 +47,8 @@ void AddEventListener(
     const std::string& extension_id,
     const std::string& service_type,
     extensions::EventListenerMap::ListenerList* listener_list) {
-  std::unique_ptr<base::DictionaryValue> filter(new base::DictionaryValue);
-  filter->SetStringKey(kEventFilterServiceTypeKey, service_type);
+  auto filter = std::make_unique<base::Value::Dict>();
+  filter->Set(kEventFilterServiceTypeKey, service_type);
   listener_list->push_back(EventListener::ForExtension(
       kEventFilterServiceTypeKey, extension_id, nullptr, std::move(filter)));
 }
@@ -357,8 +357,8 @@ TEST_P(MDnsAPIExtensionTest, ExtensionRespectsAllowlist) {
   // There is a allowlist of mdns service types extensions may access, which
   // includes "_testing._tcp.local" and excludes "_trex._tcp.local"
   {
-    base::DictionaryValue filter;
-    filter.SetStringKey(kEventFilterServiceTypeKey, "_trex._tcp.local");
+    base::Value::Dict filter;
+    filter.Set(kEventFilterServiceTypeKey, "_trex._tcp.local");
 
     ASSERT_TRUE(dns_sd_registry());
     // Test that the extension is not able to listen to a non-allowlisted
@@ -378,8 +378,8 @@ TEST_P(MDnsAPIExtensionTest, ExtensionRespectsAllowlist) {
                                       absl::nullopt, filter, false);
   }
   {
-    base::DictionaryValue filter;
-    filter.SetStringKey(kEventFilterServiceTypeKey, "_testing._tcp.local");
+    base::Value::Dict filter;
+    filter.Set(kEventFilterServiceTypeKey, "_testing._tcp.local");
 
     ASSERT_TRUE(dns_sd_registry());
     // Test that the extension is able to listen to a allowlisted service
@@ -411,8 +411,8 @@ TEST_F(MDnsAPITest, PlatformAppsNotSubjectToAllowlist) {
   ASSERT_TRUE(extension->is_platform_app());
   auto param = mojom::EventListenerParam::NewExtensionId(kExtId);
 
-  base::DictionaryValue filter;
-  filter.SetStringKey(kEventFilterServiceTypeKey, "_trex._tcp.local");
+  base::Value::Dict filter;
+  filter.Set(kEventFilterServiceTypeKey, "_trex._tcp.local");
 
   ASSERT_TRUE(dns_sd_registry());
   // Test that the extension is able to listen to a non-allowlisted service

@@ -302,7 +302,7 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
       content::BrowserContext* browser_context,
       Feature::Context target_context,
       const Extension* extension,
-      const base::DictionaryValue* listener_filter,
+      const base::Value::Dict* listener_filter,
       std::unique_ptr<base::Value::List>* event_args_out,
       mojom::EventFilteringInfoPtr* event_filtering_info_out);
 
@@ -758,7 +758,7 @@ bool PrinterProviderAPIImpl::WillRequestPrinters(
     content::BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    const base::DictionaryValue* listener_filter,
+    const base::Value::Dict* listener_filter,
     std::unique_ptr<base::Value::List>* event_args_out,
     mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   if (!extension)

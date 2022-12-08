@@ -71,7 +71,7 @@ bool WillDispatchDeviceEvent(
     content::BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    const base::DictionaryValue* listener_filter,
+    const base::Value::Dict* listener_filter,
     std::unique_ptr<base::Value::List>* event_args_out,
     mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   // Check install-time and optional permissions.

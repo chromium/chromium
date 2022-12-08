@@ -9,6 +9,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/render_frame_host.h"
@@ -215,10 +216,10 @@ void MDnsAPI::GetValidOnServiceListListeners(
     std::set<std::string>* extension_ids,
     ServiceTypeCounts* service_type_counts) {
   for (const auto& listener : GetEventListeners()) {
-    base::DictionaryValue* filter = listener->filter();
+    base::Value::Dict* filter = listener->filter();
 
     const std::string* service_type =
-        filter->FindStringKey(kEventFilterServiceTypeKey);
+        filter->FindString(kEventFilterServiceTypeKey);
     if (!service_type || service_type->empty() ||
         !base::IsStringASCII(*service_type))
       continue;

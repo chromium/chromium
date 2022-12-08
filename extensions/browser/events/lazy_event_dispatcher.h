@@ -10,13 +10,10 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/extension_id.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace content {
 class BrowserContext;
@@ -53,7 +50,7 @@ class LazyEventDispatcher {
   // started before dispatching the  event.
   void Dispatch(const Event& event,
                 const LazyContextId& dispatch_context,
-                const base::DictionaryValue* listener_filter);
+                const base::Value::Dict* listener_filter);
 
   // Returns whether or not an event listener identical for |dispatch_context|
   // is already queued for dispatch.
@@ -66,7 +63,7 @@ class LazyEventDispatcher {
   bool QueueEventDispatch(const Event& event,
                           const LazyContextId& dispatch_context,
                           const Extension* extension,
-                          const base::DictionaryValue* listener_filter);
+                          const base::Value::Dict* listener_filter);
 
   void RecordAlreadyDispatched(const LazyContextId& dispatch_context);
 

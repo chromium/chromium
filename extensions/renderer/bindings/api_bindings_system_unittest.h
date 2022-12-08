@@ -9,14 +9,11 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_request_handler.h"
 #include "v8/include/v8.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 class APIBindingsSystem;
@@ -60,14 +57,14 @@ class APIBindingsSystemTest : public APIBindingTest {
   void AddConsoleError(v8::Local<v8::Context> context,
                        const std::string& error);
 
-  // Returns the DictionaryValue representing the schema with the given API
+  // Returns the base::Value::Dict representing the schema with the given API
   // name.
   const base::Value::Dict& GetAPISchema(const std::string& api_name);
 
   // Callback for event listeners changing.
   void OnEventListenersChanged(const std::string& event_name,
                                binding::EventListenersChanged changed,
-                               const base::DictionaryValue* filter,
+                               const base::Value::Dict* filter,
                                bool was_manual,
                                v8::Local<v8::Context> context);
 

@@ -94,7 +94,7 @@ void AddEventFilteredListenerOnIO(const std::string& extension_id,
                                   const std::string& event_name,
                                   int64_t service_worker_version_id,
                                   int worker_thread_id,
-                                  base::Value filter,
+                                  base::Value::Dict filter,
                                   bool add_lazy_listener) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->GetEventRouterOnIO()->AddFilteredListenerForServiceWorker(
@@ -109,7 +109,7 @@ void RemoveEventFilteredListenerOnIO(const std::string& extension_id,
                                      const std::string& event_name,
                                      int64_t service_worker_version_id,
                                      int worker_thread_id,
-                                     base::Value filter,
+                                     base::Value::Dict filter,
                                      bool remove_lazy_listener) {
   auto* dispatcher = WorkerThreadDispatcher::Get();
   dispatcher->GetEventRouterOnIO()->RemoveFilteredListenerForServiceWorker(
@@ -256,7 +256,7 @@ void WorkerThreadDispatcher::SendAddEventFilteredListener(
     const std::string& event_name,
     int64_t service_worker_version_id,
     int worker_thread_id,
-    base::Value filter,
+    base::Value::Dict filter,
     bool add_lazy_listener) {
   io_task_runner_->PostTask(
       FROM_HERE,
@@ -292,7 +292,7 @@ void WorkerThreadDispatcher::SendRemoveEventFilteredListener(
     const std::string& event_name,
     int64_t service_worker_version_id,
     int worker_thread_id,
-    base::Value filter,
+    base::Value::Dict filter,
     bool remove_lazy_listener) {
   io_task_runner_->PostTask(
       FROM_HERE,
