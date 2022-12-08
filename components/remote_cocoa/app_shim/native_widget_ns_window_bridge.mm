@@ -450,7 +450,7 @@ void NativeWidgetNSWindowBridge::InitWindow(
   // Validate the window's initial state, otherwise the bridge's initial
   // tracking state will be incorrect.
   DCHECK(![window_ isVisible]);
-  DCHECK(!IsFullscreen());
+  DCHECK_EQ(0u, [window_ styleMask] & NSWindowStyleMaskFullScreen);
 
   // Include "regular" windows without the standard frame in the window cycle.
   // These use NSWindowStyleMaskBorderless so do not get it by default.
@@ -861,11 +861,6 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
 
 bool NativeWidgetNSWindowBridge::HasWindowRestorationData() {
   return !pending_restoration_data_.empty();
-}
-
-bool NativeWidgetNSWindowBridge::IsFullscreen() {
-  return ([window_ styleMask] & NSWindowStyleMaskFullScreen) ==
-         NSWindowStyleMaskFullScreen;
 }
 
 bool NativeWidgetNSWindowBridge::RunMoveLoop(const gfx::Vector2d& drag_offset) {
@@ -1287,10 +1282,15 @@ void NativeWidgetNSWindowBridge::FullscreenControllerToggleFullscreen() {
   }
 
   bool is_key_window = [window_ isKeyWindow];
-  bool was_fullscreen = IsFullscreen();
   [window_ toggleFullScreen:nil];
-  // Ensure the transitioning window maintains focus (crbug.com/1338659).
-  if (!was_fullscreen && is_key_window)
+  // Ensure the transitioning window maintains focus.
+  // When a key window moves to a different space, AppKit will focus a
+  // different window on the previouly focused space to become key, which can
+  // break cross-display fullscreen transitions by losing focus of the
+  // transitioning window (crbug.com/1338659) or changing the z-order of
+  // windows on the previous space. Making the window key here seems to
+  // alleviate those apparent defects (crbug.com/1392542). 
+  if (is_key_window)
     [window_ makeKeyAndOrderFront:nil];
 }
 

@@ -340,9 +340,6 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Returns true if window restoration data exists from session restore.
   bool HasWindowRestorationData();
 
-  // Returns true if the window is fullscreen.
-  bool IsFullscreen();
-
   // CocoaMouseCaptureDelegate:
   bool PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
