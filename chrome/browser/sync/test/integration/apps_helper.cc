@@ -55,7 +55,7 @@ void FlushPendingOperations(std::vector<Profile*> profiles) {
 
     std::vector<web_app::AppId> apps_to_be_sync_installed =
         web_app::WebAppProvider::GetForTest(profile)
-            ->registrar()
+            ->registrar_unsafe()
             .GetAppsFromSyncAndPendingInstallation();
     apps_to_be_installed.insert(apps_to_be_sync_installed.begin(),
                                 apps_to_be_sync_installed.end());
@@ -227,7 +227,7 @@ bool AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     // registry.
     auto* provider = web_app::WebAppProvider::GetForTest(profile);
     std::vector<web_app::AppId> sync_apps_pending_install =
-        provider->registrar().GetAppsFromSyncAndPendingInstallation();
+        provider->registrar_unsafe().GetAppsFromSyncAndPendingInstallation();
     if (!sync_apps_pending_install.empty()) {
       LOG(ERROR) << "Apps from sync are still pending installation: "
                  << sync_apps_pending_install.size();
@@ -235,7 +235,7 @@ bool AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     }
 
     std::vector<web_app::AppId> apps_in_uninstall =
-        provider->registrar().GetAppsPendingUninstall();
+        provider->registrar_unsafe().GetAppsPendingUninstall();
     if (!apps_in_uninstall.empty()) {
       LOG(ERROR) << "App uninstalls are still pending: "
                  << apps_in_uninstall.size();
@@ -264,7 +264,7 @@ web_app::AppId InstallWebApp(Profile* profile, const WebAppInstallInfo& info) {
 
   run_loop.Run();
 
-  const web_app::WebAppRegistrar& registrar = provider->registrar();
+  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   DCHECK_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
   DCHECK_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
 

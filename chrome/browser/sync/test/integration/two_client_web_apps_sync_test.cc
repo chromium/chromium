@@ -78,7 +78,7 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
-    return WebAppProvider::GetForTest(profile)->registrar();
+    return WebAppProvider::GetForTest(profile)->registrar_unsafe();
   }
 
   bool AllProfilesHaveSameWebAppIds() {
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 
   auto* provider1 = WebAppProvider::GetForTest(GetProfile(1));
-  WebAppRegistrar& registrar1 = provider1->registrar();
+  WebAppRegistrar& registrar1 = provider1->registrar_unsafe();
   EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
             UserDisplayMode::kStandalone);
 

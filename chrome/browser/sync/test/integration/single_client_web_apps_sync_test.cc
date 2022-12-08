@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 }
 
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
   auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
 
   EXPECT_EQ(web_app_registrar.GetAppById(app_id), nullptr);
 }
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
   auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
 
   EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
 }
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
 
   EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
 }
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar();
+      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 

@@ -158,7 +158,7 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
-    return WebAppProvider::GetForTest(profile)->registrar();
+    return WebAppProvider::GetForTest(profile)->registrar_unsafe();
   }
 
   FakeOsIntegrationManager& GetOsIntegrationManager(Profile* profile) {
