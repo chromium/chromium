@@ -871,9 +871,14 @@ class ASH_EXPORT WallpaperControllerImpl
 
   base::FilePathWatcher drive_fs_wallpaper_watcher_;
 
-  // Used to capture wallpaper variants' url to their corresponding image.
-  // Cleared every time downloading wallpapers is initiated.
-  base::flat_map<std::string, gfx::ImageSkia> url_to_image_map_;
+  // Transient storage for the wallpaper variant (out of the N total variants
+  // that may exist for a given "unit") that was requested by the client. The
+  // other N - 1 variants are saved to disc for potential future usage. After
+  // all variants have been downloaded and saved, the
+  // |online_wallpaper_variant_to_use_| is released and passed on for further
+  // processing in the pipeline.
+  gfx::ImageSkia online_wallpaper_variant_to_use_;
+  size_t num_variants_downloaded_ = 0;
 
   // If true, use a solid color wallpaper as if it is the decoded image.
   bool bypass_decode_for_testing_ = false;

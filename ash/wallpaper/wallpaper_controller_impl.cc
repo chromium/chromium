@@ -2951,12 +2951,14 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
                        /*save_file=*/true, std::move(callback)));
   } else {
     // Start fetching the wallpaper variants.
-    url_to_image_map_.clear();
+    num_variants_downloaded_ = 0;
+    online_wallpaper_variant_to_use_ = gfx::ImageSkia();
     auto on_done = base::BarrierClosure(
         variants.size(),
         base::BindOnce(
             &WallpaperControllerImpl::OnAllOnlineWallpaperVariantsDownloaded,
-            weak_factory_.GetWeakPtr(), params, std::move(callback)));
+            set_wallpaper_weak_factory_.GetWeakPtr(), params,
+            std::move(callback)));
 
     for (size_t i = 0; i < variants.size(); i++) {
       ImageDownloader::Get()->Download(
@@ -2983,8 +2985,10 @@ void WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded(
 
   const std::vector<OnlineWallpaperVariant>& variants = params.variants;
   const OnlineWallpaperVariant& current_variant = variants.at(current_index);
-  // Keep track of each downloaded image.
-  url_to_image_map_.insert({current_variant.raw_url.spec(), image});
+
+  ++num_variants_downloaded_;
+  if (params.url == current_variant.raw_url)
+    online_wallpaper_variant_to_use_ = image;
 
   // Save the image to disk.
   image.EnsureRepsForSupportedScales();
@@ -2999,15 +3003,21 @@ void WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded(
 void WallpaperControllerImpl::OnAllOnlineWallpaperVariantsDownloaded(
     const OnlineWallpaperParams& params,
     SetWallpaperCallback callback) {
-  bool success = url_to_image_map_.size() == params.variants.size() &&
-                 !url_to_image_map_.at(params.url.spec()).isNull();
+  bool success = num_variants_downloaded_ == params.variants.size() &&
+                 !online_wallpaper_variant_to_use_.isNull();
+  // Now that all variants are downloaded, there's no point in maintaining
+  // |online_wallpaper_variant_to_use_|. Keeping it around just leaves an unused
+  // reference count to the underlying image memory until the next wallpaper is
+  // "set", preventing that memory from being freed until then.
+  gfx::ImageSkia variant_to_use = online_wallpaper_variant_to_use_;
+  online_wallpaper_variant_to_use_ = gfx::ImageSkia();
   if (!success) {
     std::move(callback).Run(success);
     return;
   }
 
   OnOnlineWallpaperDecoded(params, /*save_file=*/false, std::move(callback),
-                           url_to_image_map_.at(params.url.spec()));
+                           variant_to_use);
 }
 
 constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
