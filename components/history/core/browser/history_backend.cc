@@ -60,6 +60,7 @@
 #include "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #include "components/history/core/browser/url_utils.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -386,16 +387,18 @@ void HistoryBackend::Init(
   typed_url_sync_bridge_ = std::make_unique<TypedURLSyncBridge>(
       this, db_ ? db_->GetTypedURLMetadataDB() : nullptr,
       std::make_unique<ClientTagBasedModelTypeProcessor>(
-          syncer::TYPED_URLS, /*dump_stack=*/base::RepeatingClosure()));
+          syncer::TYPED_URLS,
+          base::BindRepeating(&syncer::ReportUnrecoverableError,
+                              history_database_params.channel)));
   typed_url_sync_bridge_->Init();
 
   if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
-    // TODO(crbug.com/1318028): Plumb in syncer::ReportUnrecoverableError as the
-    // dump_stack callback.
     history_sync_bridge_ = std::make_unique<HistorySyncBridge>(
         this, db_ ? db_->GetHistoryMetadataDB() : nullptr,
         std::make_unique<ClientTagBasedModelTypeProcessor>(
-            syncer::HISTORY, /*dump_stack=*/base::RepeatingClosure()));
+            syncer::HISTORY,
+            base::BindRepeating(&syncer::ReportUnrecoverableError,
+                                history_database_params.channel)));
   }
 
   if (base::FeatureList::IsEnabled(kDeleteForeignVisitsOnStartup) && db_) {
