@@ -154,7 +154,4 @@ specific_include_rules = {
   "gtest_prod_util\.h$": [
     "+testing/gtest/include/gtest/gtest_prod.h",
   ],
-  "raw_ptr\.cc$": [
-    "+base",
-  ]
 }

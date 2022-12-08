@@ -367,24 +367,6 @@ component("partition_alloc") {
   }
 }
 
-source_set("raw_ptr") {
-  # `gn check` is unhappy with most `#includes` when PA isn't
-  # actually built.
-  check_includes = false
-  public = [
-    "pointers/raw_ptr.h",
-    "pointers/raw_ref.h",
-  ]
-  sources = [ "pointers/raw_ptr.cc" ]
-  if (use_partition_alloc) {
-    public_deps = [ ":partition_alloc" ]
-  }
-  deps = [ ":buildflags" ]
-
-  # See also: `partition_alloc_base/component_export.h`
-  defines = [ "IS_RAW_PTR_IMPL" ]
-}
-
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
 
