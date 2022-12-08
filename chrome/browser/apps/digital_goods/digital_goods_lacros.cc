@@ -28,7 +28,7 @@ absl::optional<std::pair<web_app::AppId, GURL>> GetWebAppIdAndScopeForDocument(
     return absl::nullopt;
   }
 
-  const web_app::WebAppRegistrar& registrar = provider->registrar();
+  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
   absl::optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(
       render_frame_host.GetMainFrame()->GetLastCommittedURL());
   if (!app_id) {
