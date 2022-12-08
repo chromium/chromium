@@ -74,7 +74,8 @@ public class CreatorActivity extends SnackbarActivity {
                 new ShareDelegateImpl.ShareSheetDelegate(),
                 /* isCustomTab */ false);
         mShareDelegateSupplier.set(shareDelegate);
-        mCreatorActionDelegate = new CreatorActionDelegateImpl();
+        mCreatorActionDelegate =
+                new CreatorActionDelegateImpl(this, mProfile, getSnackbarManager());
         coordinator.initFeedStream(mCreatorActionDelegate,
                 HelpAndFeedbackLauncherImpl.getInstance(), mShareDelegateSupplier);
 

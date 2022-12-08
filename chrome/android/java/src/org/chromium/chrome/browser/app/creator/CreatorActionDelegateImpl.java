@@ -4,28 +4,46 @@
 
 package org.chromium.chrome.browser.app.creator;
 
+import android.content.Context;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.mojom.WindowOpenDisposition;
+import org.chromium.url.GURL;
 
 /** Implements some actions for the Feed */
 public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private static final String TAG = "Cormorant";
 
-    public CreatorActionDelegateImpl() {}
+    private final Context mActivityContext;
+    private final Profile mProfile;
+    private final SnackbarManager mSnackbarManager;
+
+    public CreatorActionDelegateImpl(
+            Context activityContext, Profile profile, SnackbarManager snackbarManager) {
+        mActivityContext = activityContext;
+        mProfile = profile;
+        mSnackbarManager = snackbarManager;
+    }
+
     @Override
     public void downloadPage(String url) {
-        // TODO(crbug/1385185) Add glue code to access download page action.
+        // Unimplemented.
     }
 
     @Override
     public void openSuggestionUrl(int disposition, LoadUrlParams params, boolean inGroup,
             Runnable onPageLoaded, Callback<VisitResult> onVisitComplete) {
-        // Back of card actions
+        // Back-of-card actions
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB
                 || disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
                 || disposition == WindowOpenDisposition.OFF_THE_RECORD) {
@@ -48,7 +66,14 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void addToReadingList(String title, String url) {
-        // TODO(crbug/1385187) create glue code for accessing bookmark model.
+        // TODO(crbug/1399617) Eliminate code duplication with
+        //     FeedActionDelegateImpl
+        BookmarkModel bookmarkModel = BookmarkModel.getForProfile(mProfile);
+        bookmarkModel.finishLoadingBookmarkModel(() -> {
+            assert ThreadUtils.runningOnUiThread();
+            BookmarkUtils.addToReadingList(
+                    new GURL(url), title, mSnackbarManager, bookmarkModel, mActivityContext);
+        });
     }
 
     @Override
