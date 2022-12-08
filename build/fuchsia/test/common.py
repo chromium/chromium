@@ -62,6 +62,14 @@ def _is_daemon_running():
     return 'Running' in _get_daemon_status()
 
 
+def check_ssh_config_file() -> None:
+    """Checks for ssh keys and generates them if they are missing."""
+
+    script_path = os.path.join(SDK_ROOT, 'bin', 'fuchsia-common.sh')
+    check_cmd = ['bash', '-c', f'. {script_path}; check-fuchsia-ssh-config']
+    subprocess.run(check_cmd, check=True)
+
+
 def _wait_for_daemon(start=True, timeout_seconds=100):
     """Waits for daemon to reach desired state in a polling loop.
 

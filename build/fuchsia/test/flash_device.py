@@ -14,7 +14,8 @@ import time
 
 from typing import Optional, Tuple
 
-from common import register_device_args, run_ffx_command, SDK_ROOT
+from common import check_ssh_config_file, register_device_args, \
+                   run_ffx_command, SDK_ROOT
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
     running_unattended, add_exec_to_file, get_host_arch, find_image_in_sdk
 from ffx_integration import ScopedFfxConfig
@@ -155,6 +156,7 @@ def update(system_image_dir: str,
 
     system_image_dir = actual_image_dir
     if needs_update:
+        check_ssh_config_file()
         if should_pave:
             if running_unattended():
                 assert target, ('Target ID must be specified on swarming when'

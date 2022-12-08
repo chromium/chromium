@@ -15,8 +15,8 @@ import tempfile
 from contextlib import AbstractContextManager
 from typing import Iterable, Optional
 
-from common import run_ffx_command, run_continuous_ffx_command, \
-                   SDK_ROOT
+from common import check_ssh_config_file, run_ffx_command, \
+                   run_continuous_ffx_command, SDK_ROOT
 from compatible_utils import get_host_arch
 
 _EMU_COMMAND_RETRIES = 3
@@ -119,16 +119,6 @@ class FfxEmulator(AbstractContextManager):
                 self._scoped_pb_metadata = ScopedFfxConfig(
                     'pbms.metadata', json.dumps((pb_metadata)))
 
-    @staticmethod
-    def _check_ssh_config_file() -> None:
-        """Checks for ssh keys and generates them if they are missing."""
-
-        script_path = os.path.join(SDK_ROOT, 'bin', 'fuchsia-common.sh')
-        check_cmd = [
-            'bash', '-c', f'. {script_path}; check-fuchsia-ssh-config'
-        ]
-        subprocess.run(check_cmd, check=True)
-
     def __enter__(self) -> str:
         """Start the emulator.
 
@@ -138,7 +128,7 @@ class FfxEmulator(AbstractContextManager):
 
         if self._scoped_pb_metadata:
             self._scoped_pb_metadata.__enter__()
-        self._check_ssh_config_file()
+        check_ssh_config_file()
         emu_command = [
             'emu', 'start', self._product_bundle, '--name', self._node_name
         ]

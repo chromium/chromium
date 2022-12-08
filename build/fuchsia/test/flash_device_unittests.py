@@ -31,11 +31,15 @@ class FlashDeviceTest(unittest.TestCase):
         self._sdk_hash_patcher = mock.patch('flash_device.get_sdk_hash',
                                             return_value=(_TEST_PRODUCT,
                                                           _TEST_VERSION))
+        self._check_patcher = mock.patch('flash_device.check_ssh_config_file')
         self._config_mock = self._config_patcher.start()
         self._ffx_mock = self._ffx_patcher.start()
         self._sdk_hash_mock = self._sdk_hash_patcher.start()
+        self._check_patcher_mock = self._check_patcher.start()
+        self.addCleanup(self._config_mock.stop)
         self.addCleanup(self._ffx_mock.stop)
         self.addCleanup(self._sdk_hash_mock.stop)
+        self.addCleanup(self._check_patcher_mock.stop)
 
     def test_update_required_on_ignore_returns_immediately(self) -> None:
         """Test |os_check|='ignore' skips all checks."""
