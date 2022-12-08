@@ -818,7 +818,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.IsSameBrowsingInstance"
-    enum="NavigationIsSameBrowsingInstance" expires_after="2023-01-15">
+    enum="NavigationIsSameBrowsingInstance" expires_after="2025-01-01">
   <owner>arthursonzogni@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
@@ -835,7 +835,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.IsSameSiteInstance"
-    enum="NavigationIsSameSiteInstance" expires_after="2023-05-07">
+    enum="NavigationIsSameSiteInstance" expires_after="2025-01-01">
   <owner>arthursonzogni@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>nasko@chromium.org</owner>
