@@ -33,7 +33,7 @@ bool DeviceHasEnoughMemoryForBackForwardCache() {
     // 2GB devices which report lower RAM due to carveouts.
     int default_memory_threshold_mb =
 #if BUILDFLAG(IS_ANDROID)
-        1700;
+        1200;
 #else
         // Desktop has lower memory limitations compared to Android allowing us
         // to enable BackForwardCache for all devices.
