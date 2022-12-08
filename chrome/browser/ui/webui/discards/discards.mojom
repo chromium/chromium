@@ -52,11 +52,6 @@ struct TabDiscardsInfo {
   // This can be manipulated by the chrome://discards UI, or via the discards
   // extension API.
   bool is_auto_discardable;
-  // True if a reactivation score is calculated for the tab. Reactivation score
-  // can be predicted only for background tabs.
-  bool has_reactivation_score;
-  // Tab Ranker reactivation score, if |has_reactivation_score| is true.
-  double reactivation_score;
   // Site engagement score.
   double site_engagement_score;
   // Whether or not the tab has input focus.

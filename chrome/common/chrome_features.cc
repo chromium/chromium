@@ -1080,11 +1080,6 @@ BASE_FEATURE(kTPMFirmwareUpdate,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)
-// Enables logging UKMs for background tab activity by TabActivityWatcher.
-BASE_FEATURE(kTabMetricsLogging,
-             "TabMetricsLogging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the demo version of the Support Tool. The tool will be available in
 // chrome://support-tool. See go/support-tool-v1-design for more details.
 BASE_FEATURE(kSupportTool, "SupportTool", base::FEATURE_DISABLED_BY_DEFAULT);

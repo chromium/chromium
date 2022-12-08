@@ -173,14 +173,6 @@
                 </div>
               </div>
             </th>
-            <th data-sort-key="reactivationScore" on-click="onSortClick">
-              <div class="header-cell-container">
-                <div>
-                  <div>Reactivation</div>
-                  <div>Score</div>
-                </div>
-              </div>
-            </th>
             <th data-sort-key="siteEngagementScore" on-click="onSortClick">
               <div class="header-cell-container">
                 <div>
@@ -252,7 +244,6 @@
               items="[[tabInfos_]]">
             <tr>
               <td>[[item.utilityRank]]</td>
-              <td>[[getReactivationScore_(item)]]</td>
               <td>[[getSiteEngagementScore_(item)]]</td>
               <td>
                 <div class="title-cell-container">

@@ -71,7 +71,6 @@ export function compareTabDiscardsInfos(
         'loadingState',
         'discardCount',
         'utilityRank',
-        'reactivationScore',
         'lastActiveSeconds',
         'siteEngagementScore',
       ].includes(sortKey)) {
@@ -248,16 +247,6 @@ class DiscardsTabElement extends DiscardsTabElementBase {
     }
     this.updateTableImpl_();
     this.updateTimer_ = setInterval(this.updateTableImpl_.bind(this), 1000);
-  }
-
-  /**
-   * Formats an items reactivation for display.
-   * @param item The item in question.
-   * @return The formatted reactivation score.
-   */
-  private getReactivationScore_(item: TabDiscardsInfo): string {
-    return item.hasReactivationScore ? item.reactivationScore.toFixed(4) :
-                                       'N/A';
   }
 
   /**

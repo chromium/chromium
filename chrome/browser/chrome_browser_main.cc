@@ -204,7 +204,6 @@
 #include "ui/base/resource/resource_bundle_android.h"
 #else
 #include "chrome/browser/profiles/delete_profile_helper.h"
-#include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resources_integrity.h"
 #include "chrome/browser/ui/browser.h"
@@ -1322,10 +1321,6 @@ void ChromeBrowserMainParts::PostBrowserStart() {
         ->PostTask(FROM_HERE,
                    base::BindOnce(&WebUsbDetector::Initialize,
                                   base::Unretained(web_usb_detector_.get())));
-  }
-  if (base::FeatureList::IsEnabled(features::kTabMetricsLogging)) {
-    // Initialize the TabActivityWatcher to begin logging tab activity events.
-    resource_coordinator::TabActivityWatcher::GetInstance();
   }
 #endif
 

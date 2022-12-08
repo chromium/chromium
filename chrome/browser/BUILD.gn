@@ -4090,8 +4090,6 @@ static_library("browser") {
       "resource_coordinator/lifecycle_unit_source_base.cc",
       "resource_coordinator/lifecycle_unit_source_base.h",
       "resource_coordinator/lifecycle_unit_source_observer.h",
-      "resource_coordinator/tab_activity_watcher.cc",
-      "resource_coordinator/tab_activity_watcher.h",
       "resource_coordinator/tab_lifecycle_observer.h",
       "resource_coordinator/tab_lifecycle_unit.cc",
       "resource_coordinator/tab_lifecycle_unit.h",
