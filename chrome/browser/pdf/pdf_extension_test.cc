@@ -102,6 +102,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/scoped_time_zone.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -386,6 +387,20 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
     EXPECT_NE(pdf_tree_id, ui::AXTreeIDUnknown());
 
     return content::GetAccessibilityTreeSnapshotFromId(pdf_tree_id);
+  }
+
+  void SimulateMouseClickAt(extensions::MimeHandlerViewGuest* guest,
+                            int modifiers,
+                            blink::WebMouseEvent::Button button,
+                            const gfx::Point& point_in_guest) {
+    auto* guest_main_frame = guest->GetGuestMainFrame();
+    content::WaitForHitTestData(guest_main_frame);
+
+    const gfx::Point point_in_root_coords =
+        guest_main_frame->GetView()->TransformPointToRootCoordSpace(
+            point_in_guest);
+    content::SimulateMouseClickAt(guest->embedder_web_contents(), modifiers,
+                                  button, point_in_root_coords);
   }
 
   // Hooks to set up feature flags.
@@ -2065,25 +2080,23 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
 IN_PROC_BROWSER_TEST_F(
     PDFExtensionTest,
     DISABLED_ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
-  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
   ASSERT_TRUE(plugin_frame);
 
+  content::RenderFrameHost* guest_main_frame = guest->GetGuestMainFrame();
   // Makes sure that the correct frame invoked the context menu.
-  content::ContextMenuInterceptor menu_interceptor(
-      guest_contents->GetPrimaryMainFrame());
+  content::ContextMenuInterceptor menu_interceptor(guest_main_frame);
 
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   PrintObserver print_observer(plugin_frame);
-  content::SimulateMouseClickAt(guest_contents,
-                                blink::WebInputEvent::kNoModifiers,
-                                blink::WebMouseEvent::Button::kLeft, {1, 1});
-  guest_contents->GetPrimaryMainFrame()
-      ->GetRenderWidgetHost()
-      ->ShowContextMenuAtPoint({1, 1}, ui::MENU_SOURCE_MOUSE);
+  SimulateMouseClickAt(guest, blink::WebInputEvent::kNoModifiers,
+                       blink::WebMouseEvent::Button::kLeft, {1, 1});
+  guest_main_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+      {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
   menu_interceptor.Wait();
 }
@@ -2111,9 +2124,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ContextMenuPrintCommandPluginFrame) {
 // TODO(crbug.com/1330032): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
                        DISABLED_ContextMenuPrintCommandEmbeddedPluginFrame) {
-  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
-  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);
   ASSERT_TRUE(plugin_frame);
 
   // Makes sure that the correct frame invoked the context menu.
@@ -2123,7 +2136,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
   PrintObserver print_observer(plugin_frame);
-  SetInputFocusOnPlugin(guest_contents);
+  SetInputFocusOnPlugin(guest);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   print_observer.WaitForPrintPreview();
