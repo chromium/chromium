@@ -208,8 +208,8 @@ class CONTENT_EXPORT MediaDevicesManager
   // EnumerateDevices is called. The results of a new or in-progress low-level
   // device enumeration are used.
   // The SYSTEM_MONITOR policy is such that previous results are re-used,
-  // provided they were successfully produced by a low-level device enumeration
-  // issued after the last call to OnDevicesChanged.
+  // provided they were produced by a low-level device enumeration issued after
+  // the last call to OnDevicesChanged.
   enum class CachePolicy {
     NO_CACHE,
     SYSTEM_MONITOR,

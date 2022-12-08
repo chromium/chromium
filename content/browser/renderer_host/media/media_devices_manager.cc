@@ -253,7 +253,11 @@ struct MediaDevicesManager::EnumerationRequest {
 // redundant enumerations.
 class MediaDevicesManager::CacheInfo {
  public:
-  CacheInfo() = default;
+  CacheInfo()
+      : current_event_sequence_(0),
+        seq_last_update_(0),
+        seq_last_invalidation_(0),
+        is_update_ongoing_(false) {}
 
   void InvalidateCache() {
     DCHECK(thread_checker_.CalledOnValidThread());
@@ -262,8 +266,7 @@ class MediaDevicesManager::CacheInfo {
 
   bool IsLastUpdateValid() const {
     DCHECK(thread_checker_.CalledOnValidThread());
-    return seq_last_update_ > seq_last_invalidation_ && !is_update_ongoing_ &&
-           (last_update_result_ == UpdateResult::kSuccess);
+    return seq_last_update_ > seq_last_invalidation_ && !is_update_ongoing_;
   }
 
   void UpdateStarted() {
@@ -273,12 +276,10 @@ class MediaDevicesManager::CacheInfo {
     is_update_ongoing_ = true;
   }
 
-  enum class UpdateResult { kSuccess, kFailure };
-  void UpdateCompleted(UpdateResult result) {
+  void UpdateCompleted() {
     DCHECK(thread_checker_.CalledOnValidThread());
     DCHECK(is_update_ongoing_);
     is_update_ongoing_ = false;
-    last_update_result_ = result;
   }
 
   bool is_update_ongoing() const {
@@ -292,11 +293,10 @@ class MediaDevicesManager::CacheInfo {
     return ++current_event_sequence_;
   }
 
-  int64_t current_event_sequence_ = 0;
-  int64_t seq_last_update_ = 0;
-  int64_t seq_last_invalidation_ = 0;
-  bool is_update_ongoing_ = false;
-  UpdateResult last_update_result_ = UpdateResult::kSuccess;
+  int64_t current_event_sequence_;
+  int64_t seq_last_update_;
+  int64_t seq_last_invalidation_;
+  bool is_update_ongoing_;
   base::ThreadChecker thread_checker_;
 };
 
@@ -414,11 +414,7 @@ void MediaDevicesManager::EnumerateDevices(
   bool all_results_cached = true;
   for (size_t i = 0;
        i < static_cast<size_t>(MediaDeviceType::NUM_MEDIA_DEVICE_TYPES); ++i) {
-    bool value_cached_or_being_updated = cache_infos_[i].IsLastUpdateValid() ||
-                                         cache_infos_[i].is_update_ongoing();
-    bool enumeration_required = cache_policies_[i] == CachePolicy::NO_CACHE ||
-                                !value_cached_or_being_updated;
-    if (requested_types[i] && enumeration_required) {
+    if (requested_types[i] && cache_policies_[i] == CachePolicy::NO_CACHE) {
       all_results_cached = false;
       DoEnumerateDevices(static_cast<MediaDeviceType>(i));
     }
@@ -970,7 +966,7 @@ void MediaDevicesManager::VideoInputDevicesEnumerated(
       return false;
     });
     cache_infos_[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]
-        .UpdateCompleted(CacheInfo::UpdateResult::kFailure);
+        .UpdateCompleted();
 
     return;
   }
@@ -1001,8 +997,7 @@ void MediaDevicesManager::DevicesEnumerated(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(blink::IsValidMediaDeviceType(type));
   UpdateSnapshot(type, snapshot);
-  cache_infos_[static_cast<size_t>(type)].UpdateCompleted(
-      CacheInfo::UpdateResult::kSuccess);
+  cache_infos_[static_cast<size_t>(type)].UpdateCompleted();
   has_seen_result_[static_cast<size_t>(type)] = true;
   SendLogMessage(GetDevicesEnumeratedLogString(type, snapshot));
 
