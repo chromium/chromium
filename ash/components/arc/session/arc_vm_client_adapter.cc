@@ -28,6 +28,7 @@
 #include "ash/components/arc/session/file_system_status.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -66,6 +67,7 @@
 #include "components/version_info/version_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 
 namespace arc {
@@ -402,21 +404,26 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   else
     request.set_vm_memory_psi_period(-1);
 
-  auto orientation = display::Display::ROTATE_0;
-  if (auto* screen = display::Screen::GetScreen())
-    orientation = screen->GetPrimaryDisplay().panel_rotation();
+  auto orientation = display::PanelOrientation::kNormal;
+  if (auto* screen = display::Screen::GetScreen()) {
+    const auto display_id = screen->GetPrimaryDisplay().id();
+    if (auto* shell = ash::Shell::Get()) {
+      const auto& info = shell->display_manager()->GetDisplayInfo(display_id);
+      orientation = info.panel_orientation();
+    }
+  }
   switch (orientation) {
     using StartArcVmRequest = vm_tools::concierge::StartArcVmRequest;
-    case display::Display::ROTATE_0:
+    case display::PanelOrientation::kNormal:
       request.set_panel_orientation(StartArcVmRequest::ORIENTATION_0);
       break;
-    case display::Display::ROTATE_90:
+    case display::PanelOrientation::kRightUp:
       request.set_panel_orientation(StartArcVmRequest::ORIENTATION_90);
       break;
-    case display::Display::ROTATE_180:
+    case display::PanelOrientation::kBottomUp:
       request.set_panel_orientation(StartArcVmRequest::ORIENTATION_180);
       break;
-    case display::Display::ROTATE_270:
+    case display::PanelOrientation::kLeftUp:
       request.set_panel_orientation(StartArcVmRequest::ORIENTATION_270);
       break;
   }

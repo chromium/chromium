@@ -44,6 +44,7 @@ static_library("session") {
   deps = [
     ":arc_base_enums",
     ":connection_holder",
+    "//ash",
     "//ash/components/arc:arc_base_utils",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:prefs",
@@ -66,6 +67,7 @@ static_library("session") {
     "//components/prefs:prefs",
     "//components/user_manager",
     "//components/version_info",
+    "//ui/display/manager",
   ]
 }
 
