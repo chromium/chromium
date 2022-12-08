@@ -1540,7 +1540,12 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
   dawn_instance_->DiscoverAdapters(&swiftShaderOptions);
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 #else
-  dawn_instance_->DiscoverDefaultAdapters();
+  // Don't call DiscoverDefaultAdapters() in Compat mode. Some drivers (*stares
+  // at NVidia*) are not robust when an EGL context and a Vulkan device are
+  // created in the same process.
+  if (use_webgpu_adapter_ != WebGPUAdapterName::kCompat) {
+    dawn_instance_->DiscoverDefaultAdapters();
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   std::vector<dawn::native::Adapter> adapters = dawn_instance_->GetAdapters();
