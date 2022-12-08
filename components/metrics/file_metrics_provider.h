@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_METRICS_FILE_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_FILE_METRICS_PROVIDER_H_
 
+#include <stddef.h>
+
 #include <list>
 #include <memory>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
@@ -268,7 +271,10 @@ class FileMetricsProvider : public MetricsProvider,
 
   // Checks a list of sources (on a task-runner allowed to do I/O) and merge
   // any data found within them.
-  void CheckAndMergeMetricSourcesOnTaskRunner(SourceInfoList* sources);
+  // Returns a list of histogram sample counts for sources of type
+  // ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER that were processed.
+  static std::vector<size_t> CheckAndMergeMetricSourcesOnTaskRunner(
+      SourceInfoList* sources);
 
   // Checks a single source and maps it into memory.
   static AccessResult CheckAndMapMetricSource(SourceInfo* source);
@@ -291,18 +297,20 @@ class FileMetricsProvider : public MetricsProvider,
       SystemProfileProto* system_profile_proto,
       base::HistogramSnapshotManager* snapshot_manager);
 
-  // Records the metadata of the |source| to perf.
-  void RecordFileMetadataOnTaskRunner(SourceInfo* source);
+  // Collects the metadata of the |source|.
+  // Returns the number of histogram samples from that source.
+  static size_t CollectFileMetadataFromSource(SourceInfo* source);
 
   // Appends the samples count to pref on UI thread.
-  void AppendToSamplesCountPref(size_t samples_count);
+  void AppendToSamplesCountPref(std::vector<size_t> samples_count);
 
   // Creates a task to check all monitored sources for updates.
   void ScheduleSourcesCheck();
 
   // Takes a list of sources checked by an external task and determines what
   // to do with each.
-  void RecordSourcesChecked(SourceInfoList* checked);
+  void RecordSourcesChecked(SourceInfoList* checked,
+                            std::vector<size_t> samples_counts);
 
   // Schedules the deletion of a file in the background using the task-runner.
   void DeleteFileAsync(const base::FilePath& path);
@@ -354,8 +362,6 @@ class FileMetricsProvider : public MetricsProvider,
 
   // The preferences-service used to store persistent state about sources.
   raw_ptr<PrefService> pref_service_;
-
-  const scoped_refptr<base::TaskRunner> main_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileMetricsProvider> weak_factory_{this};

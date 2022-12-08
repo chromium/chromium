@@ -4,7 +4,10 @@
 
 #include "components/metrics/file_metrics_provider.h"
 
+#include <stddef.h>
+
 #include <memory>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -193,10 +196,7 @@ FileMetricsProvider::Params::Params(const base::FilePath& path,
 FileMetricsProvider::Params::~Params() {}
 
 FileMetricsProvider::FileMetricsProvider(PrefService* local_state)
-    : task_runner_(CreateBackgroundTaskRunner()),
-      pref_service_(local_state),
-      main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  DCHECK(main_task_runner_);
+    : task_runner_(CreateBackgroundTaskRunner()), pref_service_(local_state) {
   base::StatisticsRecorder::RegisterHistogramProvider(
       weak_factory_.GetWeakPtr());
 }
@@ -385,10 +385,13 @@ void FileMetricsProvider::FinishedWithSource(SourceInfo* source,
   }
 }
 
-void FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner(
+// static
+std::vector<size_t> FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner(
     SourceInfoList* sources) {
   // This method has all state information passed in |sources| and is intended
   // to run on a worker thread rather than the UI thread.
+  std::vector<size_t> samples_counts;
+
   for (std::unique_ptr<SourceInfo>& source : *sources) {
     AccessResult result;
     do {
@@ -413,7 +416,7 @@ void FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner(
           break;
 
         if (source->association == ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER) {
-          RecordFileMetadataOnTaskRunner(source.get());
+          samples_counts.push_back(CollectFileMetadataFromSource(source.get()));
         } else {
           MergeHistogramDeltasFromSource(source.get());
         }
@@ -433,6 +436,8 @@ void FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner(
     if (source->found_files && source->found_files->empty())
       source->found_files.reset();
   }
+
+  return samples_counts;
 }
 
 // This method has all state information passed in |source| and is intended
@@ -681,23 +686,25 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
   return false;
 }
 
-void FileMetricsProvider::AppendToSamplesCountPref(size_t samples_count) {
+void FileMetricsProvider::AppendToSamplesCountPref(
+    std::vector<size_t> samples_counts) {
   ScopedListPrefUpdate update(pref_service_,
                               metrics::prefs::kMetricsFileMetricsMetadata);
-  update->Append(static_cast<int>(samples_count));
+  for (size_t samples_count : samples_counts) {
+    update->Append(static_cast<int>(samples_count));
+  }
 }
 
-void FileMetricsProvider::RecordFileMetadataOnTaskRunner(SourceInfo* source) {
+// static
+size_t FileMetricsProvider::CollectFileMetadataFromSource(SourceInfo* source) {
   base::HistogramBase::Count samples_count = 0;
   base::PersistentHistogramAllocator::Iterator it{source->allocator.get()};
   std::unique_ptr<base::HistogramBase> histogram;
   while ((histogram = it.GetNext()) != nullptr) {
     samples_count += histogram->SnapshotFinalDelta()->TotalCount();
   }
-  main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&FileMetricsProvider::AppendToSamplesCountPref,
-                                base::Unretained(this), samples_count));
   source->read_complete = true;
+  return samples_count;
 }
 
 void FileMetricsProvider::ScheduleSourcesCheck() {
@@ -712,17 +719,21 @@ void FileMetricsProvider::ScheduleSourcesCheck() {
   // because that must complete before the reply runs.
   SourceInfoList* check_list = new SourceInfoList();
   std::swap(sources_to_check_, *check_list);
-  task_runner_->PostTaskAndReply(
+  task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner,
-          base::UnsafeDanglingUntriaged(this), base::Unretained(check_list)),
+          base::Unretained(check_list)),
       base::BindOnce(&FileMetricsProvider::RecordSourcesChecked,
                      weak_factory_.GetWeakPtr(), base::Owned(check_list)));
 }
 
-void FileMetricsProvider::RecordSourcesChecked(SourceInfoList* checked) {
+void FileMetricsProvider::RecordSourcesChecked(
+    SourceInfoList* checked,
+    std::vector<size_t> samples_counts) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  AppendToSamplesCountPref(std::move(samples_counts));
 
   // Sources that still have an allocator at this point are read/write "active"
   // files that may need their contents merged on-demand. If there is no
