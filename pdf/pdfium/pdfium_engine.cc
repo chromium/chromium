@@ -2425,7 +2425,7 @@ base::Value::Dict PDFiumEngine::TraverseBookmarks(FPDF_BOOKMARK bookmark,
     std::string uri = CallPDFiumStringBufferApi(
         base::BindRepeating(&FPDFAction_GetURIPath, doc(), action),
         /*check_expected_size=*/true);
-    if (!uri.empty())
+    if (!uri.empty() && base::IsStringUTF8AllowingNoncharacters(uri))
       dict.Set("uri", uri);
   }
 

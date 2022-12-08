@@ -922,7 +922,7 @@ PDFiumPage::Area PDFiumPage::GetURITarget(FPDF_ACTION uri_action,
     std::string url = CallPDFiumStringBufferApi(
         base::BindRepeating(&FPDFAction_GetURIPath, engine_->doc(), uri_action),
         /*check_expected_size=*/true);
-    if (!url.empty())
+    if (!url.empty() && base::IsStringUTF8AllowingNoncharacters(url))
       target->url = url;
   }
   return WEBLINK_AREA;
