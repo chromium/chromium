@@ -35,13 +35,13 @@ using testing::_;
 
 namespace {
 
-using drivefs::mojom::ItemEvent::State::kCompleted;
-using drivefs::mojom::ItemEvent::State::kFailed;
-using drivefs::mojom::ItemEvent::State::kInProgress;
-using drivefs::mojom::ItemEvent::State::kQueued;
+constexpr auto kCompleted = drivefs::mojom::ItemEvent::State::kCompleted;
+constexpr auto kFailed = drivefs::mojom::ItemEvent::State::kFailed;
+constexpr auto kInProgress = drivefs::mojom::ItemEvent::State::kInProgress;
+constexpr auto kQueued = drivefs::mojom::ItemEvent::State::kQueued;
 
-using drivefs::mojom::ItemEventReason::kPin;
-using drivefs::mojom::ItemEventReason::kTransfer;
+constexpr auto kPin = drivefs::mojom::ItemEventReason::kPin;
+constexpr auto kTransfer = drivefs::mojom::ItemEventReason::kTransfer;
 
 constexpr auto QUEUED = file_manager_private::TRANSFER_STATE_QUEUED;
 constexpr auto IN_PROGRESS = file_manager_private::TRANSFER_STATE_IN_PROGRESS;
