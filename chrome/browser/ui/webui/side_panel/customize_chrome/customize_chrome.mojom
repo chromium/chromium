@@ -17,6 +17,10 @@ struct BackgroundImage {
 struct Theme {
   // The background image.
   BackgroundImage? background_image;
+  // Whether the OS is in dark mode.
+  bool system_dark_mode;
+  // The current theme color. If not set, we use the default theme.
+  skia.mojom.SkColor? foreground_color;
 };
 
 struct ChromeColor {
