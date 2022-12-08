@@ -95,6 +95,7 @@ source_set("unit_tests") {
     ":test_support",
     "//components/optimization_guide/core:test_support",
     "//components/search_engines",
+    "//components/ukm:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
