@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
-import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogLaunchContext;
 import org.chromium.chrome.browser.privacy_sandbox.PromptAction;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -128,13 +127,11 @@ public class PrivacySandboxDialogConsentEEAV4 extends Dialog implements View.OnC
         // Dismiss has a bigger timeout than spinner in order to guarantee a graceful transition
         // between the spinner view and the notice one.
         consentHandler.postDelayed(this::dismiss, getDismissTimeout());
-        consentHandler.postDelayed(this::maybeShowNotice, getSpinnerTimeout());
+        consentHandler.postDelayed(this::showNotice, getSpinnerTimeout());
     }
 
-    private void maybeShowNotice() {
-        PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                PrivacySandboxDialogLaunchContext.BROWSER_START, getContext(), mSettingsLauncher,
-                /*isIncognito = */ false, /*bottomSheetController = */ null);
+    private void showNotice() {
+        PrivacySandboxDialogController.showNoticeEEA(getContext(), mSettingsLauncher);
     }
 
     private boolean isDropdownExpanded() {

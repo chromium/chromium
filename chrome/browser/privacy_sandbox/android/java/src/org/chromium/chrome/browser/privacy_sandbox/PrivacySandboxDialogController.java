@@ -53,9 +53,7 @@ public class PrivacySandboxDialogController {
                 sDialog = new WeakReference<>(dialog);
                 return true;
             case PromptType.M1_NOTICE_EEA:
-                dialog = new PrivacySandboxDialogNoticeEEAV4(context, settingsLauncher);
-                dialog.show();
-                sDialog = new WeakReference<>(dialog);
+                showNoticeEEA(context, settingsLauncher);
                 return true;
             case PromptType.M1_NOTICE_ROW:
                 dialog = new PrivacySandboxDialogNoticeROWV4(context, settingsLauncher);
@@ -79,6 +77,16 @@ public class PrivacySandboxDialogController {
                 // Should not be reached.
                 return false;
         }
+    }
+
+    /**
+     * Shows the NoticeEEA dialog.
+     */
+    public static void showNoticeEEA(Context context, SettingsLauncher settingsLauncher) {
+        Dialog dialog;
+        dialog = new PrivacySandboxDialogNoticeEEAV4(context, settingsLauncher);
+        dialog.show();
+        sDialog = new WeakReference<>(dialog);
     }
 
     static boolean showNewNotice() {
