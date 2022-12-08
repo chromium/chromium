@@ -259097,16 +259097,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "80fc17d29856db7b8670032d91d60d7a2483bc28",
-     []
-    ],
-    "mtime.json": [
-     "2d1f7df3fe0cd4641b8cda7cc859e21e25b7914c",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -363302,7 +363292,7 @@
       []
      ],
      "largest-contentful-paint-helpers.js": [
-      "190df0383ddae9271ffe63c6ac109af5c9875f09",
+      "043587ca654c44fb97ae41e32cff094852199365",
       []
      ],
      "lcp-sw-from-cache.js": [
@@ -458856,6 +458846,15 @@
         {}
        ]
       ],
+      "fullscreen-pseudo-class-in-has.html": [
+       "dbbcea250219c369396e686992ea35595a5cba41",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "has-complexity.html": [
        "0bdcdec13b97d8a2b3973f86773512474988519c",
        [
@@ -483269,7 +483268,7 @@
        ]
       ],
       "request-forbidden-headers.any.js": [
-       "fa5e277abe2f7d3b295a4f4deaaf4379670c74e1",
+       "511ce601e7c45cf39223ef0bd29bb6437ae078a1",
        [
         "fetch/api/basic/request-forbidden-headers.any.html",
         {
@@ -488226,7 +488225,7 @@
        ]
       ],
       "request-headers.any.js": [
-       "cb34e5a790a6370259b45a00c477466da78ceab2",
+       "b73b398013ab0d9bad4ecf6b1844ed29484cb6ee",
        [
         "fetch/api/request/request-headers.any.html",
         {
@@ -551865,6 +551864,34 @@
       {}
      ]
     ],
+    "non-tao-image-load-after-fcp.tentative.html": [
+     "06b065be3ab76809b02d4fa23ce00e4bff31fb6e",
+     [
+      null,
+      {}
+     ]
+    ],
+    "non-tao-image-load-before-fcp-render-after.tentative.html": [
+     "57f29c353560956b89e507d3056c8a43096dc631",
+     [
+      null,
+      {}
+     ]
+    ],
+    "non-tao-image-load-before-fcp-render-at-fcp.tentative.html": [
+     "b209b50c8b2cf2500f6171f55fbec390b367b0c8",
+     [
+      null,
+      {}
+     ]
+    ],
+    "non-tao-image-subsequent-lcp-candidate.tentative.html": [
+     "50f9a229ea6bd99c38e2a40ab4219c1eb96e3cf5",
+     [
+      null,
+      {}
+     ]
+    ],
     "observe-after-untrusted-scroll.html": [
      "c84f922e5e589eea59290ab22731f1bb5eb4415b",
      [
@@ -565732,13 +565759,6 @@
      ],
      [
       "performance-timeline/case-sensitivity.any.worker.html",
-      {}
-     ]
-    ],
-    "cross-origin-non-tao-image.sub.html": [
-     "210f4e1fa3e8afdf4ac6a97671829bf52d223df1",
-     [
-      null,
       {}
      ]
     ],
