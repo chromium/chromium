@@ -635,33 +635,26 @@ bool ExtensionPrefs::ReadPrefAsString(const std::string& extension_id,
   return true;
 }
 
-bool ExtensionPrefs::ReadPrefAsList(const std::string& extension_id,
-                                    const PrefMap& pref,
-                                    const base::ListValue** out_value) const {
+const base::Value::List* ExtensionPrefs::ReadPrefAsList(
+    const std::string& extension_id,
+    const PrefMap& pref) const {
   DCHECK_EQ(PrefScope::kExtensionSpecific, pref.scope);
   DCHECK_EQ(PrefType::kList, pref.type);
-  DCHECK(out_value);
-  const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  if (!ext || !ext->GetList(pref.name, out_value))
-    return false;
-  return true;
-}
-
-bool ExtensionPrefs::ReadPrefAsDictionary(
-    const std::string& extension_id,
-    const PrefMap& pref,
-    const base::DictionaryValue** out_value) const {
-  DCHECK_EQ(PrefScope::kExtensionSpecific, pref.scope);
-  DCHECK_EQ(PrefType::kDictionary, pref.type);
-  DCHECK(out_value);
   const base::DictionaryValue* ext = GetExtensionPref(extension_id);
   if (!ext)
-    return false;
-  const base::Value* dict = ext->FindDictPath(pref.name);
-  if (!dict)
-    return false;
-  *out_value = &base::Value::AsDictionaryValue(*dict);
-  return true;
+    return nullptr;
+  return ext->GetDict().FindListByDottedPath(pref.name);
+}
+
+const base::Value::Dict* ExtensionPrefs::ReadPrefAsDictionary(
+    const std::string& extension_id,
+    const PrefMap& pref) const {
+  DCHECK_EQ(PrefScope::kExtensionSpecific, pref.scope);
+  DCHECK_EQ(PrefType::kDictionary, pref.type);
+  const base::DictionaryValue* ext = GetExtensionPref(extension_id);
+  if (!ext)
+    return nullptr;
+  return ext->GetDict().FindDictByDottedPath(pref.name);
 }
 
 base::Time ExtensionPrefs::ReadPrefAsTime(const std::string& extension_id,

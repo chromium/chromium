@@ -193,11 +193,12 @@ class ExtensionPrefsGrantedPermissions : public ExtensionPrefsTest {
     std::unique_ptr<APIPermission> permission(
         permission_info->CreateAPIPermission());
     {
-      std::unique_ptr<base::ListValue> value(new base::ListValue());
-      value->Append("tcp-connect:*.example.com:80");
-      value->Append("udp-bind::8080");
-      value->Append("udp-send-to::8888");
-      ASSERT_TRUE(permission->FromValue(value.get(), nullptr, nullptr));
+      base::Value::List list;
+      list.Append("tcp-connect:*.example.com:80");
+      list.Append("udp-bind::8080");
+      list.Append("udp-send-to::8888");
+      base::Value value(std::move(list));
+      ASSERT_TRUE(permission->FromValue(&value, nullptr, nullptr));
     }
     api_perm_set1_.insert(std::move(permission));
 
@@ -470,11 +471,10 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
  public:
   // Sets idle install information for one test extension.
   void SetIdleInfo(const std::string& id, int num) {
-    base::DictionaryValue manifest;
-    manifest.SetStringPath(manifest_keys::kName, "test");
-    manifest.SetStringPath(manifest_keys::kVersion,
-                           "1." + base::NumberToString(num));
-    manifest.SetIntPath(manifest_keys::kManifestVersion, 2);
+    base::Value::Dict manifest;
+    manifest.Set(manifest_keys::kName, "test");
+    manifest.Set(manifest_keys::kVersion, "1." + base::NumberToString(num));
+    manifest.Set(manifest_keys::kManifestVersion, 2);
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII(base::NumberToString(num));
     std::string errors;
@@ -629,26 +629,25 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
     EXPECT_FALSE(prefs()->GetDelayedInstallInfo(id_));
     EXPECT_EQ(std::string("Param"), prefs()->GetInstallParam(id_));
 
-    const base::DictionaryValue* manifest;
-    ASSERT_TRUE(prefs()->ReadPrefAsDictionary(id_, "manifest", &manifest));
-    ASSERT_TRUE(manifest);
-    ASSERT_TRUE(manifest->is_dict());
-    const base::Value::Dict& dict = manifest->GetDict();
-    const std::string* name = dict.FindString(manifest_keys::kName);
-    EXPECT_TRUE(name);
+    const base::Value::Dict* dict = prefs()->ReadPrefAsDict(id_, "manifest");
+    ASSERT_TRUE(dict);
+    const std::string* name = dict->FindString(manifest_keys::kName);
+    ASSERT_TRUE(name);
     EXPECT_EQ("test", *name);
-    const std::string* version = dict.FindString(manifest_keys::kVersion);
-    EXPECT_TRUE(version);
+    const std::string* version = dict->FindString(manifest_keys::kVersion);
+    ASSERT_TRUE(version);
     EXPECT_EQ("0.2", *version);
-    EXPECT_FALSE(dict.FindString(manifest_keys::kBackgroundPage));
-    const base::ListValue* scripts;
-    ASSERT_TRUE(manifest->GetList(manifest_keys::kBackgroundScripts, &scripts));
-    EXPECT_EQ(1u, scripts->GetList().size());
+    EXPECT_FALSE(dict->FindString(manifest_keys::kBackgroundPage));
+    const base::Value::List* scripts =
+        dict->FindListByDottedPath(manifest_keys::kBackgroundScripts);
+    ASSERT_TRUE(scripts);
+    EXPECT_EQ(1u, scripts->size());
   }
 
  protected:
   std::string id_;
 };
+
 TEST_F(ExtensionPrefsFinishDelayedInstallInfo, FinishDelayedInstallInfo) {}
 
 class ExtensionPrefsOnExtensionInstalled : public ExtensionPrefsTest {
@@ -778,7 +777,7 @@ class ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue
   void Verify() override {
     const base::DictionaryValue* ext =
         prefs()->GetExtensionPref(extension_->id());
-    EXPECT_NE(nullptr, ext);
+    ASSERT_TRUE(ext);
     // The pref value should be cleared.
     EXPECT_FALSE(ext->FindIntKey("disable_reasons"));
   }
@@ -838,12 +837,12 @@ TEST_F(ExtensionPrefsFlags, ExtensionPrefsFlags) {}
 
 PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase()
     : ExtensionPrefsTest() {
-  base::DictionaryValue simple_dict;
+  base::Value::Dict simple_dict;
   std::string error;
 
-  simple_dict.SetStringPath(manifest_keys::kVersion, "1.0.0.0");
-  simple_dict.SetIntPath(manifest_keys::kManifestVersion, 2);
-  simple_dict.SetStringPath(manifest_keys::kName, "unused");
+  simple_dict.Set(manifest_keys::kVersion, "1.0.0.0");
+  simple_dict.Set(manifest_keys::kManifestVersion, 2);
+  simple_dict.Set(manifest_keys::kName, "unused");
 
   extension1_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext1_"),
                                   ManifestLocation::kExternalPref, simple_dict,
@@ -1103,10 +1102,8 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
     auto dictionary = std::make_unique<base::DictionaryValue>();
     prefs()->UpdateExtensionPref(extension_->id(), kPrefStringForIdMapping,
                                  std::move(dictionary));
-    const base::DictionaryValue* dictionary_value = nullptr;
-    EXPECT_TRUE(prefs()->ReadPrefAsDictionary(
-        extension_->id(), kPrefStringForIdMapping, &dictionary_value));
-    EXPECT_TRUE(dictionary_value);
+    EXPECT_TRUE(
+        prefs()->ReadPrefAsDict(extension_->id(), kPrefStringForIdMapping));
 
     prefs()->MigrateObsoleteExtensionPrefs();
   }
@@ -1118,9 +1115,8 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
         &str_value));
 
     // TODO(crbug.com/1015619): Remove 2023-05. kPrefStringForIdMapping.
-    const base::DictionaryValue* dictionary_value = nullptr;
-    EXPECT_FALSE(prefs()->ReadPrefAsDictionary(
-        extension_->id(), kPrefStringForIdMapping, &dictionary_value));
+    EXPECT_FALSE(
+        prefs()->ReadPrefAsDict(extension_->id(), kPrefStringForIdMapping));
   }
 
  private:
@@ -1424,9 +1420,10 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
   dict->SetStringKey("key", "val");
   prefs.prefs()->SetDictionaryPref(extension_id, kTestDictPref,
                                    std::move(dict));
-  auto list = base::ListValue();
+  base::Value::List list;
   list.Append("list_val");
-  prefs.prefs()->SetListPref(extension_id, kTestListPref, std::move(list));
+  prefs.prefs()->SetListPref(extension_id, kTestListPref,
+                             base::Value(std::move(list)));
   base::Time time = base::Time::Now();
   prefs.prefs()->SetTimePref(extension_id, kTestTimePref, time);
 
@@ -1443,16 +1440,19 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
                                               &string_value));
   EXPECT_EQ(string_value, "foo");
 
-  const base::DictionaryValue* dict_val = nullptr;
-  prefs.prefs()->ReadPrefAsDictionary(extension_id, kTestDictPref, &dict_val);
-  const std::string* string_ptr = dict_val->GetDict().FindString("key");
-  EXPECT_TRUE(string_ptr);
+  const base::Value::Dict* dict_val =
+      prefs.prefs()->ReadPrefAsDictionary(extension_id, kTestDictPref);
+  ASSERT_TRUE(dict_val);
+  const std::string* string_ptr = dict_val->FindString("key");
+  ASSERT_TRUE(string_ptr);
   EXPECT_EQ(*string_ptr, "val");
 
-  const base::ListValue* list_val = nullptr;
-  prefs.prefs()->ReadPrefAsList(extension_id, kTestListPref, &list_val);
-  EXPECT_TRUE(list_val->GetList()[0].is_string());
-  EXPECT_EQ(list_val->GetList()[0].GetString(), "list_val");
+  const base::Value::List* list_val =
+      prefs.prefs()->ReadPrefAsList(extension_id, kTestListPref);
+  ASSERT_TRUE(list_val);
+  ASSERT_FALSE(list_val->empty());
+  ASSERT_TRUE((*list_val)[0].is_string());
+  EXPECT_EQ((*list_val)[0].GetString(), "list_val");
 
   EXPECT_EQ(time, prefs.prefs()->ReadPrefAsTime(extension_id, kTestTimePref));
 }

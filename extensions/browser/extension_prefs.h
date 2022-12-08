@@ -328,13 +328,11 @@ class ExtensionPrefs : public KeyedService {
                         const PrefMap& pref,
                         std::string* out_value) const;
 
-  bool ReadPrefAsList(const std::string& extension_id,
-                      const PrefMap& pref,
-                      const base::ListValue** out_value) const;
+  const base::Value::List* ReadPrefAsList(const std::string& extension_id,
+                                          const PrefMap& pref) const;
 
-  bool ReadPrefAsDictionary(const std::string& extension_id,
-                            const PrefMap& pref,
-                            const base::DictionaryValue** out_value) const;
+  const base::Value::Dict* ReadPrefAsDictionary(const std::string& extension_id,
+                                                const PrefMap& pref) const;
 
   base::Time ReadPrefAsTime(const std::string& extension_id,
                             const PrefMap& pref) const;
