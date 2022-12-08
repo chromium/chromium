@@ -195,16 +195,15 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusForwardTraversal) {
 }
 
 IN_PROC_BROWSER_TEST_F(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
-  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+  extensions::MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf#toolbar=0"));
 
   // Tab in.
-  content::FocusedNodeDetails details =
-      TabAndWait(guest_contents, /*forward=*/false);
+  content::FocusedNodeDetails details = TabAndWait(guest, /*forward=*/false);
   EXPECT_EQ(blink::mojom::FocusType::kBackward, details.focus_type);
 
   // Tab out.
-  details = TabAndWait(guest_contents, /*forward=*/false);
+  details = TabAndWait(guest, /*forward=*/false);
   EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
 }
 
