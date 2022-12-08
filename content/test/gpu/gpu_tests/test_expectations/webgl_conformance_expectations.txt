@@ -519,6 +519,9 @@ crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-
 # crbug.com/1288595 [ android android-pixel-6 passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1399541 [ android android-pixel-6 renderer-skia-vulkan passthrough ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ RetryOnFailure ]
+crbug.com/1399541 [ android android-pixel-6 renderer-skia-vulkan no-passthrough ] conformance/glsl/functions/glsl-function-cos.html [ RetryOnFailure ]
+crbug.com/1399541 [ android android-pixel-6 renderer-skia-vulkan passthrough ] conformance/glsl/misc/shader-with-function-scoped-struct.html [ RetryOnFailure ]
 
 # Misc failures
 
