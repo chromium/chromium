@@ -1,0 +1,200 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+
+#include "base/test/trace_event_analyzer.h"
+#include "build/build_config.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/hit_test_region_observer.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+
+using absl::optional;
+using base::Bucket;
+using base::Value;
+using trace_analyzer::Query;
+using trace_analyzer::TraceAnalyzer;
+using trace_analyzer::TraceEventVector;
+using ukm::builders::PageLoad;
+
+class InteractionToNextPaintTest : public MetricIntegrationTest {
+ protected:
+  // This function will extract the target UKM value from ukm_recorder
+  // by the given metric_name in PageLoad.
+  bool ExtractUKMPageLoadMetric(const ukm::TestUkmRecorder& ukm_recorder,
+                                base::StringPiece metric_name,
+                                int64_t* extracted_value);
+
+  // This function will extract and compare the INP values in TraceAnalyzer
+  // and UKM.
+  bool VerifyUKMAndTraceData(TraceAnalyzer& analyzer);
+};
+
+bool InteractionToNextPaintTest::ExtractUKMPageLoadMetric(
+    const ukm::TestUkmRecorder& ukm_recorder,
+    base::StringPiece metric_name,
+    int64_t* extracted_value) {
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  const auto& kv = merged_entries.begin();
+  auto* metric_value =
+      ukm::TestUkmRecorder::GetEntryMetric(kv->second.get(), metric_name);
+  if (!metric_value)
+    return false;
+  *extracted_value = *metric_value;
+  return true;
+}
+
+bool InteractionToNextPaintTest::VerifyUKMAndTraceData(
+    TraceAnalyzer& analyzer) {
+  TraceEventVector events;
+
+  // Extract the events by name EventTiming.
+  analyzer.FindEvents(Query::EventNameIs("EventTiming"), &events);
+  int sizeOfEvents = (int)events.size();
+
+  // max_duration is used to record the maximum duration out of
+  // pointerdown, pointerup and click.
+  int max_duration = 0;
+  for (int i = 0; i < sizeOfEvents; i++) {
+    auto* traceEvent = events[i];
+
+    // If the traceEvent doesn't contain args data, it is not
+    // one of pointerdown, pointerup and click.
+    if (traceEvent->HasDictArg("data")) {
+      Value::Dict data = traceEvent->GetKnownArgAsDict("data");
+
+      // INP only consider the events with interactionID greater than 0.
+      std::string* event_name = data.FindString("type");
+      if ((*event_name == "pointerdown" || *event_name == "pointerup" ||
+           *event_name == "click") &&
+          data.FindInt("interactionId").value_or(-1) > 0) {
+        int duration = (int)*(data.FindDouble("duration"));
+
+        // Ensure the max_duration carries the largest duration out of
+        // pointerdown, pointerup and click.
+        max_duration = fmax(max_duration, duration);
+      }
+    }
+  }
+
+  // Extract the UKM INP values from ukm_recorder.
+  int64_t INP_numOfInteraction_value;
+  int64_t INP_100th_value;
+  int64_t INP_98th_value;
+
+  bool extract_num_of_interaction = ExtractUKMPageLoadMetric(
+      ukm_recorder(),
+      ukm::builders::PageLoad::kInteractiveTiming_NumInteractionsName,
+      &INP_numOfInteraction_value);
+  bool extract_worst_interaction = ExtractUKMPageLoadMetric(
+      ukm_recorder(),
+      ukm::builders::PageLoad::
+          kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName,
+      &INP_100th_value);
+  bool extract_98th_interaction = ExtractUKMPageLoadMetric(
+      ukm_recorder(),
+      ukm::builders::PageLoad::
+          kInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDurationName,
+      &INP_98th_value);
+
+  // Ensure the UKM contains all three values.
+  if (!extract_num_of_interaction || !extract_worst_interaction ||
+      !extract_98th_interaction) {
+    return false;
+  }
+
+  // Since the INP value takes 98th percentile all interactions,
+  // the 98th percentile and 100th percentile should be the same when
+  // we have less than 50 interactions.
+  EXPECT_EQ(INP_98th_value, INP_100th_value);
+
+  // The duration value in trace data is rounded to 8md
+  // which means the value before rounding should be in the
+  // range of plus and minus 8ms of the rounded value.
+  EXPECT_GE(max_duration, INP_98th_value - 8);
+  EXPECT_LE(max_duration, INP_98th_value + 8);
+
+  // Ensure that we only have one interaction in UKM.
+  EXPECT_EQ(INP_numOfInteraction_value, 1);
+  return true;
+}
+
+IN_PROC_BROWSER_TEST_F(InteractionToNextPaintTest, INP_ClickOnPage) {
+  // Add waiter to wait for the interaction is arrived in browser.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddNumInteractionsExpectation(1);
+
+  // Start tracing to record tracing data.
+  StartTracing({"devtools.timeline"});
+  LoadHTML(R"HTML(
+  <p>Sample website</p>
+  )HTML");
+
+  // Create a Performance Observer to observe first input in the program
+  // and the promise will resolve when it observes first input. We are
+  // leveraging the Performance Observer to ensure we received a input.
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+   waitForClick = async () => {
+      const observePromise = new Promise(resolve => {
+        new PerformanceObserver(e => {
+          e.getEntries().forEach(entry => {
+            resolve(true);
+          })
+        }).observe({type: 'first-input', buffered: true});
+      });
+      return await observePromise;
+    };
+
+    let eventCounts = {mouseup: 0, pointerup: 0, click: 0};
+    let eventPromise;
+    waitForEvents = () => {
+      eventPromise = new Promise(resolve => {
+        for (let evt in eventCounts) {
+          window.addEventListener(evt, function(e) {
+            eventCounts[e.type]++;
+            if (eventCounts.click == 1 &&
+                eventCounts.pointerup == 1 &&
+                eventCounts.mouseup == 1) {
+              resolve(true);
+            }
+          });
+        }
+      });
+      return true;
+    };
+    runwaitForEvents = async () => {
+      return await eventPromise;
+    };
+  )"));
+
+  ASSERT_TRUE(EvalJs(web_contents(), "waitForEvents()").ExtractBool());
+
+  // We should wait for the main frame's hit-test data to be ready before
+  // sending the click event below to avoid flakiness.
+  content::WaitForHitTestData(web_contents()->GetPrimaryMainFrame());
+  // Ensure the compositor thread is aware of the mouse events.
+  content::MainThreadFrameObserver frame_observer(GetRenderWidgetHost());
+  frame_observer.Wait();
+
+  // Simulate a click on div which has no renderer actions as our interaction.
+  content::SimulateMouseClick(web_contents(), 0,
+                              blink::WebMouseEvent::Button::kLeft);
+
+  // Start the waitForClick Performance Observer.
+  ASSERT_TRUE(EvalJs(web_contents(), "waitForClick()").ExtractBool());
+  ASSERT_TRUE(EvalJs(web_contents(), "runwaitForEvents()").ExtractBool());
+  waiter->Wait();
+
+  // Navigate to blank page to ensure the data gets flushed from renderer to
+  // browser.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  auto analyzer = StopTracingAndAnalyze();
+  ASSERT_TRUE(VerifyUKMAndTraceData(*analyzer));
+}
