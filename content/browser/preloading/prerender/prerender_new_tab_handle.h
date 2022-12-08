@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PRERENDER_PRERENDER_NEW_TAB_HANDLE_H_
 
 #include "content/browser/preloading/prerender/prerender_attributes.h"
-#include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -43,7 +43,7 @@ class PrerenderNewTabHandle {
   int StartPrerendering();
 
   // Cancels prerendering started in `web_contents_`.
-  void CancelPrerendering(PrerenderFinalStatus final_status);
+  void CancelPrerendering(const PrerenderCancellationReason& reason);
 
   // Passes the ownership of `web_contents_` to the caller if it's available for
   // new tab navigation with given params.

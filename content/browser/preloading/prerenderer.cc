@@ -8,6 +8,7 @@
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/preloading/prerender/prerender_new_tab_handle.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -163,8 +164,9 @@ void Prerenderer::ProcessCandidatesForPrerender(
     started_it = equal_prerender_end;
   }
 
-  registry_->CancelHosts(removed_prerender_rules,
-                         PrerenderFinalStatus::kTriggerDestroyed);
+  registry_->CancelHosts(
+      removed_prerender_rules,
+      PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
 
   // Actually start the candidates once the diffing is done.
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host());
@@ -308,8 +310,9 @@ void Prerenderer::CancelStartedPrerenders() {
     for (auto& prerender_info : started_prerenders_) {
       started_prerender_ids.push_back(prerender_info.prerender_host_id);
     }
-    registry_->CancelHosts(started_prerender_ids,
-                           PrerenderFinalStatus::kTriggerDestroyed);
+    registry_->CancelHosts(
+        started_prerender_ids,
+        PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
   }
 
   started_prerenders_.clear();

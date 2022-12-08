@@ -80,8 +80,8 @@ int PrerenderNewTabHandle::StartPrerendering() {
 }
 
 void PrerenderNewTabHandle::CancelPrerendering(
-    PrerenderFinalStatus final_status) {
-  GetPrerenderHostRegistry().CancelHost(prerender_host_id_, final_status);
+    const PrerenderCancellationReason& reason) {
+  GetPrerenderHostRegistry().CancelHost(prerender_host_id_, reason);
 }
 
 std::unique_ptr<WebContentsImpl>
