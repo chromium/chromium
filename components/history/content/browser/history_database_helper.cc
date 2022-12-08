@@ -8,16 +8,19 @@
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/history/content/browser/download_conversions.h"
 #include "components/history/core/browser/history_database_params.h"
+#include "components/version_info/channel.h"
 
 namespace history {
 
 HistoryDatabaseParams HistoryDatabaseParamsForPath(
-    const base::FilePath& history_dir) {
+    const base::FilePath& history_dir,
+    version_info::Channel channel) {
   return HistoryDatabaseParams(history_dir,
                                history::ToHistoryDownloadInterruptReason(
                                    download::DOWNLOAD_INTERRUPT_REASON_NONE),
                                history::ToHistoryDownloadInterruptReason(
-                                   download::DOWNLOAD_INTERRUPT_REASON_CRASH));
+                                   download::DOWNLOAD_INTERRUPT_REASON_CRASH),
+                               channel);
 }
 
 }  // namespace

@@ -37,6 +37,7 @@
 #include "components/history/core/browser/sync/history_backend_for_sync.h"
 #include "components/history/core/browser/visit_tracker.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/version_info/channel.h"
 #include "sql/init_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -949,6 +950,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Directory where database files will be stored, empty until Init is called.
   base::FilePath history_dir_;
+
+  // Used to control error reporting.
+  version_info::Channel channel_ = version_info::Channel::UNKNOWN;
 
   // The history/favicon databases. Either may be null if the database could
   // not be opened, all users must first check for null and return immediately

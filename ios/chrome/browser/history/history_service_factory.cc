@@ -19,6 +19,7 @@
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_client_impl.h"
+#include "ios/chrome/common/channel_info.h"
 
 namespace ios {
 
@@ -33,7 +34,7 @@ std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
               ios::BookmarkModelFactory::GetForBrowserState(browser_state)),
           nullptr));
   if (!history_service->Init(history::HistoryDatabaseParamsForPath(
-          browser_state->GetStatePath()))) {
+          browser_state->GetStatePath(), GetChannel()))) {
     return nullptr;
   }
   return history_service;

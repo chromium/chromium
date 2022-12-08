@@ -20,6 +20,7 @@ static_library("browser") {
     "//base",
     "//components/download/public/common:public",
     "//components/history/core/browser",
+    "//components/version_info",
     "//components/visitedlink/browser",
     "//content/public/browser",
     "//url:url",
