@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.privacy_sandbox.Topic;
 import org.chromium.chrome.browser.privacy_sandbox.TopicPreference;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -57,6 +58,11 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED, isEnabled);
     }
 
+    static boolean isTopicsPrefManaged() {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return prefService.isManagedPreference(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED);
+    }
+
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
@@ -72,7 +78,7 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
 
         mTopicsTogglePreference.setChecked(isTopicsPrefEnabled());
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
-        // TODO(http://b/254411473): Make the preference managed.
+        mTopicsTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
     }
 
     @Override
@@ -142,5 +148,14 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mCurrentTopicsCategory.setVisible(topicsEnabled && !topicsEmpty);
         mTopicsPageFooterPreference.setVisible(topicsEnabled && !topicsEmpty);
         mBlockedTopicsPreference.setDividerAllowedBelow(topicsEnabled && !topicsEmpty);
+    }
+
+    private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
+        return preference -> {
+            if (TOPICS_TOGGLE_PREFERENCE.equals(preference.getKey())) {
+                return isTopicsPrefManaged();
+            }
+            return false;
+        };
     }
 }

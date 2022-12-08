@@ -350,4 +350,6 @@ public final class TopicsFragmentV4Test {
         onView(withText(TOPIC_NAME_1)).check(matches(isDisplayed()));
         onView(withText(TOPIC_NAME_2)).check(matches(isDisplayed()));
     }
+    // TODO(http://b/261822498): Add Managed state tests when the Privacy Sandbox policy is
+    // implemented.
 }
