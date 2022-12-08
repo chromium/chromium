@@ -200,10 +200,14 @@ WaylandSurfaceFactory::GetAllowedGLImplementations() {
     // be requested, which is not supported with this backend yet.
     impls.emplace_back(
         gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(crbug.com/1231934): --use-angle=gl results in gles, resolve that and
+    // use the correct config/testsuite on Lacros-like Linux bots.
     impls.emplace_back(
         gl::GLImplementationParts(gl::ANGLEImplementation::kOpenGL));
     impls.emplace_back(
         gl::GLImplementationParts(gl::ANGLEImplementation::kOpenGLES));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
   return impls;
 }
