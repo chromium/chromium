@@ -44,6 +44,7 @@ class LongpressDiacriticsSuggester : public Suggester {
   ~LongpressDiacriticsSuggester() override;
 
   bool TrySuggestOnLongpress(char key_character);
+  void SetEngineId(const std::string& engine_id);
 
   // Suggester overrides:
   void OnFocus(int context_id) override;
@@ -70,6 +71,8 @@ class LongpressDiacriticsSuggester : public Suggester {
   absl::optional<char> displayed_window_base_character_;
   // Highlighted index can be nullopt even if window displayed.
   absl::optional<size_t> highlighted_index_;
+  // Current engine id
+  std::string engine_id_ = "";
 };
 
 }  // namespace input_method

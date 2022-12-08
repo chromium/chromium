@@ -665,6 +665,8 @@ std::vector<ime::AssistiveSuggestion> AssistiveSuggester::GetSuggestions() {
 
 void AssistiveSuggester::OnActivate(const std::string& engine_id) {
   active_engine_id_ = engine_id;
+  longpress_diacritics_suggester_.SetEngineId(engine_id);
+
   if (features::IsAssistiveMultiWordEnabled()) {
     RecordAssistiveUserPrefForMultiWord(
         IsPredictiveWritingPrefEnabled(profile_->GetPrefs(), engine_id));

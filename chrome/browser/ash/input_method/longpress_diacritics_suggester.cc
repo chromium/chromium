@@ -32,7 +32,14 @@ std::vector<std::u16string> SplitDiacritics(base::StringPiece16 diacritics) {
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
 
-std::vector<std::u16string> GetDiacriticsFor(char key_character) {
+std::vector<std::u16string> GetDiacriticsFor(char key_character,
+                                             base::StringPiece engine_id) {
+  // Currently only supporting US English.
+  // TODO(b/260915965): Add support for other engines.
+  if (engine_id != "xkb:us::eng") {
+    return {};
+  }
+
   // Current diacritics ordering is based on the Gboard ordering so it keeps
   // distance from target key consistent.
   // TODO(b/260915965): Add more sets here for other engines.
@@ -108,7 +115,7 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
     return false;
   }
   std::vector<std::u16string> diacritics_candidates =
-      GetDiacriticsFor(key_character);
+      GetDiacriticsFor(key_character, engine_id_);
   if (!diacritics_candidates.empty()) {
     AssistiveWindowProperties properties;
     properties.type =
@@ -129,6 +136,10 @@ bool LongpressDiacriticsSuggester::TrySuggestOnLongpress(char key_character) {
     LOG(ERROR) << "Unable to suggest diacritics on longpress: " << error;
   }
   return false;
+}
+
+void LongpressDiacriticsSuggester::SetEngineId(const std::string& engine_id) {
+  engine_id_ = engine_id;
 }
 
 void LongpressDiacriticsSuggester::OnFocus(int context_id) {
@@ -324,7 +335,7 @@ LongpressDiacriticsSuggester::GetCurrentShownDiacritics() {
   if (displayed_window_base_character_ == absl::nullopt) {
     return {};
   }
-  return GetDiacriticsFor(*displayed_window_base_character_);
+  return GetDiacriticsFor(*displayed_window_base_character_, engine_id_);
 }
 
 void LongpressDiacriticsSuggester::Reset() {
