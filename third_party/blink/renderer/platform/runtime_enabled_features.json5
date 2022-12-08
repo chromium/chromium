@@ -2556,6 +2556,11 @@
       status: "stable",
     },
     {
+      name: "SmartCard",
+      status: {"Android": "", "default": "test"},
+      base_feature: "SmartCard",
+    },
+    {
       // If enabled Border, Outline and Column-Rule Widths
       // will be pixel snapped before layout.
       name: "SnapBorderWidthsBeforeLayout",

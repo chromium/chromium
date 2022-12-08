@@ -244,6 +244,8 @@
     "quicstream",
     "quotachange",
     "ratechange",
+    "readeradd",
+    "readerremove",
     "reading",
     "readingerror",
     "readystatechange",

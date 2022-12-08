@@ -1,0 +1,20 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("smart_card") {
+  sources = [
+    "smart_card_connection.cc",
+    "smart_card_connection.h",
+    "smart_card_reader.cc",
+    "smart_card_reader.h",
+    "smart_card_reader_presence_event.cc",
+    "smart_card_reader_presence_event.h",
+    "smart_card_reader_presence_observer.cc",
+    "smart_card_reader_presence_observer.h",
+    "smart_card_resource_manager.cc",
+    "smart_card_resource_manager.h",
+  ]
+}

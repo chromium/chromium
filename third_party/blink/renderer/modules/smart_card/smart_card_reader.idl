@@ -1,0 +1,16 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+
+[
+  ActiveScriptWrappable,
+  Exposed=Window,
+  RuntimeEnabled=SmartCard,
+  SecureContext,
+  IsolatedContext
+] interface SmartCardReader : EventTarget {
+  readonly attribute DOMString name;
+  // TODO(crbug.com/1386175): add the rest of the API
+};

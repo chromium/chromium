@@ -55,6 +55,8 @@
     "PresentationConnectionList",
     "PresentationRequest",
     "RemotePlayback",
+    "SmartCardReader",
+    "SmartCardReaderPresenceObserver",
     "ScreenOrientation",
     "ScreenDetails",
     "Sensor",
