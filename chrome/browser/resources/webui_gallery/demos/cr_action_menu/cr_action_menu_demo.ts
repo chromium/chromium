@@ -68,7 +68,7 @@ class CrActionMenuDemoElement extends PolymerElement {
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
   }
 
-  private onAlignmentXChanged_(event: Event) {
+  private onAlignmentChangedX_(event: Event) {
     const select = event.target as HTMLSelectElement;
     if (!select.value) {
       delete this.showAtPositionConfig_.anchorAlignmentX;
@@ -78,7 +78,7 @@ class CrActionMenuDemoElement extends PolymerElement {
     this.showAtPositionConfig_.anchorAlignmentX = AnchorAlignment[key];
   }
 
-  private onAlignmentYChanged_(event: Event) {
+  private onAlignmentChangedY_(event: Event) {
     const select = event.target as HTMLSelectElement;
     if (!select.value) {
       delete this.showAtPositionConfig_.anchorAlignmentY;

@@ -266,7 +266,7 @@ class GraphNode implements d3.SimulationNodeDatum {
    */
   setInitialPosition(graphWidth: number, graphHeight: number) {
     this.x = graphWidth / 2;
-    this.y = this.targetYPosition(graphHeight);
+    this.y = this.targetPositionY(graphHeight);
     this.vx = 0;
     this.vy = 0;
   }
@@ -274,8 +274,8 @@ class GraphNode implements d3.SimulationNodeDatum {
   /**
    * @param graphHeight Height of the graph view (svg).
    */
-  targetYPosition(graphHeight: number): number {
-    const bounds = this.allowedYRange(graphHeight);
+  targetPositionY(graphHeight: number): number {
+    const bounds = this.allowedRangeY(graphHeight);
     return (bounds[0] + bounds[1]) / 2;
   }
 
@@ -298,7 +298,7 @@ class GraphNode implements d3.SimulationNodeDatum {
   /**
    * @param graphHeight Height of the graph view.
    */
-  allowedYRange(graphHeight: number): [number, number] {
+  allowedRangeY(graphHeight: number): [number, number] {
     // By default, nodes just need to be in bounds of the graph.
     return [0, graphHeight];
   }
@@ -363,7 +363,7 @@ class PageNode extends GraphNode {
     return 0.5;
   }
 
-  override allowedYRange(_graphHeight: number): [number, number] {
+  override allowedRangeY(_graphHeight: number): [number, number] {
     return [0, kPageNodesYRange];
   }
 
@@ -396,11 +396,11 @@ class FrameNode extends GraphNode {
     return this.frame.url.url.length > 0 ? this.frame.url.url : 'Frame';
   }
 
-  override targetYPosition(_graphHeight: number) {
+  override targetPositionY(_graphHeight: number) {
     return kFrameNodesTargetY;
   }
 
-  override allowedYRange(graphHeight: number): [number, number] {
+  override allowedRangeY(graphHeight: number): [number, number] {
     return [kFrameNodesTopMargin, graphHeight - kFrameNodesBottomMargin];
   }
 
@@ -440,7 +440,7 @@ class ProcessNode extends GraphNode {
     return 0.5;
   }
 
-  override allowedYRange(graphHeight: number): [number, number] {
+  override allowedRangeY(graphHeight: number): [number, number] {
     return [graphHeight - kProcessNodesYRange, graphHeight];
   }
 
@@ -469,7 +469,7 @@ class WorkerNode extends GraphNode {
     return kHighYStrength;
   }
 
-  override allowedYRange(graphHeight: number): [number, number] {
+  override allowedRangeY(graphHeight: number): [number, number] {
     return [
       graphHeight - kWorkerNodesYRange,
       graphHeight - kProcessNodesYRange,
@@ -492,7 +492,7 @@ class WorkerNode extends GraphNode {
 }
 
 /**
- * A force that bounds GraphNodes |allowedYRange| in Y,
+ * A force that bounds GraphNodes |allowedRangeY| in Y,
  * as well as bounding them to stay in page bounds in X.
  */
 function boundingForce(graphHeight: number, graphWidth: number) {
@@ -532,7 +532,7 @@ function boundingForce(graphHeight: number, graphWidth: number) {
   force.initialize = function(n: GraphNode[]) {
     nodes = n;
     bounds = nodes.map(node => {
-      const nodeBounds = node.allowedYRange(graphHeight);
+      const nodeBounds = node.allowedRangeY(graphHeight);
       // Leave space for the node circle plus a small border.
       nodeBounds[0] += kNodeRadius * 2;
       nodeBounds[1] -= kNodeRadius * 2;
@@ -1045,7 +1045,7 @@ class Graph implements GraphChangeStreamInterface {
     }
     // Leave the node pinned where it was dropped. Return it to free
     // positioning if it's dropped outside its designated area.
-    const bounds = d.allowedYRange(this.height_);
+    const bounds = d.allowedRangeY(this.height_);
     if (d3.event.y < bounds[0] || d3.event.y > bounds[1]) {
       d.fx = null;
       d.fy = null;
@@ -1055,11 +1055,11 @@ class Graph implements GraphChangeStreamInterface {
     d3.select(`#circle-${d.id}`).classed('pinned', d.fx != null);
   }
 
-  private getTargetYPosition_(d: GraphNode): number {
-    return d.targetYPosition(this.height_);
+  private getTargetPositionY_(d: GraphNode): number {
+    return d.targetPositionY(this.height_);
   }
 
-  private getTargetYPositionStrength_(d: GraphNode): number {
+  private getTargetPositionStrengthY_(d: GraphNode): number {
     return d.targetYPositionStrength;
   }
 
@@ -1135,8 +1135,8 @@ class Graph implements GraphChangeStreamInterface {
     // Reset both X and Y attractive forces, as they're cached.
     const xForce = d3.forceX().x(this.width_ / 2).strength(0.1);
     const yForce = (d3.forceY() as d3.ForceY<GraphNode>)
-                       .y(this.getTargetYPosition_.bind(this))
-                       .strength(this.getTargetYPositionStrength_.bind(this));
+                       .y(this.getTargetPositionY_.bind(this))
+                       .strength(this.getTargetPositionStrengthY_.bind(this));
     this.simulation_!.force('x_pos', xForce);
     this.simulation_!.force('y_pos', yForce);
     this.simulation_!.force(

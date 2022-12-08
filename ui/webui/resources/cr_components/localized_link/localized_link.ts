@@ -79,7 +79,7 @@ export class LocalizedLinkElement extends PolymerElement {
         type: String,
         value: '',
         computed: 'getAriaLabelledContent_(localizedString, linkUrl)',
-        observer: 'setContainerInnerHTML_',
+        observer: 'setContainerInnerHtml_',
       },
     };
   }
@@ -148,7 +148,7 @@ export class LocalizedLinkElement extends PolymerElement {
     return tempEl.innerHTML;
   }
 
-  private setContainerInnerHTML_() {
+  private setContainerInnerHtml_() {
     this.$.container.innerHTML = sanitizeInnerHtml(this.containerInnerHTML_, {
       attrs: [
         'aria-hidden',

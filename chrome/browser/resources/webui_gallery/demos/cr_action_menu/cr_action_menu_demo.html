@@ -59,7 +59,7 @@
       <label id="alignmentXLabel">AlignmentX</label>
       <select
           aria-labelledby="alignmentXLabel"
-          on-change="onAlignmentXChanged_">
+          on-change="onAlignmentChangedX_">
         <option value="">Default</option>
         <template is="dom-repeat" items="[[alignmentOptions_]]">
           <option value="[[item]]">[[item]]</option>
@@ -71,7 +71,7 @@
       <label id="alignmentYLabel">AlignmentY</label>
       <select
           aria-labelledby="alignmentYLabel"
-          on-change="onAlignmentYChanged_">
+          on-change="onAlignmentChangedY_">
         <option value="">Default</option>
         <template is="dom-repeat" items="[[alignmentOptions_]]">
           <option value="[[item]]">[[item]]</option>

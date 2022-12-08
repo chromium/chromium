@@ -172,7 +172,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
         'client-import-allowed-changed',
         this.setClientImportAllowed.bind(this));
     this.addWebUiListener(
-        'ca-import-allowed-changed', this.setCAImportAllowed.bind(this));
+        'ca-import-allowed-changed', this.setCaImportAllowed.bind(this));
     CertificatesBrowserProxyImpl.getInstance().refreshCertificates();
   }
 
@@ -180,7 +180,7 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
     this.clientImportAllowed = allowed;
   }
 
-  private setCAImportAllowed(allowed: boolean) {
+  private setCaImportAllowed(allowed: boolean) {
     this.caImportAllowed = allowed;
   }
 

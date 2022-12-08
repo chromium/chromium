@@ -140,11 +140,11 @@ export class AppManagementPermissionItemElement extends PolymerElement {
     const permissionValue = getPermission(this.app, this.permissionType).value;
     if (isBoolValue(permissionValue)) {
       newPermission =
-          this.getUIPermissionBoolean_(this.app, this.permissionType);
+          this.getUiPermissionBoolean_(this.app, this.permissionType);
       newBoolState = getBoolPermissionValue(newPermission.value);
     } else if (isTriStateValue(permissionValue)) {
       newPermission =
-          this.getUIPermissionTriState_(this.app, this.permissionType);
+          this.getUiPermissionTriState_(this.app, this.permissionType);
 
       newBoolState =
           getTriStatePermissionValue(newPermission.value) === TriState.kAllow;
@@ -164,7 +164,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   /**
    * Gets the permission boolean based on the toggle's UI state.
    */
-  private getUIPermissionBoolean_(
+  private getUiPermissionBoolean_(
       app: App, permissionType: PermissionTypeIndex): Permission {
     const currentPermission = getPermission(app, permissionType);
 
@@ -180,7 +180,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   /**
    * Gets the permission tristate based on the toggle's UI state.
    */
-  private getUIPermissionTriState_(
+  private getUiPermissionTriState_(
       app: App, permissionType: PermissionTypeIndex): Permission {
     let newPermissionValue;
     const currentPermission = getPermission(app, permissionType);
