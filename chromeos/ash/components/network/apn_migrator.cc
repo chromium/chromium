@@ -60,7 +60,10 @@ void ApnMigrator::NetworkListChanged() {
   network_state_handler_->GetVisibleNetworkListByType(
       NetworkTypePattern::Cellular(), &network_list);
   for (const NetworkState* network : network_list) {
-    // TODO(b/162365553): Ignore stub cellular networks
+    if (network->IsNonShillCellularNetwork()) {
+      continue;
+    }
+
     if (!managed_cellular_pref_handler_->ContainsApnMigratedIccid(
             network->iccid())) {
       if (!ash::features::IsApnRevampEnabled()) {

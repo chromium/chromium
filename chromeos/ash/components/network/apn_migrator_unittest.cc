@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
 #include "chromeos/ash/components/network/mock_managed_cellular_pref_handler.h"
 #include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/mock_network_metadata_store.h"
@@ -116,11 +117,17 @@ class ApnMigratorTest : public testing::Test {
     return cellular_service_path_3_;
   }
 
+  void AddStub(const std::string& stub_iccid, const std::string& eid) {
+    stub_cellular_networks_provider_.AddStub(stub_iccid, eid);
+    network_state_helper_.network_state_handler()->SyncStubCellularNetworks();
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper network_state_helper_{
       /*use_default_devices_and_services=*/true};
   NetworkHandlerTestHelper handler_test_helper_;
+  FakeStubCellularNetworksProvider stub_cellular_networks_provider_;
 
   std::unique_ptr<MockManagedCellularPrefHandler>
       managed_cellular_pref_handler_;
@@ -148,6 +155,9 @@ class ApnMigratorTest : public testing::Test {
   void SetupNetworks() {
     network_state_helper_.manager_test()->AddTechnology(shill::kTypeCellular,
                                                         /*enabled=*/true);
+    network_state_helper_.network_state_handler()
+        ->set_stub_cellular_networks_provider(
+            &stub_cellular_networks_provider_);
 
     AddTestCellularDevice(kCellularName1, kTestCellularPath1,
                           kTestCellularIccid1);
@@ -220,12 +230,17 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
   TriggerNetworkListChanged();
 }
 
-TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_AllNetworksMigrated) {
+TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigratedNetworks) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
 
-  // Every network should be evaluated, pretend that all network have been
-  // migrated.
+  const char kTestStubIccid[] = "test_stub_iccid";
+  const char kTestStubEid[] = "test_stub_eid";
+  AddStub(kTestStubIccid, kTestStubEid);
+
+  // The migrator routine will iterate through cellular networks. Stub networks
+  // must be ignored. For this test, pretend that all non-stub cellular network
+  // have been migrated.
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid1)))
       .Times(1)
@@ -238,6 +253,9 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_AllNetworksMigrated) {
               ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
       .Times(1)
       .WillOnce(Return(true));
+  EXPECT_CALL(*managed_cellular_pref_handler(),
+              ContainsApnMigratedIccid(Eq(kTestStubIccid)))
+      .Times(0);
 
   // Return nullptr and empty list for the first two networks.
   EXPECT_CALL(*network_metadata_store(), GetCustomApnList(kTestCellularGuid1))
