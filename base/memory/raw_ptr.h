@@ -5,8 +5,9 @@
 #ifndef BASE_MEMORY_RAW_PTR_H_
 #define BASE_MEMORY_RAW_PTR_H_
 
-// Facade header to allow us time to slowly rewrite `raw_ptr` users
-// to refer to the new location.
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+// Although `raw_ptr` is part of the standalone PA distribution, it is
+// easier to use the shorter path in `//base/memory`. We retain this
+// facade header for ease of typing.
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"  // IWYU pragma: export
 
 #endif  // BASE_MEMORY_RAW_PTR_H_

@@ -5,8 +5,9 @@
 #ifndef BASE_MEMORY_RAW_REF_H_
 #define BASE_MEMORY_RAW_REF_H_
 
-// Facade header to allow us time to slowly rewrite `raw_ref` users
-// to refer to the new location.
-#include "base/allocator/partition_allocator/pointers/raw_ref.h"
+// Although `raw_ref` is part of the standalone PA distribution, it is
+// easier to use the shorter path in `//base/memory`. We retain this
+// facade header for ease of typing.
+#include "base/allocator/partition_allocator/pointers/raw_ref.h"  // IWYU pragma: export
 
 #endif  // BASE_MEMORY_RAW_REF_H_
