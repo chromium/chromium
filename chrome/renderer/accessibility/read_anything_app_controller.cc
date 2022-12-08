@@ -270,7 +270,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     const ui::AXTreeUpdate& snapshot,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // Reset state.
-  display_root_id_ = ui::kInvalidAXNodeID;
   display_node_ids_.clear();
   start_node_ = nullptr;
   end_node_ = nullptr;
@@ -340,25 +339,17 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection(
     end_offset_ = 0;
   }
 
-  // The display root is the lowest common ancestor between the start and end
-  // nodes. This is the lowest node in the tree which entirely contains the
-  // selection.
-  display_root_id_ = start_node_->GetLowestCommonAncestor(*end_node_)->id();
-
   // Display nodes are the nodes which will be displayed by the rendering
-  // algorithm of Read Anything app.ts. We wish to create a subtree with display
-  // root as the root which stretches from start node to end node.
+  // algorithm of Read Anything app.ts. We wish to create a subtree which
+  // stretches from start node to end node with tree root as the root.
 
-  // Add all ancestor ids of start node up to the display root. The first
-  // ancestor is the content node, which should also be added. This does a first
-  // walk from display root down to start node.
+  // Add all ancestor ids of start node, including the start node itself. This
+  // does a first walk down to start node.
   base::queue<ui::AXNode*> ancestors =
       start_node_->GetAncestorsCrossingTreeBoundaryAsQueue();
   while (!ancestors.empty()) {
     ui::AXNodeID ancestor_id = ancestors.front()->id();
     display_node_ids_.insert(ancestor_id);
-    if (ancestor_id == display_root_id_)
-      break;
     ancestors.pop();
   }
 
@@ -376,21 +367,18 @@ void ReadAnythingAppController::PostProcessAXTreeWithSelection(
 void ReadAnythingAppController::PostProcessDistillableAXTree() {
   DCHECK(!content_node_ids_.empty());
 
-  // The display root is the lowest common ancestor between all of the content
-  // node IDs. This is the lowest node in the tree which entirely contains the
-  // distilled content.
-  display_root_id_ = GetLowestCommonAncestorOfContentNodes()->id();
-
   // Display nodes are the nodes which will be displayed by the rendering
-  // algorithm of Read Anything app.ts. We wish to create a subtree with display
-  // root as the root which stretches down to every content node and includes
-  // the descendants of each content node.
+  // algorithm of Read Anything app.ts. We wish to create a subtree which
+  // stretches down from tree root to every content node and includes the
+  // descendants of each content node.
   for (auto content_node_id : content_node_ids_) {
     ui::AXNode* content_node = GetAXNode(content_node_id);
     DCHECK(content_node);
 
-    // Add all ancestor ids in the queue up to the display root. The first
-    // ancestor is the content node, which should also be added.
+    // Add all ancestor ids, including the content node itself, which is the
+    // first ancestor in the queue. Exit the loop early if an ancestor is
+    // already in display_node_ids_; this means that all of the remaining
+    // ancestors in the queue are also already in display_node_ids.
     base::queue<ui::AXNode*> ancestors =
         content_node->GetAncestorsCrossingTreeBoundaryAsQueue();
     while (!ancestors.empty()) {
@@ -398,8 +386,6 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
       if (base::Contains(display_node_ids_, ancestor_id))
         break;
       display_node_ids_.insert(ancestor_id);
-      if (ancestor_id == display_root_id_)
-        break;
       ancestors.pop();
     }
 
@@ -436,7 +422,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
              isolate)
       .SetProperty("backgroundColor",
                    &ReadAnythingAppController::BackgroundColor)
-      .SetProperty("displayRootId", &ReadAnythingAppController::DisplayRootId)
+      .SetProperty("rootId", &ReadAnythingAppController::RootId)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
       .SetProperty("foregroundColor",
@@ -458,8 +444,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::SetThemeForTesting);
 }
 
-ui::AXNodeID ReadAnythingAppController::DisplayRootId() const {
-  return display_root_id_;
+ui::AXNodeID ReadAnythingAppController::RootId() const {
+  return tree_->root()->id();
 }
 
 SkColor ReadAnythingAppController::BackgroundColor() const {
@@ -643,21 +629,6 @@ ui::AXNode* ReadAnythingAppController::GetAXNode(
     ui::AXNodeID ax_node_id) const {
   DCHECK(tree_);
   return tree_->GetFromId(ax_node_id);
-}
-
-ui::AXNode* ReadAnythingAppController::GetLowestCommonAncestorOfContentNodes()
-    const {
-  ui::AXNode* common_ancestor = nullptr;
-  for (auto content_node_id : content_node_ids_) {
-    ui::AXNode* content_node = GetAXNode(content_node_id);
-    DCHECK(content_node);
-    if (common_ancestor) {
-      common_ancestor = content_node->GetLowestCommonAncestor(*common_ancestor);
-    } else {
-      common_ancestor = content_node;
-    }
-  }
-  return common_ancestor;
 }
 
 bool ReadAnythingAppController::NodeIsContentNode(

@@ -56,7 +56,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     controller_->OnAXTreeDistilled(snapshot, content_node_ids);
   }
 
-  ui::AXNodeID DisplayRootId() { return controller_->DisplayRootId(); }
+  ui::AXNodeID RootId() { return controller_->RootId(); }
 
   bool DisplayNodeIdsContains(ui::AXNodeID ax_node_id) {
     return base::Contains(controller_->display_node_ids_, ax_node_id);
@@ -90,10 +90,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     return controller_->GetUrl(ax_node_id);
   }
 
-  ui::AXNode* GetLowestCommonAncestorOfContentNodes() {
-    return controller_->GetLowestCommonAncestorOfContentNodes();
-  }
-
   ui::AXTreeUpdate basic_snapshot_;
   ui::AXTreeData basic_tree_data_with_selection_;
 
@@ -122,48 +118,15 @@ TEST_F(ReadAnythingAppControllerTest, Theme) {
   EXPECT_EQ(letter_spacing_value, LetterSpacing());
 }
 
-TEST_F(ReadAnythingAppControllerTest, DisplayRootId_NoSelection) {
-  basic_snapshot_.nodes.resize(6);
-  basic_snapshot_.nodes[3].child_ids = {5, 6};
-  basic_snapshot_.nodes[4].id = 5;
-  basic_snapshot_.nodes[5].id = 6;
-
-  // The lowest common ancestor of nodes 5 and 6 is node 4.
-  std::vector<ui::AXNodeID> content_node_ids_1 = {5, 6};
-  OnAXTreeDistilled(basic_snapshot_, content_node_ids_1);
-  EXPECT_EQ(4, DisplayRootId());
-
-  // The lowest common ancestor of nodes 4, 5, and 6 is the root node.
-  std::vector<ui::AXNodeID> content_node_ids_2 = {3, 5, 6};
-  OnAXTreeDistilled(basic_snapshot_, content_node_ids_2);
-  EXPECT_EQ(basic_snapshot_.root_id, DisplayRootId());
-
-  // The lowest common ancestor of node 5 is node 5.
-  std::vector<ui::AXNodeID> content_node_ids_3 = {5};
-  OnAXTreeDistilled(basic_snapshot_, content_node_ids_3);
-  EXPECT_EQ(5, DisplayRootId());
-
-  // The lowest common ancestor when there are no content nodes is
-  // kInvalidAXNodeID.
-  std::vector<ui::AXNodeID> content_node_ids_4 = {};
-  OnAXTreeDistilled(basic_snapshot_, content_node_ids_4);
-  EXPECT_EQ(ui::kInvalidAXNodeID, DisplayRootId());
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       DisplayRootId_WithSelectionAndContentNodeIds) {
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
+TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
+  OnAXTreeDistilled(basic_snapshot_, {1});
+  EXPECT_EQ(1, RootId());
+  OnAXTreeDistilled(basic_snapshot_, {2});
+  EXPECT_EQ(1, RootId());
+  OnAXTreeDistilled(basic_snapshot_, {3});
+  EXPECT_EQ(1, RootId());
   OnAXTreeDistilled(basic_snapshot_, {4});
-  EXPECT_EQ(4, DisplayRootId());
-}
-
-TEST_F(ReadAnythingAppControllerTest,
-       DisplayRootId_WithSelectionButNoContentNodeIds) {
-  basic_snapshot_.has_tree_data = true;
-  basic_snapshot_.tree_data = basic_tree_data_with_selection_;
-  OnAXTreeDistilled(basic_snapshot_, {});
-  EXPECT_EQ(basic_snapshot_.root_id, DisplayRootId());
+  EXPECT_EQ(1, RootId());
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetChildren_NoSelectionOrContentNodes) {
@@ -400,26 +363,4 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_FALSE(DisplayNodeIdsContains(2));
   EXPECT_FALSE(DisplayNodeIdsContains(3));
   EXPECT_FALSE(DisplayNodeIdsContains(4));
-}
-
-TEST_F(ReadAnythingAppControllerTest, GetLowestCommonAncestorOfContentNodes) {
-  basic_snapshot_.nodes.resize(6);
-  basic_snapshot_.nodes[3].child_ids = {5, 6};
-  basic_snapshot_.nodes[4].id = 5;
-  basic_snapshot_.nodes[5].id = 6;
-
-  OnAXTreeDistilled(basic_snapshot_, {5, 6});
-  EXPECT_EQ(4, GetLowestCommonAncestorOfContentNodes()->id());
-
-  OnAXTreeDistilled(basic_snapshot_, {4, 6});
-  EXPECT_EQ(4, GetLowestCommonAncestorOfContentNodes()->id());
-
-  OnAXTreeDistilled(basic_snapshot_, {3, 6});
-  EXPECT_EQ(1, GetLowestCommonAncestorOfContentNodes()->id());
-
-  OnAXTreeDistilled(basic_snapshot_, {2});
-  EXPECT_EQ(2, GetLowestCommonAncestorOfContentNodes()->id());
-
-  OnAXTreeDistilled(basic_snapshot_, {});
-  EXPECT_EQ(nullptr, GetLowestCommonAncestorOfContentNodes());
 }

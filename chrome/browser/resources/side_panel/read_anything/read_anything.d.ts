@@ -11,7 +11,7 @@ declare namespace chrome {
     /////////////////////////////////////////////////////////////////////
 
     // The root AXNodeID of the tree to be displayed.
-    let displayRootId: number;
+    let rootId: number;
 
     // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
     let fontName: string;

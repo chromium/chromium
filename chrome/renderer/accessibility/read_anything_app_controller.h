@@ -45,11 +45,9 @@ class ReadAnythingAppControllerTest;
 //  from the provided AXTreeUpdate and content nodes. There are two rendering
 //  algorithms:
 //  1. If the AXTreeUpdate has a selection, display a subtree containing all of
-//     the nodes between the selection start and end, with the least common
-//     ancestor of the start and end nodes as the subtree root.
+//     the nodes between the selection start and end.
 //  2. If the AXTreeUpdate has no selection, display a subtree containing all of
-//     the content nodes, their descendants, and their ancestors up to the
-//     least common ancestor of the content nodes.
+//     the content nodes, their descendants, and their ancestors.
 //
 class ReadAnythingAppController
     : public gin::Wrappable<ReadAnythingAppController>,
@@ -83,7 +81,7 @@ class ReadAnythingAppController
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
 
   // gin templates:
-  ui::AXNodeID DisplayRootId() const;
+  ui::AXNodeID RootId() const;
   SkColor BackgroundColor() const;
   std::string FontName() const;
   float FontSize() const;
@@ -104,9 +102,7 @@ class ReadAnythingAppController
   // Anything app.ts. These functions:
   // 1. Save state related to selection (start_node_, end_node_, start_offset_,
   //    end_offset_).
-  // 2. Save the display_root_id_, which is to be the root node of the tree
-  //    to be displayed by Read Anything app.ts.
-  // 3. Save the display_node_ids_, which is a set of all nodes to be displayed
+  // 2. Save the display_node_ids_, which is a set of all nodes to be displayed
   //    in Read Anything app.ts.
   void PostProcessAXTreeWithSelection(const ui::AXTreeData& tree_data);
   void PostProcessDistillableAXTree();
@@ -142,9 +138,6 @@ class ReadAnythingAppController
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
 
-  // Returns the lowest common ancestor of all content nodes.
-  ui::AXNode* GetLowestCommonAncestorOfContentNodes() const;
-
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
 
   content::RenderFrame* render_frame_;
@@ -156,7 +149,6 @@ class ReadAnythingAppController
   std::unique_ptr<ui::AXTree> tree_;
   std::vector<ui::AXNodeID> content_node_ids_;
   std::set<ui::AXNodeID> display_node_ids_;
-  ui::AXNodeID display_root_id_;
   bool has_selection_ = false;
   ui::AXNode* start_node_ = nullptr;
   ui::AXNode* end_node_ = nullptr;

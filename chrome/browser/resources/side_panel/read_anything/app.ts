@@ -129,11 +129,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // would create a shadow node element representing each AXNode, because
     // experimentation found the shadow node creation to be ~8-10x slower than
     // constructing and appending nodes directly to the container element.
-    const displayRootId = chrome.readAnything.displayRootId;
-    if (!displayRootId) {
+    const rootId = chrome.readAnything.rootId;
+    if (!rootId) {
       return;
     }
-    const node = this.buildSubtree_(displayRootId);
+    const node = this.buildSubtree_(rootId);
     container.appendChild(node);
   }
 
