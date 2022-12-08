@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsBaseFragment;
 import org.chromium.chrome.browser.privacy_sandbox.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -50,6 +51,11 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         prefService.setBoolean(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED, isEnabled);
     }
 
+    static boolean isFledgePrefManaged() {
+        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return prefService.isManagedPreference(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
+    }
+
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
@@ -64,7 +70,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
 
         mFledgeTogglePreference.setChecked(isFledgePrefEnabled());
         mFledgeTogglePreference.setOnPreferenceChangeListener(this);
-        // TODO(http://b/254411473): Make the preference managed.
+        mFledgeTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
     }
 
     @Override
@@ -105,5 +111,14 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         // Visible when Fledge is enabled and the current sites list is not empty.
         mCurrentSitesCategory.setVisible(fledgeEnabled && !sitesEmpty);
         mAllSitesPreference.setVisible(fledgeEnabled && !sitesEmpty);
+    }
+
+    private ChromeManagedPreferenceDelegate createManagedPreferenceDelegate() {
+        return preference -> {
+            if (FLEDGE_TOGGLE_PREFERENCE.equals(preference.getKey())) {
+                return isFledgePrefManaged();
+            }
+            return false;
+        };
     }
 }

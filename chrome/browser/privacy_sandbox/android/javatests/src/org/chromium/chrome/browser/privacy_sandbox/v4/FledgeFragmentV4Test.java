@@ -169,4 +169,6 @@ public final class FledgeFragmentV4Test {
         onView(withText(R.string.settings_fledge_page_current_sites_description_empty))
                 .check(doesNotExist());
     }
+    // TODO(http://b/261823248): Add Managed state tests when the Privacy Sandbox policy it
+    // implemented.
 }
