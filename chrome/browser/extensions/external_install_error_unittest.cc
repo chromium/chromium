@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/external_install_error.h"
+
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/external_install_error_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,8 +20,7 @@ TEST(ExternalInstallErrorTest, DefaultButtonFromFeature) {
         kDefaultDialogButtonSettingOk}});
 
   EXPECT_EQ(ExternalInstallError::DIALOG_BUTTON_OK,
-            ExternalInstallError::GetDefaultDialogButton(
-                base::Value(base::Value::Type::DICTIONARY)));
+            ExternalInstallError::GetDefaultDialogButton({}));
 }
 
 TEST(ExternalInstallErrorTest, DefaultButtonFromWebstoreResponse) {
@@ -31,10 +32,10 @@ TEST(ExternalInstallErrorTest, DefaultButtonFromWebstoreResponse) {
       {{WebstoreDataFetcherDelegate::kExternalInstallDefaultButtonKey,
         kDefaultDialogButtonSettingOk}});
 
-  base::Value webstore_data(base::Value::Type::DICTIONARY);
-  webstore_data.SetKey(
+  base::Value::Dict webstore_data;
+  webstore_data.Set(
       WebstoreDataFetcherDelegate::kExternalInstallDefaultButtonKey,
-      base::Value(kDefaultDialogButtonSettingCancel));
+      kDefaultDialogButtonSettingCancel);
 
   EXPECT_EQ(ExternalInstallError::DIALOG_BUTTON_CANCEL,
             ExternalInstallError::GetDefaultDialogButton(webstore_data));
@@ -42,8 +43,7 @@ TEST(ExternalInstallErrorTest, DefaultButtonFromWebstoreResponse) {
 
 TEST(ExternalInstallErrorTest, DefaultButtonFallback) {
   EXPECT_EQ(ExternalInstallError::NOT_SPECIFIED,
-            ExternalInstallError::GetDefaultDialogButton(
-                base::Value(base::Value::Type::DICTIONARY)));
+            ExternalInstallError::GetDefaultDialogButton({}));
 }
 
 }  // namespace extensions

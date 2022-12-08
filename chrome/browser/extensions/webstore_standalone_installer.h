@@ -179,7 +179,7 @@ class WebstoreStandaloneInstaller
 
   void OnWebstoreResponseParseSuccess(
       const std::string& extension_id,
-      std::unique_ptr<base::DictionaryValue> webstore_data) override;
+      const base::Value::Dict& webstore_data) override;
 
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;

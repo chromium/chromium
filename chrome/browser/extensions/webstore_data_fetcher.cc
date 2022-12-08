@@ -129,9 +129,7 @@ void WebstoreDataFetcher::OnJsonParsed(
     return;
   }
 
-  delegate_->OnWebstoreResponseParseSuccess(
-      id_, base::DictionaryValue::From(
-               base::Value::ToUniquePtrValue(std::move(*result))));
+  delegate_->OnWebstoreResponseParseSuccess(id_, result->GetDict());
 }
 
 void WebstoreDataFetcher::OnSimpleLoaderComplete(

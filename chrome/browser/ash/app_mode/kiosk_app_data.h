@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
 #include "components/account_id/account_id.h"
@@ -129,7 +130,7 @@ class KioskAppData : public KioskAppDataBase,
   void OnWebstoreRequestFailure(const std::string& extension_id) override;
   void OnWebstoreResponseParseSuccess(
       const std::string& extension_id,
-      std::unique_ptr<base::DictionaryValue> webstore_data) override;
+      const base::Value::Dict& webstore_data) override;
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
 
@@ -137,7 +138,7 @@ class KioskAppData : public KioskAppDataBase,
   // |response|. Passes |key|'s content via |value| and returns
   // true when |key| is present.
   bool CheckResponseKeyValue(const std::string& extension_id,
-                             const base::DictionaryValue* response,
+                             const base::Value::Dict& response,
                              const char* key,
                              std::string* value);
 

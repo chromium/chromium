@@ -235,8 +235,7 @@ void WebstoreStandaloneInstaller::OnWebstoreRequestFailure(
 
 void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
     const std::string& extension_id,
-    std::unique_ptr<base::DictionaryValue> webstore_data_val) {
-  base::Value::Dict webstore_data = std::move(*webstore_data_val).TakeDict();
+    const base::Value::Dict& webstore_data) {
   OnWebStoreDataFetcherDone();
 
   if (!CheckRequestorAlive()) {

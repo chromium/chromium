@@ -8,10 +8,7 @@
 #include <memory>
 #include <string>
 
-
-namespace base {
-class DictionaryValue;
-}
+#include "base/values.h"
 
 namespace extensions {
 
@@ -20,11 +17,10 @@ class WebstoreDataFetcherDelegate {
   // Invoked when the web store data request failed.
   virtual void OnWebstoreRequestFailure(const std::string& extension_id) = 0;
 
-  // Invoked when the web store response parsing is successful. Delegate takes
-  // ownership of |webstore_data|.
+  // Invoked when the web store response parsing is successful.
   virtual void OnWebstoreResponseParseSuccess(
       const std::string& extension_id,
-      std::unique_ptr<base::DictionaryValue> webstore_data) = 0;
+      const base::Value::Dict& webstore_data) = 0;
 
   // Invoked when the web store response parsing is failed.
   virtual void OnWebstoreResponseParseFailure(const std::string& extension_id,

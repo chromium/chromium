@@ -305,11 +305,11 @@ void ExternalInstallBubbleAlert::BubbleViewCancelButtonPressed(
 // static
 ExternalInstallError::DefaultDialogButtonSetting
 ExternalInstallError::GetDefaultDialogButton(
-    const base::Value& webstore_response) {
-  const base::Value* value = webstore_response.FindKeyOfType(
-      kExternalInstallDefaultButtonKey, base::Value::Type::STRING);
-  if (value) {
-    return MapDefaultButtonStringToSetting(value->GetString());
+    const base::Value::Dict& webstore_response) {
+  const std::string* value_str =
+      webstore_response.FindString(kExternalInstallDefaultButtonKey);
+  if (value_str) {
+    return MapDefaultButtonStringToSetting(*value_str);
   }
 
   if (base::FeatureList::IsEnabled(
@@ -431,12 +431,11 @@ void ExternalInstallError::OnWebstoreRequestFailure(
 
 void ExternalInstallError::OnWebstoreResponseParseSuccess(
     const std::string& extension_id,
-    std::unique_ptr<base::DictionaryValue> webstore_data) {
+    const base::Value::Dict& webstore_data) {
   absl::optional<double> average_rating =
-      webstore_data->FindDoubleKey(kAverageRatingKey);
-  absl::optional<int> rating_count = webstore_data->FindIntKey(kRatingCountKey);
-  const std::string* localized_user_count =
-      webstore_data->GetDict().FindString(kUsersKey);
+      webstore_data.FindDouble(kAverageRatingKey);
+  absl::optional<int> rating_count = webstore_data.FindInt(kRatingCountKey);
+  const std::string* localized_user_count = webstore_data.FindString(kUsersKey);
   if (!localized_user_count || !average_rating || !rating_count) {
     // If we don't get a valid webstore response, short circuit, and continue
     // to show a prompt without webstore data.
@@ -444,10 +443,10 @@ void ExternalInstallError::OnWebstoreResponseParseSuccess(
     return;
   }
 
-  default_dialog_button_setting_ = GetDefaultDialogButton(*webstore_data.get());
+  default_dialog_button_setting_ = GetDefaultDialogButton(webstore_data);
 
   absl::optional<bool> show_user_count =
-      webstore_data->FindBoolKey(kShowUserCountKey);
+      webstore_data.FindBool(kShowUserCountKey);
 
   prompt_->SetWebstoreData(*localized_user_count,
                            show_user_count.value_or(true), *average_rating,

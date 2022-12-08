@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/webstore_data_fetcher_delegate.h"
 
@@ -83,7 +84,7 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
   //    |kExternalInstallDefaultButtonKey| value.
   // If not specified by either optional source, returns |NOT_SPECIFIED|.
   static DefaultDialogButtonSetting GetDefaultDialogButton(
-      const base::Value& webstore_response);
+      const base::Value::Dict& webstore_response);
 
   DefaultDialogButtonSetting default_dialog_button_setting() const {
     return default_dialog_button_setting_;
@@ -94,7 +95,7 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
   void OnWebstoreRequestFailure(const std::string& extension_id) override;
   void OnWebstoreResponseParseSuccess(
       const std::string& extension_id,
-      std::unique_ptr<base::DictionaryValue> webstore_data) override;
+      const base::Value::Dict& webstore_data) override;
   void OnWebstoreResponseParseFailure(const std::string& extension_id,
                                       const std::string& error) override;
 
