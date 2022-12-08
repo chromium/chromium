@@ -315,9 +315,10 @@ void OfflineInternalsUIMessageHandler::HandleGeneratePageBundle(
   message.append("\n");
 
   // Construct a JSON array containing all the URLs. To guard against malicious
-  // URLs that might contain special characters, we create a ListValue and then
-  // serialize it into JSON, instead of doing direct string manipulation.
-  base::ListValue urls;
+  // URLs that might contain special characters, we create a base::Value::List
+  // and then serialize it into JSON, instead of doing direct string
+  // manipulation.
+  base::Value::List urls;
   for (const auto& prefetch_url : prefetch_urls) {
     urls.Append(prefetch_url.url.spec());
   }
