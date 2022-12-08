@@ -625,7 +625,9 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         switch (dependencyId) {
-            case 'androidx_annotation_annotation':
+            case 'androidx_annotation_annotation_jvm':
+                sb.append('  # https://crbug.com/989505\n')
+                sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
                 break
             case 'androidx_core_core':
                 sb.with {
@@ -711,10 +713,6 @@ class BuildConfigGenerator extends DefaultTask {
                     append('      "res/layout*/*time*",\n')
                     append('  ]\n')
                 }
-                break
-            case 'com_android_support_support_annotations':
-                sb.append('  # https://crbug.com/989505\n')
-                sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
                 break
             case 'com_android_support_support_compat':
                 sb.append('\n')
