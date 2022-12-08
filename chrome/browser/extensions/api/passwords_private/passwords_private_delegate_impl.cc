@@ -349,8 +349,7 @@ bool PasswordsPrivateDelegateImpl::AddPassword(
   credential.facets.push_back(std::move(facet));
   credential.username = username;
   credential.password = password;
-  credential.note = password_manager::PasswordNote(
-      /*value=*/note, /*date_created=*/base::Time::Now());
+  credential.note = note;
   credential.stored_in = {store_to_use};
   bool success = saved_passwords_presenter_.AddCredential(credential);
 
@@ -376,8 +375,7 @@ absl::optional<int> PasswordsPrivateDelegateImpl::ChangeSavedPassword(
   updated_credential.username = base::UTF8ToUTF16(params.username);
   updated_credential.password = base::UTF8ToUTF16(params.password);
   if (params.note) {
-    updated_credential.note = password_manager::PasswordNote(
-        base::UTF8ToUTF16(*params.note), base::Time::Now());
+    updated_credential.note = base::UTF8ToUTF16(*params.note);
   }
   switch (saved_passwords_presenter_.EditSavedCredentials(*original_credential,
                                                           updated_credential)) {
@@ -807,7 +805,7 @@ void PasswordsPrivateDelegateImpl::OnRequestCredentialDetailsAuthResult(
     api::passwords_private::PasswordUiEntry password_ui_entry =
         CreatePasswordUiEntryFromCredentialUiEntry(*credential);
     password_ui_entry.password = base::UTF16ToUTF8(credential->password);
-    password_ui_entry.note = base::UTF16ToUTF8(credential->note.value);
+    password_ui_entry.note = base::UTF16ToUTF8(credential->note);
     // password_manager::MovePasswordsToAccountStore() takes care of moving the
     // entire equivalence class, so passing the first element is fine.
     passwords.push_back(std::move(password_ui_entry));

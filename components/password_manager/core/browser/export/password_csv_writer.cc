@@ -54,7 +54,7 @@ std::map<std::string, std::string> PasswordCSVWriter::PasswordFormToRecord(
   record[kUsernameColumnName] = base::UTF16ToUTF8(credential.username);
   record[kPasswordColumnName] = base::UTF16ToUTF8(credential.password);
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
-    record[kNoteColumnName] = base::UTF16ToUTF8(credential.note.value);
+    record[kNoteColumnName] = base::UTF16ToUTF8(credential.note);
   }
   return record;
 }

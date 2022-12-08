@@ -73,8 +73,8 @@ password_manager::PasswordForm GenerateFormFromCredential(
   form.date_created = base::Time::Now();
   form.date_password_modified = form.date_created;
 
-  if (!credential.note.value.empty())
-    form.notes = {credential.note};
+  if (!credential.note.empty())
+    form.SetNoteWithEmptyUniqueDisplayName(credential.note);
 
   DCHECK(!credential.stored_in.empty());
   form.in_store = *credential.stored_in.begin();
@@ -83,13 +83,10 @@ password_manager::PasswordForm GenerateFormFromCredential(
 
 // Check if notes was modified for a specified |form| with |new_note|.
 IsPasswordNoteChanged IsNoteChanged(const password_manager::PasswordForm& form,
-                                    const PasswordNote& new_note) {
-  const auto& old_note_itr = base::ranges::find_if(
-      form.notes, &std::u16string::empty, &PasswordNote::unique_display_name);
-  bool old_note_exists = old_note_itr != form.notes.end();
+                                    const std::u16string& new_note) {
   return IsPasswordNoteChanged(
-      (old_note_exists && old_note_itr->value != new_note.value) ||
-      (!old_note_exists && !new_note.value.empty()));
+      form.GetNoteWithEmptyUniqueDisplayName().value_or(std::u16string()) !=
+      new_note);
 }
 
 PasswordNoteAction NoteChangeResultToPasswordNoteEditDialogAction(

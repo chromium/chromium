@@ -145,8 +145,7 @@ TEST_F(IdGeneratorTest, UpdatedCacheWithNewGenerateId) {
   EXPECT_THAT(id_generator().TryGetKey(id), Pointee(Eq(credential)));
 
   CredentialUIEntry updated_credential(credential);
-  updated_credential.note =
-      password_manager::PasswordNote(u"new note", base::Time::Now());
+  updated_credential.note = u"new note";
 
   int same_id = id_generator().GenerateId(updated_credential);
 
