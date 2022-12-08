@@ -3011,8 +3011,10 @@ void CrostiniManager::OnCreateLxdContainer(
       LOG(ERROR) << "Failed to create container: "
                  << response->failure_reason();
       // Remove all create options and the existence of this container.
-      RemoveLxdContainerFromPrefs(profile_, container_id);
-      UnregisterContainer(container_id);
+      if (IsPendingCreation(container_id)) {
+        RemoveLxdContainerFromPrefs(profile_, container_id);
+        UnregisterContainer(container_id);
+      }
       std::move(callback).Run(CrostiniResult::CONTAINER_CREATE_FAILED);
   }
 }
@@ -3195,8 +3197,10 @@ void CrostiniManager::OnLxdContainerCreated(
   if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to create container. ID: " << container_id
                << " reason: " << signal.failure_reason();
-    RemoveLxdContainerFromPrefs(profile_, container_id);
-    UnregisterContainer(container_id);
+    if (IsPendingCreation(container_id)) {
+      RemoveLxdContainerFromPrefs(profile_, container_id);
+      UnregisterContainer(container_id);
+    }
   }
 
   InvokeAndErasePendingContainerCallbacks(&create_lxd_container_callbacks_,
@@ -4153,6 +4157,19 @@ bool CrostiniManager::RegisterCreateOptions(
                                 guest_os::prefs::kContainerCreateOptions,
                                 std::move(new_create_options));
   return true;
+}
+
+bool CrostiniManager::IsPendingCreation(const guest_os::GuestId& container_id) {
+  const base::Value* create_options = guest_os::GetContainerPrefValue(
+      profile_, container_id, guest_os::prefs::kContainerCreateOptions);
+  if (create_options == nullptr) {
+    // Will only reach here if it's a vmc-started container. Treat it as if the
+    // create options have already been used.
+    return false;
+  }
+
+  return !(*create_options->GetDict().FindBool(
+      prefs::kCrostiniCreateOptionsUsedKey));
 }
 
 void CrostiniManager::SetCreateOptionsUsed(
