@@ -169,7 +169,7 @@ class BrowserLauncherTest : public InProcessBrowserTest {
         profile_manager->GetPrimaryUserProfilePath());
 
     web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::GetForTest(profile)->registrar();
+        web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
     for (auto& app_id : registrar.GetAppIds()) {
       web_app::test::UninstallWebApp(profile, app_id);
     }
