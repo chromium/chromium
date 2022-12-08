@@ -40,7 +40,7 @@ mojo::PlatformChannelEndpoint ConnectToServer(
 
   kern_return_t kr = mach_msg_send(&message.header);
   if (kr != KERN_SUCCESS) {
-    MACH_LOG(ERROR, kr) << "mach_msg_send";
+    MACH_VLOG(1, kr) << "mach_msg_send";
     return mojo::PlatformChannelEndpoint();
   }
 
