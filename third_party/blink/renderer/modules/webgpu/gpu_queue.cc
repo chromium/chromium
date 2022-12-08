@@ -239,11 +239,62 @@ ExternalSource GetExternalSourceFromExternalImage(
 // The StaticImageBitmap is a container that specifies an orientation for its
 // content, but the content of StaticImageBitmap has its own orientation so we
 // need to take both into account.
-bool IsExternalImageOriginTopLeft(StaticBitmapImage* static_bitmap_image) {
+bool IsExternalImageOriginTopLeft(
+    const StaticBitmapImage* static_bitmap_image) {
   bool frameTopLeft =
       static_bitmap_image->CurrentFrameOrientation().Orientation() ==
       ImageOrientationEnum::kOriginTopLeft;
   return frameTopLeft == static_bitmap_image->IsOriginTopLeft();
+}
+
+// CopyExternalImageToTexture() needs to set src/dst AlphaMode, flipY and color
+// space conversion related params. This helper function also initializes
+// ColorSpaceConversionConstants param.
+WGPUCopyTextureForBrowserOptions CreateCopyTextureForBrowserOptions(
+    const StaticBitmapImage* image,
+    const PaintImage* paint_image,
+    PredefinedColorSpace dst_color_space,
+    bool dst_premultiplied_alpha,
+    bool flipY,
+    ColorSpaceConversionConstants* color_space_conversion_constants) {
+  WGPUCopyTextureForBrowserOptions options = {};
+
+  options.srcAlphaMode = image->IsPremultiplied()
+                             ? WGPUAlphaMode_Premultiplied
+                             : WGPUAlphaMode_Unpremultiplied;
+  options.dstAlphaMode = dst_premultiplied_alpha
+                             ? WGPUAlphaMode_Premultiplied
+                             : WGPUAlphaMode_Unpremultiplied;
+
+  // Set color space conversion params
+  sk_sp<SkColorSpace> sk_src_color_space =
+      paint_image->GetSkImageInfo().refColorSpace();
+
+  // If source input discard the color space info(e.g. ImageBitmap created with
+  // flag colorSpaceConversion: none). Treat the source color space as sRGB.
+  if (sk_src_color_space == nullptr) {
+    sk_src_color_space = SkColorSpace::MakeSRGB();
+  }
+
+  gfx::ColorSpace gfx_src_color_space = gfx::ColorSpace(*sk_src_color_space);
+  gfx::ColorSpace gfx_dst_color_space =
+      PredefinedColorSpaceToGfxColorSpace(dst_color_space);
+
+  *color_space_conversion_constants = GetColorSpaceConversionConstants(
+      gfx_src_color_space, gfx_dst_color_space);
+
+  if (gfx_src_color_space != gfx_dst_color_space) {
+    options.needsColorSpaceConversion = true;
+    options.srcTransferFunctionParameters =
+        color_space_conversion_constants->src_transfer_constants.data();
+    options.dstTransferFunctionParameters =
+        color_space_conversion_constants->dst_transfer_constants.data();
+    options.conversionMatrix =
+        color_space_conversion_constants->gamut_conversion_matrix.data();
+  }
+  options.flipY = (IsExternalImageOriginTopLeft(image) == flipY);
+
+  return options;
 }
 
 }  // namespace
@@ -640,69 +691,25 @@ bool GPUQueue::CopyFromCanvasSourceImage(
     bool dst_premultiplied_alpha,
     PredefinedColorSpace dst_color_space,
     bool flipY) {
-  PaintImage paint_image = image->PaintImageForCurrentFrame();
-  SkColorType source_color_type = paint_image.GetSkImageInfo().colorType();
-
-  // TODO(crbug.com/dawn/856): Expand copyTextureForBrowser to support any
-  // non-depth, non-stencil, non-compressed texture format pair copy.
-  if (source_color_type != SkColorType::kRGBA_8888_SkColorType &&
-      source_color_type != SkColorType::kBGRA_8888_SkColorType) {
-    return false;
-  }
-
-  // Set options for CopyTextureForBrowser except flipY. The possible
-  // image->MakeUnaccelerated() call changes the source orientation, so we set
-  // the flipY option when we need to issue CopyTextureForBrowser() to ensure
-  // the correctness.
-  WGPUCopyTextureForBrowserOptions options = {};
-
-  options.srcAlphaMode = image->IsPremultiplied()
-                             ? WGPUAlphaMode_Premultiplied
-                             : WGPUAlphaMode_Unpremultiplied;
-  options.dstAlphaMode = dst_premultiplied_alpha
-                             ? WGPUAlphaMode_Premultiplied
-                             : WGPUAlphaMode_Unpremultiplied;
-
-  // Set color space conversion params
-  sk_sp<SkColorSpace> sk_src_color_space =
-      paint_image.GetSkImageInfo().refColorSpace();
-
-  // If source input discard the color space info(e.g. ImageBitmap created with
-  // flag colorSpaceConversion: none). Treat the source color space as sRGB.
-  if (sk_src_color_space == nullptr) {
-    sk_src_color_space = SkColorSpace::MakeSRGB();
-  }
-
-  gfx::ColorSpace gfx_src_color_space = gfx::ColorSpace(*sk_src_color_space);
-  gfx::ColorSpace gfx_dst_color_space =
-      PredefinedColorSpaceToGfxColorSpace(dst_color_space);
-
-  ColorSpaceConversionConstants color_space_conversion_constants;
-
-  if (gfx_src_color_space != gfx_dst_color_space) {
-    color_space_conversion_constants = GetColorSpaceConversionConstants(
-        gfx_src_color_space, gfx_dst_color_space);
-
-    options.needsColorSpaceConversion = true;
-    options.srcTransferFunctionParameters =
-        color_space_conversion_constants.src_transfer_constants.data();
-    options.dstTransferFunctionParameters =
-        color_space_conversion_constants.dst_transfer_constants.data();
-    options.conversionMatrix =
-        color_space_conversion_constants.gamut_conversion_matrix.data();
-  }
-
-  bool use_gpu_uploading = image->IsTextureBacked();
+  // If GPU backed image failed to uploading through GPU, call
+  // MakeUnaccelerated() to generate CPU backed image and fallback to CPU
+  // uploading path.
+  scoped_refptr<StaticBitmapImage> unaccelerated_image = nullptr;
 
 // TODO(crbug.com/1309194): GPU-GPU copy on linux platform requires interop
 // supported. According to the bug, this change will be a long time task.
 // So disable GPU-GPU copy path on linux platform.
 #if BUILDFLAG(IS_LINUX)
-  use_gpu_uploading = false;
+  unaccelerated_image = image->MakeUnaccelerated();
+  image = unaccelerated_image.get();
 #endif  // BUILDFLAG(IS_LINUX)
 
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
+  SkColorType source_color_type = paint_image.GetSkImageInfo().colorType();
+  ColorSpaceConversionConstants color_space_conversion_constants = {};
+
   // Handling GPU resource.
-  if (use_gpu_uploading) {
+  if (image->IsTextureBacked()) {
     scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
         WebGPUMailboxTexture::FromStaticBitmapImage(
             GetDawnControlClient(), device_->GetHandle(),
@@ -716,23 +723,27 @@ bool GPUQueue::CopyFromCanvasSourceImage(
       src.texture = mailbox_texture->GetTexture();
       src.origin = origin;
 
-      bool is_external_image_origin_top_left =
-          IsExternalImageOriginTopLeft(image);
-      options.flipY = (is_external_image_origin_top_left == flipY);
+      WGPUCopyTextureForBrowserOptions options =
+          CreateCopyTextureForBrowserOptions(
+              image, &paint_image, dst_color_space, dst_premultiplied_alpha,
+              flipY, &color_space_conversion_constants);
 
       GetProcs().queueCopyTextureForBrowser(GetHandle(), &src, &destination,
                                             &copy_size, &options);
       return true;
     }
+    // Fallback to CPU uploading path
+    unaccelerated_image = image->MakeUnaccelerated();
+    image = unaccelerated_image.get();
+    paint_image = image->PaintImageForCurrentFrame();
+    source_color_type = paint_image.GetSkImageInfo().colorType();
   }
 
-  // Call MakeUnaccelerated() to ensure image is CPU back resource.
   // This path will handle all CPU backend resource StaticBitmapImage or the one
   // with texture backed resource but fail to associate staticBitmapImage to
   // dawn resource.
-  scoped_refptr<StaticBitmapImage> unaccelerated_image =
-      image->MakeUnaccelerated();
-  image = unaccelerated_image.get();
+  DCHECK(!image->IsTextureBacked());
+  DCHECK(!paint_image.IsTextureBacked());
 
   // Handling CPU resource.
   // Source type is SkColorType::kRGBA_8888_SkColorType or
@@ -828,10 +839,9 @@ bool GPUQueue::CopyFromCanvasSourceImage(
   src.texture = intermediate_texture;
   src.origin = origin;
 
-  // MakeUnaccelerated() call might change the StaticBitmapImage orientation so
-  // we need to query the orientation again.
-  bool is_external_image_origin_top_left = IsExternalImageOriginTopLeft(image);
-  options.flipY = (is_external_image_origin_top_left == flipY);
+  WGPUCopyTextureForBrowserOptions options = CreateCopyTextureForBrowserOptions(
+      image, &paint_image, dst_color_space, dst_premultiplied_alpha, flipY,
+      &color_space_conversion_constants);
   GetProcs().queueCopyTextureForBrowser(GetHandle(), &src, &destination,
                                         &copy_size, &options);
 
