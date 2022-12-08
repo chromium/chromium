@@ -9150,6 +9150,8 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="ServiceWorker_EventType" separator="_">
+<!-- TODO(crbug.com/1353689): rewrite with the new way. -->
+
   <suffix name="ACTIVATE" label="ACTIVATE"/>
   <suffix name="BACKGROUND_FETCH_ABORT" label=""/>
   <suffix name="BACKGROUND_FETCH_CLICK" label=""/>
@@ -9171,6 +9173,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="SYNC" label="SYNC"/>
   <suffix name="UNKNOWN" label="UNKNOWN"/>
   <affected-histogram name="ServiceWorker.EventDispatchingDelay"/>
+  <affected-histogram name="ServiceWorker.StartWorker.Time_Any"/>
   <affected-histogram name="ServiceWorker.StartWorker.Time_DuringStartup"/>
   <affected-histogram
       name="ServiceWorker.StartWorker.Time_ExistingReadyProcess"/>
@@ -9211,6 +9214,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="ServiceWorker_StartSituationDoNotUse" separator="_">
 <!-- Use ServiceWorker.StartSituation instead, which uses standard "." separator. -->
 
+  <suffix name="Any" label="Includes any start situations."/>
   <suffix name="DuringStartup"
       label="The worker started up during browser startup."/>
   <suffix name="ExistingReadyProcess"
