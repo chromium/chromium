@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/ime/ime_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
@@ -14,6 +16,7 @@
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/strings/string_piece_forward.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "content/public/test/browser_task_environment.h"
@@ -60,6 +63,12 @@ enum VivaldiTopRowScanCode {
   kRefresh = 0xE7,
 };
 
+// xkb layout ids for both turkish Q-Type and F-Type layouts.
+constexpr base::StringPiece kTurkishKeyboardLayoutId = "xkb:tr::tur";
+constexpr base::StringPiece kTurkishKeyboardFLayoutId = "xkb:tr:f:tur";
+constexpr base::StringPiece kTurkeyRegionCode = "tr";
+constexpr base::StringPiece kTurkeyFLayoutRegionCode = "tr.f";
+
 ui::InputDevice InputDeviceFromCapabilities(
     int device_id,
     const ui::DeviceCapabilities& capabilities) {
@@ -88,6 +97,17 @@ ui::EventRewriterChromeOS::MutableKeyState MakeMutableKeyStateForFKey(
       ui::DomKey(ui::DomKey::F1 + diff), key_code);
 }
 
+void SetCurrentImeId(const std::string& current_ime_id) {
+  // Only data relavent is the ime id.
+  ImeInfo ime_info;
+  ime_info.id = current_ime_id;
+  ime_info.name = u"English";
+  ime_info.short_name = u"US";
+  ime_info.third_party = false;
+
+  Shell::Get()->ime_controller()->RefreshIme(
+      current_ime_id, /*available_imes=*/{ime_info}, /*menu_items=*/{});
+}
 }  // namespace
 
 class InputDataProviderKeyboardTest : public ash::AshTestBase {
@@ -288,6 +308,28 @@ TEST_F(VivaldiKeyboardTestBase, ScanCodeIndexesWithZeroScanCodes) {
   EXPECT_EQ(2u, aux_data_.top_row_key_scancode_indexes[kFullscreen]);
 
   EXPECT_EQ(top_row_keys_, keyboard_info_->top_row_keys);
+}
+
+TEST_F(VivaldiKeyboardTestBase, TurkishNoFLayout) {
+  SetCurrentImeId(std::string(kTurkishKeyboardLayoutId));
+  statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
+                                           std::string(kTurkeyRegionCode));
+
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_EQ(kTurkeyRegionCode, keyboard_info_->region_code);
+}
+
+TEST_F(VivaldiKeyboardTestBase, TurkishFLayout) {
+  SetCurrentImeId(std::string(kTurkishKeyboardFLayoutId));
+  statistics_provider_.SetMachineStatistic(chromeos::system::kRegionKey,
+                                           std::string(kTurkeyRegionCode));
+
+  keyboard_info_ = input_data_provider_keyboard_->ConstructKeyboard(
+      &device_information, &aux_data_);
+
+  EXPECT_EQ(kTurkeyFLayoutRegionCode, keyboard_info_->region_code);
 }
 
 class MechanicalLayoutTest

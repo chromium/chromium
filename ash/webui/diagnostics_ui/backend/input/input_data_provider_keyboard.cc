@@ -10,12 +10,16 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/display/privacy_screen_controller.h"
+#include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
+#include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "chromeos/system/statistics_provider.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -204,6 +208,16 @@ constexpr uint32_t kScancodesDrallion[] = {
     0xAE, 0xB0, 0x44, 0x57, 0xd7, 0x8B, 0xD3,
 };
 
+// Turkish F-Type xkb keyboard layout id which is used to differentiate between
+// a device from 'tr' region with Q-Type vs F-Type.
+constexpr base::StringPiece kTurkishFLayoutId = "xkb:tr:f:tur";
+
+// |kTurkeyRegionCode| is the real turkey region code.
+// |kTurkeyFLayoutRegionCode| is used purely in the diagnostics app to
+// accurately display F-Type keyboard layouts.
+constexpr base::StringPiece kTurkeyRegionCode = "tr";
+constexpr base::StringPiece kTurkeyFLayoutRegionCode = "tr.f";
+
 mojom::MechanicalLayout GetSystemMechanicalLayout() {
   chromeos::system::StatisticsProvider* stats_provider =
       chromeos::system::StatisticsProvider::GetInstance();
@@ -234,6 +248,18 @@ absl::optional<std::string> GetRegionCode() {
   if (!layout_string) {
     LOG(ERROR) << "Couldn't determine region";
     return absl::nullopt;
+  }
+
+  // In Turkey, two different layouts are shipped (Q-Type and F-Type) under the
+  // same region code |kTurkeyRegionCode|. To do a best effort differentiation
+  // between the two, query the current IME. If it is |kTurkishFLayoutId|,
+  // return our made up |kTurnishFLayoutRegionCode|.
+  if (layout_string.value() == kTurkeyRegionCode) {
+    ImeControllerImpl* controller = Shell::Get()->ime_controller();
+    DCHECK(controller);
+    if (base::EndsWith(controller->current_ime().id, kTurkishFLayoutId)) {
+      return std::string(kTurkeyFLayoutRegionCode);
+    }
   }
 
   return std::string(layout_string.value());
