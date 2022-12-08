@@ -5494,7 +5494,7 @@
   {
     "name": "partitioned-cookies",
     "owners": [ "dylancutler@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "password-change-account-store-users",
