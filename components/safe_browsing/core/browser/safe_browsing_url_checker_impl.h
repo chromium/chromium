@@ -153,6 +153,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
                         NativeCheckUrlCallback callback);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingUrlCheckerTest,
+                           CheckUrl_CancelCheckOnTimeout);
+
   class Notifier {
    public:
     explicit Notifier(CheckUrlCallback callback);
@@ -269,6 +272,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // Cancels the ongoing database manager check if there is one.
   void CancelCheckIfRelevant();
 
+  void SetTimerForTesting(std::unique_ptr<base::OneShotTimer> timer);
+
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const GURL& url,
       SBThreatType threat_type,
@@ -350,7 +355,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   State state_ = STATE_NONE;
 
   // Timer to abort the SafeBrowsing check if it takes too long.
-  base::OneShotTimer timer_;
+  std::unique_ptr<base::OneShotTimer> timer_ =
+      std::make_unique<base::OneShotTimer>();
 
   // Whether real time lookup is enabled for this request.
   bool real_time_lookup_enabled_;

@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/timer/mock_timer.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
@@ -226,8 +227,8 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
     *new_threat_info = threat_info;
     callback_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(response_callback),
-                                  /* is_rt_lookup_successful */ true,
-                                  /* is_cached_response */ is_cached_response_,
+                                  /*is_rt_lookup_successful=*/true,
+                                  /*is_cached_response=*/is_cached_response_,
                                   std::move(response)));
   }
 
@@ -317,14 +318,31 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         /*webui_delegate_=*/nullptr);
   }
 
+  // This can be used as the CheckUrl callback in cases where it's a local check
+  // but it is not safe synchronously. Since the database manager is mocked out,
+  // this is only relevant for unsafe URL checks that are interrupted by a
+  // timeout, which ends up making them conclude the check is safe and call the
+  // slow check notifier callback.
+  void OnCheckUrlCallbackSettingSlowCheckNotifier(
+      SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
+      bool proceed,
+      bool showed_interstitial,
+      bool did_perform_real_time_check,
+      bool did_check_allowlist) {
+    *slow_check_notifier = slow_check_notifier_callback_.Get();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
   std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_;
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier>
+      slow_check_notifier_callback_;
 };
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
+  base::HistogramTester histograms;
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*real_time_lookup_enabled=*/false, /*can_check_safe_browsing_db=*/true);
 
@@ -343,6 +361,9 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl) {
 
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
   task_environment_.RunUntilIdle();
+  histograms.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
+                                /*sample=*/false,
+                                /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_DangerousUrl) {
@@ -485,11 +506,14 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrl) {
   safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
 
   task_environment_.RunUntilIdle();
+  histograms.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
+                                /*sample=*/false,
+                                /*expected_bucket_count=*/1);
 
   // The false positive metric should not be logged, because the
   // verdict is not from cache.
   histograms.ExpectTotalCount("SafeBrowsing.RT.GetCache.FallbackThreatType",
-                              /* total_count */ 0);
+                              /*count=*/0);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrlFromCache) {
@@ -517,8 +541,8 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_RealTimeEnabledSafeUrlFromCache) {
   task_environment_.RunUntilIdle();
 
   histograms.ExpectUniqueSample("SafeBrowsing.RT.GetCache.FallbackThreatType",
-                                /* sample */ SB_THREAT_TYPE_SAFE,
-                                /* expected_count */ 1);
+                                /*sample=*/SB_THREAT_TYPE_SAFE,
+                                /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -545,8 +569,8 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   task_environment_.RunUntilIdle();
 
   histograms.ExpectUniqueSample("SafeBrowsing.RT.GetCache.FallbackThreatType",
-                                /* sample */ SB_THREAT_TYPE_URL_PHISHING,
-                                /* expected_count */ 1);
+                                /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
+                                /*expected_bucket_count=*/1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
@@ -572,7 +596,6 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 
 TEST_F(SafeBrowsingUrlCheckerTest,
        CheckUrl_RealTimeEnabledSafeBrowsingDisabled_Safe) {
-  base::HistogramTester histograms;
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/false);
 
@@ -604,6 +627,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
 
     base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
+    EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
     safe_browsing_url_checker.reset();
     EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
 
@@ -624,10 +648,71 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnDestruct) {
                         /*did_perform_real_time_check=*/false,
                         /*did_check_allowlist=*/false));
     safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
+    EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
     safe_browsing_url_checker.reset();
     EXPECT_TRUE(database_manager_->HasCalledCancelCheck());
 
     task_environment_.RunUntilIdle();
+  }
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
+  // Timeout for real-time checks should not cancel the database check.
+  {
+    base::HistogramTester histograms;
+    auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+        /*real_time_lookup_enabled=*/true, /*can_check_safe_browsing_db=*/true);
+    auto timer = std::make_unique<base::MockOneShotTimer>();
+    auto* timer_ptr = timer.get();
+    safe_browsing_url_checker->SetTimerForTesting(std::move(timer));
+
+    GURL url("https://example.test/");
+    database_manager_->SetAllowlistResultForUrl(url, false);
+    url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING);
+
+    base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback> cb;
+    EXPECT_CALL(cb, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                        /*did_perform_real_time_check=*/true,
+                        /*did_check_allowlist=*/true));
+    safe_browsing_url_checker->CheckUrl(url, "GET", cb.Get());
+    EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
+    timer_ptr->Fire();
+    EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
+    task_environment_.RunUntilIdle();
+    histograms.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
+                                  /*sample=*/true,
+                                  /*expected_bucket_count=*/1);
+  }
+  // Timeout for local checks should cancel the database check.
+  {
+    base::HistogramTester histograms;
+    auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+        /*real_time_lookup_enabled=*/false,
+        /*can_check_safe_browsing_db=*/true);
+    auto timer = std::make_unique<base::MockOneShotTimer>();
+    auto* timer_ptr = timer.get();
+    safe_browsing_url_checker->SetTimerForTesting(std::move(timer));
+
+    GURL url("https://example.test/");
+    database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
+                                           /*delayed_callback=*/false);
+
+    SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback callback =
+        base::BindOnce(&SafeBrowsingUrlCheckerTest::
+                           OnCheckUrlCallbackSettingSlowCheckNotifier,
+                       base::Unretained(this));
+    EXPECT_CALL(slow_check_notifier_callback_,
+                Run(/*proceed=*/true, /*showed_interstitial=*/false,
+                    /*did_perform_real_time_check=*/false,
+                    /*did_check_allowlist=*/false));
+    safe_browsing_url_checker->CheckUrl(url, "GET", std::move(callback));
+    EXPECT_FALSE(database_manager_->HasCalledCancelCheck());
+    timer_ptr->Fire();
+    EXPECT_TRUE(database_manager_->HasCalledCancelCheck());
+    task_environment_.RunUntilIdle();
+    histograms.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
+                                  /*sample=*/true,
+                                  /*expected_bucket_count=*/1);
   }
 }
 

@@ -282,7 +282,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
   DCHECK_LT(next_index_, urls_.size());
   DCHECK_EQ(urls_[next_index_].url, url);
 
-  timer_.Stop();
+  timer_->Stop();
   RecordCheckUrlTimeout(timed_out);
   if (urls_[next_index_].is_cached_safe_url) {
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.GetCache.FallbackThreatType",
@@ -445,8 +445,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
                                       TRACE_ID_LOCAL(this), "url", url.spec());
 
     // Start a timer to abort the check if it takes too long.
-    timer_.Start(FROM_HERE, base::Milliseconds(kCheckUrlTimeoutMs), this,
-                 &SafeBrowsingUrlCheckerImpl::OnTimeout);
+    timer_->Start(FROM_HERE, base::Milliseconds(kCheckUrlTimeoutMs), this,
+                  &SafeBrowsingUrlCheckerImpl::OnTimeout);
 
     bool safe_synchronously;
     bool can_perform_full_url_lookup = CanPerformFullURLLookup(url);
@@ -478,7 +478,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     }
 
     if (safe_synchronously) {
-      timer_.Stop();
+      timer_->Stop();
       RecordCheckUrlTimeout(/*timed_out=*/false);
 
       TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
@@ -772,6 +772,11 @@ void SafeBrowsingUrlCheckerImpl::CancelCheckIfRelevant() {
   if (is_async_database_manager_check_in_progress_) {
     database_manager_->CancelCheck(this);
   }
+}
+
+void SafeBrowsingUrlCheckerImpl::SetTimerForTesting(
+    std::unique_ptr<base::OneShotTimer> timer) {
+  timer_ = std::move(timer);
 }
 
 }  // namespace safe_browsing
