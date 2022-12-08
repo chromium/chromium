@@ -32,7 +32,7 @@ enum MediaStreamTrackState {
 
 // https://w3c.github.io/mediacapture-main/#media-stream-track-interface-definition
 [
-    Exposed(Window MediaStreamTrackInWindow, Worker MediaStreamTrackInWorker),
+    Exposed=Window,
     ActiveScriptWrappable
 ] interface MediaStreamTrack : EventTarget {
     readonly attribute DOMString kind;

@@ -1787,16 +1787,6 @@
       status: "stable",
     },
     {
-      // Feature added "guarding" the already launched exposure of
-      // MediaStreamTracks in the Window contexts, to allow exposure in other
-      // contexts to be feature controlled, crbug.com/c/1290274.
-      name: "MediaStreamTrackInWindow",
-      status: "stable",
-    },
-    {
-      name: "MediaStreamTrackInWorker",
-    },
-    {
       name: "MediaStreamTrackTransfer",
       status: "test",
     },
