@@ -6,6 +6,7 @@
 
 #include "ash/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -13,10 +14,8 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
-#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/system/unified/date_tray.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/containers/adapters.h"
 #include "base/ranges/algorithm.h"
@@ -35,8 +34,8 @@ namespace ash {
 
 namespace {
 
-constexpr int kPaddingBetweenItems = 8;
-constexpr int kSystemTraysRightPaddingOffset = -4;
+constexpr int kPaddingBetweenTrayItems = 8;
+constexpr int kPaddingBetweenPrimaryTraySetItems = kPaddingBetweenTrayItems - 4;
 
 class StatusAreaWidgetDelegateAnimationSettings
     : public ui::ScopedLayerAnimationSettings {
@@ -258,24 +257,24 @@ void StatusAreaWidgetDelegate::SetBorderOnChild(views::View* child,
   int top_edge = vertical_padding;
   int left_edge = 0;
   int bottom_edge = vertical_padding;
+
   // Add some extra space so that borders don't overlap. This padding between
   // items also takes care of padding at the edge of the shelf (unless hotseat
   // is enabled).
-  int right_edge = kPaddingBetweenItems;
-
-  // TODO(crbug/1354354): Refactor this hack to make it more efficient and less
-  // of a hack.
-  // If this view is `DateTray` or `NotificationCenterTray`, apply
-  // the offset `kSystemTraysRightPaddingOffset` between it and the tray on it's
-  // right.
-  if (child->GetClassName() == DateTray::kViewClassName ||
-      child->GetClassName() == NotificationCenterTray::kViewClassName) {
-    right_edge += kSystemTraysRightPaddingOffset;
-  }
-
+  int right_edge;
   if (is_child_on_edge) {
     right_edge = ShelfConfig::Get()->control_button_edge_spacing(
         true /* is_primary_axis_edge */);
+  } else {
+    // The primary tray set contains the notification tray, the date tray and
+    // the status tray. The status tray is always on the edge, so that case is
+    // covered in the `if` condition.
+    const bool is_in_primary_tray_set =
+        child->GetID() == VIEW_ID_SA_DATE_TRAY ||
+        child->GetID() == VIEW_ID_SA_NOTIFICATION_TRAY;
+
+    right_edge = is_in_primary_tray_set ? kPaddingBetweenPrimaryTraySetItems
+                                        : kPaddingBetweenTrayItems;
   }
 
   // Swap edges if alignment is not horizontal (bottom-to-top).

@@ -49,6 +49,12 @@ enum ViewID {
   VIEW_ID_QS_VERSION_BUTTON,
   VIEW_ID_QS_MAX = VIEW_ID_QS_VERSION_BUTTON,
 
+  // Status area trays:
+  VIEW_ID_SA_MIN,
+  VIEW_ID_SA_DATE_TRAY = VIEW_ID_SA_MIN,
+  VIEW_ID_SA_NOTIFICATION_TRAY,
+  VIEW_ID_SA_MAX = VIEW_ID_SA_NOTIFICATION_TRAY,
+
   // Sticky header rows in a scroll view.
   VIEW_ID_STICKY_HEADER,
   // System tray up-arrow icon that shows an update is available.

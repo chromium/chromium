@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/tray_background_view_catalog.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/notification_center/notification_center_bubble.h"
@@ -27,6 +28,7 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
                          RoundedCornerBehavior::kStartRounded),
       notification_icons_controller_(
           std::make_unique<NotificationIconsController>(shelf)) {
+  SetID(VIEW_ID_SA_NOTIFICATION_TRAY);
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   set_use_bounce_in_animation(false);
 

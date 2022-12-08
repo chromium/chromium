@@ -5,6 +5,7 @@
 #include "ash/system/unified/date_tray.h"
 
 #include "ash/constants/tray_background_view_catalog.h"
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
@@ -28,6 +29,7 @@ DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
       time_view_(tray_container()->AddChildView(
           std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kDate))),
       unified_system_tray_(tray) {
+  SetID(VIEW_ID_SA_DATE_TRAY);
   SetPressedCallback(
       base::BindRepeating(&DateTray::OnButtonPressed, base::Unretained(this)));
 
