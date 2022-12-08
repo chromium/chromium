@@ -119,7 +119,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   class ManagedNetworkChecker;
   class OAuthTokenFetcher;
 
-  enum class UserType {
+  enum class UserSessionType {
     kAutoLaunchedKiosk,
     kManuallyLaunchedKiosk,
     kNoUser,
@@ -128,7 +128,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
     kOther,
   };
 
-  const char* UserTypeToString(UserType value) const;
+  const char* UserTypeToString(UserSessionType value) const;
 
   void CheckManagedNetworkASync(base::OnceClosure on_success);
   void FetchOAuthTokenASync(OAuthTokenCallback on_success);
@@ -139,7 +139,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void FinishWithNotIdleError();
 
   bool UserTypeSupportsCrd() const;
-  UserType GetUserType() const;
+  UserSessionType GetUserSessionType() const;
   UmaSessionType GetUmaSessionType() const;
   bool IsRunningAutoLaunchedKiosk() const;
   bool IsDeviceIdle() const;

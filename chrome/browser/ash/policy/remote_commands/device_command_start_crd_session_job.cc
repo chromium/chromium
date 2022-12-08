@@ -506,66 +506,66 @@ void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
 }
 
 bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
-  const UserType current_user_type = GetUserType();
+  const UserSessionType current_user_type = GetUserSessionType();
 
   CRD_DVLOG(2) << "User is of type " << UserTypeToString(current_user_type);
 
   if (curtain_local_user_session_) {
-    return current_user_type == UserType::kNoUser;
+    return current_user_type == UserSessionType::kNoUser;
   }
 
   switch (current_user_type) {
-    case UserType::kAffiliatedUser:
-    case UserType::kAutoLaunchedKiosk:
-    case UserType::kManagedGuestSession:
-    case UserType::kManuallyLaunchedKiosk:
+    case UserSessionType::kAffiliatedUser:
+    case UserSessionType::kAutoLaunchedKiosk:
+    case UserSessionType::kManagedGuestSession:
+    case UserSessionType::kManuallyLaunchedKiosk:
       return true;
-    case UserType::kNoUser:
-    case UserType::kOther:
+    case UserSessionType::kNoUser:
+    case UserSessionType::kOther:
       return false;
   }
   NOTREACHED();
   return false;
 }
 
-DeviceCommandStartCrdSessionJob::UserType
-DeviceCommandStartCrdSessionJob::GetUserType() const {
+DeviceCommandStartCrdSessionJob::UserSessionType
+DeviceCommandStartCrdSessionJob::GetUserSessionType() const {
   const auto* user_manager = user_manager::UserManager::Get();
 
   if (!user_manager->IsUserLoggedIn())
-    return UserType::kNoUser;
+    return UserSessionType::kNoUser;
 
   if (user_manager->IsLoggedInAsAnyKioskApp()) {
     if (IsRunningAutoLaunchedKiosk())
-      return UserType::kAutoLaunchedKiosk;
+      return UserSessionType::kAutoLaunchedKiosk;
     else
-      return UserType::kManuallyLaunchedKiosk;
+      return UserSessionType::kManuallyLaunchedKiosk;
   }
 
   if (user_manager->IsLoggedInAsPublicAccount())
-    return UserType::kManagedGuestSession;
+    return UserSessionType::kManagedGuestSession;
 
   if (user_manager->GetActiveUser()->IsAffiliated())
-    return UserType::kAffiliatedUser;
+    return UserSessionType::kAffiliatedUser;
 
-  return UserType::kOther;
+  return UserSessionType::kOther;
 }
 
 DeviceCommandStartCrdSessionJob::UmaSessionType
 DeviceCommandStartCrdSessionJob::GetUmaSessionType() const {
-  switch (GetUserType()) {
-    case UserType::kAutoLaunchedKiosk:
+  switch (GetUserSessionType()) {
+    case UserSessionType::kAutoLaunchedKiosk:
       return UmaSessionType::kAutoLaunchedKiosk;
-    case UserType::kAffiliatedUser:
+    case UserSessionType::kAffiliatedUser:
       return UmaSessionType::kAffiliatedUser;
-    case UserType::kManagedGuestSession:
+    case UserSessionType::kManagedGuestSession:
       return UmaSessionType::kManagedGuestSession;
-    case UserType::kManuallyLaunchedKiosk:
+    case UserSessionType::kManuallyLaunchedKiosk:
       return UmaSessionType::kManuallyLaunchedKiosk;
-    case UserType::kNoUser:
+    case UserSessionType::kNoUser:
       // TODO(b/236689277): Introduce UmaSessionType::kNoLocalUser.
       return UmaSessionType::kMaxValue;
-    case UserType::kOther:
+    case UserSessionType::kOther:
       NOTREACHED();
       return UmaSessionType::kMaxValue;
   }
@@ -600,14 +600,14 @@ std::string DeviceCommandStartCrdSessionJob::GetRobotAccountUserName() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
-  switch (GetUserType()) {
-    case UserType::kAffiliatedUser:
-    case UserType::kManagedGuestSession:
+  switch (GetUserSessionType()) {
+    case UserSessionType::kAffiliatedUser:
+    case UserSessionType::kManagedGuestSession:
       return true;
-    case UserType::kAutoLaunchedKiosk:
-    case UserType::kManuallyLaunchedKiosk:
-    case UserType::kNoUser:
-    case UserType::kOther:
+    case UserSessionType::kAutoLaunchedKiosk:
+    case UserSessionType::kManuallyLaunchedKiosk:
+    case UserSessionType::kNoUser:
+    case UserSessionType::kOther:
       return false;
   }
   NOTREACHED();
@@ -618,9 +618,9 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
   if (curtain_local_user_session_)
     return false;
 
-  switch (GetUserType()) {
-    case UserType::kAffiliatedUser:
-    case UserType::kManagedGuestSession:
+  switch (GetUserSessionType()) {
+    case UserSessionType::kAffiliatedUser:
+    case UserSessionType::kManagedGuestSession:
       // We never terminate upon input for the user-session scenarios, because:
       //   1. There is no risk of the admin spying on the users, as they need to
       //       explicitly accept the connection request.
@@ -629,11 +629,11 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
       //      as pressing the button to accept the connection request counts as
       //      user input.
       return false;
-    case UserType::kAutoLaunchedKiosk:
-    case UserType::kManuallyLaunchedKiosk:
+    case UserSessionType::kAutoLaunchedKiosk:
+    case UserSessionType::kManuallyLaunchedKiosk:
       return !acked_user_presence_;
-    case UserType::kNoUser:
-    case UserType::kOther:
+    case UserSessionType::kNoUser:
+    case UserSessionType::kOther:
       // This method will only be called for user types for which we support
       // CRD sessions.
       NOTREACHED();
@@ -657,19 +657,19 @@ void DeviceCommandStartCrdSessionJob::TerminateImpl() {
 }
 
 const char* DeviceCommandStartCrdSessionJob::UserTypeToString(
-    UserType value) const {
+    UserSessionType value) const {
   switch (value) {
-    case UserType::kAutoLaunchedKiosk:
+    case UserSessionType::kAutoLaunchedKiosk:
       return "kAutoLaunchedKiosk";
-    case UserType::kManuallyLaunchedKiosk:
+    case UserSessionType::kManuallyLaunchedKiosk:
       return "kManuallyLaunchedKiosk";
-    case UserType::kNoUser:
+    case UserSessionType::kNoUser:
       return "kNoUser";
-    case UserType::kAffiliatedUser:
+    case UserSessionType::kAffiliatedUser:
       return "kAffiliatedUser";
-    case UserType::kManagedGuestSession:
+    case UserSessionType::kManagedGuestSession:
       return "kManagedGuestSession";
-    case UserType::kOther:
+    case UserSessionType::kOther:
       return "kOther";
   }
   NOTREACHED();
