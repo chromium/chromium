@@ -130,6 +130,10 @@ void LabelButton::SetEnabledTextColors(absl::optional<SkColor> color) {
   ResetColorsFromNativeTheme();
 }
 
+void LabelButton::SetEnabledTextColorReadabilityAdjustment(bool enabled) {
+  label_->SetAutoColorReadabilityEnabled(enabled);
+}
+
 SkColor LabelButton::GetCurrentTextColor() const {
   return label_->GetEnabledColor();
 }

@@ -252,6 +252,7 @@ void DownloadBubbleSecurityView::UpdateButton(
     bubble_delegate_->SetCancelCallback(std::move(callback));
     bubble_delegate_->SetButtonEnabled(button_type, !has_checkbox);
     views::LabelButton* button = bubble_delegate_->GetCancelButton();
+    button->SetEnabledTextColorReadabilityAdjustment(true);
     button->SetEnabledTextColors(color);
     secondary_button_ = button;
   } else {

@@ -71,6 +71,10 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // Sets the text colors shown for the non-disabled states to |color|.
   virtual void SetEnabledTextColors(absl::optional<SkColor> color);
 
+  // Enable the text colors to auto adjust for readability for the non-disabled
+  // states. Default to false.
+  void SetEnabledTextColorReadabilityAdjustment(bool enabled);
+
   // Gets the current state text color.
   SkColor GetCurrentTextColor() const;
 
