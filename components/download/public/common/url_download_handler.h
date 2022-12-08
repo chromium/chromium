@@ -33,7 +33,7 @@ class COMPONENTS_DOWNLOAD_EXPORT UrlDownloadHandler {
         std::unique_ptr<InputStream> input_stream,
         URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
             url_loader_factory_provider,
-        UrlDownloadHandler* downloader,
+        UrlDownloadHandlerID downloader,
         DownloadUrlParameters::OnStartedCallback callback) = 0;
 
     // Called after the connection is cancelled or finished.

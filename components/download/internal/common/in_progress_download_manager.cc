@@ -224,7 +224,7 @@ void InProgressDownloadManager::OnUrlDownloadStarted(
     std::unique_ptr<InputStream> input_stream,
     URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
         url_loader_factory_provider,
-    UrlDownloadHandler* downloader,
+    UrlDownloadHandlerID downloader,
     DownloadUrlParameters::OnStartedCallback callback) {
   // If a new download's GUID already exists, skip it.
   if (!download_create_info->guid.empty() &&
@@ -237,8 +237,7 @@ void InProgressDownloadManager::OnUrlDownloadStarted(
   StartDownload(std::move(download_create_info), std::move(input_stream),
                 std::move(url_loader_factory_provider),
                 base::BindOnce(&InProgressDownloadManager::CancelUrlDownload,
-                               weak_factory_.GetWeakPtr(),
-                               base::UnsafeDanglingUntriaged(downloader)),
+                               weak_factory_.GetWeakPtr(), downloader),
                 std::move(callback));
 }
 
@@ -696,9 +695,9 @@ void InProgressDownloadManager::AddInProgressDownloadForTest(
 }
 
 void InProgressDownloadManager::CancelUrlDownload(
-    UrlDownloadHandler* downloader,
+    UrlDownloadHandlerID downloader,
     bool user_cancel) {
-  OnUrlDownloadStopped(reinterpret_cast<UrlDownloadHandlerID>(downloader));
+  OnUrlDownloadStopped(downloader);
 }
 
 }  // namespace download

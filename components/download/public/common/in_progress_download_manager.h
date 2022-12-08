@@ -219,7 +219,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
       std::unique_ptr<InputStream> input_stream,
       URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
           url_loader_factory_provider,
-      UrlDownloadHandler* downloader,
+      UrlDownloadHandlerID downloader,
       DownloadUrlParameters::OnStartedCallback callback) override;
   void OnUrlDownloadStopped(UrlDownloadHandlerID downloader) override;
   void OnUrlDownloadHandlerCreated(
@@ -251,7 +251,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
   void NotifyDownloadsInitialized();
 
   // Cancels the given UrlDownloadHandler.
-  void CancelUrlDownload(UrlDownloadHandler* downloader, bool user_cancel);
+  void CancelUrlDownload(UrlDownloadHandlerID downloader, bool user_cancel);
 
   // Active download handlers.
   std::vector<UrlDownloadHandler::UniqueUrlDownloadHandlerPtr>

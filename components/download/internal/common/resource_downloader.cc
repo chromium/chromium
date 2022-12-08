@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/public/common/stream_handle_input_stream.h"
+#include "components/download/public/common/url_download_handler.h"
 #include "components/download/public/common/url_loader_factory_provider.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -253,7 +254,7 @@ void ResourceDownloader::OnResponseStarted(
               new URLLoaderFactoryProvider(url_loader_factory_),
               base::OnTaskRunnerDeleter(
                   base::SingleThreadTaskRunner::GetCurrentDefault())),
-          this, std::move(callback_)));
+          reinterpret_cast<UrlDownloadHandlerID>(this), std::move(callback_)));
 }
 
 void ResourceDownloader::OnReceiveRedirect() {

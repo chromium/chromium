@@ -63,7 +63,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadWorker
       std::unique_ptr<InputStream> input_stream,
       URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
           url_loader_factory_provider,
-      UrlDownloadHandler* downloader,
+      UrlDownloadHandlerID downloader,
       DownloadUrlParameters::OnStartedCallback callback) override;
   void OnUrlDownloadStopped(UrlDownloadHandlerID downloader) override;
   void OnUrlDownloadHandlerCreated(
