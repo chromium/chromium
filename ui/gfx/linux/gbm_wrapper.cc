@@ -127,7 +127,7 @@ class Buffer final : public ui::GbmBuffer {
 
   ~Buffer() override {
     DCHECK(!mmap_data_);
-    gbm_bo_destroy(bo_);
+    gbm_bo_destroy(bo_.ExtractAsDangling());
   }
 
   uint32_t GetFormat() const override { return format_; }
@@ -219,7 +219,7 @@ class Buffer final : public ui::GbmBuffer {
     buffer->mmap_data_ = nullptr;
   }
 
-  const raw_ptr<gbm_bo, DanglingUntriaged> bo_;
+  raw_ptr<gbm_bo> bo_;
   void* mmap_data_ = nullptr;
 
   const uint32_t format_;
