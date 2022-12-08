@@ -293,5 +293,85 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
       "non-existing");
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppURLLoaderFactoryBrowserTest,
+                       UrlLoaderFactoryCanUseServiceWorker) {
+  web_package::WebBundleBuilder builder;
+  builder.AddExchange(kUrl, {{":status", "200"}, {"content-type", "text/html"}},
+                      R"html(
+<html>
+  <head>
+    <script type="text/javascript" src="/script.js"></script>
+  </head>
+</html>
+)html");
+  builder.AddExchange(kUrl.Resolve("/title.txt"),
+                      {{":status", "200"}, {"content-type", "text/plain"}},
+                      "data from web bundle");
+  builder.AddExchange(kUrl.Resolve("/script.js"),
+                      {{":status", "200"}, {"content-type", "text/javascript"}},
+                      R"js(
+const policy = trustedTypes.createPolicy('default', {
+  createScriptURL(url) {
+    return new URL(url, document.baseURI);
+  },
+});
+
+const wait_for_activated = async (registration) => {
+  const worker = registration.active;
+  if (worker.state == 'activated') {
+    return;
+  }
+
+  await new Promise(resolve => {
+    worker.addEventListener('statechange', () => {
+      if (worker.state = 'activated') {
+        resolve();
+      }
+    });
+  });
+};
+
+const register_service_worker = async () => {
+  const registration = await navigator.serviceWorker.register(
+    policy.createScriptURL('service_worker.js'), {
+      scope: '/',
+    }
+  );
+
+  await wait_for_activated(await navigator.serviceWorker.ready);
+
+  return registration;
+};
+
+window.addEventListener('load', (async () => {
+  const registration = await register_service_worker();
+  const request = await fetch('title.txt');
+  document.title = await request.text();
+}));
+)js");
+  builder.AddExchange(kUrl.Resolve("/service_worker.js"),
+                      {{":status", "200"}, {"content-type", "text/javascript"}},
+                      R"js(
+addEventListener('fetch', (event) => {
+  event.respondWith((async () => {
+    response = await fetch(event.request);
+    text = await response.text();
+    return new Response(text + ' data from service worker');
+  })());
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(clients.claim());
+});
+)js");
+  RegisterWebApp(CreateIsolatedWebApp(
+      GURL(kUrl),
+      IsolationData{IsolationData::InstalledBundle{
+          .path = SignAndWriteBundleToDisk(builder.CreateBundle())}}));
+
+  NavigateAndWaitForTitle(GURL(kUrl),
+                          u"data from web bundle data from service worker");
+}
+
 }  // namespace
 }  // namespace web_app
