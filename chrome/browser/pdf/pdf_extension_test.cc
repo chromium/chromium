@@ -4379,17 +4379,18 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
                        LinkNavigation) {
   // Enable accessibility and load the test file.
   content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/accessibility/weblinks.pdf"));
-  ASSERT_TRUE(guest_contents);
-  WaitForAccessibilityTreeToContainNodeWithName(guest_contents, "Page 1");
+  ASSERT_TRUE(guest);
+  WaitForAccessibilityTreeToContainNodeWithName(GetActiveWebContents(),
+                                                "Page 1");
 
   // Find the specific link node.
   content::FindAccessibilityNodeCriteria find_criteria;
   find_criteria.role = ax::mojom::Role::kLink;
   find_criteria.name = "http://bing.com";
   ui::AXPlatformNodeDelegate* link_node =
-      content::FindAccessibilityNode(guest_contents, find_criteria);
+      content::FindAccessibilityNode(GetActiveWebContents(), find_criteria);
   ASSERT_TRUE(link_node);
 
   // Invoke action on a link and wait for navigation to complete.
