@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/common/chrome_features.h"
+#include "components/crash/core/common/crash_key.h"
 #include "content/public/browser/network_service_instance.h"
 
 namespace ash {
@@ -138,6 +139,29 @@ class ArcKioskAppServiceWrapper : public KioskAppLauncher {
 
 }  // namespace
 
+const char kKioskLaunchStateCrashKey[] = "kiosk-launch-state";
+
+std::string KioskLaunchStateToString(KioskLaunchState state) {
+  switch (state) {
+    case KioskLaunchState::kAttemptToLaunch:
+      return "attempt-to-launch";
+    case KioskLaunchState::kStartLaunch:
+      return "start-launch";
+    case KioskLaunchState::kLauncherStarted:
+      return "launcher-started";
+    case KioskLaunchState::kLaunchFailed:
+      return "launch-failed";
+    case KioskLaunchState::kAppWindowCreated:
+      return "app-window-created";
+  }
+}
+
+void SetKioskLaunchStateCrashKey(KioskLaunchState state) {
+  static crash_reporter::CrashKeyString<32> crash_key(
+      kKioskLaunchStateCrashKey);
+  crash_key.Set(KioskLaunchStateToString(state));
+}
+
 KioskLaunchController::KioskLaunchController(OobeUI* oobe_ui)
     : host_(LoginDisplayHost::default_host()),
       splash_screen_view_(oobe_ui->GetView<AppLaunchSplashScreenHandler>()) {}
@@ -157,6 +181,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
   launcher_start_time_ = base::Time::Now();
 
   RecordKioskLaunchUMA(auto_launch);
+  SetKioskLaunchStateCrashKey(KioskLaunchState::kLauncherStarted);
 
   if (host_)
     host_->GetLoginDisplay()->SetUIEnabled(true);
@@ -475,6 +500,8 @@ void KioskLaunchController::OnLaunchFailed(KioskAppLaunchError::Error error) {
   if (cleaned_up_)
     return;
 
+  SetKioskLaunchStateCrashKey(KioskLaunchState::kLaunchFailed);
+
   DCHECK_NE(KioskAppLaunchError::Error::kNone, error);
   SYSLOG(ERROR) << "Kiosk launch failed, error=" << static_cast<int>(error);
 
@@ -565,6 +592,9 @@ void KioskLaunchController::OnAppLaunched() {
 
 void KioskLaunchController::OnAppWindowCreated() {
   SYSLOG(INFO) << "App window created, closing splash screen.";
+
+  SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
+
   // If timer is running, do not remove splash screen for a few
   // more seconds to give the user ability to exit kiosk session.
   if (splash_wait_timer_.IsRunning())

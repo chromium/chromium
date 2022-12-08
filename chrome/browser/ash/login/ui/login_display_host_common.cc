@@ -271,6 +271,9 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
                                         bool is_auto_launch) {
   VLOG(1) << "Login >> start kiosk of type "
           << static_cast<int>(kiosk_app_id.type);
+
+  SetKioskLaunchStateCrashKey(KioskLaunchState::kAttemptToLaunch);
+
   SetStatusAreaVisible(false);
 
   // Wait for the `CrosSettings` to become either trusted or permanently
@@ -295,6 +298,8 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
     // shown by the DeviceDisablingManager.
     return;
   }
+
+  SetKioskLaunchStateCrashKey(KioskLaunchState::kStartLaunch);
 
   OnStartAppLaunch();
 

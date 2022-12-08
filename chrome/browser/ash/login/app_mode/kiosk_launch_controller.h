@@ -25,6 +25,22 @@ namespace ash {
 class LoginDisplayHost;
 class OobeUI;
 
+extern const char kKioskLaunchStateCrashKey[];
+
+// Kiosk launch state for crash key.
+enum class KioskLaunchState {
+  kAttemptToLaunch,
+  kStartLaunch,
+  kLauncherStarted,
+  kLaunchFailed,
+  kAppWindowCreated,
+};
+
+std::string KioskLaunchStateToString(KioskLaunchState state);
+
+// Sets crash key for kiosk launch state.
+void SetKioskLaunchStateCrashKey(KioskLaunchState state);
+
 // Controller for the kiosk launch process, responsible for loading the kiosk
 // profile, and updating the splash screen UI.
 //
