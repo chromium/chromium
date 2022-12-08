@@ -557,7 +557,7 @@ void MigrateJapaneseSettingsToPrefs(PrefService& prefs,
           ? input_method_specific_pref_or_null->Clone()
           : base::Value::Dict();
 
-  // Sanity check. This code should never be called if the migration has already
+  // Health check. This code should never be called if the migration has already
   // happened.
   CHECK(!japanese_settings.FindBool(kJapaneseMigrationCompleteKey));
 
