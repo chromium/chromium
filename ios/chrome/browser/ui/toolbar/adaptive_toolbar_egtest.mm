@@ -57,8 +57,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(
-      "<html><body><p>" + std::string(kPageLoadedString) + "</p><a href=\"" +
-      kPageURL3 + "\" id=\"" + kLinkID + "\">link!</a></body></html>");
+      "<html><body><p>" + std::string(kPageLoadedString) +
+      "</p><a style='font-size:50pt' href=\"" + kPageURL3 + "\" id=\"" +
+      kLinkID + "\">link!</a></body></html>");
   return std::move(http_response);
 }
 
