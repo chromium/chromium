@@ -181,6 +181,19 @@ void ExtensionAppsChromeOs::Initialize() {
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ExtensionAppsChromeOs::GetCompressedIconData(
+    const std::string& app_id,
+    apps::IconType icon_type,
+    int32_t size_in_dip,
+    ui::ResourceScaleFactor scale_factor,
+    LoadIconCallback callback) {
+  apps::GetChromeAppCompressedIconData(profile(), app_id, icon_type,
+                                       size_in_dip, scale_factor,
+                                       std::move(callback));
+}
+#endif
+
 void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
                                                     LaunchCallback callback) {
   const auto* extension = MaybeGetExtension(params.app_id);
