@@ -5,7 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {storage} from '../../common/js/storage_adapter.js';
+import {storage} from '../../common/js/storage.js';
 import {util} from '../../common/js/util.js';
 
 /**

@@ -40,7 +40,7 @@ group("js_modules") {
     ":notifications_browser_proxy",
     ":progress_center_common",
     ":recent_date_bucket",
-    ":storage_adapter",
+    ":storage",
     ":ui",
     ":url_constants",
     ":util",
@@ -69,7 +69,7 @@ js_type_check("closure_compile_jsmodules") {
     ":notifications_browser_proxy",
     ":progress_center_common",
     ":recent_date_bucket",
-    ":storage_adapter",
+    ":storage",
     ":ui",
     ":url_constants",
     ":util",
@@ -110,7 +110,7 @@ js_library("api") {
 
 js_library("app_util") {
   deps = [
-    ":storage_adapter",
+    ":storage",
     "//ui/file_manager/file_manager/externs:file_manager_private",
     "//ui/file_manager/file_manager/externs:volume_manager",
   ]
@@ -284,12 +284,12 @@ js_unittest("recent_date_bucket_unittest") {
   ]
 }
 
-js_library("storage_adapter") {
+js_library("storage") {
 }
 
-js_unittest("storage_adapter_unittest") {
+js_unittest("storage_unittest") {
   deps = [
-    ":storage_adapter",
+    ":storage",
     "//chrome/test/data/webui/chromeos:chai_assert",
   ]
 }
@@ -360,7 +360,7 @@ js_test_type_check("js_test_type_check") {
     ":filtered_volume_manager_unittest",
     ":lru_cache_unittest",
     ":recent_date_bucket_unittest",
-    ":storage_adapter_unittest",
+    ":storage_unittest",
     ":util_unittest",
     ":volume_manager_types_unittest",
   ]

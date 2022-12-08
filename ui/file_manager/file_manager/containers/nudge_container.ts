@@ -4,7 +4,7 @@
 
 import '../widgets/xf_nudge.js';
 
-import {storage} from '../common/js/storage_adapter.js';
+import {storage} from '../common/js/storage.js';
 import {str} from '../common/js/util.js';
 import {NudgeDirection, XfNudge} from '../widgets/xf_nudge.js';
 

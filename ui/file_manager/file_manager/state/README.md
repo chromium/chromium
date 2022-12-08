@@ -428,7 +428,7 @@ For the Actions Producer, we create a new file:
 `./actions_producers/ui_settings.ts`.
 
 ```typescript
-import {storage} from '../../common/js/storage_adapter.js';
+import {storage} from '../../common/js/storage.js';
 import {ColumnName, PropStatus, SortOrder, ViewType} from '../../externs/ts/state.js';
 import {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {keepLatest, serialize} from '../../lib/concurrency_models.js';

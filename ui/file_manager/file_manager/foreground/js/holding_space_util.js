@@ -7,7 +7,7 @@
  */
 
 import {metrics} from '../../common/js/metrics.js';
-import {storage} from '../../common/js/storage_adapter.js';
+import {storage} from '../../common/js/storage.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
 export class HoldingSpaceUtil {

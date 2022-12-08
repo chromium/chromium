@@ -62,7 +62,7 @@ static_js_files = [
   "file_manager/common/js/notifications_browser_proxy.js",
   "file_manager/common/js/progress_center_common.js",
   "file_manager/common/js/recent_date_bucket.js",
-  "file_manager/common/js/storage_adapter.js",
+  "file_manager/common/js/storage.js",
   "file_manager/common/js/test_error_reporting.js",
   "file_manager/common/js/ui.js",
   "file_manager/common/js/unittest_util.js",
@@ -413,7 +413,7 @@ unittest_files = [
   "file_manager/common/js/lru_cache_unittest.js",
   "file_manager/common/js/files_app_entry_types_unittest.js",
   "file_manager/common/js/recent_date_bucket_unittest.js",
-  "file_manager/common/js/storage_adapter_unittest.js",
+  "file_manager/common/js/storage_unittest.js",
   "file_manager/common/js/volume_manager_types_unittest.js",
 
   # Background:

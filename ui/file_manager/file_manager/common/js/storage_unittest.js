@@ -4,7 +4,7 @@
 
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {storage} from './storage_adapter.js';
+import {storage} from './storage.js';
 import {waitUntil} from './test_error_reporting.js';
 
 /**

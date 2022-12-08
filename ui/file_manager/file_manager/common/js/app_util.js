@@ -4,7 +4,7 @@
 
 import {VolumeManager} from '../../externs/volume_manager.js';
 
-import {storage} from './storage_adapter.js';
+import {storage} from './storage.js';
 
 const appUtil = {};
 

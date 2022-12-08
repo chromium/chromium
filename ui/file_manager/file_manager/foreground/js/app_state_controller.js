@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {appUtil} from '../../common/js/app_util.js';
 import {DialogType} from '../../common/js/dialog_type.js';
-import {storage} from '../../common/js/storage_adapter.js';
+import {storage} from '../../common/js/storage.js';
 import {util} from '../../common/js/util.js';
 
 import {DirectoryModel} from './directory_model.js';
