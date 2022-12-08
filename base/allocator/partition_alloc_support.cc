@@ -498,19 +498,28 @@ void DanglingRawPtrReleasedCrash(uintptr_t id) {
   debug::TaskTrace task_trace_release;
   absl::optional<debug::StackTrace> stack_trace_free = TakeStackTrace(id);
 
+  static const char dangling_ptr_footer[] =
+      "\n"
+      "\n"
+      "Please check for more information on:\n"
+      "https://chromium.googlesource.com/chromium/src/+/main/docs/"
+      "dangling_ptr_guide.md\n";
+
   if (stack_trace_free) {
     LOG(ERROR) << "Detected dangling raw_ptr with id="
                << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
                << "The memory was freed at:\n"
                << *stack_trace_free << "\n"
                << "The dangling raw_ptr was released at:\n"
-               << stack_trace_release << task_trace_release;
+               << stack_trace_release << task_trace_release
+               << dangling_ptr_footer;
   } else {
     LOG(ERROR) << "Detected dangling raw_ptr with id="
                << StringPrintf("0x%016" PRIxPTR, id) << ":\n\n"
                << "It was not recorded where the memory was freed.\n\n"
                << "The dangling raw_ptr was released at:\n"
-               << stack_trace_release << task_trace_release;
+               << stack_trace_release << task_trace_release
+               << dangling_ptr_footer;
   }
   ImmediateCrash();
 }
