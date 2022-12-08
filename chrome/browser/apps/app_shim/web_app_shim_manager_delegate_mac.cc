@@ -181,7 +181,7 @@ bool WebAppShimManagerDelegate::AppIsInstalled(Profile* profile,
     return fallback_delegate_->AppIsInstalled(profile, app_id);
   }
   return profile &&
-         WebAppProvider::GetForWebApps(profile)->registrar().IsInstalled(
+         WebAppProvider::GetForWebApps(profile)->registrar_unsafe().IsInstalled(
              app_id);
 }
 
@@ -201,7 +201,7 @@ bool WebAppShimManagerDelegate::AppUsesRemoteCocoa(Profile* profile,
   // window) can attach to a host.
   if (!profile)
     return false;
-  auto& registrar = WebAppProvider::GetForWebApps(profile)->registrar();
+  auto& registrar = WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
   return registrar.IsInstalled(app_id) &&
          registrar.GetAppEffectiveDisplayMode(app_id) !=
              web_app::DisplayMode::kBrowser;
@@ -241,7 +241,7 @@ void WebAppShimManagerDelegate::LaunchApp(
     return;
   }
   DisplayMode effective_display_mode = WebAppProvider::GetForWebApps(profile)
-                                           ->registrar()
+                                           ->registrar_unsafe()
                                            .GetAppEffectiveDisplayMode(app_id);
 
   apps::LaunchContainer launch_container =
@@ -315,7 +315,7 @@ void WebAppShimManagerDelegate::LaunchApp(
     // unless the user has granted or denied permission to this protocol scheme
     // previously.
     web_app::WebAppRegistrar& registrar =
-        WebAppProvider::GetForWebApps(profile)->registrar();
+        WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
     if (registrar.IsDisallowedLaunchProtocol(app_id, protocol_url.scheme())) {
       CancelAppLaunch(profile, app_id);
       return;
@@ -333,7 +333,7 @@ void WebAppShimManagerDelegate::LaunchApp(
   // If there is no matching file handling URL (such as when the API has been
   // disabled), fall back to a normal app launch.
   if (!file_launches.empty()) {
-    const WebApp* web_app = provider->registrar().GetAppById(app_id);
+    const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id);
     DCHECK(web_app);
 
     if (web_app->file_handler_approval_state() ==
@@ -392,7 +392,7 @@ bool WebAppShimManagerDelegate::UseFallback(Profile* profile,
   // If |app_id| is installed via WebAppProvider, then use |this| as the
   // delegate.
   auto* provider = WebAppProvider::GetForWebApps(profile);
-  if (provider->registrar().IsInstalled(app_id))
+  if (provider->registrar_unsafe().IsInstalled(app_id))
     return false;
 
   // Use |fallback_delegate_| only if |app_id| is installed for |profile|
@@ -411,7 +411,7 @@ WebAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(Profile* profile,
   DCHECK(profile);
 
   auto shortcuts_menu_item_infos = WebAppProvider::GetForWebApps(profile)
-                                       ->registrar()
+                                       ->registrar_unsafe()
                                        .GetAppShortcutsMenuItemInfos(app_id);
 
   DCHECK_LE(shortcuts_menu_item_infos.size(), kMaxApplicationDockMenuItems);
