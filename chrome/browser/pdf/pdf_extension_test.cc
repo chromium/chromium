@@ -4494,17 +4494,20 @@ class PDFExtensionSubmitFormTest : public PDFExtensionTest {
 #define MAYBE_SubmitForm SubmitForm
 #endif
 IN_PROC_BROWSER_TEST_F(PDFExtensionSubmitFormTest, MAYBE_SubmitForm) {
-  WebContents* guest_contents = LoadPdfGetGuestContents(
+  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/submit_form.pdf"));
-  ASSERT_TRUE(guest_contents);
+  ASSERT_TRUE(guest);
+
+  content::RenderFrameHost* guest_mainframe = guest->GetGuestMainFrame();
+  ASSERT_TRUE(guest_mainframe);
 
   std::unique_ptr<base::RunLoop> run_loop = CreateFormSubmissionRunLoop();
 
   // Click on the "Submit Form" button.
   content::SimulateMouseClickAt(
-      guest_contents, blink::WebInputEvent::kNoModifiers,
+      GetActiveWebContents(), blink::WebInputEvent::kNoModifiers,
       blink::WebMouseEvent::Button::kLeft,
-      ConvertPageCoordToScreenCoord(guest_contents, {200, 200}));
+      ConvertPageCoordToScreenCoord(guest_mainframe, {200, 200}));
 
   run_loop->Run();
 }
