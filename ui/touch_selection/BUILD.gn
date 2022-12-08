@@ -22,6 +22,8 @@ component("touch_selection") {
     "touch_selection_controller.cc",
     "touch_selection_controller.h",
     "touch_selection_draggable.h",
+    "touch_selection_magnifier_runner.cc",
+    "touch_selection_magnifier_runner.h",
     "touch_selection_menu_runner.cc",
     "touch_selection_menu_runner.h",
     "ui_touch_selection_export.h",

@@ -221,6 +221,7 @@ class ToastManagerImpl;
 class ToplevelWindowEventHandler;
 class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
+class TouchSelectionMagnifierRunnerAsh;
 class TrayAction;
 class UserMetricsRecorder;
 class VideoActivityNotifier;
@@ -1042,6 +1043,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<HighlighterController> highlighter_controller_;
 
   std::unique_ptr<DockedMagnifierController> docked_magnifier_controller_;
+
+  std::unique_ptr<TouchSelectionMagnifierRunnerAsh>
+      touch_selection_magnifier_runner_ash_;
 
   std::unique_ptr<chromeos::SnapController> snap_controller_;
 

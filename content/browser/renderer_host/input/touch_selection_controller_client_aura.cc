@@ -28,6 +28,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/touch_selection/touch_handle_drawable_aura.h"
+#include "ui/touch_selection/touch_selection_magnifier_runner.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 
 namespace content {
@@ -297,6 +298,21 @@ void TouchSelectionControllerClientAura::UpdateQuickMenu() {
   }
 }
 
+void TouchSelectionControllerClientAura::ShowMagnifier(
+    const gfx::PointF& position) {
+  if (auto* magnifier_runner =
+          ui::TouchSelectionMagnifierRunner::GetInstance()) {
+    magnifier_runner->ShowMagnifier(rwhva_->GetNativeView(), position);
+  }
+}
+
+void TouchSelectionControllerClientAura::CloseMagnifier() {
+  if (auto* magnifier_runner =
+          ui::TouchSelectionMagnifierRunner::GetInstance()) {
+    magnifier_runner->CloseMagnifier();
+  }
+}
+
 bool TouchSelectionControllerClientAura::SupportsAnimation() const {
   // We don't pass this to the active client, since it is assumed it will have
   // the same behaviour as the Aura client.
@@ -385,6 +401,7 @@ void TouchSelectionControllerClientAura::OnSelectionEvent(
     case ui::INSERTION_HANDLE_DRAG_STOPPED:
       handle_drag_in_progress_ = false;
       UpdateQuickMenu();
+      CloseMagnifier();
       break;
     case ui::SELECTION_HANDLES_MOVED:
     case ui::INSERTION_HANDLE_MOVED:
@@ -404,7 +421,10 @@ void TouchSelectionControllerClientAura::InternalClient::OnSelectionEvent(
 
 void TouchSelectionControllerClientAura::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
-    const gfx::PointF& position) {}
+    const gfx::PointF& position) {
+  DCHECK(handle_drag_in_progress_);
+  ShowMagnifier(position);
+}
 
 void TouchSelectionControllerClientAura::InternalClient::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,

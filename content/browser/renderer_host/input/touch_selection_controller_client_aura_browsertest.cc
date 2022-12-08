@@ -37,6 +37,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/touch_selection/touch_selection_controller_test_api.h"
+#include "ui/touch_selection/touch_selection_magnifier_runner.h"
 
 namespace content {
 namespace {
@@ -56,6 +57,33 @@ bool JSONToPoint(const std::string& str, gfx::PointF* point) {
   point->set_y(*y);
   return true;
 }
+
+// A mock touch selection magnifier runner to use whenever a default one is not
+// installed.
+class TestTouchSelectionMagnifierRunner
+    : public ui::TouchSelectionMagnifierRunner {
+ public:
+  TestTouchSelectionMagnifierRunner() = default;
+
+  TestTouchSelectionMagnifierRunner(const TestTouchSelectionMagnifierRunner&) =
+      delete;
+  TestTouchSelectionMagnifierRunner& operator=(
+      const TestTouchSelectionMagnifierRunner&) = delete;
+
+  ~TestTouchSelectionMagnifierRunner() override = default;
+
+ private:
+  void ShowMagnifier(aura::Window* context,
+                     const gfx::PointF& position) override {
+    magnifier_running_ = true;
+  }
+
+  void CloseMagnifier() override { magnifier_running_ = false; }
+
+  bool IsRunning() const override { return magnifier_running_; }
+
+  bool magnifier_running_ = false;
+};
 
 // A mock touch selection menu runner to use whenever a default one is not
 // installed.
@@ -200,17 +228,21 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
+    if (!ui::TouchSelectionMagnifierRunner::GetInstance())
+      magnifier_runner_ = std::make_unique<TestTouchSelectionMagnifierRunner>();
     if (!ui::TouchSelectionMenuRunner::GetInstance())
       menu_runner_ = std::make_unique<TestTouchSelectionMenuRunner>();
   }
 
  private:
   void TearDownOnMainThread() override {
+    magnifier_runner_ = nullptr;
     menu_runner_ = nullptr;
     selection_controller_client_ = nullptr;
     ContentBrowserTest::TearDownOnMainThread();
   }
 
+  std::unique_ptr<TestTouchSelectionMagnifierRunner> magnifier_runner_;
   std::unique_ptr<TestTouchSelectionMenuRunner> menu_runner_;
 
   raw_ptr<TestTouchSelectionControllerClientAura> selection_controller_client_ =
@@ -934,6 +966,7 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
             rwhva->selection_controller()->active_status());
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
   EXPECT_EQ(2.f, rwhva->GetDeviceScaleFactor());
   EXPECT_EQ(gfx::RectF(),
@@ -988,6 +1021,7 @@ IN_PROC_BROWSER_TEST_P(
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_down);
   selection_controller_client()->Wait();
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   // Move it.
   selection_controller_client()->InitWaitForSelectionEvent(
@@ -998,6 +1032,7 @@ IN_PROC_BROWSER_TEST_P(
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_move);
   selection_controller_client()->Wait();
+  EXPECT_TRUE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   // Then release.
   selection_controller_client()->InitWaitForSelectionEvent(
@@ -1007,6 +1042,7 @@ IN_PROC_BROWSER_TEST_P(
                           ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_up);
   selection_controller_client()->Wait();
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   // The handle should have moved to right.
   EXPECT_EQ(start_top.y(), controller->start().edge_start().y());
@@ -1071,6 +1107,7 @@ IN_PROC_BROWSER_TEST_P(
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_down);
   selection_controller_client()->Wait();
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   // Move it.
   selection_controller_client()->InitWaitForSelectionEvent(
@@ -1081,6 +1118,7 @@ IN_PROC_BROWSER_TEST_P(
       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_move);
   selection_controller_client()->Wait();
+  EXPECT_TRUE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   // Then release.
   selection_controller_client()->InitWaitForSelectionEvent(
@@ -1090,6 +1128,7 @@ IN_PROC_BROWSER_TEST_P(
                           ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   rwhva->OnTouchEvent(&touch_up);
   selection_controller_client()->Wait();
+  EXPECT_FALSE(ui::TouchSelectionMagnifierRunner::GetInstance()->IsRunning());
 
   gfx::RectF moved_handle_rect =
       rwhva->selection_controller()->GetStartHandleRect();
