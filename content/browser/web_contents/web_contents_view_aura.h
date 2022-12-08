@@ -84,6 +84,10 @@ class CONTENT_EXPORT WebContentsViewAura
 
     // Location local to WebContentsViewAura.
     gfx::PointF localized_location;
+
+    // Root location of the drop target event.
+    gfx::PointF root_location;
+
     // The supported DnD operation of the source. A bitmask of
     // ui::mojom::DragOperations.
     int source_operations;
@@ -265,7 +269,7 @@ class CONTENT_EXPORT WebContentsViewAura
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
                            absl::optional<gfx::PointF> transformed_pt);
-  void DragUpdatedCallback(ui::DropTargetEvent event,
+  void DragUpdatedCallback(DropMetadata drop_metadata,
                            std::unique_ptr<DropData> drop_data,
                            base::WeakPtr<RenderWidgetHostViewBase> target,
                            absl::optional<gfx::PointF> transformed_pt);
