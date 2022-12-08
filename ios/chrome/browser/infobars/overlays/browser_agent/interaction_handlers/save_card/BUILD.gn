@@ -9,8 +9,6 @@ source_set("save_card") {
     "save_card_infobar_banner_interaction_handler.mm",
     "save_card_infobar_banner_overlay_request_callback_installer.h",
     "save_card_infobar_banner_overlay_request_callback_installer.mm",
-    "save_card_infobar_interaction_handler.h",
-    "save_card_infobar_interaction_handler.mm",
     "save_card_infobar_modal_interaction_handler.h",
     "save_card_infobar_modal_interaction_handler.mm",
     "save_card_infobar_modal_overlay_request_callback_installer.h",

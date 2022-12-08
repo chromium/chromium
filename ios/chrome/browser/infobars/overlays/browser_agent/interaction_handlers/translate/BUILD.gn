@@ -7,8 +7,6 @@ source_set("translate") {
   sources = [
     "translate_infobar_banner_interaction_handler.h",
     "translate_infobar_banner_interaction_handler.mm",
-    "translate_infobar_interaction_handler.h",
-    "translate_infobar_interaction_handler.mm",
     "translate_infobar_modal_interaction_handler.h",
     "translate_infobar_modal_interaction_handler.mm",
     "translate_infobar_modal_overlay_request_callback_installer.h",

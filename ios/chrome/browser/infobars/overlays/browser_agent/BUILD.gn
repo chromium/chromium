@@ -40,6 +40,7 @@ source_set("browser_agent_util") {
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/tailored_security",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
   ]
 }
 

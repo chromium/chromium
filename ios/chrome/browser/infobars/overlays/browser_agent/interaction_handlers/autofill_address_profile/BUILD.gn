@@ -7,8 +7,6 @@ source_set("autofill_address_profile") {
   sources = [
     "save_address_profile_infobar_banner_interaction_handler.h",
     "save_address_profile_infobar_banner_interaction_handler.mm",
-    "save_address_profile_infobar_interaction_handler.h",
-    "save_address_profile_infobar_interaction_handler.mm",
     "save_address_profile_infobar_modal_interaction_handler.h",
     "save_address_profile_infobar_modal_interaction_handler.mm",
     "save_address_profile_infobar_modal_overlay_request_callback_installer.h",

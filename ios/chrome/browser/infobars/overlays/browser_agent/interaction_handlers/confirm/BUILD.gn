@@ -7,8 +7,6 @@ source_set("confirm") {
   sources = [
     "confirm_infobar_banner_interaction_handler.h",
     "confirm_infobar_banner_interaction_handler.mm",
-    "confirm_infobar_interaction_handler.h",
-    "confirm_infobar_interaction_handler.mm",
   ]
   deps = [
     "//base",

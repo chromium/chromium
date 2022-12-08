@@ -7,8 +7,6 @@ source_set("permissions") {
   sources = [
     "permissions_infobar_banner_interaction_handler.h",
     "permissions_infobar_banner_interaction_handler.mm",
-    "permissions_infobar_interaction_handler.h",
-    "permissions_infobar_interaction_handler.mm",
   ]
   deps = [
     "//base",

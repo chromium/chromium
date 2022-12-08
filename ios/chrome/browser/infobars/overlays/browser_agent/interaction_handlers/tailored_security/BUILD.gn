@@ -7,8 +7,6 @@ source_set("tailored_security") {
   sources = [
     "tailored_security_infobar_banner_interaction_handler.h",
     "tailored_security_infobar_banner_interaction_handler.mm",
-    "tailored_security_infobar_interaction_handler.h",
-    "tailored_security_infobar_interaction_handler.mm",
   ]
   deps = [
     "//base",
