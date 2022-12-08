@@ -70,7 +70,7 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
     auto* provider =
         web_app::WebAppProvider::GetForWebApps(browser_view->GetProfile());
     always_show_toolbar_in_fullscreen_observation_.Observe(
-        &provider->registrar());
+        &provider->registrar_unsafe());
   } else {
     show_fullscreen_toolbar_.Init(
         prefs::kShowFullscreenToolbar, browser_view->GetProfile()->GetPrefs(),
