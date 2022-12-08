@@ -439,14 +439,14 @@ TEST_F(ExtensionTelemetryServiceTest, TestExtensionInfoProtoConstruction) {
   }
 }
 
-TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnShutdown) {
+TEST_F(ExtensionTelemetryServiceTest,
+       PersistsReportsOnShutdownWithSignalDataPresent) {
   // Setting up the persister and signals.
   telemetry_service_->SetEnabled(false);
   scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
   telemetry_service_->SetEnabled(true);
   PrimeTelemetryServiceWithSignal();
   task_environment_.RunUntilIdle();
-  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
   // After a shutdown, the persister should create a file of persisted data.
   telemetry_service_->Shutdown();
   base::FilePath persisted_dir = profile_.GetPath();
@@ -459,6 +459,23 @@ TEST_F(ExtensionTelemetryServiceTest, PersistsReportsOnShutdown) {
   telemetry_service_->SetEnabled(false);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(base::PathExists(persisted_dir));
+}
+
+TEST_F(ExtensionTelemetryServiceTest,
+       DoesNotPersistsReportsOnShutdownWithNoSignalDataPresent) {
+  // Setting up the persister and signals.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeature(kExtensionTelemetryPersistence);
+  telemetry_service_->SetEnabled(true);
+  task_environment_.RunUntilIdle();
+  // After a shutdown, the persister should not persist a file. There are
+  // extensions installed but there is no signal data present.
+  telemetry_service_->Shutdown();
+  base::FilePath persisted_dir = profile_.GetPath();
+  persisted_dir = persisted_dir.AppendASCII("CRXTelemetry");
+  base::FilePath persisted_file = persisted_dir.AppendASCII("CRXTelemetry_0");
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(persisted_file));
 }
 
 TEST_F(ExtensionTelemetryServiceTest, PersistsReportOnFailedUpload) {
