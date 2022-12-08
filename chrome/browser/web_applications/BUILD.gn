@@ -760,6 +760,10 @@ source_set("web_applications_browser_tests") {
     sources += [ "policy/web_app_policy_manager_browsertest.cc" ]
   }
 
+  if (is_chromeos_ash) {
+    sources += [ "isolated_web_apps/policy/isolated_web_app_policy_manager_ash_browsertest.cc" ]
+  }
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
@@ -783,6 +787,7 @@ source_set("web_applications_browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//chrome/browser/ash:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     ]

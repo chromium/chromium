@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_POLICY_WEB_APP_POLICY_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_POLICY_WEB_APP_POLICY_MANAGER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -198,6 +200,9 @@ class WebAppPolicyManager {
   std::unique_ptr<WebAppSetting> default_settings_;
 
   ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<IsolatedWebAppPolicyManager> iwa_policy_manager_;
+#endif
 
   base::WeakPtrFactory<WebAppPolicyManager> weak_ptr_factory_{this};
 };
