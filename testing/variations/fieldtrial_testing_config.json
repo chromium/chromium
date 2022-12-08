@@ -10165,9 +10165,6 @@
     "SharingHubDesktopScreenshots": [
         {
             "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
@@ -10176,8 +10173,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DesktopScreenshots",
-                        "SharingDesktopScreenshotsEdit"
+                        "DesktopScreenshots"
                     ]
                 }
             ]
