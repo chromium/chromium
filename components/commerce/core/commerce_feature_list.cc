@@ -37,7 +37,7 @@ typedef std::unordered_map<std::string, std::unordered_set<std::string>>
 const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
   // Declaring the variable "static" means it isn't recreated each time this
   // function is called. This gets around the "static initializers" problem.
-  static const base::NoDestructor<CountryLocaleMap> map({{"us", {"en-us"}}});
+  static const base::NoDestructor<CountryLocaleMap> map{{{"us", {"en-us"}}}};
   return *map;
 }
 
