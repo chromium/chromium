@@ -37,7 +37,7 @@ class PrefService;
 namespace base {
 class Value;
 class Clock;
-}
+}  // namespace base
 
 namespace content_settings {
 class ObservableProvider;
@@ -46,7 +46,7 @@ class PrefProvider;
 class TestUtils;
 class RuleIterator;
 class WebsiteSettingsInfo;
-}
+}  // namespace content_settings
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -239,10 +239,9 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Check if a call to SetNarrowestContentSetting would succeed or if it would
   // fail because of an invalid pattern.
-  bool CanSetNarrowestContentSetting(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType type) const;
+  bool CanSetNarrowestContentSetting(const GURL& primary_url,
+                                     const GURL& secondary_url,
+                                     ContentSettingsType type) const;
 
   // Checks whether the specified |type| controls a feature that is restricted
   // to secure origins.

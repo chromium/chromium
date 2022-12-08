@@ -44,11 +44,13 @@ static_assert(std::size(kContentSettingsStringMapping) ==
 // belong between ALLOW and ASK. DEFAULT should never be used and is therefore
 // not part of this array.
 const ContentSetting kContentSettingOrder[] = {
+    // clang-format off
     CONTENT_SETTING_ALLOW,
     CONTENT_SETTING_SESSION_ONLY,
     CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
     CONTENT_SETTING_ASK,
     CONTENT_SETTING_BLOCK
+    // clang-format on
 };
 
 static_assert(std::size(kContentSettingOrder) ==
@@ -83,15 +85,14 @@ bool ContentSettingFromString(const std::string& name,
 std::string CreatePatternString(
     const ContentSettingsPattern& item_pattern,
     const ContentSettingsPattern& top_level_frame_pattern) {
-  return item_pattern.ToString()
-         + std::string(kPatternSeparator)
-         + top_level_frame_pattern.ToString();
+  return item_pattern.ToString() + std::string(kPatternSeparator) +
+         top_level_frame_pattern.ToString();
 }
 
 PatternPair ParsePatternString(const std::string& pattern_str) {
-  std::vector<std::string> pattern_str_list = base::SplitString(
-      pattern_str, std::string(1, kPatternSeparator[0]),
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string> pattern_str_list =
+      base::SplitString(pattern_str, std::string(1, kPatternSeparator[0]),
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // If the |pattern_str| is an empty string then the |pattern_string_list|
   // contains a single empty string. In this case the empty string will be
@@ -106,10 +107,8 @@ PatternPair ParsePatternString(const std::string& pattern_str) {
     }
   }
 
-  if (pattern_str_list.size() > 2 ||
-      pattern_str_list.size() == 0) {
-    return PatternPair(ContentSettingsPattern(),
-                       ContentSettingsPattern());
+  if (pattern_str_list.size() > 2 || pattern_str_list.size() == 0) {
+    return PatternPair(ContentSettingsPattern(), ContentSettingsPattern());
   }
 
   PatternPair pattern_pair;

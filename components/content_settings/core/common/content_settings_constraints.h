@@ -35,8 +35,8 @@ struct ContentSettingConstraints {
   SessionModel session_model = SessionModel::Durable;
   // Set to true to keep track of the last visit to the origin of this
   // permission.
-  // This is used for the Safety check permission module and unrelated to the "expiration" keyword
-  // above.
+  // This is used for the Safety check permission module and unrelated to the
+  // "expiration" keyword above.
   bool track_last_visit_for_autoexpiration = false;
 };
 

@@ -17,8 +17,7 @@ ContentSettingsPattern Pattern(const std::string& str) {
 
 TEST(ContentSettingsPatternTest, RealWorldPatterns) {
   // This is the place for real world patterns that unveiled bugs.
-  EXPECT_STREQ("[*.]ikea.com",
-               Pattern("[*.]ikea.com").ToString().c_str());
+  EXPECT_STREQ("[*.]ikea.com", Pattern("[*.]ikea.com").ToString().c_str());
 }
 
 TEST(ContentSettingsPatternTest, GURL) {
@@ -52,8 +51,8 @@ TEST(ContentSettingsPatternTest, FromURL) {
   // - A domain wildcard is added to the GURL host.
   // - A port wildcard is used instead of the schemes default port.
   //   In case of non-default ports the specific GURL port is used.
-  ContentSettingsPattern pattern = ContentSettingsPattern::FromURL(
-      GURL("http://www.youtube.com"));
+  ContentSettingsPattern pattern =
+      ContentSettingsPattern::FromURL(GURL("http://www.youtube.com"));
   EXPECT_TRUE(pattern.IsValid());
   EXPECT_STREQ("[*.]www.youtube.com", pattern.ToString().c_str());
 
@@ -102,24 +101,24 @@ TEST(ContentSettingsPatternTest, FromURL) {
 TEST(ContentSettingsPatternTest, FilesystemUrls) {
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromURL(GURL("http://www.google.com"));
-  EXPECT_TRUE(pattern.Matches(
-      GURL("filesystem:http://www.google.com/temporary/")));
-  EXPECT_TRUE(pattern.Matches(
-      GURL("filesystem:http://foo.www.google.com/temporary/")));
-  EXPECT_TRUE(pattern.Matches(
-      GURL("filesystem:http://www.google.com:80/temporary/")));
-  EXPECT_TRUE(pattern.Matches(
-      GURL("filesystem:http://www.google.com:81/temporary/")));
+  EXPECT_TRUE(
+      pattern.Matches(GURL("filesystem:http://www.google.com/temporary/")));
+  EXPECT_TRUE(
+      pattern.Matches(GURL("filesystem:http://foo.www.google.com/temporary/")));
+  EXPECT_TRUE(
+      pattern.Matches(GURL("filesystem:http://www.google.com:80/temporary/")));
+  EXPECT_TRUE(
+      pattern.Matches(GURL("filesystem:http://www.google.com:81/temporary/")));
 
   pattern = ContentSettingsPattern::FromURL(GURL("https://www.google.com"));
-  EXPECT_TRUE(pattern.Matches(
-      GURL("filesystem:https://www.google.com/temporary/")));
+  EXPECT_TRUE(
+      pattern.Matches(GURL("filesystem:https://www.google.com/temporary/")));
   EXPECT_TRUE(pattern.Matches(
       GURL("filesystem:https://www.google.com:443/temporary/")));
   EXPECT_TRUE(pattern.Matches(
       GURL("filesystem:https://foo.www.google.com/temporary/")));
-  EXPECT_FALSE(pattern.Matches(
-      GURL("filesystem:https://www.google.com:81/temporary/")));
+  EXPECT_FALSE(
+      pattern.Matches(GURL("filesystem:https://www.google.com:81/temporary/")));
 
   // A pattern from a filesystem URLs is equivalent to a pattern from the inner
   // URL of the filesystem URL.
@@ -132,20 +131,18 @@ TEST(ContentSettingsPatternTest, FilesystemUrls) {
   // TODO(msramek): Filesystem URLs do not return correct paths. For example,
   // GURL("filesystem:file:///temporary/test.txt").inner_url().path() returns
   // only '/temporary' instead of 'temporary/test.txt'. crbug.com/568110.
-  pattern =
-      ContentSettingsPattern::FromURL(
-          GURL("filesystem:file:///temporary/foo/bar"));
+  pattern = ContentSettingsPattern::FromURL(
+      GURL("filesystem:file:///temporary/foo/bar"));
   EXPECT_TRUE(pattern.Matches(GURL("filesystem:file:///temporary/")));
   EXPECT_TRUE(pattern.Matches(GURL("filesystem:file:///temporary/test.txt")));
   EXPECT_TRUE(pattern.Matches(GURL("file:///temporary")));
   EXPECT_FALSE(pattern.Matches(GURL("file://foo/bar")));
-  pattern2 =
-      ContentSettingsPattern::FromURL(
-          GURL("filesystem:file:///persistent/foo2/bar2"));
-  EXPECT_EQ(
-      ContentSettingsPattern::DISJOINT_ORDER_PRE, pattern.Compare(pattern2));
-  EXPECT_EQ(
-      ContentSettingsPattern::DISJOINT_ORDER_POST, pattern2.Compare(pattern));
+  pattern2 = ContentSettingsPattern::FromURL(
+      GURL("filesystem:file:///persistent/foo2/bar2"));
+  EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
+            pattern.Compare(pattern2));
+  EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_POST,
+            pattern2.Compare(pattern));
 }
 
 TEST(ContentSettingsPatternTest, FromURLNoWildcard) {
@@ -157,8 +154,8 @@ TEST(ContentSettingsPatternTest, FromURLNoWildcard) {
   // Creating content settings patterns from strings behaves different. Pattern
   // parts that are omitted in pattern specifications (strings), are completed
   // with a wildcard.
-  ContentSettingsPattern pattern = ContentSettingsPattern::FromURLNoWildcard(
-      GURL("http://www.example.com"));
+  ContentSettingsPattern pattern =
+      ContentSettingsPattern::FromURLNoWildcard(GURL("http://www.example.com"));
   EXPECT_TRUE(pattern.IsValid());
   EXPECT_STREQ("http://www.example.com:80", pattern.ToString().c_str());
   EXPECT_TRUE(pattern.Matches(GURL("http://www.example.com")));
@@ -174,18 +171,17 @@ TEST(ContentSettingsPatternTest, FromURLNoWildcard) {
   EXPECT_FALSE(pattern.Matches(GURL("http://foo.www.example.com")));
 
   // Pattern for filesystem URLs
-  pattern =
-      ContentSettingsPattern::FromURLNoWildcard(
-          GURL("filesystem:http://www.google.com/temporary/"));
+  pattern = ContentSettingsPattern::FromURLNoWildcard(
+      GURL("filesystem:http://www.google.com/temporary/"));
   EXPECT_TRUE(pattern.IsValid());
   EXPECT_TRUE(pattern.Matches(GURL("http://www.google.com")));
   EXPECT_FALSE(pattern.Matches(GURL("http://foo.www.google.com")));
-  EXPECT_TRUE(pattern.Matches(
-      GURL("filesystem:http://www.google.com/persistent/")));
-  EXPECT_FALSE(pattern.Matches(
-      GURL("filesystem:https://www.google.com/persistent/")));
-  EXPECT_FALSE(pattern.Matches(
-      GURL("filesystem:https://www.google.com:81/temporary/")));
+  EXPECT_TRUE(
+      pattern.Matches(GURL("filesystem:http://www.google.com/persistent/")));
+  EXPECT_FALSE(
+      pattern.Matches(GURL("filesystem:https://www.google.com/persistent/")));
+  EXPECT_FALSE(
+      pattern.Matches(GURL("filesystem:https://www.google.com:81/temporary/")));
   EXPECT_FALSE(pattern.Matches(
       GURL("filesystem:https://foo.www.google.com/temporary/")));
 
@@ -209,8 +205,10 @@ TEST(ContentSettingsPatternTest, FromURLNoWildcard) {
 TEST(ContentSettingsPatternTest, ValidWildcardFastPath) {
   std::unique_ptr<ContentSettingsPattern::BuilderInterface> builder =
       ContentSettingsPattern::CreateBuilder();
-  builder->WithSchemeWildcard()->WithDomainWildcard()->WithPortWildcard()->
-           WithPathWildcard();
+  builder->WithSchemeWildcard()
+      ->WithDomainWildcard()
+      ->WithPortWildcard()
+      ->WithPathWildcard();
   ContentSettingsPattern built_wildcard = builder->Build();
   EXPECT_EQ(built_wildcard, ContentSettingsPattern::Wildcard());
 }
@@ -222,10 +220,10 @@ TEST(ContentSettingsPatternTest, Wildcard) {
       GURL("http://www.google.com")));
   EXPECT_TRUE(ContentSettingsPattern::Wildcard().Matches(
       GURL("https://www.google.com")));
-  EXPECT_TRUE(ContentSettingsPattern::Wildcard().Matches(
-      GURL("https://myhost:8080")));
-  EXPECT_TRUE(ContentSettingsPattern::Wildcard().Matches(
-      GURL("file:///foo/bar.txt")));
+  EXPECT_TRUE(
+      ContentSettingsPattern::Wildcard().Matches(GURL("https://myhost:8080")));
+  EXPECT_TRUE(
+      ContentSettingsPattern::Wildcard().Matches(GURL("file:///foo/bar.txt")));
 
   EXPECT_STREQ("*", ContentSettingsPattern::Wildcard().ToString().c_str());
 
@@ -236,10 +234,10 @@ TEST(ContentSettingsPatternTest, Wildcard) {
 
 TEST(ContentSettingsPatternTest, TrimEndingDotFromHost) {
   EXPECT_TRUE(Pattern("www.example.com").IsValid());
-  EXPECT_TRUE(Pattern("www.example.com").Matches(
-      GURL("http://www.example.com")));
-  EXPECT_TRUE(Pattern("www.example.com").Matches(
-      GURL("http://www.example.com.")));
+  EXPECT_TRUE(
+      Pattern("www.example.com").Matches(GURL("http://www.example.com")));
+  EXPECT_TRUE(
+      Pattern("www.example.com").Matches(GURL("http://www.example.com.")));
 
   EXPECT_TRUE(Pattern("www.example.com.").IsValid());
   EXPECT_STREQ("www.example.com",
@@ -316,14 +314,14 @@ TEST(ContentSettingsPatternTest, FromString_FilePatterns) {
   EXPECT_FALSE(Pattern("file:///foo/bar/file.*").IsValid());
 
   // File patterns match URLs with the same path on any host.
-  EXPECT_TRUE(Pattern("file:///foo/bar/file.html").Matches(
-      GURL("file://localhost/foo/bar/file.html")));
-  EXPECT_TRUE(Pattern("file:///foo/bar/file.html").Matches(
-      GURL("file://example.com/foo/bar/file.html")));
-  EXPECT_FALSE(Pattern("file:///foo/bar/file.html").Matches(
-        GURL("file://localhost/foo/bar/other.html")));
-  EXPECT_FALSE(Pattern("file:///foo/bar/file.html").Matches(
-      GURL("file://example.com/foo/bar/other.html")));
+  EXPECT_TRUE(Pattern("file:///foo/bar/file.html")
+                  .Matches(GURL("file://localhost/foo/bar/file.html")));
+  EXPECT_TRUE(Pattern("file:///foo/bar/file.html")
+                  .Matches(GURL("file://example.com/foo/bar/file.html")));
+  EXPECT_FALSE(Pattern("file:///foo/bar/file.html")
+                   .Matches(GURL("file://localhost/foo/bar/other.html")));
+  EXPECT_FALSE(Pattern("file:///foo/bar/file.html")
+                   .Matches(GURL("file://example.com/foo/bar/other.html")));
 
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromURL(GURL("file:///tmp/test.html"));
@@ -339,28 +337,26 @@ TEST(ContentSettingsPatternTest, FromString_FilePatterns) {
   ContentSettingsPattern pattern3 =
       ContentSettingsPattern::FromString("file:///tmp/other.html");
 
-  EXPECT_EQ(ContentSettingsPattern::IDENTITY,
-            pattern.Compare(pattern));
-  EXPECT_EQ(ContentSettingsPattern::IDENTITY,
-            pattern.Compare(pattern2));
+  EXPECT_EQ(ContentSettingsPattern::IDENTITY, pattern.Compare(pattern));
+  EXPECT_EQ(ContentSettingsPattern::IDENTITY, pattern.Compare(pattern2));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
             pattern.Compare(pattern3));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_POST,
             pattern3.Compare(pattern));
-  EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
-            file_wildcard.Compare(pattern));
+  EXPECT_EQ(ContentSettingsPattern::SUCCESSOR, file_wildcard.Compare(pattern));
   EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
             pattern.Compare(file_wildcard));
 }
 
 TEST(ContentSettingsPatternTest, FromString_ExtensionPatterns) {
   EXPECT_TRUE(Pattern("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/")
-      .IsValid());
+                  .IsValid());
   EXPECT_EQ("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/",
-      Pattern("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/")
-          .ToString());
+            Pattern("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/")
+                .ToString());
   EXPECT_TRUE(Pattern("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/")
-      .Matches(GURL("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/")));
+                  .Matches(GURL(
+                      "chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/")));
 }
 
 TEST(ContentSettingsPatternTest, FromString_SearchPatterns) {
@@ -412,10 +408,10 @@ TEST(ContentSettingsPatternTest, FromString_WithWildcards) {
   EXPECT_TRUE(Pattern("*://www.google.com.com:8080").IsValid());
   EXPECT_STREQ("www.google.com:8080",
                Pattern("*://www.google.com:8080").ToString().c_str());
-  EXPECT_TRUE(Pattern("*://www.google.com:8080").Matches(
-      GURL("http://www.google.com:8080")));
-  EXPECT_TRUE(Pattern("*://www.google.com:8080").Matches(
-      GURL("https://www.google.com:8080")));
+  EXPECT_TRUE(Pattern("*://www.google.com:8080")
+                  .Matches(GURL("http://www.google.com:8080")));
+  EXPECT_TRUE(Pattern("*://www.google.com:8080")
+                  .Matches(GURL("https://www.google.com:8080")));
   EXPECT_FALSE(
       Pattern("*://www.google.com").Matches(GURL("file:///foo/bar.html")));
 
@@ -437,43 +433,39 @@ TEST(ContentSettingsPatternTest, FromString_WithWildcards) {
   EXPECT_TRUE(Pattern("www.example.com").IsValid());
   EXPECT_STREQ("www.example.com",
                Pattern("www.example.com").ToString().c_str());
-  EXPECT_TRUE(Pattern("www.example.com").Matches(
-      GURL("http://www.example.com/")));
-  EXPECT_FALSE(Pattern("example.com").Matches(
-      GURL("http://example.org/")));
+  EXPECT_TRUE(
+      Pattern("www.example.com").Matches(GURL("http://www.example.com/")));
+  EXPECT_FALSE(Pattern("example.com").Matches(GURL("http://example.org/")));
 
   // Patterns with domain wildcard.
   EXPECT_TRUE(Pattern("[*.]example.com").IsValid());
   EXPECT_STREQ("[*.]example.com",
                Pattern("[*.]example.com").ToString().c_str());
-  EXPECT_TRUE(Pattern("[*.]example.com").Matches(
-      GURL("http://example.com/")));
-  EXPECT_TRUE(Pattern("[*.]example.com").Matches(
-      GURL("http://foo.example.com/")));
-  EXPECT_FALSE(Pattern("[*.]example.com").Matches(
-      GURL("http://example.org/")));
+  EXPECT_TRUE(Pattern("[*.]example.com").Matches(GURL("http://example.com/")));
+  EXPECT_TRUE(
+      Pattern("[*.]example.com").Matches(GURL("http://foo.example.com/")));
+  EXPECT_FALSE(Pattern("[*.]example.com").Matches(GURL("http://example.org/")));
 
-  EXPECT_TRUE(Pattern("[*.]google.com:80").Matches(
-      GURL("http://mail.google.com:80")));
-  EXPECT_FALSE(Pattern("[*.]google.com:80").Matches(
-      GURL("http://mail.google.com:81")));
-  EXPECT_TRUE(Pattern("[*.]google.com:80").Matches(
-      GURL("http://www.google.com")));
+  EXPECT_TRUE(
+      Pattern("[*.]google.com:80").Matches(GURL("http://mail.google.com:80")));
+  EXPECT_FALSE(
+      Pattern("[*.]google.com:80").Matches(GURL("http://mail.google.com:81")));
+  EXPECT_TRUE(
+      Pattern("[*.]google.com:80").Matches(GURL("http://www.google.com")));
 
-  EXPECT_TRUE(Pattern("[*.]google.com:8080").Matches(
-      GURL("http://mail.google.com:8080")));
+  EXPECT_TRUE(Pattern("[*.]google.com:8080")
+                  .Matches(GURL("http://mail.google.com:8080")));
 
-  EXPECT_TRUE(Pattern("[*.]google.com:443").Matches(
-      GURL("https://mail.google.com:443")));
-  EXPECT_TRUE(Pattern("[*.]google.com:443").Matches(
-      GURL("https://www.google.com")));
+  EXPECT_TRUE(Pattern("[*.]google.com:443")
+                  .Matches(GURL("https://mail.google.com:443")));
+  EXPECT_TRUE(
+      Pattern("[*.]google.com:443").Matches(GURL("https://www.google.com")));
 
-  EXPECT_TRUE(Pattern("[*.]google.com:4321").Matches(
-      GURL("https://mail.google.com:4321")));
-  EXPECT_TRUE(Pattern("[*.]example.com").Matches(
-      GURL("http://example.com/")));
-  EXPECT_TRUE(Pattern("[*.]example.com").Matches(
-      GURL("http://www.example.com/")));
+  EXPECT_TRUE(Pattern("[*.]google.com:4321")
+                  .Matches(GURL("https://mail.google.com:4321")));
+  EXPECT_TRUE(Pattern("[*.]example.com").Matches(GURL("http://example.com/")));
+  EXPECT_TRUE(
+      Pattern("[*.]example.com").Matches(GURL("http://www.example.com/")));
 
   // Patterns with host wildcard
   EXPECT_TRUE(Pattern("[*.]").IsValid());
@@ -641,15 +633,14 @@ TEST(ContentSettingsPatternTest, UnequalOperator) {
 
 TEST(ContentSettingsPatternTest, Compare) {
   // Test identical patterns patterns.
-  ContentSettingsPattern pattern1 =
-      Pattern("http://www.google.com");
+  ContentSettingsPattern pattern1 = Pattern("http://www.google.com");
   EXPECT_EQ(ContentSettingsPattern::IDENTITY, pattern1.Compare(pattern1));
   EXPECT_EQ(ContentSettingsPattern::IDENTITY,
-            Pattern("http://www.google.com:80").Compare(
-                Pattern("http://www.google.com:80")));
-  EXPECT_EQ(ContentSettingsPattern::IDENTITY,
-            Pattern("*://[*.]google.com:*").Compare(
-                Pattern("*://[*.]google.com:*")));
+            Pattern("http://www.google.com:80")
+                .Compare(Pattern("http://www.google.com:80")));
+  EXPECT_EQ(
+      ContentSettingsPattern::IDENTITY,
+      Pattern("*://[*.]google.com:*").Compare(Pattern("*://[*.]google.com:*")));
 
   ContentSettingsPattern invalid_pattern1;
   ContentSettingsPattern invalid_pattern2 =
@@ -664,99 +655,89 @@ TEST(ContentSettingsPatternTest, Compare) {
 
   // Compare a pattern with an IPv4 addresse to a pattern with a domain name.
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_POST,
-            Pattern("http://www.google.com").Compare(
-                Pattern("127.0.0.1")));
+            Pattern("http://www.google.com").Compare(Pattern("127.0.0.1")));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("127.0.0.1").Compare(
-                Pattern("http://www.google.com")));
+            Pattern("127.0.0.1").Compare(Pattern("http://www.google.com")));
   EXPECT_TRUE(Pattern("127.0.0.1") > Pattern("http://www.google.com"));
   EXPECT_TRUE(Pattern("http://www.google.com") < Pattern("127.0.0.1"));
 
   // Compare a pattern with an IPv6 address to a patterns with a domain name.
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_POST,
-            Pattern("http://www.google.com").Compare(
-                Pattern("[::1]")));
+            Pattern("http://www.google.com").Compare(Pattern("[::1]")));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("[::1]").Compare(
-                Pattern("http://www.google.com")));
+            Pattern("[::1]").Compare(Pattern("http://www.google.com")));
   EXPECT_TRUE(Pattern("[::1]") > Pattern("http://www.google.com"));
   EXPECT_TRUE(Pattern("http://www.google.com") < Pattern("[::1]"));
 
   // Compare a pattern with an IPv6 addresse to a pattern with an IPv4 addresse.
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("127.0.0.1").Compare(
-                Pattern("[::1]")));
+            Pattern("127.0.0.1").Compare(Pattern("[::1]")));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_POST,
-            Pattern("[::1]").Compare(
-                Pattern("127.0.0.1")));
+            Pattern("[::1]").Compare(Pattern("127.0.0.1")));
   EXPECT_TRUE(Pattern("[::1]") < Pattern("127.0.0.1"));
   EXPECT_TRUE(Pattern("127.0.0.1") > Pattern("[::1]"));
 
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("http://www.google.com").Compare(
-                Pattern("http://www.youtube.com")));
+            Pattern("http://www.google.com")
+                .Compare(Pattern("http://www.youtube.com")));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("http://[*.]google.com").Compare(
-                Pattern("http://[*.]youtube.com")));
+            Pattern("http://[*.]google.com")
+                .Compare(Pattern("http://[*.]youtube.com")));
 
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_POST,
-            Pattern("http://[*.]host.com").Compare(
-                Pattern("http://[*.]evilhost.com")));
+            Pattern("http://[*.]host.com")
+                .Compare(Pattern("http://[*.]evilhost.com")));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_POST,
-            Pattern("*://www.google.com:80").Compare(
-                Pattern("*://www.google.com:8080")));
+            Pattern("*://www.google.com:80")
+                .Compare(Pattern("*://www.google.com:8080")));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("https://www.google.com:80").Compare(
-                Pattern("http://www.google.com:80")));
+            Pattern("https://www.google.com:80")
+                .Compare(Pattern("http://www.google.com:80")));
 
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("http://[*.]google.com:90").Compare(
-                Pattern("http://mail.google.com:80")));
+            Pattern("http://[*.]google.com:90")
+                .Compare(Pattern("http://mail.google.com:80")));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("https://[*.]google.com:80").Compare(
-                Pattern("http://mail.google.com:80")));
+            Pattern("https://[*.]google.com:80")
+                .Compare(Pattern("http://mail.google.com:80")));
   EXPECT_EQ(ContentSettingsPattern::DISJOINT_ORDER_PRE,
-            Pattern("https://mail.google.com:*").Compare(
-                Pattern("http://mail.google.com:80")));
+            Pattern("https://mail.google.com:*")
+                .Compare(Pattern("http://mail.google.com:80")));
 
   // Test patterns with different precedences.
   EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
-            Pattern("mail.google.com").Compare(
-                Pattern("[*.]google.com")));
+            Pattern("mail.google.com").Compare(Pattern("[*.]google.com")));
   EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
-            Pattern("[*.]google.com").Compare(
-                Pattern("mail.google.com")));
+            Pattern("[*.]google.com").Compare(Pattern("mail.google.com")));
   EXPECT_TRUE(Pattern("mail.google.com") > Pattern("[*.]google.com"));
 
   EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
-            Pattern("[*.]mail.google.com").Compare(
-                Pattern("[*.]google.com")));
+            Pattern("[*.]mail.google.com").Compare(Pattern("[*.]google.com")));
   EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
-            Pattern("[*.]google.com").Compare(
-                Pattern("[*.]mail.google.com")));
+            Pattern("[*.]google.com").Compare(Pattern("[*.]mail.google.com")));
   EXPECT_TRUE(Pattern("[*.]mail.google.com") > Pattern("[*.]google.com"));
 
-  EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
-            Pattern("mail.google.com:80").Compare(
-                Pattern("mail.google.com:*")));
-  EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
-            Pattern("mail.google.com:*").Compare(
-                Pattern("mail.google.com:80")));
+  EXPECT_EQ(
+      ContentSettingsPattern::PREDECESSOR,
+      Pattern("mail.google.com:80").Compare(Pattern("mail.google.com:*")));
+  EXPECT_EQ(
+      ContentSettingsPattern::SUCCESSOR,
+      Pattern("mail.google.com:*").Compare(Pattern("mail.google.com:80")));
   EXPECT_TRUE(Pattern("mail.google.com:80") > Pattern("mail.google.com:*"));
 
   EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
-            Pattern("https://mail.google.com:*").Compare(
-                Pattern("*://mail.google.com:*")));
+            Pattern("https://mail.google.com:*")
+                .Compare(Pattern("*://mail.google.com:*")));
   EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
-            Pattern("*://mail.google.com:*").Compare(
-                Pattern("https://mail.google.com:*")));
+            Pattern("*://mail.google.com:*")
+                .Compare(Pattern("https://mail.google.com:*")));
 
   EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
-            Pattern("*://mail.google.com:80").Compare(
-                Pattern("https://mail.google.com:*")));
+            Pattern("*://mail.google.com:80")
+                .Compare(Pattern("https://mail.google.com:*")));
   EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
-            Pattern("https://mail.google.com:*").Compare(
-                Pattern("*://mail.google.com:80")));
+            Pattern("https://mail.google.com:*")
+                .Compare(Pattern("*://mail.google.com:80")));
 }
 
 TEST(ContentSettingsPatternTest, CompareSubdomains) {
@@ -791,27 +772,27 @@ TEST(ContentSettingsPatternTest, CompareWithWildcard) {
   EXPECT_EQ(ContentSettingsPattern::IDENTITY,
             ContentSettingsPattern::Wildcard().Compare(Pattern("*")));
 
-  EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
-            Pattern("[*.]google.com").Compare(
-                ContentSettingsPattern::Wildcard()));
+  EXPECT_EQ(
+      ContentSettingsPattern::PREDECESSOR,
+      Pattern("[*.]google.com").Compare(ContentSettingsPattern::Wildcard()));
   EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
             Pattern("[*.]google.com").Compare(Pattern("*")));
 
-  EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
-            ContentSettingsPattern::Wildcard().Compare(
-                 Pattern("[*.]google.com")));
+  EXPECT_EQ(
+      ContentSettingsPattern::SUCCESSOR,
+      ContentSettingsPattern::Wildcard().Compare(Pattern("[*.]google.com")));
   EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
             Pattern("*").Compare(Pattern("[*.]google.com")));
 
-  EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
-            Pattern("mail.google.com").Compare(
-                ContentSettingsPattern::Wildcard()));
+  EXPECT_EQ(
+      ContentSettingsPattern::PREDECESSOR,
+      Pattern("mail.google.com").Compare(ContentSettingsPattern::Wildcard()));
   EXPECT_EQ(ContentSettingsPattern::PREDECESSOR,
             Pattern("mail.google.com").Compare(Pattern("*")));
 
-  EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
-            ContentSettingsPattern::Wildcard().Compare(
-                 Pattern("mail.google.com")));
+  EXPECT_EQ(
+      ContentSettingsPattern::SUCCESSOR,
+      ContentSettingsPattern::Wildcard().Compare(Pattern("mail.google.com")));
   EXPECT_EQ(ContentSettingsPattern::SUCCESSOR,
             Pattern("*").Compare(Pattern("mail.google.com")));
 }
@@ -823,36 +804,27 @@ TEST(ContentSettingsPatternTest, PatternSupport_Legacy) {
   EXPECT_TRUE(Pattern("example.com").IsValid());
   EXPECT_TRUE(Pattern("192.168.0.1").IsValid());
   EXPECT_TRUE(Pattern("[::1]").IsValid());
-  EXPECT_TRUE(
-      Pattern("file:///tmp/test.html").IsValid());
+  EXPECT_TRUE(Pattern("file:///tmp/test.html").IsValid());
   EXPECT_FALSE(Pattern("*example.com").IsValid());
   EXPECT_FALSE(Pattern("example.*").IsValid());
 
-  EXPECT_TRUE(
-      Pattern("http://example.com").IsValid());
-  EXPECT_TRUE(
-      Pattern("https://example.com").IsValid());
+  EXPECT_TRUE(Pattern("http://example.com").IsValid());
+  EXPECT_TRUE(Pattern("https://example.com").IsValid());
 
-  EXPECT_TRUE(Pattern("[*.]example.com").Matches(
-              GURL("http://example.com/")));
-  EXPECT_TRUE(Pattern("[*.]example.com").Matches(
-              GURL("http://www.example.com/")));
-  EXPECT_TRUE(Pattern("www.example.com").Matches(
-              GURL("http://www.example.com/")));
+  EXPECT_TRUE(Pattern("[*.]example.com").Matches(GURL("http://example.com/")));
   EXPECT_TRUE(
-      Pattern("file:///tmp/test.html").Matches(
-              GURL("file:///tmp/test.html")));
+      Pattern("[*.]example.com").Matches(GURL("http://www.example.com/")));
+  EXPECT_TRUE(
+      Pattern("www.example.com").Matches(GURL("http://www.example.com/")));
+  EXPECT_TRUE(
+      Pattern("file:///tmp/test.html").Matches(GURL("file:///tmp/test.html")));
   EXPECT_FALSE(Pattern(std::string()).Matches(GURL("http://www.example.com/")));
-  EXPECT_FALSE(Pattern("[*.]example.com").Matches(
-               GURL("http://example.org/")));
-  EXPECT_FALSE(Pattern("example.com").Matches(
-               GURL("http://example.org/")));
+  EXPECT_FALSE(Pattern("[*.]example.com").Matches(GURL("http://example.org/")));
+  EXPECT_FALSE(Pattern("example.com").Matches(GURL("http://example.org/")));
   EXPECT_FALSE(
-      Pattern("file:///tmp/test.html").Matches(
-               GURL("file:///tmp/other.html")));
+      Pattern("file:///tmp/test.html").Matches(GURL("file:///tmp/other.html")));
   EXPECT_FALSE(
-      Pattern("file:///tmp/test.html").Matches(
-               GURL("http://example.org/")));
+      Pattern("file:///tmp/test.html").Matches(GURL("http://example.org/")));
 }
 
 TEST(ContentSettingsPatternTest, CanonicalizePattern_Legacy) {

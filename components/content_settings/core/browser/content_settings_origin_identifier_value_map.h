@@ -20,7 +20,7 @@ class GURL;
 namespace base {
 class Lock;
 class Value;
-}
+}  // namespace base
 
 namespace content_settings {
 
@@ -46,29 +46,19 @@ class OriginIdentifierValueMap {
   typedef std::map<PatternPair, ValueEntry> Rules;
   typedef std::map<ContentSettingsType, Rules> EntryMap;
 
-  EntryMap::iterator begin() {
-    return entries_.begin();
-  }
+  EntryMap::iterator begin() { return entries_.begin(); }
 
-  EntryMap::iterator end() {
-    return entries_.end();
-  }
+  EntryMap::iterator end() { return entries_.end(); }
 
-  EntryMap::const_iterator begin() const {
-    return entries_.begin();
-  }
+  EntryMap::const_iterator begin() const { return entries_.begin(); }
 
-  EntryMap::const_iterator end() const {
-    return entries_.end();
-  }
+  EntryMap::const_iterator end() const { return entries_.end(); }
 
   EntryMap::iterator find(ContentSettingsType content_type) {
     return entries_.find(content_type);
   }
 
-  bool empty() const {
-    return size() == 0u;
-  }
+  bool empty() const { return size() == 0u; }
 
   size_t size() const;
 

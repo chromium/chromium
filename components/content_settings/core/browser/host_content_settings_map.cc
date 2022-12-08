@@ -48,8 +48,8 @@
 #include "net/cookies/static_cookie_policy.h"
 #include "url/gurl.h"
 
-using content_settings::WebsiteSettingsInfo;
 using content_settings::ContentSettingsInfo;
+using content_settings::WebsiteSettingsInfo;
 
 namespace {
 
@@ -516,7 +516,7 @@ void HostContentSettingsMap::SetNarrowestContentSetting(
                                constraints);
 }
 
-content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns (
+content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type) const {
@@ -535,8 +535,8 @@ content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns (
     return content_settings::PatternPair();
   }
 
-  content_settings::PatternPair patterns = GetPatternsForContentSettingsType(
-      primary_url, secondary_url, type);
+  content_settings::PatternPair patterns =
+      GetPatternsForContentSettingsType(primary_url, secondary_url, type);
 
   ContentSettingsPattern::Relation r1 =
       info.primary_pattern.Compare(patterns.first);

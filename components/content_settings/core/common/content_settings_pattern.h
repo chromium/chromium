@@ -22,7 +22,7 @@ class PatternParser;
 namespace mojom {
 class ContentSettingsPatternDataView;
 }
-}
+}  // namespace content_settings
 
 // A pattern used in content setting rules. See |IsValid| for a description of
 // possible patterns.

@@ -55,9 +55,7 @@ class RuleIteratorImpl : public RuleIterator {
 OriginIdentifierValueMap::PatternPair::PatternPair(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern)
-    : primary_pattern(primary_pattern),
-      secondary_pattern(secondary_pattern) {
-}
+    : primary_pattern(primary_pattern), secondary_pattern(secondary_pattern) {}
 
 bool OriginIdentifierValueMap::PatternPair::operator<(
     const OriginIdentifierValueMap::PatternPair& other) const {

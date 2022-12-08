@@ -460,7 +460,6 @@ void PolicyProvider::UpdateManagedDefaultSetting(
   }
 }
 
-
 void PolicyProvider::ReadManagedContentSettings(bool overwrite) {
   base::AutoLock auto_lock(lock_);
   if (overwrite)
@@ -481,8 +480,7 @@ bool PolicyProvider::SetWebsiteSetting(
 }
 
 void PolicyProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type) {
-}
+    ContentSettingsType content_type) {}
 
 void PolicyProvider::ShutdownOnUIThread() {
   DCHECK(CalledOnValidThread());

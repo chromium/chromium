@@ -282,7 +282,6 @@ void PrefProvider::ClearAllContentSettingsRules(
 
   if (supports_type(content_type))
     GetPref(content_type)->ClearAllContentSettingsRules();
-
 }
 
 void PrefProvider::ShutdownOnUIThread() {

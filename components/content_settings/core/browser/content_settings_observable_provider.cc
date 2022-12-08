@@ -11,11 +11,9 @@ namespace content_settings {
 // ObservableProvider
 //
 
-ObservableProvider::ObservableProvider() {
-}
+ObservableProvider::ObservableProvider() {}
 
-ObservableProvider::~ObservableProvider() {
-}
+ObservableProvider::~ObservableProvider() {}
 
 void ObservableProvider::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);

@@ -39,7 +39,7 @@ class StorageKey;
 namespace content {
 class WebContents;
 class WebContentsObserver;
-}
+}  // namespace content
 
 namespace url {
 class Origin;
