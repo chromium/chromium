@@ -30,14 +30,9 @@ public class ServiceHelper {
     public static boolean bindService(
             Context context, Intent intent, ServiceConnection serviceConnection, int flags) {
         try {
-            boolean serviceBindingSuccess = context.bindService(intent, serviceConnection, flags);
-            if (!serviceBindingSuccess) {
-                context.unbindService(serviceConnection);
-            }
-            return serviceBindingSuccess;
+            return context.bindService(intent, serviceConnection, flags);
         } catch (ReceiverCallNotAllowedException e) {
             // If we're running in a BroadcastReceiver Context then we cannot bind to Services.
-            context.unbindService(serviceConnection);
             return false;
         } catch (SecurityException e) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
@@ -48,7 +43,6 @@ public class ServiceHelper {
                 // exception and carry on.
                 Log.e(TAG, "Unable to bind to services from a secondary user account on Android N",
                         e);
-                context.unbindService(serviceConnection);
                 return false;
             } else {
                 throw e;
