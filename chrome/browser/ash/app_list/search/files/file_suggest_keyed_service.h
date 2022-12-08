@@ -13,8 +13,8 @@
 #include "base/observer_list_types.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
-#include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
-#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
+#include "chrome/browser/ash/app_list/search/ranking/removed_results.pb.h"
+#include "chrome/browser/ash/app_list/search/util/persistent_proto.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

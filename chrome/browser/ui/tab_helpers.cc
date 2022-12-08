@@ -191,7 +191,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder_tab_tracker.h"
+#include "chrome/browser/ash/app_list/search/cros_action_history/cros_action_recorder_tab_tracker.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

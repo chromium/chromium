@@ -15,10 +15,10 @@
 #include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ash/app_list/search/files/file_suggestion_provider.h"
 #include "chrome/browser/ash/app_list/search/files/justifications.h"
+#include "chrome/browser/ash/app_list/search/ranking/util.h"
+#include "chrome/browser/ash/app_list/search/util/mrfu_cache.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/ranking/util.h"
-#include "chrome/browser/ui/app_list/search/util/mrfu_cache.h"
 
 namespace app_list {
 

@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
+#include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/types.h"
 
 class ChromeSearchResult;
