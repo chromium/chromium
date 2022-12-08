@@ -726,6 +726,58 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   sm_.Replay();
 }
 
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowTablesList) {
+  EnableChromeVox();
+
+  sm_.Call([this]() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), GURL(R"(data:text/html;charset=utf-8,
+        <button autofocus>Start here</button>
+        <table>
+          <caption>Can Collection Drive Results</caption>
+          <tr><th>Name</th> <th>Date</th> <th>Cans collected</th></tr>
+          <tr><td>Joey</td> <td>12/1</td> <td>177</td></tr>
+          <tr><td>Moss</td> <td>12/2</td> <td>122</td></tr>
+        </table>
+
+        <table>
+          <caption>Types of Can Received</caption>
+          <tr><th>Food</th>   <th>Count</th></tr>
+          <tr><td>Soup</td>   <td>101</td></tr>
+          <tr><td>Beans</td>  <td>88</td></tr>
+          <tr><td>Pumpkin</td><td>87</td></tr>
+        </table>)")));
+  });
+  // Wait for the page to load.
+  sm_.ExpectSpeech("Start here");
+
+  // Open the Tables menu.
+  sm_.Call([this]() { SendKeyPressWithSearchAndControl(ui::VKEY_T); });
+  sm_.ExpectSpeech("Table Menu");
+
+  // Verify the first menu item is read.
+  sm_.ExpectSpeech("Can Collection Drive Results");
+  sm_.ExpectSpeech("Menu item 1 of 2");
+  // Move down to read the second item.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_DOWN); });
+  sm_.ExpectSpeech("Types of Can Received");
+  sm_.ExpectSpeech("Menu item 2 of 2");
+  // Return to the first item.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_UP); });
+  sm_.ExpectSpeech("Can Collection Drive Results");
+  // Select the first item.
+  sm_.Call([this]() { SendKeyPress(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Can Collection Drive Results");
+
+  // Verify we're back on the web page and the menus are closed.
+  sm_.Call([this]() {
+    SendKeyPressWithSearch(ui::VKEY_LEFT);
+    SendKeyPressWithSearch(ui::VKEY_LEFT);
+  });
+  sm_.ExpectSpeech("Start here");
+  sm_.Replay();
+}
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShowHeadingList) {
   EnableChromeVox();
 

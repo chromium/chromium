@@ -595,8 +595,7 @@ export class CommandHandler extends CommandHandlerInterface {
             .send();
         return false;
       case Command.SHOW_TABLES_LIST:
-        (new PanelCommand(PanelCommandType.OPEN_MENUS, 'table_strategy'))
-            .send();
+        (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_table')).send();
         return false;
       case Command.TOGGLE_SEARCH_WIDGET:
         (new PanelCommand(PanelCommandType.SEARCH)).send();
