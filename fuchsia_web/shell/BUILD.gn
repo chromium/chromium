@@ -100,19 +100,10 @@ if (enable_cast_receiver) {
     data_deps = [ ":cast_streaming_shell_exe" ]
   }
 
-  fuchsia_component("cast_streaming_shell_component_v1") {
-    testonly = true
-    manifest = "cast_streaming_shell.cmx"
-    data_deps = [ ":cast_streaming_shell_exe" ]
-  }
-
   fuchsia_package("cast_streaming_shell_pkg") {
     testonly = true
     package_name = "cast_streaming_shell"
-    deps = [
-      ":cast_streaming_shell_component",
-      ":cast_streaming_shell_component_v1",
-    ]
+    deps = [ ":cast_streaming_shell_component" ]
   }
 
   fuchsia_package_installer("cast_streaming_shell") {
