@@ -2,33 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_android)
 
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  in_files = [
+    "lens_internals.ts",
+    "lens_internals_browser_proxy.ts",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
+}
+
 generate_grd("build_grdp") {
   grd_prefix = "lens_internals"
   out_grd = "$target_gen_dir/resources.grdp"
-  input_files = [
-    "lens_internals_browser_proxy.js",
-    "lens_internals.html",
-    "lens_internals.js",
-  ]
+  input_files = [ "lens_internals.html" ]
   input_files_base_dir = rebase_path(".", "//")
-}
-
-js_type_check("closure_compile") {
-  deps = [
-    ":lens_internals",
-    ":lens_internals_browser_proxy",
-  ]
-}
-
-js_library("lens_internals") {
-  deps = [ ":lens_internals_browser_proxy" ]
-}
-
-js_library("lens_internals_browser_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
 }

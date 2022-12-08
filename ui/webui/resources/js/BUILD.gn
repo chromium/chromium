@@ -86,8 +86,8 @@ preprocess_if_expr("preprocess_src") {
     "load_time_data_deprecated.js",
   ]
 
-  if (is_chromeos_ash || is_android) {
-    # Used by ChromeOS and Android Closure UIs.
+  if (is_chromeos_ash) {
+    # Used by ChromeOS UIs.
     in_files += [ "cr.m.js" ]
   }
 
@@ -137,7 +137,7 @@ js_type_check("closure_compile_modules") {
     ":load_time_data.m",
   ]
 
-  if (is_chromeos_ash || is_android) {
+  if (is_chromeos_ash) {
     deps += [ ":cr.m" ]
   }
 }
@@ -145,7 +145,7 @@ js_type_check("closure_compile_modules") {
 js_library("assert") {
 }
 
-if (is_chromeos_ash || is_android) {
+if (is_chromeos_ash) {
   js_library("cr.m") {
   }
 }

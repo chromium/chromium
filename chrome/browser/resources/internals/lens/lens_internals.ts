@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+
 import {LensInternalsBrowserProxy, LensInternalsBrowserProxyImpl} from './lens_internals_browser_proxy.js';
 
-/** @param {boolean} showEnableButton Whether to show the "start" button. */
-function toggleDebugModeButton(showEnableButton) {
-  document.body.querySelector('#start-debug-mode')
+/** @param showEnableButton Whether to show the "start" button. */
+function toggleDebugModeButton(showEnableButton: boolean) {
+  getRequiredElement('start-debug-mode')
       .toggleAttribute('hidden', !showEnableButton);
-  document.body.querySelector('#stop-debug-mode')
+  getRequiredElement('stop-debug-mode')
       .toggleAttribute('hidden', showEnableButton);
 }
 
 /**
- * @param {!Array<!Array<string>>} data The debug data to display in table
- *     form.
+ * @param data The debug data to display in table form.
  */
-function onDebugDataRefreshed(data) {
+function onDebugDataRefreshed(data: string[][]) {
   if (data.length === 0) {
     toggleDebugModeButton(/*showEnableButton=*/ true);
   } else {
@@ -26,10 +27,9 @@ function onDebugDataRefreshed(data) {
 }
 
 /**
- * @param {!Array<!Array<string>>} tableData The debug data to display in
- *     table form.
+ * @param tableData The debug data to display in table form.
  */
-function updateDebugDataTable(tableData) {
+function updateDebugDataTable(tableData: string[][]) {
   const table = document.createElement('table');
   table.style.display = 'block';
   const tableBody = document.createElement('tbody');
@@ -45,15 +45,15 @@ function updateDebugDataTable(tableData) {
   });
   table.appendChild(tableBody);
 
-  document.body.querySelector('#debug-data-table').replaceWith(table);
+  getRequiredElement('debug-data-table').replaceWith(table);
   table.id = 'debug-data-table';
 }
 
 function initialize() {
-  /** @type {!LensInternalsBrowserProxy} */
-  const browserProxy = LensInternalsBrowserProxyImpl.getInstance();
+  const browserProxy: LensInternalsBrowserProxy =
+      LensInternalsBrowserProxyImpl.getInstance();
 
-  document.body.querySelector('#start-debug-mode').onclick = function() {
+  getRequiredElement('start-debug-mode').onclick = function() {
     browserProxy.startDebugMode().then(function() {
       // After starting debug mode automatically refresh data.  This will
       // toggle the button if the call was successful.
@@ -61,7 +61,7 @@ function initialize() {
     });
   };
 
-  document.body.querySelector('#stop-debug-mode').onclick = function() {
+  getRequiredElement('stop-debug-mode').onclick = function() {
     browserProxy.stopDebugMode().then(function() {
       // After stopping debug mode automatically refresh data.  This will
       // toggle the button if the call was successful.

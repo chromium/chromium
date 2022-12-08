@@ -139,10 +139,11 @@ group("closure_compile") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
-checked_in_dts_files = [
-  "js/cr.m.d.ts",
-  "js/load_time_data.m.d.ts",
-]
+checked_in_dts_files = [ "js/load_time_data.m.d.ts" ]
+
+if (is_chromeos_ash) {
+  checked_in_dts_files += [ "js/cr.m.d.ts" ]
+}
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.
