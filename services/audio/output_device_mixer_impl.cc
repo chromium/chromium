@@ -101,7 +101,7 @@ class OutputDeviceMixerImpl::MixTrack final
   ~MixTrack() final {
     DCHECK(!audio_source_callback_);
     base::UmaHistogramEnumeration(
-        "Media.Audio.OutputDeviceMixer.StreamPlaybackStatus", error_);
+        "Media.Audio.OutputDeviceMixer.StreamStatus", error_);
   }
 
   void SetSource(
