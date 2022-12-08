@@ -4023,7 +4023,7 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
 
   // Expect a tabbed app was opened with a pinned tab.
   EXPECT_TRUE(web_app::WebAppProvider::GetForTest(profile)
-                  ->registrar()
+                  ->registrar_unsafe()
                   .IsTabbedWindowModeEnabled(app_id));
   EXPECT_TRUE(tab_strip->IsTabPinned(0));
 
@@ -4073,7 +4073,7 @@ IN_PROC_BROWSER_TEST_F(TabbedAppSessionRestoreTest, RestorePinnedAppTab) {
     if (browser->type() == Browser::Type::TYPE_APP) {
       EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(browser, app_id));
       EXPECT_TRUE(web_app::WebAppProvider::GetForTest(browser->profile())
-                      ->registrar()
+                      ->registrar_unsafe()
                       .IsTabbedWindowModeEnabled(app_id));
 
       EXPECT_EQ(browser->tab_strip_model()->GetWebContentsAt(0)->GetURL(),
