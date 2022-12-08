@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -57,7 +58,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   InterfaceEndpointClient(ScopedInterfaceEndpointHandle handle,
                           MessageReceiverWithResponderStatus* receiver,
                           std::unique_ptr<MessageReceiver> payload_validator,
-                          bool expect_sync_requests,
+                          base::span<const uint32_t> sync_method_ordinals,
                           scoped_refptr<base::SequencedTaskRunner> task_runner,
                           uint32_t interface_version,
                           const char* interface_name,
@@ -221,6 +222,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // The router lock must be held when calling this.
   void ForgetAsyncRequest(uint64_t request_id);
 
+  base::span<const uint32_t> sync_method_ordinals() const {
+    return sync_method_ordinals_;
+  }
+
  private:
   struct PendingAsyncResponse {
    public:
@@ -282,7 +287,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   bool HandleValidatedMessage(Message* message);
 
-  const bool expect_sync_requests_ = false;
+  const base::span<const uint32_t> sync_method_ordinals_;
 
   // The callback to invoke when our peer endpoint sends us NotifyIdle and we
   // have no outstanding unacked messages. If null, no callback has been set and

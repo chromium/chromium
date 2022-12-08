@@ -185,6 +185,7 @@ component("bindings") {
     "lib/sync_event_watcher.cc",
     "lib/sync_handle_registry.cc",
     "lib/sync_handle_watcher.cc",
+    "lib/sync_method_traits.h",
     "lib/task_runner_helper.cc",
     "lib/task_runner_helper.h",
     "lib/thread_safe_forwarder_base.cc",

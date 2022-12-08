@@ -439,13 +439,13 @@ InterfaceEndpointClient::InterfaceEndpointClient(
     ScopedInterfaceEndpointHandle handle,
     MessageReceiverWithResponderStatus* receiver,
     std::unique_ptr<MessageReceiver> payload_validator,
-    bool expect_sync_requests,
+    base::span<const uint32_t> sync_method_ordinals,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     uint32_t interface_version,
     const char* interface_name,
     MessageToStableIPCHashCallback ipc_hash_callback,
     MessageToMethodNameCallback method_name_callback)
-    : expect_sync_requests_(expect_sync_requests),
+    : sync_method_ordinals_(sync_method_ordinals),
       handle_(std::move(handle)),
       incoming_receiver_(receiver),
       dispatcher_(&thunk_),
@@ -849,7 +849,8 @@ void InterfaceEndpointClient::InitControllerIfNecessary() {
 
   controller_ = handle_.group_controller()->AttachEndpointClient(handle_, this,
                                                                  task_runner_);
-  if (expect_sync_requests_ && task_runner_->RunsTasksInCurrentSequence())
+  if (!sync_method_ordinals_.empty() &&
+      task_runner_->RunsTasksInCurrentSequence())
     controller_->AllowWokenUpBySyncWatchOnSameThread();
 }
 

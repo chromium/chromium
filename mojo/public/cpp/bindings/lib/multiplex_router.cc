@@ -1067,6 +1067,12 @@ bool MultiplexRouter::ProcessIncomingMessage(
 
   bool can_direct_call;
   if (message->has_flag(Message::kFlagIsSync)) {
+    if (!message->has_flag(Message::kFlagIsResponse) &&
+        !base::Contains(endpoint->client()->sync_method_ordinals(),
+                        message->name())) {
+      RaiseErrorInNonTestingMode();
+      return true;
+    }
     can_direct_call = client_call_behavior != NO_DIRECT_CLIENT_CALLS &&
                       endpoint->task_runner()->RunsTasksInCurrentSequence();
   } else {

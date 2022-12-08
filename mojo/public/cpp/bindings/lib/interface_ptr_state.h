@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/pending_remote_state.h"
+#include "mojo/public/cpp/bindings/lib/sync_method_traits.h"
 #include "mojo/public/cpp/bindings/message_header_validator.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
@@ -244,6 +245,10 @@ class InterfacePtrState : public InterfacePtrStateBase {
     endpoint_client()->RaiseError();
   }
 
+  InterfaceEndpointClient* endpoint_client_for_test() {
+    return endpoint_client();
+  }
+
  private:
   void ConfigureProxyIfNecessary() {
     // The proxy has been configured.
@@ -254,7 +259,8 @@ class InterfacePtrState : public InterfacePtrStateBase {
     }
 
     if (InitializeEndpointClient(
-            Interface::PassesAssociatedKinds_, Interface::HasSyncMethods_,
+            Interface::PassesAssociatedKinds_,
+            !SyncMethodTraits<Interface>::GetOrdinals().empty(),
             Interface::HasUninterruptableMethods_,
             std::make_unique<typename Interface::ResponseValidator_>(),
             Interface::Name_, Interface::MessageToStableIPCHash_,
