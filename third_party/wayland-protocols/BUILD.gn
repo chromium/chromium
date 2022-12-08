@@ -132,6 +132,10 @@ wayland_protocol("touchpad_haptics_protocol") {
   sources = [ "unstable/touchpad-haptics/touchpad-haptics-unstable-v1.xml" ]
 }
 
+wayland_protocol("ui_controls_protocol") {
+  sources = [ "unstable/ui-controls/ui-controls-unstable-v1.xml" ]
+}
+
 wayland_protocol("viewporter_protocol") {
   sources = [ "src/stable/viewporter/viewporter.xml" ]
 }

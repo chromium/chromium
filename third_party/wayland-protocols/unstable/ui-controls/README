@@ -1,0 +1,5 @@
+Input emulation that matches the semantics of ui_controls as defined in
+//ui/base/test/ui_controls.h.
+
+Maintainers:
+Max Ihlenfeldt <max@igalia.com>

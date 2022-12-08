@@ -26,6 +26,7 @@ class Display;
 namespace wayland {
 
 class SerialTracker;
+class UiControls;
 struct WaylandDataDeviceManager;
 class WaylandDisplayOutput;
 struct WaylandKeyboardExtension;
@@ -107,6 +108,7 @@ class Server : public display::DisplayObserver {
   const base::FilePath& socket_path() const { return socket_path_; }
 
  protected:
+  friend class UiControls;
   friend class WestonTest;
   void AddWaylandOutput(int64_t id,
                         std::unique_ptr<WaylandDisplayOutput> output);
@@ -137,6 +139,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
   std::unique_ptr<WestonTest> weston_test_holder_;
+  std::unique_ptr<UiControls> ui_controls_holder_;
 };
 
 }  // namespace wayland

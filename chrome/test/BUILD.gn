@@ -9921,6 +9921,7 @@ if (!is_android) {
         "//chromeos/ash/components/dbus",
         "//chromeos/ash/components/login/auth",
         "//chromeos/ui/frame:test_support",
+        "//components/exo/wayland:ui_controls_protocol_stub",
         "//components/exo/wayland:weston_test_stub",
         "//ui/display:display_manager_test_api",
         "//ui/display/manager",
@@ -10974,6 +10975,7 @@ if (is_chromeos_ash) {
       "//chrome/browser",
       "//chrome/browser/ash",
       "//chromeos/ash/components/settings",
+      "//components/exo/wayland:ui_controls_protocol_stub",
       "//components/exo/wayland:weston_test_stub",
       "//testing/gmock",
       "//testing/gtest",
@@ -11164,6 +11166,7 @@ if (is_chromeos_ash) {
       "//ash:test_support",
       "//base/test:test_support",
       "//chromeos/services/machine_learning/public/cpp:stub",
+      "//components/exo/wayland:ui_controls_protocol",
       "//components/exo/wayland:weston_test",
       "//ui/base:test_support",
 

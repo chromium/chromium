@@ -3834,6 +3834,7 @@ static_library("test_support") {
     "//components/account_id",
     "//components/desks_storage",
     "//components/desks_storage:test_support",
+    "//components/exo/wayland:ui_controls_protocol_stub",
     "//components/exo/wayland:weston_test_stub",
     "//components/prefs:test_support",
     "//components/user_manager:user_manager",

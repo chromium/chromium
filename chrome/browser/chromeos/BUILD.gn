@@ -814,7 +814,10 @@ source_set("chromeos") {
   }
 
   if (use_libfuzzer) {
-    deps += [ "//components/exo/wayland:weston_test_stub" ]
+    deps += [
+      "//components/exo/wayland:ui_controls_protocol_stub",
+      "//components/exo/wayland:weston_test_stub",
+    ]
   }
 
   if (enable_plugins) {
