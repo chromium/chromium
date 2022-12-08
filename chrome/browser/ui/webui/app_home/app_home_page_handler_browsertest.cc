@@ -25,6 +25,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -195,8 +196,19 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
   }
 
   scoped_refptr<const extensions::Extension> InstallTestExtensionApp() {
-    scoped_refptr<const extensions::Extension> extension =
-        extensions::ExtensionBuilder(kTestAppName).Build();
+    base::DictionaryValue manifest;
+    manifest.SetString(extensions::manifest_keys::kName, kTestAppName);
+    manifest.SetString(extensions::manifest_keys::kVersion, "0.0.0.0");
+    manifest.SetString(extensions::manifest_keys::kApp, "true");
+    manifest.SetString(extensions::manifest_keys::kPlatformAppBackgroundPage,
+                       std::string());
+
+    std::string error;
+    scoped_refptr<extensions::Extension> extension =
+        extensions::Extension::Create(
+            base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
+            manifest, 0, &error);
+
     extension_service()->AddExtension(extension.get());
     return extension;
   }

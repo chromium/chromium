@@ -67,6 +67,8 @@ interface PageHandler {
   LaunchApp(string app_id, int32 source, ClickEvent? click_event);
   // Used to set the Run On OS Login Modes from the frontend of an app.
   SetRunOnOsLoginMode(string app_id, RunOnOsLoginMode run_on_os_login_mode);
+  // Open the deprecated apps dialog.
+  LaunchDeprecatedAppDialog();
 };
 
 // The `Page` interface is used for sending mojom action messsage

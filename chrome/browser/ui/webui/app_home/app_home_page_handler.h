@@ -67,6 +67,9 @@ class AppHomePageHandler
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
 
   // web_app::AppRegistrarObserver:
   void OnWebAppRunOnOsLoginModeChanged(
@@ -86,6 +89,7 @@ class AppHomePageHandler
   void SetRunOnOsLoginMode(
       const std::string& app_id,
       web_app::RunOnOsLoginMode run_on_os_login_mode) override;
+  void LaunchDeprecatedAppDialog() override;
 
  private:
   Browser* GetCurrentBrowser();
@@ -99,6 +103,8 @@ class AppHomePageHandler
 
   // Reset some instance flags we use to track the currently prompting app.
   void ResetExtensionDialogState();
+
+  void ExtensionRemoved(const extensions::Extension* extension);
 
   // ExtensionUninstallDialog::Delegate:
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
@@ -153,6 +159,8 @@ class AppHomePageHandler
 
   // Used to show confirmation UI for enabling extensions.
   std::unique_ptr<ExtensionEnableFlow> extension_enable_flow_;
+  // Set of deprecated app ids for showing on dialog.
+  std::set<extensions::ExtensionId> deprecated_app_ids_;
 
   // Used for passing callbacks.
   base::WeakPtrFactory<AppHomePageHandler> weak_ptr_factory_{this};

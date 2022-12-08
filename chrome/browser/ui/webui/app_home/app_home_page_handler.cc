@@ -23,9 +23,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
+#include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
+#include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -202,9 +204,23 @@ void AppHomePageHandler::FillExtensionInfoList(
                                                ExtensionRegistry::DISABLED |
                                                ExtensionRegistry::TERMINATED);
   for (const auto& extension : *extension_apps) {
-    if (extensions::ui_util::ShouldDisplayInNewTabPage(extension.get(),
-                                                       profile_))
-      result->emplace_back(CreateAppInfoPtrFromExtension(extension.get()));
+    if (!extensions::ui_util::ShouldDisplayInNewTabPage(extension.get(),
+                                                        profile_)) {
+      continue;
+    }
+
+    bool is_deprecated_app = false;
+    auto* context = extension_service_->GetBrowserContext();
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+    is_deprecated_app = extensions::IsExtensionUnsupportedDeprecatedApp(
+        context, extension->id());
+#endif
+    if (is_deprecated_app && !extensions::IsExtensionForceInstalled(
+                                 context, extension->id(), nullptr)) {
+      deprecated_app_ids_.insert(extension->id());
+    }
+    result->emplace_back(CreateAppInfoPtrFromExtension(extension.get()));
   }
 }
 
@@ -278,6 +294,19 @@ void AppHomePageHandler::UninstallExtensionApp(const Extension* extension) {
       extensions::UNINSTALL_SOURCE_CHROME_APPS_PAGE);
 }
 
+void AppHomePageHandler::ExtensionRemoved(const Extension* extension) {
+  if (deprecated_app_ids_.find(extension->id()) != deprecated_app_ids_.end())
+    deprecated_app_ids_.erase(extension->id());
+
+  if (!extension->is_app() ||
+      !extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile_))
+    return;
+
+  auto app_info = app_home::mojom::AppInfo::New();
+  app_info->id = extension->id();
+  page_->RemoveApp(std::move(app_info));
+}
+
 void AppHomePageHandler::OnWebAppWillBeUninstalled(
     const web_app::AppId& app_id) {
   auto app_info = app_home::mojom::AppInfo::New();
@@ -299,13 +328,18 @@ void AppHomePageHandler::OnExtensionLoaded(
   page_->AddApp(CreateAppInfoPtrFromExtension(extension));
 }
 
+void AppHomePageHandler::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  ExtensionRemoved(extension);
+}
+
 void AppHomePageHandler::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  auto app_info = app_home::mojom::AppInfo::New();
-  app_info->id = extension->id();
-  page_->RemoveApp(std::move(app_info));
+  ExtensionRemoved(extension);
 }
 
 void AppHomePageHandler::PromptToEnableExtensionApp(
@@ -526,6 +560,12 @@ void AppHomePageHandler::SetRunOnOsLoginMode(
 
   web_app_provider_->scheduler().SetRunOnOsLoginMode(
       app_id, run_on_os_login_mode, base::DoNothing());
+}
+
+void AppHomePageHandler::LaunchDeprecatedAppDialog() {
+  TabDialogs::FromWebContents(web_ui_->GetWebContents())
+      ->ShowDeprecatedAppsDialog(extensions::ExtensionId(), deprecated_app_ids_,
+                                 web_ui_->GetWebContents(), base::DoNothing());
 }
 
 }  // namespace webapps
