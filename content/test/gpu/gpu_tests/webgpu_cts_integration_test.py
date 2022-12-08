@@ -105,6 +105,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   _is_asan = False
   _enable_dawn_backend_validation = False
   _use_webgpu_adapter = None  # use the default
+  _original_environ = None
 
   _build_dir = None
 
@@ -251,6 +252,23 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       cls._test_timeout = options.override_timeout
     cls._enable_dawn_backend_validation = options.enable_dawn_backend_validation
     cls._use_webgpu_adapter = options.use_webgpu_adapter
+
+  @classmethod
+  def _ModifyBrowserEnvironment(cls) -> None:
+    super(WebGpuCtsIntegrationTest, cls)._ModifyBrowserEnvironment()
+    if sys.platform == 'darwin' and cls._enable_dawn_backend_validation:
+      if cls._original_environ is None:
+        cls._original_environ = os.environ.copy()
+      os.environ['MTL_DEBUG_LAYER'] = '1'
+      os.environ['MTL_DEBUG_LAYER_VALIDATE_LOAD_ACTIONS'] = '1'
+      os.environ['MTL_DEBUG_LAYER_VALIDATE_STORE_ACTIONS'] = '1'
+      os.environ['MTL_DEBUG_LAYER_VALIDATE_UNRETAINED_RESOURCES'] = '4'
+
+  @classmethod
+  def _RestoreBrowserEnvironment(cls) -> None:
+    if cls._original_environ is not None:
+      os.environ = cls._original_environ.copy()
+    super(WebGpuCtsIntegrationTest, cls)._RestoreBrowserEnvironment()
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
