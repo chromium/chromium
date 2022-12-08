@@ -502,7 +502,7 @@ bool SVGSVGElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
   // but many things in LocalFrameView and SVGImage depend on the LayoutSVGRoot
   // when they should instead depend on the LayoutView.
   // https://bugs.webkit.org/show_bug.cgi?id=103493
-  if (GetDocument().documentElement() == this)
+  if (IsDocumentElement())
     return true;
 
   // <svg> elements don't need an SVG parent to render, so we bypass
@@ -589,8 +589,10 @@ bool SVGSVGElement::HasEmptyViewBox() const {
 }
 
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {
-  return GetLayoutObject() && GetLayoutObject()->IsSVGRoot() &&
-         To<LayoutSVGRoot>(GetLayoutObject())->IsEmbeddedThroughSVGImage();
+  if (!IsDocumentElement())
+    return false;
+  const auto* svg_root = DynamicTo<LayoutSVGRoot>(GetLayoutObject());
+  return svg_root && svg_root->IsEmbeddedThroughSVGImage();
 }
 
 gfx::RectF SVGSVGElement::CurrentViewBoxRect() const {
