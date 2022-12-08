@@ -753,6 +753,8 @@ void MediaStreamVideoTrack::AddSink(
   secure_tracker_.Add(sink, is_secure == MediaStreamVideoSink::IsSecure::kYes);
   if (uses_alpha == MediaStreamVideoSink::UsesAlpha::kDefault) {
     alpha_using_sinks_.insert(sink);
+  } else if (uses_alpha == MediaStreamVideoSink::UsesAlpha::kNo) {
+    alpha_discarding_sinks_.insert(sink);
   }
 
   // Ensure sink gets told about any constraints set.
@@ -766,8 +768,10 @@ void MediaStreamVideoTrack::AddSink(
   RequestRefreshFrame();
   source_->UpdateCapturingLinkSecure(this,
                                      secure_tracker_.is_capturing_secure());
-  // Alpha can be discarded only if no sink need to use alpha.
-  const bool can_discard_alpha = alpha_using_sinks_.empty();
+  // Alpha can't be discarded if any sink uses alpha, or if the only sinks
+  // connected are kDependsOnOtherSinks.
+  const bool can_discard_alpha =
+      alpha_using_sinks_.empty() && !alpha_discarding_sinks_.empty();
   source_->SetCanDiscardAlpha(can_discard_alpha);
   if (is_screencast_)
     StartTimerForRequestingFrames();
@@ -795,6 +799,7 @@ void MediaStreamVideoTrack::RemoveSink(WebMediaStreamSink* sink) {
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   RemoveSinkInternal(&sinks_, sink);
   alpha_using_sinks_.erase(sink);
+  alpha_discarding_sinks_.erase(sink);
   frame_deliverer_->RemoveCallback(sink);
   secure_tracker_.Remove(sink);
   if (!source_)
@@ -802,8 +807,9 @@ void MediaStreamVideoTrack::RemoveSink(WebMediaStreamSink* sink) {
   UpdateSourceHasConsumers();
   source_->UpdateCapturingLinkSecure(this,
                                      secure_tracker_.is_capturing_secure());
-  // Alpha can be discarded only if no sink uses alpha or no sink exists.
-  const bool can_discard_alpha = sinks_.empty() || alpha_using_sinks_.empty();
+  const bool can_discard_alpha =
+      sinks_.empty() ||
+      (alpha_using_sinks_.empty() && !alpha_discarding_sinks_.empty());
   source_->SetCanDiscardAlpha(can_discard_alpha);
   // Restart the timer with existing sinks.
   if (is_screencast_)

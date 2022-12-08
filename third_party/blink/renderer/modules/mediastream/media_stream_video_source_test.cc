@@ -851,11 +851,11 @@ TEST_F(MediaStreamVideoSourceTest, CanDiscardAlphaIfOtherSinksDiscard) {
   MockMediaStreamVideoSink sink_alpha;
   sink_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kDefault);
 
-  // Discard alpha if the only sink is DependsOnOtherSinks.
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  // Keep alpha if the only sink is DependsOnOtherSinks.
+  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
   sink_depends.ConnectToTrack(track);
 
-  // Discard alpha if there is still no other sink using alpha.
+  // Now alpha can be dropped since other sink drops alpha.
   EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
   sink_no_alpha.ConnectToTrack(track);
 
@@ -863,13 +863,13 @@ TEST_F(MediaStreamVideoSourceTest, CanDiscardAlphaIfOtherSinksDiscard) {
   EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
   sink_alpha.ConnectToTrack(track);
 
-  // Now that alpha track is removed, alpha can be discarded again.
+  // Now that alpha track is removes, alpha can be discarded again.
   EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
   sink_alpha.DisconnectFromTrack();
 
-  // Now that the alpha dropping track is disconnected. It doesn't affect
-  /// whether or not alpha is discarded.
-  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  // Now that the alpha dropping track is disconnected, we keep alpha since the
+  // only sink depends on other sinks, which keeps alpha by default.
+  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
   sink_no_alpha.DisconnectFromTrack();
 
   // Alpha is discarded if there are no sinks connected.
