@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
+#include "components/supervised_user/core/common/features.h"
 #include <string>
 
 #include "base/check.h"

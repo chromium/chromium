@@ -1,21 +1,20 @@
-# Copyright 2021 The Chromium Authors
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("supervised_user_features") {
+static_library("common") {
   sources = [
-    "supervised_user_features.cc",
-    "supervised_user_features.h",
+    "features.cc",
+    "features.h",
   ]
-
   deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "supervised_user_features_unittest.cc" ]
+  sources = [ "features_unittest.cc" ]
   deps = [
-    ":supervised_user_features",
+    ":common",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",

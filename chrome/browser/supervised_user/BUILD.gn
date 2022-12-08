@@ -4,15 +4,6 @@
 
 import("//tools/grit/grit_rule.gni")
 
-grit("supervised_user_unscaled_resources") {
-  source = "supervised_user_unscaled_resources.grd"
-  outputs = [
-    "grit/supervised_user_unscaled_resources.h",
-    "supervised_user_unscaled_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome/browser/supervised_user"
-}
-
 static_library("test_support") {
   testonly = true
   sources = [

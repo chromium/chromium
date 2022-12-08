@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <include name="IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_HTML" file="../supervised_user/core/browser/resources/supervised_user_block_interstitial.html" flattenhtml="true" type="BINDATA" compress="brotli" />
+  <include name="IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML" file="../supervised_user/core/browser/resources/supervised_user_block_interstitial_v2.html" flattenhtml="true" type="BINDATA" compress="brotli" />
+  <include name="IDR_SUPERVISED_USER_ICON" file="../supervised_user/core/browser/resources/supervised_user_icon.png" type="BINDATA" />
+</grit-part>

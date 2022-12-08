@@ -346,11 +346,6 @@ are declared in tools/grit/grit_rule.gni.
         <part file="vr_strings.grdp" />
       </if>
 
-      <!-- Supervised user error page -->
-      <if expr="enable_supervised_users">
-        <part file="supervised_user_error_page_strings.grdp" />
-      </if>
-
       <!-- TODO add all of your "string table" messages here.  Remember to
       change nontranslateable parts of the messages into placeholders (using the
       <ph> element).  You can also use the 'grit add' tool to help you identify

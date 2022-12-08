@@ -11,6 +11,7 @@ import("//components/feed/features.gni")
 import("//components/nacl/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/signin/features.gni")
+import("//components/supervised_user/buildflags.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -84,10 +85,6 @@ declare_args() {
 # may be selectively enabled by default for release builds.
 assert(!chrome_enable_logging_by_default || !is_official_build,
        "Logging must be disabled by default in Official builds")
-
-# Enables supervision for Family Link users.
-# Supervision is only supported on Chrome OS and Android.
-enable_supervised_users = is_chromeos || is_android
 
 # Use brlapi from brltty for braille display support.
 use_brlapi = is_chromeos_ash

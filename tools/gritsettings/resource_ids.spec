@@ -323,9 +323,6 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [2060],
   },
-  "chrome/browser/supervised_user/supervised_user_unscaled_resources.grd": {
-    "includes": [2080],
-  },
   "chrome/browser/test_dummy/internal/android/resources/resources.grd": {
     "includes": [2100],
   },

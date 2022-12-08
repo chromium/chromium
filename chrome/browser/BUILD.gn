@@ -3457,8 +3457,8 @@ static_library("browser") {
       ]
       deps += [
         "//chrome/browser/supervised_user:jni_headers",
-        "//chrome/browser/supervised_user/supervised_user_error_page",
-        "//chrome/browser/supervised_user/supervised_user_features",
+        "//components/supervised_user/core/browser",
+        "//components/supervised_user/core/common",
       ]
     }
 
@@ -5154,7 +5154,6 @@ static_library("browser") {
       "//chrome/browser/nearby_sharing/scheduling",
       "//chrome/browser/policy:onc",
       "//chrome/browser/resources/chromeos:app_icon_resources",
-      "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
       "//chrome/browser/ui/ash/system_web_apps",
       "//chrome/browser/ui/quick_answers",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",
@@ -7709,9 +7708,9 @@ static_library("browser") {
     }
     deps += [
       "//chrome/browser/supervised_user/kids_chrome_management:proto",
-      "//chrome/browser/supervised_user/supervised_user_error_page",
-      "//chrome/browser/supervised_user/supervised_user_features",
       "//chrome/common:supervised_user_commands_mojom",
+      "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/common",
     ]
   }
   if (enable_supervised_users && enable_extensions) {
@@ -8019,7 +8018,6 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/set_time_dialog:html_wrapper_files",
       "//chrome/browser/resources/chromeos/smb_shares:web_components",
       "//chrome/browser/resources/chromeos/vm:web_components",
-      "//chrome/browser/supervised_user:supervised_user_unscaled_resources",
       "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js",

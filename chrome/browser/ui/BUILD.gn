@@ -1918,8 +1918,8 @@ static_library("ui") {
       "webui/family_link_user_internals/family_link_user_internals_ui.h",
     ]
     deps += [
-      "//chrome/browser/supervised_user/supervised_user_error_page",
-      "//chrome/browser/supervised_user/supervised_user_features",
+      "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/common",
     ]
   }
 

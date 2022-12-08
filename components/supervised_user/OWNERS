@@ -1,0 +1,19 @@
+# Note: Unless you want a specific reviewer's expertise, please send CLs to
+# chrome-family-kids-reviews@google.com rather than to specific individuals.
+#
+# These CLs will be automatically reassigned to a reviewer within
+# about 5 minutes. This approach helps our team to load-balance incoming
+# reviews. Googlers can read more about this at go/gwsq-gerrit.
+
+# ChromeOS
+agawronska@chromium.org
+danan@chromium.org
+llin@chromium.org
+
+# Chrome Browser
+fernandex@chromium.org
+ljjlee@google.com
+tju@google.com
+
+# Previous owner, feel free to add for any questions or historical context:
+# treib@chromium.org

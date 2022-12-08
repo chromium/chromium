@@ -3607,7 +3607,7 @@ if (!is_android) {
       }
       deps += [
         "//chrome/browser/supervised_user:test_support",
-        "//chrome/browser/supervised_user/supervised_user_features",
+        "//components/supervised_user/core/common",
       ]
     }
 
@@ -9031,9 +9031,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/supervised_user:test_support",
       "//chrome/browser/supervised_user/kids_chrome_management:proto",
-      "//chrome/browser/supervised_user/supervised_user_error_page:unit_tests",
-      "//chrome/browser/supervised_user/supervised_user_features",
-      "//chrome/browser/supervised_user/supervised_user_features:unit_tests",
+      "//components/supervised_user/core/common",
     ]
   }
   if (safe_browsing_mode == 1 && enable_extensions) {
