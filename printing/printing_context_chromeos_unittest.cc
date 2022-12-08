@@ -19,8 +19,10 @@ namespace {
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::DoAll;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::SetArgPointee;
 
 constexpr char kPrinterName[] = "printer";
 constexpr char16_t kPrinterName16[] = u"printer";
@@ -95,7 +97,7 @@ class PrintingContextTest : public testing::Test,
   void SetDefaultSettings(bool send_user_info, const std::string& uri) {
     auto unique_connection = std::make_unique<MockCupsConnection>();
     auto* connection = unique_connection.get();
-    auto unique_printer = std::make_unique<MockCupsPrinter>();
+    auto unique_printer = std::make_unique<NiceMock<MockCupsPrinter>>();
     printer_ = unique_printer.get();
     EXPECT_CALL(*printer_, GetUri()).WillRepeatedly(Return(uri));
     EXPECT_CALL(*connection, GetPrinter(kPrinterName))
@@ -198,7 +200,8 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Secure) {
   std::string start_document_document_name;
   std::string start_document_username;
   EXPECT_CALL(*printer_, CreateJob)
-      .WillOnce(DoAll(SaveArg<1>(&create_job_document_name),
+      .WillOnce(DoAll(SetArgPointee<0>(/*job_id=*/1),
+                      SaveArg<1>(&create_job_document_name),
                       SaveArg<2>(&create_job_username), Return(status)));
   EXPECT_CALL(*printer_, StartDocument)
       .WillOnce(DoAll(SaveArg<1>(&start_document_document_name),
@@ -223,7 +226,8 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_SendUserInfo_Insecure) {
   std::string start_document_document_name;
   std::string start_document_username;
   EXPECT_CALL(*printer_, CreateJob)
-      .WillOnce(DoAll(SaveArg<1>(&create_job_document_name),
+      .WillOnce(DoAll(SetArgPointee<0>(/*job_id=*/1),
+                      SaveArg<1>(&create_job_document_name),
                       SaveArg<2>(&create_job_username), Return(status)));
   EXPECT_CALL(*printer_, StartDocument)
       .WillOnce(DoAll(SaveArg<1>(&start_document_document_name),
@@ -246,7 +250,8 @@ TEST_F(PrintingContextTest, SettingsToCupsOptions_DoNotSendUserInfo) {
   std::string start_document_document_name;
   std::string start_document_username;
   EXPECT_CALL(*printer_, CreateJob)
-      .WillOnce(DoAll(SaveArg<1>(&create_job_document_name),
+      .WillOnce(DoAll(SetArgPointee<0>(/*job_id=*/1),
+                      SaveArg<1>(&create_job_document_name),
                       SaveArg<2>(&create_job_username), Return(status)));
   EXPECT_CALL(*printer_, StartDocument)
       .WillOnce(DoAll(SaveArg<1>(&start_document_document_name),
