@@ -6169,6 +6169,26 @@
             ]
         }
     ],
+    "JourneysNonSupportedLocales": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221206",
+                    "params": {
+                        "JourneysLocaleOrLanguageAllowlist": "*"
+                    },
+                    "enable_features": [
+                        "Journeys"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysPersistence": [
         {
             "platforms": [
