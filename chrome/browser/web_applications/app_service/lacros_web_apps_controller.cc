@@ -110,7 +110,7 @@ void LacrosWebAppsController::Shutdown() {
 }
 
 WebAppRegistrar& LacrosWebAppsController::registrar() const {
-  return provider_->registrar();
+  return provider_->registrar_unsafe();
 }
 
 void LacrosWebAppsController::SetPublisherForTesting(

@@ -110,7 +110,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_Minimal) {
   info->start_url = start_url;
 
   AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar().GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_EQ(app->app_id, app_id);
@@ -165,7 +165,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_NoteTaking) {
   info->note_taking_new_note_url = new_note_url;
 
   AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar().GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_TRUE(HandlesIntent(app, apps_util::CreateCreateNoteIntent()));
@@ -186,7 +186,7 @@ TEST_F(WebAppPublisherHelperTest, CreateWebApp_LockScreen_DisabledByFlag) {
   info->lock_screen_start_url = lock_screen_url;
 
   AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar().GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_FALSE(HandlesIntent(app, apps_util::CreateStartOnLockScreenIntent()));
@@ -312,7 +312,7 @@ TEST_F(WebAppPublisherHelperTest_WebLockScreenApi, CreateWebApp_LockScreen) {
   info->lock_screen_start_url = lock_screen_url;
 
   AppId app_id = test::InstallWebApp(profile(), std::move(info));
-  const WebApp* web_app = provider_->registrar().GetAppById(app_id);
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
   apps::AppPtr app = publisher_->CreateWebApp(web_app);
 
   EXPECT_TRUE(HandlesIntent(app, apps_util::CreateStartOnLockScreenIntent()));

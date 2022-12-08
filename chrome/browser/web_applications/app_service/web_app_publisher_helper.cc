@@ -727,16 +727,16 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
   auto app = apps::AppPublisher::MakeApp(
       app_type(), web_app->app_id(), readiness,
-      provider_->registrar().GetAppShortName(web_app->app_id()),
+      provider_->registrar_unsafe().GetAppShortName(web_app->app_id()),
       apps::ConvertMojomInstallReasonToInstallReason(
           GetHighestPriorityInstallReason(web_app)),
       apps::ConvertMojomInstallSourceToInstallSource(
           ConvertInstallSourceToMojom(
-              provider_->registrar().GetAppInstallSourceForMetrics(
+              provider_->registrar_unsafe().GetAppInstallSourceForMetrics(
                   web_app->app_id()))));
 
   app->description =
-      provider_->registrar().GetAppDescription(web_app->app_id());
+      provider_->registrar_unsafe().GetAppDescription(web_app->app_id());
   app->additional_search_terms = web_app->additional_search_terms();
 
   // Web App's publisher_id the start url.
@@ -1403,7 +1403,7 @@ void WebAppPublisherHelper::ExecuteContextMenuCommand(
 }
 
 WebAppRegistrar& WebAppPublisherHelper::registrar() const {
-  return provider_->registrar();
+  return provider_->registrar_unsafe();
 }
 
 WebAppInstallManager& WebAppPublisherHelper::install_manager() const {
@@ -1969,7 +1969,8 @@ void WebAppPublisherHelper::LaunchAppWithFilesCheckingUserPermission(
                      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(params),
                      std::move(callback));
 
-  switch (provider_->registrar().GetAppFileHandlerApprovalState(app_id)) {
+  switch (
+      provider_->registrar_unsafe().GetAppFileHandlerApprovalState(app_id)) {
     case ApiApprovalState::kRequiresPrompt:
       chrome::ShowWebAppFileLaunchDialog(file_paths, profile(), app_id,
                                          std::move(launch_callback));

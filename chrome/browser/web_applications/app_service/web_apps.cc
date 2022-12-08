@@ -71,7 +71,7 @@ void WebApps::Shutdown() {
 
 const WebApp* WebApps::GetWebApp(const AppId& app_id) const {
   DCHECK(provider_);
-  return provider_->registrar().GetAppById(app_id);
+  return provider_->registrar_unsafe().GetAppById(app_id);
 }
 
 void WebApps::Initialize(
@@ -355,7 +355,7 @@ std::vector<apps::AppPtr> WebApps::CreateWebApps() {
   DCHECK(provider_);
 
   std::vector<apps::AppPtr> apps;
-  for (const WebApp& web_app : provider_->registrar().GetApps()) {
+  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
     apps.push_back(publisher_helper().CreateWebApp(&web_app));
   }
   return apps;
@@ -367,7 +367,7 @@ void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
     return;
   }
 
-  for (const WebApp& web_app : provider_->registrar().GetApps()) {
+  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
     apps_out->push_back(publisher_helper().ConvertWebApp(&web_app));
   }
 }

@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, LaunchWithFiles) {
   const GURL app_url =
       embedded_test_server()->GetURL("/web_apps/file_handler_index.html");
   AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  EXPECT_EQ(provider().registrar().GetAppStartUrl(app_id), app_url);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id), app_url);
 
   MockAppPublisher mock_app_publisher;
   LacrosWebAppsController lacros_web_apps_controller(profile());
@@ -1021,8 +1021,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
   EXPECT_TRUE(HasFileViewFilters(
       mock_app_publisher.get_deltas().back()->intent_filters));
 
-  EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
-            provider().registrar().GetAppFileHandlerApprovalState(app_id));
+  EXPECT_EQ(
+      ApiApprovalState::kRequiresPrompt,
+      provider().registrar_unsafe().GetAppFileHandlerApprovalState(app_id));
   provider().sync_bridge().SetAppFileHandlerApprovalState(
       app_id, ApiApprovalState::kDisallowed);
 
