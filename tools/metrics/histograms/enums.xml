@@ -26405,6 +26405,10 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="24" label="text/markdown"/>
   <int value="25" label="text/x-clojure"/>
   <int value="26" label="text/jsx"/>
+  <int value="27" label="text/x-go"/>
+  <int value="28" label="text/x-kotlin"/>
+  <int value="29" label="text/x-scala"/>
+  <int value="30" label="text/x.svelte"/>
 </enum>
 
 <enum name="DevToolsMutatingHttpActionVerb">
