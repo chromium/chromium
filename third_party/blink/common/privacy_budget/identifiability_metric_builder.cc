@@ -4,6 +4,7 @@
 
 #include <iterator>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -23,7 +24,7 @@ IdentifiabilityMetricBuilder& IdentifiabilityMetricBuilder::Add(
     IdentifiableToken value) {
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("identifiability"),
                       "CallIdentifiableSurface", "key",
-                      surface.ToUkmMetricHash());
+                      base::NumberToString(surface.ToUkmMetricHash()));
   metrics_.emplace_back(surface, value);
   return *this;
 }
