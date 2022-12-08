@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/webui/personalization_app/test/fake_personalization_app_theme_provider.h"
+#include "fake_personalization_app_theme_provider.h"
 
 namespace ash::personalization_app {
 
@@ -43,4 +44,13 @@ void FakePersonalizationAppThemeProvider::IsColorModeAutoScheduleEnabled(
   std::move(callback).Run(/*enabled=*/false);
 }
 
+void FakePersonalizationAppThemeProvider::SetColorScheme(
+    ash::ColorScheme color_scheme) {
+  return;
+}
+
+void FakePersonalizationAppThemeProvider::SetStaticColor(
+    ::SkColor static_color) {
+  return;
+}
 }  // namespace ash::personalization_app

@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_theme_provider_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/schedule_enums.h"
+#include "ash/style/color_palette_controller.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/profiles/profile.h"
@@ -17,6 +19,9 @@ PersonalizationAppThemeProviderImpl::PersonalizationAppThemeProviderImpl(
     content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
+  if (ash::features::IsJellyEnabled()) {
+    color_palette_controller_ = ColorPaletteController::Create();
+  }
 }
 
 PersonalizationAppThemeProviderImpl::~PersonalizationAppThemeProviderImpl() =
@@ -106,4 +111,22 @@ void PersonalizationAppThemeProviderImpl::NotifyColorModeAutoScheduleChanged() {
       IsColorModeAutoScheduleEnabled());
 }
 
+void PersonalizationAppThemeProviderImpl::SetColorScheme(
+    ColorScheme color_scheme) {
+  if (!ash::features::IsJellyEnabled()) {
+    theme_receiver_.ReportBadMessage(
+        "Cannot call SetColorScheme without Jelly enabled.");
+    return;
+  }
+  color_palette_controller_->SetColorScheme(color_scheme, base::DoNothing());
+}
+
+void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
+  if (!ash::features::IsJellyEnabled()) {
+    theme_receiver_.ReportBadMessage(
+        "Cannot call SetStaticColor without Jelly enabled.");
+    return;
+  }
+  color_palette_controller_->SetStaticColor(static_color, base::DoNothing());
+}
 }  // namespace ash::personalization_app

@@ -50,7 +50,7 @@
     <!-- TODO(b/253089237): Add the final translated text. -->
     <div id="dynamicColorToggleDescription">[temp]Auto</div>
     <!-- TODO(b/253089237): Add the translated aria label. -->
-    <cr-toggle checked="{{automaticSeedColorEnabled}}">
+    <cr-toggle checked="{{automaticSeedColorEnabled}}" on-click="onClickToggle_">
     </cr-toggle>
   </div>
   <iron-a11y-keys id="colorSchemeKeys" keys="left right" on-keys-pressed="onColorSchemeKeysPress_">
@@ -60,21 +60,27 @@
   <iron-selector
       id="colorSchemeSelector"
       selected="0"
-      selected-item="{{colorSchemeSelectedButton_}}"
+      selected-item="{{colorSchemeHighlightedButton_}}"
       hidden="[[!automaticSeedColorEnabled]]">
-    <template is="dom-repeat" items="[[schemes_]]" as="scheme">
-      <cr-button tabindex$="[[getTabIndex_(scheme.id)]]">
-        <color-scheme-icon-svg scheme="[[scheme]]"></color-scheme-icon-svg>
+    <template is="dom-repeat" items="[[colorSchemes_]]" as="colorScheme">
+      <cr-button 
+          tabindex$="[[getTabIndex_(colorScheme.id)]]"
+          on-click="onClickColorSchemeButton_"
+          data-color-scheme-id$="[[colorScheme.id]]">
+        <color-scheme-icon-svg scheme="[[colorScheme]]"></color-scheme-icon-svg>
       </cr-button>
     </template>
   </iron-selector>
   <iron-selector
       id="staticColorSelector"
       selected="0"
-      selected-item="{{staticColorSelectedButton_}}"
+      selected-item="{{staticColorHighlightedButton_}}"
       hidden="[[automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
-      <cr-button tabindex$="[[getTabIndex_(staticColor)]]">
+      <cr-button
+          tabindex$="[[getTabIndex_(staticColor)]]"
+          on-click="onClickStaticColorButton_"
+          data-static-color$="[[staticColor]]">
         <svg>
           <circle style$="fill: [[staticColor]]" cx="24" cy="24" r="24"></circle>
         </svg>

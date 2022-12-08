@@ -7,15 +7,20 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {DynamicColorElement} from 'chrome://personalization/js/personalization_app.js';
+import {DynamicColorElement, SetColorSchemePrefAction, SetStaticColorPrefAction, ThemeActionName} from 'chrome://personalization/js/personalization_app.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {dispatchKeydown, getActiveElement, initElement, teardownElement, waitForActiveElement} from './personalization_app_test_utils.js';
+import {baseSetup, dispatchKeydown, getActiveElement, initElement, teardownElement, waitForActiveElement} from './personalization_app_test_utils.js';
+import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestThemeProvider} from './test_theme_interface_provider.js';
 
 suite('DynamicColorElementTest', function() {
   let dynamicColorElement: DynamicColorElement|null;
+  let personalizationStore: TestPersonalizationStore;
+  let themeProvider: TestThemeProvider;
 
   function getToggleButton(): CrToggleElement {
     return dynamicColorElement!.shadowRoot!.querySelector('cr-toggle')!;
@@ -31,15 +36,35 @@ suite('DynamicColorElementTest', function() {
         'staticColorSelector')!;
   }
 
-  function getColorSchemeButtons(): NodeListOf<Element> {
+  function getColorSchemeButtons(): NodeListOf<CrButtonElement> {
     return getColorSchemeSelector().querySelectorAll('cr-button')!;
   }
 
-  function getStaticColorButtons(): NodeListOf<Element> {
+  function getStaticColorButtons(): NodeListOf<CrButtonElement> {
     return getStaticColorSelector().querySelectorAll('cr-button')!;
   }
 
+  function showStaticColorButtons() {
+    const toggleButton = getToggleButton();
+    if (toggleButton.checked) {
+      toggleButton.click();
+    }
+    assertFalse(getStaticColorSelector().hidden);
+  }
+
+  function showColorSchemeButtons() {
+    const toggleButton = getToggleButton();
+    if (!toggleButton.checked) {
+      toggleButton.click();
+    }
+    assertFalse(getColorSchemeSelector().hidden);
+  }
+
   setup(async () => {
+    const mocks = baseSetup();
+    personalizationStore = mocks.personalizationStore;
+    themeProvider = mocks.themeProvider;
+
     dynamicColorElement = initElement(DynamicColorElement)!;
     await waitAfterNextRender(dynamicColorElement);
   });
@@ -90,7 +115,7 @@ suite('DynamicColorElementTest', function() {
 
   test('keypress navigates color scheme buttons', async () => {
     assertTrue(!!dynamicColorElement);
-    assertTrue(getToggleButton().checked, 'toggle button should be on');
+    showColorSchemeButtons();
     const colorSchemeButtons = getColorSchemeButtons();
     (colorSchemeButtons[0] as HTMLElement)!.focus();
 
@@ -113,11 +138,7 @@ suite('DynamicColorElementTest', function() {
 
   test('keypress navigates static color buttons', async () => {
     assertTrue(!!dynamicColorElement);
-    const toggleButton = getToggleButton();
-    toggleButton!.click();
-    assertFalse(
-        toggleButton!.checked,
-        'toggle button should be off to show the static color buttons');
+    showStaticColorButtons();
     const staticColorButtons = getStaticColorButtons();
     (staticColorButtons![0] as HTMLElement)!.focus();
 
@@ -137,5 +158,31 @@ suite('DynamicColorElementTest', function() {
       assertEquals(
           'iron-selected', getActiveElement(dynamicColorElement).className);
     }
+  });
+
+  test('sets color scheme', async () => {
+    personalizationStore.expectAction(ThemeActionName.SET_COLOR_SCHEME);
+    showColorSchemeButtons();
+
+    getColorSchemeButtons()[1]!.click();
+    await themeProvider.whenCalled('setColorScheme');
+
+    const action =
+        await personalizationStore.waitForAction(
+            ThemeActionName.SET_COLOR_SCHEME) as SetColorSchemePrefAction;
+    assertTrue(!!action.colorScheme);
+  });
+
+  test('set static color', async () => {
+    personalizationStore.expectAction(ThemeActionName.SET_STATIC_COLOR);
+    showStaticColorButtons();
+
+    getStaticColorButtons()[1]!.click();
+    await themeProvider.whenCalled('setStaticColor');
+
+    const action =
+        await personalizationStore.waitForAction(
+            ThemeActionName.SET_STATIC_COLOR) as SetStaticColorPrefAction;
+    assertTrue(!!action.staticColor);
   });
 });

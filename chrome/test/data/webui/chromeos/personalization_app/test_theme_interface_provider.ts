@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ThemeObserverInterface, ThemeObserverRemote, ThemeProviderInterface} from 'chrome://personalization/js/personalization_app.js';
+import {ColorScheme, ThemeObserverInterface, ThemeObserverRemote, ThemeProviderInterface} from 'chrome://personalization/js/personalization_app.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestThemeProvider extends TestBrowserProxy implements
@@ -12,6 +13,8 @@ export class TestThemeProvider extends TestBrowserProxy implements
       'setThemeObserver',
       'setColorModePref',
       'setColorModeAutoScheduleEnabled',
+      'setColorScheme',
+      'setStaticColor',
       'isDarkModeEnabled',
       'isColorModeAutoScheduleEnabled',
     ]);
@@ -36,6 +39,14 @@ export class TestThemeProvider extends TestBrowserProxy implements
 
   setColorModeAutoScheduleEnabled(enabled: boolean) {
     this.methodCalled('setColorModeAutoScheduleEnabled', enabled);
+  }
+
+  setColorScheme(colorScheme: ColorScheme) {
+    this.methodCalled('setColorScheme', colorScheme);
+  }
+
+  setStaticColor(color: SkColor) {
+    this.methodCalled('setStaticColor', color);
   }
 
   isDarkModeEnabled() {

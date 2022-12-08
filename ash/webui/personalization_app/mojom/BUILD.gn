@@ -72,6 +72,10 @@ mojom("mojom") {
           mojom = "ash.personalization_app.mojom.AmbientUiVisibility"
           cpp = "ash::AmbientUiVisibility"
         },
+        {
+          mojom = "ash.personalization_app.mojom.ColorScheme"
+          cpp = "ash::ColorScheme"
+        },
       ]
       traits_headers = [ "personalization_app_mojom_traits.h" ]
       traits_sources = [ "personalization_app_mojom_traits.cc" ]

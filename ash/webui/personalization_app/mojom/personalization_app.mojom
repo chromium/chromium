@@ -324,6 +324,14 @@ interface WallpaperProvider {
     CancelPreviewWallpaper();
 };
 
+enum ColorScheme {
+  kStatic = 0,
+  kTonalSpot = 1,
+  kNeutral = 2,
+  kExpressive = 3,
+  kVibrant = 4,
+};
+
 // Receives information whenever there are theme related changes such as color
 // mode.
 interface ThemeObserver {
@@ -345,6 +353,14 @@ interface ThemeProvider {
 
   // Disables or enables dark color mode auto scheduler.
   SetColorModeAutoScheduleEnabled(bool enabled);
+
+  // Sets the color scheme for dynamic color.
+  // @see //ash/style/color_palette_controller.h
+  SetColorScheme(ColorScheme colorScheme);
+
+  // Sets the seed color for dynamic color.
+  // @see //ash/style/color_palette_controller.h
+  SetStaticColor(skia.mojom.SkColor static_color);
 
   // Returns whether color mode auto scheduler is enabled.
   IsColorModeAutoScheduleEnabled() => (bool enabled);

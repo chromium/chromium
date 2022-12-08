@@ -45,6 +45,10 @@ class FakePersonalizationAppThemeProvider
 
   void SetColorModeAutoScheduleEnabled(bool enabled) override;
 
+  void SetColorScheme(ash::ColorScheme color_scheme) override;
+
+  void SetStaticColor(::SkColor static_color) override;
+
   void IsDarkModeEnabled(IsDarkModeEnabledCallback callback) override;
 
   void IsColorModeAutoScheduleEnabled(
