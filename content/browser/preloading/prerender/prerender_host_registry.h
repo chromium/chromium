@@ -219,6 +219,8 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       RenderFrameHost* render_frame_host,
       const GlobalRequestID& request_id,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   int FindHostToActivateInternal(NavigationRequest& navigation_request);
 

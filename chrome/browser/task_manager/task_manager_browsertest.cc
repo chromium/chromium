@@ -1677,6 +1677,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
   // Terminate the prerender task, which should signal the task manager to
   // remove the prerender task entry.
   {
+    base::HistogramTester histogram_tester;
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
     absl::optional<size_t> trigger_row =
         FindResourceIndex(MatchTab("Title Of Awesomeness"));
@@ -1685,6 +1686,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderTaskBrowserTest,
     model()->Kill(trigger_row.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyPrerender()));
+    histogram_tester.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+        /*PrerenderFinalStatus::kRendererProcessKilled=*/14, 1);
   }
 }
 
@@ -1722,6 +1726,7 @@ IN_PROC_BROWSER_TEST_F(
       WaitForTaskManagerRows(1, MatchPrerender(prerender_gurl.spec())));
   // Main task stays after prerendered task is terminated.
   {
+    base::HistogramTester histogram_tester;
     content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
     absl::optional<size_t> prerender_row =
         FindResourceIndex(MatchPrerender(prerender_gurl.spec()));
@@ -1732,12 +1737,17 @@ IN_PROC_BROWSER_TEST_F(
     ASSERT_NO_FATAL_FAILURE(
         WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyPrerender()));
+    histogram_tester.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+        "DirectURLInput",
+        /*PrerenderFinalStatus::kRendererProcessKilled=*/14, 1);
   }
   // Both tasks are deleted after main task is terminated.
   {
     // Use a different URL because re-using the same URL does not trigger new
     // prerendering:
     // https://crsrc.org/c/chrome/browser/predictors/autocomplete_action_predictor.cc;l=208;drc=a08a4e1c3f6862b3b1385b8a040a4fdb524e509d
+    base::HistogramTester histogram_tester;
     const char kNewPrerenderURL[] = "/title3.html";
     const auto new_prerender_gurl =
         embedded_test_server()->GetURL(kNewPrerenderURL);
@@ -1756,6 +1766,10 @@ IN_PROC_BROWSER_TEST_F(
     model()->Kill(trigger_row.value());
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
     ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyPrerender()));
+    histogram_tester.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+        "DirectURLInput",
+        /*PrerenderFinalStatus::kRendererProcessKilled=*/14, 1);
   }
 }
 

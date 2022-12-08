@@ -808,6 +808,13 @@ void PrerenderHostRegistry::ResourceLoadComplete(
   }
 }
 
+void PrerenderHostRegistry::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  CancelAllHosts(status == base::TERMINATION_STATUS_PROCESS_CRASHED
+                     ? PrerenderFinalStatus::kRendererProcessCrashed
+                     : PrerenderFinalStatus::kRendererProcessKilled);
+}
+
 int PrerenderHostRegistry::FindHostToActivateInternal(
     NavigationRequest& navigation_request) {
   RenderFrameHostImpl* render_frame_host =
