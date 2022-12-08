@@ -5374,7 +5374,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"omnibox-default-browser-pedal",
      flag_descriptions::kOmniboxDefaultBrowserPedalName,
-     flag_descriptions::kOmniboxDefaultBrowserPedalDescription, kOsAll,
+     flag_descriptions::kOmniboxDefaultBrowserPedalDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxDefaultBrowserPedal)},
 
     {"omnibox-report-assisted-query-stats",

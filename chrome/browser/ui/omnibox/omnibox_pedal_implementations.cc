@@ -1940,7 +1940,14 @@ class OmniboxPedalSetChromeAsDefaultBrowser : public OmniboxPedal {
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
       const AutocompleteProviderClient& client) const override {
-    return shell_integration::CanSetAsDefaultBrowser();
+    // Note: shell_integration::CanSetAsDefaultBrowser() uses this call too,
+    // and if permission is SET_DEFAULT_NOT_ALLOWED, this method returns false.
+    const shell_integration::DefaultWebClientSetPermission permission =
+        shell_integration::GetDefaultWebClientSetPermission();
+    return (permission == shell_integration::SET_DEFAULT_INTERACTIVE &&
+            OmniboxFieldTrial::kDefaultBrowserPedalInteractive.Get()) ||
+           (permission == shell_integration::SET_DEFAULT_UNATTENDED &&
+            OmniboxFieldTrial::kDefaultBrowserPedalUnattended.Get());
   }
 
   void Execute(ExecutionContext& context) const override {

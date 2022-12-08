@@ -535,10 +535,6 @@ bool OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxFuzzyUrlSuggestions);
 }
 
-bool OmniboxFieldTrial::IsDefaultBrowserPedalEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxDefaultBrowserPedal);
-}
-
 const base::FeatureParam<bool>
     OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual(
         &omnibox::kOmniboxFuzzyUrlSuggestions,
@@ -588,6 +584,22 @@ const base::FeatureParam<int>
         &omnibox::kOmniboxFuzzyUrlSuggestions,
         "FuzzyUrlSuggestionsPenaltyTaperLength",
         0);
+
+bool OmniboxFieldTrial::IsDefaultBrowserPedalEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxDefaultBrowserPedal);
+}
+
+const base::FeatureParam<bool>
+    OmniboxFieldTrial::kDefaultBrowserPedalInteractive(
+        &omnibox::kOmniboxDefaultBrowserPedal,
+        "DefaultBrowserPedalInteractive",
+        true);
+
+const base::FeatureParam<bool>
+    OmniboxFieldTrial::kDefaultBrowserPedalUnattended(
+        &omnibox::kOmniboxDefaultBrowserPedal,
+        "DefaultBrowserPedalUnattended",
+        true);
 
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
