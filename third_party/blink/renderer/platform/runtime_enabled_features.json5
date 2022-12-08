@@ -945,6 +945,8 @@
     {
       name: "DeliveryType",
       status: "experimental",
+      implied_by: ["SpeculationRulesPrefetchFuture"],
+      origin_trial_feature_name: "DeliveryType",
     },
     {
       name: "DesktopCaptureDisableLocalEchoControl",
@@ -2575,17 +2577,33 @@
     },
     {
       name: "SpeculationRulesDocumentRules",
+      origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
+      origin_trial_allows_third_party: true,
     },
     {
-      name: "SpeculationRulesFetchFromHeader"
+      name: "SpeculationRulesFetchFromHeader",
+      origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
+      origin_trial_allows_third_party: true,
     },
     {
       name: "SpeculationRulesPointerDownHeuristics",
-      base_feature: "SpeculationRulesPointerDownHeuristics"
+      base_feature: "SpeculationRulesPointerDownHeuristics",
+      base_feature_status: "enabled",
     },
     {
       name: "SpeculationRulesPointerHoverHeuristics",
       base_feature: "SpeculationRulesPointerHoverHeuristics"
+    },
+    // This feature exists solely to be the target of implied_by for features
+    // that are part of this trial but which may also be enabled another way.
+    // Otherwise, runtime-enabled features can be added to the origin trial
+    // with the following:
+    //   origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
+    //   origin_trial_allows_third_party: true,
+    {
+      name: "SpeculationRulesPrefetchFuture",
+      origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
+      origin_trial_allows_third_party: true,
     },
     // Origin trial to enable Speculation Rules for access to the prefetch proxy.
     // https://crbug.com/1190167
@@ -2595,6 +2613,7 @@
       status: {"Android": "stable"},
       base_feature: "SpeculationRulesPrefetchProxy",
       copied_from_base_feature_if: "overridden",
+      implied_by: ["SpeculationRulesPrefetchFuture"],
     },
     {
       "name": "SpeculationRulesPrefetchWithSubresources",
@@ -2603,9 +2622,13 @@
     {
       name: "SpeculationRulesReferrerPolicyKey",
       base_feature: "SpeculationRulesReferrerPolicyKey",
+      origin_trial_feature_name: "SpeculationRulesReferrerPolicyKey",
+      implied_by: ["SpeculationRulesPrefetchFuture"],
     },
     {
       name: "SpeculationRulesRelativeToDocument",
+      origin_trial_feature_name: "SpeculationRulesPrefetchFuture",
+      origin_trial_allows_third_party: true,
     },
     {
       name: "SrcsetMaxDensity",

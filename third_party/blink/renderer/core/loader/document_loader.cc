@@ -114,6 +114,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_header.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
@@ -2679,13 +2680,8 @@ void DocumentLoader::CommitNavigation() {
 }
 
 void DocumentLoader::CreateParserPostCommit() {
-  if (RuntimeEnabledFeatures::SpeculationRulesFetchFromHeaderEnabled()) {
-    CountUse(WebFeature::kSpeculationRulesHeader);
-    auto& speculation_rules_header =
-        response_.HttpHeaderField(http_names::kSpeculationRules);
-    PreloadHelper::LoadSpeculationRuleLinkFromHeader(
-        speculation_rules_header, GetFrame()->GetDocument(), *GetFrame());
-  }
+  SpeculationRulesHeader::ProcessHeadersForDocumentResponse(
+      response_, *frame_->DomWindow());
 
   if (navigation_delivery_type_ ==
       network::mojom::NavigationDeliveryType::kNavigationalPrefetch) {

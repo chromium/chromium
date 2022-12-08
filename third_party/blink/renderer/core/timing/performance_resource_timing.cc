@@ -203,7 +203,6 @@ AtomicString PerformanceResourceTiming::initiatorType() const {
 }
 
 AtomicString PerformanceResourceTiming::deliveryType() const {
-  DCHECK(RuntimeEnabledFeatures::DeliveryTypeEnabled());
   if (!AllowTimingDetails())
     return g_empty_atom;
   return delivery_type_;
@@ -498,8 +497,10 @@ PerformanceResourceTiming::serverTiming() const {
 
 void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
+  ExecutionContext* execution_context =
+      ExecutionContext::From(builder.GetScriptState());
   builder.AddString("initiatorType", initiatorType());
-  if (RuntimeEnabledFeatures::DeliveryTypeEnabled()) {
+  if (RuntimeEnabledFeatures::DeliveryTypeEnabled(execution_context)) {
     builder.AddString("deliveryType", deliveryType());
   }
   builder.AddString("nextHopProtocol", nextHopProtocol());

@@ -117,7 +117,8 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
   // a means of specifying a suitable policy. Once
   // SpeculationRulesReferrerPolicyKey ships, this workaround should be removed.
   // See https://crbug.com/1398772.
-  if (!RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled() &&
+  if (!RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled(
+          execution_context) &&
       !AcceptableReferrerPolicy(referrer, is_initially_same_site)) {
     referrer = SecurityPolicy::GenerateReferrer(
         network::mojom::ReferrerPolicy::kNever, url, outgoing_referrer);

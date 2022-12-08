@@ -61,8 +61,9 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   for (wtf_size_t i = 0; i < input->size(); ++i) {
     const String& input_key = input->at(i).first;
     const bool conditionally_known_key =
-        RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled() &&
-        (input_key == "referrer_policy");
+        RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled(
+            context) &&
+        input_key == "referrer_policy";
     if (!base::Contains(kKnownKeys, input_key) && !conditionally_known_key)
       return nullptr;
   }
@@ -206,7 +207,8 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   JSONValue* referrer_policy_value = input->Get("referrer_policy");
   if (referrer_policy_value) {
     // Feature gated due to known keys check above.
-    DCHECK(RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled());
+    DCHECK(RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled(
+        context));
 
     String referrer_policy_str;
     if (!referrer_policy_value->AsString(&referrer_policy_str))

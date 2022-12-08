@@ -958,6 +958,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT bool
 IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
 
+// Allows certain origin trials to be enabled using third-party tokens
+// associated with the origin of external speculation rules.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSpeculationRulesHeaderEnableThirdPartyOriginTrial);
+
+// Controls whether the SpeculationRulesPrefetchFuture origin trial can be
+// enabled.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
+
 }  // namespace features
 }  // namespace blink
 

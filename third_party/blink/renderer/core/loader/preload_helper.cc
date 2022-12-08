@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 
-#include "net/http/structured_headers.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -38,18 +37,12 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/link_prefetch_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
-#include "third_party/blink/renderer/core/loader/resource/speculation_rules_resource.h"
-#include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
-#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
-#include "third_party/blink/renderer/core/speculation_rules/speculation_rules_metrics.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/json/json_parser.h"
-#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -633,96 +626,6 @@ void PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
       LinkPrefetchResource::Fetch(link_fetch_params, document.Fetcher());
   if (pending_preload)
     pending_preload->AddResource(resource);
-}
-
-void PreloadHelper::LoadSpeculationRuleLinkFromHeader(
-    const String& header_value,
-    Document* document,
-    LocalFrame& frame) {
-  DCHECK(document);
-  if (header_value.empty())
-    return;
-
-  auto parsed_header = net::structured_headers::ParseList(header_value.Utf8());
-  if (!parsed_header.has_value()) {
-    CountSpeculationRulesLoadOutcome(
-        SpeculationRulesLoadOutcome::kUnparseableSpeculationRulesHeader);
-    SendMessageToConsoleForPossiblyNullDocument(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::blink::ConsoleMessageSource::kOther,
-            mojom::blink::ConsoleMessageLevel::kWarning,
-            String("Cannot parse Speculation-Rules header value.")),
-        document, &frame);
-    return;
-  }
-
-  if (parsed_header->empty()) {
-    // This is valid, but unlikely to be intentional. Let's make a note of it.
-    CountSpeculationRulesLoadOutcome(
-        SpeculationRulesLoadOutcome::kEmptySpeculationRulesHeader);
-    return;
-  }
-
-  for (auto const& parsed_item : parsed_header.value()) {
-    // Only strings are valid list members.
-    if (parsed_item.member.size() != 1u ||
-        !parsed_item.member[0].item.is_string()) {
-      CountSpeculationRulesLoadOutcome(
-          SpeculationRulesLoadOutcome::kInvalidSpeculationRulesHeaderItem);
-      SendMessageToConsoleForPossiblyNullDocument(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              String("Only strings are valid in Speculation-Rules header value "
-                     "and inner lists are ignored.")),
-          document, &frame);
-      continue;
-    }
-    const auto& url_str = String(parsed_item.member[0].item.GetString());
-    KURL speculation_rule_url(document->BaseURL(), url_str);
-    if (url_str.empty() || !speculation_rule_url.IsValid()) {
-      CountSpeculationRulesLoadOutcome(
-          SpeculationRulesLoadOutcome::kInvalidSpeculationRulesHeaderItem);
-      SendMessageToConsoleForPossiblyNullDocument(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kOther,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              String("URL \"" + url_str +
-                     "\" found in Speculation-Rules header is invalid.")),
-          document, &frame);
-      continue;
-    }
-
-    ResourceRequest resource_request(speculation_rule_url);
-
-    resource_request.SetPrefetchMaybeForTopLevelNavigation(false);
-    resource_request.SetFetchPriorityHint(
-        mojom::blink::FetchPriorityHint::kLow);
-
-    // Always use CORS. Adopt new best practices for subresources: CORS requests
-    // with same-origin credentials only.
-    auto* origin = document->GetExecutionContext()->GetSecurityOrigin();
-    resource_request.SetMode(network::mojom::RequestMode::kCors);
-    resource_request.SetCredentialsMode(
-        network::mojom::CredentialsMode::kSameOrigin);
-    resource_request.RemoveUserAndPassFromURL();
-    resource_request.SetRequestorOrigin(origin);
-    resource_request.SetHTTPOrigin(origin);
-
-    ResourceLoaderOptions options(
-        document->GetExecutionContext()->GetCurrentWorld());
-    options.initiator_info.name = fetch_initiator_type_names::kOther;
-
-    FetchParameters speculation_rule_params(std::move(resource_request),
-                                            options);
-
-    SpeculationRulesResource* resource = SpeculationRulesResource::Fetch(
-        speculation_rule_params, document->Fetcher());
-
-    SpeculationRuleLoader* speculation_rule_loader =
-        MakeGarbageCollected<SpeculationRuleLoader>(*document);
-    speculation_rule_loader->LoadResource(resource, speculation_rule_url);
-  }
 }
 
 void PreloadHelper::LoadLinksFromHeader(
