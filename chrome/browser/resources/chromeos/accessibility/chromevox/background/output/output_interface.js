@@ -113,13 +113,6 @@ export class OutputInterface {
    * @param {string} token
    * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    */
-  formatTableCellIndex_(data, token, options) {}
-
-  /**
-   * @param {!outputTypes.OutputFormattingData} data
-   * @param {string} token
-   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
-   */
   formatTextContent_(data, token, options) {}
 
   /**

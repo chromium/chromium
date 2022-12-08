@@ -95,7 +95,7 @@ export class OutputFormatter {
       this.formatInputType_(this.params_, token, options);
     } else if (
         token === 'tableCellRowIndex' || token === 'tableCellColumnIndex') {
-      this.output_.formatTableCellIndex_(this.params_, token, options);
+      this.formatTableCellIndex_(this.params_, token, options);
     } else if (token === 'cellIndexText') {
       this.output_.formatCellIndexText_(this.params_, token, options);
     } else if (token === 'node') {
@@ -566,6 +566,27 @@ export class OutputFormatter {
         }
       });
     }
+  }
+
+  /**
+   * @param {!outputTypes.OutputFormattingData} data
+   * @param {string} token
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @private
+   */
+  formatTableCellIndex_(data, token, options) {
+    const buff = data.outputBuffer;
+    const node = data.node;
+    const formatLog = data.outputFormatLogger;
+
+    let value = node[token];
+    if (value === undefined) {
+      return;
+    }
+    value = String(value + 1);
+    options.annotation.push(token);
+    this.output_.append_(buff, value, options);
+    formatLog.writeTokenWithValue(token, value);
   }
 
   /**

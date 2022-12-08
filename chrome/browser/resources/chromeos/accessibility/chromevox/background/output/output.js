@@ -672,23 +672,6 @@ export class Output {
   }
 
   /** @override */
-  /** @override */
-  formatTableCellIndex_(data, token, options) {
-    const buff = data.outputBuffer;
-    const node = data.node;
-    const formatLog = data.outputFormatLogger;
-
-    let value = node[token];
-    if (value === undefined) {
-      return;
-    }
-    value = String(value + 1);
-    options.annotation.push(token);
-    this.append_(buff, value, options);
-    formatLog.writeTokenWithValue(token, value);
-  }
-
-  /** @override */
   formatCellIndexText_(data, token, options) {
     const buff = data.outputBuffer;
     const node = data.node;
