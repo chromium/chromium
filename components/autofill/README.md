@@ -144,3 +144,156 @@ There are some closely related directories in `//chrome`:
   - [`//chrome/android/java/src/org/chromium/chrome/browser/autofill`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/autofill/)
 - [`//chrome/browser/ui/autofill`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/autofill)
 - [`//chrome/browser/ui/views/autofill`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/autofill)
+
+# Autofill cheatsheet
+
+This is a cheatsheet to navigate Autofill. It is not necessarily exhaustive and
+may sacrifice a little bit of correctness in favor of simplicity.
+
+## What are the main classes that orchestrate Autofill?
+
+* Renderer:
+  * `AutofillAgent`
+    * One instance per `RenderFrame` (frame).
+    * Responsibilities:
+      * Observes forms in a frame and notifies the browser about changes.
+      * Executes preview and filling requests.
+    * Implements `blink::WebAutofillClient` to communicate with Blink.
+* Browser:
+  * `ContentAutofillDriver`
+    * One instance per `RenderFrameHost` (frame), owned by
+      `ContentAutofillDriverFactory`
+    * Responsibilities:
+      * Facilitates communication between the browser and the renderer logic.
+    * Implements interfaces `AutofillDriver` and `mojom::AutofillDriver`
+    * Has sibling `AutofillDriverIOS` for iOS
+  * `ContentAutofillDriverFactory`
+    * One instance per `WebContents` (tab)
+    * Responsibilities:
+      * Manages life-cycle of `ContentAutofillDriver` and ensures that there is
+        one Driver instance per renderer frame.
+  * `AutofillManager` and `BrowserAutofillManager`
+    * One instance per `RenderFrameHost` (frame), owned by
+      `AutofillDriver`.
+    * Responsibilities:
+      * Main orchestrator for Autofill logic.
+    * `BrowserAutofillManager` extends the `AutofillManager` base class.
+    * `BrowserAutofillManager` has sibling `AndroidAutofillManager` which is
+      responsible for Android Autofill for WebViews.
+  * `ChromeAutofillClient`
+    * One instance per `WebContents` (tab)
+    * Responsibilities:
+      * Serves as bridge from platform aganostic `BrowserAutofillManager` to the
+        OS specific logic.
+    * Implements `AutofillClient` interface.
+    * Has siblings `AwAutofillClient`, `ChromeAutofillClientIOS` and
+      `WebViewAutofillClientIOS`.
+
+## What's the difference between Autofill and Autocomplete?
+
+* Autofill is about structured and typed information (addresses, credit card
+  data, ...)
+* Autocomplete is about single-field, untyped information. Values are tied to a
+  field identifier. Autocomplete is largely implemented by the
+  `AutocompleteHistoryManager`.
+
+## What are the representations for Forms and Fields?
+
+* Between Renderer and Browser, we mostly exchange structural information
+  * `FormData`
+    * HTML attributes of a form
+    * Contains a list of fields (`FormFieldData`).
+    * 1:1 correspondence to a `blink::WebFormElement`
+  * `FormFieldData`
+    * HTML attributes of a field
+    * current value (or value that should be filled)
+    * `global_id()` gives a globally unique and non-changing identifier of a
+      field in the renderer process.
+    * 1:1 correspondence to a `blink::WebFormControlElement`
+* On the Browser side, we have augmented information:
+  * `FormStructure` - corresponds to a `FormData`
+    * Container for a series of `FormFieldData` objects
+  * `AutofillField` - corresponds to a `FormFieldData`
+    * Inherits from `FormFieldData` and extends it by
+      * Field type classifications
+      * Other Autofill metadata
+
+## How are forms and fields identified?
+* Per page load, in particular for distinguishing DOM elements:
+  * `FormGlobalId` is a pair of a `LocalFrameToken` and a `FormRendererId`,
+     which uniquely identify the frame and the form element in that frame.
+  * `FieldGlobalId` is a pair of a `LocalFrameToken` and a `FieldRendererId`.
+* Across page loads, in particular for crowdsourcing:
+  * `FormSignature` is a 64 bit hash value of the form URL (target URL or
+    location of the embedding website as a fallback) and normalized field
+    names.
+  * `FieldSignature` is a 32 bit hash value of the field name (name attribute,
+    falling back to id attribute of the form control) and type (text, search,
+    password, tel, ...)
+
+## How are field classified?
+* Local heuristics
+  * See `components/autofill/core/browser/form_parsing/`.
+  * `FormField::ParseFormFields` is the global entry point for parsing fields
+    with heuristics.
+  * Local heuristics are only applied if a form has at least 3 fields and at
+    least 3 fields are classified (after launching
+    AutofillMin3FieldTypesForLocalHeuristics, we require 3 different field
+    types). There are exceptions for a few field types (email addresses,
+    promo codes, IBANs, CVV fields).
+  * We perform local heuristics even for smaller forms but only for promo codes
+    and IBANs (see `ParseSingleFieldForms`).
+  * Regular expressions for parsing are provided via
+    `components/autofill/core/common/autofill_regex_constants.h` or
+    `components/autofill/core/browser/form_parsing/regex_patterns.h` if
+    `features::kAutofillParsingPatternProvider` is enabled.
+* Crowd sourcing
+  * `AutofillDownloadManager` is responsible for downloading field
+    classifications.
+  * Crowd sourcing is applied (for lookups and voting) for forms of any size but
+    the server can handle small forms differently, see
+    [`http://cs/IsSmallForm%20file:autofill`](http://cs/IsSmallForm%20file:autofill).
+  * Crowd sourcing trumps local heuristics.
+* Autocomplete attribute
+  * The autocomplete attribute is parsed in `ParseAutocompleteAttribute`.
+  * The autocomplete attribute trumps local heuristics and crowd sourcing
+    (except for `off`).
+* Rationalization
+  * Rationalization is the process of looking at the output of the previous
+    classification steps and doing a post processing for certain field
+    combinations that don't make sense (street-address followed by
+    address-line1).
+
+## How is data represented internally?
+* See `components/autofill/core/browser/data_model/`
+  * For addresses, see
+    `components/autofill/core/browser/data_model/autofill_structured_address.h`
+    and
+    `components/autofill/core/browser/data_model/autofill_structured_address_name.h`.
+  * Parsing = breaking a bigger concept (e.g. street address) into smaller
+    concepts (e.g. street name and house number). See
+    `AddressComponent::ParseValueAndAssignSubcomponents()`.
+      * Parsing goes through a chain until one method succeeds:
+        * Via `ParseValueAndAssignSubcomponentsByMethod()`
+        * Via `ParseValueAndAssignSubcomponentsByRegularExpressions()`
+        * Finally `ParseValueAndAssignSubcomponentsByFallbackMethod()`
+      * This is driven by the implementations of
+        `GetParseRegularExpressionsByRelevance()`.
+  * Formatting = combining the smaller concepts (e.g. street name and house
+    number) into a bigger one (street address). See
+    `AddressComponent::FormatValueFromSubcomponents()`.
+    * This is driven by the implementations of `GetBestFormatString()`,
+      in particular `StreetAddress::GetBestFormatString()`.
+  * Invariance: The children of a node cannot contain more information than the
+    parent node, or more more formally: every string in a node must be present
+    in its parent (at least in a normalized form). If a subtree contains too
+    much data, it is discarded via `AddressComponent::WipeInvalidStructure()`.
+
+## Where is Autofill data persisted?
+* See
+  [`../../components/autofill/core/browser/webdata/autofill_table.h`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/webdata/autofill_table.h)
+
+<!-- TODO:
+## How are addresses compared, updated or added?
+*
+-->
