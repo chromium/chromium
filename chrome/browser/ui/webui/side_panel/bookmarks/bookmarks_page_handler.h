@@ -26,7 +26,7 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
   ~BookmarksPageHandler() override;
 
   // side_panel::mojom::BookmarksPageHandler:
-  void BookmarkCurrentTab() override;
+  void BookmarkCurrentTabInFolder(int64_t folder_id) override;
   void OpenBookmark(int64_t node_id,
                     int32_t parent_folder_depth,
                     ui::mojom::ClickModifiersPtr click_modifiers,

@@ -147,12 +147,12 @@ BookmarksPageHandler::BookmarksPageHandler(
 
 BookmarksPageHandler::~BookmarksPageHandler() = default;
 
-void BookmarksPageHandler::BookmarkCurrentTab() {
+void BookmarksPageHandler::BookmarkCurrentTabInFolder(int64_t folder_id) {
   Browser* browser = chrome::FindLastActive();
   if (!browser)
     return;
 
-  chrome::BookmarkCurrentTab(browser);
+  chrome::BookmarkCurrentTabInFolder(browser, folder_id);
 }
 
 void BookmarksPageHandler::OpenBookmark(

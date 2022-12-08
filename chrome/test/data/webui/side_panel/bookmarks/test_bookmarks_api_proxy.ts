@@ -25,7 +25,7 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     super([
       'getActiveUrl',
       'getFolders',
-      'bookmarkCurrentTab',
+      'bookmarkCurrentTabInFolder',
       'openBookmark',
       'cutBookmark',
       'copyBookmark',
@@ -55,8 +55,8 @@ export class TestBookmarksApiProxy extends TestBrowserProxy implements
     return Promise.resolve(this.folders_);
   }
 
-  bookmarkCurrentTab() {
-    this.methodCalled('bookmarkCurrentTab');
+  bookmarkCurrentTabInFolder() {
+    this.methodCalled('bookmarkCurrentTabInFolder');
   }
 
   openBookmark(

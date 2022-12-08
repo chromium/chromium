@@ -11,7 +11,7 @@ let instance: BookmarksApiProxy|null = null;
 
 export interface BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
-  bookmarkCurrentTab(): void;
+  bookmarkCurrentTabInFolder(folderId: string): void;
   cutBookmark(id: string): void;
   copyBookmark(id: string): Promise<void>;
   getActiveUrl(): Promise<string|undefined>;
@@ -46,8 +46,8 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
-  bookmarkCurrentTab() {
-    this.handler.bookmarkCurrentTab();
+  bookmarkCurrentTabInFolder(folderId: string) {
+    this.handler.bookmarkCurrentTabInFolder(BigInt(folderId));
   }
 
   cutBookmark(id: string) {

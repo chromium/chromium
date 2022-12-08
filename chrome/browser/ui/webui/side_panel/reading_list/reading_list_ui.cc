@@ -106,6 +106,13 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       "bookmarksDragAndDropEnabled",
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled));
 
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  source->AddString(
+      "otherBookmarksId",
+      base::NumberToString(bookmark_model ? bookmark_model->other_node()->id()
+                                          : -1));
+
   ReadingListModel* const reading_list_model =
       ReadingListModelFactory::GetForBrowserContext(profile);
   source->AddBoolean(

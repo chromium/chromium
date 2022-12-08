@@ -22,8 +22,8 @@ interface BookmarksPageHandlerFactory {
 
 // Browser-side handler for requests from WebUI page.
 interface BookmarksPageHandler {
-  // Bookmarks the current active tab.
-  BookmarkCurrentTab();
+  // Bookmarks the current active tab in the given folder.
+  BookmarkCurrentTabInFolder(int64 folder_id);
 
   // Opens the bookmark specified by node_id. Passes the parent folder
   // depth for metrics collection and the action source to identify

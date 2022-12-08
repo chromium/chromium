@@ -94,6 +94,13 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("canModifyBookmarks", !profile->IsGuestSession() &&
                                                !profile->IsIncognitoProfile());
 
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+  source->AddString(
+      "otherBookmarksId",
+      base::NumberToString(bookmark_model ? bookmark_model->other_node()->id()
+                                          : -1));
+
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));

@@ -148,7 +148,12 @@ void ConvertPopupToTabbedBrowser(Browser* browser);
 void CloseTabsToRight(Browser* browser);
 void CloseOtherTabs(Browser* browser);
 void Exit();
+// Bookmarks the current tab in the most recently used folder and shows the
+// edit dialog.
 void BookmarkCurrentTab(Browser* browser);
+// Bookmarks the current tab in the given folder and does not show the edit
+// dialog.
+void BookmarkCurrentTabInFolder(Browser* browser, int64_t folder_id);
 bool CanBookmarkCurrentTab(const Browser* browser);
 void BookmarkAllTabs(Browser* browser);
 bool CanBookmarkAllTabs(const Browser* browser);

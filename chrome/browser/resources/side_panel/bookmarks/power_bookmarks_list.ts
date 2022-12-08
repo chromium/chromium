@@ -676,7 +676,11 @@ export class PowerBookmarksListElement extends PolymerElement {
   }
 
   private onAddTabClicked_() {
-    this.bookmarksApi_.bookmarkCurrentTab();
+    const newParent = this.getActiveFolder_() ||
+        this.folders_.find(
+            (folder: chrome.bookmarks.BookmarkTreeNode) =>
+                folder.id === loadTimeData.getString('otherBookmarksId'));
+    this.bookmarksApi_.bookmarkCurrentTabInFolder(newParent!.id);
   }
 
   private disableBackButton_(): boolean {
