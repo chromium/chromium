@@ -307,11 +307,15 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': '3a990bac0bd53e13f105914a7ab0f657398719aa',
+  'skia_revision': 'd4e1f60d9789c8616f7b3f5101211ed4a4ce145e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'f1bc03fd6b4c201abd9f0fd9d51fb989150f97b9',
+  'v8_revision': 'f6e4514f5faf71f0d1a4bb0196b822c033ad8870',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling swarming_client
+  # and whatever else without interference from each other.
+  'swarming_revision': 'a32a1607f6093d338f756c7e7c7b4333b0c50c9c',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -1747,7 +1751,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '841ea4172ba904fe3536789497f9565f2ef64129',
 
   'src/third_party/skia':
-    Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
+    'https://github.com/replayio/chromium-skia.git' + '@' +  Var('skia_revision'),
 
   'src/third_party/smhasher/src':
     Var('chromium_git') + '/external/smhasher.git' + '@' + 'e87738e57558e0ec472b2fc3a643b838e5b6e88f',
@@ -1851,7 +1855,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'eba1a78f3d741241b0dbee728561b61e9587a686',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'fb3bd4a01d7c840dfe7b3efa144c0fbcb6a97fef',
+    'https://github.com/replayio/chromium-webrtc.git' + '@' + '23028dc11c72d9a6c0266af21f7e629c1e25223b',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
@@ -1918,7 +1922,7 @@ deps = {
   },
 
   'src/v8':
-    Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
+    'https://github.com/replayio/chromium-v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
     'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@39de996bfa7f09823052d5ad7581b8c94389f8ce',

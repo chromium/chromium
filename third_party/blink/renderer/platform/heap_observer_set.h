@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 // A set of observers. Ensures list is not mutated while iterating. Observers
@@ -22,6 +24,12 @@ class PLATFORM_EXPORT HeapObserverSet {
   // Add an observer to this list. An observer should not be added to the same
   // list more than once.
   void AddObserver(ObserverType* observer) {
+    // https://linear.app/replay/issue/RUN-806
+    if (record_replay_assert_id_) {
+      recordreplay::Assert("HeapObserverSet::AddObserver %d %d",
+                           record_replay_assert_id_, recordreplay::PointerId(observer));
+    }
+
     CHECK(iteration_state_ & kAllowingAddition);
     DCHECK(!HasObserver(observer));
     observers_.insert(observer);
@@ -30,6 +38,12 @@ class PLATFORM_EXPORT HeapObserverSet {
   // Removes the given observer from this list. Does nothing if this observer is
   // not in this list.
   void RemoveObserver(ObserverType* observer) {
+    // https://linear.app/replay/issue/RUN-806
+    if (record_replay_assert_id_) {
+      recordreplay::Assert("HeapObserverSet::RemoveObserver %d %d",
+                           record_replay_assert_id_, recordreplay::PointerId(observer));
+    }
+
     CHECK(iteration_state_ & kAllowingRemoval);
     observers_.erase(observer);
   }
@@ -70,6 +84,9 @@ class PLATFORM_EXPORT HeapObserverSet {
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(observers_); }
+
+  // https://linear.app/replay/issue/RUN-806
+  bool record_replay_assert_id_ = 0;
 
  private:
   using ObserverSet = HeapHashSet<WeakMember<ObserverType>>;

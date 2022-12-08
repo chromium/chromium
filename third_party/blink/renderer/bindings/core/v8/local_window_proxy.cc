@@ -226,7 +226,7 @@ void LocalWindowProxy::Initialize() {
       !origin->Host().empty() &&
       !gRecordReplayStateInitialized) {
     gRecordReplayStateInitialized = true;
-    SetupRecordReplayCommands(GetIsolate());
+    SetupRecordReplayCommands(GetIsolate(), GetFrame());
     V8RecordReplaySetDefaultContext(GetIsolate(), context);
     recordreplay::NewCheckpoint();
     RunInitialRecordReplayScripts(GetIsolate());
@@ -462,6 +462,9 @@ void LocalWindowProxy::SetSecurityToken(const SecurityOrigin* origin) {
 }
 
 void LocalWindowProxy::UpdateDocument() {
+  // https://linear.app/replay/issue/RUN-965
+  recordreplay::Assert("LocalWindowProxy::UpdateDocument %d", (int)lifecycle_);
+
   // For an uninitialized main window proxy, there's nothing we need
   // to update. The update is done when the window proxy gets initialized later.
   if (lifecycle_ == Lifecycle::kContextIsUninitialized)

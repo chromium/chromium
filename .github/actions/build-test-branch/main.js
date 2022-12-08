@@ -13,12 +13,6 @@ const chromiumRevision = getLatestRevision();
 const driverRevision = process.env.INPUT_DRIVER_REVISION;
 console.log("DriverRevision", driverRevision);
 
-const chromiumV8Revision = process.env.INPUT_V8_REVISION;
-console.log("V8Revision", chromiumV8Revision);
-
-const chromiumSkiaRevision = process.env.INPUT_SKIA_REVISION;
-console.log("SkiaRevision", chromiumSkiaRevision);
-
 const clobberInput = process.env.INPUT_CLOBBER;
 console.log("Clobber", clobberInput);
 const clobber = clobberInput == "true";
@@ -56,8 +50,6 @@ function platformTasks(platform) {
       branch: branchName,
       branchSlot: slot,
       driverRevision,
-      chromiumV8Revision,
-      chromiumSkiaRevision,
       clobber,
     },
     platform

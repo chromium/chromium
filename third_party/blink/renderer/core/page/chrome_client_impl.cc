@@ -406,6 +406,10 @@ void ChromeClientImpl::AddMessageToConsole(LocalFrame* local_frame,
     // https://linear.app/replay/issue/RUN-824
     mojo::internal::RecordReplayAssertBufferAllocationsBegin();
 
+    // https://linear.app/replay/issue/RUN-824
+    recordreplay::Assert("ChromeClientImpl::AddMessageToConsole %u %u %u",
+                         message.length(), source_id.length(), stack_trace.length());
+
     local_frame->GetLocalFrameHostRemote().DidAddMessageToConsole(
         level, message, static_cast<int32_t>(line_number), source_id,
         stack_trace);
@@ -515,6 +519,9 @@ void ChromeClientImpl::InvalidateContainer() {
 
 void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
                                          base::TimeDelta delay) {
+  // https://linear.app/replay/issue/RUN-966
+  recordreplay::Assert("ChromeClientImpl::ScheduleAnimation");
+
   LocalFrame& frame = frame_view->GetFrame();
   // If the frame is still being created, it might not yet have a WebWidget.
   // TODO(dcheng): Is this the right thing to do? Is there a way to avoid having

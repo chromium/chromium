@@ -257,9 +257,13 @@ SerializedScriptValue::SerializedScriptValue(DataBufferPtr data,
     : data_buffer_(std::move(data)),
       data_buffer_size_(data_size),
       has_registered_external_allocation_(false) {
-  // https://linear.app/replay/issue/RUN-490
-  recordreplay::Assert("SerializedScriptValue::SerializedScriptValue %zu",
-                       data_size, v8::RecordReplayGetScriptedCaller().c_str());
+  // Tolerate different serialized value lengths when replaying, as a workaround
+  // to improve robustness and allow the replay to continue.
+  size_t recorded_size = recordreplay::RecordReplayValue("SerializedScriptValue", data_size);
+  if (recorded_size != data_size) {
+    data_buffer_ = AllocateBuffer(recorded_size);
+    memset(data_buffer_.get(), 0, recorded_size);
+  }
 }
 
 void SerializedScriptValue::SetImageBitmapContentsArray(

@@ -466,6 +466,9 @@ void IDBTransaction::OnAbort(DOMException* error) {
 }
 
 void IDBTransaction::OnComplete() {
+  // https://linear.app/replay/issue/RUN-969
+  recordreplay::Diagnostic("IDBTransaction::OnComplete %p", this);
+
   TRACE_EVENT1("IndexedDB", "IDBTransaction::onComplete", "txn.id", id_);
   if (!GetExecutionContext()) {
     Finished();

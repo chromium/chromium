@@ -50,7 +50,7 @@ namespace blink {
 
 ThreadDebuggerCommonImpl::ThreadDebuggerCommonImpl(v8::Isolate* isolate)
     : ThreadDebugger(isolate), isolate_(isolate) {
-  RecordReplayRegisterV8Inspector(v8_inspector_.get());
+  RecordReplayRegisterV8Inspector(v8_inspector_.get(), isolate);
 }
 
 ThreadDebuggerCommonImpl::~ThreadDebuggerCommonImpl() = default;

@@ -8,12 +8,14 @@
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 
 #include "base/record_replay.h"
+#include "base/strings/stringprintf.h"
 
 namespace blink {
 
 ContextLifecycleNotifier::ContextLifecycleNotifier() {
   // https://linear.app/replay/issue/RUN-806
   recordreplay::RegisterPointer("ContextLifecycleNotifier", this);
+  observers_.record_replay_assert_id_ = recordreplay::PointerId(this);
 }
 
 ContextLifecycleNotifier::~ContextLifecycleNotifier() {
@@ -51,8 +53,10 @@ void ContextLifecycleNotifier::RemoveContextLifecycleObserver(
 
 void ContextLifecycleNotifier::NotifyContextDestroyed() {
   // https://linear.app/replay/issue/RUN-806
-  recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed %d",
-                       recordreplay::PointerId(this));
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed %d",
+                         recordreplay::PointerId(this));
+  }
 
   context_destroyed_ = true;
 
@@ -66,10 +70,25 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
     observers.push_back(observer);
   });
 
+  std::sort(observers.begin(), observers.end(), recordreplay::CompareByPointerId());
+
+  // https://linear.app/replay/issue/RUN-806
+  if (recordreplay::IsRecordingOrReplaying("values") && !recordreplay::AreEventsDisallowed()) {
+    std::string observer_ids;
+    for (ContextLifecycleObserver* observer : observers) {
+      observer_ids += base::StringPrintf(" %d", recordreplay::PointerId(observer));
+    }
+    recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #0%s",
+                         observer_ids.c_str());
+  }
+
   for (ContextLifecycleObserver* observer : observers) {
     // https://linear.app/replay/issue/RUN-806
-    recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #1 %d",
-                         recordreplay::PointerId(observer));
+    if (!recordreplay::AreEventsDisallowed()) {
+      recordreplay::Assert("ContextLifecycleNotifier::NotifyContextDestroyed #1 %d",
+                           recordreplay::PointerId(observer));
+    }
+
     observer->NotifyContextDestroyed();
   }
 

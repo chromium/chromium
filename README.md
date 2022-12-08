@@ -7,8 +7,8 @@ Only one build configuration is currently supported.
 
 1. Install chromium tree and depot_tools per https://www.chromium.org/developers/how-tos/get-the-code
    * Warning: Do not use `--no-history` (since it will make it difficult to cast the git re-wiring magic spells below).
-1. Change to and pull our (instead of the original) origins for chromium, V8 etc.
-   * NOTE: The `gclient sync` here ensures that other third party dependencies are at the right point for our chromium fork, and not upstream tip.
+1. Change to and pull our (instead of the original) origin for chromium.
+   * NOTE: The `gclient sync` here updates all subrepositories to the correct point, including both repositories we've modified and ones we haven't.  See "Setting dependency revisions" below for more.
    * NOTE: After `git pull`, you might see "You are not currently on a branch. Please specify which branch you want to merge with.". In this case, `git switch master-or-main` will ignore any merge-related hassles, and instead tracks and switches to the remote `master-or-main` locally ([more info here](https://stackoverflow.com/a/9537923)).
    ```
    cd /path/to/chromium/src
@@ -17,21 +17,6 @@ Only one build configuration is currently supported.
    git pull
    git switch master
    gclient sync
-   cd ./v8
-   git remote set-url origin https://github.com/replayio/chromium-v8.git
-   git branch -D master
-   git pull
-   git switch master
-   cd ../third_party/webrtc
-   git remote set-url origin https://github.com/replayio/chromium-webrtc.git
-   git branch -D master
-   git pull
-   git switch main
-   cd ../../third_party/skia
-   git remote set-url origin https://github.com/replayio/chromium-skia.git
-   git branch -D master
-   git pull
-   git switch main
    ```
 1. Setup engflow:
    ```
@@ -74,7 +59,14 @@ Only one build configuration is currently supported.
 
 # Troubleshooting
 
-## Python3 version
+If you have trouble with new submodules popping up that are not part of our current release:
+
+* You might see the submodules pop up as unwanted files in `git status`, and they might sneak into your PR.
+* You can easily and safely remove them via `git rm --cached name-of-submodule`.
+* E.g. (for old Chromium 91): `git rm --cached docs/website third_party/cast_core/public/src third_party/content_analysis_sdk/src third_party/cpuinfo/src third_party/cros_components third_party/fxdiv/src third_party/highway/src third_party/libjxl/src third_party/pthreadpool/src third_party/wayland-protocols/gtk third_party/wayland-protocols/kde third_party/xnnpack/src`
+
+
+## Linux: Python3 version
 
 When encountering the following errors:
 ```
@@ -158,3 +150,7 @@ git push
 ```
 
 FIXME add instructions for other chromium repositories we've forked.
+
+# Setting dependency revisions
+
+The revision to use for dependent repositories is specified in the `DEPS` file and updated to by running `gclient sync`.  Whenever the revision to use for any dependencies we've modified changes, this file needs to be updated.  Look for `v8_revision`, `skia_revision`, or the revision associated with `https://github.com/replayio/chromium-webrtc.git`.
