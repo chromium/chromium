@@ -15,15 +15,20 @@ namespace {
 using BluetoothHidType = BluetoothHidDetector::BluetoothHidType;
 using InputState = HidDetectionManager::InputState;
 
-// Global InputDeviceManagerBinder instance that can be overridden in tests.
-base::NoDestructor<HidDetectionManagerImpl::InputDeviceManagerBinder>
-    g_input_device_manager_binder;
+HidDetectionManagerImpl::InputDeviceManagerBinder&
+GetInputDeviceManagerBinderOverride() {
+  // InputDeviceManagerBinder instance that can be overridden in tests.
+  static base::NoDestructor<HidDetectionManagerImpl::InputDeviceManagerBinder>
+      binder;
+  return *binder;
+}
+
 }  // namespace
 
 // static
 void HidDetectionManagerImpl::SetInputDeviceManagerBinderForTest(
     InputDeviceManagerBinder binder) {
-  *g_input_device_manager_binder = std::move(binder);
+  GetInputDeviceManagerBinderOverride() = std::move(binder);
 }
 
 HidDetectionManagerImpl::HidDetectionManagerImpl(
@@ -144,8 +149,9 @@ void HidDetectionManagerImpl::BindToInputDeviceManagerIfNeeded() {
 
   mojo::PendingReceiver<device::mojom::InputDeviceManager> receiver =
       input_device_manager_.BindNewPipeAndPassReceiver();
-  if (*g_input_device_manager_binder) {
-    g_input_device_manager_binder->Run(std::move(receiver));
+  const auto& binder = GetInputDeviceManagerBinderOverride();
+  if (binder) {
+    binder.Run(std::move(receiver));
     return;
   }
 
