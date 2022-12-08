@@ -6092,7 +6092,7 @@
   {
     "name": "screentime",
     "owners": [ "lgrey", "chrome-mac-dev@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "scroll-unification",
