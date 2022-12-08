@@ -151,8 +151,7 @@ void StubCrdHostDelegate::StartCrdHostAndGetCode(
     std::move(success_callback).Run(kTestAccessCode);
   } else {
     std::move(error_callback)
-        .Run(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
-             std::string());
+        .Run(ResultCode::FAILURE_CRD_HOST_ERROR, std::string());
   }
 }
 
@@ -484,7 +483,7 @@ class DeviceCommandStartCrdSessionJobTest : public ash::DeviceSettingsTestBase {
 std::string DeviceCommandStartCrdSessionJobTest::CreateSuccessPayload(
     const std::string& access_code) {
   return DictionaryBuilder()
-      .Set(kResultCodeFieldName, DeviceCommandStartCrdSessionJob::SUCCESS)
+      .Set(kResultCodeFieldName, static_cast<int>(ResultCode::SUCCESS))
       .Set(kResultAccessCodeFieldName, access_code)
       .ToJSON();
 }
@@ -493,7 +492,7 @@ std::string DeviceCommandStartCrdSessionJobTest::CreateErrorPayload(
     ResultCode result_code,
     const std::string& error_message = "") {
   DictionaryBuilder builder;
-  builder.Set(kResultCodeFieldName, result_code);
+  builder.Set(kResultCodeFieldName, static_cast<int>(result_code));
   if (!error_message.empty())
     builder.Set(kResultMessageFieldName, error_message);
   return builder.ToJSON();
@@ -502,8 +501,7 @@ std::string DeviceCommandStartCrdSessionJobTest::CreateErrorPayload(
 std::string DeviceCommandStartCrdSessionJobTest::CreateNotIdlePayload(
     int idle_time_in_sec) {
   return DictionaryBuilder()
-      .Set(kResultCodeFieldName,
-           DeviceCommandStartCrdSessionJob::FAILURE_NOT_IDLE)
+      .Set(kResultCodeFieldName, static_cast<int>(ResultCode::FAILURE_NOT_IDLE))
       .Set(kResultLastActivityFieldName, idle_time_in_sec)
       .ToJSON();
 }
@@ -531,14 +529,14 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldFailForGuestUser) {
   LogInAsGuestUser();
 
   EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+               ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldFailForRegularUser) {
   LogInAsRegularUser();
 
   EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+               ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -640,7 +638,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
   EXPECT_ERROR(RunJobAndWaitForResult(
                    Payload().Set("idlenessCutoffSec", idleness_cutoff_in_sec)),
-               DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+               ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest,
@@ -648,8 +646,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
   LogInAsAutoLaunchedKioskAppUser();
   ClearOAuthToken();
 
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_NO_OAUTH_TOKEN,
+  EXPECT_ERROR(RunJobAndWaitForResult(), ResultCode::FAILURE_NO_OAUTH_TOKEN,
                kTestNoOAuthTokenReason);
 }
 
@@ -658,8 +655,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldFailIfCrdHostReportsAnError) {
 
   crd_host_delegate().MakeAccessCodeFetchFail();
 
-  EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR);
+  EXPECT_ERROR(RunJobAndWaitForResult(), ResultCode::FAILURE_CRD_HOST_ERROR);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldPassOAuthTokenToDelegate) {
@@ -743,7 +739,7 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
 
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldFailIfNoUserIsLoggedIn) {
   EXPECT_ERROR(RunJobAndWaitForResult(),
-               DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+               ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobTest, ShouldSucceedForManagedGuestUser) {
@@ -975,7 +971,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
@@ -986,7 +982,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
@@ -997,7 +993,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
@@ -1008,7 +1004,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
@@ -1019,7 +1015,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
@@ -1030,7 +1026,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNSUPPORTED_USER_TYPE);
+      ResultCode::FAILURE_UNSUPPORTED_USER_TYPE);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
@@ -1092,7 +1088,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNMANAGED_ENVIRONMENT);
+      ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
@@ -1106,7 +1102,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNMANAGED_ENVIRONMENT);
+      ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
@@ -1118,7 +1114,7 @@ TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,
 
   EXPECT_ERROR(
       RunJobAndWaitForResult(Payload().Set("curtainLocalUserSession", true)),
-      DeviceCommandStartCrdSessionJob::FAILURE_UNMANAGED_ENVIRONMENT);
+      ResultCode::FAILURE_UNMANAGED_ENVIRONMENT);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobCurtainSessionTest,

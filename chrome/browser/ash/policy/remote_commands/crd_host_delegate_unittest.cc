@@ -25,6 +25,8 @@ using SessionParameters =
     DeviceCommandStartCrdSessionJob::Delegate::SessionParameters;
 using StartSupportSessionCallback =
     crosapi::mojom::Remoting::StartSupportSessionCallback;
+
+using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using remoting::mojom::StartSupportSessionResponse;
 using remoting::mojom::StartSupportSessionResponsePtr;
 using remoting::mojom::SupportHostObserver;
@@ -118,7 +120,7 @@ class Response {
     return Response(access_code);
   }
 
-  static Response Error(DeviceCommandStartCrdSessionJob::ResultCode error_code,
+  static Response Error(ResultCode error_code,
                         const std::string& error_message) {
     return Response(error_code, error_message);
   }
@@ -134,9 +136,8 @@ class Response {
     return error_message_.value_or("<no error received>");
   }
 
-  DeviceCommandStartCrdSessionJob::ResultCode error_code() const {
-    return error_code_.value_or(
-        DeviceCommandStartCrdSessionJob::ResultCode::SUCCESS);
+  ResultCode error_code() const {
+    return error_code_.value_or(ResultCode::SUCCESS);
   }
 
   std::string access_code() const {
@@ -146,12 +147,11 @@ class Response {
  private:
   explicit Response(const std::string& access_code)
       : access_code_(access_code) {}
-  Response(DeviceCommandStartCrdSessionJob::ResultCode error_code,
-           const std::string& error_message)
+  Response(ResultCode error_code, const std::string& error_message)
       : error_code_(error_code), error_message_(error_message) {}
 
   absl::optional<std::string> access_code_;
-  absl::optional<DeviceCommandStartCrdSessionJob::ResultCode> error_code_;
+  absl::optional<ResultCode> error_code_;
   absl::optional<std::string> error_message_;
 };
 
@@ -178,8 +178,7 @@ class CrdHostDelegateTest : public ::testing::Test {
 
   auto error_callback() {
     return base::BindOnce(
-        [](base::OnceCallback<void(Response)> setter,
-           DeviceCommandStartCrdSessionJob::ResultCode error_code,
+        [](base::OnceCallback<void(Response)> setter, ResultCode error_code,
            const std::string& error_message) {
           std::move(setter).Run(Response::Error(error_code, error_message));
         },
@@ -361,8 +360,7 @@ TEST_F(CrdHostDelegateTest, ShouldReportErrorIfStartSessionReturnsError) {
 
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
-  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
-            response.error_code());
+  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
 }
 
 TEST_F(CrdHostDelegateTest, ShouldReturnAccessCode) {
@@ -384,8 +382,7 @@ TEST_F(CrdHostDelegateTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("host disconnected", response.error_message());
-  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
-            response.error_code());
+  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
 }
 
 TEST_F(CrdHostDelegateTest,
@@ -397,8 +394,7 @@ TEST_F(CrdHostDelegateTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("policy error", response.error_message());
-  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
-            response.error_code());
+  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
 }
 
 TEST_F(CrdHostDelegateTest,
@@ -410,8 +406,7 @@ TEST_F(CrdHostDelegateTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("invalid domain error", response.error_message());
-  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
-            response.error_code());
+  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
 }
 
 TEST_F(CrdHostDelegateTest,
@@ -423,8 +418,7 @@ TEST_F(CrdHostDelegateTest,
   Response response = WaitForResponse();
   ASSERT_TRUE(response.HasError());
   EXPECT_EQ("host state error", response.error_message());
-  EXPECT_EQ(DeviceCommandStartCrdSessionJob::FAILURE_CRD_HOST_ERROR,
-            response.error_code());
+  EXPECT_EQ(ResultCode::FAILURE_CRD_HOST_ERROR, response.error_code());
 }
 
 TEST_F(CrdHostDelegateTest, HasActiveSessionShouldBeTrueWhenASessionIsStarted) {

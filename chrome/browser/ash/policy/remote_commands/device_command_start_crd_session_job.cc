@@ -106,8 +106,7 @@ ash::KioskAppManagerBase* GetKioskAppManagerIfKioskAppIsRunning(
   return nullptr;
 }
 
-void SendResultCodeToUma(
-    DeviceCommandStartCrdSessionJob::ResultCode result_code) {
+void SendResultCodeToUma(ResultCode result_code) {
   base::UmaHistogramEnumeration("Enterprise.DeviceRemoteCommand.Crd.Result",
                                 result_code);
 }
@@ -160,14 +159,14 @@ bool IsInManagedEnvironment(
 
 std::string CreateSuccessPayload(const std::string& access_code) {
   return DictionaryBuilder()
-      .Set(kResultCodeFieldName, ResultCode::SUCCESS)
+      .Set(kResultCodeFieldName, static_cast<int>(ResultCode::SUCCESS))
       .Set(kResultAccessCodeFieldName, access_code)
       .ToJSON();
 }
 
 std::string CreateNonIdlePayload(const base::TimeDelta& time_delta) {
   return DictionaryBuilder()
-      .Set(kResultCodeFieldName, ResultCode::FAILURE_NOT_IDLE)
+      .Set(kResultCodeFieldName, static_cast<int>(ResultCode::FAILURE_NOT_IDLE))
       .Set(kResultLastActivityFieldName,
            static_cast<int>(time_delta.InSeconds()))
       .ToJSON();
@@ -179,7 +178,7 @@ std::string CreateErrorPayload(ResultCode result_code,
   DCHECK(result_code != ResultCode::FAILURE_NOT_IDLE);
 
   DictionaryBuilder builder;
-  builder.Set(kResultCodeFieldName, result_code);
+  builder.Set(kResultCodeFieldName, static_cast<int>(result_code));
   if (!error_message.empty()) {
     builder.Set(kResultMessageFieldName, error_message);
   }
@@ -308,8 +307,7 @@ class DeviceCommandStartCrdSessionJob::OAuthTokenFetcher
     CRD_DVLOG(1) << "Failed to get OAuth access token: " << error.ToString();
     oauth_request_.reset();
     std::move(error_callback_)
-        .Run(DeviceCommandStartCrdSessionJob::FAILURE_NO_OAUTH_TOKEN,
-             error.ToString());
+        .Run(ResultCode::FAILURE_NO_OAUTH_TOKEN, error.ToString());
   }
 
   DeviceOAuth2TokenService& oauth_service_;
@@ -483,7 +481,8 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
     const std::string& message) {
   DCHECK(result_code != ResultCode::SUCCESS);
   CRD_LOG(INFO) << "Not starting CRD session because of error (code "
-                << result_code << ", message '" << message << "')";
+                << static_cast<int>(result_code) << ", message '" << message
+                << "')";
   if (!failed_callback_)
     return;  // Task was terminated.
 

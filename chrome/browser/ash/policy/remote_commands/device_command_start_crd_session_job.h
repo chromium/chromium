@@ -24,7 +24,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // This enum can't be renumbered because it's logged to UMA and because its
   // values must match the values in the server side
   // `DeviceCommandUtil::ClientResultCode` enum.
-  enum ResultCode {
+  enum class ResultCode {
     // Successfully obtained access code.
     SUCCESS = 0,
 
