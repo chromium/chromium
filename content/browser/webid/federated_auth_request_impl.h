@@ -119,15 +119,28 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const IdpNetworkRequestManager::AccountList& accounts,
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata client_metadata);
-  void MaybeShowAccountsDialog(
+
+  // Called when all of the data needed to display the FedCM prompt has been
+  // fetched for `idp_info`.
+  void OnFetchDataForIdpSucceeded(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       const IdpNetworkRequestManager::AccountList& accounts,
       const IdpNetworkRequestManager::ClientMetadata& client_metadata);
 
+  // Called when there is an error in fetching information to show the prompt
+  // for a given IDP - `idp_info`.
+  void OnFetchDataForIdpFailed(
+      std::unique_ptr<IdentityProviderInfo> idp_info,
+      blink::mojom::FederatedAuthRequestResult result,
+      absl::optional<content::FedCmRequestIdTokenStatus> token_status,
+      bool should_delay_callback);
+
+  void MaybeShowAccountsDialog();
+
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
   void HandleAccountsFetchFailure(
-      const url::Origin& idp_origin,
+      std::unique_ptr<IdentityProviderInfo> idp_info,
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status);
 
@@ -153,6 +166,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                                const std::string& token);
   void DispatchOneLogout();
   void OnLogoutCompleted();
+
   void CompleteRequestWithError(
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
@@ -164,6 +178,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       const std::string& token,
       bool should_delay_callback);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
+
+  // Notifies metrics endpoint that either the user did not select the IDP in
+  // the prompt or that there was an error in fetching data for the IDP.
+  void SendFailedTokenRequestMetrics(
+      const GURL& metrics_endpoint,
+      blink::mojom::FederatedAuthRequestResult result);
 
   void CleanUp();
 

@@ -278,8 +278,15 @@ int TestRenderFrameHost::GetHeavyAdIssueCount(
 }
 
 int TestRenderFrameHost::GetFederatedAuthRequestIssueCount(
-    blink::mojom::FederatedAuthRequestResult result) {
-  auto it = federated_auth_counts_.find(result);
+    absl::optional<blink::mojom::FederatedAuthRequestResult> filter) {
+  if (!filter) {
+    int total = 0;
+    for (const auto& [result, count] : federated_auth_counts_)
+      total += count;
+    return total;
+  }
+
+  auto it = federated_auth_counts_.find(*filter);
   if (it == federated_auth_counts_.end())
     return 0;
   return it->second;

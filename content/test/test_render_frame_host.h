@@ -161,10 +161,11 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   void DidEnforceInsecureRequestPolicy(
       blink::mojom::InsecureRequestPolicy policy);
 
-  // Returns the number of FedCM issues sent to DevTools with the given
-  // FederatedAuthRequestResult.
+  // Returns the number of FedCM issues of FederatedAuthRequestResult type
+  // `filter` sent to DevTools. If `filter` is absl::nullopt, returns the total
+  // number of FedCM issues of any type sent to DevTools.
   int GetFederatedAuthRequestIssueCount(
-      blink::mojom::FederatedAuthRequestResult result);
+      absl::optional<blink::mojom::FederatedAuthRequestResult> filter);
 
   // If set, navigations will appear to have cleared the history list in the
   // RenderFrame (DidCommitProvisionalLoadParams::history_list_was_cleared).
