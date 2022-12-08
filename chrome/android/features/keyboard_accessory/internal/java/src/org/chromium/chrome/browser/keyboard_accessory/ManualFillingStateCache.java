@@ -48,7 +48,7 @@ class ManualFillingStateCache {
      * @return A {@link ManualFillingState}. Never null.
      */
     ManualFillingState getStateFor(@Nullable WebContents webContents) {
-        if (webContents == null) {
+        if (webContents == null || webContents.isDestroyed()) {
             // If state is requested for destroyed or invalid WebContents, it returns a null object.
             return new ManualFillingState(null);
         }
@@ -80,7 +80,7 @@ class ManualFillingStateCache {
      * @param webContents The WebContents about to be destroyed and should not be held any longer.
      */
     void destroyStateFor(WebContents webContents) {
-        if (webContents != null) {
+        if (webContents != null) { // No need to check isDestroyed since the object is only a key.
             getStateFor(webContents).destroy();
             mStatesForWebContents.remove(webContents);
         }

@@ -372,7 +372,7 @@ class ManualFillingMediator
     private boolean hasSufficientSpace() {
         if (mActivity == null) return false;
         WebContents webContents = mActivity.getCurrentWebContents();
-        if (webContents == null) return false;
+        if (webContents == null || webContents.isDestroyed()) return false;
         float height = webContents.getHeight(); // In dip. Includes top control elements only.
 
         // WebContents height ignores the soft keyboard — subtract the keyboard height:
@@ -679,7 +679,7 @@ class ManualFillingMediator
     private void restrictAccessorySheetHeight() {
         if (!is(FLOATING_SHEET) && !is(REPLACING_KEYBOARD)) return;
         WebContents webContents = mActivity.getCurrentWebContents();
-        if (webContents == null) return;
+        if (webContents == null || webContents.isDestroyed()) return;
         float density = mWindowAndroid.getDisplay().getDipScale();
         // The maximal height for the sheet ensures a minimal amount of WebContents space.
         @Px
@@ -705,7 +705,7 @@ class ManualFillingMediator
     @VisibleForTesting
     AccessorySheetTabCoordinator getOrCreateSheet(
             WebContents webContents, @AccessoryTabType int tabType) {
-        if (!canCreateSheet(tabType)) return null;
+        if (!canCreateSheet(tabType) || webContents.isDestroyed()) return null;
         AccessorySheetTabCoordinator sheet;
         ManualFillingState state = mStateCache.getStateFor(webContents);
         sheet = ChromeFeatureList.isEnabled(AUTOFILL_KEYBOARD_ACCESSORY)

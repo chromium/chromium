@@ -93,11 +93,12 @@ class ManualFillingState {
      * @param webContents Some {@link WebContents} which are assumed to be shown right now.
      */
     ManualFillingState(@Nullable WebContents webContents) {
-        mWebContents = webContents;
-        if (webContents == null) {
+        if (webContents == null || webContents.isDestroyed()) {
+            mWebContents = null;
             mWebContentsObserver = null;
             return;
         }
+        mWebContents = webContents;
         mWebContentsShowing = true;
         mWebContentsObserver = new Observer(mWebContents);
         mWebContents.addObserver(mWebContentsObserver);
