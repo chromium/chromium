@@ -138,27 +138,26 @@ void AccountChecker::FetchWaaStatus() {
       waa_timeout_ms, waa_post_data, traffic_annotation, identity_manager_);
   endpoint_fetcher.get()->Fetch(base::BindOnce(
       &AccountChecker::HandleFetchWaaResponse, weak_ptr_factory_.GetWeakPtr(),
-      pref_service_, std::move(endpoint_fetcher)));
+      std::move(endpoint_fetcher)));
 }
 
 void AccountChecker::HandleFetchWaaResponse(
-    PrefService* pref_service,
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
   data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
-      base::BindOnce(
-          [](PrefService* pref_service,
-             data_decoder::DataDecoder::ValueOrError result) {
-            if (pref_service && result.has_value() && result->is_dict()) {
-              const char waa_response_key[] = "history_recording_enabled";
-              if (auto waa_enabled = result->FindBoolKey(waa_response_key)) {
-                pref_service->SetBoolean(kWebAndAppActivityEnabledForShopping,
-                                         *waa_enabled);
-              }
-            }
-          },
-          pref_service));
+      responses->response, base::BindOnce(&AccountChecker::OnFetchWaaJsonParsed,
+                                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void AccountChecker::OnFetchWaaJsonParsed(
+    data_decoder::DataDecoder::ValueOrError result) {
+  if (pref_service_ && result.has_value() && result->is_dict()) {
+    const char waa_response_key[] = "history_recording_enabled";
+    if (auto waa_enabled = result->FindBoolKey(waa_response_key)) {
+      pref_service_->SetBoolean(kWebAndAppActivityEnabledForShopping,
+                                *waa_enabled);
+    }
+  }
 }
 
 void AccountChecker::FetchPriceEmailPref() {
