@@ -219,8 +219,8 @@ chrome.autofillPrivate.getUpiIdList = function(callback) {};
 
 /**
  * Enrolls a credit card into virtual cards.
- * @param {string} cardId The server side id of the credit card to be
- *     enrolled. Note it refers to the legacy server id of credit cards, not the
+ * @param {string} cardId The server side id of the credit card to be enrolled.
+ *     Note it refers to the legacy server id of credit cards, not the
  *     instrument ids.
  */
 chrome.autofillPrivate.addVirtualCard = function(cardId) {};

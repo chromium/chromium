@@ -9,6 +9,9 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
+// TODO(b/242243189): Disable automatic extern generation until fixed.
+// The longClick method was manually inserted.
+
 /**
  * @fileoverview Externs generated from namespace: automation
  * @externs
@@ -405,6 +408,7 @@ chrome.automation.ActionType = {
   INCREMENT: 'increment',
   INTERNAL_INVALIDATE_TREE: 'internalInvalidateTree',
   LOAD_INLINE_TEXT_BOXES: 'loadInlineTextBoxes',
+  LONG_CLICK: 'longClick',
   REPLACE_SELECTED_TEXT: 'replaceSelectedText',
   RESUME_MEDIA: 'resumeMedia',
   SCROLL_BACKWARD: 'scrollBackward',
@@ -427,7 +431,6 @@ chrome.automation.ActionType = {
   START_DUCKING_MEDIA: 'startDuckingMedia',
   STOP_DUCKING_MEDIA: 'stopDuckingMedia',
   SUSPEND_MEDIA: 'suspendMedia',
-  LONG_CLICK: 'longClick',
 };
 
 /**
@@ -2425,14 +2428,6 @@ chrome.automation.AutomationNode.prototype.scrollRight = function(callback) {};
  * @see https://developer.chrome.com/extensions/automation#method-scrollToPoint
  */
 chrome.automation.AutomationNode.prototype.scrollToPoint = function(x, y) {};
-
-/**
- * Scrolls this scrollable grid to the given row and column index.
- * @param {number} row
- * @param {number} column
- * @see https://developer.chrome.com/extensions/automation#method-scrollToPositionAtRowColumn
- */
- chrome.automation.AutomationNode.prototype.scrollToPositionAtRowColumn = function(row, column) {};
 
 /**
  * Sets this scrollable container's scroll offset.

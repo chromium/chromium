@@ -886,6 +886,9 @@ chrome.developerPrivate.getUserAndExtensionSitesByEtld = function(callback) {};
 chrome.developerPrivate.getMatchingExtensionsForSite = function(site, callback) {};
 
 /**
+ * Updates the site access settings for multiple extensions for the given `site`
+ * and calls `callback` once all updates have been finished. Each update species
+ * an extension id an a new HostAccess setting.
  * @param {string} site
  * @param {!Array<!chrome.developerPrivate.ExtensionSiteAccessUpdate>} updates
  * @param {function(): void=} callback

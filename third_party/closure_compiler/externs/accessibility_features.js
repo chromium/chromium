@@ -8,9 +8,9 @@
 //   'chrome.accessibilityFeatures.FooType'.
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
-// NOTE: This file was modified by hand after it was generated. All instances of
-// chrome.accessibilityFeatures.types.ChromeSetting must be changed to
-// ChromeSetting after this file is generated.
+
+// TODO(crbug.com/543822): Disable automatic extern generation until fixed.
+// s/chrome.accessibilityFeatures.types.ChromeSetting/ChromeSetting/
 
 /**
  * @fileoverview Externs generated from namespace: accessibilityFeatures

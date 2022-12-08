@@ -9,7 +9,7 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-// IMPORTANT NOTE: Work-around for crbug.com/543822
+// TODO(crbug.com/543822): Disable automatic extern generation until fixed.
 // s/chrome.bluetoothPrivate.bluetooth.Device/chrome.bluetooth.Device/
 // s/chrome.bluetoothPrivate.bluetooth.Transport/chrome.bluetooth.Transport/
 

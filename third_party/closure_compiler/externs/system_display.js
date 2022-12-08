@@ -9,6 +9,7 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
+// TODO(crbug.com/1086377): Disable automatic extern generation until fixed.
 // This was modified to add 'chrome.system = {};'
 // If the above tool that generates this file removes it, please readd it or
 // the closure compiler will fail.
