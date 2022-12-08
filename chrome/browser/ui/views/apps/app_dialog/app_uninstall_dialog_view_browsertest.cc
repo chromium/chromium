@@ -195,7 +195,7 @@ class WebAppsUninstallDialogViewBrowserTest
 
     auto* provider = web_app::WebAppProvider::GetForTest(browser()->profile());
     DCHECK(provider);
-    app_name_ = provider->registrar().GetAppShortName(app_id_);
+    app_name_ = provider->registrar_unsafe().GetAppShortName(app_id_);
   }
 
   GURL GetAppURL() const {
