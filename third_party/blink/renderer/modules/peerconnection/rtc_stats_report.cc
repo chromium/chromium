@@ -33,11 +33,6 @@ v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
   return v8_object;
 }
 
-bool IsFullScreenEnabled(LocalDOMWindow* window) {
-  Document* document = window->document();
-  return document && DocumentFullscreen::fullscreenElement(*document);
-}
-
 bool IsCapturing(LocalDOMWindow* window) {
   UserMediaClient* user_media_client = UserMediaClient::From(window);
   return user_media_client && user_media_client->IsCapturing();
@@ -46,12 +41,11 @@ bool IsCapturing(LocalDOMWindow* window) {
 bool ExposeHardwareCapabilityStats(ScriptState* script_state) {
   // According the the spec description at
   // https://w3c.github.io/webrtc-stats/#dfn-exposing-hardware-is-allowed,
-  // hardware capabilities may be exposed if,
-  // 1. there is a full-screen element, or
-  // 2. the context capturing state is true.
+  // hardware capabilities may be exposed if the context capturing state is
+  // true.
   ExecutionContext* ctx = ExecutionContext::From(script_state);
   LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(ctx);
-  return window && (IsCapturing(window) || IsFullScreenEnabled(window));
+  return window && IsCapturing(window);
 }
 
 v8::Local<v8::Object> RTCStatsToV8Object(ScriptState* script_state,
