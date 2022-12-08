@@ -18,6 +18,7 @@ class ScopedUserManager;
 
 namespace ash {
 class MockUserManager;
+class AuthMetricsRecorder;
 
 namespace {
 
@@ -58,6 +59,7 @@ class ExistingUserControllerBaseTest : public ::testing::Test {
  private:
   std::unique_ptr<MockUserManager> const mock_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> const scoped_user_manager_;
+  std::unique_ptr<AuthMetricsRecorder> auth_metrics_recorder_;
 };
 
 }  // namespace ash

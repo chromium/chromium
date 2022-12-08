@@ -12,7 +12,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
-#include "chromeos/ash/components/login/auth/metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
 #include "components/account_id/account_id.h"
@@ -24,7 +24,7 @@
 namespace ash {
 
 LoginPerformer::LoginPerformer(Delegate* delegate,
-                               MetricsRecorder* metrics_recorder)
+                               AuthMetricsRecorder* metrics_recorder)
     : delegate_(delegate),
       metrics_recorder_(metrics_recorder),
       last_login_failure_(AuthFailure(AuthFailure::NONE)) {

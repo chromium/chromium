@@ -450,13 +450,11 @@ void ExistingUserController::UpdateLoginDisplay(
 
   cros_settings_->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                              &show_users_on_signin);
-  GetLoginDisplayHost()->metrics_recorder()->OnShowUsersOnSignin(
-      show_users_on_signin);
+  AuthMetricsRecorder::Get()->OnShowUsersOnSignin(show_users_on_signin);
   bool enable_ephemeral_users = false;
   cros_settings_->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
                              &enable_ephemeral_users);
-  GetLoginDisplayHost()->metrics_recorder()->OnEnableEphemeralUsers(
-      enable_ephemeral_users);
+  AuthMetricsRecorder::Get()->OnEnableEphemeralUsers(enable_ephemeral_users);
   user_manager::UserManager* const user_manager =
       user_manager::UserManager::Get();
   // By default disable offline login from the error screen.
@@ -487,7 +485,7 @@ void ExistingUserController::UpdateLoginDisplay(
   // Records total number of users on the login screen.
   base::UmaHistogramCounts100("Login.NumberOfUsersOnLoginScreen",
                               regular_users_counter);
-  GetLoginDisplayHost()->metrics_recorder()->OnUserCount(regular_users_counter);
+  AuthMetricsRecorder::Get()->OnUserCount(regular_users_counter);
 
   auto login_users = ExtractLoginUsers(users);
 
@@ -603,7 +601,7 @@ void ExistingUserController::PerformLogin(
     // Only one instance of LoginPerformer should exist at a time.
     login_performer_.reset(nullptr);
     login_performer_ = std::make_unique<ChromeLoginPerformer>(
-        this, GetLoginDisplayHost()->metrics_recorder());
+        this, AuthMetricsRecorder::Get());
   }
   if (IsActiveDirectoryManaged() &&
       user_context.GetUserType() != user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
@@ -1209,8 +1207,8 @@ void ExistingUserController::LoginAsGuest() {
 
   // Only one instance of LoginPerformer should exist at a time.
   login_performer_.reset(nullptr);
-  login_performer_ = std::make_unique<ChromeLoginPerformer>(
-      this, GetLoginDisplayHost()->metrics_recorder());
+  login_performer_ =
+      std::make_unique<ChromeLoginPerformer>(this, AuthMetricsRecorder::Get());
   login_performer_->LoginOffTheRecord();
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_OFFRECORD));
@@ -1508,8 +1506,8 @@ void ExistingUserController::LoginAsPublicSessionInternal(
   VLOG(2) << "LoginAsPublicSessionInternal for user: "
           << user_context.GetAccountId();
   login_performer_.reset(nullptr);
-  login_performer_ = std::make_unique<ChromeLoginPerformer>(
-      this, GetLoginDisplayHost()->metrics_recorder());
+  login_performer_ =
+      std::make_unique<ChromeLoginPerformer>(this, AuthMetricsRecorder::Get());
   login_performer_->LoginAsPublicSession(user_context);
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_PUBLIC_ACCOUNT));

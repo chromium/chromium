@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/common/features/feature_session_type.h"
@@ -193,6 +194,7 @@ LoginDisplayHostCommon::LoginDisplayHostCommon()
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &LoginDisplayHostCommon::OnAppTerminating, base::Unretained(this)));
   BrowserList::AddObserver(this);
+  AuthMetricsRecorder::Get()->ResetLoginData();
 }
 
 LoginDisplayHostCommon::~LoginDisplayHostCommon() {

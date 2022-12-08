@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/login/auth/metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -54,72 +55,98 @@ std::string UserCountSuffix(int user_count) {
 
 }  // namespace
 
-MetricsRecorder::MetricsRecorder() = default;
+// static
+AuthMetricsRecorder* AuthMetricsRecorder::instance_ = nullptr;
 
-MetricsRecorder::~MetricsRecorder() = default;
+AuthMetricsRecorder::AuthMetricsRecorder() {
+  DCHECK(!instance_);
+  instance_ = this;
+}
 
-void MetricsRecorder::OnAuthFailure(const AuthFailure::FailureReason& reason) {
+AuthMetricsRecorder::~AuthMetricsRecorder() {
+  instance_ = nullptr;
+}
+
+// static
+AuthMetricsRecorder* AuthMetricsRecorder::Get() {
+  CHECK(instance_) << "If there is no instance in test, use "
+                      "AuthMetricsRecorder::CreateForTesting()";
+  return instance_;
+}
+
+// static
+std::unique_ptr<ash::AuthMetricsRecorder>
+AuthMetricsRecorder::CreateForTesting() {
+  return base::WrapUnique<AuthMetricsRecorder>(new AuthMetricsRecorder());
+}
+
+void AuthMetricsRecorder::ResetLoginData() {
+  Reset();
+}
+
+void AuthMetricsRecorder::OnAuthFailure(
+    const AuthFailure::FailureReason& reason) {
   base::RecordAction(base::UserMetricsAction("Login_Failure"));
   UMA_HISTOGRAM_ENUMERATION(kFailureReasonHistogramName, reason,
                             AuthFailure::NUM_FAILURE_REASONS);
 }
 
-void MetricsRecorder::OnLoginSuccess(const SuccessReason& reason) {
+void AuthMetricsRecorder::OnLoginSuccess(const SuccessReason& reason) {
   base::RecordAction(base::UserMetricsAction("Login_Success"));
   UMA_HISTOGRAM_ENUMERATION(kSuccessReasonHistogramName, reason,
                             SuccessReason::NUM_SUCCESS_REASONS);
 }
 
-void MetricsRecorder::OnGuestLoignSuccess() {
+void AuthMetricsRecorder::OnGuestLoignSuccess() {
   base::RecordAction(base::UserMetricsAction("Login_GuestLoginSuccess"));
 }
 
-void MetricsRecorder::OnUserCount(bool user_count) {
+void AuthMetricsRecorder::OnUserCount(bool user_count) {
   user_count_ = user_count;
   MaybeReportFlowMetrics();
 }
 
-void MetricsRecorder::OnShowUsersOnSignin(bool show_users_on_signin) {
+void AuthMetricsRecorder::OnShowUsersOnSignin(bool show_users_on_signin) {
   show_users_on_signin_ = show_users_on_signin;
   MaybeReportFlowMetrics();
 }
 
-void MetricsRecorder::OnEnableEphemeralUsers(bool enable_ephemeral_users) {
+void AuthMetricsRecorder::OnEnableEphemeralUsers(bool enable_ephemeral_users) {
   enable_ephemeral_users_ = enable_ephemeral_users;
   MaybeUpdateUserLoginType();
 }
 
-void MetricsRecorder::OnIsUserNew(bool is_new_user) {
+void AuthMetricsRecorder::OnIsUserNew(bool is_new_user) {
   is_new_user_ = is_new_user;
   MaybeUpdateUserLoginType();
 }
 
-void MetricsRecorder::OnIsLoginOffline(bool is_login_offline) {
+void AuthMetricsRecorder::OnIsLoginOffline(bool is_login_offline) {
   is_login_offline_ = is_login_offline;
   MaybeUpdateUserLoginType();
 }
 
-void MetricsRecorder::MaybeUpdateUserLoginType() {
+void AuthMetricsRecorder::MaybeUpdateUserLoginType() {
   if (!is_login_offline_.has_value() || !is_new_user_.has_value() ||
       !enable_ephemeral_users_.has_value())
     return;
 
   if (is_login_offline_.value()) {
-    user_login_type_ = MetricsRecorder::kOffline;
+    user_login_type_ = AuthMetricsRecorder::kOffline;
   } else if (!is_new_user_.value()) {
     // The rest 3 online login types are with either existing user and new users
-    user_login_type_ = MetricsRecorder::kOnlineExisting;
+    user_login_type_ = AuthMetricsRecorder::kOnlineExisting;
   } else if (enable_ephemeral_users_.value()) {
     // The rest 2 new user login types are either ephemeral or new online users
-    user_login_type_ = MetricsRecorder::kEphemeral;
+    user_login_type_ = AuthMetricsRecorder::kEphemeral;
   } else {
-    user_login_type_ = MetricsRecorder::kOnlineNew;
+    user_login_type_ = AuthMetricsRecorder::kOnlineNew;
   }
 
   MaybeReportFlowMetrics();
 }
 
-void MetricsRecorder::MaybeReportFlowMetrics() {
+void AuthMetricsRecorder::MaybeReportFlowMetrics() {
   if (!show_users_on_signin_.has_value() || !user_count_.has_value() ||
       !user_login_type_.has_value())
     return;
@@ -130,6 +157,15 @@ void MetricsRecorder::MaybeReportFlowMetrics() {
   std::string suffix = UserCountSuffix(user_count_.value());
   base::UmaHistogramEnumeration(base::StrCat({prefix, suffix}),
                                 user_login_type_.value());
+}
+
+void AuthMetricsRecorder::Reset() {
+  user_count_ = absl::nullopt;
+  show_users_on_signin_ = absl::nullopt;
+  enable_ephemeral_users_ = absl::nullopt;
+  is_new_user_ = absl::nullopt;
+  is_login_offline_ = absl::nullopt;
+  user_login_type_ = absl::nullopt;
 }
 
 }  // namespace ash

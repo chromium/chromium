@@ -13,10 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/ash/components/login/auth/auth_status_consumer.h"
 #include "chromeos/ash/components/login/auth/authenticator.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
-#include "chromeos/ash/components/login/auth/metrics_recorder.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/user_type.h"
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   };
 
   explicit LoginPerformer(Delegate* delegate,
-                          MetricsRecorder* metrics_recorder);
+                          AuthMetricsRecorder* metrics_recorder);
 
   LoginPerformer(const LoginPerformer&) = delete;
   LoginPerformer& operator=(const LoginPerformer&) = delete;
@@ -200,7 +200,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   scoped_refptr<Authenticator> authenticator_;
 
   // Used for metric reporting.
-  const raw_ptr<MetricsRecorder, DanglingUntriaged> metrics_recorder_;
+  const raw_ptr<AuthMetricsRecorder, DanglingUntriaged> metrics_recorder_;
 
   // Represents last login failure that was encountered when communicating to
   // sign-in server. AuthFailure.LoginFailureNone() by default.

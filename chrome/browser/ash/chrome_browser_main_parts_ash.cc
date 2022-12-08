@@ -204,6 +204,7 @@
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/network/fast_transition_observer.h"
@@ -821,6 +822,9 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
 
   debugd_notification_handler_ =
       std::make_unique<DebugdNotificationHandler>(DebugDaemonClient::Get());
+
+  auth_metrics_recorder_ =
+      base::WrapUnique<AuthMetricsRecorder>(new AuthMetricsRecorder());
 
   return ChromeBrowserMainPartsLinux::PreMainMessageLoopRun();
 }
@@ -1474,6 +1478,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   if (features::IsTrafficCountersEnabled())
     traffic_counters_handler_.reset();
   bluetooth_pref_state_observer_.reset();
+  auth_metrics_recorder_.reset();
 
   // Detach D-Bus clients before DBusThreadManager is shut down.
   idle_action_warning_observer_.reset();
