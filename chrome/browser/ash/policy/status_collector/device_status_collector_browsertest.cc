@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -877,6 +878,13 @@ class DeviceStatusCollectorTest : public testing::Test {
     TestingDeviceStatusCollector::RegisterPrefs(local_state_.registry());
     TestingDeviceStatusCollector::RegisterProfilePrefs(
         profile_pref_service_.registry());
+
+    // This pref registration is temporarily added because crrev/c/4076557 makes
+    // SystemWebAppManager (which is instantiated during creation of a
+    // TestProfile) dependent on the kDemoModeConfig pref.
+    // TODO(b/260117078): Delete this line after the DemoModeConfig pref is
+    // deprecated.
+    ash::DemoSetupController::RegisterLocalStatePrefs(local_state_.registry());
 
     // Set up a fake local state for KioskAppManager and KioskCryptohomeRemover.
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);

@@ -389,9 +389,9 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUp() override {
-    DeviceSettingsTestBase::SetUp();
     install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(
         ash::StubInstallAttributes::CreateUnset());
+    DeviceSettingsTestBase::SetUp();
 
     crostini_features_ = std::make_unique<crostini::FakeCrostiniFeatures>();
     SetUpConnectManager();
