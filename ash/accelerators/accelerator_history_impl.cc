@@ -72,10 +72,8 @@ void AcceleratorHistoryImpl::StoreCurrentAccelerator(
       for (auto key_code : currently_pressed_keys_)
         pressed_keys.append(base::NumberToString(key_code).append(" "));
 
-      LOG(WARNING) << "Key Release (" << accelerator.key_code()
-                   << ") delivered with no corresponding Press. "
-                      "Clearing all pressed keys: "
-                   << pressed_keys;
+      // Key release was delivered with no corresponding press. This usually
+      // happens when the key press is lost somehow.
       currently_pressed_keys_.clear();
     }
   }
