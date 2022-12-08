@@ -4667,7 +4667,7 @@
   {
     "name": "messages-for-android-stacking-animation",
     "owners": [ "lazzzis", "aishwaryarj"],
-    "expiry_milestone": 110
+    "expiry_milestone": 118
   },
   {
     "name": "messages-for-android-update-password",
