@@ -164,6 +164,7 @@ media::OutputDeviceInfo AudioDeviceFactory::GetOutputDeviceInfo(
   constexpr base::TimeDelta kDeleteTimeout = base::Milliseconds(5000);
 
   if (!sink_cache_) {
+    // Do we actually need a separate thread pool just for deleting audio sinks?
     sink_cache_ = std::make_unique<AudioRendererSinkCache>(
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT,
