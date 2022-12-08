@@ -25,6 +25,16 @@ Please follow these steps to update libaom source code:
 
    Use the generated commit message for the roll.
 
+Note: When running roll_dep.py on a Chrome release branch, we get the
+error message:
+   error: Ensure chromium/src is clean first (no non-merged commits).
+
+because the is_prestine() function in roll_dep.py runs git diff against
+origin/main. A workaround is to edit roll_dep.py and change
+'origin/main' to the release branch, e.g., 'branch-heads/5414' for the
+Chrome M109 release branch. Remember to change it back to 'origin/main'
+after running roll_dep.py.
+
 2. Generate the config files:
      # See prerequisites in file comments.
      ./cmake_update.sh
