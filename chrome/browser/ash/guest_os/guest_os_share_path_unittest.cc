@@ -1016,4 +1016,10 @@ TEST_F(GuestOsSharePathTest, RegisterListAndUnregister) {
   }
 }
 
+TEST_F(GuestOsSharePathTest, GetAndSetFirstForSession) {
+  ASSERT_TRUE(guest_os_share_path_->GetAndSetFirstForSession("first"));
+  ASSERT_TRUE(guest_os_share_path_->GetAndSetFirstForSession("second"));
+  ASSERT_FALSE(guest_os_share_path_->GetAndSetFirstForSession("second"));
+}
+
 }  // namespace guest_os

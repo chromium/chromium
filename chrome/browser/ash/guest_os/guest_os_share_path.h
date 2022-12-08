@@ -105,7 +105,7 @@ class GuestOsSharePath : public KeyedService,
                    SuccessCallback callback);
 
   // Returns true the first time it is called on this service.
-  bool GetAndSetFirstForSession();
+  bool GetAndSetFirstForSession(const std::string& vm_name);
 
   // Get list of all shared paths for the specified VM.
   std::vector<base::FilePath> GetPersistedSharedPaths(
@@ -190,7 +190,9 @@ class GuestOsSharePath : public KeyedService,
   Profile* profile_;
   // Task runner for FilePathWatchers to be created, run, and be destroyed on.
   scoped_refptr<base::SequencedTaskRunner> file_watcher_task_runner_;
-  bool first_for_session_ = true;
+
+  // List of VMs GetAndSetFirstForSession has been called on.
+  std::set<std::string> first_for_session_;
 
   // Allow seneschal callback to be overridden for testing.
   SeneschalCallback seneschal_callback_;

@@ -465,10 +465,9 @@ void GuestOsSharePath::UnsharePath(const std::string& vm_name,
   }
 }
 
-bool GuestOsSharePath::GetAndSetFirstForSession() {
-  bool result = first_for_session_;
-  first_for_session_ = false;
-  return result;
+bool GuestOsSharePath::GetAndSetFirstForSession(const std::string& vm_name) {
+  auto result = first_for_session_.insert(vm_name);
+  return result.second;
 }
 
 std::vector<base::FilePath> GuestOsSharePath::GetPersistedSharedPaths(

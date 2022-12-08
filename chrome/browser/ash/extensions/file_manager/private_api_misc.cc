@@ -979,8 +979,9 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
       Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
   auto* guest_os_share_path =
       guest_os::GuestOsSharePath::GetForProfile(profile);
-  bool first_for_session = params->observe_first_for_session &&
-                           guest_os_share_path->GetAndSetFirstForSession();
+  bool first_for_session =
+      params->observe_first_for_session &&
+      guest_os_share_path->GetAndSetFirstForSession(params->vm_name);
   auto shared_paths =
       guest_os_share_path->GetPersistedSharedPaths(params->vm_name);
   base::Value::List entries;
