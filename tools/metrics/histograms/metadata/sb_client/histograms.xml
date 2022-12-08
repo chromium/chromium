@@ -256,10 +256,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkDuration" units="ms"
-    expires_after="2022-12-04">
-  <owner>vakh@chromium.org</owner>
+    expires_after="2023-06-04">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <owner>mattm@chromium.org</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service ping. It is
     not recorded for requests that were cancelled.
@@ -270,10 +269,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2022-12-04">
-  <owner>vakh@chromium.org</owner>
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2023-06-04">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <owner>mattm@chromium.org</owner>
   <summary>
     Records the results of SafeBrowsing binary download checks which caused a
     server ping.
