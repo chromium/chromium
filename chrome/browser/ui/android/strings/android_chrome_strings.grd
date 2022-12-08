@@ -2107,6 +2107,7 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ACCOUNT_MANAGEMENT_NO_PARENTAL_DATA" desc="String saying that we are waiting for family information.">
         Waiting for details of parents.
       </message>
+
       <message name="IDS_ACCOUNT_MANAGEMENT_ONE_PARENT_NAME" desc="String for name of single parent for child account.">
         This browser is managed by <ph name="PARENT_NAME">%1$s<ex>parent1@gmail.com</ex></ph>.
       </message>
@@ -2124,6 +2125,15 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_ACCOUNT_MANAGEMENT_CHILD_CONTENT_ALL" desc="Setting that permits child accounts to visit any websites.">
         Allow all sites
+      </message>
+      <message name="IDS_ACCOUNT_MANAGEMENT_HEADER_NO_PARENTAL_DATA" desc="String saying that child should go to parent for help for child account.">
+        If you need help, ask your parent
+        </message>
+      <message name="IDS_ACCOUNT_MANAGEMENT_HEADER_ONE_PARENT_NAME" desc="String saying that child should go to parent for help with email of single parent for child account.">
+        If you need help, ask your parent (<ph name="PARENT_NAME">%1$s<ex>parent1@gmail.com</ex></ph>)
+      </message>
+      <message name="IDS_ACCOUNT_MANAGEMENT_HEADER_TWO_PARENT_NAMES" desc="String saying that child should go to parent for help with email of two parents for child account.">
+        If you need help, ask your parent (<ph name="PARENT_NAME_1">%1$s<ex>parent1@gmail.com</ex></ph> or <ph name="PARENT_NAME_2">%2$s<ex>parent2@gmail.com</ex></ph>)
       </message>
 
       <!-- Parent approval widget. -->

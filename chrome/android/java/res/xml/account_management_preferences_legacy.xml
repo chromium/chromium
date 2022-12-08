@@ -13,7 +13,6 @@ found in the LICENSE file.
         android:key="accounts_category"
         android:title="@string/account_management_title"/>
 
-
     <PreferenceCategory
         android:key="parental_settings"
         android:title="@string/account_management_parental_settings"/>

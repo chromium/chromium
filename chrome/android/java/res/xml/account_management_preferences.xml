@@ -10,6 +10,10 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+  <org.chromium.components.browser_ui.settings.TextMessagePreference
+      android:key="parent_account_category"
+      tools:summary="@string/account_management_two_parent_names"/>
+
   <PreferenceCategory
       android:key="accounts_category"
       android:title="@string/account_management_title"/>
