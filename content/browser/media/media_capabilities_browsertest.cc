@@ -171,18 +171,11 @@ class MediaCapabilitiesTestWithConfigType
   }
 };
 
-// Fails on Linux and Chrome OS: http://crbug.com/1220321.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CommonVideoDecodeTypes DISABLED_CommonVideoDecodeTypes
-#else
-#define MAYBE_CommonVideoDecodeTypes CommonVideoDecodeTypes
-#endif
-
 // Cover basic codec support of content types where the answer of support
 // (or not) should be common to both "media-source" and "file" query types.
 // for more exhaustive codec string testing.
 IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
-                       MAYBE_CommonVideoDecodeTypes) {
+                       CommonVideoDecodeTypes) {
   base::FilePath file_path = media::GetTestDataFilePath(kDecodeTestFile);
 
   const std::string& config_type = GetTypeString();
