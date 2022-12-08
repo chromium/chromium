@@ -142,6 +142,10 @@
       'win-angle-chromium-x86-builder': 'gpu_tests_release_bot_dcheck_always_on_x86_reclient',
     },
 
+    'chromium.cft': {
+      'mac-rel-cft': 'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_no_nacl_reclient',
+    },
+
     'chromium.chromiumos': {
       'Linux ChromiumOS Full': 'chromeos_with_codecs_release_bot_reclient',
 
@@ -1047,6 +1051,10 @@
       'win-angle-chromium-x86-try': 'gpu_tests_release_trybot_x86_reclient',
     },
 
+    'tryserver.chromium.cft': {
+      'mac-rel-cft': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_chrome_for_testing',
+    },
+
     'tryserver.chromium.chromiumos': {
       # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
       # and two kevin bots when the PFQ has it enabled.
@@ -1247,7 +1255,6 @@
       'mac-osxbeta-rel': 'gpu_tests_debug_trybot',
       'mac-perfetto-rel': 'perfetto_release_trybot',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
-      'mac-rel-cft': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_chrome_for_testing',
       'mac-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
       'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
@@ -2668,6 +2675,11 @@
 
     'gpu_tests_release_bot_minimal_symbols': [
       'gpu_tests', 'release_bot', 'minimal_symbols',
+    ],
+
+    'gpu_tests_release_bot_minimal_symbols_chrome_for_testing_no_nacl_reclient': [
+      'gpu_tests', 'release_bot_reclient', 'minimal_symbols', 'disable_nacl',
+      'chrome_for_testing',
     ],
 
     'gpu_tests_release_bot_minimal_symbols_code_coverage': [

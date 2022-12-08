@@ -1257,6 +1257,30 @@
     },
   },
   {
+    # CfT == Chrome for Testing
+    'name': 'chromium.cft',
+    'mixins': ['chromium-tester-service-account'],
+    'machines': {
+      # mac-rel-cft is the CfT mirror of mac-rel. It is intended to
+      # exactly match mac-rel except that we don't build the installers
+      # and don't need any of the installer tests. test_suite_exceptions.pyl
+      # contains the exceptions for the installer tests.
+      'mac-rel-cft': {
+        'mixins': [
+          'mac_12_x64',
+          'isolate_profile_data',
+        ],
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_mac_gtests_no_nacl',
+          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
+        },
+      },
+    },
+  },
+  {
     'name': 'chromium.chromiumos',
     'mixins': ['chromium-tester-service-account'],
     'machines': {

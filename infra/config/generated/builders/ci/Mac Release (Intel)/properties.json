@@ -80,10 +80,6 @@
           "group": "tryserver.chromium.mac"
         },
         {
-          "builder": "mac-rel-cft",
-          "group": "tryserver.chromium.mac"
-        },
-        {
           "builder": "mac-rel-inverse-fyi",
           "group": "tryserver.chromium.mac"
         }

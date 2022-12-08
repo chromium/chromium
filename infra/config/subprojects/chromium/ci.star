@@ -77,6 +77,7 @@ luci.gitiles_poller(
         "chromium.gpu",
         "chromium.fyi",
         "chromium.android.fyi",
+        "chromium.cft",
         "chromium.clang",
         "chromium.fuzz",
         "chromium.gpu.fyi",
@@ -145,6 +146,7 @@ exec("./ci/chromium.accessibility.star")
 exec("./ci/chromium.android.star")
 exec("./ci/chromium.android.fyi.star")
 exec("./ci/chromium.angle.star")
+exec("./ci/chromium.cft.star")
 exec("./ci/chromium.chromiumos.star")
 exec("./ci/chromium.clang.star")
 exec("./ci/chromium.dawn.star")

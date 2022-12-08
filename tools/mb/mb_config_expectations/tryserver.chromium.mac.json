@@ -530,19 +530,6 @@
       "use_goma": true
     }
   },
-  "mac-rel-cft": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "is_chrome_for_testing_branded": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_clang_coverage": true,
-      "use_goma": true
-    }
-  },
   "mac-rel-inverse-fyi": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",

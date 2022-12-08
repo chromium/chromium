@@ -148,6 +148,7 @@ sheriff_rotations = struct(
     ANDROID = _rotation("android"),
     ANGLE = _rotation("angle"),
     CHROMIUM = _rotation("chromium"),
+    CFT = _rotation("cft"),
     FUCHSIA = _rotation("fuchsia"),
     CHROMIUM_CLANG = _rotation("chromium.clang"),
     CHROMIUM_FUZZ = _rotation("chromium.fuzz"),

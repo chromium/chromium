@@ -2550,6 +2550,13 @@
       },
     },
   },
+  'mac_signing_tests': {
+    'remove_from': [
+      # This is intentional and explained in the waterfalls.pyl comment for
+      # this builder.
+      'mac-rel-cft',
+    ],
+  },
   'maps_pixel_passthrough_test': {
     'modifications': {
       'Android FYI Release (Pixel 4)': {
