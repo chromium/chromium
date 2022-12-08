@@ -11,9 +11,9 @@
 #include "ash/public/cpp/assistant/test_support/mock_assistant_state.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 

@@ -7,7 +7,7 @@
 #include <memory>
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
+#include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"

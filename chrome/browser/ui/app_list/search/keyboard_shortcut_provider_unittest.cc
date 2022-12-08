@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/app_list/search/keyboard_shortcut_provider.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

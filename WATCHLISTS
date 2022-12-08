@@ -1554,12 +1554,12 @@
                   '|chrome/android/java/src/org/chromium/chrome/browser/offlinepages/'
     },
     'omnibox_desktop': {
-      'filepath': '^chrome/browser/autocomplete/|'\
+      'filepath': '^chrome/browser/ash/app_list/search/omnibox/|'\
+                  '^chrome/browser/autocomplete/|'\
                   '^chrome/browser/resources/new_tab_page/realbox/|'\
                   '^chrome/browser/resources/omnibox|'\
                   '^chrome/browser/ui/location_bar/|'\
                   '^chrome/browser/ui/omnibox/|'\
-                  '^chrome/browser/ui/app_list/search/omnibox/|'\
                   '^chrome/browser/ui/views/location_bar/|'\
                   '^chrome/browser/ui/views/omnibox/|'\
                   '^chrome/browser/ui/webui/omnibox/|'\
