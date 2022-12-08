@@ -127,8 +127,6 @@ AudioDeviceFactory::NewAudioRendererSink(
   if (IsMixable(source_type))
     return NewMixableSink(source_type, frame_token, params);
 
-  UMA_HISTOGRAM_BOOLEAN("Media.Audio.Render.SinkCache.UsedForSinkCreation",
-                        false);
   return NewFinalAudioRendererSink(frame_token, params,
                                    GetDefaultAuthTimeout());
 }
