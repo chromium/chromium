@@ -281,9 +281,13 @@ CastSocketImpl::GetNetworkTrafficAnnotationTag() {
         policy {
           cookies_allowed: NO
           setting:
-            "This request cannot be disabled, but it would not be sent if user "
-            "does not connect a Cast device to the local network."
-          policy_exception_justification: "Not implemented."
+            "This request cannot be disabled in settings, but it would not be "
+            "sent if user does not connect a Cast device to the local network."
+          chrome_policy {
+            EnableMediaRouter {
+              EnableMediaRouter: false
+            }
+          }
         })");
 }
 
