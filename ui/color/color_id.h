@@ -241,10 +241,12 @@
   E_CPONLY(kColorProgressBar) \
   E_CPONLY(kColorProgressBarPaused) \
   E_CPONLY(kColorReadAnythingBackground) \
+  E_CPONLY(kColorReadAnythingBackgroundBlue) \
   E_CPONLY(kColorReadAnythingBackgroundDark) \
   E_CPONLY(kColorReadAnythingBackgroundLight) \
   E_CPONLY(kColorReadAnythingBackgroundYellow) \
   E_CPONLY(kColorReadAnythingForeground) \
+  E_CPONLY(kColorReadAnythingForegroundBlue) \
   E_CPONLY(kColorReadAnythingForegroundDark) \
   E_CPONLY(kColorReadAnythingForegroundLight) \
   E_CPONLY(kColorReadAnythingForegroundYellow) \

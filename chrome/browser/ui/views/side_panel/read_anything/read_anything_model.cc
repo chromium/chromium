@@ -268,10 +268,15 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
                              ui::kColorReadAnythingForegroundYellow,
                              ui::kColorReadAnythingBackgroundYellow};
 
+  ColorInfo kBlueColors = {u"Blue", IDS_READ_ANYTHING_BLUE_PNG,
+                           ui::kColorReadAnythingForegroundBlue,
+                           ui::kColorReadAnythingBackgroundBlue};
+
   colors_choices_.emplace_back(kDefaultColors);
   colors_choices_.emplace_back(kLightColors);
   colors_choices_.emplace_back(kDarkColors);
   colors_choices_.emplace_back(kYellowColors);
+  colors_choices_.emplace_back(kBlueColors);
   colors_choices_.shrink_to_fit();
 }
 bool ReadAnythingColorsModel::IsValidColorsIndex(size_t index) {

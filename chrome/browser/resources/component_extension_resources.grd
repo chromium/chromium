@@ -80,6 +80,7 @@
       <include name="IDS_READ_ANYTHING_LIGHT_PNG" file="side_panel/images/read_anything_light.png" type="BINDATA" />
       <include name="IDS_READ_ANYTHING_DARK_PNG" file="side_panel/images/read_anything_dark.png" type="BINDATA" />
       <include name="IDS_READ_ANYTHING_YELLOW_PNG" file="side_panel/images/read_anything_yellow.png" type="BINDATA" />
+      <include name="IDS_READ_ANYTHING_BLUE_PNG" file="side_panel/images/read_anything_blue.png" type="BINDATA" />
     </includes>
   </release>
 </grit>

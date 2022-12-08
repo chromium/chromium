@@ -157,12 +157,14 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorReadAnythingBackground] = {
       dark_mode ? kColorReadAnythingBackgroundDark
                 : kColorReadAnythingBackgroundLight};
+  mixer[kColorReadAnythingBackgroundBlue] = {gfx::kGoogleBlue200};
   mixer[kColorReadAnythingBackgroundDark] = {gfx::kGoogleGrey900};
   mixer[kColorReadAnythingBackgroundLight] = {gfx::kGoogleGrey050};
   mixer[kColorReadAnythingBackgroundYellow] = {gfx::kGoogleYellow200};
   mixer[kColorReadAnythingForeground] = {
       dark_mode ? kColorReadAnythingForegroundDark
                 : kColorReadAnythingForegroundLight};
+  mixer[kColorReadAnythingForegroundBlue] = {gfx::kGoogleGrey900};
   mixer[kColorReadAnythingForegroundDark] = {gfx::kGoogleGrey200};
   mixer[kColorReadAnythingForegroundLight] = {gfx::kGoogleGrey800};
   mixer[kColorReadAnythingForegroundYellow] = {gfx::kGoogleGrey800};
