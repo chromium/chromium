@@ -297,17 +297,15 @@ const base::FeatureParam<int> kSharedStorageBitBudget = {
 const base::FeatureParam<base::TimeDelta> kSharedStorageBudgetInterval = {
     &kSharedStorageAPI, "SharedStorageBudgetInterval", base::Hours(24)};
 const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStaleOriginPurgeInitialInterval = {
-        &kSharedStorageAPI, "SharedStorageStaleOriginPurgeInitialInterval",
-        base::Minutes(15)};
+    kSharedStorageStalePurgeInitialInterval = {
+        &kSharedStorageAPI, "SharedStorageStalePurgeInitialInterval",
+        base::Minutes(2)};
 const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStaleOriginPurgeRecurringInterval = {
-        &kSharedStorageAPI, "SharedStorageStaleOriginPurgeRecurringInterval",
+    kSharedStorageStalePurgeRecurringInterval = {
+        &kSharedStorageAPI, "SharedStorageStalePurgeRecurringInterval",
         base::Hours(2)};
-const base::FeatureParam<base::TimeDelta>
-    kSharedStorageOriginStalenessThreshold = {
-        &kSharedStorageAPI, "SharedStorageOriginStalenessThreshold",
-        base::Days(30)};
+const base::FeatureParam<base::TimeDelta> kSharedStorageStalenessThreshold = {
+    &kSharedStorageAPI, "SharedStorageStalenessThreshold", base::Days(30)};
 const base::FeatureParam<int>
     kSharedStorageMaxAllowedFencedFrameDepthForSelectURL = {
         &kSharedStorageAPI,

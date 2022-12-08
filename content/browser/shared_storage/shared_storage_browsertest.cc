@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_test_utils.h"
@@ -91,6 +92,8 @@ const char kTimingSelectUrlExecutedInWorkletHistogram[] =
 
 const double kBudgetAllowed = 5.0;
 
+const int kStalenessThresholdDays = 1;
+
 const char kSelectFrom8URLsScript[] = R"(
     let urls = [];
     for (let i = 0; i < 8; ++i) {
@@ -105,6 +108,10 @@ const char kSelectFrom8URLsScript[] = R"(
   )";
 
 const char kRemainingBudgetPrefix[] = "remaining budget: ";
+
+std::string TimeDeltaToString(base::TimeDelta delta) {
+  return base::StrCat({base::NumberToString(delta.InMilliseconds()), "ms"});
+}
 
 void WaitForHistogram(const std::string& histogram_name) {
   // Continue if histogram was already recorded.
@@ -577,7 +584,10 @@ class SharedStorageBrowserTest : public ContentBrowserTest {
                                        {{blink::features::kSharedStorageAPI,
                                          {{"SharedStorageBitBudget",
                                            base::NumberToString(
-                                               kBudgetAllowed)}}},
+                                               kBudgetAllowed)},
+                                          {"SharedStorageStalenessThreshold",
+                                           TimeDeltaToString(base::Days(
+                                               kStalenessThresholdDays))}}},
                                         {features::
                                              kPrivacySandboxAdsAPIsOverride,
                                          {}}},
@@ -2322,6 +2332,96 @@ IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, ClearOperationInWorklet) {
         SharedStorageEventParams::CreateDefault()},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateDefault()}});
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest, GetOperationInWorklet) {
+  base::SimpleTestClock clock;
+  base::RunLoop loop;
+  static_cast<StoragePartitionImpl*>(shell()
+                                         ->web_contents()
+                                         ->GetBrowserContext()
+                                         ->GetDefaultStoragePartition())
+      ->GetSharedStorageManager()
+      ->OverrideClockForTesting(&clock, loop.QuitClosure());
+  loop.Run();
+  clock.SetNow(base::Time::Now());
+
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.set('key0', 'value0');
+    )"));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  GURL script_url =
+      https_server()->GetURL("a.test", "/shared_storage/getter_module.js");
+
+  EXPECT_TRUE(ExecJs(
+      shell(), JsReplace("sharedStorage.worklet.addModule($1)", script_url)));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('get-operation', {data: {'key': 'key0'}});
+      )"));
+
+  // There are 2 "worklet operations": `addModule()` and `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponsesCount(2);
+
+  // Advance clock so that key will expire.
+  clock.Advance(base::Days(kStalenessThresholdDays) + base::Seconds(1));
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+        sharedStorage.run('get-operation', {data: {'key': 'key0'}});
+      )"));
+
+  // There is one "worklet operation": `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponsesCount(1);
+
+  EXPECT_EQ(4u, console_observer.messages().size());
+  EXPECT_EQ("sharedStorage.length(): 1",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("sharedStorage.get('key0'): value0",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("sharedStorage.length(): 0",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("sharedStorage.get('key0'): undefined",
+            base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            console_observer.messages()[0].log_level);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            console_observer.messages()[1].log_level);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            console_observer.messages()[2].log_level);
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kInfo,
+            console_observer.messages()[3].log_level);
+
+  WaitForHistograms({kTimingRunExecutedInWorkletHistogram});
+  histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 2);
+
+  std::string origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved(
+      {{AccessType::kDocumentSet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForSet("key0", "value0", false)},
+       {AccessType::kDocumentAddModule, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForAddModule(script_url)},
+       {AccessType::kDocumentRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRun("get-operation",
+                                               std::vector<uint8_t>())},
+       {AccessType::kWorkletLength, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateDefault()},
+       {AccessType::kWorkletGet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0")},
+       {AccessType::kDocumentRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRun("get-operation",
+                                               std::vector<uint8_t>())},
+       {AccessType::kWorkletLength, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateDefault()},
+       {AccessType::kWorkletGet, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForGetOrDelete("key0")}});
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageBrowserTest,

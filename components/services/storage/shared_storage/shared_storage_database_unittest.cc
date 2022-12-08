@@ -39,6 +39,7 @@ namespace storage {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::Pair;
 using StorageKeyPolicyMatcherFunction =
     SharedStorageDatabase::StorageKeyPolicyMatcherFunction;
 using InitStatus = SharedStorageDatabase::InitStatus;
@@ -48,7 +49,7 @@ using GetResult = SharedStorageDatabase::GetResult;
 using TimeResult = SharedStorageDatabase::TimeResult;
 
 const int kBudgetIntervalHours = 24;
-const int kOriginStalenessThresholdDays = 1;
+const int kStalenessThresholdDays = 1;
 const int kBitBudget = 8;
 const int kMaxEntriesPerOrigin = 5;
 const int kMaxEntriesPerOriginForIteratorTest = 1000;
@@ -415,7 +416,7 @@ TEST_F(SharedStorageDatabaseTest, DestroyTooNew) {
             db_->PurgeMatchingOrigins(StorageKeyPolicyMatcherFunction(),
                                       base::Time::Min(), base::Time::Max(),
                                       /*perform_storage_cleanup=*/false));
-  EXPECT_EQ(OperationResult::kInitFailure, db_->PurgeStaleOrigins());
+  EXPECT_EQ(OperationResult::kInitFailure, db_->PurgeStale());
   EXPECT_EQ(OperationResult::kInitFailure,
             db_->GetEntriesForDevTools(kOrigin).result);
 
@@ -459,6 +460,7 @@ class SharedStorageDatabaseParamTest
     db_ = std::make_unique<SharedStorageDatabase>(
         db_path, special_storage_policy_, std::move(options));
     db_->OverrideClockForTesting(&clock_);
+    clock_.SetNow(base::Time::Now());
 
     ASSERT_EQ(GetParam().in_memory_only, !db_->is_filebacked());
   }
@@ -478,8 +480,8 @@ class SharedStorageDatabaseParamTest
          {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
          {"SharedStorageBudgetInterval",
           TimeDeltaToString(base::Hours(kBudgetIntervalHours))},
-         {"SharedStorageOriginStalenessThreshold",
-          TimeDeltaToString(base::Days(kOriginStalenessThresholdDays))}});
+         {"SharedStorageStalenessThreshold",
+          TimeDeltaToString(base::Days(kStalenessThresholdDays))}});
   }
 
   void CheckInitHistograms() {
@@ -500,8 +502,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::PrintToStringParamName());
 
 TEST_P(SharedStorageDatabaseParamTest, BasicOperations) {
-  clock_.SetNow(base::Time::Now());
-
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
@@ -542,8 +542,6 @@ TEST_P(SharedStorageDatabaseParamTest, BasicOperations) {
 }
 
 TEST_P(SharedStorageDatabaseParamTest, IgnoreIfPresent) {
-  clock_.SetNow(base::Time::Now());
-
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
@@ -624,11 +622,23 @@ TEST_P(SharedStorageDatabaseParamTest, IgnoreIfPresent) {
   last_used_time1 = db_->Get(kOrigin2, u"key2").last_used_time;
   ASSERT_LE(last_used_time1, now);
   ASSERT_GE(last_used_time1, now - TestTimeouts::action_max_timeout());
+
+  // Advance the clock so that the key expires.
+  clock_.Advance(base::Days(kStalenessThresholdDays) + base::Seconds(1));
+
+  // The expired entry will be replaced instead of ignored.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key2", u"replaced",
+                                            SetBehavior::kIgnoreIfPresent));
+  EXPECT_EQ(db_->Get(kOrigin2, u"key2").data, u"replaced");
+
+  // Verify that there are also no errors when setting a previously expired (but
+  // unexpunged) key with the default behavior.
+  EXPECT_EQ(OperationResult::kSet,
+            db_->Set(kOrigin1, u"key2", u"replaced", SetBehavior::kDefault));
+  EXPECT_EQ(db_->Get(kOrigin1, u"key2").data, u"replaced");
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Append) {
-  clock_.SetNow(base::Time::Now());
-
   const url::Origin kOrigin1 =
       url::Origin::Create(GURL("http://www.example1.test"));
   EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"value1"));
@@ -641,7 +651,7 @@ TEST_P(SharedStorageDatabaseParamTest, Append) {
   ASSERT_GE(last_used_time1, now - TestTimeouts::action_max_timeout());
 
   // Advance the clock to put distance between the last used times.
-  clock_.Advance(base::Hours(12));
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
 
   EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"value1"));
   now = clock_.Now();
@@ -654,7 +664,7 @@ TEST_P(SharedStorageDatabaseParamTest, Append) {
   ASSERT_GE(last_used_time2, now - TestTimeouts::action_max_timeout());
 
   // Advance the clock to put distance between the last used times.
-  clock_.Advance(base::Hours(12));
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
 
   EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"value1"));
   now = clock_.Now();
@@ -665,6 +675,92 @@ TEST_P(SharedStorageDatabaseParamTest, Append) {
   ASSERT_GT(last_used_time3, last_used_time2);
   ASSERT_LE(last_used_time3, now);
   ASSERT_GE(last_used_time3, now - TestTimeouts::action_max_timeout());
+
+  // Advance the clock so that the key expires.
+  clock_.Advance(base::Days(kStalenessThresholdDays) + base::Seconds(1));
+
+  // The expired entry will be replaced instead of appended to.
+  EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key1", u"replaced"));
+  EXPECT_EQ(db_->Get(kOrigin1, u"key1").data, u"replaced");
+}
+
+TEST_P(SharedStorageDatabaseParamTest, Get_NonUpdatedKeyExpires) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
+  base::Time set_time = clock_.Now();
+  GetResult result1 = db_->Get(kOrigin1, u"key1");
+  EXPECT_EQ(result1.data, u"value1");
+  EXPECT_EQ(result1.result, OperationResult::kSuccess);
+
+  // Verify that `result1.last_used_time` is set to `set_time` (within a
+  // tolerance).
+  ASSERT_LE(result1.last_used_time, set_time);
+  ASSERT_GE(result1.last_used_time,
+            set_time - TestTimeouts::action_max_timeout());
+
+  // Advance the clock halfway towards expiration of the key.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
+  EXPECT_GT(clock_.Now(), set_time);
+
+  // The information obtained is still the same.
+  GetResult result2 = db_->Get(kOrigin1, u"key1");
+  EXPECT_EQ(result2.data, u"value1");
+  EXPECT_EQ(result2.result, OperationResult::kSuccess);
+  ASSERT_LE(result2.last_used_time, set_time);
+  ASSERT_GE(result2.last_used_time,
+            set_time - TestTimeouts::action_max_timeout());
+
+  // Advance the clock to key expiration time.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0) + base::Seconds(1));
+
+  // The key has expired but not been cleared yet.
+  GetResult result3 = db_->Get(kOrigin1, u"key1");
+  EXPECT_EQ(result3.data, u"value1");
+  EXPECT_EQ(result3.result, OperationResult::kExpired);
+}
+
+TEST_P(SharedStorageDatabaseParamTest, Get_UpdatedKeyRemains) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
+  base::Time set_time1 = clock_.Now();
+  GetResult result1 = db_->Get(kOrigin1, u"key1");
+  EXPECT_EQ(result1.data, u"value1");
+  EXPECT_EQ(result1.result, OperationResult::kSuccess);
+
+  // Verify that `result1.last_used_time` is set to `set_time` (within a
+  // tolerance).
+  ASSERT_LE(result1.last_used_time, set_time1);
+  ASSERT_GE(result1.last_used_time,
+            set_time1 - TestTimeouts::action_max_timeout());
+
+  // Advance the clock halfway towards expiration of the key.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
+
+  // Modify the key.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value2"));
+  base::Time set_time2 = clock_.Now();
+  EXPECT_GT(set_time2, set_time1);
+
+  // The information obtained will be updated, including the `last_used_time`.
+  GetResult result2 = db_->Get(kOrigin1, u"key1");
+  EXPECT_EQ(result2.data, u"value2");
+  EXPECT_EQ(result2.result, OperationResult::kSuccess);
+  ASSERT_LE(result2.last_used_time, set_time2);
+  ASSERT_GE(result2.last_used_time,
+            set_time2 - TestTimeouts::action_max_timeout());
+
+  // Advance the clock to original key expiration time.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0) + base::Seconds(1));
+
+  // The key is not cleared because it has an updated expiration time.
+  GetResult result3 = db_->Get(kOrigin1, u"key1");
+  EXPECT_EQ(result3.data, u"value2");
+  EXPECT_EQ(result3.result, OperationResult::kSuccess);
+  ASSERT_LE(result3.last_used_time, set_time2);
+  ASSERT_GE(result3.last_used_time,
+            set_time2 - TestTimeouts::action_max_timeout());
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Length) {
@@ -696,6 +792,20 @@ TEST_P(SharedStorageDatabaseParamTest, Length) {
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key3", u"value3"));
   EXPECT_EQ(3L, db_->Length(kOrigin1));
   EXPECT_EQ(0L, db_->Length(kOrigin2));
+
+  // Advance the clock halfway towards expiration of the keys.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
+
+  // Update one entry.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value0"));
+  EXPECT_EQ(3L, db_->Length(kOrigin1));
+
+  // Advance the clock to original key expiration time.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0) + base::Seconds(1));
+
+  // 2 keys for `kOrigin1` have now expired, so `Length()` will not count them
+  // even though they have not been purged yet.
+  EXPECT_EQ(1L, db_->Length(kOrigin1));
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Keys) {
@@ -756,6 +866,26 @@ TEST_P(SharedStorageDatabaseParamTest, Keys) {
   EXPECT_THAT(utility.TakeKeysForId(id5), ElementsAre(u"key1", u"key3"));
   EXPECT_EQ(1U, utility.BatchCountForId(id5));
   utility.VerifyNoErrorForId(id5);
+
+  // Advance the clock halfway towards expiration of the keys.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
+
+  // Update one entry.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key1", u"value0"));
+  EXPECT_EQ(2L, db_->Length(kOrigin1));
+
+  // Advance the clock to original key expiration time.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0) + base::Seconds(1));
+
+  size_t id6 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Keys(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id6)));
+  utility.FlushForId(id6);
+
+  // u"key3" is now expired.
+  EXPECT_THAT(utility.TakeKeysForId(id6), ElementsAre(u"key1"));
+  EXPECT_EQ(1U, utility.BatchCountForId(id6));
+  utility.VerifyNoErrorForId(id6);
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Entries) {
@@ -780,8 +910,7 @@ TEST_P(SharedStorageDatabaseParamTest, Entries) {
             db_->Entries(kOrigin1, utility.BindNewPipeAndPassRemoteForId(id2)));
   utility.FlushForId(id2);
   EXPECT_THAT(utility.TakeEntriesForId(id2),
-              ElementsAre(std::make_pair(u"key1", u"value1"),
-                          std::make_pair(u"key2", u"value2")));
+              ElementsAre(Pair(u"key1", u"value1"), Pair(u"key2", u"value2")));
   EXPECT_EQ(1U, utility.BatchCountForId(id2));
   utility.VerifyNoErrorForId(id2);
 
@@ -803,9 +932,8 @@ TEST_P(SharedStorageDatabaseParamTest, Entries) {
             db_->Entries(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id4)));
   utility.FlushForId(id4);
   EXPECT_THAT(utility.TakeEntriesForId(id4),
-              ElementsAre(std::make_pair(u"key1", u"value1"),
-                          std::make_pair(u"key2", u"value2"),
-                          std::make_pair(u"key3", u"value3")));
+              ElementsAre(Pair(u"key1", u"value1"), Pair(u"key2", u"value2"),
+                          Pair(u"key3", u"value3")));
   EXPECT_EQ(1U, utility.BatchCountForId(id4));
   utility.VerifyNoErrorForId(id4);
 
@@ -816,10 +944,30 @@ TEST_P(SharedStorageDatabaseParamTest, Entries) {
             db_->Entries(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id5)));
   utility.FlushForId(id5);
   EXPECT_THAT(utility.TakeEntriesForId(id5),
-              ElementsAre(std::make_pair(u"key1", u"value1"),
-                          std::make_pair(u"key3", u"value3")));
+              ElementsAre(Pair(u"key1", u"value1"), Pair(u"key3", u"value3")));
   EXPECT_EQ(1U, utility.BatchCountForId(id5));
   utility.VerifyNoErrorForId(id5);
+
+  // Advance the clock halfway towards expiration of the keys.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
+
+  // Update one entry.
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key1", u"value0"));
+  EXPECT_EQ(2L, db_->Length(kOrigin1));
+
+  // Advance the clock to original key expiration time.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0) + base::Seconds(1));
+
+  size_t id6 = utility.RegisterListener();
+  EXPECT_EQ(OperationResult::kSuccess,
+            db_->Entries(kOrigin2, utility.BindNewPipeAndPassRemoteForId(id6)));
+  utility.FlushForId(id6);
+
+  // u"key3" is now expired.
+  EXPECT_THAT(utility.TakeEntriesForId(id6),
+              ElementsAre(Pair(u"key1", u"value0")));
+  EXPECT_EQ(1U, utility.BatchCountForId(id6));
+  utility.VerifyNoErrorForId(id6);
 }
 
 TEST_P(SharedStorageDatabaseParamTest, Clear) {
@@ -894,8 +1042,6 @@ TEST_P(SharedStorageDatabaseParamTest, FetchOrigins) {
 }
 
 TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
-  clock_.SetNow(base::Time::Now());
-
   // There should be no entries in the budget table.
   EXPECT_EQ(0L, db_->GetTotalNumBudgetEntriesForTesting());
 
@@ -962,16 +1108,16 @@ TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
 
   // Now only the single debit made within the current lookback window is
   // counted, although the entries are still in the table because we haven't
-  // called `PurgeStaleWithdrawals()`.
+  // called `PurgeStale()`.
   EXPECT_DOUBLE_EQ(kBitBudget - 1.0, db_->GetRemainingBudget(kOrigin1).bits);
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
   EXPECT_EQ(3L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
   EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin2));
   EXPECT_EQ(4L, db_->GetTotalNumBudgetEntriesForTesting());
 
-  // After `PurgeStaleOrigins()` runs, there will only be the most recent
+  // After `PurgeStale()` runs, there will only be the most recent
   // debit left in the budget table.
-  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStaleOrigins());
+  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStale());
   EXPECT_DOUBLE_EQ(kBitBudget - 1.0, db_->GetRemainingBudget(kOrigin1).bits);
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
   EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
@@ -988,8 +1134,8 @@ TEST_P(SharedStorageDatabaseParamTest, MakeBudgetWithdrawal) {
   EXPECT_EQ(1L, db_->GetNumBudgetEntriesForTesting(kOrigin1));
   EXPECT_EQ(1L, db_->GetTotalNumBudgetEntriesForTesting());
 
-  // After `PurgeStaleOrigins()` runs, the budget table will be empty.
-  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStaleOrigins());
+  // After `PurgeStale()` runs, the budget table will be empty.
+  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStale());
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin1).bits);
   EXPECT_DOUBLE_EQ(kBitBudget, db_->GetRemainingBudget(kOrigin2).bits);
   EXPECT_EQ(0L, db_->GetTotalNumBudgetEntriesForTesting());
@@ -1049,11 +1195,10 @@ TEST_P(SharedStorageDatabaseParamTest,
   EXPECT_EQ(3L, db_->Length(kOrigin2));
   base::Time creation_time2 = db_->GetCreationTime(kOrigin2).time;
 
-  clock_.Advance(base::Days(kOriginStalenessThresholdDays) +
-                 base::Microseconds(1));
+  clock_.Advance(base::Days(kStalenessThresholdDays) + base::Microseconds(1));
 
   // Creation time will remain the same when all of `kOrigin1`'s entries are
-  // deleted via `Delete()` after expiration but `PurgeStaleOrigins()` has not
+  // deleted via `Delete()` after expiration but `PurgeStale()` has not
   // yet been called.
   EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin1, u"key1"));
   EXPECT_EQ(OperationResult::kSuccess, db_->Delete(kOrigin1, u"key2"));
@@ -1061,13 +1206,13 @@ TEST_P(SharedStorageDatabaseParamTest,
   EXPECT_EQ(creation_time1, db_->GetCreationTime(kOrigin1).time);
 
   // Creation time will remain the same when all of `kOrigin2`'s entries are
-  // deleted via `Clear()` after expiration but `PurgeStaleOrigins()` has not
+  // deleted via `Clear()` after expiration but `PurgeStale()` has not
   // yet been called.
   EXPECT_EQ(OperationResult::kSuccess, db_->Clear(kOrigin2));
   EXPECT_EQ(0L, db_->Length(kOrigin2));
   EXPECT_EQ(creation_time2, db_->GetCreationTime(kOrigin2).time);
 
-  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStaleOrigins());
+  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStale());
 
   // Creation times should not be found after a purge of stale origins.
   EXPECT_EQ(OperationResult::kNotFound, db_->GetCreationTime(kOrigin1).result);
@@ -1115,6 +1260,7 @@ class SharedStorageDatabasePurgeMatchingOriginsParamTest
     db_ = std::make_unique<SharedStorageDatabase>(
         db_path, special_storage_policy_, std::move(options));
     db_->OverrideClockForTesting(&clock_);
+    clock_.SetNow(base::Time::Now());
   }
 
   void InitSharedStorageFeature() override {
@@ -1208,7 +1354,6 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
   EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u"value2"));
   EXPECT_EQ(2L, db_->Length(kOrigin1));
 
-  clock_.SetNow(base::Time::Now());
   clock_.Advance(base::Milliseconds(50));
 
   // Time threshold that will be used as a starting point for deletion.
@@ -1229,7 +1374,6 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
   const url::Origin kOrigin4 =
       url::Origin::Create(GURL("http://www.example4.test"));
 
-  clock_.SetNow(base::Time::Now());
   clock_.Advance(base::Milliseconds(50));
 
   // Time threshold that will be used as a starting point for deletion.
@@ -1296,7 +1440,7 @@ TEST_P(SharedStorageDatabasePurgeMatchingOriginsParamTest, SinceThreshold) {
           threshold2, base::Time::Max(), GetParam().perform_storage_cleanup));
 }
 
-TEST_P(SharedStorageDatabaseParamTest, PurgeStaleOrigins) {
+TEST_P(SharedStorageDatabaseParamTest, PurgeStale) {
   EXPECT_TRUE(db_->FetchOrigins().empty());
 
   const url::Origin kOrigin1 =
@@ -1313,9 +1457,21 @@ TEST_P(SharedStorageDatabaseParamTest, PurgeStaleOrigins) {
   EXPECT_EQ(1L, db_->Length(kOrigin2));
   EXPECT_EQ(db_->Get(kOrigin2, u"key1").data, u"value1");
 
-  clock_.SetNow(base::Time::Now());
-  clock_.Advance(base::Days(kOriginStalenessThresholdDays));
+  clock_.Advance(base::Days(kStalenessThresholdDays));
   clock_.Advance(base::Microseconds(1));
+
+  // `Length()` does not count the expired keys.
+  EXPECT_EQ(0L, db_->Length(kOrigin1));
+  EXPECT_EQ(0L, db_->Length(kOrigin2));
+
+  // Update a key and set additional keys.
+  EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key2", u"value2"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key3", u"value2"));
+  EXPECT_EQ(2L, db_->Length(kOrigin1));
+
+  EXPECT_EQ(OperationResult::kSet,
+            db_->Set(kOrigin2, u"key1", u"value0", SetBehavior::kDefault));
+  EXPECT_EQ(1L, db_->Length(kOrigin2));
 
   const url::Origin kOrigin3 =
       url::Origin::Create(GURL("http://www.example3.test"));
@@ -1342,36 +1498,52 @@ TEST_P(SharedStorageDatabaseParamTest, PurgeStaleOrigins) {
   EXPECT_LT(db_->GetCreationTime(kOrigin2).time,
             db_->GetCreationTime(kOrigin4).time);
 
-  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStaleOrigins());
+  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStale());
 
-  // `kOrigin1` expired.
-  EXPECT_EQ(0L, db_->Length(kOrigin1));
+  // `kOrigin1` had 1 key expire.
+  EXPECT_EQ(2L, db_->Length(kOrigin1));
 
-  // `kOrigin2` expired.
-  EXPECT_EQ(0L, db_->Length(kOrigin2));
+  // `kOrigin2` had no keys expire.
+  EXPECT_EQ(1L, db_->Length(kOrigin2));
 
-  // `kOrigin3` is active.
+  // `kOrigin3` had no keys expire.
   EXPECT_EQ(3L, db_->Length(kOrigin3));
 
-  // `kOrigin4` is active.
+  // `kOrigin4` had no keys expire.
   EXPECT_EQ(4L, db_->Length(kOrigin4));
 
   origins.clear();
   for (const auto& info : db_->FetchOrigins())
     origins.push_back(info->storage_key.origin());
-  EXPECT_THAT(origins, ElementsAre(kOrigin3, kOrigin4));
+  EXPECT_THAT(origins, ElementsAre(kOrigin1, kOrigin2, kOrigin3, kOrigin4));
 
-  clock_.Advance(base::Days(kOriginStalenessThresholdDays));
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
+
+  // Will not set the new value but will update the write time.
+  EXPECT_EQ(OperationResult::kIgnored, db_->Set(kOrigin4, u"key1", u"value0",
+                                                SetBehavior::kIgnoreIfPresent));
+
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
   clock_.Advance(base::Microseconds(1));
-  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStaleOrigins());
 
-  // `kOrigin3` expired.
+  EXPECT_EQ(OperationResult::kSuccess, db_->PurgeStale());
+
+  // `kOrigin1` had all keys expire.
+  EXPECT_EQ(0L, db_->Length(kOrigin1));
+
+  // `kOrigin2` had all keys expire
+  EXPECT_EQ(0L, db_->Length(kOrigin2));
+
+  // `kOrigin3` had all keys expire
   EXPECT_EQ(0L, db_->Length(kOrigin3));
 
-  // `kOrigin4` expired.
-  EXPECT_EQ(0L, db_->Length(kOrigin4));
+  // `kOrigin4` had all but one key expire.
+  EXPECT_EQ(1L, db_->Length(kOrigin4));
 
-  EXPECT_TRUE(db_->FetchOrigins().empty());
+  origins.clear();
+  for (const auto& info : db_->FetchOrigins())
+    origins.push_back(info->storage_key.origin());
+  EXPECT_THAT(origins, ElementsAre(kOrigin4));
 }
 
 TEST_P(SharedStorageDatabaseParamTest, TrimMemory) {
@@ -1507,6 +1679,12 @@ TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
 
+  // Override the clock and set to the last time in the file that is used to set
+  // a `last_used_time` for a value.
+  db_->OverrideClockForTesting(&clock_);
+  clock_.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13268941676192362)));
+
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
   TestSharedStorageEntriesListenerUtility utility(
       task_environment_.GetMainThreadTaskRunner());
@@ -1548,6 +1726,12 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
   db_ = LoadFromFile("shared_storage.v2.iterator.sql");
   ASSERT_TRUE(db_);
   ASSERT_TRUE(db_->is_filebacked());
+
+  // Override the clock and set to the last time in the file that is used to set
+  // a `last_used_time` for a value.
+  db_->OverrideClockForTesting(&clock_);
+  clock_.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13268941676192362)));
 
   url::Origin google_com = url::Origin::Create(GURL("http://google.com/"));
   TestSharedStorageEntriesListenerUtility utility(

@@ -62,7 +62,7 @@ class AsyncSharedStorageDatabase {
 
   // `TrimMemory()`, `Get()`, `Set()`, `Append()`, `Delete()`, `Clear()`,
   // `Length()`, `Keys()`, `Entries()`, `PurgeMatchingOrigins()`,
-  // `PurgeStaleOrigins()`, `FetchOrigins()`, `MakeBudgetWithdrawal()`,
+  // `PurgeStale()`, `FetchOrigins()`, `MakeBudgetWithdrawal()`,
   // `GetRemainingBudget()`, `GetCreationTime()`, `GetMetadata()`, and
   // `GetEntriesForDevTools()` are all async versions of the corresponding
   // methods in `storage::SharedStorageDatabase`, with the modification that
@@ -187,13 +187,13 @@ class AsyncSharedStorageDatabase {
       base::OnceCallback<void(OperationResult)> callback,
       bool perform_storage_cleanup = false) = 0;
 
-  // Clear all entries for all origins whose `last_read_time` (i.e. creation
-  // time) falls before `SharedStorageDatabase::clock_->Now() -
-  // SharedStorageDatabase::origin_staleness_threshold_`. Also purges, for all
-  // origins, all privacy budget withdrawals that have `time_stamps` older than
-  // `SharedStorageDatabase::clock_->Now() -
-  // SharedStorageDatabase::budget_interval_`.
-  virtual void PurgeStaleOrigins(
+  // Clear all entries whose `last_used_time` (currently the last write access)
+  // falls before `SharedStorageDatabase::clock_->Now() - staleness_threshold_`.
+  // Also purges, for all origins, all privacy budget withdrawals that have
+  // `time_stamps` older than `SharedStorageDatabase::clock_->Now() -
+  // budget_interval_`. The parameter of `callback` reports whether the
+  // transaction was successful.
+  virtual void PurgeStale(
       base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one

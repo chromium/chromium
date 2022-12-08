@@ -169,11 +169,11 @@ void AsyncSharedStorageDatabaseImpl::PurgeMatchingOrigins(
       .Then(std::move(callback));
 }
 
-void AsyncSharedStorageDatabaseImpl::PurgeStaleOrigins(
+void AsyncSharedStorageDatabaseImpl::PurgeStale(
     base::OnceCallback<void(OperationResult)> callback) {
   DCHECK(callback);
   DCHECK(database_);
-  database_.AsyncCall(&SharedStorageDatabase::PurgeStaleOrigins)
+  database_.AsyncCall(&SharedStorageDatabase::PurgeStale)
       .Then(std::move(callback));
 }
 
@@ -270,6 +270,18 @@ void AsyncSharedStorageDatabaseImpl::OverrideCreationTimeForTesting(
       .Then(std::move(callback));
 }
 
+void AsyncSharedStorageDatabaseImpl::OverrideLastUsedTimeForTesting(
+    url::Origin context_origin,
+    std::u16string key,
+    base::Time new_last_used_time,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_.AsyncCall(&SharedStorageDatabase::OverrideLastUsedTimeForTesting)
+      .WithArgs(std::move(context_origin), key, new_last_used_time)
+      .Then(std::move(callback));
+}
+
 void AsyncSharedStorageDatabaseImpl::OverrideSpecialStoragePolicyForTesting(
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy) {
   DCHECK(database_);
@@ -281,6 +293,7 @@ void AsyncSharedStorageDatabaseImpl::OverrideSpecialStoragePolicyForTesting(
 void AsyncSharedStorageDatabaseImpl::OverrideClockForTesting(
     base::Clock* clock,
     base::OnceClosure callback) {
+  DCHECK(callback);
   DCHECK(database_);
   database_.AsyncCall(&SharedStorageDatabase::OverrideClockForTesting)
       .WithArgs(clock)

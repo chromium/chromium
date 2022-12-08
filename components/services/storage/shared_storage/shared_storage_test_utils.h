@@ -71,10 +71,11 @@ class TestDatabaseOperationReceiver {
       DB_GET_REMAINING_BUDGET = 15,
       DB_IS_OPEN = 16,
       DB_STATUS = 17,
-      DB_OVERRIDE_TIME = 18,
-      DB_GET_NUM_BUDGET = 19,
-      DB_GET_TOTAL_NUM_BUDGET = 20,
-      DB_GET_CREATION_TIME = 21,
+      DB_OVERRIDE_TIME_ORIGIN = 18,
+      DB_OVERRIDE_TIME_ENTRY = 19,
+      DB_GET_NUM_BUDGET = 20,
+      DB_GET_TOTAL_NUM_BUDGET = 21,
+      DB_GET_CREATION_TIME = 22,
     } type;
     url::Origin origin;
     std::vector<std::u16string> params;

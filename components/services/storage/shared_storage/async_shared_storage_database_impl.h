@@ -113,8 +113,7 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
                             base::Time end,
                             base::OnceCallback<void(OperationResult)> callback,
                             bool perform_storage_cleanup = false) override;
-  void PurgeStaleOrigins(
-      base::OnceCallback<void(OperationResult)> callback) override;
+  void PurgeStale(base::OnceCallback<void(OperationResult)> callback) override;
   void FetchOrigins(base::OnceCallback<
                         void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
                     bool exclude_empty_origins = true) override;
@@ -143,9 +142,16 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   // Asynchronously determines the database `InitStatus`. Useful for testing.
   void DBStatusForTesting(base::OnceCallback<void(InitStatus)> callback);
 
-  // Changes `last_used_time` to `new_creation_time` for `context_origin`.
+  // Changes `creation_time` to `new_creation_time` for `context_origin`.
   void OverrideCreationTimeForTesting(url::Origin context_origin,
                                       base::Time new_creation_time,
+                                      base::OnceCallback<void(bool)> callback);
+
+  // Changes `last_used_time` to `new_last_used_time` for `context_origin` and
+  // `key`.
+  void OverrideLastUsedTimeForTesting(url::Origin context_origin,
+                                      std::u16string key,
+                                      base::Time new_last_used_time,
                                       base::OnceCallback<void(bool)> callback);
 
   // Overrides the `SpecialStoragePolicy` for tests.

@@ -111,19 +111,19 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSharedStorageBudgetInterval;
 // Initial interval from service startup after which
-// SharedStorageManager first checks for any stale origins, purging any that it
+// SharedStorageManager first checks for any stale entries, purging any that it
 // finds.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStaleOriginPurgeInitialInterval;
+    kSharedStorageStalePurgeInitialInterval;
 // Second and subsequent intervals from service startup after
-// which SharedStorageManager checks for any stale origins, purging any that it
+// which SharedStorageManager checks for any stale entries, purging any that it
 // finds.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSharedStorageStaleOriginPurgeRecurringInterval;
-// Length of time between origin creation and origin expiration. When an
-// origin's data is older than this threshold, it will be auto-purged.
+    kSharedStorageStalePurgeRecurringInterval;
+// Length of time between last key write access and key expiration. When an
+// entry's data is older than this threshold, it will be auto-purged.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kSharedStorageOriginStalenessThreshold;
+    kSharedStorageStalenessThreshold;
 // Maximum depth of fenced frame where sharedStorage.selectURL() is allowed to
 // be invoked. The depth of a fenced frame is the number of the fenced frame
 // boundaries above that frame (i.e. the outermost main frame's frame tree has

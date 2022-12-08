@@ -50,7 +50,8 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(
          type == Type::DB_APPEND || type == Type::DB_DELETE ||
          type == Type::DB_KEYS || type == Type::DB_ENTRIES ||
          type == Type::DB_MAKE_BUDGET_WITHDRAWAL ||
-         type == Type::DB_OVERRIDE_TIME);
+         type == Type::DB_OVERRIDE_TIME_ORIGIN ||
+         type == Type::DB_OVERRIDE_TIME_ENTRY);
 }
 
 TestDatabaseOperationReceiver::DBOperation::DBOperation(

@@ -263,6 +263,8 @@ class SharedStorageManager {
   void OverrideSpecialStoragePolicyForTesting(
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
+  void OverrideClockForTesting(base::Clock* clock, base::OnceClosure callback);
+
   void OverrideDatabaseForTesting(
       std::unique_ptr<AsyncSharedStorageDatabase> override_async_database);
 
@@ -286,18 +288,16 @@ class SharedStorageManager {
   base::OnceCallback<void(OperationResult)> GetOperationResultCallback(
       base::OnceCallback<void(OperationResult)> callback);
 
-  // Purges the data for any origins that haven't been written to or read from
-  // for more than the `origin_staleness_threshold_`. Also purges, for all
-  // origins, all privacy budget withdrawals that have `time_stamps` older than
-  // the current time minus `SharedStorageDatabase::budget_interval_`.
-  void PurgeStaleOrigins();
+  // Clear all entries whose `last_used_time` (currently the last write access)
+  // falls before `SharedStorageDatabase::clock_->Now() -
+  // options_->staleness_threshold_`. Also purges, for all origins, all privacy
+  // budget withdrawals that have `time_stamps` older than
+  // `SharedStorageDatabase::clock_->Now() - options_->budget_interval_`. The
+  // parameter of `callback` reports whether the transaction was successful.
+  void PurgeStale();
 
-  // Processes the result of purging stale origins, then purges all privacy
-  // budget withdrawals that have `time_stamps` older than the current time
-  // minus `SharedStorageDatabase::budget_interval_`
-
-  // Starts the `timer_` for the next call to `PurgeStaleOrigins()`.
-  void OnStaleOriginsPurged(OperationResult result);
+  // Starts the `timer_` for the next call to `PurgeStale()`.
+  void OnStalePurged(OperationResult result);
 
   // Records metrics, including how many SQL errors were seen, when destructor
   // is called.
