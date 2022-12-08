@@ -74,6 +74,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
@@ -3598,6 +3599,9 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   }
   // Assume full damage every time the pass is rendered.
   overlay->damage_rect = gfx::RectF(filter_bounds);
+  // Fill in |format| and |color_space| information based on selected backing.
+  overlay->color_space = color_space;
+  overlay->format = BufferFormat(buffer_format);
 #endif  // BUILDFLAG(IS_APPLE)
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
