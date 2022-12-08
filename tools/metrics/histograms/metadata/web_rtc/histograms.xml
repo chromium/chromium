@@ -3321,6 +3321,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="WebRTC.Video.Screenshare.NumberResolutionDownswitchesPerMinute"
     units="switches/minute" expires_after="M88">
+  <obsolete>
+    Removed 12/2022.
+  </obsolete>
   <owner>ilnik@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
