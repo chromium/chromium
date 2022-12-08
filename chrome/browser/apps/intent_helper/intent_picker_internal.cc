@@ -78,7 +78,7 @@ std::vector<IntentPickerAppInfo> FindPwaForUrl(
     return apps;
 
   auto* const provider = web_app::WebAppProvider::GetForWebApps(profile);
-  if (provider->registrar().GetAppUserDisplayMode(*app_id) ==
+  if (provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) ==
       web_app::UserDisplayMode::kBrowser) {
     return apps;
   }
@@ -90,7 +90,7 @@ std::vector<IntentPickerAppInfo> FindPwaForUrl(
   // Prefer the web and place apps of type PWA before apps of type ARC.
   // TODO(crbug.com/824598): deterministically sort this list.
   apps.emplace(apps.begin(), PickerEntryType::kWeb, icon_model, *app_id,
-               provider->registrar().GetAppShortName(*app_id));
+               provider->registrar_unsafe().GetAppShortName(*app_id));
 
   return apps;
 }
