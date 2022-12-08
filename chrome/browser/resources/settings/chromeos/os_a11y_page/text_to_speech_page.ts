@@ -116,6 +116,8 @@ class SettingsTextToSpeechPageElement extends
   override ready() {
     super.ready();
 
+    this.addFocusConfig(
+        routes.A11Y_SELECT_TO_SPEAK, '#select-to-speak-subpage-trigger');
     this.addFocusConfig(routes.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
   }
 

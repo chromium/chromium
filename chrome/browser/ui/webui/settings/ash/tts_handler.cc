@@ -12,6 +12,7 @@
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/tts_controller.h"
@@ -28,13 +29,7 @@ namespace ash::settings {
 
 TtsHandler::TtsHandler() = default;
 
-TtsHandler::~TtsHandler() {
-  RemoveTtsControllerDelegates();
-}
-
-void TtsHandler::HandleGetAllTtsVoiceData(const base::Value::List& args) {
-  OnVoicesChanged();
-}
+TtsHandler::~TtsHandler() = default;
 
 void TtsHandler::HandleGetTtsExtensions(const base::Value::List& args) {
   // Ensure the built in tts engine is loaded to be able to respond to messages.
@@ -110,77 +105,19 @@ void TtsHandler::OnVoicesChanged() {
   HandleGetTtsExtensions(base::Value::List());
 }
 
-void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
-                            content::TtsEventType event_type,
-                            int char_index,
-                            int length,
-                            const std::string& error_message) {
-  if (event_type == content::TTS_EVENT_END ||
-      event_type == content::TTS_EVENT_INTERRUPTED ||
-      event_type == content::TTS_EVENT_ERROR) {
-    base::Value result(false /* preview stopped */);
-    FireWebUIListener("tts-preview-state-changed", result);
-  }
-}
-
-void TtsHandler::HandlePreviewTtsVoice(const base::Value::List& args) {
-  DCHECK_EQ(2U, args.size());
-  const std::string& text = args[0].GetString();
-  const std::string& voice_id = args[1].GetString();
-
-  if (text.empty() || voice_id.empty())
-    return;
-
-  std::unique_ptr<base::DictionaryValue> json =
-      base::DictionaryValue::From(base::JSONReader::ReadDeprecated(voice_id));
-  std::string name;
-  std::string extension_id;
-  if (const std::string* ptr = json->FindStringKey("name"))
-    name = *ptr;
-  if (const std::string* ptr = json->FindStringKey("extension"))
-    extension_id = *ptr;
-
-  std::unique_ptr<content::TtsUtterance> utterance =
-      content::TtsUtterance::Create(web_ui()->GetWebContents());
-  utterance->SetText(text);
-  utterance->SetVoiceName(name);
-  utterance->SetEngineId(extension_id);
-  utterance->SetSrcUrl(
-      GURL(chrome::GetOSSettingsUrl("manageAccessibility/tts")));
-  utterance->SetEventDelegate(this);
-  content::TtsController::GetInstance()->Stop();
-
-  base::Value result(true /* preview started */);
-  FireWebUIListener("tts-preview-state-changed", result);
-  content::TtsController::GetInstance()->SpeakOrEnqueue(std::move(utterance));
-}
-
 void TtsHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      "getAllTtsVoiceData",
-      base::BindRepeating(&TtsHandler::HandleGetAllTtsVoiceData,
-                          base::Unretained(this)));
+  SettingsWithTtsPreviewHandler::RegisterMessages();
   web_ui()->RegisterMessageCallback(
       "getTtsExtensions",
       base::BindRepeating(&TtsHandler::HandleGetTtsExtensions,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "previewTtsVoice", base::BindRepeating(&TtsHandler::HandlePreviewTtsVoice,
-                                             base::Unretained(this)));
+      "previewTtsVoice",
+      base::BindRepeating(&SettingsWithTtsPreviewHandler::HandlePreviewTtsVoice,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "wakeTtsEngine",
       base::BindRepeating(&TtsHandler::WakeTtsEngine, base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "refreshTtsVoices", base::BindRepeating(&TtsHandler::RefreshTtsVoices,
-                                              base::Unretained(this)));
-}
-
-void TtsHandler::OnJavascriptAllowed() {
-  content::TtsController::GetInstance()->AddVoicesChangedDelegate(this);
-}
-
-void TtsHandler::OnJavascriptDisallowed() {
-  RemoveTtsControllerDelegates();
 }
 
 int TtsHandler::GetVoiceLangMatchScore(const content::VoiceData* voice,
@@ -208,13 +145,9 @@ void TtsHandler::OnTtsEngineAwake(bool success) {
   OnVoicesChanged();
 }
 
-void TtsHandler::RefreshTtsVoices(const base::Value::List& args) {
-  content::TtsController::GetInstance()->RefreshVoices();
-}
-
-void TtsHandler::RemoveTtsControllerDelegates() {
-  content::TtsController::GetInstance()->RemoveVoicesChangedDelegate(this);
-  content::TtsController::GetInstance()->RemoveUtteranceEventDelegate(this);
+GURL TtsHandler::GetSourceURL() const {
+  return GURL(chrome::GetOSSettingsUrl(
+      chromeos::settings::mojom::kTextToSpeechSubpagePath));
 }
 
 }  // namespace ash::settings

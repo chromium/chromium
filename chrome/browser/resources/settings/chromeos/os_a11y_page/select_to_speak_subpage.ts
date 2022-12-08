@@ -17,14 +17,63 @@ import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resource
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {Route} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_route.js';
 import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
 import {getTemplate} from './select_to_speak_subpage.html.js';
+import {SelectToSpeakSubpageBrowserProxy, SelectToSpeakSubpageBrowserProxyImpl} from './select_to_speak_subpage_browser_proxy.js';
+
+/**
+ * Constant used as the value for a menu option representing the current device
+ * language.
+ */
+const USE_DEVICE_LANGUAGE = 'select_to_speak_device_language';
+
+/**
+ * Constant representing the system TTS voice.
+ */
+const SYSTEM_VOICE = 'select_to_speak_system_voice';
+
+/**
+ * Constant representing the voice name for the default (server-selected)
+ * enhanced network TTS voice.
+ */
+const DEFAULT_NETWORK_VOICE = 'default-wavenet';
+
+/**
+ * Extension ID of the enhanced network TTS voices extension.
+ */
+const ENHANCED_TTS_EXTENSION_ID = 'jacnkoglebceckolkoapelihnglgaicd';
+
+/**
+ * Subset of TtsEventType enum from:
+ *   chromium/src/content/public/browser/tts_utterance.h
+ * String conversion can be found in:
+ *   chrome/browser/speech/extension_api/tts_extension_api.cc
+ */
+enum EventType {
+  START = 'start',
+  END = 'end',
+  WORD = 'word',
+  CANCELLED = 'cancelled',
+}
+
+interface HandlerVoice {
+  eventTypes: EventType[];
+  extensionId: string;
+  lang: string;
+  voiceName: string;
+  displayName?: string;
+  displayLanguage?: string;
+  displayLanguageAndCountry?: string;
+  languageCode?: string;
+}
 
 const SettingsSelectToSpeakSubpageElementBase =
     mixinBehaviors(
@@ -50,6 +99,47 @@ class SettingsSelectToSpeakSubpageElement extends
 
   static get properties() {
     return {
+      /**
+       * The language sort dropdown state as a fake preference object (so we can
+       * use <settings-dropdown-menu> without overriding with custom handlers)
+       */
+      languageFilterVirtualPref_: {
+        type: Object,
+        observer: 'languageChanged_',
+        notify: true,
+        value(): chrome.settingsPrivate.PrefObject {
+          return {
+            key: 'fakeLanguagePref',
+            type: chrome.settingsPrivate.PrefType.STRING,
+            value: USE_DEVICE_LANGUAGE,
+          };
+        },
+      },
+
+      /**
+       * List of options for the languages menu.
+       */
+      languagesMenuOptions_: {
+        type: Array,
+        value: [],
+      },
+
+      /**
+       * List of options for the local voices menu.
+       */
+      localVoicesMenuOptions_: {
+        type: Array,
+        value: [],
+      },
+
+      /**
+       * List of options for the network voices menu.
+       */
+      networkVoicesMenuOptions_: {
+        type: Array,
+        value: [],
+      },
+
       /**
        * List of options for the text size drop-down menu.
        */
@@ -111,17 +201,44 @@ class SettingsSelectToSpeakSubpageElement extends
 
   static get observers() {
     return [
-      'onHighlightColorChanged(prefs.settings.a11y.select_to_speak_highlight_color.value)',
+      'onHighlightColorChanged_(prefs.settings.a11y.select_to_speak_highlight_color.value)',
+      'languageChanged_(languageFilterVirtualPref_.*)',
     ];
   }
 
   private route_: Route;
+  private langBrowserProxy_: LanguagesBrowserProxy;
+  private languageFilterVirtualPref_: chrome.settingsPrivate.PrefObject<string>;
+  private languagesMenuOptions_: DropdownMenuOptionList;
+  private localVoicesMenuOptions_: DropdownMenuOptionList;
+  private networkVoicesMenuOptions_: DropdownMenuOptionList;
+  private appLocale_ = '';
+  private selectToSpeakBrowserProxy_: SelectToSpeakSubpageBrowserProxy;
+  private voices_: HandlerVoice[] = [];
 
   constructor() {
     super();
 
+    this.selectToSpeakBrowserProxy_ =
+        SelectToSpeakSubpageBrowserProxyImpl.getInstance();
+    this.langBrowserProxy_ = LanguagesBrowserProxyImpl.getInstance();
+
     /** RouteOriginBehavior override */
     this.route_ = routes.A11Y_SELECT_TO_SPEAK;
+  }
+
+  override ready() {
+    super.ready();
+
+    this.addWebUiListener(
+        'all-sts-voice-data-updated',
+        (voices: HandlerVoice[]) => this.updateVoices_(voices));
+    this.addWebUiListener(
+        'app-locale-updated',
+        (appLocale: string) => this.updateAppLocale_(appLocale));
+    this.selectToSpeakBrowserProxy_.getAllTtsVoiceData();
+    this.selectToSpeakBrowserProxy_.getAppLocale();
+    this.selectToSpeakBrowserProxy_.refreshTtsVoices();
   }
 
   /**
@@ -138,9 +255,232 @@ class SettingsSelectToSpeakSubpageElement extends
     this.attemptDeepLink();
   }
 
-  private onHighlightColorChanged(color: string) {
+  private onHighlightColorChanged_(color: string) {
     this.shadowRoot!.getElementById('lightHighlight')!.style.background = color;
     this.shadowRoot!.getElementById('darkHighlight')!.style.background = color;
+  }
+
+  private languageChanged_() {
+    this.populateVoicesAndLanguages_();
+  }
+
+  /**
+   * Updates the lists of all voices and the UI to use in display.
+   */
+  private updateVoices_(voices: HandlerVoice[]): void {
+    this.voices_ = voices;
+    this.populateVoicesAndLanguages_();
+  }
+
+  /**
+   * Updates the app locale and repopulates voices and languages.
+   */
+  private updateAppLocale_(appLocale: string): void {
+    this.appLocale_ = appLocale.toLowerCase();
+    this.populateVoicesAndLanguages_();
+  }
+
+  /**
+   * Populate select elements corresponding to local and network voices with a
+   * list of corresponding TTS voices, and select element corresponding to
+   * language with a list of languages covered by the available voices.
+   * @private
+   */
+  private populateVoicesAndLanguages_() {
+    let lang = this.languageFilterVirtualPref_.value || USE_DEVICE_LANGUAGE;
+    if (lang === USE_DEVICE_LANGUAGE) {
+      lang = this.getLanguageShortCode_(this.appLocale_);
+    }
+
+    const languagesMenuOptions = [{
+      value: USE_DEVICE_LANGUAGE,
+      name: this.i18n('selectToSpeakOptionsDeviceLanguage'),
+    }];
+
+    const localVoicesMenuOptions = [{
+      value: SYSTEM_VOICE,
+      name: this.i18n('selectToSpeakOptionsSystemVoice'),
+    }];
+    const networkVoicesMenuOptions = [{
+      value: DEFAULT_NETWORK_VOICE,
+      name: this.i18n('selectToSpeakOptionsDefaultNetworkVoice'),
+    }];
+
+    // Group voices by language, and languages by language family.
+    this.groupAndAddLanguagesAndVoices_(
+        this.voices_, lang, languagesMenuOptions, localVoicesMenuOptions,
+        networkVoicesMenuOptions);
+
+    // Update the dropdowns on the page.
+    this.languagesMenuOptions_ = languagesMenuOptions;
+    this.localVoicesMenuOptions_ = localVoicesMenuOptions;
+    this.networkVoicesMenuOptions_ = networkVoicesMenuOptions;
+  }
+
+  /**
+   * Group and sort available voices by language, and add languages, local
+   * voices, and network voices to their respective select elements.
+   * TODO(crbug.com/1234115): Add unit tests for this method.
+   */
+  private groupAndAddLanguagesAndVoices_(
+      voices: HandlerVoice[], preferredLang: string,
+      languageOptions: DropdownMenuOptionList,
+      localOptions: DropdownMenuOptionList,
+      networkOptions: DropdownMenuOptionList) {
+    // Group voices by language.
+    const languageDisplayNames = new Map();
+    const localVoices = new Map();
+    const networkVoices = new Map();
+
+    voices.forEach(voice => {
+      if (!this.isVoiceUsable_(voice)) {
+        return;
+      }
+      // Only show language names based on base language code.
+      const languageCode = this.getLanguageShortCode_(voice.lang || '');
+      const displayName = voice.displayLanguage;
+      if (!displayName) {
+        return;
+      }
+      languageDisplayNames.set(languageCode, displayName);
+      if (voice.extensionId === ENHANCED_TTS_EXTENSION_ID) {
+        // Get display name from locale for enhanced voices, since the
+        // supplied voiceName is not human-readable (e.g. enc-wavenet).
+        voice.displayName = voice.displayLanguageAndCountry;
+        this.addVoiceToMapForLanguage_(voice, networkVoices, languageCode);
+      } else {
+        voice.displayName = voice.voiceName;
+        this.addVoiceToMapForLanguage_(voice, localVoices, languageCode);
+      }
+    });
+
+    this.populateLanguages_(languageDisplayNames, languageOptions);
+
+    // Sort voices by language, with the preferred language on top.
+    const voiceLanguagesList = Array.from(languageDisplayNames.keys());
+    voiceLanguagesList.sort(
+        (lang1, lang2) => (Number(lang2 === preferredLang) -
+                           Number(lang1 === preferredLang)) ||
+            lang1.localeCompare(lang2));
+
+    // Populate local and network selects.
+    voiceLanguagesList.forEach(voiceLang => {
+      this.appendVoicesToOptions_(
+          localOptions, localVoices.get(voiceLang), /*numberVoices=*/ false);
+      this.appendVoicesToOptions_(
+          networkOptions, networkVoices.get(voiceLang),
+          /*numberVoices=*/ true);
+    });
+  }
+
+  /**
+   * Populate language select element with language display names.
+   * |languageDisplayNames| is a Map of language code (e.g. en) to display name
+   * (e.g. English).
+   */
+  private populateLanguages_(
+      languageDisplayNames: Map<string, string>,
+      languageOptions: DropdownMenuOptionList) {
+    const supportedLanguagesList = Array.from(languageDisplayNames.keys());
+    supportedLanguagesList.sort(
+        (lang1, lang2) => languageDisplayNames.get(lang1)!.localeCompare(
+            languageDisplayNames.get(lang2)!));
+    supportedLanguagesList.forEach(language => {
+      languageOptions.push(
+          {value: language, name: languageDisplayNames.get(language)!});
+    });
+  }
+
+  /**
+   * Checks if a voice has the properties and events needed for Select-to-speak.
+   */
+  private isVoiceUsable_(voice: HandlerVoice): boolean {
+    if (!voice.voiceName || !voice.lang) {
+      return false;
+    }
+    if (!voice.eventTypes.includes(EventType.START) ||
+        !voice.eventTypes.includes(EventType.END) ||
+        !voice.eventTypes.includes(EventType.WORD) ||
+        !voice.eventTypes.includes(EventType.CANCELLED)) {
+      // Required event types for Select-to-Speak.
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Returns the ISO 639 code (e.g. en or yue) for the given language code (e.g.
+   * en-us).
+   */
+  private getLanguageShortCode_(lang: string): string {
+    return lang.trim().split(/-|_/)[0];
+  }
+
+  /**
+   * Groups voices by display name (e.g. English (Australia)) and if there is
+   * more than one voice per display name, adds a numerical index to them (e.g.
+   * English (Australia) 1) for disambiguation.
+   */
+  private addIndexToVoiceDisplayNames_(voiceList: HandlerVoice[]) {
+    const displayNameCounts = new Map<string, HandlerVoice[]>();
+    voiceList.forEach(voice => {
+      if (!displayNameCounts.has(voice.displayName!)) {
+        displayNameCounts.set(voice.displayName!, [voice]);
+      } else {
+        displayNameCounts.get(voice.displayName!)!.push(voice);
+      }
+    });
+    for (const voiceGroup of displayNameCounts.values()) {
+      if (voiceGroup.length > 1) {
+        let index = 1;
+        voiceGroup.forEach(voice => {
+          voice.displayName =
+              String(this.i18nAdvanced('selectToSpeakOptionsNaturalVoiceName', {
+                substitutions: [
+                  voice.displayName!,
+                  String(index),
+                ],
+              }));
+          index += 1;
+        });
+      }
+    }
+  }
+
+  /**
+   * Add options corresponding to the given list of voices to a select element.
+   * If |numberVoices| is true, add numbers to disambiguate voices with
+   * identical display names.
+   */
+  private appendVoicesToOptions_(
+      options: DropdownMenuOptionList, voiceList: HandlerVoice[],
+      numberVoices: boolean) {
+    if (!voiceList) {
+      return;
+    }
+    if (voiceList.length > 1) {
+      voiceList.sort((a, b) => a.displayName!.localeCompare(b.displayName!));
+      if (numberVoices) {
+        this.addIndexToVoiceDisplayNames_(voiceList);
+      }
+    }
+
+    voiceList.forEach(
+        voice =>
+            options.push({value: voice.voiceName, name: voice.displayName!}));
+  }
+
+  /**
+   * Adds a voice to the map entry corresponding to the given language.
+   */
+  private addVoiceToMapForLanguage_(
+      voice: HandlerVoice, map: Map<string, HandlerVoice[]>, lang: string) {
+    voice.languageCode = lang;
+    if (map.has(lang)) {
+      map.get(lang)!.push(voice);
+    } else {
+      map.set(lang, [voice]);
+    }
   }
 }
 

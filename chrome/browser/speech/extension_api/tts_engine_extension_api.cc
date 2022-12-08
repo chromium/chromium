@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api_constants.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,6 +40,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using extensions::EventRouter;
@@ -197,8 +199,11 @@ bool GetTtsEventType(const std::string event_type_string,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool CanUseEnhancedNetworkVoices(const GURL& source_url, Profile* profile) {
-  // Currently only Select-to-speak can use Enhanced Network voices.
-  if (source_url.host() != extension_misc::kSelectToSpeakExtensionId)
+  // Currently only Select-to-speak and its settings page can use Enhanced
+  // Network voices.
+  if (source_url.host() != extension_misc::kSelectToSpeakExtensionId &&
+      source_url != chrome::GetOSSettingsUrl(
+                        chromeos::settings::mojom::kSelectToSpeakSubpagePath))
     return false;
 
   // Check if these voices are disallowed by policy.

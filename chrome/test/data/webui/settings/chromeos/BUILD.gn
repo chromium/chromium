@@ -180,6 +180,7 @@ test_files = [
   "test_personalization_hub_browser_proxy.js",
   "test_privacy_hub_browser_proxy.js",
   "test_profile_info_browser_proxy.js",
+  "test_select_to_speak_subpage_browser_proxy.js",
   "tether_connection_dialog_test.js",
   "text_to_speech_page_tests.js",
   "text_to_speech_subpage_tests.js",

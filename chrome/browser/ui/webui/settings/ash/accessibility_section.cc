@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/settings/accessibility_main_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/accessibility_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/ash/select_to_speak_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/switch_access_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/tts_handler.h"
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
@@ -721,12 +722,20 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DISABLED_DESCRIPTION},
       {"selectToSpeakLinkTitle",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LINK_TITLE},
+      {"selectToSpeakOptionsLanguagesFilterDescription",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_LANGUAGES_FILTER_DESCRIPTION},
+      {"selectToSpeakOptionsVoiceDescription",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_DESCRIPTION},
       {"selectToSpeakOptionsVoiceSwitchingDescription",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_VOICE_SWITCHING_DESCRIPTION},
       {"selectToSpeakOptionsEnhancedNetworkVoicesDescription",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICES_DESCRIPTION},
       {"selectToSpeakOptionsEnhancedNetworkVoicesSubtitle",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICES_SUBTITLE},
+      {"selectToSpeakOptionsEnhancedNetworkVoice",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_ENHANCED_NETWORK_VOICE},
+      {"selectToSpeakOptionsNaturalVoiceName",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_NATURAL_VOICE_NAME},
       {"selectToSpeakOptionsHighlightDescription",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT_DESCRIPTION},
       {"selectToSpeakOptionsHighlightColorDescription",
@@ -757,6 +766,12 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_HIGHLIGHT},
       {"selectToSpeakOptionsSpeech",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SPEECH},
+      {"selectToSpeakOptionsDeviceLanguage",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DEVICE_LANGUAGE},
+      {"selectToSpeakOptionsSystemVoice",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_SYSTEM_VOICE},
+      {"selectToSpeakOptionsDefaultNetworkVoice",
+       IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_DEFAULT_NETWORK_VOICE},
       {"selectToSpeakOptionsLabel",
        IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_OPTIONS_LABEL},
       {"selectToSpeakTitle", IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_TITLE},
@@ -961,6 +976,7 @@ void AccessibilitySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<SwitchAccessHandler>(profile()->GetPrefs()));
   web_ui->AddMessageHandler(std::make_unique<TtsHandler>());
+  web_ui->AddMessageHandler(std::make_unique<SelectToSpeakHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<::settings::FontHandler>(profile()));
   web_ui->AddMessageHandler(

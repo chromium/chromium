@@ -110,16 +110,43 @@ found in the LICENSE file.
 
 <h2>$i18n{selectToSpeakOptionsSpeech}</h2>
 <div class="sub-item">
+  <div class="settings-box continuation">
+    <div class="start settings-box-text">
+      $i18n{selectToSpeakOptionsLanguagesFilterDescription}
+    </div>
+    <settings-dropdown-menu
+        label="$i18n{selectToSpeakOptionsLanguagesFilterDescription}"
+        pref="{{languageFilterVirtualPref_}}"
+        menu-options="[[languagesMenuOptions_]]">
+    </settings-dropdown-menu>
+  </div>
+  <div class="settings-box continuation">
+    <div class="start settings-box-text">
+      $i18n{selectToSpeakOptionsVoiceDescription}
+    </div>
+    <settings-dropdown-menu id="voiceDropdown"
+        label="$i18n{selectToSpeakOptionsVoiceDescription}"
+        pref="{{prefs.settings.a11y.select_to_speak_voice_name}}"
+        menu-options="[[localVoicesMenuOptions_]]"
+        deep-link-focus-id$="[[Setting.kSelectToSpeakVoice]]">
+      </settings-dropdown-menu>
+  </div>
   <template is="dom-if"
       if="[[isExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled_]]">
+    <!-- TODO(crbug.com/1354821): Figure out how to make settings-toggle-button
+    and other control labels speakable with Select-to-speak. -->
+    <!-- TODO(crbug.com/1354821): Disable and turn off or hide
+    voiceSwitchingToggle when enhanced network voices is enabled. -->
     <settings-toggle-button
         id="voiceSwitchingToggle"
-        class="settings-box continuation"
+        class="settings-box"
         pref="{{prefs.settings.a11y.select_to_speak_voice_switching}}"
         label="$i18n{selectToSpeakOptionsVoiceSwitchingDescription}"
         deep-link-focus-id$="[[Setting.kSelectToSpeakVoiceSwitching]]">
     </settings-toggle-button>
   </template>
+  <!-- TODO(crbug.com/1354821): Disable and turn off or hide enhanced network
+  voices settings when disabled by policy. -->
   <settings-toggle-button
       id="enhancedNetworkVoicesToggle"
       class="settings-box"
@@ -129,6 +156,22 @@ found in the LICENSE file.
       learn-more-url="$i18n{selectToSpeakLearnMoreUrl}"
       deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoices]]">
   </settings-toggle-button>
+  <template is="dom-if"
+      if="[[prefs.settings.a11y.select_to_speak_enhanced_network_voices.value]]">
+    <div class="indented">
+      <div class="settings-box">
+        <div class="start settings-box-text">
+          $i18n{selectToSpeakOptionsEnhancedNetworkVoice}
+        </div>
+        <settings-dropdown-menu id="enhancedNetworkVoiceDropdown"
+            label="$i18n{selectToSpeakOptionsEnhancedNetworkVoice}"
+            pref="{{prefs.settings.a11y.select_to_speak_enhanced_voice_name}}"
+            menu-options="[[networkVoicesMenuOptions_]]"
+            deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoice]]">
+        </settings-dropdown-menu>
+      </div>
+    </div>
+  </template>
 </div>
 
 <h2>$i18n{selectToSpeakOptionsHighlight}</h2>
@@ -158,7 +201,7 @@ found in the LICENSE file.
       if="[[prefs.settings.a11y.select_to_speak_word_highlight.value]]">
     <div class="indented">
       <div class="settings-box continuation">
-        <div class="start settings-box-text" aria-hidden="true">
+        <div class="start settings-box-text">
           $i18n{selectToSpeakOptionsHighlightColorDescription}
         </div>
         <settings-dropdown-menu id="highlightColorDropdown"
@@ -169,7 +212,7 @@ found in the LICENSE file.
       </div>
     </div>
   </template>
-  <div class="background-preview" aria-hidden=true>
+  <div class="background-preview">
     <p class="background-preview-unselected">
       $i18n{selectToSpeakOptionsSampleText}
     </p>

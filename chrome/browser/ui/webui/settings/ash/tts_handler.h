@@ -6,15 +6,13 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_TTS_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chrome/browser/ui/webui/settings/ash/settings_with_tts_preview_handler.h"
 #include "content/public/browser/tts_controller.h"
 
 namespace ash::settings {
 
-// Chrome "/manageAccessibility/tts/*" settings page UI handler.
-class TtsHandler : public ::settings::SettingsPageUIHandler,
-                   public content::VoicesChangedDelegate,
-                   public content::UtteranceEventDelegate {
+// ChromeOS "/manageAccessibility/tts/*" settings page UI handler.
+class TtsHandler : public SettingsWithTtsPreviewHandler {
  public:
   TtsHandler();
 
@@ -25,30 +23,21 @@ class TtsHandler : public ::settings::SettingsPageUIHandler,
 
   void HandleGetAllTtsVoiceData(const base::Value::List& args);
   void HandleGetTtsExtensions(const base::Value::List& args);
-  void HandlePreviewTtsVoice(const base::Value::List& args);
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
-  void OnJavascriptAllowed() override;
-  void OnJavascriptDisallowed() override;
 
   // VoicesChangedDelegate implementation.
   void OnVoicesChanged() override;
 
-  // UtteranceEventDelegate implementation.
-  void OnTtsEvent(content::TtsUtterance* utterance,
-                  content::TtsEventType event_type,
-                  int char_index,
-                  int length,
-                  const std::string& error_message) override;
+  // SettingsWithTtsPreviewHandler implementation.
+  GURL GetSourceURL() const override;
 
  private:
   void WakeTtsEngine(const base::Value::List& args);
   void OnTtsEngineAwake(bool success);
-  void RefreshTtsVoices(const base::Value::List& args);
   int GetVoiceLangMatchScore(const content::VoiceData* voice,
                              const std::string& app_locale);
-  void RemoveTtsControllerDelegates();
 
   base::WeakPtrFactory<TtsHandler> weak_factory_{this};
 };

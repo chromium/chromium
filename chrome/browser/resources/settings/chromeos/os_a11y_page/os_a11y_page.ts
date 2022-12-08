@@ -174,10 +174,6 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       this.addFocusConfig(
           routes.A11Y_AUDIO_AND_CAPTIONS, '#audio-and-captions-page-trigger');
     }
-    if (routes.A11Y_SELECT_TO_SPEAK) {
-      this.addFocusConfig(
-          routes.A11Y_SELECT_TO_SPEAK, '#select-to-speak-subpage-trigger');
-    }
 
     this.addWebUiListener(
         'screen-reader-state-changed',
