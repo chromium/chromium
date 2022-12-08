@@ -54,6 +54,10 @@ FullRestoreReadHandler::~FullRestoreReadHandler() = default;
 void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   int32_t window_id = window->GetProperty(app_restore::kRestoreWindowIdKey);
 
+  // Patch fix for (b/261765975).
+  if (window_id < app_restore::kParentToHiddenContainer)
+    return;
+
   if (app_restore::IsArcWindow(window)) {
     // If there isn't restore data for ARC apps, we don't need to handle ARC app
     // windows restoration.
