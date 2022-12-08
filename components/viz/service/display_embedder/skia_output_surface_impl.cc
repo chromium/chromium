@@ -37,6 +37,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -48,6 +49,7 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -402,7 +404,9 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
   return current_paint_->recorder()->getCanvas();
 }
 
-void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
+void SkiaOutputSurfaceImpl::MakePromiseSkImage(
+    ImageContext* image_context,
+    const gfx::ColorSpace& yuv_color_space) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
   DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
@@ -431,20 +435,50 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
   if (image_context->has_image())
     return;
 
-  SkColorType color_type =
-      ToClosestSkColorType(true /* gpu_compositing */, image_context->format());
-  GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-      image_context->format().resource_format(),
-      image_context->mailbox_holder().texture_target,
-      image_context->ycbcr_info());
-  FulfillForPlane* fulfill = new FulfillForPlane(impl);
-  auto image = SkImage::MakePromiseTexture(
-      gr_context_thread_safe_, backend_format,
-      {image_context->size().width(), image_context->size().height()},
-      GrMipMapped::kNo, image_context->origin(), color_type,
-      image_context->alpha_type(), image_context->color_space(), Fulfill,
-      CleanUp, fulfill);
-  image_context->SetImage(std::move(image), backend_format);
+  auto format = image_context->format();
+  if (format.is_single_plane() || format.PrefersExternalSampler()) {
+    SkColorType color_type =
+        ToClosestSkColorType(/*gpu_compositing=*/true, format);
+    GrBackendFormat backend_format = GetGrBackendFormatForTexture(
+        format, /*plane_index=*/0,
+        image_context->mailbox_holder().texture_target,
+        image_context->ycbcr_info());
+    FulfillForPlane* fulfill = new FulfillForPlane(impl);
+    auto image = SkImage::MakePromiseTexture(
+        gr_context_thread_safe_, backend_format,
+        gfx::SizeToSkISize(image_context->size()), GrMipMapped::kNo,
+        image_context->origin(), color_type, image_context->alpha_type(),
+        image_context->color_space(), Fulfill, CleanUp, fulfill);
+    image_context->SetImage(std::move(image), {backend_format});
+  } else {
+    SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
+    SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
+    // TODO(crbug.com/828599): This should really default to rec709.
+    SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
+    yuv_color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
+                                      &sk_yuv_color_space);
+    SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()),
+                         plane_config, subsampling, sk_yuv_color_space);
+
+    std::vector<GrBackendFormat> formats;
+    void* fulfills[4] = {};
+    for (int plane_index = 0; plane_index < format.NumberOfPlanes();
+         ++plane_index) {
+      DCHECK_EQ(image_context->origin(), kTopLeft_GrSurfaceOrigin);
+      formats.push_back(GetGrBackendFormatForTexture(
+          format, plane_index, image_context->mailbox_holder().texture_target,
+          image_context->ycbcr_info()));
+      fulfills[plane_index] = new FulfillForPlane(impl, plane_index);
+    }
+
+    GrYUVABackendTextureInfo yuva_backend_info(
+        yuva_info, formats.data(), GrMipmapped::kNo, kTopLeft_GrSurfaceOrigin);
+    auto image = SkImage::MakePromiseYUVATexture(
+        gr_context_thread_safe_, yuva_backend_info,
+        image_context->color_space(), Fulfill, CleanUp, fulfills);
+    DCHECK(image);
+    image_context->SetImage(std::move(image), formats);
+  }
 
   if (mailbox_holder.sync_token.HasData()) {
     resource_sync_tokens_.push_back(mailbox_holder.sync_token);
@@ -464,8 +498,8 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
 
   auto* y_context = static_cast<ImageContextImpl*>(contexts[0]);
   // Note: YUV to RGB conversion is handled by a color filter in SkiaRenderer.
-  SkYUVAInfo yuva_info({y_context->size().width(), y_context->size().height()},
-                       plane_config, subsampling, kIdentity_SkYUVColorSpace);
+  SkYUVAInfo yuva_info(gfx::SizeToSkISize(y_context->size()), plane_config,
+                       subsampling, kIdentity_SkYUVColorSpace);
 
   GrBackendFormat formats[4] = {};
   SkDeferredDisplayListRecorder::PromiseImageTextureContext
@@ -473,15 +507,15 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
   void* fulfills[4] = {};
   for (size_t i = 0; i < contexts.size(); ++i) {
     auto* context = static_cast<ImageContextImpl*>(contexts[i]);
-    DCHECK(context->origin() == kTopLeft_GrSurfaceOrigin);
+    DCHECK_EQ(context->origin(), kTopLeft_GrSurfaceOrigin);
     formats[i] =
-        GetGrBackendFormatForTexture(context->format().resource_format(),
+        GetGrBackendFormatForTexture(context->format(), /*plane_index=*/0,
                                      context->mailbox_holder().texture_target,
                                      /*ycbcr_info=*/absl::nullopt);
 
     // NOTE: We don't have promises for individual planes, but still need format
     // for fallback
-    context->SetImage(nullptr, formats[i]);
+    context->SetImage(nullptr, {formats[i]});
 
     if (context->mailbox_holder().sync_token.HasData()) {
       resource_sync_tokens_.push_back(context->mailbox_holder().sync_token);
@@ -723,9 +757,9 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
   DCHECK(current_paint_);
 
   auto& image_context = render_pass_image_cache_[id];
+  auto si_format = SharedImageFormat::SinglePlane(format);
   if (!image_context) {
     gpu::MailboxHolder mailbox_holder(mailbox, gpu::SyncToken(), 0);
-    auto si_format = SharedImageFormat::SinglePlane(format);
     image_context = std::make_unique<ImageContextImpl>(
         mailbox_holder, size, si_format, /*maybe_concurrent_reads=*/false,
         /*ycbcr_info=*/absl::nullopt, std::move(color_space),
@@ -735,15 +769,16 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
     SkColorType color_type =
         ResourceFormatToClosestSkColorType(true /* gpu_compositing */, format);
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
-        format, GL_TEXTURE_2D, /*ycbcr_info=*/absl::nullopt);
+        si_format, /*plane_index=*/0, GL_TEXTURE_2D,
+        /*ycbcr_info=*/absl::nullopt);
     FulfillForPlane* fulfill = new FulfillForPlane(image_context.get());
     auto image = SkImage::MakePromiseTexture(
         gr_context_thread_safe_, backend_format,
-        {image_context->size().width(), image_context->size().height()},
+        gfx::SizeToSkISize(image_context->size()),
         mipmap ? GrMipMapped::kYes : GrMipMapped::kNo, image_context->origin(),
         color_type, image_context->alpha_type(), image_context->color_space(),
         Fulfill, CleanUp, fulfill);
-    image_context->SetImage(std::move(image), backend_format);
+    image_context->SetImage(std::move(image), {backend_format});
     if (!image_context->has_image()) {
       return nullptr;
     }
@@ -1178,17 +1213,17 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(SyncMode sync_mode) {
 }
 
 GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
-    ResourceFormat resource_format,
+    SharedImageFormat si_format,
+    int plane_index,
     uint32_t gl_texture_target,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
   if (dependency_->IsUsingVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
     if (!ycbcr_info) {
       // YCbCr info is required for YUV images.
-      DCHECK(resource_format != YVU_420 &&
-             resource_format != YUV_420_BIPLANAR &&
-             resource_format != YUVA_420_TRIPLANAR && resource_format != P010);
-      return GrBackendFormat::MakeVk(ToVkFormat(resource_format));
+      DCHECK(si_format.is_single_plane());
+      // TODO(hitawala): Add multiplanar support for Skia-Vulkan.
+      return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format));
     }
 
     // Assume optimal tiling.
@@ -1208,12 +1243,14 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 #endif  // BUILDFLAG(ENABLE_VULKAN)
   } else if (dependency_->IsUsingDawn()) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    wgpu::TextureFormat format = ToDawnFormat(resource_format);
+    // TODO(hitawala): Add multiplanar support for Skia-Dawn.
+    wgpu::TextureFormat format = gpu::ToDawnFormat(si_format);
     return GrBackendFormat::MakeDawn(format);
 #endif
   } else if (dependency_->IsUsingMetal()) {
 #if BUILDFLAG(IS_APPLE)
-    return GrBackendFormat::MakeMtl(ToMTLPixelFormat(resource_format));
+    return GrBackendFormat::MakeMtl(
+        gpu::ToMTLPixelFormat(si_format, plane_index));
 #endif
   } else {
 #if !BUILDFLAG(IS_LINUX)
@@ -1222,8 +1259,16 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     DCHECK(!ycbcr_info);
 #endif
     // Convert internal format from GLES2 to platform GL.
+    bool use_angle_rgbx_format = impl_on_gpu_->GetFeatureInfo()
+                                     ->feature_flags()
+                                     .angle_rgbx_internal_format;
+    auto gl_format_desc = si_format.PrefersExternalSampler()
+                              ? gpu::ToGLFormatDescExternalSampler(si_format)
+                              : gpu::ToGLFormatDesc(si_format, plane_index,
+                                                    use_angle_rgbx_format);
+    auto gl_storage_internal_format = gl_format_desc.storage_internal_format;
     unsigned int texture_storage_format = gpu::GetGrGLBackendTextureFormat(
-        impl_on_gpu_->GetFeatureInfo(), resource_format,
+        impl_on_gpu_->GetFeatureInfo(), gl_storage_internal_format,
         gr_context_thread_safe_);
 
     return GrBackendFormat::MakeGL(texture_storage_format, gl_texture_target);

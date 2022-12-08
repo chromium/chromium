@@ -112,7 +112,9 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintCurrentFrame() {
   return sk_surface->getCanvas();
 }
 
-void FakeSkiaOutputSurface::MakePromiseSkImage(ImageContext* image_context) {
+void FakeSkiaOutputSurface::MakePromiseSkImage(
+    ImageContext* image_context,
+    const gfx::ColorSpace& yuv_color_space) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (image_context->has_image())
@@ -131,7 +133,7 @@ void FakeSkiaOutputSurface::MakePromiseSkImage(ImageContext* image_context) {
                                kTopLeft_GrSurfaceOrigin, sk_color_type,
                                image_context->alpha_type(),
                                image_context->color_space()),
-      backend_texture.getBackendFormat());
+      {backend_texture.getBackendFormat()});
 }
 
 sk_sp<SkImage> FakeSkiaOutputSurface::MakePromiseSkImageFromYUV(

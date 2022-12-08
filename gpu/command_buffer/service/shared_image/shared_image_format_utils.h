@@ -100,7 +100,8 @@ GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format);
 // SharedImageFormat.
 #if BUILDFLAG(IS_APPLE)
 // Returns MtlPixelFormat format for given `format`.
-GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format);
+GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
+                                               int plane_index = 0);
 #endif
 
 }  // namespace gpu

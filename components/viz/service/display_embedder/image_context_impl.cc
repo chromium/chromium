@@ -111,19 +111,20 @@ void ImageContextImpl::CreateFallbackImage(
   // We can't allocate a fallback texture as the original texture was externally
   // allocated. Skia will skip drawing a null SkPromiseImageTexture, do nothing
   // and leave it null.
-  if (backend_format().textureType() == GrTextureType::kExternal)
+  const auto& formats = backend_formats();
+  if (formats.empty() || formats[0].textureType() == GrTextureType::kExternal)
     return;
 
-  DCHECK(!format().PrefersExternalSampler());
   DCHECK(!fallback_context_state_);
   fallback_context_state_ = context_state;
 
   std::vector<sk_sp<SkPromiseImageTexture>> promise_textures;
   for (int plane_index = 0; plane_index < format().NumberOfPlanes();
        plane_index++) {
+    DCHECK_NE(formats[plane_index].textureType(), GrTextureType::kExternal);
     auto fallback_texture =
         fallback_context_state_->gr_context()->createBackendTexture(
-            size().width(), size().height(), backend_format(),
+            size().width(), size().height(), formats[plane_index],
             GetFallbackColorForPlane(format(), plane_index), GrMipMapped::kNo,
             GrRenderable::kYes);
 

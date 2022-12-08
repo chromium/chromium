@@ -113,16 +113,15 @@ GLenum GLInternalFormat(viz::SharedImageFormat format, int plane_index) {
 
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel 8-bit planes Y, U, V, A return GL_RED_EXT.
-  // For single channel 10-bit planes Y return GL_R16_EXT.
+  // For single channel 10/16-bit planes Y,  U, V, A return GL_R16_EXT.
   // For 2 channel plane 8-bit UV return GL_RG_EXT.
-  // For 2 channel plane 16-bit UV return GL_RG16_EXT.
+  // For 2 channel plane 10/16-bit UV return GL_RG16_EXT.
   int num_channels = format.NumChannelsInPlane(plane_index);
   DCHECK_LE(num_channels, 2);
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
       return num_channels == 2 ? GL_RG_EXT : GL_RED_EXT;
     case viz::SharedImageFormat::ChannelFormat::k10:
-      return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
     case viz::SharedImageFormat::ChannelFormat::k16:
       return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
     case viz::SharedImageFormat::ChannelFormat::k16F:
@@ -140,16 +139,15 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
 
   // For multiplanar formats without external sampler, GL formats are per plane.
   // For single channel 8-bit planes Y, U, V, A return GL_R8_EXT.
-  // For single channel 10-bit planes Y return GL_R16_EXT.
+  // For single channel 10/16-bit planes Y,  U, V, A return GL_R16_EXT.
   // For 2 channel plane 8-bit UV return GL_RG8_EXT.
-  // For 2 channel plane 16-bit UV return GL_RG16_EXT.
+  // For 2 channel plane 10/16-bit UV return GL_RG16_EXT.
   int num_channels = format.NumChannelsInPlane(plane_index);
   DCHECK_LE(num_channels, 2);
   switch (format.channel_format()) {
     case viz::SharedImageFormat::ChannelFormat::k8:
       return num_channels == 2 ? GL_RG8_EXT : GL_R8_EXT;
     case viz::SharedImageFormat::ChannelFormat::k10:
-      return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
     case viz::SharedImageFormat::ChannelFormat::k16:
       return num_channels == 2 ? GL_RG16_EXT : GL_R16_EXT;
     case viz::SharedImageFormat::ChannelFormat::k16F:

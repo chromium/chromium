@@ -31,11 +31,12 @@ void ExternalUseClient::ImageContext::OnContextLost() {
   NOTREACHED();
 }
 
-void ExternalUseClient::ImageContext::SetImage(sk_sp<SkImage> image,
-                                               GrBackendFormat backend_format) {
+void ExternalUseClient::ImageContext::SetImage(
+    sk_sp<SkImage> image,
+    std::vector<GrBackendFormat> backend_formats) {
   DCHECK(!image_);
   image_ = std::move(image);
-  backend_format_ = backend_format;
+  backend_formats_ = backend_formats;
 }
 
 }  // namespace viz

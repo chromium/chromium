@@ -78,9 +78,12 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
 
     bool has_image() { return !!image_; }
     sk_sp<SkImage> image() { return image_; }
-    void SetImage(sk_sp<SkImage> image, GrBackendFormat backend_format);
+    void SetImage(sk_sp<SkImage> image,
+                  std::vector<GrBackendFormat> backend_formats);
     void clear_image() { image_.reset(); }
-    const GrBackendFormat& backend_format() { return backend_format_; }
+    const std::vector<GrBackendFormat>& backend_formats() {
+      return backend_formats_;
+    }
     const cc::PaintOpBuffer* paint_op_buffer() const {
       return paint_op_buffer_;
     }
@@ -110,7 +113,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
 
     // The promise image which is used on display thread.
     sk_sp<SkImage> image_;
-    GrBackendFormat backend_format_;
+    std::vector<GrBackendFormat> backend_formats_;
     raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
     absl::optional<SkColor4f> clear_color_;
   };

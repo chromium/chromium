@@ -77,7 +77,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       base::OnceClosure on_finished,
       base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
       bool is_overlay) override;
-  void MakePromiseSkImage(ImageContext* image_context) override;
+  void MakePromiseSkImage(ImageContext* image_context,
+                          const gfx::ColorSpace& yuv_color_space) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
       const gfx::Size& size,

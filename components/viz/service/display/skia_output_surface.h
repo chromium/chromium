@@ -86,9 +86,11 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   // Skia will not read the content of the resource until the |sync_token| in
   // the |image_context| is satisfied. The SwapBuffers should take care of this
   // by scheduling a GPU task with all resource sync tokens recorded by
-  // MakePromiseSkImage for the current frame.
+  // MakePromiseSkImage for the current frame. The |yuv_color_space| is the
+  // original color space needed for yuv to rgb conversion.
   virtual void MakePromiseSkImage(
-      ExternalUseClient::ImageContext* image_context) = 0;
+      ExternalUseClient::ImageContext* image_context,
+      const gfx::ColorSpace& yuv_color_space) = 0;
 
   // Make a promise SkImage from the given |contexts| and |image_color_space|.
   // The number of contexts provided should match the number of planes indicated

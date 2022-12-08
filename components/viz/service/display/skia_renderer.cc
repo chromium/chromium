@@ -634,7 +634,10 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     image_context->set_origin(origin);
   }
 
-  skia_renderer->skia_output_surface_->MakePromiseSkImage(image_context);
+  // We need the original TransferableResource.color_space for YUV => RGB
+  // conversion.
+  skia_renderer->skia_output_surface_->MakePromiseSkImage(
+      image_context, resource_provider->GetOverlayColorSpace(resource_id));
   paint_op_buffer_ = image_context->paint_op_buffer();
   clear_color_ = image_context->clear_color();
   sk_image_ = image_context->image().get();
