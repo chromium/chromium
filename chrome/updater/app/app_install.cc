@@ -206,13 +206,6 @@ void AppInstall::WakeCandidate() {
       update_service_internal, base::WrapRefCounted(this)));
 }
 
-#if BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1276114) - implement.
-void AppInstall::WakeCandidateDone() {
-  NOTIMPLEMENTED();
-}
-#endif  // BUILDFLAG(IS_LINUX)
-
 void AppInstall::FetchPolicies() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

@@ -151,15 +151,18 @@ base::RepeatingCallback<bool(const std::string&)> GetScopePredicate(
     const bool is_match = [&scope, &request_body]() {
       const absl::optional<base::Value> doc =
           base::JSONReader::Read(request_body);
-      if (!doc || !doc->is_dict())
+      if (!doc || !doc->is_dict()) {
         return false;
+      }
       const base::Value::Dict* object_request =
           doc->GetDict().FindDict("request");
-      if (!object_request)
+      if (!object_request) {
         return false;
+      }
       absl::optional<bool> ismachine = object_request->FindBool("ismachine");
-      if (!ismachine.has_value())
+      if (!ismachine.has_value()) {
         return false;
+      }
       switch (scope) {
         case UpdaterScope::kSystem:
           return *ismachine;
@@ -200,8 +203,9 @@ void ExitTestMode(UpdaterScope scope) {
 int CountDirectoryFiles(const base::FilePath& dir) {
   base::FileEnumerator it(dir, false, base::FileEnumerator::FILES);
   int res = 0;
-  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next())
+  for (base::FilePath name = it.Next(); !name.empty(); name = it.Next()) {
     ++res;
+  }
   return res;
 }
 
@@ -459,8 +463,9 @@ bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   }
   VLOG(0) << " Run command: " << command_line.GetCommandLineString();
   base::Process process = base::LaunchProcess(command_line, {});
-  if (!process.IsValid())
+  if (!process.IsValid()) {
     return false;
+  }
 
   // macOS requires a larger timeout value for --install.
   return process.WaitForExitWithTimeout(2 * TestTimeouts::action_max_timeout(),
@@ -473,8 +478,9 @@ bool WaitFor(base::RepeatingCallback<bool()> predicate,
   auto notify_next = base::TimeTicks::Now() + kOutputInterval;
   const auto deadline = base::TimeTicks::Now() + TestTimeouts::action_timeout();
   while (base::TimeTicks::Now() < deadline) {
-    if (predicate.Run())
+    if (predicate.Run()) {
       return true;
+    }
     if (notify_next < base::TimeTicks::Now()) {
       still_waiting.Run();
       notify_next += kOutputInterval;
@@ -596,8 +602,9 @@ void StressUpdateService(UpdaterScope scope) {
   // Runs on the main sequence.
   auto loop_closure = [&]() {
     LOG(ERROR) << __func__ << ": n: " << n;
-    if (--n)
+    if (--n) {
       return false;
+    }
     loop.Quit();
     return true;
   };
@@ -721,8 +728,7 @@ std::set<base::FilePath::StringType> GetTestProcessNames() {
       }(),
   };
 #else
-  NOTREACHED();
-  return {};
+  return {GetExecutableRelativePath().BaseName().value()};
 #endif
 }
 

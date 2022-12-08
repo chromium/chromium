@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
@@ -51,9 +52,6 @@
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #endif  // BUILDFLAG(IS_WIN)
-
-// TODO(1367437): Enable tests once updater is implemented for Linux
-#if !BUILDFLAG(IS_LINUX)
 
 namespace updater::test {
 namespace {
@@ -104,8 +102,9 @@ class IntegrationTest : public ::testing::Test {
 
   void TearDown() override {
     ExitTestMode();
-    if (!HasFatalFailure())
+    if (!HasFatalFailure()) {
       ExpectClean();
+    }
     PrintLog();
 
     // TODO(crbug.com/1159189): Use a specific test output directory
@@ -354,6 +353,10 @@ class IntegrationTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment environment_;
+
+#if BUILDFLAG(IS_POSIX)
+  ScopedIPCSupportWrapper ipc_support_;
+#endif
 };
 
 // The project's position is that component builds are not portable outside of
@@ -380,6 +383,9 @@ TEST_F(IntegrationTest, Install) {
   Uninstall();
 }
 
+// TODO(crbug.com/1398845) Enable test once SetupRealUpdaterLowerVersion
+// is implemented.
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(IntegrationTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   EXPECT_TRUE(WaitForUpdaterExit());
@@ -397,10 +403,6 @@ TEST_F(IntegrationTest, OverinstallWorking) {
 TEST_F(IntegrationTest, OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
   EXPECT_TRUE(WaitForUpdaterExit());
-
-  // TODO(crbug.com/1393788) - find a different way to break the CIPD build,
-  // maybe rename the directory then restore it back before uninstalling such
-  // that clean up is successful.
   DeleteUpdaterDirectory();
 
   // Since the old version is not working, the new version should install and
@@ -411,6 +413,7 @@ TEST_F(IntegrationTest, OverinstallBroken) {
 
   Uninstall();
 }
+#endif  // !BUILDFLAG(IS_LINUX)
 
 TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Install();
@@ -783,6 +786,9 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if !defined(COMPONENT_BUILD)
+// TODO(crbug.com/1398845): Enable test once SetupRealUpdaterLowerVersion
+// is implemented.
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
   ScopedServer test_server(test_commands_);
 
@@ -814,7 +820,6 @@ TEST_F(IntegrationTest, InstallLowerVersion) {
   ExpectVersionNotActive(kUpdaterVersion);
   Uninstall();
 
-  // TODO(crbug.com/1393788) - eliminate this special case of clean up.
 #if BUILDFLAG(IS_WIN)
   // This deletes a tree of empty subdirectories corresponding to the crash
   // handler of the lower version updater installed above. `Uninstall` runs
@@ -827,6 +832,7 @@ TEST_F(IntegrationTest, InstallLowerVersion) {
 #endif  // IS_WIN
 }
 
+#endif  // !BUILDFLAG(IS_LINUX)
 #endif
 #endif
 
@@ -960,5 +966,3 @@ TEST_F(IntegrationTest, LegacySilentOfflineInstall) {
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)
 
 }  // namespace updater::test
-
-#endif  // !BUILDFLAG(IS_LINUX)

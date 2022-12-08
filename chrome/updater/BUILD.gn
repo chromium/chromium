@@ -342,6 +342,7 @@ if (is_win || is_mac || is_linux) {
     if (is_linux) {
       sources += [
         "activity_impl_util_linux.cc",
+        "app/app_install_linux.cc",
         "app/server/linux/server.cc",
         "app/server/linux/server.h",
         "app/server/linux/update_service_stub.cc",
