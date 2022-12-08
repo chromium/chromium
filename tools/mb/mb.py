@@ -1720,6 +1720,23 @@ class MetaBuildWrapper:
     is_win = self.platform == 'win32' or 'target_os="win"' in vals['gn_args']
     is_lacros = 'chromeos_is_browser_only=true' in vals['gn_args']
 
+    # This should be true if tests with type='windowed_test_launcher' are
+    # expected to run using xvfb. For example, Linux Desktop, X11 CrOS and
+    # Ozone CrOS builds on Linux (xvfb is not used on CrOS HW or VMs). Note
+    # that one Ozone build can be used to run different backends. Currently,
+    # tests are executed for the headless and X11 backends and both can run
+    # under Xvfb on Linux.
+    use_xvfb = (self.platform.startswith('linux') and not is_android
+                and not is_fuchsia and not is_cros_device)
+
+    asan = 'is_asan=true' in vals['gn_args']
+    msan = 'is_msan=true' in vals['gn_args']
+    tsan = 'is_tsan=true' in vals['gn_args']
+    cfi_diag = 'use_cfi_diag=true' in vals['gn_args']
+    clang_coverage = 'use_clang_coverage=true' in vals['gn_args']
+    java_coverage = 'use_jacoco_coverage=true' in vals['gn_args']
+    javascript_coverage = 'use_javascript_coverage=true' in vals['gn_args']
+
     test_type = isolate_map[target]['type']
 
     if self.use_luci_auth:
@@ -1740,29 +1757,14 @@ class MetaBuildWrapper:
       # generated_scripts.
       cmdline += [script] + isolate_map[target].get('args', [])
 
+      if java_coverage:
+        cmdline += ['--coverage-dir', '${ISOLATED_OUTDIR}/coverage']
+
       return cmdline, []
 
 
     # TODO(crbug.com/816629): Convert all targets to generated_scripts
     # and delete the rest of this function.
-
-    # This should be true if tests with type='windowed_test_launcher' are
-    # expected to run using xvfb. For example, Linux Desktop, X11 CrOS and
-    # Ozone CrOS builds on Linux (xvfb is not used on CrOS HW or VMs). Note
-    # that one Ozone build can be used to run different backends. Currently,
-    # tests are executed for the headless and X11 backends and both can run
-    # under Xvfb on Linux.
-    use_xvfb = (self.platform.startswith('linux') and not is_android
-                and not is_fuchsia and not is_cros_device)
-
-    asan = 'is_asan=true' in vals['gn_args']
-    msan = 'is_msan=true' in vals['gn_args']
-    tsan = 'is_tsan=true' in vals['gn_args']
-    cfi_diag = 'use_cfi_diag=true' in vals['gn_args']
-    clang_coverage = 'use_clang_coverage=true' in vals['gn_args']
-    java_coverage = 'use_jacoco_coverage=true' in vals['gn_args']
-    javascript_coverage = 'use_javascript_coverage=true' in vals['gn_args']
-
     executable = isolate_map[target].get('executable', target)
     executable_suffix = isolate_map[target].get(
         'executable_suffix', '.exe' if is_win else '')
