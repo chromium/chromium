@@ -393,9 +393,10 @@ def DownloadPinnedClang():
                            PINNED_CLANG_VERSION)
 
 
-# TODO(crbug.com/929645): Remove once we don't need gcc's libstdc++.
+# TODO(crbug.com/1013560): Consider linking with libc++ instead of libstdc++.
 def MaybeDownloadHostGcc(args):
-  """Download a modern GCC host compiler on Linux."""
+  """Download the libstdc++ packaged with GCC, which we must link into the clang
+  we are building on Linux."""
   assert sys.platform.startswith('linux')
   if args.gcc_toolchain:
     return

@@ -170,8 +170,12 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
     # * https://reviews.llvm.org/D116528
     RUSTENV['RUSTFLAGS_BOOTSTRAP'] = (
         f'-Clinker={clang_path} -Clink-arg=-fuse-ld=lld '
-        f'-Clink-arg=-Wl,--no-gc-sections -Clink-arg={gcc_toolchain_flag} '
-        f'-L native={gcc_toolchain_path}/lib64')
+        f'-Clink-arg=-Wl,--no-gc-sections)')
+    if gcc_toolchain_flag:
+        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag} '
+    if gcc_toolchain_path:
+        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
+            f' -L native={gcc_toolchain_path}/lib64')
     RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] = RUSTENV['RUSTFLAGS_BOOTSTRAP']
     os.chdir(RUST_SRC_DIR)
     cmd = [sys.executable, 'x.py', sub]
@@ -261,10 +265,12 @@ def main():
     if args.fetch_llvm_libs:
         UpdatePackage('clang-libs', GetDefaultHostOs())
 
-    # Fetch GCC package to build against same libstdc++ as Clang. This function
-    # will only download it if necessary.
     args.gcc_toolchain = None
-    build.MaybeDownloadHostGcc(args)
+    if sys.platform.startswith('linux'):
+        # Fetch GCC package to build against same libstdc++ as Clang. This
+        # function will only download it if necessary, and it will set the
+        # `args.gcc_toolchain` if so.
+        build.MaybeDownloadHostGcc(args)
 
     # Set up config.toml in Rust source tree to configure build.
     Configure(llvm_libs_root)

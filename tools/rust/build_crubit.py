@@ -193,10 +193,12 @@ def main():
         help='skip Crubit git checkout. Useful for trying local changes')
     args, rest = parser.parse_known_args()
 
-    # Fetch GCC package to build against same libstdc++ as Clang. This function
-    # will only download it if necessary.
     args.gcc_toolchain = None
-    MaybeDownloadHostGcc(args)
+    if sys.platform.startswith('linux'):
+        # Fetch GCC package to build against same libstdc++ as Clang. This
+        # function will only download it if necessary, and it will set the
+        # `args.gcc_toolchain` if so.
+        MaybeDownloadHostGcc(args)
 
     if not args.skip_checkout:
         CheckoutCrubit(CRUBIT_REVISION, CRUBIT_SRC_DIR)
