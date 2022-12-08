@@ -13,7 +13,6 @@ android_resources("java_resources") {
     "java/res/drawable/generic_favicon.xml",
     "java/res/drawable/generic_file.xml",
     "java/res/drawable/ink_highlighter.xml",
-    "java/res/drawable/lightweight_reactions_icon.xml",
     "java/res/drawable/link.xml",
     "java/res/drawable/link_off.xml",
     "java/res/drawable/preview_icon_border_background.xml",

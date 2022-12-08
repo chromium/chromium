@@ -78,9 +78,8 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures(
         {ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT, ChromeFeatureList.WEBNOTES_STYLIZE})
-@DisableFeatures(
-        {ChromeFeatureList.LIGHTWEIGHT_REACTIONS, ChromeFeatureList.UPCOMING_SHARING_FEATURES,
-                ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
+@DisableFeatures({ChromeFeatureList.UPCOMING_SHARING_FEATURES,
+        ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO})
 public class ChromeProvidedSharingOptionsProviderTest {
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
@@ -154,22 +153,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    public void getPropertyModels_lightweightReactionsEnabled() {
-        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
-                /*printingEnabled=*/false, LinkGeneration.MAX);
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ShareSheetPropertyModelBuilder.ALL_CONTENT_TYPES_FOR_TEST,
-                        DetailedContentType.NOT_SPECIFIED,
-                        /*isMultiWindow=*/false);
-
-        assertTrue("Property models should contain Lightweight Reactions.",
-                propertyModelsContain(propertyModels, R.string.sharing_lightweight_reactions));
-    }
-
-    @Test
-    @MediumTest
     public void getPropertyModels_longScreenshotEnabledNoTab_excludesLongScreenshot() {
         Mockito.when(mTabProvider.hasValue()).thenReturn(false);
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
@@ -217,10 +200,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT,
-            ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    public void
-    getPropertyModels_linkAndTextShare() {
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
+    public void getPropertyModels_linkAndTextShare() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/false, LinkGeneration.MAX);
 
@@ -240,10 +221,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT,
-            ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    public void
-    getPropertyModels_linkShare() {
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
+    public void getPropertyModels_linkShare() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/false, LinkGeneration.MAX);
 
@@ -262,10 +241,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT,
-            ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    public void
-    getPropertyModels_textShare() {
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
+    public void getPropertyModels_textShare() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/false, LinkGeneration.MAX);
 
@@ -314,10 +291,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT,
-            ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    public void
-    getPropertyModels_filtersByContentType() {
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
+    public void getPropertyModels_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -335,10 +310,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT,
-            ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    public void
-    getPropertyModels_multipleTypes_filtersByContentType() {
+    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
+    public void getPropertyModels_multipleTypes_filtersByContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -355,7 +328,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
                     mActivity.getResources().getString(R.string.sharing_long_screenshot));
         }
         expectedModels.addAll(ImmutableList.of(
-                mActivity.getResources().getString(R.string.sharing_lightweight_reactions),
                 mActivity.getResources().getString(R.string.sharing_copy_url),
                 mActivity.getResources().getString(R.string.sharing_copy_image),
                 mActivity.getResources().getString(R.string.send_tab_to_self_share_activity_title),
@@ -367,8 +339,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    public void getPropertyModels_nonLightweightReactions_doesNotFilterByDetailedContentType() {
+    public void getPropertyModels_doesNotFilterByDetailedContentType() {
         setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -412,28 +383,10 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    public void getPropertyModels_lightweightReactions_filtersByDetailedContentType() {
-        setUpChromeProvidedSharingOptionsProviderTest(/*isIncognito=*/false,
-                /*printingEnabled=*/true, LinkGeneration.MAX);
-        List<PropertyModel> propertyModels =
-                mChromeProvidedSharingOptionsProvider.getPropertyModels(
-                        ImmutableSet.of(ContentType.IMAGE),
-                        DetailedContentType.LIGHTWEIGHT_REACTION,
-                        /*isMultiWindow=*/false);
-
-        assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_gif)));
-    }
-
-    @Test
-    @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT,
-            ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
+    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
     @DisabledTest(message = "https://crbug.com/1318398")
-    public void
-    getShareDetailsMetrics_LinkGeneration() {
+    public void getShareDetailsMetrics_LinkGeneration() {
         @LinkGeneration
         int linkGenerationStatus = LinkGeneration.LINK;
 
