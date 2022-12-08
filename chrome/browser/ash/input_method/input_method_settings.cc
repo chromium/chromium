@@ -559,7 +559,7 @@ void MigrateJapaneseSettingsToPrefs(PrefService& prefs,
 
   // Sanity check. This code should never be called if the migration has already
   // happened.
-  DCHECK(!japanese_settings.FindBool(kJapaneseMigrationCompleteKey));
+  CHECK(!japanese_settings.FindBool(kJapaneseMigrationCompleteKey));
 
   japanese_settings.Merge(ConvertConfigToJapaneseSettings(config));
 
