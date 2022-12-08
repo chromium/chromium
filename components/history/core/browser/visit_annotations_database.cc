@@ -672,6 +672,53 @@ void VisitAnnotationsDatabase::AddClusters(
   }
 }
 
+int64_t VisitAnnotationsDatabase::ReserveNextClusterId() {
+  sql::Statement clusters_statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO clusters"
+      "(should_show_on_prominent_ui_surfaces,label,raw_label)"
+      "VALUES(?,?,?)"));
+  // Tentatively set all clusters as visible.
+  clusters_statement.BindBool(0, true);
+  clusters_statement.BindString16(1, u"");
+  clusters_statement.BindString16(2, u"");
+  if (!clusters_statement.Run()) {
+    DVLOG(0) << "Failed to execute 'clusters' insert statement";
+  }
+  return GetDB().GetLastInsertRowId();
+}
+
+void VisitAnnotationsDatabase::AddVisitsToCluster(
+    int64_t cluster_id,
+    const std::vector<VisitID>& visits) {
+  DCHECK_GT(cluster_id, 0);
+  sql::Statement clusters_and_visits_statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE,
+      "INSERT INTO clusters_and_visits"
+      "(cluster_id,visit_id,score,engagement_score,url_for_deduping,"
+      "normalized_url,url_for_display)"
+      "VALUES(?,?,?,?,?,?,?)"));
+
+  // Insert each visit into 'clusters_and_visits'.
+  base::ranges::for_each(visits, [&](const auto visit_id) {
+    DCHECK_GT(visit_id, 0);
+    clusters_and_visits_statement.Reset(true);
+    clusters_and_visits_statement.BindInt64(0, cluster_id);
+    clusters_and_visits_statement.BindInt64(1, visit_id);
+    // Tentatively score everything as 1.0.
+    clusters_and_visits_statement.BindDouble(2, 1.0);
+    // Do not populate these initially.
+    clusters_and_visits_statement.BindDouble(3, 0);
+    clusters_and_visits_statement.BindString(4, "");
+    clusters_and_visits_statement.BindString(5, "");
+    clusters_and_visits_statement.BindString16(6, u"");
+    if (!clusters_and_visits_statement.Run()) {
+      DVLOG(0) << "Failed to execute 'clusters_and_visits' insert statement:  "
+               << "cluster_id = " << cluster_id << ", visit_id = " << visit_id;
+    }
+  });
+}
+
 Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
   DCHECK_GT(cluster_id, 0);
   sql::Statement statement(GetDB().GetCachedStatement(

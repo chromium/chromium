@@ -521,6 +521,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void ReplaceClusters(const std::vector<int64_t>& ids_to_delete,
                        const std::vector<Cluster>& clusters_to_add);
 
+  int64_t ReserveNextClusterId();
+
+  void AddVisitsToCluster(int64_t cluster_id,
+                          const std::vector<VisitID>& visits);
+
   std::vector<Cluster> GetMostRecentClusters(
       base::Time inclusive_min_time,
       base::Time exclusive_max_time,

@@ -378,6 +378,11 @@ Config::Config() {
             internal::kHistoryClustersNavigationContextClustering,
             "clean_up_duration_minutes",
             context_clustering_clean_up_duration.InMinutes()));
+
+    persist_context_clusters_at_navigation = GetFieldTrialParamByFeatureAsBool(
+        internal::kHistoryClustersNavigationContextClustering,
+        "persist_context_clusters_at_navigation",
+        persist_context_clusters_at_navigation);
   }
 
   // Lonely features without child params.

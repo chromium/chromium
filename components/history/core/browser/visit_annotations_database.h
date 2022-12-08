@@ -83,6 +83,13 @@ class VisitAnnotationsDatabase {
   // entries for any `Cluster` that it failed to add.
   void AddClusters(const std::vector<Cluster>& clusters);
 
+  // Adds a cluster with no visits and returns the new cluster's ID.
+  int64_t ReserveNextClusterId();
+
+  // Adds visits to the cluster with id `cluster_id`.
+  void AddVisitsToCluster(int64_t cluster_id,
+                          const std::vector<VisitID>& visits);
+
   // Get a `Cluster`. Does not include the cluster's `visits` or
   // `keyword_to_data_map`.
   Cluster GetCluster(int64_t cluster_id);

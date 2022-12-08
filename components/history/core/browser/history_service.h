@@ -587,6 +587,24 @@ class HistoryService : public KeyedService {
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
+  // Implemented and called by `ReserveNextClusterId()` below with the last
+  // cluster ID that was added to the database.
+  using ClusterIdCallback = base::OnceCallback<void(int64_t)>;
+
+  // Adds a cluster with no visits and invokes `callback` with the ID of the
+  // new cluster.
+  // Virtual for testing.
+  virtual base::CancelableTaskTracker::TaskId ReserveNextClusterId(
+      base::OnceCallback<void(int64_t)> callback,
+      base::CancelableTaskTracker* tracker);
+
+  // Adds all visit IDs in `visits` to the cluster `cluster_id`.
+  // Virtual for testing.
+  virtual base::CancelableTaskTracker::TaskId AddVisitsToCluster(
+      int64_t cluster_id,
+      const std::vector<VisitID>& visits,
+      base::CancelableTaskTracker* tracker);
+
   // Get the most recent `Cluster`s within the constraints. The most recent
   // visit of a cluster represents the cluster's time. `max_clusters` is a hard
   // cap. `max_visits_soft_cap` is a soft cap; `GetMostRecentClusters()` will

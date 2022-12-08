@@ -341,7 +341,13 @@ struct Config {
   float search_results_page_ranking_weight = 2.0;
 
   // The `kHistoryClustersNavigationContextClustering` feature and child params.
+
+  // The duration between context clustering clean up passes.
   base::TimeDelta context_clustering_clean_up_duration = base::Minutes(10);
+
+  // Whether to persist the context clusters as the visits are coming in at
+  // navigation time.
+  bool persist_context_clusters_at_navigation = false;
 
   // Lonely features without child params.
 

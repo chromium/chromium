@@ -2135,6 +2135,20 @@ void HistoryBackend::ReplaceClusters(
   ScheduleCommit();
 }
 
+int64_t HistoryBackend::ReserveNextClusterId() {
+  TRACE_EVENT0("browser", "HistoryBackend::ReserveNextClusterId");
+  return db_ ? db_->ReserveNextClusterId() : 0;
+}
+
+void HistoryBackend::AddVisitsToCluster(int64_t cluster_id,
+                                        const std::vector<VisitID>& visits) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddVisitsToCluster");
+  if (!db_)
+    return;
+
+  db_->AddVisitsToCluster(cluster_id, visits);
+}
+
 std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,

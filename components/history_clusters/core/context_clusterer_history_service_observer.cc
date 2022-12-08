@@ -41,13 +41,11 @@ ContextClustererHistoryServiceObserver::ContextClustererHistoryServiceObserver(
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
     optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider)
-    : template_url_service_(template_url_service),
+    : history_service_(history_service),
+      template_url_service_(template_url_service),
       optimization_guide_decider_(optimization_guide_decider),
       clock_(base::DefaultClock::GetInstance()) {
-  if (history_service) {
-    // History service is only null in tests.
-    history_service_observation_.Observe(history_service);
-  }
+  history_service_observation_.Observe(history_service);
 
   if (optimization_guide_decider_) {
     optimization_guide_decider_->RegisterOptimizationTypes(
@@ -95,7 +93,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   }
 
   // See what cluster we should add it to.
-  absl::optional<int64_t> cluster_idx;
+  absl::optional<int64_t> cluster_id;
 
   std::vector<history::VisitID> previous_visit_ids_to_check;
   if (new_visit.opener_visit != 0) {
@@ -110,7 +108,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     for (history::VisitID previous_visit_id : previous_visit_ids_to_check) {
       auto it = visit_id_to_cluster_map_.find(previous_visit_id);
       if (it != visit_id_to_cluster_map_.end()) {
-        cluster_idx = it->second;
+        cluster_id = it->second;
         break;
       }
     }
@@ -118,39 +116,61 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     // See if we have clustered the URL. (forward-back, reload, etc.)
     auto it = visit_url_to_cluster_map_.find(normalized_url);
     if (it != visit_url_to_cluster_map_.end()) {
-      cluster_idx = it->second;
+      cluster_id = it->second;
     }
   }
 
   // See if we should add to cluster.
-  if (cluster_idx) {
-    auto& in_progress_cluster = in_progress_clusters_.at(*cluster_idx);
+  if (cluster_id) {
+    auto& in_progress_cluster = in_progress_clusters_.at(*cluster_id);
     if (!ShouldAddVisitToCluster(new_visit, search_terms,
                                  in_progress_cluster)) {
-      FinalizeCluster(*cluster_idx);
+      FinalizeCluster(*cluster_id);
 
-      cluster_idx = absl::nullopt;
+      cluster_id = absl::nullopt;
     }
   }
+  bool is_new_cluster = !cluster_id;
 
   // Add a new cluster if we haven't assigned one already.
-  if (!cluster_idx) {
-    cluster_idx_counter_++;
-    cluster_idx = cluster_idx_counter_;
+  if (is_new_cluster) {
+    cluster_id_counter_++;
+    cluster_id = cluster_id_counter_;
 
-    in_progress_clusters_.emplace(*cluster_idx, InProgressCluster());
+    in_progress_clusters_.emplace(*cluster_id, InProgressCluster());
   }
 
   // Add to cluster maps.
-  auto& in_progress_cluster = in_progress_clusters_.at(*cluster_idx);
+  auto& in_progress_cluster = in_progress_clusters_.at(*cluster_id);
   in_progress_cluster.last_visit_time = new_visit.visit_time;
   in_progress_cluster.visit_urls.insert(normalized_url);
   in_progress_cluster.visit_ids.emplace_back(new_visit.visit_id);
   in_progress_cluster.search_terms = search_terms;
-  visit_id_to_cluster_map_[new_visit.visit_id] = *cluster_idx;
-  visit_url_to_cluster_map_[normalized_url] = *cluster_idx;
+  visit_id_to_cluster_map_[new_visit.visit_id] = *cluster_id;
+  visit_url_to_cluster_map_[normalized_url] = *cluster_id;
 
-  // TODO(b/259466296): Persist visit.
+  if (GetConfig().persist_context_clusters_at_navigation) {
+    // For new clusters, asyncly reserve an ID and have the
+    //   `OnPersistedClusterIdReceived()` callback add the visits.
+    // For clusters created recently for which history service hasn't yet
+    //   returned the IDs, there's already a callback pending that will add the
+    //   visits.
+    // For clusters whose IDs are already known, add the visits here.
+    if (in_progress_cluster.persisted_cluster_id > 0) {
+      // Persist visit to existing cluster.
+      history_service->AddVisitsToCluster(
+          in_progress_cluster.persisted_cluster_id, {new_visit.visit_id},
+          &task_tracker_);
+    } else if (is_new_cluster) {
+      // Cluster creation is async. Reserve next cluster ID and wait to persist
+      // items until it comes back in `OnPersistedClusterIdReceived()`.
+      history_service->ReserveNextClusterId(
+          base::BindOnce(&ContextClustererHistoryServiceObserver::
+                             OnPersistedClusterIdReceived,
+                         weak_ptr_factory_.GetWeakPtr(), *cluster_id),
+          &task_tracker_);
+    }
+  }
 }
 
 void ContextClustererHistoryServiceObserver::OnURLsDeleted(
@@ -185,8 +205,8 @@ void ContextClustererHistoryServiceObserver::OnURLsDeleted(
   }
 
   // Finalize clusters.
-  for (int64_t cluster_idx : clusters_to_finalize) {
-    FinalizeCluster(cluster_idx);
+  for (int64_t cluster_id : clusters_to_finalize) {
+    FinalizeCluster(cluster_id);
   }
 }
 
@@ -210,8 +230,8 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
   }
 
   // Finalize clusters.
-  for (int64_t cluster_idx : clusters_to_finalize) {
-    FinalizeCluster(cluster_idx);
+  for (int64_t cluster_id : clusters_to_finalize) {
+    FinalizeCluster(cluster_id);
   }
 
   base::UmaHistogramCounts1000(
@@ -224,12 +244,11 @@ void ContextClustererHistoryServiceObserver::CleanUpClusters() {
 }
 
 void ContextClustererHistoryServiceObserver::FinalizeCluster(
-    int64_t cluster_idx) {
-  DCHECK(in_progress_clusters_.find(cluster_idx) !=
-         in_progress_clusters_.end());
+    int64_t cluster_id) {
+  DCHECK(in_progress_clusters_.find(cluster_id) != in_progress_clusters_.end());
 
   // Delete relevant visits from in-progress maps.
-  auto& cluster = in_progress_clusters_.at(cluster_idx);
+  auto& cluster = in_progress_clusters_.at(cluster_id);
   for (const auto& visit_url : cluster.visit_urls) {
     visit_url_to_cluster_map_.erase(visit_url);
   }
@@ -239,7 +258,24 @@ void ContextClustererHistoryServiceObserver::FinalizeCluster(
 
   // TODO(b/259466296): Kick off persisting keywords and prominence bits.
 
-  in_progress_clusters_.erase(cluster_idx);
+  in_progress_clusters_.erase(cluster_id);
+}
+
+void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
+    int64_t cluster_id,
+    int64_t persisted_cluster_id) {
+  auto cluster_it = in_progress_clusters_.find(cluster_id);
+  base::UmaHistogramBoolean(
+      "History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence",
+      cluster_it == in_progress_clusters_.end());
+  if (cluster_it == in_progress_clusters_.end()) {
+    return;
+  }
+
+  cluster_it->second.persisted_cluster_id = persisted_cluster_id;
+  // Persist all visits we've seen so far.
+  history_service_->AddVisitsToCluster(
+      persisted_cluster_id, cluster_it->second.visit_ids, &task_tracker_);
 }
 
 void ContextClustererHistoryServiceObserver::OverrideClockForTesting(

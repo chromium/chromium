@@ -1092,6 +1092,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="History.Clusters.ContextClusterer.ClusterCleanedUpBeforePersistence"
+    enum="Boolean" expires_after="2023-10-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <summary>
+    When the user visits a page, `ContextClustererHistoryServiceObserver`
+    considers whether to add the visit to a new cluster or an existing cluster.
+    If it decides to create a new cluster, this is logged. Therefore, logged at
+    most once per page visit.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.ContextClusterer.NumClusters.AtCleanUp"
     units="num clusters" expires_after="2023-10-01">
   <owner>sophiechang@chromium.org</owner>

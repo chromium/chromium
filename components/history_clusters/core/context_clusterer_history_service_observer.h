@@ -10,7 +10,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -42,6 +44,8 @@ struct InProgressCluster {
   // The search terms associated with this in-progress cluster. It will only be
   // set once if a search visit is part of this in-progress cluster.
   std::u16string search_terms;
+  // The corresponding cluster ID in the persisted database.
+  int64_t persisted_cluster_id = 0;
 };
 
 // A HistoryServiceObserver responsible for grouping visits into clusters.
@@ -78,14 +82,19 @@ class ContextClustererHistoryServiceObserver
   // Cleans up clusters that have not been interacted with for awhile.
   void CleanUpClusters();
 
-  // Finalizes the cluster with index, `cluster_idx`.
-  void FinalizeCluster(int64_t cluster_idx);
+  // Finalizes the cluster with index, `cluster_id`.
+  void FinalizeCluster(int64_t cluster_id);
+
+  // Callback invoked when the History Service returns the cluster ID
+  // (`persisted_cluster_id`) to use for `cluster_id`.
+  void OnPersistedClusterIdReceived(int64_t cluster_id,
+                                    int64_t persisted_cluster_id);
 
   // Overrides `clock_` for testing.
   void OverrideClockForTesting(const base::Clock* clock);
 
   // Returns the number of clusters created since the start of the session.
-  int64_t num_clusters_created() const { return cluster_idx_counter_; }
+  int64_t num_clusters_created() const { return cluster_id_counter_; }
 
   // Mapping from cluster ID to the contents of the in-progress cluster.
   std::map<int64_t, InProgressCluster> in_progress_clusters_;
@@ -98,10 +107,13 @@ class ContextClustererHistoryServiceObserver
   std::map<std::string, int64_t> visit_url_to_cluster_map_;
 
   // A running counter that is used to index the in-progress clusters.
-  int64_t cluster_idx_counter_ = 0;
+  int64_t cluster_id_counter_ = 0;
 
   // Used to invoke `CleanUpClusters()` periodically.
   base::RepeatingTimer clean_up_clusters_repeating_timer_;
+
+  // The History Service that `this` observers. Should never be null.
+  raw_ptr<history::HistoryService> history_service_;
 
   // The Template URL Service used to determine if a visit is a search visit.
   raw_ptr<TemplateURLService> template_url_service_;
@@ -118,6 +130,12 @@ class ContextClustererHistoryServiceObserver
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
+
+  // Task tracker for calls for the history service.
+  base::CancelableTaskTracker task_tracker_;
+
+  base::WeakPtrFactory<ContextClustererHistoryServiceObserver>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace history_clusters

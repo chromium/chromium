@@ -4,16 +4,25 @@
 
 #include "components/history_clusters/core/context_clusterer_history_service_observer.h"
 
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/search_engines/template_url_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history_clusters {
 
 namespace {
+
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::Invoke;
+using ::testing::Return;
 
 history::URLRows CreateURLRows(const std::vector<GURL>& urls) {
   history::URLRows url_rows;
@@ -71,6 +80,24 @@ const TemplateURLService::Initializer kTemplateURLData[] = {
      "Not Default"},
 };
 
+class MockHistoryService : public history::HistoryService {
+ public:
+  MockHistoryService() = default;
+
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              ReserveNextClusterId,
+              (ClusterIdCallback callback,
+               base::CancelableTaskTracker* tracker),
+              (override));
+
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              AddVisitsToCluster,
+              (int64_t,
+               const std::vector<history::VisitID>&,
+               base::CancelableTaskTracker*),
+              (override));
+};
+
 }  // namespace
 
 class ContextClustererHistoryServiceObserverTest : public testing::Test {
@@ -79,6 +106,9 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
   ~ContextClustererHistoryServiceObserverTest() override = default;
 
   void SetUp() override {
+    history_service_ =
+        std::make_unique<testing::StrictMock<MockHistoryService>>();
+
     // Set up a simple template URL service with a default search engine.
     template_url_service_ = std::make_unique<TemplateURLService>(
         kTemplateURLData, std::size(kTemplateURLData));
@@ -88,9 +118,36 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
 
     // Instantiate observer.
     observer_ = std::make_unique<ContextClustererHistoryServiceObserver>(
-        /*history_service=*/nullptr, template_url_service_.get(),
+        history_service_.get(), template_url_service_.get(),
         optimization_guide_decider_.get());
     observer_->OverrideClockForTesting(task_environment_.GetMockClock());
+  }
+
+  void TearDown() override {
+    // Just reset to original config at end of each test.
+    Config config;
+    SetConfigForTesting(config);
+  }
+
+  // Sets the config so that we expect to persist clusters and visits using this
+  // code path.
+  void SetPersistenceExpectedConfig() {
+    Config config;
+    config.persist_context_clusters_at_navigation = true;
+    SetConfigForTesting(config);
+  }
+
+  // Closure to capture the cluster ID callback.
+  base::CancelableTaskTracker::TaskId CaptureClusterIdCallbackAndReturn(
+      history::HistoryService::ClusterIdCallback callback,
+      base::CancelableTaskTracker* tracker) {
+    cluster_id_callback_ = std::move(callback);
+    return base::CancelableTaskTracker::TaskId();
+  }
+
+  // Runs the last cluster id callback received with `cluster_id`.
+  void RunLastClusterIdCallbackWithClusterId(int64_t cluster_id) {
+    std::move(cluster_id_callback_).Run(cluster_id);
   }
 
   // Simulates a visit to URL.
@@ -107,7 +164,7 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
     new_visit.opener_visit = opener_visit;
     new_visit.referring_visit = referring_visit;
     new_visit.is_known_to_sync = is_known_to_sync;
-    observer_->OnURLVisited(/*history_service=*/nullptr, url_row, new_visit);
+    observer_->OnURLVisited(history_service_.get(), url_row, new_visit);
   }
 
   // Simulates deleting `urls` from history. If `urls` is empty, we will
@@ -117,7 +174,7 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         urls.empty() ? history::DeletionInfo::ForAllHistory()
                      : history::DeletionInfo::ForUrls(CreateURLRows(urls),
                                                       /*favicon_urls=*/{});
-    observer_->OnURLsDeleted(/*history_service=*/nullptr, deletion_info);
+    observer_->OnURLsDeleted(history_service_.get(), deletion_info);
   }
 
   // Move clock forward by `time_delta`.
@@ -134,6 +191,9 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
   // Returns the current time of this task environment's mock clock.
   base::Time Now() { return task_environment_.GetMockClock()->Now(); }
 
+ protected:
+  std::unique_ptr<MockHistoryService> history_service_;
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -141,26 +201,72 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
   std::unique_ptr<TemplateURLService> template_url_service_;
   std::unique_ptr<TestOptimizationGuideDecider> optimization_guide_decider_;
   std::unique_ptr<ContextClustererHistoryServiceObserver> observer_;
+
+  history::HistoryService::ClusterIdCallback cluster_id_callback_;
 };
 
 TEST_F(ContextClustererHistoryServiceObserverTest, ClusterOneVisit) {
+  SetPersistenceExpectedConfig();
+  int64_t cluster_id = 123;
+
+  EXPECT_CALL(*history_service_,
+              ReserveNextClusterId(base::test::IsNotNullCallback(), _))
+      .WillOnce(Invoke(this, &ContextClustererHistoryServiceObserverTest::
+                                 CaptureClusterIdCallbackAndReturn));
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123));
+
+  std::vector<history::VisitID> visit_ids = {1};
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
+      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  RunLastClusterIdCallbackWithClusterId(cluster_id);
 
   EXPECT_EQ(1, GetNumClustersCreated());
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
        ClusterTwoVisitsTiedByReferringVisit) {
+  SetPersistenceExpectedConfig();
+  int64_t cluster_id = 123;
+
+  EXPECT_CALL(*history_service_,
+              ReserveNextClusterId(base::test::IsNotNullCallback(), _))
+      .WillOnce(Invoke(this, &ContextClustererHistoryServiceObserverTest::
+                                 CaptureClusterIdCallbackAndReturn));
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123));
   VisitURL(GURL("https://example.com/2"), 2, base::Time::FromTimeT(123),
            /*opener_visit=*/history::kInvalidVisitID, /*referring_visit=*/1);
+
+  // Should persist all visits for the cluster when callback is run.
+  std::vector<history::VisitID> visit_ids = {1, 2};
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
+      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  RunLastClusterIdCallbackWithClusterId(cluster_id);
 
   EXPECT_EQ(1, GetNumClustersCreated());
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
        ClusterTwoVisitsTiedByOpenerVisit) {
+  SetPersistenceExpectedConfig();
+  int64_t cluster_id = 123;
+
+  EXPECT_CALL(*history_service_,
+              ReserveNextClusterId(base::test::IsNotNullCallback(), _))
+      .WillOnce(Invoke(this, &ContextClustererHistoryServiceObserverTest::
+                                 CaptureClusterIdCallbackAndReturn));
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123));
+
+  // Should persist all visits for the cluster when callback is run.
+  std::vector<history::VisitID> visit_ids = {1};
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
+      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  RunLastClusterIdCallbackWithClusterId(cluster_id);
+
+  // Should persist as is since we already have the persisted cluster id at this
+  // visit.
+  visit_ids = {2};
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
+      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
   VisitURL(GURL("https://example.com/2"), 2, base::Time::FromTimeT(123),
            /*opener_visit=*/1, /*referring_visit=*/history::kInvalidVisitID);
 
@@ -202,11 +308,34 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, SplitClusterOnSearchTerm) {
+  SetPersistenceExpectedConfig();
+
+  EXPECT_CALL(*history_service_,
+              ReserveNextClusterId(base::test::IsNotNullCallback(), _))
+      .WillOnce(Invoke(this, &ContextClustererHistoryServiceObserverTest::
+                                 CaptureClusterIdCallbackAndReturn));
   VisitURL(GURL("http://default-engine.com/search?q=foo"), 1,
            base::Time::FromTimeT(123));
+
+  int64_t cluster_id = 123;
+  std::vector<history::VisitID> visit_ids = {1};
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
+      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  RunLastClusterIdCallbackWithClusterId(cluster_id);
+
+  EXPECT_CALL(*history_service_,
+              ReserveNextClusterId(base::test::IsNotNullCallback(), _))
+      .WillOnce(Invoke(this, &ContextClustererHistoryServiceObserverTest::
+                                 CaptureClusterIdCallbackAndReturn));
   VisitURL(GURL("http://default-engine.com/search?q=otherterm"), 2,
            base::Time::FromTimeT(123),
            /*opener_visit=*/1);
+
+  visit_ids = {2};
+  cluster_id = 124;
+  EXPECT_CALL(*history_service_, AddVisitsToCluster(cluster_id, visit_ids, _))
+      .WillOnce(Return(base::CancelableTaskTracker::TaskId()));
+  RunLastClusterIdCallbackWithClusterId(cluster_id);
 
   EXPECT_EQ(2, GetNumClustersCreated());
 }
@@ -223,6 +352,8 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, SkipsSyncedVisits) {
+  SetPersistenceExpectedConfig();
+
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123),
            history::kInvalidVisitID, history::kInvalidVisitID,
            /*is_known_to_sync=*/true);
@@ -231,6 +362,8 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SkipsSyncedVisits) {
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, SkipsBlocklistedHost) {
+  SetPersistenceExpectedConfig();
+
   VisitURL(GURL("https://shouldskip.com"), 1, base::Time::FromTimeT(123));
 
   EXPECT_EQ(0, GetNumClustersCreated());

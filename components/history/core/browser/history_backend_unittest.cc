@@ -4079,6 +4079,26 @@ TEST_F(HistoryBackendTest, AddClusters_GetCluster) {
   VerifyCluster(backend_->GetCluster(2, true), {0});
 }
 
+TEST_F(HistoryBackendTest, ReserveNextClusterId_GetCluster) {
+  int64_t cluster_id = backend_->ReserveNextClusterId();
+
+  // We call from the DB instead of from the backend since the DB does
+  // additional checking around visit count.
+  auto cluster = backend_->db_->GetCluster(cluster_id);
+  EXPECT_EQ(cluster.cluster_id, cluster_id);
+  EXPECT_TRUE(cluster.should_show_on_prominent_ui_surfaces);
+}
+
+TEST_F(HistoryBackendTest, ReserveNextClusterId_AddVisitsToCluster_GetCluster) {
+  int64_t cluster_id = backend_->ReserveNextClusterId();
+
+  AddAnnotatedVisit(1);
+  AddAnnotatedVisit(2);
+  backend_->AddVisitsToCluster(cluster_id, {1, 2});
+
+  VerifyCluster(backend_->GetCluster(cluster_id, false), {cluster_id, {2, 1}});
+}
+
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {
   auto last_visit_time = base::Time::Now();
   const auto add_visit = [&](std::string url, VisitID referring_visit,
