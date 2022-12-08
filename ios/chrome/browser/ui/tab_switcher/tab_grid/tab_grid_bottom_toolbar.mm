@@ -404,7 +404,7 @@
     [NSLayoutConstraint deactivateConstraints:_floatingConstraints];
     [_toolbar removeFromSuperview];
     [_largeNewTabButton removeFromSuperview];
-    self.hidden = !self.subviews.count;
+    self.hidden = YES;
     return;
   }
   _largeNewTabButtonBottomAnchor.constant =
@@ -418,7 +418,7 @@
     ]];
     [self addSubview:_toolbar];
     [NSLayoutConstraint activateConstraints:_compactConstraints];
-    self.hidden = !self.subviews.count;
+    self.hidden = NO;
     return;
   }
   UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
@@ -504,12 +504,6 @@
 
 // Updates the visibility of the backgrounds based on the state of the TabGrid.
 - (void)updateBackgroundVisibility {
-  if (self.mode == TabGridModeSearch) {
-    _scrolledToBottomBackgroundView.hidden = YES;
-    _scrolledBackgroundView.hidden = YES;
-    return;
-  }
-
   _scrolledToBottomBackgroundView.hidden = !_scrolledToEdge;
   _scrolledBackgroundView.hidden = _scrolledToEdge;
 }
