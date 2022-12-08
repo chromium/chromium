@@ -107,13 +107,22 @@ void LoadIconFromWebApp(content::BrowserContext* context,
                         LoadIconCallback callback);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Requests a compressed icon data for an web app identified by `app_id`.
+// Requests a compressed icon data for an web app identified by `web_app_id`.
 void GetWebAppCompressedIconData(content::BrowserContext* context,
                                  const std::string& web_app_id,
                                  IconType icon_type,
                                  int size_in_dip,
                                  ui::ResourceScaleFactor scale_factor,
                                  LoadIconCallback callback);
+
+// Requests a compressed icon data for a chrome app identified by
+// `extension_id`.
+void GetChromeAppCompressedIconData(content::BrowserContext* context,
+                                    const std::string& extension_id,
+                                    IconType icon_type,
+                                    int size_in_dip,
+                                    ui::ResourceScaleFactor scale_factor,
+                                    LoadIconCallback callback);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Loads an icon from a FilePath. If that fails, it calls the fallback.

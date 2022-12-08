@@ -114,10 +114,16 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
       const std::vector<arc::mojom::ActivityIconPtr>& icons);
 
   // Requests a compressed icon data with `scale_factor` for an web app
-  // identified by `app_id`.
+  // identified by `web_app_id`.
   void GetWebAppCompressedIconData(const std::string& web_app_id,
                                    ui::ResourceScaleFactor scale_factor,
                                    web_app::WebAppIconManager& icon_manager);
+
+  // Requests a compressed icon data with `scale_factor` for a chrome app
+  // identified by `extension`.
+  void GetChromeAppCompressedIconData(const extensions::Extension* extension,
+                                      content::BrowserContext* context,
+                                      ui::ResourceScaleFactor scale_factor);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
@@ -150,6 +156,8 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   void OnReadWebAppIcon(std::map<int, SkBitmap> icon_bitmaps);
 
   void OnReadWebAppForCompressedIconData(std::map<int, SkBitmap> icon_bitmaps);
+
+  void OnReadChromeAppForCompressedIconData(gfx::ImageSkia image);
 
   void MaybeLoadFallbackOrCompleteEmpty();
 

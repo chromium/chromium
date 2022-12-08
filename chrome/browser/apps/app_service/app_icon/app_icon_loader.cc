@@ -604,6 +604,26 @@ void AppIconLoader::GetWebAppCompressedIconData(
                      base::WrapRefCounted(this)));
 }
 
+void AppIconLoader::GetChromeAppCompressedIconData(
+    const extensions::Extension* extension,
+    content::BrowserContext* context,
+    ui::ResourceScaleFactor scale_factor) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!extension || icon_type_ == IconType::kUnknown) {
+    MaybeLoadFallbackOrCompleteEmpty();
+    return;
+  }
+
+  icon_scale_ = ui::GetScaleForResourceScaleFactor(scale_factor);
+  profile_ = Profile::FromBrowserContext(context);
+  extensions::ImageLoader::Get(context)->LoadImageAtEveryScaleFactorAsync(
+      extension, gfx::Size(size_hint_in_dip_, size_hint_in_dip_),
+      ImageToImageSkia(
+          base::BindOnce(&AppIconLoader::OnReadChromeAppForCompressedIconData,
+                         base::WrapRefCounted(this))));
+}
+
 std::unique_ptr<arc::IconDecodeRequest>
 AppIconLoader::CreateArcIconDecodeRequest(
     base::OnceCallback<void(const gfx::ImageSkia& icon)> callback,
@@ -796,6 +816,20 @@ void AppIconLoader::OnReadWebAppForCompressedIconData(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&apps::EncodeImageToPngBytes, image_skia, icon_scale_),
+      base::BindOnce(&AppIconLoader::CompleteWithCompressed,
+                     base::WrapRefCounted(this)));
+}
+
+void AppIconLoader::OnReadChromeAppForCompressedIconData(gfx::ImageSkia image) {
+  if (image.isNull()) {
+    MaybeLoadFallbackOrCompleteEmpty();
+    return;
+  }
+
+  image.MakeThreadSafe();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&apps::EncodeImageToPngBytes, image, icon_scale_),
       base::BindOnce(&AppIconLoader::CompleteWithCompressed,
                      base::WrapRefCounted(this)));
 }
