@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,6 +36,8 @@ import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.common.ContentFeatures;
@@ -214,11 +217,25 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
 
     @Override
     public void maybeDisplayPrivacySandboxSnackbar() {
-        // Only show the snackbar when the Privacy Sandbox APIs are enabled.
-        if (mPrivacySandboxController != null && PrivacySandboxBridge.isPrivacySandboxEnabled()
-                && !PrivacySandboxBridge.isPrivacySandboxRestricted()) {
-            mPrivacySandboxController.showSnackbar();
+        if (mPrivacySandboxController == null) return;
+
+        // Only show the snackbar when Privacy Sandbox APIs are enabled.
+        if (isPrivacySandboxSettings4Enabled()) {
+            if (!isAnyPrivacySandboxApiEnabledV4()) return;
+        } else {
+            if (!PrivacySandboxBridge.isPrivacySandboxEnabled()) return;
         }
+
+        if (PrivacySandboxBridge.isPrivacySandboxRestricted()) return;
+
+        mPrivacySandboxController.showSnackbar();
+    }
+
+    private boolean isAnyPrivacySandboxApiEnabledV4() {
+        PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
+        return prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_TOPICS_ENABLED)
+                || prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_AD_MEASUREMENT_ENABLED)
+                || prefs.getBoolean(Pref.PRIVACY_SANDBOX_M1_FLEDGE_ENABLED);
     }
 
     @Override
