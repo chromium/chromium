@@ -9,12 +9,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
-
-namespace base {
-class DictionaryValue;
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace {
 class BrowserContext;
@@ -47,7 +43,7 @@ class NativeMessageEchoHost : public NativeMessageHost {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() const override;
 
  private:
-  void ProcessEcho(const base::DictionaryValue& request);
+  void ProcessEcho(const base::Value::Dict& request);
 
   // Counter used to ensure message uniqueness for testing.
   int message_number_ = 0;

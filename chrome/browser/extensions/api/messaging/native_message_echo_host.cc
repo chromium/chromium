@@ -51,7 +51,7 @@ void NativeMessageEchoHost::OnMessage(const std::string& request_string) {
   } else if (request_string.find("bigMessageTest") != std::string::npos) {
     client_->CloseChannel(kHostInputOutputError);
   } else {
-    ProcessEcho(base::Value::AsDictionaryValue(request_value.value()));
+    ProcessEcho(request_value->GetDict());
   }
 }
 
@@ -60,11 +60,11 @@ scoped_refptr<base::SingleThreadTaskRunner> NativeMessageEchoHost::task_runner()
   return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
-void NativeMessageEchoHost::ProcessEcho(const base::DictionaryValue& request) {
-  base::DictionaryValue response;
-  response.SetIntKey("id", ++message_number_);
-  response.SetKey("echo", request.Clone());
-  response.SetStringKey("caller_url", kOrigins[0]);
+void NativeMessageEchoHost::ProcessEcho(const base::Value::Dict& request) {
+  base::Value::Dict response;
+  response.Set("id", ++message_number_);
+  response.Set("echo", request.Clone());
+  response.Set("caller_url", kOrigins[0]);
   std::string response_string;
   base::JSONWriter::Write(response, &response_string);
   client_->PostMessageFromNativeHost(response_string);
