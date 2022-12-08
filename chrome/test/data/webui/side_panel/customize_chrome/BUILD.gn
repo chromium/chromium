@@ -27,6 +27,7 @@ ts_library("build_ts") {
     "color_test.ts",
     "colors_test.ts",
     "themes_test.ts",
+    "theme_snapshot_test.ts",
   ]
   definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   deps = [

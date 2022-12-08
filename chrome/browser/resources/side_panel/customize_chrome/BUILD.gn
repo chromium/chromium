@@ -21,6 +21,7 @@ build_webui("build") {
     "colors.ts",
     "appearance.ts",
     "themes.ts",
+    "theme_snapshot.ts",
   ]
 
   non_web_component_files = [ "customize_chrome_api_proxy.ts" ]

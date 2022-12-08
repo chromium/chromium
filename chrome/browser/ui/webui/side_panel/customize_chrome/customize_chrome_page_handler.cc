@@ -102,6 +102,8 @@ void CustomizeChromePageHandler::UpdateTheme() {
   auto background_image = side_panel::mojom::BackgroundImage::New();
   if (custom_background.has_value()) {
     background_image->url = custom_background->custom_background_url;
+    background_image->title =
+        custom_background->custom_background_attribution_line_1;
   } else {
     background_image = nullptr;
   }

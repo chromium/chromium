@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BackgroundImage, Theme} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -25,4 +26,29 @@ export function assertStyle(element: Element, name: string, expected: string) {
 export function assertNotStyle(element: Element, name: string, not: string) {
   const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
   assertNotEquals(not, actual);
+}
+
+/**
+ * Queries |selector| on |element|'s shadow root and returns the resulting
+ * element if there is any.
+ */
+export function $$<E extends Element = Element>(
+    element: Element, selector: string): E|null;
+export function $$(element: Element, selector: string) {
+  return element.shadowRoot!.querySelector(selector);
+}
+
+export function createBackgroundImage(url: string): BackgroundImage {
+  return {
+    url: {url},
+    title: '',
+  };
+}
+
+export function createTheme(): Theme {
+  return {
+    backgroundImage: undefined,
+    systemDarkMode: false,
+    foregroundColor: undefined,
+  };
 }

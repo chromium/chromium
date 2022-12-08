@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './colors.js';
+import './theme_snapshot.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

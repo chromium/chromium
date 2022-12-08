@@ -11,6 +11,8 @@ import "url/mojom/url.mojom";
 struct BackgroundImage {
   // URL to the background image. Can point to untrusted content.
   url.mojom.Url url;
+  // Title of the background image.
+  string title;
 };
 
 // A generic theme.

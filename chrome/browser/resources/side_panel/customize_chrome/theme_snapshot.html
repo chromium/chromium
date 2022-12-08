@@ -1,0 +1,29 @@
+<style>
+  #themeSnapshot {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-inline-start: 16px;
+    width: 288px;
+  }
+
+  #themeSnapshot img {
+    border-radius: 20px;
+    height: 162px;
+    margin-bottom: 4px;
+    object-fit: fill;
+  }
+
+  #themeTitle {
+    margin-bottom: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+</style>
+<div id="themeSnapshot">
+  <img is="cr-auto-img" auto-src="[[theme_.backgroundImage.url.url]]"
+      draggable="false">
+  </img>
+  <label id="themeTitle">[[theme_.backgroundImage.title]]</label>
+</div>
