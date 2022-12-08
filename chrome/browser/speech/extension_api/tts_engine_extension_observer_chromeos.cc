@@ -186,8 +186,10 @@ bool TtsEngineExtensionObserverChromeOS::IsLoadedTtsEngine(
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
   DCHECK(event_router);
-  if (event_router->ExtensionHasEventListener(extension_id,
-                                              tts_engine_events::kOnSpeak) &&
+  if ((event_router->ExtensionHasEventListener(extension_id,
+                                               tts_engine_events::kOnSpeak) ||
+       event_router->ExtensionHasEventListener(
+           extension_id, tts_engine_events::kOnSpeakWithAudioStream)) &&
       event_router->ExtensionHasEventListener(extension_id,
                                               tts_engine_events::kOnStop)) {
     return true;
