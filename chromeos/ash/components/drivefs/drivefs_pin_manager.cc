@@ -56,6 +56,44 @@ class FreeDiskSpaceImpl : public FreeDiskSpaceDelegate {
 
 constexpr char kGCacheFolderName[] = "GCache";
 
+DriveFsPinManager::InProgressSyncingItems::InProgressSyncingItems() = default;
+
+DriveFsPinManager::InProgressSyncingItems::~InProgressSyncingItems() = default;
+
+void DriveFsPinManager::InProgressSyncingItems::AddItem(
+    const std::string path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Emplace an item with no progress, these values (i.e. 0,0) will get updated
+  // in the `OnSyncingStatusUpdate`.
+  in_progress_items_.try_emplace(path, /*bytes_transferred=*/0,
+                                 /*bytes_to_transfer=*/0);
+}
+
+void DriveFsPinManager::InProgressSyncingItems::RemoveItem(
+    const std::string path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  in_progress_items_.erase(path);
+}
+
+void DriveFsPinManager::InProgressSyncingItems::UpdateItem(
+    const std::string path,
+    int64_t bytes_transferred,
+    int64_t bytes_to_transfer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto it = in_progress_items_.find(path);
+  if (it == in_progress_items_.end()) {
+    return;
+  }
+  it->second.first = bytes_transferred;
+  it->second.second = bytes_to_transfer;
+}
+
+size_t DriveFsPinManager::InProgressSyncingItems::GetItemCount() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << "Remaining syncing items: " << in_progress_items_.size();
+  return in_progress_items_.size();
+}
+
 DriveFsPinManager::DriveFsPinManager(bool enabled,
                                      const base::FilePath& profile_path,
                                      mojom::DriveFs* drivefs_interface)
@@ -63,7 +101,10 @@ DriveFsPinManager::DriveFsPinManager(bool enabled,
       free_disk_space_(std::make_unique<FreeDiskSpaceImpl>()),
       profile_path_(profile_path),  // The GCache directory is located in the
                                     // users profile path.
-      drivefs_interface_(drivefs_interface) {}
+      drivefs_interface_(drivefs_interface),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+      syncing_items_(
+          base::SequenceBound<InProgressSyncingItems>{task_runner_}) {}
 
 DriveFsPinManager::DriveFsPinManager(
     bool enabled,
@@ -235,54 +276,48 @@ void DriveFsPinManager::OnSearchResultsForPinning(
     drivefs_interface_->SetPinned(
         path, /*pinned=*/true,
         base::BindOnce(&DriveFsPinManager::OnFilePinned,
-                       weak_ptr_factory_.GetWeakPtr(), path));
+                       weak_ptr_factory_.GetWeakPtr(), path.value()));
   }
 }
 
-void DriveFsPinManager::OnFilePinned(const base::FilePath& path,
+void DriveFsPinManager::OnFilePinned(const std::string& path,
                                      drive::FileError status) {
   if (status != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Failed pinning an item: " << status;
-    VLOG(2) << "Path that failed to pin: " << path.value() << " with error "
+    VLOG(2) << "Path that failed to pin: " << path << " with error "
             << drive::FileErrorToString(status);
     Complete(PinError::kErrorFailedToPinItem);
     return;
   }
 
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Emplace an item with no progress, these values (i.e. 0,0) will get updated
-  // in the `OnSyncingStatusUpdate`.
-  in_progress_items_.try_emplace(path.value(), /*bytes_transferred=*/0,
-                                 /*bytes_to_transfer=*/0);
+  syncing_items_.AsyncCall(&InProgressSyncingItems::AddItem).WithArgs(path);
 }
 
 void DriveFsPinManager::OnSyncingStatusUpdate(
     const mojom::SyncingStatus& status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   for (const auto& item : status.item_events) {
     auto cloned_item = item.Clone();
-    auto transferred = in_progress_items_.find(cloned_item->path);
-    if (transferred == in_progress_items_.end()) {
-      continue;
-    }
     // TODO(b/259454320): Hosted files (e.g. gdoc) do not send an update via the
     // `OnSyncingStatusUpdate` method. Need to add a method to cleanse the
     // `in_progress_items_` map to ensure any values that are small enough or
     // optimistically pinned get removed.
     if (cloned_item->state == mojom::ItemEvent::State::kCompleted) {
-      in_progress_items_.erase(cloned_item->path);
-      VLOG(2) << "Removing completed items from sync map: "
-              << cloned_item->path.c_str();
+      syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
+          .WithArgs(cloned_item->path);
       continue;
     }
-    transferred->second.first = cloned_item->bytes_transferred;
-    transferred->second.second = cloned_item->bytes_to_transfer;
+    syncing_items_.AsyncCall(&InProgressSyncingItems::UpdateItem)
+        .WithArgs(cloned_item->path, cloned_item->bytes_transferred,
+                  cloned_item->bytes_to_transfer);
   }
 
-  if (in_progress_items_.size() == 0) {
-    VLOG(2) << "Current batch below threshold (" << in_progress_items_.size()
-            << "), starting new batch";
+  syncing_items_.AsyncCall(&InProgressSyncingItems::GetItemCount)
+      .Then(base::BindOnce(&DriveFsPinManager::MaybeStartSearch,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveFsPinManager::MaybeStartSearch(size_t remaining_items) {
+  if (remaining_items == 0) {
     search_query_->GetNextPage(
         base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
                        weak_ptr_factory_.GetWeakPtr()));
