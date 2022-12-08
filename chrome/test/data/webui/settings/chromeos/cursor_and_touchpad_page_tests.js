@@ -15,6 +15,15 @@ import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
 const RED_CURSOR_COLOR = 0xd93025;
 
+/**
+ * Possible control types for settings.
+ * @enum {string}
+ */
+export const ControlType = {
+  DROPDOWN: 'dropdown',
+  TOGGLE: 'toggle',
+};
+
 suite('CursorAndTouchpadPageTests', function() {
   let page = null;
   let deviceBrowserProxy = null;
@@ -262,4 +271,74 @@ suite('CursorAndTouchpadPageTests', function() {
     assertTrue(isVisible(largeCursorSizeSlider));
   });
 
+  const settingsControls = [
+    {
+      id: 'autoClickToggle',
+      prefKey: 'settings.a11y.autoclick',
+      defaultValue: false,
+      alternateValue: true,
+      type: ControlType.TOGGLE,
+    },
+    {
+      id: 'delayBeforeClickDropdown',
+      prefKey: 'settings.a11y.autoclick_delay_ms',
+      defaultValue: 1000,
+      alternateValue: 2000,
+      type: ControlType.DROPDOWN,
+    },
+    {
+      id: 'autoClickStabilizePositionToggle',
+      prefKey: 'settings.a11y.autoclick_stabilize_position',
+      defaultValue: false,
+      alternateValue: true,
+      type: ControlType.TOGGLE,
+    },
+    {
+      id: 'autoclickMovementThresholdDropdown',
+      prefKey: 'settings.a11y.autoclick_movement_threshold',
+      defaultValue: 20,
+      alternateValue: 5,
+      type: ControlType.DROPDOWN,
+    },
+    {
+      id: 'autoClickRevertToLeftClickToggle',
+      prefKey: 'settings.a11y.autoclick_revert_to_left_click',
+      defaultValue: true,
+      alternateValue: false,
+      type: ControlType.TOGGLE,
+    },
+  ];
+
+  settingsControls.forEach(control => {
+    const {id, prefKey, defaultValue, alternateValue, type} = control;
+
+    test(`Autoclick ${type} ${id} syncs to Pref: ${prefKey}`, async () => {
+      await initPage();
+
+      // Ensure control exists.
+      const control = page.shadowRoot.querySelector(`#${id}`);
+      assertTrue(!!control);
+
+      // Ensure pref is set to the default value.
+      let pref = page.getPref(prefKey);
+      assertEquals(defaultValue, pref.value);
+
+      // Update control to alternate value.
+      switch (type) {
+        case ControlType.TOGGLE:
+          control.click();
+          break;
+        case ControlType.DROPDOWN:
+          await waitAfterNextRender(control);
+          const controlElement = control.shadowRoot.querySelector('select');
+          controlElement.value = alternateValue;
+          controlElement.dispatchEvent(new CustomEvent('change'));
+          break;
+      }
+
+      // Ensure pref is set to the alternate value.
+      pref = page.getPref(prefKey);
+      assertEquals(alternateValue, pref.value);
+    });
+  });
 });

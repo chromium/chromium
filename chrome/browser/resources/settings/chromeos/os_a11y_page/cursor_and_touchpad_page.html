@@ -23,6 +23,7 @@
 </style>
 
 <settings-toggle-button
+    id="autoClickToggle"
     pref="{{prefs.settings.a11y.autoclick}}"
     icon="os-settings:autoclick"
     label="$i18n{clickOnStopLabel}"
@@ -34,13 +35,15 @@
     <div class="start settings-box-text" aria-hidden="true">
       $i18n{delayBeforeClickLabel}
     </div>
-    <settings-dropdown-menu label="$i18n{delayBeforeClickLabel}"
+    <settings-dropdown-menu id="delayBeforeClickDropdown"
+        label="$i18n{delayBeforeClickLabel}"
         pref="{{prefs.settings.a11y.autoclick_delay_ms}}"
         menu-options="[[autoClickDelayOptions_]]"
         disabled="[[!prefs.settings.a11y.autoclick.value]]">
     </settings-dropdown-menu>
   </div>
-  <settings-toggle-button class="settings-box hr"
+  <settings-toggle-button id="autoClickStabilizePositionToggle"
+      class="settings-box hr"
       pref="{{prefs.settings.a11y.autoclick_stabilize_position}}"
       label="$i18n{autoclickStabilizeCursorPosition}">
   </settings-toggle-button>
@@ -48,14 +51,15 @@
     <div class="start settings-box-text" aria-hidden="true">
       $i18n{autoclickMovementThresholdLabel}
     </div>
-    <settings-dropdown-menu
+    <settings-dropdown-menu id="autoclickMovementThresholdDropdown"
         label="$i18n{autoclickMovementThresholdLabel}"
         pref="{{prefs.settings.a11y.autoclick_movement_threshold}}"
         menu-options="[[autoClickMovementThresholdOptions_]]"
         disabled="[[!prefs.settings.a11y.autoclick.value]]">
     </settings-dropdown-menu>
   </div>
-  <settings-toggle-button class="settings-box hr"
+  <settings-toggle-button id="autoClickRevertToLeftClickToggle"
+      class="settings-box hr"
       pref="{{prefs.settings.a11y.autoclick_revert_to_left_click}}"
       label="$i18n{autoclickRevertToLeftClick}">
   </settings-toggle-button>
