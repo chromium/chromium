@@ -100867,6 +100867,7 @@ Full version information for the fingerprint enum values:
   <int value="19" label="Virtual Keyboard Tray, Status Area"/>
   <int value="20" label="Virtual Keyboard Tray, Accesibility Window"/>
   <int value="21" label="WM Mode Button"/>
+  <int value="22" label="Video Conferencing Tray"/>
 </enum>
 
 <enum name="TrendingQueryIndex">
