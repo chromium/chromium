@@ -176,7 +176,7 @@ public class FeedSurfaceMediator
 
         @Override
         public void refreshStream() {
-            mCoordinator.onRefresh();
+            mCoordinator.nonSwipeRefresh();
         }
     }
 
