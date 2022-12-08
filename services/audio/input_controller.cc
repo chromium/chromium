@@ -656,34 +656,18 @@ void InputController::LogSilenceState(SilenceState value) {
 #endif
 
 void InputController::LogCaptureStartupResult(CaptureStartupResult result) {
-  switch (type_) {
-    case LOW_LATENCY:
-      UMA_HISTOGRAM_ENUMERATION("Media.LowLatencyAudioCaptureStartupSuccess",
-                                result, CAPTURE_STARTUP_RESULT_MAX + 1);
-      break;
-    case HIGH_LATENCY:
-      UMA_HISTOGRAM_ENUMERATION("Media.HighLatencyAudioCaptureStartupSuccess",
-                                result, CAPTURE_STARTUP_RESULT_MAX + 1);
-      break;
-    default:
-      break;
-  }
+  if (type_ != LOW_LATENCY)
+    return;
+  UMA_HISTOGRAM_ENUMERATION("Media.LowLatencyAudioCaptureStartupSuccess",
+                            result, CAPTURE_STARTUP_RESULT_MAX + 1);
 }
 
 void InputController::LogCallbackError() {
-  bool error_during_callback = audio_callback_->error_during_callback();
-  switch (type_) {
-    case LOW_LATENCY:
-      UMA_HISTOGRAM_BOOLEAN("Media.Audio.Capture.LowLatencyCallbackError",
-                            error_during_callback);
-      break;
-    case HIGH_LATENCY:
-      UMA_HISTOGRAM_BOOLEAN("Media.Audio.Capture.HighLatencyCallbackError",
-                            error_during_callback);
-      break;
-    default:
-      break;
-  }
+  if (type_ != LOW_LATENCY)
+    return;
+
+  UMA_HISTOGRAM_BOOLEAN("Media.Audio.Capture.LowLatencyCallbackError",
+                        audio_callback_->error_during_callback());
 }
 
 void InputController::LogMessage(const std::string& message) {
