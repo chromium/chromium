@@ -468,14 +468,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     UMA_HISTOGRAM_BOOLEAN("GPU.AppHelpIsLoaded",
                           static_cast<bool>(::GetModuleHandle(L"apphelp.dll")));
 #endif
-    if (watchdog_thread_) {
-      if (base::FeatureList::IsEnabled(
-              features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
-        watchdog_thread_->DisableReportOnlyMode();
-      } else {
-        watchdog_thread_->ResumeWatchdog();
-      }
-    }
     if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
       gl_display = gl::init::InitializeGLNoExtensionsOneOff(
           /*init_bindings*/ false, system_device_id);
@@ -483,6 +475,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       if (!gl_initialized) {
         VLOG(1) << "gl::init::InitializeGLNoExtensionsOneOff failed";
         return false;
+      }
+    }
+    if (watchdog_thread_) {
+      if (base::FeatureList::IsEnabled(
+              features::kEnableWatchdogReportOnlyModeOnGpuInit)) {
+        watchdog_thread_->DisableReportOnlyMode();
+      } else {
+        watchdog_thread_->ResumeWatchdog();
       }
     }
   }
