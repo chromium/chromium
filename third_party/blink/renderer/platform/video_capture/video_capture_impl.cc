@@ -527,21 +527,8 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif
 
-  unsigned texture_target =
-      buffer_context_->gpu_factories()->ImageTextureTarget(
-          gpu_memory_buffer_->GetFormat());
-
-  // TODO(sunnyps): Get rid of NV12_DUAL_GMB format and instead rely on enabled
-  // by default multi plane shared images on Windows.
-
-  const bool use_multiplane =
-#if BUILDFLAG(IS_WIN)
-      output_format ==
-          media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB ||
-#endif
-      base::FeatureList::IsEnabled(media::kMultiPlaneVideoCaptureSharedImages);
-
-  if (use_multiplane) {
+  if (base::FeatureList::IsEnabled(
+          media::kMultiPlaneVideoCaptureSharedImages)) {
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
   } else {
@@ -562,6 +549,10 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
           buffer_context_->gmb_resources()->mailboxes[plane]);
     }
   }
+
+  const unsigned texture_target =
+      buffer_context_->gpu_factories()->ImageTextureTarget(
+          gpu_memory_buffer_->GetFormat());
 
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 

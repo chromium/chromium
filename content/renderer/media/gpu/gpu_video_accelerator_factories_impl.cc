@@ -485,8 +485,15 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
       !capabilities.image_ycbcr_420v_disabled_for_video_frames) {
     return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
   }
-  if (capabilities.texture_rg)
+  if (capabilities.texture_rg) {
+#if BUILDFLAG(IS_WIN)
+    // Windows supports binding single shmem GMB as separate shared images. We
+    // prefer single GMB because it makes dcomp overlay code simpler.
+    return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB;
+#else
     return media::GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB;
+#endif
+  }
   return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
 }
 
