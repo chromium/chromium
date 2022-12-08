@@ -690,19 +690,19 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
       containing_block_context = &fragment_context.current;
       containing_block_context->paint_offset += child.offset;
 
-      if (object.IsLayoutView()) {
-        // Out-of-flow positioned descendants are positioned relatively to this
-        // fragmentainer (page).
-        fragment_context.absolute_position = *containing_block_context;
-        fragment_context.fixed_position = *containing_block_context;
-      }
-
       // Keep track of the paint offset at the fragmentainer. This is needed
       // when entering OOF descendants. OOFs have the nearest fragmentainer as
       // their containing block, so when entering them during LayoutObject tree
       // traversal, we have to compensate for this.
       containing_block_context->paint_offset_for_oof_in_fragmentainer =
           containing_block_context->paint_offset;
+
+      if (object.IsLayoutView()) {
+        // Out-of-flow positioned descendants are positioned relatively to this
+        // fragmentainer (page).
+        fragment_context.absolute_position = *containing_block_context;
+        fragment_context.fixed_position = *containing_block_context;
+      }
     }
 
     WalkChildren(actual_parent, box_fragment, fragmentainer_context);
