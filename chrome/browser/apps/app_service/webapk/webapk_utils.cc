@@ -79,7 +79,7 @@ void PopulateWebApkManifest(Profile* profile,
                             const std::string& app_id,
                             webapk::WebAppManifest* web_app_manifest) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  auto& registrar = provider->registrar();
+  auto& registrar = provider->registrar_unsafe();
 
   // TODO(crbug.com/1254199): Call WebAppRegistrar::GetAppById(const AppId&
   // app_id) instead of performing repeated app_id lookups.
@@ -133,7 +133,7 @@ void GetWebApkCreationParams(Profile* profile,
     return;
   }
 
-  auto& registrar = provider->registrar();
+  auto& registrar = provider->registrar_unsafe();
 
   // TODO(crbug.com/1254199): Call WebAppRegistrar::GetAppById(const AppId&
   // app_id) instead of performing repeated app_id lookups.

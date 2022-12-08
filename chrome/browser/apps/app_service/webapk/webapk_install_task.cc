@@ -266,7 +266,7 @@ void WebApkInstallTask::Start(ResultCallback callback) {
     return;
   }
 
-  auto& registrar = web_app_provider_->registrar();
+  auto& registrar = web_app_provider_->registrar_unsafe();
 
   // Installation & share target are already checked in WebApkManager, check
   // again in case anything changed while the install request was queued.
@@ -366,7 +366,7 @@ void WebApkInstallTask::OnArcFeaturesLoaded(
   // sending has been resized and so doesn't exactly match any of the images in
   // the manifest. Since we can't be perfect, it's okay to be roughly correct
   // and just send any URL of the correct purpose.
-  auto& registrar = web_app_provider_->registrar();
+  auto& registrar = web_app_provider_->registrar_unsafe();
   const auto& manifest_icons = registrar.GetAppIconInfos(app_id_);
   auto it = base::ranges::find_if(
       manifest_icons, [&icon_size_and_purpose](const apps::IconInfo& info) {
