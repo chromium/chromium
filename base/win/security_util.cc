@@ -4,18 +4,15 @@
 
 #include "base/win/security_util.h"
 
-#include <aclapi.h>
 #include <windows.h>
-
-#include <string>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/numerics/checked_math.h"
+#include "base/win/access_control_list.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/scoped_localalloc.h"
-#include "base/win/win_util.h"
+#include "base/win/security_descriptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -27,70 +24,41 @@ bool AddACEToPath(const FilePath& path,
                   DWORD access_mask,
                   DWORD inheritance,
                   bool recursive,
-                  ACCESS_MODE access_mode) {
+                  SecurityAccessMode access_mode) {
   DCHECK(!path.empty());
-  if (sids.empty())
+  if (sids.empty()) {
     return true;
+  }
 
-  std::wstring object_name = path.value();
-  PSECURITY_DESCRIPTOR sd = nullptr;
-  PACL dacl = nullptr;
-
-  // Get the existing DACL.
-  DWORD error = ::GetNamedSecurityInfo(object_name.c_str(), SE_FILE_OBJECT,
-                                       DACL_SECURITY_INFORMATION, nullptr,
-                                       nullptr, &dacl, nullptr, &sd);
-  if (error != ERROR_SUCCESS) {
-    ::SetLastError(error);
-    DPLOG(ERROR) << "Failed getting DACL for path \"" << path.value() << "\"";
+  absl::optional<SecurityDescriptor> sd =
+      SecurityDescriptor::FromFile(path, DACL_SECURITY_INFORMATION);
+  if (!sd) {
     return false;
   }
-  auto sd_ptr = TakeLocalAlloc(sd);
-  std::vector<EXPLICIT_ACCESS> access_entries(sids.size());
-  auto entries_interator = access_entries.begin();
+
+  std::vector<ExplicitAccessEntry> entries;
   for (const Sid& sid : sids) {
-    EXPLICIT_ACCESS& new_access = *entries_interator++;
-    new_access.grfAccessMode = access_mode;
-    new_access.grfAccessPermissions = access_mask;
-    new_access.grfInheritance = inheritance;
-    ::BuildTrusteeWithSid(&new_access.Trustee, sid.GetPSID());
+    entries.emplace_back(sid, access_mode, access_mask, inheritance);
   }
 
-  PACL new_dacl = nullptr;
-  error = ::SetEntriesInAcl(checked_cast<ULONG>(access_entries.size()),
-                            access_entries.data(), dacl, &new_dacl);
-  if (error != ERROR_SUCCESS) {
-    ::SetLastError(error);
-    DPLOG(ERROR) << "Failed adding ACEs to DACL for path \"" << path.value()
-                 << "\"";
+  if (!sd->SetDaclEntries(entries)) {
     return false;
   }
-  auto new_dacl_ptr = TakeLocalAlloc(new_dacl);
+
   if (recursive) {
-    error = ::SetNamedSecurityInfo(&object_name[0], SE_FILE_OBJECT,
-                                   DACL_SECURITY_INFORMATION, nullptr, nullptr,
-                                   new_dacl_ptr.get(), nullptr);
-  } else {
-    ScopedHandle handle(::CreateFile(path.value().c_str(), WRITE_DAC, 0,
-                                     nullptr, OPEN_EXISTING,
-                                     FILE_FLAG_BACKUP_SEMANTICS, nullptr));
-    if (!handle.is_valid()) {
-      DPLOG(ERROR) << "Failed opening path \"" << path.value()
-                   << "\" to write DACL";
-      return false;
-    }
-    error = ::SetSecurityInfo(handle.get(), SE_KERNEL_OBJECT,
-                              DACL_SECURITY_INFORMATION, nullptr, nullptr,
-                              new_dacl_ptr.get(), nullptr);
+    return sd->WriteToFile(path, DACL_SECURITY_INFORMATION);
   }
 
-  if (error != ERROR_SUCCESS) {
-    ::SetLastError(error);
-    DPLOG(ERROR) << "Failed setting DACL for path \"" << path.value() << "\"";
+  ScopedHandle handle(::CreateFile(path.value().c_str(), WRITE_DAC, 0, nullptr,
+                                   OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS,
+                                   nullptr));
+  if (!handle.is_valid()) {
+    DPLOG(ERROR) << "Failed opening path \"" << path.value()
+                 << "\" to write DACL";
     return false;
   }
-
-  return true;
+  return sd->WriteToHandle(handle.get(), SecurityObjectType::kKernel,
+                           DACL_SECURITY_INFORMATION);
 }
 
 }  // namespace
@@ -101,7 +69,7 @@ bool GrantAccessToPath(const FilePath& path,
                        DWORD inheritance,
                        bool recursive) {
   return AddACEToPath(path, sids, access_mask, inheritance, recursive,
-                      GRANT_ACCESS);
+                      SecurityAccessMode::kGrant);
 }
 
 bool DenyAccessToPath(const FilePath& path,
@@ -110,7 +78,7 @@ bool DenyAccessToPath(const FilePath& path,
                       DWORD inheritance,
                       bool recursive) {
   return AddACEToPath(path, sids, access_mask, inheritance, recursive,
-                      DENY_ACCESS);
+                      SecurityAccessMode::kDeny);
 }
 
 std::vector<Sid> CloneSidVector(const std::vector<Sid>& sids) {

@@ -8,8 +8,11 @@
 #include <sddl.h>
 #include <windows.h>
 
+#include <utility>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/stringprintf.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/sid.h"
@@ -94,6 +97,15 @@ TEST(SecurityUtilTest, GrantAccessToPathErrorCase) {
       GrantAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE, true));
   EXPECT_TRUE(
       GrantAccessToPath(path, *sids, FILE_GENERIC_READ, NO_INHERITANCE, false));
+  std::vector<Sid> large_sid_list;
+  while (large_sid_list.size() < 0x10000) {
+    auto sid = Sid::FromSddlString(
+        base::StringPrintf(L"S-1-5-1234-%zu", large_sid_list.size()).c_str());
+    ASSERT_TRUE(sid);
+    large_sid_list.emplace_back(std::move(*sid));
+  }
+  EXPECT_FALSE(GrantAccessToPath(path, large_sid_list, FILE_GENERIC_READ,
+                                 NO_INHERITANCE, false));
   path = temp_dir.GetPath().Append(L"test_nowritedac");
   ASSERT_TRUE(CreateWithDacl(path, kNoWriteDacDacl, false));
   EXPECT_FALSE(
@@ -126,6 +138,9 @@ TEST(SecurityUtilTest, GrantAccessToPathFileNoInherit) {
   FilePath path = temp_dir.GetPath().Append(L"test");
   ASSERT_TRUE(CreateWithDacl(path, kBaseDacl, false));
   EXPECT_EQ(kBaseDacl, GetFileDacl(path));
+  EXPECT_TRUE(
+      GrantAccessToPath(path, {}, FILE_GENERIC_READ, NO_INHERITANCE, false));
+  EXPECT_EQ(kBaseDacl, GetFileDacl(path));
   auto sids = Sid::FromSddlStringVector({kAuthenticatedUsersSid});
   ASSERT_TRUE(sids);
   EXPECT_TRUE(
@@ -143,6 +158,9 @@ TEST(SecurityUtilTest, DenyAccessToPathFile) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   FilePath path = temp_dir.GetPath().Append(L"test");
   ASSERT_TRUE(CreateWithDacl(path, kBaseDacl, false));
+  EXPECT_EQ(kBaseDacl, GetFileDacl(path));
+  EXPECT_TRUE(
+      DenyAccessToPath(path, {}, FILE_GENERIC_READ, NO_INHERITANCE, true));
   EXPECT_EQ(kBaseDacl, GetFileDacl(path));
   auto sids = Sid::FromSddlStringVector({kLocalGuestSid});
   ASSERT_TRUE(sids);
