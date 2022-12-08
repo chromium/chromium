@@ -317,6 +317,24 @@ TEST(Session, OnBidiResponseCorrectConnection) {
   EXPECT_THAT(data_parsed->GetDict().FindString("data"), Pointee(Eq("ok")));
 }
 
+TEST(Session, OnBidiResponseFormat) {
+  std::unique_ptr<Chrome> chrome(new MockChrome());
+  Session session("1", std::move(chrome));
+  std::string received;
+  session.AddBidiConnection(512, base::BindRepeating(&SaveTo, &received),
+                            base::BindRepeating([] {}));
+  base::Value::Dict payload;
+  payload.Set("channel", std::string("abc/512") + Session::kChannelSuffix);
+  payload.Set("string_field", "some_String");
+  payload.Set("integer_field", 1);
+  payload.Set("float_field", 1.234);
+  EXPECT_TRUE(StatusOk(session.OnBidiResponse(std::move(payload))));
+  EXPECT_EQ(
+      "{\"channel\":\"abc\",\"float_field\":1.234,\"integer_field\":1,\"string_"
+      "field\":\"some_String\"}",
+      received);
+}
+
 TEST(Session, OnBlockingChannelResponseWhileAwaiting) {
   std::string good_blocking_channels[] = {
       std::string("x/7") + Session::kChannelSuffix +

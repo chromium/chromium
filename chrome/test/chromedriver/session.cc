@@ -230,7 +230,11 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
   }
 
   std::string message;
-  if (!base::JSONWriter::Write(payload, &message)) {
+  // `OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION` is needed to keep the BiDi format.
+  // crbug.com/chromedriver/4297.
+  if (!base::JSONWriter::WriteWithOptions(
+          payload, base::JSONWriter::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION,
+          &message)) {
     return Status{kUnknownError, "unable to serialize a BiDi response"};
   }
 
