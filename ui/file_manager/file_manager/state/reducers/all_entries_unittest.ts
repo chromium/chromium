@@ -5,13 +5,17 @@
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {DialogType} from '../../common/js/dialog_type.js';
 import {FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {Crostini} from '../../externs/background/crostini.js';
 import {EntryType, FileData} from '../../externs/ts/state.js';
+import {FileSelectionHandler} from '../../foreground/js/file_selection.js';
 import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
+import {TaskController} from '../../foreground/js/task_controller.js';
 import {ActionType} from '../actions.js';
 import {ClearStaleCachedEntriesAction} from '../actions/all_entries.js';
 import {cd, changeSelection} from '../for_tests.js';
@@ -30,6 +34,10 @@ export function setUp() {
   window.fileManager = {
     volumeManager: volumeManager,
     metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
+    crostini: {} as unknown as Crostini,
+    selectionHandler: {} as unknown as FileSelectionHandler,
+    taskController: {} as unknown as TaskController,
+    dialogType: DialogType.FULL_PAGE,
   };
 
   store.init(getEmptyState());

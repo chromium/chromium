@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentDirectory, PropStatus, Selection, State} from '../../externs/ts/state.js';
+import {CurrentDirectory, FileKey, PropStatus, Selection, State} from '../../externs/ts/state.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
 import {ChangeDirectoryAction, ChangeSelectionAction} from '../actions/current_directory.js';
 
@@ -31,9 +31,9 @@ export function changeDirectory(
       offlineCachedCount: undefined,
       fileTasks: {
         tasks: [],
-        defaultHandlerPolicy: undefined,
+        policyDefaultHandlerStatus: undefined,
+        defaultTask: undefined,
         status: PropStatus.SUCCESS,
-        keys: [],
       },
     };
   }
@@ -77,15 +77,9 @@ export function changeDirectory(
   };
 }
 
-/**
- * Updates the `currentDirectory.selection` state.
- */
-export function updateSelection(
-    currentState: State, action: ChangeSelectionAction): State {
-  // TODO: When we have all the keys from current directory, we should validate
-  // that selectedKeys belongs to current directory.
-  const selection: Selection = {
-    keys: action.payload.selectedKeys,
+function getEmptySelection(keys: FileKey[] = []): Selection {
+  return {
+    keys,
     dirCount: 0,
     fileCount: 0,
     // hostedCount might be updated to undefined in the for loop below.
@@ -94,11 +88,21 @@ export function updateSelection(
     offlineCachedCount: 0,
     fileTasks: {
       tasks: [],
-      defaultHandlerPolicy: undefined,
+      defaultTask: undefined,
+      policyDefaultHandlerStatus: undefined,
       status: PropStatus.STARTED,
-      keys: action.payload.selectedKeys,
     },
   };
+}
+
+/**
+ * Updates the `currentDirectory.selection` state.
+ */
+export function updateSelection(
+    currentState: State, action: ChangeSelectionAction): State {
+  // TODO: When we have all the keys from current directory, we should validate
+  // that selectedKeys belongs to current directory.
+  const selection = getEmptySelection(action.payload.selectedKeys);
 
   for (const key of action.payload.selectedKeys) {
     const fileData = currentState.allEntries[key];

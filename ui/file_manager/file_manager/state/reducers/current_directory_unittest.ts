@@ -5,11 +5,15 @@
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
+import {DialogType} from '../../common/js/dialog_type.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {Crostini} from '../../externs/background/crostini.js';
 import {CurrentDirectory, PropStatus} from '../../externs/ts/state.js';
+import {FileSelectionHandler} from '../../foreground/js/file_selection.js';
 import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
+import {TaskController} from '../../foreground/js/task_controller.js';
 import {changeDirectory, updateSelection} from '../actions/current_directory.js';
 import {assertStateEquals} from '../for_tests.js';
 import {getEmptyState, getStore, Store} from '../store.js';
@@ -22,6 +26,10 @@ export function setUp() {
   window.fileManager = {
     volumeManager: volumeManager,
     metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
+    crostini: {} as unknown as Crostini,
+    selectionHandler: {} as unknown as FileSelectionHandler,
+    taskController: {} as unknown as TaskController,
+    dialogType: DialogType.FULL_PAGE,
   };
 
   fileSystem = volumeManager.getCurrentProfileVolumeInfo(
@@ -72,10 +80,10 @@ export function testChangeDirectoryFromEmpty() {
       hostedCount: undefined,
       offlineCachedCount: undefined,
       fileTasks: {
-        defaultHandlerPolicy: undefined,
+        policyDefaultHandlerStatus: undefined,
+        defaultTask: undefined,
         tasks: [],
         status: PropStatus.SUCCESS,
-        keys: [],
       },
     },
   };
@@ -118,10 +126,10 @@ export function testChangeDirectoryTwice() {
       hostedCount: undefined,
       offlineCachedCount: undefined,
       fileTasks: {
-        defaultHandlerPolicy: undefined,
+        policyDefaultHandlerStatus: undefined,
+        defaultTask: undefined,
         tasks: [],
         status: PropStatus.SUCCESS,
-        keys: [],
       },
     },
   };
@@ -153,10 +161,10 @@ export function testChangeSelection() {
       hostedCount: undefined,
       offlineCachedCount: undefined,
       fileTasks: {
-        defaultHandlerPolicy: undefined,
+        policyDefaultHandlerStatus: undefined,
+        defaultTask: undefined,
         tasks: [],
         status: PropStatus.STARTED,
-        keys: [subDir.toURL()],
       },
     },
   };
@@ -167,7 +175,6 @@ export function testChangeSelection() {
   want.selection.keys = [file.toURL()];
   want.selection.dirCount = 0;
   want.selection.fileCount = 1;
-  want.selection.fileTasks.keys = [file.toURL()];
   assertStateEquals(want, store.getState().currentDirectory);
 
   // Append to the selection.
@@ -175,6 +182,5 @@ export function testChangeSelection() {
   want.selection.keys = [file.toURL(), subDir.toURL()];
   want.selection.dirCount = 1;
   want.selection.fileCount = 1;
-  want.selection.fileTasks.keys = [file.toURL(), subDir.toURL()];
   assertStateEquals(want, store.getState().currentDirectory);
 }

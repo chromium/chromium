@@ -13,6 +13,10 @@ import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 interface FileManager {
   volumeManager: VolumeManager;
   metadataModel: MetadataModel;
+  crostini: Crostini;
+  selectionHandler: FileSelectionHandler;
+  taskController: TaskController;
+  dialogType: DialogType;
 }
 
 /**
