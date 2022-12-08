@@ -25,6 +25,7 @@ class GPUImageDataLayout;
 class ScriptPromiseResolver;
 class ScriptState;
 class StaticBitmapImage;
+struct ExternalTextureSource;
 
 class GPUQueue : public DawnObject<WGPUQueue> {
   DEFINE_WRAPPERTYPEINFO();
@@ -84,14 +85,20 @@ class GPUQueue : public DawnObject<WGPUQueue> {
  private:
   void OnWorkDoneCallback(ScriptPromiseResolver* resolver,
                           WGPUQueueWorkDoneStatus status);
-
-  bool UploadContentToTexture(StaticBitmapImage* image,
-                              const WGPUOrigin3D& origin,
-                              const WGPUExtent3D& copy_size,
-                              const WGPUImageCopyTexture& destination,
-                              bool dst_premultiplied_alpha,
-                              PredefinedColorSpace dst_color_space,
-                              bool flipY);
+  void CopyFromVideoElement(const ExternalTextureSource source,
+                            const WGPUOrigin3D& origin,
+                            const WGPUExtent3D& copy_size,
+                            const WGPUImageCopyTexture& destination,
+                            bool dst_premultiplied_alpha,
+                            PredefinedColorSpace dst_color_space,
+                            bool flipY);
+  bool CopyFromCanvasSourceImage(StaticBitmapImage* image,
+                                 const WGPUOrigin3D& origin,
+                                 const WGPUExtent3D& copy_size,
+                                 const WGPUImageCopyTexture& destination,
+                                 bool dst_premultiplied_alpha,
+                                 PredefinedColorSpace dst_color_space,
+                                 bool flipY);
   void WriteBufferImpl(ScriptState* script_state,
                        GPUBuffer* buffer,
                        uint64_t buffer_offset,

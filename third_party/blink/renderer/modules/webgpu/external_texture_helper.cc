@@ -56,7 +56,7 @@ ColorSpaceConversionConstants GetColorSpaceConversionConstants(
                          &dst_primary_matrix_from_XYZD50);
 
   skcms_Matrix3x3 transform_matrix = skcms_Matrix3x3_concat(
-      &src_primary_matrix_to_XYZD50, &dst_primary_matrix_from_XYZD50);
+      &dst_primary_matrix_from_XYZD50, &src_primary_matrix_to_XYZD50);
   // From row major matrix to col major matrix
   color_space_conversion_constants.gamut_conversion_matrix =
       std::array<float, 9>{
@@ -68,7 +68,7 @@ ColorSpaceConversionConstants GetColorSpaceConversionConstants(
 
   // Set constants for source transfer function.
   skcms_TransferFunction src_transfer_fn;
-  src_color_space.GetInverseTransferFunction(&src_transfer_fn);
+  src_color_space.GetTransferFunction(&src_transfer_fn);
   color_space_conversion_constants.src_transfer_constants =
       std::array<float, 7>{src_transfer_fn.g, src_transfer_fn.a,
                            src_transfer_fn.b, src_transfer_fn.c,
@@ -77,7 +77,7 @@ ColorSpaceConversionConstants GetColorSpaceConversionConstants(
 
   // Set constants for destination transfer function.
   skcms_TransferFunction dst_transfer_fn;
-  dst_color_space.GetTransferFunction(&dst_transfer_fn);
+  dst_color_space.GetInverseTransferFunction(&dst_transfer_fn);
   color_space_conversion_constants.dst_transfer_constants =
       std::array<float, 7>{dst_transfer_fn.g, dst_transfer_fn.a,
                            dst_transfer_fn.b, dst_transfer_fn.c,

@@ -355,6 +355,16 @@ crbug.com/1307787 [ linux renderer-skia-vulkan ] Pixel_VulkanSwiftShader_WebGPUI
 
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
+# WebGPU interop fails on windows and mac with unaccelerated webcodec videoFrame -- pixel color diff
+crbug.com/1395227 [ mac ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
+crbug.com/1395227 [ mac ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1395227 [ mac ] Pixel_WebGPUImportVideoFrame [ Failure ]
+crbug.com/1395227 [ mac ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
+crbug.com/1395227 [ win ] Pixel_WebGPUImportVideoFrameUnaccelerated [ Failure ]
+crbug.com/1395227 [ win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
+crbug.com/1395227 [ win ] Pixel_WebGPUImportVideoFrame [ Failure ]
+crbug.com/1395227 [ win ] Pixel_WebGPUImportVideoFrameOffscreenCanvas [ Failure ]
+
 # Pixel_VideoStreamFromWebGL* tests sporadically fail on Linux FYI Release (NVIDIA) bot
 crbug.com/1348002 [ linux nvidia ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
 

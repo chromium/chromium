@@ -6,7 +6,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUImageCopyExternalImage {
-    required (ImageBitmap or HTMLCanvasElement or OffscreenCanvas) source;
+    required (ImageBitmap or HTMLCanvasElement or HTMLVideoElement or OffscreenCanvas) source;
     GPUOrigin2D origin = {};
     boolean flipY = false;
 };
