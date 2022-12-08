@@ -225,10 +225,6 @@ constexpr const char kPrefDoNotSync[] = "do_not_sync";
 // that need to be synced. Default value is false.
 constexpr const char kPrefNeedsSync[] = "needs_sync";
 
-// Stores preferences corresponding to static indexed rulesets for the
-// Declarative Net Request API.
-constexpr const char kDNRStaticRulesetPref[] = "dnr_static_ruleset";
-
 // Stores preferences corresponding to dynamic indexed ruleset for the
 // Declarative Net Request API. Note: we use a separate preference key for
 // dynamic rulesets instead of using the |kDNRStaticRulesetPref| dictionary.
@@ -340,10 +336,6 @@ class ScopedExtensionPrefUpdate : public prefs::ScopedDictionaryPrefUpdate {
  private:
   const std::string extension_id_;
 };
-
-std::string JoinPrefs(const std::vector<base::StringPiece>& parts) {
-  return base::JoinString(parts, ".");
-}
 
 // Whether SetAlertSystemFirstRun() should always return true, so that alerts
 // are triggered, even in first run.
@@ -2165,6 +2157,19 @@ void ExtensionPrefs::SetRunAlertsInFirstRunForTest() {
 
 const char ExtensionPrefs::kFakeObsoletePrefForTesting[] =
     "__fake_obsolete_pref_for_testing";
+
+// Stores preferences corresponding to static indexed rulesets for the
+// Declarative Net Request API.
+//
+// TODO(blee@igalia.com) Need to move all the DNR related codes to the helper.
+//                       (DeclarativeNetRequestPrefsHelper)
+const char ExtensionPrefs::kDNRStaticRulesetPref[] = "dnr_static_ruleset";
+
+// static
+std::string ExtensionPrefs::JoinPrefs(
+    const std::vector<base::StringPiece>& parts) {
+  return base::JoinString(parts, ".");
+}
 
 ExtensionPrefs::ExtensionPrefs(
     content::BrowserContext* browser_context,

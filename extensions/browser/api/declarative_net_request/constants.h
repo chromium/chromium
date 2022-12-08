@@ -210,6 +210,9 @@ extern const char kEnabledRulesetsRegexRuleCountExceeded[];
 extern const char kInternalErrorUpdatingEnabledRulesets[];
 extern const char kEnabledRulesetCountExceeded[];
 
+// Static rule toggling API errors.
+extern const char kDisabledStaticRuleCountExceeded[];
+
 // setExtensionActionOptions API errors.
 extern const char kTabNotFoundError[];
 extern const char kIncrementActionCountWithoutUseAsBadgeTextError[];
@@ -238,6 +241,9 @@ extern const char kErrorGetMatchedRulesMissingPermissions[];
 // The maximum amount of static rules in the global rule pool for a single
 // profile.
 constexpr int kMaxStaticRulesPerProfile = 300000;
+
+// The per-extension maximum amount of disabled static rules.
+constexpr int kMaxDisabledStaticRules = 5000;
 
 // Identifier for a Flatbuffer containing `flat::EmbedderConditions` as the
 // root.

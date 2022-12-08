@@ -791,6 +791,13 @@ class ExtensionPrefs : public KeyedService {
       const std::string& extension_id,
       const mojom::ManifestLocation location);
 
+  // Join |parts| to get a prefs key
+  static std::string JoinPrefs(const std::vector<base::StringPiece>& parts);
+
+  // TODO(blee@igalia.com) Need to move all the DNR related codes to the helper.
+  //                       (DeclarativeNetRequestPrefsHelper)
+  static const char kDNRStaticRulesetPref[];
+
   // When called before the ExtensionService is created, alerts that are
   // normally suppressed in first run will still trigger.
   static void SetRunAlertsInFirstRunForTest();

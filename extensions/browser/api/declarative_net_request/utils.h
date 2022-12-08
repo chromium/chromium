@@ -121,6 +121,9 @@ int GetDynamicAndSessionRuleLimit();
 // static and dynamic rulesets.
 int GetRegexRuleLimit();
 
+// Returns the per-extension maximum amount of disabled static rules.
+int GetDisabledStaticRuleLimit();
+
 // Test helpers to override the various rule limits until the returned value is
 // in scope.
 using ScopedRuleLimitOverride = base::AutoReset<int>;
@@ -131,6 +134,8 @@ ScopedRuleLimitOverride CreateScopedGlobalStaticRuleLimitOverrideForTesting(
 ScopedRuleLimitOverride CreateScopedRegexRuleLimitOverrideForTesting(int limit);
 ScopedRuleLimitOverride
 CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(int limit);
+ScopedRuleLimitOverride CreateScopedDisabledStaticRuleLimitOverrideForTesting(
+    int limit);
 
 // Helper to convert a flatbufffers::String to a string-like object with type T.
 template <typename T>

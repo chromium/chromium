@@ -68,6 +68,7 @@ int g_static_guaranteed_minimum_for_testing = kInvalidRuleLimit;
 int g_global_static_rule_limit_for_testing = kInvalidRuleLimit;
 int g_regex_rule_limit_for_testing = kInvalidRuleLimit;
 int g_dynamic_and_session_rule_limit_for_testing = kInvalidRuleLimit;
+int g_disabled_static_rule_limit_for_testing = kInvalidRuleLimit;
 
 int GetIndexedRulesetFormatVersion() {
   return g_indexed_ruleset_format_version_for_testing ==
@@ -389,6 +390,12 @@ int GetRegexRuleLimit() {
              : g_regex_rule_limit_for_testing;
 }
 
+int GetDisabledStaticRuleLimit() {
+  return g_disabled_static_rule_limit_for_testing == kInvalidRuleLimit
+             ? kMaxDisabledStaticRules
+             : g_disabled_static_rule_limit_for_testing;
+}
+
 ScopedRuleLimitOverride CreateScopedStaticGuaranteedMinimumOverrideForTesting(
     int minimum) {
   return base::AutoReset<int>(&g_static_guaranteed_minimum_for_testing,
@@ -409,6 +416,11 @@ ScopedRuleLimitOverride
 CreateScopedDynamicAndSessionRuleLimitOverrideForTesting(int limit) {
   return base::AutoReset<int>(&g_dynamic_and_session_rule_limit_for_testing,
                               limit);
+}
+
+ScopedRuleLimitOverride CreateScopedDisabledStaticRuleLimitOverrideForTesting(
+    int limit) {
+  return base::AutoReset<int>(&g_disabled_static_rule_limit_for_testing, limit);
 }
 
 size_t GetEnabledStaticRuleCount(const CompositeMatcher* composite_matcher) {
