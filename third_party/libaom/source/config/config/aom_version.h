@@ -12,8 +12,8 @@
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 5
 #define VERSION_PATCH 0
-#define VERSION_EXTRA "480-gbee1caded"
+#define VERSION_EXTRA "493-gc0239a23c"
 #define VERSION_PACKED \
   ((VERSION_MAJOR << 16) | (VERSION_MINOR << 8) | (VERSION_PATCH))
-#define VERSION_STRING_NOSP "3.5.0-480-gbee1caded"
-#define VERSION_STRING " 3.5.0-480-gbee1caded"
+#define VERSION_STRING_NOSP "3.5.0-493-gc0239a23c"
+#define VERSION_STRING " 3.5.0-493-gc0239a23c"

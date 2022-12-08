@@ -995,6 +995,16 @@ void aom_get_blk_sse_sum_c(const int16_t* data,
 unsigned int aom_get_mb_ss_c(const int16_t*);
 #define aom_get_mb_ss aom_get_mb_ss_c
 
+void aom_get_var_sse_sum_16x16_dual_c(const uint8_t* src_ptr,
+                                      int source_stride,
+                                      const uint8_t* ref_ptr,
+                                      int ref_stride,
+                                      uint32_t* sse16x16,
+                                      unsigned int* tot_sse,
+                                      int* tot_sum,
+                                      uint32_t* var16x16);
+#define aom_get_var_sse_sum_16x16_dual aom_get_var_sse_sum_16x16_dual_c
+
 void aom_get_var_sse_sum_8x8_quad_c(const uint8_t* src_ptr,
                                     int source_stride,
                                     const uint8_t* ref_ptr,
