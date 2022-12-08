@@ -1452,6 +1452,9 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 <histogram
     name="Navigation.UrlParamFilter.ApplicableClassificationCount{UrlParamFilterClassificationRole}"
     units="count" expires_after="2023-01-02">
+  <obsolete>
+    Obsolete and no longer written as of m109.
+  </obsolete>
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
@@ -1466,7 +1469,10 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.UrlParamFilter.ClassificationListValidationResult"
-    enum="ClassificationListValidationResult" expires_after="2023-03-26">
+    enum="ClassificationListValidationResult" expires_after="2023-01-02">
+  <obsolete>
+    Obsolete and no longer written as of m109.
+  </obsolete>
   <owner>kaklilu@chromium.org</owner>
   <owner>src/chrome/browser/url_param_filter/OWNERS</owner>
   <summary>
@@ -1482,7 +1488,10 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.UrlParamFilter.FilteredParamCount" units="count"
-    expires_after="2023-05-07">
+    expires_after="2023-01-02">
+  <obsolete>
+    Obsolete and no longer written as of m109.
+  </obsolete>
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>
@@ -1495,7 +1504,10 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.UrlParamFilter.FilteredParamCountExperimental"
-    units="count" expires_after="2023-05-07">
+    units="count" expires_after="2023-01-02">
+  <obsolete>
+    Obsolete and no longer written as of m109.
+  </obsolete>
   <owner>mreichhoff@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <owner>bcl@chromium.org</owner>

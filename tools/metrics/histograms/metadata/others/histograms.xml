@@ -150,12 +150,24 @@ chromium-metrics-reviews@google.com.
 
 <variants name="UrlParamFilterClassificationRole">
   <variant name=".Destination"
-      summary="parameters classified as having the destination role"/>
+      summary="parameters classified as having the destination role">
+    <obsolete>
+      Obsolete and no longer written as of m109.
+    </obsolete>
+  </variant>
   <variant name=".Invalid"
       summary="parameters with an unknown role, likely indicating a
-               compatibility issue"/>
+               compatibility issue">
+    <obsolete>
+      Obsolete and no longer written as of m109.
+    </obsolete>
+  </variant>
   <variant name=".Source"
-      summary="parameters classified as having the source role"/>
+      summary="parameters classified as having the source role">
+    <obsolete>
+      Obsolete and no longer written as of m109.
+    </obsolete>
+  </variant>
 </variants>
 
 <variants name="VoiceIntentTargetVariant">
