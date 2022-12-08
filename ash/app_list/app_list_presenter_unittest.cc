@@ -2107,7 +2107,8 @@ TEST_P(AppListBubbleAndTabletTest,
   views::test::WidgetDestroyedWaiter widget_close_waiter(confirmation_dialog);
   GetSearchBoxView()->ClearSearchAndDeactivateSearchBox();
   EXPECT_FALSE(AppListSearchResultPageVisible());
-  EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
+  if (tablet_mode_param())
+    EXPECT_FALSE(keyboard_controller->IsKeyboardVisible());
 
   // Exiting the search results page should close the dialog.
   widget_close_waiter.Wait();

@@ -289,8 +289,10 @@ void ContentsView::ShowSearchResults(bool show) {
   int search_page = GetPageIndexForState(AppListState::kStateSearchResults);
   DCHECK_GE(search_page, 0);
 
-  // Hide or Show results
-  search_result_page_view()->SetVisible(show);
+  // SetVisible() only when showing search results, the search results page will
+  // be hidden at the end of its own bounds animation.
+  if (show)
+    search_result_page_view()->SetVisible(true);
   SetActiveStateInternal(show ? search_page : page_before_search_,
                          true /*animate*/);
   if (show)
@@ -347,7 +349,6 @@ void ContentsView::InitializeSearchBoxAnimation(AppListState current_state,
 
   search_box->UpdateLayout(target_state,
                            GetSearchBoxSize(target_state).height());
-  search_box->UpdateBackground(target_state);
 
   gfx::Rect target_bounds = GetSearchBoxBounds(target_state);
   target_bounds = search_box->GetViewBoundsForSearchBoxContentsBounds(

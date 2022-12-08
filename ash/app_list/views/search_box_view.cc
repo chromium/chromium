@@ -613,7 +613,10 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
       gfx::Insets::TLBR(0, horizontal_spacing, 0, horizontal_right_padding));
   box_layout_view()->SetBetweenChildSpacing(horizontal_spacing);
   InvalidateLayout();
-  UpdateBackground(target_state);
+  // Avoid setting background when animating to kStateApps, background will be
+  // set when the animation ends.
+  if (target_state != AppListState::kStateApps)
+    UpdateBackground(target_state);
 }
 
 int SearchBoxView::GetSearchBoxBorderCornerRadiusForState(
@@ -944,7 +947,7 @@ void SearchBoxView::SetAutocompleteText(
   // |node_data| for "Value".
   NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
 
-    MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
+  MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
 
 SearchBoxView::PlaceholderTextType SearchBoxView::SelectPlaceholderText()
@@ -968,8 +971,11 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
     return;
 
   SetA11yActiveDescendant(absl::nullopt);
-  ClearSearch();
+  // Set search box as inactive first, because ClearSearch() eventually calls
+  // into AppListMainView::QueryChanged() which will hide search results based
+  // on `is_search_box_active_`.
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
+  ClearSearch();
   MaybeSetAutocompleteGhostText(std::u16string(), std::u16string());
 }
 

@@ -29,7 +29,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
-#include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -51,15 +50,13 @@ const int kResultContainersCount =
 
 namespace ash {
 
-// Parameterized based on whether the search view is shown within the clamshell
-// or tablet mode launcher UI.
-class ProductivityLauncherSearchViewTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+// Subclasses set `test_under_tablet_` in the constructor to indicate
+// which mode to test.
+class ProductivityLauncherSearchViewTest : public AshTestBase {
  public:
-  ProductivityLauncherSearchViewTest()
+  explicit ProductivityLauncherSearchViewTest(bool test_under_tablet)
       : AshTestBase((base::test::TaskEnvironment::TimeSource::MOCK_TIME)),
-        test_under_tablet_(GetParam()) {}
+        test_under_tablet_(test_under_tablet) {}
   ProductivityLauncherSearchViewTest(
       const ProductivityLauncherSearchViewTest&) = delete;
   ProductivityLauncherSearchViewTest& operator=(
@@ -190,12 +187,33 @@ class ProductivityLauncherSearchViewTest
   }
 
  private:
-  const bool test_under_tablet_;
+  const bool test_under_tablet_ = false;
 };
 
-// An extension of ProductivityLauncherSearchViewTest to test launcher image
+// Parameterized based on whether the search view is shown within the clamshell
+// or tablet mode launcher UI.
+class SearchViewClamshellAndTabletTest
+    : public ProductivityLauncherSearchViewTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SearchViewClamshellAndTabletTest()
+      : ProductivityLauncherSearchViewTest(/*test_under_tablet=*/GetParam()) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(Tablet,
+                         SearchViewClamshellAndTabletTest,
+                         testing::Bool());
+
+// ProductivityLauncherSearchViewTest which only tests tablet mode.
+class SearchViewTabletTest : public ProductivityLauncherSearchViewTest {
+ public:
+  SearchViewTabletTest()
+      : ProductivityLauncherSearchViewTest(/*test_under_tablet=*/true) {}
+};
+
+// An extension of SearchViewClamshellAndTabletTest to test launcher image
 // search.
-class SearchResultImageViewTest : public ProductivityLauncherSearchViewTest {
+class SearchResultImageViewTest : public SearchViewClamshellAndTabletTest {
  public:
   SearchResultImageViewTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -205,10 +223,6 @@ class SearchResultImageViewTest : public ProductivityLauncherSearchViewTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(Tablet,
-                         ProductivityLauncherSearchViewTest,
-                         testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(Tablet, SearchResultImageViewTest, testing::Bool());
 
@@ -300,7 +314,7 @@ TEST_P(SearchResultImageViewTest, ShowContextMenu) {
   EXPECT_TRUE(SearchResultImageViewDelegate::Get()->HasActiveContextMenu());
 }
 
-TEST_P(ProductivityLauncherSearchViewTest, AnimateSearchResultView) {
+TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -373,7 +387,7 @@ TEST_P(ProductivityLauncherSearchViewTest, AnimateSearchResultView) {
   client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
-TEST_P(ProductivityLauncherSearchViewTest, ResultContainerIsVisible) {
+TEST_P(SearchViewClamshellAndTabletTest, ResultContainerIsVisible) {
   GetAppListTestHelper()->ShowAppList();
 
   TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
@@ -416,7 +430,7 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultContainerIsVisible) {
   client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
-TEST_P(ProductivityLauncherSearchViewTest,
+TEST_P(SearchViewClamshellAndTabletTest,
        SearchResultsAreVisibleDuringHidePageAnimation) {
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
@@ -498,9 +512,67 @@ TEST_P(ProductivityLauncherSearchViewTest,
   client->set_search_callback(TestAppListClient::SearchCallback());
 }
 
+// Test that the search result page view is visible while animating the search
+// page from expanded to closed, specifically in tablet mode.
+TEST_F(SearchViewTabletTest, SearchResultPageShownWhileClosing) {
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  TestAppListClient* const client = GetAppListTestHelper()->app_list_client();
+  client->set_search_callback(
+      base::BindLambdaForTesting([&](const std::u16string& query) {
+        if (query.empty()) {
+          AppListModelProvider::Get()->search_model()->DeleteAllResults();
+          return;
+        }
+        EXPECT_EQ(u"a", query);
+
+        auto* test_helper = GetAppListTestHelper();
+        SearchModel::SearchResults* results = test_helper->GetSearchResults();
+        // Create categorized results and order categories as {kApps, kWeb}.
+        std::vector<AppListSearchResultCategory>* ordered_categories =
+            test_helper->GetOrderedResultCategories();
+        ordered_categories->push_back(AppListSearchResultCategory::kApps);
+        ordered_categories->push_back(AppListSearchResultCategory::kWeb);
+        SetUpSearchResults(results, 1, kDefaultSearchItems, 100, false,
+                           SearchResult::Category::kApps);
+        SetUpSearchResults(results, 1 + kDefaultSearchItems,
+                           kDefaultSearchItems, 1, false,
+                           SearchResult::Category::kWeb);
+      }));
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  std::vector<SearchResultContainerView*> result_containers =
+      GetProductivityLauncherSearchView()->result_container_views_for_test();
+  for (auto* container : result_containers)
+    EXPECT_TRUE(container->RunScheduledUpdateForTest());
+
+  SearchResultView* app_result = GetSearchResultView(2, 0);
+  ASSERT_TRUE(app_result);
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Press backspace to delete the query and switch back to the apps page.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  // The search page should be visible and animating while closing.
+  EXPECT_TRUE(GetSearchPage()->GetVisible());
+  EXPECT_TRUE(GetSearchPageAnimationLayer()->GetAnimator()->is_animating());
+
+  ui::LayerAnimationStoppedWaiter().Wait(GetSearchPageAnimationLayer());
+
+  // After waiting for animation, the search page should now be hidden.
+  EXPECT_FALSE(GetSearchPage()->GetVisible());
+  EXPECT_FALSE(GetSearchPageAnimationLayer()->GetAnimator()->is_animating());
+}
+
 // Tests that attempts to change selection during results hide animation are
 // handed gracefully.
-TEST_P(ProductivityLauncherSearchViewTest, SelectionChangeDuringHide) {
+TEST_P(SearchViewClamshellAndTabletTest, SelectionChangeDuringHide) {
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
 
@@ -565,7 +637,7 @@ TEST_P(ProductivityLauncherSearchViewTest, SelectionChangeDuringHide) {
 
 // Tests that key traversal correctly cycles between the list of results and
 // search box close button.
-TEST_P(ProductivityLauncherSearchViewTest, ResultSelectionCycle) {
+TEST_P(SearchViewClamshellAndTabletTest, ResultSelectionCycle) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
   EXPECT_FALSE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
@@ -642,7 +714,7 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultSelectionCycle) {
             kDefaultSearchItems - 1);
 }
 
-TEST_P(ProductivityLauncherSearchViewTest, AnswerCardSelection) {
+TEST_P(SearchViewClamshellAndTabletTest, AnswerCardSelection) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -690,7 +762,7 @@ TEST_P(ProductivityLauncherSearchViewTest, AnswerCardSelection) {
 
 // Tests that result selection controller can change between  within and between
 // result containers.
-TEST_P(ProductivityLauncherSearchViewTest, ResultSelection) {
+TEST_P(SearchViewClamshellAndTabletTest, ResultSelection) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
   EXPECT_FALSE(GetProductivityLauncherSearchView()->CanSelectSearchResults());
@@ -751,7 +823,7 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultSelection) {
   EXPECT_EQ(controller->selected_location_details()->result_index, 2);
 }
 
-TEST_P(ProductivityLauncherSearchViewTest, ResultPageHiddenInZeroSearchState) {
+TEST_P(SearchViewClamshellAndTabletTest, ResultPageHiddenInZeroSearchState) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -812,7 +884,7 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultPageHiddenInZeroSearchState) {
 }
 
 // Verifies that search result categories are sorted properly.
-TEST_P(ProductivityLauncherSearchViewTest, SearchResultCategoricalSort) {
+TEST_P(SearchViewClamshellAndTabletTest, SearchResultCategoricalSort) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -901,7 +973,7 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchResultCategoricalSort) {
   EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{}));
 }
 
-TEST_P(ProductivityLauncherSearchViewTest, SearchResultA11y) {
+TEST_P(SearchViewClamshellAndTabletTest, SearchResultA11y) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -945,7 +1017,7 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchResultA11y) {
   EXPECT_EQ(5, ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged));
 }
 
-TEST_P(ProductivityLauncherSearchViewTest, SearchPageA11y) {
+TEST_P(SearchViewClamshellAndTabletTest, SearchPageA11y) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
@@ -992,7 +1064,7 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchPageA11y) {
             data.GetStringAttribute(ax::mojom::StringAttribute::kValue));
 }
 
-TEST_P(ProductivityLauncherSearchViewTest, SearchClearedOnModelUpdate) {
+TEST_P(SearchViewClamshellAndTabletTest, SearchClearedOnModelUpdate) {
   auto* test_helper = GetAppListTestHelper();
   test_helper->ShowAppList();
 
