@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 
+#include <stddef.h>
+
 #include <utility>
 #include <vector>
 
@@ -132,10 +134,7 @@ class AttributionDataHostManagerImpl::ReceiverContext {
     registration_type_ = type;
   }
 
-  int num_data_registered() const {
-    DCHECK_GE(num_data_registered_, 0);
-    return num_data_registered_;
-  }
+  size_t num_data_registered() const { return num_data_registered_; }
 
   base::TimeTicks register_time() const { return register_time_; }
 
@@ -145,10 +144,7 @@ class AttributionDataHostManagerImpl::ReceiverContext {
     return nav_type_;
   }
 
-  void IncrementNumDataRegistered() {
-    DCHECK_GE(num_data_registered_, 0);
-    ++num_data_registered_;
-  }
+  void IncrementNumDataRegistered() { ++num_data_registered_; }
 
  private:
   // Top-level origin the data host was created in.
@@ -157,7 +153,7 @@ class AttributionDataHostManagerImpl::ReceiverContext {
 
   AttributionRegistrationType registration_type_;
 
-  int num_data_registered_ = 0;
+  size_t num_data_registered_ = 0;
 
   // Logically const.
   base::TimeTicks register_time_;
@@ -507,7 +503,7 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
   switch (context.registration_type()) {
     case AttributionRegistrationType::kSourceOrTrigger:
       OnSourceEligibleDataHostFinished(context.register_time());
-      DCHECK_EQ(context.num_data_registered(), 0);
+      DCHECK_EQ(context.num_data_registered(), 0u);
       return;
     case AttributionRegistrationType::kTrigger:
       histogram_name = "Conversions.RegisteredTriggersPerDataHost";
@@ -518,7 +514,7 @@ void AttributionDataHostManagerImpl::OnReceiverDisconnected() {
       break;
   }
 
-  if (int num = context.num_data_registered(); num > 0)
+  if (size_t num = context.num_data_registered())
     base::UmaHistogramExactLinear(histogram_name, num, 101);
 }
 
@@ -576,7 +572,7 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   if (it == redirect_registrations_.end())
     return;
 
-  DCHECK_GE(it->second.pending_source_data, 0u);
+  DCHECK_GT(it->second.pending_source_data, 0u);
   NavigationRedirectSourceRegistrations& registrations = it->second;
   registrations.pending_source_data--;
 
