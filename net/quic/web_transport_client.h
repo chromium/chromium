@@ -103,7 +103,6 @@ struct NET_EXPORT WebTransportParameters {
 
   bool allow_pooling = false;
 
-  bool enable_quic_transport = false;
   bool enable_web_transport_http3 = false;
 
   // A vector of fingerprints for expected server certificates, as described in
