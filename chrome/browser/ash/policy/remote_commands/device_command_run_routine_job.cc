@@ -172,7 +172,31 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck: {
       diagnostics_service->RunSmartctlCheckRoutine(
+          ash::cros_healthd::mojom::NullableUint32Ptr(),
           std::move(response_callback));
+      break;
+    }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+        kSmartctlCheckWithPercentageUsed: {
+      constexpr char kPercentageUsedThresholdFieldName[] =
+          "percentageUsedThreshold";
+      absl::optional<int> percentage_used_threshold =
+          params_dict_.FindIntKey(kPercentageUsedThresholdFieldName);
+      ash::cros_healthd::mojom::NullableUint32Ptr input_threshold;
+      // The smartctl check routine expects one optional integer >= 0.
+      if (percentage_used_threshold.has_value()) {
+        // If the optional integer parameter is specified, it must be [0, 255].
+        int value = percentage_used_threshold.value();
+        if (value < 0 || value > 255) {
+          SYSLOG(ERROR) << "Invalid parameters for smartctl check routine.";
+          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, std::move(invalid_parameters_callback));
+          break;
+        }
+        input_threshold = ash::cros_healthd::mojom::NullableUint32::New(value);
+      }
+      diagnostics_service->RunSmartctlCheckRoutine(
+          std::move(input_threshold), std::move(response_callback));
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAcPower: {

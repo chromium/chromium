@@ -259,6 +259,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdServiceFactory,
   void RunBatteryHealthRoutine(
       RunBatteryHealthRoutineCallback callback) override;
   void RunSmartctlCheckRoutine(
+      mojom::NullableUint32Ptr percentage_used_threshold,
       RunSmartctlCheckRoutineCallback callback) override;
   void RunAcPowerRoutine(mojom::AcPowerStatusEnum expected_status,
                          const absl::optional<std::string>& expected_power_type,

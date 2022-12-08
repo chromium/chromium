@@ -69,6 +69,10 @@ constexpr char kMinimumChargePercentRequiredFieldName[] =
 // routine.
 constexpr char kPrivacyScreenTargetStateFieldName[] = "targetState";
 
+// String constants identifying the parameter fields for the smartctl check
+// routine.
+constexpr char kPercentageUsedThresholdFieldName[] = "percentageUsedThreshold";
+
 constexpr uint32_t kId = 11;
 constexpr auto kStatus =
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning;
@@ -77,6 +81,7 @@ constexpr RemoteCommandJob::UniqueIDType kUniqueID = 987123;
 
 constexpr int kPositiveInt = 8789;
 constexpr int kNegativeInt = -231;
+constexpr int kValidSmartctlCheckPercentageUsedValue = 100;
 constexpr auto kValidAcPowerStatusEnum =
     ash::cros_healthd::mojom::AcPowerStatusEnum::kConnected;
 constexpr char kValidExpectedAcPowerType[] = "power_type";
@@ -352,8 +357,8 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunUrandomRoutineInvalidLengthSeconds) {
              })));
 }
 
-// Note that the smartctl check routine has no parameters, so we only need to
-// test that it can be run successfully.
+// Note that the smartctl check routine (without percentage_used) has no
+// parameters, so we only need to test that it can be run successfully.
 TEST_F(DeviceCommandRunRoutineJobTest, RunSmartctlCheckRoutineSuccess) {
   auto run_routine_response =
       ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
@@ -368,6 +373,68 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunSmartctlCheckRoutineSuccess) {
                std::unique_ptr<std::string> payload = job->GetResultPayload();
                EXPECT_TRUE(payload);
                EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+             })));
+}
+
+// Test that the smartctl check routine (with percentage_used) handles the
+// optional percentage_used_threshold parameter being persent.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunSmartctlCheckRoutineWithPercentageUsedSuccess) {
+  auto run_routine_response =
+      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
+      run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetIntKey(kPercentageUsedThresholdFieldName,
+                        kValidSmartctlCheckPercentageUsedValue);
+  EXPECT_TRUE(RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+                         kSmartctlCheckWithPercentageUsed,
+                     std::move(params_dict),
+                     base::BindLambdaForTesting([](RemoteCommandJob* job) {
+                       EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+                       std::unique_ptr<std::string> payload =
+                           job->GetResultPayload();
+                       EXPECT_TRUE(payload);
+                       EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+                     })));
+}
+
+// Test that the smartctl check routine (with percentage_used) handles the
+// optional percentage_used_threshold parameter being missing.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunSmartctlCheckRoutineWithPercentageUsedMissingParam) {
+  auto run_routine_response =
+      ash::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
+      run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+                         kSmartctlCheckWithPercentageUsed,
+                     std::move(params_dict),
+                     base::BindLambdaForTesting([](RemoteCommandJob* job) {
+                       EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+                       std::unique_ptr<std::string> payload =
+                           job->GetResultPayload();
+                       EXPECT_TRUE(payload);
+                       EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+                     })));
+}
+
+// Test that a negative percentage_used_threshold parameter causes the smartctl
+// check routine (with percentage_used) to fail.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunSmartctlCheckRoutineWithPercentageUsedInvalidParam) {
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetIntKey(kPercentageUsedThresholdFieldName, kNegativeInt);
+  EXPECT_TRUE(
+      RunJob(ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+                 kSmartctlCheckWithPercentageUsed,
+             std::move(params_dict),
+             base::BindLambdaForTesting([](RemoteCommandJob* job) {
+               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+               std::unique_ptr<std::string> payload = job->GetResultPayload();
+               EXPECT_TRUE(payload);
+               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
              })));
 }
 

@@ -459,8 +459,8 @@ TEST_F(DiagnosticsServiceAshTest, RunSmartctlCheckRoutineSuccess) {
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();
-  ValidateResponse(result,
-                   cros_healthd::mojom::DiagnosticRoutineEnum::kSmartctlCheck);
+  ValidateResponse(result, cros_healthd::mojom::DiagnosticRoutineEnum::
+                               kSmartctlCheckWithPercentageUsed);
 }
 
 }  // namespace ash

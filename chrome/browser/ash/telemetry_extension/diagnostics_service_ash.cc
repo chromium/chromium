@@ -374,14 +374,18 @@ void DiagnosticsServiceAsh::RunSignalStrengthRoutine(
 
 void DiagnosticsServiceAsh::RunSmartctlCheckRoutine(
     RunSmartctlCheckRoutineCallback callback) {
-  GetService()->RunSmartctlCheckRoutine(base::BindOnce(
-      [](crosapi::mojom::DiagnosticsService::RunSmartctlCheckRoutineCallback
-             callback,
-         cros_healthd::mojom::RunRoutineResponsePtr ptr) {
-        std::move(callback).Run(
-            converters::ConvertDiagnosticsPtr(std::move(ptr)));
-      },
-      std::move(callback)));
+  // TODO(b/248215517): Migrate to new interface and support
+  // percentage_used_threshold argument.
+  GetService()->RunSmartctlCheckRoutine(
+      cros_healthd::mojom::NullableUint32Ptr(),
+      base::BindOnce(
+          [](crosapi::mojom::DiagnosticsService::RunSmartctlCheckRoutineCallback
+                 callback,
+             cros_healthd::mojom::RunRoutineResponsePtr ptr) {
+            std::move(callback).Run(
+                converters::ConvertDiagnosticsPtr(std::move(ptr)));
+          },
+          std::move(callback)));
 }
 
 }  // namespace ash

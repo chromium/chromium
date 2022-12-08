@@ -54,7 +54,7 @@ interface CrosHealthdServiceFactory {
 
 // Diagnostics interface exposed by the cros_healthd daemon.
 //
-// NextMinVersion: 6, NextIndex: 38
+// NextMinVersion: 7, NextIndex: 38
 [Stable]
 interface CrosHealthdDiagnosticsService {
   // Returns an array of all diagnostic routines that the platform supports.
@@ -127,15 +127,29 @@ interface CrosHealthdDiagnosticsService {
   RunBatteryHealthRoutine@4() => (RunRoutineResponse response);
 
   // Requests that the SmartctlCheck routine is created and started on the
-  // platform. This routine checks available spare NVMe capacity against the
-  // threshold.
+  // platform. This routine passes iff a NVMe drive's:
+  // 1. Critical Warning == 0x00 (no warning)
+  // 2. Available Spare >= Available Spare Threshold
+  // 3. Percentage Used <= Percentage Used Threshold (from request)
+  // In addition, above values are also returned in the output.
   // The availability of this routine can be determined by checking that
-  // kSmartctlCheck is returned by GetAvailableRoutines.
+  // kSmartctlCheck (without |percentage_used_threshold|) or
+  // kSmartctlCheckWithPercentageUsed (with |percentage_used_threshold|) is
+  // returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |percentage_used_threshold| - an optional threshold number in percentage,
+  //                                 range [0, 255] inclusive, that the routine
+  //                                 examines `percentage_used` against. If not
+  //                                 specified, the routine will default to the
+  //                                 max allowed value (255).
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunSmartctlCheckRoutine@5() => (RunRoutineResponse response);
+  RunSmartctlCheckRoutine@5(
+    [MinVersion=6] NullableUint32? percentage_used_threshold)
+        => (RunRoutineResponse response);
 
   // Requests that the AcPower routine is created and started on the
   // platform. This routine checks the status of the power supply, and if

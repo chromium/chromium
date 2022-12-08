@@ -538,8 +538,10 @@ void FakeCrosHealthd::RunBatteryHealthRoutine(
 }
 
 void FakeCrosHealthd::RunSmartctlCheckRoutine(
+    mojom::NullableUint32Ptr percentage_used_threshold,
     RunSmartctlCheckRoutineCallback callback) {
-  last_run_routine_ = mojom::DiagnosticRoutineEnum::kSmartctlCheck;
+  last_run_routine_ =
+      mojom::DiagnosticRoutineEnum::kSmartctlCheckWithPercentageUsed;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), run_routine_response_.Clone()),
