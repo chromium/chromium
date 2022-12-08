@@ -448,17 +448,40 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
     return;
   }
 
-  if (index < 0 || static_cast<uint32_t>(index) > surrounding_text_.size()) {
+  // Adjust index and anchor to the position in `surrounding_text_`.
+  // `index` and `anchor` sent from Exo is for the surrounding text sent to Exo
+  // which could be trimmed when the actual surrounding text is longer than 4000
+  // bytes.
+  // Note that `index` and `anchor` is guaranteed to be under 4000 bytes,
+  // adjusted index and anchor below won't overflow.
+  size_t adjusted_index = index + surrounding_text_offset_;
+  size_t adjusted_anchor = anchor + surrounding_text_offset_;
+
+  if (adjusted_index > surrounding_text_.size()) {
     LOG(ERROR) << "Invalid index is specified.";
     return;
   }
-  if (anchor < 0 || static_cast<uint32_t>(anchor) > surrounding_text_.size()) {
+  if (adjusted_anchor > surrounding_text_.size()) {
     LOG(ERROR) << "Invalid anchor is specified.";
     return;
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (selection_range_utf8_ == gfx::Range(index, anchor)) {
+  // Cursor position may be wrong on Lacros due to timing issue for some
+  // scenario when surrounding text is longer than wayland message size
+  // limitation (4000 bytes) such as:
+  // 1. Set surrounding text with 8000 bytes and send the selection adjusted to
+  // 4000 bytes (wayland message size maximum).
+  // 2. Exo requests to delete surrounding text sent from 1.
+  // 3. Before receiving OnDeleteSurrounding, move the selection to 4000 bytes
+  // (this implies that surrounding text sent to Exo is changed) on wayland and
+  // set surrounding text.
+  // In this case, Exo can only know the relative position to the offset trimmed
+  // on Wayland, so the position is mismatched to Wayland.
+  //
+  // This timing issue will be fixed by sending whole surrounding text instead
+  // of trimmed text.
+  if (selection_range_utf8_ == gfx::Range(adjusted_index, adjusted_anchor)) {
     pending_keep_selection_ = true;
   } else {
     NOTIMPLEMENTED_LOG_ONCE();
@@ -620,7 +643,8 @@ void WaylandInputMethodContext::OnSetPreeditRegion(
 
 void WaylandInputMethodContext::OnClearGrammarFragments(
     const gfx::Range& range) {
-  std::vector<size_t> offsets = {range.start(), range.end()};
+  std::vector<size_t> offsets = {range.start() + surrounding_text_offset_,
+                                 range.end() + surrounding_text_offset_};
   base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
   ime_delegate_->OnClearGrammarFragments(gfx::Range(
       static_cast<uint32_t>(offsets[0]), static_cast<uint32_t>(offsets[1])));
@@ -628,7 +652,9 @@ void WaylandInputMethodContext::OnClearGrammarFragments(
 
 void WaylandInputMethodContext::OnAddGrammarFragment(
     const GrammarFragment& fragment) {
-  std::vector<size_t> offsets = {fragment.range.start(), fragment.range.end()};
+  std::vector<size_t> offsets = {
+      fragment.range.start() + surrounding_text_offset_,
+      fragment.range.end() + surrounding_text_offset_};
   base::UTF8ToUTF16AndAdjustOffsets(surrounding_text_, &offsets);
   ime_delegate_->OnAddGrammarFragment(
       {GrammarFragment(gfx::Range(static_cast<uint32_t>(offsets[0]),
@@ -637,7 +663,9 @@ void WaylandInputMethodContext::OnAddGrammarFragment(
 }
 
 void WaylandInputMethodContext::OnSetAutocorrectRange(const gfx::Range& range) {
-  ime_delegate_->OnSetAutocorrectRange(range);
+  ime_delegate_->OnSetAutocorrectRange(
+      gfx::Range(range.start() + surrounding_text_offset_,
+                 range.end() + surrounding_text_offset_));
 }
 
 void WaylandInputMethodContext::OnSetVirtualKeyboardOccludedBounds(

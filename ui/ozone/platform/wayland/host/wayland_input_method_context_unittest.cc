@@ -715,6 +715,42 @@ TEST_F(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
       input_method_context_delegate_->was_on_confirm_composition_text_called());
 }
 
+TEST_F(WaylandInputMethodContextTest,
+       MAYBE(OnConfirmCompositionTextForLongRange)) {
+  const std::u16string original_text(5000, u'あ');
+  constexpr gfx::Range original_range(4000, 4500);
+
+  // Text longer than 4000 bytes is trimmed to meet the limitation.
+  // Selection range is also adjusted by the trimmed text before sendin to Exo.
+  const std::string kExpectedSentText(
+      base::UTF16ToUTF8(std::u16string(1332, u'あ')));
+  constexpr gfx::Range kExpectedSentRange(1248, 2748);
+
+  // SetSurroundingText should be called in UTF-8.
+  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+                          wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->text_input_manager_v1()->text_input(),
+                SetSurroundingText(kExpectedSentText, kExpectedSentRange));
+  });
+  input_method_context_->SetSurroundingText(original_text, original_range);
+  connection_->Flush();
+
+  PostToServerAndWait([kExpectedSentText, kExpectedSentRange](
+                          wl::TestWaylandServerThread* server) {
+    auto* text_input = server->text_input_manager_v1()->text_input();
+    Mock::VerifyAndClearExpectations(text_input);
+
+    zwp_text_input_v1_send_cursor_position(text_input->resource(),
+                                           kExpectedSentRange.start(),
+                                           kExpectedSentRange.end());
+    zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
+                                         kExpectedSentText.c_str());
+  });
+
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_confirm_composition_text_called());
+}
+
 TEST_F(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {
   constexpr char16_t text[] = u"abcあdef";
   const gfx::Range range(3, 4);  // あ is selected.

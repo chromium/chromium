@@ -128,9 +128,13 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   CharacterComposer character_composer_;
 
   // Stores the parameters required for OnDeleteSurroundingText.
-  // The index moved by SetSurroundingText. This is byte-offset in UTF8 form.
+  // The index moved by SetSurroundingText due to the maximum length of wayland
+  // messages limitation. It is specified as 4000 bytes in the protocol spec of
+  // text-input-unstable-v3.
+  // This is byte-offset in UTF8 form.
   size_t surrounding_text_offset_ = 0;
-  // The string in SetSurroundingText.
+  // The string in SetSurroundingText. This is NOT trimmed by the wayland
+  // message size limitation.
   std::string surrounding_text_;
   // The selection range in UTF-8 offsets in the |surrounding_text_|.
   gfx::Range selection_range_utf8_ = gfx::Range::InvalidRange();
