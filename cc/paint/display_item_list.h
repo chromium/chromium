@@ -17,6 +17,7 @@
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/image_id.h"
 #include "cc/paint/paint_export.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPicture.h"

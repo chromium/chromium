@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/network_interfaces.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor.h"

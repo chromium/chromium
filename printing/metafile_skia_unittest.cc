@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "printing/common/metafile_utils.h"
 #include "printing/mojom/print.mojom.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/icon_standardizer.h"
 
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkMaskFilter.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"

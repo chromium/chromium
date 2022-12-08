@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/skottie_frame_data.h"

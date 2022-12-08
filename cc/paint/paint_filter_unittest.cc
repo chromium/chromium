@@ -5,7 +5,7 @@
 #include "cc/paint/paint_filter.h"
 
 #include "cc/paint/image_provider.h"
-#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op.h"
 #include "cc/test/skia_common.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/effects/SkLumaColorFilter.h"

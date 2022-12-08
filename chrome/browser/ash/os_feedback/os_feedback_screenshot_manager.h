@@ -8,13 +8,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-
-namespace base {
-class RefCountedMemory;
-}  // namespace base
 
 namespace ash {
 

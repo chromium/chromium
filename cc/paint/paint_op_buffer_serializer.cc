@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/clear_for_opaque_raster.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -353,7 +354,7 @@ bool PaintOpBufferSerializer::SerializeOp(SkCanvas* canvas,
   }
 
   DCHECK_GE(bytes, 4u);
-  DCHECK_EQ(bytes % PaintOpBuffer::PaintOpAlign, 0u);
+  DCHECK_EQ(bytes % PaintOpBuffer::kPaintOpAlign, 0u);
   return true;
 }
 

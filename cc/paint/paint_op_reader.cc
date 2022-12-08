@@ -77,7 +77,7 @@ bool PaintOpReader::ReadAndValidateOpHeader(const volatile void* input,
 
   if (input_size < *skip)
     return false;
-  if (*skip % PaintOpBuffer::PaintOpAlign != 0)
+  if (*skip % PaintOpBuffer::kPaintOpAlign != 0)
     return false;
   if (*type > static_cast<uint8_t>(PaintOpType::LastPaintOpType))
     return false;
@@ -1365,7 +1365,7 @@ void PaintOpReader::ReadLightingSpotPaintFilter(
 size_t PaintOpReader::Read(sk_sp<PaintRecord>* record) {
   size_t size_bytes = 0;
   ReadSize(&size_bytes);
-  AlignMemory(PaintOpBuffer::PaintOpAlign);
+  AlignMemory(PaintOpBuffer::kPaintOpAlign);
   if (enable_security_constraints_) {
     // Validate that the record was not serialized if security constraints are
     // enabled.

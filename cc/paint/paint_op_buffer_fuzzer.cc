@@ -95,7 +95,7 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
 
     std::unique_ptr<char, base::AlignedFreeDeleter> deserialized(
         static_cast<char*>(base::AlignedAlloc(
-            sizeof(cc::LargestPaintOp), cc::PaintOpBuffer::PaintOpAlign)));
+            sizeof(cc::LargestPaintOp), cc::PaintOpBuffer::kPaintOpAlign)));
     size_t bytes_read = 0;
     cc::PaintOp* deserialized_op = cc::PaintOp::Deserialize(
         data, size, deserialized.get(), sizeof(cc::LargestPaintOp), &bytes_read,

@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
-
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 #include "ui/gfx/geometry/rect_f.h"

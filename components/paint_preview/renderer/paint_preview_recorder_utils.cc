@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "components/paint_preview/common/file_stream.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "mojo/public/cpp/base/shared_memory_utils.h"

@@ -34,10 +34,10 @@ class PaintOpPerfTest : public testing::Test {
                kTimeCheckInterval),
         serialized_data_(static_cast<char*>(
             base::AlignedAlloc(kMaxSerializedBufferBytes,
-                               PaintOpBuffer::PaintOpAlign))),
+                               PaintOpBuffer::kPaintOpAlign))),
         deserialized_data_(static_cast<char*>(
             base::AlignedAlloc(sizeof(LargestPaintOp),
-                               PaintOpBuffer::PaintOpAlign))) {}
+                               PaintOpBuffer::kPaintOpAlign))) {}
 
   void RunTest(const std::string& name, const PaintOpBuffer& buffer) {
     TestOptionsProvider test_options_provider;

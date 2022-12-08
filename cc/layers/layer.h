@@ -26,6 +26,7 @@
 #include "cc/layers/touch_action_region.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/paint/node_id.h"
 #include "cc/paint/paint_record.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/property_tree.h"

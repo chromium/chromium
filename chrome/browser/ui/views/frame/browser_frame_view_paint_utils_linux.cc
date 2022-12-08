@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
 
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/scoped_canvas.h"

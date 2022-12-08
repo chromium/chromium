@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/time/time.h"
+#include "cc/paint/paint_canvas.h"
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"

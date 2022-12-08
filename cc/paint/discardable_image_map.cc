@@ -18,6 +18,7 @@
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 #include "ui/gfx/display_color_spaces.h"

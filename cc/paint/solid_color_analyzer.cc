@@ -8,7 +8,8 @@
 
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 

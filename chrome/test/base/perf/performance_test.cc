@@ -22,6 +22,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/user_manager/user_names.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"

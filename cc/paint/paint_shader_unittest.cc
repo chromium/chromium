@@ -7,7 +7,7 @@
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_image_builder.h"
-#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_skcanvas.h"

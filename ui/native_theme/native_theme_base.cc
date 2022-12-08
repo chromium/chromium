@@ -17,6 +17,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"

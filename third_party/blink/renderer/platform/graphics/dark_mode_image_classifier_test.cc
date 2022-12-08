@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 
 namespace blink {
 namespace {

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/logging_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"

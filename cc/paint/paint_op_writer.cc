@@ -919,7 +919,7 @@ void PaintOpWriter::Write(const LightingSpotPaintFilter& filter,
 void PaintOpWriter::Write(const PaintRecord* record,
                           const gfx::Rect& playback_rect,
                           const gfx::SizeF& post_scale) {
-  AlignMemory(PaintOpBuffer::PaintOpAlign);
+  AlignMemory(PaintOpBuffer::kPaintOpAlign);
 
   // We need to record how many bytes we will serialize, but we don't know this
   // information until we do the serialization. So, skip the amount needed

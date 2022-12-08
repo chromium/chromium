@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/camera_roll_manager.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"

@@ -10,7 +10,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_filter.h"
-#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op.h"
 #include "cc/paint/skottie_wrapper.h"
 
 namespace cc {

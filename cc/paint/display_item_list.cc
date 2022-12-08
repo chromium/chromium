@@ -13,6 +13,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/picture_debug_util.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/solid_color_analyzer.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"

@@ -10,7 +10,7 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
-#include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op_buffer_iterator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"

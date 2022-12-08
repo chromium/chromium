@@ -5,6 +5,7 @@
 #include "ui/gtk/window_frame_provider_gtk.h"
 
 #include "base/logging.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
