@@ -989,10 +989,6 @@ void Navigator::OnBeginNavigation(
     mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
         renderer_cancellation_listener) {
   TRACE_EVENT0("navigation", "Navigator::OnBeginNavigation");
-  // TODO(clamy): the url sent by the renderer should be validated with
-  // FilterURL.
-  // This is a renderer-initiated navigation.
-  DCHECK(frame_tree_node);
 
   if (common_params->is_history_navigation_in_new_child_frame) {
     // Try to find a FrameNavigationEntry that matches this frame instead, based
