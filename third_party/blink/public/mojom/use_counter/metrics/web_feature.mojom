@@ -3760,6 +3760,9 @@ enum WebFeature {
   kScrollend = 4419,
   kDOMWindowOpenCrossOriginIframe = 4420,
   kStreamingDeclarativeShadowDOM = 4421,
+  kDialogCloseWatcherCancelSkipped = 4422,
+  kDialogCloseWatcherCancelSkippedAndDefaultPrevented = 4423,
+  kDialogCloseWatcherCloseSignalClosedMultiple = 4424,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

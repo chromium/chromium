@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1383001">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<dialog id=one></dialog>
+<dialog id=two></dialog>
+
+<script>
+test(() => {
+  one.showModal();
+  two.showModal();
+  eventSender.keyDown('Escape');
+  assert_true(internals.isUseCounted(document, 4424));
+});
+</script>

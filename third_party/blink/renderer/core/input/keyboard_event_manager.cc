@@ -568,16 +568,24 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
     page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
   }
 
+  bool cancel_skipped = false;
+  frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event,
+                                                              &cancel_skipped);
+
   HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog();
   if (dialog && !RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-    dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel));
+    auto* cancel_event = Event::CreateCancelable(event_type_names::kCancel);
+    dialog->DispatchEvent(*cancel_event);
+    if (cancel_event->defaultPrevented() && cancel_skipped) {
+      UseCounter::Count(
+          frame_->GetDocument(),
+          WebFeature::kDialogCloseWatcherCancelSkippedAndDefaultPrevented);
+    }
   }
 
   auto* target_node = event->GetEventPath()[0].Target()->ToNode();
   DCHECK(target_node);
   HTMLElement::HandlePopoverLightDismiss(*event, *target_node);
-
-  frame_->DomWindow()->closewatcher_stack()->EscapeKeyHandler(event);
 }
 
 void KeyboardEventManager::DefaultEnterEventHandler(KeyboardEvent* event) {

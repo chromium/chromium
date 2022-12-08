@@ -19,6 +19,7 @@ namespace blink {
 class CloseWatcherOptions;
 class LocalDOMWindow;
 class KeyboardEvent;
+class HTMLDialogElement;
 
 class CloseWatcher final : public EventTargetWithInlineData,
                            public ExecutionContextClient {
@@ -29,15 +30,24 @@ class CloseWatcher final : public EventTargetWithInlineData,
                               CloseWatcherOptions*,
                               ExceptionState&);
 
-  static CloseWatcher* Create(LocalDOMWindow*);
+  // We have a few use counters which we trigger only for the <dialog> case,
+  // where we're trying to determine whether it's web-compatible or not to use
+  // CloseWatcher rules for <dialog>s. (Namely, sometimes closing multiple
+  // <dialog>s with a single close signal, and sometimes skipping cancel
+  // events.) This argument should be removed after web-compatibility is
+  // determined; ultimately the CloseWatcher code should not be aware of the
+  // existence of <dialog>, for good layering.
+  static CloseWatcher* Create(LocalDOMWindow*,
+                              HTMLDialogElement* dialog_for_use_counters);
 
-  explicit CloseWatcher(LocalDOMWindow*);
+  explicit CloseWatcher(LocalDOMWindow*,
+                        HTMLDialogElement* dialog_for_use_counters);
   void Trace(Visitor*) const override;
 
   bool IsClosed() const { return state_ == State::kClosed; }
   bool IsGroupedWithPrevious() const { return grouped_with_previous_; }
 
-  void close();
+  void close(bool* cancel_skipped = nullptr);
   void destroy();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
@@ -65,11 +75,12 @@ class CloseWatcher final : public EventTargetWithInlineData,
 
     void Trace(Visitor*) const;
 
-    void EscapeKeyHandler(KeyboardEvent*);
+    void EscapeKeyHandler(KeyboardEvent*, bool* cancel_skipped);
 
    private:
     // mojom::blink::CloseListener override:
     void Signal() final;
+    void SignalInternal(bool* cancel_skipped);
 
     HeapLinkedHashSet<Member<CloseWatcher>> watchers_;
 
@@ -80,9 +91,11 @@ class CloseWatcher final : public EventTargetWithInlineData,
   };
 
  private:
-  static CloseWatcher* CreateInternal(LocalDOMWindow*,
-                                      WatcherStack&,
-                                      CloseWatcherOptions*);
+  static CloseWatcher* CreateInternal(
+      LocalDOMWindow*,
+      WatcherStack&,
+      CloseWatcherOptions*,
+      HTMLDialogElement* dialog_for_use_counters);
 
   enum class State { kActive, kClosed };
   State state_ = State::kActive;
@@ -90,6 +103,7 @@ class CloseWatcher final : public EventTargetWithInlineData,
   bool grouped_with_previous_ = false;
   bool created_with_user_activation_ = false;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
+  Member<HTMLDialogElement> dialog_for_use_counters_;
 };
 
 }  // namespace blink

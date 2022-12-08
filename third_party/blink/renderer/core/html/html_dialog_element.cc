@@ -279,17 +279,15 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   InertSubtreesChanged(document, old_modal_dialog);
   document.UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  if (RuntimeEnabledFeatures::CloseWatcherEnabled()) {
-    if (LocalDOMWindow* window = GetDocument().domWindow()) {
-      close_watcher_ = CloseWatcher::Create(window);
-      if (close_watcher_) {
-        auto* event_listener =
-            MakeGarbageCollected<DialogCloseWatcherEventListener>(this);
-        close_watcher_->addEventListener(event_type_names::kClose,
-                                         event_listener);
-        close_watcher_->addEventListener(event_type_names::kCancel,
-                                         event_listener);
-      }
+  if (LocalDOMWindow* window = GetDocument().domWindow()) {
+    close_watcher_ = CloseWatcher::Create(window, this);
+    if (close_watcher_) {
+      auto* event_listener =
+          MakeGarbageCollected<DialogCloseWatcherEventListener>(this);
+      close_watcher_->addEventListener(event_type_names::kClose,
+                                       event_listener);
+      close_watcher_->addEventListener(event_type_names::kCancel,
+                                       event_listener);
     }
   }
 
@@ -324,6 +322,8 @@ void HTMLDialogElement::DefaultEventHandler(Event& event) {
 }
 
 void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
+  if (!RuntimeEnabledFeatures::CloseWatcherEnabled())
+    return;
   // https://wicg.github.io/close-watcher/#patch-dialog cancelAction
 
   Event* dialog_event = Event::CreateCancelable(event_type_names::kCancel);
@@ -334,6 +334,8 @@ void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
 }
 
 void HTMLDialogElement::CloseWatcherFiredClose() {
+  if (!RuntimeEnabledFeatures::CloseWatcherEnabled())
+    return;
   // https://wicg.github.io/close-watcher/#patch-dialog closeAction
 
   close();

@@ -41474,6 +41474,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4419" label="Scrollend"/>
   <int value="4420" label="DOMWindowOpenCrossOriginIframe"/>
   <int value="4421" label="StreamingDeclarativeShadowDOM"/>
+  <int value="4422" label="DialogCloseWatcherCancelSkipped"/>
+  <int value="4423" label="DialogCloseWatcherCancelSkippedAndDefaultPrevented"/>
+  <int value="4424" label="DialogCloseWatcherCloseSignalClosedMultiple"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

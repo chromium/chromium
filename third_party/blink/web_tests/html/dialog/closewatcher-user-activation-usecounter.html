@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1383001">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+
+<dialog id=dialog>
+  <button id=button>user activation button</button>
+</dialog>
+
+<script>
+promise_test(async () => {
+  dialog.showModal();
+  await test_driver.click(button);
+  eventSender.keyDown('Escape');
+  assert_false(internals.isUseCounted(document, 4422));
+  assert_false(internals.isUseCounted(document, 4423));
+
+  dialog.showModal();
+  dialog.addEventListener('cancel', () => console.log('hello world'));
+  await test_driver.click(button);
+  eventSender.keyDown('Escape');
+  assert_false(internals.isUseCounted(document, 4422));
+  assert_false(internals.isUseCounted(document, 4423));
+
+  dialog.showModal();
+  dialog.addEventListener('cancel', event => event.preventDefault());
+  await test_driver.click(button);
+  eventSender.keyDown('Escape');
+  assert_false(internals.isUseCounted(document, 4422));
+  assert_false(internals.isUseCounted(document, 4423));
+});
+</script>
