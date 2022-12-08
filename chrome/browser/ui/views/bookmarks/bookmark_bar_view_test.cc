@@ -458,7 +458,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                       target.x(), target.y()));
+                       target.x(), target.y(), ui_controls::kNoWindowHint));
   }
 
   void OnWidgetDragComplete(views::Widget* widget) override {
@@ -522,7 +522,8 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseEvents),
                        ui_controls::LEFT, ui_controls::UP,
-                       ui_controls::kNoAccelerator));
+                       ui_controls::kNoAccelerator,
+                       ui_controls::kNoWindowHint));
   }
 
   // Called after the drag ends; returns the node the test thinks should be the
@@ -917,7 +918,7 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                       target.x(), target.y()));
+                       target.x(), target.y(), ui_controls::kNoWindowHint));
   }
 
   void OnWidgetDragComplete(views::Widget* widget) override {
@@ -971,7 +972,7 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                       target.x(), target.y()));
+                       target.x(), target.y(), ui_controls::kNoWindowHint));
   }
 
  protected:

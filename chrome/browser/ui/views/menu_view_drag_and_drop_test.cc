@@ -13,6 +13,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -264,7 +265,7 @@ void MenuViewDragAndDropTest::OnDragEntered() {
       FROM_HERE,
       base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseEvents),
                      ui_controls::LEFT, ui_controls::UP,
-                     ui_controls::kNoAccelerator));
+                     ui_controls::kNoAccelerator, ui_controls::kNoWindowHint));
 }
 
 bool MenuViewDragAndDropTest::GetDropFormats(
@@ -350,8 +351,9 @@ void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragWillStart(
   const gfx::Point target =
       ui_test_utils::GetCenterInScreenCoordinates(drop_target_view);
   GetDragTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                                target.x(), target.y()));
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
+                     target.x(), target.y(), ui_controls::kNoWindowHint));
 }
 
 void MenuViewDragAndDropTestTestInMenuDrag::OnWidgetDragComplete(
@@ -430,8 +432,9 @@ void MenuViewDragAndDropTestNestedDrag::OnWidgetDragWillStart(
   const gfx::Point target =
       ui_test_utils::GetCenterInScreenCoordinates(drop_target_view);
   GetDragTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
-                                target.x(), target.y()));
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseMove),
+                     target.x(), target.y(), ui_controls::kNoWindowHint));
 }
 
 void MenuViewDragAndDropTestNestedDrag::OnWidgetDragComplete(

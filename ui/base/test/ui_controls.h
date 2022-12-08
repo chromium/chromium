@@ -62,14 +62,25 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 bool command,
                                 base::OnceClosure task);
 
-// Simulate a mouse move.
-bool SendMouseMove(int screen_x, int screen_y);
+// This value specifies that no window hint is given and an appropriate target
+// window should be deduced from the target or current mouse position.
+constexpr gfx::NativeWindow kNoWindowHint = gfx::kNullNativeWindow;
 
+// Simulate a mouse move.
+//
+// The `window_hint` - if specified - helps the method correctly target the
+// appropriate window on platforms where mouse events must be explicitly
+// targeted.
+//
 // Returns false on Windows if the desired position is not over a window
 // belonging to the current process.
+bool SendMouseMove(int screen_x,
+                   int screen_y,
+                   gfx::NativeWindow window_hint = kNoWindowHint);
 bool SendMouseMoveNotifyWhenDone(int screen_x,
                                  int screen_y,
-                                 base::OnceClosure task);
+                                 base::OnceClosure task,
+                                 gfx::NativeWindow window_hint = kNoWindowHint);
 
 enum MouseButton {
   LEFT = 0,
@@ -99,16 +110,24 @@ enum TouchType { PRESS = 1 << 0, RELEASE = 1 << 1, MOVE = 1 << 2 };
 // currently is, so be sure to move the cursor before calling this
 // (and be sure the cursor has arrived!).
 // |accelerator_state| is a bitmask of AcceleratorState.
+//
+// The `window_hint` - if specified - helps the method correctly target the
+// appropriate window on platforms where mouse events must be explicitly
+// targeted.
 bool SendMouseEvents(MouseButton type,
                      int button_state,
-                     int accelerator_state = kNoAccelerator);
-bool SendMouseEventsNotifyWhenDone(MouseButton type,
-                                   int button_state,
-                                   base::OnceClosure task,
-                                   int accelerator_state = kNoAccelerator);
+                     int accelerator_state = kNoAccelerator,
+                     gfx::NativeWindow window_hint = kNoWindowHint);
+bool SendMouseEventsNotifyWhenDone(
+    MouseButton type,
+    int button_state,
+    base::OnceClosure task,
+    int accelerator_state = kNoAccelerator,
+    gfx::NativeWindow window_hint = kNoWindowHint);
 
 // Same as SendMouseEvents with UP | DOWN.
-bool SendMouseClick(MouseButton type);
+bool SendMouseClick(MouseButton type,
+                    gfx::NativeWindow window_hint = kNoWindowHint);
 
 #if BUILDFLAG(IS_WIN)
 // Send WM_POINTER messages to generate touch events. There is no way to detect
