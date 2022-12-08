@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
@@ -96,6 +97,9 @@ class IntentPickerBubbleView : public LocationBarBubbleDelegateView {
   static IntentPickerBubbleView* intent_picker_bubble() {
     return intent_picker_bubble_;
   }
+
+  static base::AutoReset<bool> SetAutoAcceptIntentPickerBubbleForTesting();
+
   static void CloseCurrentBubble();
 
   // LocationBarBubbleDelegateView overrides:

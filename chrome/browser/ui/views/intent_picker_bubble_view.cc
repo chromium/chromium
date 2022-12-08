@@ -83,6 +83,8 @@ constexpr int kGridItemInteriorPadding = 8;
 constexpr int kGridItemBorderRadius = 4;
 constexpr int kGridItemGroupId = 1;
 
+bool g_auto_accept_intent_picker_bubble_for_testing = false;
+
 bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
   return key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
          key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
@@ -528,7 +530,17 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
   intent_picker_bubble_->ShowForReason(DisplayReason::USER_GESTURE);
 
   intent_picker_bubble_->SelectDefaultItem();
+  if (g_auto_accept_intent_picker_bubble_for_testing) {
+    intent_picker_bubble_->AcceptDialog();
+  }
   return widget;
+}
+
+// static
+base::AutoReset<bool>
+IntentPickerBubbleView::SetAutoAcceptIntentPickerBubbleForTesting() {
+  return base::AutoReset<bool>(&g_auto_accept_intent_picker_bubble_for_testing,
+                               true);
 }
 
 // static

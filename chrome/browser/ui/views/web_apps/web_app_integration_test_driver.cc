@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -1273,6 +1274,8 @@ void WebAppIntegrationTestDriver::LaunchFromChromeApps(Site site) {
 void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
+  base::AutoReset<bool> intent_picker_bubble_scope =
+      IntentPickerBubbleView::SetAutoAcceptIntentPickerBubbleForTesting();
   AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
@@ -1280,22 +1283,20 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   NavigateTabbedBrowserToSite(GetInScopeURL(site), NavigationMode::kNewTab);
 
   ASSERT_TRUE(intent_picker_view()->GetVisible());
-
   BrowserAddedWaiter browser_added_waiter;
 
-  if (!IntentPickerBubbleView::intent_picker_bubble()) {
+  if (IntentPickerBubbleView::intent_picker_bubble()) {
+    // This means that the intent_picker_bubble has shown up before the scoped
+    // response was provided. Manually accept the bubble.
+    IntentPickerBubbleView::intent_picker_bubble()->AcceptDialog();
+  } else {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         IntentPickerBubbleView::kViewClassName);
-    EXPECT_FALSE(IntentPickerBubbleView::intent_picker_bubble());
     intent_picker_view()->ExecuteForTesting();
     waiter.WaitIfNeededAndGet();
   }
 
-  ASSERT_TRUE(IntentPickerBubbleView::intent_picker_bubble());
-  EXPECT_TRUE(IntentPickerBubbleView::intent_picker_bubble()->GetVisible());
-
-  IntentPickerBubbleView::intent_picker_bubble()->AcceptDialog();
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ActivateBrowserAndWait(app_browser_);
