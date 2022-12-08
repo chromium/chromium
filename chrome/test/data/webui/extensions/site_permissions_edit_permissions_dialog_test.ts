@@ -45,6 +45,13 @@ suite('SitePermissionsEditPermissionsDialog', function() {
     {id: 'test_2', siteAccess: HostAccess.ON_SPECIFIC_SITES},
   ];
 
+  const changeHostAccess =
+      (select: HTMLSelectElement,
+       access: chrome.developerPrivate.HostAccess) => {
+        select.value = access;
+        select.dispatchEvent(new CustomEvent('change'));
+      };
+
   setup(function() {
     delegate = new TestService();
     delegate.matchingExtensionsInfo = matchingExtensionsInfo;
@@ -118,9 +125,7 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         assertEquals(2, extensionSiteAccessRows.length);
 
         const whenClosed = eventToPromise('close', element);
-        const submit = element.$.submit;
-
-        submit.click();
+        element.$.submit.click();
         const [siteSet, sites] =
             await delegate.whenCalled('removeUserSpecifiedSites');
         assertEquals(SiteSet.USER_PERMITTED, siteSet);
@@ -143,7 +148,7 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         assertTrue(!!extensionSpecifiedRadioButton);
         extensionSpecifiedRadioButton.click();
         const site = await delegate.whenCalled('getMatchingExtensionsForSite');
-        assertEquals('http://example.com', site);
+        assertEquals('http://example.com/', site);
 
         flush();
         assertTrue(
@@ -166,7 +171,7 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         assertTrue(!!extensionSpecifiedRadioButton);
         extensionSpecifiedRadioButton.click();
         let site = await delegate.whenCalled('getMatchingExtensionsForSite');
-        assertEquals('http://example.com', site);
+        assertEquals('http://example.com/', site);
 
         flush();
 
@@ -196,7 +201,7 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         // Test that changing `element.extensions` causes a call to
         // getMatchingExtensionsForSite.
         site = await delegate.whenCalled('getMatchingExtensionsForSite');
-        assertEquals('http://example.com', site);
+        assertEquals('http://example.com/', site);
         flush();
 
         extensionSiteAccessSelects =
@@ -207,5 +212,142 @@ suite('SitePermissionsEditPermissionsDialog', function() {
         // updated matchingExtensionsInfo.
         assertEquals(
             HostAccess.ON_ALL_SITES, extensionSiteAccessSelects[0]!.value);
+      });
+
+  test('editing extension site access', async function() {
+    element.site = 'example.com';
+    delegate.matchingExtensionsInfo = [
+      ...matchingExtensionsInfo,
+      {id: 'test_3', siteAccess: HostAccess.ON_ALL_SITES},
+    ];
+
+    flush();
+    const extensionSpecifiedRadioButton =
+        element.shadowRoot!.querySelector<HTMLElement>(
+            `cr-radio-button[name=${SiteSet.EXTENSION_SPECIFIED}]`);
+    assertTrue(!!extensionSpecifiedRadioButton);
+    extensionSpecifiedRadioButton.click();
+
+    const site = await delegate.whenCalled('getMatchingExtensionsForSite');
+    assertEquals('*://example.com/', site);
+    flush();
+
+    const extensionSiteAccessRows =
+        element.shadowRoot!.querySelectorAll<HTMLElement>('.extension-row');
+    assertEquals(3, extensionSiteAccessRows.length);
+
+    const siteAccessSelectMenus =
+        element.shadowRoot!.querySelectorAll<HTMLSelectElement>(
+            '.extension-host-access');
+    assertEquals(3, siteAccessSelectMenus.length);
+
+    // Edit the site access values for the first two extensions.
+    changeHostAccess(siteAccessSelectMenus[0]!, HostAccess.ON_SPECIFIC_SITES);
+    changeHostAccess(siteAccessSelectMenus[1]!, HostAccess.ON_ALL_SITES);
+
+    // Edit the site access for the third extension once, then change it
+    // back to the original value.
+    changeHostAccess(siteAccessSelectMenus[2]!, HostAccess.ON_CLICK);
+    changeHostAccess(siteAccessSelectMenus[2]!, HostAccess.ON_ALL_SITES);
+
+    const whenClosed = eventToPromise('close', element);
+    element.$.submit.click();
+    await delegate.whenCalled('removeUserSpecifiedSites');
+
+    const [siteToUpdate, siteAccessUpdates] =
+        await delegate.whenCalled('updateSiteAccess');
+    // For updating the extensions' site access, check that a wildcard
+    // host is used if the site was a host only.
+    assertEquals('*://example.com/', siteToUpdate);
+
+    // Since the site access for extension "test_3" was ultimately not
+    // changed through the select menu, it should not be included in
+    // `siteAccessUpdates`.
+    assertDeepEquals(
+        [
+          {id: 'test_1', siteAccess: HostAccess.ON_SPECIFIC_SITES},
+          {id: 'test_2', siteAccess: HostAccess.ON_ALL_SITES},
+        ],
+        siteAccessUpdates);
+
+    await whenClosed;
+    assertFalse(element.$.dialog.open);
+  });
+
+  test(
+      'updateSiteAccess arguments are updated in response to extension updates',
+      async function() {
+        element.site = 'http://example.com';
+        delegate.matchingExtensionsInfo = [
+          ...matchingExtensionsInfo,
+          {id: 'test_3', siteAccess: HostAccess.ON_ALL_SITES},
+        ];
+
+        flush();
+        const extensionSpecifiedRadioButton =
+            element.shadowRoot!.querySelector<HTMLElement>(
+                `cr-radio-button[name=${SiteSet.EXTENSION_SPECIFIED}]`);
+        assertTrue(!!extensionSpecifiedRadioButton);
+        extensionSpecifiedRadioButton.click();
+
+        let site = await delegate.whenCalled('getMatchingExtensionsForSite');
+        assertEquals('http://example.com/', site);
+        flush();
+
+        const siteAccessSelectMenus =
+            element.shadowRoot!.querySelectorAll<HTMLSelectElement>(
+                '.extension-host-access');
+        assertEquals(3, siteAccessSelectMenus.length);
+
+        // Edit the site access values for all three extensions.
+        changeHostAccess(
+            siteAccessSelectMenus[0]!, HostAccess.ON_SPECIFIC_SITES);
+        changeHostAccess(siteAccessSelectMenus[1]!, HostAccess.ON_ALL_SITES);
+        changeHostAccess(siteAccessSelectMenus[2]!, HostAccess.ON_CLICK);
+
+        // Simulate an update event happening. Note that the new site access for
+        // `test_1` is now the same as what was edited and `test_3` no longer
+        // exists.
+        delegate.matchingExtensionsInfo = [
+          {id: 'test_1', siteAccess: HostAccess.ON_SPECIFIC_SITES},
+          {id: 'test_2', siteAccess: HostAccess.ON_SPECIFIC_SITES},
+        ];
+
+        element.extensions = [
+          createExtensionInfo({
+            id: 'test_1',
+            name: 'test_1',
+            iconUrl: 'icon_url',
+          }),
+          createExtensionInfo({
+            id: 'test_2',
+            name: 'test_2',
+            iconUrl: 'icon_url',
+          }),
+        ];
+
+        // Changing `element.extensions` causes a call to
+        // getMatchingExtensionsForSite.
+        site = await delegate.whenCalled('getMatchingExtensionsForSite');
+        assertEquals('http://example.com/', site);
+        flush();
+
+        const whenClosed = eventToPromise('close', element);
+        element.$.submit.click();
+        await delegate.whenCalled('removeUserSpecifiedSites');
+
+        const [siteToUpdate, siteAccessUpdates] =
+            await delegate.whenCalled('updateSiteAccess');
+        assertEquals('http://example.com/', siteToUpdate);
+
+        // Only the site access update for `test_2` should be included, as after
+        // the update, there's no change for site access for `test_1` and
+        // `test_3` no longer exists.
+        assertDeepEquals(
+            [{id: 'test_2', siteAccess: HostAccess.ON_ALL_SITES}],
+            siteAccessUpdates);
+
+        await whenClosed;
+        assertFalse(element.$.dialog.open);
       });
 });

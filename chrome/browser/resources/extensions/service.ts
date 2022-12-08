@@ -460,6 +460,13 @@ export class Service implements ServiceInterface {
     });
   }
 
+  updateSiteAccess(
+      site: string,
+      updates: chrome.developerPrivate.ExtensionSiteAccessUpdate[]):
+      Promise<void> {
+    return chrome.developerPrivate.updateSiteAccess(site, updates);
+  }
+
   static getInstance(): ServiceInterface {
     return instance || (instance = new Service());
   }

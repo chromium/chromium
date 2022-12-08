@@ -70,6 +70,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'updateAllExtensions',
       'updateExtensionCommandKeybinding',
       'updateExtensionCommandScope',
+      'updateSiteAccess',
     ]);
   }
 
@@ -355,5 +356,12 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   getMatchingExtensionsForSite(site: string) {
     this.methodCalled('getMatchingExtensionsForSite', site);
     return Promise.resolve(this.matchingExtensionsInfo!);
+  }
+
+  updateSiteAccess(
+      site: string,
+      updates: chrome.developerPrivate.ExtensionSiteAccessUpdate[]) {
+    this.methodCalled('updateSiteAccess', site, updates);
+    return Promise.resolve();
   }
 }

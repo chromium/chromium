@@ -75,10 +75,9 @@
           <div class="extension-row">
             <img class="extension-icon" src="[[item.iconUrl]]" alt="">
             <span class="extension-name">[[item.name]]</span>
-            <!-- TODO(crbug.com/1253673): Enable these after implementing an API
-                method to edit site access for multiple extensions. -->
             <select class="extension-host-access md-select"
-                value="[[item.siteAccess]]" disabled>
+                on-change="onHostAccessChange_"
+                value="[[getExtensionHostAccess_(item.id, item.siteAccess)]]">
               <option value="[[hostAccessEnum_.ON_CLICK]]">
                 $i18n{sitePermissionsOnClick}
               </option>

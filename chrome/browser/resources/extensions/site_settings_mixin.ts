@@ -25,6 +25,10 @@ export interface SiteSettingsDelegate {
       Promise<chrome.developerPrivate.SiteGroup[]>;
   getMatchingExtensionsForSite(site: string):
       Promise<chrome.developerPrivate.MatchingExtensionInfo[]>;
+  updateSiteAccess(
+      site: string,
+      updates: chrome.developerPrivate.ExtensionSiteAccessUpdate[]):
+      Promise<void>;
   getUserSiteSettingsChangedTarget():
       ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
 }

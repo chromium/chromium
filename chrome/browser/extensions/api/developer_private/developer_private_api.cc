@@ -443,7 +443,10 @@ void RevokePermissionsForSite(content::BrowserContext* context,
                         hosts_to_withhold.Clone(), hosts_to_withhold.Clone()),
           *PermissionsManager::Get(context)->GetRevokablePermissions(extension),
           URLPatternSet::IntersectionBehavior::kDetailed);
-  DCHECK(!permissions_to_remove->IsEmpty());
+  if (permissions_to_remove->IsEmpty()) {
+    std::move(done_callback).Run();
+    return;
+  }
 
   PermissionsUpdater(context).RevokeRuntimePermissions(
       extension, *permissions_to_remove, std::move(done_callback));
@@ -2579,7 +2582,8 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
   // changed.
   PermissionsManager* const permissions_manager =
       PermissionsManager::Get(browser_context());
-  std::vector<const Extension*> extensions_to_modify;
+  std::vector<std::pair<const Extension&, developer::HostAccess>>
+      extensions_to_modify;
   extensions_to_modify.reserve(params->updates.size());
   for (const auto& update : params->updates) {
     const Extension* extension = GetExtensionById(update.id);
@@ -2588,16 +2592,17 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
     if (!permissions_manager->CanAffectExtension(*extension))
       return RespondNow(Error(kCannotChangeHostPermissions));
 
-    extensions_to_modify.push_back(extension);
+    extensions_to_modify.emplace_back(*extension, update.site_access);
   }
 
-  for (const auto& update : params->updates) {
-    const Extension* extension = GetExtensionById(update.id);
+  for (const auto& update : extensions_to_modify) {
+    const Extension& extension = update.first;
+
     std::unique_ptr<const PermissionSet> permissions;
-    ScriptingPermissionsModifier modifier(browser_context(), extension);
+    ScriptingPermissionsModifier modifier(browser_context(), &extension);
     bool has_withheld_permissions =
-        permissions_manager->HasWithheldHostPermissions(*extension);
-    switch (update.site_access) {
+        permissions_manager->HasWithheldHostPermissions(extension);
+    switch (update.second) {
       case developer::HOST_ACCESS_ON_CLICK:
         // If the extension has no withheld permissions and can run on all of
         // its requested hosts, withhold all of its host permissions as a
@@ -2608,7 +2613,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
           modifier.RemoveAllGrantedHostPermissions();
           done_callback.Run();
         } else {
-          RevokePermissionsForSite(browser_context(), *extension, parsed_site,
+          RevokePermissionsForSite(browser_context(), extension, parsed_site,
                                    done_callback);
         }
         break;
@@ -2620,7 +2625,7 @@ DeveloperPrivateUpdateSiteAccessFunction::Run() {
           modifier.SetWithholdHostPermissions(true);
           modifier.RemoveAllGrantedHostPermissions();
         }
-        GrantPermissionsForSite(browser_context(), *extension, parsed_site,
+        GrantPermissionsForSite(browser_context(), extension, parsed_site,
                                 done_callback);
         break;
       case developer::HOST_ACCESS_ON_ALL_SITES:

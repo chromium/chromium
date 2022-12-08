@@ -415,6 +415,11 @@ declare global {
         siteAccess: HostAccess;
       }
 
+      export interface ExtensionSiteAccessUpdate {
+        id: string;
+        siteAccess: HostAccess;
+      }
+
       type VoidCallback = () => void;
       type StringCallback = (s: string) => void;
 
@@ -464,6 +469,8 @@ declare global {
       export function getUserAndExtensionSitesByEtld(): Promise<SiteGroup[]>;
       export function getMatchingExtensionsForSite(site: string):
           Promise<MatchingExtensionInfo[]>;
+      export function updateSiteAccess(
+          site: string, updates: ExtensionSiteAccessUpdate[]): Promise<void>;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:
