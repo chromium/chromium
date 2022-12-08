@@ -996,6 +996,9 @@ extern const char kJourneysShowAllClustersDescription[];
 extern const char kJourneysVisitDedupingName[];
 extern const char kJourneysVisitDedupingDescription[];
 
+extern const char kJourneysIncludeSyncedVisitsName[];
+extern const char kJourneysIncludeSyncedVisitsDescription[];
+
 extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseName[];
 extern const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[];
 

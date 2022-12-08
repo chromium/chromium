@@ -1766,6 +1766,11 @@ const char kJourneysVisitDedupingName[] = "History Journeys Visit Deduping";
 const char kJourneysVisitDedupingDescription[] =
     "Enables variations for how visits are deduped";
 
+const char kJourneysIncludeSyncedVisitsName[] =
+    "History Journeys Include SyncedVisits";
+const char kJourneysIncludeSyncedVisitsDescription[] =
+    "Enabled synced visits to be included in History Journeys clusters.";
+
 const char kExtractRelatedSearchesFromPrefetchedZPSResponseName[] =
     "Extract Related Searches from Prefetched ZPS Response";
 const char kExtractRelatedSearchesFromPrefetchedZPSResponseDescription[] =

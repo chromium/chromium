@@ -60011,6 +60011,7 @@ from previous Chrome versions.
   <int value="-290329565" label="CrosVmCupsProxy:disabled"/>
   <int value="-288316828" label="enable-delegated-renderer"/>
   <int value="-286603268" label="hide-android-files-in-files-app"/>
+  <int value="-284694765" label="JourneysIncludeSyncedVisits:disabled"/>
   <int value="-284547865" label="UnifiedConsent:enabled"/>
   <int value="-284470280" label="ShelfPalmRejectionTouchArea:enabled"/>
   <int value="-284328071" label="LocalWebApprovals:enabled"/>
@@ -63988,6 +63989,7 @@ from previous Chrome versions.
   <int value="2071229145" label="BloatedRendererDetection:enabled"/>
   <int value="2071340353" label="progress-bar-completion"/>
   <int value="2071461362" label="disable-credit-card-scan"/>
+  <int value="2072050792" label="JourneysIncludeSyncedVisits:enabled"/>
   <int value="2072057275" label="UpdateHoverAtBeginFrame:disabled"/>
   <int value="2072231406" label="SingleProcessMash:disabled"/>
   <int value="2073113207" label="SensorContentSetting:disabled"/>

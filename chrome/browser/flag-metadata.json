@@ -4060,6 +4060,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "history-journeys-include-synced-visits",
+    "owners": [ "tommycli", "chrome-journeys@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "history-journeys-labels",
     "owners": [ "tommycli", "chrome-journeys@google.com" ],
     "expiry_milestone": 115

@@ -5668,6 +5668,13 @@ const FeatureEntry kFeatureEntries[] = {
          kJourneysVisitDedupingVariations,
          "HistoryJourneysVisitDeduping")},
 
+    {"history-journeys-include-synced-visits",
+     flag_descriptions::kJourneysIncludeSyncedVisitsName,
+     flag_descriptions::kJourneysIncludeSyncedVisitsDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         history_clusters::internal::kJourneysIncludeSyncedVisits)},
+
     {"extract-related-searches-from-prefetched-zps-response",
      flag_descriptions::kExtractRelatedSearchesFromPrefetchedZPSResponseName,
      flag_descriptions::
