@@ -33,6 +33,11 @@ enum class TooltipStatus {
   kNumberOfTooltipStatus,
 };
 
+struct SaveDeskButtonStatus {
+  bool enabled;
+  int tooltip_id;
+};
+
 constexpr std::array<int,
                      static_cast<int>(TooltipStatus::kNumberOfTooltipStatus)>
     kSaveAsTemplateButtonTooltipIDs = {
@@ -63,7 +68,7 @@ int GetTooltipID(SavedDeskSaveDeskButton::Type button_type,
   }
 }
 
-std::pair<bool, int> GetEnableStateAndTooltipIDForButtonType(
+SaveDeskButtonStatus GetEnableStateAndTooltipIDForButtonType(
     SavedDeskSaveDeskButton::Type type,
     int current_entry_count,
     int max_entry_count,
@@ -72,34 +77,34 @@ std::pair<bool, int> GetEnableStateAndTooltipIDForButtonType(
     int window_count) {
   // Disable if we already have the max supported saved desks.
   if (current_entry_count >= max_entry_count) {
-    return {/*enabled=*/false,
-            /*tooltip_ID=*/GetTooltipID(type, TooltipStatus::kReachMax)};
+    return {.enabled = false,
+            .tooltip_id = GetTooltipID(type, TooltipStatus::kReachMax)};
   }
 
   // Enable if there are any supported window.
   if (incognito_window_count + unsupported_window_count != window_count) {
-    return {/*enabled=*/true,
-            /*tooltip_ID=*/GetTooltipID(type, TooltipStatus::kOk)};
+    return {.enabled = true,
+            .tooltip_id = GetTooltipID(type, TooltipStatus::kOk)};
   }
 
   // Disable if there are incognito windows and unsupported Linux Apps but no
   // supported windows.
   if (incognito_window_count && unsupported_window_count) {
-    return {/*enabled=*/false,
-            /*tooltip_ID=*/GetTooltipID(
+    return {.enabled = false,
+            .tooltip_id = GetTooltipID(
                 type, TooltipStatus::kIncognitoAndUnsupportedWindow)};
   }
 
   // Disable if there are incognito windows but no supported windows.
   if (incognito_window_count) {
-    return {/*enabled=*/false,
-            /*tooltip_ID=*/GetTooltipID(type, TooltipStatus::kIncognitoWindow)};
+    return {.enabled = false,
+            .tooltip_id = GetTooltipID(type, TooltipStatus::kIncognitoWindow)};
   }
 
   // Disable if there are unsupported Linux Apps but no supported windows.
   DCHECK(unsupported_window_count);
-  return {/*enabled=*/false,
-          /*tooltip_ID=*/GetTooltipID(type, TooltipStatus::kUnsupportedWindow)};
+  return {.enabled = false,
+          .tooltip_id = GetTooltipID(type, TooltipStatus::kUnsupportedWindow)};
 }
 
 }  // namespace
@@ -182,13 +187,11 @@ void SavedDeskSaveDeskButtonContainer::UpdateButtonEnableStateAndTooltip(
   SavedDeskSaveDeskButton* button = GetButtonFromType(type);
   if (!button)
     return;
-  std::pair<bool, int> enable_state_and_tooltip_ID =
-      GetEnableStateAndTooltipIDForButtonType(
-          type, current_entry_count, max_entry_count, incognito_window_count,
-          unsupported_window_count, window_count);
-  button->SetEnabled(enable_state_and_tooltip_ID.first);
-  button->SetTooltipText(
-      l10n_util::GetStringUTF16(enable_state_and_tooltip_ID.second));
+  SaveDeskButtonStatus button_status = GetEnableStateAndTooltipIDForButtonType(
+      type, current_entry_count, max_entry_count, incognito_window_count,
+      unsupported_window_count, window_count);
+  button->SetEnabled(button_status.enabled);
+  button->SetTooltipText(l10n_util::GetStringUTF16(button_status.tooltip_id));
 }
 
 void SavedDeskSaveDeskButtonContainer::
