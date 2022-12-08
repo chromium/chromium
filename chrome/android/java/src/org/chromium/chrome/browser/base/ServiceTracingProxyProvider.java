@@ -129,6 +129,10 @@ public class ServiceTracingProxyProvider {
             for (int i = 0; i < mServiceCacheProxied.length; ++i) {
                 mServiceCacheProxied[i] = new AtomicBoolean(false);
             }
+            // Force the window service to be accessed and added to the service cache immediately.
+            // This will make sure it is proxied before ViewRootImpl can cache an unproxied
+            // WindowSession.
+            unwrappedBaseContext.getSystemService(Context.WINDOW_SERVICE);
         } catch (Throwable throwable) {
             Log.d(TAG, TRACE_FAILED, throwable);
             mServiceCache = new Object[0];
@@ -168,8 +172,10 @@ public class ServiceTracingProxyProvider {
             // Class defers to WindowManagerGlobal.
             Class clazz = Class.forName("android.view.WindowManagerGlobal");
             Object managerGlobal = callNoArgMethod(null, clazz, "getInstance");
-            // Static service is unpopulated until used.
+            // Static service and WindowSession are unpopulated until used. Access them now so that
+            // the fields are populated when we inspect them for proxying.
             callNoArgMethod(null, managerGlobal.getClass(), "getWindowManagerService");
+            callNoArgMethod(null, managerGlobal.getClass(), "getWindowSession");
             return managerGlobal;
         }
         if (service.getClass().equals(ActivityManager.class)) {
