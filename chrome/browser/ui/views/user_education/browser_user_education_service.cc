@@ -219,7 +219,7 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHReadingListDiscoveryFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHReadingListDiscoveryFeature,
-      kSidePanelButtonElementId, IDS_READING_LIST_DISCOVERY_PROMO));
+      kReadLaterButtonElementId, IDS_READING_LIST_DISCOVERY_PROMO));
 
   // kIPHReadingListEntryPointFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
@@ -239,7 +239,7 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHReadingListInSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHReadingListInSidePanelFeature,
-      kSidePanelButtonElementId, IDS_READING_LIST_IN_SIDE_PANEL_PROMO));
+      kReadLaterButtonElementId, IDS_READING_LIST_IN_SIDE_PANEL_PROMO));
 
   // kIPHReopenTabFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
@@ -341,7 +341,7 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHPriceTrackingInSidePanelFeature;
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHPriceTrackingInSidePanelFeature,
-      kSidePanelButtonElementId, IDS_PRICE_TRACKING_SIDE_PANEL_IPH));
+      kReadLaterButtonElementId, IDS_PRICE_TRACKING_SIDE_PANEL_IPH));
 }
 
 void MaybeRegisterChromeTutorials(
@@ -471,7 +471,7 @@ void MaybeRegisterChromeTutorials(
     // Open side panel
     TutorialDescription::Step open_side_panel_step(
         0, IDS_TUTORIAL_SIDE_PANEL_READING_LIST_OPEN_SIDE_PANEL,
-        ui::InteractionSequence::StepType::kShown, kSidePanelButtonElementId,
+        ui::InteractionSequence::StepType::kShown, kReadLaterButtonElementId,
         std::string(), HelpBubbleArrow::kTopRight);
     side_panel_description.steps.emplace_back(open_side_panel_step);
 
