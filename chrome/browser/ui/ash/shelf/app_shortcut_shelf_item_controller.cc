@@ -124,8 +124,8 @@ class AppMatcher {
     DCHECK(profile);
     if (web_app::WebAppProvider* provider =
             web_app::WebAppProvider::GetForLocalAppsUnchecked(profile)) {
-      if (provider->registrar().IsLocallyInstalled(app_id)) {
-        registrar_ = &provider->registrar();
+      if (provider->registrar_unsafe().IsLocallyInstalled(app_id)) {
+        registrar_ = &provider->registrar_unsafe();
       }
     }
     if (!registrar_)
@@ -560,7 +560,7 @@ bool AppShortcutShelfItemController::IsWindowedWebApp() {
   if (web_app::WebAppProvider* provider =
           web_app::WebAppProvider::GetForLocalAppsUnchecked(
               ChromeShelfController::instance()->profile())) {
-    web_app::WebAppRegistrar& registrar = provider->registrar();
+    web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
     if (registrar.IsLocallyInstalled(app_id())) {
       return registrar.GetAppUserDisplayMode(app_id()) !=
              web_app::UserDisplayMode::kBrowser;
