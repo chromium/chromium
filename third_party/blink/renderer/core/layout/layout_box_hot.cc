@@ -312,6 +312,19 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       if (column_spanner_path || cached_layout_result->ColumnSpannerPath())
         return nullptr;
 
+      // Break appeal may have been reduced because the fragment crosses the
+      // fragmentation line, to send a strong signal to break before it
+      // instead. If we actually ended up breaking before it, this break appeal
+      // may no longer be valid, since there could be more room in the next
+      // fragmentainer. Miss the cache.
+      //
+      // TODO(mstensho): Maybe this shouldn't be necessary. Look into how
+      // FinishFragmentation() clamps break appeal down to
+      // kBreakAppealLastResort. Maybe there are better ways.
+      if (break_token && break_token->IsBreakBefore() &&
+          cached_layout_result->BreakAppeal() < kBreakAppealPerfect)
+        return nullptr;
+
       // If the node didn't break into multiple fragments, we might be able to
       // re-use the result. If the fragmentainer block-size has changed, or if
       // the fragment's block-offset within the fragmentainer has changed, we
