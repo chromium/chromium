@@ -4,7 +4,7 @@
 <script src="/common/utils.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="resources/utils.js"></script>
-<title>Test fenced frame inner config installation triggers navigation.</title>
+<title>Test fenced frame config installation triggers navigation.</title>
 
 <body>
 
@@ -18,8 +18,8 @@ promise_test(async () => {
 
   // Create a fenced frame and install an inner config constructed with an url.
   const fenced_frame = document.createElement('fencedframe');
-  const config = new FencedFrameInnerConfig(url_string);
-  fenced_frame.innerConfig = config;
+  const config = new FencedFrameConfig(url_string);
+  fenced_frame.config = config;
   document.body.append(fenced_frame);
 
   assert_equals(fenced_frame.mode, "default");

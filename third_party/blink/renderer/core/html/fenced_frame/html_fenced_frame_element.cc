@@ -141,7 +141,7 @@ void HTMLFencedFrameElement::Trace(Visitor* visitor) const {
   HTMLFrameOwnerElement::Trace(visitor);
   visitor->Trace(frame_delegate_);
   visitor->Trace(resize_observer_);
-  visitor->Trace(inner_config_);
+  visitor->Trace(config_);
 }
 
 void HTMLFencedFrameElement::DisconnectContentFrame() {
@@ -320,14 +320,15 @@ HTMLIFrameElement* HTMLFencedFrameElement::InnerIFrameElement() const {
   return nullptr;
 }
 
-void HTMLFencedFrameElement::setInnerConfig(FencedFrameInnerConfig* config) {
-  inner_config_ = config;
+void HTMLFencedFrameElement::setConfig(FencedFrameConfig* config) {
+  config_ = config;
 
-  if (inner_config_) {
-    // Navigate to the specified url in the installed inner config.
-    DCHECK(inner_config_->url());
-    KURL url = inner_config_->GetValueIgnoringVisibility<
-        FencedFrameInnerConfig::Attribute::kURL>();
+  if (config_) {
+    // Navigate to the specified url in the installed config.
+    DCHECK(config_->url());
+    KURL url =
+        config_
+            ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
     Navigate(url);
   }
 }
@@ -440,14 +441,13 @@ void HTMLFencedFrameElement::ParseAttribute(
 
     mode_ = new_mode;
   } else if (params.name == html_names::kSrcAttr) {
-    if (inner_config_) {
-      DCHECK(inner_config_->url());
+    if (config_) {
+      DCHECK(config_->url());
       GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kJavaScript,
           mojom::blink::ConsoleMessageLevel::kWarning,
           "Changing the `src` attribute on a fenced frame has no effect after "
-          "it has already been installed an inner config with a specified "
-          "url."));
+          "it has already been installed a config with a specified url."));
       return;
     }
 
@@ -583,20 +583,21 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
   frame_delegate_ = FencedFrameDelegate::Create(this);
 
   KURL url;
-  // If there is an inner config, the urn or url will be retrieved from it.
-  if (!inner_config_) {
+  // If there is a config, the urn or url will be retrieved from it.
+  if (!config_) {
     url = GetNonEmptyURLAttribute(html_names::kSrcAttr);
-  } else if (inner_config_->urn(PassKey())) {
+  } else if (config_->urn(PassKey())) {
     // TODO(lbrady) Right now, the URN should always be null. It will eventually
     // be able to have a value read into it. We will enable the DCHECK at that
     // point.
-    // DCHECK(IsValidUrnUuidURL(GURL(inner_config_->urn().value())));
+    // DCHECK(IsValidUrnUuidURL(GURL(config_->urn().value())));
     NOTREACHED();
-    url = inner_config_->urn(PassKey()).value();
+    url = config_->urn(PassKey()).value();
   } else {
-    DCHECK(inner_config_->url());
-    url = inner_config_->GetValueIgnoringVisibility<
-        FencedFrameInnerConfig::Attribute::kURL>();
+    DCHECK(config_->url());
+    url =
+        config_
+            ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
   }
 
   Navigate(url);

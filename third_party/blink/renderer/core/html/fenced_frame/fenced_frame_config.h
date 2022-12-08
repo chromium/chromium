@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_INNER_CONFIG_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_INNER_CONFIG_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_CONFIG_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_CONFIG_H_
 
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
@@ -16,13 +16,13 @@
 
 namespace blink {
 
-// FencedFrameInnerConfig class implements the FencedFrameInnerConfig IDL. It
-// specifies the fenced frame's inner properties. It can be returned by shared
-// storage's selectURL() and FLEDGE's runAdAuction(), or directly constructed
-// for navigation to non-opaque URLs. Please see the link for examples of
-// installing FencedFrameInnerConfig in fenced frames.
-// https://github.com/WICG/fenced-frame/issues/48#issuecomment-1245809738
-class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
+// FencedFrameConfig class implements the FencedFrameConfig IDL. It specifies
+// the fenced frame's inner properties. It can be returned by shared storage's
+// selectURL() and FLEDGE's runAdAuction(), or directly constructed for
+// navigation to non-opaque URLs. Please see the link for examples of installing
+// FencedFrameConfig in fenced frames.
+// https://github.com/WICG/fenced-frame/issues/48#issuecomment-1245809738.
+class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -46,12 +46,12 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
   };
 
   // Create an inner config with a given url, the url will be transparent.
-  static FencedFrameInnerConfig* Create(const String& url);
+  static FencedFrameConfig* Create(const String& url);
 
   // Construct an inner config with a given url, the url will be transparent.
-  explicit FencedFrameInnerConfig(const String& url);
-  FencedFrameInnerConfig(const FencedFrameInnerConfig&) = delete;
-  FencedFrameInnerConfig& operator=(const FencedFrameInnerConfig&) = delete;
+  explicit FencedFrameConfig(const String& url);
+  FencedFrameConfig(const FencedFrameConfig&) = delete;
+  FencedFrameConfig& operator=(const FencedFrameConfig&) = delete;
 
   V8UnionOpaquePropertyOrUSVString* url() const;
   V8UnionOpaquePropertyOrUnsignedLong* width() const;
@@ -133,22 +133,22 @@ class CORE_EXPORT FencedFrameInnerConfig final : public ScriptWrappable {
     NOTREACHED();
   }
 
-  // The URN attribute is used as the key in the FencedFrameURNMapping map.
-  // When we navigate a fenced frame using a `FencedFrameInnerConfig` object
-  // that has a non-null `urn_`, we navigate to that URN instead of the
-  // platform-provided URL. This value is never exposed to the web platform.
+  // The URN attribute is used as the key in the FencedFrameURNMapping map. When
+  // we navigate a fenced frame using a `FencedFrameConfig` object that has a
+  // non-null `urn_`, we navigate to that URN instead of the platform-provided
+  // URL. This value is never exposed to the web platform.
   absl::optional<KURL> urn_;
 };
 
 template <>
-struct FencedFrameInnerConfig::AttributeUnion<String> {
+struct FencedFrameConfig::AttributeUnion<String> {
   using Type = V8UnionOpaquePropertyOrUSVString;
 };
 template <>
-struct FencedFrameInnerConfig::AttributeUnion<uint32_t> {
+struct FencedFrameConfig::AttributeUnion<uint32_t> {
   using Type = V8UnionOpaquePropertyOrUnsignedLong;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_INNER_CONFIG_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FENCED_FRAME_FENCED_FRAME_CONFIG_H_

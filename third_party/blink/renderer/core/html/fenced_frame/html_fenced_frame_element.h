@@ -10,7 +10,7 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_inner_config.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -105,8 +105,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // while keeping the inner frame size unchanged.
   HTMLIFrameElement* InnerIFrameElement() const;
 
-  FencedFrameInnerConfig* innerConfig() const { return inner_config_; }
-  void setInnerConfig(FencedFrameInnerConfig* config);
+  FencedFrameConfig* config() const { return config_; }
+  void setConfig(FencedFrameConfig* config);
   // Web-exposed API that returns whether an opaque-ads fenced frame would be
   // allowed to be created in the current active document of this node.
   // Checks the following criteria:
@@ -170,7 +170,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // `kFencedFrameMandatoryUnsandboxedFlags`.
   Member<FencedFrameDelegate> frame_delegate_;
   Member<ResizeObserver> resize_observer_;
-  Member<FencedFrameInnerConfig> inner_config_;
+  Member<FencedFrameConfig> config_;
   // See |FrozenFrameSize| above. Stored in CSS pixel (without DSF multiplied.)
   absl::optional<PhysicalSize> frozen_frame_size_;
   absl::optional<PhysicalRect> content_rect_;

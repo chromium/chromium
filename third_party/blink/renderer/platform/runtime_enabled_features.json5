@@ -1216,8 +1216,8 @@
     },
     {
       name: "FencedFramesAPIChanges",
-      // Various new IDL attributes on the <fencedframe> element (such as `innerConfig`, `sandbox`,
-      // and `allow`).
+      // Various new IDL attributes on the <fencedframe> element (such as
+      // `config`, `sandbox`, and `allow`).
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,
       base_feature: "FencedFramesAPIChanges",
