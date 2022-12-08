@@ -278,6 +278,8 @@ void MockConsumer::OnDetach(bool /*success*/) {}
 void MockConsumer::OnAttach(bool /*success*/, const perfetto::TraceConfig&) {}
 void MockConsumer::OnTraceStats(bool /*success*/, const perfetto::TraceStats&) {
 }
+void MockConsumer::OnSessionCloned(bool /*success*/,
+                                   const std::string& /*error*/) {}
 
 void MockConsumer::OnObservableEvents(
     const perfetto::ObservableEvents& events) {

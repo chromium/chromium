@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -733,6 +734,10 @@ void ConsumerHost::OnTraceStats(bool success,
   if (tracing_session_) {
     tracing_session_->OnTraceStats(success, stats);
   }
+}
+
+void ConsumerHost::OnSessionCloned(bool, const std::string&) {
+  NOTREACHED();
 }
 
 void ConsumerHost::DestructTracingSession() {
