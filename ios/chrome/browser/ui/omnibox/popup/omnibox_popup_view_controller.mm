@@ -58,10 +58,10 @@ const CGFloat kMinTileFaviconSize = 32.0f;
 /// Maximum size of the fetched favicon for tiles.
 const CGFloat kMaxTileFaviconSize = 48.0f;
 
-/// Bottom padding for table view headers, variation 2.
-const CGFloat kHeaderPaddingBottomVariation2 = 10.0f;
-/// Leading, trailing, and top padding for table view headers, variation 2.
-const CGFloat kHeaderPaddingVariation2 = 2.0f;
+/// Bottom padding for table view headers.
+const CGFloat kHeaderPaddingBottom = 10.0f;
+/// Leading, trailing, and top padding for table view headers.
+const CGFloat kHeaderPadding = 2.0f;
 }  // namespace
 
 @interface OmniboxPopupViewController () <UITableViewDataSource,
@@ -766,8 +766,26 @@ const CGFloat kHeaderPaddingVariation2 = 2.0f;
   contentConfiguration.textProperties.transform =
       UIListContentTextTransformUppercase;
   contentConfiguration.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-      kHeaderPaddingVariation2, kHeaderPaddingVariation2,
-      kHeaderPaddingBottomVariation2, kHeaderPaddingVariation2);
+      kHeaderPadding, kHeaderPadding, kHeaderPaddingBottom,
+      kHeaderPadding);
+
+  // Inset the header to match the omnibox width, similar to
+  // `adjustMarginsToMatchOmniboxWidth` method.
+  if (IsOmniboxActionsVisualTreatment1() && IsRegularXRegularSizeClass(self)) {
+    NamedGuide* layoutGuide = [NamedGuide guideWithName:kOmniboxGuide
+                                                   view:self.view];
+    if (layoutGuide) {
+      CGRect omniboxFrame = [layoutGuide.constrainedView
+          convertRect:layoutGuide.constrainedView.bounds
+               toView:self.view];
+      CGFloat leftMargin = omniboxFrame.origin.x;
+
+      contentConfiguration.directionalLayoutMargins =
+          NSDirectionalEdgeInsetsMake(
+              kHeaderPadding, kHeaderPadding + leftMargin,
+              kHeaderPaddingBottom, kHeaderPadding);
+    }
+  }
 
   header.contentConfiguration = contentConfiguration;
   return header;
