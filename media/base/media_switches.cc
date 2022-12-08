@@ -606,6 +606,10 @@ BASE_FEATURE(kVaapiVideoDecodeLinux,
              "VaapiVideoDecoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kVaapiVideoDecodeLinuxGL,
+             "VaapiVideoDecodeLinuxGL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kVaapiVideoEncodeLinux,
              "VaapiVideoEncoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
