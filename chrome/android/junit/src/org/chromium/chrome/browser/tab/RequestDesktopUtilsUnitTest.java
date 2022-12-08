@@ -674,7 +674,7 @@ public class RequestDesktopUtilsUnitTest {
 
         boolean shouldShowOptIn = RequestDesktopUtils.shouldShowGlobalSettingOptInMessage(
                 RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_OPT_IN_DISPLAY_SIZE_MIN_THRESHOLD_INCHES,
-                mProfile);
+                mProfile, mActivity);
         Assert.assertFalse(
                 "Opt-in message for desktop site global setting should not be shown in the control experiment group.",
                 shouldShowOptIn);
