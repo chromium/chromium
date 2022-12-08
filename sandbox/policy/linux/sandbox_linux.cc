@@ -28,6 +28,8 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread_id_name_manager.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -378,6 +380,12 @@ bool SandboxLinux::InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
     if (sandbox_failure_fatal && !IsUnsandboxedSandboxType(sandbox_type)) {
       error_message += " Try waiting for /proc to be updated.";
       LOG(ERROR) << error_message;
+
+      for (const auto& id :
+           base::ThreadIdNameManager::GetInstance()->GetIds()) {
+        LOG(ERROR) << "ThreadId=" << id << " name:"
+                   << base::ThreadIdNameManager::GetInstance()->GetName(id);
+      }
       // This will return if /proc/self eventually reports this process is
       // single-threaded, or crash if it does not after a number of retries.
       ThreadHelpers::AssertSingleThreaded();
