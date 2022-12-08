@@ -237,38 +237,6 @@ TEST_F(HistoryStateOperationsTest, NoOpReplaceDifferentOrigin) {
   WaitForNoOpText();
 }
 
-// Tests that calling window.history.replaceState() with only a new title
-// successfully replaces the current NavigationItem's title.
-// TODO(crbug.com/677356): Enable this test once the NavigationItem's title is
-// updated from within the web layer.
-TEST_F(HistoryStateOperationsTest, DISABLED_TitleReplacement) {
-  // Navigate to about:blank then navigate back to the test page.  The created
-  // NavigationItem can be used later to verify that the title is replaced
-  // rather than pushed.
-  GURL about_blank("about:blank");
-  ASSERT_TRUE(LoadUrl(about_blank));
-  web::NavigationItem* about_blank_item = GetLastCommittedItem();
-  EXPECT_TRUE(ExecuteBlockAndWaitForLoad(state_operations_url(), ^{
-    navigation_manager()->GoBack();
-  }));
-  EXPECT_EQ(state_operations_url(), GetLastCommittedItem()->GetURL());
-  // Set up the state parameters and tap the replace state button.
-  std::string empty_state;
-  std::string new_title("NEW TITLE");
-  GURL empty_url;
-  SetStateParams(empty_state, new_title, empty_url);
-  ASSERT_TRUE(web::test::TapWebViewElementWithId(web_state(), kReplaceStateId));
-  // Wait for the title to be reflected in the NavigationItem.
-  BOOL completed = base::test::ios::WaitUntilConditionOrTimeout(
-      kWaitForStateUpdateTimeout, ^{
-        return GetLastCommittedItem()->GetTitle() == ASCIIToUTF16(new_title);
-      });
-  EXPECT_TRUE(completed) << "Failed to validate NavigationItem title.";
-  // Verify that the forward navigation was not pruned.
-  EXPECT_EQ(GetIndexOfNavigationItem(GetLastCommittedItem()) + 1,
-            GetIndexOfNavigationItem(about_blank_item));
-}
-
 // Tests that calling window.history.replaceState() with a new state object
 // replaces the state object for the current NavigationItem.
 TEST_F(HistoryStateOperationsTest, StateReplacement) {
