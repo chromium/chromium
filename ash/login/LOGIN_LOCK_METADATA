@@ -1,0 +1,8 @@
+buganizer {
+  component_id: 1207311
+}
+buganizer_public {
+  component_id: 1277523
+}
+team_email : "cros-lurs@google.com"
+os: CHROME_OS
