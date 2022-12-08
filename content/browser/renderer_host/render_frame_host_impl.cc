@@ -3785,7 +3785,7 @@ void RenderFrameHostImpl::DidNavigate(
 
   // Sets whether the last navigation has user gesture/transient activation or
   // not.
-  last_navigation_started_with_transient_activation_ =
+  last_committed_common_params_has_user_gesture_ =
       navigation_request->common_params().has_user_gesture;
 
   // Navigations that activate an existing bfcached or prerendered document do

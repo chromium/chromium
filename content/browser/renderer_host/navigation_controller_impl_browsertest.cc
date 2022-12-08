@@ -16256,7 +16256,7 @@ IN_PROC_BROWSER_TEST_P(
     url2_capturer.Wait();
     EXPECT_TRUE(url2_capturer.has_user_gesture());
     EXPECT_TRUE(root->current_frame_host()
-                    ->last_navigation_started_with_transient_activation());
+                    ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16266,7 +16266,7 @@ IN_PROC_BROWSER_TEST_P(
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 }
 
@@ -16291,7 +16291,7 @@ IN_PROC_BROWSER_TEST_P(
     url2_capturer.Wait();
     EXPECT_TRUE(url2_capturer.has_user_gesture());
     EXPECT_TRUE(root->current_frame_host()
-                    ->last_navigation_started_with_transient_activation());
+                    ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16301,7 +16301,7 @@ IN_PROC_BROWSER_TEST_P(
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 }
 
@@ -16326,7 +16326,7 @@ IN_PROC_BROWSER_TEST_P(
     url2_capturer.Wait();
     EXPECT_TRUE(url2_capturer.has_user_gesture());
     EXPECT_TRUE(root->current_frame_host()
-                    ->last_navigation_started_with_transient_activation());
+                    ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16336,7 +16336,7 @@ IN_PROC_BROWSER_TEST_P(
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 }
 
@@ -16361,7 +16361,7 @@ IN_PROC_BROWSER_TEST_P(
     url2_capturer.Wait();
     EXPECT_TRUE(url2_capturer.has_user_gesture());
     EXPECT_TRUE(root->current_frame_host()
-                    ->last_navigation_started_with_transient_activation());
+                    ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16371,7 +16371,7 @@ IN_PROC_BROWSER_TEST_P(
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 }
 
@@ -16397,7 +16397,7 @@ IN_PROC_BROWSER_TEST_P(
     url1_capturer.Wait();
     EXPECT_FALSE(url1_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16407,7 +16407,7 @@ IN_PROC_BROWSER_TEST_P(
     url2_capturer.Wait();
     EXPECT_FALSE(url2_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16417,7 +16417,7 @@ IN_PROC_BROWSER_TEST_P(
     url3_capturer.Wait();
     EXPECT_TRUE(url3_capturer.has_user_gesture());
     EXPECT_TRUE(root->current_frame_host()
-                    ->last_navigation_started_with_transient_activation());
+                    ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16427,7 +16427,7 @@ IN_PROC_BROWSER_TEST_P(
     url4_capturer.Wait();
     EXPECT_FALSE(url4_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16444,7 +16444,7 @@ IN_PROC_BROWSER_TEST_P(
     url5_capturer.Wait();
     EXPECT_TRUE(url5_capturer.has_user_gesture());
     EXPECT_TRUE(root->current_frame_host()
-                    ->last_navigation_started_with_transient_activation());
+                    ->last_committed_common_params_has_user_gesture());
   }
 }
 
@@ -16476,7 +16476,7 @@ IN_PROC_BROWSER_TEST_P(
     url1_capturer.Wait();
     EXPECT_TRUE(url1_capturer.has_user_gesture());
     EXPECT_TRUE(root->current_frame_host()
-                    ->last_navigation_started_with_transient_activation());
+                    ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16486,7 +16486,7 @@ IN_PROC_BROWSER_TEST_P(
     url2_capturer.Wait();
     EXPECT_FALSE(url2_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16496,7 +16496,7 @@ IN_PROC_BROWSER_TEST_P(
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
     EXPECT_FALSE(root->current_frame_host()
-                     ->last_navigation_started_with_transient_activation());
+                     ->last_committed_common_params_has_user_gesture());
   }
 
   {
@@ -16513,7 +16513,7 @@ IN_PROC_BROWSER_TEST_P(
     url4_capturer.Wait();
     EXPECT_TRUE(url4_capturer.has_user_gesture());
     EXPECT_TRUE(root->current_frame_host()
-                    ->last_navigation_started_with_transient_activation());
+                    ->last_committed_common_params_has_user_gesture());
   }
 }
 
