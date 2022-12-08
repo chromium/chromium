@@ -178,7 +178,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     _showsSelectionUpdates = YES;
     _notSelectedTabCellOpacity = 1.0;
     _mode = TabGridModeNormal;
+
+    // Register for VoiceOver notifications.
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+           selector:@selector(voiceOverStatusDidChange)
+               name:UIAccessibilityVoiceOverStatusDidChangeNotification
+             object:nil];
   }
+
   return self;
 }
 
@@ -234,7 +242,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.allowsMultipleSelection = YES;
   collectionView.dragDelegate = self;
   collectionView.dropDelegate = self;
-  collectionView.dragInteractionEnabled = YES;
+  self.collectionView.dragInteractionEnabled =
+      [self shouldEnableDrapAndDropInteraction];
 
   self.pointerInteractionCells =
       [NSHashTable<UICollectionViewCell*> weakObjectsHashTable];
@@ -1358,6 +1367,16 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 #pragma mark - Private
+
+- (void)voiceOverStatusDidChange {
+  self.collectionView.dragInteractionEnabled =
+      [self shouldEnableDrapAndDropInteraction];
+}
+
+- (BOOL)shouldEnableDrapAndDropInteraction {
+  // Don't enable drag and drop when voice over is enabled.
+  return !UIAccessibilityIsVoiceOverRunning();
+}
 
 // Checks whether `indexPath` corresponds to the index path of the plus sign
 // cell. The plus sign cell is the last cell in the collection view after all
