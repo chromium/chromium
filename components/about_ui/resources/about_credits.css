@@ -11,7 +11,7 @@ html {
   --google-grey-800: rgb(60, 64, 67);
   --google-grey-900: rgb(32, 33, 36);
 
-  --interactive-color: var(--google-blue-600);
+  --interactive-color: var(--google-blue-900);
   --primary-color: var(--google-grey-900);
 
   --product-background: var(--google-blue-50);
