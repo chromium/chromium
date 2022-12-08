@@ -4387,6 +4387,22 @@
             ]
         }
     ],
+    "EnableFrameSinkDesktopCapturerInCrd": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableFrameSinkDesktopCapturerInCrd"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnablePDPMetricsUSDesktopIOS": [
         {
             "platforms": [
