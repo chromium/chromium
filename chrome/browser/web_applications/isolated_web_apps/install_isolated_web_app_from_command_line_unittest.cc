@@ -396,9 +396,8 @@ TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
   EXPECT_THAT(result.error(), HasSubstr("is not implemented"));
 }
 
-// Disabled. https://crbug.com/1392579
 TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
-       DISABLED_GetIsolationInfoWhenDevModeBundleSucceeds) {
+       GetIsolationInfoWhenDevModeBundleSucceeds) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path =
@@ -437,9 +436,8 @@ TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
                         "bundle: FILE_ERROR_NOT_FOUND"));
 }
 
-// Disabled. https://crbug.com/1392579
 TEST_F(InstallIsolatedWebAppFromCommandLineIsolationInfoTest,
-       DISABLED_GetIsolationInfoWhenDevModeBundleFailsWhenInvalidFile) {
+       GetIsolationInfoWhenDevModeBundleFailsWhenInvalidFile) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath path =
