@@ -770,28 +770,6 @@ void FocusFakebox() {
 
 @end
 
-// Test case for the NTP home UI, except the new omnibox popup flag is enabled
-// with variant 2.
-@interface NewOmniboxPopupLocationBarSteadyStateVariant2TestCase
-    : NewOmniboxPopupLocationBarSteadyStateTestCase
-@end
-
-@implementation NewOmniboxPopupLocationBarSteadyStateVariant2TestCase
-
-- (void)setUp {
-  _variant = std::string(kIOSOmniboxUpdatedPopupUIVariation2UIKit);
-
-  // `appConfigurationForTestCase` is called during [super setUp], and
-  // depends on _variant.
-  [super setUp];
-}
-
-// This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
-}
-
-@end
-
 #pragma mark - Edit state tests
 
 @interface LocationBarEditStateTestCase : ChromeTestCase

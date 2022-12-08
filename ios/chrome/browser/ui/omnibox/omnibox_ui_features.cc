@@ -37,20 +37,11 @@ bool IsOmniboxActionsEnabled() {
 }
 
 bool IsOmniboxActionsVisualTreatment1() {
-  if (!IsOmniboxActionsEnabled()) {
-    return false;
-  }
-  auto param = base::GetFieldTrialParamValueByFeature(
-      kIOSOmniboxUpdatedPopupUI, kIOSOmniboxUpdatedPopupUIVariationName);
-  return param == kIOSOmniboxUpdatedPopupUIVariation1 ||
-         param == kIOSOmniboxUpdatedPopupUIVariation1UIKit;
+  return base::FeatureList::IsEnabled(kIOSOmniboxUpdatedPopupUI);
 }
 
 bool IsOmniboxActionsVisualTreatment2() {
-  if (!IsOmniboxActionsEnabled()) {
-    return false;
-  }
-  return !IsOmniboxActionsVisualTreatment1();
+  return false;
 }
 
 bool IsSwiftUIPopupEnabled() {

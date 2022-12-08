@@ -61,7 +61,7 @@ BASE_FEATURE(kIOSNewOmniboxImplementation,
 
 BASE_FEATURE(kIOSOmniboxUpdatedPopupUI,
              "IOSOmniboxUpdatedPopupUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRemoveCrashInfobar,
              "RemoveCrashInfobar",
