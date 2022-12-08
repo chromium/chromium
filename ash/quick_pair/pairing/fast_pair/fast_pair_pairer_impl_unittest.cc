@@ -99,6 +99,7 @@ const char kSavedDeviceUpdateOptInStatusRetroactiveResult[] =
 const char kSavedDeviceUpdateOptInStatusSubsequentResult[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.UpdateOptInStatus.Result."
     "SubsequentPairingProtocol";
+constexpr char kInitialSuccessFunnelMetric[] = "FastPair.InitialPairing";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -611,6 +612,11 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial_AlreadyFastPaired) {
   fake_fast_pair_handshake_->InvokeCallback();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_EQ(
+      histogram_tester().GetBucketCount(
+          kInitialSuccessFunnelMetric,
+          FastPairInitialSuccessFunnelEvent::kDeviceAlreadyAssociatedToAccount),
+      1);
 }
 
 TEST_F(FastPairPairerImplTest,
@@ -1401,6 +1407,10 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_GuestLoggedIn) {
   adapter_->DevicePairedChanged(fake_bluetooth_device_ptr_, true);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kGuestModeDetected),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_KioskAppLoggedIn) {
@@ -1943,6 +1953,10 @@ TEST_F(FastPairPairerImplTest, FastPairVersionOne_DeviceUnpaired) {
   EXPECT_CALL(paired_callback_, Run).Times(0);
   EXPECT_CALL(pairing_procedure_complete_, Run).Times(0);
   EXPECT_EQ(DeviceFastPairVersion::kV1, device_->version().value());
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kV1DeviceDetected),
+            1);
   DeviceUnpaired();
 }
 
@@ -1991,6 +2005,14 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_FlagDisabled) {
   RunWriteAccountKeyCallback();
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_StrictFlagDisabled) {
@@ -2009,6 +2031,14 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_StrictFlagDisabled) {
   PerformAndCheckSuccessfulPairingCallbacks();
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagDisabled) {
@@ -2028,6 +2058,14 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagDisabled) {
   PerformAndCheckSuccessfulPairingCallbacks();
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_StrictFlagDisabled) {
@@ -2046,6 +2084,14 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_StrictFlagDisabled) {
   PerformAndCheckSuccessfulPairingCallbacks();
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagEnabled) {
@@ -2089,6 +2135,14 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagDisabled) {
   PerformAndCheckSuccessfulPairingCallbacks();
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
@@ -2125,6 +2179,14 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
   RunWriteAccountKeyCallback();
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey),
+            1);
+  EXPECT_EQ(histogram_tester().GetBucketCount(
+                kInitialSuccessFunnelMetric,
+                FastPairInitialSuccessFunnelEvent::kAccountKeyWritten),
+            1);
 }
 
 TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {

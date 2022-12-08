@@ -105,6 +105,9 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
               FastPairSubsequentSuccessFunnelEvent::kNotificationsClicked);
           break;
         case Protocol::kFastPairInitial:
+          RecordInitialSuccessFunnelFlow(
+              FastPairInitialSuccessFunnelEvent::kNotificationsClicked);
+          break;
         case Protocol::kFastPairRetroactive:
           break;
       }
@@ -204,6 +207,9 @@ void QuickPairMetricsLogger::OnPairingStart(scoped_refptr<Device> device) {
           FastPairSubsequentSuccessFunnelEvent::kInitializationStarted);
       break;
     case Protocol::kFastPairInitial:
+      RecordInitialSuccessFunnelFlow(
+          FastPairInitialSuccessFunnelEvent::kInitializationStarted);
+      break;
     case Protocol::kFastPairRetroactive:
       break;
   }
@@ -216,6 +222,9 @@ void QuickPairMetricsLogger::OnHandshakeComplete(scoped_refptr<Device> device) {
           FastPairSubsequentSuccessFunnelEvent::kPairingStarted);
       break;
     case Protocol::kFastPairInitial:
+      RecordInitialSuccessFunnelFlow(
+          FastPairInitialSuccessFunnelEvent::kPairingStarted);
+      break;
     case Protocol::kFastPairRetroactive:
       break;
   }
@@ -228,6 +237,9 @@ void QuickPairMetricsLogger::OnPairingComplete(scoped_refptr<Device> device) {
           FastPairSubsequentSuccessFunnelEvent::kProcessComplete);
       break;
     case Protocol::kFastPairInitial:
+      RecordInitialSuccessFunnelFlow(
+          FastPairInitialSuccessFunnelEvent::kPairingComplete);
+      break;
     case Protocol::kFastPairRetroactive:
       break;
   }
@@ -317,8 +329,20 @@ void QuickPairMetricsLogger::OnAssociateAccountAction(
 void QuickPairMetricsLogger::OnAccountKeyWrite(
     scoped_refptr<Device> device,
     absl::optional<AccountKeyFailure> error) {
-  if (device->protocol == Protocol::kFastPairRetroactive)
-    RecordRetroactivePairingResult(/*success=*/!error.has_value());
+  switch (device->protocol) {
+    case Protocol::kFastPairSubsequent:
+      // TODO(b/259443372): Record this case once we implement account key
+      // writing in all scenarios,
+      NOTREACHED();
+      break;
+    case Protocol::kFastPairInitial:
+      RecordInitialSuccessFunnelFlow(
+          FastPairInitialSuccessFunnelEvent::kProcessComplete);
+      break;
+    case Protocol::kFastPairRetroactive:
+      RecordRetroactivePairingResult(/*success=*/!error.has_value());
+      break;
+  }
 
   if (error.has_value()) {
     RecordAccountKeyResult(*device, /*success=*/false);

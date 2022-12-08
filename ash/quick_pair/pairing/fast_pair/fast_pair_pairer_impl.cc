@@ -133,6 +133,8 @@ FastPairPairerImpl::FastPairPairerImpl(
   // BluetoothAdapter::Observer::DevicePairedChanged event before firing the
   // |paired_callback|.
   if (device_->version().value() == DeviceFastPairVersion::kV1) {
+    RecordInitialSuccessFunnelFlow(
+        FastPairInitialSuccessFunnelEvent::kV1DeviceDetected);
     Shell::Get()->system_tray_model()->client()->ShowBluetoothPairingDialog(
         device_->ble_address);
     return;
@@ -480,6 +482,8 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
   // be.
   if (!ShouldBeEnabledForLoginStatus(
           Shell::Get()->session_controller()->login_status())) {
+    RecordInitialSuccessFunnelFlow(
+        FastPairInitialSuccessFunnelEvent::kGuestModeDetected);
     QP_LOG(VERBOSE) << __func__ << ": No logged in user to save account key to";
     std::move(pairing_procedure_complete_).Run(device_);
     return;
@@ -537,13 +541,15 @@ void FastPairPairerImpl::OnIsDeviceSavedToAccount(
     QP_LOG(INFO) << __func__
                  << ": Device is already saved, skipping write account key. "
                     "Pairing procedure complete.";
+    RecordInitialSuccessFunnelFlow(
+        FastPairInitialSuccessFunnelEvent::kDeviceAlreadyAssociatedToAccount);
     std::move(pairing_procedure_complete_).Run(device_);
     return;
   }
 
   // If we can't load the user's saved devices for some reason (e.g. offline)
   // |is_device_saved_to_account| will return false even though we didn't
-  // properly check Footrpints. This will cause us to write a new account key to
+  // properly check Footprints. This will cause us to write a new account key to
   // the device. This may cause problems since the device will have a different
   // account key than what is stored in Footprints, causing the not discoverable
   // advertisement to not be recognized.
@@ -555,6 +561,8 @@ void FastPairPairerImpl::WriteAccountKey() {
   RAND_bytes(account_key.data(), account_key.size());
   account_key[0] = 0x04;
 
+  RecordInitialSuccessFunnelFlow(
+      FastPairInitialSuccessFunnelEvent::kPreparingToWriteAccountKey);
   fast_pair_gatt_service_client_->WriteAccountKey(
       account_key, fast_pair_handshake_->fast_pair_data_encryptor(),
       base::BindOnce(&FastPairPairerImpl::OnWriteAccountKey,
@@ -595,6 +603,8 @@ void FastPairPairerImpl::OnWriteAccountKey(
   QP_LOG(INFO)
       << __func__
       << ": Account key written to device. Pairing procedure complete.";
+  RecordInitialSuccessFunnelFlow(
+      FastPairInitialSuccessFunnelEvent::kAccountKeyWritten);
   std::move(pairing_procedure_complete_).Run(device_);
 }
 

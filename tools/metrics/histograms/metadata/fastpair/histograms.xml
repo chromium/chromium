@@ -34,6 +34,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FastPair.InitialPairing"
+    enum="FastPairInitialSuccessFunnelEvent" expires_after="2023-06-01">
+  <owner>jackshira@chromium.org</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each successful step in the Initial Pairing flow. These steps are:
+    on notification click, on initialization start, on pairing start, on pairing
+    complete, V1 device detected, guest mode detected, device already associated
+    with the user's account, preparing to write the account key, account key
+    written successfully, and on completion of the entire pairing process.
+  </summary>
+</histogram>
+
 <histogram name="FastPair.SubsequentPairing"
     enum="FastPairSubsequentSuccessFunnelEvent" expires_after="2023-06-01">
   <owner>jackshira@chromium.org</owner>

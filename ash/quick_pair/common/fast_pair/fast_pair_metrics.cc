@@ -537,6 +537,7 @@ const char kSavedDevicesTotalUxLoadTime[] =
 const char kSavedDevicesCount[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.DeviceCount";
 constexpr char kFastPairGattConnectionStep[] = "FastPair.GattConnection";
+constexpr char kInitialSuccessFunnelMetric[] = "FastPair.InitialPairing";
 constexpr char kSubsequentSuccessFunnelMetric[] = "FastPair.SubsequentPairing";
 
 const std::string GetEngagementFlowInitialModelIdMetric(
@@ -591,6 +592,10 @@ void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                static_cast<int>(event));
       break;
   }
+}
+
+void RecordInitialSuccessFunnelFlow(FastPairInitialSuccessFunnelEvent event) {
+  base::UmaHistogramEnumeration(kInitialSuccessFunnelMetric, event);
 }
 
 void RecordSubsequentSuccessFunnelFlow(
