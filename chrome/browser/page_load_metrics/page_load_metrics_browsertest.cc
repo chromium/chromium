@@ -3381,6 +3381,23 @@ class PageLoadMetricsBrowserTestTerminatedPage
         ->DiscardTab(mojom::LifecycleUnitDiscardReason::URGENT);
   }
 
+  void CloseTab(content::WebContents* contents) {
+    auto* tab_strip_model = browser()->tab_strip_model();
+    // Get the total count of tabs.
+    int tab_count = tab_strip_model->count();
+
+    // Get the tab index of the given WebContents.
+    int tab_index = tab_strip_model->GetIndexOfWebContents(contents);
+    // Expect the tab index of the given WebContents is found.
+    EXPECT_NE(tab_index, TabStripModel::kNoTab);
+
+    // Close the tab corresponding to the given WebContents.
+    tab_strip_model->CloseWebContentsAt(tab_index,
+                                        TabCloseTypes::CLOSE_USER_GESTURE);
+    // Verify tab is closed.
+    EXPECT_EQ(tab_strip_model->count(), tab_count - 1);
+  }
+
   std::string ScriptForGettingLCPTimeFromEmittedLCPEntry() {
     return R"(
    (async () => {
@@ -3402,43 +3419,26 @@ class PageLoadMetricsBrowserTestTerminatedPage
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestTerminatedPage,
-                       UkmIsRecordedForDiscardedForegroundTabPage) {
-  // Open a new foreground tab and navigate. The new tab would be of index 1
-  // which would be used below in verifying the tab is discarded.
-  content::WebContents* contents = OpenTabAndNavigate();
+class PageLoadMetricsBrowserTestDiscardedPage
+    : public PageLoadMetricsBrowserTestTerminatedPage,
+      public ::testing::WithParamInterface<bool> {};
 
-  // Wait for LCP emission and observation. This is to ensure there is an LCP
-  // entry to report at the time of discardin the page.
-  double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
-
-  // Discard tab.
-  DiscardTab(contents);
-
-  // Verify tab is discarded.
-  EXPECT_TRUE(
-      browser()->tab_strip_model()->GetWebContentsAt(1)->WasDiscarded());
-
-  // Verify page load metric is recorded.
-  EXPECT_NEAR(
-      GetUKMPageLoadMetric(
-          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
-      lcp_time, 10);
-}
-
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestTerminatedPage,
-                       UkmIsRecordedForDiscardedBackgroundTabPage) {
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestDiscardedPage,
+                       UkmIsRecordedForDiscardedTabPage) {
   // Open a new foreground tab and navigate.
   content::WebContents* contents = OpenTabAndNavigate();
 
   // Wait for LCP emission and observation.
   double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
 
-  // Add a new tab.
-  AddNewTab();
+  // Background current tab by adding a new tab if provided param is true.
+  if (GetParam()) {
+    // Add a new tab.
+    AddNewTab();
 
-  // Verify the first tab is backgrounded.
-  EXPECT_NE(contents, browser()->tab_strip_model()->GetActiveWebContents());
+    // Verify the first tab is backgrounded.
+    EXPECT_NE(contents, browser()->tab_strip_model()->GetActiveWebContents());
+  }
 
   // Discard tab.
   DiscardTab(contents);
@@ -3453,6 +3453,47 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestTerminatedPage,
           PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
       lcp_time, 10);
 }
+
+INSTANTIATE_TEST_SUITE_P(DiscardedPages,
+                         PageLoadMetricsBrowserTestDiscardedPage,
+                         testing::Bool());
+
+class PageLoadMetricsBrowserTestClosedPage
+    : public PageLoadMetricsBrowserTestTerminatedPage,
+      public ::testing::WithParamInterface<bool> {};
+
+IN_PROC_BROWSER_TEST_P(PageLoadMetricsBrowserTestClosedPage,
+                       UkmIsRecordedForClosedTabPage) {
+  // Open a new foreground tab and navigate. The new tab would be of index 1
+  // which would be used below in verifying the tab is discarded.
+  content::WebContents* contents = OpenTabAndNavigate();
+
+  // Wait for LCP emission and observation. This is to ensure there is an LCP
+  // entry to report at the time of closing the page.
+  double lcp_time = GetLCPTimeFromEmittedLCPEntry(contents);
+
+  // Background current tab by adding a new tab if provided param is true.
+  if (GetParam()) {
+    // Add a new tab.
+    AddNewTab();
+
+    // Verify the tab is backgrounded.
+    EXPECT_NE(contents, browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  // close tab.
+  CloseTab(contents);
+
+  // Verify page load metric is recorded.
+  EXPECT_NEAR(
+      GetUKMPageLoadMetric(
+          PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name),
+      lcp_time, 10);
+}
+
+INSTANTIATE_TEST_SUITE_P(ClosedPages,
+                         PageLoadMetricsBrowserTestClosedPage,
+                         testing::Bool());
 
 // This test is to verify page load metrics are recorded in case when the
 // render process is shut down.
