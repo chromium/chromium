@@ -341,6 +341,9 @@ interface ThemeObserver {
 
   // Notifies the JS side the current state of color mode auto scheduler.
   OnColorModeAutoScheduleChanged(bool enabled);
+
+  // Notifies the JS side about the current state of the static color.
+  OnStaticColorChanged(skia.mojom.SkColor? color);
 };
 
 // Provides APIs to expose theme settings such dark/light color mode.
@@ -361,6 +364,9 @@ interface ThemeProvider {
   // Sets the seed color for dynamic color.
   // @see //ash/style/color_palette_controller.h
   SetStaticColor(skia.mojom.SkColor static_color);
+
+  // Retrieves the static seed color for dynamic color.
+  GetStaticColor() => (skia.mojom.SkColor? static_color);
 
   // Returns whether color mode auto scheduler is enabled.
   IsColorModeAutoScheduleEnabled() => (bool enabled);

@@ -37,6 +37,20 @@
     width: 76px;
   }
 
+  /* TODO(b/254478525) Replace with an icon button component. */
+  cr-button[aria-checked='true']::before {
+    background-color: var(--cros-button-background-color-primary);
+    border-radius: 50%;
+    color: var(--cros-button-icon-color-primary);
+    content: '✓';
+    font-size: 16px;
+    height: 32px;
+    line-height: 32px;
+    position: absolute;
+    text-align: center;
+    width: 32px;
+  }
+
   color-scheme-icon-svg,
   svg {
     height: 48px;
@@ -80,6 +94,7 @@
       <cr-button
           tabindex$="[[getTabIndex_(staticColor)]]"
           on-click="onClickStaticColorButton_"
+          aria-checked$="[[getStaticColorAriaChecked_(staticColor, staticColorSelected_)]]"
           data-static-color$="[[staticColor]]">
         <svg>
           <circle style$="fill: [[staticColor]]" cx="24" cy="24" r="24"></circle>

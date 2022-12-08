@@ -7,10 +7,11 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {DynamicColorElement, SetColorSchemePrefAction, SetStaticColorPrefAction, ThemeActionName} from 'chrome://personalization/js/personalization_app.js';
+import {DynamicColorElement, SetColorSchemePrefAction, SetStaticColorPrefAction, ThemeActionName, ThemeObserver} from 'chrome://personalization/js/personalization_app.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, dispatchKeydown, getActiveElement, initElement, teardownElement, waitForActiveElement} from './personalization_app_test_utils.js';
@@ -64,6 +65,7 @@ suite('DynamicColorElementTest', function() {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
     themeProvider = mocks.themeProvider;
+    ThemeObserver.initThemeObserverIfNeeded();
 
     dynamicColorElement = initElement(DynamicColorElement)!;
     await waitAfterNextRender(dynamicColorElement);
@@ -71,6 +73,7 @@ suite('DynamicColorElementTest', function() {
 
   teardown(async () => {
     teardownElement(dynamicColorElement);
+    ThemeObserver.shutdown();
   });
 
   test('displays content', async () => {
@@ -176,13 +179,20 @@ suite('DynamicColorElementTest', function() {
   test('set static color', async () => {
     personalizationStore.expectAction(ThemeActionName.SET_STATIC_COLOR);
     showStaticColorButtons();
+    const button = getStaticColorButtons()[1]!;
+    assertEquals(button.getAttribute('aria-checked'), 'false');
+    personalizationStore.setReducersEnabled(true);
 
-    getStaticColorButtons()[1]!.click();
+    button.click();
     await themeProvider.whenCalled('setStaticColor');
 
     const action =
         await personalizationStore.waitForAction(
             ThemeActionName.SET_STATIC_COLOR) as SetStaticColorPrefAction;
     assertTrue(!!action.staticColor);
+    assertDeepEquals(
+        hexColorToSkColor(button.dataset['staticColor']!),
+        personalizationStore.data.theme.staticColorSelected);
+    assertEquals(button.getAttribute('aria-checked'), 'true');
   });
 });

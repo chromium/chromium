@@ -4,6 +4,7 @@
 
 #include "ash/webui/personalization_app/test/fake_personalization_app_theme_provider.h"
 #include "fake_personalization_app_theme_provider.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace ash::personalization_app {
 
@@ -52,5 +53,10 @@ void FakePersonalizationAppThemeProvider::SetColorScheme(
 void FakePersonalizationAppThemeProvider::SetStaticColor(
     ::SkColor static_color) {
   return;
+}
+
+void FakePersonalizationAppThemeProvider::GetStaticColor(
+    GetStaticColorCallback callback) {
+  std::move(callback).Run(SK_ColorBLUE);
 }
 }  // namespace ash::personalization_app

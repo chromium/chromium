@@ -31,8 +31,20 @@ export function colorModeAutoScheduleEnabledReducer(
   }
 }
 
+export function staticColorSelectedReducer(
+    state: ThemeState['staticColorSelected'], action: Actions,
+    _: PersonalizationState): ThemeState['staticColorSelected'] {
+  switch (action.name) {
+    case ThemeActionName.SET_STATIC_COLOR:
+      return action.staticColor;
+    default:
+      return state;
+  }
+}
+
 export const themeReducers:
     {[K in keyof ThemeState]: ReducerFunction<ThemeState[K]>} = {
       colorModeAutoScheduleEnabled: colorModeAutoScheduleEnabledReducer,
       darkModeEnabled: darkModeEnabledReducer,
+      staticColorSelected: staticColorSelectedReducer,
     };

@@ -20,10 +20,12 @@ import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector
 
 import {ColorScheme} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {convertToRgbHexStr} from '../utils.js';
 
 import {getTemplate} from './dynamic_color_element.html.js';
-import {setColorSchemePref, setStaticColorPref} from './theme_controller.js';
+import {initializeDynamicColorData, setColorSchemePref, setStaticColorPref} from './theme_controller.js';
 import {getThemeProvider} from './theme_interface_provider.js';
+import {ThemeObserver} from './theme_observer.js';
 
 export interface DynamicColorScheme {
   id: ColorScheme;
@@ -63,15 +65,9 @@ export class DynamicColorElement extends WithPersonalizationStore {
         reflectToAttribute: true,
       },
       // The static color stored in the backend.
-      staticColorSelected_: {
-        type: Object,
-        value: DEFAULT_STATIC_COLOR,
-      },
+      staticColorSelected_: Object,
       // The color scheme stored in the backend.
-      colorSchemeSelected_: {
-        type: Object,
-        value: DEFAULT_COLOR_SCHEME,
-      },
+      colorSchemeSelected_: Object,
       staticColors_: {
         type: Object,
         readOnly: true,
@@ -144,6 +140,15 @@ export class DynamicColorElement extends WithPersonalizationStore {
     this.$.colorSchemeKeys.target = this.$.colorSchemeSelector;
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    ThemeObserver.initThemeObserverIfNeeded();
+    this.watch<DynamicColorElement['staticColorSelected_']>(
+        'staticColorSelected_', state => state.theme.staticColorSelected);
+    this.updateFromStore();
+    initializeDynamicColorData(getThemeProvider(), this.getStore());
+  }
+
   private onClickColorSchemeButton_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
     const colorScheme = Number(eventTarget.dataset['colorSchemeId']);
@@ -155,7 +160,6 @@ export class DynamicColorElement extends WithPersonalizationStore {
     const eventTarget = event.currentTarget as HTMLElement;
     const staticColorHexStr = String(eventTarget.dataset['staticColor']);
     const staticColor = hexColorToSkColor(staticColorHexStr);
-    this.staticColorSelected_ = staticColor;
     setStaticColorPref(staticColor, getThemeProvider(), this.getStore());
   }
 
@@ -167,6 +171,15 @@ export class DynamicColorElement extends WithPersonalizationStore {
       const colorScheme = this.colorSchemeSelected_ || DEFAULT_COLOR_SCHEME;
       setColorSchemePref(colorScheme, getThemeProvider(), this.getStore());
     }
+  }
+
+  private getStaticColorAriaChecked_(
+      staticColor: string, staticColorSelected: SkColor|null): string {
+    if (!staticColorSelected) {
+      return 'false';
+    }
+    return (staticColor === convertToRgbHexStr(staticColorSelected.value))
+        .toString();
   }
 
   private onStaticColorKeysPress_(

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+
 import {ThemeObserverInterface, ThemeObserverReceiver, ThemeProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setColorModeAutoScheduleEnabledAction, setDarkModeEnabledAction} from './theme_actions.js';
+import {setColorModeAutoScheduleEnabledAction, setDarkModeEnabledAction, setStaticColorAction} from './theme_actions.js';
 import {getThemeProvider} from './theme_interface_provider.js';
 
 /** @fileoverview listens for updates on color mode changes. */
@@ -47,5 +49,10 @@ export class ThemeObserver implements ThemeObserverInterface {
   onColorModeAutoScheduleChanged(enabled: boolean): void {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setColorModeAutoScheduleEnabledAction(enabled));
+  }
+
+  onStaticColorChanged(staticColor: SkColor): void {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setStaticColorAction(staticColor));
   }
 }

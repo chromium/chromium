@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace ash::personalization_app {
 
@@ -36,6 +37,10 @@ class TestThemeObserver
 
   void OnColorModeAutoScheduleChanged(bool enabled) override {
     color_mode_auto_schedule_enabled_ = enabled;
+  }
+
+  void OnStaticColorChanged(absl::optional<::SkColor> static_color) override {
+    static_color_ = static_color;
   }
 
   mojo::PendingRemote<ash::personalization_app::mojom::ThemeObserver>
@@ -60,12 +65,20 @@ class TestThemeObserver
     return color_mode_auto_schedule_enabled_;
   }
 
+  absl::optional<SkColor> get_static_color() {
+    if (!theme_observer_receiver_.is_bound())
+      return absl::nullopt;
+    theme_observer_receiver_.FlushForTesting();
+    return static_color_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::ThemeObserver>
       theme_observer_receiver_{this};
 
   bool dark_mode_enabled_ = false;
   bool color_mode_auto_schedule_enabled_ = false;
+  absl::optional<::SkColor> static_color_ = absl::nullopt;
 };
 
 }  // namespace
@@ -137,6 +150,12 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
     return test_theme_observer_.is_color_mode_auto_schedule_enabled();
   }
 
+  absl::optional<SkColor> get_static_color() {
+    if (theme_provider_remote_.is_bound())
+      theme_provider_remote_.FlushForTesting();
+    return test_theme_observer_.get_static_color();
+  }
+
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
@@ -189,6 +208,33 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
   EXPECT_TRUE(is_color_mode_auto_schedule_enabled());
   histogram_tester().ExpectBucketCount(
       kPersonalizationThemeColorModeHistogramName, ColorMode::kAuto, 1);
+}
+
+class PersonalizationAppThemeProviderImplJellyTest
+    : public PersonalizationAppThemeProviderImplTest {
+ public:
+  PersonalizationAppThemeProviderImplJellyTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kJelly);
+  }
+
+  PersonalizationAppThemeProviderImplJellyTest(
+      const PersonalizationAppThemeProviderImplJellyTest&) = delete;
+  PersonalizationAppThemeProviderImplJellyTest& operator=(
+      const PersonalizationAppThemeProviderImplJellyTest&) = delete;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetStaticColor) {
+  SetThemeObserver();
+  theme_provider_remote()->FlushForTesting();
+  SkColor color = SK_ColorMAGENTA;
+  EXPECT_NE(color, get_static_color());
+
+  theme_provider()->SetStaticColor(color);
+
+  EXPECT_EQ(color, get_static_color());
 }
 
 }  // namespace ash::personalization_app

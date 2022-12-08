@@ -38,7 +38,7 @@ export type SetColorSchemePrefAction = Action&{
 
 export type SetStaticColorPrefAction = Action&{
   name: ThemeActionName.SET_STATIC_COLOR,
-  staticColor: SkColor,
+  staticColor: SkColor | null,
 };
 
 export function setDarkModeEnabledAction(enabled: boolean):
@@ -56,7 +56,7 @@ export function setColorSchemeAction(colorScheme: ColorScheme):
   return {name: ThemeActionName.SET_COLOR_SCHEME, colorScheme};
 }
 
-export function setStaticColorAction(staticColor: SkColor):
-    SetStaticColorPrefAction {
+export function setStaticColorAction(staticColor: SkColor|
+                                     null): SetStaticColorPrefAction {
   return {name: ThemeActionName.SET_STATIC_COLOR, staticColor};
 }

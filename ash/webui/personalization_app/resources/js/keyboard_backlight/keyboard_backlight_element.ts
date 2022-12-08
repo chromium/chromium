@@ -15,7 +15,7 @@ import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector
 
 import {BacklightColor, BLUE_COLOR, GREEN_COLOR, INDIGO_COLOR, PURPLE_COLOR, RED_COLOR, WHITE_COLOR, YELLOW_COLOR} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isSelectionEvent} from '../utils.js';
+import {convertToRgbHexStr, isSelectionEvent} from '../utils.js';
 
 import {getShouldShowNudge, handleNudgeShown, setBacklightColor} from './keyboard_backlight_controller.js';
 import {getTemplate} from './keyboard_backlight_element.html.js';
@@ -45,12 +45,6 @@ function calculateColorBrightness(hexVal: number): number {
   const g = (hexVal >> 8) & 0xff;   // extract green
   const b = (hexVal >> 0) & 0xff;   // extract blue
   return (r * 299 + g * 587 + b * 114) / 1000;
-}
-
-/** Returns the RGB hex in #FFFFFF format. */
-function convertToRgbHexStr(hexVal: number): string {
-  const PADDING_LENGTH = 6;
-  return `#${hexVal.toString(16).padStart(PADDING_LENGTH, '0')}`;
 }
 
 interface ColorInfo {

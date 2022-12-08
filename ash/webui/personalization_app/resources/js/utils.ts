@@ -92,3 +92,13 @@ export function isImageDataUrl(maybeDataUrl: Url|null|
       (maybeDataUrl.url.startsWith('data:image/png;base64') ||
        maybeDataUrl.url.startsWith('data:image/jpeg;base64'));
 }
+
+/** Returns the RGB hex in #ffffff format. */
+export function convertToRgbHexStr(hexVal: number): string {
+  const PADDING_LENGTH = 6;
+  const STRING_LENGTH = 16;
+  return `#${
+      (hexVal & 0x0FFFFFF)
+          .toString(STRING_LENGTH)
+          .padStart(PADDING_LENGTH, '0')}`;
+}

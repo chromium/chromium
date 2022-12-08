@@ -14,6 +14,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 class Profile;
 
@@ -62,11 +63,15 @@ class PersonalizationAppThemeProviderImpl
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
 
+  void GetStaticColor(GetStaticColorCallback callback) override;
+
  private:
   bool IsColorModeAutoScheduleEnabled();
 
   // Notify webUI the current state of color mode auto scheduler.
   void NotifyColorModeAutoScheduleChanged();
+
+  void OnStaticColorChanged(absl::optional<SkColor> color);
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> const profile_ = nullptr;
