@@ -97,8 +97,13 @@ def _GetPolicyChangeList(input_api):
   '''
   if _CACHED_POLICY_CHANGE_LIST:
     return _CACHED_POLICY_CHANGE_LIST
-  policies_dir = input_api.os_path.join(input_api.change.RepositoryRoot(),
+
+  root = input_api.change.RepositoryRoot()
+  policies_dir = input_api.os_path.join(root,
                                         _POLICIES_DEFINITIONS_PATH)
+  policy_name_to_id = {name: id
+    for id, name
+    in _LoadYamlFile(root, _POLICIES_YAML_PATH)['policies'].items()}
   template_affected_files = [f for f in input_api.change.AffectedFiles()
     if os.path.commonpath([policies_dir,
       f.AbsoluteLocalPath()]) ==  policies_dir]
@@ -116,11 +121,13 @@ def _GetPolicyChangeList(input_api):
       try:
         old_policy = pyyaml.safe_load('\n'.join(affected_file.OldContents()))
         old_policy['name'] = policy_name
+        old_policy['id'] = policy_name_to_id[policy_name]
       except:
         old_policy = None
     if affected_file.Action() != 'D':
       new_policy = pyyaml.safe_load('\n'.join(affected_file.NewContents()))
       new_policy['name'] = policy_name
+      new_policy['id'] = policy_name_to_id[policy_name]
     _CACHED_POLICY_CHANGE_LIST.append({
       'policy': policy_name,
       'old_policy': old_policy,
@@ -471,6 +478,94 @@ def CheckDevicePolicyProtos(input_api, output_api):
         results.append(output_api.PresubmitError(
          f"Policy '{policy}': Expected field '{field}' not found in "
          "chrome_device_policy.proto."))
+  return results
+
+
+def _GetPlatformSupportMap(policy):
+  '''Returns a map of platforms to their support version range as an object
+     with the keys `from` and `to`.'''
+  platforms_and_versions = {}
+  if not policy:
+    return platforms_and_versions
+  for supported_on in policy.get('supported_on', []):
+    platform, versions = supported_on.split(':')
+    supported_from, supported_to = versions.split('-')
+    version_range = {
+      'from': int(supported_from) if supported_from else None,
+      'to': int(supported_to) if supported_to else None
+    }
+    if platform == 'chrome.*':
+      for p in ['chrome.win', 'chrome.mac', 'chrome.linux']:
+        platforms_and_versions[p] = platforms_and_versions[platform]
+    else:
+      platforms_and_versions[platform] = version_range
+  return platforms_and_versions
+
+
+# TODO(crbug/1171839): Remove the version check from
+# syntax_check_policy_template_json.py as this check is now duplicated.
+def _CheckPolicyChangeVersionCompatibility(policy_changelist, current_version,
+                                           output_api):
+  '''Cheks if the modified policies are compatible with their previous version
+    if any and if they are compatible with the current version.
+
+    Args:
+    policy_changelist: A list of changed policy definitions with their old and
+                         new values.
+    original_file_contents: The full contents of the original policy templates
+      file.
+    current_version: The current major version of the branch as stored in
+      chrome/VERSION.'''
+  results = []
+  for policy_changes in policy_changelist:
+    original_policy = policy_changes['old_policy']
+    new_policy = policy_changes['new_policy']
+    policy_name = policy_changes['policy']
+    original_policy_platforms = _GetPlatformSupportMap(original_policy)
+    new_policy_platforms = _GetPlatformSupportMap(new_policy)
+
+    for platform, original_range in original_policy_platforms.items():
+      # Policy supported
+      if original_range['from'] < current_version:
+        if platform not in new_policy_platforms:
+          results.append(output_api.PresubmitError(
+            f"In policy {policy_name}: Policy has been removed on {platform}. "
+            "A released policy cannot be removed. Mark it as deprecated and "
+            "update the supported versions."))
+
+      if original_range['from'] >= current_version:
+        if platform not in new_policy_platforms:
+          results.append(output_api.PresubmitPromptWarning(
+            f"Unreleased policy {policy_name} has been removed on {platform}."))
+
+    for platform, _ in new_policy_platforms.items():
+      new_from_version = new_policy_platforms[platform]['from']
+      if (new_from_version < current_version - 1 and
+          platform not in original_policy_platforms):
+        results.append(output_api.PresubmitError(
+          f"In policy {policy_name}: Support can't be added on platform "
+          f"{platform} because version {new_from_version} is already released.")
+        )
+
+      if (new_from_version == current_version - 1 and
+          platform not in original_policy_platforms):
+        results.append(output_api.PresubmitPromptWarning(
+          f"In policy {policy_name}: Support will be added on platform "
+          f"{platform} version {new_from_version} which has already passed "
+          "branch point. Please merge this change in Beta."))
+
+      if not new_policy_platforms[platform]['to']:
+        continue
+      # Support for policies can only be removed for past version until we have
+      # a better reminder process to cleanup the code related to deprecated
+      # policies.
+      if new_policy_platforms[platform]['to'] > current_version:
+        previous_version = int(current_version) - 1
+        results.append(output_api.PresubmitError(
+          f"In policy {policy_name}: Support on platform {platform} can only "
+          f"be removed for version {previous_version}. Please remove all "
+          "references in the code to that policy since it will not be "
+          f"supported in the current version {current_version}."))
   return results
 
 
