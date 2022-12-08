@@ -72,7 +72,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
     return provider()->os_integration_manager().file_handler_manager();
   }
 
-  WebAppRegistrar& registrar() { return provider()->registrar(); }
+  WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
 
   GURL GetSecureAppURL() {
     return https_server()->GetURL("app.com", "/ssl/google.html");
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingIconBrowserTest, Basic) {
       embedded_test_server()->GetURL("/web_app_file_handling/icons_app.html"));
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   auto* provider = WebAppProvider::GetForTest(browser()->profile());
-  const WebApp* web_app = provider->registrar().GetAppById(app_id);
+  const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);
 
   ASSERT_EQ(1U, web_app->file_handlers().size());

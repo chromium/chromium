@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
 
   // Trigger app uninstall without waiting for result.
   WebAppProvider* const provider = WebAppProvider::GetForTest(profile());
-  EXPECT_TRUE(provider->registrar().IsInstalled(app_id));
+  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(app_id));
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
@@ -190,14 +190,14 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, TwoUninstallCalls) {
         EXPECT_FALSE(uninstall_delegate_called);
 
         // Validate that uninstalling flag is set
-        auto* app = provider->registrar().GetAppById(app_id);
+        auto* app = provider->registrar_unsafe().GetAppById(app_id);
         EXPECT_TRUE(app);
         EXPECT_TRUE(app->is_uninstalling());
         uninstall_delegate_called = true;
       }));
 
   run_loop.Run();
-  EXPECT_FALSE(provider->registrar().IsInstalled(app_id));
+  EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest, PrefsRemovedAfterUninstall) {

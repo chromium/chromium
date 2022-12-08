@@ -152,7 +152,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {
-    return provider().registrar().GetAppById(app_id)->launch_handler();
+    return provider().registrar_unsafe().GetAppById(app_id)->launch_handler();
   }
 
  protected:

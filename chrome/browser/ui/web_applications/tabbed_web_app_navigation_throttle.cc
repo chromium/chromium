@@ -56,13 +56,13 @@ TabbedWebAppNavigationThrottle::MaybeCreateThrottleFor(
   const AppId& app_id = browser->app_controller()->app_id();
 
   absl::optional<GURL> home_tab_url =
-      provider->registrar().GetAppPinnedHomeTabUrl(app_id);
+      provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
 
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
 
   // Only create the throttle for tabbed web apps that have a home tab.
   if (tab_helper && tab_helper->acting_as_app() &&
-      provider->registrar().IsTabbedWindowModeEnabled(app_id) &&
+      provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id) &&
       home_tab_url.has_value()) {
     return std::make_unique<TabbedWebAppNavigationThrottle>(handle);
   }
@@ -85,14 +85,14 @@ TabbedWebAppNavigationThrottle::WillStartRequest() {
   const AppId& app_id = app_controller->app_id();
 
   absl::optional<GURL> home_tab_url =
-      provider->registrar().GetAppPinnedHomeTabUrl(app_id);
+      provider->registrar_unsafe().GetAppPinnedHomeTabUrl(app_id);
   DCHECK(home_tab_url.has_value());
 
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
   DCHECK(tab_helper);
   bool navigating_from_home_tab = tab_helper->is_pinned_home_tab();
   bool navigation_url_is_home_url = IsPinnedHomeTabUrl(
-      provider->registrar(), app_id, navigation_handle()->GetURL());
+      provider->registrar_unsafe(), app_id, navigation_handle()->GetURL());
 
   // Navigations from the home tab to another URL should open in a new tab.
   if (navigating_from_home_tab && !navigation_url_is_home_url) {

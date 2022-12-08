@@ -52,7 +52,7 @@ absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
     return absl::nullopt;
 
   if (!WebAppProvider::GetForWebApps(browser->profile())
-           ->registrar()
+           ->registrar_unsafe()
            .IsInstalled(*app_id)) {
     return absl::nullopt;
   }

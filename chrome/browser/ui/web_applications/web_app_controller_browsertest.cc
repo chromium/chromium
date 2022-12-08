@@ -164,13 +164,13 @@ WebAppControllerBrowserTest::NavigateInNewWindowAndAwaitInstallabilityCheck(
 
 absl::optional<AppId> WebAppControllerBrowserTest::FindAppWithUrlInScope(
     const GURL& url) {
-  return provider().registrar().FindAppWithUrlInScope(url);
+  return provider().registrar_unsafe().FindAppWithUrlInScope(url);
 }
 
 content::WebContents* WebAppControllerBrowserTest::OpenApplication(
     const AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
-      provider().registrar().GetAppStartUrl(app_id),
+      provider().registrar_unsafe().GetAppStartUrl(app_id),
       content::NotificationService::AllSources());
 
   apps::AppLaunchParams params(

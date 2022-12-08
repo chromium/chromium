@@ -18,7 +18,7 @@ WebAppIconDiagnostic::WebAppIconDiagnostic(Profile* profile, AppId app_id)
     : profile_(profile),
       app_id_(std::move(app_id)),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(profile_.get())),
-      app_(provider_->registrar().GetAppById(app_id_)) {}
+      app_(provider_->registrar_unsafe().GetAppById(app_id_)) {}
 
 WebAppIconDiagnostic::~WebAppIconDiagnostic() = default;
 

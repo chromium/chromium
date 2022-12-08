@@ -123,7 +123,7 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
 
   // WebAppControllerBrowserTest:
   void TearDownOnMainThread() override {
-    WebAppRegistrar& registrar = provider().registrar();
+    WebAppRegistrar& registrar = provider().registrar_unsafe();
     for (const auto& app_id : registrar.GetAppIds()) {
       web_app::test::UninstallWebApp(profile(), app_id);
       AppReadinessWaiter(profile(), app_id, apps::Readiness::kUninstalledByUser)
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBadgingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppBadgingBrowserTest, ClearLastBadgingTime) {
   ExecuteScriptAndWaitForBadgeChange("navigator.setAppBadge()", main_frame_);
-  WebAppRegistrar& registrar = provider().registrar();
+  WebAppRegistrar& registrar = provider().registrar_unsafe();
   EXPECT_NE(registrar.GetAppLastBadgingTime(main_app_id()), base::Time());
   EXPECT_NE(registrar.GetAppLastLaunchTime(main_app_id()), base::Time());
 

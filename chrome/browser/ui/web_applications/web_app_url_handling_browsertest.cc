@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlingBrowserTest, BasicUrlHandlers) {
       "manifest_test_page.html?manifest=manifest_url_handlers.json",
       /*await_metric=*/true);
   apps::UrlHandlers url_handlers =
-      provider().registrar().GetAppUrlHandlers(app_id);
+      provider().registrar_unsafe().GetAppUrlHandlers(app_id);
 
   // One handler has an invalid host so it shouldn't be in the result.
   ASSERT_EQ(3u, url_handlers.size());
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlHandlingBrowserTest, NoUrlHandlers) {
       InstallTestApp("/banners/manifest_test_page.html?manifest=manifest.json",
                      /*await_metric=*/false);
   apps::UrlHandlers url_handlers =
-      provider().registrar().GetAppUrlHandlers(app_id);
+      provider().registrar_unsafe().GetAppUrlHandlers(app_id);
   ASSERT_EQ(0u, url_handlers.size());
 
   histogram_tester_.ExpectBucketCount(kUseCounterHistogram,

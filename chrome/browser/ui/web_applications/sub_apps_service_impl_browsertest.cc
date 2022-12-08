@@ -107,7 +107,7 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   }
 
   std::vector<AppId> GetAllSubAppIds(const AppId& parent_app_id) {
-    return provider().registrar().GetAllSubAppIds(parent_app_id);
+    return provider().registrar_unsafe().GetAllSubAppIds(parent_app_id);
   }
 
   void BindRemote(content::WebContents* web_contents = nullptr) {
@@ -288,12 +288,13 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
             CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
 
   // Verify a bunch of things for the newly installed sub-app.
-  EXPECT_TRUE(provider().registrar().IsInstalled(sub_app_id));
-  EXPECT_TRUE(provider().registrar().IsLocallyInstalled(sub_app_id));
-  EXPECT_EQ(DisplayMode::kStandalone,
-            provider().registrar().GetAppEffectiveDisplayMode(sub_app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(sub_app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(sub_app_id));
+  EXPECT_EQ(
+      DisplayMode::kStandalone,
+      provider().registrar_unsafe().GetAppEffectiveDisplayMode(sub_app_id));
 
-  const WebApp* sub_app = provider().registrar().GetAppById(sub_app_id);
+  const WebApp* sub_app = provider().registrar_unsafe().GetAppById(sub_app_id);
   EXPECT_EQ(parent_app_id_, sub_app->parent_app_id());
   EXPECT_EQ(std::vector<AppId>{sub_app->app_id()},
             GetAllSubAppIds(parent_app_id_));
@@ -598,21 +599,21 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                           SubAppsServiceAddResultCode::kSuccessNewInstall),
             CallAdd({{unhashed_sub_app_id_3, GetURL(kSubAppPath3)}}));
 
-  EXPECT_TRUE(provider().registrar().IsInstalled(
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
-  EXPECT_TRUE(provider().registrar().IsInstalled(
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
-  EXPECT_TRUE(provider().registrar().IsInstalled(
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_3)));
 
   UninstallParentApp();
   // Verify that both parent app and sub apps are no longer installed.
-  EXPECT_FALSE(provider().registrar().IsInstalled(parent_app_id_));
-  EXPECT_FALSE(provider().registrar().IsInstalled(
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(parent_app_id_));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
-  EXPECT_FALSE(provider().registrar().IsInstalled(
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
-  EXPECT_FALSE(provider().registrar().IsInstalled(
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_3)));
 }
 
@@ -645,21 +646,23 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                           SubAppsServiceAddResultCode::kSuccessNewInstall),
             CallAdd({{unhashed_sub_app_id_2, GetURL(kSubAppPath2)}}));
 
-  EXPECT_TRUE(provider().registrar().IsInstalled(
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
-  EXPECT_TRUE(provider().registrar().IsInstalled(
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
 
   UninstallParentAppBySource(WebAppManagement::kDefault);
   // Verify that parent app and sub_apps are still installed, only
   // the default install source is removed from the parent app.
-  EXPECT_TRUE(provider().registrar().IsInstalled(parent_app_id_));
-  EXPECT_FALSE(
-      provider().registrar().GetAppById(parent_app_id_)->IsPreinstalledApp());
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(parent_app_id_));
+  EXPECT_FALSE(provider()
+                   .registrar_unsafe()
+                   .GetAppById(parent_app_id_)
+                   ->IsPreinstalledApp());
 
-  EXPECT_TRUE(provider().registrar().IsInstalled(
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_1)));
-  EXPECT_TRUE(provider().registrar().IsInstalled(
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id_2)));
 }
 
@@ -679,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
                           SubAppsServiceAddResultCode::kSuccessNewInstall),
             CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
   EXPECT_EQ(DisplayMode::kStandalone,
-            provider().registrar().GetAppEffectiveDisplayMode(
+            provider().registrar_unsafe().GetAppEffectiveDisplayMode(
                 GenerateAppIdFromUnhashed(unhashed_sub_app_id)));
 
   GURL kSubAppWithMinialUiUrl = GetURL(kSubAppPathMinimalUi);
@@ -689,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
                     SubAppsServiceAddResultCode::kSuccessAlreadyInstalled),
       CallAdd({{unhashed_sub_app_id, kSubAppWithMinialUiUrl}}));
   EXPECT_EQ(DisplayMode::kStandalone,
-            provider().registrar().GetAppEffectiveDisplayMode(
+            provider().registrar_unsafe().GetAppEffectiveDisplayMode(
                 GenerateAppIdFromUnhashed(unhashed_sub_app_id)));
 }
 
@@ -716,12 +719,12 @@ IN_PROC_BROWSER_TEST_F(
                           SubAppsServiceAddResultCode::kSuccessNewInstall),
             CallAdd({{unhashed_sub_app_id, GetURL(kSubAppPath)}}));
 
-  EXPECT_TRUE(provider().registrar().IsInstalled(
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id)));
 
   // Add standalone app as sub-app.
   const WebApp* standalone_app =
-      provider().registrar().GetAppById(standalone_app_id);
+      provider().registrar_unsafe().GetAppById(standalone_app_id);
   EXPECT_EQ(AddResultMojo(unhashed_standalone_app_id,
                           SubAppsServiceAddResultCode::kSuccessNewInstall),
             CallAdd({{unhashed_standalone_app_id, GetURL(kSubAppPath2)}}));
@@ -735,11 +738,11 @@ IN_PROC_BROWSER_TEST_F(
   UninstallParentApp();
 
   // Verify that normal sub-app is uninstalled.
-  EXPECT_FALSE(provider().registrar().IsInstalled(
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(
       GenerateAppIdFromUnhashed(unhashed_sub_app_id)));
 
   // Verify that previous standalone is still installed.
-  EXPECT_TRUE(provider().registrar().IsInstalled(standalone_app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(standalone_app_id));
 
   // Verify that there are no apps registered as parent app's sub apps.
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
@@ -853,11 +856,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
                           SubAppsServiceAddResultCode::kSuccessNewInstall),
             CallAdd({{unhashed_app_id, GetURL(kSubAppPath)}}));
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
-  EXPECT_TRUE(provider().registrar().IsInstalled(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
 
   EXPECT_EQ(SubAppsServiceResult::kSuccess, CallRemove(unhashed_app_id));
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
-  EXPECT_FALSE(provider().registrar().IsInstalled(app_id));
+  EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
 }
 
 // Remove fails for a regular installed app.

@@ -193,7 +193,7 @@ std::unique_ptr<AppBrowserController> CreateWebAppBrowserController(
   const bool has_tab_strip =
       !browser->is_type_app_popup() &&
       (should_have_tab_strip_for_swa ||
-       provider->registrar().IsTabbedWindowModeEnabled(app_id));
+       provider->registrar_unsafe().IsTabbedWindowModeEnabled(app_id));
   return std::make_unique<WebAppBrowserController>(*provider, browser, app_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                                                    system_app,
@@ -227,7 +227,7 @@ absl::optional<AppId> GetWebAppForActiveTab(Browser* browser) {
   if (!web_contents)
     return absl::nullopt;
 
-  return provider->registrar().FindInstalledAppWithUrlInScope(
+  return provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
       web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
 
@@ -271,7 +271,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   // disabled if the previous page was outside scope. Packaged apps are not
   // affected.
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
-  WebAppRegistrar& registrar = provider->registrar();
+  WebAppRegistrar& registrar = provider->registrar_unsafe();
   const WebApp* web_app = registrar.GetAppById(app_id);
   if (!web_app)
     return nullptr;
@@ -360,7 +360,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
   const AppId app_id = GetAppIdFromApplicationName(browser->app_name());
   auto* const provider =
       WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
-  if (provider && provider->registrar().IsInstalled(app_id)) {
+  if (provider && provider->registrar_unsafe().IsInstalled(app_id)) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (profiles::IsKioskSession() &&
         base::FeatureList::IsEnabled(features::kKioskEnableAppService)) {
@@ -381,7 +381,8 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
 
 void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id) {
   WebAppRegistrar& registrar =
-      WebAppProvider::GetForLocalAppsUnchecked(browser->profile())->registrar();
+      WebAppProvider::GetForLocalAppsUnchecked(browser->profile())
+          ->registrar_unsafe();
   absl::optional<GURL> pinned_home_tab_url =
       registrar.GetAppPinnedHomeTabUrl(app_id);
 
@@ -447,7 +448,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
                                                 NavigateParams& nav_params) {
   WebAppRegistrar& registrar =
       WebAppProvider::GetForLocalAppsUnchecked(nav_params.browser->profile())
-          ->registrar();
+          ->registrar_unsafe();
 
   if (IsPinnedHomeTabUrl(registrar, app_id, nav_params.url)) {
     // Navigations to the home tab URL in tabbed apps should happen in the home
@@ -526,12 +527,12 @@ void RecordAppWindowLaunchMetric(Profile* profile,
   if (!provider)
     return;
 
-  const WebApp* web_app = provider->registrar().GetAppById(app_id);
+  const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id);
   if (!web_app)
     return;
 
   DisplayMode display =
-      provider->registrar().GetEffectiveDisplayModeFromManifest(app_id);
+      provider->registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id);
   if (display != DisplayMode::kUndefined) {
     DCHECK_LT(DisplayMode::kUndefined, display);
     DCHECK_LE(display, DisplayMode::kMaxValue);

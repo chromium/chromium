@@ -27,7 +27,7 @@ class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
   WebAppRegistrar& registrar() {
     auto* provider = WebAppProvider::GetForTest(profile());
     CHECK(provider);
-    return provider->registrar();
+    return provider->registrar_unsafe();
   }
 
   void ScheduleCurrentProfileForDeletion() {

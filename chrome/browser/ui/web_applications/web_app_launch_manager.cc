@@ -48,9 +48,9 @@ content::WebContents* WebAppLaunchManager::OpenApplication(
   WebAppProvider* provider =
       WebAppProvider::GetForLocalAppsUnchecked(profile_.get());
   DCHECK(provider);
-  return WebAppLaunchProcess::CreateAndRun(*profile_, provider->registrar(),
-                                           provider->os_integration_manager(),
-                                           params);
+  return WebAppLaunchProcess::CreateAndRun(
+      *profile_, provider->registrar_unsafe(),
+      provider->os_integration_manager(), params);
 }
 
 void WebAppLaunchManager::LaunchApplication(
@@ -130,9 +130,9 @@ void WebAppLaunchManager::LaunchWebApplication(
         callback) {
   apps::LaunchContainer container;
   Browser* browser = nullptr;
-  if (provider_->registrar().IsInstalled(params.app_id)) {
-    if (provider_->registrar().GetAppEffectiveDisplayMode(params.app_id) ==
-        blink::mojom::DisplayMode::kBrowser) {
+  if (provider_->registrar_unsafe().IsInstalled(params.app_id)) {
+    if (provider_->registrar_unsafe().GetAppEffectiveDisplayMode(
+            params.app_id) == blink::mojom::DisplayMode::kBrowser) {
       params.container = apps::LaunchContainer::kLaunchContainerTab;
       params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     }

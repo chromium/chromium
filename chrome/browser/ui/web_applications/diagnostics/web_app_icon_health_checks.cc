@@ -48,7 +48,7 @@ void WebAppIconHealthChecks::RunDiagnostics() {
 
   install_manager_observation_.Observe(&provider->install_manager());
 
-  std::vector<AppId> app_ids = provider->registrar().GetAppIds();
+  std::vector<AppId> app_ids = provider->registrar_unsafe().GetAppIds();
   run_complete_callback_ = base::BarrierClosure(
       app_ids.size(),
       base::BindOnce(&WebAppIconHealthChecks::RecordDiagnosticResults,

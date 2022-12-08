@@ -94,16 +94,19 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, ColorSchemeDarkSet) {
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kWebAppManifestUserPreferences, 1);
 
-  EXPECT_EQ(provider().registrar().GetAppThemeColor(app_id).value(),
+  EXPECT_EQ(provider().registrar_unsafe().GetAppThemeColor(app_id).value(),
             SK_ColorBLUE);
-  EXPECT_EQ(provider().registrar().GetAppBackgroundColor(app_id).value(),
+  EXPECT_EQ(provider().registrar_unsafe().GetAppBackgroundColor(app_id).value(),
             SK_ColorBLUE);
 
-  EXPECT_EQ(provider().registrar().GetAppDarkModeThemeColor(app_id).value(),
-            SK_ColorRED);
   EXPECT_EQ(
-      provider().registrar().GetAppDarkModeBackgroundColor(app_id).value(),
+      provider().registrar_unsafe().GetAppDarkModeThemeColor(app_id).value(),
       SK_ColorRED);
+  EXPECT_EQ(provider()
+                .registrar_unsafe()
+                .GetAppDarkModeBackgroundColor(app_id)
+                .value(),
+            SK_ColorRED);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, NoUserPreferences) {
@@ -222,11 +225,13 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeOriginTrialBrowserTest, OriginTrial) {
 
   // Origin trial should grant the app access.
   WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
-  EXPECT_EQ(provider.registrar().GetAppById(app_id)->dark_mode_theme_color(),
-            SK_ColorRED);
   EXPECT_EQ(
-      provider.registrar().GetAppById(app_id)->dark_mode_background_color(),
+      provider.registrar_unsafe().GetAppById(app_id)->dark_mode_theme_color(),
       SK_ColorRED);
+  EXPECT_EQ(provider.registrar_unsafe()
+                .GetAppById(app_id)
+                ->dark_mode_background_color(),
+            SK_ColorRED);
 
   // Open the page again with the token missing.
   {
@@ -240,11 +245,13 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeOriginTrialBrowserTest, OriginTrial) {
 
   // The app should update to no longer have dark mode colors defined without
   // the origin trial.
-  EXPECT_EQ(provider.registrar().GetAppById(app_id)->dark_mode_theme_color(),
-            absl::nullopt);
   EXPECT_EQ(
-      provider.registrar().GetAppById(app_id)->dark_mode_background_color(),
+      provider.registrar_unsafe().GetAppById(app_id)->dark_mode_theme_color(),
       absl::nullopt);
+  EXPECT_EQ(provider.registrar_unsafe()
+                .GetAppById(app_id)
+                ->dark_mode_background_color(),
+            absl::nullopt);
 }
 
 }  // namespace web_app

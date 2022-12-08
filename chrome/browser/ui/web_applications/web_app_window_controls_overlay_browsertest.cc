@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(WebAppWindowControlsOverlayBrowserTest,
       /*await_metric=*/true);
 
   std::vector<DisplayMode> display_mode_override =
-      provider().registrar().GetAppDisplayModeOverride(app_id);
+      provider().registrar_unsafe().GetAppDisplayModeOverride(app_id);
 
   ASSERT_EQ(1u, display_mode_override.size());
 
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(WebAppWindowControlsOverlayBrowserTest,
                      /*await_metric=*/false);
 
   std::vector<DisplayMode> display_mode_override =
-      provider().registrar().GetAppDisplayModeOverride(app_id);
+      provider().registrar_unsafe().GetAppDisplayModeOverride(app_id);
 
   ASSERT_EQ(0u, display_mode_override.size());
 

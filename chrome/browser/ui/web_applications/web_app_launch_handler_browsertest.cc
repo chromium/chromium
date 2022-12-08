@@ -84,7 +84,7 @@ class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
   }
 
   const WebApp* GetWebApp(const AppId& app_id) {
-    return WebAppProvider::GetForTest(profile())->registrar().GetAppById(
+    return WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppById(
         app_id);
   }
 
@@ -620,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
 
   // Origin trial should grant the app access.
   WebAppProvider& provider = *WebAppProvider::GetForTest(browser()->profile());
-  EXPECT_EQ(provider.registrar().GetAppById(app_id)->launch_handler(),
+  EXPECT_EQ(provider.registrar_unsafe().GetAppById(app_id)->launch_handler(),
             (LaunchHandler{ClientMode::kFocusExisting}));
 
   // Open the page again with the token missing.
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerOriginTrialBrowserTest, OriginTrial) {
 
   // The app should update to no longer have launch_handler defined without the
   // origin trial.
-  EXPECT_EQ(provider.registrar().GetAppById(app_id)->launch_handler(),
+  EXPECT_EQ(provider.registrar_unsafe().GetAppById(app_id)->launch_handler(),
             absl::nullopt);
 }
 

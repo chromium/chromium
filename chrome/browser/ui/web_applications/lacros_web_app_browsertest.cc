@@ -63,7 +63,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, AppInfo) {
   const GURL app_url =
       https_server()->GetURL("/web_apps/file_handler_index.html");
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  EXPECT_EQ(provider().registrar().GetAppFileHandlers(app_id)->size(), 1U);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppFileHandlers(app_id)->size(),
+            1U);
 
   LaunchWebAppBrowser(app_id);
 
@@ -123,8 +124,9 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppBrowserTest, Shortcut) {
   const GURL app_url =
       https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
-  EXPECT_EQ(provider().registrar().GetAppShortcutsMenuItemInfos(app_id).size(),
-            6U);
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppShortcutsMenuItemInfos(app_id).size(),
+      6U);
 
   // Wait for item to exist in shelf.
   ASSERT_TRUE(browser_test_util::WaitForShelfItem(app_id, /*exists=*/true));

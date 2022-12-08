@@ -145,7 +145,7 @@ void WebAppMetrics::OnEngagementEvent(
   // No HostedAppBrowserController if app is running as a tab in common browser.
   const bool in_window = !!browser->app_controller();
   const bool user_installed = WebAppProvider::GetForLocalAppsUnchecked(profile_)
-                                  ->registrar()
+                                  ->registrar_unsafe()
                                   .WasInstalledByUser(*app_id);
 
   // Record all web apps:
@@ -319,7 +319,8 @@ void WebAppMetrics::CountUserInstalledApps() {
 
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile_);
 
-  num_user_installed_apps_ = provider->registrar().CountUserInstalledApps();
+  num_user_installed_apps_ =
+      provider->registrar_unsafe().CountUserInstalledApps();
   DCHECK_NE(kNumUserInstalledAppsNotCounted, num_user_installed_apps_);
   DCHECK_GE(num_user_installed_apps_, 0);
 }
@@ -340,16 +341,16 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
   DailyInteraction features;
 
   const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
-  if (app_id && provider->registrar().IsLocallyInstalled(*app_id)) {
+  if (app_id && provider->registrar_unsafe().IsLocallyInstalled(*app_id)) {
     // App is installed
-    features.start_url = provider->registrar().GetAppStartUrl(*app_id);
+    features.start_url = provider->registrar_unsafe().GetAppStartUrl(*app_id);
     features.installed = true;
     auto install_source =
-        provider->registrar().GetAppInstallSourceForMetrics(*app_id);
+        provider->registrar_unsafe().GetAppInstallSourceForMetrics(*app_id);
     if (install_source)
       features.install_source = static_cast<int>(*install_source);
     DisplayMode display_mode =
-        provider->registrar().GetAppEffectiveDisplayMode(*app_id);
+        provider->registrar_unsafe().GetAppEffectiveDisplayMode(*app_id);
     features.effective_display_mode = static_cast<int>(display_mode);
     // AppBannerManager treats already-installed web-apps as non-promotable, so
     // include already-installed findings as promotable.

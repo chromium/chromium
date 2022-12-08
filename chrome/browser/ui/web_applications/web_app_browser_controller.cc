@@ -459,8 +459,8 @@ std::u16string WebAppBrowserController::GetTitle() const {
 
   std::u16string raw_title = AppBrowserController::GetTitle();
 
-  std::u16string app_name =
-      base::UTF8ToUTF16(provider_->registrar().GetAppShortName(app_id()));
+  std::u16string app_name = base::UTF8ToUTF16(
+      provider_->registrar_unsafe().GetAppShortName(app_id()));
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
   }
@@ -521,7 +521,7 @@ void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
 }
 
 const WebAppRegistrar& WebAppBrowserController::registrar() const {
-  return provider_->registrar();
+  return provider_->registrar_unsafe();
 }
 
 const WebAppInstallManager& WebAppBrowserController::install_manager() const {
