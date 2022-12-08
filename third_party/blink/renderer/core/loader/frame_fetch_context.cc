@@ -516,6 +516,19 @@ void FrameFetchContext::PrepareRequest(
 
     recordreplay::OnNetworkRequest(request_id.Utf8().c_str(), "http", bookmark);
     recordreplay::BrowserEvent("Network.PrepareRequest", dict);
+
+    // Check the request body for request data or stream.
+    const scoped_refptr<blink::EncodedFormData>& form_body =
+      request.MutableBody().FormBody();
+    if (form_body) {
+      WTF::String data = form_body->FlattenToString();
+      base::DictionaryValue requestDataDict;
+      requestDataDict.SetString("requestId", request_id.Utf8());
+      std::string dataStr = data.Utf8();
+      requestDataDict.SetString("data", dataStr);
+      requestDataDict.SetInteger("dataLength", dataStr.size());
+      recordreplay::BrowserEvent("Network.RequestData.Form", requestDataDict);
+    }
   }
 
   probe::PrepareRequest(Probe(), document_loader_, request, options,
