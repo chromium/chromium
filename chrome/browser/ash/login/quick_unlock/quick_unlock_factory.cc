@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 
+#include "base/no_destructor.h"
+#include "chrome/browser/ash/login/quick_unlock/auth_token.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -43,6 +46,49 @@ QuickUnlockStorage* QuickUnlockFactory::GetForAccountId(
 // static
 QuickUnlockFactory* QuickUnlockFactory::GetInstance() {
   return base::Singleton<QuickUnlockFactory>::get();
+}
+
+ash::auth::QuickUnlockStorageDelegate& QuickUnlockFactory::GetDelegate() {
+  class Delegate : public auth::QuickUnlockStorageDelegate {
+    UserContext* GetUserContext(const ::user_manager::User* user,
+                                const std::string& token) override {
+      if (!user) {
+        LOG(ERROR) << "Invalid user";
+        return nullptr;
+      }
+      QuickUnlockStorage* storage = GetForUser(user);
+      if (!storage) {
+        LOG(ERROR) << "User does not have a QuickUnlockStorage";
+        return nullptr;
+      }
+      return storage->GetUserContext(token);
+    }
+
+    void SetUserContext(const ::user_manager::User* user,
+                        std::unique_ptr<UserContext> context) override {
+      if (!user) {
+        LOG(ERROR) << "Invalid user";
+        return;
+      }
+      QuickUnlockStorage* storage =
+          quick_unlock::QuickUnlockFactory::GetForUser(user);
+      if (!user) {
+        LOG(ERROR) << "User does not have a QuickUnlockStorage";
+        return;
+      }
+      quick_unlock::AuthToken* auth_token = storage->GetAuthToken();
+      if (auth_token == nullptr || auth_token->user_context() == nullptr) {
+        // If this happens, it means that the auth token expired. In this case,
+        // the user needs to reauthenticate, and a new context will be created.
+        return;
+      }
+
+      auth_token->ReplaceUserContext(std::move(context));
+    }
+  };
+
+  static base::NoDestructor<Delegate> delegate;
+  return *delegate;
 }
 
 QuickUnlockFactory::QuickUnlockFactory()

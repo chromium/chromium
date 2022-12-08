@@ -12,13 +12,16 @@ static_library("auth_factor_config") {
     "auth_factor_config.h",
     "in_process_instances.cc",
     "in_process_instances.h",
+    "quick_unlock_storage_delegate.h",
     "recovery_factor_editor.cc",
     "recovery_factor_editor.h",
   ]
 
   deps = [
     "//ash/constants",
-    "//components/prefs:prefs",
+    "//chromeos/ash/components/login/auth",
+    "//components/prefs",
+    "//components/user_manager",
   ]
 
   public_deps = [

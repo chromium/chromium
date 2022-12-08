@@ -3626,6 +3626,7 @@ source_set("ash") {
     "//chromeos/ash/components/tpm",
     "//chromeos/ash/components/tpm:buildflags",
     "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/ash/services/auth_factor_config",
     "//chromeos/ash/services/bluetooth_config:in_process_bluetooth_config",
     "//chromeos/ash/services/cros_healthd/private/cpp",
     "//chromeos/ash/services/device_sync",

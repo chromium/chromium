@@ -74,7 +74,7 @@ class QuickUnlockStorage : public KeyedService {
   AuthToken* GetAuthToken();
 
   // Fetch the user context if `auth_token` is valid. May return null.
-  const UserContext* GetUserContext(const std::string& auth_token);
+  UserContext* GetUserContext(const std::string& auth_token);
 
   void ReplaceUserContext(const std::string& auth_token,
                           std::unique_ptr<UserContext>);

@@ -51,7 +51,9 @@ void CryptohomeRecoverySetupScreen::ShowImpl() {
   CHECK(context()->extra_factors_auth_session);
   const std::string token = quick_unlock_storage->CreateAuthToken(
       *context()->extra_factors_auth_session);
-  auth::GetRecoveryFactorEditor().Configure(
+  auto& recovery_editor = auth::GetRecoveryFactorEditor(
+      quick_unlock::QuickUnlockFactory::GetDelegate());
+  recovery_editor.Configure(
       token, /*enabled=*/true,
       base::BindOnce(&CryptohomeRecoverySetupScreen::OnRecoveryConfigured,
                      weak_ptr_factory_.GetWeakPtr()));

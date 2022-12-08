@@ -15,6 +15,7 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
@@ -229,12 +230,14 @@ void OSSettingsUI::BindInterface(
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver) {
-  auth::BindToAuthFactorConfig(std::move(receiver));
+  auth::BindToAuthFactorConfig(std::move(receiver),
+                               quick_unlock::QuickUnlockFactory::GetDelegate());
 }
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<auth::mojom::RecoveryFactorEditor> receiver) {
-  auth::BindToRecoveryFactorEditor(std::move(receiver));
+  auth::BindToRecoveryFactorEditor(
+      std::move(receiver), quick_unlock::QuickUnlockFactory::GetDelegate());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)

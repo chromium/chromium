@@ -10,8 +10,10 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screen_manager.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/wizard_controller_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -54,16 +56,23 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
     context->defer_oobe_flow_finished_for_tests = true;
     login_manager_mixin_.LoginAsNewRegularUser();
     WizardControllerExitWaiter(UserCreationView::kScreenId).Wait();
-    // Wait for the recovery screen and copy the auth session configuration
-    // before the context is cleared.
+    // Wait for the recovery screen and copy the user context before it is
+    // cleared.
     WaitForScreenExit();
-    auto configuration =
-        context->extra_factors_auth_session->GetAuthFactorsConfiguration();
+    auto user_context =
+        std::make_unique<UserContext>(*context->extra_factors_auth_session);
+    cryptohome_.MarkUserAsExisting(user_context->GetAccountId());
     ContinueScreenExit();
+    // Wait until the OOBE flow finishes before we set new values on the wizard
+    // context.
+    OobeScreenExitWaiter(UserCreationView::kScreenId).Wait();
+
     // Set the values on the wizard context: the `extra_factors_auth_session`
-    // should be available for the test.
-    auto user_context = std::make_unique<UserContext>();
-    user_context->SetAuthFactorsConfiguration(configuration);
+    // is available after the previous screens have run regularly, and it holds
+    // an authenticated auth session.
+    user_context->ResetAuthSessionId();
+    user_context->SetAuthSessionId(cryptohome_.AddSession(
+        user_context->GetAccountId(), /*authenticated=*/true));
     context->extra_factors_auth_session = std::move(user_context);
     context->skip_post_login_screens_for_tests = false;
     // Clear the test state.
@@ -97,11 +106,14 @@ class CryptohomeRecoverySetupScreenTest : public OobeBaseTest {
   }
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  CryptohomeMixin cryptohome_{&mixin_host_};
   absl::optional<CryptohomeRecoverySetupScreen::Result> result_;
 
  private:
   void HandleScreenExit(CryptohomeRecoverySetupScreen::Result result) {
     result_ = result;
+    if (screen_exit_callback_)
+      std::move(screen_exit_callback_).Run();
   }
 
   base::test::ScopedFeatureList feature_list_;

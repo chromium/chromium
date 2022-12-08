@@ -6,28 +6,31 @@
 #define CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_IN_PROCESS_INSTANCES_H_
 
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
+#include "chromeos/ash/services/auth_factor_config/quick_unlock_storage_delegate.h"
 #include "chromeos/ash/services/auth_factor_config/recovery_factor_editor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 // This file contains functions to bind mojo clients for the auth factor config
 // related services to server implementations. The server implementations are
 // singletons defined in the .cc file.
+//
+// Until the QuickUnlockPrivate API is removed, the mojo services provided here
+// need to interact nicely with QuickUnlockPrivate internals. Because of DEPS
+// issues, a delegate to these internals must be provided whenever one of the
+// global mojo service instances is accessed.
 
 namespace ash::auth {
 
-namespace mojom {
-class AuthFactorConfigAsyncWaiter;
-class RecoveryFactorEditorAsyncWaiter;
-}  // namespace mojom
-
 void BindToAuthFactorConfig(
-    mojo::PendingReceiver<mojom::AuthFactorConfig> receiver);
-mojom::AuthFactorConfigAsyncWaiter GetAuthFactorConfigForTesting();
+    mojo::PendingReceiver<mojom::AuthFactorConfig> receiver,
+    QuickUnlockStorageDelegate&);
+mojom::AuthFactorConfig& GetAuthFactorConfig(QuickUnlockStorageDelegate&);
 
 void BindToRecoveryFactorEditor(
-    mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver);
-mojom::RecoveryFactorEditorAsyncWaiter GetRecoveryFactorEditorForTesting();
-mojom::RecoveryFactorEditor& GetRecoveryFactorEditor();
+    mojo::PendingReceiver<mojom::RecoveryFactorEditor> receiver,
+    QuickUnlockStorageDelegate&);
+mojom::RecoveryFactorEditor& GetRecoveryFactorEditor(
+    QuickUnlockStorageDelegate&);
 
 }  // namespace ash::auth
 

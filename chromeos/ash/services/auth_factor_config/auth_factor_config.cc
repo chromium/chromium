@@ -6,11 +6,15 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
 
-AuthFactorConfig::AuthFactorConfig() = default;
+AuthFactorConfig::AuthFactorConfig(
+    QuickUnlockStorageDelegate* quick_unlock_storage)
+    : quick_unlock_storage_(quick_unlock_storage) {
+  DCHECK(quick_unlock_storage_);
+}
 
 AuthFactorConfig::~AuthFactorConfig() = default;
 
@@ -44,15 +48,27 @@ void AuthFactorConfig::IsSupported(const std::string& auth_token,
 void AuthFactorConfig::IsConfigured(const std::string& auth_token,
                                     mojom::AuthFactor factor,
                                     base::OnceCallback<void(bool)> callback) {
-  if (!features::IsCryptohomeRecoverySetupEnabled()) {
-    // Log always, crash on debug builds.
-    LOG(ERROR) << "AuthFactorConfig::IsConfigured is a fake";
+  DCHECK(features::IsCryptohomeRecoverySetupEnabled());
+
+  if (factor != mojom::AuthFactor::kRecovery) {
+    LOG(ERROR) << "AuthFactorConfig::IsConfigured supports recovery only";
     NOTIMPLEMENTED();
     std::move(callback).Run(false);
     return;
   }
 
-  std::move(callback).Run(recovery_configured_);
+  const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
+  auto* user_context = quick_unlock_storage_->GetUserContext(user, auth_token);
+  if (!user_context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const auto& config = user_context->GetAuthFactorsConfiguration();
+  const bool is_configured =
+      config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
+  std::move(callback).Run(is_configured);
 }
 
 void AuthFactorConfig::GetManagementType(

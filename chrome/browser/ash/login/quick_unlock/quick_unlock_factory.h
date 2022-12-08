@@ -7,6 +7,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/services/auth_factor_config/quick_unlock_storage_delegate.h"
 #include "components/account_id/account_id.h"
 
 class Profile;
@@ -38,6 +39,9 @@ class QuickUnlockFactory : public ProfileKeyedServiceFactory {
   static QuickUnlockStorage* GetForAccountId(const AccountId& account_id);
 
   static QuickUnlockFactory* GetInstance();
+
+  // Returns a delegate to QuickUnlockStorage.
+  static ash::auth::QuickUnlockStorageDelegate& GetDelegate();
 
   QuickUnlockFactory(const QuickUnlockFactory&) = delete;
   QuickUnlockFactory& operator=(const QuickUnlockFactory&) = delete;

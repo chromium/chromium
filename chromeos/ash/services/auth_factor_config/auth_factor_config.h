@@ -6,22 +6,19 @@
 #define CHROMEOS_ASH_SERVICES_AUTH_FACTOR_CONFIG_AUTH_FACTOR_CONFIG_H_
 
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
+#include "chromeos/ash/services/auth_factor_config/quick_unlock_storage_delegate.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
-class PrefRegistrySimple;
+#include "components/prefs/pref_registry_simple.h"
+#include "components/user_manager/user.h"
 
 namespace ash::auth {
 
 // The implementation of the AuthFactorConfig service.
-// TODO(crbug.com/1327627): This will eventually communicate with cryptohome,
-// but it is currently a fake and only maintains a boolean corresponding to the
-// current state. No changes are sent to cryptohome. The fake reports that
-// cryptohome recovery is supported only if the CryptohomeRecoverySetup feature
-// flag is enabled.
 class AuthFactorConfig : public mojom::AuthFactorConfig {
  public:
-  AuthFactorConfig();
+  explicit AuthFactorConfig(QuickUnlockStorageDelegate*);
   ~AuthFactorConfig() override;
 
   AuthFactorConfig(const AuthFactorConfig&) = delete;
@@ -47,13 +44,12 @@ class AuthFactorConfig : public mojom::AuthFactorConfig {
                   mojom::AuthFactor factor,
                   base::OnceCallback<void(bool)>) override;
 
- private:
-  friend class RecoveryFactorEditor;
-
+  // Reload auth factor data from cryptohome and notify factor change
+  // observers of the change.
   void NotifyFactorObservers(mojom::AuthFactor changed_factor);
 
-  bool recovery_configured_ = false;
-
+ private:
+  raw_ptr<QuickUnlockStorageDelegate> quick_unlock_storage_;
   mojo::ReceiverSet<mojom::AuthFactorConfig> receivers_;
   mojo::RemoteSet<mojom::FactorObserver> observers_;
 };
