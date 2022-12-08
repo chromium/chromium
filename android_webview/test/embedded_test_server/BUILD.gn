@@ -37,7 +37,10 @@ source_set("aw_java_test_native_support") {
     "aw_embedded_test_server.cc",
     "aw_test_entry_point.cc",
   ]
-  deps = [ "//net:test_support" ]
+  deps = [
+    "//net:test_support",
+    "//services/network/public/cpp",
+  ]
   public_deps = [
     ":aw_net_jni_headers",
     "//net:net_test_jni_headers",

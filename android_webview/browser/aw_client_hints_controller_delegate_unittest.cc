@@ -96,19 +96,17 @@ TEST_F(AwClientHintsControllerDelegateTest, GetAllowedClientHintsFromSource) {
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, IsJavaScriptAllowed) {
-  EXPECT_FALSE(client_hints_controller_delegate_->IsJavaScriptAllowed(GURL(""),
-                                                                      nullptr));
-  EXPECT_FALSE(client_hints_controller_delegate_->IsJavaScriptAllowed(
+  EXPECT_TRUE(client_hints_controller_delegate_->IsJavaScriptAllowed(GURL(""),
+                                                                     nullptr));
+  EXPECT_TRUE(client_hints_controller_delegate_->IsJavaScriptAllowed(
       GURL("https://example.com/"), nullptr));
-  // TODO(crbug.com/921655): Add integration test when the rest is implemented.
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, AreThirdPartyCookiesBlocked) {
-  EXPECT_TRUE(client_hints_controller_delegate_->AreThirdPartyCookiesBlocked(
+  EXPECT_FALSE(client_hints_controller_delegate_->AreThirdPartyCookiesBlocked(
       GURL(""), nullptr));
-  EXPECT_TRUE(client_hints_controller_delegate_->AreThirdPartyCookiesBlocked(
+  EXPECT_FALSE(client_hints_controller_delegate_->AreThirdPartyCookiesBlocked(
       GURL("https://example.com"), nullptr));
-  // TODO(crbug.com/921655): Add integration test when the rest is implemented.
 }
 
 TEST_F(AwClientHintsControllerDelegateTest, GetUserAgentMetadata) {
@@ -133,15 +131,6 @@ TEST_F(AwClientHintsControllerDelegateTest, PersistClientHints) {
       {network::mojom::WebClientHintsType::kDeviceMemory});
   permissive_client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
       url::Origin::Create(GURL("http://example.com")), &enabled_hints);
-  EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
-
-  // Delegate that bans JavaScript can't persist hints.
-  enabled_hints = blink::EnabledClientHints();
-  client_hints_controller_delegate_->PersistClientHints(
-      url::Origin::Create(GURL("https://example.com")), nullptr,
-      {network::mojom::WebClientHintsType::kDeviceMemory});
-  client_hints_controller_delegate_->GetAllowedClientHintsFromSource(
-      url::Origin::Create(GURL("https://example.com")), &enabled_hints);
   EXPECT_TRUE(enabled_hints.GetEnabledHints().empty());
 
   // Persisting hints for one origin doesnt affect others.

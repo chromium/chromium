@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.ServerCertificate;
 
 /** A simple file server for java android webview tests which extends
  *  from class EmbeddedTestServer. It is able to add custom handlers
@@ -44,5 +45,21 @@ public class AwEmbeddedTestServer extends EmbeddedTestServer {
      */
     public static AwEmbeddedTestServer createAndStartServer(Context context) {
         return initializeAndStartServer(new AwEmbeddedTestServer(), context, 0 /* port */);
+    }
+
+    /**
+     * Create and initialize an HTTPS server with the default and custom handlers.
+     *
+     *  This handles native object initialization, server configuration, and server initialization.
+     *  On returning, the server is ready for use.
+     *
+     *  @param context The context in which the server will run.
+     *  @param serverCertificate The certificate option that the server will use.
+     *  @return The created server.
+     */
+    public static AwEmbeddedTestServer createAndStartHTTPSServer(
+            Context context, @ServerCertificate int serverCertificate) {
+        return initializeAndStartHTTPSServer(
+                new AwEmbeddedTestServer(), context, serverCertificate, 0 /* port */);
     }
 }
