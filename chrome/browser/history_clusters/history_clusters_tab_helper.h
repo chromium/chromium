@@ -36,7 +36,9 @@ class HistoryClustersTabHelper
   // Called by `HistoryTabHelper` right after submitting a new navigation for
   // `web_contents()` to HistoryService. We need close coordination with
   // History's conception of the visit lifetime.
-  void OnUpdatedHistoryForNavigation(int64_t navigation_id, const GURL& url);
+  void OnUpdatedHistoryForNavigation(int64_t navigation_id,
+                                     base::Time timestamp,
+                                     const GURL& url);
 
   // Invoked for navigations that are tracked by UKM. Specifically, same-app
   // navigations aren't tracked individually in UKM and therefore won't receive

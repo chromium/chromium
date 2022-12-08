@@ -357,8 +357,9 @@ void HistoryTabHelper::DidFinishNavigation(
   // the WebContents' URL getter does.
   NavigationEntry* last_committed =
       web_contents()->GetController().GetLastCommittedEntry();
+  base::Time timestamp = last_committed->GetTimestamp();
   history::HistoryAddPageArgs add_page_args = CreateHistoryAddPageArgs(
-      web_contents()->GetLastCommittedURL(), last_committed->GetTimestamp(),
+      web_contents()->GetLastCommittedURL(), timestamp,
       last_committed->GetUniqueID(), navigation_handle);
 
   if (!IsEligibleTab(add_page_args))
@@ -369,7 +370,7 @@ void HistoryTabHelper::DidFinishNavigation(
   if (HistoryClustersTabHelper* clusters_tab_helper =
           HistoryClustersTabHelper::FromWebContents(web_contents())) {
     clusters_tab_helper->OnUpdatedHistoryForNavigation(
-        navigation_handle->GetNavigationId(), add_page_args.url);
+        navigation_handle->GetNavigationId(), timestamp, add_page_args.url);
   }
 }
 

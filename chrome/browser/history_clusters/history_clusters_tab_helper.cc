@@ -60,10 +60,8 @@ class GetMostRecentVisitsToUrl : public history::HistoryDBTask {
   }
 
   void DoneRunOnMainThread() override {
-    if (!visits_.empty()) {
-      DCHECK_LE(visits_.size(), 2u);
-      std::move(callback_).Run(url_row_, visits_);
-    }
+    DCHECK_LE(visits_.size(), 2u);
+    std::move(callback_).Run(url_row_, visits_);
   }
 
  private:
@@ -158,6 +156,7 @@ void HistoryClustersTabHelper::OnOmniboxUrlShared() {
 
 void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
     int64_t navigation_id,
+    base::Time timestamp,
     const GURL& url) {
   auto* history_clusters_service = GetHistoryClustersService();
   if (!history_clusters_service)
@@ -174,7 +173,7 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
       .is_existing_bookmark = IsPageBookmarked(web_contents(), url);
 
   if (auto* history_service = GetHistoryService()) {
-    // This `GetMostRecentVisitsToUrl` task will find at least 1 visit since
+    // This `GetMostRecentVisitsToUrl` task should find at least 1 visit since
     // `HistoryTabHelper::UpdateHistoryForNavigation()`, invoked prior to
     // `OnUpdatedHistoryForNavigation()`, will have posted a task to add the
     // visit associated to `incomplete_visit_context_annotations`.
@@ -186,15 +185,36 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
                 [](HistoryClustersTabHelper* history_clusters_tab_helper,
                    history_clusters::HistoryClustersService*
                        history_clusters_service,
-                   int64_t navigation_id,
+                   int64_t navigation_id, base::Time timestamp,
                    history_clusters::IncompleteVisitContextAnnotations&
                        incomplete_visit_context_annotations,
                    history::URLRow url_row, history::VisitVector visits) {
                   DCHECK(history_clusters_tab_helper);
                   DCHECK(history_clusters_service);
+                  // This can happen for navigations that don't result in a
+                  // visit being added to the DB, e.g. navigations to
+                  // "chrome://" URLs.
+                  if (visits.empty()) {
+                    return;
+                  }
                   DCHECK(url_row.id());
                   DCHECK(visits[0].visit_id);
                   DCHECK_EQ(url_row.id(), visits[0].url_id);
+                  // Make sure the visit we got actually corresponds to the
+                  // navigation by comparing the timestamps.
+                  if (visits[0].visit_time != timestamp) {
+                    return;
+                  }
+                  // Make sure the latest visit (the first one in the array) is
+                  // a local one. That should almost always be the case, since
+                  // this gets called just after a local visit happened, but in
+                  // some rare cases it might not be, e.g. if another device
+                  // sent us a visit "from the future". If this turns out to be
+                  // a problem, consider implementing a
+                  // GetMostRecent*Local*VisitsForURL().
+                  if (!visits[0].originator_cache_guid.empty()) {
+                    return;
+                  }
                   incomplete_visit_context_annotations.url_row = url_row;
                   incomplete_visit_context_annotations.visit_row = visits[0];
                   if (visits.size() > 1) {
@@ -214,7 +234,7 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
                         navigation_id);
                   }
                 },
-                this, history_clusters_service, navigation_id,
+                this, history_clusters_service, navigation_id, timestamp,
                 std::ref(incomplete_visit_context_annotations))),
         &task_tracker_);
   }

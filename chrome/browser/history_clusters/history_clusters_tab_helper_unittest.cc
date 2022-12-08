@@ -99,12 +99,15 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
     return history_clusters_service_test_api_->GetVisits();
   }
 
-  void AddToHistory(const GURL& url, int time_seconds) {
+  base::Time MakeTime(int time_seconds) {
+    return base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(time_seconds));
+  }
+
+  void AddToHistory(const GURL& url, base::Time timestamp) {
     history::HistoryAddPageArgs add_page_args;
     add_page_args.url = url;
     add_page_args.title = u"Fake Title";
-    add_page_args.time =
-        base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(time_seconds));
+    add_page_args.time = timestamp;
     history_service_->AddPage(add_page_args);
   }
 
@@ -153,8 +156,9 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
 // 2) `WebContentsDestroyed()` is invoked.
 // Then: 0 context annotations should be committed.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith0HistoryVisits) {
-  AddToHistory(GURL{"https://other.com"}, 1);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://other.com"}, MakeTime(2));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->OnOmniboxUrlCopied();
   DeleteContents();
@@ -172,8 +176,9 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith0HistoryVisits) {
 // 2) `WebContentsDestroyed()` is invoked.
 // Then: 1 context annotation should be committed.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
-  AddToHistory(GURL{"https://github.com"}, 1);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->OnOmniboxUrlCopied();
   EXPECT_EQ(GetVisits().size(), 1u);
@@ -191,6 +196,33 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
   EXPECT_TRUE(visits[0].context_annotations.omnibox_url_copied);
 }
 
+// History (w/ 1 *mismatched* visit) -> destroy
+// When:
+// 1) `OnUpdatedHistoryForNavigation()` is invoked and 1 history visit is
+//    fetched, but it doesn't match the navigation timestamp.
+// 2) `WebContentsDestroyed()` is invoked.
+// Then: 0 context annotations should be committed.
+TEST_F(HistoryClustersTabHelperTest, NavigationWith1MismatchedHistoryVisit) {
+  // One pre-existing visit to the URL exists in the DB.
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  // A new visit to the same URL happens, but this one is *not* in the DB.
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(100),
+                                         GURL{"https://github.com"});
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_);
+  helper_->OnOmniboxUrlCopied();
+  ASSERT_EQ(GetVisits().size(), 1u);
+
+  DeleteContents();
+
+  auto visits = GetVisits();
+  ASSERT_EQ(visits.size(), 1u);
+  ASSERT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
+  EXPECT_NE(visits[0].visit_row.visit_time, MakeTime(100));
+  // Since the timestamps didn't match, the visit should *not* have gotten any
+  // annotations.
+  EXPECT_FALSE(visits[0].context_annotations.omnibox_url_copied);
+}
+
 // History (w/ 2 visits) -> destroy
 // When:
 // 1) `OnUpdatedHistoryForNavigation()` is invoked and 2 history visits are
@@ -198,9 +230,10 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
 // 2) `WebContentsDestroyed()` is invoked.
 // Then: 1 context annotation should be committed.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith2HistoryVisits) {
-  AddToHistory(GURL{"https://github.com"}, 19);
-  AddToHistory(GURL{"https://github.com"}, 23);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, MakeTime(19));
+  AddToHistory(GURL{"https://github.com"}, MakeTime(23));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(23),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   auto visits = GetVisits();
   // Two visits are there but context annotations are initially unavailable.
@@ -230,8 +263,10 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith2HistoryVisits) {
 // 3) `WebContentsDestroyed()` is invoked.
 // Then: 0 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith0HistoryVisits) {
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
-  helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
+  helper_->OnUpdatedHistoryForNavigation(1, MakeTime(2),
+                                         GURL{"https://google.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   EXPECT_TRUE(GetVisits().empty());
 }
@@ -245,11 +280,12 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith0HistoryVisits) {
 // 3) `WebContentsDestroyed()` is invoked.
 // Then: 2 context annotations should be committed.
 TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
-  AddToHistory(GURL{"https://github.com"}, 1);
-  AddToHistory(GURL{"https://github.com"}, 5);
-  AddToHistory(GURL{"https://google.com"}, 10);
-  AddToHistory(GURL{"https://google.com"}, 18);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  AddToHistory(GURL{"https://github.com"}, MakeTime(5));
+  AddToHistory(GURL{"https://google.com"}, MakeTime(10));
+  AddToHistory(GURL{"https://google.com"}, MakeTime(18));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(5),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   // 4 visits are in History, but they don't have context annotations.
   auto visits = GetVisits();
@@ -267,7 +303,8 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
   EXPECT_EQ(visits[3].context_annotations.duration_since_last_visit.InSeconds(),
             -1);
 
-  helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
+  helper_->OnUpdatedHistoryForNavigation(1, MakeTime(18),
+                                         GURL{"https://google.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   visits = GetVisits();
   ASSERT_EQ(visits.size(), 4u);
@@ -302,8 +339,9 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
 //    resolved.
 // Then: 0 context annotations should be committed.
 TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfterDestroy) {
-  AddToHistory(GURL{"https://github.com"}, 1);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
   helper_->OnOmniboxUrlCopied();
   DeleteContents();
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
@@ -322,10 +360,12 @@ TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfterDestroy) {
 // 3) `WebContentsDestroyed()` is invoked.
 // Then: 2 context annotations should be committed.
 TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfter2ndNavigation) {
-  AddToHistory(GURL{"https://google.com"}, 1);
-  AddToHistory(GURL{"https://github.com"}, 2);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://google.com"});
-  helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://google.com"}, MakeTime(1));
+  AddToHistory(GURL{"https://github.com"}, MakeTime(2));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://google.com"});
+  helper_->OnUpdatedHistoryForNavigation(1, MakeTime(2),
+                                         GURL{"https://github.com"});
 
   // Bookmarked after navigation ends, but before its history request resolved.
   AddBookmark(GURL{"https://google.com"});
@@ -360,10 +400,11 @@ TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfter2ndNavigation) {
 // Then: 3 context annotations should be committed; the 1st and 3rd should have
 //       `omnibox_url_copied` true.
 TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
-  AddToHistory(GURL{"https://github.com"}, 1);
-  AddToHistory(GURL{"https://google.com"}, 2);
-  AddToHistory(GURL{"https://gmail.com"}, 3);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  AddToHistory(GURL{"https://google.com"}, MakeTime(2));
+  AddToHistory(GURL{"https://gmail.com"}, MakeTime(3));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
   helper_->OnOmniboxUrlCopied();
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   auto visits = GetVisits();
@@ -375,7 +416,8 @@ TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
   EXPECT_EQ(visits[2].url_row.url(), GURL{"https://github.com"});
   EXPECT_FALSE(visits[2].context_annotations.omnibox_url_copied);
 
-  helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
+  helper_->OnUpdatedHistoryForNavigation(1, MakeTime(2),
+                                         GURL{"https://google.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   visits = GetVisits();
   ASSERT_EQ(visits.size(), 3u);
@@ -386,7 +428,8 @@ TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
   EXPECT_EQ(visits[2].url_row.url(), GURL{"https://github.com"});
   EXPECT_TRUE(visits[2].context_annotations.omnibox_url_copied);
 
-  helper_->OnUpdatedHistoryForNavigation(2, GURL{"https://gmail.com"});
+  helper_->OnUpdatedHistoryForNavigation(2, MakeTime(3),
+                                         GURL{"https://gmail.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->OnOmniboxUrlCopied();
   visits = GetVisits();
@@ -417,8 +460,9 @@ TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
 // 4) `WebContentsDestroyed()` is invoked.
 // Then: 1 context annotations committed after step 3 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmBeforeDestroy) {
-  AddToHistory(GURL{"https://github.com"}, 1);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
   ASSERT_EQ(GetVisits().size(), 1u);
@@ -446,8 +490,9 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmBeforeDestroy) {
 // Then: 1 context annotation should be committed after step 4 w/ a
 //       `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmAfterDestroy) {
-  AddToHistory(GURL{"https://github.com"}, 1);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
 
@@ -484,9 +529,10 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmAfterDestroy) {
 //       `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        NavigationAfterUkmExpectAndWithUkmBeforeDestroy) {
-  AddToHistory(GURL{"https://github.com"}, 1);
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   ASSERT_EQ(GetVisits().size(), 1u);
   EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
@@ -513,8 +559,9 @@ TEST_F(HistoryClustersTabHelperTest,
 // `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        NavigationWithUkmBeforeDestroyAndHistoryResolvedAfterDestroy) {
-  AddToHistory(GURL{"https://github.com"}, 1);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, MakeTime(1));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(1),
+                                         GURL{"https://github.com"});
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
   AddBookmark(GURL{"https://github.com"});
   helper_->OnUkmNavigationComplete(0, base::Seconds(20),
@@ -559,9 +606,10 @@ TEST_F(HistoryClustersTabHelperTest,
 //.      should have a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        TwoNavigationsWith1stUkmBefore2ndNavigation) {
-  AddToHistory(GURL{"https://google.com"}, 1);
-  AddToHistory(GURL{"https://github.com"}, 2);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://google.com"}, MakeTime(1));
+  AddToHistory(GURL{"https://github.com"}, MakeTime(2));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(2),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
 
@@ -574,7 +622,8 @@ TEST_F(HistoryClustersTabHelperTest,
   helper_->OnUkmNavigationComplete(0, base::Seconds(20),
                                    page_load_metrics::PageEndReason::END_OTHER);
 
-  helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
+  helper_->OnUpdatedHistoryForNavigation(1, MakeTime(1),
+                                         GURL{"https://google.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
 
   DeleteContents();
@@ -601,12 +650,14 @@ TEST_F(HistoryClustersTabHelperTest,
 //.      should have a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        TwoNavigationsWith1stUkmAfter2ndNavigation) {
-  AddToHistory(GURL{"https://google.com"}, 1);
-  AddToHistory(GURL{"https://github.com"}, 2);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://google.com"}, MakeTime(1));
+  AddToHistory(GURL{"https://github.com"}, MakeTime(2));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(2),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
-  helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
+  helper_->OnUpdatedHistoryForNavigation(1, MakeTime(1),
+                                         GURL{"https://google.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   auto visits = GetVisits();
   ASSERT_EQ(visits.size(), 2u);
@@ -654,9 +705,10 @@ TEST_F(HistoryClustersTabHelperTest,
 // Then: 2 context annotations should be committed after steps 2 and 5; the 2nd
 //.      should have a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
-  AddToHistory(GURL{"https://google.com"}, 1);
-  AddToHistory(GURL{"https://github.com"}, 2);
-  helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
+  AddToHistory(GURL{"https://google.com"}, MakeTime(1));
+  AddToHistory(GURL{"https://github.com"}, MakeTime(2));
+  helper_->OnUpdatedHistoryForNavigation(0, MakeTime(2),
+                                         GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   auto visits = GetVisits();
   ASSERT_EQ(visits.size(), 2u);
@@ -672,7 +724,8 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
   helper_->TagNavigationAsExpectingUkmNavigationComplete(1);
   EXPECT_EQ(GetVisits().size(), 2u);
 
-  helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
+  helper_->OnUpdatedHistoryForNavigation(1, MakeTime(1),
+                                         GURL{"https://google.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
 
   // Invoke `OnUkmNavigationComplete()` after `WebContentsDestroyed()` is
