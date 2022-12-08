@@ -35,6 +35,7 @@ class ScenarioOSADriver(abc.ABC):
     self.script_process = None
     self.osa_script = None
     self.duration = duration
+    self.tag = ""
 
   def Launch(self):
     """Starts the driver script.
@@ -106,7 +107,7 @@ class ScenarioOSADriver(abc.ABC):
   def Summary(self):
     """Returns a dictionary describing the scenarios parameters.
     """
-    return {'name': self.name, **self._args}
+    return {'name': self.name, 'tag': self.tag, **self._args}
 
 
 class ScenarioWithBrowserOSADriver(ScenarioOSADriver):

@@ -106,6 +106,12 @@ def main():
                       dest='extra_command_line',
                       action='store')
 
+  parser.add_argument('--tag',
+                      dest='tag',
+                      default="",
+                      action='store',
+                      help='Tag to be added to metada to identify run.')
+
   args = parser.parse_args()
 
   if args.verbose:
@@ -142,6 +148,8 @@ def main():
     for scenario in IterScenarios(args.scenarios,
                                   BrowserFactory,
                                   meet_meeting_id=args.meet_meeting_id):
+
+      scenario.tag = args.tag
 
       if kasa_plug_controller:
         kasa_plug_controller.charge_to(80)
