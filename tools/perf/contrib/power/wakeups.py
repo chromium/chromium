@@ -59,7 +59,14 @@ class ContribPowerWakeups(_PowerPerfBenchmarkBase):
           config {
               name: "org.chromium.trace_event"
               chrome_config {
-                  trace_config: "{\\\"record_mode\\":\\"record-until-full\\",\\"included_categories\\":[\\"toplevel.flow\\",\\"toplevel\\"],\\"memory_dump_config\\":{}}"
+                  trace_config: "{
+                    \\"record_mode\\": \\"record-until-full\\",
+                    \\"included_categories\\": [
+                      \\"toplevel.flow\\",
+                      \\"toplevel\\"
+                    ],
+                    \\"memory_dump_config\\": {}
+                  }"
                   client_priority: USER_INITIATED
               }
           }
@@ -68,7 +75,14 @@ class ContribPowerWakeups(_PowerPerfBenchmarkBase):
           config {
               name: "org.chromium.trace_metadata"
               chrome_config {
-                  trace_config: "{\\"record_mode\\":\\"record-until-full\\",\\"included_categories\\":[\\"toplevel.flow\\",\\"toplevel\\"],\\"memory_dump_config\\":{}}"
+                  trace_config: "{
+                    \\"record_mode\\": \\"record-until-full\\",
+                    \\"included_categories\\": [
+                      \\"toplevel.flow\\",
+                      \\"toplevel\\"
+                    ],
+                    \\"memory_dump_config\\": {}
+                  }"
                   client_priority: USER_INITIATED
               }
           }
