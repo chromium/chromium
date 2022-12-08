@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/component_extension_ime_manager_delegate.h"
 
@@ -49,13 +50,13 @@ class ComponentExtensionIMEManagerDelegateImpl
   static void ReadComponentExtensionsInfo(
       std::vector<ComponentExtensionIME>* out_imes);
 
-  // Parses manifest string to manifest json dictionary value.
-  static std::unique_ptr<base::DictionaryValue> GetManifest(
-      const std::string& manifest_string);
+  // Parses manifest string into dictionary value.
+  static absl::optional<base::Value::Dict> ParseManifest(
+      const base::StringPiece& manifest_string);
 
   // Reads extension information: description, option page. This function
   // returns true on success, otherwise returns false.
-  static bool ReadExtensionInfo(const base::DictionaryValue& manifest,
+  static bool ReadExtensionInfo(const base::Value::Dict& manifest,
                                 const std::string& extension_id,
                                 ComponentExtensionIME* out);
 
@@ -64,7 +65,7 @@ class ComponentExtensionIMEManagerDelegateImpl
   // otherwise return false. This function must be called on FILE thread.
   static bool ReadEngineComponent(
       const ComponentExtensionIME& component_extension,
-      const base::DictionaryValue& dict,
+      const base::Value::Dict& dict,
       ComponentExtensionEngine* out);
 
   // The list of component extension IME.
