@@ -167,9 +167,20 @@ void VirtualCardEnrollBubbleViews::Init() {
       views::BoxLayout::Orientation::kVertical);
   card_identifier_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  card_identifier_view->AddChildView(std::make_unique<views::Label>(
-      card.CardIdentifierStringForAutofillDisplay(),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  auto* card_name_4digits_view = card_identifier_view->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  card_name_4digits_view->SetOrientation(
+      views::BoxLayout::Orientation::kHorizontal);
+  card_name_4digits_view->SetBetweenChildSpacing(
+      provider->GetDistanceMetric(DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+  auto* card_name_label =
+      card_name_4digits_view->AddChildView(std::make_unique<views::Label>(
+          card.CardNameForAutofillDisplay(),
+          views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  card_name_4digits_view->SetFlexForView(card_name_label, /*flex=*/1);
+  card_name_4digits_view->AddChildView(std::make_unique<views::Label>(
+      card.ObfuscatedLastFourDigits(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_PRIMARY));
   card_identifier_view->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
       ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
