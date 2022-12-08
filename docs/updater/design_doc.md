@@ -693,6 +693,38 @@ service supports. This is used as:
 [application commands](functional_spec.md#application-commands-applicable-to-the-windows-version-of-the-updater)
 in the functional spec.
 
+#### COM interface versioning
+
+The COM interfaces are declared in `updater_idl.template`,
+`updater_internal_idl.template`, and `updater_legacy_idl.template`.
+
+* `updater_idl.template`:
+  * contains the interfaces for the currently active updater version.
+  * the interface IDs are `uuid5-generated` and are distinct based on branding.
+
+* `updater_internal_idl.template`:
+  * contains the side-by-side interfaces which allow each updater COM client to
+    talk to the same version COM server.
+  * the interface IDs are `uuid5-generated` and are distinct based on branding
+    and version.
+
+* `updater_legacy_idl.template`:
+  * contains legacy interfaces for the currently active updater version.
+  * the interface IDs are hardcoded and based on branding.
+
+The interface ID generation and substitution can be seen in the
+[build file](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/BUILD.gn).
+
+The `uuid5-generation` and substitutions are done via `midl.gni` using the
+values provided via the `dynamic_guids` property.
+
+`dynamic_guids` can contain hardcoded values, for instance, in the case of
+`updater_internal_idl.template`. Or it can contain `uuid5:`-prefixed values, in
+which case the IDs are `uuid5-generated`.
+
+More information on how `uuid5-generation` works can be found
+[here](http://crrev.com/825994).
+
 #### COM Marshaling
 
 Typelib marshaling is used to marshal the updater interfaces. Each interface is
@@ -742,7 +774,7 @@ the following steps need to be followed:
 * IDL file changes use the following rules:
   * If there are no interface parameters in any of the methods of the interface,
     simply derive the `User` and `System` suffixed interfaces from the
-    non-suffixed interface. 
+    non-suffixed interface.
 
     Example: `IUpdaterInternalCallbackUser` and `IUpdaterInternalCallbackSystem`
     derive from `IUpdaterInternalCallback` in `updater_internal_idl.template`.
