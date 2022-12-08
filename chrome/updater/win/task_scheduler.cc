@@ -626,8 +626,11 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    base::win::ScopedBstr path(run_command.GetProgram().value());
-    hr = exec_action->put_Path(path.Get());
+    // Quotes the command line before `put_Path`.
+    hr = exec_action->put_Path(
+        base::win::ScopedBstr(
+            base::CommandLine(run_command.GetProgram()).GetCommandLineString())
+            .Get());
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't set path of exec action. " << std::hex << hr;
       return false;
