@@ -74,7 +74,7 @@ ProtocolHandlersHandler::~ProtocolHandlersHandler() = default;
 void ProtocolHandlersHandler::OnJavascriptAllowed() {
   registry_observation_.Observe(GetProtocolHandlerRegistry());
   if (web_app_provider_) {
-    app_observation_.Observe(&web_app_provider_->registrar());
+    app_observation_.Observe(&web_app_provider_->registrar_unsafe());
     install_manager_observation_.Observe(&web_app_provider_->install_manager());
   }
 }
@@ -274,7 +274,7 @@ void ProtocolHandlersHandler::UpdateAllAllowedLaunchProtocols() {
     return;
 
   base::flat_set<std::string> protocols(
-      web_app_provider_->registrar().GetAllAllowedLaunchProtocols());
+      web_app_provider_->registrar_unsafe().GetAllAllowedLaunchProtocols());
   web_app::OsIntegrationManager& os_integration_manager =
       web_app_provider_->os_integration_manager();
 
@@ -295,7 +295,7 @@ void ProtocolHandlersHandler::UpdateAllDisallowedLaunchProtocols() {
     return;
 
   base::flat_set<std::string> protocols(
-      web_app_provider_->registrar().GetAllDisallowedLaunchProtocols());
+      web_app_provider_->registrar_unsafe().GetAllDisallowedLaunchProtocols());
   web_app::OsIntegrationManager& os_integration_manager =
       web_app_provider_->os_integration_manager();
 

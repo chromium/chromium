@@ -1049,11 +1049,11 @@ absl::optional<std::string> GetIsolatedWebAppName(Profile* profile,
   absl::optional<std::string> app_name;
   if (auto* provider = web_app::WebAppProvider::GetForWebApps(profile)) {
     if (absl::optional<web_app::AppId> app_id =
-            provider->registrar().FindAppWithUrlInScope(origin)) {
-      if (!provider->registrar().IsIsolated(*app_id)) {
+            provider->registrar_unsafe().FindAppWithUrlInScope(origin)) {
+      if (!provider->registrar_unsafe().IsIsolated(*app_id)) {
         return app_name;
       }
-      app_name = provider->registrar().GetAppShortName(*app_id);
+      app_name = provider->registrar_unsafe().GetAppShortName(*app_id);
     }
   }
   return app_name;
