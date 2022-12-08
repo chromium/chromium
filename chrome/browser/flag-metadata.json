@@ -5346,27 +5346,27 @@
   {
     "name": "optimization-guide-debug-logs",
     "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "optimization-guide-install-wide-model-store",
     "owners": [ "rajendrant", "sophiechang", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 115
   },
   {
     "name": "optimization-guide-model-downloading",
     "owners": [ "sophiechang", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "optimization-guide-push-notifications",
     "owners": [ "robertogden", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "optimization-target-prediction",
     "owners": [ "sophiechang", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "organic-repeatable-queries",
@@ -5427,12 +5427,12 @@
   {
     "name": "page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "page-entities-page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "page-info-about-this-page-description-placeholder",
@@ -5479,7 +5479,7 @@
   {
     "name": "page-visibility-page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "paint-preview-demo",
