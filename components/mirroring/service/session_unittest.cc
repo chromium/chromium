@@ -253,8 +253,10 @@ class SessionTest : public mojom::ResourceProvider,
   }
 
   // Create a mirroring session. Expect to send OFFER message.
-  void CreateSession(SessionType session_type) {
+  void CreateSession(SessionType session_type,
+                     bool is_remote_playback = false) {
     session_type_ = session_type;
+    is_remote_playback_ = is_remote_playback;
     mojom::SessionParametersPtr session_params =
         mojom::SessionParameters::New();
     session_params->receiver_address = receiver_endpoint_.address();
@@ -264,6 +266,7 @@ class SessionTest : public mojom::ResourceProvider,
       session_params->target_playout_delay =
           base::Milliseconds(target_playout_delay_ms_);
     }
+    session_params->is_remote_playback = is_remote_playback_;
     cast_mode_ = "mirroring";
     mojo::PendingRemote<mojom::ResourceProvider> resource_provider_remote;
     mojo::PendingRemote<mojom::SessionObserver> session_observer_remote;
@@ -301,7 +304,9 @@ class SessionTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnGetVideoCaptureHost()).Times(num_to_get_video_host);
     EXPECT_CALL(*this, OnCreateAudioStream()).Times(num_to_create_audio_stream);
     EXPECT_CALL(*this, OnError(_)).Times(0);
-    EXPECT_CALL(*this, OnOutboundMessage("GET_CAPABILITIES")).Times(1);
+    if (!is_remote_playback_) {
+      EXPECT_CALL(*this, OnOutboundMessage("GET_CAPABILITIES")).Times(1);
+    }
     EXPECT_CALL(*this, DidStart()).Times(1);
     SendAnswer();
     task_environment_.RunUntilIdle();
@@ -392,7 +397,7 @@ class SessionTest : public mojom::ResourceProvider,
     Mock::VerifyAndClear(&remoting_source_);
   }
 
-  void StopRemoting() {
+  void StopRemotingAndRestartMirroring() {
     ASSERT_EQ(cast_mode_, "remoting");
     const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
     // Expect to send OFFER message to fallback on mirroring.
@@ -401,6 +406,19 @@ class SessionTest : public mojom::ResourceProvider,
     remoter_->Stop(reason);
     task_environment_.RunUntilIdle();
     cast_mode_ = "mirroring";
+    Mock::VerifyAndClear(this);
+    Mock::VerifyAndClear(&remoting_source_);
+  }
+
+  void StopRemotingAndStopSession() {
+    ASSERT_EQ(cast_mode_, "remoting");
+    const RemotingStopReason reason = RemotingStopReason::LOCAL_PLAYBACK;
+    EXPECT_CALL(remoting_source_, OnStopped(reason));
+    if (video_host_)
+      EXPECT_CALL(*video_host_, OnStopped());
+    EXPECT_CALL(*this, DidStop());
+    remoter_->Stop(reason);
+    task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(this);
     Mock::VerifyAndClear(&remoting_source_);
   }
@@ -463,6 +481,7 @@ class SessionTest : public mojom::ResourceProvider,
   mojo::Receiver<mojom::CastMessageChannel> outbound_channel_receiver_{this};
   mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
   SessionType session_type_ = SessionType::AUDIO_AND_VIDEO;
+  bool is_remote_playback_ = false;
   mojo::Remote<media::mojom::Remoter> remoter_;
   NiceMock<MockRemotingSource> remoting_source_;
   std::string cast_mode_;
@@ -536,8 +555,16 @@ TEST_F(SessionTest, SwitchToAndFromRemoting) {
   SendRemotingCapabilities();
   StartRemoting();
   RemotingStarted();
-  StopRemoting();
+  StopRemotingAndRestartMirroring();
   StopSession();
+}
+
+TEST_F(SessionTest, SwitchFromRemotingForRemotePlayback) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO, true);
+  StartSession();
+  StartRemoting();
+  RemotingStarted();
+  StopRemotingAndStopSession();
 }
 
 TEST_F(SessionTest, StopSessionWhileRemoting) {

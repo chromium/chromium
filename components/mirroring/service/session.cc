@@ -976,6 +976,14 @@ void Session::RequestRemotingStreaming() {
 void Session::RestartMirroringStreaming() {
   if (state_ != REMOTING)
     return;
+
+  // Stop session instead of switching to mirroring when in Remote Playback
+  // mode.
+  if (session_params_.is_remote_playback) {
+    StopSession();
+    return;
+  }
+
   StopStreaming();
   state_ = MIRRORING;
   CreateAndSendOffer();
