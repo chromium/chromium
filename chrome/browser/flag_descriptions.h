@@ -2807,6 +2807,9 @@ extern const char kBluetoothUseFlossDescription[];
 extern const char kBluetoothUseLLPrivacyName[];
 extern const char kBluetoothUseLLPrivacyDescription[];
 
+extern const char kCalendarJellyName[];
+extern const char kCalendarJellyDescription[];
+
 extern const char kCalendarViewName[];
 extern const char kCalendarViewDescription[];
 

@@ -761,6 +761,14 @@
     "expiry_milestone": 112
   },
   {
+    "name": "calendar-jelly",
+    "owners": [
+      "newcomer",
+      "cros-status-area-eng@google.com"
+    ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "calendar-view",
     "owners": ["jiamingc", "cros-status-area-eng@google.com"],
     "expiry_milestone" : 106

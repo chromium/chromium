@@ -60462,6 +60462,7 @@ from previous Chrome versions.
   <int value="-20267582" label="ResourceLoadingHints:disabled"/>
   <int value="-19498390"
       label="RunVideoCaptureServiceInBrowserProcess:disabled"/>
+  <int value="-18757749" label="CalendarJelly:disabled"/>
   <int value="-18464041" label="AutofillPrefilledFields:disabled"/>
   <int value="-18380160" label="AutofillEnableVirtualCardMetadata:enabled"/>
   <int value="-17698200" label="DoubleTapToZoomInTabletMode:disabled"/>
@@ -61151,6 +61152,7 @@ from previous Chrome versions.
   <int value="385339273" label="TextBasedAudioDescription:disabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>
   <int value="386138870" label="DesktopPWAsOmniboxInstall:enabled"/>
+  <int value="386328035" label="CalendarJelly:enabled"/>
   <int value="386946105" label="NtpMiddleSlotPromoDismissal:disabled"/>
   <int value="387178525" label="VideoFullscreenOrientationLock:enabled"/>
   <int value="387233614" label="HomePageButtonForceEnabled:disabled"/>
