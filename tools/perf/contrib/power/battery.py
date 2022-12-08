@@ -4,13 +4,13 @@
 
 from core import platforms
 import contrib.power.stories as stories
-from contrib.power.power_perf_benchmark_base import _PowerPerfBenchmarkBase
+from contrib.power.power_perf_benchmark_base import PowerPerfBenchmarkBase
 from telemetry import benchmark
 from telemetry import story
 
 
 @benchmark.Info(emails=['chrometto-team@google.com'])
-class ContribPowerBattery(_PowerPerfBenchmarkBase):
+class ContribPowerBattery(PowerPerfBenchmarkBase):
 
   SUPPORTED_PLATFORMS = [story.expectations.ALL_ANDROID]
   SUPPORTED_PLATFORM_TAGS = [platforms.ANDROID]

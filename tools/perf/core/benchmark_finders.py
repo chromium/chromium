@@ -65,6 +65,8 @@ def GetContribBenchmarks():
       # other benchmarks, and not a standalone benchmark.
       'perf_benchmark_with_profiling.PerfBenchmarkWithProfiling',
       'perf_benchmark_with_profiling_unittest.PerfBenchmarkForTesting',
+      # This benchmark is a base class for power measurements.
+      'power_perf_benchmark_base.PowerPerfBenchmarkBase',
   }
 
   benchmarks = list(

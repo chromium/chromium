@@ -6,9 +6,9 @@ from core.perf_benchmark import PerfBenchmark
 from telemetry.web_perf import timeline_based_measurement
 
 
-class _PowerPerfBenchmarkBase(PerfBenchmark):
+class PowerPerfBenchmarkBase(PerfBenchmark):
   def __init__(self, *args, **kwargs):
-    super(_PowerPerfBenchmarkBase, self).__init__(*args, **kwargs)
+    super(PowerPerfBenchmarkBase, self).__init__(*args, **kwargs)
     # The browser selected for benchmarking.
     self._browser_package = None
 
@@ -16,7 +16,7 @@ class _PowerPerfBenchmarkBase(PerfBenchmark):
     raise NotImplementedError("GetTraceConfig not implemented")
 
   def CustomizeOptions(self, finder_options, possible_browser=None):
-    super(_PowerPerfBenchmarkBase,
+    super(PowerPerfBenchmarkBase,
           self).CustomizeOptions(finder_options, possible_browser)
 
     if finder_options is None or possible_browser is None:
