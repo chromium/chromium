@@ -43,7 +43,7 @@ public class ClientHintsTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void testClientHintsDefault() throws Throwable {
-        setupAndVerifyClientHintBehavior(false);
+        setupAndVerifyClientHintBehavior(true);
     }
 
     @Test
@@ -70,10 +70,8 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testAllClientHints() throws Throwable {
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testAllClientHints() throws Throwable {
         // Initial test setup.
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =
@@ -162,10 +160,8 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
-            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void
-    testCriticalClientHints() throws Throwable {
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testCriticalClientHints() throws Throwable {
         // Initial test setup.
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
         final AwContents contents =

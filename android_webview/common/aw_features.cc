@@ -147,7 +147,7 @@ BASE_FEATURE(kWebViewXRequestedWithHeaderManifestAllowList,
 // This persists client hints between top-level navigations.
 BASE_FEATURE(kWebViewClientHintsControllerDelegate,
              "WebViewClientHintsControllerDelegate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This enables image drage out for Webview.
 BASE_FEATURE(kWebViewImageDrag,
