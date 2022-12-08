@@ -2266,7 +2266,7 @@ ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   auto& registrar =
-      web_app::WebAppProvider::GetForWebApps(profile)->registrar();
+      web_app::WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
   std::vector<web_app::AppId> app_ids_for_origin =
       registrar.FindAppsInScope(app_origin.GetURL());
   if (app_ids_for_origin.empty()) {
@@ -3976,7 +3976,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
             web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
         const web_app::AppId& app_id = browser->app_controller()->app_id();
         const web_app::WebAppRegistrar& registrar =
-            web_app_provider->registrar();
+            web_app_provider->registrar_unsafe();
         if (registrar.IsLocallyInstalled(app_id))
           web_prefs->web_app_scope = registrar.GetAppScope(app_id);
 
