@@ -248,7 +248,7 @@ TEST_F(BluetoothSocketFlossTest, Connect) {
 }
 
 // TODO (b/243420879) - Fix flakiness to re-enable
-TEST_F(BluetoothSocketFlossTest, DISABLED_Listen) {
+TEST_F(BluetoothSocketFlossTest, Listen) {
   // Get socket id for next returned socket.
   FlossSocketManager::SocketId id = fake_floss_socket_manager_->GetNextId();
 

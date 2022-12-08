@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/atomicops.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -44,7 +45,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketThread
   void EnsureStarted();
 
   base::ThreadChecker thread_checker_;
-  int active_socket_count_;
+  base::subtle::Atomic32 active_socket_count_ = 0;
   std::unique_ptr<base::Thread> thread_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
