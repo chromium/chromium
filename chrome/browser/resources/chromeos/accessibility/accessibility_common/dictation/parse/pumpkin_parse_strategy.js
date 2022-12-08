@@ -31,11 +31,6 @@ export class PumpkinParseStrategy extends ParseStrategy {
   /** @param {!InputController} inputController */
   constructor(inputController) {
     super(inputController);
-    /**
-     * Whether or not the feature flag gating this object's logic is enabled.
-     * @private {boolean}
-     */
-    this.featureEnabled_ = false;
     /** @private {?PumpkinConstants.PumpkinData} */
     this.pumpkinData_ = null;
     /** @private {boolean} */
@@ -48,49 +43,23 @@ export class PumpkinParseStrategy extends ParseStrategy {
     this.locale_ = null;
     /** @private {boolean} */
     this.requestedPumpkinInstall_ = false;
-    /** @private {boolean} */
-    this.isMoreCommandsFeatureEnabled_ = false;
-
-    /** @private {!Array<!MacroName>}*/
-    this.moreCommandsSet_ = [
-      MacroName.DELETE_ALL_TEXT,
-      MacroName.NAV_START_TEXT,
-      MacroName.NAV_END_TEXT,
-      MacroName.SELECT_PREV_WORD,
-      MacroName.SELECT_NEXT_WORD,
-      MacroName.SELECT_NEXT_CHAR,
-      MacroName.SELECT_PREV_CHAR,
-      MacroName.REPEAT,
-    ];
 
     this.init_();
   }
 
   /** @private */
   init_() {
-    const pumpkinFeature = chrome.accessibilityPrivate.AccessibilityFeature
-                               .DICTATION_PUMPKIN_PARSING;
-    chrome.accessibilityPrivate.isFeatureEnabled(pumpkinFeature, enabled => {
-      this.featureEnabled_ = enabled;
-      this.refreshLocale_();
-      if (!enabled || !this.locale_) {
-        return;
-      }
+    this.refreshLocale_();
+    if (!this.locale_) {
+      return;
+    }
 
-      this.requestedPumpkinInstall_ = true;
-      chrome.accessibilityPrivate.installPumpkinForDictation(data => {
-        // TODO(crbug.comg/1258190): Consider retrying installation at a later
-        // time if it failed.
-        this.onPumpkinInstalled_(data);
-      });
+    this.requestedPumpkinInstall_ = true;
+    chrome.accessibilityPrivate.installPumpkinForDictation(data => {
+      // TODO(crbug.comg/1258190): Consider retrying installation at a later
+      // time if it failed.
+      this.onPumpkinInstalled_(data);
     });
-
-    const moreCommandsFeature = chrome.accessibilityPrivate.AccessibilityFeature
-                                    .DICTATION_MORE_COMMANDS;
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        moreCommandsFeature, enabled => {
-          this.isMoreCommandsFeatureEnabled_ = enabled;
-        });
   }
 
   /**
@@ -98,10 +67,8 @@ export class PumpkinParseStrategy extends ParseStrategy {
    * @private
    */
   onPumpkinInstalled_(data) {
-    if (!this.featureEnabled_ || !data) {
-      console.warn(
-          'Pumpkin installed, but either data is empty or feature ' +
-          'flag is not enabled');
+    if (!data) {
+      console.warn('Pumpkin installed, but data is empty');
       return;
     }
 
@@ -367,31 +334,11 @@ export class PumpkinParseStrategy extends ParseStrategy {
       return null;
     }
 
-    const macro =
-        this.macroFromPumpkinHypothesis_(taggerResults.hypothesisList[0]);
-    return this.shouldReturnMacro_(macro) ? macro : null;
+    return this.macroFromPumpkinHypothesis_(taggerResults.hypothesisList[0]);
   }
 
   /** @override */
   isEnabled() {
-    return this.enabled && this.featureEnabled_;
-  }
-
-  /**
-   * @param {Macro} macro
-   * @return {boolean}
-   * @private
-   */
-  shouldReturnMacro_(macro) {
-    if (!macro) {
-      return false;
-    }
-
-    const isNewCommand = this.moreCommandsSet_.includes(macro.getMacroName());
-    if (!isNewCommand) {
-      return true;
-    }
-
-    return this.isMoreCommandsFeatureEnabled_;
+    return this.enabled;
   }
 }

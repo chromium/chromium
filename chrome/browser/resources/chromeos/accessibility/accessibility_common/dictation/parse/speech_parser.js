@@ -68,4 +68,9 @@ export class SpeechParser {
     return await /** @type {!Promise<!Macro>} */ (
         this.inputTextStrategy_.parse(text));
   }
+
+  /** For testing purposes only. */
+  disablePumpkinForTesting() {
+    this.pumpkinParseStrategy_.setEnabled(false);
+  }
 }

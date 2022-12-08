@@ -310,8 +310,11 @@ class DictationTestBase : public InProcessBrowserTest,
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    test_helper_.SetUp(browser()->profile());
 
+    // Set up the Pumpkin dir before turning on Dictation because the
+    // extension will immediately request a Pumpkin installation once activated.
+    SetUpPumpkinDir();
+    test_helper_.SetUp(browser()->profile());
     ASSERT_FALSE(AccessibilityManager::Get()->IsDictationEnabled());
     console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
         browser()->profile(), extension_misc::kAccessibilityCommonExtensionId);
@@ -350,6 +353,10 @@ class DictationTestBase : public InProcessBrowserTest,
       window.domAutomationController.send("done");
     )";
     ExecuteAccessibilityCommonScript(script);
+
+    // Dictation will request a Pumpkin install when it starts up. Wait for
+    // the install to succeed.
+    WaitForPumpkinTaggerReady();
   }
 
   void TearDownOnMainThread() override {
@@ -549,6 +556,14 @@ class DictationTestBase : public InProcessBrowserTest,
   const base::flat_map<std::string, Dictation::LocaleData>
   GetAllSupportedLocales() {
     return Dictation::GetAllSupportedLocales();
+  }
+
+  void DisablePumpkin() {
+    std::string script = R"(
+      accessibilityCommon.dictation_.disablePumpkinForTesting_();
+      window.domAutomationController.send("done");
+    )";
+    ExecuteAccessibilityCommonScript(script);
   }
 
   std::string ExecuteAccessibilityCommonScript(const std::string& script) {
@@ -990,6 +1005,8 @@ class DictationJaTest : public DictationTestBase {
     GetActiveUserPrefs()->SetString(prefs::kAccessibilityDictationLocale, "ja");
 
     DictationTestBase::SetUpOnMainThread();
+
+    DisablePumpkin();
   }
 };
 
@@ -1118,6 +1135,8 @@ class DictationRegexCommandsTest : public DictationTest {
  protected:
   void SetUpOnMainThread() override {
     DictationTest::SetUpOnMainThread();
+    // Disable Pumpkin so that we use regex parsing.
+    DisablePumpkin();
     ToggleDictationWithKeystroke();
     WaitForRecognitionStarted();
   }
@@ -1820,31 +1839,8 @@ class DictationPumpkinTest : public DictationTest {
   DictationPumpkinTest& operator=(const DictationPumpkinTest&) = delete;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DictationTest::SetUpCommandLine(command_line);
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.emplace_back(base::test::FeatureRef(
-        ::features::kExperimentalAccessibilityDictationWithPumpkin));
-    enabled_features.emplace_back(base::test::FeatureRef(
-        ::features::kExperimentalAccessibilityDictationMoreCommands));
-    scoped_feature_list_.InitWithFeatures(
-        enabled_features, std::vector<base::test::FeatureRef>());
-  }
-
   void SetUpOnMainThread() override {
-    // Set the path to the Pumpkin test files. For more details, see the
-    // `pumpkin_test_files` rule in the accessibility_common BUILD file.
-    // Must be done before DictationTest::SetUpOnMainThread because the parent
-    // class method will start up the extension and immediately request a
-    // Pumpkin installation.
-    SetUpPumpkinDir();
     DictationTest::SetUpOnMainThread();
-
-    // Dictation will request a Pumpkin install when it starts up. Wait for
-    // the install to succeed. Must be done after
-    // DictationTest::SetUpOnMainThread because the steps here assume that the
-    // extension is active.
-    WaitForPumpkinTaggerReady();
     ToggleDictationWithKeystroke();
     WaitForRecognitionStarted();
   }

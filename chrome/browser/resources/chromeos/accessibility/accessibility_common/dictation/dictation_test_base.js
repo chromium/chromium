@@ -82,6 +82,9 @@ DictationE2ETestBase = class extends E2ETestBase {
       chrome.accessibilityFeatures.dictation.set({value: true}, resolve);
     });
     await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
+
+    // By default, Dictation JS tests should use regex parsing.
+    accessibilityCommon.dictation_.disablePumpkinForTesting_();
   }
 
   /** @override */

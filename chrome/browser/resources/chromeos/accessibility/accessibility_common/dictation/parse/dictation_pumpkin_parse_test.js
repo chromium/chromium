@@ -38,10 +38,6 @@ class ParseTestCase {
 DictationPumpkinParseTest = class extends DictationE2ETestAllowConsole {
   /** @override */
   async setUpDeferred() {
-    this.mockAccessibilityPrivate.enableFeatureForTest(
-        'dictationPumpkinParsing', true);
-    this.mockAccessibilityPrivate.enableFeatureForTest(
-        'dictationMoreCommands', true);
     await this.mockAccessibilityPrivate.initializePumpkinData();
     // Re-initialize PumpkinParseStrategy after mock Pumpkin data has been
     // created.
@@ -51,6 +47,10 @@ DictationPumpkinParseTest = class extends DictationE2ETestAllowConsole {
         '/accessibility_common/dictation/parse/speech_parser.js');
 
     await super.setUpDeferred();
+
+    // By default, Dictation JS tests use regex parsing. Enable Pumpkin for
+    // this test suite.
+    this.getPumpkinParseStrategy().setEnabled(true);
   }
 
   /**

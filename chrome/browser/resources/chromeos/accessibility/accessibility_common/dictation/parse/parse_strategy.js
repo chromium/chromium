@@ -33,6 +33,11 @@ export class ParseStrategy {
     return this.enabled;
   }
 
+  /** @param {boolean} enabled */
+  setEnabled(enabled) {
+    this.enabled = enabled;
+  }
+
   /** Refreshes this strategy when the locale changes. */
   refresh() {}
 

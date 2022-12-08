@@ -131,7 +131,7 @@ bool IsDictationOfflineAvailable() {
 
 BASE_FEATURE(kExperimentalAccessibilityDictationWithPumpkin,
              "ExperimentalAccessibilityDictationWithPumpkin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsExperimentalAccessibilityDictationWithPumpkinEnabled() {
   return base::FeatureList::IsEnabled(
@@ -140,7 +140,7 @@ bool IsExperimentalAccessibilityDictationWithPumpkinEnabled() {
 
 BASE_FEATURE(kExperimentalAccessibilityDictationMoreCommands,
              "ExperimentalAccessibilityDictationMoreCommands",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsExperimentalAccessibilityDictationMoreCommandsEnabled() {
   return base::FeatureList::IsEnabled(

@@ -553,6 +553,11 @@ export class Dictation {
     this.prevMacro_ = newMacro;
     return newMacro;
   }
+
+  /** @private */
+  disablePumpkinForTesting_() {
+    this.speechParser_.disablePumpkinForTesting();
+  }
 }
 
 /**
