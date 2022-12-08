@@ -71,7 +71,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
-#include "extensions/common/constants.h"
 #else
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #endif

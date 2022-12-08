@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
