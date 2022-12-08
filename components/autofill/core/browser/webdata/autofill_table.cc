@@ -187,6 +187,7 @@ constexpr base::StringPiece kExpYear = "exp_year";
 constexpr base::StringPiece kBankName = "bank_name";
 // kNickname = "nickname"
 constexpr base::StringPiece kCardIssuer = "card_issuer";
+constexpr base::StringPiece kCardIssuerId = "card_issuer_id";
 constexpr base::StringPiece kInstrumentId = "instrument_id";
 constexpr base::StringPiece kVirtualCardEnrollmentState =
     "virtual_card_enrollment_state";
@@ -1220,6 +1221,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 107:
       *update_compatible_version = false;
       return MigrateToVersion107AddContactInfoTables();
+    case 108:
+      *update_compatible_version = false;
+      return MigrateToVersion108AddCardIssuerIdColumn();
   }
   return true;
 }
@@ -2048,8 +2052,8 @@ bool AutofillTable::GetServerCreditCards(
        base::StrCat({"metadata.", kUseCount}),
        base::StrCat({"metadata.", kUseDate}), kNetwork, kNameOnCard, kExpMonth,
        kExpYear, base::StrCat({"metadata.", kBillingAddressId}), kBankName,
-       kNickname, kCardIssuer, kInstrumentId, kVirtualCardEnrollmentState,
-       kCardArtUrl, kProductDescription},
+       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
+       kVirtualCardEnrollmentState, kCardArtUrl, kProductDescription},
       "LEFT OUTER JOIN unmasked_credit_cards USING (id) "
       "LEFT OUTER JOIN server_card_metadata AS metadata USING (id)");
   while (s.Step()) {
@@ -2093,6 +2097,7 @@ bool AutofillTable::GetServerCreditCards(
     card->SetNickname(s.ColumnString16(index++));
     card->set_card_issuer(
         static_cast<CreditCard::Issuer>(s.ColumnInt(index++)));
+    card->set_issuer_id(s.ColumnString(index++));
     card->set_instrument_id(s.ColumnInt64(index++));
     card->set_virtual_card_enrollment_state(
         static_cast<CreditCard::VirtualCardEnrollmentState>(
@@ -2326,8 +2331,8 @@ void AutofillTable::SetServerCardsData(
   InsertBuilder(
       db_, masked_insert, kMaskedCreditCardsTable,
       {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear, kBankName,
-       kNickname, kCardIssuer, kInstrumentId, kVirtualCardEnrollmentState,
-       kCardArtUrl, kProductDescription});
+       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
+       kVirtualCardEnrollmentState, kCardArtUrl, kProductDescription});
 
   int index;
   for (const CreditCard& card : credit_cards) {
@@ -2343,6 +2348,7 @@ void AutofillTable::SetServerCardsData(
     masked_insert.BindString(index++, card.bank_name());
     masked_insert.BindString16(index++, card.nickname());
     masked_insert.BindInt(index++, static_cast<int>(card.card_issuer()));
+    masked_insert.BindString(index++, card.issuer_id());
     masked_insert.BindInt64(index++, card.instrument_id());
     masked_insert.BindInt(
         index++, static_cast<int>(card.virtual_card_enrollment_state()));
@@ -3259,6 +3265,24 @@ bool AutofillTable::MigrateToVersion107AddContactInfoTables() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion108AddCardIssuerIdColumn() {
+  sql::Transaction transaction(db_);
+
+  if (!transaction.Begin())
+    return false;
+
+  if (!db_->DoesTableExist(kMaskedCreditCardsTable))
+    return false;
+
+  // Add card_issuer_id to masked_credit_cards.
+  if (!AddColumnIfNotExists(db_, kMaskedCreditCardsTable, kCardIssuerId,
+                            "VARCHAR")) {
+    return false;
+  }
+
+  return transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3408,8 +3432,8 @@ void AutofillTable::AddMaskedCreditCards(
   InsertBuilder(
       db_, masked_insert, kMaskedCreditCardsTable,
       {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear, kBankName,
-       kNickname, kCardIssuer, kInstrumentId, kVirtualCardEnrollmentState,
-       kCardArtUrl, kProductDescription});
+       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
+       kVirtualCardEnrollmentState, kCardArtUrl, kProductDescription});
 
   int index;
   for (const CreditCard& card : credit_cards) {
@@ -3425,6 +3449,7 @@ void AutofillTable::AddMaskedCreditCards(
     masked_insert.BindString(index++, card.bank_name());
     masked_insert.BindString16(index++, card.nickname());
     masked_insert.BindInt(index++, static_cast<int>(card.card_issuer()));
+    masked_insert.BindString(index++, card.issuer_id());
     masked_insert.BindInt64(index++, card.instrument_id());
     masked_insert.BindInt(index++, card.virtual_card_enrollment_state());
     masked_insert.BindString(index++, card.card_art_url().spec());
@@ -3618,7 +3643,8 @@ bool AutofillTable::InitMaskedCreditCardsTable() {
        {kInstrumentId, "INTEGER DEFAULT 0"},
        {kVirtualCardEnrollmentState, "INTEGER DEFAULT 0"},
        {kCardArtUrl, "VARCHAR"},
-       {kProductDescription, "VARCHAR"}});
+       {kProductDescription, "VARCHAR"},
+       {kCardIssuerId, "VARCHAR"}});
 }
 
 bool AutofillTable::InitUnmaskedCreditCardsTable() {

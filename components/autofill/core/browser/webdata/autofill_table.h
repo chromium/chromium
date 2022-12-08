@@ -281,6 +281,7 @@ struct PaymentsCustomerData;
 //   product_description
 //                      The product description for the card. Used to be shown
 //                      in the UI when card is presented. Added in version 102.
+//   card_issuer_id     The id of the card's issuer.
 //
 // unmasked_credit_cards
 //                      When a masked credit credit card is unmasked and the
@@ -786,6 +787,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion105AddAutofillIBANTable();
   bool MigrateToVersion106RecreateAutofillIBANTable();
   bool MigrateToVersion107AddContactInfoTables();
+  bool MigrateToVersion108AddCardIssuerIdColumn();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
