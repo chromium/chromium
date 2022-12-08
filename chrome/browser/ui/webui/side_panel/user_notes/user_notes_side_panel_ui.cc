@@ -25,7 +25,6 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
       resource);
-  webui::EnableTrustedTypesCSP(source);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

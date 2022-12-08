@@ -125,7 +125,6 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
       base::make_span(kNewTabPageThirdPartyResources,
                       kNewTabPageThirdPartyResourcesSize),
       IDR_NEW_TAB_PAGE_THIRD_PARTY_NEW_TAB_PAGE_THIRD_PARTY_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   return source;
 }

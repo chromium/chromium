@@ -372,7 +372,6 @@ content::WebUIDataSource* CreatePrintPreviewUISource(Profile* profile) {
       source,
       base::make_span(kPrintPreviewResources, kPrintPreviewResourcesSize),
       IDR_PRINT_PREVIEW_PRINT_PREVIEW_HTML);
-  webui::EnableTrustedTypesCSP(source);
   AddPrintPreviewStrings(source);
   SetupPrintPreviewPlugin(source);
   AddPrintPreviewFlags(source, profile);

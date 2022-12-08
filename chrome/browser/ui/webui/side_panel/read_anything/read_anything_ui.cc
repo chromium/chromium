@@ -35,7 +35,6 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
       IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
-  webui::EnableTrustedTypesCSP(source);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }

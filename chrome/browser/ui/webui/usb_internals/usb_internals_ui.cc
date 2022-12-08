@@ -32,7 +32,6 @@ UsbInternalsUI::UsbInternalsUI(content::WebUI* web_ui)
       source,
       base::make_span(kUsbInternalsResources, kUsbInternalsResourcesSize),
       IDR_USB_INTERNALS_USB_INTERNALS_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

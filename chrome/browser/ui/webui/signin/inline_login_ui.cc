@@ -117,7 +117,6 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
       source,
       base::make_span(kGaiaAuthHostResources, kGaiaAuthHostResourcesSize),
       IDR_INLINE_LOGIN_INLINE_LOGIN_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddResourcePaths(base::make_span(kArcAccountPickerResources,

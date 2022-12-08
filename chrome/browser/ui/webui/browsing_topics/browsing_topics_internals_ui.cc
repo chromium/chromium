@@ -25,7 +25,6 @@ BrowsingTopicsInternalsUI::BrowsingTopicsInternalsUI(content::WebUI* web_ui)
       base::make_span(kBrowsingTopicsInternalsResources,
                       kBrowsingTopicsInternalsResourcesSize),
       IDR_BROWSING_TOPICS_INTERNALS_BROWSING_TOPICS_INTERNALS_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);

@@ -40,7 +40,6 @@ WebUIJsErrorUI::WebUIJsErrorUI(content::WebUI* web_ui)
       source,
       base::make_span(kWebuiJsErrorResources, kWebuiJsErrorResourcesSize),
       IDR_WEBUI_JS_ERROR_WEBUI_JS_ERROR_HTML);
-  webui::EnableTrustedTypesCSP(source);
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource::Add(profile, source);
 }

@@ -173,7 +173,6 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kManagementResources, kManagementResourcesSize),
       IDR_MANAGEMENT_MANAGEMENT_HTML);
-  webui::EnableTrustedTypesCSP(source);
   return source;
 }
 

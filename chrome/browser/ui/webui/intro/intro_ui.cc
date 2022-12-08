@@ -54,7 +54,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kIntroResources, kIntroResourcesSize),
       IDR_INTRO_INTRO_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   AddStrings(source);
 

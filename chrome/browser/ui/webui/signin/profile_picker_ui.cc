@@ -284,7 +284,6 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kProfilePickerResources, kProfilePickerResourcesSize),
       IDR_PROFILE_PICKER_PROFILE_PICKER_HTML);
-  webui::EnableTrustedTypesCSP(html_source);
   content::WebUIDataSource::Add(profile, html_source);
 }
 

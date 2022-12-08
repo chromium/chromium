@@ -26,7 +26,6 @@ MetricsInternalsUI::MetricsInternalsUI(content::WebUI* web_ui)
                               base::make_span(kMetricsInternalsResources,
                                               kMetricsInternalsResourcesSize),
                               IDR_METRICS_INTERNALS_METRICS_INTERNALS_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   web_ui->AddMessageHandler(std::make_unique<MetricsInternalsHandler>());
 }

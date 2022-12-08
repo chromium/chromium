@@ -45,7 +45,6 @@ EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kResources),
       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_ENTERPRISE_PROFILE_WELCOME_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   source->AddResourcePath(

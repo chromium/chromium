@@ -112,7 +112,6 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, base::make_span(kResources),
                               IDR_SIGNIN_SIGNIN_REAUTH_SIGNIN_REAUTH_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   source->AddString("accountImageUrl", GetAccountImageURL(profile));
 

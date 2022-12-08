@@ -31,7 +31,6 @@ FeedUI::FeedUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       source, base::make_span(kFeedResources, kFeedResourcesSize),
       IDR_FEED_FEED_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   if (kWebUiDisableContentSecurityPolicy.Get()) {
     source->DisableContentSecurityPolicy();

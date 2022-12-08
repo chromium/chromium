@@ -25,7 +25,6 @@ AppServiceInternalsUI::AppServiceInternalsUI(content::WebUI* web_ui)
       base::make_span(kAppServiceInternalsResources,
                       kAppServiceInternalsResourcesSize),
       IDR_APP_SERVICE_INTERNALS_INDEX_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   content::WebUIDataSource::Add(profile_, source);
 }

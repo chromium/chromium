@@ -42,7 +42,6 @@ content::WebUIDataSource* CreatePasswordsUIHTMLSource(Profile* profile,
       source,
       base::make_span(kPasswordManagerResources, kPasswordManagerResourcesSize),
       IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
-  webui::EnableTrustedTypesCSP(source);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"usernameCopiedToClipboard",
