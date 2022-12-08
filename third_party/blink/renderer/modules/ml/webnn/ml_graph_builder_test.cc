@@ -2537,18 +2537,15 @@ struct ArrayBufferViewInfo {
   size_t number_of_elements;
   V8MLOperandType::Enum type;
 
-  // TODO(crbug.com/1382288): Return a DOMArrayBufferView.
-  V8UnionArrayBufferOrArrayBufferView* ToArrayBufferView() {
-    return MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-        CreateDOMArrayBufferView(number_of_elements, type));
+  NotShared<DOMArrayBufferView> ToArrayBufferView() {
+    return CreateDOMArrayBufferView(number_of_elements, type);
   }
 };
 
 // Helper function to create an ArrayBufferView given an operand.
-V8UnionArrayBufferOrArrayBufferView* CreateArrayBufferViewForOperand(
+NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand) {
-  return MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-      CreateDOMArrayBufferView(operand->NumberOfElements(), operand->Type()));
+  return CreateDOMArrayBufferView(operand->NumberOfElements(), operand->Type());
 }
 
 TEST_P(FakeMLGraphTest, ComputeTest) {
@@ -2723,42 +2720,6 @@ TEST_P(FakeMLGraphTest, ComputeTest) {
     EXPECT_EQ(exception->message(),
               "Invalid outputs: The byte length (32) of the array buffer view "
               "with name \"c\" doesn't match the expected byte length (36).");
-  }
-  {
-    // Test throwing exception if the input is not an array buffer view object.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    inputs.emplace_back(
-        "b", MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-                 CreateDOMArrayBufferView(12, V8MLOperandType::Enum::kFloat32)
-                     ->buffer()));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back("c", CreateArrayBufferViewForOperand(c));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
-              "Invalid inputs: The object with name \"b\" is not an "
-              "ArrayBufferView.");
-  }
-  {
-    // Test throwing exception if the output is not an array buffer view object.
-    MLNamedArrayBufferViews inputs;
-    inputs.emplace_back("a", CreateArrayBufferViewForOperand(a));
-    inputs.emplace_back("b", CreateArrayBufferViewForOperand(b));
-    MLNamedArrayBufferViews outputs;
-    outputs.emplace_back(
-        "c", MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
-                 CreateDOMArrayBufferView(9, V8MLOperandType::Enum::kFloat32)
-                     ->buffer()));
-    auto* exception = ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_NE(exception, nullptr);
-    EXPECT_EQ(exception->name(),
-              DOMException::GetErrorName(DOMExceptionCode::kDataError));
-    EXPECT_EQ(exception->message(),
-              "Invalid outputs: The object with name \"c\" is not an "
-              "ArrayBufferView.");
   }
 }
 

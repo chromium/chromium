@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -22,13 +21,7 @@ class ScriptPromiseResolver;
 
 // Implement the MLNamedArrayBufferViews type definition of WebNN spec:
 // https://www.w3.org/TR/webnn/#typedefdef-mlnamedarraybufferviews
-
-// TODO(crbug.com/1382288): There is a build error for the C++ type
-// HeapVector<std::pair<String, NotShared<DOMArrayBufferView>>> generated for
-// IDL type record<DOMString, ArrayBufferView>. Use
-// V8UnionArrayBufferOrArrayBufferView as a workaround.
-typedef HeapVector<
-    std::pair<String, Member<V8UnionArrayBufferOrArrayBufferView>>>
+typedef HeapVector<std::pair<String, NotShared<DOMArrayBufferView>>>
     MLNamedArrayBufferViews;
 
 class MODULES_EXPORT MLGraph : public ScriptWrappable {

@@ -31,21 +31,13 @@ bool ValidateNamedArrayBufferViews(
     return false;
   }
   for (const auto& named_array_buffer_view : named_array_buffer_views) {
-    const auto& [name, array_buffer_or_view] = named_array_buffer_view;
+    const auto& [name, array_buffer_view] = named_array_buffer_view;
     if (!resources_info.Contains(name)) {
       error_message = String::Format("The name \"%s\" isn't part of the graph.",
                                      name.Utf8().c_str());
       return false;
     }
     const auto& info = resources_info.at(name);
-    if (!array_buffer_or_view->IsArrayBufferView()) {
-      error_message = String::Format(
-          "The object with name \"%s\" is not an ArrayBufferView.",
-          name.Utf8().c_str());
-      return false;
-    }
-    auto* array_buffer_view =
-        array_buffer_or_view->GetAsArrayBufferView().Get();
     if (array_buffer_view->GetType() != GetArrayBufferViewType(info.type)) {
       error_message = String::Format(
           "The type (%s) of the array buffer view with name \"%s\" doesn't "
