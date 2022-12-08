@@ -9,11 +9,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/rounded_container.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_constants.h"
@@ -24,6 +26,7 @@
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -105,20 +108,22 @@ void CastDetailedView::OnDevicesUpdated(
   Layout();
 }
 
-const char* CastDetailedView::GetClassName() const {
-  return "CastDetailedView";
-}
-
 void CastDetailedView::UpdateReceiverListFromCachedData() {
   // Remove all of the existing views.
   view_to_sink_map_.clear();
   scroll_content()->RemoveAllChildViews();
 
+  // QsRevamp places items in a rounded container.
+  views::View* item_container =
+      features::IsQsRevampEnabled()
+          ? scroll_content()->AddChildView(std::make_unique<RoundedContainer>())
+          : scroll_content();
+
   // Per product requirement, access code receiver should be shown before other
   // receivers.
   if (CastConfigController::Get()->AccessCodeCastingEnabled()) {
     add_access_code_device_ = AddScrollListItem(
-        scroll_content(), vector_icons::kKeyboardIcon,
+        item_container, vector_icons::kKeyboardIcon,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
   }
@@ -127,7 +132,7 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
   for (auto& it : sinks_and_routes_) {
     const CastSink& sink = it.second.sink;
     views::View* container = AddScrollListItem(
-        scroll_content(), SinkIconTypeToIcon(sink.sink_icon_type),
+        item_container, SinkIconTypeToIcon(sink.sink_icon_type),
         base::UTF8ToUTF16(sink.name));
     view_to_sink_map_[container] = sink.id;
   }
@@ -149,6 +154,12 @@ void CastDetailedView::HandleViewClicked(views::View* view) {
     Shell::Get()->system_tray_model()->client()->ShowAccessCodeCastingDialog(
         AccessCodeCastDialogOpenLocation::kSystemTrayCastMenu);
   }
+  // Close the system tray to emphasize the pinned Cast notification.
+  if (features::IsQsRevampEnabled())
+    CloseBubble();  // Deletes `this`.
 }
+
+BEGIN_METADATA(CastDetailedView, TrayDetailedView)
+END_METADATA
 
 }  // namespace ash

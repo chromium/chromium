@@ -2981,6 +2981,7 @@ test("ash_unittests") {
     "system/camera/camera_effects_controller_unittest.cc",
     "system/caps_lock_notification_controller_unittest.cc",
     "system/cast/cast_feature_pod_controller_unittest.cc",
+    "system/cast/tray_cast_unittest.cc",
     "system/channel_indicator/channel_indicator_quick_settings_view_unittest.cc",
     "system/channel_indicator/channel_indicator_unittest.cc",
     "system/channel_indicator/channel_indicator_utils_unittest.cc",
