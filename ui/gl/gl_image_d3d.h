@@ -40,9 +40,6 @@ class GL_EXPORT GLImageD3D : public GLImage {
   GLImageD3D(const GLImageD3D&) = delete;
   GLImageD3D& operator=(const GLImageD3D&) = delete;
 
-  // Safe downcast. Returns nullptr on failure.
-  static GLImageD3D* FromGLImage(GLImage* image);
-
   bool Initialize();
 
   // GLImage implementation

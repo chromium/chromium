@@ -457,7 +457,7 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
   gl::GLImageIOSurface* image_io_surface =
-      gl::GLImageIOSurface::FromGLImage(image.get());
+      gl::GLImage::ToGLImageIOSurface(image.get());
   if (!image_io_surface) {
     LOG(ERROR) << "Created image was not IOSurface-backed.";
     return nullptr;

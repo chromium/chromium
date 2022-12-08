@@ -19,9 +19,6 @@ class GLImagePbuffer final : public gl::GLImage {
  public:
   GLImagePbuffer(const gfx::Size& size, EGLSurface surface);
 
-  // Safe downcast. Returns nullptr on failure.
-  static GLImagePbuffer* FromGLImage(GLImage* image);
-
   // gl::GLImage implementation.
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;

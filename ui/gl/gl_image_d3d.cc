@@ -67,13 +67,6 @@ bool GLImageD3D::Initialize() {
   return true;
 }
 
-// static
-GLImageD3D* GLImageD3D::FromGLImage(GLImage* image) {
-  if (!image || image->GetType() != Type::D3D)
-    return nullptr;
-  return static_cast<GLImageD3D*>(image);
-}
-
 GLImage::Type GLImageD3D::GetType() const {
   return Type::D3D;
 }

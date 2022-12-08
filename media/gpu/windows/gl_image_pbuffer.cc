@@ -13,13 +13,6 @@ namespace media {
 GLImagePbuffer::GLImagePbuffer(const gfx::Size& size, EGLSurface surface)
     : size_(size), surface_(surface) {}
 
-// static
-GLImagePbuffer* GLImagePbuffer::FromGLImage(GLImage* image) {
-  if (!image || image->GetType() != Type::PBUFFER)
-    return nullptr;
-  return static_cast<GLImagePbuffer*>(image);
-}
-
 gfx::Size GLImagePbuffer::GetSize() {
   return size_;
 }

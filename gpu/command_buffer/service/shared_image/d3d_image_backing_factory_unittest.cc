@@ -266,8 +266,8 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
   GLuint back_texture_id = back_texture->service_id();
   EXPECT_NE(back_texture_id, 0u);
 
-  auto* back_image = gl::GLImageD3D::FromGLImage(
-      back_texture->GetLevelImage(GL_TEXTURE_2D, 0));
+  auto* back_image =
+      gl::GLImage::ToGLImageD3D(back_texture->GetLevelImage(GL_TEXTURE_2D, 0));
 
   auto front_texture = shared_image_representation_factory_
                            ->ProduceGLTexturePassthrough(front_buffer_mailbox)
@@ -278,8 +278,8 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
   GLuint front_texture_id = front_texture->service_id();
   EXPECT_NE(front_texture_id, 0u);
 
-  auto* front_image = gl::GLImageD3D::FromGLImage(
-      front_texture->GetLevelImage(GL_TEXTURE_2D, 0));
+  auto* front_image =
+      gl::GLImage::ToGLImageD3D(front_texture->GetLevelImage(GL_TEXTURE_2D, 0));
 
   ASSERT_TRUE(back_image);
   EXPECT_EQ(back_image->ShouldBindOrCopy(), gl::GLImage::BIND);
@@ -1882,7 +1882,7 @@ void D3DImageBackingFactoryTest::RunOverlayTest(bool use_shared_handle,
   ASSERT_TRUE(scoped_read_access);
 
   auto* gl_image_d3d =
-      gl::GLImageD3D::FromGLImage(scoped_read_access->gl_image());
+      gl::GLImage::ToGLImageD3D(scoped_read_access->gl_image());
   ASSERT_TRUE(gl_image_d3d);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
@@ -2097,7 +2097,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
     ASSERT_TRUE(scoped_read_access);
 
     auto* gl_image_memory =
-        gl::GLImageMemory::FromGLImage(scoped_read_access->gl_image());
+        gl::GLImage::ToGLImageMemory(scoped_read_access->gl_image());
     ASSERT_TRUE(gl_image_memory);
 
     CheckYUV(gl_image_memory->memory(), gl_image_memory->stride(), size,

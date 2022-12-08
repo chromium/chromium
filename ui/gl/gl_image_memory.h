@@ -33,9 +33,6 @@ class GL_EXPORT GLImageMemory : public GLImage {
                   size_t stride,
                   bool disable_pbo_upload = false);
 
-  // Safe downcast. Returns |nullptr| on failure.
-  static GLImageMemory* FromGLImage(GLImage* image);
-
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   unsigned GetInternalFormat() override;

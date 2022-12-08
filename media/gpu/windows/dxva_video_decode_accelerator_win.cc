@@ -3254,7 +3254,7 @@ DXVAVideoDecodeAccelerator::GetSharedImagesFromPictureBuffer(
     std::unique_ptr<gpu::SharedImageBacking> shared_image;
     // Check if this picture buffer has a DX11 texture.
     gl::GLImageDXGI* gl_image_dxgi =
-        gl::GLImageDXGI::FromGLImage(picture_buffer->gl_image().get());
+        gl::GLImage::ToGLImageDXGI(picture_buffer->gl_image().get());
     if (gl_image_dxgi) {
       shared_image = gpu::D3DImageBacking::CreateFromGLTexture(
           mailbox, viz_formats[texture_idx],
@@ -3264,7 +3264,7 @@ DXVAVideoDecodeAccelerator::GetSharedImagesFromPictureBuffer(
           std::move(gl_texture));
     } else {
       auto gl_image_pbuffer_ref = scoped_refptr<GLImagePbuffer>(
-          GLImagePbuffer::FromGLImage(picture_buffer->gl_image().get()));
+          gl::GLImage::ToGLImagePbuffer(picture_buffer->gl_image().get()));
       DCHECK(gl_image_pbuffer_ref.get());
 
       // GLImagePbuffer is only created by PbufferPictureBuffer, which itself

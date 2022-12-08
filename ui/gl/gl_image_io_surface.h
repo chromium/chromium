@@ -75,9 +75,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
     return cv_pixel_buffer_;
   }
 
-  // Downcasts from |image|. Returns |nullptr| on failure.
-  static GLImageIOSurface* FromGLImage(GLImage* image);
-
  protected:
   GLImageIOSurface(const gfx::Size& size);
   ~GLImageIOSurface() override;

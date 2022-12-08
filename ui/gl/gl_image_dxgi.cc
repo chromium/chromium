@@ -134,13 +134,6 @@ EGLSurface CreatePbuffer(const Microsoft::WRL::ComPtr<ID3D11Texture2D>& texture,
 GLImageDXGI::GLImageDXGI(const gfx::Size& size, EGLStreamKHR stream)
     : size_(size), stream_(stream) {}
 
-// static
-GLImageDXGI* GLImageDXGI::FromGLImage(GLImage* image) {
-  if (!image || image->GetType() != Type::DXGI_IMAGE)
-    return nullptr;
-  return static_cast<GLImageDXGI*>(image);
-}
-
 GLImageDXGI::BindOrCopy GLImageDXGI::ShouldBindOrCopy() {
   return BIND;
 }

@@ -40,6 +40,7 @@ class Texture;
 }
 
 namespace media {
+class GLImagePbuffer;
 class VTVideoDecodeAccelerator;
 }
 
@@ -49,6 +50,11 @@ class SurfacelessSkiaGlRenderer;
 }  // namespace ui
 
 namespace gl {
+
+class GLImageD3D;
+class GLImageDXGI;
+class GLImageIOSurface;
+class GLImageMemory;
 
 // Encapsulates an image that can be bound and/or copied to a texture, hiding
 // platform specific management.
@@ -112,6 +118,14 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
     PBUFFER
   };
   virtual Type GetType() const;
+
+  // Safe downcasts. All functions return nullptr if |image| does not exist or
+  // does not have the specified type.
+  static GLImageD3D* ToGLImageD3D(GLImage* image);
+  static GLImageMemory* ToGLImageMemory(GLImage* image);
+  static GLImageIOSurface* ToGLImageIOSurface(GLImage* image);
+  static GLImageDXGI* ToGLImageDXGI(GLImage* image);
+  static media::GLImagePbuffer* ToGLImagePbuffer(GLImage* image);
 
  protected:
   // NOTE: We are in the process of eliminating client usage of GLImage. As part

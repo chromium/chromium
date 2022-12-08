@@ -1061,17 +1061,17 @@ bool SwapChainPresenter::PresentToSwapChain(
   ReleaseDCOMPSurfaceResourcesIfNeeded();
 
   GLImageDXGI* image_dxgi =
-      GLImageDXGI::FromGLImage(params.images[kNV12ImageIndex].get());
+      GLImage::ToGLImageDXGI(params.images[kNV12ImageIndex].get());
   GLImageD3D* image_d3d =
-      GLImageD3D::FromGLImage(params.images[kNV12ImageIndex].get());
+      GLImage::ToGLImageD3D(params.images[kNV12ImageIndex].get());
 
   GLImageMemory* y_image_memory =
-      GLImageMemory::FromGLImage(params.images[kYPlaneImageIndex].get());
+      GLImage::ToGLImageMemory(params.images[kYPlaneImageIndex].get());
   GLImageMemory* uv_image_memory =
-      GLImageMemory::FromGLImage(params.images[kUVPlaneImageIndex].get());
+      GLImage::ToGLImageMemory(params.images[kUVPlaneImageIndex].get());
 
   GLImageD3D* swap_chain_image =
-      GLImageD3D::FromGLImage(params.images[kSwapChainImageIndex].get());
+      GLImage::ToGLImageD3D(params.images[kSwapChainImageIndex].get());
   if (swap_chain_image && !swap_chain_image->swap_chain())
     swap_chain_image = nullptr;
 

@@ -212,11 +212,4 @@ void GLImageIOSurface::SetColorSpace(const gfx::ColorSpace& color_space) {
   IOSurfaceSetColorSpace(io_surface_, color_space);
 }
 
-// static
-GLImageIOSurface* GLImageIOSurface::FromGLImage(GLImage* image) {
-  if (!image || image->GetType() != Type::IOSURFACE)
-    return nullptr;
-  return static_cast<GLImageIOSurface*>(image);
-}
-
 }  // namespace gl
