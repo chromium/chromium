@@ -486,7 +486,8 @@ void LoadIconFromWebApp(content::BrowserContext* context,
           icon_type, size_hint_in_dip, is_placeholder_icon, icon_effects,
           IDR_APP_DEFAULT_ICON, std::move(callback));
   icon_loader->LoadWebAppIcon(
-      web_app_id, web_app_provider->registrar().GetAppStartUrl(web_app_id),
+      web_app_id,
+      web_app_provider->registrar_unsafe().GetAppStartUrl(web_app_id),
       web_app_provider->icon_manager(), Profile::FromBrowserContext(context));
 }
 

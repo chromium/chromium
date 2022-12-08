@@ -92,10 +92,11 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
     }
 
     absl::optional<web_app::AppId> app_id =
-        provider->registrar().FindAppWithUrlInScope(tab->GetVisibleURL());
+        provider->registrar_unsafe().FindAppWithUrlInScope(
+            tab->GetVisibleURL());
     if (app_id) {
       const web_app::WebApp* web_app =
-          provider->registrar().GetAppById(*app_id);
+          provider->registrar_unsafe().GetAppById(*app_id);
       DCHECK(web_app);
       if (web_app->user_display_mode() == web_app::UserDisplayMode::kBrowser &&
           !web_app->is_uninstalling()) {
