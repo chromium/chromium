@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEBAUTHN_ANDROID_CONDITIONAL_UI_DELEGATE_ANDROID_H_
-#define CHROME_BROWSER_WEBAUTHN_ANDROID_CONDITIONAL_UI_DELEGATE_ANDROID_H_
+#ifndef CHROME_BROWSER_WEBAUTHN_ANDROID_WEBAUTHN_REQUEST_DELEGATE_ANDROID_H_
+#define CHROME_BROWSER_WEBAUTHN_ANDROID_WEBAUTHN_REQUEST_DELEGATE_ANDROID_H_
 
 #include <vector>
 
@@ -13,7 +13,7 @@
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace device {
 class DiscoverableCredentialMetadata;
@@ -23,15 +23,16 @@ class DiscoverableCredentialMetadata;
 // request handling for Conditional UI on Android. This is attached to a
 // WebContents via SetUserData. It caches a callback that will complete the
 // WebAuthn 'get' request when a user selects a credential.
-class ConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
+class WebAuthnRequestDelegateAndroid : public base::SupportsUserData::Data {
  public:
-  ConditionalUiDelegateAndroid();
+  WebAuthnRequestDelegateAndroid();
 
-  ConditionalUiDelegateAndroid(const ConditionalUiDelegateAndroid&) = delete;
-  ConditionalUiDelegateAndroid& operator=(const ConditionalUiDelegateAndroid&) =
+  WebAuthnRequestDelegateAndroid(const WebAuthnRequestDelegateAndroid&) =
       delete;
+  WebAuthnRequestDelegateAndroid& operator=(
+      const WebAuthnRequestDelegateAndroid&) = delete;
 
-  ~ConditionalUiDelegateAndroid() override;
+  ~WebAuthnRequestDelegateAndroid() override;
 
   // Called when a Web Authentication Conditional UI request is received. This
   // provides the callback that will complete the request if and when a user
@@ -54,7 +55,7 @@ class ConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
   // one does not already exist.
   // The delegate is destroyed along with the WebContents and so should not be
   // cached.
-  static ConditionalUiDelegateAndroid* GetConditionalUiDelegate(
+  static WebAuthnRequestDelegateAndroid* GetRequestDelegate(
       content::WebContents* web_contents);
 
  private:
@@ -62,4 +63,4 @@ class ConditionalUiDelegateAndroid : public base::SupportsUserData::Data {
       webauthn_account_selection_callback_;
 };
 
-#endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_CONDITIONAL_UI_DELEGATE_ANDROID_H_
+#endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_WEBAUTHN_REQUEST_DELEGATE_ANDROID_H_

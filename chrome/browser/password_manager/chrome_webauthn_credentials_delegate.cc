@@ -23,7 +23,7 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/webauthn/android/conditional_ui_delegate_android.h"
+#include "chrome/browser/webauthn/android/webauthn_request_delegate_android.h"
 #endif
 
 ChromeWebAuthnCredentialsDelegate::ChromeWebAuthnCredentialsDelegate(
@@ -57,12 +57,12 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
   DCHECK(selected_credential_id);
 
 #if BUILDFLAG(IS_ANDROID)
-  auto* credentials_delegate =
-      ConditionalUiDelegateAndroid::GetConditionalUiDelegate(web_contents_);
-  if (!credentials_delegate) {
+  auto* request_delegate =
+      WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents_);
+  if (!request_delegate) {
     return;
   }
-  credentials_delegate->OnWebAuthnAccountSelected(*selected_credential_id);
+  request_delegate->OnWebAuthnAccountSelected(*selected_credential_id);
 #else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(web_contents_);
