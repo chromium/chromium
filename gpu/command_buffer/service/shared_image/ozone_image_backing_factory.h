@@ -54,6 +54,16 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
 
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gfx::GpuMemoryBufferHandle handle) override;
+
+  std::unique_ptr<SharedImageBacking> CreateSharedImage(
+      const Mailbox& mailbox,
       int client_id,
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,

@@ -35,6 +35,25 @@
 namespace gpu {
 namespace {
 
+// Returns BufferFormat for given `format`.
+gfx::BufferFormat GetBufferFormat(viz::SharedImageFormat format) {
+  if (format.is_single_plane())
+    viz::BufferFormat(format.resource_format());
+
+  switch (format.plane_config()) {
+    case viz::SharedImageFormat::PlaneConfig::kY_V_U:
+      return gfx::BufferFormat::YVU_420;
+    case viz::SharedImageFormat::PlaneConfig::kY_UV:
+      return format.channel_format() ==
+                     viz::SharedImageFormat::ChannelFormat::k10
+                 ? gfx::BufferFormat::P010
+                 : gfx::BufferFormat::YUV_420_BIPLANAR;
+    case viz::SharedImageFormat::PlaneConfig::kY_UV_A:
+      return gfx::BufferFormat::YUVA_420_TRIPLANAR;
+  }
+  NOTREACHED();
+}
+
 gfx::BufferUsage GetBufferUsage(uint32_t usage) {
   if (usage & SHARED_IMAGE_USAGE_WEBGPU) {
     // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
@@ -184,6 +203,36 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   return backing;
 }
 
+std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    uint32_t usage,
+    gfx::GpuMemoryBufferHandle handle) {
+  DCHECK_EQ(handle.type, gfx::NATIVE_PIXMAP);
+
+  ui::SurfaceFactoryOzone* surface_factory =
+      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      surface_factory->CreateNativePixmapFromHandle(
+          kNullSurfaceHandle, size, GetBufferFormat(format),
+          std::move(handle.native_pixmap_handle));
+  if (!pixmap) {
+    return nullptr;
+  }
+
+  auto backing = std::make_unique<OzoneImageBacking>(
+      mailbox, format, gfx::BufferPlane::DEFAULT, size, color_space,
+      surface_origin, alpha_type, usage, shared_context_state_.get(),
+      std::move(pixmap), dawn_procs_, workarounds_, use_passthrough_);
+  backing->SetCleared();
+
+  return backing;
+}
+
 bool OzoneImageBackingFactory::IsSupported(
     uint32_t usage,
     viz::SharedImageFormat format,
@@ -192,7 +241,7 @@ bool OzoneImageBackingFactory::IsSupported(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  if (format.is_multi_plane()) {
+  if (format.is_multi_plane() && gmb_type != gfx::NATIVE_PIXMAP) {
     return false;
   }
 
