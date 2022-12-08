@@ -84,22 +84,7 @@ class NamedMojoIpcServerBase : public IpcServer {
   base::RepeatingClosure disconnect_handler_;
 
  private:
-  // Forwards callbacks from a NamedMojoServerEndpointConnector to a
-  // NamedMojoIpcServerBase. This allows the server to create a SequenceBound
-  // interface to post callbacks from the IO sequence to the main sequence.
-  class DelegateProxy : public NamedMojoServerEndpointConnector::Delegate {
-   public:
-    explicit DelegateProxy(base::WeakPtr<NamedMojoIpcServerBase> server);
-    ~DelegateProxy() override;
-
-    // Overrides for NamedMojoServerEndpointConnector::Delegate
-    void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
-                           std::unique_ptr<ConnectionInfo> info) override;
-    void OnServerEndpointCreated() override;
-
-   private:
-    base::WeakPtr<NamedMojoIpcServerBase> server_;
-  };
+  class DelegateProxy;
 
   void OnEndpointConnectorStarted(
       base::SequenceBound<NamedMojoServerEndpointConnector> endpoint_connector);

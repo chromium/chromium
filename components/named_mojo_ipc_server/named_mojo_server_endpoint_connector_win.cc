@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector_win.h"
-
 #include <string.h>
 #include <windows.h>
 
@@ -12,21 +10,24 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_types.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -57,7 +58,47 @@ mojo::PlatformChannelServerEndpoint CreateServerEndpoint(
   return channel.TakeServerEndpoint();
 }
 
-}  // namespace
+class NamedMojoServerEndpointConnectorWin final
+    : public NamedMojoServerEndpointConnector {
+ public:
+  explicit NamedMojoServerEndpointConnectorWin(
+      const mojo::NamedPlatformChannel::ServerName& server_name,
+      base::SequenceBound<Delegate> delegate);
+  NamedMojoServerEndpointConnectorWin(
+      const NamedMojoServerEndpointConnectorWin&) = delete;
+  NamedMojoServerEndpointConnectorWin& operator=(
+      const NamedMojoServerEndpointConnectorWin&) = delete;
+  ~NamedMojoServerEndpointConnectorWin() override;
+
+ private:
+  void OnConnectedEventSignaled(base::WaitableEvent* event);
+
+  void Connect();
+  void OnReady();
+  void OnError();
+
+  void ResetConnectionObjects();
+
+  // Overrides for NamedMojoServerEndpointConnector.
+  bool TryStart() override;
+
+  base::WaitableEventWatcher client_connection_watcher_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Non-null when there is a pending connection.
+  base::win::ScopedHandle pending_named_pipe_handle_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Signaled by ConnectNamedPipe() once |pending_named_pipe_handle_| is
+  // connected to a client.
+  base::WaitableEvent client_connected_event_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Object to allow ConnectNamedPipe() to run asynchronously.
+  OVERLAPPED connect_overlapped_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::OneShotTimer retry_connect_timer_;
+};
 
 NamedMojoServerEndpointConnectorWin::NamedMojoServerEndpointConnectorWin(
     const mojo::NamedPlatformChannel::ServerName& server_name,
@@ -168,16 +209,6 @@ void NamedMojoServerEndpointConnectorWin::OnError() {
                              &NamedMojoServerEndpointConnectorWin::Connect);
 }
 
-// static
-base::SequenceBound<NamedMojoServerEndpointConnector>
-NamedMojoServerEndpointConnector::Create(
-    scoped_refptr<base::SequencedTaskRunner> io_sequence,
-    const mojo::NamedPlatformChannel::ServerName& server_name,
-    base::SequenceBound<Delegate> delegate) {
-  return base::SequenceBound<NamedMojoServerEndpointConnectorWin>(
-      io_sequence, server_name, std::move(delegate));
-}
-
 void NamedMojoServerEndpointConnectorWin::ResetConnectionObjects() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -189,6 +220,18 @@ void NamedMojoServerEndpointConnectorWin::ResetConnectionObjects() {
 bool NamedMojoServerEndpointConnectorWin::TryStart() {
   Connect();
   return true;
+}
+
+}  // namespace
+
+// static
+base::SequenceBound<NamedMojoServerEndpointConnector>
+NamedMojoServerEndpointConnector::Create(
+    scoped_refptr<base::SequencedTaskRunner> io_sequence,
+    const mojo::NamedPlatformChannel::ServerName& server_name,
+    base::SequenceBound<Delegate> delegate) {
+  return base::SequenceBound<NamedMojoServerEndpointConnectorWin>(
+      io_sequence, server_name, std::move(delegate));
 }
 
 }  // namespace named_mojo_ipc_server

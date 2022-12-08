@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector_linux.h"
-
 #include <sys/socket.h>
 #include <sys/types.h>
 
@@ -14,12 +12,46 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
 namespace named_mojo_ipc_server {
+namespace {
+
+class NamedMojoServerEndpointConnectorLinux final
+    : public NamedMojoServerEndpointConnector {
+ public:
+  explicit NamedMojoServerEndpointConnectorLinux(
+      const mojo::NamedPlatformChannel::ServerName& server_name,
+      base::SequenceBound<Delegate> delegate);
+  NamedMojoServerEndpointConnectorLinux(
+      const NamedMojoServerEndpointConnectorLinux&) = delete;
+  NamedMojoServerEndpointConnectorLinux& operator=(
+      const NamedMojoServerEndpointConnectorLinux&) = delete;
+  ~NamedMojoServerEndpointConnectorLinux() override;
+
+ private:
+  void OnSocketReady();
+
+  // Overrides for NamedMojoServerEndpointConnector.
+  bool TryStart() override;
+
+  // Note that |server_endpoint_| must outlive |read_watcher_controller_|;
+  // otherwise a bad file descriptor error will occur at destruction.
+  mojo::PlatformChannelServerEndpoint server_endpoint_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<base::FileDescriptorWatcher::Controller>
+      read_watcher_controller_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::WeakPtrFactory<NamedMojoServerEndpointConnectorLinux> weak_factory_{
+      this};
+};
 
 NamedMojoServerEndpointConnectorLinux::NamedMojoServerEndpointConnectorLinux(
     const mojo::NamedPlatformChannel::ServerName& server_name,
@@ -84,6 +116,8 @@ bool NamedMojoServerEndpointConnectorLinux::TryStart() {
   delegate_.AsyncCall(&Delegate::OnServerEndpointCreated);
   return true;
 }
+
+}  // namespace
 
 // static
 base::SequenceBound<NamedMojoServerEndpointConnector>

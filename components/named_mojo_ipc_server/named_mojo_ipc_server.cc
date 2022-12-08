@@ -39,25 +39,32 @@
 
 namespace named_mojo_ipc_server {
 
-NamedMojoIpcServerBase::DelegateProxy::DelegateProxy(
-    base::WeakPtr<NamedMojoIpcServerBase> server)
-    : server_(server) {}
+// Forwards callbacks from a NamedMojoServerEndpointConnector to a
+// NamedMojoIpcServerBase. This allows the server to create a SequenceBound
+// interface to post callbacks from the IO sequence to the main sequence.
+class NamedMojoIpcServerBase::DelegateProxy final
+    : public NamedMojoServerEndpointConnector::Delegate {
+ public:
+  explicit DelegateProxy(base::WeakPtr<NamedMojoIpcServerBase> server)
+      : server_(server) {}
+  ~DelegateProxy() override = default;
 
-NamedMojoIpcServerBase::DelegateProxy::~DelegateProxy() = default;
-
-void NamedMojoIpcServerBase::DelegateProxy::OnClientConnected(
-    mojo::PlatformChannelEndpoint endpoint,
-    std::unique_ptr<ConnectionInfo> info) {
-  if (server_) {
-    server_->OnClientConnected(std::move(endpoint), std::move(info));
+  void OnClientConnected(mojo::PlatformChannelEndpoint endpoint,
+                         std::unique_ptr<ConnectionInfo> info) override {
+    if (server_) {
+      server_->OnClientConnected(std::move(endpoint), std::move(info));
+    }
   }
-}
 
-void NamedMojoIpcServerBase::DelegateProxy::OnServerEndpointCreated() {
-  if (server_) {
-    server_->OnServerEndpointCreated();
+  void OnServerEndpointCreated() override {
+    if (server_) {
+      server_->OnServerEndpointCreated();
+    }
   }
-}
+
+ private:
+  base::WeakPtr<NamedMojoIpcServerBase> server_;
+};
 
 NamedMojoIpcServerBase::NamedMojoIpcServerBase(
     const mojo::NamedPlatformChannel::ServerName& server_name,

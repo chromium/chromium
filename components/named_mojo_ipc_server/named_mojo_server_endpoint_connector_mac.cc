@@ -2,26 +2,58 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector_mac.h"
-
 #include <bsm/libbsm.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>
 #include <mach/port.h>
 
+#include <memory>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/mac/dispatch_source_mach.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/mac/scoped_mach_port.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/named_mojo_server_endpoint_connector.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
+#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
 namespace named_mojo_ipc_server {
+namespace {
+
+// Mac implementation for MojoServerEndpointConnector.
+class NamedMojoServerEndpointConnectorMac final
+    : public NamedMojoServerEndpointConnector {
+ public:
+  explicit NamedMojoServerEndpointConnectorMac(
+      const mojo::NamedPlatformChannel::ServerName& server_name,
+      base::SequenceBound<Delegate> delegate);
+  NamedMojoServerEndpointConnectorMac(
+      const NamedMojoServerEndpointConnectorMac&) = delete;
+  NamedMojoServerEndpointConnectorMac& operator=(
+      const NamedMojoServerEndpointConnectorMac&) = delete;
+  ~NamedMojoServerEndpointConnectorMac() override;
+
+ private:
+  // Called by |dispatch_source_| on an arbitrary thread when a Mach message is
+  // ready to be received on |endpoint_|.
+  void HandleRequest();
+  mach_port_t port();
+
+  // Overrides for NamedMojoServerEndpointConnector.
+  bool TryStart() override;
+
+  // Note: |server_endpoint_| must outlive |dispatch_source_|.
+  mojo::PlatformChannelServerEndpoint server_endpoint_;
+  std::unique_ptr<base::DispatchSourceMach> dispatch_source_;
+};
 
 NamedMojoServerEndpointConnectorMac::NamedMojoServerEndpointConnectorMac(
     const mojo::NamedPlatformChannel::ServerName& server_name,
@@ -96,6 +128,8 @@ bool NamedMojoServerEndpointConnectorMac::TryStart() {
   delegate_.AsyncCall(&Delegate::OnServerEndpointCreated);
   return true;
 }
+
+}  // namespace
 
 // static
 base::SequenceBound<NamedMojoServerEndpointConnector>
