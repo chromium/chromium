@@ -145,7 +145,7 @@ class AttributionInternalsWebUiBrowserTest : public ContentBrowserTest {
         .shadowRoot.querySelector('tbody');
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children[0].innerText === "No sent or pending reports.") {
+          table.children[0].children[0]?.innerText === "No sent or pending reports.") {
         obs.disconnect();
         document.title = $1;
       }
@@ -243,8 +243,7 @@ IN_PROC_BROWSER_TEST_F(
         .shadowRoot.querySelector('tbody');
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children[0].innerText ===
-          "No sources.") {
+          table.children[0].children[0]?.innerText === "No sources.") {
         obs.disconnect();
         document.title = $1;
       }
@@ -315,32 +314,32 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 7 &&
-          table.children[0].children[0].innerText === $1 &&
-          table.children[0].children[9].innerText === "Navigation" &&
-          table.children[1].children[9].innerText === "Event" &&
-          table.children[0].children[10].innerText === "0" &&
-          table.children[1].children[10].innerText === $2 &&
-          table.children[0].children[11].innerText === "{}" &&
-          table.children[1].children[11].innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
-          table.children[0].children[12].innerText === "{}" &&
-          table.children[1].children[12].innerText === '{\n "a": "0x1"\n}' &&
-          table.children[0].children[13].innerText === "0 / 65536" &&
-          table.children[1].children[13].innerText === "1300 / 65536" &&
-          table.children[0].children[14].innerText === "19" &&
-          table.children[1].children[14].innerText === "" &&
-          table.children[0].children[15].innerText === "" &&
-          table.children[1].children[15].innerText === "13, 17" &&
-          table.children[0].children[16].innerText === "" &&
-          table.children[1].children[16].innerText === "14, 18" &&
-          table.children[0].children[1].innerText === "Unattributable: noised" &&
-          table.children[1].children[1].innerText === "Attributable" &&
-          table.children[2].children[1].innerText === "Attributable: reached event-level attribution limit" &&
-          table.children[3].children[1].innerText === "Rejected: internal error" &&
-          table.children[4].children[1].innerText === "Rejected: insufficient source capacity" &&
-          table.children[5].children[1].innerText === "Rejected: insufficient unique destination capacity" &&
-          table.children[6].children[1].innerText === "Rejected: excessive reporting origins" &&
-          table.children[5].children[17].innerText === "disabled" &&
-          table.children[6].children[17].innerText === "enabled") {
+          table.children[0].children[0]?.innerText === $1 &&
+          table.children[0].children[9]?.innerText === "Navigation" &&
+          table.children[1].children[9]?.innerText === "Event" &&
+          table.children[0].children[10]?.innerText === "0" &&
+          table.children[1].children[10]?.innerText === $2 &&
+          table.children[0].children[11]?.innerText === "{}" &&
+          table.children[1].children[11]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
+          table.children[0].children[12]?.innerText === "{}" &&
+          table.children[1].children[12]?.innerText === '{\n "a": "0x1"\n}' &&
+          table.children[0].children[13]?.innerText === "0 / 65536" &&
+          table.children[1].children[13]?.innerText === "1300 / 65536" &&
+          table.children[0].children[14]?.innerText === "19" &&
+          table.children[1].children[14]?.innerText === "" &&
+          table.children[0].children[15]?.innerText === "" &&
+          table.children[1].children[15]?.innerText === "13, 17" &&
+          table.children[0].children[16]?.innerText === "" &&
+          table.children[1].children[16]?.innerText === "14, 18" &&
+          table.children[0].children[1]?.innerText === "Unattributable: noised" &&
+          table.children[1].children[1]?.innerText === "Attributable" &&
+          table.children[2].children[1]?.innerText === "Attributable: reached event-level attribution limit" &&
+          table.children[3].children[1]?.innerText === "Rejected: internal error" &&
+          table.children[4].children[1]?.innerText === "Rejected: insufficient source capacity" &&
+          table.children[5].children[1]?.innerText === "Rejected: insufficient unique destination capacity" &&
+          table.children[6].children[1]?.innerText === "Rejected: excessive reporting origins" &&
+          table.children[5].children[17]?.innerText === "disabled" &&
+          table.children[6].children[17]?.innerText === "enabled") {
         obs.disconnect();
         document.title = $3;
       }
@@ -373,10 +372,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children.length >= 3 &&
-          table.children[0].children[1].innerHTML === description &&
-          table.children[0].children[2].innerHTML === metadata
-      )  {
+          table.children[0].children[1]?.innerHTML === description &&
+          table.children[0].children[2]?.innerHTML === metadata
+      ) {
         obs.disconnect();
         document.title = $1;
       }
@@ -410,10 +408,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children.length >= 3 &&
-          table.children[0].children[1].innerHTML === description &&
-          table.children[0].children[2].innerHTML === metadata
-      )  {
+          table.children[0].children[1]?.innerHTML === description &&
+          table.children[0].children[2]?.innerHTML === metadata
+      ) {
         obs.disconnect();
         document.title = $1;
       }
@@ -448,10 +445,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children.length >= 3 &&
-          table.children[0].children[1].innerHTML === description &&
-          table.children[0].children[2].innerHTML === metadata
-      )  {
+          table.children[0].children[1]?.innerHTML === description &&
+          table.children[0].children[2]?.innerHTML === metadata
+      ) {
         obs.disconnect();
         document.title = $1;
       }
@@ -609,24 +605,24 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .shadowRoot.querySelector('tbody');
       let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 6 &&
-            table.children[0].children[3].innerText ===
+            table.children[0].children[3]?.innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
-            table.children[0].children[6].innerText === "13" &&
-            table.children[0].children[7].innerText === "yes" &&
-            table.children[0].children[2].innerText === "Pending" &&
-            table.children[1].children[6].innerText === "11" &&
-            table.children[1].children[2].innerText ===
+            table.children[0].children[6]?.innerText === "13" &&
+            table.children[0].children[7]?.innerText === "yes" &&
+            table.children[0].children[2]?.innerText === "Pending" &&
+            table.children[1].children[6]?.innerText === "11" &&
+            table.children[1].children[2]?.innerText ===
               "Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e" &&
-            table.children[2].children[6].innerText === "0" &&
-            table.children[2].children[7].innerText === "no" &&
-            table.children[2].children[2].innerText === "Sent: HTTP 200" &&
+            table.children[2].children[6]?.innerText === "0" &&
+            table.children[2].children[7]?.innerText === "no" &&
+            table.children[2].children[2]?.innerText === "Sent: HTTP 200" &&
             !table.children[2].classList.contains('send-error') &&
-            table.children[3].children[2].innerText === "Prohibited by browser policy" &&
+            table.children[3].children[2]?.innerText === "Prohibited by browser policy" &&
             !table.children[3].classList.contains('send-error') &&
-            table.children[4].children[2].innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
+            table.children[4].children[2]?.innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
             table.children[4].classList.contains('send-error') &&
-            table.children[5].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
-            table.children[5].children[3].innerText ===
+            table.children[5].children[2]?.innerText === "Network error: ERR_TIMED_OUT" &&
+            table.children[5].children[3]?.innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           obs.disconnect();
           document.title = $1;
@@ -651,21 +647,21 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .shadowRoot.querySelector('tbody');
       let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 6 &&
-            table.children[5].children[3].innerText ===
+            table.children[5].children[3]?.innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
-            table.children[5].children[6].innerText === "13" &&
-            table.children[5].children[7].innerText === "yes" &&
-            table.children[5].children[2].innerText === "Pending" &&
-            table.children[4].children[6].innerText === "11" &&
-            table.children[4].children[2].innerText ===
+            table.children[5].children[6]?.innerText === "13" &&
+            table.children[5].children[7]?.innerText === "yes" &&
+            table.children[5].children[2]?.innerText === "Pending" &&
+            table.children[4].children[6]?.innerText === "11" &&
+            table.children[4].children[2]?.innerText ===
               "Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e" &&
-            table.children[3].children[6].innerText === "0" &&
-            table.children[3].children[7].innerText === "no" &&
-            table.children[3].children[2].innerText === "Sent: HTTP 200" &&
-            table.children[2].children[2].innerText === "Prohibited by browser policy" &&
-            table.children[1].children[2].innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
-            table.children[0].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
-            table.children[0].children[3].innerText ===
+            table.children[3].children[6]?.innerText === "0" &&
+            table.children[3].children[7]?.innerText === "no" &&
+            table.children[3].children[2]?.innerText === "Sent: HTTP 200" &&
+            table.children[2].children[2]?.innerText === "Prohibited by browser policy" &&
+            table.children[1].children[2]?.innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
+            table.children[0].children[2]?.innerText === "Network error: ERR_TIMED_OUT" &&
+            table.children[0].children[3]?.innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           obs.disconnect();
           document.title = $1;
@@ -688,21 +684,21 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .shadowRoot.querySelector('tbody');
       let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 6 &&
-            table.children[0].children[3].innerText ===
+            table.children[0].children[3]?.innerText ===
               "https://report.test/.well-known/attribution-reporting/report-event-attribution" &&
-            table.children[0].children[6].innerText === "13" &&
-            table.children[0].children[7].innerText === "yes" &&
-            table.children[0].children[2].innerText === "Pending" &&
-            table.children[1].children[6].innerText === "11" &&
-            table.children[1].children[2].innerText ===
+            table.children[0].children[6]?.innerText === "13" &&
+            table.children[0].children[7]?.innerText === "yes" &&
+            table.children[0].children[2]?.innerText === "Pending" &&
+            table.children[1].children[6]?.innerText === "11" &&
+            table.children[1].children[2]?.innerText ===
               "Replaced by higher-priority report: 21abd97f-73e8-4b88-9389-a9fee6abda5e" &&
-            table.children[2].children[6].innerText === "0" &&
-            table.children[2].children[7].innerText === "no" &&
-            table.children[2].children[2].innerText === "Sent: HTTP 200" &&
-            table.children[3].children[2].innerText === "Prohibited by browser policy" &&
-            table.children[4].children[2].innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
-            table.children[5].children[2].innerText === "Network error: ERR_TIMED_OUT" &&
-            table.children[5].children[3].innerText ===
+            table.children[2].children[6]?.innerText === "0" &&
+            table.children[2].children[7]?.innerText === "no" &&
+            table.children[2].children[2]?.innerText === "Sent: HTTP 200" &&
+            table.children[3].children[2]?.innerText === "Prohibited by browser policy" &&
+            table.children[4].children[2]?.innerText === "Network error: ERR_METHOD_NOT_SUPPORTED" &&
+            table.children[5].children[2]?.innerText === "Network error: ERR_TIMED_OUT" &&
+            table.children[5].children[3]?.innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-event-attribution") {
           obs.disconnect();
           document.title = $1;
@@ -765,8 +761,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     const setTitleIfDone = (_, obs) => {
       if (table.children.length === 2 &&
-          table.children[0].children[6].innerText === "7" &&
-          table.children[1].children[2].innerText === "Sent: HTTP 200") {
+          table.children[0].children[6]?.innerText === "7" &&
+          table.children[1].children[2]?.innerText === "Sent: HTTP 200") {
         if (obs) {
           obs.disconnect();
         }
@@ -825,8 +821,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 2 &&
-          table.children[0].children[0].innerText === "5" &&
-          table.children[1].children[0].innerText === "6") {
+          table.children[0].children[0]?.innerText === "5" &&
+          table.children[1].children[0]?.innerText === "6") {
         obs.disconnect();
         document.title = $1;
       }
@@ -847,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children[0].innerText === "No sources.") {
+          table.children[0].children[0]?.innerText === "No sources.") {
         obs.disconnect();
         document.title = $1;
       }
@@ -889,8 +885,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     const setTitleIfDone = (_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children.length >= 7 &&
-          table.children[0].children[6].innerText === "7") {
+          table.children[0].children[6]?.innerText === "7") {
           if (obs) {
             obs.disconnect();
           }
@@ -1018,16 +1013,16 @@ IN_PROC_BROWSER_TEST_F(
           .shadowRoot.querySelector('tbody');
       let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 6 &&
-            table.children[0].children[3].innerText ===
+            table.children[0].children[3]?.innerText ===
               "https://report.test/.well-known/attribution-reporting/report-aggregate-attribution" &&
-            table.children[0].children[2].innerText === "Pending" &&
-            table.children[0].children[6].innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
-            table.children[1].children[2].innerText === "Sent: HTTP 200" &&
-            table.children[2].children[2].innerText === "Prohibited by browser policy" &&
-            table.children[3].children[2].innerText === "Dropped due to assembly failure" &&
-            table.children[4].children[2].innerText === "Network error: ERR_INVALID_REDIRECT" &&
-            table.children[5].children[2].innerText === "Network error: ERR_INTERNET_DISCONNECTED" &&
-            table.children[5].children[3].innerText ===
+            table.children[0].children[2]?.innerText === "Pending" &&
+            table.children[0].children[6]?.innerText === '[ {  "key": "0x1",  "value": 2 }]' &&
+            table.children[1].children[2]?.innerText === "Sent: HTTP 200" &&
+            table.children[2].children[2]?.innerText === "Prohibited by browser policy" &&
+            table.children[3].children[2]?.innerText === "Dropped due to assembly failure" &&
+            table.children[4].children[2]?.innerText === "Network error: ERR_INVALID_REDIRECT" &&
+            table.children[5].children[2]?.innerText === "Network error: ERR_INTERNET_DISCONNECTED" &&
+            table.children[5].children[3]?.innerText ===
               "https://report.test/.well-known/attribution-reporting/debug/report-aggregate-attribution") {
           obs.disconnect();
           document.title = $1;
@@ -1099,11 +1094,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .shadowRoot.querySelector('tbody');
       let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 1 &&
-            table.children[0].children[1].innerText === "Success: Report stored" &&
-            table.children[0].children[2].innerText === "Success: Report stored" &&
-            table.children[0].children[3].innerText === "https://d.test" &&
-            table.children[0].children[4].innerText === "https://r.test" &&
-            table.children[0].children[5].innerText.includes('{')) {
+            table.children[0].children[1]?.innerText === "Success: Report stored" &&
+            table.children[0].children[2]?.innerText === "Success: Report stored" &&
+            table.children[0].children[3]?.innerText === "https://d.test" &&
+            table.children[0].children[4]?.innerText === "https://r.test" &&
+            table.children[0].children[5]?.innerText.includes('{')) {
           obs.disconnect();
           document.title = $1;
         }
@@ -1188,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children[0].innerText === "No sent or pending reports.") {
+          table.children[0].children[0]?.innerText === "No sent or pending reports.") {
         obs.disconnect();
         document.title = $1;
       }
@@ -1243,8 +1238,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let label = document.querySelector('#show-debug-event-reports span');
       let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 2 &&
-            table.children[0].children[6].innerText === "1" &&
-            table.children[1].children[6].innerText === "2" &&
+            table.children[0].children[6]?.innerText === "1" &&
+            table.children[1].children[6]?.innerText === "2" &&
             label.innerText === '') {
           obs.disconnect();
           document.title = $1;
@@ -1282,7 +1277,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let label = document.querySelector('#show-debug-event-reports span');
       let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 1 &&
-            table.children[0].children[6].innerText === "2" &&
+            table.children[0].children[6]?.innerText === "2" &&
             label.innerText === ' (2 hidden)') {
           obs.disconnect();
           document.title = $1;
@@ -1310,9 +1305,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       let label = document.querySelector('#show-debug-event-reports span');
       let obs = new MutationObserver((_, obs) => {
         if (table.children.length === 3 &&
-            table.children[0].children[6].innerText === "1" &&
-            table.children[1].children[6].innerText === "2" &&
-            table.children[2].children[6].innerText === "3" &&
+            table.children[0].children[6]?.innerText === "1" &&
+            table.children[1].children[6]?.innerText === "2" &&
+            table.children[2].children[6]?.innerText === "3" &&
             label.innerText === '') {
           obs.disconnect();
           document.title = $1;
@@ -1348,10 +1343,9 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children.length >= 4 &&
-          table.children[0].children[1].innerText === url &&
-          table.children[0].children[2].innerText === 'HTTP 200' &&
-          table.children[0].children[3].innerText.includes('source-unknown-error')
+          table.children[0].children[1]?.innerText === url &&
+          table.children[0].children[2]?.innerText === 'HTTP 200' &&
+          table.children[0].children[3]?.innerText.includes('source-unknown-error')
       ) {
         obs.disconnect();
         document.title = $1;
