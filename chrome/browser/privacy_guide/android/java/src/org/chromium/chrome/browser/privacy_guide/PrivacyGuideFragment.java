@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
@@ -25,10 +27,26 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.widget.ButtonCompat;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * Fragment containing the Privacy Guide (a walk-through of the most important privacy settings).
  */
 public class PrivacyGuideFragment extends Fragment {
+    /**
+     * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
+     */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({FragmentType.MSBB, FragmentType.SYNC, FragmentType.SAFE_BROWSING,
+            FragmentType.COOKIES})
+    @interface FragmentType {
+        int MSBB = 0;
+        int SYNC = 1;
+        int SAFE_BROWSING = 2;
+        int COOKIES = 3;
+    }
+
     private BottomSheetController mBottomSheetController;
     private PrivacyGuidePagerAdapter mPagerAdapter;
     private View mView;
@@ -36,11 +54,13 @@ public class PrivacyGuideFragment extends Fragment {
     private ButtonCompat mNextButton;
     private ButtonCompat mBackButton;
     private ButtonCompat mFinishButton;
+    private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegate;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate();
     }
 
     @Nullable
@@ -82,6 +102,10 @@ public class PrivacyGuideFragment extends Fragment {
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setUserInputEnabled(false);
 
+        // Record the initial state of the first card
+        mPrivacyGuideMetricsDelegate.setInitialStateForCard(
+                mPagerAdapter.getFragmentType(mViewPager.getCurrentItem()));
+
         TabLayout tabLayout = mView.findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, mViewPager, (tab, position) -> {
             tab.view.setClickable(false);
@@ -110,7 +134,8 @@ public class PrivacyGuideFragment extends Fragment {
     }
 
     private void nextStep() {
-        int nextIdx = mViewPager.getCurrentItem() + 1;
+        int currentIdx = mViewPager.getCurrentItem();
+        int nextIdx = currentIdx + 1;
         if (nextIdx < mPagerAdapter.getItemCount()) {
             mViewPager.setCurrentItem(nextIdx);
         }
@@ -119,6 +144,12 @@ public class PrivacyGuideFragment extends Fragment {
             mNextButton.setVisibility(View.GONE);
             mFinishButton.setVisibility(View.VISIBLE);
         }
+
+        // Record metrics when the user clicks the next button
+        mPrivacyGuideMetricsDelegate.recordMetricsOnNextForCard(
+                mPagerAdapter.getFragmentType(currentIdx));
+        // Record the initial state of the next card
+        mPrivacyGuideMetricsDelegate.setInitialStateForCard(mPagerAdapter.getFragmentType(nextIdx));
     }
 
     private void previousStep() {
@@ -131,6 +162,9 @@ public class PrivacyGuideFragment extends Fragment {
         if (prevIdx == 0) {
             mBackButton.setVisibility(View.INVISIBLE);
         }
+
+        // Record the initial state of the previous card
+        mPrivacyGuideMetricsDelegate.setInitialStateForCard(mPagerAdapter.getFragmentType(prevIdx));
     }
 
     @Override
@@ -159,5 +193,11 @@ public class PrivacyGuideFragment extends Fragment {
 
     public void setBottomSheetController(BottomSheetController bottomSheetController) {
         mBottomSheetController = bottomSheetController;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    void setPrivacyGuideMetricsDelegateForTesting(
+            @Nullable PrivacyGuideMetricsDelegate privacyGuideMetricsDelegate) {
+        mPrivacyGuideMetricsDelegate = privacyGuideMetricsDelegate;
     }
 }

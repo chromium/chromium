@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.privacy_guide;
 
-import androidx.annotation.IntDef;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,48 +14,35 @@ import java.util.List;
  * Controls the behavior of the ViewPager to navigate between privacy guide steps.
  */
 public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
-    /**
-     * The types of fragments supported. Each fragment corresponds to a step in the privacy guide.
-     */
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({FragmentType.COOKIES, FragmentType.MSBB, FragmentType.SAFE_BROWSING,
-            FragmentType.SYNC})
-    private @interface FragmentType {
-        int MSBB = 0;
-        int SYNC = 1;
-        int SAFE_BROWSING = 2;
-        int COOKIES = 3;
-    }
-
     private final List<Integer> mFragmentTypeList = new ArrayList<>();
 
     public PrivacyGuidePagerAdapter(Fragment parent, StepDisplayHandler displayHandler) {
         super(parent);
 
-        mFragmentTypeList.add(FragmentType.MSBB);
+        mFragmentTypeList.add(PrivacyGuideFragment.FragmentType.MSBB);
         if (displayHandler.shouldDisplaySync()) {
-            mFragmentTypeList.add(FragmentType.SYNC);
+            mFragmentTypeList.add(PrivacyGuideFragment.FragmentType.SYNC);
         }
         if (displayHandler.shouldDisplaySafeBrowsing()) {
-            mFragmentTypeList.add(FragmentType.SAFE_BROWSING);
+            mFragmentTypeList.add(PrivacyGuideFragment.FragmentType.SAFE_BROWSING);
         }
         if (displayHandler.shouldDisplayCookies()) {
-            mFragmentTypeList.add(FragmentType.COOKIES);
+            mFragmentTypeList.add(PrivacyGuideFragment.FragmentType.COOKIES);
         }
     }
 
     @Override
     public Fragment createFragment(int position) {
-        @FragmentType
-        int fragmentType = mFragmentTypeList.get(position);
+        @PrivacyGuideFragment.FragmentType
+        int fragmentType = getFragmentType(position);
         switch (fragmentType) {
-            case FragmentType.MSBB:
+            case PrivacyGuideFragment.FragmentType.MSBB:
                 return new MSBBFragment();
-            case FragmentType.SYNC:
+            case PrivacyGuideFragment.FragmentType.SYNC:
                 return new SyncFragment();
-            case FragmentType.SAFE_BROWSING:
+            case PrivacyGuideFragment.FragmentType.SAFE_BROWSING:
                 return new SafeBrowsingFragment();
-            case FragmentType.COOKIES:
+            case PrivacyGuideFragment.FragmentType.COOKIES:
                 return new CookiesFragment();
         }
         return null;
@@ -67,5 +51,16 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         return mFragmentTypeList.size();
+    }
+
+    /**
+     * Returns a {@link PrivacyGuideFragment.FragmentType} at a specified position of Privacy Guide.
+     * TODO(crbug.com/1396267): Remove this method and substitute with getCurrentFragmentType
+     *
+     * @param position within |mFragmentTypeList|
+     * @return the {@link PrivacyGuideFragment.FragmentType} at the specified position.
+     */
+    public @PrivacyGuideFragment.FragmentType int getFragmentType(int position) {
+        return mFragmentTypeList.get(position);
     }
 }
