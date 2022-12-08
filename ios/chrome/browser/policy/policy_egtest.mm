@@ -331,8 +331,7 @@ NSString* const kDomain2 = @"domain2.com";
 
 // Tests that language detection is not performed and the tool manual trigger
 // button is disabled when the pref kOfferTranslateEnabled is set to false.
-// TODO(crbug.com/1341363): Disabled due to flakiness. Re-enabled when fixed.
-- (void)DISABLED_testTranslateEnabled {
+- (void)testTranslateEnabled {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL testURL = self.testServer->GetURL("/pony.html");
   const std::string pageText = "pony";
@@ -359,10 +358,14 @@ NSString* const kDomain2 = @"domain2.com";
 
   // Make sure the Translate manual trigger button disabled.
   [ChromeEarlGreyUI openToolsMenu];
+  id<GREYMatcher> toolsMenuMatcher =
+      [ChromeEarlGrey isNewOverflowMenuEnabled]
+          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
+          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
   [[[EarlGrey selectElementWithMatcher:ToolsMenuTranslateButton()]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   /*amount=*/200)
-      onElementWithMatcher:chrome_test_util::ToolsMenuView()]
+      onElementWithMatcher:toolsMenuMatcher]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
 
