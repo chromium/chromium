@@ -436,7 +436,8 @@ float SVGAnimationElement::CalculatePercentForSpline(
 }
 
 float SVGAnimationElement::CalculatePercentFromKeyPoints(float percent) const {
-  DCHECK_NE(GetCalcMode(), kCalcModePaced);
+  DCHECK(GetCalcMode() != kCalcModePaced ||
+         GetAnimationMode() == kPathAnimation);
   DCHECK_GT(KeyTimes().size(), 1u);
   DCHECK(!key_points_.empty());
   DCHECK_EQ(key_points_.size(), KeyTimes().size());
@@ -640,8 +641,6 @@ bool SVGAnimationElement::CheckAnimationParameters() {
   if (animation_mode == kValuesAnimation)
     return CalculateValuesAnimation();
   if (animation_mode == kPathAnimation) {
-    if (calc_mode == kCalcModePaced)
-      return true;
     // If 'keyPoints' is specified it should have the same amount of points as
     // 'keyTimes', and at least two points.
     if (FastHasAttribute(svg_names::kKeyPointsAttr) &&
@@ -702,7 +701,8 @@ void SVGAnimationElement::ApplyAnimation(SMILAnimationValue& animation_value) {
       last_values_animation_from_ = from;
       last_values_animation_to_ = to;
     }
-  } else if (calc_mode != kCalcModePaced && !key_points_.empty()) {
+  } else if (!key_points_.empty() && (animation_mode == kPathAnimation ||
+                                      calc_mode != kCalcModePaced)) {
     effective_percent = CalculatePercentFromKeyPoints(percent);
   } else if (calc_mode == kCalcModeSpline && key_points_.empty() &&
              KeyTimes().size() > 1) {
