@@ -4738,6 +4738,11 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
           https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
       rfh1));
 
+  // Wait for leave to be committed to the database.
+  while (GetJoinCount(test_origin, "cars") > 0) {
+    base::RunLoop().RunUntilIdle();
+  }
+
   ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
       ad_url2,
       JsReplace(
