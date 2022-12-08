@@ -1743,10 +1743,11 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermissions(
   if (!web_app_provider)
     return false;
 
-  auto app_id =
-      web_app_provider->registrar().FindAppWithUrlInScope(origin.GetURL());
+  auto app_id = web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
+      origin.GetURL());
   return app_id.has_value() &&
-         web_app_provider->registrar().IsActivelyInstalled(app_id.value());
+         web_app_provider->registrar_unsafe().IsActivelyInstalled(
+             app_id.value());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
