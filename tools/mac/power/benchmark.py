@@ -104,7 +104,8 @@ def main():
 
   parser.add_argument('--extra-command-line',
                       dest='extra_command_line',
-                      action='store')
+                      action='append',
+                      help="Multiple values are suported.")
 
   parser.add_argument('--tag',
                       dest='tag',
