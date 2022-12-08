@@ -99,6 +99,7 @@ class BASE_EXPORT StatisticsRecorder {
   };
 
   typedef std::vector<HistogramBase*> Histograms;
+  typedef size_t SnapshotTransactionId;
 
   StatisticsRecorder(const StatisticsRecorder&) = delete;
   StatisticsRecorder& operator=(const StatisticsRecorder&) = delete;
@@ -188,20 +189,29 @@ class BASE_EXPORT StatisticsRecorder {
   // histograms should be recorded, use |Histogram::kNoFlags| as the required
   // flag. This is logically equivalent to calling SnapshotUnloggedSamples()
   // followed by HistogramSnapshotManager::MarkUnloggedSamplesAsLogged() on
-  // |snapshot_manager|.
-  static void PrepareDeltas(bool include_persistent,
-                            HistogramBase::Flags flags_to_set,
-                            HistogramBase::Flags required_flags,
-                            HistogramSnapshotManager* snapshot_manager)
+  // |snapshot_manager|. Returns the snapshot transaction ID associated with
+  // this operation. Thread-safe.
+  static SnapshotTransactionId PrepareDeltas(
+      bool include_persistent,
+      HistogramBase::Flags flags_to_set,
+      HistogramBase::Flags required_flags,
+      HistogramSnapshotManager* snapshot_manager)
       LOCKS_EXCLUDED(snapshot_lock_.Pointer());
 
   // Same as PrepareDeltas() above, but the samples are not marked as logged.
   // This includes persistent histograms, and no flags will be set. A call to
   // HistogramSnapshotManager::MarkUnloggedSamplesAsLogged() on the passed
-  // |snapshot_manager| should be made to mark them as logged.
-  static void SnapshotUnloggedSamples(
+  // |snapshot_manager| should be made to mark them as logged. Returns the
+  // snapshot transaction ID associated with this operation. Thread-safe.
+  static SnapshotTransactionId SnapshotUnloggedSamples(
       HistogramBase::Flags required_flags,
       HistogramSnapshotManager* snapshot_manager)
+      LOCKS_EXCLUDED(snapshot_lock_.Pointer());
+
+  // Returns the transaction ID of the last snapshot performed (either through
+  // PrepareDeltas() or SnapshotUnloggedSamples()). Returns 0 if a snapshot was
+  // never taken so far. Thread-safe.
+  static SnapshotTransactionId GetLastSnapshotTransactionId()
       LOCKS_EXCLUDED(snapshot_lock_.Pointer());
 
   // Retrieves and runs the list of callbacks for the histogram referred to by
@@ -369,6 +379,12 @@ class BASE_EXPORT StatisticsRecorder {
 
   // Global lock for internal synchronization of histogram snapshots.
   static LazyInstance<base::Lock>::Leaky snapshot_lock_;
+
+  // A strictly increasing number that is incremented every time a snapshot is
+  // taken (by either calling SnapshotUnloggedSamples() or PrepareDeltas()).
+  // This represents the transaction ID of the last snapshot taken.
+  static SnapshotTransactionId last_snapshot_transaction_id_
+      GUARDED_BY(snapshot_lock_.Get());
 
   // Current global recorder. This recorder is used by static methods. When a
   // new global recorder is created by CreateTemporaryForTesting(), then the

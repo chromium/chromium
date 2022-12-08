@@ -484,6 +484,106 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.MetricsService.MaybeCleanUpAndStoreFinalizedLog.Time"
+    units="ms" expires_after="2023-06-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The amount of time the main thread spends on storing a finalized async log
+    and marking its unlogged samples as logged. I.e., the run time of
+    MetricsService::MaybeCleanUpAndStoreFinalizedLog(). This is not emitted if
+    the async log is not stored (see the UMA.MetricsService.ShouldStoreAsyncLog
+    histogram).
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsService.PendingOngoingLog" enum="Boolean"
+    expires_after="2023-06-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether there is an ongoing log being finalized right as we are about to
+    close a non-periodic log. For example, due to Chrome being shut down.
+    Emitted every time MetricsService::PushPendingLogsToPersistentStorage() is
+    called.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsService.PendingOngoingLogOnBackgrounded"
+    enum="Boolean" expires_after="2023-06-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether there is an ongoing log being finalized right as we are about to
+    close a non-periodic log due to Chrome being backgrounded. This should be a
+    subset of the UMA.MetricsService.PendingOngoingLog histogram. Only emitted
+    on mobile platforms.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsService.PendingOngoingLogOnDisable" enum="Boolean"
+    expires_after="2023-06-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether there is an ongoing log being finalized right as we are about to
+    close a non-periodic log due to the metrics service being disabled. Most
+    commonly, this happens when Chrome is shutting down cleanly. Otherwise, this
+    can happen when the user manually disables UMA. Emitted every time
+    MetricsService::DisableRecording() is called. This is only emitted on mobile
+    platforms. This should be a subset of the
+    UMA.MetricsService.PendingOngoingLog histogram.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsService.PendingOngoingLogOnForegrounded"
+    enum="Boolean" expires_after="2023-06-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether there is an ongoing log being finalized right as we are about to
+    close a non-periodic log due to Chrome being foregrounded. This should be a
+    subset of the UMA.MetricsService.PendingOngoingLog histogram. Only emitted
+    on mobile platforms.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsService.PeriodicOngoingLog.CloseTime" units="ms"
+    expires_after="2023-06-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The amount of time the main thread spent on finalizing a periodic ongoing
+    log. I.e., the run time of MetricsService::OnFinalLogInfoCollectionDone().
+    This is not emitted if UMA was turned off while collecting some final
+    metrics for the log.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsService.PeriodicOngoingLog.ReplyTime" units="ms"
+    expires_after="2023-06-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The time it took between posting a task to finalize a periodic ongoing log,
+    and when the reply task was run (on the main thread) to store the finalized
+    log. This is only emitted if the periodic ongoing log was created
+    asynchronously.
+  </summary>
+</histogram>
+
+<histogram name="UMA.MetricsService.ShouldStoreAsyncLog" enum="Boolean"
+    expires_after="2023-06-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether a log that was created asynchronously is going to be stored. An
+    async log will not be stored if a synchronous log was created while the
+    async one was being finalized. Emitted every time the
+    MetricsService::MaybeCleanUpAndStoreFinalizedLog() callback runs.
+  </summary>
+</histogram>
+
 <histogram name="UMA.NegativeSamples.Histogram" enum="HistogramNameHash"
     expires_after="2023-11-01">
   <owner>asvitkine@chromium.org</owner>

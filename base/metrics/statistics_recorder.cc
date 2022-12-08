@@ -39,6 +39,10 @@ LazyInstance<base::Lock>::Leaky StatisticsRecorder::snapshot_lock_ =
     LAZY_INSTANCE_INITIALIZER;
 
 // static
+StatisticsRecorder::SnapshotTransactionId
+    StatisticsRecorder::last_snapshot_transaction_id_ = 0;
+
+// static
 StatisticsRecorder* StatisticsRecorder::top_ = nullptr;
 
 // static
@@ -217,7 +221,7 @@ void StatisticsRecorder::ImportProvidedHistograms() {
 }
 
 // static
-void StatisticsRecorder::PrepareDeltas(
+StatisticsRecorder::SnapshotTransactionId StatisticsRecorder::PrepareDeltas(
     bool include_persistent,
     HistogramBase::Flags flags_to_set,
     HistogramBase::Flags required_flags,
@@ -226,16 +230,26 @@ void StatisticsRecorder::PrepareDeltas(
   base::AutoLock lock(snapshot_lock_.Get());
   snapshot_manager->PrepareDeltas(std::move(histograms), flags_to_set,
                                   required_flags);
+  return ++last_snapshot_transaction_id_;
 }
 
 // static
-void StatisticsRecorder::SnapshotUnloggedSamples(
+StatisticsRecorder::SnapshotTransactionId
+StatisticsRecorder::SnapshotUnloggedSamples(
     HistogramBase::Flags required_flags,
     HistogramSnapshotManager* snapshot_manager) {
   Histograms histograms = Sort(GetHistograms());
   base::AutoLock lock(snapshot_lock_.Get());
   snapshot_manager->SnapshotUnloggedSamples(std::move(histograms),
                                             required_flags);
+  return ++last_snapshot_transaction_id_;
+}
+
+// static
+StatisticsRecorder::SnapshotTransactionId
+StatisticsRecorder::GetLastSnapshotTransactionId() {
+  base::AutoLock lock(snapshot_lock_.Get());
+  return last_snapshot_transaction_id_;
 }
 
 // static

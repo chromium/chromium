@@ -129,6 +129,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_flattener.h"
@@ -136,12 +137,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/persistent_histogram_allocator.h"
-#include "base/metrics/statistics_recorder.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -404,6 +405,8 @@ void MetricsService::DisableRecording() {
 
   delegating_provider_.OnRecordingDisabled();
 
+  base::UmaHistogramBoolean("UMA.MetricsService.PendingOngoingLogOnDisable",
+                            pending_ongoing_log_);
   PushPendingLogsToPersistentStorage();
 
   // If kEmitHistogramsForIndependentLogs is set, call OnDidCreateMetricsLog()
@@ -469,6 +472,9 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
   // persisting all logs. Unlinke a shutdown, the state is primed to be ready
   // to continue logging and uploading if the process does return.
   if (recording_active() && state_ >= SENDING_LOGS) {
+    base::UmaHistogramBoolean(
+        "UMA.MetricsService.PendingOngoingLogOnBackgrounded",
+        pending_ongoing_log_);
     PushPendingLogsToPersistentStorage();
     // Persisting logs closes the current log, so start recording a new log
     // immediately to capture any background work that might be done before the
@@ -483,6 +489,9 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
   StartSchedulerIfNecessary();
 
   if (force_open_new_log && recording_active() && state_ >= SENDING_LOGS) {
+    base::UmaHistogramBoolean(
+        "UMA.MetricsService.PendingOngoingLogOnForegrounded",
+        pending_ongoing_log_);
     // Because state_ >= SENDING_LOGS, PushPendingLogsToPersistentStorage()
     // will close the log, allowing a new log to be opened.
     PushPendingLogsToPersistentStorage();
@@ -610,7 +619,7 @@ MetricsService::GetSyntheticTrialRegistry() {
 }
 
 bool MetricsService::StageCurrentLogForTest() {
-  CloseCurrentLog();
+  CloseCurrentLog(/*async=*/false);
 
   MetricsLogStore* const log_store = reporting_service_.metrics_log_store();
   log_store->StageNextLog();
@@ -748,11 +757,13 @@ void MetricsService::GetUptimes(PrefService* pref,
 //------------------------------------------------------------------------------
 // Recording control methods
 
-void MetricsService::OpenNewLog() {
+void MetricsService::OpenNewLog(bool call_providers) {
   DCHECK(!log_manager_.current_log());
 
   log_manager_.BeginLoggingWithLog(CreateLog(MetricsLog::ONGOING_LOG));
-  delegating_provider_.OnDidCreateMetricsLog();
+  if (call_providers) {
+    delegating_provider_.OnDidCreateMetricsLog();
+  }
 
   DCHECK_NE(CONSTRUCTED, state_);
   if (state_ == INITIALIZED) {
@@ -791,17 +802,24 @@ MetricsService::MetricsLogHistogramWriter::MetricsLogHistogramWriter(
     : required_flags_(required_flags),
       flattener_(std::make_unique<IndependentFlattener>(log)),
       histogram_snapshot_manager_(
-          std::make_unique<base::HistogramSnapshotManager>(flattener_.get())) {}
+          std::make_unique<base::HistogramSnapshotManager>(flattener_.get())),
+      snapshot_transaction_id_(0) {}
 
 MetricsService::MetricsLogHistogramWriter::~MetricsLogHistogramWriter() =
     default;
 
 void MetricsService::MetricsLogHistogramWriter::
-    SnapshotStatisticsRecorderHistograms() {
-  base::StatisticsRecorder::PrepareDeltas(
+    SnapshotStatisticsRecorderDeltas() {
+  snapshot_transaction_id_ = base::StatisticsRecorder::PrepareDeltas(
       /*include_persistent=*/true,
       /*flags_to_set=*/base::Histogram::kNoFlags, required_flags_,
       histogram_snapshot_manager_.get());
+}
+
+void MetricsService::MetricsLogHistogramWriter::
+    SnapshotStatisticsRecorderUnloggedSamples() {
+  snapshot_transaction_id_ = base::StatisticsRecorder::SnapshotUnloggedSamples(
+      required_flags_, histogram_snapshot_manager_.get());
 }
 
 MetricsService::IndependentMetricsLoader::IndependentMetricsLoader(
@@ -829,7 +847,8 @@ void MetricsService::StartInitTask() {
       &MetricsService::FinishedInitTask, self_ptr_factory_.GetWeakPtr()));
 }
 
-void MetricsService::CloseCurrentLog() {
+void MetricsService::CloseCurrentLog(bool async,
+                                     base::OnceClosure log_stored_callback) {
   if (!log_manager_.current_log())
     return;
 
@@ -863,11 +882,43 @@ void MetricsService::CloseCurrentLog() {
 
   MetricsLog::LogType log_type = current_log->log_type();
   std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
-  FinalizedLog finalized_log = SnapshotHistogramsAndFinalizeLog(
-      std::move(log_histogram_writer), std::move(current_log),
-      /*truncate_events=*/true, client_->GetVersionString(),
-      std::move(signing_key));
-  StoreFinalizedLog(log_type, base::DoNothing(), std::move(finalized_log));
+  if (async) {
+    // To finalize the log asynchronously, we snapshot the unlogged samples of
+    // histograms and fill them into the log, without actually marking the
+    // samples as logged. We only mark them as logged after running the main
+    // thread reply task to store the log. This way, we will not lose the
+    // samples in case Chrome closes while the background task is running. Note
+    // that while this async log is being finalized, it is possible that another
+    // log is finalized and stored synchronously, which could potentially cause
+    // the same samples to be in two different logs, and hence sent twice. To
+    // prevent this, if a synchronous log is stored while the async one is being
+    // finalized, we discard the async log as it would be a subset of the
+    // synchronous one (in terms of histograms). For more details, see
+    // MaybeCleanUpAndStoreFinalizedLog().
+    //
+    // TODO(crbug/1052796): Find a way to save the other data such as user
+    // actions and omnibox events when we discard an async log.
+    MetricsLogHistogramWriter* log_histogram_writer_ptr =
+        log_histogram_writer.get();
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&MetricsService::SnapshotUnloggedSamplesAndFinalizeLog,
+                       log_histogram_writer_ptr, std::move(current_log),
+                       /*truncate_events=*/true, client_->GetVersionString(),
+                       std::move(signing_key)),
+        base::BindOnce(&MetricsService::MaybeCleanUpAndStoreFinalizedLog,
+                       self_ptr_factory_.GetWeakPtr(),
+                       std::move(log_histogram_writer), log_type,
+                       std::move(log_stored_callback)));
+    async_ongoing_log_posted_time_ = base::TimeTicks::Now();
+  } else {
+    FinalizedLog finalized_log = SnapshotDeltasAndFinalizeLog(
+        std::move(log_histogram_writer), std::move(current_log),
+        /*truncate_events=*/true, client_->GetVersionString(),
+        std::move(signing_key));
+    StoreFinalizedLog(log_type, std::move(log_stored_callback),
+                      std::move(finalized_log));
+  }
 }
 
 void MetricsService::StoreFinalizedLog(MetricsLog::LogType log_type,
@@ -878,11 +929,65 @@ void MetricsService::StoreFinalizedLog(MetricsLog::LogType log_type,
   std::move(done_callback).Run();
 }
 
+void MetricsService::MaybeCleanUpAndStoreFinalizedLog(
+    std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
+    MetricsLog::LogType log_type,
+    base::OnceClosure done_callback,
+    FinalizedLog finalized_log) {
+  UMA_HISTOGRAM_TIMES("UMA.MetricsService.PeriodicOngoingLog.ReplyTime",
+                      base::TimeTicks::Now() - async_ongoing_log_posted_time_);
+
+  // Store the finalized log only if the StatisticRecorder's last transaction ID
+  // is the same as the one from |log_histogram_writer|. If they are not the
+  // same, then it indicates that another log was created while creating
+  // |finalized_log| (that log would be a superset of |finalized_log| in terms
+  // of histograms, so we discard |finalized_log| by not storing it).
+  //
+  // TODO(crbug/1052796): Find a way to save the other data such as user actions
+  // and omnibox events when we discard |finalized_log|.
+  //
+  // Note that the call to StatisticsRecorder::GetLastSnapshotTransactionId()
+  // here should not have to wait for a lock since there should not be any async
+  // logs being created (|rotation_scheduler_| is only re-scheduled at the end
+  // of this method).
+  bool should_store_log =
+      (base::StatisticsRecorder::GetLastSnapshotTransactionId() ==
+       log_histogram_writer->snapshot_transaction_id());
+  base::UmaHistogramBoolean("UMA.MetricsService.ShouldStoreAsyncLog",
+                            should_store_log);
+
+  if (!should_store_log) {
+    // We still need to run |done_callback| even if we do not store the log.
+    std::move(done_callback).Run();
+    return;
+  }
+
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "UMA.MetricsService.MaybeCleanUpAndStoreFinalizedLog.Time");
+
+  log_histogram_writer->histogram_snapshot_manager()
+      ->MarkUnloggedSamplesAsLogged();
+  StoreFinalizedLog(log_type, std::move(done_callback),
+                    std::move(finalized_log));
+
+  // Call OnDidCreateMetricsLog() after storing a log instead of directly after
+  // opening a log. Otherwise, the async log that was created would potentially
+  // have mistakenly snapshotted the histograms intended for the newly opened
+  // log.
+  delegating_provider_.OnDidCreateMetricsLog();
+}
+
 void MetricsService::PushPendingLogsToPersistentStorage() {
   if (state_ < SENDING_LOGS)
     return;  // We didn't and still don't have time to get plugin list etc.
 
-  CloseCurrentLog();
+  base::UmaHistogramBoolean("UMA.MetricsService.PendingOngoingLog",
+                            pending_ongoing_log_);
+
+  // Close and store a log synchronously because this is usually called in
+  // critical code paths (e.g., shutdown) where we may not have time to run
+  // background tasks.
+  CloseCurrentLog(/*async=*/false);
   log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 }
 
@@ -956,8 +1061,36 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
     return;
   }
 
-  CloseCurrentLog();
-  OpenNewLog();
+  SCOPED_UMA_HISTOGRAM_TIMER("UMA.MetricsService.PeriodicOngoingLog.CloseTime");
+
+  // There shouldn't be two periodic ongoing logs being finalized in the
+  // background simultaneously. This is currently enforced because:
+  // 1. Only periodic ongoing logs are finalized asynchronously (i.e., logs
+  //    created by the MetricsRotationScheduler).
+  // 2. We only re-schedule the MetricsRotationScheduler after storing a
+  //    periodic ongoing log.
+  //
+  // TODO(crbug/1052796): Consider making it possible to have multiple
+  // simultaneous async logs by having some queueing system (e.g., if we want
+  // the log created when foregrounding Chrome to be async).
+  DCHECK(!pending_ongoing_log_);
+  pending_ongoing_log_ = true;
+
+  base::OnceClosure log_stored_callback =
+      base::BindOnce(&MetricsService::OnPeriodicOngoingLogStored,
+                     self_ptr_factory_.GetWeakPtr());
+  if (base::FeatureList::IsEnabled(features::kMetricsServiceAsyncCollection)) {
+    CloseCurrentLog(/*async=*/true, std::move(log_stored_callback));
+    OpenNewLog(/*call_providers=*/false);
+  } else {
+    CloseCurrentLog(/*async=*/false, std::move(log_stored_callback));
+    OpenNewLog();
+  }
+}
+
+void MetricsService::OnPeriodicOngoingLogStored() {
+  pending_ongoing_log_ = false;
+
   // Trim and store unsent logs, including the log that was just closed, so that
   // they're not lost in case of a crash before upload time. However, the
   // in-memory log store is unchanged. I.e., logs that are trimmed will still be
@@ -967,9 +1100,17 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
   // in-memory log store will be updated.
   log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/false);
 
-  reporting_service_.Start();
-  rotation_scheduler_->RotationFinished();
-  HandleIdleSinceLastTransmission(true);
+  // Do not re-schedule if metrics were turned off while finalizing the log.
+  if (!recording_active()) {
+    rotation_scheduler_->Stop();
+    rotation_scheduler_->RotationFinished();
+  } else {
+    // Only re-schedule |rotation_scheduler_| *after* the log was stored to
+    // ensure that only one log is created asynchronously at a time.
+    reporting_service_.Start();
+    rotation_scheduler_->RotationFinished();
+    HandleIdleSinceLastTransmission(true);
+  }
 }
 
 bool MetricsService::PrepareInitialStabilityLog(
@@ -981,6 +1122,7 @@ bool MetricsService::PrepareInitialStabilityLog(
 
   // Do not call OnDidCreateMetricsLog here because the stability log describes
   // stats from the _previous_ session.
+
   if (!initial_stability_log->LoadSavedEnvironmentFromPrefs(local_state_))
     return false;
 
@@ -997,7 +1139,10 @@ bool MetricsService::PrepareInitialStabilityLog(
 
   MetricsLog::LogType log_type = initial_stability_log->log_type();
   std::string signing_key = log_store()->GetSigningKeyForLogType(log_type);
-  FinalizedLog finalized_log = SnapshotHistogramsAndFinalizeLog(
+
+  // Synchronously create the initial stability log in order to ensure that the
+  // stability histograms are filled into this specific log.
+  FinalizedLog finalized_log = SnapshotDeltasAndFinalizeLog(
       std::move(log_histogram_writer), std::move(initial_stability_log),
       /*truncate_events=*/false, client_->GetVersionString(),
       std::move(signing_key));
@@ -1162,13 +1307,26 @@ void MetricsService::UpdateLastLiveTimestampTask() {
 }
 
 // static
-MetricsService::FinalizedLog MetricsService::SnapshotHistogramsAndFinalizeLog(
+MetricsService::FinalizedLog MetricsService::SnapshotDeltasAndFinalizeLog(
     std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
     std::unique_ptr<MetricsLog> log,
     bool truncate_events,
     std::string current_app_version,
     std::string signing_key) {
-  log_histogram_writer->SnapshotStatisticsRecorderHistograms();
+  log_histogram_writer->SnapshotStatisticsRecorderDeltas();
+  return FinalizeLog(std::move(log), truncate_events,
+                     std::move(current_app_version), std::move(signing_key));
+}
+
+// static
+MetricsService::FinalizedLog
+MetricsService::SnapshotUnloggedSamplesAndFinalizeLog(
+    MetricsLogHistogramWriter* log_histogram_writer,
+    std::unique_ptr<MetricsLog> log,
+    bool truncate_events,
+    std::string current_app_version,
+    std::string signing_key) {
+  log_histogram_writer->SnapshotStatisticsRecorderUnloggedSamples();
   return FinalizeLog(std::move(log), truncate_events,
                      std::move(current_app_version), std::move(signing_key));
 }

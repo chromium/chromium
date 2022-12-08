@@ -17,6 +17,10 @@ BASE_DECLARE_FEATURE(kEmitHistogramsEarlier);
 // If set, histograms that are expected to be set on every log will be emitted
 // in DisableRecording().
 extern const base::FeatureParam<bool> kEmitHistogramsForIndependentLogs;
+
+// Determines whether the metrics service should create periodic logs
+// asynchronously.
+BASE_DECLARE_FEATURE(kMetricsServiceAsyncCollection);
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_
