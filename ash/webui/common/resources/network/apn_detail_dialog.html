@@ -39,17 +39,19 @@
     [[getDialogTitle_(mode)]]
   </div>
   <div slot="body">
-    <!-- TODO(b/162365553): Add validation for the input box settings. -->
     <cr-input id="apnInput" value="{{apn_}}" label="[[i18n('apn')]]"
-        type="text" disabled="[[isUiElementDisabled_(mode)]]">
+        type="text" invalid="[[isApnInputInvalid_]]"
+        error-message="[[getApnErrorMessage_(isApnInputInvalid_, apn_,
+            isMaxApnInputLengthReached_)]]"
+        disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]">
     </cr-input>
     <cr-input id="usernameInput" value="{{username_}}"
         label="[[i18n('OncCellular-APN-Username')]]" type="text"
-        disabled="[[isUiElementDisabled_(mode)]]">
+        disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]">
     </cr-input>
     <cr-input id="passwordInput" value="{{password_}}"
         label="[[i18n('OncCellular-APN-Password')]]" type="password"
-        disabled="[[isUiElementDisabled_(mode)]]">
+        disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]">
     </cr-input>
     <cr-expand-button id="advancedSettingsBtn"
         class="advanced-settings cr-row"
@@ -64,7 +66,7 @@
         </div>
         <select id="authTypeDropDown" class="select-field md-select"
             value="{{selectedAuthType_::change}}"
-            disabled="[[isUiElementDisabled_(mode)]]"
+            disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]"
             aria-labelledby="authenticationTypeLabel">
           <template is="dom-repeat"
               items="[[AuthenticationTypes]]">
@@ -78,17 +80,18 @@
       <div class="cr-form-field-label">
         [[i18n('apnDetailApnTypes')]]
       </div>
+      <!-- TODO(b/162365553): Add validation for APN types. -->
       <div id="checkboxContainer" class="checkbox-section">
         <cr-checkbox id="apnDefaultTypeCheckbox"
             aria-labelledby="apnDefaultTypelabel"
-            disabled="[[isUiElementDisabled_(mode)]]"
+            disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]"
             checked="{{isDefaultApnType_}}">
           <div id="apnDefaultTypelabel" class="checkbox-text-area">
             [[i18n('apnDetailApnTypeDefault')]]
           </div>
         </cr-checkbox>
         <cr-checkbox id="apnAttachTypeCheckbox"
-            disabled="[[isUiElementDisabled_(mode)]]"
+            disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]"
             aria-labelledby="apnAttachTypeLabel"
             checked="{{isAttachApnType_}}">
           <div id="apnAttachTypeLabel" class="checkbox-text-area">
@@ -102,7 +105,7 @@
         </div>
         <select id="ipTypeDropDown" class="md-select select-field"
             value="{{selectedIpType_::change}}"
-            disabled="[[isUiElementDisabled_(mode)]]"
+            disabled="[[isUiElementDisabled_(UiElement.INPUT, mode)]]"
             aria-labelledby="ipTypeLabel">
           <template is="dom-repeat"
               items="[[IpTypes]]">
@@ -117,18 +120,21 @@
     <div class="cr-row-line cr-row"></div>
   </div>
   <div slot="button-container">
-    <template is="dom-if" if="[[isUiElementVisible_(mode)]]" restamp>
+    <template is="dom-if"
+        if="[[isUiElementVisible_(UiElement.ADD_BUTTON, mode)]]" restamp>
       <cr-button id="apnDetailCancelBtn" class="cancel-button"
           on-click="onCancelClicked_">
         [[i18n('cancel')]]
       </cr-button>
-      <!-- TODO(b/162365553): Disable Add button unless validated -->
       <cr-button id="apnDetailAddBtn" class="action-button"
-          on-click="onAddClicked_">
+          on-click="onAddClicked_"
+          disabled="[[isUiElementDisabled_(UiElement.ADD_BUTTON, mode, apn_,
+              isApnInputInvalid_)]]">
         [[i18n('add')]]
       </cr-button>
     </template>
-    <template is="dom-if" if="[[isUiElementDisabled_(mode)]]" restamp>
+    <template is="dom-if"
+        if="[[isUiElementVisible_(UiElement.DONE_BUTTON, mode)]]" restamp>
       <cr-button id="apnDoneBtn" class="action-button"
           on-click="onCancelClicked_">
         [[i18n('done')]]

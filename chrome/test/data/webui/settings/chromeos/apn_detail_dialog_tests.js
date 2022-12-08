@@ -148,6 +148,9 @@ suite('ApnDetailDialog', function() {
       assertTrue(!!element);
       assertFalse(element.disabled);
     };
+    apnDetailDialog.$.apnInput.value = TEST_APN.accessPointName;
+    apnDetailDialog.$.usernameInput.value = TEST_APN.username;
+    apnDetailDialog.$.passwordInput.value = TEST_APN.password;
 
     assertFieldEnabled('#apnInput');
     assertFieldEnabled('#usernameInput');
@@ -165,9 +168,6 @@ suite('ApnDetailDialog', function() {
     mojoApi_.setManagedPropertiesForTest(network);
     await flushTasks();
 
-    apnDetailDialog.$.apnInput.value = TEST_APN.accessPointName;
-    apnDetailDialog.$.usernameInput.value = TEST_APN.username;
-    apnDetailDialog.$.passwordInput.value = TEST_APN.password;
     /**
      * @type {!ApnProperties}
      */
@@ -202,7 +202,7 @@ suite('ApnDetailDialog', function() {
       assertTrue(element.disabled);
     };
     apnDetailDialog.mode = ApnDetailDialogMode.VIEW;
-    apnDetailDialog.apn = TEST_APN;
+    apnDetailDialog.apnProperties = TEST_APN;
     await flushTasks();
     assertEquals(
         apnDetailDialog.i18n('apnDetailViewApnDialogTitle'),
@@ -223,4 +223,42 @@ suite('ApnDetailDialog', function() {
     assertFieldDisabled('#ipTypeDropDown');
   });
 
+  test('Dialog input fields are validated', async () => {
+    const apnInputField = apnDetailDialog.$.apnInput;
+    const addBtn = apnDetailDialog.shadowRoot.querySelector('#apnDetailAddBtn');
+    assertTrue(!!addBtn);
+    // Case: After opening dialog before user input
+    assertFalse(!!apnInputField.invalid);
+    assertTrue(!!addBtn.disabled);
+
+    // Case : After valid user input
+    apnInputField.value = 'test';
+    assertFalse(!!apnInputField.invalid);
+    assertFalse(!!addBtn.disabled);
+
+    // Case : After Removing all user input no error state but button disabled
+    apnInputField.value = '';
+    assertFalse(!!apnInputField.invalid);
+    assertTrue(!!addBtn.disabled);
+
+    // Case : Non ascii user input
+    apnInputField.value = 'testμ';
+    assertTrue(!!apnInputField.invalid);
+    assertTrue(!!addBtn.disabled);
+    assertTrue(apnInputField.value.includes('μ'));
+
+    // Case : longer than 63 characters then removing one character
+    apnInputField.value = 'a'.repeat(64);
+    assertTrue(!!apnInputField.invalid);
+    assertTrue(!!addBtn.disabled);
+    assertFalse(apnInputField.value.length > 63);
+    apnInputField.value = apnInputField.value.slice(0, -1);
+    assertFalse(!!apnInputField.invalid);
+    assertFalse(!!addBtn.disabled);
+
+    // Case : longer than 63 non-ASCII characters
+    apnInputField.value = 'μ'.repeat(64);
+    assertTrue(!!apnInputField.invalid);
+    assertTrue(!!addBtn.disabled);
+  });
 });
