@@ -49,7 +49,6 @@ scoped_refptr<gles2::TexturePassthrough> MakeGLTexturePassthrough(
       base::MakeRefCounted<gles2::TexturePassthrough>(service_id, target);
   passthrough_texture->SetEstimatedSize(estimated_size);
   passthrough_texture->SetLevelImage(target, 0, egl_image.get());
-  passthrough_texture->clear_bind_pending();
   return passthrough_texture;
 }
 
