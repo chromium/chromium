@@ -102,18 +102,22 @@ class ExtensionIconImageTest : public ExtensionsTest,
     std::string error;
     JSONFileValueDeserializer deserializer(
         test_file.AppendASCII("manifest.json"));
-    std::unique_ptr<base::DictionaryValue> valid_value =
-        base::DictionaryValue::From(
-            deserializer.Deserialize(&error_code, &error));
+    std::unique_ptr<base::Value> valid_value =
+        deserializer.Deserialize(&error_code, &error);
     EXPECT_EQ(0, error_code) << error;
     if (error_code != 0)
       return nullptr;
 
-    EXPECT_TRUE(valid_value.get());
+    EXPECT_TRUE(valid_value);
     if (!valid_value)
       return nullptr;
 
-    return Extension::Create(test_file, location, *valid_value,
+    const base::Value::Dict* valid_dict = valid_value->GetIfDict();
+    EXPECT_TRUE(valid_dict);
+    if (!valid_dict)
+      return nullptr;
+
+    return Extension::Create(test_file, location, *valid_dict,
                              Extension::NO_FLAGS, &error);
   }
 

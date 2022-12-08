@@ -214,15 +214,16 @@ class MDnsAPITest : public extensions::ExtensionServiceTestBase {
       std::string name,
       bool is_platform_app,
       std::string extension_id) {
-    base::DictionaryValue manifest;
-    manifest.SetStringKey(extensions::manifest_keys::kVersion, "1.0.0.0");
-    manifest.SetStringKey(extensions::manifest_keys::kName, name);
-    manifest.SetIntKey(extensions::manifest_keys::kManifestVersion, 2);
+    base::Value::Dict manifest;
+    manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
+    manifest.Set(extensions::manifest_keys::kName, name);
+    manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
     if (is_platform_app) {
       // Setting app.background.page = "background.html" is sufficient to make
       // the extension type TYPE_PLATFORM_APP.
-      manifest.Set(extensions::manifest_keys::kPlatformAppBackgroundPage,
-                   std::make_unique<base::Value>("background.html"));
+      manifest.SetByDottedPath(
+          extensions::manifest_keys::kPlatformAppBackgroundPage,
+          "background.html");
     }
 
     std::string error;
