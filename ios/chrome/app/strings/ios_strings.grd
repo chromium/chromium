@@ -258,6 +258,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_APPLICATION_SHORTCUT_VOICE_SEARCH_TITLE" desc="Message when opening a Voice Search from springboard force touch static shortcuts. [Length: unlimited] [iOS only]." meaning="3D Touch entry to trigger a voice search.">
         Voice Search
       </message>
+      <message name="IDS_IOS_APPLICATION_SHORTCUT_SET_DEFAULT_BROWSER" desc="The title of the spotlight item to set Chrome as a default browser. [Length: unlimited] [iOS only]." meaning="Spotlight item title for setting default browser.">
+        Set Chrome as Default Browser
+      </message>
       <message name="IDS_IOS_APP_LAUNCHER_OPEN_APP_BUTTON_LABEL" desc="Label of a button to open an application. [Length: 10em] [iOS only]">
         Open
       </message>

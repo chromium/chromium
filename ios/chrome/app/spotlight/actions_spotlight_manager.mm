@@ -41,6 +41,7 @@ const char kSpotlightActionNewTab[] = "OpenNewTab";
 const char kSpotlightActionNewIncognitoTab[] = "OpenIncognitoTab";
 const char kSpotlightActionVoiceSearch[] = "OpenVoiceSearch";
 const char kSpotlightActionQRScanner[] = "OpenQRScanner";
+const char kSpotlightActionSetDefaultBrowser[] = "SetDefaultBrowser";
 
 // Enum is used to record the actions performed by the user.
 enum {
@@ -52,6 +53,8 @@ enum {
   SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
   // Recorded when a user pressed the QR scanner spotlight action.
   SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
+  // Recorded when a user pressed the Set Default Browser spotlight action.
+  SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
   // NOTE: Add new spotlight actions in sources only immediately above this
   // line. Also, make sure the enum list for histogram `SpotlightActions` in
   // histograms.xml is updated with any change in here.
@@ -92,6 +95,16 @@ BOOL SetStartupParametersForSpotlightAction(
                               SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
     [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
+  } else if ([action isEqualToString:base::SysUTF8ToNSString(
+                                         kSpotlightActionSetDefaultBrowser)]) {
+    UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
+                              SPOTLIGHT_ACTION_SET_DEFAULT_BROWSER_PRESSED,
+                              SPOTLIGHT_ACTION_COUNT);
+    [[UIApplication sharedApplication]
+                  openURL:[NSURL
+                              URLWithString:UIApplicationOpenSettingsURLString]
+                  options:{}
+        completionHandler:nil];
   } else {
     return NO;
   }
@@ -165,11 +178,18 @@ BOOL SetStartupParametersForSpotlightAction(
           NSString* qrScannerAction =
               base::SysUTF8ToNSString(spotlight::kSpotlightActionQRScanner);
 
+          NSString* defaultBrowserTitle = l10n_util::GetNSString(
+              IDS_IOS_APPLICATION_SHORTCUT_SET_DEFAULT_BROWSER);
+          NSString* defaultBrowserAction = base::SysUTF8ToNSString(
+              spotlight::kSpotlightActionSetDefaultBrowser);
+
           NSArray* spotlightItems = @[
             [strongSelf itemForAction:voiceSearchAction title:voiceSearchTitle],
             [strongSelf itemForAction:newTabAction title:newTabTitle],
             [strongSelf itemForAction:incognitoAction title:incognitoTitle],
             [strongSelf itemForAction:qrScannerAction title:qrScannerTitle],
+            [strongSelf itemForAction:defaultBrowserAction
+                                title:defaultBrowserTitle],
           ];
 
           [[CSSearchableIndex defaultSearchableIndex]

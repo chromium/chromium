@@ -52865,6 +52865,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="New Incognito Tab"/>
   <int value="2" label="Voice Search"/>
   <int value="3" label="QR Code Scanner"/>
+  <int value="4" label="Set Default Browser"/>
 </enum>
 
 <enum name="IOSSpotlightAvailability">
