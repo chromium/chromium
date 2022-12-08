@@ -522,6 +522,14 @@ void XDGToplevelWrapperImpl::Deactivate() {
   }
 }
 
+void XDGToplevelWrapperImpl::SetScaleFactor(float scale_factor) {
+  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                            ZAURA_TOPLEVEL_SET_SCALE_FACTOR_SINCE_VERSION) {
+    uint32_t value = *reinterpret_cast<uint32_t*>(&scale_factor);
+    zaura_toplevel_set_scale_factor(aura_toplevel_.get(), value);
+  }
+}
+
 void XDGToplevelWrapperImpl::SetRestoreInfo(int32_t restore_session_id,
                                             int32_t restore_window_id) {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=

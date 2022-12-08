@@ -1046,7 +1046,8 @@
         representations for IEEE 754 floats, this protocol implicitly assumes
         that the caller and receiver are the same machine. To avoid redundant
         messages, this request needs to only be called once when the zaura
-        toplevel scale factor changes.
+        toplevel scale factor changes. This is double buffered state and will be
+        applied in the next commit.
       </description>
       <arg name="scale_factor_as_uint" type="uint"/>
     </request>

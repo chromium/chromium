@@ -91,7 +91,9 @@ WaylandSurface::WaylandSurface(WaylandConnection* connection,
                                WaylandWindow* root_window)
     : connection_(connection),
       root_window_(root_window),
-      surface_(connection->CreateSurface()) {}
+      surface_(connection->CreateSurface()),
+      surface_submission_in_pixel_coordinates_(
+          connection->surface_submission_in_pixel_coordinates()) {}
 
 WaylandSurface::~WaylandSurface() {
   for (auto& release : linux_buffer_releases_) {
@@ -271,14 +273,14 @@ void WaylandSurface::Commit(bool flush) {
 }
 
 void WaylandSurface::set_surface_buffer_scale(float scale) {
-  if (SurfaceSubmissionInPixelCoordinates())
-    return;
-
-  pending_state_.buffer_scale = (scale < 1.0f) ? 1 : static_cast<int>(scale);
+  pending_state_.buffer_scale_float = scale;
 
   if (apply_state_immediately_) {
-    state_.buffer_scale = pending_state_.buffer_scale;
-    wl_surface_set_buffer_scale(surface_.get(), state_.buffer_scale);
+    state_.buffer_scale_float = pending_state_.buffer_scale_float;
+    if (!surface_submission_in_pixel_coordinates_)
+      wl_surface_set_buffer_scale(surface_.get(), GetWaylandScale(state_));
+    if (root_window_)
+      root_window_->PropagateBufferScale(scale);
   }
 }
 
@@ -298,7 +300,7 @@ void WaylandSurface::set_opaque_region(
         pending_state_.opaque_region_px.empty()
             ? nullptr
             : CreateAndAddRegion(pending_state_.opaque_region_px,
-                                 pending_state_.buffer_scale)
+                                 GetWaylandScale(pending_state_))
                   .get());
   }
 }
@@ -320,31 +322,33 @@ void WaylandSurface::set_input_region(const gfx::Rect* region_px) {
         surface_.get(),
         pending_state_.input_region_px.has_value()
             ? CreateAndAddRegion({pending_state_.input_region_px.value()},
-                                 pending_state_.buffer_scale)
+                                 GetWaylandScale(pending_state_))
                   .get()
             : nullptr);
   }
+}
+
+int WaylandSurface::GetWaylandScale(const State& state) {
+  if (surface_submission_in_pixel_coordinates_)
+    return 1;
+  return (state.buffer_scale_float < 1.0f)
+             ? 1
+             : std::ceil(state.buffer_scale_float);
 }
 
 wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
     const std::vector<gfx::Rect>& region_px,
     int32_t buffer_scale) {
   DCHECK(root_window_);
+  DCHECK(!surface_submission_in_pixel_coordinates_ || buffer_scale == 1);
 
   wl::Object<wl_region> region(
       wl_compositor_create_region(connection_->compositor()));
 
-  const bool surface_submission_in_pixel_coordinates =
-      SurfaceSubmissionInPixelCoordinates();
   for (const auto& rect_px : region_px) {
-    if (surface_submission_in_pixel_coordinates) {
-      wl_region_add(region.get(), rect_px.x(), rect_px.y(), rect_px.width(),
-                    rect_px.height());
-    } else {
-      gfx::Rect rect = gfx::ScaleToEnclosingRect(rect_px, 1.f / buffer_scale);
-      wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
-                    rect.height());
-    }
+    gfx::Rect rect = gfx::ScaleToEnclosingRect(rect_px, 1.f / buffer_scale);
+    wl_region_add(region.get(), rect.x(), rect.y(), rect.width(),
+                  rect.height());
   }
   return region;
 }
@@ -462,7 +466,7 @@ void WaylandSurface::ApplyPendingState() {
 
   // Don't set input region when use_native_frame is enabled.
   if (pending_state_.input_region_px != state_.input_region_px ||
-      pending_state_.buffer_scale != state_.buffer_scale) {
+      GetWaylandScale(pending_state_) != GetWaylandScale(state_)) {
     // Sets input region for input events to allow go through and
     // for the compositor to ignore the parts of the input region that fall
     // outside of the surface.
@@ -470,7 +474,7 @@ void WaylandSurface::ApplyPendingState() {
         surface_.get(),
         pending_state_.input_region_px.has_value()
             ? CreateAndAddRegion({pending_state_.input_region_px.value()},
-                                 pending_state_.buffer_scale)
+                                 GetWaylandScale(pending_state_))
                   .get()
             : nullptr);
   }
@@ -478,13 +482,13 @@ void WaylandSurface::ApplyPendingState() {
   // It's important to set opaque region for opaque windows (provides
   // optimization hint for the Wayland compositor).
   if (pending_state_.opaque_region_px != state_.opaque_region_px ||
-      pending_state_.buffer_scale != state_.buffer_scale) {
+      GetWaylandScale(pending_state_) != GetWaylandScale(state_)) {
     wl_surface_set_opaque_region(
         surface_.get(),
         pending_state_.opaque_region_px.empty()
             ? nullptr
             : CreateAndAddRegion(pending_state_.opaque_region_px,
-                                 pending_state_.buffer_scale)
+                                 GetWaylandScale(pending_state_))
                   .get());
   }
 
@@ -511,7 +515,7 @@ void WaylandSurface::ApplyPendingState() {
     if (augmented_surface_get_version(get_augmented_surface()) >=
         AUGMENTED_SURFACE_SET_ROUNDED_CLIP_BOUNDS_SINCE_VERSION) {
       gfx::RRectF rounded_clip_bounds = pending_state_.rounded_clip_bounds;
-      rounded_clip_bounds.Scale(1.f / pending_state_.buffer_scale);
+      rounded_clip_bounds.Scale(1.f / GetWaylandScale(pending_state_));
 
       augmented_surface_set_rounded_clip_bounds(
           get_augmented_surface(), rounded_clip_bounds.rect().x(),
@@ -563,15 +567,19 @@ void WaylandSurface::ApplyPendingState() {
     // Unset buffer scale if wp_viewport.destination will be set.
     applying_surface_scale = 1;
   } else {
-    applying_surface_scale = pending_state_.buffer_scale;
-    bounds = gfx::ScaleSize(bounds, 1.f / pending_state_.buffer_scale);
+    applying_surface_scale = GetWaylandScale(pending_state_);
+    bounds = gfx::ScaleSize(bounds, 1.f / GetWaylandScale(pending_state_));
   }
-  if (!SurfaceSubmissionInPixelCoordinates() &&
+  if (!surface_submission_in_pixel_coordinates_ &&
       surface_scale_set_ != applying_surface_scale) {
     wl_surface_set_buffer_scale(surface_.get(), applying_surface_scale);
     surface_scale_set_ = applying_surface_scale;
   }
   DCHECK_GE(surface_scale_set_, 1);
+
+  // If this is not a subsurface, propagate the buffer scale.
+  if (root_window_ && root_window_->root_surface() == this)
+    root_window_->PropagateBufferScale(pending_state_.buffer_scale_float);
 
   gfx::RectF viewport_src_dip;
   wl_fixed_t src_to_set[4] = {wl_fixed_from_int(-1), wl_fixed_from_int(-1),
@@ -628,7 +636,7 @@ void WaylandSurface::ApplyPendingState() {
       pending_state_.viewport_px.IsEmpty()
           ? viewport_src_dip.size()
           : gfx::ScaleSize(pending_state_.viewport_px,
-                           1.f / pending_state_.buffer_scale);
+                           1.f / GetWaylandScale(pending_state_));
   float dst_to_set[2] = {-1.f, -1.f};
   if (viewport_dst_dip != viewport_src_dip.size()) {
     dst_to_set[0] = viewport_dst_dip.width();
@@ -750,7 +758,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   buffer_id = other.buffer_id;
   buffer = other.buffer;
   buffer_size_px = other.buffer_size_px;
-  buffer_scale = other.buffer_scale;
+  buffer_scale_float = other.buffer_scale_float;
   buffer_transform = other.buffer_transform;
   crop = other.crop;
   viewport_px = other.viewport_px;
@@ -827,10 +835,6 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
 
   if (root_window_)
     root_window_->OnLeftOutput();
-}
-
-bool WaylandSurface::SurfaceSubmissionInPixelCoordinates() const {
-  return connection_->surface_submission_in_pixel_coordinates();
 }
 
 void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {

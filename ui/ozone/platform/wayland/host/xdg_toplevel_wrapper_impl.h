@@ -62,6 +62,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   bool SupportsActivation() override;
   void Activate() override;
   void Deactivate() override;
+  void SetScaleFactor(float scale_factor) override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 

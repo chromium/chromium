@@ -254,6 +254,14 @@ void XDGPopupWrapperImpl::Decorate() {
                              ZAURA_POPUP_DECORATION_TYPE_SHADOW);
 }
 
+void XDGPopupWrapperImpl::SetScaleFactor(float scale_factor) {
+  if (aura_popup_ && zaura_popup_get_version(aura_popup_.get()) >=
+                         ZAURA_POPUP_SET_SCALE_FACTOR_SINCE_VERSION) {
+    uint32_t value = *reinterpret_cast<uint32_t*>(&scale_factor);
+    zaura_popup_set_scale_factor(aura_popup_.get(), value);
+  }
+}
+
 wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner() {
   wl::Object<xdg_positioner> positioner(
       xdg_wm_base_create_positioner(connection_->shell()));

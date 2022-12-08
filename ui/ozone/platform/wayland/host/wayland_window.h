@@ -82,6 +82,9 @@ class WaylandWindow : public PlatformWindow,
   // to do so (this is not needed upon window initialization).
   virtual void UpdateWindowScale(bool update_bounds);
 
+  // Propagates the buffer scale of the next commit to exo.
+  virtual void PropagateBufferScale(float new_scale) = 0;
+
   WaylandSurface* root_surface() const { return root_surface_.get(); }
   WaylandSubsurface* primary_subsurface() const {
     return primary_subsurface_.get();

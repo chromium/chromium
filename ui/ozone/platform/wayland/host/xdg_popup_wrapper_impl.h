@@ -37,6 +37,7 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   void Grab(uint32_t serial) override;
   bool SupportsDecoration() override;
   void Decorate() override;
+  void SetScaleFactor(float scale_factor) override;
 
  private:
   wl::Object<xdg_positioner> CreatePositioner();

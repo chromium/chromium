@@ -610,6 +610,17 @@ void WaylandToplevelWindow::UpdateDecorations() {
     set_geometry_on_next_frame_ = true;
 }
 
+void WaylandToplevelWindow::PropagateBufferScale(float new_scale) {
+  if (!IsSurfaceConfigured())
+    return;
+
+  if (!last_sent_buffer_scale_ ||
+      last_sent_buffer_scale_.value() != new_scale) {
+    shell_toplevel()->SetScaleFactor(new_scale);
+    last_sent_buffer_scale_ = new_scale;
+  }
+}
+
 bool WaylandToplevelWindow::IsClientControlledWindowMovementSupported() const {
   auto* window_drag_controller = connection()->window_drag_controller();
   DCHECK(window_drag_controller);

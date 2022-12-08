@@ -109,6 +109,12 @@ class WaylandBufferManagerTest : public WaylandTest {
   ~WaylandBufferManagerTest() override = default;
 
   void SetUp() override {
+    // Surface submission in pixel coordinates is only checked once on surface
+    // creation and persisted, so we must make sure the configuration is done
+    // before we create the surface.
+    connection_->set_surface_submission_in_pixel_coordinates(
+        GetParam().surface_submission_in_pixel_coordinates);
+
     // Set this bug fix so that WaylandFrameManager does not use a freeze
     // counter. Otherwise, we won't be able to have a reliable test order of
     // frame submissions. This must be set before any window is created
@@ -2726,47 +2732,44 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
   std::vector<bool> in_pixels = {true, false};
 
   uint32_t frame_id = 0u;
-  for (auto is_in_px : in_pixels) {
-    connection_->set_surface_submission_in_pixel_coordinates(is_in_px);
-    for (auto scale_factor : scale_factors) {
-      for (const auto& rounded_corners : rounded_corners_vec) {
-        std::vector<wl::WaylandOverlayConfig> overlay_configs;
-        for (auto id : kBufferIds) {
-          overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
-              id == 1 ? INT32_MIN : id, id, window_->GetBoundsInPixels()));
-          overlay_configs.back().surface_scale_factor = scale_factor;
-          overlay_configs.back().rounded_clip_bounds = rounded_corners;
-        }
-
-        buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), ++frame_id,
-                                            std::move(overlay_configs));
-
-        base::RunLoop().RunUntilIdle();
-
-        for (auto& subsurface : window_->wayland_subsurfaces_) {
-          gfx::RRectF rounded_clip_bounds_dip = rounded_corners;
-          // If submission in px is allowed, there is no need to convert px to
-          // dip.
-          if (!is_in_px) {
-            // Ozone/Wayland applies ceiled scale factor if it's fractional.
-            rounded_clip_bounds_dip.Scale(1.f / std::ceil(scale_factor));
-          }
-          PostToServerAndWait(
-              [subsurface_id = subsurface->wayland_surface()->get_surface_id(),
-               &rounded_clip_bounds_dip](wl::TestWaylandServerThread* server) {
-                auto* mock_surface_of_subsurface =
-                    server->GetObject<wl::MockSurface>(subsurface_id);
-                EXPECT_TRUE(mock_surface_of_subsurface);
-
-                EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
-                              ->rounded_clip_bounds(),
-                          rounded_clip_bounds_dip);
-                mock_surface_of_subsurface->SendFrameCallback();
-              });
-        }
-
-        SendFrameCallbackForSurface(surface_id_);
+  for (auto scale_factor : scale_factors) {
+    for (const auto& rounded_corners : rounded_corners_vec) {
+      std::vector<wl::WaylandOverlayConfig> overlay_configs;
+      for (auto id : kBufferIds) {
+        overlay_configs.emplace_back(CreateBasicWaylandOverlayConfig(
+            id == 1 ? INT32_MIN : id, id, window_->GetBoundsInPixels()));
+        overlay_configs.back().surface_scale_factor = scale_factor;
+        overlay_configs.back().rounded_clip_bounds = rounded_corners;
       }
+
+      buffer_manager_gpu_->CommitOverlays(window_->GetWidget(), ++frame_id,
+                                          std::move(overlay_configs));
+
+      base::RunLoop().RunUntilIdle();
+
+      for (auto& subsurface : window_->wayland_subsurfaces_) {
+        gfx::RRectF rounded_clip_bounds_dip = rounded_corners;
+        // If submission in px is allowed, there is no need to convert px to
+        // dip.
+        if (!GetParam().surface_submission_in_pixel_coordinates) {
+          // Ozone/Wayland applies ceiled scale factor if it's fractional.
+          rounded_clip_bounds_dip.Scale(1.f / std::ceil(scale_factor));
+        }
+        PostToServerAndWait(
+            [subsurface_id = subsurface->wayland_surface()->get_surface_id(),
+             &rounded_clip_bounds_dip](wl::TestWaylandServerThread* server) {
+              auto* mock_surface_of_subsurface =
+                  server->GetObject<wl::MockSurface>(subsurface_id);
+              EXPECT_TRUE(mock_surface_of_subsurface);
+
+              EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()
+                            ->rounded_clip_bounds(),
+                        rounded_clip_bounds_dip);
+              mock_surface_of_subsurface->SendFrameCallback();
+            });
+      }
+
+      SendFrameCallbackForSurface(surface_id_);
     }
   }
 }
@@ -3080,5 +3083,10 @@ INSTANTIATE_TEST_SUITE_P(
     Values(wl::ServerConfig{
         .use_explicit_synchronization =
             wl::ShouldUseExplicitSynchronizationProtocol::kUse}));
+
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithSurfaceSubmissionInPixelCoordinatesDisabled,
+    WaylandBufferManagerTest,
+    Values(wl::ServerConfig{.surface_submission_in_pixel_coordinates = false}));
 
 }  // namespace ui

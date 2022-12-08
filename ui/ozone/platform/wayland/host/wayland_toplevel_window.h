@@ -118,6 +118,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetWindowGeometry(gfx::Rect bounds) override;
   void AckConfigure(uint32_t serial) override;
   void UpdateDecorations() override;
+  void PropagateBufferScale(float new_scale) override;
 
   // PlatformWindow overrides:
   bool IsClientControlledWindowMovementSupported() const override;
@@ -320,6 +321,9 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // True when screen coordinates is enabled.
   bool screen_coordinates_enabled_;
+
+  // The last buffer scale sent to the wayland server.
+  absl::optional<float> last_sent_buffer_scale_;
 
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 };

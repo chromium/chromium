@@ -151,6 +151,10 @@ class ShellToplevelWrapper {
   virtual bool SupportsActivation() = 0;
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
+
+  // Sets the scale factor for the next commit. Scale factor persists until a
+  // new one is set.
+  virtual void SetScaleFactor(float scale_factor) = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.

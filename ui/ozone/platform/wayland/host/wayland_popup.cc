@@ -217,6 +217,17 @@ void WaylandPopup::UpdateWindowMask() {
   root_surface()->set_opaque_region(IsOpaqueWindow() ? &region : nullptr);
 }
 
+void WaylandPopup::PropagateBufferScale(float new_scale) {
+  if (!IsSurfaceConfigured())
+    return;
+
+  if (!last_sent_buffer_scale_ ||
+      last_sent_buffer_scale_.value() != new_scale) {
+    shell_popup()->SetScaleFactor(new_scale);
+    last_sent_buffer_scale_ = new_scale;
+  }
+}
+
 void WaylandPopup::OnCloseRequest() {
   // Before calling OnCloseRequest, the |shell_popup_| must become hidden and
   // only then call OnCloseRequest().

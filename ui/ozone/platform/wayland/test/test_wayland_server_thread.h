@@ -62,6 +62,7 @@ struct ServerConfig {
       ShouldUseExplicitSynchronizationProtocol::kUse;
   EnableAuraShellProtocol enable_aura_shell =
       EnableAuraShellProtocol::kDisabled;
+  bool surface_submission_in_pixel_coordinates = true;
 };
 
 class TestWaylandServerThread;

@@ -69,6 +69,10 @@ class ShellPopupWrapper {
   // Decorates the surface with a drop shadow.
   virtual void Decorate() = 0;
 
+  // Sets the scale factor for the next commit. Scale factor persists until a
+  // new one is set.
+  virtual void SetScaleFactor(float scale_factor) = 0;
+
  protected:
   // Asks the compositor to take explicit-grab for this popup.
   virtual void Grab(uint32_t serial) = 0;
