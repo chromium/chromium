@@ -235,7 +235,7 @@ bool ApkWebAppService::IsWebAppInstalledFromArc(
     // ARC++.
     return WebAppToApks().FindDict(web_app_id) != nullptr;
   } else {
-    web_app::WebAppRegistrar& registrar = provider_->registrar();
+    web_app::WebAppRegistrar& registrar = provider_->registrar_unsafe();
     const web_app::WebApp* app = registrar.GetAppById(web_app_id);
     return app ? app->IsWebAppStoreInstalledApp() : false;
   }
@@ -263,7 +263,7 @@ absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
   if (!web_app_provider)
     return absl::nullopt;
   absl::optional<web_app::AppId> app_id =
-      web_app_provider->registrar().FindAppWithUrlInScope(url);
+      web_app_provider->registrar_unsafe().FindAppWithUrlInScope(url);
   if (!app_id)
     return absl::nullopt;
 
