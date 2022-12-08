@@ -466,3 +466,39 @@ TEST_F(BatteryDischargeReporterTest, BatteryLevelIncreased) {
       },
       BatteryDischargeMode::kBatteryLevelIncreased);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(BatteryDischargeReporterTest, BatteryDischargeGranularity) {
+  TestUsageScenarioDataStoreImpl usage_scenario_data_store;
+
+  base::BatteryStateSampler battery_state_sampler(
+      std::make_unique<NoopSamplingEventSource>(),
+      std::make_unique<NoopBatteryLevelProvider>());
+  BatteryDischargeReporter battery_discharge_reporter(
+      &battery_state_sampler, &usage_scenario_data_store);
+
+  const int64_t kGranularityMilliwattHours = 10;
+  // Since the full charged capacity is 1000, a granularity of 10 is equal to
+  // one percent, or 100 hundredths of a percent.
+  const int64_t kGranularityRelative = 100;
+
+  const auto kBatteryState = base::BatteryLevelProvider::BatteryState{
+      .battery_count = 1,
+      .is_external_power_connected = false,
+      .current_capacity = 500,
+      .full_charged_capacity = 1000,
+      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
+      .battery_discharge_granularity = kGranularityMilliwattHours,
+  };
+
+  battery_discharge_reporter.OnBatteryStateSampled(kBatteryState);
+  task_environment_.FastForwardBy(base::Minutes(1));
+  battery_discharge_reporter.OnBatteryStateSampled(kBatteryState);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeGranularityMilliwattHours",
+      kGranularityMilliwattHours, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeGranularityRelative", kGranularityRelative, 1);
+}
+#endif  // BUILDFLAG(IS_WIN)

@@ -41,8 +41,6 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
 #if BUILDFLAG(IS_WIN)
     state.battery_discharge_granularity =
         battery_details.front().battery_discharge_granularity;
-    state.max_battery_discharge_granularity =
-        battery_details.front().max_battery_discharge_granularity;
 #endif  // BUILDFLAG(IS_WIN)
   }
   state.capture_time = base::TimeTicks::Now();

@@ -60,17 +60,12 @@ class BASE_EXPORT BatteryLevelProvider {
     base::TimeTicks capture_time;
 
 #if BUILDFLAG(IS_WIN)
-    // The granularity of the |current_capacity| value, in hundredths of a
-    // percent. Only available on Windows, and if a battery is present. This
-    // value is populated by the manufacturer and is not guaranteed to be
-    // available or accurate.
+    // The granularity of the battery discharge. Always the most coarse
+    // granularity among all the reporting scales of the battery, regardless of
+    // the current capacity, in milliwatt-hours. Only available on
+    // Windows, and if a battery is present. This value is populated by the
+    // manufacturer and is not guaranteed to be available or accurate.
     absl::optional<uint32_t> battery_discharge_granularity;
-
-    // The most coarse granularity among all the reporting scales of the
-    // battery, in hundredths of a percent. Only available on Windows, and if a
-    // battery is present. This value is populated by the manufacturer and is
-    // not guaranteed to be available or accurate.
-    absl::optional<uint32_t> max_battery_discharge_granularity;
 #endif  // BUILDFLAG(IS_WIN)
   };
 

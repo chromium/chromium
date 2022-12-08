@@ -12751,6 +12751,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Conditions changed"/>
 </enum>
 
+<enum name="BooleanOrdered">
+  <int value="0" label="Not ordered"/>
+  <int value="1" label="Ordered"/>
+</enum>
+
 <enum name="BooleanOriginHeaderSameAsRequestOrigin">
   <int value="0" label="Headers differ"/>
   <int value="1" label="Headers match"/>

@@ -751,22 +751,3 @@ TEST_F(PowerMetricsReporterUnitTest, ShortIntervalHistograms_EndToEnd) {
       "PerformanceMonitor.ResourceCoalition.CPUTime2_10sec", 6000, 1);
 }
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_WIN)
-TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeGranularity) {
-  const uint32_t kGranularity = 20;
-  const uint32_t kMaxGranularity = 30;
-
-  battery_states_.push(base::BatteryLevelProvider::BatteryState{
-      .full_charged_capacity = 100,
-      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
-      .battery_discharge_granularity = kGranularity,
-      .max_battery_discharge_granularity = kMaxGranularity});
-  task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
-
-  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeGranularity",
-                                       kGranularity, 1);
-  histogram_tester_.ExpectUniqueSample("Power.MaxBatteryDischargeGranularity",
-                                       kMaxGranularity, 1);
-}
-#endif  // BUILDFLAG(IS_WIN)

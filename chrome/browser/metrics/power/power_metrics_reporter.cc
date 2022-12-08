@@ -233,32 +233,6 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
   auto battery_discharge = GetBatteryDischargeDuringInterval(
       previous_battery_state, new_battery_state, interval_duration);
 
-#if BUILDFLAG(IS_WIN)
-  if (new_battery_state.has_value() &&
-      new_battery_state->charge_unit.has_value() &&
-      new_battery_state->charge_unit.value() ==
-          base::BatteryLevelProvider::BatteryLevelUnit::kMWh) {
-    base::UmaHistogramBoolean(
-        "Power.BatteryDischargeGranularityAvailable",
-        new_battery_state->battery_discharge_granularity.has_value());
-
-    DCHECK_EQ(new_battery_state->battery_discharge_granularity.has_value(),
-              new_battery_state->max_battery_discharge_granularity.has_value());
-    if (new_battery_state->battery_discharge_granularity.has_value()) {
-      base::UmaHistogramCustomCounts(
-          "Power.BatteryDischargeGranularity",
-          new_battery_state->battery_discharge_granularity.value(),
-          /*min=*/0, /*exclusive_max=*/20000,
-          /*buckets=*/50);
-      base::UmaHistogramCustomCounts(
-          "Power.MaxBatteryDischargeGranularity",
-          new_battery_state->max_battery_discharge_granularity.value(),
-          /*min=*/0, /*exclusive_max=*/20000,
-          /*buckets=*/50);
-    }
-  }
-#endif
-
   // Get usage scenario data.
   auto long_interval_data =
       long_usage_scenario_data_store_->ResetIntervalData();

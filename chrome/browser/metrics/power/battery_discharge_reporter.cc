@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
 #include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
 #include "chrome/browser/metrics/power/usage_scenario.h"
@@ -72,6 +73,30 @@ void BatteryDischargeReporter::OnBatteryStateSampled(
                          base::Seconds(1))) {
     battery_discharge.mode = BatteryDischargeMode::kInvalidInterval;
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
+    base::UmaHistogramBoolean(
+        "Power.BatteryDischargeGranularityAvailable",
+        battery_state->battery_discharge_granularity.has_value());
+
+    if (battery_state->battery_discharge_granularity.has_value()) {
+      base::UmaHistogramCustomCounts(
+          "Power.BatteryDischargeGranularityMilliwattHours",
+          battery_state->battery_discharge_granularity.value(),
+          /*min=*/0, /*exclusive_max=*/20000,
+          /*buckets=*/50);
+
+      uint32_t granularity_relative =
+          battery_state->battery_discharge_granularity.value() * 10000 /
+          battery_state->full_charged_capacity.value();
+      base::UmaHistogramCustomCounts(
+          "Power.BatteryDischargeGranularityRelative", granularity_relative,
+          /*min=*/0, /*exclusive_max=*/20000,
+          /*buckets=*/50);
+    }
+  }
+#endif
 
   auto interval_data = battery_usage_scenario_data_store_->ResetIntervalData();
 
