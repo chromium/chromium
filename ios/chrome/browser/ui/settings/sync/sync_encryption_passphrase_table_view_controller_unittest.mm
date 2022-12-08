@@ -83,7 +83,7 @@ class SyncEncryptionPassphraseTableViewControllerTest
   }
 
   void TearDown() override {
-    [SyncController() stopObserving];
+    [SyncController() settingsWillBeDismissed];
     PassphraseTableViewControllerTest::TearDown();
   }
 

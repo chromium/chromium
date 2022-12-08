@@ -65,8 +65,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 }  // namespace
 
 @interface SyncEncryptionPassphraseTableViewController () <
-    IdentityManagerObserverBridgeDelegate,
-    SettingsControllerProtocol> {
+    IdentityManagerObserverBridgeDelegate> {
   // Whether the decryption progress is currently being shown.
   BOOL _isDecryptionProgressShown;
   NSString* _savedTitle;
@@ -76,6 +75,9 @@ const CGFloat kSpinnerButtonPadding = 18;
       _identityManagerObserver;
   UITextField* _passphrase;
   std::unique_ptr<ScopedUIBlocker> _uiBlocker;
+
+  // Whether Settings have been dismissed.
+  BOOL _settingsAreDismissed;
 }
 
 @property(nonatomic, assign, readonly) Browser* browser;
@@ -138,6 +140,8 @@ const CGFloat kSpinnerButtonPadding = 18;
 }
 
 - (NSString*)syncErrorMessage {
+  if (_settingsAreDismissed)
+    return nil;
   if (_syncErrorMessage)
     return _syncErrorMessage;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
@@ -300,6 +304,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 }
 
 - (void)signInPressed {
+  DCHECK(!_settingsAreDismissed);
   DCHECK([_passphrase text].length);
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
 
@@ -443,14 +448,6 @@ const CGFloat kSpinnerButtonPadding = 18;
   return leftBarButtonItem;
 }
 
-- (void)stopObserving {
-  // Stops observing the sync service. This is required during the shutdown
-  // phase to avoid observing sync events for a browser state that is being
-  // killed.
-  _syncObserver.reset();
-  _identityManagerObserver.reset();
-}
-
 #pragma mark - UIControl events listener
 
 - (void)textFieldDidBeginEditing:(id)sender {
@@ -489,6 +486,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  DCHECK(!_settingsAreDismissed);
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   syncer::SyncService* service =
       SyncServiceFactory::GetForBrowserState(browserState);
@@ -531,6 +529,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onEndBatchOfRefreshTokenStateChanges {
+  DCHECK(!_settingsAreDismissed);
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   if (AuthenticationServiceFactory::GetForBrowserState(browserState)
           ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
@@ -554,7 +553,16 @@ const CGFloat kSpinnerButtonPadding = 18;
 }
 
 - (void)settingsWillBeDismissed {
-  [self stopObserving];
+  DCHECK(!_settingsAreDismissed);
+
+  // Remove observer bridges.
+  _syncObserver.reset();
+  _identityManagerObserver.reset();
+
+  // Clear C++ ivars.
+  _browser = nullptr;
+
+  _settingsAreDismissed = true;
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

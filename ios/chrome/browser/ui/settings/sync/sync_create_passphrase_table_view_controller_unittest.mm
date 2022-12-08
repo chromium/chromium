@@ -38,7 +38,7 @@ class SyncCreatePassphraseTableViewControllerTest
 
  protected:
   void TearDown() override {
-    [SyncController() stopObserving];
+    [SyncController() settingsWillBeDismissed];
     PassphraseTableViewControllerTest::TearDown();
   }
 

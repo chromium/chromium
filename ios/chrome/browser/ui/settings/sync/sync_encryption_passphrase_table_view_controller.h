@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
 class Browser;
@@ -41,8 +42,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @end
 
-@interface SyncEncryptionPassphraseTableViewController (Subclassing) <
-    UITextFieldDelegate>
+@interface SyncEncryptionPassphraseTableViewController (
+    Subclassing) <SettingsControllerProtocol, UITextFieldDelegate>
 
 // Whether this controller is for encryption or decryption. Returns `YES`, if
 // the used for the user to enter an existing passphrase that is not yet
@@ -73,10 +74,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Called after a touch event leaving a `UITextField` by clicking "return" key.
 - (void)textFieldDidEndEditing:(id)sender;
-
-// Stops observing the sync service. This is required during the shutdown phase
-// to avoid observing sync events for a browser state that is being killed.
-- (void)stopObserving;
 
 @end
 
