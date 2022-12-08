@@ -1219,8 +1219,6 @@
         'swarming': {
           # Reducing parallelism due to DUT shortage (b/238271231)
           'shards': 5,
-          # Increased timeout to 2 hours due to shard timeout (b/261363192)
-          'hard_timeout': 7200,
         }
       },
     },
