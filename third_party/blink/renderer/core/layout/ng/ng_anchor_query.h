@@ -166,9 +166,11 @@ class CORE_EXPORT NGPhysicalAnchorQuery
  public:
   using Base = NGAnchorQueryBase<NGPhysicalAnchorReference>;
 
-  const NGPhysicalAnchorReference* AnchorReference(const NGAnchorKey&) const;
-  const PhysicalRect* Rect(const NGAnchorKey&) const;
-  const NGPhysicalFragment* Fragment(const NGAnchorKey&) const;
+  const NGPhysicalAnchorReference* AnchorReference(
+      const NGAnchorKey&,
+      bool can_use_invalid_anchors) const;
+  const NGPhysicalFragment* Fragment(const NGAnchorKey&,
+                                     bool can_use_invalid_anchors) const;
 
   void SetFromLogical(const NGLogicalAnchorQuery& logical_query,
                       const WritingModeConverter& converter);
@@ -202,9 +204,9 @@ class CORE_EXPORT NGLogicalAnchorQuery
   // Returns an empty instance.
   static const NGLogicalAnchorQuery& Empty();
 
-  const NGLogicalAnchorReference* AnchorReference(const NGAnchorKey&) const;
-  const LogicalRect* Rect(const NGAnchorKey&) const;
-  const NGPhysicalFragment* Fragment(const NGAnchorKey&) const;
+  const NGLogicalAnchorReference* AnchorReference(
+      const NGAnchorKey&,
+      bool can_use_invalid_anchor) const;
 
   enum class SetOptions {
     // A valid entry. The call order is in the tree order.
@@ -256,12 +258,14 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
                         const LayoutObject* implicit_anchor,
                         const WritingModeConverter& container_converter,
                         WritingDirectionMode self_writing_direction,
-                        const PhysicalOffset& offset_to_padding_box)
+                        const PhysicalOffset& offset_to_padding_box,
+                        bool is_in_top_layer)
       : anchor_query_(&anchor_query),
         implicit_anchor_(implicit_anchor),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        offset_to_padding_box_(offset_to_padding_box) {
+        offset_to_padding_box_(offset_to_padding_box),
+        is_in_top_layer_(is_in_top_layer) {
     DCHECK(anchor_query_);
   }
 
@@ -272,13 +276,15 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
                         const LayoutObject& containing_block,
                         const WritingModeConverter& container_converter,
                         WritingDirectionMode self_writing_direction,
-                        const PhysicalOffset& offset_to_padding_box)
+                        const PhysicalOffset& offset_to_padding_box,
+                        bool is_in_top_layer)
       : anchor_queries_(&anchor_queries),
         implicit_anchor_(implicit_anchor),
         containing_block_(&containing_block),
         container_converter_(container_converter),
         self_writing_direction_(self_writing_direction),
-        offset_to_padding_box_(offset_to_padding_box) {
+        offset_to_padding_box_(offset_to_padding_box),
+        is_in_top_layer_(is_in_top_layer) {
     DCHECK(anchor_queries_);
     DCHECK(containing_block_);
   }
@@ -323,6 +329,7 @@ class CORE_EXPORT NGAnchorEvaluatorImpl : public Length::AnchorEvaluator {
   LayoutUnit available_size_;
   bool is_y_axis_ = false;
   bool is_right_or_bottom_ = false;
+  bool is_in_top_layer_ = false;
   mutable bool has_anchor_functions_ = false;
 };
 

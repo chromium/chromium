@@ -150,6 +150,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   bool IsInlineLevel() const;
   bool IsAtomicInlineLevel() const;
   bool HasAspectRatio() const;
+  bool IsInTopLayer() const;
 
   // Returns the aspect ratio of a replaced element.
   LogicalSize GetAspectRatio() const;

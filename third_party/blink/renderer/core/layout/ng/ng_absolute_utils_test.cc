@@ -110,7 +110,8 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
-        PhysicalOffset());
+        PhysicalOffset(),
+        /* is_in_top_layer */ false);
     const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
     LogicalSize computed_available_size =
@@ -140,7 +141,8 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         /* self_writing_direction */
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         /* offset_to_padding_box */
-        PhysicalOffset());
+        PhysicalOffset(),
+        /* is_in_top_layer */ false);
     const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
     LogicalSize computed_available_size =

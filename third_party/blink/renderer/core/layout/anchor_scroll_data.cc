@@ -36,24 +36,49 @@ const LayoutObject* AnchorScrollObject(const LayoutObject* layout_object) {
   if (!anchor_query)
     return nullptr;
 
+  const Element* element = DynamicTo<Element>(layout_object->GetNode());
+  const bool is_in_top_layer = element ? element->IsInTopLayer() : false;
+
   const NGPhysicalFragment* fragment = nullptr;
   if (value->IsImplicit()) {
-    Element* element = DynamicTo<Element>(layout_object->GetNode());
     Element* anchor = element ? element->ImplicitAnchorElement() : nullptr;
     LayoutObject* anchor_layout_object =
         anchor ? anchor->GetLayoutObject() : nullptr;
     if (anchor_layout_object)
-      fragment = anchor_query->Fragment(anchor_layout_object);
+      fragment = anchor_query->Fragment(anchor_layout_object, is_in_top_layer);
   } else {
     DCHECK(value->IsNamed());
-    fragment = anchor_query->Fragment(&value->GetName());
+    fragment = anchor_query->Fragment(&value->GetName(), is_in_top_layer);
+  }
+
+  // |is_in_top_layer| allows NGPhysicalAnchorQuery to return elements that are
+  // rendered after, and hence, can't be used as anchors for |layout_object|.
+  if (is_in_top_layer && fragment &&
+      layout_object->IsBeforeInPreOrder(*fragment->GetLayoutObject())) {
+    return nullptr;
   }
 
   return fragment ? fragment->GetLayoutObject() : nullptr;
 }
 
+// Returns the PaintLayer of the scroll container of |anchor|.
+const PaintLayer* ContainingScrollContainerForAnchor(
+    const LayoutObject* anchor) {
+  if (!anchor->HasLayer())
+    return anchor->ContainingScrollContainer()->Layer();
+  // Normally, |scroller_layer| is the result. There's only one special case
+  // where |anchor| is fixed-positioned and |scroller_layer| is the LayoutView,
+  // then |anchor| doesn't actually scroll with |scroller_layer|, and null
+  // should be returned.
+  bool is_fixed_to_view = false;
+  const PaintLayer* scroller_layer =
+      To<LayoutBoxModelObject>(anchor)->Layer()->ContainingScrollContainerLayer(
+          &is_fixed_to_view);
+  return is_fixed_to_view ? nullptr : scroller_layer;
+}
+
 // Returns the PaintLayer of the scroll container of an anchor-positioned |box|.
-const PaintLayer* ContainingScrollContainerLayerForAnchorScroll(
+const PaintLayer* ContainingScrollContainerLayerForAnchorPositionedBox(
     const LayoutBox* box) {
   // Normally, |scroller_layer| is the result. There's only one special case
   // where |box| is fixed-positioned and |scroller_layer| is the LayoutView,
@@ -88,9 +113,10 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
   if (const LayoutObject* anchor =
           AnchorScrollObject(owner_->GetLayoutObject())) {
     const PaintLayer* starting_layer =
-        anchor->ContainingScrollContainer()->Layer();
+        ContainingScrollContainerForAnchor(anchor);
     const PaintLayer* bounding_layer =
-        ContainingScrollContainerLayerForAnchorScroll(owner_->GetLayoutBox());
+        ContainingScrollContainerLayerForAnchorPositionedBox(
+            owner_->GetLayoutBox());
     for (const PaintLayer* layer = starting_layer; layer != bounding_layer;
          layer = layer->ContainingScrollContainerLayer()) {
       // |bounding_layer| must be either null (for fixed-positioned |owner_|) or

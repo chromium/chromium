@@ -94,49 +94,35 @@ const NGLogicalAnchorQuery& NGLogicalAnchorQuery::Empty() {
 }
 
 const NGPhysicalAnchorReference* NGPhysicalAnchorQuery::AnchorReference(
-    const NGAnchorKey& key) const {
+    const NGAnchorKey& key,
+    bool can_use_invalid_anchors) const {
   if (const NGPhysicalAnchorReference* reference = Base::AnchorReference(key)) {
-    if (!reference->is_invalid)
+    if (can_use_invalid_anchors || !reference->is_invalid)
       return reference;
   }
   return nullptr;
 }
 
-const PhysicalRect* NGPhysicalAnchorQuery::Rect(const NGAnchorKey& key) const {
-  if (const NGPhysicalAnchorReference* reference = AnchorReference(key))
-    return &reference->rect;
-  return nullptr;
-}
-
 const NGPhysicalFragment* NGPhysicalAnchorQuery::Fragment(
-    const NGAnchorKey& key) const {
-  if (const NGPhysicalAnchorReference* reference = AnchorReference(key))
+    const NGAnchorKey& key,
+    bool can_use_invalid_anchors) const {
+  if (const NGPhysicalAnchorReference* reference =
+          AnchorReference(key, can_use_invalid_anchors)) {
     return reference->fragment.Get();
-  return nullptr;
-}
-
-const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
-    const NGAnchorKey& key) const {
-  if (const NGLogicalAnchorReference* reference = Base::AnchorReference(key)) {
-    for (const NGLogicalAnchorReference* result = reference; result;
-         result = result->next) {
-      if (!result->is_invalid)
-        return result;
-    }
   }
   return nullptr;
 }
 
-const LogicalRect* NGLogicalAnchorQuery::Rect(const NGAnchorKey& key) const {
-  if (const NGLogicalAnchorReference* reference = AnchorReference(key))
-    return &reference->rect;
-  return nullptr;
-}
-
-const NGPhysicalFragment* NGLogicalAnchorQuery::Fragment(
-    const NGAnchorKey& key) const {
-  if (const NGLogicalAnchorReference* reference = AnchorReference(key))
-    return reference->fragment;
+const NGLogicalAnchorReference* NGLogicalAnchorQuery::AnchorReference(
+    const NGAnchorKey& key,
+    bool can_use_invalid_anchor) const {
+  if (const NGLogicalAnchorReference* reference = Base::AnchorReference(key)) {
+    for (const NGLogicalAnchorReference* result = reference; result;
+         result = result->next) {
+      if (can_use_invalid_anchor || !result->is_invalid)
+        return result;
+    }
+  }
   return nullptr;
 }
 
@@ -386,8 +372,9 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchor(
   if (!anchor_query)
     return absl::nullopt;
   const NGLogicalAnchorReference* anchor_reference =
-      anchor_name ? anchor_query->AnchorReference(anchor_name)
-                  : anchor_query->AnchorReference(implicit_anchor_);
+      anchor_name
+          ? anchor_query->AnchorReference(anchor_name, is_in_top_layer_)
+          : anchor_query->AnchorReference(implicit_anchor_, is_in_top_layer_);
   if (!anchor_reference)
     return absl::nullopt;
 
@@ -407,8 +394,9 @@ absl::optional<LayoutUnit> NGAnchorEvaluatorImpl::EvaluateAnchorSize(
   if (!anchor_query)
     return absl::nullopt;
   const NGLogicalAnchorReference* anchor_reference =
-      anchor_name ? anchor_query->AnchorReference(anchor_name)
-                  : anchor_query->AnchorReference(implicit_anchor_);
+      anchor_name
+          ? anchor_query->AnchorReference(anchor_name, is_in_top_layer_)
+          : anchor_query->AnchorReference(implicit_anchor_, is_in_top_layer_);
   if (!anchor_reference)
     return absl::nullopt;
 
