@@ -67,9 +67,7 @@ NGGridRangeBuilder::NGGridRangeBuilder(
     const ComputedStyle& grid_style,
     const NGGridPlacementData& placement_data,
     GridTrackSizingDirection track_direction)
-    : auto_repetitions_((track_direction == kForColumns)
-                            ? placement_data.column_auto_repetitions
-                            : placement_data.row_auto_repetitions),
+    : auto_repetitions_(placement_data.AutoRepetitions(track_direction)),
       start_offset_((track_direction == kForColumns)
                         ? placement_data.column_start_offset
                         : placement_data.row_start_offset),

@@ -477,22 +477,24 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
 
   const auto& node = Node();
   const auto& style = node.Style();
-
-  // Initialize this grid's placement data.
-  auto placement_data =
-      parent_line_resolver
-          ? NGGridPlacementData(style, *parent_line_resolver,
-                                SubgriddedAreaInParent(subgrid_data))
-          : NGGridPlacementData(style);
+  wtf_size_t column_auto_repetitions = kNotFound;
+  wtf_size_t row_auto_repetitions = kNotFound;
 
   // TODO(ethavar): Compute automatic repetitions for subgridded axes as
   // described in https://drafts.csswg.org/css-grid-2/#auto-repeat.
   if (!parent_sizing_data) {
-    placement_data.column_auto_repetitions =
-        ComputeAutomaticRepetitions(kForColumns);
-    placement_data.row_auto_repetitions = ComputeAutomaticRepetitions(kForRows);
+    column_auto_repetitions = ComputeAutomaticRepetitions(kForColumns);
+    row_auto_repetitions = ComputeAutomaticRepetitions(kForRows);
   }
 
+  // Initialize this grid's placement data.
+  // TODO(kschmi): Remove placement data from `NGGridPlacement`.
+  auto placement_data =
+      parent_line_resolver
+          ? NGGridPlacementData(style, *parent_line_resolver,
+                                SubgriddedAreaInParent(subgrid_data))
+          : NGGridPlacementData(style, column_auto_repetitions,
+                                row_auto_repetitions);
   bool has_nested_subgrid = false;
   auto& sizing_data = sizing_tree->CreateSizingData();
 

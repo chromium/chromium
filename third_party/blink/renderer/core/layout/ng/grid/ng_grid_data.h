@@ -16,57 +16,71 @@ struct CORE_EXPORT NGGridPlacementData {
   NGGridPlacementData(NGGridPlacementData&&) = default;
   NGGridPlacementData& operator=(NGGridPlacementData&&) = default;
 
-  explicit NGGridPlacementData(const ComputedStyle& grid_style)
-      : line_resolver(grid_style) {}
+  explicit NGGridPlacementData(const ComputedStyle& grid_style,
+                               wtf_size_t column_auto_repetitions,
+                               wtf_size_t row_auto_repetitions)
+      : line_resolver(grid_style,
+                      column_auto_repetitions,
+                      row_auto_repetitions) {}
 
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.
   NGGridPlacementData(const ComputedStyle& grid_style,
                       const NGGridLineResolver& parent_line_resolver,
                       GridArea subgrid_area)
-      : line_resolver(grid_style, parent_line_resolver, subgrid_area) {
-    if (subgrid_area.columns.IsTranslatedDefinite())
-      subgridded_column_span_size = subgrid_area.SpanSize(kForColumns);
-    if (subgrid_area.rows.IsTranslatedDefinite())
-      subgridded_row_span_size = subgrid_area.SpanSize(kForRows);
-  }
+      : line_resolver(grid_style, parent_line_resolver, subgrid_area) {}
 
   // This constructor only copies inputs to the auto-placement algorithm.
   NGGridPlacementData(const NGGridPlacementData& other)
-      : line_resolver(other.line_resolver),
-        subgridded_column_span_size(other.subgridded_column_span_size),
-        subgridded_row_span_size(other.subgridded_row_span_size),
-        column_auto_repetitions(other.column_auto_repetitions),
-        row_auto_repetitions(other.row_auto_repetitions) {}
+      : line_resolver(other.line_resolver) {}
 
   // This method compares the fields computed by the auto-placement algorithm in
   // |NGGridPlacement| and it's only intended to validate the cached data.
   bool operator==(const NGGridPlacementData& other) const {
     return grid_item_positions == other.grid_item_positions &&
-           explicit_grid_column_count == other.explicit_grid_column_count &&
-           explicit_grid_row_count == other.explicit_grid_row_count &&
            column_start_offset == other.column_start_offset &&
-           row_start_offset == other.row_start_offset;
+           row_start_offset == other.row_start_offset &&
+           line_resolver == other.line_resolver;
   }
 
+  bool operator!=(const NGGridPlacementData& other) const {
+    return !(*this == other);
+  }
+
+  // TODO(kschmi): Remove placement data from `NGGridPlacement` as well as
+  // these helpers.
   bool HasStandaloneAxis(GridTrackSizingDirection track_direction) const {
-    const wtf_size_t subgrid_span_size = (track_direction == kForColumns)
-                                             ? subgridded_column_span_size
-                                             : subgridded_row_span_size;
-    return subgrid_span_size == kNotFound;
+    return line_resolver.HasStandaloneAxis(track_direction);
+  }
+
+  wtf_size_t AutoRepetitions(GridTrackSizingDirection track_direction) const {
+    return line_resolver.AutoRepetitions(track_direction);
+  }
+
+  wtf_size_t AutoRepeatTrackCount(
+      GridTrackSizingDirection track_direction) const {
+    return line_resolver.AutoRepeatTrackCount(track_direction);
+  }
+
+  wtf_size_t SubgridSpanSize(GridTrackSizingDirection track_direction) const {
+    return line_resolver.SubgridSpanSize(track_direction);
+  }
+
+  wtf_size_t ExplicitGridTrackCount(
+      GridTrackSizingDirection track_direction) const {
+    return line_resolver.ExplicitGridTrackCount(track_direction);
+  }
+
+  wtf_size_t StartOffset(GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? column_start_offset
+                                            : row_start_offset;
   }
 
   NGGridLineResolver line_resolver;
-  wtf_size_t subgridded_column_span_size{kNotFound};
-  wtf_size_t subgridded_row_span_size{kNotFound};
-  wtf_size_t column_auto_repetitions{1};
-  wtf_size_t row_auto_repetitions{1};
 
   // These fields are computed in |NGGridPlacement::RunAutoPlacementAlgorithm|,
   // so they're not considered inputs to the grid placement step.
   Vector<GridArea> grid_item_positions;
-  wtf_size_t explicit_grid_column_count{0};
-  wtf_size_t explicit_grid_row_count{0};
   wtf_size_t column_start_offset{0};
   wtf_size_t row_start_offset{0};
 };

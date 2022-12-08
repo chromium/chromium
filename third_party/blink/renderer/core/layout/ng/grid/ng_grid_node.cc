@@ -47,10 +47,7 @@ GridItems NGGridNode::ConstructGridItems(
     grid_items.ReserveInitialCapacity(
         cached_placement_data->grid_item_positions.size());
 
-    if (placement_data.column_auto_repetitions !=
-            cached_placement_data->column_auto_repetitions ||
-        placement_data.row_auto_repetitions !=
-            cached_placement_data->row_auto_repetitions) {
+    if (placement_data != *cached_placement_data) {
       // We need to recompute grid item placement if the automatic column/row
       // repetitions changed due to updates in the container's style.
       cached_placement_data = nullptr;

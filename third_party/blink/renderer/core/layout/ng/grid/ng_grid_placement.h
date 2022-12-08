@@ -36,9 +36,6 @@ class CORE_EXPORT NGGridPlacement {
       wtf_size_t* start_line,
       wtf_size_t* end_line);
 
-  wtf_size_t AutoRepetitions(GridTrackSizingDirection track_direction) const;
-  wtf_size_t StartOffset(GridTrackSizingDirection track_direction) const;
-
  private:
   enum class CursorMovementBehavior { kAuto, kForceMajorLine, kForceMinorLine };
 
@@ -159,24 +156,17 @@ class CORE_EXPORT NGGridPlacement {
   // subgrid, clamp their resolved positions to the subgrid's explicit grid.
   void ClampGridItemsToFitSubgridArea(GridTrackSizingDirection track_direction);
 
-  wtf_size_t AutoRepeatTrackCount(
-      GridTrackSizingDirection track_direction) const;
-  wtf_size_t SubgridSpanSize(GridTrackSizingDirection track_direction) const;
-
   bool HasSparsePacking() const;
-
-  PackingBehavior packing_behavior_;
-  NGGridPlacementData placement_data_;
-
-  GridTrackSizingDirection major_direction_;
-  GridTrackSizingDirection minor_direction_;
 
 #if DCHECK_IS_ON()
   bool auto_placement_algorithm_called_ : 1;
 #endif
 
-  wtf_size_t column_auto_repeat_track_count_;
-  wtf_size_t row_auto_repeat_track_count_;
+  // TODO(kschmi): Replace `NGGridPlacementData` with line resolver.
+  NGGridPlacementData placement_data_;
+  PackingBehavior packing_behavior_;
+  GridTrackSizingDirection major_direction_;
+  GridTrackSizingDirection minor_direction_;
   wtf_size_t minor_max_end_line_;
 };
 
