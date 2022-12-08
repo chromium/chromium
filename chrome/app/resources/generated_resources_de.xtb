@@ -5355,7 +5355,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5979084224081478209">Passwörter prüfen</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Du hast 1 potenziell schädliche Erweiterung wieder aktiviert}other{Du hast {NUM_EXTENSIONS} potenziell schädliche Erweiterungen wieder aktiviert}}</translation>
 <translation id="5979353814339191480">Diese Option ist für Chromebooks relevant, die mit einem Datentarif oder einem Dongle für ein Mobilfunknetz verwendet werden oder per Tethering mit einem mobilen Hotspot verbunden sind</translation>
-<translation id="5979421442488174909">&amp;Auf <ph name="LANGUAGE" /> übersetzen</translation>
+<translation id="5979421442488174909">&amp;Übersetzen in <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Klicke auf den Stern in der Adressleiste, um Seiten als Lesezeichen zu speichern</translation>
 <translation id="5981362776161841923">Wenn du eine Erweiterung zulassen möchtest, ändere unten die Standardeinstellung.</translation>
 <translation id="5984222099446776634">Kürzlich besucht</translation>
