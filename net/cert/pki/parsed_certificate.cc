@@ -71,7 +71,7 @@ bool ParsedCertificate::GetExtension(const der::Input& extension_oid,
   return true;
 }
 
-ParsedCertificate::ParsedCertificate() = default;
+ParsedCertificate::ParsedCertificate(PrivateConstructor) {}
 ParsedCertificate::~ParsedCertificate() = default;
 
 // static
@@ -85,8 +85,7 @@ std::shared_ptr<const ParsedCertificate> ParsedCertificate::Create(
   if (!errors)
     errors = &unused_errors;
 
-  std::shared_ptr<ParsedCertificate> result(
-      new ParsedCertificate, ParsedCertificate::ParsedCertificateDeleter());
+  auto result = std::make_shared<ParsedCertificate>(PrivateConstructor{});
   result->cert_data_ = std::move(backing_data);
   result->cert_ = der::Input(CRYPTO_BUFFER_data(result->cert_data_.get()),
                              CRYPTO_BUFFER_len(result->cert_data_.get()));
