@@ -158,20 +158,24 @@ interface TtsClient {
   Stop@2(string engine_id);
 };
 
-// This interface serves as a remote client of a TtsUtterance in Ash which is
-// originated from the Lacros. Implemented in lacros-chrome.
-// When Tts extension API or SpeechSynthesis web API is called from Lacros
-// browser to speak an utterance, We will call Tts::SpeakOrEnqueue to send the
-// utterance data to Ash along with a pending_remote<TtsUtteranceClient>
-// object, which allows to perform tasks associated with the utterance.
-// The disconnect handler will be invoked in Ash when the original utterance
-// becomes invalid in Lacros.
+// This interface receives events from an utterance which is being spoken by
+// a remote process.
+// Can be used in either lacros-chrome or ash.
+//
+// For example, when Tts extension API or SpeechSynthesis web API is called from
+// Lacros browser to speak an utterance, We will call Tts::SpeakOrEnqueue to
+// send the utterance to Ash along with a pending_remote<TtsUtteranceClient>
+// object, which can be used to forward the TtsEvent back to Lacros. In
+// addition, its disconnect handler will be invoked in Ash when the original
+// utterance becomes invalid in Lacros.
+// Similarly, it is also passed as argument in TtsClient::SpeakWithLacrosVoice
+// when Ash calls this API to speak an Ash Utterance with a Lacros speech
+// engine.
 [Stable, Uuid="edf0536d-53ea-445c-9519-cb39af32364f"]
 interface TtsUtteranceClient {
-  // Forwards a speech engine event received from an Ash speech engine
-  // to the callback function of the Tts client in Lacros. |error_message|
-  // may contain an error message from the speech engine only if |event_type|
-  // is TtsEventType::kError.
+  // Forwards a Tts event received from the remote speech engine to the callback
+  // function of the TtsUtterance. |error_message| may contain an error message
+  // from the speech engine only if |event_type| is TtsEventType::kError.
   OnTtsEvent@0(TtsEventType event_type, uint32 char_index,
              uint32 length, string error_message);
 };

@@ -40,6 +40,65 @@ constexpr char kErrorUnsupportedVersion[] = "crosapi: Unsupported ash version";
 
 }  // namespace
 
+// This class is used as the UtteranceEventDelegate for the Ash utterance
+// sent to Lacros to be spoken with Lacros speech engine.
+// The lifetime of instance of this class is bound to the lifetime of the
+// associated TtsUtterance.
+class TtsClientLacros::AshUtteranceEventDelegate
+    : public content::UtteranceEventDelegate {
+ public:
+  AshUtteranceEventDelegate(
+      TtsClientLacros* owner,
+      int utterance_id,
+      mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient> client)
+      : owner_(owner), utterance_id_(utterance_id), client_(std::move(client)) {
+    client_.set_disconnect_handler(base::BindOnce(
+        &AshUtteranceEventDelegate::OnTtsUtteranceClientDisconnected,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  AshUtteranceEventDelegate(const AshUtteranceEventDelegate&) = delete;
+  AshUtteranceEventDelegate& operator=(const AshUtteranceEventDelegate&) =
+      delete;
+  ~AshUtteranceEventDelegate() override = default;
+
+  // content::UtteranceEventDelegate:
+  void OnTtsEvent(content::TtsUtterance* utterance,
+                  content::TtsEventType event_type,
+                  int char_index,
+                  int char_length,
+                  const std::string& error_message) override {
+    DCHECK_EQ(utterance->GetId(), utterance_id_);
+    // Forward the Tts event to Ash.
+    // Note: If |client_| is disconnected, this will be a no-op.
+    client_->OnTtsEvent(tts_crosapi_util::ToMojo(event_type), char_index,
+                        char_length, error_message);
+
+    if (utterance->IsFinished()) {
+      owner_->OnAshUtteranceFinished(utterance->GetId());
+      // |this| is deleted at this point.
+    }
+  }
+
+ private:
+  void OnTtsUtteranceClientDisconnected() {
+    // This will be triggered when the web contents associated with the ash
+    // utterance destroyed in ash.
+    owner_->OnAshUtteranceBecameInvalid(utterance_id_);
+    // |this| is deleted at this point.
+  }
+
+  const raw_ptr<TtsClientLacros> owner_;  // not owned
+  // Id of the TtsUtterance created in Lacros for the ash utterance.
+  int utterance_id_;
+
+  // Used to forward the Tts events back to Ash. Its disconnect handler will
+  // be invoked when its original utterance instance in Ash becomes invalid.
+  mojo::Remote<crosapi::mojom::TtsUtteranceClient> client_;
+
+  base::WeakPtrFactory<AshUtteranceEventDelegate> weak_ptr_factory_{this};
+};
+
 // This class implements crosapi::mojom::TtsUtteranceClient.
 // It is used to create a remote pending utterance client for a Lacros
 // utterance sent to Ash's TtsController.
@@ -184,6 +243,24 @@ void TtsClientLacros::SpeakWithLacrosVoice(
       content::TtsController::GetInstance()->GetTtsEngineDelegate()->Speak(
           current_utterance_to_speak, voice);
     }
+  } else {
+    // Speaking an Ash utterance.
+    // There should NOT be an active pending ash utterance, since Ash
+    // TtsController won't process the next utterance in the utterance queue
+    // until the current one is finished.
+    DCHECK(!pending_ash_utterance_ && !ash_utterance_event_delegate_);
+    // Create a TtsUtterance in Lacros for the Ash utterance to be
+    // spoken with Lacros speech engine.
+    pending_ash_utterance_ = tts_crosapi_util::CreateUtteranceFromMojo(
+        mojo_utterance, /*should_always_be_spoken=*/false);
+    ash_utterance_event_delegate_.reset(
+        new AshUtteranceEventDelegate(this, pending_ash_utterance_->GetId(),
+                                      std::move(ash_pending_utterance_client)));
+    pending_ash_utterance_->SetEventDelegate(
+        ash_utterance_event_delegate_.get());
+    // Request Lacros Tts engine to speak the Ash utterance.
+    content::TtsController::GetInstance()->GetTtsEngineDelegate()->Speak(
+        pending_ash_utterance_.get(), voice);
   }
 }
 
@@ -324,9 +401,27 @@ void TtsClientLacros::OnLacrosSpeechEngineTtsEvent(
     // Lacros utterance.
     item->second->OnLacrosSpeechEngineTtsEvent(
         utterance_id, event_type, char_index, length, error_message);
+  } else if (pending_ash_utterance_) {
+    // Ash utterance.
+    DCHECK_EQ(utterance_id, pending_ash_utterance_->GetId());
+    pending_ash_utterance_->OnTtsEvent(event_type, char_index, length,
+                                       error_message);
   }
 }
 
 void TtsClientLacros::DeletePendingUtteranceClient(int utterance_id) {
   pending_utterance_clients_.erase(utterance_id);
+}
+
+void TtsClientLacros::OnAshUtteranceFinished(int utterance_id) {
+  DCHECK(pending_ash_utterance_);
+  DCHECK_EQ(pending_ash_utterance_->GetId(), utterance_id);
+  pending_ash_utterance_.reset();
+  ash_utterance_event_delegate_.reset();
+}
+
+void TtsClientLacros::OnAshUtteranceBecameInvalid(int utterance_id) {
+  DCHECK(pending_ash_utterance_);
+  pending_ash_utterance_->Finish();
+  OnAshUtteranceFinished(utterance_id);
 }

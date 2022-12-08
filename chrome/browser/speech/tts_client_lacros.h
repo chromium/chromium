@@ -63,6 +63,8 @@ class TtsClientLacros
                                     int char_index,
                                     int length,
                                     const std::string& error_message);
+  void OnAshUtteranceFinished(int utterance_id);
+  void OnAshUtteranceBecameInvalid(int utterance_id);
 
   void DeletePendingUtteranceClient(int utterance_id);
 
@@ -73,6 +75,7 @@ class TtsClientLacros
 
  private:
   class TtsUtteraneClient;
+  class AshUtteranceEventDelegate;
   friend class extensions::BrowserContextKeyedAPIFactory<TtsClientLacros>;
 
   // net::NetworkChangeNotifier::NetworkChangeObserver:
@@ -103,6 +106,10 @@ class TtsClientLacros
 
   // Pending Lacros Tts Utterance clients by by utterance id.
   std::map<int, std::unique_ptr<TtsUtteraneClient>> pending_utterance_clients_;
+
+  // Pending Ash utterance to be spoken with Lacros speech engine.
+  std::unique_ptr<content::TtsUtterance> pending_ash_utterance_;
+  std::unique_ptr<AshUtteranceEventDelegate> ash_utterance_event_delegate_;
 
   base::WeakPtrFactory<TtsClientLacros> weak_ptr_factory_{this};
 };

@@ -162,8 +162,8 @@ interface InputMethodTestInterface {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 24
-// Next method id: 35
+// Next version: 25
+// Next method id: 37
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -354,4 +354,14 @@ interface TestController {
   // been finished already.
   [MinVersion=23]
   AreDesksBeingModified@34()=>(bool are_desks_being_modified);
+
+  // Returns all available voices in ash-chrome.
+  [MinVersion=24]
+  GetTtsVoices@35() => (array<TtsVoice> voices);
+
+  // Requests Tts(text to speech) to speak an utterance from Ash.
+  [MinVersion=24]
+  TtsSpeak@36(TtsUtterance utterance,
+              pending_remote<TtsUtteranceClient> utterance_client);
+
 };

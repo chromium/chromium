@@ -111,27 +111,58 @@ TEST_F(TtsUtteranceMojomTest, RoundTripWithoutOptions) {
   // Round trip conversion to and from mojom utterance.
   auto mojo_utterance = tts_crosapi_util::ToMojo(in_utterance.get());
   mojo_utterance->browser_context_id = kBrowerContextId;
-  std::unique_ptr<content::TtsUtterance> out_utterance =
-      tts_crosapi_util::FromMojo(mojo_utterance);
 
-  ASSERT_EQ(out_utterance->GetText(), kText);
-  ASSERT_EQ(out_utterance->GetVoiceName(), kVoiceName);
-  ASSERT_EQ(out_utterance->GetLang(), kLang);
-  ASSERT_EQ(out_utterance->GetSrcId(), kSrcId);
-  ASSERT_EQ(out_utterance->GetSrcUrl(), GURL(kSrcUrl));
-  ASSERT_EQ(out_utterance->GetEngineId(), kEngineId);
-  auto continuouse_params = out_utterance->GetContinuousParameters();
-  ASSERT_EQ(continuouse_params.rate, kRate);
-  ASSERT_EQ(continuouse_params.pitch, kPitch);
-  ASSERT_EQ(continuouse_params.volume, kVolume);
-  ASSERT_TRUE(out_utterance->GetShouldClearQueue());
+  {
+    // Create TtsUtterance for a Lacros Utterance.
+    std::unique_ptr<content::TtsUtterance> out_utterance =
+        tts_crosapi_util::CreateUtteranceFromMojo(
+            mojo_utterance, /*should_always_be_spoken=*/true);
 
-  ASSERT_TRUE(EventTypesMatches(in_utterance->GetRequiredEventTypes(),
-                                out_utterance->GetRequiredEventTypes()));
-  ASSERT_TRUE(EventTypesMatches(in_utterance->GetDesiredEventTypes(),
-                                out_utterance->GetDesiredEventTypes()));
+    ASSERT_EQ(out_utterance->GetText(), kText);
+    ASSERT_EQ(out_utterance->GetVoiceName(), kVoiceName);
+    ASSERT_EQ(out_utterance->GetLang(), kLang);
+    ASSERT_EQ(out_utterance->GetSrcId(), kSrcId);
+    ASSERT_EQ(out_utterance->GetSrcUrl(), GURL(kSrcUrl));
+    ASSERT_EQ(out_utterance->GetEngineId(), kEngineId);
+    auto continuouse_params = out_utterance->GetContinuousParameters();
+    ASSERT_EQ(continuouse_params.rate, kRate);
+    ASSERT_EQ(continuouse_params.pitch, kPitch);
+    ASSERT_EQ(continuouse_params.volume, kVolume);
+    ASSERT_TRUE(out_utterance->GetShouldClearQueue());
 
-  ASSERT_TRUE(out_utterance->ShouldAlwaysBeSpoken());
+    ASSERT_TRUE(EventTypesMatches(in_utterance->GetRequiredEventTypes(),
+                                  out_utterance->GetRequiredEventTypes()));
+    ASSERT_TRUE(EventTypesMatches(in_utterance->GetDesiredEventTypes(),
+                                  out_utterance->GetDesiredEventTypes()));
+
+    ASSERT_TRUE(out_utterance->ShouldAlwaysBeSpoken());
+  }
+
+  {
+    // Create TtsUtterance for an Ash Utterance.
+    std::unique_ptr<content::TtsUtterance> out_utterance =
+        tts_crosapi_util::CreateUtteranceFromMojo(
+            mojo_utterance, /*should_always_be_spoken=*/false);
+
+    ASSERT_EQ(out_utterance->GetText(), kText);
+    ASSERT_EQ(out_utterance->GetVoiceName(), kVoiceName);
+    ASSERT_EQ(out_utterance->GetLang(), kLang);
+    ASSERT_EQ(out_utterance->GetSrcId(), kSrcId);
+    ASSERT_EQ(out_utterance->GetSrcUrl(), GURL(kSrcUrl));
+    ASSERT_EQ(out_utterance->GetEngineId(), kEngineId);
+    auto continuouse_params = out_utterance->GetContinuousParameters();
+    ASSERT_EQ(continuouse_params.rate, kRate);
+    ASSERT_EQ(continuouse_params.pitch, kPitch);
+    ASSERT_EQ(continuouse_params.volume, kVolume);
+    ASSERT_TRUE(out_utterance->GetShouldClearQueue());
+
+    ASSERT_TRUE(EventTypesMatches(in_utterance->GetRequiredEventTypes(),
+                                  out_utterance->GetRequiredEventTypes()));
+    ASSERT_TRUE(EventTypesMatches(in_utterance->GetDesiredEventTypes(),
+                                  out_utterance->GetDesiredEventTypes()));
+
+    ASSERT_FALSE(out_utterance->ShouldAlwaysBeSpoken());
+  }
 }
 
 TEST_F(TtsUtteranceMojomTest, RoundTripWithOptions) {
@@ -145,7 +176,8 @@ TEST_F(TtsUtteranceMojomTest, RoundTripWithOptions) {
 
   auto mojo_utterance = tts_crosapi_util::ToMojo(in_utterance.get());
   std::unique_ptr<content::TtsUtterance> out_utterance =
-      tts_crosapi_util::FromMojo(mojo_utterance);
+      tts_crosapi_util::CreateUtteranceFromMojo(
+          mojo_utterance, /*should_always_be_spoken=*/true);
 
   auto* out_options = out_utterance->GetOptions();
 

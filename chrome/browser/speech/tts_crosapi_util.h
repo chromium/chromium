@@ -18,9 +18,16 @@ crosapi::mojom::TtsEventType ToMojo(content::TtsEventType event_type);
 content::VoiceData FromMojo(const crosapi::mojom::TtsVoicePtr& mojo_voice);
 crosapi::mojom::TtsVoicePtr ToMojo(const content::VoiceData& voice);
 crosapi::mojom::TtsUtterancePtr ToMojo(content::TtsUtterance* utterance);
-std::unique_ptr<content::TtsUtterance> FromMojo(
-    crosapi::mojom::TtsUtterancePtr& mojo_utterance);
 
+// Creates TtsUtterane from the mojo Utterance data.
+// |should_always_be_spoken| should be set to true if the TtsUtterance is
+// created for a Lacros utterance; otherwise, it should be set to false if the
+// TtsUtterance is created for an Ash utterance. This is used by Ash's
+// TtsController to differentiate whether an utterances is originated from Ash
+// or Lacros.
+std::unique_ptr<content::TtsUtterance> CreateUtteranceFromMojo(
+    crosapi::mojom::TtsUtterancePtr& mojo_utterance,
+    bool should_always_be_spoken);
 bool ShouldEnableLacrosTtsSupport();
 
 // Functions for testing use only.

@@ -163,14 +163,15 @@ void StandaloneBrowserTestController::GetTtsVoices(
 void StandaloneBrowserTestController::TtsSpeak(
     crosapi::mojom::TtsUtterancePtr mojo_utterance,
     mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient> utterance_client) {
-  std::unique_ptr<content::TtsUtterance> utterance =
-      tts_crosapi_util::FromMojo(mojo_utterance);
+  std::unique_ptr<content::TtsUtterance> lacros_utterance =
+      tts_crosapi_util::CreateUtteranceFromMojo(
+          mojo_utterance, /*should_always_be_spoken=*/true);
   auto event_delegate = std::make_unique<LacrosUtteranceEventDelegate>(
       this, std::move(utterance_client));
-  utterance->SetEventDelegate(event_delegate.get());
-  lacros_utterance_event_delegates_.emplace(utterance->GetId(),
+  lacros_utterance->SetEventDelegate(event_delegate.get());
+  lacros_utterance_event_delegates_.emplace(lacros_utterance->GetId(),
                                             std ::move(event_delegate));
-  tts_crosapi_util::SpeakForTesting(std::move(utterance));
+  tts_crosapi_util::SpeakForTesting(std::move(lacros_utterance));
 }
 
 void StandaloneBrowserTestController::OnUtteranceFinished(int utterance_id) {

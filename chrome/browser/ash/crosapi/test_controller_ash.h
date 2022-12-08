@@ -109,6 +109,12 @@ class TestControllerAsh : public mojom::TestController,
   void GetTtsUtteranceQueueSize(
       GetTtsUtteranceQueueSizeCallback callback) override;
 
+  void GetTtsVoices(GetTtsVoicesCallback callback) override;
+
+  void TtsSpeak(crosapi::mojom::TtsUtterancePtr mojo_utterance,
+                mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
+                    utterance_client) override;
+
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
@@ -123,6 +129,10 @@ class TestControllerAsh : public mojom::TestController,
 
  private:
   class OverviewWaiter;
+  class AshUtteranceEventDelegate;
+
+  // Called when a Tts utterance is finished.
+  void OnAshUtteranceFinished(int utterance_id);
 
   // Called when a waiter has finished waiting for its event.
   void WaiterFinished(OverviewWaiter* waiter);
@@ -157,6 +167,10 @@ class TestControllerAsh : public mojom::TestController,
       standalone_browser_test_controller_;
 
   base::OneShotEvent on_standalone_browser_test_controller_bound_;
+
+  // Ash utterance event delegates by utterance id.
+  std::map<int, std::unique_ptr<AshUtteranceEventDelegate>>
+      ash_utterance_event_delegates_;
 };
 
 class TestShillControllerAsh : public crosapi::mojom::TestShillController {

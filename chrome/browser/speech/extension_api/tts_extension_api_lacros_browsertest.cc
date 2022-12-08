@@ -7,9 +7,12 @@
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
+#include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/speech/tts_lacros.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "chromeos/crosapi/mojom/tts.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
@@ -72,14 +75,14 @@ class LacrosTtsApiTest : public ExtensionApiTest,
   bool VoicesChangedNotified() { return voices_changed_; }
   void ResetVoicesChanged() { voices_changed_ = false; }
 
-  void WaitUntilVoicesLoaded() {
-    while (!HasVoiceWithName("Alice")) {
+  void WaitUntilVoicesLoaded(const std::string& voice_name) {
+    while (!HasVoiceWithName(voice_name)) {
       GiveItSomeTime(base::Milliseconds(100));
     }
   }
 
-  void WaitUntilVoicesUnloaded() {
-    while (HasVoiceWithName("Alice")) {
+  void WaitUntilVoicesUnloaded(const std::string& voice_name) {
+    while (HasVoiceWithName(voice_name)) {
       GiveItSomeTime(base::Milliseconds(100));
     }
   }
@@ -94,8 +97,66 @@ class LacrosTtsApiTest : public ExtensionApiTest,
     return waiter.GetTtsUtteranceQueueSize() == 0;
   }
 
+  bool FoundVoiceInMojoVoices(
+      const std::string& voice_name,
+      const std::vector<crosapi::mojom::TtsVoicePtr>& mojo_voices) {
+    for (const auto& voice : mojo_voices) {
+      if (voice_name == voice->voice_name)
+        return true;
+    }
+    return false;
+  }
+
+  void WaitUntilTtsEventReceivedByUtteranceEventDelegateInAsh() {
+    while (!tts_event_notified_in_ash_) {
+      GiveItSomeTime(base::Milliseconds(100));
+    }
+  }
+
+  void NotifyTtsEventReceivedInAsh(content::TtsEventType tts_event) {
+    tts_event_notified_in_ash_ = true;
+    tts_event_received_ = tts_event;
+  }
+
+  bool TtsEventNotifiedInAsh() { return tts_event_notified_in_ash_; }
+  bool TtsEventReceivedEq(content::TtsEventType expected_tts_event) {
+    return tts_event_received_ == expected_tts_event;
+  }
+
+  // Used to verify that the TtsEvent is received by the Ash utterance's
+  // UtteranceEventDelegate in Ash.
+  class EventDelegate : public crosapi::mojom::TtsUtteranceClient {
+   public:
+    explicit EventDelegate(extensions::LacrosTtsApiTest* owner)
+        : owner_(owner) {}
+    EventDelegate(const EventDelegate&) = delete;
+    EventDelegate& operator=(const EventDelegate&) = delete;
+    ~EventDelegate() override = default;
+
+    // crosapi::mojom::TtsUtteranceClient:
+    void OnTtsEvent(crosapi::mojom::TtsEventType mojo_tts_event,
+                    uint32_t char_index,
+                    uint32_t char_length,
+                    const std::string& error_message) override {
+      content::TtsEventType tts_event =
+          tts_crosapi_util::FromMojo(mojo_tts_event);
+      owner_->NotifyTtsEventReceivedInAsh(tts_event);
+    }
+
+    mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
+    BindTtsUtteranceClient() {
+      return receiver_.BindNewPipeAndPassRemoteWithVersion();
+    }
+
+   private:
+    extensions::LacrosTtsApiTest* owner_;
+    mojo::Receiver<crosapi::mojom::TtsUtteranceClient> receiver_{this};
+  };
+
  private:
   bool voices_changed_ = false;
+  bool tts_event_notified_in_ash_ = false;
+  content::TtsEventType tts_event_received_;
 };
 
 //
@@ -119,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, LoadAndUnloadLacrosTtsEngine) {
       << message_;
 
   // Wait until Lacros gets the voices registered by the tts engine extension.
-  WaitUntilVoicesLoaded();
+  WaitUntilVoicesLoaded("Alice");
 
   // Verify TtsController notifies VoicesChangedDelegate for the voices change.
   EXPECT_TRUE(VoicesChangedNotified());
@@ -141,9 +202,10 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest, LoadAndUnloadLacrosTtsEngine) {
   UninstallExtension(last_loaded_extension_id());
   observer.WaitForExtensionUninstalled();
 
-  WaitUntilVoicesUnloaded();
+  WaitUntilVoicesUnloaded("Alice");
 
-  // Verify TtsController notifies VoicesChangedDelegate for the voices change.
+  // Verify TtsController notifies VoicesChangedDelegate for the voices
+  // change.
   EXPECT_TRUE(VoicesChangedNotified());
 
   // Verify the voices from the tts engine extensions are unloaded in Lacros
@@ -170,8 +232,92 @@ IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
                        {}, {.ignore_manifest_warnings = true}))
       << message_;
 
-  // Verify the utterance issued from the testing extension is properly finished
-  // and the utterance queue is empty in Ash's TtsController.
+  // Verify the utterance issued from the testing extension is properly
+  // finished and the utterance queue is empty in Ash's TtsController.
+  ASSERT_TRUE(IsUtteranceQueueEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosTtsApiTest,
+                       SpeakAshUtteranceWithLacrosSpeechEngine) {
+  if (chromeos::LacrosService::Get()->GetInterfaceVersion(
+          crosapi::mojom::TestController::Uuid_) <
+      static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                           kGetTtsVoicesMinVersion)) {
+    GTEST_SKIP() << "Unsupported ash version.";
+  }
+
+  EXPECT_FALSE(VoicesChangedNotified());
+  EXPECT_FALSE(HasVoiceWithName("Alice"));
+  EXPECT_FALSE(HasVoiceWithName("Alex"));
+  EXPECT_FALSE(HasVoiceWithName("Amanda"));
+
+  ResetVoicesChanged();
+  content::TtsController::GetInstance()->AddVoicesChangedDelegate(this);
+
+  // Load speech engine extension in Lacros.
+  ASSERT_TRUE(
+      RunExtensionTest("tts_engine/lacros_tts_support/"
+                       "register_lacros_tts_engine",
+                       {}, {.ignore_manifest_warnings = true}))
+      << message_;
+
+  WaitUntilVoicesLoaded("Alice");
+
+  EXPECT_TRUE(VoicesChangedNotified());
+
+  // Verify all the voices from tts engine extension are laded in Lacros.
+  std::vector<content::VoiceData> voices;
+  content::TtsController::GetInstance()->GetVoices(profile(), GURL(), &voices);
+  EXPECT_TRUE(HasVoiceWithName("Alice"));
+  EXPECT_TRUE(HasVoiceWithName("Alex"));
+  EXPECT_TRUE(HasVoiceWithName("Amanda"));
+  // Verify a random dummy voice is not loaded.
+  EXPECT_FALSE(HasVoiceWithName("Tommy"));
+
+  // Verify the same voices are also loaded in Ash.
+  crosapi::mojom::TestControllerAsyncWaiter waiter(
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::TestController>()
+          .get());
+
+  std::vector<crosapi::mojom::TtsVoicePtr> mojo_voices;
+  while (mojo_voices.size() == 0) {
+    waiter.GetTtsVoices(&mojo_voices);
+    if (mojo_voices.size() > 0)
+      break;
+    GiveItSomeTime(base::Milliseconds(100));
+  }
+
+  EXPECT_TRUE(FoundVoiceInMojoVoices("Alice", mojo_voices));
+  EXPECT_TRUE(FoundVoiceInMojoVoices("Alex", mojo_voices));
+  EXPECT_TRUE(FoundVoiceInMojoVoices("Amanda", mojo_voices));
+  // Verify a random dummy voice is not loaded.
+  EXPECT_FALSE(FoundVoiceInMojoVoices("Tommy", mojo_voices));
+
+  std::unique_ptr<content::TtsUtterance> ash_utterance =
+      content::TtsUtterance::Create();
+  ash_utterance->SetText("Hello from Ash");
+  // Use a voice provided by Lacros speech engine to speak the ash utterance.
+  ash_utterance->SetVoiceName("Alice");
+  crosapi::mojom::TtsUtterancePtr mojo_utterance =
+      tts_crosapi_util::ToMojo(ash_utterance.get());
+  // Note: mojo_utterance requires a value for browser_context_id, but it will
+  // not used in Ash for the testing case.
+  mojo_utterance->browser_context_id = base::UnguessableToken::Create();
+  auto pending_client = std::make_unique<EventDelegate>(this);
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::TestController>()
+      ->TtsSpeak(std::move(mojo_utterance),
+                 pending_client->BindTtsUtteranceClient());
+
+  // Verify that the Tts event has been received by the UtteranceEventDelegate
+  // in Ash.
+  WaitUntilTtsEventReceivedByUtteranceEventDelegateInAsh();
+  EXPECT_TRUE(TtsEventNotifiedInAsh());
+  EXPECT_TRUE(TtsEventReceivedEq(content::TTS_EVENT_END));
+
+  // Verify the utterance issued from the testing extension is properly
+  // finished and the utterance queue is empty in Ash's TtsController.
   ASSERT_TRUE(IsUtteranceQueueEmpty());
 }
 

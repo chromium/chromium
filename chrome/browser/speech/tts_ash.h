@@ -54,6 +54,8 @@ class TtsAsh : public mojom::Tts,
   // |utterance|.
   void StopRemoteEngine(content::TtsUtterance* utterance);
 
+  void DeletePendingAshUtteranceClient(int utterance_id);
+
   // crosapi::mojom::Tts:
   void RegisterTtsClient(mojo::PendingRemote<mojom::TtsClient> client,
                          const base::UnguessableToken& browser_context_id,
@@ -65,6 +67,7 @@ class TtsAsh : public mojom::Tts,
       mojo::PendingRemote<mojom::TtsUtteranceClient> utterance_client) override;
 
  private:
+  class TtsUtteranceClient;
   // content::VoicesChangedDelegate:
   void OnVoicesChanged() override;
 
@@ -89,6 +92,14 @@ class TtsAsh : public mojom::Tts,
       crosapi_voices_;
 
   base::UnguessableToken primary_profile_browser_context_id_;
+
+  // Pending Ash Utterance clients (for the Ash uttenrances to be spoken by
+  // Lacros speech engine) by utterance id.
+  // Note: The size of |pending_ash_utterance_clients_| should not be greater
+  // that one, since Ash TtsController process the utterances one at a time in
+  // sequence and  will not send more than 1 utterance to Lacros to be spoken.
+  std::map<int, std::unique_ptr<TtsUtteranceClient>>
+      pending_ash_utterance_clients_;
 
   base::ScopedObservation<content::TtsController,
                           content::VoicesChangedDelegate>
