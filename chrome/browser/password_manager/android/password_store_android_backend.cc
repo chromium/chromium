@@ -70,7 +70,7 @@ using password_manager::GetRegexForPSLFederatedMatching;
 using password_manager::GetRegexForPSLMatching;
 using sync_util::GetSyncingAccount;
 
-using JobId = PasswordStoreAndroidBackendBridge::JobId;
+using JobId = PasswordStoreAndroidBackendConsumerBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
 std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
@@ -591,13 +591,14 @@ PasswordStoreAndroidBackend::JobReturnHandler::GetOperation() {
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(PrefService* prefs)
     : lifecycle_helper_(std::make_unique<PasswordManagerLifecycleHelperImpl>()),
-      bridge_(PasswordStoreAndroidBackendBridge::Create()) {
+      consumer_bridge_(PasswordStoreAndroidBackendConsumerBridge::Create()),
+      bridge_(PasswordStoreAndroidBackendBridge::Create(*consumer_bridge_)) {
   DCHECK(base::FeatureList::IsEnabled(
       password_manager::features::kUnifiedPasswordManagerAndroid));
   DCHECK(bridge_);
   prefs_ = prefs;
   DCHECK(prefs_);
-  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+  consumer_bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
   sync_controller_delegate_ =
       std::make_unique<PasswordSyncControllerDelegateAndroid>(
           std::make_unique<PasswordSyncControllerDelegateBridgeImpl>(),
@@ -607,18 +608,20 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(PrefService* prefs)
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     base::PassKey<class PasswordStoreAndroidBackendTest>,
+    std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge> consumer_bridge,
     std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
     std::unique_ptr<PasswordSyncControllerDelegateAndroid>
         sync_controller_delegate,
     PrefService* prefs)
     : lifecycle_helper_(std::move(lifecycle_helper)),
+      consumer_bridge_(std::move(consumer_bridge)),
       bridge_(std::move(bridge)),
       sync_controller_delegate_(std::move(sync_controller_delegate)) {
   DCHECK(bridge_);
   prefs_ = prefs;
   DCHECK(prefs_);
-  bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
+  consumer_bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
 
 PasswordStoreAndroidBackend::~PasswordStoreAndroidBackend() = default;

@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_consumer_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
@@ -161,10 +163,19 @@ std::string ApiErrorMetricName(const std::string& method_name) {
          ".APIError";
 }
 
+class MockPasswordStoreAndroidBackendConsumerBridge
+    : public PasswordStoreAndroidBackendConsumerBridge {
+ public:
+  MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
+  MOCK_METHOD(base::android::ScopedJavaGlobalRef<jobject>,
+              GetJavaBridge,
+              (),
+              (const, override));
+};
+
 class MockPasswordStoreAndroidBackendBridge
     : public PasswordStoreAndroidBackendBridge {
  public:
-  MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (Account), (override));
   MOCK_METHOD(JobId, GetAutofillableLogins, (Account), (override));
   MOCK_METHOD(JobId,
@@ -199,8 +210,9 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
 
     backend_ = std::make_unique<PasswordStoreAndroidBackend>(
         base::PassKey<class PasswordStoreAndroidBackendTest>(),
-        CreateMockBridge(), CreateFakeLifecycleHelper(),
-        CreatePasswordSyncControllerDelegate(), &prefs_);
+        CreateMockConsumerBridge(), CreateMockBridge(),
+        CreateFakeLifecycleHelper(), CreatePasswordSyncControllerDelegate(),
+        &prefs_);
   }
 
   ~PasswordStoreAndroidBackendTest() override {
@@ -210,7 +222,9 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   }
 
   PasswordStoreBackend& backend() { return *backend_; }
-  PasswordStoreAndroidBackendBridge::Consumer& consumer() { return *backend_; }
+  PasswordStoreAndroidBackendConsumerBridge::Consumer& consumer() {
+    return *backend_;
+  }
   MockPasswordStoreAndroidBackendBridge* bridge() { return bridge_; }
   FakePasswordManagerLifecycleHelper* lifecycle_helper() {
     return lifecycle_helper_;
@@ -240,11 +254,19 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
+  std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge>
+  CreateMockConsumerBridge() {
+    auto unique_bridge = std::make_unique<
+        StrictMock<MockPasswordStoreAndroidBackendConsumerBridge>>();
+    consumer_bridge_ = unique_bridge.get();
+    EXPECT_CALL(*consumer_bridge_, SetConsumer);
+    return unique_bridge;
+  }
+
   std::unique_ptr<PasswordStoreAndroidBackendBridge> CreateMockBridge() {
     auto unique_bridge =
         std::make_unique<StrictMock<MockPasswordStoreAndroidBackendBridge>>();
     bridge_ = unique_bridge.get();
-    EXPECT_CALL(*bridge_, SetConsumer);
     return unique_bridge;
   }
 
@@ -265,6 +287,8 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   }
 
   std::unique_ptr<PasswordStoreAndroidBackend> backend_;
+  raw_ptr<StrictMock<MockPasswordStoreAndroidBackendConsumerBridge>>
+      consumer_bridge_;
   raw_ptr<StrictMock<MockPasswordStoreAndroidBackendBridge>> bridge_;
   raw_ptr<FakePasswordManagerLifecycleHelper> lifecycle_helper_;
   raw_ptr<PasswordSyncControllerDelegateAndroid> sync_controller_delegate_;

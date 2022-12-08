@@ -7,12 +7,8 @@
 
 #include <vector>
 
-#include "base/types/strong_alias.h"
-#include "chrome/browser/password_manager/android/password_store_operation_target.h"
-#include "components/password_manager/core/browser/android_backend_error.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_consumer_bridge.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store_change.h"
 
 namespace password_manager {
 
@@ -21,44 +17,16 @@ namespace password_manager {
 // that performs API call on the Java side to Google Mobile for each operation.
 // Any logic beyond data conversion should either live in
 // `PasswordStoreAndroidBackend` or a component that is used by the java-side of
-// this bridge.
+// this bridge. Consumer bridge is defined separately in
+// `PasswordStoreAndroidBackendConsumerBridge`.
 class PasswordStoreAndroidBackendBridge {
  public:
-  using JobId = base::StrongAlias<struct JobIdTag, int>;
   using SyncingAccount =
-      base::StrongAlias<struct SyncingAccountTag, std::string>;
-  using Account = absl::variant<PasswordStoreOperationTarget, SyncingAccount>;
-
-  // Each bridge is created with a consumer that will be called when a job is
-  // completed. In order to identify which request the response belongs to, the
-  // bridge needs to pass a `JobId` back that was returned by the initial
-  // request and is unique per bridge.
-  class Consumer {
-   public:
-    virtual ~Consumer() = default;
-
-    // Asynchronous response called with the `job_id` which was passed to the
-    // corresponding call to `PasswordStoreAndroidBackendBridge`, and with the
-    // requested `passwords`.
-    // Used in response to `GetAllLogins`.
-    virtual void OnCompleteWithLogins(JobId job_id,
-                                      std::vector<PasswordForm> passwords) = 0;
-
-    // Asynchronous response called with the `job_id` which was passed to the
-    // corresponding call to `PasswordStoreAndroidBackendBridge`, and with the
-    // PasswordChanges.
-    // Used in response to 'AddLogin', 'UpdateLogin' and `RemoveLogin`.
-    virtual void OnLoginsChanged(JobId job_id, PasswordChanges changes) = 0;
-
-    // Asynchronous response called with the `job_id` which was passed to the
-    // corresponding call to `PasswordStoreAndroidBackendBridge`.
-    virtual void OnError(JobId job_id, AndroidBackendError error) = 0;
-  };
+      PasswordStoreAndroidBackendConsumerBridge::SyncingAccount;
+  using Account = PasswordStoreAndroidBackendConsumerBridge::Account;
+  using JobId = PasswordStoreAndroidBackendConsumerBridge::JobId;
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;
-
-  // Sets the `consumer` that is notified on job completion.
-  virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;
 
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the
@@ -117,7 +85,10 @@ class PasswordStoreAndroidBackendBridge {
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
   // Ensure `CanCreateBackend` returns true before calling this method.
-  static std::unique_ptr<PasswordStoreAndroidBackendBridge> Create();
+  // `consumer_bridge` will be set to handle callbacks from the Java side and
+  // should outlive this object.
+  static std::unique_ptr<PasswordStoreAndroidBackendBridge> Create(
+      const PasswordStoreAndroidBackendConsumerBridge& consumer_bridge);
 
   // Method that checks whether a backend can be created or whether `Create`
   // would fail. It returns true iff all nontransient prerequisistes are

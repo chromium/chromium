@@ -33,7 +33,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -67,16 +66,12 @@ public class PasswordStoreAndroidBackendBridgeTest {
             PasswordWithLocalData.newBuilder().setPasswordSpecificsData(sTestProfile);
     private static final ListPasswordsResult.Builder sTestLogins =
             ListPasswordsResult.newBuilder().addPasswordData(sTestPwdWithLocalData);
-    private static final long sDummyNativePointer = 4;
     private static final String sTestAccountEmail = "test@email.com";
     private static final Optional<Account> sTestAccount =
             Optional.of(AccountUtils.createAccountFromName(sTestAccountEmail));
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-
     @Mock
-    private PasswordStoreAndroidBackendBridgeImpl.Natives mBridgeJniMock;
+    private PasswordStoreAndroidBackendConsumerBridgeImpl mConsumerBridgeMock;
     @Mock
     private PasswordStoreAndroidBackend mBackendMock;
 
@@ -85,9 +80,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(PasswordStoreAndroidBackendBridgeImplJni.TEST_HOOKS, mBridgeJniMock);
         mBackendBridge =
-                new PasswordStoreAndroidBackendBridgeImpl(sDummyNativePointer, mBackendMock);
+                new PasswordStoreAndroidBackendBridgeImpl(mConsumerBridgeMock, mBackendMock);
     }
 
     @Test
@@ -102,8 +96,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
         successCallback.getValue().onResult(kExpectedList);
-        verify(mBridgeJniMock)
-                .onCompleteWithLogins(sDummyNativePointer, kTestTaskId, kExpectedList);
+        verify(mConsumerBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
     }
 
     @Test
@@ -119,9 +112,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
-                        false, -1);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -138,9 +129,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new PasswordStoreAndroidBackend.BackendException(
                 "Sample failure", AndroidBackendErrorType.NO_ACCOUNT);
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.NO_ACCOUNT, 0,
-                        false, -1);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -157,10 +146,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new ApiException(
                 new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
-                        CommonStatusCodes.API_NOT_CONNECTED, true,
-                        ConnectionResult.API_UNAVAILABLE);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -179,9 +165,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
                 new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
         failureCallback.getValue().onResult(kExpectedException);
         verify(pendingIntentMock, never()).send();
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
-                        CommonStatusCodes.RESOLUTION_REQUIRED, false, -1);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -197,8 +181,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
         successCallback.getValue().onResult(kExpectedList);
-        verify(mBridgeJniMock)
-                .onCompleteWithLogins(sDummyNativePointer, kTestTaskId, kExpectedList);
+        verify(mConsumerBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
     }
 
     @Test
@@ -215,9 +198,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
-                        false, -1);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -234,8 +215,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
         successCallback.getValue().onResult(kExpectedList);
-        verify(mBridgeJniMock)
-                .onCompleteWithLogins(sDummyNativePointer, kTestTaskId, kExpectedList);
+        verify(mConsumerBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
     }
 
     @Test
@@ -253,9 +233,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
-                        false, -1);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -271,7 +249,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mBridgeJniMock).onLoginChanged(sDummyNativePointer, kTestTaskId);
+        verify(mConsumerBridgeMock).onLoginChanged(kTestTaskId);
     }
 
     @Test
@@ -288,9 +266,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
-                        false, -1);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -306,7 +282,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mBridgeJniMock).onLoginChanged(sDummyNativePointer, kTestTaskId);
+        verify(mConsumerBridgeMock).onLoginChanged(kTestTaskId);
     }
 
     @Test
@@ -323,9 +299,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
-                        false, -1);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -341,7 +315,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mBridgeJniMock).onLoginChanged(sDummyNativePointer, kTestTaskId);
+        verify(mConsumerBridgeMock).onLoginChanged(kTestTaskId);
     }
 
     @Test
@@ -358,8 +332,6 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
-                        false, -1);
+        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 }

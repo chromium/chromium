@@ -80,11 +80,13 @@ enum class PasswordStoreOperation {
 // required the job since JNI itself can't preserve the callbacks.
 class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
-      public PasswordStoreAndroidBackendBridge::Consumer {
+      public PasswordStoreAndroidBackendConsumerBridge::Consumer {
  public:
   explicit PasswordStoreAndroidBackend(PrefService* prefs);
   PasswordStoreAndroidBackend(
       base::PassKey<class PasswordStoreAndroidBackendTest>,
+      std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge>
+          consumer_bridge,
       std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
       std::unique_ptr<PasswordSyncControllerDelegateAndroid>
@@ -330,6 +332,10 @@ class PasswordStoreAndroidBackend
   // Used to store callbacks for each invoked jobs since callbacks can't be
   // called via JNI directly.
   JobMap request_for_job_ GUARDED_BY_CONTEXT(main_sequence_checker_);
+
+  // This object is the proxy to the JNI bridge that handles API callbacks from
+  // the Java side.
+  std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge> consumer_bridge_;
 
   // This object is the proxy to the JNI bridge that performs the API requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;
