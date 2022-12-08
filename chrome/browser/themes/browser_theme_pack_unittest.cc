@@ -236,7 +236,7 @@ void BrowserThemePackTest::BuildFromUnpackedExtension(
   std::unique_ptr<base::Value> valid_value =
       deserializer.Deserialize(nullptr, &error);
   EXPECT_EQ("", error);
-  ASSERT_TRUE(valid_value.get());
+  ASSERT_TRUE(valid_value.get() && valid_value->is_dict());
   scoped_refptr<Extension> extension(Extension::Create(
       extension_path, extensions::mojom::ManifestLocation::kInvalidLocation,
       valid_value->GetDict(), Extension::NO_FLAGS, &error));

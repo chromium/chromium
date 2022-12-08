@@ -185,12 +185,11 @@ scoped_refptr<extensions::Extension> MakeThemeExtension(
     const string& name,
     extensions::mojom::ManifestLocation location,
     const string& update_url) {
-  base::DictionaryValue source;
-  source.SetString(extensions::manifest_keys::kName, name);
-  source.Set(extensions::manifest_keys::kTheme,
-             std::make_unique<base::DictionaryValue>());
-  source.SetString(extensions::manifest_keys::kUpdateURL, update_url);
-  source.SetString(extensions::manifest_keys::kVersion, "0.0.0.0");
+  base::Value::Dict source;
+  source.Set(extensions::manifest_keys::kName, name);
+  source.Set(extensions::manifest_keys::kTheme, base::Value::Dict());
+  source.Set(extensions::manifest_keys::kUpdateURL, update_url);
+  source.Set(extensions::manifest_keys::kVersion, "0.0.0.0");
   string error;
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(

@@ -288,8 +288,7 @@ class AppContextMenuTest : public AppListTestBase {
     std::string error;
     return extensions::Extension::Create(
         path.DirName(), extensions::mojom::ManifestLocation::kInternal,
-        base::Value::AsDictionaryValue(manifest),
-        extensions::Extension::NO_FLAGS, app_id, &error);
+        manifest.GetDict(), extensions::Extension::NO_FLAGS, app_id, &error);
   }
 
   void TestExtensionApp(const std::string& app_id,
@@ -332,10 +331,10 @@ class AppContextMenuTest : public AppListTestBase {
 
   scoped_refptr<extensions::Extension> MakeChromeApp() {
     std::string err;
-    base::DictionaryValue value;
-    value.SetStringKey("name", "Chrome App");
-    value.SetStringKey("version", "0.0");
-    value.SetStringPath("app.launch.web_url", "http://google.com");
+    base::Value::Dict value;
+    value.Set("name", "Chrome App");
+    value.Set("version", "0.0");
+    value.SetByDottedPath("app.launch.web_url", "http://google.com");
     scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
         base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
         extensions::Extension::WAS_INSTALLED_BY_DEFAULT,

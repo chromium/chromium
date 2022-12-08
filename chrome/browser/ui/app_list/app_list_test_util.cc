@@ -90,10 +90,10 @@ scoped_refptr<extensions::Extension> MakeApp(
     const std::string& id,
     extensions::Extension::InitFromValueFlags flags) {
   std::string err;
-  base::DictionaryValue value;
-  value.SetStringKey("name", name);
-  value.SetStringKey("version", "0.0");
-  value.SetStringPath("app.launch.web_url", "http://google.com");
+  base::Value::Dict value;
+  value.Set("name", name);
+  value.Set("version", "0.0");
+  value.SetByDottedPath("app.launch.web_url", "http://google.com");
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       flags, id, &err);

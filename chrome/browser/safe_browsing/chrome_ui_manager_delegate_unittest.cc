@@ -33,17 +33,17 @@ TEST_F(ChromeSafeBrowsingUIManagerDelegateTest, IsHostingExtension) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Create a WebContents instance that *is* hosting an extension.
-  base::DictionaryValue manifest;
-  manifest.SetString(extensions::manifest_keys::kName, "TestComponentApp");
-  manifest.SetString(extensions::manifest_keys::kVersion, "0.0.0.0");
-  manifest.SetString(extensions::manifest_keys::kApp, "true");
-  manifest.SetString(extensions::manifest_keys::kPlatformAppBackgroundPage,
-                     std::string());
+  base::Value::Dict manifest;
+  manifest.Set(extensions::manifest_keys::kName, "TestComponentApp");
+  manifest.Set(extensions::manifest_keys::kVersion, "0.0.0.0");
+  manifest.SetByDottedPath(
+      extensions::manifest_keys::kPlatformAppBackgroundPage, std::string());
   std::string error;
   scoped_refptr<extensions::Extension> app;
   app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kComponent,
       manifest, 0, &error);
+  ASSERT_TRUE(app) << error;
   extensions::ProcessManager* extension_manager =
       extensions::ProcessManager::Get(web_contents()->GetBrowserContext());
   extension_manager->CreateBackgroundHost(app.get(), GURL("background.html"));

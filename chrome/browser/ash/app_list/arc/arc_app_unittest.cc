@@ -1352,12 +1352,12 @@ class ArcPlayStoreAppTest : public ArcDefaultAppTest {
   void OnBeforeArcTestSetup() override {
     ArcDefaultAppTest::OnBeforeArcTestSetup();
 
-    base::DictionaryValue manifest;
-    manifest.SetStringPath(extensions::manifest_keys::kName, "Play Store");
-    manifest.SetStringPath(extensions::manifest_keys::kVersion, "1");
-    manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
-    manifest.SetStringPath(extensions::manifest_keys::kDescription,
-                           "Play Store for testing");
+    base::Value::Dict manifest;
+    manifest.Set(extensions::manifest_keys::kName, "Play Store");
+    manifest.Set(extensions::manifest_keys::kVersion, "1");
+    manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+    manifest.Set(extensions::manifest_keys::kDescription,
+                 "Play Store for testing");
 
     std::string error;
     arc_support_host_ = extensions::Extension::Create(

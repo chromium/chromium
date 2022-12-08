@@ -42,10 +42,10 @@ scoped_refptr<Extension> MakeExtension(const std::string& name) {
   EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &path));
   path = path.AppendASCII(name);
 
-  base::DictionaryValue value;
-  value.SetInteger(keys::kManifestVersion, 2);
-  value.SetString(keys::kVersion, "1.0.0.0");
-  value.SetString(keys::kName, name);
+  base::Value::Dict value;
+  value.Set(keys::kManifestVersion, 2);
+  value.Set(keys::kVersion, "1.0.0.0");
+  value.Set(keys::kName, name);
   std::string error;
   scoped_refptr<Extension> extension(Extension::Create(
       path, extensions::mojom::ManifestLocation::kInvalidLocation, value,

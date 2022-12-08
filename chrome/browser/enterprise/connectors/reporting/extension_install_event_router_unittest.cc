@@ -95,13 +95,12 @@ class ExtensionInstallEventRouterTest : public testing::Test {
     settings.enabled_event_names.insert(
         ReportingServiceSettings::kExtensionInstallEvent);
 
-    base::DictionaryValue manifest;
-    manifest.SetStringPath(extensions::manifest_keys::kName,
-                           kFakeExtensionName);
-    manifest.SetStringPath(extensions::manifest_keys::kVersion, "1");
-    manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
-    manifest.SetStringPath(extensions::manifest_keys::kDescription,
-                           kFakeExtensionDescription);
+    base::Value::Dict manifest;
+    manifest.Set(extensions::manifest_keys::kName, kFakeExtensionName);
+    manifest.Set(extensions::manifest_keys::kVersion, "1");
+    manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+    manifest.Set(extensions::manifest_keys::kDescription,
+                 kFakeExtensionDescription);
 
     std::string error;
     extension_chrome_ = extensions::Extension::Create(
