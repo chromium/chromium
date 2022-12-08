@@ -315,7 +315,6 @@ class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetStepDescription() const override;
   ui::MenuModel* GetOtherMechanismsMenuModel() override;
   void OnBack() override;
-  bool IsOtherMechanismButtonVisible() const override;
 
   std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };
@@ -336,7 +335,6 @@ class AuthenticatorAndroidAccessorySheetModel
   std::u16string GetStepTitle() const override;
   std::u16string GetStepDescription() const override;
   ui::MenuModel* GetOtherMechanismsMenuModel() override;
-  bool IsOtherMechanismButtonVisible() const override;
 
   std::unique_ptr<OtherMechanismsMenuModel> other_mechanisms_menu_model_;
 };

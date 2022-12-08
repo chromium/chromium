@@ -877,12 +877,6 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
   }
 }
 
-bool AuthenticatorPaaskSheetModel::IsOtherMechanismButtonVisible() const {
-  DCHECK(base::FeatureList::IsEnabled(
-      device::kWebAuthnNewDiscoverableCredentialsUi));
-  return false;
-}
-
 ui::MenuModel* AuthenticatorPaaskSheetModel::GetOtherMechanismsMenuModel() {
   switch (dialog_model()->experiment_server_link_sheet_) {
     case AuthenticatorRequestDialogModel::ExperimentServerLinkSheet::CONTROL:
@@ -956,13 +950,6 @@ std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepDescription()
 ui::MenuModel*
 AuthenticatorAndroidAccessorySheetModel::GetOtherMechanismsMenuModel() {
   return other_mechanisms_menu_model_.get();
-}
-
-bool AuthenticatorAndroidAccessorySheetModel::IsOtherMechanismButtonVisible()
-    const {
-  DCHECK(base::FeatureList::IsEnabled(
-      device::kWebAuthnNewDiscoverableCredentialsUi));
-  return false;
 }
 
 // AuthenticatorClientPinEntrySheetModel
