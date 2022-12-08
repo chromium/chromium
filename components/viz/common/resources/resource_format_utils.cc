@@ -496,6 +496,18 @@ bool GLSupportsFormat(ResourceFormat format) {
   }
 }
 
+bool IsYuvFormat(ResourceFormat format) {
+  switch (format) {
+    case YVU_420:
+    case YUV_420_BIPLANAR:
+    case YUVA_420_TRIPLANAR:
+    case P010:
+      return true;
+    default:
+      return false;
+  }
+}
+
 #if BUILDFLAG(ENABLE_VULKAN)
 namespace {
 VkFormat ToVkFormatInternal(ResourceFormat format) {
@@ -541,6 +553,7 @@ VkFormat ToVkFormatInternal(ResourceFormat format) {
     case LUMINANCE_F16:
       return VK_FORMAT_R16_SFLOAT;
     case P010:
+      return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
     case YUVA_420_TRIPLANAR:
       break;
   }

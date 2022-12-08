@@ -220,6 +220,19 @@ ScenicSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
       this, &sysmem_buffer_manager_, use_swiftshader, allow_protected_memory);
 }
 
+std::vector<gfx::BufferFormat>
+ScenicSurfaceFactory::GetSupportedFormatsForTexturing() const {
+  return {
+      gfx::BufferFormat::R_8,
+      gfx::BufferFormat::RG_88,
+      gfx::BufferFormat::RGBA_8888,
+      gfx::BufferFormat::RGBX_8888,
+      gfx::BufferFormat::BGRA_8888,
+      gfx::BufferFormat::BGRX_8888,
+      gfx::BufferFormat::YUV_420_BIPLANAR,
+  };
+}
+
 void ScenicSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
                                       ScenicSurface* surface) {
   base::AutoLock lock(surface_lock_);

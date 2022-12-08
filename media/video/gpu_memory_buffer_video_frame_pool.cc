@@ -204,7 +204,8 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
       const gfx::Size& natural_size,
       const gfx::ColorSpace& color_space,
       base::TimeDelta timestamp,
-      bool allow_i420_overlay);
+      bool allow_i420_overlay,
+      const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
 
   // Return true if |resources| can be used to represent a frame for
   // specific |format| and |size|.
@@ -1105,7 +1106,8 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
           frame_resources, CodedSize(video_frame.get(), output_format_),
           gfx::Rect(video_frame->visible_rect().size()),
           video_frame->natural_size(), video_frame->ColorSpace(),
-          video_frame->timestamp(), video_frame->metadata().allow_overlay);
+          video_frame->timestamp(), video_frame->metadata().allow_overlay,
+          video_frame->ycbcr_info());
   if (!frame) {
     CompleteCopyRequestAndMaybeStartNextCopy(std::move(video_frame));
     return;
@@ -1129,7 +1131,8 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
         const gfx::Size& natural_size,
         const gfx::ColorSpace& color_space,
         base::TimeDelta timestamp,
-        bool allow_i420_overlay) {
+        bool allow_i420_overlay,
+        const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   gpu::SharedImageInterface* sii = gpu_factories_->SharedImageInterface();
   if (!sii) {
@@ -1218,6 +1221,10 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
       base::BindOnce(&PoolImpl::MailboxHoldersReleased, this, frame_resources));
 
   frame->set_color_space(color_space);
+
+  if (ycbcr_info) {
+    frame->set_ycbcr_info(ycbcr_info);
+  }
 
   bool allow_overlay = false;
 #if BUILDFLAG(IS_WIN)
