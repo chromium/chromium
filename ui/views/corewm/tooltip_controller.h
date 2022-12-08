@@ -59,17 +59,6 @@ class VIEWS_EXPORT TooltipController
   void AddObserver(wm::TooltipObserver* observer);
   void RemoveObserver(wm::TooltipObserver* observer);
 
-  // Calls TooltipStateManager::Show with given params.
-  void UpdateAndShow(aura::Window* window,
-                     const std::u16string& text,
-                     const gfx::Point& position,
-                     const TooltipTrigger trigger,
-                     const base::TimeDelta& show_delay,
-                     const base::TimeDelta& hide_delay);
-
-  // Reset the window and calls `TooltipStateManager::HideAndReset`.
-  void HideAndReset();
-
   // Overridden from wm::TooltipClient.
   int GetMaxWidth(const gfx::Point& location) const override;
   void UpdateTooltip(aura::Window* target) override;
@@ -104,6 +93,9 @@ class VIEWS_EXPORT TooltipController
 
  private:
   friend class test::TooltipControllerTestHelper;
+
+  // Reset the window and calls `TooltipStateManager::HideAndReset`.
+  void HideAndReset();
 
   // Updates the tooltip if required (if there is any change in the tooltip
   // text, tooltip id or the aura::Window).

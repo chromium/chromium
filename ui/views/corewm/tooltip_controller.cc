@@ -145,21 +145,6 @@ void TooltipController::RemoveObserver(wm::TooltipObserver* observer) {
   state_manager_->RemoveObserver(observer);
 }
 
-void TooltipController::UpdateAndShow(aura::Window* window,
-                                      const std::u16string& text,
-                                      const gfx::Point& position,
-                                      const TooltipTrigger trigger,
-                                      const base::TimeDelta& show_delay,
-                                      const base::TimeDelta& hide_delay) {
-  // Use passed `show_delay` value regardless of `show_delay_enabled_` state.
-  state_manager_->Show(window, text, position, trigger, show_delay, hide_delay);
-}
-
-void TooltipController::HideAndReset() {
-  state_manager_->HideAndReset();
-  SetObservedWindow(nullptr);
-}
-
 int TooltipController::GetMaxWidth(const gfx::Point& location) const {
   return state_manager_->GetMaxWidth(location);
 }
@@ -366,6 +351,11 @@ void TooltipController::OnWindowActivated(ActivationReason reason,
 
 ////////////////////////////////////////////////////////////////////////////////
 // TooltipController private:
+
+void TooltipController::HideAndReset() {
+  state_manager_->HideAndReset();
+  SetObservedWindow(nullptr);
+}
 
 void TooltipController::UpdateIfRequired(TooltipTrigger trigger) {
   if (!tooltips_enabled_ || aura::Env::GetInstance()->IsMouseButtonDown() ||

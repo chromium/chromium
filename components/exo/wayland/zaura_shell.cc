@@ -51,11 +51,10 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/display_manager_util.h"
 #include "ui/display/screen.h"
-#include "ui/views/corewm/tooltip.h"
-#include "ui/views/corewm/tooltip_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
+#include "ui/wm/public/tooltip_client.h"
 
 namespace exo {
 namespace wayland {
@@ -120,18 +119,6 @@ zaura_surface_occlusion_state WaylandOcclusionState(
       return ZAURA_SURFACE_OCCLUSION_STATE_HIDDEN;
   }
   return ZAURA_SURFACE_OCCLUSION_STATE_UNKNOWN;
-}
-
-views::corewm::TooltipTrigger TooltipTrigger(uint32_t tooltip_trigger) {
-  switch (tooltip_trigger) {
-    case ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR:
-      return views::corewm::TooltipTrigger::kCursor;
-    case ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD:
-      return views::corewm::TooltipTrigger::kKeyboard;
-    default:
-      VLOG(2) << "Unknown aura-shell tooltip trigger: " << tooltip_trigger;
-      return views::corewm::TooltipTrigger::kCursor;
-  }
 }
 
 void aura_surface_set_frame(wl_client* client,
@@ -690,14 +677,10 @@ void AuraSurface::ShowTooltip(const char* text,
   tooltip_text_ = base::UTF8ToUTF16(text);
   wm::SetTooltipText(surface_->window(), &tooltip_text_);
   wm::SetTooltipId(surface_->window(), surface_);
-  ash::Shell::Get()->tooltip_controller()->UpdateAndShow(
-      surface_->window(), tooltip_text_, position, TooltipTrigger(trigger),
-      show_delay, hide_delay);
 }
 
 void AuraSurface::HideTooltip() {
   tooltip_text_ = std::u16string();
-  ash::Shell::Get()->tooltip_controller()->HideAndReset();
 }
 
 chromeos::OrientationType OrientationLock(uint32_t orientation_lock) {
