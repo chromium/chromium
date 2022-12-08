@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "base/logging.h"
-#include "base/time/time.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
 #include "cc/trees/swap_promise.h"
 
