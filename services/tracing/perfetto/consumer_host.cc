@@ -182,9 +182,15 @@ ConsumerHost::TracingSession::TracingSession(
   }
 #endif
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  const std::string kDataSourceName = "track_event";
+#else
+  const std::string kDataSourceName = mojom::kTraceEventDataSourceName;
+#endif
+
   filtered_pids_.clear();
   for (const auto& ds_config : trace_config.data_sources()) {
-    if (ds_config.config().name() == mojom::kTraceEventDataSourceName) {
+    if (ds_config.config().name() == kDataSourceName) {
       for (const auto& filter : ds_config.producer_name_filter()) {
         base::ProcessId pid;
         if (PerfettoService::ParsePidFromProducerName(filter, &pid)) {
