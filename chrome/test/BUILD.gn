@@ -10031,6 +10031,7 @@ if (!is_android) {
 
     if (is_mac) {
       sources += [
+        "../browser/app_controller_mac_interactive_uitest.mm",
         "../browser/apps/platform_apps/app_shim_interactive_uitest_mac.mm",
         "../browser/apps/platform_apps/app_shim_quit_interactive_uitest_mac.mm",
         "../browser/focus_ring_browsertest_mac.h",

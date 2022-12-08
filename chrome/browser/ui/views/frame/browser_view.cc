@@ -1317,8 +1317,7 @@ void BrowserView::Show() {
 }
 
 void BrowserView::ShowInactive() {
-  if (!frame_->IsVisible())
-    frame_->ShowInactive();
+  frame_->ShowInactive();
 }
 
 void BrowserView::Hide() {

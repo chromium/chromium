@@ -2002,7 +2002,6 @@ void OpenUrlsInBrowserWithProfile(const std::vector<GURL>& urls,
   } else if (!browser) {
     // if no browser window exists then create one with no tabs to be filled in.
     browser = Browser::Create(Browser::CreateParams(profile, true));
-    browser->window()->Show();
   }
 
   // Various methods to open URLs that we get in a native fashion. We use
