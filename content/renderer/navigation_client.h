@@ -11,7 +11,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 
 namespace content {
 
@@ -44,7 +43,6 @@ class NavigationClient : mojom::NavigationClient {
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
-      blink::mojom::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons,
       CommitNavigationCallback callback) override;
   void CommitFailedNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,

@@ -13,7 +13,6 @@ import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
-import "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom";
 import "third_party/blink/public/mojom/commit_result/commit_result.mojom";
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
@@ -245,9 +244,6 @@ interface NavigationClient {
   // browser. These may be null if the NavigationThreadingOptimizations feature
   // is disabled. |cookie_manager_info| may also be null for non HTTP/HTTPS
   // navigations, or if the origin is opaque.
-  // |not_restored_reasons| contain the reasons why this navigation is not
-  // served from back/forward cache if applicable. This is only sent for
-  // cross-document main frame history navigations.
   CommitNavigation(
       blink.mojom.CommonNavigationParams common_params,
       blink.mojom.CommitNavigationParams request_params,
@@ -265,8 +261,7 @@ interface NavigationClient {
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
       CookieManagerInfo? cookie_manager_info,
-      StorageInfo? storage_info,
-      blink.mojom.BackForwardCacheNotRestoredReasons? not_restored_reasons)
+      StorageInfo? storage_info)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 

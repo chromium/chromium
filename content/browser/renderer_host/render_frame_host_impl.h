@@ -588,14 +588,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // BackForwardCacheBrowserTest::AddBlocklistedFeature should be used.
   void UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
-  // Update NotRestoredReasons for |navigation_request| if this is a
-  // cross-document main frame navigation and is not served from back/forward
-  // cache. This will create a metrics object if there is none. This can happen
-  // when we create a new navigation entry such as session restore.
-  // TODO(yuzus): Move this to NavigationEntry.
-  void UpdateBackForwardCacheNotRestoredReasons(
-      NavigationRequest* navigation_request);
-
   const blink::mojom::BackForwardCacheNotRestoredReasonsPtr&
   NotRestoredReasonsForTesting() {
     return not_restored_reasons_for_testing_;

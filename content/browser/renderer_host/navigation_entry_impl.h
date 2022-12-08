@@ -310,6 +310,13 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   void RemoveEntryForFrame(FrameTreeNode* frame_tree_node,
                            bool only_if_different_position);
 
+  // Update NotRestoredReasons for |navigation_request| which should be a
+  // cross-document main frame navigation and is not served from back/forward
+  // cache. This will create a metrics object if there is none, which can happen
+  // when doing a session restore.
+  void UpdateBackForwardCacheNotRestoredReasons(
+      NavigationRequest* navigation_request);
+
   void set_unique_id(int unique_id) { unique_id_ = unique_id; }
 
   void set_started_from_context_menu(bool started_from_context_menu) {

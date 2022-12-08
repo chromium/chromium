@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
@@ -926,7 +927,8 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           soft_navigation_heuristics_task_id,
           /*modified_runtime_features=*/
           base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
-          /*fenced_frame_properties=*/absl::nullopt);
+          /*fenced_frame_properties=*/absl::nullopt,
+          /*not_restored_reasons=*/nullptr);
 #if BUILDFLAG(IS_ANDROID)
   // `data_url_as_string` is saved in NavigationEntry but should only be used by
   // main frames, because loadData* navigations can only happen on the main
@@ -1175,6 +1177,25 @@ void NavigationEntryImpl::RemoveEntryForFrame(FrameTreeNode* frame_tree_node,
     CHECK(it != parent_node->children.end());
     parent_node->children.erase(it);
   }
+}
+
+void NavigationEntryImpl::UpdateBackForwardCacheNotRestoredReasons(
+    NavigationRequest* navigation_request) {
+  DCHECK(BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
+      navigation_request));
+  if (!back_forward_cache_metrics()) {
+    // Create a metrics object if there is none.
+    FrameNavigationEntry* frame_navigation_entry =
+        GetFrameEntry(navigation_request->frame_tree_node());
+    scoped_refptr<BackForwardCacheMetrics> metrics =
+        base::WrapRefCounted(new BackForwardCacheMetrics(
+            frame_navigation_entry->document_sequence_number()));
+    set_back_forward_cache_metrics(std::move(metrics));
+  }
+  // Update NotRestoredReasons to include additional reasons only
+  // known when we navigate back to the NavigationEntry.
+  back_forward_cache_metrics()->UpdateNotRestoredReasonsForNavigation(
+      navigation_request);
 }
 
 GURL NavigationEntryImpl::GetHistoryURLForDataURL() {

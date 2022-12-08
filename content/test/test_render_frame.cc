@@ -275,7 +275,6 @@ void TestRenderFrame::Navigate(
           blink::mojom::PolicyContainerPolicies::New(),
           mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote()),
       mojo::NullRemote() /* code_cache_host */, nullptr, nullptr,
-      /* not_restored_reasons */ nullptr,
       base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
                      base::Unretained(mock_frame_host_.get())));
 }

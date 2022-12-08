@@ -87,6 +87,7 @@
 #include "content/browser/web_package/web_bundle_source.h"
 #include "content/browser/web_package/web_bundle_utils.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/common/debug_utils.h"
 #include "content/common/features.h"
 #include "content/common/navigation_params_utils.h"
@@ -1300,7 +1301,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*soft_navigation_heuristic_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
           base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
-          /*fenced_frame_properties=*/absl::nullopt);
+          /*fenced_frame_properties=*/absl::nullopt,
+          /*not_restored_reasons=*/nullptr);
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
@@ -1441,7 +1443,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*soft_navigation_heuristic_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
           base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
-          /*fenced_frame_properties=*/absl::nullopt);
+          /*fenced_frame_properties=*/absl::nullopt,
+          /*not_restored_reasons=*/nullptr);
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New();
   std::unique_ptr<NavigationRequest> navigation_request(new NavigationRequest(
@@ -1912,6 +1915,24 @@ NavigationRequest::NavigationRequest(
         context->StartServiceWorkerForNavigationHint(GetURL(), key,
                                                      base::DoNothing());
       }
+    }
+  }
+
+  // Only update the BackForwardCacheMetrics if this is for a navigation that
+  // could've been served from the bfcache.
+  if (IsBackForwardCacheEnabled() && !IsServedFromBackForwardCache() && entry &&
+      BackForwardCacheMetrics::IsCrossDocumentMainFrameHistoryNavigation(
+          this)) {
+    // Update NotRestoredReasons and create a metrics object if there's none.
+    entry->UpdateBackForwardCacheNotRestoredReasons(this);
+    auto* metrics = entry->back_forward_cache_metrics();
+    DCHECK(metrics);
+    if (base::FeatureList::IsEnabled(
+            blink::features::kBackForwardCacheSendNotRestoredReasons)) {
+      // Only populate the web-exposed NotRestoredReasons when needed by
+      // the NotRestoredReasons API.
+      commit_params_->not_restored_reasons =
+          metrics->GetWebExposedNotRestoredReasons();
     }
   }
 }
@@ -2819,6 +2840,10 @@ void NavigationRequest::OnRequestRedirected(
   // Reset the page state as it can no longer be used at commit time since the
   // navigation was redirected.
   commit_params_->page_state = std::string();
+
+  // Reset NotRestoredReasons as the reasons are for the original page and not
+  // for the redirected one.
+  commit_params_->not_restored_reasons = nullptr;
 
   // A request was made. Record it before we decide to block this response for
   // a reason or another.

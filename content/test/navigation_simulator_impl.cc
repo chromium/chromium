@@ -709,10 +709,6 @@ void NavigationSimulatorImpl::Commit() {
     browser_interface_broker_receiver_.reset();
   }
 
-  // Update back/forward cache NotRestoredReasons.
-  if (previous_rfh)
-    previous_rfh->UpdateBackForwardCacheNotRestoredReasons(request_);
-
   // The initial `navigation_url_` may have been mapped to a new URL at this
   // point. Overwrite it here with the desired value to correctly mock the
   // DidCommitProvisionalLoadParams.
@@ -869,10 +865,6 @@ void NavigationSimulatorImpl::CommitErrorPage() {
   // record that now while we can still access the object.
   if (!previous_rfh->IsRenderFrameLive())
     drop_unload_ack_ = true;
-
-  // Update back/forward cache NotRestoredReasons.
-  if (previous_rfh)
-    previous_rfh->UpdateBackForwardCacheNotRestoredReasons(request_);
 
   auto params = BuildDidCommitProvisionalLoadParams(
       false /* same_document */, true /* failed_navigation */,

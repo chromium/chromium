@@ -1371,6 +1371,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
             GetLastCommittedEntry(), is_main_frame_navigation,
             params.document_sequence_number);
   }
+
   // Notify the last active entry that we have navigated away.
   if (is_main_frame_navigation && !is_same_document_navigation) {
     if (auto* metrics = GetLastCommittedEntry()->back_forward_cache_metrics()) {
@@ -3831,7 +3832,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*soft_navigation_heuristics_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
           base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
-          /*fenced_frame_properties=*/absl::nullopt);
+          /*fenced_frame_properties=*/absl::nullopt,
+          /*not_restored_reasons=*/nullptr);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();

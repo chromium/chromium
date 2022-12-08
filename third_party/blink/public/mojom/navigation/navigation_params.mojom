@@ -16,6 +16,7 @@ import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/web_sandbox_flags.mojom";
+import "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 import "third_party/blink/public/mojom/frame/view_transition_state.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
@@ -524,4 +525,9 @@ struct CommitNavigationParams {
   // Only non-null for embedder-initiated navigations of a fenced frame root,
   // and urn navigations in iframes while they're supported.
   FencedFrameProperties? fenced_frame_properties;
+
+  // `not_restored_reasons` contains the reasons why this navigation is not
+  // served from back/forward cache if applicable. This is only sent for
+  // cross-document main frame history navigations.
+  blink.mojom.BackForwardCacheNotRestoredReasons? not_restored_reasons;
 };

@@ -312,4 +312,77 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
               rfh_a_result);
 }
 
+// Test when a server redirect happens on history navigation, causing a
+// SiteInstance change and a new navigation entry. Ensure that the reasons from
+// the old entry are copied to the new one and reported internally, but not to
+// the API.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
+                       ServerRedirect) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // Navigate to a.com. This time the redirect does not happen.
+  ASSERT_TRUE(NavigateToURL(web_contents(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_EQ(url_a, rfh_a->GetLastCommittedURL());
+  // Replace the history URL to a URL that would redirect to b.com when
+  // navigated to.
+  std::string replace_state =
+      "window.history.replaceState(null, '', '/server-redirect?" +
+      url_b.spec() + "');";
+  EXPECT_TRUE(ExecJs(rfh_a.get(), replace_state));
+
+  // Navigate to c.com, and evict |rfh_a| by executing JavaScript.
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  EvictByJavaScript(rfh_a.get());
+
+  // Navigate back.
+  GURL url_a_redirect(embedded_test_server()->GetURL(
+      "a.com", "/server-redirect?" + url_b.spec()));
+  TestNavigationManager navigation_manager(web_contents(), url_a_redirect);
+  web_contents()->GetController().GoBack();
+
+  // Wait for the navigation to start.
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+  auto* navigation_request =
+      NavigationRequest::From(navigation_manager.GetNavigationHandle());
+  auto reasons =
+      navigation_request->commit_params().not_restored_reasons.Clone();
+  // The reasons have not been reset yet.
+  auto rfh_a_result = MatchesNotRestoredReasons(
+      blink::mojom::BFCacheBlocked::kYes,
+      MatchesSameOriginDetails(
+          /*id=*/"", /*name=*/"", /*src=*/"", /*url=*/url_a_redirect.spec(),
+          /*reasons=*/{"JavaScript execution"},
+          /*children=*/{}));
+  EXPECT_THAT(reasons, rfh_a_result);
+
+  // Redirect happens, and now the reasons are reset.
+  EXPECT_TRUE(navigation_manager.WaitForResponse());
+  auto* reasons_after_redirect =
+      navigation_request->commit_params().not_restored_reasons.get();
+  EXPECT_THAT(reasons_after_redirect, nullptr);
+  navigation_manager.WaitForNavigationFinished();
+
+  // Eviction reasons should be recorded internally.
+  ExpectNotRestored({NotRestoredReason::kJavaScriptExecution}, {}, {}, {}, {},
+                    FROM_HERE);
+  // Redirect happened once.
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "performance.getEntriesByType('navigation')[0]."
+                     "redirectCount == 1"));
+  // Navigation type should be navigate, instead of back-forward because of the
+  // redirect.
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "performance.getEntriesByType('navigation')[0]."
+                     "type == 'navigate'"));
+  // NotRestoredReasons are not sent to the renderer because of redirect.
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     "performance.getEntriesByType('navigation')[0]."
+                     "notRestoredReasons == null"));
+}
+
 }  // namespace content
