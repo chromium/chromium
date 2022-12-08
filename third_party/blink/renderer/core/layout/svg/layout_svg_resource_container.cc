@@ -218,20 +218,43 @@ void LayoutSVGResourceContainer::InvalidateCacheAndMarkForLayout(
 static inline void RemoveFromCacheAndInvalidateDependencies(
     LayoutObject& object,
     bool needs_layout) {
-  auto* element = DynamicTo<SVGElement>(object.GetNode());
-  if (!element)
-    return;
-
   // TODO(fs): Do we still need this? (If bounds are invalidated on a leaf
   // LayoutObject, we will propagate that during the required layout and
   // invalidate effects of self and any ancestors at that time.)
-  SVGResourceInvalidator(object).InvalidateEffects();
+  if (object.IsSVG())
+    SVGResourceInvalidator(object).InvalidateEffects();
 
+  LayoutSVGResourceContainer::InvalidateDependentElements(object, needs_layout);
+}
+
+void LayoutSVGResourceContainer::InvalidateDependentElements(
+    LayoutObject& object,
+    bool needs_layout) {
+  auto* element = DynamicTo<SVGElement>(object.GetNode());
+  if (!element)
+    return;
   element->NotifyIncomingReferences([needs_layout](SVGElement& element) {
     DCHECK(element.GetLayoutObject());
     LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
         *element.GetLayoutObject(), needs_layout);
   });
+}
+
+void LayoutSVGResourceContainer::InvalidateAncestorChainResources(
+    LayoutObject& object,
+    bool needs_layout) {
+  LayoutObject* current = object.Parent();
+  while (current) {
+    RemoveFromCacheAndInvalidateDependencies(*current, needs_layout);
+
+    if (current->IsSVGResourceContainer()) {
+      // This will process the rest of the ancestors.
+      To<LayoutSVGResourceContainer>(current)->RemoveAllClientsFromCache();
+      break;
+    }
+
+    current = current->Parent();
+  }
 }
 
 void LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
@@ -245,20 +268,7 @@ void LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
   }
 
   RemoveFromCacheAndInvalidateDependencies(object, needs_layout);
-
-  // Invalidate resources in ancestor chain, if needed.
-  LayoutObject* current = object.Parent();
-  while (current) {
-    RemoveFromCacheAndInvalidateDependencies(*current, needs_layout);
-
-    if (current->IsSVGResourceContainer()) {
-      // This will process the rest of the ancestors.
-      To<LayoutSVGResourceContainer>(current)->RemoveAllClientsFromCache();
-      break;
-    }
-
-    current = current->Parent();
-  }
+  InvalidateAncestorChainResources(object, needs_layout);
 }
 
 static inline bool IsLayoutObjectOfResourceContainer(

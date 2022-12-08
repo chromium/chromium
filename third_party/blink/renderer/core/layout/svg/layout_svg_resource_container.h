@@ -73,6 +73,9 @@ class LayoutSVGResourceContainer : public LayoutSVGHiddenContainer {
 
   bool FindCycle() const;
 
+  static void InvalidateDependentElements(LayoutObject&, bool needs_layout);
+  static void InvalidateAncestorChainResources(LayoutObject&,
+                                               bool needs_layout);
   static void MarkForLayoutAndParentResourceInvalidation(
       LayoutObject&,
       bool needs_layout = true);

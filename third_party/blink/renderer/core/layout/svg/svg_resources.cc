@@ -299,6 +299,10 @@ void SVGElementResourceClient::FilterPrimitiveChanged(
     return;
   layout_object->SetNeedsPaintPropertyUpdate();
   MarkFilterDataDirty();
+  LayoutSVGResourceContainer::InvalidateDependentElements(*layout_object,
+                                                          false);
+  LayoutSVGResourceContainer::InvalidateAncestorChainResources(*layout_object,
+                                                               false);
 }
 
 SVGElementResourceClient::FilterData*
