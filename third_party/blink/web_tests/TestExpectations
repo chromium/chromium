@@ -3014,6 +3014,8 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/storage-founda
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-general.html [ Timeout ]
+crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-nonces.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
