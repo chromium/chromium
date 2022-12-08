@@ -43,8 +43,6 @@ def resolve_owners(flags):
   """
 
   owners_db = owners_client.GetCodeOwnersClient(
-      root=utils.ROOT_PATH,
-      upstream="",
       host="chromium-review.googlesource.com",
       project="chromium/src",
       branch="main")
