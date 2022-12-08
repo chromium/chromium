@@ -1075,19 +1075,67 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
 
   ash::ShellTestApi().SetTabletModeEnabledForTest(false);
   WaitForAppListTransitionAnimation();
+  EXPECT_NE(ReorderAnimationEndState::kFadeOutAborted, actual_state);
+
   ash::AcceleratorController::Get()->PerformActionIfEnabled(
       ash::TOGGLE_APP_LIST, {});
   app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
 
-  // Verify that the reorder animation is aborted.
-  EXPECT_EQ(ReorderAnimationEndState::kFadeInAborted, actual_state);
-
-  // Before switching to the tablet mode, the app list is closed so the
-  // temporary sorting order is committed.
+  // When switching out of the tablet mode, the tablet mode app list gets
+  // closed so the temporary sorting order is committed.
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
-  // Verify that reordering in tablet mode works.
+  ReorderTopLevelAppsGridAndWaitForCompletion(
+      ash::AppListSortOrder::kColor, MenuType::kAppListNonFolderItemMenu);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
+}
+
+// Verify that switching to clamshell mode when the fade in animation in tablet
+// mode is running, and gets aborted during tablet mode transition works as
+// expected.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
+                       TransitionToClamshellModeDuringAbortedFadeInAnimation) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST, {});
+  app_list_test_api_.WaitForAppListShowAnimation(/*is_bubble_window=*/false);
+
+  // Verify the default app order.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app3_id_, app2_id_, app1_id_}));
+
+  ReorderAnimationEndState actual_state;
+  app_list_test_api_.ReorderByMouseClickAtToplevelAppsGridMenu(
+      ash::AppListSortOrder::kNameAlphabetical,
+      MenuType::kAppListNonFolderItemMenu, event_generator_.get(),
+      /*target_state=*/ReorderAnimationEndState::kFadeInAborted, &actual_state);
+
+  // Verify that there is active reorder animations.
+  EXPECT_TRUE(app_list_test_api_.HasAnyWaitingReorderDoneCallback());
+
+  // The app order should change because the fade out animation ends.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  // Progress tablet mode animation to the end before item fade in animation
+  // completes - this should hide the tablet mode app list and abort the fade in
+  // aniamtion.
+  app_list_test_api_.GetAppListViewLayer()->GetAnimator()->StopAnimating();
+  EXPECT_EQ(ReorderAnimationEndState::kFadeInAborted, actual_state);
+
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // When switching out of the tablet mode, the tablet mode app list gets
+  // closed so the temporary sorting order is committed.
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+
   ReorderTopLevelAppsGridAndWaitForCompletion(
       ash::AppListSortOrder::kColor, MenuType::kAppListNonFolderItemMenu);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),

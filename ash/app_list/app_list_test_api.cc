@@ -748,12 +748,13 @@ ui::Layer* AppListTestApi::GetAppListViewLayer() {
 
 void AppListTestApi::RegisterReorderAnimationDoneCallback(
     ReorderAnimationEndState* actual_state) {
-  AddReorderAnimationCallback(
-      base::BindRepeating(&AppListTestApi::OnReorderAnimationDone,
-                          weak_factory_.GetWeakPtr(), actual_state));
+  AddReorderAnimationCallback(base::BindRepeating(
+      &AppListTestApi::OnReorderAnimationDone, weak_factory_.GetWeakPtr(),
+      !ash::Shell::Get()->IsInTabletMode(), actual_state));
 }
 
-void AppListTestApi::OnReorderAnimationDone(ReorderAnimationEndState* result,
+void AppListTestApi::OnReorderAnimationDone(bool for_bubble_app_list,
+                                            ReorderAnimationEndState* result,
                                             bool abort,
                                             AppListGridAnimationStatus status) {
   DCHECK(status == AppListGridAnimationStatus::kReorderFadeOut ||
@@ -771,9 +772,8 @@ void AppListTestApi::OnReorderAnimationDone(ReorderAnimationEndState* result,
 
     // Verify that the toast container under the clamshell mode does not have
     // a layer after reorder animation completes.
-    views::View* toast_container = GetToastContainerView();
-    if (toast_container && !ash::Shell::Get()->IsInTabletMode())
-      EXPECT_FALSE(toast_container->layer());
+    if (for_bubble_app_list)
+      EXPECT_FALSE(GetToastContainerView()->layer());
   }
 
   // Callback can be registered without a running loop.

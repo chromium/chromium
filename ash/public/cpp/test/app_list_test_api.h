@@ -247,7 +247,8 @@ class ASH_EXPORT AppListTestApi {
       ReorderAnimationEndState* actual_state);
 
   // Called at the end of the reorder animation.
-  void OnReorderAnimationDone(ReorderAnimationEndState* result,
+  void OnReorderAnimationDone(bool for_bubble_app_list,
+                              ReorderAnimationEndState* result,
                               bool abort,
                               AppListGridAnimationStatus status);
 

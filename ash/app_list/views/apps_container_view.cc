@@ -471,6 +471,7 @@ void AppsContainerView::ResetForShowApps() {
   DVLOG(1) << __FUNCTION__;
   UpdateRecentApps(/*needs_layout=*/false);
   SetShowState(SHOW_APPS, false);
+  apps_grid_view_->MaybeAbortWholeGridAnimation();
   DisableFocusForShowingActiveFolder(false);
 }
 
