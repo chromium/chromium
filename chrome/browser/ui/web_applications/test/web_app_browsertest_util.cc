@@ -237,7 +237,8 @@ Browser* LaunchWebAppBrowserAndWait(Profile* profile,
                                     const AppId& app_id,
                                     WindowOpenDisposition disposition) {
   ui_test_utils::UrlLoadObserver url_observer(
-      WebAppProvider::GetForTest(profile)->registrar().GetAppLaunchUrl(app_id),
+      WebAppProvider::GetForTest(profile)->registrar_unsafe().GetAppLaunchUrl(
+          app_id),
       content::NotificationService::AllSources());
   Browser* const app_browser =
       LaunchWebAppBrowser(profile, app_id, disposition);

@@ -235,7 +235,7 @@ void WebAppNavigationBrowserTest::SetUpOnMainThread() {
 void WebAppNavigationBrowserTest::TearDownOnMainThread() {
 #if BUILDFLAG(IS_CHROMEOS)
   auto* const provider = WebAppProvider::GetForWebApps(profile());
-  const WebAppRegistrar& registrar = provider->registrar();
+  const WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<AppId> app_ids = registrar.GetAppIds();
   for (const auto& app_id : app_ids) {
     if (!registrar.IsInstalled(app_id)) {
@@ -332,7 +332,7 @@ bool WebAppNavigationBrowserTest::TestTabActionDoesNotOpenAppWindow(
 
 const GURL& WebAppNavigationBrowserTest::test_web_app_start_url() {
   auto* const provider = WebAppProvider::GetForWebApps(profile());
-  const WebAppRegistrar& registrar = provider->registrar();
+  const WebAppRegistrar& registrar = provider->registrar_unsafe();
   return registrar.GetAppStartUrl(test_web_app_);
 }
 

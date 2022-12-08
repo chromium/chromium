@@ -144,7 +144,7 @@ void IsolatedWebAppBrowserTestHarness::CreateIframe(
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
     const AppId& app_id) {
   WebAppRegistrar& registrar =
-      WebAppProvider::GetForWebApps(profile())->registrar();
+      WebAppProvider::GetForWebApps(profile())->registrar_unsafe();
   const WebApp* app = registrar.GetAppById(app_id);
   EXPECT_TRUE(app);
   Browser* app_window = Browser::Create(Browser::CreateParams::CreateForApp(
