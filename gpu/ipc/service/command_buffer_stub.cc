@@ -254,7 +254,7 @@ void CommandBufferStub::ScheduleDelayedWork(base::TimeDelta delay) {
     process_delayed_work_timer_.Start(
         FROM_HERE, current_time + delay,
         base::BindOnce(&CommandBufferStub::PollWork, AsWeakPtr()),
-        base::ExactDeadline(true));
+        base::subtle::DelayPolicy::kPrecise);
     return;
   }
 
@@ -278,7 +278,7 @@ void CommandBufferStub::ScheduleDelayedWork(base::TimeDelta delay) {
   process_delayed_work_timer_.Start(
       FROM_HERE, current_time + delay,
       base::BindOnce(&CommandBufferStub::PollWork, AsWeakPtr()),
-      base::ExactDeadline(true));
+      base::subtle::DelayPolicy::kPrecise);
 }
 
 bool CommandBufferStub::MakeCurrent() {

@@ -83,8 +83,6 @@ namespace base {
 
 class TickClock;
 
-using ExactDeadline = base::StrongAlias<class ExactDeadlineTag, bool>;
-
 namespace internal {
 
 // This class wraps logic shared by all timers.
@@ -431,14 +429,14 @@ class BASE_EXPORT DeadlineTimer : public internal::TimerBase {
   DeadlineTimer(const DeadlineTimer&) = delete;
   DeadlineTimer& operator=(const DeadlineTimer&) = delete;
 
-  // Start the timer to run |user_task| near the specified |deadline|;
-  // preferably as close as possible to the specified time if |exact|, or
-  // preferably a little bit before than after otherwise. If the timer is
-  // already running, it will be replaced to call the given |user_task|.
+  // Start the timer to run |user_task| near the specified |deadline| following
+  // |delay_policy| If the timer is already running, it will be replaced to call
+  // the given |user_task|.
   void Start(const Location& posted_from,
              TimeTicks deadline,
              OnceClosure user_task,
-             ExactDeadline exact = ExactDeadline(false));
+             subtle::DelayPolicy delay_policy =
+                 subtle::DelayPolicy::kFlexiblePreferEarly);
 
   // Start the timer to run |user_task| near the specified |deadline|. If the
   // timer is already running, it will be replaced to call a task formed from
@@ -448,8 +446,10 @@ class BASE_EXPORT DeadlineTimer : public internal::TimerBase {
              TimeTicks deadline,
              Receiver* receiver,
              void (Receiver::*method)(),
-             ExactDeadline exact = ExactDeadline(false)) {
-    Start(posted_from, deadline, BindOnce(method, Unretained(receiver)), exact);
+             subtle::DelayPolicy delay_policy =
+                 subtle::DelayPolicy::kFlexiblePreferEarly) {
+    Start(posted_from, deadline, BindOnce(method, Unretained(receiver)),
+          delay_policy);
   }
 
  protected:

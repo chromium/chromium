@@ -365,14 +365,11 @@ DeadlineTimer::~DeadlineTimer() = default;
 void DeadlineTimer::Start(const Location& posted_from,
                           TimeTicks deadline,
                           OnceClosure user_task,
-                          ExactDeadline exact) {
+                          subtle::DelayPolicy delay_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AbandonScheduledTask();
   user_task_ = std::move(user_task);
   posted_from_ = posted_from;
-  subtle::DelayPolicy delay_policy =
-      exact ? subtle::DelayPolicy::kPrecise
-            : subtle::DelayPolicy::kFlexiblePreferEarly;
   ScheduleNewTask(deadline, delay_policy);
 }
 

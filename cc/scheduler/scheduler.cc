@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/delay_policy.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -776,7 +777,9 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
         FROM_HERE, deadline_,
         base::BindOnce(&Scheduler::OnBeginImplFrameDeadline,
                        base::Unretained(this)),
-        base::ExactDeadline(true));
+        deadline_mode_ == DeadlineMode::LATE
+            ? base::subtle::DelayPolicy::kFlexibleNoSooner
+            : base::subtle::DelayPolicy::kPrecise);
   }
 }
 

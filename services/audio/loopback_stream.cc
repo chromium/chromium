@@ -402,7 +402,8 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   // started below will just run immediately and there will be no harmful
   // effects in the next GenerateMoreAudio() call. http://crbug.com/847487
   timer_->Start(FROM_HERE, next_generate_time_, this,
-                &FlowNetwork::GenerateMoreAudio, base::ExactDeadline(true));
+                &FlowNetwork::GenerateMoreAudio,
+                base::subtle::DelayPolicy::kPrecise);
 }
 
 }  // namespace audio

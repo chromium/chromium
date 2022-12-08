@@ -235,7 +235,7 @@ class CastAudioOutputDevice::Internal
     // No frames filled, schedule read immediately with a small delay.
     push_timer_.Start(FROM_HERE, base::TimeTicks::Now() + kNoBufferReadDelay,
                       this, &Internal::TryPushBuffer,
-                      base::ExactDeadline(true));
+                      base::subtle::DelayPolicy::kPrecise);
   }
 
   scoped_refptr<CastAudioOutputDevice> output_device_;
