@@ -208,6 +208,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableBrowserVerifiedUserActivationMouse,
      features::kBrowserVerifiedUserActivationMouse},
     {wf::EnableCompositeBGColorAnimation, features::kCompositeBGColorAnimation},
+    {wf::EnableCompositeClipPathAnimation,
+     features::kCompositeClipPathAnimation},
     {wf::EnableConsolidatedMovementXY, features::kConsolidatedMovementXY},
     {wf::EnableCooperativeScheduling, features::kCooperativeScheduling},
     {wf::EnableDevicePosture, features::kDevicePosture},

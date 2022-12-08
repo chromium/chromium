@@ -541,6 +541,7 @@
     },
     {
       name: "CompositeClipPathAnimation",
+      public: true,
     },
     {
       name: "CompositedSelectionUpdate",

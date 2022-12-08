@@ -225,6 +225,10 @@ BASE_FEATURE(kCompositeBGColorAnimation,
              "CompositeBGColorAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCompositeClipPathAnimation,
+             "CompositeClipPathAnimation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, code cache does not use a browsing_data filter for deletions.
 BASE_FEATURE(kCodeCacheDeletionWithoutFilter,
              "CodeCacheDeletionWithoutFilter",
