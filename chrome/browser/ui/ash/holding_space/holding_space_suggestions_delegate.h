@@ -9,8 +9,8 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
-#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
+#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ash/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
 
 namespace ash {

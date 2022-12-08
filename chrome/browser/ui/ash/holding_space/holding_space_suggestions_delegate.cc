@@ -6,8 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
+#include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 
 namespace ash {
 namespace {

@@ -9,7 +9,7 @@
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_browser_process.h"

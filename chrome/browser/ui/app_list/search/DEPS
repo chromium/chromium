@@ -1,3 +1,6 @@
+# TODO(https://crbug.com/1164001): When this file is edited, same file in
+# //chrome/browser/ash/app_list/search should be updated as well. We need
+# to sync both files until the migration is done.
 include_rules = [
   "+ash/accelerators",
   "+ash/assistant/model",
