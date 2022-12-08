@@ -112,12 +112,14 @@ export class BaseDialog {
     this.frame.appendChild(this.buttons);
 
     this.okButton = doc.createElement('button');
+    this.okButton.setAttribute('tabindex', 0);
     this.okButton.className = 'cr-dialog-ok';
     this.okButton.textContent = BaseDialog.OK_LABEL;
     this.okButton.addEventListener('click', this.onOkClick_.bind(this));
     this.buttons.appendChild(this.okButton);
 
     this.cancelButton = doc.createElement('button');
+    this.cancelButton.setAttribute('tabindex', 1);
     this.cancelButton.className = 'cr-dialog-cancel';
     this.cancelButton.textContent = BaseDialog.CANCEL_LABEL;
     this.cancelButton.addEventListener('click', this.onCancelClick_.bind(this));
