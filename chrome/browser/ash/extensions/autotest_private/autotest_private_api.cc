@@ -2284,7 +2284,7 @@ void AutotestPrivateGetRegisteredSystemWebAppsFunction::
     if (app_id) {
       system_web_app.start_url =
           ash::SystemWebAppManager::GetWebAppProvider(profile)
-              ->registrar()
+              ->registrar_unsafe()
               .GetAppLaunchUrl(*app_id)
               .spec();
     }
