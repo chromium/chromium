@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -3355,6 +3356,7 @@ TEST_P(QuicStreamFactoryTest, OnNetworkMadeDefaultConnectionMigrationDisabled) {
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
       ->NotifyNetworkMadeDefault(kNewNetworkForTests);
 
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
   EXPECT_EQ(1u, session->GetNumActiveStreams());
@@ -3844,7 +3846,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnNetworkDisconnected(
   // Trigger connection migration.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
       ->NotifyNetworkDisconnected(kDefaultNetworkForTests);
-
+  base::RunLoop().RunUntilIdle();
   // The connection should still be alive, not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
@@ -4144,6 +4146,7 @@ TEST_P(QuicStreamFactoryTest, MigrateToProbingSocket) {
   // Cause the connection to report path degrading to the session.
   // Session will start to probe the alternate network.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
   // The connection should still be alive, and not marked as going away.
@@ -4316,6 +4319,7 @@ void QuicStreamFactoryTestBase::TestMigrationOnPathDegrading(
   // Cause the connection to report path degrading to the session.
   // Session will start to probe the alternate network.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
   base::TimeDelta next_task_delay;
@@ -4471,6 +4475,7 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionEarlyProbingWriterError) {
   // However, the probing writer will fail. This should result in a failed probe
   // but no connection close.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
   // The connection should still be alive, and not marked as going away.
@@ -4479,9 +4484,10 @@ TEST_P(QuicStreamFactoryTest, MigrateSessionEarlyProbingWriterError) {
   EXPECT_EQ(1u, session->GetNumActiveStreams());
   EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
 
-  // There should be one task of notifying the session that probing failed.
+  // There should be one task of notifying the session that probing failed, and
+  // a second as a DoNothingAs callback.
   EXPECT_TRUE(session->connection()->HasPendingPathValidation());
-  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
   base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
   EXPECT_EQ(base::TimeDelta(), next_task_delay);
   task_runner->FastForwardBy(next_task_delay);
@@ -4522,6 +4528,7 @@ TEST_P(QuicStreamFactoryTest,
 
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
       ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
+  base::RunLoop().RunUntilIdle();
 
   quic::QuicConnectionId cid_on_path1 =
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator());
@@ -4557,10 +4564,9 @@ TEST_P(QuicStreamFactoryTest,
 
   // Connection ID is retired on the old path.
   client_maker_.set_connection_id(cid_on_path1);
-  quic_data1.AddWrite(SYNCHRONOUS,
-                      client_maker_.MakeRetireConnectionIdPacket(
-                          packet_number++, /*include_version=*/false,
-                          /*sequence_number=*/1u));
+  quic_data1.AddWrite(ASYNC, client_maker_.MakeRetireConnectionIdPacket(
+                                 packet_number++, /*include_version=*/false,
+                                 /*sequence_number=*/1u));
 
   // A socket will be created for a new path, but there would be no write
   // due to lack of new connection ID.
@@ -4599,7 +4605,7 @@ TEST_P(QuicStreamFactoryTest,
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
   MaybeMakeNewConnectionIdAvailableToSession(cid_on_path2, session);
-
+  base::RunLoop().RunUntilIdle();
   // Send GET request on stream.
   HttpResponseInfo response;
   HttpRequestHeaders request_headers;
@@ -4612,6 +4618,7 @@ TEST_P(QuicStreamFactoryTest,
   // However, the probing writer will fail. This should result in a failed probe
   // but no connection close.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
   // The connection should still be alive, and not marked as going away.
@@ -4620,14 +4627,16 @@ TEST_P(QuicStreamFactoryTest,
   EXPECT_EQ(1u, session->GetNumActiveStreams());
   EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
 
-  // There should be one task of notifying the session that probing failed.
+  // There should be one task of notifying the session that probing failed, and
+  // one that was posted as a DoNothingAs callback.
   EXPECT_TRUE(session->connection()->HasPendingPathValidation());
-  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+  EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
 
   // Trigger another path degrading, but this time another network is available.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
       ->SetConnectedNetworksList({kDefaultNetworkForTests, 3});
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
 
   base::TimeDelta next_task_delay = task_runner->NextPendingTaskDelay();
   EXPECT_EQ(base::TimeDelta(), next_task_delay);
@@ -4643,6 +4652,7 @@ TEST_P(QuicStreamFactoryTest,
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   EXPECT_EQ(200, response.headers->response_code());
 
+  base::RunLoop().RunUntilIdle();
   // Verify that the session is still alive.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
@@ -4748,6 +4758,7 @@ TEST_P(QuicStreamFactoryTest, MultiPortSession) {
 
   // This will trigger multi-port path creation.
   MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+  base::RunLoop().RunUntilIdle();
 
   // Send GET request on stream.
   HttpResponseInfo response;
@@ -4887,6 +4898,7 @@ TEST_P(QuicStreamFactoryTest, PortMigrationDisabledOnPathDegrading) {
   // Cause the connection to report path degrading to the session.
   // Session will start to probe a different port.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
 
   // The session should stay alive as if nothing happened.
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
@@ -4999,6 +5011,7 @@ TEST_P(QuicStreamFactoryTest,
   // Cause the connection to report path degrading to the session.
   // Session will start to probe a different port.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
@@ -5199,11 +5212,14 @@ void QuicStreamFactoryTestBase::TestSimplePortMigrationOnPathDegrading() {
   // Cause the connection to report path degrading to the session.
   // Session will start to probe a different port.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
-  // The retry mechanism is internal to path validator.
-  EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
+  // There should be one pending task as the probe posted a DoNothingAs
+  // callback.
+  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+  task_runner->ClearPendingTasks();
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -5392,12 +5408,13 @@ TEST_P(QuicStreamFactoryTest,
     // Cause the connection to report path degrading to the session.
     // Session will start to probe a different port.
     session->connection()->OnPathDegradingDetected();
+    base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1u,
               QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
     // The retry mechanism is internal to path validator.
-    EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
+    EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
 
     // The connection should still be alive, and not marked as going away.
     EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -5566,6 +5583,7 @@ TEST_P(QuicStreamFactoryTest,
   // Cause the connection to report path degrading to the session.
   // Session will start to probe a different port.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, session->GetNumActiveStreams());
   EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
   // A response will be received on the current path and closes the request
@@ -5578,8 +5596,10 @@ TEST_P(QuicStreamFactoryTest,
 
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
-  // The retry mechanism is internal to path validator.
-  EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
+  // There should be one pending task as the probe posted a DoNothingAs
+  // callback.
+  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
+  task_runner->ClearPendingTasks();
 
   // The connection should still be alive, and not marked as going away.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -5703,6 +5723,7 @@ TEST_P(QuicStreamFactoryTest, DoNotMigrateToBadSocketOnPathDegrading) {
   // Cause the connection to report path degrading to the session.
   // Session will start to probe the alternate network.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
   // The connection should still be alive, and not marked as going away.
@@ -5715,9 +5736,9 @@ TEST_P(QuicStreamFactoryTest, DoNotMigrateToBadSocketOnPathDegrading) {
   quic_data.Resume();
   EXPECT_THAT(callback_.WaitForResult(), IsOk());
   EXPECT_EQ(200, response.headers->response_code());
-
-  // Verify there is no pending task as probing alternate network is halted.
-  EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
+  // There should be one pending task left as the probe posted a
+  // DoNothingAsCallback.
+  EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
 
   // Verify that the session is still alive.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
@@ -5858,6 +5879,7 @@ void QuicStreamFactoryTestBase::TestMigrateSessionWithDrainingStream(
   // Cause the connection to report path degrading to the session.
   // Session should still start to probe the alternate network.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HasActiveSession(scheme_host_port_));
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
@@ -6009,6 +6031,7 @@ TEST_P(QuicStreamFactoryTest, MigrateOnNewNetworkConnectAfterPathDegrading) {
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
   EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
 
@@ -6272,6 +6295,7 @@ TEST_P(QuicStreamFactoryTest, MigrateOnPathDegradingWithNoNewNetwork) {
   // as going away.
   EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(session->connection()->IsPathDegrading());
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
@@ -6923,6 +6947,7 @@ TEST_P(QuicStreamFactoryTest,
   // Session will ignore the signal as handshake is not completed.
   EXPECT_EQ(0u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
 
@@ -6990,6 +7015,7 @@ void QuicStreamFactoryTestBase::TestNoAlternateNetworkBeforeHandshake(
   // Cause the connection to report path degrading to the session.
   // Session will ignore the signal as handshake is not completed.
   session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, QuicStreamFactoryPeer::GetNumDegradingSessions(factory_.get()));
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
   EXPECT_FALSE(HasActiveSession(scheme_host_port_));
@@ -8770,6 +8796,7 @@ void QuicStreamFactoryTestBase::
   HttpRequestHeaders request_headers;
   EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
                                     callback_.callback()));
+  base::RunLoop().RunUntilIdle();
 
   // Now queue a network change notification in the message loop behind
   // the migration attempt.
@@ -11135,9 +11162,14 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
 
   const uint8_t kTestIpAddress[] = {1, 2, 3, 4};
   const uint16_t kTestPort = 123;
+  base::RunLoop run_loop;
+  QuicChromiumClientSession::MigrationCallback migration_callback =
+      base::BindLambdaForTesting(
+          [&run_loop](MigrationResult result) { run_loop.Quit(); });
   session->Migrate(handles::kInvalidNetworkHandle,
-                   IPEndPoint(IPAddress(kTestIpAddress), kTestPort), true);
-
+                   IPEndPoint(IPAddress(kTestIpAddress), kTestPort), true,
+                   std::move(migration_callback));
+  run_loop.Run();
   session->GetDefaultSocket()->GetPeerAddress(&ip);
   DVLOG(1) << "Socket migrated to: " << ip.address().ToString() << " "
            << ip.port();
@@ -11258,9 +11290,14 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationNonMigratableStream) {
   constexpr handles::NetworkHandle kNonDefaultNetwork = 1;
   constexpr uint8_t kTestIpAddress[] = {1, 2, 3, 4};
   constexpr uint16_t kTestPort = 123;
+  base::RunLoop run_loop;
+  QuicChromiumClientSession::MigrationCallback migration_callback =
+      base::BindLambdaForTesting(
+          [&run_loop](MigrationResult result) { run_loop.Quit(); });
   session->Migrate(kNonDefaultNetwork,
-                   IPEndPoint(IPAddress(kTestIpAddress), kTestPort), true);
-
+                   IPEndPoint(IPAddress(kTestIpAddress), kTestPort), true,
+                   std::move(migration_callback));
+  run_loop.Run();
   // The session should exist but no longer be active since its only stream has
   // been reset.
   EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));

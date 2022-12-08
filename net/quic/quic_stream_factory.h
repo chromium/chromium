@@ -110,6 +110,14 @@ enum AllActiveSessionsGoingAwayReason {
   kCertDBChanged
 };
 
+enum CreateSessionFailure {
+  CREATION_ERROR_CONNECTING_SOCKET,
+  CREATION_ERROR_SETTING_RECEIVE_BUFFER,
+  CREATION_ERROR_SETTING_SEND_BUFFER,
+  CREATION_ERROR_SETTING_DO_NOT_FRAGMENT,
+  CREATION_ERROR_MAX
+};
+
 // Encapsulates a pending request for a QuicChromiumClientSession.
 // If the request is still pending when it is destroyed, it will
 // cancel the request with the factory.
@@ -321,10 +329,38 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   void ClearCachedStatesInCryptoConfig(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 
+  // Helper method that connects a DatagramClientSocket. Socket is
+  // bound to the default network if the |network| param is
+  // handles::kInvalidNetworkHandle. This method calls
+  // DatagramClientSocket::ConnectAsync and completes asynchronously. Returns
+  // ERR_IO_PENDING.
+  int ConnectAndConfigureSocket(CompletionOnceCallback callback,
+                                DatagramClientSocket* socket,
+                                IPEndPoint addr,
+                                handles::NetworkHandle network,
+                                const SocketTag& socket_tag);
+
+  // Helper method that configures a DatagramClientSocket once
+  // DatagramClientSocket::ConnectAsync completes. Posts a task to run
+  // `callback` with a net_error code.
+  void FinishConnectAndConfigureSocket(CompletionOnceCallback callback,
+                                       DatagramClientSocket* socket,
+                                       const SocketTag& socket_tag,
+                                       int rv);
+
+  void OnFinishConnectAndConfigureSocketError(CompletionOnceCallback callback,
+                                              enum CreateSessionFailure error,
+                                              int rv);
+
+  void DoCallback(CompletionOnceCallback callback, int rv);
+
   // Helper method that configures a DatagramClientSocket. Socket is
   // bound to the default network if the |network| param is
-  // handles::kInvalidNetworkHandle.
-  // Returns net_error code.
+  // handles::kInvalidNetworkHandle. This method calls
+  // DatagramClientSocket::Connect and completes synchronously. Returns
+  // net_error code.
+  // TODO(liza): Remove this once QuicStreamFactory::Job calls
+  // ConnectAndConfigureSocket.
   int ConfigureSocket(DatagramClientSocket* socket,
                       IPEndPoint addr,
                       handles::NetworkHandle network,

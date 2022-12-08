@@ -79,14 +79,6 @@ namespace net {
 
 namespace {
 
-enum CreateSessionFailure {
-  CREATION_ERROR_CONNECTING_SOCKET,
-  CREATION_ERROR_SETTING_RECEIVE_BUFFER,
-  CREATION_ERROR_SETTING_SEND_BUFFER,
-  CREATION_ERROR_SETTING_DO_NOT_FRAGMENT,
-  CREATION_ERROR_MAX
-};
-
 enum InitialRttEstimateSource {
   INITIAL_RTT_DEFAULT,
   INITIAL_RTT_CACHED,
@@ -1348,7 +1340,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
       params_.race_stale_dns_on_connection, priority, use_dns_aliases,
       session_key.require_dns_https_alpn(), cert_verify_flags, net_log);
   int rv = job->Run(base::BindOnce(&QuicStreamFactory::OnJobComplete,
-                                   base::Unretained(this), job.get()));
+                                   weak_factory_.GetWeakPtr(), job.get()));
   if (rv == ERR_IO_PENDING) {
     job->AddRequest(request);
     active_jobs_[session_key] = std::move(job);
@@ -1474,6 +1466,117 @@ void QuicStreamFactory::ClearCachedStatesInCryptoConfig(
   for (const auto& crypto_config : recent_crypto_config_map_) {
     crypto_config.second->config()->ClearCachedStates(filter);
   }
+}
+
+int QuicStreamFactory::ConnectAndConfigureSocket(
+    CompletionOnceCallback callback,
+    DatagramClientSocket* socket,
+    IPEndPoint addr,
+    handles::NetworkHandle network,
+    const SocketTag& socket_tag) {
+  socket->UseNonBlockingIO();
+
+  int rv;
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  CompletionOnceCallback connect_callback =
+      base::BindOnce(&QuicStreamFactory::FinishConnectAndConfigureSocket,
+                     weak_factory_.GetWeakPtr(),
+                     std::move(split_callback.first), socket, socket_tag);
+  if (!params_.migrate_sessions_on_network_change_v2) {
+    rv = socket->ConnectAsync(addr, std::move(connect_callback));
+  } else if (network == handles::kInvalidNetworkHandle) {
+    // If caller leaves network unspecified, use current default network.
+    rv = socket->ConnectUsingDefaultNetworkAsync(addr,
+                                                 std::move(connect_callback));
+  } else {
+    rv = socket->ConnectUsingNetworkAsync(network, addr,
+                                          std::move(connect_callback));
+  }
+  // Both callbacks within `split_callback` will always be run asynchronously,
+  // even if a Connect call returns synchronously. Therefore we always return
+  // ERR_IO_PENDING.
+  if (rv != ERR_IO_PENDING) {
+    FinishConnectAndConfigureSocket(std::move(split_callback.second), socket,
+                                    socket_tag, rv);
+  }
+  return ERR_IO_PENDING;
+}
+
+void QuicStreamFactory::FinishConnectAndConfigureSocket(
+    CompletionOnceCallback callback,
+    DatagramClientSocket* socket,
+    const SocketTag& socket_tag,
+    int rv) {
+  if (rv != OK) {
+    OnFinishConnectAndConfigureSocketError(
+        std::move(callback), CREATION_ERROR_CONNECTING_SOCKET, rv);
+    return;
+  }
+
+  socket->ApplySocketTag(socket_tag);
+
+  rv = socket->SetReceiveBufferSize(kQuicSocketReceiveBufferSize);
+  if (rv != OK) {
+    OnFinishConnectAndConfigureSocketError(
+        std::move(callback), CREATION_ERROR_SETTING_RECEIVE_BUFFER, rv);
+    return;
+  }
+
+  rv = socket->SetDoNotFragment();
+  // SetDoNotFragment is not implemented on all platforms, so ignore errors.
+  if (rv != OK && rv != ERR_NOT_IMPLEMENTED) {
+    OnFinishConnectAndConfigureSocketError(
+        std::move(callback), CREATION_ERROR_SETTING_DO_NOT_FRAGMENT, rv);
+    return;
+  }
+
+  // Set a buffer large enough to contain the initial CWND's worth of packet
+  // to work around the problem with CHLO packets being sent out with the
+  // wrong encryption level, when the send buffer is full.
+  rv = socket->SetSendBufferSize(quic::kMaxOutgoingPacketSize * 20);
+  if (rv != OK) {
+    OnFinishConnectAndConfigureSocketError(
+        std::move(callback), CREATION_ERROR_SETTING_SEND_BUFFER, rv);
+    return;
+  }
+
+  if (params_.ios_network_service_type > 0) {
+    socket->SetIOSNetworkServiceType(params_.ios_network_service_type);
+  }
+
+  socket->GetLocalAddress(&local_address_);
+  if (need_to_check_persisted_supports_quic_) {
+    need_to_check_persisted_supports_quic_ = false;
+    if (http_server_properties_->WasLastLocalAddressWhenQuicWorked(
+            local_address_.address())) {
+      is_quic_known_to_work_on_current_network_ = true;
+      // Clear the persisted IP address, in case the network no longer supports
+      // QUIC so the next restart will require confirmation. It will be
+      // re-persisted when the first job completes successfully.
+      http_server_properties_->ClearLastLocalAddressWhenQuicWorked();
+    }
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&QuicStreamFactory::DoCallback, weak_factory_.GetWeakPtr(),
+                     std::move(callback), rv));
+}
+
+void QuicStreamFactory::OnFinishConnectAndConfigureSocketError(
+    CompletionOnceCallback callback,
+    enum CreateSessionFailure error,
+    int rv) {
+  DCHECK(callback);
+  HistogramCreateSessionFailure(error);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&QuicStreamFactory::DoCallback, weak_factory_.GetWeakPtr(),
+                     std::move(callback), rv));
+}
+
+void QuicStreamFactory::DoCallback(CompletionOnceCallback callback, int rv) {
+  std::move(callback).Run(rv);
 }
 
 int QuicStreamFactory::ConfigureSocket(DatagramClientSocket* socket,
