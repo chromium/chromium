@@ -38,6 +38,7 @@ CustomElementDefinition::~CustomElementDefinition() = default;
 
 void CustomElementDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(construction_stack_);
+  ElementRareDataField::Trace(visitor);
 }
 
 static String ErrorMessageForConstructorResult(Element& element,

@@ -207,6 +207,7 @@ void AnchorScrollData::Trace(Visitor* visitor) const {
   visitor->Trace(owner_);
   visitor->Trace(scroll_container_layers_);
   ScrollSnapshotClient::Trace(visitor);
+  ElementRareDataField::Trace(visitor);
 }
 
 }  // namespace blink

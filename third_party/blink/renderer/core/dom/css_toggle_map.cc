@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/style/toggle_root.h"
 #include "third_party/blink/renderer/core/style/toggle_root_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -19,6 +20,7 @@ void CSSToggleMap::Trace(Visitor* visitor) const {
   visitor->Trace(toggles_);
 
   ScriptWrappable::Trace(visitor);
+  ElementRareDataField::Trace(visitor);
 }
 
 void CSSToggleMap::CreateToggles(const ToggleRootList* toggle_roots) {

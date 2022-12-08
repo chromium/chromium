@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_BASE_H_
 
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
@@ -35,11 +36,15 @@ class CustomElementDefinition;
 class ResizeObserverSize;
 class PopoverData;
 class CSSToggleMap;
+class HTMLElement;
 
 enum class ElementFlags;
 
-class ElementRareDataBase : public GarbageCollectedMixin {
+class ElementRareDataBase : public NodeRareData {
  public:
+  explicit ElementRareDataBase(NodeRenderingData* node_layout_data)
+      : NodeRareData(ClassType::kElementRareData, node_layout_data) {}
+
   virtual void SetPseudoElement(
       PseudoId,
       PseudoElement*,
@@ -72,19 +77,6 @@ class ElementRareDataBase : public GarbageCollectedMixin {
 
   virtual bool HasPseudoElements() const = 0;
   virtual void ClearPseudoElements() = 0;
-
-  virtual void SetDidAttachInternals() = 0;
-  virtual bool DidAttachInternals() const = 0;
-
-  virtual void SetStyleShouldForceLegacyLayout(bool force) = 0;
-  virtual bool StyleShouldForceLegacyLayout() const = 0;
-  virtual void SetShouldForceLegacyLayoutForChild(bool force) = 0;
-  virtual bool ShouldForceLegacyLayoutForChild() const = 0;
-  virtual bool HasUndoStack() const = 0;
-  virtual void SetHasUndoStack(bool value) = 0;
-  virtual bool ScrollbarPseudoElementStylesDependOnFontMetrics() const = 0;
-  virtual void SetScrollbarPseudoElementStylesDependOnFontMetrics(
-      bool value) = 0;
 
   virtual AttrNodeList& EnsureAttrNodeList() = 0;
   virtual AttrNodeList* GetAttrNodeList() = 0;
@@ -159,33 +151,89 @@ class ElementRareDataBase : public GarbageCollectedMixin {
   virtual CSSToggleMap* GetToggleMap() const = 0;
   virtual CSSToggleMap& EnsureToggleMap(Element* owner_element) = 0;
 
-  virtual FocusgroupFlags GetFocusgroupFlags() const = 0;
-  virtual void SetFocusgroupFlags(FocusgroupFlags flags) = 0;
-  virtual void ClearFocusgroupFlags() = 0;
+  FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
+  void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
+  void ClearFocusgroupFlags() { focusgroup_flags_ = FocusgroupFlags::kNone; }
 
-  virtual bool AffectedBySubjectHas() const = 0;
-  virtual void SetAffectedBySubjectHas() = 0;
-  virtual bool AffectedByNonSubjectHas() const = 0;
-  virtual void SetAffectedByNonSubjectHas() = 0;
-  virtual bool AncestorsOrAncestorSiblingsAffectedByHas() const = 0;
-  virtual void SetAncestorsOrAncestorSiblingsAffectedByHas() = 0;
-  virtual unsigned GetSiblingsAffectedByHasFlags() const = 0;
-  virtual bool HasSiblingsAffectedByHasFlags(unsigned flags) const = 0;
-  virtual void SetSiblingsAffectedByHasFlags(unsigned flags) = 0;
-  virtual bool AffectedByPseudoInHas() const = 0;
-  virtual void SetAffectedByPseudoInHas() = 0;
-  virtual bool AncestorsOrSiblingsAffectedByHoverInHas() const = 0;
-  virtual void SetAncestorsOrSiblingsAffectedByHoverInHas() = 0;
-  virtual bool AncestorsOrSiblingsAffectedByActiveInHas() const = 0;
-  virtual void SetAncestorsOrSiblingsAffectedByActiveInHas() = 0;
-  virtual bool AncestorsOrSiblingsAffectedByFocusInHas() const = 0;
-  virtual void SetAncestorsOrSiblingsAffectedByFocusInHas() = 0;
-  virtual bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const = 0;
-  virtual void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() = 0;
-  virtual bool AffectedByLogicalCombinationsInHas() const = 0;
-  virtual void SetAffectedByLogicalCombinationsInHas() = 0;
-  virtual bool AffectedByMultipleHas() const = 0;
-  virtual void SetAffectedByMultipleHas() = 0;
+  bool AffectedBySubjectHas() const {
+    return has_invalidation_flags_.affected_by_subject_has;
+  }
+  void SetAffectedBySubjectHas() {
+    has_invalidation_flags_.affected_by_subject_has = true;
+  }
+  bool AffectedByNonSubjectHas() const {
+    return has_invalidation_flags_.affected_by_non_subject_has;
+  }
+  void SetAffectedByNonSubjectHas() {
+    has_invalidation_flags_.affected_by_non_subject_has = true;
+  }
+  bool AncestorsOrAncestorSiblingsAffectedByHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_ancestor_siblings_affected_by_has;
+  }
+  void SetAncestorsOrAncestorSiblingsAffectedByHas() {
+    has_invalidation_flags_.ancestors_or_ancestor_siblings_affected_by_has =
+        true;
+  }
+  unsigned GetSiblingsAffectedByHasFlags() const {
+    return has_invalidation_flags_.siblings_affected_by_has;
+  }
+  bool HasSiblingsAffectedByHasFlags(unsigned flags) const {
+    return has_invalidation_flags_.siblings_affected_by_has & flags;
+  }
+  void SetSiblingsAffectedByHasFlags(unsigned flags) {
+    has_invalidation_flags_.siblings_affected_by_has |= flags;
+  }
+  bool AffectedByPseudoInHas() const {
+    return has_invalidation_flags_.affected_by_pseudos_in_has;
+  }
+  void SetAffectedByPseudoInHas() {
+    has_invalidation_flags_.affected_by_pseudos_in_has = true;
+  }
+  bool AncestorsOrSiblingsAffectedByHoverInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_hover_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByHoverInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_hover_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByActiveInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_active_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByActiveInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_active_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByFocusInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByFocusInHas() {
+    has_invalidation_flags_.ancestors_or_siblings_affected_by_focus_in_has =
+        true;
+  }
+  bool AncestorsOrSiblingsAffectedByFocusVisibleInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_visible_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByFocusVisibleInHas() {
+    has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_focus_visible_in_has = true;
+  }
+  bool AffectedByLogicalCombinationsInHas() const {
+    return has_invalidation_flags_.affected_by_logical_combinations_in_has;
+  }
+  void SetAffectedByLogicalCombinationsInHas() {
+    has_invalidation_flags_.affected_by_logical_combinations_in_has = true;
+  }
+  bool AffectedByMultipleHas() const {
+    return has_invalidation_flags_.affected_by_multiple_has;
+  }
+  void SetAffectedByMultipleHas() {
+    has_invalidation_flags_.affected_by_multiple_has = true;
+  }
 
   virtual void SetTabIndexExplicitly() = 0;
   virtual void ClearTabIndexExplicitly() = 0;
@@ -204,6 +252,38 @@ class ElementRareDataBase : public GarbageCollectedMixin {
   virtual void ClearElementFlag(ElementFlags mask) = 0;
   virtual bool HasRestyleFlags() const = 0;
   virtual void ClearRestyleFlags() = 0;
+
+  void SetDidAttachInternals() { did_attach_internals_ = true; }
+  bool DidAttachInternals() const { return did_attach_internals_; }
+  void SetStyleShouldForceLegacyLayout(bool force) {
+    style_should_force_legacy_layout_ = force;
+  }
+  bool StyleShouldForceLegacyLayout() const {
+    return style_should_force_legacy_layout_;
+  }
+  void SetShouldForceLegacyLayoutForChild(bool force) {
+    should_force_legacy_layout_for_child_ = force;
+  }
+  bool ShouldForceLegacyLayoutForChild() const {
+    return should_force_legacy_layout_for_child_;
+  }
+  bool HasUndoStack() const { return has_undo_stack_; }
+  void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
+  bool ScrollbarPseudoElementStylesDependOnFontMetrics() const {
+    return scrollbar_pseudo_element_styles_depend_on_font_metrics_;
+  }
+  void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
+    scrollbar_pseudo_element_styles_depend_on_font_metrics_ = value;
+  }
+
+ private:
+  unsigned did_attach_internals_ : 1;
+  unsigned should_force_legacy_layout_for_child_ : 1;
+  unsigned style_should_force_legacy_layout_ : 1;
+  unsigned has_undo_stack_ : 1;
+  unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
+  HasInvalidationFlags has_invalidation_flags_;
+  FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
 };
 
 }  // namespace blink

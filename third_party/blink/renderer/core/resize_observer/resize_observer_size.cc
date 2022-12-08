@@ -19,4 +19,9 @@ ResizeObserverSize::ResizeObserverSize(double inline_size, double block_size)
 
 ResizeObserverSize::ResizeObserverSize() = default;
 
+void ResizeObserverSize::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  ElementRareDataField::Trace(visitor);
+}
+
 }  // namespace blink

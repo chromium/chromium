@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_SCROLL_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_ANCHOR_SCROLL_DATA_H_
 
+#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
@@ -39,7 +40,8 @@ class PaintLayer;
 // Whenever taking a snapshot, we also check if the above still holds for the
 // current fallback position. If not, a layout invalidation is needed.
 class AnchorScrollData : public GarbageCollected<AnchorScrollData>,
-                         public ScrollSnapshotClient {
+                         public ScrollSnapshotClient,
+                         public ElementRareDataField {
  public:
   explicit AnchorScrollData(Element*);
   virtual ~AnchorScrollData();

@@ -84,6 +84,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_data_cache.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
@@ -1026,11 +1027,11 @@ Vector<AtomicString> Element::getAttributeNames() const {
 
 inline ElementRareDataBase* Element::GetElementRareData() const {
   DCHECK(HasRareData());
-  return static_cast<ElementRareData*>(RareData());
+  return static_cast<ElementRareDataBase*>(RareData());
 }
 
 inline ElementRareDataBase& Element::EnsureElementRareData() {
-  return static_cast<ElementRareData&>(EnsureRareData());
+  return static_cast<ElementRareDataBase&>(EnsureRareData());
 }
 
 void Element::RemovePopoverData() {

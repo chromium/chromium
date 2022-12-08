@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/element_rare_data_field.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/popover_animation_finished_event_listener.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
@@ -39,7 +40,8 @@ class PopoverAnchorObserver : public IdTargetObserver {
   Member<HTMLElement> element_;
 };
 
-class PopoverData final : public GarbageCollected<PopoverData> {
+class PopoverData final : public GarbageCollected<PopoverData>,
+                          public ElementRareDataField {
  public:
   PopoverData() = default;
   PopoverData(const PopoverData&) = delete;
@@ -103,13 +105,14 @@ class PopoverData final : public GarbageCollected<PopoverData> {
     owner_select_menu_element_ = element;
   }
 
-  void Trace(Visitor* visitor) const {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(invoker_);
     visitor->Trace(previously_focused_element_);
     visitor->Trace(animation_finished_listener_);
     visitor->Trace(anchor_element_);
     visitor->Trace(anchor_observer_);
     visitor->Trace(owner_select_menu_element_);
+    ElementRareDataField::Trace(visitor);
   }
 
  private:

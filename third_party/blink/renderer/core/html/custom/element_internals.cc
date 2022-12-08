@@ -48,6 +48,7 @@ void ElementInternals::Trace(Visitor* visitor) const {
   visitor->Trace(explicitly_set_attr_elements_map_);
   ListedElement::Trace(visitor);
   ScriptWrappable::Trace(visitor);
+  ElementRareDataField::Trace(visitor);
 }
 
 void ElementInternals::setFormValue(const V8ControlValue* value,

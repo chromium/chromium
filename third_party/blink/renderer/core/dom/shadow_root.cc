@@ -48,7 +48,9 @@
 
 namespace blink {
 
-struct SameSizeAsShadowRoot : public DocumentFragment, public TreeScope {
+struct SameSizeAsShadowRoot : public DocumentFragment,
+                              public TreeScope,
+                              public ElementRareDataField {
   Member<void*> member[3];
   unsigned flags[1];
 };
@@ -262,6 +264,7 @@ void ShadowRoot::Trace(Visitor* visitor) const {
   visitor->Trace(style_sheet_list_);
   visitor->Trace(slot_assignment_);
   visitor->Trace(registry_);
+  ElementRareDataField::Trace(visitor);
   TreeScope::Trace(visitor);
   DocumentFragment::Trace(visitor);
 }
