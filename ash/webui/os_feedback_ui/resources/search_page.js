@@ -285,7 +285,7 @@ export class SearchPageElement extends SearchPageElementBase {
       isPopularContent = true;
     } else {
       response = await this.helpContentProvider_.getHelpContents(request);
-      isPopularContent = (response.response.totalResults === 0);
+      isPopularContent = (response.response.results.length === 0);
       this.helpContentSearchResultCount = response.response.results.length;
     }
 

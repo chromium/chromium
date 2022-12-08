@@ -5,13 +5,14 @@
 import {fakeEmptySearchResponse, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import {SearchResponse} from 'chrome://os-feedback/feedback_types.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {domainQuestions, questionnaireBegin} from 'chrome://os-feedback/questionnaire.js';
 import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise} from '../test_util.js';
 
 export function searchPageTestSuite() {
@@ -223,6 +224,39 @@ export function searchPageTestSuite() {
     assertEquals(longTextNoResult, provider.lastQuery);
     // Search result count should be 0.
     assertEquals(0, page.getSearchResultCountForTesting());
+    // Popular content should be displayed (i.e. isPopularContent = true).
+    assertTrue(page.getIsPopularContentForTesting_());
+  });
+
+  /**
+   * Test that popular help content is displayed when no match is returned after
+   * filtering but there were matches.
+   */
+  test('NoItemsReturnedButThereWereMatches', async () => {
+    /** {?Element} */
+    let textAreaElement = null;
+
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+    textAreaElement = getElement('#descriptionText');
+
+    /** @type {!SearchResponse} */
+    const fakeResponse = {
+      results: [],  // None items returned after filtering out other languages.
+      totalResults: 15,  // 15 matches.
+    };
+
+    provider.setFakeSearchResponse(fakeResponse);
+    textAreaElement.value = 'abc';
+
+    textAreaElement.dispatchEvent(new Event('input'));
+    await flushTasks();
+    // Verify that getHelpContent() has been called with query 'abc'.
+    assertEquals('abc', provider.lastQuery);
+    // Search result count should be 0.
+    assertEquals(0, page.getSearchResultCountForTesting());
+    // Popular content should be displayed (i.e. isPopularContent = true).
+    assertTrue(page.getIsPopularContentForTesting_());
   });
 
   /**
