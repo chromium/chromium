@@ -5,7 +5,11 @@
 /**
  * @fileoverview 'cr-lottie' is a wrapper around the player for lottie
  * animations. Since the player runs on a worker thread, 'cr-lottie' requires
- * the document CSP to be set to "worker-src blob: 'self';".
+ * the document CSP to be set to "worker-src blob: chrome://resources 'self';".
+ *
+ * For documents that have TrustedTypes CSP checks enabled, it also requires the
+ * document CSP to be set to "trusted-types lottie-worker-script-loader;".
+ *
  * Fires a 'cr-lottie-initialized' event when the animation was successfully
  * initialized.
  * Fires a 'cr-lottie-playing' event when the animation starts playing.
@@ -18,7 +22,6 @@
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assert, assertNotReached} from '../../js/assert_ts.js';
-import {getTrustedScriptURL} from '../../js/static_types.js';
 
 import {getTemplate} from './cr_lottie.html.js';
 
@@ -29,13 +32,8 @@ function getLottieWorkerURL(): TrustedScriptURL {
     workerLoaderPolicy =
         window.trustedTypes!.createPolicy('lottie-worker-script-loader', {
           createScriptURL: (_ignore: string) => {
-            const workerUrl =
-                getTrustedScriptURL`chrome://resources/lottie/lottie_worker.min.js`;
-            // Need to add a try-catch clause because in tests the parent
-            // element can be removed from the DOM before the importScripts()
-            // call  has finished loading, resulting in test errors.
-            const script = `try{ importScripts('${
-                workerUrl}'); } catch(e) { console.warn(e); };`;
+            const script =
+                `import 'chrome://resources/lottie/lottie_worker.min.js';`;
             // CORS blocks loading worker script from a different origin, even
             // if chrome://resources/ is added in the 'worker-src' CSP header.
             // (see https://crbug.com/1385477). Loading scripts as blob and then
@@ -153,7 +151,8 @@ export class CrLottieElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.worker_ = new Worker(getLottieWorkerURL() as unknown as URL);
+    this.worker_ =
+        new Worker(getLottieWorkerURL() as unknown as URL, {type: 'module'});
     this.worker_.onmessage = this.onMessage_.bind(this);
     this.initialize_();
   }

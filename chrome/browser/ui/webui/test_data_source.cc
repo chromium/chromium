@@ -90,7 +90,7 @@ std::string TestDataSource::GetContentSecurityPolicy(
   if (directive == network::mojom::CSPDirectiveName::ScriptSrc) {
     return "script-src chrome://* 'self';";
   } else if (directive == network::mojom::CSPDirectiveName::WorkerSrc) {
-    return "worker-src blob: 'self';";
+    return "worker-src blob: chrome://resources 'self';";
   } else if (directive ==
                  network::mojom::CSPDirectiveName::RequireTrustedTypesFor ||
              directive == network::mojom::CSPDirectiveName::TrustedTypes) {

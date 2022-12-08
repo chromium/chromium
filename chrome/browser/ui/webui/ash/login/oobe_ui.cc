@@ -225,7 +225,8 @@ void AddAssistantScreensResources(content::WebUIDataSource* source) {
   source->AddResourcePaths(
       base::make_span(kAssistantOptinResources, kAssistantOptinResourcesSize));
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 }
 
 void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
@@ -234,7 +235,8 @@ void AddMultiDeviceSetupResources(content::WebUIDataSource* source) {
   source->AddResourcePath("multidevice_setup_dark.json",
                           IDR_MULTIDEVICE_SETUP_ANIMATION_DARK);
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 }
 
 void AddDebuggerResources(content::WebUIDataSource* source) {
@@ -621,7 +623,8 @@ void OobeUI::AddOobeComponents(content::WebUIDataSource* source) {
 
   source->AddResourcePath("spinner.json", IDR_LOGIN_SPINNER_ANIMATION);
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 }
 
 CoreOobeView* OobeUI::GetCoreOobeView() {

@@ -447,7 +447,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
   // increases, set this as the default so manual override is no longer
   // required.
   html_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

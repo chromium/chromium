@@ -145,7 +145,8 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddResourcePath("multidevice_setup_light.json",
                                IDR_MULTIDEVICE_SETUP_ANIMATION_LIGHT);
   html_source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 }
 
 void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {

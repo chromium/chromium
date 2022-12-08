@@ -22,7 +22,8 @@ content::WebUIDataSource* CreateWebUITestDataSource() {
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://* 'self';");
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://* 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameAncestors,
       "frame-ancestors chrome://* 'self';");
