@@ -5363,7 +5363,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
@@ -5379,7 +5379,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5393,7 +5394,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
           "args": [],
@@ -5409,7 +5410,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5423,7 +5425,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
           "args": [],
@@ -5439,7 +5441,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5457,7 +5460,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
         "merge": {
           "args": [],
@@ -5473,7 +5476,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5491,7 +5495,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
@@ -5512,7 +5516,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5526,7 +5531,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
         "merge": {
           "args": [],
@@ -5542,7 +5547,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5560,7 +5566,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
@@ -5581,7 +5587,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5596,7 +5603,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
@@ -5612,7 +5619,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5626,7 +5634,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "merge": {
           "args": [],
@@ -5642,7 +5650,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5656,7 +5665,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
         "merge": {
           "args": [],
@@ -5672,7 +5681,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5689,7 +5699,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
         "merge": {
           "args": [],
@@ -5705,7 +5715,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5722,7 +5733,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
         "merge": {
           "args": [],
@@ -5738,7 +5749,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       },
       {
         "args": [
@@ -5754,7 +5766,7 @@
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
-        "cros_img": "kevin-public/R109-15237.0.0",
+        "cros_img": "kevin-public/R110-15271.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
         "merge": {
           "args": [],
@@ -5770,7 +5782,8 @@
           "can_use_on_swarming_builders": false
         },
         "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
+        "timeout_sec": 10800
       }
     ]
   },
