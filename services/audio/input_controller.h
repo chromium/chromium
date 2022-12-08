@@ -162,10 +162,9 @@ class InputController final : public StreamMonitor {
 
   // enum used for determining what UMA stats to report.
   enum StreamType {
-    VIRTUAL = 0,
-    HIGH_LATENCY = 1,
-    LOW_LATENCY = 2,
-    FAKE = 3,
+    HIGH_LATENCY = 0,
+    LOW_LATENCY = 1,
+    FAKE = 2,
   };
 
   InputController(const InputController&) = delete;

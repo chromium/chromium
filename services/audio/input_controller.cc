@@ -665,10 +665,6 @@ void InputController::LogCaptureStartupResult(CaptureStartupResult result) {
       UMA_HISTOGRAM_ENUMERATION("Media.HighLatencyAudioCaptureStartupSuccess",
                                 result, CAPTURE_STARTUP_RESULT_MAX + 1);
       break;
-    case VIRTUAL:
-      UMA_HISTOGRAM_ENUMERATION("Media.VirtualAudioCaptureStartupSuccess",
-                                result, CAPTURE_STARTUP_RESULT_MAX + 1);
-      break;
     default:
       break;
   }
@@ -683,10 +679,6 @@ void InputController::LogCallbackError() {
       break;
     case HIGH_LATENCY:
       UMA_HISTOGRAM_BOOLEAN("Media.Audio.Capture.HighLatencyCallbackError",
-                            error_during_callback);
-      break;
-    case VIRTUAL:
-      UMA_HISTOGRAM_BOOLEAN("Media.Audio.Capture.VirtualCallbackError",
                             error_during_callback);
       break;
     default:
