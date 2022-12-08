@@ -164,7 +164,7 @@ web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   DCHECK(provider);
-  return provider->registrar();
+  return provider->registrar_unsafe();
 }
 
 bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
