@@ -4877,8 +4877,15 @@ class DidChangeVerticalScrollDirectionObserver : public WebContentsObserver {
 
 // Tests that DidChangeVerticalScrollDirection is called only when the vertical
 // scroll direction has changed and that it includes the correct details.
+// TODO(crbug.com/1359225): This is flaky on the Mac10.14 bot.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DidChangeVerticalScrollDirection \
+  DISABLED_DidChangeVerticalScrollDirection
+#else
+#define MAYBE_DidChangeVerticalScrollDirection DidChangeVerticalScrollDirection
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       DidChangeVerticalScrollDirection) {
+                       MAYBE_DidChangeVerticalScrollDirection) {
   net::EmbeddedTestServer* server = embedded_test_server();
   EXPECT_TRUE(server->Start());
 
