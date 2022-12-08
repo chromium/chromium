@@ -517,6 +517,17 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 #pragma mark - BookmarkHomeConsumer
 
+- (void)setTableViewEditing:(BOOL)editing {
+  self.sharedState.currentlyInEditMode = editing;
+  [self setContextBarState:editing ? BookmarksContextBarBeginSelection
+                                   : BookmarksContextBarDefault];
+  self.searchController.searchBar.userInteractionEnabled = !editing;
+  self.searchController.searchBar.alpha =
+      editing ? kTableViewNavigationAlphaForDisabledSearchBar : 1.0;
+
+  self.tableView.dragInteractionEnabled = !editing;
+}
+
 - (void)refreshContents {
   if (self.sharedState.currentlyShowingSearchResults) {
     NSString* noResults = GetNSString(IDS_HISTORY_NO_SEARCH_RESULTS);
@@ -1164,19 +1175,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   controller.snackbarCommandsHandler = self.snackbarCommandsHandler;
 
   return controller;
-}
-
-// Sets the editing mode for tableView, update context bar and search state
-// accordingly.
-- (void)setTableViewEditing:(BOOL)editing {
-  self.sharedState.currentlyInEditMode = editing;
-  [self setContextBarState:editing ? BookmarksContextBarBeginSelection
-                                   : BookmarksContextBarDefault];
-  self.searchController.searchBar.userInteractionEnabled = !editing;
-  self.searchController.searchBar.alpha =
-      editing ? kTableViewNavigationAlphaForDisabledSearchBar : 1.0;
-
-  self.tableView.dragInteractionEnabled = !editing;
 }
 
 // Row selection of the tableView will be cleared after reloadData.  This

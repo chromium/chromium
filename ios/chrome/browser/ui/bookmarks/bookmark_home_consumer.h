@@ -37,6 +37,10 @@ typedef NS_ENUM(NSInteger, BookmarkHomeBackgroundStyle) {
 // Displays the table view background for the given `style`.
 - (void)updateTableViewBackgroundStyle:(BookmarkHomeBackgroundStyle)style;
 
+// Sets the editing mode for tableView, update context bar and search state
+// accordingly.
+- (void)setTableViewEditing:(BOOL)editing;
+
 // Displays the signin UI configured by `command`.
 - (void)showSignin:(ShowSigninCommand*)command;
 

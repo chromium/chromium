@@ -826,6 +826,34 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       verifyAbsenceOfBookmarkWithURL:base::SysUTF8ToNSString(firstURL.spec())];
 }
 
+// Test that when bookmark is on edit mode and all entries are deleted outside
+// of that window it automatically quits edit mode.
+- (void)testBookmarksSyncWhenAllEntriesAreCancelled {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Go in edit mode.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarkHomeTrailingButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Delete all bookmarks and folders under Mobile Bookmarks.
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"Folder 1.1"];
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"Folder 1"];
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"French URL"];
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"Second URL"];
+
+  // Check window is still in edit mode (still one bookmark/folder left).
+  [BookmarkEarlGreyUI verifyContextBarInEditMode];
+  [BookmarkEarlGrey removeBookmarkWithTitle:@"First URL"];
+
+  // Check window is no more in edit mode (no bookmark/folder left).
+  [BookmarkEarlGreyUI verifyContextBarInDefaultStateWithSelectEnabled:NO
+                                                     newFolderEnabled:YES];
+}
+
 // TODO(crbug.com/695749): Add egtests for:
 // 1. Spinner background.
 // 2. Reorder bookmarks. (make sure it won't clear the row selection on table)
