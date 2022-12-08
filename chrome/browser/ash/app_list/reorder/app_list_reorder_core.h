@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_REORDER_APP_LIST_REORDER_CORE_H_
-#define CHROME_BROWSER_UI_APP_LIST_REORDER_APP_LIST_REORDER_CORE_H_
+#ifndef CHROME_BROWSER_ASH_APP_LIST_REORDER_APP_LIST_REORDER_CORE_H_
+#define CHROME_BROWSER_ASH_APP_LIST_REORDER_APP_LIST_REORDER_CORE_H_
 
 #include <vector>
 
-#include "chrome/browser/ui/app_list/reorder/app_list_reorder_util.h"
+#include "chrome/browser/ash/app_list/reorder/app_list_reorder_util.h"
 
 namespace app_list {
 namespace reorder {
@@ -58,4 +58,4 @@ float CalculateEntropyForTest(ash::AppListSortOrder order,
 }  // namespace reorder
 }  // namespace app_list
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_REORDER_APP_LIST_REORDER_CORE_H_
+#endif  // CHROME_BROWSER_ASH_APP_LIST_REORDER_APP_LIST_REORDER_CORE_H_

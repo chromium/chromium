@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/app_list/chrome_app_list_item_manager.h"
 
-#include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "components/crx_file/id_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

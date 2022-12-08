@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_TEST_FAKE_APP_LIST_MODEL_UPDATER_H_
-#define CHROME_BROWSER_UI_APP_LIST_TEST_FAKE_APP_LIST_MODEL_UPDATER_H_
+#ifndef CHROME_BROWSER_ASH_APP_LIST_TEST_FAKE_APP_LIST_MODEL_UPDATER_H_
+#define CHROME_BROWSER_ASH_APP_LIST_TEST_FAKE_APP_LIST_MODEL_UPDATER_H_
 
 #include <memory>
 #include <string>
@@ -103,4 +103,4 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   syncer::StringOrdinal GetOemFolderPos();
 };
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_TEST_FAKE_APP_LIST_MODEL_UPDATER_H_
+#endif  // CHROME_BROWSER_ASH_APP_LIST_TEST_FAKE_APP_LIST_MODEL_UPDATER_H_

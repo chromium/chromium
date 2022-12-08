@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/test/test_app_list_controller.h"
+#include "chrome/browser/ash/app_list/test/test_app_list_controller.h"
 
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"

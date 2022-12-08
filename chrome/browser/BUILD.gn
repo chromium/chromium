@@ -8296,6 +8296,12 @@ static_library("test_support") {
       "ash/accessibility/html_test_utils.h",
       "ash/accessibility/service/fake_accessibility_service.cc",
       "ash/accessibility/service/fake_accessibility_service.h",
+      "ash/app_list/test/chrome_app_list_test_support.cc",
+      "ash/app_list/test/chrome_app_list_test_support.h",
+      "ash/app_list/test/test_app_list_controller.cc",
+      "ash/app_list/test/test_app_list_controller.h",
+      "ash/app_list/test/test_app_list_controller_delegate.cc",
+      "ash/app_list/test/test_app_list_controller_delegate.h",
       "ash/app_mode/fake_cws.cc",
       "ash/app_mode/fake_cws.h",
       "ash/arc/extensions/fake_arc_support.cc",
@@ -8344,12 +8350,6 @@ static_library("test_support") {
       "sharesheet/sharesheet_test_util.h",
       "speech/speech_recognition_test_helper.cc",
       "speech/speech_recognition_test_helper.h",
-      "ui/app_list/test/chrome_app_list_test_support.cc",
-      "ui/app_list/test/chrome_app_list_test_support.h",
-      "ui/app_list/test/test_app_list_controller.cc",
-      "ui/app_list/test/test_app_list_controller.h",
-      "ui/app_list/test/test_app_list_controller_delegate.cc",
-      "ui/app_list/test/test_app_list_controller_delegate.h",
     ]
     configs += [ "//build/config/linux/dbus" ]
     deps += [

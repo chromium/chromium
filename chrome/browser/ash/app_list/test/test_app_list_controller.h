@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_TEST_TEST_APP_LIST_CONTROLLER_H_
-#define CHROME_BROWSER_UI_APP_LIST_TEST_TEST_APP_LIST_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_APP_LIST_TEST_TEST_APP_LIST_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_APP_LIST_TEST_TEST_APP_LIST_CONTROLLER_H_
 
 #include "ash/public/cpp/app_list/app_list_controller.h"
 
@@ -58,4 +58,4 @@ class TestAppListController : public ash::AppListController {
 
 }  // namespace test
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_TEST_TEST_APP_LIST_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_APP_LIST_TEST_TEST_APP_LIST_CONTROLLER_H_

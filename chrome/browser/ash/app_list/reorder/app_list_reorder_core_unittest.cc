@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
+#include "chrome/browser/ash/app_list/reorder/app_list_reorder_core.h"
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "components/crx_file/id_util.h"
