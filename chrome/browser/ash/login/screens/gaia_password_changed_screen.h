@@ -27,6 +27,8 @@ class GaiaPasswordChangedScreen : public BaseScreen {
     MIGRATE,
   };
 
+  static std::string GetResultString(Result result);
+
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   explicit GaiaPasswordChangedScreen(
@@ -49,8 +51,6 @@ class GaiaPasswordChangedScreen : public BaseScreen {
     kMaxValue = kIncorrectOldPassword
   };
 
-  void MigrateUserData(const std::string& old_password);
-
   void Configure(const AccountId& account_id, bool after_incorrect_attempt);
 
  private:
@@ -59,6 +59,7 @@ class GaiaPasswordChangedScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
+  void MigrateUserData(const std::string& old_password);
   void CancelPasswordChangedFlow();
   void OnCookiesCleared();
 

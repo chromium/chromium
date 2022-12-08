@@ -18,11 +18,23 @@ constexpr const char kUserActionCancelLogin[] = "cancel";
 constexpr const char kUserActionResyncData[] = "resync";
 constexpr const char kUserActionMigrateUserData[] = "migrate-user-data";
 
-}  // namespace
-
-void RecordEulaScreenAction(GaiaPasswordChangedScreen::UserAction value) {
+void RecordScreenAction(GaiaPasswordChangedScreen::UserAction value) {
   base::UmaHistogramEnumeration("OOBE.GaiaPasswordChangedScreen.UserActions",
                                 value);
+}
+
+}  // namespace
+
+// static
+std::string GaiaPasswordChangedScreen::GetResultString(Result result) {
+  switch (result) {
+    case Result::CANCEL:
+      return "Cancel";
+    case Result::MIGRATE:
+      return "Migrate";
+    case Result::RESYNC:
+      return "Resync";
+  }
 }
 
 GaiaPasswordChangedScreen::GaiaPasswordChangedScreen(
@@ -52,17 +64,17 @@ void GaiaPasswordChangedScreen::Configure(const AccountId& account_id,
   account_id_ = account_id;
   show_error_ = after_incorrect_attempt;
   if (after_incorrect_attempt)
-    RecordEulaScreenAction(UserAction::kIncorrectOldPassword);
+    RecordScreenAction(UserAction::kIncorrectOldPassword);
 }
 
 void GaiaPasswordChangedScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
 
   if (action_id == kUserActionCancelLogin) {
-    RecordEulaScreenAction(UserAction::kCancel);
+    RecordScreenAction(UserAction::kCancel);
     CancelPasswordChangedFlow();
   } else if (action_id == kUserActionResyncData) {
-    RecordEulaScreenAction(UserAction::kResyncUserData);
+    RecordScreenAction(UserAction::kResyncUserData);
     // LDH will pass control to ExistingUserController to proceed with clearing
     // cryptohome.
     exit_callback_.Run(Result::RESYNC);
@@ -77,11 +89,10 @@ void GaiaPasswordChangedScreen::OnUserAction(const base::Value::List& args) {
 
 void GaiaPasswordChangedScreen::MigrateUserData(
     const std::string& old_password) {
-  RecordEulaScreenAction(UserAction::kMigrateUserData);
+  RecordScreenAction(UserAction::kMigrateUserData);
   // LDH will pass control to ExistingUserController to proceed with updating
   // cryptohome keys.
-  if (LoginDisplayHost::default_host())
-    LoginDisplayHost::default_host()->MigrateUserData(old_password);
+  LoginDisplayHost::default_host()->MigrateUserData(old_password);
 }
 
 void GaiaPasswordChangedScreen::CancelPasswordChangedFlow() {

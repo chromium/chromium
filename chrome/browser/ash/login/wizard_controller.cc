@@ -1199,8 +1199,8 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
 
 void WizardController::OnPasswordChangeScreenExit(
     GaiaPasswordChangedScreen::Result result) {
-  if (!LoginDisplayHost::default_host())
-    return;
+  OnScreenExit(GaiaPasswordChangedView::kScreenId,
+               GaiaPasswordChangedScreen::GetResultString(result));
   switch (result) {
     case GaiaPasswordChangedScreen::Result::CANCEL:
       LoginDisplayHost::default_host()->CancelPasswordChangedFlow();
