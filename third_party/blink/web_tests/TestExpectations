@@ -8102,3 +8102,6 @@ crbug.com/1396127 [ Linux ] virtual/gpu-rasterization/images/color-profile-image
 
 # Sheriff 2022-12-07
 crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
+
+# Sheriff 2022-12-08
+crbug.com/1383847 [ Linux ] virtual/exotic-color-space/images/color-profile-image-canvas.html [ Crash Failure Pass ]
