@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/manifest_constants.h"
 
@@ -134,20 +135,20 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
   }
 
   for (const auto& element : value.GetList()) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!element.GetAsDictionary(&dict)) {
+    if (!element.is_dict()) {
       error_builder.Append("expected dictionary, got %s",
                            base::Value::GetTypeName(element.type()));
       return nullptr;
     }
-    std::string event;
-    if (!dict->GetString("event", &event)) {
+    const base::Value::Dict& dict = element.GetDict();
+    const std::string* event = dict.FindString("event");
+    if (!event) {
       error_builder.Append("'event' is required");
       return nullptr;
     }
 
     Rule rule;
-    if (!Rule::Populate(*dict, &rule)) {
+    if (!Rule::Populate(element, &rule)) {
       error_builder.Append("rule failed to populate");
       return nullptr;
     }
@@ -155,7 +156,7 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
     if (!ConvertManifestRule(rule, &error_builder))
       return nullptr;
 
-    result->event_rules_map_[event].push_back(std::move(rule));
+    result->event_rules_map_[*event].push_back(std::move(rule));
   }
   return result;
 }
