@@ -5,7 +5,7 @@
 
 <body>
   <script>
-    getLCPStartTime = async () => {
+    const getLCPStartTime = async () => {
       return await new Promise(resolve => {
         new PerformanceObserver((entryList, observer) => {
           resolve(entryList.getEntries()[0].startTime);
@@ -14,9 +14,10 @@
       });
     }
 
-    getFCPStartTime = () => { return performance.getEntriesByName('first-contentful-paint')[0].startTime; }
+    const getFCPStartTime = () => {
+      return performance.getEntriesByName('first-contentful-paint')[0].startTime;
+    }
   </script>
 
-  <img src='http://b.com/images/blue.png'
-    id='image_id' />
+  <img src='http://b.com/images/blue.png' id='image_id' />
 </body>

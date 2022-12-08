@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 
-#include "base/debug/stack_trace.h"
+#include "base/check.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
@@ -85,25 +85,30 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   const AtomicString& image_id =
       image_element ? image_element->GetIdAttribute() : AtomicString();
 
-  base::TimeTicks paint_time =
-      expose_paint_time_to_api ? largest_image->paint_time : base::TimeTicks();
+  base::TimeTicks start_time = expose_paint_time_to_api
+                                   ? largest_image->paint_time
+                                   : largest_image->load_time;
 
-  if (RuntimeEnabledFeatures::ExposeRenderTimeNonTaoDelayedImageEnabled()) {
+  if (RuntimeEnabledFeatures::ExposeRenderTimeNonTaoDelayedImageEnabled() &&
+      !expose_paint_time_to_api) {
+    // For Non-Tao images, set start time to the max of FCP and load time.
     base::TimeTicks fcp =
         PaintTiming::From(*window_performance_->DomWindow()->document())
             .FirstContentfulPaintPresentation();
-
-    if (!media_timing->TimingAllowPassed() &&
-        largest_image->paint_time <= fcp) {
-      paint_time = fcp;
-    }
+    DCHECK(!fcp.is_null());
+    start_time = std::max(fcp, largest_image->load_time);
   }
+  base::TimeTicks renderTime =
+      expose_paint_time_to_api ? largest_image->paint_time : base::TimeTicks();
 
   window_performance_->OnLargestContentfulPaintUpdated(
-      paint_time, largest_image->recorded_size, largest_image->load_time,
+      /*start_time=*/start_time, /*render_time=*/renderTime,
+      /*paint_size=*/largest_image->recorded_size,
+      /*load_time=*/largest_image->load_time,
+      /*first_animated_frame_time=*/
       expose_paint_time_to_api ? largest_image->first_animated_frame_time
                                : base::TimeTicks(),
-      image_id, image_url, image_element);
+      /*id=*/image_id, /*url=*/image_url, /*element=*/image_element);
 
   // TODO: update trace value with animated frame data
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
@@ -134,9 +139,14 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
       text_node->IsInShadowTree() ? nullptr : To<Element>(text_node);
   const AtomicString& text_id =
       text_element ? text_element->GetIdAttribute() : AtomicString();
+  // Always use paint time as start time for text LCP candidate.
   window_performance_->OnLargestContentfulPaintUpdated(
-      largest_text.paint_time, largest_text.recorded_size, base::TimeTicks(),
-      base::TimeTicks(), text_id, g_empty_string, text_element);
+      /*start_time=*/largest_text.paint_time,
+      /*render_time=*/largest_text.paint_time,
+      /*paint_size=*/largest_text.recorded_size,
+      /*load_time=*/base::TimeTicks(),
+      /*first_animated_frame_time=*/base::TimeTicks(), /*id=*/text_id,
+      /*url=*/g_empty_string, /*element=*/text_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(kTraceCategories, kLCPCandidate,

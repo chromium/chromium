@@ -23,7 +23,7 @@ class LargestContentfulPaintTestBrowserTest
   LargestContentfulPaintTestBrowserTest() {
     if (GetParam()) {
       features_.InitWithFeatures(
-          /*`enabled_features`=*/
+          /*enabled_features=*/
           {blink::features::kReportFCPOnlyOnSuccessfulCommit},
           /*disabled_features=*/
           {features::kSkipCommitsIfNotSynchronizingCompositorState});

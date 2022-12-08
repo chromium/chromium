@@ -149,7 +149,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void PageVisibilityChanged() override;
 
   void OnLargestContentfulPaintUpdated(
-      base::TimeTicks paint_time,
+      base::TimeTicks start_time,
+      base::TimeTicks render_time,
       uint64_t paint_size,
       base::TimeTicks load_time,
       base::TimeTicks first_animated_frame_time,

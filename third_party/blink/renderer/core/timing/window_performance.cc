@@ -703,27 +703,21 @@ EventCounts* WindowPerformance::eventCounts() {
 }
 
 void WindowPerformance::OnLargestContentfulPaintUpdated(
-    base::TimeTicks paint_time,
+    base::TimeTicks start_time,
+    base::TimeTicks render_time,
     uint64_t paint_size,
     base::TimeTicks load_time,
     base::TimeTicks first_animated_frame_time,
     const AtomicString& id,
     const String& url,
     Element* element) {
-  base::TimeDelta render_timestamp = MonotonicTimeToTimeDelta(paint_time);
+  DOMHighResTimeStamp start_timestamp =
+      MonotonicTimeToDOMHighResTimeStamp(start_time);
+  base::TimeDelta render_timestamp = MonotonicTimeToTimeDelta(render_time);
   base::TimeDelta load_timestamp = MonotonicTimeToTimeDelta(load_time);
   base::TimeDelta first_animated_frame_timestamp =
       MonotonicTimeToTimeDelta(first_animated_frame_time);
   // TODO(yoav): Should we modify start to represent the animated frame?
-
-  // The start_timestamp is converted to DOMHighResTimeStamp which will be
-  // passed to PerformanceEntry constructor as double. This is to align the
-  // conversion to that of FCP so that both start_timestamps have the same
-  // precision.
-  DOMHighResTimeStamp start_timestamp =
-      render_timestamp.is_zero()
-          ? MonotonicTimeToDOMHighResTimeStamp(load_time)
-          : MonotonicTimeToDOMHighResTimeStamp(paint_time);
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
       start_timestamp, render_timestamp, paint_size, load_timestamp,
       first_animated_frame_timestamp, id, url, element,
