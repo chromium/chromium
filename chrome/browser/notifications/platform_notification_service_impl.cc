@@ -556,13 +556,14 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
     const absl::optional<web_app::AppId> app_id =
-        web_app_provider->registrar().FindAppWithUrlInScope(web_app_hint_url);
+        web_app_provider->registrar_unsafe().FindAppWithUrlInScope(
+            web_app_hint_url);
     if (app_id) {
       absl::optional<WebAppIconAndTitle> icon_and_title;
       icon_and_title.emplace();
 
       icon_and_title->title = base::UTF8ToUTF16(
-          web_app_provider->registrar().GetAppShortName(*app_id));
+          web_app_provider->registrar_unsafe().GetAppShortName(*app_id));
       icon_and_title->icon =
           web_app_provider->icon_manager().GetMonochromeFavicon(*app_id);
       return icon_and_title;
