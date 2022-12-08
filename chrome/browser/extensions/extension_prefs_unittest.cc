@@ -729,18 +729,19 @@ class ExtensionPrefsMigratesToLastUpdateTime : public ExtensionPrefsTest {
 
   void Verify() override {
     auto* dict = prefs()->GetExtensionPref(extension_->id());
-    std::string first_install_time;
-    std::string last_update_time;
-    std::string old_install_time;
 
     // Verify the legacy install_time key has been removed and replaced by
     // the last_update_time key. Also verify that the first_install_time key
     // has been added and has the same value as the last_update_time key.
-    EXPECT_FALSE(dict->GetString(kOldInstallTimePrefKey, &old_install_time));
-    EXPECT_TRUE(dict->GetString(kFirstInstallTimePrefKey, &first_install_time));
-    EXPECT_TRUE(dict->GetString(kLastUpdateTimePrefKey, &last_update_time));
-    EXPECT_EQ(first_install_time, time_str_);
-    EXPECT_EQ(last_update_time, time_str_);
+    EXPECT_FALSE(dict->FindString(kOldInstallTimePrefKey));
+    const std::string* first_install_time =
+        dict->FindString(kFirstInstallTimePrefKey);
+    ASSERT_TRUE(first_install_time);
+    EXPECT_EQ(*first_install_time, time_str_);
+    const std::string* last_update_time =
+        dict->FindString(kLastUpdateTimePrefKey);
+    ASSERT_TRUE(last_update_time);
+    EXPECT_EQ(*last_update_time, time_str_);
   }
 
  private:
@@ -775,11 +776,10 @@ class ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue
   }
 
   void Verify() override {
-    const base::DictionaryValue* ext =
-        prefs()->GetExtensionPref(extension_->id());
+    const base::Value::Dict* ext = prefs()->GetExtensionPref(extension_->id());
     ASSERT_TRUE(ext);
     // The pref value should be cleared.
-    EXPECT_FALSE(ext->FindIntKey("disable_reasons"));
+    EXPECT_FALSE(ext->FindInt("disable_reasons"));
   }
 
  private:

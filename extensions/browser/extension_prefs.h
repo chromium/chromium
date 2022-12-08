@@ -869,7 +869,7 @@ class ExtensionPrefs : public KeyedService {
 
   // Returns an immutable dictionary for extension |id|'s prefs, or NULL if it
   // doesn't exist.
-  const base::DictionaryValue* GetExtensionPref(const std::string& id) const;
+  const base::Value::Dict* GetExtensionPref(const std::string& id) const;
 
   // Returns an immutable base::Value for extension |id|'s prefs, or nullptr if
   // it doesn't exist.
