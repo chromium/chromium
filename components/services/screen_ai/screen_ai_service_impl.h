@@ -129,9 +129,14 @@ class ScreenAIService : public mojom::ScreenAIService,
   std::unique_ptr<LibraryFunctions> library_functions_;
 
   // mojom::ScreenAIAnnotator:
-  void Annotate(const SkBitmap& image,
-                const ui::AXTreeID& parent_tree_id,
-                AnnotationCallback callback) override;
+  void ExtractSemanticLayout(const SkBitmap& image,
+                             const ui::AXTreeID& parent_tree_id,
+                             AnnotationCallback callback) override;
+
+  // mojom::ScreenAIAnnotator:
+  void PerformOcr(const SkBitmap& image,
+                  const ui::AXTreeID& parent_tree_id,
+                  AnnotationCallback callback) override;
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
@@ -155,14 +160,26 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
+  // Common section of PerformOcr and ExtractSemanticLayout functions.
+  void PerformVisualAnnotation(const SkBitmap& image,
+                               const ui::AXTreeID& parent_tree_id,
+                               AnnotationCallback callback,
+                               bool run_ocr,
+                               bool run_layout_extraction);
+
   // Wrapper functions for task scheduler.
-  void OcrInternal(const SkBitmap& image,
-                   const ui::AXTreeID& parent_tree_id,
-                   ui::AXTreeUpdate* annotation);
+  void VisualAnnotationInternal(const SkBitmap& image,
+                                const ui::AXTreeID& parent_tree_id,
+                                bool run_ocr,
+                                bool run_layout_extraction,
+                                ui::AXTreeUpdate* annotation);
   void ExtractMainContentInternal(const ui::AXTreeUpdate& snapshot,
                                   std::vector<int32_t>* content_node_ids);
 
   // Library function calls are isolated to have specific compiler directives.
+  bool CallLibraryLayoutExtractionFunction(const SkBitmap& image,
+                                           char*& annotation_proto,
+                                           uint32_t& annotation_proto_length);
   bool CallLibraryOcrFunction(const SkBitmap& image,
                               char*& annotation_proto,
                               uint32_t& annotation_proto_length);

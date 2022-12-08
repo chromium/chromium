@@ -65,12 +65,13 @@ class AXScreenAIAnnotator : public KeyedService,
                                     gfx::Image snapshot);
 
   // Informs this instance that the Screen AI Service has finished creating the
-  // visual annotations. `parent_tree_id` is the ID of the accessibility tree
+  // semantic layout. `parent_tree_id` is the ID of the accessibility tree
   // associated with the screenshot that was sent to the Screen AI Service, and
   // `screen_ai_tree_id` is the ID of the accessibility tree that has been
   // created by the Service, containing the visual annotations.
-  void OnAnnotationPerformed(const ui::AXTreeID& parent_tree_id,
-                             const ui::AXTreeID& screen_ai_tree_id);
+  void OnSemanticLayoutExtractionPerformed(
+      const ui::AXTreeID& parent_tree_id,
+      const ui::AXTreeID& screen_ai_tree_id);
 
   // mojom::ScreenAIAnnotatorClient:
   void HandleAXTreeUpdate(const ui::AXTreeUpdate& update) override;

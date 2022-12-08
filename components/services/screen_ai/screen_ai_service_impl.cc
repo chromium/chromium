@@ -211,7 +211,8 @@ ScreenAIService::~ScreenAIService() = default;
 
 LibraryFunctions::LibraryFunctions(const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
-  VLOG(2) << "Library load result: " << library_.GetError()->ToString();
+  std::string library_error = library_.GetError()->ToString();
+  DCHECK(library_error.empty()) << library_error;
 
   // General functions.
   get_library_version_ = reinterpret_cast<GetLibraryVersionFn>(
@@ -294,11 +295,12 @@ void ScreenAIService::BindMainContentExtractor(
                                          std::move(main_content_extractor));
 }
 
-// TODO(https://crbug.com/1278249): Update mojo interface to have different
-// entry points for OCR and Layout Extraction requests and remove |Annotate|.
-void ScreenAIService::Annotate(const SkBitmap& image,
-                               const ui::AXTreeID& parent_tree_id,
-                               AnnotationCallback callback) {
+void ScreenAIService::PerformVisualAnnotation(
+    const SkBitmap& image,
+    const ui::AXTreeID& parent_tree_id,
+    AnnotationCallback callback,
+    bool run_ocr,
+    bool run_layout_extraction) {
   std::unique_ptr<ui::AXTreeUpdate> annotation =
       std::make_unique<ui::AXTreeUpdate>();
   ui::AXTreeUpdate* annotation_ptr = annotation.get();
@@ -311,9 +313,9 @@ void ScreenAIService::Annotate(const SkBitmap& image,
   // binding the task.
   task_runner_->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&ScreenAIService::OcrInternal,
+      base::BindOnce(&ScreenAIService::VisualAnnotationInternal,
                      weak_ptr_factory_.GetWeakPtr(), std::move(image),
-                     std::move(parent_tree_id),
+                     std::move(parent_tree_id), run_ocr, run_layout_extraction,
                      base::Unretained(annotation_ptr)),
       base::BindOnce(
           [](mojo::Remote<mojom::ScreenAIAnnotatorClient>* client,
@@ -331,17 +333,45 @@ void ScreenAIService::Annotate(const SkBitmap& image,
           std::move(annotation)));
 }
 
-void ScreenAIService::OcrInternal(const SkBitmap& image,
-                                  const ui::AXTreeID& parent_tree_id,
-                                  ui::AXTreeUpdate* annotation) {
+void ScreenAIService::ExtractSemanticLayout(const SkBitmap& image,
+                                            const ui::AXTreeID& parent_tree_id,
+                                            AnnotationCallback callback) {
+  PerformVisualAnnotation(std::move(image), parent_tree_id, std::move(callback),
+                          /*run_ocr=*/false,
+                          /*run_layout_extraction=*/true);
+}
+
+void ScreenAIService::PerformOcr(const SkBitmap& image,
+                                 const ui::AXTreeID& parent_tree_id,
+                                 AnnotationCallback callback) {
+  PerformVisualAnnotation(std::move(image), parent_tree_id, std::move(callback),
+                          /*run_ocr=*/true,
+                          /*run_layout_extraction=*/false);
+}
+
+void ScreenAIService::VisualAnnotationInternal(
+    const SkBitmap& image,
+    const ui::AXTreeID& parent_tree_id,
+    bool run_ocr,
+    bool run_layout_extraction,
+    ui::AXTreeUpdate* annotation) {
+  // Currently we only support either of OCR or LayoutExtraction features.
+  DCHECK_NE(run_ocr, run_layout_extraction);
   DCHECK(screen_ai_annotator_client_.is_bound());
 
   char* annotation_proto = nullptr;
   uint32_t annotation_proto_length = 0;
   // TODO(https://crbug.com/1278249): Consider adding a signature that
   // verifies the data integrity and source.
-  if (!CallLibraryOcrFunction(image, annotation_proto,
-                              annotation_proto_length)) {
+  bool result = false;
+  if (run_ocr) {
+    result = CallLibraryOcrFunction(image, annotation_proto,
+                                    annotation_proto_length);
+  } else /* if (run_layout_extraction) */ {
+    result = CallLibraryLayoutExtractionFunction(image, annotation_proto,
+                                                 annotation_proto_length);
+  }
+  if (!result) {
     DCHECK_EQ(annotation->tree_data.tree_id, ui::AXTreeIDUnknown());
     VLOG(1) << "Screen AI library could not process snapshot.";
     return;
@@ -374,6 +404,17 @@ bool ScreenAIService::CallLibraryOcrFunction(
   DCHECK(library_functions_->perform_ocr_);
   return library_functions_->perform_ocr_(image, annotation_proto,
                                           annotation_proto_length);
+}
+
+NO_SANITIZE("cfi-icall")
+bool ScreenAIService::CallLibraryLayoutExtractionFunction(
+    const SkBitmap& image,
+    char*& annotation_proto,
+    uint32_t& annotation_proto_length) {
+  DCHECK(library_functions_);
+  DCHECK(library_functions_->extract_layout_);
+  return library_functions_->extract_layout_(image, annotation_proto,
+                                             annotation_proto_length);
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,

@@ -11,21 +11,28 @@ import "skia/public/mojom/bitmap.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 
-// Main interface a client uses for Visual Annotation function of Screen AI
-// service. Each browser can have one AXScreenAIAnnotator which contains an
-// ScreenAIAnnotator.
-// All annotators of one browser profile use one ScreenAIService.
+// Main interface a client uses for visual annotation functions of the Screen AI
+// service.
 interface ScreenAIAnnotator {
+  // Receives an image, such as a screenshot or a canvas content, as well as the
+  // ID of the accessibility tree that contains the image (`parent_tree_id`).
+  // It then asks the Screen AI library to perform semantic layout extraction on
+  // the image and returns the ID of the accessibility tree which would be
+  // created by the service containing the output of the library.
+  ExtractSemanticLayout(skia.mojom.BitmapN32 image,
+    ax.mojom.AXTreeID parent_tree_id) =>
+    (ax.mojom.AXTreeID child_tree_id);
+
   // Receives an image, such as a screenshot or a page from a PDF file, as well
   // as the ID of the accessibility tree that contains the image
-  // (`parent_tree_id`). It then asks the Screen AI library to perform object
-  // recognition and OCR on the image. It returns the ID of the accessibility
-  // tree which would be created by the Service containing the output of the
-  // library.
-  Annotate(skia.mojom.BitmapN32 image,
+  // (`parent_tree_id`). It then asks the Screen AI library to perform OCR on
+  // the image. It returns the ID of the accessibility tree which would be
+  // created by the Service containing the output of the library.
+  PerformOcr(skia.mojom.BitmapN32 image,
     ax.mojom.AXTreeID parent_tree_id) =>
     (ax.mojom.AXTreeID child_tree_id);
 };
+
 // This interface sends accessibility messages from the Screen AI Service to
 // `AXScreenAIAnnotator` in the browser process in non-ChromeOS or the extension
 // in ChromeOS.
@@ -42,8 +49,6 @@ interface ScreenAIAnnotatorClient {
 interface Screen2xMainContentExtractor {
   // Receives the accessibility tree, schedules processing, and returns the main
   // content of the given tree.
-  // TODO(https://crbug.com/1278249): Add an interface for sending back the
-  // result.
   ExtractMainContent(ax.mojom.AXTreeUpdate snapshot) =>
     (array<int32> content_node_ids);
 };

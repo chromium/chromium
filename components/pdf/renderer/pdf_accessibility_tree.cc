@@ -68,11 +68,11 @@ class PdfOcrService final {
   // Sends the given image to the Screen AIService for processing.
   bool ScheduleImageProcessing(
       const chrome_pdf::AccessibilityImageInfo& image,
-      screen_ai::mojom::ScreenAIAnnotator::AnnotateCallback callback) {
+      screen_ai::mojom::ScreenAIAnnotator::PerformOcrCallback callback) {
     if (!screen_ai_annotator_.is_bound())
       return false;
-    screen_ai_annotator_->Annotate(image.image_data, parent_tree_id_,
-                                   std::move(callback));
+    screen_ai_annotator_->PerformOcr(image.image_data, parent_tree_id_,
+                                     std::move(callback));
     return true;
   }
 

@@ -124,13 +124,13 @@ void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
 
   base::UmaHistogramTimes(
       "Accessibility.ScreenAI.AnnotateScreenshotTime.Success", elapsed_time);
-  screen_ai_annotator_->Annotate(
+  screen_ai_annotator_->ExtractSemanticLayout(
       snapshot.AsBitmap(), ax_tree_id,
-      base::BindOnce(&AXScreenAIAnnotator::OnAnnotationPerformed,
+      base::BindOnce(&AXScreenAIAnnotator::OnSemanticLayoutExtractionPerformed,
                      weak_ptr_factory_.GetWeakPtr(), ax_tree_id));
 }
 
-void AXScreenAIAnnotator::OnAnnotationPerformed(
+void AXScreenAIAnnotator::OnSemanticLayoutExtractionPerformed(
     const ui::AXTreeID& parent_tree_id,
     const ui::AXTreeID& screen_ai_tree_id) {
   VLOG(2) << base::StrCat({"AXScreenAIAnnotator received tree ids: parent: ",
