@@ -103993,6 +103993,25 @@ others/histograms.xml -->
   <int value="4" label="Toolbar button"/>
 </enum>
 
+<enum name="VoteForSelecteOptionValuesEvents">
+  <int value="0" label="ClassifiedAnyField">
+    A form had a non-empty list of determined field types.
+  </int>
+  <int value="1" label="ClassifiedMoreFields">
+    The form of the first bucket had more field types classified due to the
+    AutofillVoteForSelectOptionValues experiment.
+  </int>
+  <int value="2" label="ClassifiedFieldAsCountryField">
+    The form of the first bucket had at least one country field (as in
+    &quot;country name&quot;, not as in a &quot;phone country code field&quot;).
+  </int>
+  <int value="3" label="SwitchedFromCountryToPhoneCountryCode">
+    A form in the &quot;ClassifiedFieldAsCountryField&quot; bucket hat at least
+    one country field flipped to a &quot;phone country code field&quot; due to
+    the AutofillVoteForSelectOptionValues experiment.
+  </int>
+</enum>
+
 <enum name="VPDCacheReadResult">
   <int value="0" label="Success"/>
   <int value="1" label="File missing"/>

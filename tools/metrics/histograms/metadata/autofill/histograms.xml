@@ -4561,6 +4561,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.VoteForSelecteOptionValues"
+    enum="VoteForSelecteOptionValuesEvents" expires_after="M112">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Logs the impact of the AutofillVoteForSelectOptionValues experiment. Metrics
+    are only recorded for submitted forms (not for blur votes) to prevent double
+    counting.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.WalletAddressConversionType"
     enum="AutofillWalletAddressConversionType" expires_after="2023-12-12">
   <owner>battre@chromium.org</owner>

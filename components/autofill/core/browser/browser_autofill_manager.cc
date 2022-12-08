@@ -948,7 +948,8 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
       base::BindOnce(
           &BrowserAutofillManager::DeterminePossibleFieldTypesForUpload,
           std::move(copied_profiles), std::move(copied_credit_cards),
-          last_unlocked_credit_card_cvc_, app_locale_, raw_form),
+          last_unlocked_credit_card_cvc_, app_locale_, observed_submission,
+          raw_form),
       std::move(call_after_determine_field_types));
 
   return true;
@@ -2558,11 +2559,31 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     const std::vector<CreditCard>& credit_cards,
     const std::u16string& last_unlocked_credit_card_cvc,
     const std::string& app_locale,
-    FormStructure* submitted_form) {
-  // For each field in the |submitted_form|, extract the value.  Then for each
+    bool observed_submission,
+    FormStructure* form) {
+  // Temporary helper structure for measuring the impact of
+  // autofill::features::kAutofillVoteForSelectOptionValues.
+  // TODO(crbug.com/1395740) Remove this once the feature has settled.
+  struct AutofillVoteForSelectOptionValuesMetrics {
+    // Whether kAutofillVoteForSelectOptionValues classified more fields
+    // than the original version of this function w/o
+    // kAutofillVoteForSelectOptionValuesMetrics.
+    bool classified_more_field_types = false;
+    // Whether any field types were detected and assigned to fields for the
+    // current form.
+    bool classified_any_field_types = false;
+    // Whether any field was classified as a country field.
+    bool classified_field_as_country_field = false;
+    // Whether any <select> element was reclassified from a country field
+    // to a phone country code field due to
+    // kAutofillVoteForSelectOptionValuesMetrics.
+    bool switched_from_country_to_phone_country_code = false;
+  } metrics;
+
+  // For each field in the |form|, extract the value.  Then for each
   // profile or credit card, identify any stored types that match the value.
-  for (size_t i = 0; i < submitted_form->field_count(); ++i) {
-    AutofillField* field = submitted_form->field(i);
+  for (size_t i = 0; i < form->field_count(); ++i) {
+    AutofillField* field = form->field(i);
     if (!field->possible_types().empty() && field->IsEmpty()) {
       // This is a password field in a sign-in form. Skip checking its type
       // since |field->value| is not set.
@@ -2597,25 +2618,36 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
 
     for (const AutofillProfile& profile : profiles) {
       profile.GetMatchingTypes(value, app_locale, &matching_types);
-      if (select_content)
+      if (select_content) {
+        ServerFieldTypeSet matching_types_backup = matching_types;
         profile.GetMatchingTypes(*select_content, app_locale, &matching_types);
+        if (matching_types_backup != matching_types)
+          metrics.classified_more_field_types = true;
+      }
     }
 
     // TODO(crbug/880531) set possible_types_validities for credit card too.
     for (const CreditCard& card : credit_cards) {
       card.GetMatchingTypes(value, app_locale, &matching_types);
-      if (select_content)
+      if (select_content) {
+        ServerFieldTypeSet matching_types_backup = matching_types;
         card.GetMatchingTypes(*select_content, app_locale, &matching_types);
+        if (matching_types_backup != matching_types)
+          metrics.classified_more_field_types = true;
+      }
     }
 
     // In case a select element has options like this
     //  <option value="US">+1</option>,
     // meaning that it contains a phone country code, we treat that as
     // sufficient evidence to only vote for phone country code.
+    if (matching_types.contains(ADDRESS_HOME_COUNTRY))
+      metrics.classified_field_as_country_field = true;
     if (select_content && matching_types.contains(ADDRESS_HOME_COUNTRY) &&
         MatchesRegex<kAugmentedPhoneCountryCodeRe>(*select_content)) {
       matching_types.erase(ADDRESS_HOME_COUNTRY);
       matching_types.insert(PHONE_HOME_COUNTRY_CODE);
+      metrics.switched_from_country_to_phone_country_code = true;
     }
 
     if (IsUPIVirtualPaymentAddress(value))
@@ -2623,6 +2655,9 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
 
     if (field->state_is_a_matching_type())
       matching_types.insert(ADDRESS_HOME_STATE);
+
+    if (!matching_types.empty())
+      metrics.classified_any_field_types = true;
 
     if (matching_types.empty()) {
       matching_types.insert(UNKNOWN_TYPE);
@@ -2635,8 +2670,8 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
   }
 
   // As CVCs are not stored, run special heuristics to detect CVC-like values.
-  AutofillField* cvc_field = GetBestPossibleCVCFieldForUpload(
-      *submitted_form, last_unlocked_credit_card_cvc);
+  AutofillField* cvc_field =
+      GetBestPossibleCVCFieldForUpload(*form, last_unlocked_credit_card_cvc);
   if (cvc_field) {
     ServerFieldTypeSet possible_types = cvc_field->possible_types();
     possible_types.erase(UNKNOWN_TYPE);
@@ -2644,7 +2679,32 @@ void BrowserAutofillManager::DeterminePossibleFieldTypesForUpload(
     cvc_field->set_possible_types(possible_types);
   }
 
-  DisambiguateUploadTypes(submitted_form);
+  if (observed_submission && metrics.classified_any_field_types) {
+    enum class Bucket {
+      kClassifiedAnyField = 0,
+      kClassifiedMoreFields = 1,
+      kClassifiedFieldAsCountryField = 2,
+      kSwitchedFromCountryToPhoneCountryCode = 3,
+      kMaxValue = 3
+    };
+    base::UmaHistogramEnumeration("Autofill.VoteForSelecteOptionValues",
+                                  Bucket::kClassifiedAnyField);
+    if (metrics.classified_more_field_types) {
+      base::UmaHistogramEnumeration("Autofill.VoteForSelecteOptionValues",
+                                    Bucket::kClassifiedMoreFields);
+    }
+    if (metrics.classified_field_as_country_field) {
+      base::UmaHistogramEnumeration("Autofill.VoteForSelecteOptionValues",
+                                    Bucket::kClassifiedFieldAsCountryField);
+    }
+    if (metrics.switched_from_country_to_phone_country_code) {
+      base::UmaHistogramEnumeration(
+          "Autofill.VoteForSelecteOptionValues",
+          Bucket::kSwitchedFromCountryToPhoneCountryCode);
+    }
+  }
+
+  DisambiguateUploadTypes(form);
 }
 
 // static

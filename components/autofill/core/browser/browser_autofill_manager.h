@@ -335,10 +335,11 @@ class BrowserAutofillManager : public AutofillManager,
       const std::vector<CreditCard>& credit_cards,
       const std::u16string& last_unlocked_credit_card_cvc,
       const std::string& app_locale,
-      FormStructure* submitted_form) {
-    DeterminePossibleFieldTypesForUpload(profiles, credit_cards,
-                                         last_unlocked_credit_card_cvc,
-                                         app_locale, submitted_form);
+      FormStructure* form) {
+    // For tests, the observed_submission is hardcoded to true.
+    DeterminePossibleFieldTypesForUpload(
+        profiles, credit_cards, last_unlocked_credit_card_cvc, app_locale,
+        /*observed_submission=*/true, form);
   }
 
   bool ShouldTriggerRefillForTest(const FormStructure& form_structure) {
@@ -598,7 +599,7 @@ class BrowserAutofillManager : public AutofillManager,
   bool IsFormNonSecure(const FormData& form) const;
 
   // Uses the existing personal data in |profiles| and |credit_cards| to
-  // determine possible field types for the |submitted_form|.  This is
+  // determine possible field types for the |form|.  This is
   // potentially expensive -- on the order of 50ms even for a small set of
   // |stored_data|. Hence, it should not run on the UI thread -- to avoid
   // locking up the UI -- nor on the IO thread -- to avoid blocking IPC calls.
@@ -607,7 +608,8 @@ class BrowserAutofillManager : public AutofillManager,
       const std::vector<CreditCard>& credit_cards,
       const std::u16string& last_unlocked_credit_card_cvc,
       const std::string& app_locale,
-      FormStructure* submitted_form);
+      bool observed_submission,
+      FormStructure* form);
 
   // Uses context about previous and next fields to select the appropriate type
   // for fields with ambiguous upload types.
