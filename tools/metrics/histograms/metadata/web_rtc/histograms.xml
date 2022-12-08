@@ -3809,13 +3809,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.UploadFailureNetErrorCode"
-    enum="NetErrorCodes" expires_after="2022-05-01">
+    enum="NetErrorCodes" expires_after="2023-05-01">
   <owner>toprice@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
     Network error codes for WebRTC text log upload failures. Recorded when an
-    upload attempt fails.
+    upload attempt fails. Note: The histogram was disabled between May 2022 and
+    M110, so has no data for that period.
   </summary>
 </histogram>
 
