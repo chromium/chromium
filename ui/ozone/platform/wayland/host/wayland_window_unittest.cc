@@ -233,7 +233,7 @@ class WaylandWindowTest : public WaylandTest {
       WaylandWindow* dispatching_window,
       const std::vector<WaylandWindow*>& non_dispatching_windows) {
     auto* pointer_focused_window =
-        connection_->wayland_window_manager()->GetCurrentPointerFocusedWindow();
+        connection_->window_manager()->GetCurrentPointerFocusedWindow();
 
     ASSERT_TRUE(pointer_focused_window);
     Event::DispatcherApi(&test_mouse_event_).set_target(pointer_focused_window);
@@ -247,7 +247,7 @@ class WaylandWindowTest : public WaylandTest {
       const std::vector<WaylandWindow*>& non_dispatching_windows) {
     ASSERT_LT(dispatching_windows.size(), 2u);
     auto* touch_focused_window =
-        connection_->wayland_window_manager()->GetCurrentTouchFocusedWindow();
+        connection_->window_manager()->GetCurrentTouchFocusedWindow();
     // There must be focused window to dispatch.
     if (dispatching_windows.size() == 0)
       EXPECT_FALSE(touch_focused_window);
@@ -273,8 +273,8 @@ class WaylandWindowTest : public WaylandTest {
       const std::vector<WaylandWindow*>& dispatching_windows,
       const std::vector<WaylandWindow*>& non_dispatching_windows) {
     ASSERT_LT(dispatching_windows.size(), 2u);
-    auto* keyboard_focused_window = connection_->wayland_window_manager()
-                                        ->GetCurrentKeyboardFocusedWindow();
+    auto* keyboard_focused_window =
+        connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
 
     // There must be focused window to dispatch.
     if (dispatching_windows.size() == 0)

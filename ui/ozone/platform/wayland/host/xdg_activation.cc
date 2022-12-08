@@ -81,7 +81,7 @@ XdgActivation::~XdgActivation() = default;
 
 void XdgActivation::Activate(wl_surface* surface) const {
   const WaylandWindow* const active_window =
-      connection_->wayland_window_manager()->GetCurrentActiveWindow();
+      connection_->window_manager()->GetCurrentActiveWindow();
   if (!active_window) {
     LOG(WARNING) << "Cannot activate a window because no active windows found!";
     return;

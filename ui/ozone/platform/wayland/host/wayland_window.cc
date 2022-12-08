@@ -74,7 +74,7 @@ WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
       wayland_overlay_delegation_enabled_(connection->viewporter() &&
                                           IsWaylandOverlayDelegationEnabled()),
       accelerated_widget_(
-          connection->wayland_window_manager()->AllocateAcceleratedWidget()),
+          connection->window_manager()->AllocateAcceleratedWidget()),
       ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   // Set a class property key, which allows |this| to be used for drag action.
   SetWmDragHandler(this, this);
@@ -87,15 +87,15 @@ WaylandWindow::~WaylandWindow() {
   PlatformEventSource::GetInstance()->RemovePlatformEventDispatcher(this);
 
   if (wayland_overlay_delegation_enabled_) {
-    connection_->wayland_window_manager()->RemoveSubsurface(
-        GetWidget(), primary_subsurface_.get());
+    connection_->window_manager()->RemoveSubsurface(GetWidget(),
+                                                    primary_subsurface_.get());
   }
   for (const auto& widget_subsurface : wayland_subsurfaces()) {
-    connection_->wayland_window_manager()->RemoveSubsurface(
-        GetWidget(), widget_subsurface.get());
+    connection_->window_manager()->RemoveSubsurface(GetWidget(),
+                                                    widget_subsurface.get());
   }
   if (root_surface_)
-    connection_->wayland_window_manager()->RemoveWindow(GetWidget());
+    connection_->window_manager()->RemoveWindow(GetWidget());
 
   // This might have already been hidden and another window has been shown.
   // Thus, the parent will have another child window. Do not reset it.
@@ -207,13 +207,13 @@ void WaylandWindow::OnPointerFocusChanged(bool focused) {
 }
 
 bool WaylandWindow::HasPointerFocus() const {
-  return this == connection_->wayland_window_manager()
-                     ->GetCurrentPointerFocusedWindow();
+  return this ==
+         connection_->window_manager()->GetCurrentPointerFocusedWindow();
 }
 
 bool WaylandWindow::HasKeyboardFocus() const {
-  return this == connection_->wayland_window_manager()
-                     ->GetCurrentKeyboardFocusedWindow();
+  return this ==
+         connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
 }
 
 void WaylandWindow::RemoveEnteredOutput(uint32_t output_id) {
@@ -357,18 +357,17 @@ void WaylandWindow::SetCapture() {
   // this specific window has grabbed the events, and they will be rerouted in
   // WaylandWindow::DispatchEvent method.
   if (!HasCapture())
-    connection_->wayland_window_manager()->GrabLocatedEvents(this);
+    connection_->window_manager()->GrabLocatedEvents(this);
 }
 
 void WaylandWindow::ReleaseCapture() {
   if (HasCapture())
-    connection_->wayland_window_manager()->UngrabLocatedEvents(this);
+    connection_->window_manager()->UngrabLocatedEvents(this);
   // See comment in SetCapture() for details on wayland and grabs.
 }
 
 bool WaylandWindow::HasCapture() const {
-  return connection_->wayland_window_manager()->located_events_grabber() ==
-         this;
+  return connection_->window_manager()->located_events_grabber() == this;
 }
 
 void WaylandWindow::SetFullscreen(bool fullscreen, int64_t target_display_id) {}
@@ -474,7 +473,7 @@ uint32_t WaylandWindow::DispatchEvent(const PlatformEvent& native_event) {
 
   if (event->IsLocatedEvent()) {
     auto* event_grabber =
-        connection_->wayland_window_manager()->located_events_grabber();
+        connection_->window_manager()->located_events_grabber();
     auto* root_parent_window = GetRootParentWindow();
 
     // We must reroute the events to the event grabber iff these windows belong
@@ -662,7 +661,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   opacity_ = properties.opacity;
   type_ = properties.type;
 
-  connection_->wayland_window_manager()->AddWindow(GetWidget(), this);
+  connection_->window_manager()->AddWindow(GetWidget(), this);
 
   if (!OnInitialize(std::move(properties)))
     return false;
@@ -672,8 +671,8 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
         std::make_unique<WaylandSubsurface>(connection_, this);
     if (!primary_subsurface_->surface())
       return false;
-    connection_->wayland_window_manager()->AddSubsurface(
-        GetWidget(), primary_subsurface_.get());
+    connection_->window_manager()->AddSubsurface(GetWidget(),
+                                                 primary_subsurface_.get());
   }
 
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
@@ -769,8 +768,7 @@ bool WaylandWindow::RequestSubsurface() {
   auto subsurface = std::make_unique<WaylandSubsurface>(connection_, this);
   if (!subsurface->surface())
     return false;
-  connection_->wayland_window_manager()->AddSubsurface(GetWidget(),
-                                                       subsurface.get());
+  connection_->window_manager()->AddSubsurface(GetWidget(), subsurface.get());
   subsurface_stack_above_.push_back(subsurface.get());
   auto result = wayland_subsurfaces_.emplace(std::move(subsurface));
   DCHECK(result.second);

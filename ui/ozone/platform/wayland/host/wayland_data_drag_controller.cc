@@ -93,7 +93,7 @@ WaylandDataDragController::WaylandDataDragController(
     : connection_(connection),
       data_device_manager_(data_device_manager),
       data_device_(data_device_manager->GetDevice()),
-      window_manager_(connection->wayland_window_manager()),
+      window_manager_(connection->window_manager()),
       pointer_delegate_(pointer_delegate),
       touch_delegate_(touch_delegate) {
   DCHECK(connection_);

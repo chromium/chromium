@@ -1048,7 +1048,7 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithCorrectSerialForDragSource) {
   OSExchangeData os_exchange_data;
   os_exchange_data.SetString(sample_text_for_dnd());
 
-  auto* const window_manager = connection_->wayland_window_manager();
+  auto* const window_manager = connection_->window_manager();
   ASSERT_FALSE(window_manager->GetCurrentPointerFocusedWindow());
   ASSERT_FALSE(window_manager->GetCurrentTouchFocusedWindow());
 

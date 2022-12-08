@@ -295,7 +295,7 @@ display::Display WaylandScreen::GetPrimaryDisplay() const {
 
 display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
-  auto* window = connection_->wayland_window_manager()->GetWindow(widget);
+  auto* window = connection_->window_manager()->GetWindow(widget);
   // A window might be destroyed by this time on shutting down the browser.
   if (!window)
     return GetPrimaryDisplay();
@@ -340,8 +340,7 @@ gfx::Point WaylandScreen::GetCursorScreenPoint() const {
   // If a pointer is located in any of the existing wayland windows, return
   // the last known cursor position.
   auto* cursor_position = connection_->wayland_cursor_position();
-  if (connection_->wayland_window_manager()
-          ->GetCurrentPointerOrTouchFocusedWindow() &&
+  if (connection_->window_manager()->GetCurrentPointerOrTouchFocusedWindow() &&
       cursor_position)
     return cursor_position->GetCursorSurfacePoint();
 
@@ -349,8 +348,7 @@ gfx::Point WaylandScreen::GetCursorScreenPoint() const {
   // outside of largest window bounds.
   // TODO(oshima): Change this for the case that screen coordinates is
   // available.
-  auto* window =
-      connection_->wayland_window_manager()->GetWindowWithLargestBounds();
+  auto* window = connection_->window_manager()->GetWindowWithLargestBounds();
   DCHECK(window);
   const gfx::Rect bounds = window->GetBoundsInDIP();
   return gfx::Point(bounds.width() + 10, bounds.height() + 10);
@@ -360,8 +358,8 @@ gfx::AcceleratedWidget WaylandScreen::GetAcceleratedWidgetAtScreenPoint(
     const gfx::Point& point) const {
   // It is safe to check only for focused windows and test if they contain the
   // point or not.
-  auto* window = connection_->wayland_window_manager()
-                     ->GetCurrentPointerOrTouchFocusedWindow();
+  auto* window =
+      connection_->window_manager()->GetCurrentPointerOrTouchFocusedWindow();
   if (window && window->GetBoundsInDIP().Contains(point))
     return window->GetWidget();
   return gfx::kNullAcceleratedWidget;
@@ -436,7 +434,7 @@ bool WaylandScreen::SetScreenSaverSuspended(bool suspend) {
     // We assume that the idle lock is initiated by the user, and therefore the
     // surface that we should use is the one owned by the window that is focused
     // currently.
-    const auto* window_manager = connection_->wayland_window_manager();
+    const auto* window_manager = connection_->window_manager();
     DCHECK(window_manager);
     const auto* current_window = window_manager->GetCurrentFocusedWindow();
     if (!current_window) {

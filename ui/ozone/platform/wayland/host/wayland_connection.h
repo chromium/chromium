@@ -196,9 +196,7 @@ class WaylandConnection {
     return zcr_touchpad_haptics_.get();
   }
 
-  WaylandWindowManager* wayland_window_manager() {
-    return &wayland_window_manager_;
-  }
+  WaylandWindowManager* window_manager() { return &window_manager_; }
 
   WaylandBufferFactory* wayland_buffer_factory() const {
     return wayland_buffer_factory_.get();
@@ -390,7 +388,7 @@ class WaylandConnection {
   wl::Object<zxdg_output_manager_v1> xdg_output_manager_;
 
   // Manages Wayland windows.
-  WaylandWindowManager wayland_window_manager_{this};
+  WaylandWindowManager window_manager_{this};
 
   // Event source instance. Must be declared before input objects so it
   // outlives them so thus being able to properly handle their destruction.

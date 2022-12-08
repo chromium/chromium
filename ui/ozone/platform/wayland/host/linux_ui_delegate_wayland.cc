@@ -32,8 +32,7 @@ LinuxUiBackend LinuxUiDelegateWayland::GetBackend() const {
 bool LinuxUiDelegateWayland::ExportWindowHandle(
     gfx::AcceleratedWidget parent,
     base::OnceCallback<void(const std::string&)> callback) {
-  auto* parent_window =
-      connection_->wayland_window_manager()->GetWindow(parent);
+  auto* parent_window = connection_->window_manager()->GetWindow(parent);
   auto* foreign = connection_->xdg_foreign();
   if (!parent_window || !foreign)
     return false;

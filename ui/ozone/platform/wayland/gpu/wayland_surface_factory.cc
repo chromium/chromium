@@ -113,8 +113,7 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
       !connection_)
     return nullptr;
 
-  WaylandWindow* window =
-      connection_->wayland_window_manager()->GetWindow(widget);
+  WaylandWindow* window = connection_->window_manager()->GetWindow(widget);
   if (!window)
     return nullptr;
 

@@ -205,7 +205,7 @@ bool WaylandConnection::Initialize() {
   // estabilished, initialize the event source and input objects.
   DCHECK(!event_source_);
   event_source_ = std::make_unique<WaylandEventSource>(
-      display(), event_queue_.get(), wayland_window_manager(), this);
+      display(), event_queue_.get(), window_manager(), this);
 
   // Create the buffer factory before registry listener is set so that shm, drm,
   // zwp_linux_dmabuf objects are able to be stored.

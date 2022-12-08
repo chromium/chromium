@@ -18,8 +18,7 @@ XDGSurfaceWrapperImpl::XDGSurfaceWrapperImpl(WaylandWindow* wayland_window,
 
 XDGSurfaceWrapperImpl::~XDGSurfaceWrapperImpl() {
   is_configured_ = false;
-  connection_->wayland_window_manager()->NotifyWindowConfigured(
-      wayland_window_);
+  connection_->window_manager()->NotifyWindowConfigured(wayland_window_);
 }
 
 bool XDGSurfaceWrapperImpl::Initialize() {
@@ -49,8 +48,7 @@ void XDGSurfaceWrapperImpl::AckConfigure(uint32_t serial) {
   xdg_surface_ack_configure(xdg_surface_.get(), serial);
 
   is_configured_ = true;
-  connection_->wayland_window_manager()->NotifyWindowConfigured(
-      wayland_window_);
+  connection_->window_manager()->NotifyWindowConfigured(wayland_window_);
 }
 
 bool XDGSurfaceWrapperImpl::IsConfigured() {

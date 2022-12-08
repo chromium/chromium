@@ -300,7 +300,7 @@ TEST_P(WaylandClipboardTest, WriteToClipboard) {
         SendTouchUp();
       })};
 
-  auto* window_manager = connection_->wayland_window_manager();
+  auto* window_manager = connection_->window_manager();
 
   // Triggering copy on touch-down event.
   for (auto send_input_event : send_input_event_closures) {

@@ -127,11 +127,11 @@ void WaylandTestBase::DisableSyncOnTearDown() {
 }
 
 void WaylandTestBase::SetPointerFocusedWindow(WaylandWindow* window) {
-  connection_->wayland_window_manager()->SetPointerFocusedWindow(window);
+  connection_->window_manager()->SetPointerFocusedWindow(window);
 }
 
 void WaylandTestBase::SetKeyboardFocusedWindow(WaylandWindow* window) {
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(window);
+  connection_->window_manager()->SetKeyboardFocusedWindow(window);
 }
 
 void WaylandTestBase::SendConfigureEvent(uint32_t surface_id,

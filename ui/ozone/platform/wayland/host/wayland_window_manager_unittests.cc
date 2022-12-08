@@ -33,7 +33,7 @@ class WaylandWindowManagerTest : public WaylandTest {
   void SetUp() override {
     WaylandTest::SetUp();
 
-    manager_ = connection_->wayland_window_manager();
+    manager_ = connection_->window_manager();
     ASSERT_TRUE(manager_);
   }
 
@@ -84,7 +84,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentFocusedWindow) {
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
   // When window is shown, it automatically gets keyboard focus. Reset it.
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+  connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
 
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
@@ -135,7 +135,7 @@ TEST_P(WaylandWindowManagerTest, GetCurrentKeyboardFocusedWindow) {
   auto window1 = CreateWaylandWindowWithParams(PlatformWindowType::kWindow,
                                                kDefaultBounds, &delegate);
   // When window is shown, it automatically gets keyboard focus. Reset it.
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+  connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
 
   wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 

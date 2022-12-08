@@ -261,7 +261,7 @@ class WaylandInputMethodContextTest : public WaylandTestSimple {
     wl::SyncDisplay(connection_->display_wrapper(), *connection_->display());
 
     // Unset Keyboard focus.
-    connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+    connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
 
     PostToServerAndWait([](wl::TestWaylandServerThread* server) {
       ASSERT_TRUE(server->text_input_manager_v1()->text_input());
@@ -311,8 +311,7 @@ TEST_F(WaylandInputMethodContextTest, ActivateDeactivate) {
     EXPECT_CALL(*zwp_text_input, ShowInputPanel());
   });
 
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(
-      window_.get());
+  connection_->window_manager()->SetKeyboardFocusedWindow(window_.get());
   connection_->Flush();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -323,7 +322,7 @@ TEST_F(WaylandInputMethodContextTest, ActivateDeactivate) {
     EXPECT_CALL(*zwp_text_input, Deactivate());
   });
 
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+  connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
   connection_->Flush();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
@@ -350,8 +349,7 @@ TEST_F(WaylandInputMethodContextTest, ActivateDeactivate) {
     EXPECT_CALL(*zwp_text_input, ShowInputPanel()).Times(0);
   });
 
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(
-      window_.get());
+  connection_->window_manager()->SetKeyboardFocusedWindow(window_.get());
   connection_->Flush();
 
   PostToServerAndWait([id = surface_id_](wl::TestWaylandServerThread* server) {
@@ -387,7 +385,7 @@ TEST_F(WaylandInputMethodContextTest, ActivateDeactivate) {
     EXPECT_CALL(*zwp_text_input, Deactivate()).Times(0);
   });
 
-  connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
+  connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
   connection_->Flush();
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {

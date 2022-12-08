@@ -77,7 +77,7 @@ class WaylandDragDropTest : public WaylandTest {
   void ScheduleTestTask(base::OnceClosure test_task);
 
   WaylandWindowManager* window_manager() const {
-    return connection_->wayland_window_manager();
+    return connection_->window_manager();
   }
 
  private:

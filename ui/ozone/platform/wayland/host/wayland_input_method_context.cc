@@ -129,7 +129,7 @@ WaylandInputMethodContext::WaylandInputMethodContext(
       key_delegate_(key_delegate),
       ime_delegate_(ime_delegate),
       text_input_(nullptr) {
-  connection_->wayland_window_manager()->AddObserver(this);
+  connection_->window_manager()->AddObserver(this);
   Init();
 }
 
@@ -138,7 +138,7 @@ WaylandInputMethodContext::~WaylandInputMethodContext() {
     DismissVirtualKeyboard();
     text_input_->Deactivate();
   }
-  connection_->wayland_window_manager()->RemoveObserver(this);
+  connection_->window_manager()->RemoveObserver(this);
 }
 
 void WaylandInputMethodContext::Init(bool initialize_for_testing) {
@@ -703,9 +703,9 @@ void WaylandInputMethodContext::MaybeUpdateActivated(
     return;
 
   WaylandWindow* window =
-      connection_->wayland_window_manager()->GetCurrentKeyboardFocusedWindow();
+      connection_->window_manager()->GetCurrentKeyboardFocusedWindow();
   if (!window && !connection_->seat()->keyboard())
-    window = connection_->wayland_window_manager()->GetCurrentActiveWindow();
+    window = connection_->window_manager()->GetCurrentActiveWindow();
   // Activate Wayland IME only if 1) InputMethod in Chrome has some
   // TextInputClient connected, and 2) the actual keyboard focus of Wayland
   // is given to Chrome, which is notified via wl_keyboard::enter.

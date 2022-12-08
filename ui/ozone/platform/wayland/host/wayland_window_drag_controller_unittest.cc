@@ -1386,7 +1386,7 @@ TEST_P(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
 
 TEST_P(WaylandWindowDragControllerTest, GetSerialAndOrigin) {
   auto& serial_tracker = connection_->serial_tracker();
-  auto& window_manager = *connection_->wayland_window_manager();
+  auto& window_manager = *connection_->window_manager();
 
   window_manager.SetPointerFocusedWindow(nullptr);
   window_manager.SetTouchFocusedWindow(nullptr);

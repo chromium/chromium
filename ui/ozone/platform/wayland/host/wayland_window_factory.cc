@@ -19,7 +19,7 @@ namespace {
 
 WaylandWindow* GetParentWindow(WaylandConnection* connection,
                                gfx::AcceleratedWidget widget) {
-  return connection->wayland_window_manager()->GetWindow(widget);
+  return connection->window_manager()->GetWindow(widget);
 }
 
 }  // namespace
