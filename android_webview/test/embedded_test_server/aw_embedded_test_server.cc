@@ -217,26 +217,22 @@ std::unique_ptr<HttpResponse> HandleImageOnloadHtml(
   return std::move(http_response);
 }
 
-// /client-hints-header?accept-ch=ACCEPT-CH
-// Returns the response with the requested ACCEPT-CH headers set
-// and all client hint request headers reflected into the response.
-std::unique_ptr<HttpResponse> HandleClientHintsHeaderResponse(
-    const HttpRequest& request) {
-  if (!ShouldHandle(request, "/client-hints-header")) {
-    return nullptr;
-  }
-  GURL request_url = request.GetURL();
-  RequestQuery query = ParseQuery(request_url);
+std::unique_ptr<HttpResponse> HandleClientHintsHeaderResponseHelper(
+    const HttpRequest& request,
+    const base::StringPiece& accept_ch,
+    const base::StringPiece& critical_ch) {
+  // Setup basic response.
   std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse);
   http_response->set_content_type("text/html");
   http_response->AddCustomHeader("Cache-Control", "no-cache, no-store");
 
-  // Set Accept-CH header.
-  const auto& accept_ch = query.find("accept-ch");
-  if (accept_ch == query.end()) {
-    return nullptr;
+  // Add relevant headers.
+  if (accept_ch.size()) {
+    http_response->AddCustomHeader("Accept-CH", accept_ch);
   }
-  http_response->AddCustomHeader("Accept-CH", accept_ch->second.front());
+  if (critical_ch.size()) {
+    http_response->AddCustomHeader("Critical-CH", critical_ch);
+  }
 
   // Reflect any client hint headers in the request.
   std::string client_hint_dict;
@@ -259,6 +255,46 @@ std::unique_ptr<HttpResponse> HandleClientHintsHeaderResponse(
   return std::move(http_response);
 }
 
+// /client-hints-header?accept-ch=ACCEPT-CH
+// Returns the response with the requested ACCEPT-CH headers set
+// and all client hint request headers reflected into the response.
+std::unique_ptr<HttpResponse> HandleClientHintsHeaderResponse(
+    const HttpRequest& request) {
+  if (!ShouldHandle(request, "/client-hints-header")) {
+    return nullptr;
+  }
+  GURL request_url = request.GetURL();
+  RequestQuery query = ParseQuery(request_url);
+  const auto& accept_ch = query.find("accept-ch");
+  if (accept_ch == query.end()) {
+    return nullptr;
+  }
+  return HandleClientHintsHeaderResponseHelper(request,
+                                               accept_ch->second.front(), "");
+}
+
+// /critical-client-hints-header?accept-ch=ACCEPT-CH&critical-ch=CRITICAL-CH
+// Returns the response with the requested ACCEPT-CH/CRITICAL-CH headers set
+// and all client hint request headers reflected into the response.
+std::unique_ptr<HttpResponse> HandleCriticalClientHintsHeaderResponse(
+    const HttpRequest& request) {
+  if (!ShouldHandle(request, "/critical-client-hints-header")) {
+    return nullptr;
+  }
+  GURL request_url = request.GetURL();
+  RequestQuery query = ParseQuery(request_url);
+  const auto& accept_ch = query.find("accept-ch");
+  if (accept_ch == query.end()) {
+    return nullptr;
+  }
+  const auto& critical_ch = query.find("critical-ch");
+  if (critical_ch == query.end()) {
+    return nullptr;
+  }
+  return HandleClientHintsHeaderResponseHelper(
+      request, accept_ch->second.front(), critical_ch->second.front());
+}
+
 }  // namespace
 
 // static
@@ -270,7 +306,8 @@ ScopedJavaLocalRef<jlongArray> JNI_AwEmbeddedTestServerImpl_GetHandlers(
       reinterpret_cast<int64_t>(&HandleServerRedirectEchoHeader),
       reinterpret_cast<int64_t>(&HandleSetImageResponse),
       reinterpret_cast<int64_t>(&HandleImageOnloadHtml),
-      reinterpret_cast<int64_t>(&HandleClientHintsHeaderResponse)};
+      reinterpret_cast<int64_t>(&HandleClientHintsHeaderResponse),
+      reinterpret_cast<int64_t>(&HandleCriticalClientHintsHeaderResponse)};
   return base::android::ToJavaLongArray(env, handlers);
 }
 

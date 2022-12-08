@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Test suite for AwClientHintsControllerDelegate.
- * TODO(crbug.com/921655): Test Critical-CH header.
  */
 @DoNotBatch(reason = "These tests conflict with each other.")
 @RunWith(AwJUnit4ClassRunner.class)
@@ -154,6 +153,50 @@ public class ClientHintsTest {
         // This client hint isn't sent when data-saver is off.
         Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("save-data"));
         Assert.assertEquals("no-preference", jsonObject.getString("sec-ch-prefers-reduced-motion"));
+
+        // Cleanup after test.
+        clearCookies();
+        server.stopAndDestroyServer();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
+            ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void
+    testCriticalClientHints() throws Throwable {
+        // Initial test setup.
+        final TestAwContentsClient contentsClient = new TestAwContentsClient();
+        final AwContents contents =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient)
+                        .getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(contents);
+        contents.getSettings().setJavaScriptEnabled(true);
+        final AwEmbeddedTestServer server = AwEmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getTargetContext());
+
+        // First we verify that sec-ch-device-memory (critical) is returned on the first load.
+        String url = server.getURL("/critical-client-hints-header?accept-ch=sec-ch-device-memory&"
+                + "critical-ch=sec-ch-device-memory");
+        loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
+        validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
+        validateHeadersFromJSON(contents, contentsClient, "device-memory", false);
+
+        // Second we verify that device-memory (not critical) won't cause a reload.
+        url = server.getURL(
+                "/critical-client-hints-header?accept-ch=sec-ch-device-memory,device-memory&"
+                + "critical-ch=sec-ch-device-memory");
+        loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
+        validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
+        validateHeadersFromJSON(contents, contentsClient, "device-memory", false);
+
+        // Third we verify that device-memory is returned on the final load even with no request.
+        url = server.getURL("/critical-client-hints-header?accept-ch=sec-ch-device-memory&"
+                + "critical-ch=sec-ch-device-memory");
+        loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
+        validateHeadersFromJSON(contents, contentsClient, "sec-ch-device-memory", true);
+        validateHeadersFromJSON(contents, contentsClient, "device-memory", true);
 
         // Cleanup after test.
         clearCookies();
