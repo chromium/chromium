@@ -267,7 +267,9 @@ void GPU::RequestAdapterImpl(ScriptState* script_state,
             // adapter
             // TODO(crbug.com/973017): Collect GPU info and surface context
             // creation error.
-            resolver->Resolve(v8::Null(script_state->GetIsolate()));
+            gpu->OnRequestAdapterCallback(
+                script_state, options, resolver, WGPURequestAdapterStatus_Error,
+                0, "Failed to create WebGPU Context Provider");
           }
         },
         WrapPersistent(this), WrapPersistent(script_state),
