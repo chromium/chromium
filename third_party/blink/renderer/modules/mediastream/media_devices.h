@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver_with_tracker.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -39,17 +38,6 @@ class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
 class UserMediaStreamConstraints;
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class EnumerateDevicesResult {
-  kOk = 0,
-  kUnknownError = 1,
-  kErrorCaptureServiceCrash = 2,
-  kErrorMediaDevicesDispatcherHostDisconnected = 3,
-  kTimedOut = 4,
-  kMaxValue = kTimedOut
-};
 
 class MODULES_EXPORT MediaDevices final
     : public EventTargetWithInlineData,
@@ -145,9 +133,8 @@ class MODULES_EXPORT MediaDevices final
   void DispatchScheduledEvents();
   void StartObserving();
   void StopObserving();
-  void DevicesEnumerated(
-      ScriptPromiseResolverWithTracker<EnumerateDevicesResult>* result_tracker,
-      mojom::blink::EnumerationResponsePtr response);
+  void DevicesEnumerated(ScriptPromiseResolver* resolver,
+                         mojom::blink::EnumerationResponsePtr response);
   void OnDispatcherHostConnectionError();
   mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
 
@@ -178,8 +165,7 @@ class MODULES_EXPORT MediaDevices final
   struct RequestMetadata {
     base::TimeTicks start_time;
   };
-  HeapHashMap<Member<ScriptPromiseResolverWithTracker<EnumerateDevicesResult>>,
-              RequestMetadata>
+  HeapHashMap<Member<ScriptPromiseResolver>, RequestMetadata>
       enumerate_device_requests_;
 
 #if !BUILDFLAG(IS_ANDROID)

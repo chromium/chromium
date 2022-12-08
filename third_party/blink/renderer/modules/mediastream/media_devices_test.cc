@@ -351,18 +351,6 @@ class MediaDevicesTest : public PageTestBase {
     return scoped_feature_list_;
   }
 
-  void ExpectEnumerateDevicesHistogramReport(
-      EnumerateDevicesResult expected_result) {
-    histogram_tester_.ExpectTotalCount(
-        "Media.MediaDevices.EnumerateDevices.Result", 1);
-    histogram_tester_.ExpectUniqueSample(
-        "Media.MediaDevices.EnumerateDevices.Result", expected_result, 1);
-    histogram_tester_.ExpectTotalCount(
-        "Media.MediaDevices.EnumerateDevices.Latency", 1);
-    // Legacy latency histogram.
-    histogram_tester_.ExpectTotalCount(kEnumerateDevicesLatencyHistogram, 1);
-  }
-
  private:
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<MockMediaDevicesDispatcherHost> dispatcher_host_;
@@ -373,7 +361,6 @@ class MediaDevicesTest : public PageTestBase {
   bool listener_connection_error_ = false;
   Persistent<MediaDevices> media_devices_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  HistogramTester histogram_tester_;
 };
 
 TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
@@ -393,6 +380,7 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
 
 TEST_F(MediaDevicesTest, EnumerateDevices) {
   V8TestingScope scope;
+  HistogramTester histogram_tester;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
       &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
@@ -404,7 +392,7 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
   EXPECT_TRUE(devices_enumerated());
   EXPECT_EQ(7u, device_infos().size());
 
-  ExpectEnumerateDevicesHistogramReport(EnumerateDevicesResult::kOk);
+  histogram_tester.ExpectTotalCount(kEnumerateDevicesLatencyHistogram, 1);
 
   // Audio input device with matched output ID.
   Member<MediaDeviceInfo> device = device_infos()[0];
@@ -462,6 +450,7 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
 
 TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   V8TestingScope scope;
+  HistogramTester histogram_tester;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
       &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
@@ -481,8 +470,7 @@ TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   EXPECT_TRUE(dispatcher_host_connection_error());
   EXPECT_FALSE(devices_enumerated());
 
-  ExpectEnumerateDevicesHistogramReport(
-      EnumerateDevicesResult::kErrorMediaDevicesDispatcherHostDisconnected);
+  histogram_tester.ExpectTotalCount(kEnumerateDevicesLatencyHistogram, 1);
 }
 
 TEST_F(MediaDevicesTest, SetCaptureHandleConfigAfterConnectionError) {
@@ -527,7 +515,6 @@ TEST_F(MediaDevicesTest, EnumerateDevicesBeforeConnectionError) {
   platform()->RunUntilIdle();
   EXPECT_TRUE(dispatcher_host_connection_error());
   EXPECT_TRUE(devices_enumerated());
-  ExpectEnumerateDevicesHistogramReport(EnumerateDevicesResult::kOk);
 }
 
 TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
@@ -952,6 +939,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
 
 TEST_F(MediaDevicesTest, EnumerateDevicesFailedResultCode) {
   V8TestingScope scope;
+  HistogramTester histogram_tester;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
       &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
@@ -968,7 +956,7 @@ TEST_F(MediaDevicesTest, EnumerateDevicesFailedResultCode) {
   EXPECT_FALSE(dispatcher_host_connection_error());
   EXPECT_FALSE(devices_enumerated());
 
-  ExpectEnumerateDevicesHistogramReport(EnumerateDevicesResult::kUnknownError);
+  histogram_tester.ExpectTotalCount(kEnumerateDevicesLatencyHistogram, 1);
 }
 
 }  // namespace blink

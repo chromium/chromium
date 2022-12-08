@@ -32558,14 +32558,6 @@ Called by update_document_policy_enum.py.-->
   </int>
 </enum>
 
-<enum name="EnumerateDevicesResult">
-  <int value="0" label="OK"/>
-  <int value="1" label="Unknown error"/>
-  <int value="2" label="Error - Capturer Service crashed"/>
-  <int value="3" label="Error - MediaDevicesDispatcherHost disconnected"/>
-  <int value="4" label="No result within timout"/>
-</enum>
-
 <enum name="EquivalentEffectiveAndWhiteListed">
   <int value="0" label="Different effective and whitelisted touch actions"/>
   <int value="1" label="Equivalent effective and whitelisted touch actions"/>

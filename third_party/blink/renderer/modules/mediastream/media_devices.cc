@@ -317,13 +317,10 @@ ScriptPromise MediaDevices::enumerateDevices(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* result_tracker = MakeGarbageCollected<
-      ScriptPromiseResolverWithTracker<EnumerateDevicesResult>>(
-      script_state, "Media.MediaDevices.EnumerateDevices", base::Seconds(4));
-  const ScriptPromise promise = result_tracker->Promise();
-
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
   enumerate_device_requests_.Set(
-      result_tracker, RequestMetadata{.start_time = base::TimeTicks::Now()});
+      resolver, RequestMetadata{.start_time = base::TimeTicks::Now()});
 
   LocalFrame* frame = LocalDOMWindow::From(script_state)->GetFrame();
   GetDispatcherHost(frame).EnumerateDevices(
@@ -331,7 +328,7 @@ ScriptPromise MediaDevices::enumerateDevices(ScriptState* script_state,
       true /* request_video_input_capabilities */,
       true /* request_audio_input_capabilities */,
       WTF::BindOnce(&MediaDevices::DevicesEnumerated, WrapPersistent(this),
-                    WrapPersistent(result_tracker)));
+                    WrapPersistent(resolver)));
   return promise;
 }
 
@@ -764,14 +761,15 @@ void MediaDevices::StopObserving() {
 
 namespace {
 
-void RecordEnumeratedDevices(ScriptState* script_state,
+void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
                              const MediaDeviceInfoVector& media_devices) {
   if (!IdentifiabilityStudySettings::Get()->ShouldSampleWebFeature(
           WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices)) {
     return;
   }
-  Document* document =
-      LocalDOMWindow::From(script_state)->GetFrame()->GetDocument();
+  Document* document = LocalDOMWindow::From(resolver->GetScriptState())
+                           ->GetFrame()
+                           ->GetDocument();
   IdentifiableTokenBuilder builder;
   for (const auto& device_info : media_devices) {
     // Ignore device_id since that varies per-site.
@@ -788,37 +786,32 @@ void RecordEnumeratedDevices(ScriptState* script_state,
 }  // namespace
 
 void MediaDevices::DevicesEnumerated(
-    ScriptPromiseResolverWithTracker<EnumerateDevicesResult>* result_tracker,
+    ScriptPromiseResolver* resolver,
     mojom::blink::EnumerationResponsePtr response) {
-  if (!enumerate_device_requests_.Contains(result_tracker))
+  if (!enumerate_device_requests_.Contains(resolver))
     return;
 
-  const RequestMetadata request_metadata =
-      enumerate_device_requests_.at(result_tracker);
-  enumerate_device_requests_.erase(result_tracker);
+  RequestMetadata request_metadata = enumerate_device_requests_.at(resolver);
+  enumerate_device_requests_.erase(resolver);
 
   if (response->result_code !=
       media::mojom::blink::DeviceEnumerationResult::kSuccess) {
     switch (response->result_code) {
       case media::mojom::blink::DeviceEnumerationResult::
           kErrorCaptureServiceCrash:
-        result_tracker->Reject(
-            MakeGarbageCollected<DOMException>(
-                DOMExceptionCode::kOperationError,
-                "Could not enumerate cameras"),
-            EnumerateDevicesResult::kErrorCaptureServiceCrash);
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError, "Could not enumerate cameras"));
         break;
       case media::mojom::blink::DeviceEnumerationResult::kUnknownError:
-        result_tracker->Reject(
-            MakeGarbageCollected<DOMException>(
-                DOMExceptionCode::kOperationError, "Enumeration failed"),
-            EnumerateDevicesResult::kUnknownError);
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kOperationError, "Enumeration failed"));
         break;
       case media::mojom::blink::DeviceEnumerationResult::kSuccess:
         NOTREACHED();
         break;
     }
 
+    // TODO(crbug.com/1373398): Add a UMA histogram tracking failures.
     RecordEnumerateDevicesLatency(request_metadata.start_time);
     return;
   }
@@ -831,9 +824,8 @@ void MediaDevices::DevicesEnumerated(
       audio_input_capabilities =
           std::move(response->audio_input_device_capabilities);
 
-  ScriptState* script_state = result_tracker->GetScriptState();
-  if (!script_state || !ExecutionContext::From(script_state) ||
-      ExecutionContext::From(script_state)->IsContextDestroyed()) {
+  if (!resolver->GetExecutionContext() ||
+      resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
 
@@ -889,29 +881,23 @@ void MediaDevices::DevicesEnumerated(
     }
   }
 
-  RecordEnumeratedDevices(result_tracker->GetScriptState(), media_devices);
-  // TODO(crbug.com/1395324): Remove this custom EnumerateDevices latency
-  // tracking by reverting crrev.com/c/3944912/ once the
-  // ScriptPromiseResolverWithTracker based latency monitoring reaches stable.
+  RecordEnumeratedDevices(resolver, media_devices);
   RecordEnumerateDevicesLatency(request_metadata.start_time);
 
   if (enumerate_devices_test_callback_)
     std::move(enumerate_devices_test_callback_).Run(media_devices);
 
-  result_tracker->Resolve(media_devices);
+  resolver->Resolve(media_devices);
 }
 
 void MediaDevices::OnDispatcherHostConnectionError() {
   for (auto& entry : enumerate_device_requests_) {
-    ScriptPromiseResolverWithTracker<EnumerateDevicesResult>* result_tracker =
-        entry.key;
+    ScriptPromiseResolver* resolver = entry.key;
     RequestMetadata& metadata = entry.value;
 
     RecordEnumerateDevicesLatency(metadata.start_time);
-    result_tracker->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                           "enumerateDevices() failed."),
-        EnumerateDevicesResult::kErrorMediaDevicesDispatcherHostDisconnected);
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "enumerateDevices() failed."));
   }
   enumerate_device_requests_.clear();
   dispatcher_host_.reset();
