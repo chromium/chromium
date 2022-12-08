@@ -318,14 +318,13 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest,
 }
 
 // TODO(crbug.com/1395715): The test is flaky. Re-enable it.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_SubresourceCount DISABLED_SubresourceCount
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SubresourceCountUKM DISABLED_SubresourceCountUKM
 #else
-#define MAYBE_SubresourceCount SubresourceCount
+#define MAYBE_SubresourceCountUKM SubresourceCountUKM
 #endif
-IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCount) {
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
   base::RunLoop ukm_loop;
-  base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_recorder;
   test_recorder.SetOnAddEntryCallback(
       ukm::builders::ServiceWorker_OnLoad::kEntryName, ukm_loop.QuitClosure());
@@ -398,6 +397,66 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCount) {
   test_recorder.ExpectEntryMetric(
       entries[0],
       ukm::builders::ServiceWorker_OnLoad::kSubResourceFallbackRatioName, 50);
+}
+
+// TODO(crbug.com/1395715): The test is flaky. Re-enable it.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SubresourceCountUMA DISABLED_SubresourceCountUMA
+#else
+#define MAYBE_SubresourceCountUMA SubresourceCountUMA
+#endif
+IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUMA) {
+  base::HistogramTester histogram_tester;
+
+  WriteFile(FILE_PATH_LITERAL("fallback.css"), "");
+  WriteFile(FILE_PATH_LITERAL("nofallback.css"), "");
+  WriteFile(FILE_PATH_LITERAL("subresources.html"),
+            "<link href='./fallback.css' rel='stylesheet'>"
+            "<link href='./nofallback.css' rel='stylesheet'>");
+  WriteFile(FILE_PATH_LITERAL("sw.js"),
+            "this.onactivate = function(event) {"
+            "  event.waitUntil(self.clients.claim());"
+            "};"
+            "this.onfetch = function(event) {"
+            // We will fallback fallback.css.
+            "  if (event.request.url.endsWith('/fallback.css')) {"
+            "    return;"
+            "  }"
+            "  event.respondWith(fetch(event.request));"
+            "};");
+  WriteFile(FILE_PATH_LITERAL("test.html"),
+            "<script>"
+            "navigator.serviceWorker.register('./sw.js', {scope: './'})"
+            "  .then(function(reg) {"
+            "      reg.addEventListener('updatefound', function() {"
+            "          var worker = reg.installing;"
+            "          worker.addEventListener('statechange', function() {"
+            "              if (worker.state == 'activated')"
+            "                document.title = 'READY';"
+            "            });"
+            "        });"
+            "    });"
+            "</script>");
+
+  InitializeServer();
+
+  {
+    // The message "READY" will be sent when the service worker is activated.
+    const std::u16string expected_title = u"READY";
+    content::TitleWatcher title_watcher(
+        browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/test.html")));
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+  }
+
+  // Navigate to the service worker controlled page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/subresources.html")));
+
+  // Navigate away to record metrics.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
   // Sync the histogram data between the renderer and browser processes.
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
