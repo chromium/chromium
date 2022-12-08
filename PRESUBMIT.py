@@ -228,6 +228,7 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
           r'.*Test[^a-z]',
           r'third_party/',
           'base/android/java/src/org/chromium/base/ContextUtils.java',
+          'chromecast/browser/android/apk/src/org/chromium/chromecast/shell/BroadcastReceiverScope.java',
       ),
     ),
     BanRule(

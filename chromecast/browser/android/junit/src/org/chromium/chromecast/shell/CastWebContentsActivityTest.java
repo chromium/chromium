@@ -4,6 +4,8 @@
 
 package org.chromium.chromecast.shell;
 
+import static android.os.Looper.getMainLooper;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -49,6 +51,8 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivityManager;
@@ -68,6 +72,7 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
  */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(Mode.PAUSED)
 public class CastWebContentsActivityTest {
     /**
      * ShadowActivity that allows us to intercept calls to setTurnScreenOn.
@@ -533,6 +538,95 @@ public class CastWebContentsActivityTest {
 
         mActivity.onUserLeaveHint();
         verify(scope).close();
+    }
+
+    @Test
+    public void testAddsRequiredFlagsForDifferentDockedAndMediaPlayingStateTransistions() {
+        mActivityLifecycle = Robolectric.buildActivity(CastWebContentsActivity.class,
+                CastWebContentsIntentUtils.requestStartCastActivity(RuntimeEnvironment.application,
+                        mWebContents, true, false, true, /*keepScreenOn=*/false, "0"));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create();
+        // RuntimeEnvironment.application
+        updateDockState(false);
+        updateMediaState(false);
+        // State: Undocked & No Media Playing
+        assertWakeLockFlags(false, false);
+        // Media Starts playing
+        updateMediaState(true);
+        // State: Undocked & Media Playing
+        assertWakeLockFlags(false, false);
+        // Device docked
+        updateDockState(true);
+        // State: Docked & Media Playing
+        assertWakeLockFlags(true, true);
+        // Media Stops playing
+        updateMediaState(false);
+        // // State: Docked & No Media Playing
+        assertWakeLockFlags(false, true);
+        // Media Starts playing again
+        updateMediaState(true);
+        // State: Docked & Media Playing
+        assertWakeLockFlags(true, true);
+        // Undocks
+        updateDockState(false);
+        // State: Undocked & Media Playing
+        assertWakeLockFlags(false, false);
+        updateMediaState(false);
+        // State: Undocked & No Media Playing
+        assertWakeLockFlags(false, false);
+    }
+
+    @Test
+    public void testEnsureDockStateAndMediaStateDoNotImpactKeepScreenOnFlagIfAlwaysKeepScreenOn() {
+        mActivityLifecycle = Robolectric.buildActivity(CastWebContentsActivity.class,
+                CastWebContentsIntentUtils.requestStartCastActivity(RuntimeEnvironment.application,
+                        mWebContents, true, false, true, /*keepScreenOn=*/true, "0"));
+        mActivity = mActivityLifecycle.get();
+        mActivity.testingModeForTesting();
+        mActivityLifecycle.create();
+        updateDockState(false);
+        updateMediaState(false);
+        assertWakeLockFlags(true, false);
+        updateDockState(true);
+        updateMediaState(true);
+        assertWakeLockFlags(true, true);
+        updateDockState(false);
+        updateMediaState(false);
+        assertWakeLockFlags(false, false);
+    }
+
+    private void assertWakeLockFlags(boolean keepScreenOn, boolean allowLockWhileScreenOn) {
+        if (keepScreenOn) {
+            Assert.assertTrue(Shadows.shadowOf(mActivity.getWindow())
+                                      .getFlag(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
+        } else {
+            Assert.assertFalse(Shadows.shadowOf(mActivity.getWindow())
+                                       .getFlag(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
+        }
+        if (allowLockWhileScreenOn) {
+            Assert.assertTrue(
+                    Shadows.shadowOf(mActivity.getWindow())
+                            .getFlag(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON));
+        } else {
+            Assert.assertFalse(
+                    Shadows.shadowOf(mActivity.getWindow())
+                            .getFlag(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON));
+        }
+    }
+
+    private void updateDockState(boolean docked) {
+        Intent intent = new Intent(Intent.ACTION_DOCK_EVENT);
+        intent.putExtra(
+                Intent.EXTRA_DOCK_STATE, Intent.EXTRA_DOCK_STATE_UNDOCKED + (docked ? 1 : 0));
+        RuntimeEnvironment.application.sendBroadcast(intent);
+        Shadows.shadowOf(getMainLooper()).idle();
+    }
+
+    private void updateMediaState(boolean playingMedia) {
+        CastWebContentsIntentUtils.getLocalBroadcastManager().sendBroadcastSync(
+                CastWebContentsIntentUtils.mediaPlaying(mSessionId, playingMedia));
     }
 
     private IntentFilter filterFor(String action) {

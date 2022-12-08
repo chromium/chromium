@@ -151,6 +151,45 @@ public class CastWebContentsActivity extends Activity {
             });
         });
 
+        final Controller<Unit> mediaPlaying = new Controller<>();
+        mCreatedState.subscribe(x -> {
+            IntentFilter filter = new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING);
+            return new LocalBroadcastReceiverScope(filter, (Intent intent) -> {
+                if (CastWebContentsIntentUtils.isMediaPlaying(intent)) {
+                    mediaPlaying.set(Unit.unit());
+                } else {
+                    mediaPlaying.reset();
+                }
+            });
+        });
+
+        final Controller<Unit> isDocked = new Controller<>();
+        mCreatedState.subscribe(x -> {
+            IntentFilter filter = new IntentFilter(Intent.ACTION_DOCK_EVENT);
+            return new BroadcastReceiverScope(filter, (Intent intent) -> {
+                if (isDocked(intent)) {
+                    isDocked.set(Unit.unit());
+                } else {
+                    isDocked.reset();
+                }
+            });
+        });
+
+        Observable<Unit> shouldKeepScreenOn =
+                mGotIntentState.filter(CastWebContentsIntentUtils::shouldKeepScreenOn).opaque();
+
+        shouldKeepScreenOn.or(mediaPlaying.and(isDocked).opaque()).subscribe((x) -> {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            return () -> getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        });
+
+        isDocked.subscribe((x) -> {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+            return () -> {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON);
+            };
+        });
+
         mGotIntentState.map(Intent::getExtras)
                 .map(CastWebContentsIntentUtils::getSessionId)
                 .subscribe(Observers.onEnter(mSessionIdState::set));
@@ -170,13 +209,6 @@ public class CastWebContentsActivity extends Activity {
                 // Turn the screen on only if the launching Intent asks to.
                 .filter(CastWebContentsIntentUtils::shouldTurnOnScreen)
                 .subscribe(Observers.onEnter(x -> turnScreenOn()));
-
-        mCreatedState.and(mGotIntentState)
-                .map(Both::getSecond)
-                .filter(CastWebContentsIntentUtils::shouldKeepScreenOn)
-                .subscribe(Observers.onEnter(x -> {
-                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                }));
 
         // Handle each new Intent.
         Controller<CastWebContentsSurfaceHelper.StartParams> startParamsState = new Controller<>();
@@ -354,5 +386,16 @@ public class CastWebContentsActivity extends Activity {
 
     public void setSurfaceHelperForTesting(CastWebContentsSurfaceHelper surfaceHelper) {
         mSurfaceHelperState.set(surfaceHelper);
+    }
+
+    private static boolean isDocked(Intent intent) {
+        if (intent == null || !Intent.ACTION_DOCK_EVENT.equals(intent.getAction())) {
+            Log.w(TAG, "Invalid dock intent:" + intent);
+            return false;
+        }
+        int dockState = intent.getIntExtra(Intent.EXTRA_DOCK_STATE, -1);
+        boolean result = dockState != Intent.EXTRA_DOCK_STATE_UNDOCKED;
+        Log.d(TAG, "IsDocked: " + result);
+        return result;
     }
 }

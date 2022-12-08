@@ -121,6 +121,13 @@ public abstract class Observable<T> {
     }
 
     /**
+     * Returns an Observable with its type mapped to Unit.
+     */
+    public final Observable<Unit> opaque() {
+        return map(x -> Unit.unit());
+    }
+
+    /**
      * Returns an Observable that combines the state of all of this Observable's data into
      * a single activation of type A, where the state is combined by successively applying |acc|
      * when this Observable adds data, and |dim| when this Observable removes data.

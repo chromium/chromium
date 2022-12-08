@@ -254,8 +254,14 @@ public class CastWebContentsComponent {
     }
 
     public void setAllowPictureInPicture(boolean allowPictureInPicture) {
+        if (DEBUG) Log.d(TAG, "setAllowPictureInPicture: " + allowPictureInPicture);
         sendIntentSync(CastWebContentsIntentUtils.allowPictureInPicture(
                 mSessionId, allowPictureInPicture));
+    }
+
+    public void setMediaPlaying(boolean mediaPlaying) {
+        if (DEBUG) Log.d(TAG, "setMediaPlaying: " + mediaPlaying);
+        sendIntentSync(CastWebContentsIntentUtils.mediaPlaying(mSessionId, mediaPlaying));
     }
 
     public static void onComponentClosed(String sessionId) {

@@ -102,6 +102,11 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
         mComponent.setAllowPictureInPicture(allowPictureInPicture);
     }
 
+    @CalledByNative
+    private void setMediaPlaying(boolean mediaPlaying) {
+        mComponent.setMediaPlaying(mediaPlaying);
+    }
+
     @SuppressWarnings("unused")
     @CalledByNative
     private void onNativeDestroyed() {

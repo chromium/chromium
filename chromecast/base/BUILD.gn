@@ -382,6 +382,7 @@ if (is_android) {
       "$java_test_dir/org/chromium/chromecast/base/ObservableMapTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableMiscellaneousTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableNotTest.java",
+      "$java_test_dir/org/chromium/chromecast/base/ObservableOpaqueTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObservableOrTest.java",
       "$java_test_dir/org/chromium/chromecast/base/ObserversTest.java",
       "$java_test_dir/org/chromium/chromecast/base/OwnedScopeTest.java",

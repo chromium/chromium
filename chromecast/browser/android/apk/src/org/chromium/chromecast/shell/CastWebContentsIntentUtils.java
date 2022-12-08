@@ -54,6 +54,9 @@ public class CastWebContentsIntentUtils {
     public static final String ACTION_ALLOW_PICTURE_IN_PICTURE =
             "com.google.android.apps.castshell.intent.action.ALLOW_PICTURE_IN_PICTURE";
 
+    public static final String ACTION_MEDIA_PLAYING =
+            "com.google.android.apps.castshell.intent.action.MEDIA_PLAYING";
+
     /** Key of extra value in an intent, the value is a URI of cast://webcontents/<instanceId> */
     static final String INTENT_EXTRA_URI = "content_uri";
 
@@ -74,6 +77,12 @@ public class CastWebContentsIntentUtils {
      */
     static final String INTENT_EXTRA_ALLOW_PICTURE_IN_PICTURE =
             "com.google.android.apps.castshell.intent.extra.ALLOW_PICTURE_IN_PICTURE";
+
+    /**
+     * Key of extra indicating whether media is playing.
+     */
+    static final String INTENT_EXTRA_MEDIA_PLAYING =
+            "com.google.android.apps.castshell.intent.extra.MEDIA_PLAYING";
 
     /** Key of extra value of the intent to start a web content, value is true is if cast app is
      *  a remote control app.
@@ -239,6 +248,11 @@ public class CastWebContentsIntentUtils {
         return in.getExtras().getBoolean(INTENT_EXTRA_ALLOW_PICTURE_IN_PICTURE);
     }
 
+    // Used by ACTION_MEDIA_PLAYING
+    public static boolean isMediaPlaying(Intent in) {
+        return in.getExtras().getBoolean(INTENT_EXTRA_MEDIA_PLAYING);
+    }
+
     // Used by ACTION_VIEW
     public static boolean isRemoteControlMode(Bundle bundle) {
         return bundle.getBoolean(INTENT_EXTRA_REMOTE_CONTROL_MODE);
@@ -272,6 +286,13 @@ public class CastWebContentsIntentUtils {
         Intent intent = new Intent(ACTION_ALLOW_PICTURE_IN_PICTURE);
         intent.putExtra(INTENT_EXTRA_URI, getInstanceUri(instanceId).toString());
         intent.putExtra(INTENT_EXTRA_ALLOW_PICTURE_IN_PICTURE, allowPictureInPicture);
+        return intent;
+    }
+
+    public static Intent mediaPlaying(String instanceId, boolean mediaPlaying) {
+        Intent intent = new Intent(ACTION_MEDIA_PLAYING);
+        intent.putExtra(INTENT_EXTRA_URI, getInstanceUri(instanceId).toString());
+        intent.putExtra(INTENT_EXTRA_MEDIA_PLAYING, mediaPlaying);
         return intent;
     }
 

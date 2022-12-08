@@ -88,11 +88,13 @@ void CastContentWindowAndroid::EnableTouchInput(bool enabled) {
 void CastContentWindowAndroid::MediaStartedPlaying(
     const content::WebContentsObserver::MediaPlayerInfo& video_type,
     const content::MediaPlayerId& id) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   if (video_type.has_video) {
-    JNIEnv* env = base::android::AttachCurrentThread();
     Java_CastContentWindowAndroid_setAllowPictureInPicture(
         env, java_window_, static_cast<jboolean>(true));
   }
+  Java_CastContentWindowAndroid_setMediaPlaying(env, java_window_,
+                                                static_cast<jboolean>(true));
 }
 
 void CastContentWindowAndroid::MediaStoppedPlaying(
@@ -102,6 +104,8 @@ void CastContentWindowAndroid::MediaStoppedPlaying(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CastContentWindowAndroid_setAllowPictureInPicture(
       env, java_window_, static_cast<jboolean>(false));
+  Java_CastContentWindowAndroid_setMediaPlaying(env, java_window_,
+                                                static_cast<jboolean>(false));
 }
 
 void CastContentWindowAndroid::OnActivityStopped(

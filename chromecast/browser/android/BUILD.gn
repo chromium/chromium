@@ -110,6 +110,7 @@ android_library("reactive_android_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   sources = [
     "$java_src_dir/org/chromium/chromecast/shell/AsyncTaskRunner.java",
+    "$java_src_dir/org/chromium/chromecast/shell/BroadcastReceiverScope.java",
     "$java_src_dir/org/chromium/chromecast/shell/HandlerScheduler.java",
     "$java_src_dir/org/chromium/chromecast/shell/LocalBroadcastReceiverScope.java",
   ]
@@ -224,6 +225,7 @@ android_library("cast_browser_java") {
 robolectric_binary("cast_shell_junit_tests") {
   sources = [
     "junit/src/org/chromium/chromecast/shell/AsyncTaskRunnerTest.java",
+    "junit/src/org/chromium/chromecast/shell/BroadcastReceiverScopeTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsActivityTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsComponentTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsIntentUtilsTest.java",
@@ -251,6 +253,7 @@ robolectric_binary("cast_shell_junit_tests") {
     "//content/public/android:content_java",
     "//testing/android/junit:junit_test_support",
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_java",
   ]
 }
