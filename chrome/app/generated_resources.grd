@@ -12323,6 +12323,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DEVICE_LOG_TYPE_CAMERA" desc="Checkbox to enable showing events of type Camera">
         Camera
       </message>
+      <message name="IDS_DEVICE_LOG_TYPE_GEOLOCATION" desc="Checkbox to enable showing events of type Geolocation">
+        Geolocation
+      </message>
       <message name="IDS_DEVICE_LOG_FILEINFO" desc="File info checkbox in device event log">
         File Info
       </message>

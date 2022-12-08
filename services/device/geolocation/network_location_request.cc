@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/device_event_log/device_event_log.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -128,9 +129,13 @@ bool NetworkLocationRequest::MakeRequest(
     const WifiData& wifi_data,
     const base::Time& wifi_timestamp,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
+  GEOLOCATION_LOG(DEBUG)
+      << "Sending a network location request: Number of Wi-Fi APs="
+      << wifi_data.access_point_data.size();
   RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_REQUEST_START);
   RecordUmaAccessPoints(wifi_data.access_point_data.size());
   if (url_loader_) {
+    GEOLOCATION_LOG(DEBUG) << "Cancelling pending network location request";
     DVLOG(1) << "NetworkLocationRequest : Cancelling pending request";
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_REQUEST_CANCEL);
     url_loader_.reset();
@@ -189,6 +194,8 @@ void NetworkLocationRequest::OnRequestComplete(
   if (url_loader_->ResponseInfo())
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   RecordUmaResponseCode(response_code);
+  GEOLOCATION_LOG(DEBUG) << "Got network location response: response_code="
+                         << response_code;
 
   mojom::Geoposition position;
   GetLocationFromResponse(net_error, response_code, std::move(data),

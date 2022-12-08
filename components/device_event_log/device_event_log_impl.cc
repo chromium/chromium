@@ -40,6 +40,7 @@ const char kLogTypePrinterDesc[] = "Printer";
 const char kLogTypeFidoDesc[] = "FIDO";
 const char kLogTypeSerialDesc[] = "Serial";
 const char kLogTypeCameraDesc[] = "Camera";
+const char kLogTypeGeolocationDesc[] = "Geolocation";
 
 enum class ShowTime {
   kNone,
@@ -71,6 +72,8 @@ std::string GetLogTypeString(LogType type) {
       return kLogTypeSerialDesc;
     case LOG_TYPE_CAMERA:
       return kLogTypeCameraDesc;
+    case LOG_TYPE_GEOLOCATION:
+      return kLogTypeGeolocationDesc;
     case LOG_TYPE_UNKNOWN:
       break;
   }

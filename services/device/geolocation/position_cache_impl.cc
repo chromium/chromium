@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/device_event_log/device_event_log.h"
 #include "services/device/geolocation/wifi_data.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
@@ -85,6 +86,7 @@ size_t PositionCacheImpl::GetPositionCacheSize() const {
 
 const mojom::Geoposition& PositionCacheImpl::GetLastUsedNetworkPosition()
     const {
+  GEOLOCATION_LOG(DEBUG) << "Get last used network position";
   return last_used_position_;
 }
 
@@ -95,6 +97,7 @@ void PositionCacheImpl::SetLastUsedNetworkPosition(
 
 void PositionCacheImpl::OnNetworkChanged(
     net::NetworkChangeNotifier::ConnectionType) {
+  GEOLOCATION_LOG(DEBUG) << "Network changed";
   // OnNetworkChanged is called " when a change occurs to the host
   // computer's hardware or software that affects the route network packets
   // take to any network server.". This means that whatever position we had
