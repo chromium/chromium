@@ -77,6 +77,7 @@
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -1109,7 +1110,8 @@ NSString* SerializedValue(const base::Value* value) {
 
 + (BOOL)isUseLensToSearchForImageEnabled {
   return base::FeatureList::IsEnabled(kUseLensToSearchForImage) &&
-         ios::provider::IsLensSupported();
+         ios::provider::IsLensSupported() &&
+         ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 + (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
