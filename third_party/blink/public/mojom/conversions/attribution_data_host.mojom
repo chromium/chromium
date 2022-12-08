@@ -60,9 +60,6 @@ struct AttributionSourceData {
   // same-site, this source will be ignored by the browser.
   AttributionSuitableOrigin destination;
 
-  // Origin that will receive all attribution reports associated with this source.
-  AttributionSuitableOrigin reporting_origin;
-
   // Data that will be sent in attribution reports to identify this source.
   uint64 source_event_id = 0;
 
@@ -192,7 +189,8 @@ enum AttributionRegistrationType {
 interface AttributionDataHost {
   // Called when data from the renderer is available for a given attributionsrc
   // request.
-  SourceDataAvailable(AttributionSourceData data);
+  SourceDataAvailable(AttributionSuitableOrigin reporting_origin,
+                      AttributionSourceData data);
 
   // Called when trigger data from the renderer is available for a given
   // attributionsrc request.

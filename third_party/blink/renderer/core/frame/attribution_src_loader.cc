@@ -690,7 +690,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   DCHECK(!json.IsNull());
 
   auto source_data = attribution_reporting::SourceRegistration::Parse(
-      StringUTF8Adaptor(json).AsStringPiece(), std::move(reporting_origin));
+      StringUTF8Adaptor(json).AsStringPiece());
   if (!source_data.has_value()) {
     LogAuditIssue(loader_->local_frame_->DomWindow(),
                   AttributionReportingIssueType::kInvalidRegisterSourceHeader,
@@ -699,7 +699,8 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   }
 
-  data_host_->SourceDataAvailable(std::move(*source_data));
+  data_host_->SourceDataAvailable(std::move(reporting_origin),
+                                  std::move(*source_data));
 }
 
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(

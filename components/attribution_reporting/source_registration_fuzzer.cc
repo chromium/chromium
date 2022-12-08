@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_registration.h"
-#include "components/attribution_reporting/suitable_origin.h"
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
@@ -49,10 +48,7 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
   if (!input || !input->is_dict())
     return;
 
-  std::ignore = SourceRegistration::Parse(
-      std::move(*input).TakeDict(),
-      /*reporting_origin=*/
-      *SuitableOrigin::Deserialize("https://r.test/"));
+  std::ignore = SourceRegistration::Parse(std::move(*input).TakeDict());
 }
 
 }  // namespace attribution_reporting

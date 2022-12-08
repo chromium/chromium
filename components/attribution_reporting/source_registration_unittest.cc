@@ -26,18 +26,13 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 
 template <typename F>
-SourceRegistration SourceRegistrationWith(SuitableOrigin destination,
-                                          SuitableOrigin reporting_origin,
-                                          F&& f) {
-  SourceRegistration r(std::move(destination), std::move(reporting_origin));
+SourceRegistration SourceRegistrationWith(SuitableOrigin destination, F&& f) {
+  SourceRegistration r(std::move(destination));
   base::invoke<F, SourceRegistration&>(std::move(f), r);
   return r;
 }
 
 TEST(SourceRegistrationTest, Parse) {
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://r.example");
-
   const auto destination_origin =
       *SuitableOrigin::Deserialize("https://d.example");
 
@@ -59,23 +54,23 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "required_fields_only",
           R"json({"destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "source_event_id_valid",
           R"json({"source_event_id":"1","destination":"https://d.example"})json",
-          SourceRegistrationWith(destination_origin, reporting_origin,
+          SourceRegistrationWith(destination_origin,
                                  [](auto& r) { r.source_event_id = 1; }),
       },
       {
           "source_event_id_wrong_type",
           R"json({"source_event_id":1,"destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "source_event_id_invalid_defaults_to_0",
           R"json({"source_event_id":"-1","destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "destination_missing",
@@ -95,41 +90,41 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "priority_valid",
           R"json({"priority":"-5","destination":"https://d.example"})json",
-          SourceRegistrationWith(destination_origin, reporting_origin,
+          SourceRegistrationWith(destination_origin,
                                  [](auto& r) { r.priority = -5; }),
       },
       {
           "priority_wrong_type_defaults_to_0",
           R"json({"priority":-5,"destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "priority_invalid_defaults_to_0",
           R"json({"priority":"abc","destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "expiry_valid",
           R"json({"expiry":"172801","destination":"https://d.example"})json",
           SourceRegistrationWith(
-              destination_origin, reporting_origin,
+              destination_origin,
               [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
           "expiry_wrong_type",
           R"json({"expiry":172800,"destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "expiry_invalid",
           R"json({"expiry":"abc","destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "event_report_window_valid",
           R"json({"expiry":"172801","event_report_window":"86401",
           "destination":"https://d.example"})json",
-          SourceRegistrationWith(destination_origin, reporting_origin,
+          SourceRegistrationWith(destination_origin,
                                  [](auto& r) {
                                    r.expiry = base::Seconds(172801);
                                    r.event_report_window = base::Seconds(86401);
@@ -140,7 +135,7 @@ TEST(SourceRegistrationTest, Parse) {
           R"json({"expiry":"172801","event_report_window":86401,
           "destination":"https://d.example"})json",
           SourceRegistrationWith(
-              destination_origin, reporting_origin,
+              destination_origin,
               [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
@@ -148,14 +143,14 @@ TEST(SourceRegistrationTest, Parse) {
           R"json({"expiry":"172801","event_report_window":"abc",
           "destination":"https://d.example"})json",
           SourceRegistrationWith(
-              destination_origin, reporting_origin,
+              destination_origin,
               [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
           "aggregatable_report_window_valid",
           R"json({"expiry":"172801","aggregatable_report_window":"86401",
           "destination":"https://d.example"})json",
-          SourceRegistrationWith(destination_origin, reporting_origin,
+          SourceRegistrationWith(destination_origin,
                                  [](auto& r) {
                                    r.expiry = base::Seconds(172801);
                                    r.aggregatable_report_window =
@@ -167,7 +162,7 @@ TEST(SourceRegistrationTest, Parse) {
           R"json({"expiry":"172801","aggregatable_report_window":86401,
           "destination":"https://d.example"})json",
           SourceRegistrationWith(
-              destination_origin, reporting_origin,
+              destination_origin,
               [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
@@ -175,30 +170,30 @@ TEST(SourceRegistrationTest, Parse) {
           R"json({"expiry":"172801","aggregatable_report_window":"abc",
           "destination":"https://d.example"})json",
           SourceRegistrationWith(
-              destination_origin, reporting_origin,
+              destination_origin,
               [](auto& r) { r.expiry = base::Seconds(172801); }),
       },
       {
           "debug_key_valid",
           R"json({"debug_key":"5","destination":"https://d.example"})json",
-          SourceRegistrationWith(destination_origin, reporting_origin,
+          SourceRegistrationWith(destination_origin,
                                  [](auto& r) { r.debug_key = 5; }),
       },
       {
           "debug_key_invalid",
           R"json({"debug_key":"-5","destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "debug_key_wrong_type",
           R"json({"debug_key":5,"destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
       {
           "filter_data_valid",
           R"json({"filter_data":{"a":["b"]},"destination":"https://d.example"})json",
           SourceRegistrationWith(
-              destination_origin, reporting_origin,
+              destination_origin,
               [](auto& r) {
                 r.filter_data = *FilterData::Create({{"a", {"b"}}});
               }),
@@ -211,7 +206,7 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "aggregation_keys_valid",
           R"json({"aggregation_keys":{"a":"0x1"},"destination":"https://d.example"})json",
-          SourceRegistrationWith(destination_origin, reporting_origin,
+          SourceRegistrationWith(destination_origin,
                                  [](auto& r) {
                                    r.aggregation_keys =
                                        *AggregationKeys::FromKeys(
@@ -226,27 +221,23 @@ TEST(SourceRegistrationTest, Parse) {
       {
           "debug_reporting_valid",
           R"json({"debug_reporting":true,"destination":"https://d.example"})json",
-          SourceRegistrationWith(destination_origin, reporting_origin,
+          SourceRegistrationWith(destination_origin,
                                  [](auto& r) { r.debug_reporting = true; }),
       },
       {
           "debug_reporting_wrong_type",
           R"json({"debug_reporting":"true","destination":"https://d.example"})json",
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
       },
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected,
-              SourceRegistration::Parse(test_case.json, reporting_origin))
+    EXPECT_EQ(test_case.expected, SourceRegistration::Parse(test_case.json))
         << test_case.desc;
   }
 }
 
 TEST(SourceRegistrationTest, ToJson) {
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://r.example");
-
   const auto destination_origin =
       *SuitableOrigin::Deserialize("https://d.example");
 
@@ -255,7 +246,7 @@ TEST(SourceRegistrationTest, ToJson) {
     const char* expected_json;
   } kTestCases[] = {
       {
-          SourceRegistration(destination_origin, reporting_origin),
+          SourceRegistration(destination_origin),
           R"json({
             "debug_reporting": false,
             "destination":"https://d.example",
@@ -265,7 +256,7 @@ TEST(SourceRegistrationTest, ToJson) {
       },
       {
           SourceRegistrationWith(
-              destination_origin, reporting_origin,
+              destination_origin,
               [](auto& r) {
                 r.aggregatable_report_window = base::Seconds(1);
                 r.aggregation_keys = *AggregationKeys::FromKeys({{"a", 2}});

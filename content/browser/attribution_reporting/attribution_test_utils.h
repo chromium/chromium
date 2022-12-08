@@ -149,7 +149,9 @@ class MockDataHost : public blink::mojom::AttributionDataHost {
 
  private:
   // blink::mojom::AttributionDataHost:
-  void SourceDataAvailable(attribution_reporting::SourceRegistration) override;
+  void SourceDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      attribution_reporting::SourceRegistration) override;
   void TriggerDataAvailable(
       attribution_reporting::TriggerRegistration) override;
 
@@ -784,6 +786,11 @@ MATCHER_P(ImpressionOriginIs, matcher, "") {
 
 MATCHER_P(DestinationOriginIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.common_info().destination_origin(),
+                            result_listener);
+}
+
+MATCHER_P(ReportingOriginIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.common_info().reporting_origin(),
                             result_listener);
 }
 

@@ -157,8 +157,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
       HandleSource(AllOf(
           SourceTypeIs(AttributionSourceType::kEvent), SourceEventIdIs(10),
           DestinationOriginIs(destination_origin),
-          ImpressionOriginIs(page_origin), SourcePriorityIs(20),
-          SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
+          ImpressionOriginIs(page_origin), ReportingOriginIs(reporting_origin),
+          SourcePriorityIs(20), SourceDebugKeyIs(789),
+          AggregationKeysAre(aggregation_keys),
           SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
   {
     RemoteDataHost data_host_remote{.task_environment =
@@ -170,13 +171,14 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
 
     task_environment_.FastForwardBy(base::Milliseconds(1));
 
-    SourceRegistration source_data(destination_origin, reporting_origin);
+    SourceRegistration source_data(destination_origin);
     source_data.source_event_id = 10;
     source_data.priority = 20;
     source_data.debug_key = 789;
     source_data.aggregation_keys = aggregation_keys;
     source_data.debug_reporting = true;
-    data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
 
@@ -219,24 +221,28 @@ TEST_F(AttributionDataHostManagerImplTest,
         /*is_within_fenced_frame=*/false,
         AttributionRegistrationType::kSourceOrTrigger);
 
-    SourceRegistration source_data(destination_origin, reporting_origin);
-    data_host_remote.data_host->SourceDataAvailable(source_data);
+    SourceRegistration source_data(destination_origin);
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(1);
 
-    data_host_remote.data_host->SourceDataAvailable(source_data);
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(2);
 
     source_data.destination =
         *SuitableOrigin::Deserialize("https://other-trigger.example");
-    data_host_remote.data_host->SourceDataAvailable(source_data);
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(3);
-    data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
+    data_host_remote.data_host->SourceDataAvailable(std::move(reporting_origin),
+                                                    std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
 
@@ -359,9 +365,10 @@ TEST_F(AttributionDataHostManagerImplTest,
     {
       mojo::test::BadMessageObserver bad_message_observer;
 
-      SourceRegistration source_data(destination_origin, reporting_origin);
+      SourceRegistration source_data(destination_origin);
 
-      data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
+      data_host_remote.data_host->SourceDataAvailable(
+          std::move(reporting_origin), std::move(source_data));
       data_host_remote.data_host.FlushForTesting();
 
       EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
@@ -414,14 +421,16 @@ TEST_F(AttributionDataHostManagerImplTest,
         /*is_within_fenced_frame=*/false,
         AttributionRegistrationType::kSourceOrTrigger);
 
-    SourceRegistration source_data(destination_origin, reporting_origin);
+    SourceRegistration source_data(destination_origin);
 
-    data_host_remote.data_host->SourceDataAvailable(source_data);
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(1);
 
-    data_host_remote.data_host->SourceDataAvailable(source_data);
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(2);
@@ -439,7 +448,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
     checkpoint.Call(3);
 
-    data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
+    data_host_remote.data_host->SourceDataAvailable(std::move(reporting_origin),
+                                                    std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
 
@@ -475,7 +485,8 @@ TEST_F(AttributionDataHostManagerImplTest,
         HandleSource(AllOf(
             SourceTypeIs(AttributionSourceType::kNavigation),
             SourceEventIdIs(10), DestinationOriginIs(destination_origin),
-            ImpressionOriginIs(page_origin), SourcePriorityIs(20),
+            ImpressionOriginIs(page_origin),
+            ReportingOriginIs(reporting_origin), SourcePriorityIs(20),
             SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
             SourceIsWithinFencedFrameIs(false), SourceDebugReportingIs(true))));
     EXPECT_CALL(checkpoint, Call(1));
@@ -498,13 +509,14 @@ TEST_F(AttributionDataHostManagerImplTest,
         attribution_src_token, page_origin,
         AttributionNavigationType::kContextMenu);
 
-    SourceRegistration source_data(destination_origin, reporting_origin);
+    SourceRegistration source_data(destination_origin);
     source_data.source_event_id = 10;
     source_data.priority = 20;
     source_data.debug_key = 789;
     source_data.aggregation_keys = aggregation_keys;
     source_data.debug_reporting = true;
-    data_host_remote.data_host->SourceDataAvailable(source_data);
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    source_data);
     data_host_remote.data_host.FlushForTesting();
 
     checkpoint.Call(1);
@@ -513,7 +525,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     // final navigation site.
     source_data.destination =
         *SuitableOrigin::Deserialize("https://trigger2.example");
-    data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
+    data_host_remote.data_host->SourceDataAvailable(reporting_origin,
+                                                    std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
 
@@ -1233,9 +1246,10 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
       AttributionRegistrationType::kSourceOrTrigger);
 
   SourceRegistration source_data(
-      *SuitableOrigin::Deserialize("https://dest.test"),
-      *SuitableOrigin::Deserialize("https://report1.test"));
-  source_data_host_remote->SourceDataAvailable(std::move(source_data));
+      *SuitableOrigin::Deserialize("https://dest.test"));
+  source_data_host_remote->SourceDataAvailable(
+      /*reporting_origin=*/*SuitableOrigin::Deserialize("https://report1.test"),
+      std::move(source_data));
   source_data_host_remote.FlushForTesting();
 
   // Because there is still a connected data host in source mode, this trigger
@@ -1335,15 +1349,17 @@ TEST_F(AttributionDataHostManagerImplTest,
       *SuitableOrigin::Deserialize("https://page.example"),
       AttributionNavigationType::kAnchor);
 
-  SourceRegistration source_data(
-      destination_origin,
-      *SuitableOrigin::Deserialize("https://reporter.example"));
+  auto reporting_origin =
+      *SuitableOrigin::Deserialize("https://reporter.example");
+
+  SourceRegistration source_data(destination_origin);
   source_data.source_event_id = 1;
-  data_host_remote1->SourceDataAvailable(source_data);
+  data_host_remote1->SourceDataAvailable(reporting_origin, source_data);
   data_host_remote1.FlushForTesting();
 
   source_data.source_event_id = 2;
-  data_host_remote2->SourceDataAvailable(std::move(source_data));
+  data_host_remote2->SourceDataAvailable(std::move(reporting_origin),
+                                         std::move(source_data));
   data_host_remote2.FlushForTesting();
 }
 
@@ -1360,7 +1376,8 @@ TEST_F(AttributionDataHostManagerImplTest,
       HandleSource(AllOf(
           SourceTypeIs(AttributionSourceType::kEvent), SourceEventIdIs(10),
           DestinationOriginIs(destination_origin),
-          ImpressionOriginIs(page_origin), SourceIsWithinFencedFrameIs(true))));
+          ImpressionOriginIs(page_origin), ReportingOriginIs(reporting_origin),
+          SourceIsWithinFencedFrameIs(true))));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1370,9 +1387,10 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  SourceRegistration source_data(destination_origin, reporting_origin);
+  SourceRegistration source_data(destination_origin);
   source_data.source_event_id = 10;
-  data_host_remote->SourceDataAvailable(std::move(source_data));
+  data_host_remote->SourceDataAvailable(reporting_origin,
+                                        std::move(source_data));
   data_host_remote.FlushForTesting();
 }
 

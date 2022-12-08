@@ -97,13 +97,12 @@ TEST(StorableSourceTest, ReportWindows) {
   };
 
   for (const auto& test_case : kTestCases) {
-    attribution_reporting::SourceRegistration reg(destination,
-                                                  reporting_origin);
+    attribution_reporting::SourceRegistration reg(destination);
     reg.expiry = test_case.expiry;
     reg.event_report_window = test_case.event_report_window;
     reg.aggregatable_report_window = test_case.aggregatable_report_window;
 
-    StorableSource actual(std::move(reg), kSourceTime,
+    StorableSource actual(reporting_origin, std::move(reg), kSourceTime,
                           *SuitableOrigin::Deserialize("https://source.test"),
                           AttributionSourceType::kNavigation,
                           /*is_within_fenced_frame=*/false);

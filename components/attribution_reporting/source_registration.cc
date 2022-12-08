@@ -73,10 +73,8 @@ base::expected<SuitableOrigin, SourceRegistrationError> ParseDestination(
 
 SourceRegistration::SourceRegistration() = default;
 
-SourceRegistration::SourceRegistration(SuitableOrigin destination,
-                                       SuitableOrigin reporting_origin)
-    : destination(std::move(destination)),
-      reporting_origin(std::move(reporting_origin)) {}
+SourceRegistration::SourceRegistration(SuitableOrigin destination)
+    : destination(std::move(destination)) {}
 
 SourceRegistration::~SourceRegistration() = default;
 
@@ -92,14 +90,12 @@ SourceRegistration& SourceRegistration::operator=(SourceRegistration&&) =
 
 // static
 base::expected<SourceRegistration, SourceRegistrationError>
-SourceRegistration::Parse(base::Value::Dict registration,
-                          SuitableOrigin reporting_origin) {
+SourceRegistration::Parse(base::Value::Dict registration) {
   auto destination = ParseDestination(registration);
   if (!destination.has_value())
     return base::unexpected(destination.error());
 
-  SourceRegistration result(std::move(*destination),
-                            std::move(reporting_origin));
+  SourceRegistration result(std::move(*destination));
 
   base::expected<FilterData, SourceRegistrationError> filter_data =
       FilterData::FromJSON(registration.Find(kFilterData));
@@ -137,8 +133,7 @@ SourceRegistration::Parse(base::Value::Dict registration,
 
 // static
 base::expected<SourceRegistration, SourceRegistrationError>
-SourceRegistration::Parse(base::StringPiece json,
-                          SuitableOrigin reporting_origin) {
+SourceRegistration::Parse(base::StringPiece json) {
   absl::optional<base::Value> value =
       base::JSONReader::Read(json, base::JSON_PARSE_RFC);
   if (!value)
@@ -147,7 +142,7 @@ SourceRegistration::Parse(base::StringPiece json,
   if (!value->is_dict())
     return base::unexpected(SourceRegistrationError::kRootWrongType);
 
-  return Parse(std::move(*value).TakeDict(), std::move(reporting_origin));
+  return Parse(std::move(*value).TakeDict());
 }
 
 base::Value::Dict SourceRegistration::ToJson() const {

@@ -48,17 +48,16 @@ std::ostream& operator<<(std::ostream& out, const Filters& filters) {
 
 bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
   auto tie = [](const SourceRegistration& s) {
-    return std::make_tuple(
-        s.source_event_id, s.destination, s.reporting_origin, s.expiry,
-        s.event_report_window, s.aggregatable_report_window, s.priority,
-        s.filter_data, s.debug_key, s.aggregation_keys, s.debug_reporting);
+    return std::make_tuple(s.source_event_id, s.destination, s.expiry,
+                           s.event_report_window, s.aggregatable_report_window,
+                           s.priority, s.filter_data, s.debug_key,
+                           s.aggregation_keys, s.debug_reporting);
   };
   return tie(a) == tie(b);
 }
 
 std::ostream& operator<<(std::ostream& out, const SourceRegistration& s) {
-  return out << "{reporting_origin=" << s.reporting_origin
-             << ",json=" << s.ToJson() << "}";
+  return out << s.ToJson();
 }
 
 bool operator==(const AggregatableValues& a, const AggregatableValues& b) {

@@ -27,6 +27,7 @@ StorableSource::StorableSource(CommonSourceInfo common_info,
       debug_reporting_(debug_reporting) {}
 
 StorableSource::StorableSource(
+    attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::SourceRegistration reg,
     base::Time source_time,
     attribution_reporting::SuitableOrigin source_origin,
@@ -37,7 +38,7 @@ StorableSource::StorableSource(
               reg.source_event_id,
               std::move(source_origin),
               std::move(reg.destination),
-              std::move(reg.reporting_origin),
+              std::move(reporting_origin),
               source_time,
               CommonSourceInfo::GetExpiryTime(reg.expiry,
                                               source_time,

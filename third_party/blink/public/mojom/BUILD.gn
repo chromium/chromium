@@ -549,6 +549,10 @@ mojom("mojom_platform") {
         {
           mojom = "blink.mojom.AttributionSuitableOrigin"
           cpp = "::attribution_reporting::SuitableOrigin"
+
+          # Avoid expensive copies by forcing Mojo methods to take the type by
+          # value, not const ref
+          move_only = true
         },
         {
           mojom = "blink.mojom.AttributionFilterData"

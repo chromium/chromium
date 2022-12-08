@@ -114,6 +114,7 @@ void MockDataHost::WaitForTriggerData(size_t num_trigger_data) {
 }
 
 void MockDataHost::SourceDataAvailable(
+    attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::SourceRegistration data) {
   source_data_.push_back(std::move(data));
   if (source_data_.size() < min_source_data_count_) {

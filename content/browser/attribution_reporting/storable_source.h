@@ -44,7 +44,8 @@ class CONTENT_EXPORT StorableSource {
                  bool is_within_fenced_frame,
                  bool debug_reporting);
 
-  StorableSource(attribution_reporting::SourceRegistration,
+  StorableSource(attribution_reporting::SuitableOrigin reporting_origin,
+                 attribution_reporting::SourceRegistration,
                  base::Time source_time,
                  attribution_reporting::SuitableOrigin source_origin,
                  AttributionSourceType,

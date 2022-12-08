@@ -90,7 +90,9 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   struct NavigationRedirectSourceRegistrations;
 
   // blink::mojom::AttributionDataHost:
-  void SourceDataAvailable(attribution_reporting::SourceRegistration) override;
+  void SourceDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
+      attribution_reporting::SourceRegistration) override;
   void TriggerDataAvailable(
       attribution_reporting::TriggerRegistration) override;
 

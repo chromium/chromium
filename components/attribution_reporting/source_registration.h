@@ -26,13 +26,12 @@ namespace attribution_reporting {
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
-  Parse(base::Value::Dict, SuitableOrigin reporting_origin);
+      Parse(base::Value::Dict);
 
   static base::expected<SourceRegistration, mojom::SourceRegistrationError>
-  Parse(base::StringPiece json, SuitableOrigin reporting_origin);
+  Parse(base::StringPiece json);
 
-  SourceRegistration(SuitableOrigin destination,
-                     SuitableOrigin reporting_origin);
+  explicit SourceRegistration(SuitableOrigin destination);
 
   ~SourceRegistration();
 
@@ -46,7 +45,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
 
   uint64_t source_event_id = 0;
   SuitableOrigin destination;
-  SuitableOrigin reporting_origin;
   absl::optional<base::TimeDelta> expiry;
   absl::optional<base::TimeDelta> event_report_window;
   absl::optional<base::TimeDelta> aggregatable_report_window;

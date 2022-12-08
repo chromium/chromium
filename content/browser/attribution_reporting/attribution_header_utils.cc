@@ -28,12 +28,13 @@ ParseSourceRegistration(base::Value::Dict registration,
   base::expected<attribution_reporting::SourceRegistration,
                  attribution_reporting::mojom::SourceRegistrationError>
       reg = attribution_reporting::SourceRegistration::Parse(
-          std::move(registration), std::move(reporting_origin));
+          std::move(registration));
   if (!reg.has_value())
     return base::unexpected(reg.error());
 
-  return StorableSource(std::move(*reg), source_time, std::move(source_origin),
-                        source_type, is_within_fenced_frame);
+  return StorableSource(std::move(reporting_origin), std::move(*reg),
+                        source_time, std::move(source_origin), source_type,
+                        is_within_fenced_frame);
 }
 
 }  // namespace content

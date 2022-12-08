@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/http/structured_headers.h"
@@ -99,6 +100,7 @@ class MockDataHost : public mojom::blink::AttributionDataHost {
 
   // mojom::blink::AttributionDataHost:
   void SourceDataAvailable(
+      attribution_reporting::SuitableOrigin reporting_origin,
       attribution_reporting::SourceRegistration data) override {
     source_data_.push_back(std::move(data));
   }

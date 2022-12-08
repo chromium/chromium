@@ -376,9 +376,10 @@ void AttributionDataHostManagerImpl::NotifyNavigationFailure(
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
+    attribution_reporting::SuitableOrigin reporting_origin,
     attribution_reporting::SourceRegistration data) {
   // This is validated by the Mojo typemapping.
-  DCHECK(data.reporting_origin.IsValid());
+  DCHECK(reporting_origin.IsValid());
   DCHECK(data.destination.IsValid());
 
   ReceiverContext& context = receivers_.current_context();
@@ -404,7 +405,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
   }
 
   attribution_manager_->HandleSource(
-      StorableSource(std::move(data),
+      StorableSource(std::move(reporting_origin), std::move(data),
                      /*source_time=*/base::Time::Now(),
                      /*source_origin=*/context.context_origin(), source_type,
                      context.is_within_fenced_frame()));

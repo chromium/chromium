@@ -191,11 +191,6 @@ struct BLINK_COMMON_EXPORT
     return source.destination;
   }
 
-  static const attribution_reporting::SuitableOrigin& reporting_origin(
-      const attribution_reporting::SourceRegistration& source) {
-    return source.reporting_origin;
-  }
-
   static uint64_t source_event_id(
       const attribution_reporting::SourceRegistration& source) {
     return source.source_event_id;
@@ -245,9 +240,6 @@ struct BLINK_COMMON_EXPORT
   static bool Read(blink::mojom::AttributionSourceDataDataView data,
                    attribution_reporting::SourceRegistration* out) {
     if (!data.ReadDestination(&out->destination))
-      return false;
-
-    if (!data.ReadReportingOrigin(&out->reporting_origin))
       return false;
 
     if (!data.ReadExpiry(&out->expiry))
