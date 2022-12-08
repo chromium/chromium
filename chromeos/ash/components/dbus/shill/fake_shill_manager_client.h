@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void GetProperties(
       chromeos::DBusMethodCallback<base::Value> callback) override;
   void GetNetworksForGeolocation(
-      chromeos::DBusMethodCallback<base::Value> callback) override;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) override;
   void SetProperty(const std::string& name,
                    const base::Value& value,
                    base::OnceClosure callback,
@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
                             base::OnceClosure callback,
                             bool enabled) override;
   void AddGeoNetwork(const std::string& technology,
-                     const base::Value& network) override;
+                     const base::Value::Dict& network) override;
   void AddProfile(const std::string& profile_path) override;
   void ClearProperties() override;
   void SetManagerProperty(const std::string& key,
@@ -137,7 +137,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void PassStubProperties(
       chromeos::DBusMethodCallback<base::Value> callback) const;
   void PassStubGeoNetworks(
-      chromeos::DBusMethodCallback<base::Value> callback) const;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) const;
   void CallNotifyObserversPropertyChanged(const std::string& property);
   void NotifyObserversPropertyChanged(const std::string& property);
   base::Value::List& GetListProperty(const std::string& property);
@@ -158,7 +158,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   base::Value stub_properties_{base::Value::Type::DICTIONARY};
 
   // Dictionary of technology -> list of property dictionaries
-  base::Value stub_geo_networks_{base::Value::Type::DICTIONARY};
+  base::Value::Dict stub_geo_networks_;
 
   // Delay for interactive actions
   base::TimeDelta interactive_delay_;

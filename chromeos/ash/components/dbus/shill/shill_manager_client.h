@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_simulated_result.h"
 #include "chromeos/ash/components/dbus/shill/shill_client_helper.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
@@ -65,7 +66,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     // which will be appended to the results returned from
     // GetNetworksForGeolocation().
     virtual void AddGeoNetwork(const std::string& technology,
-                               const base::Value& network) = 0;
+                               const base::Value::Dict& network) = 0;
 
     // Does not create an actual profile in the ProfileClient but update the
     // profiles list and sends a notification to observers. This should only be
@@ -176,10 +177,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
       chromeos::DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls the GetNetworksForGeolocation DBus method and invokes |callback| when
-  // complete. |callback| receives a dictionary Value containing an entry for
+  // complete. |callback| receives a base::Value::Dict containing an entry for
   // available network types. See Shill manager-api documentation for details.
   virtual void GetNetworksForGeolocation(
-      chromeos::DBusMethodCallback<base::Value> callback) = 0;
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) = 0;
 
   // Calls SetProperty method.
   virtual void SetProperty(const std::string& name,

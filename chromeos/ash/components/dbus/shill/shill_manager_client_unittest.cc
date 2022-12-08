@@ -154,20 +154,19 @@ TEST_F(ShillManagerClientTest, GetNetworksForGeolocation) {
   writer.CloseContainer(&type_dict_writer);
 
   // Create the expected value.
-  base::Value property_dict_value(base::Value::Type::DICTIONARY);
-  property_dict_value.SetKey(shill::kGeoMacAddressProperty,
-                             base::Value("01:23:45:67:89:AB"));
-  base::Value type_entry_value(base::Value::Type::LIST);
+  base::Value::Dict property_dict_value;
+  property_dict_value.Set(shill::kGeoMacAddressProperty, "01:23:45:67:89:AB");
+  base::Value::List type_entry_value;
   type_entry_value.Append(std::move(property_dict_value));
-  base::Value type_dict_value(base::Value::Type::DICTIONARY);
-  type_dict_value.SetKey("wifi", std::move(type_entry_value));
+  base::Value::Dict type_dict_value;
+  type_dict_value.Set("wifi", std::move(type_entry_value));
 
   // Set expectations.
   PrepareForMethodCall(shill::kGetNetworksForGeolocation,
                        base::BindRepeating(&ExpectNoArgument), response.get());
   // Call method.
   client_->GetNetworksForGeolocation(
-      base::BindOnce(&ExpectValueResult, &type_dict_value));
+      base::BindOnce(&ExpectDictValueResult, &type_dict_value));
 
   // Run the message loop.
   base::RunLoop().RunUntilIdle();

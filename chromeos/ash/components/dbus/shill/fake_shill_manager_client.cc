@@ -286,7 +286,7 @@ void FakeShillManagerClient::GetProperties(
 }
 
 void FakeShillManagerClient::GetNetworksForGeolocation(
-    chromeos::DBusMethodCallback<base::Value> callback) {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeShillManagerClient::PassStubGeoNetworks,
@@ -660,14 +660,8 @@ void FakeShillManagerClient::SetTechnologyEnabled(const std::string& type,
 }
 
 void FakeShillManagerClient::AddGeoNetwork(const std::string& technology,
-                                           const base::Value& network) {
-  base::Value* list_value =
-      stub_geo_networks_.FindKeyOfType(technology, base::Value::Type::LIST);
-  if (!list_value) {
-    list_value = stub_geo_networks_.SetKey(
-        technology, base::Value(base::Value::Type::LIST));
-  }
-  list_value->Append(network.Clone());
+                                           const base::Value::Dict& network) {
+  stub_geo_networks_.EnsureList(technology)->Append(network.Clone());
 }
 
 void FakeShillManagerClient::AddProfile(const std::string& profile_path) {
@@ -1175,7 +1169,7 @@ void FakeShillManagerClient::PassStubProperties(
 }
 
 void FakeShillManagerClient::PassStubGeoNetworks(
-    chromeos::DBusMethodCallback<base::Value> callback) const {
+    chromeos::DBusMethodCallback<base::Value::Dict> callback) const {
   std::move(callback).Run(stub_geo_networks_.Clone());
 }
 

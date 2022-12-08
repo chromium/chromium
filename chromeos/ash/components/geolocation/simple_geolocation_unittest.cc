@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request_test_monitor.h"
@@ -343,14 +344,14 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
 
   // This should remain in sync with the format of shill (chromeos) dict entries
   void AddAccessPoint(int idx) {
-    base::DictionaryValue properties;
     std::string mac_address =
         base::StringPrintf("%02X:%02X:%02X:%02X:%02X:%02X", idx, 0, 0, 0, 0, 0);
     std::string channel = base::NumberToString(idx);
     std::string strength = base::NumberToString(idx * 10);
-    properties.SetKey(shill::kGeoMacAddressProperty, base::Value(mac_address));
-    properties.SetKey(shill::kGeoChannelProperty, base::Value(channel));
-    properties.SetKey(shill::kGeoSignalStrengthProperty, base::Value(strength));
+    base::Value::Dict properties;
+    properties.Set(shill::kGeoMacAddressProperty, mac_address);
+    properties.Set(shill::kGeoChannelProperty, channel);
+    properties.Set(shill::kGeoSignalStrengthProperty, strength);
     manager_test_->AddGeoNetwork(shill::kGeoWifiAccessPointsProperty,
                                  properties);
     base::RunLoop().RunUntilIdle();
@@ -358,16 +359,16 @@ class SimpleGeolocationWirelessTest : public ::testing::TestWithParam<bool> {
 
   // This should remain in sync with the format of shill (chromeos) dict entries
   void AddCellTower(int idx) {
-    base::DictionaryValue properties;
     std::string ci = base::NumberToString(idx);
     std::string lac = base::NumberToString(idx * 3);
     std::string mcc = base::NumberToString(idx * 100);
     std::string mnc = base::NumberToString(idx * 100 + 1);
 
-    properties.SetKey(shill::kGeoCellIdProperty, base::Value(ci));
-    properties.SetKey(shill::kGeoLocationAreaCodeProperty, base::Value(lac));
-    properties.SetKey(shill::kGeoMobileCountryCodeProperty, base::Value(mcc));
-    properties.SetKey(shill::kGeoMobileNetworkCodeProperty, base::Value(mnc));
+    base::Value::Dict properties;
+    properties.Set(shill::kGeoCellIdProperty, ci);
+    properties.Set(shill::kGeoLocationAreaCodeProperty, lac);
+    properties.Set(shill::kGeoMobileCountryCodeProperty, mcc);
+    properties.Set(shill::kGeoMobileNetworkCodeProperty, mnc);
 
     manager_test_->AddGeoNetwork(shill::kGeoCellTowersProperty, properties);
     base::RunLoop().RunUntilIdle();

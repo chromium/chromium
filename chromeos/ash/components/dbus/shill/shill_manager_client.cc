@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_property_changed_observer.h"
 #include "dbus/bus.h"
@@ -60,10 +59,10 @@ class ShillManagerClientImpl : public ShillManagerClient {
   }
 
   void GetNetworksForGeolocation(
-      chromeos::DBusMethodCallback<base::Value> callback) override {
+      chromeos::DBusMethodCallback<base::Value::Dict> callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
                                  shill::kGetNetworksForGeolocation);
-    helper_->CallValueMethod(&method_call, std::move(callback));
+    helper_->CallDictValueMethod(&method_call, std::move(callback));
   }
 
   void SetProperty(const std::string& name,

@@ -87,6 +87,11 @@ class ShillClientHelper {
   void CallValueMethod(dbus::MethodCall* method_call,
                        chromeos::DBusMethodCallback<base::Value> callback);
 
+  // Calls a method with a base::Value::Dict result.
+  void CallDictValueMethod(
+      dbus::MethodCall* method_call,
+      chromeos::DBusMethodCallback<base::Value::Dict> callback);
+
   // Calls a method without results with error callback.
   void CallVoidMethodWithErrorCallback(dbus::MethodCall* method_call,
                                        base::OnceClosure callback,

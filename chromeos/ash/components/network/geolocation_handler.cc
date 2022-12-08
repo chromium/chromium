@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -145,14 +144,14 @@ void GeolocationHandler::RequestGeolocationObjects() {
 }
 
 void GeolocationHandler::GeolocationCallback(
-    absl::optional<base::Value> properties) {
-  if (!properties || !properties->is_dict()) {
+    absl::optional<base::Value::Dict> properties) {
+  if (!properties) {
     LOG(ERROR) << "Failed to get Geolocation data";
     return;
   }
   wifi_access_points_.clear();
   cell_towers_.clear();
-  if (properties->DictEmpty())
+  if (properties->empty())
     return;  // No enabled devices, don't update received time.
 
   // Dictionary<device_type, entry_list>
@@ -164,7 +163,7 @@ void GeolocationHandler::GeolocationCallback(
   //   kGeoCellTowersProperty: [ {kGeoCellIdProperty: cell_id_value, ...}, ... ]
   // }
   for (auto* device_type : kDevicePropertyNames) {
-    const base::Value* entry_list = properties->FindKey(device_type);
+    const base::Value* entry_list = properties->Find(device_type);
     if (!entry_list) {
       continue;
     }

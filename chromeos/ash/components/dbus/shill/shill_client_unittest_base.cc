@@ -14,7 +14,6 @@
 #include "base/location.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/values.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/values_util.h"
@@ -357,12 +356,32 @@ void ShillClientUnittestBase::ExpectValueResultWithoutStatus(
 }
 
 // static
+void ShillClientUnittestBase::ExpectDictValueResultWithoutStatus(
+    const base::Value::Dict* expected_result,
+    base::Value::Dict result) {
+  std::string expected_result_string;
+  base::JSONWriter::Write(*expected_result, &expected_result_string);
+  std::string result_string;
+  base::JSONWriter::Write(result, &result_string);
+  EXPECT_EQ(expected_result_string, result_string);
+}
+
+// static
 void ShillClientUnittestBase::ExpectValueResult(
     const base::Value* expected_result,
     absl::optional<base::Value> result) {
   EXPECT_TRUE(result);
   ExpectValueResultWithoutStatus(expected_result,
                                  std::move(result).value_or(base::Value()));
+}
+
+// static
+void ShillClientUnittestBase::ExpectDictValueResult(
+    const base::Value::Dict* expected_result,
+    absl::optional<base::Value::Dict> result) {
+  EXPECT_TRUE(result);
+  ExpectDictValueResultWithoutStatus(
+      expected_result, std::move(result).value_or(base::Value::Dict()));
 }
 
 void ShillClientUnittestBase::OnConnectToPlatformMessage(
