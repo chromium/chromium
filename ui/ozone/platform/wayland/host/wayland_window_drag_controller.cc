@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
-#include "base/memory/raw_ref.h"
 
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <wayland-client-protocol.h>
@@ -17,6 +16,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -115,24 +115,20 @@ bool WaylandWindowDragController::StartDragSession() {
   if (state_ != State::kIdle)
     return true;
 
-  auto serial = connection_->serial_tracker().GetSerial(
-      {wl::SerialType::kTouchPress, wl::SerialType::kMousePress});
-  if (!serial.has_value()) {
-    LOG(ERROR) << "Failed to retrieve touch/mouse press serial.";
+  // TODO(crbug.com/1246529): Drop the heuristic below which detects the "drag
+  // source" info in favor of having it injected by the upper level layers.
+  auto [serial, origin] = GetSerialAndOrigin();
+  if (!serial || !origin) {
+    LOG(ERROR) << "Failed to retrieve dnd serial / origin window.";
     return false;
   }
 
   DVLOG(1) << "Starting DND session.";
   state_ = State::kAttached;
+  origin_window_ = origin;
   drag_source_ = serial->type == wl::SerialType::kTouchPress
                      ? DragSource::kTouch
                      : DragSource::kMouse;
-
-  origin_window_ = window_manager_->GetCurrentPointerOrTouchFocusedWindow();
-  if (!origin_window_) {
-    LOG(ERROR) << "Failed to get origin window.";
-    return false;
-  }
 
   DCHECK(!data_source_);
   data_source_ = data_device_manager_->CreateSource(this);
@@ -575,6 +571,22 @@ bool WaylandWindowDragController::IsExtendedDragAvailableInternal() const {
 std::ostream& operator<<(std::ostream& out,
                          WaylandWindowDragController::State state) {
   return out << static_cast<int>(state);
+}
+
+std::pair<absl::optional<wl::Serial>, WaylandWindow*>
+WaylandWindowDragController::GetSerialAndOrigin() {
+  std::pair<absl::optional<wl::Serial>, WaylandWindow*> result{};
+  for (auto type : {wl::SerialType::kTouchPress, wl::SerialType::kMousePress}) {
+    auto serial = connection_->serial_tracker().GetSerial(type);
+    auto* window = type == wl::SerialType::kTouchPress
+                       ? window_manager_->GetCurrentTouchFocusedWindow()
+                       : window_manager_->GetCurrentPointerFocusedWindow();
+    if (window && serial &&
+        (!result.first || serial->timestamp > result.first->timestamp)) {
+      result = {serial, window};
+    }
+  }
+  return result;
 }
 
 }  // namespace ui

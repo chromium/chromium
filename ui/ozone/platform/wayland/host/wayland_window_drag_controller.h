@@ -23,6 +23,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
@@ -98,6 +99,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
                            HandleDraggedWindowDestructionAfterMoveLoop);
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest, GetSerialAndOrigin);
 
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
@@ -142,6 +144,11 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // Tells if "extended drag" extension is available, ignoring
   // |extended_drag_available_for_testing_|.
   bool IsExtendedDragAvailableInternal() const;
+
+  // Returns the serial and origin window based on both how recent is the serial
+  // and the input focus information.
+  // TODO(crbug.com/1246529): Drop once drag source is supplied by the callers.
+  std::pair<absl::optional<wl::Serial>, WaylandWindow*> GetSerialAndOrigin();
 
   const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<WaylandDataDeviceManager> data_device_manager_;

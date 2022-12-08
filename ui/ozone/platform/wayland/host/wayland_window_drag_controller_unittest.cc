@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -25,6 +26,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
@@ -1380,6 +1382,120 @@ TEST_P(WaylandWindowDragControllerTest, ExtendedDragUnavailable) {
   EXPECT_EQ(State::kIdle, drag_controller()->state());
   EXPECT_EQ(window_.get(),
             window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+}
+
+TEST_P(WaylandWindowDragControllerTest, GetSerialAndOrigin) {
+  auto& serial_tracker = connection_->serial_tracker();
+  auto& window_manager = *connection_->wayland_window_manager();
+
+  window_manager.SetPointerFocusedWindow(nullptr);
+  window_manager.SetTouchFocusedWindow(nullptr);
+  serial_tracker.ClearForTesting();
+  {  // No serial, no window focused.
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_FALSE(serial.has_value());
+    EXPECT_FALSE(origin);
+  }
+
+  // Check cases where only pointer focus info is set.
+  {  // Serial available, but no window focused.
+    serial_tracker.UpdateSerial(wl::SerialType::kMousePress, 1u);
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_FALSE(serial.has_value());
+    EXPECT_FALSE(origin);
+  }
+  {  // Both serial and focused window available.
+    window_manager.SetPointerFocusedWindow(window_.get());
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_EQ(origin, window_.get());
+    ASSERT_TRUE(serial.has_value());
+    EXPECT_EQ(wl::SerialType::kMousePress, serial->type);
+    EXPECT_EQ(1u, serial->value);
+  }
+
+  // Reset and check cases where only touch focus info is set.
+  window_manager.SetPointerFocusedWindow(nullptr);
+  window_manager.SetTouchFocusedWindow(nullptr);
+  serial_tracker.ClearForTesting();
+  {  // Serial available, but no window focused.
+    serial_tracker.UpdateSerial(wl::SerialType::kTouchPress, 2u);
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_FALSE(serial.has_value());
+    EXPECT_FALSE(origin);
+  }
+  {  // Both serial and focused window available.
+    window_manager.SetTouchFocusedWindow(window_.get());
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_EQ(origin, window_.get());
+    ASSERT_TRUE(serial.has_value());
+    EXPECT_EQ(wl::SerialType::kTouchPress, serial->type);
+    EXPECT_EQ(2u, serial->value);
+  }
+
+  // Check cases where both touch and mouse info are available.
+  {  // Mouse press serial is newer, though no window focused.
+    task_environment_.FastForwardBy(base::Seconds(1));
+    serial_tracker.UpdateSerial(wl::SerialType::kMousePress, 3u);
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_EQ(origin, window_.get());
+    ASSERT_TRUE(serial.has_value());
+    EXPECT_EQ(wl::SerialType::kTouchPress, serial->type);
+    EXPECT_EQ(2u, serial->value);
+  }
+  {  // Mouse press serial is newer and window focused is set.
+    window_manager.SetPointerFocusedWindow(window_.get());
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_EQ(origin, window_.get());
+    ASSERT_TRUE(serial.has_value());
+    EXPECT_EQ(wl::SerialType::kMousePress, serial->type);
+    EXPECT_EQ(3u, serial->value);
+  }
+  {  // Touch press serial is now the newest and window focused is set.
+    task_environment_.FastForwardBy(base::Seconds(1));
+    serial_tracker.UpdateSerial(wl::SerialType::kTouchPress, 4u);
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_EQ(origin, window_.get());
+    ASSERT_TRUE(serial.has_value());
+    EXPECT_EQ(wl::SerialType::kTouchPress, serial->type);
+    EXPECT_EQ(4u, serial->value);
+  }
+  {  // Touch info available, mouse press serial not set.
+    serial_tracker.ResetSerial(wl::SerialType::kMousePress);
+    auto [serial, origin] = drag_controller()->GetSerialAndOrigin();
+    EXPECT_EQ(origin, window_.get());
+    ASSERT_TRUE(serial.has_value());
+    EXPECT_EQ(wl::SerialType::kTouchPress, serial->type);
+    EXPECT_EQ(4u, serial->value);
+  }
+  // Reset focused window and serial information.
+  window_manager.SetPointerFocusedWindow(nullptr);
+  window_manager.SetTouchFocusedWindow(nullptr);
+  serial_tracker.ClearForTesting();
+}
+
+TEST_P(WaylandWindowDragControllerTest, DetectCorrectDragSource) {
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+
+  // Press left mouse button within |window_|.
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+
+  SendTouchDown(window_.get(), &delegate_, /*id=*/0, /*location=*/{0, 0});
+  SendTouchUp(/*id=*/0);
+
+  GetWaylandExtension(*window_)->StartWindowDraggingSessionIfNeeded(
+      /*allow_system_drag=*/false);
+  ASSERT_EQ(State::kAttached, drag_controller()->state());
+
+  ASSERT_TRUE(drag_controller()->drag_source().has_value());
+  EXPECT_EQ(WaylandWindowDragController::DragSource::kMouse,
+            *drag_controller()->drag_source());
+  EXPECT_EQ(window_.get(), drag_controller()->origin_window_for_testing());
+
+  SendDndMotion({40, 40});
+
+  SendDndDrop();
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
