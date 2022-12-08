@@ -461,6 +461,8 @@ NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
 - (void)prepareForReuse {
   [super prepareForReuse];
 
+  self.highlighted = NO;
+  self.selected = NO;
   self.suggestion = nil;
   self.incognito = NO;
 
