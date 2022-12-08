@@ -8,6 +8,7 @@ include_rules = [
   "+components/country_codes",
   "+components/enterprise",
   "+components/infobars/android",
+  "+components/image_service",
   "+components/live_caption",
   "+components/omnibox",
   "+components/page_load_metrics/browser",

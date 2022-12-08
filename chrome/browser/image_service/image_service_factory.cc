@@ -6,16 +6,16 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
-#include "chrome/browser/history_clusters/entity_image_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/image_service/image_service.h"
 
 namespace image_service {
 
 // static
-history_clusters::EntityImageService* ImageServiceFactory::GetForBrowserContext(
+ImageService* ImageServiceFactory::GetForBrowserContext(
     content::BrowserContext* browser_context) {
-  return static_cast<history_clusters::EntityImageService*>(
+  return static_cast<ImageService*>(
       GetInstance().GetServiceForBrowserContext(browser_context, true));
 }
 
@@ -35,8 +35,7 @@ ImageServiceFactory::~ImageServiceFactory() = default;
 KeyedService* ImageServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  // TODO(tommycli): Move EntityImageService to the image_service component.
-  return new history_clusters::EntityImageService(
+  return new ImageService(
       std::make_unique<ChromeAutocompleteProviderClient>(profile),
       SyncServiceFactory::GetForProfile(profile));
 }

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_HISTORY_CLUSTERS_ENTITY_IMAGE_SERVICE_H_
-#define CHROME_BROWSER_HISTORY_CLUSTERS_ENTITY_IMAGE_SERVICE_H_
+#ifndef COMPONENTS_IMAGE_SERVICE_IMAGE_SERVICE_H_
+#define COMPONENTS_IMAGE_SERVICE_IMAGE_SERVICE_H_
 
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -17,22 +17,21 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
-namespace history_clusters {
+namespace image_service {
 
 // Used to get the image URL associated with a cluster. It doesn't actually
 // fetch the image, that's up to the UI to do.
-// TODO(tommycli): Move to /components and rename to `ImageService`.
-class EntityImageService : public KeyedService {
+class COMPONENT_EXPORT(IMAGE_SERVICE) ImageService : public KeyedService {
  public:
   using ResultCallback = base::OnceCallback<void(const GURL& image_url)>;
 
-  EntityImageService(
+  ImageService(
       std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
       syncer::SyncService* sync_service);
-  EntityImageService(const EntityImageService&) = delete;
-  EntityImageService& operator=(const EntityImageService&) = delete;
+  ImageService(const ImageService&) = delete;
+  ImageService& operator=(const ImageService&) = delete;
 
-  ~EntityImageService() override;
+  ~ImageService() override;
 
   // Populates entity images into the `image_url` of any eligible visits within
   // every cluster in `clusters`. `clusters` should be moved into the parameter.
@@ -61,9 +60,9 @@ class EntityImageService : public KeyedService {
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
 
-  base::WeakPtrFactory<EntityImageService> weak_factory_{this};
+  base::WeakPtrFactory<ImageService> weak_factory_{this};
 };
 
-}  // namespace history_clusters
+}  // namespace image_service
 
-#endif  // CHROME_BROWSER_HISTORY_CLUSTERS_ENTITY_IMAGE_SERVICE_H_
+#endif  // COMPONENTS_IMAGE_SERVICE_IMAGE_SERVICE_H_

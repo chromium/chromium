@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/history_clusters/entity_image_service.h"
+#include "components/image_service/image_service.h"
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/search_engines/template_url.h"
@@ -18,7 +16,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace history_clusters {
+namespace image_service {
 
 namespace {
 
@@ -41,7 +39,7 @@ class FetchJobManager {
   explicit FetchJobManager(std::vector<history::Cluster>&& clusters)
       : clusters_(clusters) {}
 
-  void Start(EntityImageService* service, ResultCallback callback) {
+  void Start(ImageService* service, ResultCallback callback) {
     std::vector<Request> requests;
     for (auto& cluster : clusters_) {
       for (auto& visit : cluster.visits) {
@@ -106,7 +104,7 @@ void DeleteManagerAndRunCallback(
 // A one-time use object that uses Suggest to get an image URL corresponding
 // to `search_query` and `entity_id`. This is a hacky temporary implementation,
 // ideally this should be replaced by persisted Suggest-provided entities.
-class EntityImageService::SuggestEntityImageURLFetcher {
+class ImageService::SuggestEntityImageURLFetcher {
  public:
   SuggestEntityImageURLFetcher(
       AutocompleteProviderClient* autocomplete_provider_client,
@@ -204,7 +202,7 @@ class EntityImageService::SuggestEntityImageURLFetcher {
   base::WeakPtrFactory<SuggestEntityImageURLFetcher> weak_factory_{this};
 };
 
-EntityImageService::EntityImageService(
+ImageService::ImageService(
     std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
     syncer::SyncService* sync_service)
     : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
@@ -212,13 +210,12 @@ EntityImageService::EntityImageService(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedDataCollectionConsentHelper(sync_service)) {}
 
-EntityImageService::~EntityImageService() = default;
+ImageService::~ImageService() = default;
 
-void EntityImageService::PopulateEntityImagesFor(
+void ImageService::PopulateEntityImagesFor(
     std::vector<history::Cluster> clusters,
     base::OnceCallback<void(std::vector<history::Cluster>)> callback) {
-  if (!GetConfig().images || !url_consent_helper_ ||
-      !url_consent_helper_->IsEnabled()) {
+  if (!url_consent_helper_ || !url_consent_helper_->IsEnabled()) {
     return std::move(callback).Run(std::move(clusters));
   }
 
@@ -231,10 +228,9 @@ void EntityImageService::PopulateEntityImagesFor(
                            std::move(callback)));
 }
 
-bool EntityImageService::FetchImageFor(const std::u16string& search_query,
-                                       const std::string& entity_id,
-                                       ResultCallback callback) {
-  DCHECK(GetConfig().images);
+bool ImageService::FetchImageFor(const std::u16string& search_query,
+                                 const std::string& entity_id,
+                                 ResultCallback callback) {
   DCHECK(url_consent_helper_ && url_consent_helper_->IsEnabled());
 
   auto fetcher = std::make_unique<SuggestEntityImageURLFetcher>(
@@ -243,13 +239,13 @@ bool EntityImageService::FetchImageFor(const std::u16string& search_query,
   // Use a raw pointer temporary so we can give ownership of the unique_ptr to
   // the callback and have a well defined SuggestEntityImageURLFetcher lifetime.
   auto* fetcher_raw_ptr = fetcher.get();
-  fetcher_raw_ptr->Start(base::BindOnce(
-      &EntityImageService::OnImageFetched, weak_factory_.GetWeakPtr(),
-      std::move(fetcher), std::move(callback)));
+  fetcher_raw_ptr->Start(
+      base::BindOnce(&ImageService::OnImageFetched, weak_factory_.GetWeakPtr(),
+                     std::move(fetcher), std::move(callback)));
   return true;
 }
 
-void EntityImageService::OnImageFetched(
+void ImageService::OnImageFetched(
     std::unique_ptr<SuggestEntityImageURLFetcher> fetcher,
     ResultCallback callback,
     const GURL& image_url) {
@@ -258,4 +254,4 @@ void EntityImageService::OnImageFetched(
   // `fetcher` is owned by this method and will be deleted now.
 }
 
-}  // namespace history_clusters
+}  // namespace image_service

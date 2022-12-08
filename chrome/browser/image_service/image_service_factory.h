@@ -12,18 +12,16 @@ namespace content {
 class BrowserContext;
 }
 
-namespace history_clusters {
-class EntityImageService;
-}
-
 namespace image_service {
+
+class ImageService;
 
 // Factory for BrowserContext keyed ImageService, which provides images for
 // Journeys related features.
 class ImageServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // This can return nullptr in tests.
-  static history_clusters::EntityImageService* GetForBrowserContext(
+  static ImageService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
  private:

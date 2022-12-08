@@ -19,7 +19,6 @@
 #include "base/time/time_to_iso8601.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/history_clusters/entity_image_service.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/image_service/image_service_factory.h"
@@ -38,6 +37,7 @@
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/query_clusters_state.h"
+#include "components/image_service/image_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -521,8 +521,10 @@ void HistoryClustersHandler::OnGotClustersBatch(
   // ImageService, have HistoryClustersService pass a pointer to it in the
   // constructor, so `QueryClustersState` can do this for itself.
   if (auto* image_service =
-          image_service::ImageServiceFactory::GetForBrowserContext(
-              GetProfile())) {
+          GetConfig().images
+              ? image_service::ImageServiceFactory::GetForBrowserContext(
+                    GetProfile())
+              : nullptr) {
     image_service->PopulateEntityImagesFor(
         std::move(clusters_batch),
         base::BindOnce(&HistoryClustersHandler::SendClustersToPage,

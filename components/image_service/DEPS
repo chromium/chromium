@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/history/core",
+  "+components/keyed_service/core",
+  "+components/omnibox/browser",
+  "+components/search_engines",
+  "+components/sync/driver",
+  "+components/unified_consent",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+]

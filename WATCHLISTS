@@ -708,6 +708,7 @@
     },
     'chrome_intelligence': {
       'filepath': 'history_clusters'\
+                  '|image_service'\
                   '|ios/chrome/browser/text_selection'\
                   '|optimization_guide'\
                   '|optimization_hints'\

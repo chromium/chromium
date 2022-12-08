@@ -497,6 +497,7 @@ static_library("ui") {
     "//components/history_clusters/history_clusters_internals/webui",
     "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",
     "//components/image_fetcher/core",
+    "//components/image_service",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/invalidation/impl",
