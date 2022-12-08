@@ -10,6 +10,7 @@ load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
     builder_group = "chromium.cft",
+    builderless = True,
     cores = 8,
     executable = ci.DEFAULT_EXECUTABLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
@@ -18,6 +19,7 @@ ci.defaults.set(
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     sheriff_rotations = sheriff_rotations.CFT,
+    ssd = True,
     tree_closing = False,
 )
 
@@ -31,12 +33,17 @@ ci.builder(
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
-            apply_configs = ["mb"],
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
         ),
     ),
+    cores = None,
     os = os.MAC_DEFAULT,
 )

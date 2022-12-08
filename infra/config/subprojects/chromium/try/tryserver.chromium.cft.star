@@ -28,5 +28,6 @@ try_.builder(
     mirrors = [
         "ci/mac-rel-cft",
     ],
+    cores = None,
     os = os.MAC_DEFAULT,
 )
