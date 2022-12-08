@@ -61,8 +61,7 @@ ScriptPromise HTMLVideoElementPictureInPicture::requestPictureInPicture(
 bool HTMLVideoElementPictureInPicture::FastHasAttribute(
     const HTMLVideoElement& element,
     const QualifiedName& name) {
-  DCHECK(name == html_names::kDisablepictureinpictureAttr ||
-         name == html_names::kAutopictureinpictureAttr);
+  DCHECK(name == html_names::kDisablepictureinpictureAttr);
   return element.FastHasAttribute(name);
 }
 
@@ -71,8 +70,7 @@ void HTMLVideoElementPictureInPicture::SetBooleanAttribute(
     HTMLVideoElement& element,
     const QualifiedName& name,
     bool value) {
-  DCHECK(name == html_names::kDisablepictureinpictureAttr ||
-         name == html_names::kAutopictureinpictureAttr);
+  DCHECK(name == html_names::kDisablepictureinpictureAttr);
   element.SetBooleanAttribute(name, value);
 
   Document& document = element.GetDocument();

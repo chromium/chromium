@@ -8,13 +8,10 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/common/scheme_registry.h"
-#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -340,82 +337,6 @@ bool PictureInPictureControllerImpl::IsPictureInPictureElement(
   return element == picture_in_picture_element_;
 }
 
-void PictureInPictureControllerImpl::AddToAutoPictureInPictureElementsList(
-    HTMLVideoElement* element) {
-  RemoveFromAutoPictureInPictureElementsList(element);
-  auto_picture_in_picture_elements_.push_back(element);
-}
-
-void PictureInPictureControllerImpl::RemoveFromAutoPictureInPictureElementsList(
-    HTMLVideoElement* element) {
-  DCHECK(element);
-  auto it = base::ranges::find(auto_picture_in_picture_elements_, element);
-  if (it != auto_picture_in_picture_elements_.end())
-    auto_picture_in_picture_elements_.erase(it);
-}
-
-HTMLVideoElement* PictureInPictureControllerImpl::AutoPictureInPictureElement()
-    const {
-  return auto_picture_in_picture_elements_.empty()
-             ? nullptr
-             : auto_picture_in_picture_elements_.back();
-}
-
-bool PictureInPictureControllerImpl::IsEnterAutoPictureInPictureAllowed()
-    const {
-  // Entering Auto Picture-in-Picture is allowed if one of these conditions is
-  // true:
-  // - Document runs in a Chrome Extension.
-  // - Document is in fullscreen.
-  // - Document is in a PWA window that runs in the scope of the PWA.
-  bool is_in_pwa_window = false;
-  if (GetSupplementable()->GetFrame()) {
-    mojom::blink::DisplayMode display_mode =
-        GetSupplementable()->GetFrame()->GetWidgetForLocalRoot()->DisplayMode();
-    is_in_pwa_window = display_mode != mojom::blink::DisplayMode::kBrowser;
-  }
-  if (!(CommonSchemeRegistry::IsExtensionScheme(
-            GetSupplementable()->Url().Protocol().Ascii()) ||
-        Fullscreen::FullscreenElementFrom(*GetSupplementable()) ||
-        (is_in_pwa_window && GetSupplementable()->IsInWebAppScope()))) {
-    return false;
-  }
-
-  // Don't allow if there's already an element in Auto Picture-in-Picture.
-  if (picture_in_picture_element_)
-    return false;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Don't allow if there's already a Document Picture-in-Picture window.
-  if (document_picture_in_picture_window_)
-    return false;
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Don't allow if there's no element eligible to enter Auto Picture-in-Picture
-  if (!AutoPictureInPictureElement())
-    return false;
-
-  // Don't allow if video won't resume playing automatically when it becomes
-  // visible again.
-  if (AutoPictureInPictureElement()->PausedWhenVisible())
-    return false;
-
-  // Allow if video is allowed to enter Picture-in-Picture.
-  return (IsElementAllowed(*AutoPictureInPictureElement(),
-                           /*report_failure=*/true) == Status::kEnabled);
-}
-
-bool PictureInPictureControllerImpl::IsExitAutoPictureInPictureAllowed() const {
-  // Don't allow exiting Auto Picture-in-Picture if there's no eligible element
-  // to exit Auto Picture-in-Picture.
-  if (!AutoPictureInPictureElement())
-    return false;
-
-  // Allow if the element already in Picture-in-Picture is the same as the one
-  // eligible to exit Auto Picture-in-Picture.
-  return (picture_in_picture_element_ == AutoPictureInPictureElement());
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 LocalDOMWindow* PictureInPictureControllerImpl::documentPictureInPictureWindow()
     const {
@@ -567,24 +488,6 @@ void PictureInPictureControllerImpl::
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void PictureInPictureControllerImpl::PageVisibilityChanged() {
-  DCHECK(GetSupplementable());
-
-  // If page becomes visible and exiting Auto Picture-in-Picture is allowed,
-  // exit Picture-in-Picture.
-  if (GetSupplementable()->IsPageVisible() &&
-      IsExitAutoPictureInPictureAllowed()) {
-    ExitPictureInPicture(picture_in_picture_element_, nullptr);
-    return;
-  }
-
-  // If page becomes hidden and entering Auto Picture-in-Picture is allowed,
-  // enter Picture-in-Picture.
-  if (GetSupplementable()->hidden() && IsEnterAutoPictureInPictureAllowed()) {
-    EnterPictureInPicture(AutoPictureInPictureElement(), /*promise=*/nullptr);
-  }
-}
-
 void PictureInPictureControllerImpl::OnPictureInPictureStateChange() {
   DCHECK(picture_in_picture_element_);
   DCHECK(picture_in_picture_element_->GetWebMediaPlayer());
@@ -638,20 +541,17 @@ void PictureInPictureControllerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(open_document_pip_resolver_);
 #endif  // !BUILDFLAG(IS_ANDROID)
   visitor->Trace(picture_in_picture_element_);
-  visitor->Trace(auto_picture_in_picture_elements_);
   visitor->Trace(picture_in_picture_window_);
   visitor->Trace(session_observer_receiver_);
   visitor->Trace(picture_in_picture_service_);
   visitor->Trace(picture_in_picture_session_);
   PictureInPictureController::Trace(visitor);
-  PageVisibilityObserver::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
 
 PictureInPictureControllerImpl::PictureInPictureControllerImpl(
     Document& document)
     : PictureInPictureController(document),
-      PageVisibilityObserver(document.GetPage()),
       ExecutionContextClient(document.GetExecutionContext()),
       session_observer_receiver_(this, document.GetExecutionContext()),
       picture_in_picture_service_(document.GetExecutionContext()),

@@ -336,11 +336,6 @@
       settable_from_internals: true,
     },
     {
-      name: "AutoPictureInPicture",
-      depends_on: ["PictureInPictureAPI"],
-      status: "experimental",
-    },
-    {
       // Flag set by the media::kAutoplayIgnoreWebAudio feature flag.
       name: "AutoplayIgnoresWebAudio",
       public: true,

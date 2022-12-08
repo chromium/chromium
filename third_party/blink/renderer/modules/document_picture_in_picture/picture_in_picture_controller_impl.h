@@ -11,10 +11,8 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
-#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_window.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -39,7 +37,6 @@ class TreeScope;
 // whether they want to instantiate an object when they make a call.
 class MODULES_EXPORT PictureInPictureControllerImpl
     : public PictureInPictureController,
-      public PageVisibilityObserver,
       public ExecutionContextClient,
       public blink::mojom::blink::PictureInPictureSessionObserver {
  public:
@@ -64,16 +61,6 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // video-only PiP.
   PictureInPictureWindow* pictureInPictureWindow() const;
 
-  // Returns video element whose autoPictureInPicture attribute was set most
-  // recently.
-  HTMLVideoElement* AutoPictureInPictureElement() const;
-
-  // Returns whether entering Auto Picture-in-Picture is allowed.
-  bool IsEnterAutoPictureInPictureAllowed() const;
-
-  // Returns whether exiting Auto Picture-in-Picture is allowed.
-  bool IsExitAutoPictureInPictureAllowed() const;
-
 #if !BUILDFLAG(IS_ANDROID)
   // Returns the Document Picture-in-Picture window if there is any.
   LocalDOMWindow* documentPictureInPictureWindow() const;
@@ -90,8 +77,6 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   void EnterPictureInPicture(HTMLVideoElement*,
                              ScriptPromiseResolver*) override;
   void ExitPictureInPicture(HTMLVideoElement*, ScriptPromiseResolver*) override;
-  void AddToAutoPictureInPictureElementsList(HTMLVideoElement*) override;
-  void RemoveFromAutoPictureInPictureElementsList(HTMLVideoElement*) override;
   bool IsPictureInPictureElement(const Element*) const override;
   void OnPictureInPictureStateChange() override;
   Element* PictureInPictureElement() const override;
@@ -103,9 +88,6 @@ class MODULES_EXPORT PictureInPictureControllerImpl
   // Implementation of PictureInPictureSessionObserver.
   void OnWindowSizeChanged(const gfx::Size&) override;
   void OnStopped() override;
-
-  // Implementation of PageVisibilityObserver.
-  void PageVisibilityChanged() override;
 
   void Trace(Visitor*) const override;
 
@@ -193,10 +175,6 @@ class MODULES_EXPORT PictureInPictureControllerImpl
 
   // The Picture-in-Picture element for the associated document.
   Member<HTMLVideoElement> picture_in_picture_element_;
-
-  // The list of video elements for the associated document that are eligible
-  // to Auto Picture-in-Picture.
-  HeapDeque<Member<HTMLVideoElement>> auto_picture_in_picture_elements_;
 
   // The Picture-in-Picture window for the associated document. This is for
   // video-only PiP.

@@ -632,40 +632,6 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
   WaitForPlaybackState(VideoOverlayWindow::PlaybackState::kPlaying);
 }
 
-class AutoPictureInPictureContentBrowserTest
-    : public VideoPictureInPictureContentBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnableBlinkFeatures,
-        "PictureInPictureAPI,AutoPictureInPicture");
-  }
-};
-
-// Show/hide fullscreen page and check that Auto Picture-in-Picture is
-// triggered.
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureContentBrowserTest,
-                       AutoPictureInPictureTriggeredWhenFullscreen) {
-  ASSERT_TRUE(NavigateToURL(
-      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
-
-  ASSERT_EQ(true, EvalJs(shell(), "enterFullscreen();"));
-
-  ASSERT_TRUE(ExecJs(shell(), "video.autoPictureInPicture = true;"));
-  ASSERT_TRUE(ExecJs(shell(), "addPictureInPictureEventListeners();"));
-  ASSERT_EQ(true, EvalJs(shell(), "play();"));
-
-  // Hide page and check that video entered Picture-in-Picture automatically.
-  shell()->web_contents()->WasHidden();
-  WaitForTitle(u"enterpictureinpicture");
-
-  // Show page and check that video left Picture-in-Picture automatically.
-  shell()->web_contents()->WasShown();
-  WaitForTitle(u"leavepictureinpicture");
-}
-
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
                        EnterPictureInPictureHasNoChildWebContents) {
   ASSERT_TRUE(NavigateToURL(
