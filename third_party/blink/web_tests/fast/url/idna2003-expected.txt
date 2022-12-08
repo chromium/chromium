@@ -3,10 +3,10 @@ IDNA2003 handling in domain name labels.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 The PASS/FAIL results of this test are set to the behavior in IDNA2003.
-PASS canonicalize('http://faß.de/') is 'http://fass.de/'
-PASS canonicalize('http://βόλος.com/') is 'http://xn--nxasmq6b.com/'
-PASS canonicalize('http://ශ්‍රී.com/') is 'http://xn--10cl1a0b.com/'
-PASS canonicalize('http://نامه‌ای.com/') is 'http://xn--mgba3gch31f.com/'
+FAIL canonicalize('http://faß.de/') should be http://fass.de/. Was http://xn--fa-hia.de/.
+FAIL canonicalize('http://βόλος.com/') should be http://xn--nxasmq6b.com/. Was http://xn--nxasmm1c.com/.
+FAIL canonicalize('http://ශ්‍රී.com/') should be http://xn--10cl1a0b.com/. Was http://xn--10cl1a0b660p.com/.
+FAIL canonicalize('http://نامه‌ای.com/') should be http://xn--mgba3gch31f.com/. Was http://xn--mgba3gch31f060k.com/.
 PASS canonicalize('http://www.looĸout.net/') is 'http://www.xn--looout-5bb.net/'
 PASS canonicalize('http://ᗯᗯᗯ.lookout.net/') is 'http://xn--1qeaa.lookout.net/'
 PASS canonicalize('http://www.lookout.сом/') is 'http://www.lookout.xn--l1adi/'

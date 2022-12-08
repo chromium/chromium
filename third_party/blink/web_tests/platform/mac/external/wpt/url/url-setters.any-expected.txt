@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 218 tests; 135 PASS, 83 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 218 tests; 136 PASS, 82 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS URL: Setting <a://example.net>.protocol = 'b'
@@ -68,7 +68,7 @@ FAIL URL: Setting <sc://x/>.host = '/' assert_equals: expected "sc:///" but got 
 FAIL URL: Setting <sc://x/>.host = '?' assert_equals: expected "sc:///" but got "sc://x/"
 FAIL URL: Setting <sc://x/>.host = '@' assert_equals: expected "x" but got ""
 FAIL URL: Setting <sc://x/>.host = 'ß' assert_equals: expected "sc://%C3%9F/" but got "sc://x/"
-FAIL URL: Setting <https://x/>.host = 'ß' IDNA Nontransitional_Processing assert_equals: expected "https://xn--zca/" but got "https://ss/"
+PASS URL: Setting <https://x/>.host = 'ß' IDNA Nontransitional_Processing
 PASS URL: Setting <mailto:me@example.net>.host = 'example.com' Cannot-be-a-base means no host
 PASS URL: Setting <data:text/plain,Stuff>.host = 'example.net' Cannot-be-a-base means no host
 PASS URL: Setting <http://example.net>.host = 'example.com:8080'

@@ -1432,11 +1432,13 @@
     "expires": "Jul 1, 2023"
   },
 
+  "Tests URL processing in IDNA 2008 Transitional Mode. Explicitly disables ",
+  "the Non-Transitional Mode feature flag to do so.",
   {
     "prefix": "idna-2008",
     "platforms": ["Linux"],
     "bases": [ "external/wpt/url", "fast/url"],
-    "args": ["--enable-features=UseIDNA2008NonTransitional"],
+    "args": ["--disable-features=UseIDNA2008NonTransitional"],
     "expires": "Jul 1, 2023"
   },
 

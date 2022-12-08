@@ -8,7 +8,7 @@ namespace url {
 
 BASE_FEATURE(kUseIDNA2008NonTransitional,
              "UseIDNA2008NonTransitional",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUsingIDNA2008NonTransitional() {
   return base::FeatureList::IsEnabled(kUseIDNA2008NonTransitional);

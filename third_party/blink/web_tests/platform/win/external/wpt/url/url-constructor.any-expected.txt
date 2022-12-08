@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 738 tests; 534 PASS, 204 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 738 tests; 535 PASS, 203 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -311,7 +311,7 @@ FAIL Parsing: <http://%ef%bc%85%ef%bc%94%ef%bc%91.com> against <http://other.com
 PASS Parsing: <http://％００.com> against <http://other.com/>
 PASS Parsing: <http://%ef%bc%85%ef%bc%90%ef%bc%90.com> against <http://other.com/>
 PASS Parsing: <http://你好你好> against <http://other.com/>
-FAIL Parsing: <https://faß.ExAmPlE/> against <about:blank> assert_equals: href expected "https://xn--fa-hia.example/" but got "https://fass.example/"
+PASS Parsing: <https://faß.ExAmPlE/> against <about:blank>
 FAIL Parsing: <sc://faß.ExAmPlE/> against <about:blank> assert_equals: host expected "fa%C3%9F.ExAmPlE" but got ""
 PASS Parsing: <http://%zz%66%a.com> against <http://other.com/>
 PASS Parsing: <http://%25> against <http://other.com/>

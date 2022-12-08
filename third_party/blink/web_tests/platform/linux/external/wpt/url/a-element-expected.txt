@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 736 tests; 418 PASS, 318 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 736 tests; 419 PASS, 317 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -287,7 +287,7 @@ FAIL Parsing: <http://%ef%bc%85%ef%bc%94%ef%bc%91.com> against <http://other.com
 FAIL Parsing: <http://％００.com> against <http://other.com/> assert_equals: failure should set href to input expected "http://％００.com" but got "http://%00.com/"
 FAIL Parsing: <http://%ef%bc%85%ef%bc%90%ef%bc%90.com> against <http://other.com/> assert_equals: failure should set href to input expected "http://%ef%bc%85%ef%bc%90%ef%bc%90.com" but got "http://%00.com/"
 PASS Parsing: <http://你好你好> against <http://other.com/>
-FAIL Parsing: <https://faß.ExAmPlE/> against <about:blank> assert_equals: href expected "https://xn--fa-hia.example/" but got "https://fass.example/"
+PASS Parsing: <https://faß.ExAmPlE/> against <about:blank>
 FAIL Parsing: <sc://faß.ExAmPlE/> against <about:blank> assert_equals: host expected "fa%C3%9F.ExAmPlE" but got ""
 FAIL Parsing: <http://%zz%66%a.com> against <http://other.com/> assert_equals: failure should set href to input expected "http://%zz%66%a.com" but got "http://%25zzf%25a.com/"
 FAIL Parsing: <http://%25> against <http://other.com/> assert_equals: failure should set href to input expected "http://%25" but got "http://%25/"

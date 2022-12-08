@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 329 tests; 324 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 329 tests; 325 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing origin: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -214,7 +214,7 @@ PASS Parsing origin: <http://www.foo。bar.com> against <http://other.com/>
 PASS Parsing origin: <https://x/�?�#�> against <about:blank>
 PASS Parsing origin: <http://Ｇｏ.com> against <http://other.com/>
 PASS Parsing origin: <http://你好你好> against <http://other.com/>
-FAIL Parsing origin: <https://faß.ExAmPlE/> against <about:blank> assert_equals: origin expected "https://xn--fa-hia.example" but got "https://fass.example"
+PASS Parsing origin: <https://faß.ExAmPlE/> against <about:blank>
 PASS Parsing origin: <sc://faß.ExAmPlE/> against <about:blank>
 PASS Parsing origin: <http://%30%78%63%30%2e%30%32%35%30.01> against <http://other.com/>
 PASS Parsing origin: <http://%30%78%63%30%2e%30%32%35%30.01%2e> against <http://other.com/>
