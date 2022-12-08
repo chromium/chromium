@@ -149,28 +149,18 @@ class RendererController final : public mojom::RemotingSource,
   // the element is compatible with Remote Playback API.
   void UpdateRemotePlaybackAvailabilityMonitoringState();
 
-  // Start |delayed_start_stability_timer_| to ensure all preconditions are met
-  // and held stable for a short time before starting remoting.
-  void WaitForStabilityBeforeStart(StartTrigger start_trigger);
-  // Cancel the start of remoting.
-  void CancelDelayedStart();
-  // Called when the delayed start ends. |decoded_frame_count_before_delay| is
-  // the total number of frames decoded before the delayed start began.
-  // |delayed_start_time| is the time that the delayed start began.
-  void OnDelayedStartTimerFired(StartTrigger start_trigger,
-                                unsigned decoded_frame_count_before_delay,
-                                base::TimeTicks delayed_start_time);
-
-  // Records in a histogram and returns whether the receiver supports the given
-  // pixel rate.
-  bool RecordPixelRateSupport(double pixels_per_second);
-
   // Queries on remoting sink capabilities.
   bool HasVideoCapability(mojom::RemotingSinkVideoCapability capability) const;
   bool HasAudioCapability(mojom::RemotingSinkAudioCapability capability) const;
   bool HasFeatureCapability(mojom::RemotingSinkFeature capability) const;
   bool SinkSupportsRemoting() const;
-  bool ShouldBeRemoting() const;
+  bool ShouldBeRemoting();
+
+  // Start `pixel_rate_timer_` to calculate pixel rate.
+  void MaybeStartCalculatePixelRateTimer();
+  void DoCalculatePixelRate(int decoded_frame_count_before_delay,
+                            base::TimeTicks delayed_start_time);
+  PixelRateSupport GetPixelRateSupport() const;
 
   // Callback from RpcMessenger when sending message to remote sink.
   void SendMessageToSink(std::vector<uint8_t> message);
@@ -221,10 +211,6 @@ class RendererController final : public mojom::RemotingSource,
   // visible content in the tab.
   bool encountered_renderer_fatal_error_ = false;
 
-  // When this is true, remoting will never start again for the lifetime of this
-  // controller.
-  bool permanently_disable_remoting_ = false;
-
   // This is used to check all the methods are called on the current thread in
   // debug builds.
   base::ThreadChecker thread_checker_;
@@ -248,12 +234,14 @@ class RendererController final : public mojom::RemotingSource,
   // Not owned by this class. Can only be set once by calling SetClient().
   raw_ptr<MediaObserverClient> client_ = nullptr;
 
-  // When this is running, it indicates that remoting will be started later
-  // when the timer gets fired. The start will be canceled if there is any
-  // precondition change that does not allow for remoting duting this period.
-  // TODO(xjz): Estimate whether the transmission bandwidth is sufficient to
-  // remote the content while this timer is running.
-  base::OneShotTimer delayed_start_stability_timer_;
+  // This timer is used to calculate the media content's pixel rate. The timer
+  // is stopped when the media playback is paused or when the media metadata
+  // changed.
+  base::OneShotTimer pixel_rate_timer_;
+
+  // Current pixel rate. Its value is reset to 0 when
+  // pipeline_metadata_.natural_size changes.
+  double pixels_per_second_ = 0;
 
   raw_ptr<const base::TickClock> clock_;
 

@@ -253,7 +253,7 @@ void RendererController::StartDataPipe(uint32_t data_pipe_capacity,
   }
 
   if (!ok) {
-    LOG(ERROR) << "No audio nor video to establish data pipe";
+    VLOG(1) << "No audio nor video to establish data pipe";
     std::move(done_callback)
         .Run(mojo::NullRemote(), mojo::NullRemote(),
              mojo::ScopedDataPipeProducerHandle(),
@@ -279,6 +279,8 @@ void RendererController::OnMetadataChanged(const PipelineMetadata& metadata) {
 
   const bool was_audio_codec_supported = has_audio() && IsAudioCodecSupported();
   const bool was_video_codec_supported = has_video() && IsVideoCodecSupported();
+  const bool natural_size_changed =
+      pipeline_metadata_.natural_size != metadata.natural_size;
   pipeline_metadata_ = metadata;
   const bool is_audio_codec_supported = has_audio() && IsAudioCodecSupported();
   const bool is_video_codec_supported = has_video() && IsVideoCodecSupported();
@@ -299,6 +301,13 @@ void RendererController::OnMetadataChanged(const PipelineMetadata& metadata) {
     stop_trigger = stop_trigger == UNSUPPORTED_AUDIO_CODEC
                        ? UNSUPPORTED_AUDIO_AND_VIDEO_CODECS
                        : UNSUPPORTED_VIDEO_CODEC;
+  }
+
+  // Reset and calculate pixel rate again when video size changes.
+  if (natural_size_changed) {
+    pixel_rate_timer_.Stop();
+    pixels_per_second_ = 0;
+    MaybeStartCalculatePixelRateTimer();
   }
 
   UpdateRemotePlaybackAvailabilityMonitoringState();
@@ -364,14 +373,16 @@ void RendererController::OnPlaying() {
 
   is_paused_ = false;
   UpdateAndMaybeSwitch(PLAY_COMMAND, UNKNOWN_STOP_TRIGGER);
+  MaybeStartCalculatePixelRateTimer();
 }
 
 void RendererController::OnPaused() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   is_paused_ = true;
-  // Cancel the start if in the middle of delayed start.
-  CancelDelayedStart();
+  // Cancel the timer since pixel rate cannot be calculated when media is
+  // paused.
+  pixel_rate_timer_.Stop();
 }
 
 void RendererController::OnFrozen() {
@@ -499,24 +510,13 @@ void RendererController::UpdateAndMaybeSwitch(StartTrigger start_trigger,
   DCHECK(thread_checker_.CalledOnValidThread());
 
   bool should_be_remoting = ShouldBeRemoting();
-  if (should_be_remoting) {
-    const RemotingCompatibility compatibility = GetCompatibility();
-    metrics_recorder_.RecordCompatibility(compatibility);
-    should_be_remoting = compatibility == RemotingCompatibility::kCompatible;
-  }
 
-  if ((remote_rendering_started_ ||
-       delayed_start_stability_timer_.IsRunning()) == should_be_remoting) {
+  if (should_be_remoting == remote_rendering_started_) {
     return;
   }
 
-  if (should_be_remoting) {
-    WaitForStabilityBeforeStart(start_trigger);
-  } else if (delayed_start_stability_timer_.IsRunning()) {
-    DCHECK(!remote_rendering_started_);
-    CancelDelayedStart();
-    is_media_remoting_requested_ = false;
-  } else {
+  // Stop Remoting.
+  if (!should_be_remoting) {
     remote_rendering_started_ = false;
     is_media_remoting_requested_ = false;
     DCHECK_NE(UNKNOWN_STOP_TRIGGER, stop_trigger);
@@ -525,78 +525,26 @@ void RendererController::UpdateAndMaybeSwitch(StartTrigger start_trigger,
       client_->SwitchToLocalRenderer(GetSwitchReason(stop_trigger));
     VLOG(2) << "Request to stop remoting: stop_trigger=" << stop_trigger;
     remoter_->Stop(mojom::RemotingStopReason::LOCAL_PLAYBACK);
-  }
-}
-
-void RendererController::WaitForStabilityBeforeStart(
-    StartTrigger start_trigger) {
-  DCHECK(!delayed_start_stability_timer_.IsRunning());
-  DCHECK(!remote_rendering_started_);
-  DCHECK(client_);
-  DCHECK(SinkSupportsRemoting());
-
-  delayed_start_stability_timer_.Start(
-      FROM_HERE, kDelayedStart,
-      base::BindOnce(&RendererController::OnDelayedStartTimerFired,
-                     base::Unretained(this), start_trigger,
-                     client_->DecodedFrameCount(), clock_->NowTicks()));
-}
-
-void RendererController::CancelDelayedStart() {
-  delayed_start_stability_timer_.Stop();
-}
-
-void RendererController::OnDelayedStartTimerFired(
-    StartTrigger start_trigger,
-    unsigned decoded_frame_count_before_delay,
-    base::TimeTicks delayed_start_time) {
-  DCHECK(is_dominant_content_ || is_media_remoting_requested_);
-  DCHECK(!remote_rendering_started_);
-  DCHECK(client_);  // This task is canceled otherwise.
-
-  base::TimeDelta elapsed = clock_->NowTicks() - delayed_start_time;
-  DCHECK(!elapsed.is_zero());
-  if (has_video()) {
-    const double frame_rate =
-        (client_->DecodedFrameCount() - decoded_frame_count_before_delay) /
-        elapsed.InSecondsF();
-    const double pixels_per_second =
-        frame_rate * pipeline_metadata_.natural_size.GetArea();
-    const bool supported = RecordPixelRateSupport(pixels_per_second);
-    if (!supported) {
-      permanently_disable_remoting_ = true;
-      return;
-    }
+    return;
   }
 
-  remote_rendering_started_ = true;
-  DCHECK_NE(UNKNOWN_START_TRIGGER, start_trigger);
-  metrics_recorder_.WillStartSession(start_trigger);
-  // |MediaObserverClient::SwitchToRemoteRenderer()| will be called after
-  // remoting is started successfully.
-  remoter_->Start();
-}
+  // Start remoting. First, check pixel rate compatibility.
+  if (pixels_per_second_ == 0) {
+    MaybeStartCalculatePixelRateTimer();
+    return;
+  }
 
-bool RendererController::RecordPixelRateSupport(double pixels_per_second) {
-  if (pixels_per_second <= kPixelsPerSec2k) {
-    metrics_recorder_.RecordVideoPixelRateSupport(
-        PixelRateSupport::k2kSupported);
-    return true;
+  auto pixel_rate_support = GetPixelRateSupport();
+  metrics_recorder_.RecordVideoPixelRateSupport(pixel_rate_support);
+  if (pixel_rate_support == PixelRateSupport::k2kSupported ||
+      pixel_rate_support == PixelRateSupport::k4kSupported) {
+    remote_rendering_started_ = true;
+    DCHECK_NE(UNKNOWN_START_TRIGGER, start_trigger);
+    metrics_recorder_.WillStartSession(start_trigger);
+    // |MediaObserverClient::SwitchToRemoteRenderer()| will be called after
+    // remoting is started successfully.
+    remoter_->Start();
   }
-  if (pixels_per_second <= kPixelsPerSec4k) {
-    if (HasVideoCapability(mojom::RemotingSinkVideoCapability::SUPPORT_4K)) {
-      metrics_recorder_.RecordVideoPixelRateSupport(
-          PixelRateSupport::k4kSupported);
-      return true;
-    } else {
-      metrics_recorder_.RecordVideoPixelRateSupport(
-          PixelRateSupport::k4kNotSupported);
-      return false;
-    }
-  }
-  metrics_recorder_.RecordVideoPixelRateSupport(
-      PixelRateSupport::kOver4kNotSupported);
-  return false;
 }
 
 void RendererController::OnRendererFatalError(StopTrigger stop_trigger) {
@@ -621,13 +569,12 @@ void RendererController::SetClient(MediaObserverClient* client) {
 
   client_ = client;
   if (!client_) {
-    CancelDelayedStart();
+    pixel_rate_timer_.Stop();
     if (remote_rendering_started_) {
       metrics_recorder_.WillStopSession(MEDIA_ELEMENT_DESTROYED);
       remoter_->Stop(mojom::RemotingStopReason::UNEXPECTED_FAILURE);
       remote_rendering_started_ = false;
     }
-    return;
   }
 }
 
@@ -657,7 +604,7 @@ bool RendererController::SinkSupportsRemoting() const {
   return HasFeatureCapability(RemotingSinkFeature::RENDERING);
 }
 
-bool RendererController::ShouldBeRemoting() const {
+bool RendererController::ShouldBeRemoting() {
   // Starts remote rendering when the media is the dominant content or the
   // browser has sent an explicit request.
   if (!is_dominant_content_ && !is_media_remoting_requested_) {
@@ -672,7 +619,52 @@ bool RendererController::ShouldBeRemoting() const {
     return false;
   }
 
-  return true;
+  const RemotingCompatibility compatibility = GetCompatibility();
+  metrics_recorder_.RecordCompatibility(compatibility);
+  return compatibility == RemotingCompatibility::kCompatible;
+}
+
+void RendererController::MaybeStartCalculatePixelRateTimer() {
+  if (pixel_rate_timer_.IsRunning() || !client_ || is_paused_ ||
+      pixels_per_second_ != 0) {
+    return;
+  }
+
+  pixel_rate_timer_.Start(
+      FROM_HERE, kDelayedStart,
+      base::BindOnce(&RendererController::DoCalculatePixelRate,
+                     base::Unretained(this), client_->DecodedFrameCount(),
+                     clock_->NowTicks()));
+}
+
+void RendererController::DoCalculatePixelRate(
+    int decoded_frame_count_before_delay,
+    base::TimeTicks delayed_start_time) {
+  DCHECK(client_);
+  DCHECK(!is_paused_);
+
+  base::TimeDelta elapsed = clock_->NowTicks() - delayed_start_time;
+  const double frame_rate =
+      (client_->DecodedFrameCount() - decoded_frame_count_before_delay) /
+      elapsed.InSecondsF();
+  pixels_per_second_ = frame_rate * pipeline_metadata_.natural_size.GetArea();
+  UpdateAndMaybeSwitch(PIXEL_RATE_READY, UNKNOWN_STOP_TRIGGER);
+}
+
+PixelRateSupport RendererController::GetPixelRateSupport() const {
+  DCHECK(pixels_per_second_ != 0);
+
+  if (pixels_per_second_ <= kPixelsPerSec2k) {
+    return PixelRateSupport::k2kSupported;
+  }
+  if (pixels_per_second_ <= kPixelsPerSec4k) {
+    if (HasVideoCapability(mojom::RemotingSinkVideoCapability::SUPPORT_4K)) {
+      return PixelRateSupport::k4kSupported;
+    } else {
+      return PixelRateSupport::k4kNotSupported;
+    }
+  }
+  return PixelRateSupport::kOver4kNotSupported;
 }
 
 void RendererController::SendMessageToSink(std::vector<uint8_t> message) {

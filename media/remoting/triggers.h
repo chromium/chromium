@@ -33,9 +33,10 @@ enum StartTrigger {
   SUPPORTED_VIDEO_CODEC = 7,  // Stream began using a supported video codec.
   SUPPORTED_AUDIO_AND_VIDEO_CODECS = 8,  // Both now using a supported codec.
   CDM_READY = 9,  // The CDM required for decrypting the content became ready.
+  PIXEL_RATE_READY = 11,  // The pixel rate was calculated.
 
   // Change this to the highest value.
-  START_TRIGGER_MAX = 10,
+  START_TRIGGER_MAX = 11,
 };
 
 // Events and conditions that can result in a start failure, or trigger remoting

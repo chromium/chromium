@@ -53,7 +53,8 @@ mojom::RemotingSinkMetadataPtr GetDefaultSinkMetadata(bool enable) {
 }
 
 constexpr base::TimeDelta kDelayedStartDuration = base::Seconds(5);
-
+constexpr double frame_rate = 30;
+constexpr double high_pixel_rate = 3840 * 2160 * 30;
 }  // namespace
 
 class RendererControllerTest : public ::testing::Test,
@@ -93,6 +94,10 @@ class RendererControllerTest : public ::testing::Test,
     is_remote_playback_compatible_ = is_compatible;
   }
 
+  void set_pixels_per_second_(double pixels) {
+    controller_->pixels_per_second_ = pixels;
+  }
+
   void InitializeControllerWithSink(
       const PipelineMetadata& pipeline_metadata,
       mojom::RemotingSinkMetadataPtr sink_metadata) {
@@ -101,23 +106,15 @@ class RendererControllerTest : public ::testing::Test,
     controller_->clock_ = &clock_;
     clock_.Advance(base::Seconds(1));
     controller_->SetClient(this);
-    RunUntilIdle();
-    EXPECT_FALSE(is_rendering_remotely_);
-    EXPECT_FALSE(disable_pipeline_suspend_);
     controller_->OnSinkAvailable(std::move(sink_metadata));
-    RunUntilIdle();
-    EXPECT_FALSE(is_rendering_remotely_);
-    EXPECT_FALSE(disable_pipeline_suspend_);
     controller_->OnRemotePlaybackDisabled(false);
-    RunUntilIdle();
-    EXPECT_FALSE(is_rendering_remotely_);
-    EXPECT_FALSE(disable_pipeline_suspend_);
     controller_->OnMetadataChanged(pipeline_metadata);
-    RunUntilIdle();
-    EXPECT_FALSE(is_rendering_remotely_);
-    EXPECT_FALSE(disable_pipeline_suspend_);
     controller_->OnPlaying();
     RunUntilIdle();
+    PixelRateTimerEnds();
+    RunUntilIdle();
+    EXPECT_FALSE(is_rendering_remotely_);
+    EXPECT_FALSE(disable_pipeline_suspend_);
   }
 
   void InitializeControllerAndBecomeDominant(
@@ -126,41 +123,25 @@ class RendererControllerTest : public ::testing::Test,
     InitializeControllerWithSink(pipeline_metadata, std::move(sink_metadata));
     controller_->OnBecameDominantVisibleContent(true);
     RunUntilIdle();
-    EXPECT_FALSE(is_rendering_remotely_);
-    EXPECT_FALSE(disable_pipeline_suspend_);
   }
 
-  bool IsInDelayedStart() const {
-    return controller_->delayed_start_stability_timer_.IsRunning();
-  }
-
-  void DelayedStartEnds(double frame_rate = 30) {
-    EXPECT_TRUE(IsInDelayedStart());
+  void PixelRateTimerEnds() {
+    EXPECT_TRUE(controller_->pixel_rate_timer_.IsRunning());
     decoded_frames_ = frame_rate * kDelayedStartDuration.InSeconds();
     clock_.Advance(kDelayedStartDuration);
-    RunUntilIdle();
-    controller_->delayed_start_stability_timer_.FireNow();
-  }
-
-  void ExpectInDelayedStart() const {
-    EXPECT_FALSE(is_rendering_remotely_);
-    EXPECT_FALSE(disable_pipeline_suspend_);
-    EXPECT_TRUE(sink_name_.empty());
-    EXPECT_TRUE(IsInDelayedStart());
+    controller_->pixel_rate_timer_.FireNow();
   }
 
   void ExpectInRemoting() const {
     EXPECT_TRUE(is_rendering_remotely_);
     EXPECT_TRUE(disable_pipeline_suspend_);
     EXPECT_EQ(kDefaultReceiver, sink_name_);
-    EXPECT_FALSE(IsInDelayedStart());
   }
 
   void ExpectInLocalRendering() const {
     EXPECT_FALSE(is_rendering_remotely_);
     EXPECT_FALSE(disable_pipeline_suspend_);
     EXPECT_TRUE(sink_name_.empty());
-    EXPECT_FALSE(IsInDelayedStart());
   }
 
   bool ShouldBeRemoting() const { return controller_->ShouldBeRemoting(); }
@@ -179,26 +160,32 @@ class RendererControllerTest : public ::testing::Test,
   double duration_in_sec_ = 120;  // 2m duration.
 };
 
-TEST_F(RendererControllerTest, ShouldBeRemoting) {
+TEST_F(RendererControllerTest, ShouldBeRemotingForDominantVisibleContent) {
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
   EXPECT_TRUE(ShouldBeRemoting());
 
   controller_->OnBecameDominantVisibleContent(false);
+  RunUntilIdle();
   EXPECT_FALSE(ShouldBeRemoting());
+}
 
+TEST_F(RendererControllerTest, ShouldBeRemotingForRequestFromBrowser) {
+  InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
+                                        GetDefaultSinkMetadata(true));
   controller_->OnMediaRemotingRequested();
+  RunUntilIdle();
   EXPECT_TRUE(ShouldBeRemoting());
 
   controller_->OnSinkGone();
+  RunUntilIdle();
   EXPECT_FALSE(ShouldBeRemoting());
+  RunUntilIdle();
 }
 
 TEST_F(RendererControllerTest, ToggleRendererOnDominantChange) {
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
-  DelayedStartEnds();
-  RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
 
   // Leaving fullscreen should shut down remoting.
@@ -211,8 +198,6 @@ TEST_F(RendererControllerTest, ToggleRendererOnDisableChange) {
   EXPECT_FALSE(is_rendering_remotely_);
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
-  ExpectInDelayedStart();
-  DelayedStartEnds();
   RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
 
@@ -244,8 +229,6 @@ TEST_F(RendererControllerTest, ToggleRendererOnSinkCapabilities) {
   // toggle remote rendering on.
   controller_->OnSinkAvailable(GetDefaultSinkMetadata(true));
   RunUntilIdle();
-  ExpectInDelayedStart();
-  DelayedStartEnds();
   RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
 }
@@ -262,8 +245,6 @@ TEST_F(RendererControllerTest, ToggleRendererOnMediaRemotingRequest) {
   // Start media remoting when there are available sinks.
   controller_->OnSinkAvailable(GetDefaultSinkMetadata(false));
   RunUntilIdle();
-  ExpectInDelayedStart();
-  DelayedStartEnds();
   RunUntilIdle();
   ExpectInRemoting();
 }
@@ -283,8 +264,6 @@ TEST_F(RendererControllerTest, WithVP9VideoCodec) {
   // toggle remote rendering on.
   controller_->OnSinkAvailable(std::move(sink_metadata));
   RunUntilIdle();
-  ExpectInDelayedStart();
-  DelayedStartEnds();
   RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
 }
@@ -306,8 +285,6 @@ TEST_F(RendererControllerTest, WithHEVCVideoCodec) {
   // toggle remote rendering on.
   controller_->OnSinkAvailable(std::move(sink_metadata));
   RunUntilIdle();
-  ExpectInDelayedStart();
-  DelayedStartEnds();
   RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
 }
@@ -334,8 +311,6 @@ TEST_F(RendererControllerTest, WithAACAudioCodec) {
   // toggle remote rendering on.
   controller_->OnSinkAvailable(std::move(sink_metadata));
   RunUntilIdle();
-  ExpectInDelayedStart();
-  DelayedStartEnds();
   RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
 }
@@ -361,29 +336,29 @@ TEST_F(RendererControllerTest, WithOpusAudioCodec) {
   // toggle remote rendering on.
   controller_->OnSinkAvailable(std::move(sink_metadata));
   RunUntilIdle();
-  ExpectInDelayedStart();
-  DelayedStartEnds();
   RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
 }
 
-TEST_F(RendererControllerTest, StartFailedWithHighFrameRate) {
-  InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
-                                        GetDefaultSinkMetadata(true));
-  ExpectInDelayedStart();
-  DelayedStartEnds(60);
+TEST_F(RendererControllerTest, StartFailedWithHighPixelRate) {
+  InitializeControllerWithSink(DefaultMetadata(VideoCodec::kVP8),
+                               GetDefaultSinkMetadata(true));
+  set_pixels_per_second_(high_pixel_rate);
+
+  controller_->OnBecameDominantVisibleContent(true);
   RunUntilIdle();
   ExpectInLocalRendering();
 }
 
-TEST_F(RendererControllerTest, StartSuccessWithHighFrameRate) {
+TEST_F(RendererControllerTest, StartSuccessWithHighPixelRate) {
   mojom::RemotingSinkMetadataPtr sink_metadata = GetDefaultSinkMetadata(true);
   sink_metadata->video_capabilities.push_back(
       mojom::RemotingSinkVideoCapability::SUPPORT_4K);
-  InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
-                                        std::move(sink_metadata));
-  ExpectInDelayedStart();
-  DelayedStartEnds(60);
+  InitializeControllerWithSink(DefaultMetadata(VideoCodec::kVP8),
+                               std::move(sink_metadata));
+  set_pixels_per_second_(high_pixel_rate);
+
+  controller_->OnBecameDominantVisibleContent(true);
   RunUntilIdle();
   ExpectInRemoting();
 }
@@ -391,8 +366,6 @@ TEST_F(RendererControllerTest, StartSuccessWithHighFrameRate) {
 TEST_F(RendererControllerTest, PacingTooSlowly) {
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
-  ExpectInDelayedStart();
-  DelayedStartEnds(false);
   RunUntilIdle();
   ExpectInRemoting();  // All requirements now satisfied.
   controller_->OnRendererFatalError(StopTrigger::PACING_TOO_SLOWLY);
@@ -405,15 +378,13 @@ TEST_F(RendererControllerTest, PacingTooSlowly) {
   ExpectInLocalRendering();
   controller_->OnBecameDominantVisibleContent(true);
   RunUntilIdle();
-  ExpectInDelayedStart();  // Try start remoting again.
+  ExpectInRemoting();  // All requirements now satisfied.
 }
 
 TEST_F(RendererControllerTest, StartFailed) {
   controller_ = FakeRemoterFactory::CreateController(true);
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
-  ExpectInDelayedStart();
-  DelayedStartEnds();
   RunUntilIdle();
   ExpectInLocalRendering();
 }
@@ -430,8 +401,7 @@ TEST_F(RendererControllerTest, SetClientNullptr) {
 TEST_F(RendererControllerTest, OnFrozen) {
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
-  ExpectInDelayedStart();
-  DelayedStartEnds();
+
   RunUntilIdle();
   ExpectInRemoting();
 
