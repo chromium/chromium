@@ -17,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/native_window_tracker.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -38,6 +37,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/native_window_tracker.h"
 #include "url/origin.h"
 
 namespace extensions {
@@ -75,7 +75,7 @@ ExtensionUninstallDialog::ExtensionUninstallDialog(
     : profile_(profile), parent_(parent), delegate_(delegate) {
   DCHECK(delegate_);
   if (parent)
-    parent_window_tracker_ = NativeWindowTracker::Create(parent);
+    parent_window_tracker_ = views::NativeWindowTracker::Create(parent);
   profile_observation_.Observe(profile_.get());
 }
 

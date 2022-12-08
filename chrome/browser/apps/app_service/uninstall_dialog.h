@@ -16,11 +16,14 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
-class NativeWindowTracker;
 class Profile;
 
 namespace gfx {
 class ImageSkia;
+}
+
+namespace views {
+class NativeWindowTracker;
 }
 
 namespace apps {
@@ -123,7 +126,7 @@ class UninstallDialog {
   raw_ptr<views::Widget, DanglingUntriaged> widget_ = nullptr;
 
   // Tracks whether |parent_window_| got destroyed.
-  std::unique_ptr<NativeWindowTracker> parent_window_tracker_;
+  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
 
   base::WeakPtrFactory<UninstallDialog> weak_ptr_factory_{this};
 };

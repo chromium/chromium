@@ -20,7 +20,6 @@
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
-#include "chrome/browser/ui/native_window_tracker.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
 #include "chrome/services/printing/public/mojom/printing_service.mojom.h"
@@ -39,6 +38,7 @@
 #include "printing/printing_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/native_window_tracker.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -111,7 +111,7 @@ PrintJobSubmitter::PrintJobSubmitter(
       callback_(std::move(callback)) {
   DCHECK(extension);
   if (native_window)
-    native_window_tracker_ = NativeWindowTracker::Create(native_window);
+    native_window_tracker_ = views::NativeWindowTracker::Create(native_window);
 }
 
 PrintJobSubmitter::~PrintJobSubmitter() {

@@ -34,6 +34,10 @@ namespace gfx {
 class Image;
 }
 
+namespace views {
+class NativeWindowTracker;
+}
+
 namespace printing {
 namespace mojom {
 class PdfFlattener;
@@ -41,8 +45,6 @@ class PdfFlattener;
 class PrintedDocument;
 class PrintSettings;
 }  // namespace printing
-
-class NativeWindowTracker;
 
 namespace extensions {
 
@@ -121,7 +123,7 @@ class PrintJobSubmitter : public printing::PrintJob::Observer {
   const raw_ptr<content::BrowserContext> browser_context_;
 
   // Tracks whether |native_window_| got destroyed.
-  std::unique_ptr<NativeWindowTracker> native_window_tracker_;
+  std::unique_ptr<views::NativeWindowTracker> native_window_tracker_;
 
   // These objects are owned by PrintingAPIHandler.
   const raw_ptr<PrintJobController> print_job_controller_;

@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/aura/native_window_tracker_aura.h"
+#include "ui/views/native_window_tracker_aura.h"
+
+#include <memory>
 
 #include "ui/aura/window.h"
 
-NativeWindowTrackerAura::NativeWindowTrackerAura(
-    gfx::NativeWindow window)
+namespace views {
+
+NativeWindowTrackerAura::NativeWindowTrackerAura(gfx::NativeWindow window)
     : window_(window) {
   window->AddObserver(this);
 }
@@ -21,8 +24,7 @@ bool NativeWindowTrackerAura::WasNativeWindowClosed() const {
   return window_ == nullptr;
 }
 
-void NativeWindowTrackerAura::OnWindowDestroying(
-    aura::Window* window) {
+void NativeWindowTrackerAura::OnWindowDestroying(aura::Window* window) {
   window_->RemoveObserver(this);
   window_ = nullptr;
 }
@@ -30,6 +32,7 @@ void NativeWindowTrackerAura::OnWindowDestroying(
 // static
 std::unique_ptr<NativeWindowTracker> NativeWindowTracker::Create(
     gfx::NativeWindow window) {
-  return std::unique_ptr<NativeWindowTracker>(
-      new NativeWindowTrackerAura(window));
+  return std::make_unique<NativeWindowTrackerAura>(window);
 }
+
+}  // namespace views

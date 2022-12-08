@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/cocoa/native_window_tracker_cocoa.h"
+#include "ui/views/cocoa/native_window_tracker_cocoa.h"
 
 #import <AppKit/AppKit.h>
+
+#include <memory>
 
 @interface BridgedNativeWindowTracker : NSObject {
  @private
@@ -48,14 +50,15 @@
 
 @end
 
+namespace views {
+
 NativeWindowTrackerCocoa::NativeWindowTrackerCocoa(
     gfx::NativeWindow native_window) {
   NSWindow* window = native_window.GetNativeNSWindow();
   bridge_.reset([[BridgedNativeWindowTracker alloc] initWithNSWindow:window]);
 }
 
-NativeWindowTrackerCocoa::~NativeWindowTrackerCocoa() {
-}
+NativeWindowTrackerCocoa::~NativeWindowTrackerCocoa() {}
 
 bool NativeWindowTrackerCocoa::WasNativeWindowClosed() const {
   return [bridge_ wasNSWindowClosed];
@@ -64,6 +67,7 @@ bool NativeWindowTrackerCocoa::WasNativeWindowClosed() const {
 // static
 std::unique_ptr<NativeWindowTracker> NativeWindowTracker::Create(
     gfx::NativeWindow window) {
-  return std::unique_ptr<NativeWindowTracker>(
-      new NativeWindowTrackerCocoa(window));
+  return std::make_unique<NativeWindowTrackerCocoa>(window);
 }
+
+}  // namespace views

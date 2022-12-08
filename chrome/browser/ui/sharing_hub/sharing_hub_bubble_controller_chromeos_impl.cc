@@ -164,7 +164,7 @@ void SharingHubBubbleControllerChromeOsImpl::ShowSharesheet(
   // Save the window in order to close the Sharesheet if the tab is closed. This
   // will return the incorrect window if called later.
   parent_window_ = GetWebContents().GetTopLevelNativeWindow();
-  parent_window_tracker_ = NativeWindowTracker::Create(parent_window_);
+  parent_window_tracker_ = views::NativeWindowTracker::Create(parent_window_);
 }
 
 void SharingHubBubbleControllerChromeOsImpl::CloseSharesheet() {

@@ -25,7 +25,6 @@
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
-class NativeWindowTracker;
 class Profile;
 class WebAppUninstallDialogViews;
 
@@ -36,6 +35,7 @@ enum class WebappUninstallSource;
 
 namespace views {
 class Checkbox;
+class NativeWindowTracker;
 }
 
 // The dialog's view, owned by the views framework.
@@ -134,7 +134,7 @@ class WebAppUninstallDialogViews
   base::OnceClosure dialog_shown_callback_for_testing_;
 
   // Tracks whether |parent_| got destroyed.
-  std::unique_ptr<NativeWindowTracker> parent_window_tracker_;
+  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

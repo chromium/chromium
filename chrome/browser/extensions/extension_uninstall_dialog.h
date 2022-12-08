@@ -23,7 +23,9 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
+namespace views {
 class NativeWindowTracker;
+}
 
 namespace extensions {
 class Extension;
@@ -174,7 +176,7 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
   std::unique_ptr<ChromeAppIcon> icon_;
 
   // Tracks whether |parent_| got destroyed.
-  std::unique_ptr<NativeWindowTracker> parent_window_tracker_;
+  std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
 
   // Indicates that dialog was shown.
   bool dialog_shown_ = false;

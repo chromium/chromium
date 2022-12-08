@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
-#define CHROME_BROWSER_UI_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
+#ifndef UI_VIEWS_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
+#define UI_VIEWS_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
 
 #include "base/mac/scoped_nsobject.h"
-#include "chrome/browser/ui/native_window_tracker.h"
+#include "ui/views/native_window_tracker.h"
+#include "ui/views/views_export.h"
 
 @class BridgedNativeWindowTracker;
 
-class NativeWindowTrackerCocoa : public NativeWindowTracker {
+namespace views {
+
+class VIEWS_EXPORT NativeWindowTrackerCocoa : public NativeWindowTracker {
  public:
   explicit NativeWindowTrackerCocoa(gfx::NativeWindow window);
 
@@ -26,4 +29,6 @@ class NativeWindowTrackerCocoa : public NativeWindowTracker {
   base::scoped_nsobject<BridgedNativeWindowTracker> bridge_;
 };
 
-#endif  // CHROME_BROWSER_UI_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
+}  // namespace views
+
+#endif  // UI_VIEWS_COCOA_NATIVE_WINDOW_TRACKER_COCOA_H_
