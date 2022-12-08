@@ -149,7 +149,7 @@ class SettingsSetupFingerprintDialogElement extends
 
     this.addWebUIListener(
         'on-fingerprint-scan-received', this.onScanReceived_.bind(this));
-
+    this.addWebUIListener('on-screen-locked', this.onScreenLocked_.bind(this));
     this.$.arc.reset();
     this.browserProxy_.startEnroll(this.authToken);
     this.$.dialog.showModal();
@@ -159,14 +159,14 @@ class SettingsSetupFingerprintDialogElement extends
    * Closes the dialog.
    */
   close() {
-    if (this.$.dialog.open) {
-      this.$.dialog.close();
-    }
-
     // Note: Reset resets |step_| back to the default, so handle anything that
     // checks |step_| before resetting.
     if (this.step_ !== FingerprintSetupStep.READY) {
       this.browserProxy_.cancelCurrentEnroll();
+    }
+
+    if (this.$.dialog.open) {
+      this.$.dialog.close();
     }
 
     this.reset_();
@@ -235,6 +235,18 @@ class SettingsSetupFingerprintDialogElement extends
         break;
     }
   }
+
+  /**
+   * When the screen is getting locked during enrollment we close
+   * the dialog to cancel the enrollment process and make the fingerprint
+   * unlock available to the user.
+   */
+  onScreenLocked_(screenIsLocked) {
+    if (screenIsLocked) {
+      this.close();
+    }
+  }
+
 
   /**
    * Sets the instructions based on which phase of the fingerprint setup we
