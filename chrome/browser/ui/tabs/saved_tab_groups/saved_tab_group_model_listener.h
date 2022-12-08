@@ -10,16 +10,36 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "content/public/browser/web_contents.h"
 
-class Browser;
 class SavedTabGroupModel;
 class TabStripModel;
 class Profile;
 
+// Manages the listening state for each individual tabstrip.
+class SavedTabGroupBrowserListener : public TabStripModelObserver {
+ public:
+  SavedTabGroupBrowserListener(Browser* browser, SavedTabGroupModel* model);
+  ~SavedTabGroupBrowserListener() override;
+
+  bool ContainsTabGroup(tab_groups::TabGroupId group_id) const;
+
+  // TabStripModelObserver:
+  void OnTabGroupChanged(const TabGroupChange& change) override;
+
+  Browser* browser() { return browser_; }
+  SavedTabGroupModel* saved_tab_group_model() { return model_; }
+
+ private:
+  std::unordered_map<content::WebContents*, base::Token>
+      web_contents_to_tab_id_map_;
+  raw_ptr<Browser> browser_;
+  raw_ptr<SavedTabGroupModel> model_;
+};
+
 // Serves to maintain and listen to browsers who contain saved tab groups and
 // update the model if a saved tab group was changed.
-class SavedTabGroupModelListener : public BrowserListObserver,
-                                   public TabStripModelObserver {
+class SavedTabGroupModelListener : public BrowserListObserver {
  public:
   // Used for testing.
   SavedTabGroupModelListener();
@@ -37,11 +57,15 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
-  // TabStripModelObserver:
-  void OnTabGroupChanged(const TabGroupChange& change) override;
+  // Testing Accessors.
+  std::unordered_map<Browser*, SavedTabGroupBrowserListener>&
+  GetBrowserListenerMapForTesting() {
+    return observed_browser_listeners_;
+  }
 
  private:
-  base::flat_set<raw_ptr<Browser>> observed_browsers_;
+  std::unordered_map<Browser*, SavedTabGroupBrowserListener>
+      observed_browser_listeners_;
   raw_ptr<SavedTabGroupModel> model_ = nullptr;
   raw_ptr<Profile> profile_;
 };

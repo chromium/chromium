@@ -15,61 +15,27 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 
-SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
-
-SavedTabGroupModelListener::SavedTabGroupModelListener(
-    SavedTabGroupModel* model,
-    Profile* profile)
-    : model_(model), profile_(profile) {
-  DCHECK(model);
-  DCHECK(profile);
-  BrowserList::GetInstance()->AddObserver(this);
-  for (Browser* browser : *BrowserList::GetInstance())
-    OnBrowserAdded(browser);
+// TODO(crbug/1376259): Update SavedTabGroupModel state with any groups that
+// should be in the SavedTabGroupModel.
+SavedTabGroupBrowserListener::SavedTabGroupBrowserListener(
+    Browser* browser,
+    SavedTabGroupModel* model)
+    : browser_(browser), model_(model) {
+  DCHECK(browser_);
+  browser_->tab_strip_model()->AddObserver(this);
 }
 
-SavedTabGroupModelListener::~SavedTabGroupModelListener() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-  // Note: Can no longer call OnBrowserRemoved here because model_ is already
-  // destroyed.
-  for (Browser* browser : observed_browsers_)
-    browser->tab_strip_model()->RemoveObserver(this);
-
-  observed_browsers_.clear();
+SavedTabGroupBrowserListener::~SavedTabGroupBrowserListener() {
+  if (browser_)
+    browser_->tab_strip_model()->RemoveObserver(this);
 }
 
-TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
-    tab_groups::TabGroupId group_id) {
-  auto contains_tab_group = [&](TabStripModel* model) {
-    return model->group_model()->ContainsTabGroup(group_id);
-  };
-  base::flat_set<raw_ptr<Browser>>::iterator it = base::ranges::find_if(
-      observed_browsers_, contains_tab_group, &Browser::tab_strip_model);
-  return it != observed_browsers_.end() ? it->get()->tab_strip_model()
-                                        : nullptr;
+bool SavedTabGroupBrowserListener::ContainsTabGroup(
+    tab_groups::TabGroupId group_id) const {
+  return browser_->tab_strip_model()->group_model()->ContainsTabGroup(group_id);
 }
 
-void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
-  if (profile_ != browser->profile())
-    return;
-  if (observed_browsers_.count(browser)) {
-    // TODO(crbug.com/1345680): Investigate the root cause of duplicate calls.
-    return;
-  }
-  observed_browsers_.insert(browser);
-  browser->tab_strip_model()->AddObserver(this);
-  // TODO(crbug/1376259): Update SavedTabGroupModel state with any groups that
-  // should be in the SavedTabGroupModel.
-}
-
-void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
-  if (profile_ != browser->profile())
-    return;
-  observed_browsers_.erase(browser);
-  browser->tab_strip_model()->RemoveObserver(this);
-}
-
-void SavedTabGroupModelListener::OnTabGroupChanged(
+void SavedTabGroupBrowserListener::OnTabGroupChanged(
     const TabGroupChange& change) {
   const TabStripModel* tab_strip_model = change.model;
   if (!model_->Contains(change.group))
@@ -107,4 +73,50 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
       return;
     }
   }
+}
+
+SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
+
+SavedTabGroupModelListener::SavedTabGroupModelListener(
+    SavedTabGroupModel* model,
+    Profile* profile)
+    : model_(model), profile_(profile) {
+  DCHECK(model);
+  DCHECK(profile);
+  BrowserList::GetInstance()->AddObserver(this);
+  for (Browser* browser : *BrowserList::GetInstance())
+    OnBrowserAdded(browser);
+}
+
+SavedTabGroupModelListener::~SavedTabGroupModelListener() {
+  BrowserList::GetInstance()->RemoveObserver(this);
+  observed_browser_listeners_.clear();
+}
+
+TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
+    tab_groups::TabGroupId group_id) {
+  auto it = base::ranges::find_if(
+      observed_browser_listeners_, [group_id](const auto& listener_pair) {
+        return listener_pair.second.ContainsTabGroup(group_id);
+      });
+  return it != observed_browser_listeners_.end()
+             ? it->second.browser()->tab_strip_model()
+             : nullptr;
+}
+
+void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
+  if (profile_ != browser->profile())
+    return;
+
+  // TODO(crbug.com/1345680): Investigate the root cause of duplicate calls.
+  if (observed_browser_listeners_.count(browser) > 0)
+    return;
+
+  observed_browser_listeners_.try_emplace(browser, browser, model_);
+}
+
+void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
+  if (profile_ != browser->profile())
+    return;
+  observed_browser_listeners_.erase(browser);
 }
