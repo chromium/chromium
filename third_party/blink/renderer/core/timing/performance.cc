@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/back_forward_cache_restoration.h"
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
@@ -161,29 +162,21 @@ void SwapEntries(PerformanceEntryVector& entries,
   entries[rightIndex] = tmp;
 }
 
-void InsertEntryIntoSortedList(std::list<Member<PerformanceEntry>>& all_entries,
-                               const Member<PerformanceEntry>& entry) {
-  for (auto it = all_entries.begin(); it != all_entries.end(); ++it) {
-    if (entry->startTime() <= it->Get()->startTime()) {
-      all_entries.insert(it, entry);
-      return;
-    }
-  }
-
-  all_entries.push_back(entry);
-}
-
 }  // namespace
 
-// TODO (jaspreetsandhu): If benchmarks suggest that the below algorithm is
-// inefficient we will look towards optimization.
-void MergePerformanceEntryVectorIntoList(
-    std::list<Member<PerformanceEntry>>& all_entries,
-    const PerformanceEntryVector& new_entries) {
-  std::list<Member<PerformanceEntry>> new_entries_list(new_entries.begin(),
-                                                       new_entries.end());
-  all_entries.merge(new_entries_list,
-                    PerformanceEntry::StartTimeCompareLessThan);
+PerformanceEntryVector MergePerformanceEntryVectors(
+    const PerformanceEntryVector& first_entry_vector,
+    const PerformanceEntryVector& second_entry_vector) {
+  PerformanceEntryVector merged_entries;
+  merged_entries.reserve(first_entry_vector.size() +
+                         second_entry_vector.size());
+
+  std::merge(first_entry_vector.begin(), first_entry_vector.end(),
+             second_entry_vector.begin(), second_entry_vector.end(),
+             std::back_inserter(merged_entries),
+             PerformanceEntry::StartTimeCompareLessThan);
+
+  return merged_entries;
 }
 
 using PerformanceObserverVector = HeapVector<Member<PerformanceObserver>>;
@@ -277,32 +270,45 @@ DOMHighResTimeStamp Performance::timeOrigin() const {
       cross_origin_isolated_capability_);
 }
 
-PerformanceEntryVector Performance::getEntries() {
-  std::list<Member<PerformanceEntry>> entries_list;
+PerformanceEntryVector Performance::getEntries(ScriptState* script_state,
+                                               bool include_frames) {
+  if (include_frames)
+    return GetEntriesWithChildFrames(script_state);
+  else
+    return GetEntriesForCurrentFrame();
+}
 
-  MergePerformanceEntryVectorIntoList(entries_list, resource_timing_buffer_);
-  if (first_input_timing_)
-    InsertEntryIntoSortedList(entries_list, *(first_input_timing_.Get()));
-  if (!navigation_timing_)
+PerformanceEntryVector Performance::GetEntriesForCurrentFrame() {
+  PerformanceEntryVector entries;
+
+  entries = MergePerformanceEntryVectors(entries, resource_timing_buffer_);
+  if (first_input_timing_) {
+    InsertEntryIntoSortedBuffer(entries, *first_input_timing_,
+                                kDoNotRecordSwaps);
+  }
+  if (!navigation_timing_) {
     navigation_timing_ = CreateNavigationTimingInstance();
+  }
   // This extra checking is needed when WorkerPerformance
   // calls this method.
-  if (navigation_timing_)
-    InsertEntryIntoSortedList(entries_list, *navigation_timing_);
+  if (navigation_timing_) {
+    InsertEntryIntoSortedBuffer(entries, *navigation_timing_,
+                                kDoNotRecordSwaps);
+  }
 
   if (user_timing_) {
-    MergePerformanceEntryVectorIntoList(entries_list, user_timing_->GetMarks());
-    MergePerformanceEntryVectorIntoList(entries_list,
-                                        user_timing_->GetMeasures());
+    entries = MergePerformanceEntryVectors(entries, user_timing_->GetMarks());
+    entries =
+        MergePerformanceEntryVectors(entries, user_timing_->GetMeasures());
   }
 
   if (paint_entries_timing_.size()) {
-    MergePerformanceEntryVectorIntoList(entries_list, paint_entries_timing_);
+    entries = MergePerformanceEntryVectors(entries, paint_entries_timing_);
   }
 
   if (RuntimeEnabledFeatures::NavigationIdEnabled(GetExecutionContext())) {
-    MergePerformanceEntryVectorIntoList(entries_list,
-                                        back_forward_cache_restoration_buffer_);
+    entries = MergePerformanceEntryVectors(
+        entries, back_forward_cache_restoration_buffer_);
   }
 
   if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
@@ -310,13 +316,7 @@ PerformanceEntryVector Performance::getEntries() {
       soft_navigation_buffer_.size()) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kSoftNavigationHeuristics);
-    MergePerformanceEntryVectorIntoList(entries_list, soft_navigation_buffer_);
-  }
-
-  // Convert entries_list into a PerformanceEntryVector.
-  PerformanceEntryVector entries;
-  for (auto& entry : entries_list) {
-    entries.push_back(entry);
+    entries = MergePerformanceEntryVectors(entries, soft_navigation_buffer_);
   }
 
   return entries;
@@ -330,6 +330,16 @@ PerformanceEntryVector Performance::getBufferedEntriesByType(
 }
 
 PerformanceEntryVector Performance::getEntriesByType(
+    ScriptState* script_state,
+    const AtomicString& entry_type,
+    bool include_frames) {
+  if (include_frames)
+    return GetEntriesWithChildFrames(script_state, entry_type);
+  else
+    return GetEntriesByTypeForCurrentFrame(entry_type);
+}
+
+PerformanceEntryVector Performance::GetEntriesByTypeForCurrentFrame(
     const AtomicString& entry_type) {
   PerformanceEntry::EntryType type =
       PerformanceEntry::ToEntryTypeEnum(entry_type);
@@ -432,22 +442,75 @@ PerformanceEntryVector Performance::getEntriesByTypeInternal(
 }
 
 PerformanceEntryVector Performance::getEntriesByName(
+    ScriptState* script_state,
     const AtomicString& name,
-    const AtomicString& entry_type) {
+    const AtomicString& entry_type,
+    bool include_frames) {
   PerformanceEntryVector entries;
   PerformanceEntryVector all_entries;
 
   // Get sorted entry list based on provided input.
-  if (entry_type == g_null_atom) {
-    all_entries = getEntries();
+  if (include_frames) {
+    all_entries = GetEntriesWithChildFrames(script_state, entry_type);
   } else {
-    all_entries = getEntriesByType(entry_type);
+    if (entry_type.IsNull()) {
+      all_entries = GetEntriesForCurrentFrame();
+    } else {
+      all_entries = GetEntriesByTypeForCurrentFrame(entry_type);
+    }
   }
 
+  // Filter all entries by name.
   for (const auto& entry : all_entries) {
     if (entry->name() == name)
       entries.push_back(entry);
   }
+
+  return entries;
+}
+
+PerformanceEntryVector Performance::GetEntriesWithChildFrames(
+    ScriptState* script_state,
+    const AtomicString& entry_type) {
+  PerformanceEntryVector entries;
+
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  LocalFrame* parent_frame = window->GetFrame();
+
+  HeapDeque<Member<Frame>> queue;
+  queue.push_back(parent_frame);
+
+  while (!queue.empty()) {
+    Frame* current_frame = queue.TakeFirst();
+
+    if (LocalFrame* local_frame = DynamicTo<LocalFrame>(current_frame);
+        local_frame && !local_frame->IsCrossOriginToNearestMainFrame()) {
+      // Get the Performance object from the current frame.
+      LocalDOMWindow* current_window = local_frame->GetDocument()->domWindow();
+      WindowPerformance* window_performance =
+          DOMWindowPerformance::performance(*current_window);
+
+      // Get the performance entries based on entry_type input.
+      PerformanceEntryVector current_entries;
+      if (entry_type.IsNull()) {
+        current_entries = window_performance->GetEntriesForCurrentFrame();
+      } else {
+        current_entries =
+            window_performance->GetEntriesByTypeForCurrentFrame(entry_type);
+      }
+
+      entries.AppendVector(current_entries);
+    }
+
+    // Add both Local and Remote Frames to the queue.
+    for (Frame* child = current_frame->FirstChild(); child;
+         child = child->NextSibling()) {
+      queue.push_back(child);
+    }
+  }
+
+  std::sort(entries.begin(), entries.end(),
+            PerformanceEntry::StartTimeCompareLessThan);
 
   return entries;
 }
@@ -594,7 +657,7 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
   // https://w3c.github.io/resource-timing/#dfn-add-a-performanceresourcetiming-entry
   if (CanAddResourceTimingEntry() &&
       !resource_timing_buffer_full_event_pending_) {
-    InsertEntryIntoSortedBuffer(resource_timing_buffer_, *entry);
+    InsertEntryIntoSortedBuffer(resource_timing_buffer_, *entry, kRecordSwaps);
     return;
   }
   // The Resource Timing entries have a special processing model in which there
@@ -671,7 +734,7 @@ void Performance::FireResourceTimingBufferFull(TimerBase*) {
 
 void Performance::AddElementTimingBuffer(PerformanceElementTiming& entry) {
   if (!IsElementTimingBufferFull()) {
-    InsertEntryIntoSortedBuffer(element_timing_buffer_, entry);
+    InsertEntryIntoSortedBuffer(element_timing_buffer_, entry, kRecordSwaps);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kElement)->value);
   }
@@ -679,7 +742,7 @@ void Performance::AddElementTimingBuffer(PerformanceElementTiming& entry) {
 
 void Performance::AddEventTimingBuffer(PerformanceEventTiming& entry) {
   if (!IsEventTimingBufferFull()) {
-    InsertEntryIntoSortedBuffer(event_timing_buffer_, entry);
+    InsertEntryIntoSortedBuffer(event_timing_buffer_, entry, kRecordSwaps);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kEvent)->value);
   }
@@ -688,7 +751,7 @@ void Performance::AddEventTimingBuffer(PerformanceEventTiming& entry) {
 void Performance::AddLayoutShiftBuffer(LayoutShift& entry) {
   probe::PerformanceEntryAdded(GetExecutionContext(), &entry);
   if (layout_shift_buffer_.size() < kDefaultLayoutShiftBufferSize) {
-    InsertEntryIntoSortedBuffer(layout_shift_buffer_, entry);
+    InsertEntryIntoSortedBuffer(layout_shift_buffer_, entry, kRecordSwaps);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kLayoutShift)->value);
   }
@@ -698,7 +761,8 @@ void Performance::AddLargestContentfulPaint(LargestContentfulPaint* entry) {
   probe::PerformanceEntryAdded(GetExecutionContext(), entry);
   if (largest_contentful_paint_buffer_.size() <
       kDefaultLargestContenfulPaintSize) {
-    InsertEntryIntoSortedBuffer(largest_contentful_paint_buffer_, *entry);
+    InsertEntryIntoSortedBuffer(largest_contentful_paint_buffer_, *entry,
+                                kRecordSwaps);
   } else {
     ++(dropped_entries_count_map_
            .find(PerformanceEntry::kLargestContentfulPaint)
@@ -710,7 +774,7 @@ void Performance::AddSoftNavigationToPerformanceTimeline(
     SoftNavigationEntry* entry) {
   probe::PerformanceEntryAdded(GetExecutionContext(), entry);
   if (soft_navigation_buffer_.size() < kDefaultSoftNavigationBufferSize) {
-    InsertEntryIntoSortedBuffer(soft_navigation_buffer_, *entry);
+    InsertEntryIntoSortedBuffer(soft_navigation_buffer_, *entry, kRecordSwaps);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kSoftNavigation)
            ->value);
@@ -734,7 +798,7 @@ void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
   DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||
          (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint));
   if (paint_entries_timing_.size() < kDefaultPaintEntriesBufferSize) {
-    InsertEntryIntoSortedBuffer(paint_entries_timing_, *entry);
+    InsertEntryIntoSortedBuffer(paint_entries_timing_, *entry, kRecordSwaps);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kPaint)->value);
   }
@@ -766,7 +830,7 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
       name, container_type, container_src, container_id, container_name,
       PerformanceEntry::GetNavigationId(execution_context));
   if (longtask_buffer_.size() < kDefaultLongTaskBufferSize) {
-    InsertEntryIntoSortedBuffer(longtask_buffer_, *entry);
+    InsertEntryIntoSortedBuffer(longtask_buffer_, *entry, kRecordSwaps);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kLongTask)->value);
     UseCounter::Count(execution_context, WebFeature::kLongTaskBufferFull);
@@ -790,7 +854,8 @@ void Performance::AddBackForwardCacheRestoration(
       PerformanceEntry::GetNavigationId(GetExecutionContext()));
   if (back_forward_cache_restoration_buffer_.size() <
       back_forward_cache_restoration_buffer_size_limit_) {
-    InsertEntryIntoSortedBuffer(back_forward_cache_restoration_buffer_, *entry);
+    InsertEntryIntoSortedBuffer(back_forward_cache_restoration_buffer_, *entry,
+                                kRecordSwaps);
   } else {
     ++(dropped_entries_count_map_
            .find(PerformanceEntry::kBackForwardCacheRestoration)
@@ -1147,11 +1212,12 @@ void Performance::BuildJSONValue(V8ObjectBuilder& builder) const {
   // |memory| is not part of the spec, omitted.
 }
 
-// Insert entry in PerformanceEntryVector while maintaining sorted order.
-// We assume that the order of insertion roughly corresponds to the order of
-// start time, resulting in relatively few swaps.
+// Insert entry in PerformanceEntryVector while maintaining sorted order (via
+// Bubble Sort). We assume that the order of insertion roughly corresponds to
+// the order of the StartTime, hence the sort beginning from the tail-end.
 void Performance::InsertEntryIntoSortedBuffer(PerformanceEntryVector& entries,
-                                              PerformanceEntry& entry) {
+                                              PerformanceEntry& entry,
+                                              Metrics record) {
   entries.push_back(&entry);
 
   int number_of_swaps = 0;
@@ -1161,8 +1227,10 @@ void Performance::InsertEntryIntoSortedBuffer(PerformanceEntryVector& entries,
     int left = entries.size() - 2;
     while (left >= 0 &&
            entries[left]->startTime() > entries[left + 1]->startTime()) {
-      UseCounter::Count(GetExecutionContext(),
-                        WebFeature::kPerformanceEntryBufferSwaps);
+      if (record == kRecordSwaps) {
+        UseCounter::Count(GetExecutionContext(),
+                          WebFeature::kPerformanceEntryBufferSwaps);
+      }
       number_of_swaps++;
       SwapEntries(entries, left, left + 1);
       left--;

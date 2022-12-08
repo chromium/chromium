@@ -258,7 +258,8 @@ void UserTiming::InsertPerformanceEntry(
     PerformanceEntryMap& performance_entry_map,
     PerformanceEntryVector& performance_entry_buffer,
     PerformanceEntry& entry) {
-  performance_->InsertEntryIntoSortedBuffer(performance_entry_buffer, entry);
+  performance_->InsertEntryIntoSortedBuffer(performance_entry_buffer, entry,
+                                            Performance::kDoNotRecordSwaps);
 
   auto it = performance_entry_map.find(entry.name());
   if (it == performance_entry_map.end()) {
@@ -270,7 +271,8 @@ void UserTiming::InsertPerformanceEntry(
   }
 
   DCHECK(it->value);
-  performance_->InsertEntryIntoSortedBuffer(*it->value.Get(), entry);
+  performance_->InsertEntryIntoSortedBuffer(*it->value.Get(), entry,
+                                            Performance::kDoNotRecordSwaps);
 }
 
 void UserTiming::ClearPerformanceEntries(

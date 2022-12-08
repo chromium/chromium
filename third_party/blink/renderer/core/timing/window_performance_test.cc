@@ -309,7 +309,7 @@ TEST_F(WindowPerformanceTest, EnsureEntryListOrder) {
     performance_->mark(GetScriptState(), AtomicString::Number(i), nullptr,
                        exception_state);
   }
-  PerformanceEntryVector entries = performance_->getEntries();
+  PerformanceEntryVector entries = performance_->getEntries(GetScriptState());
   EXPECT_EQ(17U, entries.size());
   for (int i = 0; i < 8; i++) {
     EXPECT_EQ(AtomicString::Number(i), entries[i]->name());
@@ -436,7 +436,7 @@ TEST_F(WindowPerformanceTest, FirstInput) {
     }
     SimulateSwapPromise(GetTimeOrigin() + base::Milliseconds(3));
     PerformanceEntryVector firstInputs =
-        performance_->getEntriesByType("first-input");
+        performance_->getEntriesByType(GetScriptState(), "first-input");
     EXPECT_GE(1u, firstInputs.size());
     EXPECT_EQ(input.should_report, firstInputs.size() == 1u);
     ResetPerformance();
@@ -453,9 +453,12 @@ TEST_F(WindowPerformanceTest, FirstInputAfterIgnored) {
                          GetTimeOrigin() + base::Milliseconds(2), 4);
     SimulateSwapPromise(GetTimeOrigin() + base::Milliseconds(3));
   }
-  ASSERT_EQ(1u, performance_->getEntriesByType("first-input").size());
+  ASSERT_EQ(
+      1u,
+      performance_->getEntriesByType(GetScriptState(), "first-input").size());
   EXPECT_EQ("mousedown",
-            performance_->getEntriesByType("first-input")[0]->name());
+            performance_->getEntriesByType(GetScriptState(), "first-input")[0]
+                ->name());
 }
 
 // Test that pointerdown followed by pointerup works as a 'firstInput'.
@@ -467,14 +470,20 @@ TEST_F(WindowPerformanceTest, FirstPointerUp) {
   RegisterPointerEvent("pointerdown", start_time, processing_start,
                        processing_end, 4);
   SimulateSwapPromise(swap_time);
-  EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(
+      0u,
+      performance_->getEntriesByType(GetScriptState(), "first-input").size());
   RegisterPointerEvent("pointerup", start_time, processing_start,
                        processing_end, 4);
   SimulateSwapPromise(swap_time);
-  EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(
+      1u,
+      performance_->getEntriesByType(GetScriptState(), "first-input").size());
   // The name of the entry should be "pointerdown".
   EXPECT_EQ(
-      1u, performance_->getEntriesByName("pointerdown", "first-input").size());
+      1u, performance_
+              ->getEntriesByName(GetScriptState(), "pointerdown", "first-input")
+              .size());
 }
 
 // When the pointerdown is optimized out, the mousedown works as a
@@ -487,10 +496,14 @@ TEST_F(WindowPerformanceTest, PointerdownOptimizedOut) {
   RegisterPointerEvent("mousedown", start_time, processing_start,
                        processing_end, 4);
   SimulateSwapPromise(swap_time);
-  EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(
+      1u,
+      performance_->getEntriesByType(GetScriptState(), "first-input").size());
   // The name of the entry should be "pointerdown".
   EXPECT_EQ(1u,
-            performance_->getEntriesByName("mousedown", "first-input").size());
+            performance_
+                ->getEntriesByName(GetScriptState(), "mousedown", "first-input")
+                .size());
 }
 
 // Test that pointerdown followed by mousedown, pointerup works as a
@@ -503,18 +516,26 @@ TEST_F(WindowPerformanceTest, PointerdownOnDesktop) {
   RegisterPointerEvent("pointerdown", start_time, processing_start,
                        processing_end, 4);
   SimulateSwapPromise(swap_time);
-  EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(
+      0u,
+      performance_->getEntriesByType(GetScriptState(), "first-input").size());
   RegisterPointerEvent("mousedown", start_time, processing_start,
                        processing_end, 4);
   SimulateSwapPromise(swap_time);
-  EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(
+      0u,
+      performance_->getEntriesByType(GetScriptState(), "first-input").size());
   RegisterPointerEvent("pointerup", start_time, processing_start,
                        processing_end, 4);
   SimulateSwapPromise(swap_time);
-  EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
+  EXPECT_EQ(
+      1u,
+      performance_->getEntriesByType(GetScriptState(), "first-input").size());
   // The name of the entry should be "pointerdown".
   EXPECT_EQ(
-      1u, performance_->getEntriesByName("pointerdown", "first-input").size());
+      1u, performance_
+              ->getEntriesByName(GetScriptState(), "pointerdown", "first-input")
+              .size());
 }
 
 TEST_F(WindowPerformanceTest, OneKeyboardInteraction) {
