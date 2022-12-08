@@ -1424,6 +1424,9 @@ class PolicyTemplateChecker(object):
 
     released_platforms = {}
     rolling_out_platform = {}
+    if policy == None:
+      return released_platforms, rolling_out_platform
+
     for supported_on in policy.get('supported_on', []):
       (supported_platform, supported_from,
        _) = _GetSupportedVersionPlatformAndRange(supported_on)
@@ -1832,7 +1835,7 @@ class PolicyTemplateChecker(object):
                         original_rolling_out_platforms),
               MergeDict(new_released_platforms, new_rolling_out_platform),
               current_version, new_policy)
-      else:
+      elif new_policy:
         (new_released_platforms,
          new_rolling_out_platform) = self._GetReleasedPlatforms(
              new_policy, current_version)
