@@ -651,6 +651,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
       std::make_unique<AccessibilityFeaturePodController>(this);
   auto screen_capture_controller =
       std::make_unique<CaptureModeFeaturePodController>(this);
+  auto cast_controller = std::make_unique<CastFeaturePodController>(this);
   auto vpn_controller = std::make_unique<VPNFeaturePodController>(this);
 
   std::vector<std::unique_ptr<FeatureTile>> tiles;
@@ -661,6 +662,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   tiles.push_back(
       std::make_unique<FeatureTile>(FeatureTile::TileType::kCompact));
 
+  tiles.push_back(cast_controller->CreateTile());
   tiles.push_back(vpn_controller->CreateTile());
 
   // More placeholder tiles.
@@ -672,6 +674,7 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
   // Transfer ownership of controllers to this.
   feature_pod_controllers_.push_back(std::move(accessibility_controller));
   feature_pod_controllers_.push_back(std::move(screen_capture_controller));
+  feature_pod_controllers_.push_back(std::move(cast_controller));
   feature_pod_controllers_.push_back(std::move(vpn_controller));
 }
 

@@ -184,6 +184,10 @@ void CastConfigControllerMediaRouter::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool CastConfigControllerMediaRouter::HasMediaRouterForPrimaryProfile() const {
+  return !!GetMediaRouter();
+}
+
 bool CastConfigControllerMediaRouter::HasSinksAndRoutes() const {
   return !devices_.empty();
 }

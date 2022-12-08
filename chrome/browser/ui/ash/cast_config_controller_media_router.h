@@ -40,6 +40,7 @@ class CastConfigControllerMediaRouter
   // CastConfigController:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  bool HasMediaRouterForPrimaryProfile() const override;
   bool HasSinksAndRoutes() const override;
   bool HasActiveRoute() const override;
   bool AccessCodeCastingEnabled() const override;

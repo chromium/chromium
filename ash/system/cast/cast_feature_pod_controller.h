@@ -9,6 +9,7 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/cast_config_controller.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
+#include "base/memory/weak_ptr.h"
 
 namespace ash {
 
@@ -29,6 +30,7 @@ class ASH_EXPORT CastFeaturePodController
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
+  std::unique_ptr<FeatureTile> CreateTile() override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
@@ -42,6 +44,8 @@ class ASH_EXPORT CastFeaturePodController
   // Unowned.
   UnifiedSystemTrayController* const tray_controller_;
   FeaturePodButton* button_ = nullptr;
+
+  base::WeakPtrFactory<CastFeaturePodController> weak_factory_{this};
 };
 
 }  // namespace ash
