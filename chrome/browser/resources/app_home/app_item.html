@@ -1,0 +1,37 @@
+<style>
+/* TODO(crbug.com/1350406): update the style after UI design
+   spec is finalized.*/
+
+:host {
+  display: block;
+  margin: 20px;
+  text-align: center;
+  width: 100px;
+}
+
+.icon-container {
+  border-radius: 50px;
+  box-shadow: 0 0 10px rgba(100,100,100);
+  height: 100px;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
+  width: 100px;
+}
+
+.text-container {
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.icon-image {
+  height: 64px;
+  margin-top: 18px;
+  width: 64px;
+}
+
+</style>
+
+<div class="icon-container">
+  <img src="[[data.iconUrl.url]]" class="icon-image" alt="App's icon"></img>
+</div>
+<div class="text-container">[[data.name]]</div>

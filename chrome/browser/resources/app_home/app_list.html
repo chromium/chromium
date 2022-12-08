@@ -1,58 +1,66 @@
 <style>
-/* TODO(crbug.com/1350406): update the style after UI design 
+  /* TODO(crbug.com/1350406): update the style after UI design
    spec is finalized.*/
+  #container {
+    align-content: center;
+    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    height: auto;
+    justify-content: center;
+    justify-items: center;
+    margin: 0 auto;
+    max-width: 1500px;
+    padding: 50px;
+    width: auto;
+  }
 
-#container {
-  align-content: center;
-  align-items: center;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  height: auto;
-  justify-content: center;
-  justify-items: center;
-  margin: 0 auto;
-  max-width: 1500px;
-  padding: 50px;
-  width: auto;
-}
+  .dropdown-item-label {
+    flex: 1;
+    padding-inline-end: 30px;
+  }
 
-.icon-container {
-  border-radius: 50px;
-  box-shadow: 0 0 10px rgba(100,100,100);
-  height: 100px;
-  text-align: center;
-  width: 100px;
-}
+  hr {
+    border-top: var(--cr-separator-line);
+    height: 0;
+  }
 
-.text-container {
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 20px;
-  text-align: center;
-}
-
-.element-container {
-  align-content: center;
-  justify-content: center;
-  margin: 20px;
-  width: 100px;
-}
-
-.icon-image {
-  height: 64px;
-  margin-top: 18px;
-  width: 64px;
-}
-
+  cr-checkbox::part(label-container) {
+    clip: rect(0,0,0,0);
+    display: block;
+    position: fixed;
+  }
 </style>
 
 <div id="container">
   <template is="dom-repeat" items="[[apps_]]">
-    <div class="element-container">
-      <div class="icon-container">
-        <img src="[[item.iconUrl.url]]" class="icon-image"></img>
-      </div>
-      <div class="text-container">[[item.name]]</div>
-    </div>
+    <app-item data="[[item]]"></app-item>
   </template>
 </div>
+
+<cr-action-menu id="menu">
+  <div tabindex="0" class="dropdown-item"
+      on-click="onOpenInWindowItemClick_">
+    <div class="dropdown-item-label">
+      Open in window
+    </div>
+    <cr-checkbox>Enable opening app in window</cr-checkbox>
+  </div>
+  <div tabindex="0" class="dropdown-item"
+      on-click="onLaunchOnStartupItemClick_">
+    <div class="dropdown-item-label">
+      Launch on startup
+    </div>
+    <cr-checkbox>Enable launching app on startup</cr-checkbox>
+  </div>
+  <button class="dropdown-item" on-click="onCreateAShortcutItemClick_">
+    Create a shortcut
+  </button>
+  <hr>
+  <button class="dropdown-item" on-click="onUninstallItemClick_">
+    Uninstall
+  </button>
+  <button class="dropdown-item" on-click="onAppSettingsItemClick_">
+    App settings
+  </button>
+</cr-action-menu>

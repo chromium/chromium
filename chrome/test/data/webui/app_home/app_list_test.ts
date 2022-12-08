@@ -4,6 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://apps/app_list.js';
+import 'chrome://apps/app_item.js';
 
 import {AppInfo, PageRemote} from 'chrome://apps/app_home.mojom-webui.js';
 import {AppListElement} from 'chrome://apps/app_list.js';
@@ -79,13 +80,8 @@ suite('AppListTest', () => {
   test('app list present', () => {
     assertTrue(!!appListElement);
 
-    assertTrue(!!appListElement.shadowRoot!.querySelector('.icon-image'));
-
-    assertTrue(!!appListElement.shadowRoot!.querySelector('.text-container'));
-
     const elementLength =
-        appListElement.shadowRoot!.querySelectorAll('.element-container')
-            .length;
+        appListElement.shadowRoot!.querySelectorAll('app-item').length;
     assertEquals(apps.appList.length, elementLength);
   });
 
@@ -94,18 +90,22 @@ suite('AppListTest', () => {
     callbackRouterRemote.addApp(testAppInfo);
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    let appNameList = Array.from(
-        appListElement.shadowRoot!.querySelectorAll('.text-container'));
-    assertTrue(!!appNameList.find(
-        appName => appName.textContent === testAppInfo.name));
+    let appItemList =
+        Array.from(appListElement.shadowRoot!.querySelectorAll('app-item'));
+    assertTrue(!!appItemList.find(
+        appItem => appItem.shadowRoot!.querySelector(
+                                          '.text-container')!.textContent ===
+            testAppInfo.name));
 
     // Test removing an app
     callbackRouterRemote.removeApp(testAppInfo);
     await callbackRouterRemote.$.flushForTesting();
     flush();
-    appNameList = Array.from(
-        appListElement.shadowRoot!.querySelectorAll('.text-container'));
-    assertFalse(!!appNameList.find(
-        appName => appName.textContent === testAppInfo.name));
+    appItemList =
+        Array.from(appListElement.shadowRoot!.querySelectorAll('app-item'));
+    assertFalse(!!appItemList.find(
+        appItem => appItem.shadowRoot!.querySelector(
+                                          '.text-container')!.textContent ===
+            testAppInfo.name));
   });
 });

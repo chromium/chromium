@@ -1,14 +1,31 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './app_item.js';
+import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppInfo, PageCallbackRouter} from './app_home.mojom-webui.js';
 import {getTemplate} from './app_list.html.js';
 import {BrowserProxy} from './browser_proxy.js';
 
+export interface ActionMenuModel {
+  data: AppInfo;
+  event: MouseEvent;
+}
+
+type OpenMenuEvent = CustomEvent<ActionMenuModel>;
+
+export interface AppListElement {
+  $: {
+    menu: CrActionMenuElement,
+  };
+}
 
 export class AppListElement extends PolymerElement {
   static get is() {
@@ -44,6 +61,11 @@ export class AppListElement extends PolymerElement {
     });
   }
 
+  override ready() {
+    super.ready();
+    this.addEventListener('open-menu', this.onOpenMenu_);
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -77,6 +99,39 @@ export class AppListElement extends PolymerElement {
     if (index !== -1) {
       this.splice('apps_', index, 1);
     }
+  }
+
+  private onOpenInWindowItemClick_() {
+    this.$.menu.close();
+  }
+
+  private onLaunchOnStartupItemClick_() {
+    this.$.menu.close();
+  }
+
+  private onCreateAShortcutItemClick_() {
+    this.$.menu.close();
+  }
+
+  private onUninstallItemClick_() {
+    this.$.menu.close();
+  }
+
+  private onAppSettingsItemClick_() {
+    this.$.menu.close();
+  }
+
+  private onOpenMenu_(event: OpenMenuEvent) {
+    this.$.menu.showAtPosition({
+      top: event.detail.event.clientY,
+      left: event.detail.event.clientX,
+    });
+  }
+}
+
+declare global {
+  interface HTMLElementEventMap {
+    'open-menu': OpenMenuEvent;
   }
 }
 
