@@ -193,6 +193,8 @@ class AccessCodeCastSinkService : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RefreshStoredDeviceInfo);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           RefreshExistingDeviceName);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RefreshStoredDeviceTimer);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            HandleMediaRouteAdded);
@@ -282,6 +284,9 @@ class AccessCodeCastSinkService : public KeyedService,
       const MediaSink::Id& sink_id);
 
   void RemoveAndDisconnectExistingSinksOnNetwork();
+
+  void UpdateExistingSink(const MediaSinkInternal& new_sink,
+                          const MediaSinkInternal* exisitng_sink);
 
   // DiscoveryNetworkMonitor::Observer implementation
   void OnNetworksChanged(const std::string& network_id) override;

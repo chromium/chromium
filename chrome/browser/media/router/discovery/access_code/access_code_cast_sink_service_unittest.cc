@@ -70,7 +70,7 @@ class AccessCodeCastSinkServiceTest : public testing::Test {
         message_handler_(mock_cast_socket_service_.get()),
         cast_media_sink_service_impl_(
             std::make_unique<MockCastMediaSinkServiceImpl>(
-                OnSinksDiscoveredCallback(),
+                mock_sink_discovered_cb_.Get(),
                 mock_cast_socket_service_.get(),
                 discovery_network_monitor_.get(),
                 &dual_media_sink_service_)) {
@@ -1317,6 +1317,43 @@ TEST_F(AccessCodeCastSinkServiceTest, RefreshStoredDeviceInfo) {
   EXPECT_EQ(*sink_1_dict, CreateValueDictFromMediaSinkInternal(new_sink_1));
   EXPECT_EQ(*sink_2_dict,
             CreateValueDictFromMediaSinkInternal(existing_sink_2));
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, RefreshExistingDeviceName) {
+  SetDeviceDurationPrefForTest(base::Seconds(100));
+
+  // Create fake sinks for test. Importantly, new_sink_1 has the same id as
+  // existing_sink_1, but they have different names.
+  MediaSinkInternal existing_sink_1 = CreateCastSink(1);
+  MediaSinkInternal new_sink_1 = CreateCastSink(1);
+  const std::string fake_new_sink_name = "Fake new sink";
+  new_sink_1.sink().set_name(fake_new_sink_name);
+  EXPECT_EQ(existing_sink_1.id(), new_sink_1.id());
+  EXPECT_NE(existing_sink_1.sink().name(), new_sink_1.sink().name());
+
+  existing_sink_1.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+  new_sink_1.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+
+  // Add existing sinks to the mock media router and stored prefs. Since the
+  // CastMediaSinkService is mocked out, just manually set everything instead.
+  mock_cast_media_sink_service_impl()->AddSinkForTest(existing_sink_1);
+
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  // Try to add new_sink_1, which has an id that matches an existing sink.
+  MockAddSinkResultCallback mock_callback;
+  access_code_cast_sink_service_->OpenChannelIfNecessary(
+      new_sink_1, mock_callback.Get(), /*has_sink=*/true);
+  FastForwardUiAndIoTasks();
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  EXPECT_EQ(mock_cast_media_sink_service_impl()
+                ->GetSinkById(existing_sink_1.id())
+                ->sink()
+                .name(),
+            new_sink_1.sink().name());
 }
 
 TEST_F(AccessCodeCastSinkServiceTest, RefreshStoredDeviceTimer) {

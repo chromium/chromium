@@ -365,6 +365,15 @@ void AccessCodeCastSinkService::OpenChannelIfNecessary(
       // information already in the media router.
       StoreSinkInPrefs(&sink);
       SetExpirationTimer(&sink);
+
+      // Get the existing sink to we can update its info.
+      cast_media_sink_service_impl_->task_runner()->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(&CastMediaSinkServiceImpl::GetSinkById,
+                         base::Unretained(cast_media_sink_service_impl_),
+                         sink.id()),
+          base::BindOnce(&AccessCodeCastSinkService::UpdateExistingSink,
+                         weak_ptr_factory_.GetWeakPtr(), sink));
     }
 
     std::move(add_sink_callback).Run(AddSinkResultCode::OK, sink.id());
@@ -740,6 +749,25 @@ void AccessCodeCastSinkService::RemoveAndDisconnectMediaSinkFromRouter(
       base::BindOnce(&CastMediaSinkServiceImpl::DisconnectAndRemoveSink,
                      base::Unretained(cast_media_sink_service_impl_), *sink),
       kExpirationDelay);
+}
+
+void AccessCodeCastSinkService::UpdateExistingSink(
+    const MediaSinkInternal& new_sink,
+    const MediaSinkInternal* existing_sink) {
+  // AddOrUpdate takes time, so avoid calling it if we can
+  if (existing_sink->sink().name() == new_sink.sink().name() &&
+      existing_sink->cast_data().capabilities ==
+          new_sink.cast_data().capabilities)
+    return;
+
+  MediaSinkInternal existing_sink_copy = *existing_sink;
+  existing_sink_copy.sink().set_name(new_sink.sink().name());
+  auto capabilities = new_sink.cast_data().capabilities;
+  existing_sink_copy.cast_data().capabilities = capabilities;
+  cast_media_sink_service_impl_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::AddOrUpdateSink,
+                                base::Unretained(cast_media_sink_service_impl_),
+                                existing_sink_copy));
 }
 
 void AccessCodeCastSinkService::RemoveSinkIdFromAllEntries(
