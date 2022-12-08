@@ -45,10 +45,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   ~CreditCardFormEventLogger() override;
 
-  void set_is_context_secure(bool is_context_secure) {
-    is_context_secure_ = is_context_secure;
-  }
-
   // Invoked when `suggestions` are successfully fetched. `with_offer` indicates
   // whether an offer is attached to any of the suggestion in the list.
   // `metadata_logging_context` contains information about whether any card has
@@ -133,7 +129,6 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // Returns whether the shown suggestions included a virtual credit card.
   bool DoSuggestionsIncludeVirtualCard();
 
-  bool is_context_secure_ = false;
   UnmaskAuthFlowType current_authentication_flow_;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
   bool has_logged_virtual_card_suggestion_selected_ = false;

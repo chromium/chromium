@@ -81,7 +81,6 @@ void CreditCardAccessManager::UpdateCreditCardFormEventLogger() {
   }
   form_event_logger_->set_server_record_type_count(server_record_type_count);
   form_event_logger_->set_local_record_type_count(local_record_type_count);
-  form_event_logger_->set_is_context_secure(client_->IsContextSecure());
 }
 
 bool CreditCardAccessManager::UnmaskedCardCacheIsEmpty() {

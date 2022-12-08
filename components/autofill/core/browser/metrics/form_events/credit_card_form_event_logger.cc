@@ -293,13 +293,6 @@ void CreditCardFormEventLogger::OnSuggestionsShownSubmittedOnce(
 void CreditCardFormEventLogger::OnLog(const std::string& name,
                                       FormEvent event,
                                       const FormStructure& form) const {
-  // Log in a different histogram for credit card forms on nonsecure pages so
-  // that form interactions on nonsecure pages can be analyzed on their own.
-  if (!is_context_secure_) {
-    base::UmaHistogramEnumeration(name + ".OnNonsecurePage", event,
-                                  NUM_FORM_EVENTS);
-  }
-
   // Log a different histogram for credit card forms with credit card offers
   // available so that selection rate with offers and rewards can be compared on
   // their own.

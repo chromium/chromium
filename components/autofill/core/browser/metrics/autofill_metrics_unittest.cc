@@ -8506,9 +8506,6 @@ TEST_F(AutofillMetricsTest, NonsecureCreditCardForm) {
   {
     base::HistogramTester histograms;
     SubmitForm(form);
-    histograms.ExpectBucketCount(
-        "Autofill.FormEvents.CreditCard.OnNonsecurePage",
-        FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
     histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
                                  FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
     histograms.ExpectBucketCount(
@@ -8553,11 +8550,6 @@ TEST_F(AutofillMetricsTest,
                                  FORM_EVENT_NO_SUGGESTION_WILL_SUBMIT_ONCE, 1);
     histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
                                  FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
-    // Check that the nonsecure histogram was not recorded. ExpectBucketCount()
-    // can't be used here because it expects the histogram to exist.
-    EXPECT_EQ(
-        0, histograms.GetTotalCountsForPrefix("Autofill.FormEvents.CreditCard")
-               ["Autofill.FormEvents.CreditCard.OnNonsecurePage"]);
   }
 }
 

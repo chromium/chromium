@@ -1756,25 +1756,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Autofill.FormEvents.CreditCard.OnNonsecurePage"
-    enum="AutofillFormEvent" expires_after="M77">
-  <owner>estark@chromium.org</owner>
-  <summary>
-    Autofill form events for credit card forms on nonsecure pages. These are
-    recorded when the user interacts with a form requesting a credit card.
-
-    Important caveat about submission metrics: - Submission using autofill data
-    is determined by simply evaluating if there was a fill operation in this
-    page. So, if the user filled with local data, completed erased or modified
-    the data after and then submitted, we would only emit one &quot;Submitted
-    with server suggestion filled (once)&quot;; - The submission segmentation
-    works by checking what kind of data was last filled for this type of form in
-    the page load. So, if a user initially filled with local data and after that
-    filled with server, we will only emit &quot;Submitted with server suggestion
-    filled (once)&quot;.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.FormEvents.CreditCard.WithOffer"
     enum="AutofillFormEvent" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>
