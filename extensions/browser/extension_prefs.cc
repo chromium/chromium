@@ -549,13 +549,11 @@ void ExtensionPrefs::SetListPref(const std::string& id,
   UpdateExtensionPrefInternal(id, pref, std::move(value));
 }
 
-void ExtensionPrefs::SetDictionaryPref(
-    const std::string& id,
-    const PrefMap& pref,
-    std::unique_ptr<base::DictionaryValue> value) {
+void ExtensionPrefs::SetDictionaryPref(const std::string& id,
+                                       const PrefMap& pref,
+                                       base::Value::Dict value) {
   DCHECK_EQ(pref.type, PrefType::kDictionary);
-  DCHECK_EQ(base::Value::Type::DICTIONARY, value->type());
-  UpdateExtensionPrefInternal(id, pref, std::move(*value));
+  UpdateExtensionPrefInternal(id, pref, base::Value(std::move(value)));
 }
 
 void ExtensionPrefs::SetTimePref(const std::string& id,
@@ -1800,15 +1798,6 @@ void ExtensionPrefs::ClearLastLaunchTimes() {
   }
 }
 
-void ExtensionPrefs::SetPref(const PrefMap& pref,
-                             std::unique_ptr<base::Value> value) {
-  DCHECK_EQ(PrefScope::kProfile, pref.scope);
-  DCHECK(CheckPrefType(pref.type, value.get()))
-      << "The value passed in does not match the expected PrefType for "
-      << pref.name;
-  prefs_->Set(pref.name, std::move(*value));
-}
-
 void ExtensionPrefs::SetIntegerPref(const PrefMap& pref, int value) {
   DCHECK_EQ(PrefScope::kProfile, pref.scope);
   DCHECK_EQ(PrefType::kInteger, pref.type);
@@ -1842,12 +1831,11 @@ void ExtensionPrefs::SetGURLPref(const PrefMap& pref, const GURL& value) {
   prefs_->SetString(pref.name, value.spec());
 }
 
-void ExtensionPrefs::SetDictionaryPref(
-    const PrefMap& pref,
-    std::unique_ptr<base::DictionaryValue> value) {
+void ExtensionPrefs::SetDictionaryPref(const PrefMap& pref,
+                                       base::Value::Dict value) {
   DCHECK_EQ(PrefScope::kProfile, pref.scope);
   DCHECK_EQ(PrefType::kDictionary, pref.type);
-  SetPref(pref, std::move(value));
+  prefs_->SetDict(pref.name, std::move(value));
 }
 
 int ExtensionPrefs::GetPrefAsInteger(const PrefMap& pref) const {
@@ -1880,14 +1868,11 @@ GURL ExtensionPrefs::GetPrefAsGURL(const PrefMap& pref) const {
   return GURL(prefs_->GetString(pref.name));
 }
 
-const base::DictionaryValue* ExtensionPrefs::GetPrefAsDictionary(
+const base::Value::Dict& ExtensionPrefs::GetPrefAsDictionary(
     const PrefMap& pref) const {
   DCHECK_EQ(PrefScope::kProfile, pref.scope);
   DCHECK_EQ(PrefType::kDictionary, pref.type);
-  // TODO (https://crbug.com/1342019) This should call
-  // `PrefService::GetDict`, which will in turn require the return type to
-  // be `base::Value::Dict`.
-  return &base::Value::AsDictionaryValue(prefs_->GetValue(pref.name));
+  return prefs_->GetDict(pref.name);
 }
 
 std::unique_ptr<prefs::ScopedDictionaryPrefUpdate>
@@ -1977,23 +1962,20 @@ bool ExtensionPrefs::HasIncognitoPrefValue(const std::string& pref_key) const {
   return has_incognito_pref_value;
 }
 
-const base::DictionaryValue* ExtensionPrefs::GetGeometryCache(
+const base::Value::Dict* ExtensionPrefs::GetGeometryCache(
     const std::string& extension_id) const {
   const base::Value::Dict* extension_prefs = GetExtensionPref(extension_id);
   if (!extension_prefs)
     return nullptr;
 
-  const base::Value* ext = extension_prefs->Find(kPrefGeometryCache);
-  if (!ext || !ext->is_dict())
-    return nullptr;
-
-  return &base::Value::AsDictionaryValue(*ext);
+  return extension_prefs->FindDict(kPrefGeometryCache);
 }
 
-void ExtensionPrefs::SetGeometryCache(
-    const std::string& extension_id,
-    std::unique_ptr<base::DictionaryValue> cache) {
-  UpdateExtensionPref(extension_id, kPrefGeometryCache, std::move(cache));
+void ExtensionPrefs::SetGeometryCache(const std::string& extension_id,
+                                      base::Value::Dict cache) {
+  UpdateExtensionPref(
+      extension_id, kPrefGeometryCache,
+      base::Value::ToUniquePtrValue(base::Value(std::move(cache))));
 }
 
 const base::Value::Dict& ExtensionPrefs::GetInstallSignature() const {

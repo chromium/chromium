@@ -82,20 +82,18 @@ void AppWindowGeometryCacheTest::AddGeometryAndLoadExtension(
     const gfx::Rect& bounds,
     const gfx::Rect& screen_bounds,
     ui::WindowShowState state) {
-  std::unique_ptr<base::DictionaryValue> dict =
-      std::make_unique<base::DictionaryValue>();
-  std::unique_ptr<base::DictionaryValue> value =
-      std::make_unique<base::DictionaryValue>();
-  value->SetIntKey("x", bounds.x());
-  value->SetIntKey("y", bounds.y());
-  value->SetIntKey("w", bounds.width());
-  value->SetIntKey("h", bounds.height());
-  value->SetIntKey("screen_bounds_x", screen_bounds.x());
-  value->SetIntKey("screen_bounds_y", screen_bounds.y());
-  value->SetIntKey("screen_bounds_w", screen_bounds.width());
-  value->SetIntKey("screen_bounds_h", screen_bounds.height());
-  value->SetIntKey("state", state);
-  dict->SetKey(window_id, base::Value::FromUniquePtrValue(std::move(value)));
+  base::Value::Dict dict;
+  base::Value::Dict value;
+  value.Set("x", bounds.x());
+  value.Set("y", bounds.y());
+  value.Set("w", bounds.width());
+  value.Set("h", bounds.height());
+  value.Set("screen_bounds_x", screen_bounds.x());
+  value.Set("screen_bounds_y", screen_bounds.y());
+  value.Set("screen_bounds_w", screen_bounds.width());
+  value.Set("screen_bounds_h", screen_bounds.height());
+  value.Set("state", state);
+  dict.Set(window_id, std::move(value));
   extension_prefs_->SetGeometryCache(extension_id, std::move(dict));
   LoadExtension(extension_id);
 }
@@ -269,25 +267,25 @@ TEST_F(AppWindowGeometryCacheTest, SaveGeometryAndStateToStore) {
   UnloadExtension(extension_id);
 
   // check if geometry got stored correctly in the state store
-  const base::DictionaryValue* dict =
+  const base::Value::Dict* dict =
       extension_prefs_->GetGeometryCache(extension_id);
   ASSERT_TRUE(dict);
 
-  ASSERT_TRUE(dict->FindKey(window_id));
+  ASSERT_TRUE(dict->Find(window_id));
 
-  ASSERT_EQ(bounds.x(), dict->FindIntPath(window_id + ".x"));
-  ASSERT_EQ(bounds.y(), dict->FindIntPath(window_id + ".y"));
-  ASSERT_EQ(bounds.width(), dict->FindIntPath(window_id + ".w"));
-  ASSERT_EQ(bounds.height(), dict->FindIntPath(window_id + ".h"));
+  ASSERT_EQ(bounds.x(), dict->FindIntByDottedPath(window_id + ".x"));
+  ASSERT_EQ(bounds.y(), dict->FindIntByDottedPath(window_id + ".y"));
+  ASSERT_EQ(bounds.width(), dict->FindIntByDottedPath(window_id + ".w"));
+  ASSERT_EQ(bounds.height(), dict->FindIntByDottedPath(window_id + ".h"));
   ASSERT_EQ(screen_bounds.x(),
-            dict->FindIntPath(window_id + ".screen_bounds_x"));
+            dict->FindIntByDottedPath(window_id + ".screen_bounds_x"));
   ASSERT_EQ(screen_bounds.y(),
-            dict->FindIntPath(window_id + ".screen_bounds_y"));
+            dict->FindIntByDottedPath(window_id + ".screen_bounds_y"));
   ASSERT_EQ(screen_bounds.width(),
-            dict->FindIntPath(window_id + ".screen_bounds_w"));
+            dict->FindIntByDottedPath(window_id + ".screen_bounds_w"));
   ASSERT_EQ(screen_bounds.height(),
-            dict->FindIntPath(window_id + ".screen_bounds_h"));
-  ASSERT_EQ(state, dict->FindIntPath(window_id + ".state"));
+            dict->FindIntByDottedPath(window_id + ".screen_bounds_h"));
+  ASSERT_EQ(state, dict->FindIntByDottedPath(window_id + ".state"));
 
   // reload extension
   LoadExtension(extension_id);

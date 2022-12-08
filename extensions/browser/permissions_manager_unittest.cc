@@ -97,15 +97,15 @@ PermissionsManagerUnittest::AddExtensionWithHostPermission(
 }
 
 const base::Value* PermissionsManagerUnittest::GetRestrictedSitesFromPrefs() {
-  const base::DictionaryValue* permissions =
+  const base::Value::Dict& permissions =
       extension_prefs_->GetPrefAsDictionary(kUserPermissions);
-  return permissions->FindKey("restricted_sites");
+  return permissions.Find("restricted_sites");
 }
 
 const base::Value* PermissionsManagerUnittest::GetPermittedSitesFromPrefs() {
-  const base::DictionaryValue* permissions =
+  const base::Value::Dict& permissions =
       extension_prefs_->GetPrefAsDictionary(kUserPermissions);
-  return permissions->FindKey("permitted_sites");
+  return permissions.Find("permitted_sites");
 }
 
 std::set<url::Origin>

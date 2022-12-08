@@ -271,15 +271,14 @@ class ExtensionPrefs : public KeyedService {
   void SetStringPref(const PrefMap& pref, const std::string& value);
   void SetTimePref(const PrefMap& pref, base::Time value);
   void SetGURLPref(const PrefMap& pref, const GURL& value);
-  void SetDictionaryPref(const PrefMap& pref,
-                         std::unique_ptr<base::DictionaryValue> value);
+  void SetDictionaryPref(const PrefMap& pref, base::Value::Dict value);
 
   int GetPrefAsInteger(const PrefMap& pref) const;
   bool GetPrefAsBoolean(const PrefMap& pref) const;
   std::string GetPrefAsString(const PrefMap& pref) const;
   base::Time GetPrefAsTime(const PrefMap& pref) const;
   GURL GetPrefAsGURL(const PrefMap& pref) const;
-  const base::DictionaryValue* GetPrefAsDictionary(const PrefMap& pref) const;
+  const base::Value::Dict& GetPrefAsDictionary(const PrefMap& pref) const;
 
   // Returns a wrapper that allows to update an ExtensionPref with a
   // PrefType::kDictionary.
@@ -303,7 +302,7 @@ class ExtensionPrefs : public KeyedService {
                    base::Value value);
   void SetDictionaryPref(const std::string& id,
                          const PrefMap& pref,
-                         std::unique_ptr<base::DictionaryValue> value);
+                         base::Value::Dict value);
   void SetTimePref(const std::string& id,
                    const PrefMap& pref,
                    const base::Time value);
@@ -672,10 +671,10 @@ class ExtensionPrefs : public KeyedService {
 
   // Used by AppWindowGeometryCache to persist its cache. These methods
   // should not be called directly.
-  const base::DictionaryValue* GetGeometryCache(
+  const base::Value::Dict* GetGeometryCache(
       const std::string& extension_id) const;
   void SetGeometryCache(const std::string& extension_id,
-                        std::unique_ptr<base::DictionaryValue> cache);
+                        base::Value::Dict cache);
 
   // Used for verification of installed extension ids. For the Set method, pass
   // null to remove the preference.
@@ -816,9 +815,6 @@ class ExtensionPrefs : public KeyedService {
       bool extensions_disabled,
       const std::vector<EarlyExtensionPrefsObserver*>& early_observers);
 
-  // Sets profile wide ExtensionPrefs.
-  void SetPref(const PrefMap& pref, std::unique_ptr<base::Value> value);
-
   // Updates ExtensionPrefs for a specific extension.
   void UpdateExtensionPrefInternal(const std::string& id,
                                    const PrefMap& pref,
@@ -827,10 +823,6 @@ class ExtensionPrefs : public KeyedService {
   // Converts absolute paths in the pref to paths relative to the
   // install_directory_.
   void MakePathsRelative();
-
-  // Converts internal relative paths to be absolute. Used for export to
-  // consumers who expect full paths.
-  void MakePathsAbsolute(base::DictionaryValue* dict);
 
   // Helper function used by GetInstalledExtensionInfo() and
   // GetDelayedInstallInfo() to construct an ExtensionInfo from the provided

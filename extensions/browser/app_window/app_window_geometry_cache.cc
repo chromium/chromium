@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/json/values_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -100,31 +101,27 @@ void AppWindowGeometryCache::SyncToStorage() {
     const std::string& extension_id = *sync_it;
     const ExtensionData& extension_data = cache_[extension_id];
 
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
+    base::Value::Dict dict;
     for (auto data_it = extension_data.cbegin(),
               data_eit = extension_data.cend();
          data_it != data_eit; ++data_it) {
-      std::unique_ptr<base::DictionaryValue> value =
-          std::make_unique<base::DictionaryValue>();
+      base::Value::Dict value;
       const gfx::Rect& bounds = data_it->second.bounds;
       const gfx::Rect& screen_bounds = data_it->second.screen_bounds;
       DCHECK(!bounds.IsEmpty());
       DCHECK(!screen_bounds.IsEmpty());
       DCHECK(data_it->second.window_state != ui::SHOW_STATE_DEFAULT);
-      value->SetIntKey("x", bounds.x());
-      value->SetIntKey("y", bounds.y());
-      value->SetIntKey("w", bounds.width());
-      value->SetIntKey("h", bounds.height());
-      value->SetIntKey("screen_bounds_x", screen_bounds.x());
-      value->SetIntKey("screen_bounds_y", screen_bounds.y());
-      value->SetIntKey("screen_bounds_w", screen_bounds.width());
-      value->SetIntKey("screen_bounds_h", screen_bounds.height());
-      value->SetIntKey("state", data_it->second.window_state);
-      value->SetStringKey(
-          "ts",
-          base::NumberToString(data_it->second.last_change.ToInternalValue()));
-      dict->SetKey(data_it->first,
-                   base::Value::FromUniquePtrValue(std::move(value)));
+      value.Set("x", bounds.x());
+      value.Set("y", bounds.y());
+      value.Set("w", bounds.width());
+      value.Set("h", bounds.height());
+      value.Set("screen_bounds_x", screen_bounds.x());
+      value.Set("screen_bounds_y", screen_bounds.y());
+      value.Set("screen_bounds_w", screen_bounds.width());
+      value.Set("screen_bounds_h", screen_bounds.height());
+      value.Set("state", data_it->second.window_state);
+      value.Set("ts", base::TimeToValue(data_it->second.last_change));
+      dict.Set(data_it->first, std::move(value));
 
       for (auto& observer : observers_)
         observer.OnGeometryCacheChanged(extension_id, data_it->first, bounds);
@@ -202,12 +199,12 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
     const std::string& extension_id) {
   ExtensionData& extension_data = cache_[extension_id];
 
-  const base::DictionaryValue* stored_windows =
+  const base::Value::Dict* stored_windows =
       prefs_->GetGeometryCache(extension_id);
   if (!stored_windows)
     return;
 
-  for (const auto item : stored_windows->GetDict()) {
+  for (const auto item : *stored_windows) {
     // If the cache already contains geometry for this window, don't
     // overwrite that information since it is probably the result of an
     // application starting up very quickly.

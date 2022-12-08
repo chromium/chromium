@@ -79,15 +79,15 @@ void RemoveSiteFromPrefs(ExtensionPrefs* extension_prefs,
 // Returns sites from `pref` in `extension_prefs`.
 std::set<url::Origin> GetSitesFromPrefs(ExtensionPrefs* extension_prefs,
                                         const char* pref) {
-  const base::Value* user_permissions =
+  const base::Value::Dict& user_permissions =
       extension_prefs->GetPrefAsDictionary(kUserPermissions);
   std::set<url::Origin> sites;
 
-  auto* list = user_permissions->FindListKey(pref);
+  auto* list = user_permissions.FindList(pref);
   if (!list)
     return sites;
 
-  for (const auto& site : list->GetList()) {
+  for (const auto& site : *list) {
     const std::string* site_as_string = site.GetIfString();
     if (!site_as_string)
       continue;
