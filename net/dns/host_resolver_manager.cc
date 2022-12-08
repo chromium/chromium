@@ -2560,11 +2560,19 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
     if (error == OK) {
       DCHECK(task_type.has_value());
-      if (IsGoogleHostWithAlpnH3(GetHostname(key_.host))) {
+      // Record, for HTTPS-capable queries to a host known to serve HTTPS
+      // records, whether the HTTPS record was successfully received.
+      if (key_.query_types.Has(DnsQueryType::HTTPS) &&
+          // Skip http- and ws-schemed hosts. Although they query HTTPS records,
+          // successful queries are reported as errors, which would skew the
+          // metrics.
+          (GetScheme(key_.host) == url::kHttpsScheme ||
+           GetScheme(key_.host) == url::kWssScheme) &&
+          IsGoogleHostWithAlpnH3(GetHostname(key_.host))) {
         bool has_metadata =
             results.GetMetadatas() && !results.GetMetadatas()->empty();
         base::UmaHistogramExactLinear(
-            "Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability",
+            "Net.DNS.H3SupportedGoogleHost.TaskTypeMetadataAvailability2",
             static_cast<int>(task_type.value()) * 2 + (has_metadata ? 1 : 0),
             (static_cast<int>(TaskType::kMaxValue) + 1) * 2);
       }
