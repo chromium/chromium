@@ -646,6 +646,12 @@ const kLayouts = {
   'ca.ansi': kUsEnglish,
   /* Canada (French keyboard) */
   'ca.fr': kCaFrench,
+  /* Canada (Hybrid ISO Keyboard) */
+  'ca.hybrid': kCaFrench,
+  /* Canada (Hybrid Ansi keyboard) */
+  'ca.hybridansi': kCaFrench,
+  /* Canada (Multilingual ISO, Probably not in use) */
+  'ca.multix': kCaFrench,
   /* Switzerland */
   'ch': [
     ...kQwertzLetters,
