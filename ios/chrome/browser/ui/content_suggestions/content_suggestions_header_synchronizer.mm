@@ -134,7 +134,19 @@ initWithCollectionController:
       MAX(-self.additionalOffset, pinnedOffsetY - [self adjustedOffset].y);
   self.shouldAnimateHeader = YES;
 
+  CGFloat pinnedOffsetBeforeAnimation = [self pinnedOffsetY];
   __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock shiftOmniboxToTop = ^{
+    __typeof(weakSelf) strongSelf = weakSelf;
+    // Changing the contentOffset of the collection results in a
+    // scroll and a change in the constraints of the header.
+    strongSelf.collectionView.contentOffset =
+        CGPointMake(0, [strongSelf pinnedOffsetY]);
+    // Layout the header for the constraints to be animated.
+    [strongSelf.headerController layoutHeader];
+    [strongSelf.collectionView.collectionViewLayout invalidateLayout];
+  };
 
   self.animator = [[UIViewPropertyAnimator alloc]
       initWithDuration:kShiftTilesUpAnimationDuration
@@ -149,14 +161,7 @@ initWithCollectionController:
                   [self pinnedOffsetY]) {
                 if (animations)
                   animations();
-                // Changing the contentOffset of the collection results in a
-                // scroll and a change in the constraints of the header.
-                strongSelf.collectionView.contentOffset =
-                    CGPointMake(0, [self pinnedOffsetY]);
-                // Layout the header for the constraints to be animated.
-                [strongSelf.headerController layoutHeader];
-                [strongSelf.collectionView
-                        .collectionViewLayout invalidateLayout];
+                shiftOmniboxToTop();
               }
             }];
 
@@ -167,6 +172,19 @@ initWithCollectionController:
     }
 
     if (finalPosition == UIViewAnimatingPositionEnd) {
+      // Content suggestion headers can be updated during the scroll, causing
+      // `pinnedOffsetY` to be invalid. When this happens during the animation,
+      // the tiles are not scrolled to the top causing the omnibox to be hidden
+      // by the `PrimaryToolbarView`. In that state, the omnibox's popup and the
+      // keyboard are still visible.
+      // If the animation is not interrupted and `pinnedOffsetY` changed
+      // during the animation, shift the omnibox to the top at the end of the
+      // animation.
+      if ([strongSelf pinnedOffsetY] != pinnedOffsetBeforeAnimation &&
+          strongSelf.collectionView.contentOffset.y <
+              [strongSelf pinnedOffsetY]) {
+        shiftOmniboxToTop();
+      }
       strongSelf.shouldAnimateHeader = NO;
     }
 
