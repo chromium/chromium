@@ -133,7 +133,7 @@ BASE_FEATURE(kPersonalizeFeedUnsignedUsers,
 
 BASE_FEATURE(kPersonalizeFeedNonSyncUsers,
              "PersonalizeFeedNonSyncUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 signin::ConsentLevel GetConsentLevelNeededForPersonalizedFeed() {
   if (!base::FeatureList::IsEnabled(kPersonalizeFeedNonSyncUsers))

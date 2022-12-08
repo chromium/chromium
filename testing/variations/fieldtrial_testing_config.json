@@ -10720,26 +10720,6 @@
             ]
         }
     ],
-    "SyncAndroidPromosRevamp": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithIllustrationAndTitle_3",
-                    "enable_features": [
-                        "SyncAndroidPromosWithIllustration",
-                        "SyncAndroidPromosWithTitle"
-                    ],
-                    "disable_features": [
-                        "SyncAndroidPromosWithAlternativeTitle",
-                        "SyncAndroidPromosWithSingleButton"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncPromoAfterSigninInterceptStudy": [
         {
             "platforms": [

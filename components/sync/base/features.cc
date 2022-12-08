@@ -34,7 +34,7 @@ BASE_FEATURE(kSyncAndroidLimitNTPPromoImpressions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncAndroidPromosWithAlternativeTitle,
              "SyncAndroidPromosWithAlternativeTitle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncAndroidPromosWithIllustration,
              "SyncAndroidPromosWithIllustration",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -43,7 +43,7 @@ BASE_FEATURE(kSyncAndroidPromosWithSingleButton,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncAndroidPromosWithTitle,
              "SyncAndroidPromosWithTitle",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSyncAutofillWalletUsageData,
