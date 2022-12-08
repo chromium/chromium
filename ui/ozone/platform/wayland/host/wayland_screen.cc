@@ -226,6 +226,10 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
     color_spaces.SetOutputColorSpaceAndBufferFormat(
         gfx::ContentColorUsage::kWideColorGamut, false,
         gfx::ColorSpace::CreateDisplayP3D65(), image_format_no_alpha_.value());
+    // SRGB10Bit was designed to provide 5x relative brightness.
+    color_spaces.SetHDRMaxLuminanceRelative(5);
+    // sRGB is defined to have a luminance level of 80 nits.
+    color_spaces.SetSDRMaxLuminanceNits(80);
   }
 #endif
 
