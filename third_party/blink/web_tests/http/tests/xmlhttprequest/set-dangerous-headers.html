@@ -13,6 +13,7 @@
     req.setRequestHeader("ACCEPT-ENCODING", "foobar");
     req.setRequestHeader("ACCESS-CONTROL-REQUEST-HEADERS", "foobar");
     req.setRequestHeader("ACCESS-CONTROL-REQUEST-METHOD", "foobar");
+    req.setRequestHeader("ACCESS-CONTROL-REQUEST-PRIVATE-NETWORK", "true");
     // AUTHORIZATION is no longer forbidden. See
     // https://bugs.webkit.org/show_bug.cgi?id=24957 for more details. Set to
     // a value other than the foobar since some http servers (lighttp) do not

@@ -2051,6 +2051,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       "oRiGiN",
       "Access-Control-Request-Headers",
       "Access-Control-Request-Method",
+      "Access-Control-Request-Private-Network",
   };
 
   for (size_t index = 0; index < std::size(kUnsafeHeaders); ++index) {

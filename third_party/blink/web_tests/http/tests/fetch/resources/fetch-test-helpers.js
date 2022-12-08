@@ -90,12 +90,35 @@ var INVALID_HEADER_VALUES = [
   'test\0',
   '\0'.repeat(100000), 'x'.repeat(100000) + '\0'];
 
-var FORBIDDEN_HEADER_NAMES =
-  ['Accept-Charset', 'Accept-Encoding', 'Access-Control-Request-Headers',
-   'Access-Control-Request-Method', 'Connection', 'Content-Length',
-   'Cookie', 'Cookie2', 'Date', 'DNT', 'Expect', 'Host', 'Keep-Alive',
-   'Origin', 'Referer', 'Set-Cookie', 'TE', 'Trailer', 'Transfer-Encoding',
-   'Upgrade', 'User-Agent', 'Via', 'Proxy-', 'Sec-', 'Proxy-FooBar', 'Sec-FooBar'];
+var FORBIDDEN_HEADER_NAMES = [
+  'Accept-Charset',
+  'Accept-Encoding',
+  'Access-Control-Request-Headers',
+  'Access-Control-Request-Method',
+  'Access-Control-Request-Private-Network',
+  'Connection',
+  'Content-Length',
+  'Cookie',
+  'Cookie2',
+  'Date',
+  'DNT',
+  'Expect',
+  'Host',
+  'Keep-Alive',
+  'Origin',
+  'Referer',
+  'Set-Cookie',
+  'TE',
+  'Trailer',
+  'Transfer-Encoding',
+  'Upgrade',
+  'User-Agent',
+  'Via',
+  'Proxy-',
+  'Sec-',
+  'Proxy-FooBar',
+  'Sec-FooBar'
+];
 var FORBIDDEN_RESPONSE_HEADER_NAMES =
   ['Set-Cookie', 'Set-Cookie2',
    'set-cookie', 'set-cookie2',
