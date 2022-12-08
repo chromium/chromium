@@ -4105,6 +4105,14 @@
     "expiry_milestone": 97
   },
   {
+    "name": "https-upgrades",
+    "owners": [
+      "cthomp",
+      "trusty-transport@chromium.org"
+    ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "identity-status-consistency",
     "owners": [ "triploblastic", "chrome-signin-team" ],
     "expiry_milestone":120

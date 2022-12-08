@@ -58055,6 +58055,7 @@ from previous Chrome versions.
   <int value="-1420848224" label="WebViewForceDarkModeMatchTheme:enabled"/>
   <int value="-1420542268" label="AutofillEnableAccountWalletStorage:disabled"/>
   <int value="-1420478723" label="EapGtcWifiAuthentication:enabled"/>
+  <int value="-1420228244" label="HttpsUpgrades:enabled"/>
   <int value="-1420160984" label="PasswordsGrouping:enabled"/>
   <int value="-1419908365"
       label="EnableWebHidOnExtensionServiceWorker:disabled"/>
@@ -60300,6 +60301,7 @@ from previous Chrome versions.
       label="NTPArticleSuggestionsExpandableHeader:enabled"/>
   <int value="-110726049" label="KeyboardLockAPI:disabled"/>
   <int value="-110465424" label="PictureInPicture:enabled"/>
+  <int value="-109901772" label="HttpsUpgrades:disabled"/>
   <int value="-109569254" label="QueryTilesInOmnibox:enabled"/>
   <int value="-108881882" label="NTPCondensedTileLayout:enabled"/>
   <int value="-108468535" label="ChromeColorsCustomColorPicker:disabled"/>

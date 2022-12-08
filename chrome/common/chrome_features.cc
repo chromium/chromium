@@ -638,6 +638,11 @@ BASE_FEATURE(kHideWebAppOriginText,
 // Sets whether the HTTPS-Only Mode setting is displayed in the settings UI.
 BASE_FEATURE(kHttpsOnlyMode, "HttpsOnlyMode", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables automatically upgrading main frame navigations to HTTPS.
+BASE_FEATURE(kHttpsUpgrades,
+             "HttpsUpgrades",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kImmersiveFullscreen,
              "ImmersiveFullscreen",
