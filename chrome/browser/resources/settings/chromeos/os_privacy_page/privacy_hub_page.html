@@ -48,6 +48,12 @@
       sub-label="$i18n{microphoneToggleSubtext}"
       disabled="[[shouldDisableMicrophoneToggle_]]"
       on-change="onMicrophoneToggleChanged_">
+    <cr-tooltip-icon
+      hidden$="[[!microphoneHardwareToggleActive_]]"
+      tooltip-text="$i18n{microphoneHwToggleTooltip}"
+      icon-class="cr:info-outline"
+      slot="more-actions">
+    </cr-tooltip-icon>
   </settings-toggle-button>
 
   <div class="list-frame">
