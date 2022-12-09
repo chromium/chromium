@@ -367,7 +367,7 @@ void PopulateInfoMapWithInstalledEngagedInTimePeriod(
   std::map<std::string, std::string> installed_origins_map;
   if (web_app::AreWebAppsUserInstallable(profile)) {
     const web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::GetForWebApps(profile)->registrar();
+        web_app::WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
     auto app_ids = registrar.GetAppIds();
     for (auto& app_id : app_ids) {
       GURL scope = registrar.GetAppScope(app_id);
