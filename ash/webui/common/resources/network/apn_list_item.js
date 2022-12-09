@@ -106,7 +106,7 @@ class ApnListItem extends ApnListItemBase {
     assert(this.guid);
     assert(this.apn);
     if (!this.apn.id) {
-      console.error('Only custom APNs can be modified.');
+      console.error('Only custom APNs can be disabled.');
       return;
     }
 
@@ -129,12 +129,12 @@ class ApnListItem extends ApnListItemBase {
     assert(this.guid);
     assert(this.apn);
     if (!this.apn.id) {
-      console.error('Only custom APNs can be modified.');
+      console.error('Only custom APNs can be enabled.');
       return;
     }
 
     if (this.apn.state !== ApnState.kDisabled) {
-      console.error('Only an APN that is diabled can be enabled.');
+      console.error('Only an APN that is disabled can be enabled.');
       return;
     }
 
@@ -159,16 +159,6 @@ class ApnListItem extends ApnListItemBase {
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
     this.networkConfig_.removeCustomApn(
         this.guid, /** @type {string} */ (this.apn.id));
-  }
-
-  /**
-   * Returns true if detail menu button should be shown.
-   * TODO(b/162365553): Implement.
-   * @return {boolean}
-   * @private
-   */
-  shouldShowDetailsMenuItem_() {
-    return true;
   }
 
   /**

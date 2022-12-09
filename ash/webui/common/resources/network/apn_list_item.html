@@ -60,26 +60,27 @@
     focus-row-control focus-type="menu">
 </cr-icon-button>
 
-<!-- TODO(b/162365553): Change from using hidden attribute to using dom-ifs -->
 <cr-action-menu id="dotsMenu" role-description="[[i18n('menu')]]">
   <button id="detailsButton" class="dropdown-item"
-      hidden="[[!shouldShowDetailsMenuItem_(apn)]]"
       on-click="onDetailsClicked_">
     [[i18n('apnMenuDetails')]]
   </button>
-  <button id="disableButton" class="dropdown-item"
-      hidden="[[!shouldShowDisableMenuItem_(apn)]]"
-      on-click="onDisableClicked_">
-    [[i18n('apnMenuDisable')]]
-  </button>
-  <button id="enableButton" class="dropdown-item"
-      hidden="[[!shouldShowEnableMenuItem_(apn)]]"
-      on-click="onEnableClicked_">
-    [[i18n('apnMenuEnable')]]
-  </button>
-  <button id="removeButton" class="dropdown-item"
-      hidden="[[!shouldShowRemoveMenuItem_(apn)]]"
-      on-click="onRemoveClicked_">
-    [[i18n('apnMenuRemove')]]
-  </button>
+  <template is="dom-if" if="[[shouldShowDisableMenuItem_(apn)]]" restamp>
+    <button id="disableButton" class="dropdown-item"
+        on-click="onDisableClicked_">
+      [[i18n('apnMenuDisable')]]
+    </button>
+  </template>
+  <template is="dom-if" if="[[shouldShowEnableMenuItem_(apn)]]" restamp>
+    <button id="enableButton" class="dropdown-item"
+        on-click="onEnableClicked_">
+      [[i18n('apnMenuEnable')]]
+    </button>
+  </template>
+  <template is="dom-if" if="[[shouldShowRemoveMenuItem_(apn)]]" restamp>
+    <button id="removeButton" class="dropdown-item"
+        on-click="onRemoveClicked_">
+      [[i18n('apnMenuRemove')]]
+    </button>
+  </template>
 </cr-action-menu>
