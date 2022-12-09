@@ -295,7 +295,8 @@ TEST_F(ProcessOutputWatcherTest, ContainsInvalidUTF8) {
   RunTest(test_cases);
 }
 
-TEST_F(ProcessOutputWatcherTest, InvalidUTF8SeriesOfTrailingBytes) {
+// TODO(crbug.com/1399698): Re-enable this test
+TEST_F(ProcessOutputWatcherTest, DISABLED_InvalidUTF8SeriesOfTrailingBytes) {
   std::vector<TestCase> test_cases;
   test_cases.push_back(TestCase("\x82\x82\x82", false, "\x82\x82\x82"));
   test_cases.push_back(TestCase("\x82\x82\x82", false, "\x82\x82\x82"));
