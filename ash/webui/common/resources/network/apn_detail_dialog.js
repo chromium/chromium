@@ -43,7 +43,7 @@ const IpTypes = [
 /** @enum {number} */
 const UiElement = {
   INPUT: 0,
-  ADD_BUTTON: 1,
+  ACTION_BUTTON: 1,
   DONE_BUTTON: 2,
 };
 
@@ -270,9 +270,19 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
    * @param {!Event} event
    * @private
    */
-  onAddClicked_(event) {
+  onActionButtonClicked_(event) {
     assert(this.guid);
+    assert(this.mode !== ApnDetailDialogMode.VIEW);
+    if (this.mode === ApnDetailDialogMode.CREATE) {
+      this.createCustomApn_();
+    }
+    // TODO(b/162365553): When the mode is edit call modifyCustomApn()
 
+    this.$.apnDetailDialog.close();
+  }
+
+  /** @private */
+  createCustomApn_() {
     const apnProperties = /** @type {!ApnProperties} */ ({
       accessPointName: this.apn_,
       username: this.username_,
@@ -283,10 +293,18 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
       apnTypes: this.getSelectedApnTypes_(),
     });
     this.networkConfig_.createCustomApn(this.guid, apnProperties);
-
-    this.$.apnDetailDialog.close();
   }
 
+  /**
+   * @return {string}
+   * @private
+   */
+  getActionButtonTitle_() {
+    if (this.mode === ApnDetailDialogMode.EDIT) {
+      return this.i18n('save');
+    }
+    return this.i18n('add');
+  }
   /**
    * @private
    */
@@ -297,8 +315,7 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
       case ApnDetailDialogMode.VIEW:
         return this.i18n('apnDetailViewApnDialogTitle');
       case ApnDetailDialogMode.EDIT:
-        // TODO(b/162365553): Add edit mode for the apn detail dialog.
-        return '';
+        return this.i18n('apnDetailEditApnDialogTitle');
     }
   }
   /**
@@ -375,7 +392,7 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     switch (uiElement) {
       case UiElement.INPUT:
         return this.mode === ApnDetailDialogMode.VIEW;
-      case UiElement.ADD_BUTTON:
+      case UiElement.ACTION_BUTTON:
         return this.apn_.length === 0 || this.isApnInputInvalid_;
     }
     return false;
@@ -390,8 +407,9 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     switch (uiElement) {
       case UiElement.DONE_BUTTON:
         return this.mode === ApnDetailDialogMode.VIEW;
-      case UiElement.ADD_BUTTON:
-        return this.mode === ApnDetailDialogMode.CREATE;
+      case UiElement.ACTION_BUTTON:
+        return this.mode === ApnDetailDialogMode.CREATE ||
+            this.mode === ApnDetailDialogMode.EDIT;
     }
     return true;
   }

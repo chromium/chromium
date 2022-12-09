@@ -85,13 +85,14 @@ class ApnListItem extends ApnListItemBase {
   onDetailsClicked_() {
     assert(!!this.guid);
     assert(!!this.apn);
-
     this.dispatchEvent(new CustomEvent('show-apn-detail-dialog', {
       composed: true,
       bubbles: true,
       detail: /** @type {!ApnEventData} */ ({
         apn: this.apn,
-        mode: ApnDetailDialogMode.VIEW,
+        // Only allow editing if the APN is a custom APN.
+        mode: this.isAutoDetected ? ApnDetailDialogMode.VIEW :
+                                    ApnDetailDialogMode.EDIT,
         guid: this.guid,
       }),
     }));

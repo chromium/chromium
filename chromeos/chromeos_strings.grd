@@ -3708,6 +3708,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SETTINGS_VIEW_APN_DIALOG_TITLE" desc="Title for the dialog for viewing an APN">
         APN details
       </message>
+      <message name="IDS_SETTINGS_EDIT_APN_DIALOG_TITLE" desc="Title for the dialog for viewing an APN">
+        View and edit details
+      </message>
       <message name="IDS_SETTINGS_APN_INPUT_LABEL" desc="Label for the input field where the APN is specified, the asterisk indicates that this is required">
         APN*
       </message>

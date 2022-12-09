@@ -212,15 +212,25 @@ suite('ApnListItemTest', function() {
       async function() {
         apnListItem.apn = TEST_APN_EVENT_DATA.apn;
         apnListItem.guid = TEST_APN_EVENT_DATA.guid;
-
-        const apnDetailsClickedEvent =
+        apnListItem.isAutoDetected = true;
+        let apnDetailsClickedEvent =
             eventToPromise('show-apn-detail-dialog', window);
         assertTrue(!!apnListItem.$.detailsButton);
         apnListItem.$.detailsButton.click();
-        const eventData = await apnDetailsClickedEvent;
+        let eventData = await apnDetailsClickedEvent;
 
         assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
         assertEquals(TEST_APN_EVENT_DATA.guid, eventData.detail.guid);
         assertEquals(TEST_APN_EVENT_DATA.mode, eventData.detail.mode);
+
+        // Case: the apn list item is not auto detected
+        apnDetailsClickedEvent =
+            eventToPromise('show-apn-detail-dialog', window);
+        apnListItem.isAutoDetected = false;
+        apnListItem.$.detailsButton.click();
+        eventData = await apnDetailsClickedEvent;
+        assertEquals(TEST_APN_EVENT_DATA.apn.name, eventData.detail.apn.name);
+        assertEquals(TEST_APN_EVENT_DATA.guid, eventData.detail.guid);
+        assertEquals(ApnDetailDialogMode.EDIT, eventData.detail.mode);
       });
 });

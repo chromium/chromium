@@ -121,16 +121,16 @@
   </div>
   <div slot="button-container">
     <template is="dom-if"
-        if="[[isUiElementVisible_(UiElement.ADD_BUTTON, mode)]]" restamp>
+        if="[[isUiElementVisible_(UiElement.ACTION_BUTTON, mode)]]" restamp>
       <cr-button id="apnDetailCancelBtn" class="cancel-button"
           on-click="onCancelClicked_">
         [[i18n('cancel')]]
       </cr-button>
-      <cr-button id="apnDetailAddBtn" class="action-button"
-          on-click="onAddClicked_"
-          disabled="[[isUiElementDisabled_(UiElement.ADD_BUTTON, mode, apn_,
-              isApnInputInvalid_)]]">
-        [[i18n('add')]]
+      <cr-button id="apnDetailActionBtn" class="action-button"
+          on-click="onActionButtonClicked_"
+          disabled="[[isUiElementDisabled_(UiElement.ACTION_BUTTON, mode,
+              apn_, isApnInputInvalid_)]]">
+        [[getActionButtonTitle_(mode)]]
       </cr-button>
     </template>
     <template is="dom-if"

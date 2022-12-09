@@ -319,6 +319,7 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"apnMoreActionsTitle", IDS_SETTINGS_APN_MORE_ACTIONS_TITLE},
       {"apnDetailAddApnDialogTitle", IDS_SETTINGS_ADD_APN_DIALOG_TITLE},
       {"apnDetailViewApnDialogTitle", IDS_SETTINGS_VIEW_APN_DIALOG_TITLE},
+      {"apnDetailEditApnDialogTitle", IDS_SETTINGS_EDIT_APN_DIALOG_TITLE},
       {"apnDetailAdvancedSettings", IDS_SETTINGS_APN_DIALOG_ADVANCED_SETTING},
       {"apnDetailApnTypes", IDS_SETTINGS_APN_DIALOG_APN_TYPES},
       {"apnDetailApnTypeDefault",
