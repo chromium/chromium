@@ -441,6 +441,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
 #endif
   FRIEND_TEST_ALL_PREFIXES(InputMethodResultAuraTest,
                            FinishImeCompositionSession);
+  FRIEND_TEST_ALL_PREFIXES(PaintHoldingRenderWidgetHostViewBrowserTest,
+                           PaintHoldingOnNavigation);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
                            PopupRetainsCaptureAfterMouseRelease);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest, SetCompositionText);

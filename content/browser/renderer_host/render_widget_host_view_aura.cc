@@ -2825,7 +2825,7 @@ void RenderWidgetHostViewAura::DidNavigate() {
                                   absl::nullopt);
     }
   }
-    delegated_frame_host_->DidNavigate();
+  delegated_frame_host_->DidNavigate();
   is_first_navigation_ = false;
 }
 
@@ -2845,7 +2845,6 @@ void RenderWidgetHostViewAura::TakeFallbackContentFrom(
   DCHECK(view_aura->delegated_frame_host_);
   delegated_frame_host_->TakeFallbackContentFrom(
       view_aura->delegated_frame_host_.get());
-  host()->GetContentRenderingTimeoutFrom(view_aura->host());
 }
 
 bool RenderWidgetHostViewAura::CanSynchronizeVisualProperties() {

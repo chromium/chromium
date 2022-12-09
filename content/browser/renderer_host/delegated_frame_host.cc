@@ -235,6 +235,12 @@ bool DelegatedFrameHost::HasFallbackSurface() const {
   return fallback_surface_id && fallback_surface_id->is_valid();
 }
 
+viz::SurfaceId DelegatedFrameHost::GetFallbackSurfaceIdForTesting() const {
+  const viz::SurfaceId* fallback_surface_id =
+      client_->DelegatedFrameHostGetLayer()->GetOldestAcceptableFallback();
+  return fallback_surface_id ? *fallback_surface_id : viz::SurfaceId();
+}
+
 void DelegatedFrameHost::EmbedSurface(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Size& new_dip_size,

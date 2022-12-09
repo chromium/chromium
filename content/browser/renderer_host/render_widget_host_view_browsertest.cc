@@ -57,6 +57,11 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
+#if defined(USE_AURA)
+#include "content/browser/renderer_host/delegated_frame_host.h"
+#include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "ui/android/delegated_frame_host_android.h"
@@ -240,6 +245,24 @@ class NoCompositingRenderWidgetHostViewBrowserTest
   }
 };
 
+// Ensures that kBackForwardCache is always enabled to ensure that a new RWH is
+// created on navigation.
+class PaintHoldingRenderWidgetHostViewBrowserTest
+    : public NoCompositingRenderWidgetHostViewBrowserTest {
+ public:
+  PaintHoldingRenderWidgetHostViewBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{{features::kBackForwardCache}, {}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
+  }
+
+  ~PaintHoldingRenderWidgetHostViewBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // When creating the first RenderWidgetHostViewBase, the CompositorFrameSink can
 // change. When this occurs we need to evict the current frame, and recreate
 // surfaces. This tests that when frame eviction occurs while the
@@ -267,6 +290,57 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // can generically test all eviction paths. However this should only be for
   // top level renderers. Currently the FrameEvict implementations are platform
   // dependent so we can't have a single generic test.
+}
+
+// Tests that when navigating to a new page the old page content continues to be
+// shown until the new page content is ready or content rendering timeout fires.
+IN_PROC_BROWSER_TEST_F(PaintHoldingRenderWidgetHostViewBrowserTest,
+                       PaintHoldingOnNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Creates the initial RenderWidgetHostViewBase, and connects to a
+  // CompositorFrameSink.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_animation.html")));
+
+  RenderWidgetHostViewBase* first_view = GetRenderWidgetHostView();
+  EXPECT_TRUE(first_view);
+  viz::SurfaceId first_surface_id = first_view->GetCurrentSurfaceId();
+  EXPECT_TRUE(first_surface_id.is_valid());
+
+  // Perform a navigation to a new page. This will use a new render widget when
+  // BackForwardCache is enabled.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("/page_with_blur.html")));
+
+  RenderWidgetHostViewBase* second_view = GetRenderWidgetHostView();
+  EXPECT_TRUE(second_view);
+  viz::SurfaceId second_surface_id = second_view->GetCurrentSurfaceId();
+  EXPECT_TRUE(second_surface_id.is_valid());
+
+  // After navigation there should be a new view with a different FrameSinkId.
+  EXPECT_NE(first_view, second_view);
+  EXPECT_NE(first_surface_id.frame_sink_id(),
+            second_surface_id.frame_sink_id());
+
+#if defined(USE_AURA)
+  DelegatedFrameHost* dfh = static_cast<RenderWidgetHostViewAura*>(second_view)
+                                ->GetDelegatedFrameHost();
+  EXPECT_TRUE(dfh->HasPrimarySurface());
+  EXPECT_TRUE(dfh->HasFallbackSurface());
+
+  // The view after navigation should have a fallback SurfaceId that corresponds
+  // to the SurfaceId from before navigation. This shows the old content after
+  // navigation until either new content is ready or content rending timeout
+  // fires.
+  viz::SurfaceId fallback_surface_id = dfh->GetFallbackSurfaceIdForTesting();
+  EXPECT_TRUE(first_surface_id.IsSameOrNewerThan(fallback_surface_id));
+  EXPECT_NE(fallback_surface_id.frame_sink_id(),
+            second_surface_id.frame_sink_id());
+#endif
+
+  // The render widget should have it's content rendering timeout timer after
+  // navigating to the new page so the fallback content is eventually cleared.
+  EXPECT_TRUE(GetRenderWidgetHost()->IsContentRenderingTimeoutRunning());
 }
 
 // TODO(jonross): Update Mac to also invalidate its viz::LocalSurfaceIds when

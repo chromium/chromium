@@ -821,6 +821,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   void DidStopFlinging();
 
+  bool IsContentRenderingTimeoutRunning() const;
   void GetContentRenderingTimeoutFrom(RenderWidgetHostImpl* other);
 
   // Called on delayed response from the renderer by either

@@ -160,6 +160,8 @@ class CONTENT_EXPORT DelegatedFrameHost
   bool HasPrimarySurface() const;
   bool HasFallbackSurface() const;
 
+  viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
+
   void OnCompositingDidCommitForTesting(ui::Compositor* compositor) {
     OnCompositingDidCommit(compositor);
   }
