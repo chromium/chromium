@@ -76,7 +76,6 @@
 ./third_party/angle/third_party/glmark2/src,ANGLE
 ./third_party/openh264/src,OpenH264
 ./third_party/googletest/src,GoogleTest
-./third_party/libjxl/src,libjxl
 ./third_party/highway/src,highway
 ./third_party/wuffs/src,wuffs
 ./third_party/catapult,catapult

@@ -25050,7 +25050,7 @@ Called by update_debug_scenarios.py.-->
   <int value="5" label="kImageICO"/>
   <int value="6" label="kImageBMP"/>
   <int value="7" label="kImageAVIF"/>
-  <int value="8" label="kImageJXL"/>
+  <int value="8" label="(obsolete) kImageJXL"/>
 </enum>
 
 <enum name="DecodeSwapChainNotUsedReason">
@@ -59066,7 +59066,6 @@ from previous Chrome versions.
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
-  <int value="-890517779" label="JXL:enabled"/>
   <int value="-890224928" label="DownloadBubbleV2:enabled"/>
   <int value="-889670978" label="AssistantRoutines:disabled"/>
   <int value="-887101831" label="StoreHoursAndroid:disabled"/>
@@ -60884,7 +60883,6 @@ from previous Chrome versions.
   <int value="188610022" label="NewMessageListView:enabled"/>
   <int value="189728101" label="FasterLocationReload:disabled"/>
   <int value="189777537" label="DisableInitialMostVisitedFadeIn:enabled"/>
-  <int value="190282969" label="JXL:disabled"/>
   <int value="190395448" label="SearchWebInSidePanel:enabled"/>
   <int value="191737931" label="enable-mark-http-as"/>
   <int value="191891628" label="AutocompleteExtendedSuggestions:enabled"/>

@@ -333,15 +333,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "jxl-enabled",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js",
-              "images/jxl"],
-    "exclusive_tests": ["http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js"],
-    "args": ["--enable-features=JXL"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "scalefactor150",
     "platforms": ["Linux", "Win"],
     "bases": ["fast/events/synthetic-events",

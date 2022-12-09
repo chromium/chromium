@@ -5136,12 +5136,6 @@ crbug.com/847356 external/wpt/css/css-transforms/transform-box/view-box-mutation
 # Started failing after rolling new version of check-layout-th.js
 css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
 
-# JXL tests fail due to rounding error differences.
-# TODO(https://crbug.com/1274220): Rebaseline all images once new tone mapping
-# lands.
-crbug.com/1210658 virtual/jxl-enabled/images/jxl/jxl-images.html [ Crash Failure Pass Timeout ]
-crbug.com/1358616 virtual/jxl-enabled/images/jxl/progressive.html [ Crash Failure Pass Timeout ]
-
 # Temporarily disabled to unblock https://crrev.com/c/3099011
 crbug.com/1199701 http/tests/devtools/console/console-big-array.js [ Crash Failure Pass Timeout ]
 

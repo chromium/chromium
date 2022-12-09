@@ -100,10 +100,7 @@ component("common") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "RTC_USE_H264=$rtc_use_h264",
-    "ENABLE_JXL_DECODER=$enable_jxl_decoder",
-  ]
+  flags = [ "RTC_USE_H264=$rtc_use_h264" ]
 }
 
 source_set("common_export") {

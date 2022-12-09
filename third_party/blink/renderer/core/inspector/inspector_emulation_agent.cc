@@ -499,10 +499,10 @@ AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
   String header(network_utils::ImageAcceptHeader());
   for (String type : *disabled_image_types) {
     // The header string is expected to be like
-    // `image/jxl,image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8`
+    // `image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8`
     // and is expected to be always ending with `image/*,*/*;q=xxx`, therefore,
-    // to remove a type we replace `image/x,` with empty string. Only webp, avif
-    // and jxl types can be disabled.
+    // to remove a type we replace `image/x,` with empty string. Only webp and
+    // avif types can be disabled.
     header.Replace(String(type + ","), "");
   }
   return AtomicString(header);
@@ -842,7 +842,6 @@ protocol::Response InspectorEmulationAgent::setDisabledImageTypes(
   namespace DisabledImageTypeEnum = protocol::Emulation::DisabledImageTypeEnum;
   for (protocol::Emulation::DisabledImageType type : *disabled_types) {
     if (DisabledImageTypeEnum::Avif == type ||
-        DisabledImageTypeEnum::Jxl == type ||
         DisabledImageTypeEnum::Webp == type) {
       disabled_image_types_.Set(prefix + type, true);
       continue;

@@ -7791,12 +7791,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(download::features::kSmartSuggestionForLargeDownloads)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_JXL_DECODER)
-    {"enable-jxl", flag_descriptions::kEnableJXLName,
-     flag_descriptions::kEnableJXLDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kJXL)},
-#endif  // BUILDFLAG(ENABLE_JXL_DECODER)
-
 #if BUILDFLAG(IS_ANDROID)
     {"messages-for-android-ads-blocked",
      flag_descriptions::kMessagesForAndroidAdsBlockedName,

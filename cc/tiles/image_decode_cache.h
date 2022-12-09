@@ -84,8 +84,6 @@ class CC_EXPORT ImageDecodeCache {
     using ScopedImageType =
         devtools_instrumentation::ScopedImageDecodeTask::ImageType;
     switch (image_type) {
-      case ImageType::kJXL:
-        return ScopedImageType::kJxl;
       case ImageType::kAVIF:
         return ScopedImageType::kAvif;
       case ImageType::kBMP:

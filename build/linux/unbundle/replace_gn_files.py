@@ -53,7 +53,6 @@ REPLACEMENTS = {
   'libdrm': 'third_party/libdrm/BUILD.gn',
   'libevent': 'third_party/libevent/BUILD.gn',
   'libjpeg': 'third_party/libjpeg.gni',
-  'libjxl' : 'third_party/libjxl/BUILD.gn',
   'libpng': 'third_party/libpng/BUILD.gn',
   'libvpx': 'third_party/libvpx/BUILD.gn',
   'libwebp': 'third_party/libwebp/BUILD.gn',

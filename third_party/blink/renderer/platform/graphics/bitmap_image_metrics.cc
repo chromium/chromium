@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
@@ -42,10 +43,6 @@ BitmapImageMetrics::StringToDecodedImageType(const String& type) {
 #if BUILDFLAG(ENABLE_AV1_DECODER)
   if (type == "avif")
     return BitmapImageMetrics::DecodedImageType::kAVIF;
-#endif
-#if BUILDFLAG(ENABLE_JXL_DECODER)
-  if (type == "jxl")
-    return BitmapImageMetrics::DecodedImageType::kJXL;
 #endif
   return BitmapImageMetrics::DecodedImageType::kUnknown;
 }
@@ -118,12 +115,8 @@ void BitmapImageMetrics::CountDecodedImageFrameTime(
                             elapsed);
       }
       break;
-    case BitmapImageMetrics::DecodedImageType::kJXL:
-      UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Jxl.EveryDecode.Time", elapsed);
-      if (first) {
-        UMA_HISTOGRAM_TIMES("Blink.ImageDecoders.Jxl.FirstDecode.Time",
-                            elapsed);
-      }
+    case BitmapImageMetrics::DecodedImageType::kREMOVED_JXL:
+      NOTREACHED();
       break;
   }
 }

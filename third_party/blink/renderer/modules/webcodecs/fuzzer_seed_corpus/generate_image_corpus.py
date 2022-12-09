@@ -32,7 +32,6 @@ EXTENSIONS_MAP = {
     "ico": "image/x-icon",
     "bmp": "image/bmp",
     "jpg": "image/jpeg",
-    "jxl": "image/jxl",
     "gif": "image/gif",
     "cur": "image/x-icon",
     "webp": "image/webp",

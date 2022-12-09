@@ -1341,7 +1341,6 @@ images/cross-fade-blending.html
 images/directly-composited-image-orientation.html
 images/drag-image.html
 images/jpeg-with-color-profile.html
-images/jxl/jxl-images.html
 images/png-suite/test.html
 images/png-with-color-profile.html
 images/yuv-decode-eligible/color-profile-border-radius.html
@@ -1578,7 +1577,6 @@ virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-i
 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/color-profile-layer.html
 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/jpeg-missing-eoi.html
 virtual/gpu-rasterization-disable-yuv/images/yuv-decode-eligible/webp-color-profile-lossy.html
-virtual/jxl-enabled/images/jxl/jxl-images.html
 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/border-color.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/entire-canvas-visible-zoom.html

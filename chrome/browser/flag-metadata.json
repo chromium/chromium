@@ -2543,11 +2543,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-jxl",
-    "owners": [ "eustas@chromium.org", "firsching", "sboukortt", "veluca" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-keyboard-backlight-toggle",
     "owners": [ "rtinkoff" ],
     "expiry_milestone": 105

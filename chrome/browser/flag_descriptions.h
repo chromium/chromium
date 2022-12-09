@@ -3747,11 +3747,6 @@ extern const char kDcheckIsFatalName[];
 extern const char kDcheckIsFatalDescription[];
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-#if BUILDFLAG(ENABLE_JXL_DECODER)
-extern const char kEnableJXLName[];
-extern const char kEnableJXLDescription[];
-#endif  // BUILDFLAG(ENABLE_JXL_DECODER)
-
 #if BUILDFLAG(ENABLE_NACL)
 extern const char kNaclName[];
 extern const char kNaclDescription[];

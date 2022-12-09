@@ -39,7 +39,6 @@ TEST(MimeUtilTest, GetWellKnownMimeTypeFromExtension) {
       {FILE_PATH_LITERAL("webm"), "video/webm"},
       {FILE_PATH_LITERAL("weba"), "audio/webm"},
       {FILE_PATH_LITERAL("avif"), "image/avif"},
-      {FILE_PATH_LITERAL("jxl"), "image/jxl"},
       {FILE_PATH_LITERAL("epub"), "application/epub+zip"},
       {FILE_PATH_LITERAL("apk"), "application/vnd.android.package-archive"},
       {FILE_PATH_LITERAL("cer"), "application/x-x509-ca-cert"},
@@ -81,7 +80,6 @@ TEST(MimeUtilTest, ExtensionTest) {
     {FILE_PATH_LITERAL("webm"), {"video/webm"}},
     {FILE_PATH_LITERAL("weba"), {"audio/webm"}},
     {FILE_PATH_LITERAL("avif"), {"image/avif"}},
-    {FILE_PATH_LITERAL("jxl"), {"image/jxl"}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // These are test cases for testing platform mime types on ChromeOS.
     {FILE_PATH_LITERAL("epub"), {"application/epub+zip"}},
@@ -440,7 +438,6 @@ TEST(MimeUtilTest, TestGetExtensionsForMimeType) {
       {"MeSsAge/*", 1, "eml"},
       {"message/", 0, nullptr, true},
       {"image/avif", 1, "avif"},
-      {"image/jxl", 1, "jxl"},
       {"image/bmp", 1, "bmp"},
       {"video/*", 6, "mp4"},
       {"video/*", 6, "mpeg"},

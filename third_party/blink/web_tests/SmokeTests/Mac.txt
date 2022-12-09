@@ -1478,7 +1478,6 @@ virtual/gpu-rasterization/images/yuv-decode-eligible/color-profile-filter.html
 virtual/gpu-rasterization/images/yuv-decode-eligible/jpeg-missing-eoi.html
 virtual/gpu-rasterization/images/yuv-decode-eligible/webp-no-color-profile-lossy.html
 virtual/gpu/fast/canvas/canvas-textMetrics-width.html
-virtual/jxl-enabled/images/jxl/jxl-images.html
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-port.sub.https.html
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-yes-child-no-port.sub.https.html
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-yes-child-yes-port.sub.https.html

@@ -379,8 +379,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundTracingPerformanceMark);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBackgroundTracingPerformanceMark_AllowList;
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kJXL);
-
 // Main controls for ad serving API features.
 //
 // Backend storage + kill switch for Interest Group API origin trials.

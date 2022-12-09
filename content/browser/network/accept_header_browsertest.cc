@@ -22,7 +22,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if BUILDFLAG(ENABLE_PPAPI)
@@ -72,20 +71,13 @@ class AcceptHeaderTest : public ContentBrowserTest {
     return it->second;
   }
 
-#if BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
+#if BUILDFLAG(ENABLE_AV1_DECODER)
   std::string GetOptionalImageCodecs() const {
     std::string result;
-#if BUILDFLAG(ENABLE_JXL_DECODER)
-    if (base::FeatureList::IsEnabled(blink::features::kJXL)) {
-      result.append("image/jxl,");
-    }
-#endif
-#if BUILDFLAG(ENABLE_AV1_DECODER)
     result.append("image/avif,");
-#endif
     return result;
   }
-#endif  // BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
  private:
   void Monitor(const net::test_server::HttpRequest& request) {
@@ -121,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
   std::string expected_main_frame_accept_header =
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,"
       "image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
-#if BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
+#if BUILDFLAG(ENABLE_AV1_DECODER)
   expected_main_frame_accept_header =
       "text/html,application/xhtml+xml,application/xml;q=0.9," +
       GetOptionalImageCodecs() +
@@ -134,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
   std::string expected_sub_frame_accept_header =
       "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,"
       "image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9";
-#if BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
+#if BUILDFLAG(ENABLE_AV1_DECODER)
   expected_sub_frame_accept_header =
       "text/html,application/xhtml+xml,application/xml;q=0.9," +
       GetOptionalImageCodecs() +
@@ -152,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(AcceptHeaderTest, Check) {
   // ResourceType::kImage
   std::string expected_image_accept_header =
       "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
-#if BUILDFLAG(ENABLE_AV1_DECODER) || BUILDFLAG(ENABLE_JXL_DECODER)
+#if BUILDFLAG(ENABLE_AV1_DECODER)
   expected_image_accept_header =
       GetOptionalImageCodecs() +
       "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8";
