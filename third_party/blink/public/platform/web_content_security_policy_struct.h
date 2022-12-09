@@ -60,6 +60,7 @@ struct WebCSPSourceList {
   bool allow_star;
   bool allow_response_redirects;
   bool allow_inline;
+  bool allow_inline_speculation_rules;
   bool allow_eval;
   bool allow_wasm_eval;
   bool allow_wasm_unsafe_eval;

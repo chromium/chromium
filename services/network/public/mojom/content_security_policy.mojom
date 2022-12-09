@@ -82,6 +82,7 @@ struct CSPSourceList {
   bool allow_star = false;
   bool allow_response_redirects = false;
   bool allow_inline = false;
+  bool allow_inline_speculation_rules = false;
   bool allow_eval = false;
   bool allow_wasm_eval = false;
   bool allow_wasm_unsafe_eval = false;

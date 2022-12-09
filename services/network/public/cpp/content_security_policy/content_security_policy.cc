@@ -10,6 +10,7 @@
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,6 +23,7 @@
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -643,6 +645,28 @@ mojom::CSPSourceListPtr ParseSourceList(
     if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-inline'")) {
       directive->allow_inline = true;
       continue;
+    }
+
+    // Discussed at https://github.com/WICG/nav-speculation/pull/209, and merged
+    // to the speculationrules explainer,
+    // https://github.com/WICG/nav-speculation/blob/main/triggers.md#content-security-policy.
+    // TODO(https://crbug.com/1382361): Have a patch spec and merge it to the
+    // upstream CSP spec.
+    if (base::FeatureList::IsEnabled(
+            features::kPrerender2ContentSecurityPolicyExtensions) &&
+        base::EqualsCaseInsensitiveASCII(expression,
+                                         "'inline-speculation-rules'")) {
+      if (directive_name == CSPDirectiveName::ScriptSrc) {
+        directive->allow_inline_speculation_rules = true;
+        continue;
+      } else {
+        parsing_errors.emplace_back(base::StringPrintf(
+            "The Content-Security-Policy directive '%s' contains '%s' as a "
+            "source expression that is permitted only for 'script-src' "
+            "directive. It will be ignored.",
+            ToString(directive_name).c_str(), std::string(expression).c_str()));
+        continue;
+      }
     }
 
     if (base::EqualsCaseInsensitiveASCII(expression, "'unsafe-eval'")) {
