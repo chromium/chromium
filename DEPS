@@ -485,6 +485,7 @@ vars = {
 
   # ninja CIPD package version.
   # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
+  # This has to stay in sync with the version in src/third_party/ninja/README.chromium.
   'ninja_version': 'version:2@1.8.2.chromium.3',
 }
 
@@ -557,15 +558,6 @@ deps = {
       {
         'package': 'infra/rbe/client/${{platform}}',
         'version': Var('reclient_version'),
-      }
-    ],
-    'dep_type': 'cipd',
-  },
-  'src/third_party/ninja': {
-    'packages': [
-      {
-        'package': 'infra/3pp/tools/ninja/${{platform}}',
-        'version': Var('ninja_version'),
       }
     ],
     'dep_type': 'cipd',
@@ -1604,6 +1596,16 @@ deps = {
   'src/third_party/netty4/src': {
       'url': Var('chromium_git') + '/external/netty4.git' + '@' + 'cc4420b13bb4eeea5b1cf4f93b2755644cd3b120',
       'condition': 'checkout_android',
+  },
+
+  'src/third_party/ninja': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/ninja/${{platform}}',
+        'version': Var('ninja_version'),
+      }
+    ],
+    'dep_type': 'cipd',
   },
 
   'src/third_party/objenesis': {
