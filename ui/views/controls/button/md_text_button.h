@@ -56,6 +56,7 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   // View:
   void OnFocus() override;
   void OnBlur() override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
   void UpdatePadding();

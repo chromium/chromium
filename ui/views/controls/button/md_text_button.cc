@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -49,7 +50,10 @@ MdTextButton::MdTextButton(PressedCallback callback,
       },
       this));
 
-  SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kLow));
+  if (!features::IsChromeRefresh2023())
+    SetCornerRadius(
+        LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kLow));
+
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
   const int minimum_width = LayoutProvider::Get()->GetDistanceMetric(
@@ -106,6 +110,8 @@ void MdTextButton::SetCornerRadius(float radius) {
   InkDrop::Get(this)->SetLargeCornerRadius(corner_radius_);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 corner_radius_);
+  // UpdateColors also updates the background border radius.
+  UpdateColors();
   OnPropertyChanged(&corner_radius_, kPropertyEffectsPaint);
 }
 
@@ -131,6 +137,15 @@ void MdTextButton::OnFocus() {
 void MdTextButton::OnBlur() {
   LabelButton::OnBlur();
   UpdateColors();
+}
+
+void MdTextButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  LabelButton::OnBoundsChanged(previous_bounds);
+
+  if (features::IsChromeRefresh2023()) {
+    SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
+        Emphasis::kMaximum, size()));
+  }
 }
 
 void MdTextButton::SetEnabledTextColors(absl::optional<SkColor> color) {
