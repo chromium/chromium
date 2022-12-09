@@ -254,4 +254,46 @@ TEST(PasswordGroupingUtilTest, HttpCredentialsGrouped) {
             expected_password_grouping_info.map_group_id_to_forms);
 }
 
+TEST(PasswordGroupingUtilTest, FederatedCredentialsGrouped) {
+  PasswordForm form;
+  form.url = GURL("https://test.com/");
+  form.signon_realm = "https://test.com/";
+  form.username_value = u"username";
+  form.password_value = u"password";
+  form.in_store = PasswordForm::Store::kProfileStore;
+
+  PasswordForm federated_form;
+  federated_form.url = GURL("https://test.com/");
+  federated_form.signon_realm = "federation://test.com/accounts.federation.com";
+  federated_form.username_value = u"username2";
+  federated_form.federation_origin =
+      url::Origin::Create(GURL("https://accounts.federation.com"));
+  federated_form.in_store = PasswordForm::Store::kProfileStore;
+
+  // Create sort_key_to_password_forms object for test.
+  std::multimap<std::string, PasswordForm> sort_key_to_password_forms;
+  sort_key_to_password_forms.insert(std::make_pair("test_key1", form));
+  sort_key_to_password_forms.insert(
+      std::make_pair("test_key2", federated_form));
+
+  // Create map_group_id_to_forms object for test.
+  std::map<GroupId, std::map<UsernamePasswordKey, std::vector<PasswordForm>>>
+      map_group_id_to_forms;
+  // form and federated_form are grouped together under the same group id.
+  GroupId group_id1(1);
+  UsernamePasswordKey test_key1(CreateUsernamePasswordSortKey(form));
+  UsernamePasswordKey test_key2(CreateUsernamePasswordSortKey(federated_form));
+
+  map_group_id_to_forms[group_id1][test_key1].push_back(form);
+  map_group_id_to_forms[group_id1][test_key2].push_back(federated_form);
+
+  PasswordGroupingInfo expected_password_grouping_info;
+  expected_password_grouping_info.map_group_id_to_forms = map_group_id_to_forms;
+
+  PasswordGroupingInfo password_grouping_info =
+      GroupPasswords({}, sort_key_to_password_forms);
+  EXPECT_EQ(password_grouping_info.map_group_id_to_forms,
+            expected_password_grouping_info.map_group_id_to_forms);
+}
+
 }  // namespace password_manager

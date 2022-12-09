@@ -5,11 +5,27 @@
 #include "components/password_manager/core/browser/ui/password_grouping_util.h"
 
 #include "base/strings/string_util.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#include "components/url_formatter/elide_url.h"
 
 namespace password_manager {
+
+namespace {
+
+std::string GetSignonRealm(const PasswordForm& form) {
+  if (form.IsFederatedCredential()) {
+    return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+               url::Origin::Create(form.url),
+               url_formatter::SchemeDisplay::SHOW)) +
+           '/';
+  }
+  return form.signon_realm;
+}
+
+}  // namespace
 
 PasswordGroupingInfo::PasswordGroupingInfo() = default;
 
@@ -102,7 +118,7 @@ PasswordGroupingInfo GroupPasswords(
     if (form.blocked_by_user) {
       password_grouping_info.blocked_sites.emplace_back(form);
     } else {
-      signon_realms.push_back(form.signon_realm);
+      signon_realms.push_back(GetSignonRealm(form));
     }
   }
 
@@ -118,17 +134,17 @@ PasswordGroupingInfo GroupPasswords(
     // Do not group blocked by user password forms.
     if (form.blocked_by_user)
       continue;
+    std::string signon_realm = GetSignonRealm(form);
 
-    GroupId group_id = map_facet_to_group_id[form.signon_realm];
+    GroupId group_id = map_facet_to_group_id[signon_realm];
 
-    SignonRealm signon_realm(form.signon_realm);
     UsernamePasswordKey key(CreateUsernamePasswordSortKey(form));
     password_grouping_info.map_group_id_to_forms[group_id][key].push_back(
         std::move(form));
 
     // Store group id for sign-on realm.
-    password_grouping_info.map_signon_realm_to_group_id[signon_realm] =
-        group_id;
+    password_grouping_info
+        .map_signon_realm_to_group_id[SignonRealm(signon_realm)] = group_id;
   }
 
   return password_grouping_info;
