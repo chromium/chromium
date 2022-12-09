@@ -81,13 +81,6 @@ class HistoryServiceObserver {
   // `url_id` is the id of the url row.
   virtual void OnKeywordSearchTermDeleted(HistoryService* history_service,
                                           URLID url_id) {}
-
-  // Called when content model annotation is modified for a url.
-  // `url_id` is the id of the url row.
-  virtual void OnContentModelAnnotationModified(
-      HistoryService* history_service,
-      const URLRow& row,
-      const VisitContentModelAnnotations& model_annotations) {}
 };
 
 }  // namespace history
