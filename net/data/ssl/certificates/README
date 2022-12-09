@@ -294,9 +294,7 @@ unit tests.
      interfere with the chain_verify_callback used by CertVerifyProcChromeOS.
      See CertVerifyProcChromeOSTest.
 
-===== From net/data/ssl/scripts/generate-multi-root-BFE-keychain.sh
-- multi-root-BFE.keychain: An OSX Keychain containing the generated
-  certificates "multi-root-B-by-F.pem" and "multi-root-F-by-E.pem".
+===== From net/data/ssl/scripts/generate-multi-root-keychain.sh
 - multi-root.keychain: An OSX Keychain containing the generated
   certificates multi-root-*-by-*.pem
 

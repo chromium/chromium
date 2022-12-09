@@ -1958,7 +1958,6 @@ bundle_data("test_support_bundle_data") {
     "data/ssl/certificates/multi-root-A-by-B.pem",
     "data/ssl/certificates/multi-root-B-by-C.pem",
     "data/ssl/certificates/multi-root-B-by-F.pem",
-    "data/ssl/certificates/multi-root-BFE.keychain",
     "data/ssl/certificates/multi-root-C-by-D.pem",
     "data/ssl/certificates/multi-root-C-by-E.pem",
     "data/ssl/certificates/multi-root-D-by-D.pem",
