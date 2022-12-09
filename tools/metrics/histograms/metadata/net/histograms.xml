@@ -465,7 +465,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.CertVerifier.MacTrustImplInitTime" units="ms"
+<histogram name="Net.CertVerifier.MacTrustImplCacheInitTime" units="ms"
     expires_after="2023-04-09">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
