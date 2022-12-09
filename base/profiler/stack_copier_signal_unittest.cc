@@ -85,6 +85,10 @@ class TestStackCopierDelegate : public StackCopier::Delegate {
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 // https://crbug.com/1042974
 #define MAYBE_CopyStack DISABLED_CopyStack
+#elif BUILDFLAG(IS_LINUX)
+// We don't support getting the stack base address on Linux, and thus can't
+// copy the stack. // https://crbug.com/1394278
+#define MAYBE_CopyStack DISABLED_CopyStack
 #else
 #define MAYBE_CopyStack CopyStack
 #endif
@@ -124,6 +128,10 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
 // TSAN hangs on the AsyncSafeWaitableEvent FUTEX_WAIT call.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_CopyStackTimestamp DISABLED_CopyStackTimestamp
+#elif BUILDFLAG(IS_LINUX)
+// We don't support getting the stack base address on Linux, and thus can't
+// copy the stack. // https://crbug.com/1394278
+#define MAYBE_CopyStackTimestamp DISABLED_CopyStackTimestamp
 #else
 #define MAYBE_CopyStackTimestamp CopyStackTimestamp
 #endif
@@ -153,6 +161,10 @@ TEST(StackCopierSignalTest, MAYBE_CopyStackTimestamp) {
 // TSAN hangs on the AsyncSafeWaitableEvent FUTEX_WAIT call.
 #if defined(THREAD_SANITIZER)
 #define MAYBE_CopyStackDelegateInvoked DISABLED_CopyStackDelegateInvoked
+#elif BUILDFLAG(IS_LINUX)
+// We don't support getting the stack base address on Linux, and thus can't
+// copy the stack. // https://crbug.com/1394278
+#define MAYBE_CopyStackDelegateInvoked DISABLED_CopyStackDelegateInvoked
 #else
 #define MAYBE_CopyStackDelegateInvoked CopyStackDelegateInvoked
 #endif
@@ -180,6 +192,10 @@ TEST(StackCopierSignalTest, MAYBE_CopyStackDelegateInvoked) {
 // functionality. The test is broken on too many other varied platforms to try
 // to selectively disable.
 #if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS))
+#define MAYBE_CopyStackFromOtherThread DISABLED_CopyStackFromOtherThread
+#elif BUILDFLAG(IS_LINUX)
+// We don't support getting the stack base address on Linux, and thus can't
+// copy the stack. // https://crbug.com/1394278
 #define MAYBE_CopyStackFromOtherThread DISABLED_CopyStackFromOtherThread
 #else
 #define MAYBE_CopyStackFromOtherThread CopyStackFromOtherThread

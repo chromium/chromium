@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <pthread.h>
@@ -29,7 +30,7 @@ struct SamplingProfilerThreadToken {
   // Due to the sandbox, we can only retrieve the stack base address for the
   // current thread. We must grab it during
   // GetSamplingProfilerCurrentThreadToken() and not try to get it later.
-  uintptr_t stack_base_address;
+  absl::optional<uintptr_t> stack_base_address;
 #endif
 };
 

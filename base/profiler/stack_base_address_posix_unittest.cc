@@ -20,6 +20,10 @@ using ::testing::Optional;
 // ASAN moves local variables outside of the stack extents.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_CurrentThread DISABLED_CurrentThread
+#elif BUILDFLAG(IS_LINUX)
+// We don't support getting the stack base address on Linux.
+// https://crbug.com/1394278
+#define MAYBE_CurrentThread DISABLED_CurrentThread
 #else
 #define MAYBE_CurrentThread CurrentThread
 #endif

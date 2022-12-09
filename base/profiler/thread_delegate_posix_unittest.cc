@@ -15,6 +15,10 @@ namespace base {
 // ASAN moves local variables outside of the stack extents.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_CurrentThreadBase DISABLED_CurrentThreadBase
+#elif BUILDFLAG(IS_LINUX)
+// We don't support getting the stack base address on Linux.
+// https://crbug.com/1394278
+#define MAYBE_CurrentThreadBase DISABLED_CurrentThreadBase
 #else
 #define MAYBE_CurrentThreadBase CurrentThreadBase
 #endif

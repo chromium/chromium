@@ -27,9 +27,9 @@ std::unique_ptr<ThreadDelegatePosix> ThreadDelegatePosix::Create(
 #else
   base_address =
       GetThreadStackBaseAddress(thread_token.id, thread_token.pthread_id);
+#endif
   if (!base_address)
     return nullptr;
-#endif
   return base::WrapUnique(
       new ThreadDelegatePosix(thread_token.id, *base_address));
 }
