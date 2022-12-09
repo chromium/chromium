@@ -316,6 +316,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
   self.feedHeaderViewController.ntpDelegate = nil;
   self.feedHeaderViewController = nil;
   self.feedTopSectionCoordinator.ntpDelegate = nil;
+  [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
 
   self.alertCoordinator = nil;
