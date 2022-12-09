@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 # Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -5852,7 +5852,10 @@ if __name__ == '__main__':
     if platform == 'linux':
       chrome_path = os.path.join(driver_path, 'chrome')
     elif platform == 'mac':
-      if os.path.exists(os.path.join(driver_path, 'Google Chrome.app')):
+      if os.path.exists(os.path.join(driver_path, 'Google Chrome for Testing.app')):
+          chrome_path = os.path.join(driver_path, 'Google Chrome for Testing.app',
+                                     'Contents', 'MacOS', 'Google Chrome for Testing')
+      elif os.path.exists(os.path.join(driver_path, 'Google Chrome.app')):
         chrome_path = os.path.join(driver_path, 'Google Chrome.app',
                                    'Contents', 'MacOS', 'Google Chrome')
       else:
