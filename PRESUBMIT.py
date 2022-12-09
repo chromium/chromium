@@ -753,6 +753,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
          'v8_wasm_response_extensions.cc',
        '^gin/array_buffer\.(cc|h)',
        '^chrome/services/sharing/nearby/',
+       '^components/js_injection/renderer/js_binding.cc',
        # Needed for interop with third-party library libunwindstack.
        '^base/profiler/libunwindstack_unwinder_android\.(cc|h)',
        # Needed for interop with third-party boringssl cert verifier
