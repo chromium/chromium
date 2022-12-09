@@ -715,38 +715,6 @@ class LayerTreeHostImplTest : public testing::Test,
     return host_impl_->MakeRenderFrameMetadata(&frame);
   }
 
-  void TestGPUMemoryForTilings(const gfx::Size& layer_size) {
-    std::unique_ptr<FakeRecordingSource> recording_source =
-        FakeRecordingSource::CreateFilledRecordingSource(layer_size);
-    PaintImage checkerable_image =
-        CreateDiscardablePaintImage(gfx::Size(500, 500));
-    recording_source->add_draw_image(checkerable_image, gfx::Point(0, 0));
-
-    recording_source->Rerecord();
-    scoped_refptr<FakeRasterSource> raster_source =
-        FakeRasterSource::CreateFromRecordingSource(recording_source.get());
-
-    // Create the pending tree.
-    host_impl_->BeginCommit(0, /*trace_id=*/1);
-    LayerTreeImpl* pending_tree = host_impl_->pending_tree();
-    LayerImpl* root = SetupRootLayer<FakePictureLayerImpl>(
-        pending_tree, layer_size, raster_source);
-    root->SetDrawsContent(true);
-    UpdateDrawProperties(pending_tree);
-
-    // CompleteCommit which should perform a PrepareTiles, adding tilings for
-    // the root layer, each one having a raster task.
-    host_impl_->CommitComplete();
-    // Activate the pending tree and ensure that all tiles are rasterized.
-    while (!did_notify_ready_to_activate_)
-      base::RunLoop().RunUntilIdle();
-
-    DrawFrame();
-
-    host_impl_->ReleaseLayerTreeFrameSink();
-    host_impl_ = nullptr;
-  }
-
   void AllowedTouchActionTestHelper(float device_scale_factor,
                                     float page_scale_factor) {
     SetupViewportLayersInnerScrolls(gfx::Size(100, 100), gfx::Size(200, 200));
@@ -1277,34 +1245,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SyncedScrollAbortedCommit) {
   EXPECT_EQ(scroll_delta3, synced_scroll->reflected_delta_in_main_tree());
   EXPECT_EQ(gfx::Vector2dF(),
             synced_scroll->next_reflected_delta_in_main_tree());
-}
-
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       GPUMemoryForSmallLayerHistogramTest) {
-  base::HistogramTester histogram_tester;
-  SetClientNameForMetrics("Renderer");
-  host_impl_->SetDownsampleMetricsForTesting(false);
-  // With default tile size being set to 256 * 256, the following layer needs
-  // one tile only which costs 256 * 256 * 4 / 1024 = 256KB memory.
-  TestGPUMemoryForTilings(gfx::Size(200, 200));
-  histogram_tester.ExpectBucketCount(
-      "Compositing.Renderer.GPUMemoryForTilingsInKb", 256, 1);
-  histogram_tester.ExpectTotalCount(
-      "Compositing.Renderer.GPUMemoryForTilingsInKb", 1);
-}
-
-TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
-       GPUMemoryForLargeLayerHistogramTest) {
-  base::HistogramTester histogram_tester;
-  SetClientNameForMetrics("Renderer");
-  host_impl_->SetDownsampleMetricsForTesting(false);
-  // With default tile size being set to 256 * 256, the following layer needs
-  // 4 tiles which cost 256 * 256 * 4 * 4 / 1024 = 1024KB memory.
-  TestGPUMemoryForTilings(gfx::Size(500, 500));
-  histogram_tester.ExpectBucketCount(
-      "Compositing.Renderer.GPUMemoryForTilingsInKb", 1024, 1);
-  histogram_tester.ExpectTotalCount(
-      "Compositing.Renderer.GPUMemoryForTilingsInKb", 1);
 }
 
 // This test verifies that we drop a scroll (and don't crash) if a scroll is

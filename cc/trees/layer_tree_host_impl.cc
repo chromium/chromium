@@ -48,7 +48,6 @@
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scrollbar_animation_controller.h"
-#include "cc/input/scroller_size_metrics.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
@@ -1612,10 +1611,6 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
     // of the process, so the histogram names are runtime constant.
     const char* client_name = GetClientNameForMetrics();
     if (client_name) {
-      size_t total_gpu_memory_for_tilings_in_bytes = 0;
-      for (const PictureLayerImpl* layer : active_tree()->picture_layers())
-        total_gpu_memory_for_tilings_in_bytes += layer->GPUMemoryUsageInBytes();
-
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           base::StringPrintf("Compositing.%s.NumActiveLayers", client_name),
           base::saturated_cast<int>(active_tree_->NumLayers()), 1, 1000, 20);
@@ -1625,19 +1620,6 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
                              client_name),
           base::saturated_cast<int>(active_tree_->picture_layers().size()), 1,
           1000, 20);
-
-      // TODO(pdr): Instead of skipping empty picture layers, maybe we should
-      // accumulate layer->GetRasterSource()->GetMemoryUsage() above and skip
-      // recording when the accumulated memory usage is 0.
-      if (!active_tree()->picture_layers().empty()) {
-        UMA_HISTOGRAM_CUSTOM_COUNTS(
-            base::StringPrintf("Compositing.%s.GPUMemoryForTilingsInKb",
-                               client_name),
-            base::saturated_cast<int>(total_gpu_memory_for_tilings_in_bytes /
-                                      1024),
-            1, kGPUMemoryForTilingsLargestBucketKb,
-            kGPUMemoryForTilingsBucketCount);
-      }
     }
   }
 

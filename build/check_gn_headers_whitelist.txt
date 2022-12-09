@@ -16,7 +16,6 @@ cc/cc_export.h
 cc/input/browser_controls_state.h
 cc/input/event_listener_properties.h
 cc/input/scrollbar.h
-cc/input/scroller_size_metrics.h
 cc/layers/performance_properties.h
 chrome/browser/android/android_theme_resources.h
 chrome/browser/android/resource_id.h
