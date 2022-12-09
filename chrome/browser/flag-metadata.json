@@ -2048,7 +2048,7 @@
   {
     "name": "enable-delegated-compositing",
     "owners": [ "petermcneeley" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "enable-desks-close-all",
