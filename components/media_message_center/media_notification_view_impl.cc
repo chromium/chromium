@@ -121,6 +121,17 @@ size_t GetMaxNumActions(bool expanded) {
                   : kMediaNotificationActionsCount;
 }
 
+void UpdateAppIconVisibility(message_center::NotificationHeaderView* header_row,
+                             bool should_show_icon) {
+  DCHECK(header_row);
+
+  header_row->SetAppIconVisible(should_show_icon);
+  header_row->SetProperty(views::kMarginsKey,
+                          should_show_icon
+                              ? kIconMediaNotificationHeaderInsets
+                              : kIconlessMediaNotificationHeaderInsets);
+}
+
 }  // namespace
 
 // static
@@ -497,9 +508,7 @@ void MediaNotificationViewImpl::UpdateWithVectorIcon(
     return;
 
   vector_header_icon_ = vector_icon;
-  header_row_->SetAppIconVisible(vector_header_icon_ != nullptr);
-  header_row_->SetProperty(views::kMarginsKey,
-                           kIconMediaNotificationHeaderInsets);
+  UpdateAppIconVisibility(header_row_, vector_header_icon_ != nullptr);
   if (GetWidget())
     UpdateForegroundColor();
 }
@@ -658,13 +667,8 @@ void MediaNotificationViewImpl::CreateHeaderRow(
 
   if (should_show_icon) {
     header_row->ClearAppIcon();
-    header_row->SetProperty(views::kMarginsKey,
-                            kIconMediaNotificationHeaderInsets);
-  } else {
-    header_row->SetAppIconVisible(false);
-    header_row->SetProperty(views::kMarginsKey,
-                            kIconlessMediaNotificationHeaderInsets);
   }
+  UpdateAppIconVisibility(header_row.get(), should_show_icon);
 
   header_row_ = AddChildView(std::move(header_row));
 }

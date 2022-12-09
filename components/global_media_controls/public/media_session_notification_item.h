@@ -157,6 +157,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   void MaybeHideOrShowNotification();
 
+  void UpdateViewCommon();
+
   const raw_ptr<Delegate> delegate_;
 
   bool is_bound_ = true;

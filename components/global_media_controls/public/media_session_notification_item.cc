@@ -75,12 +75,7 @@ void MediaSessionNotificationItem::MediaSessionInfoChanged(
   MaybeHideOrShowNotification();
 
   if (view_ && !frozen_) {
-    view_->UpdateWithMediaSessionInfo(session_info_);
-    view_->UpdateWithMuteStatus(session_info_->muted);
-    view_->UpdateWithVectorIcon(GetRemotePlaybackStarted(session_info_)
-                                    ? &vector_icons::kMediaRouterIdleIcon
-                                    : nullptr);
-    view_->UpdateWithMediaMetadata(GetSessionMetadata());
+    UpdateViewCommon();
   }
 }
 
@@ -165,11 +160,7 @@ void MediaSessionNotificationItem::SetView(
   view_ = view;
 
   if (view_) {
-    view_needs_metadata_update_ = false;
-    view_->UpdateWithMediaSessionInfo(session_info_);
-    view_->UpdateWithMediaMetadata(GetSessionMetadata());
-    view_->UpdateWithMediaActions(GetMediaSessionActions());
-    view_->UpdateWithMuteStatus(session_info_->muted);
+    UpdateViewCommon();
 
     if (session_position_.has_value())
       view_->UpdateWithMediaPosition(*session_position_);
@@ -384,12 +375,7 @@ void MediaSessionNotificationItem::UnfreezeNonArtwork() {
   // When we unfreeze, we want to fully update |view_| with any changes that
   // we've avoided sending during the freeze.
   if (view_) {
-    view_needs_metadata_update_ = false;
-    view_->UpdateWithMediaSessionInfo(session_info_);
-    view_->UpdateWithMediaMetadata(GetSessionMetadata());
-    view_->UpdateWithMediaActions(GetMediaSessionActions());
-    view_->UpdateWithMuteStatus(session_info_->muted);
-
+    UpdateViewCommon();
     if (session_position_.has_value())
       view_->UpdateWithMediaPosition(*session_position_);
   }
@@ -459,6 +445,17 @@ void MediaSessionNotificationItem::MaybeHideOrShowNotification() {
   delegate_->ActivateItem(request_id_);
 
   UMA_HISTOGRAM_ENUMERATION(kSourceHistogramName, source_);
+}
+
+void MediaSessionNotificationItem::UpdateViewCommon() {
+  view_needs_metadata_update_ = false;
+  view_->UpdateWithMediaSessionInfo(session_info_);
+  view_->UpdateWithMediaMetadata(GetSessionMetadata());
+  view_->UpdateWithMediaActions(GetMediaSessionActions());
+  view_->UpdateWithMuteStatus(session_info_->muted);
+  view_->UpdateWithVectorIcon(GetRemotePlaybackStarted(session_info_)
+                                  ? &vector_icons::kMediaRouterIdleIcon
+                                  : nullptr);
 }
 
 }  // namespace global_media_controls
