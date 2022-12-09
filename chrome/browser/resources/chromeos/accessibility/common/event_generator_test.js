@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE([
-  '../select_to_speak/select_to_speak_e2e_test_base.js',
-]);
+GEN_INCLUDE(['testing/common_e2e_test_base.js']);
 
 /** Test fixture for array_util.js. */
-EventGeneratorTest = class extends SelectToSpeakE2ETest {
+AccessibilityExtensionEventGeneratorTest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -16,20 +14,21 @@ EventGeneratorTest = class extends SelectToSpeakE2ETest {
   }
 };
 
-// Fails on ChromeOS - https://crbug.com/1136991
 TEST_F(
-    'EventGeneratorTest', 'DISABLED_MouseEventsProcessedSequentially',
-    function() {
+    'AccessibilityExtensionEventGeneratorTest',
+    'MouseEventsProcessedSequentially', function() {
       const mouseEventLog = [];
       chrome.accessibilityPrivate.sendSyntheticMouseEvent = event =>
           mouseEventLog.push(event);
 
+      const LEFT = chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT;
+
       // Set a 1ms delay so that a timeout is set between the press and release.
-      EventGenerator.sendMouseClick(100, 100, /*delayMs=*/ 1);
+      EventGenerator.sendMouseClick(100, 100, {delayMs: 1, mouseButton: LEFT});
       assertEquals(
           1, mouseEventLog.length, 'First event should be synchronous');
 
-      EventGenerator.sendMouseClick(200, 200, /*delayMs=*/ 1);
+      EventGenerator.sendMouseClick(200, 200, {delayMs: 1, mouseButton: LEFT});
       assertEquals(
           1, mouseEventLog.length,
           'Second mouse click shouldn\'t start until first has finished');

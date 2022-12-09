@@ -64,8 +64,8 @@ export class EventGenerator {
 
       EventGenerator.currentlyMidMouseClick = false;
       if (EventGenerator.mouseClickQueue.length > 0) {
-        EventGenerator.sendMouseClick.apply(
-            null /* this */, EventGenerator.mouseClickQueue.shift());
+        EventGenerator.sendMouseClick(
+            ...EventGenerator.mouseClickQueue.shift());
       }
     };
     if (delayMs > 0) {
