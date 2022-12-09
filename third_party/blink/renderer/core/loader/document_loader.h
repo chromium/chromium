@@ -65,7 +65,6 @@
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
-#include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_reporting.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -400,8 +399,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
     return ad_auction_components_;
   }
 
-  const absl::optional<blink::FencedFrameReporting>& FencedFrameReporting()
-      const {
+  const mojom::blink::FencedFrameReportingPtr& FencedFrameReporting() const {
     return fenced_frame_reporting_;
   }
 
@@ -791,7 +789,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // reporting metadata which in turn is a map from the event type to the
   // reporting url. `nullptr` otherwise.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  absl::optional<blink::FencedFrameReporting> fenced_frame_reporting_;
+  mojom::blink::FencedFrameReportingPtr fenced_frame_reporting_;
 
   std::unique_ptr<ExtraData> extra_data_;
 

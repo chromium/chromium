@@ -212,12 +212,11 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     }
     if (!has_bad_beacon_map) {
       if (seller_info == &top_level_seller_winning_bid_info_) {
-        ad_beacon_map_
-            .metadata[blink::FencedFrame::ReportingDestination::kSeller] =
+        ad_beacon_map_.metadata[blink::mojom::ReportingDestination::kSeller] =
             seller_ad_beacon_map;
       } else {
-        ad_beacon_map_.metadata
-            [blink::FencedFrame::ReportingDestination::kComponentSeller] =
+        ad_beacon_map_
+            .metadata[blink::mojom::ReportingDestination::kComponentSeller] =
             seller_ad_beacon_map;
       }
     }
@@ -407,8 +406,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
       }
     }
     if (!has_bad_beacon_map) {
-      ad_beacon_map_
-          .metadata[blink::FencedFrame::ReportingDestination::kBuyer] =
+      ad_beacon_map_.metadata[blink::mojom::ReportingDestination::kBuyer] =
           bidder_ad_beacon_map;
     }
   }

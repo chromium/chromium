@@ -26,27 +26,12 @@ FORWARD_DECLARE_TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest);
 
 namespace blink::FencedFrame {
 
-enum ReportingDestination {
-  kBuyer,
-  kSeller,
-  kComponentSeller,
-  kSharedStorageSelectUrl,
-};
-
-struct BLINK_COMMON_EXPORT FencedFrameReporting {
-  // If this is an "opaque-ads" mode fenced frame, there might be an associated
-  // reporting metadata. This is a map from destination type to reporting
-  // metadata which in turn is a map from the event type (registered by the
-  // associated worklet) to the reporting url.
-  // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  base::flat_map<ReportingDestination, base::flat_map<std::string, GURL>>
-      metadata;
-};
-
 struct AdAuctionData {
   url::Origin interest_group_owner;
   std::string interest_group_name;
 };
+
+using ReportingMetadata = blink::mojom::FencedFrameReporting;
 
 // The metadata for the shared storage runURLSelectionOperation's budget,
 // which includes the shared storage's origin and the amount of budget to
@@ -126,7 +111,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
       nested_configs_;
   absl::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
-  absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>
+  absl::optional<RedactedFencedFrameProperty<ReportingMetadata>>
       reporting_metadata_;
 };
 
@@ -157,7 +142,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
   shared_storage_budget_metadata() const {
     return shared_storage_budget_metadata_;
   }
-  const absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>&
+  const absl::optional<RedactedFencedFrameProperty<ReportingMetadata>>&
   reporting_metadata() const {
     return reporting_metadata_;
   }
@@ -178,7 +163,7 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameProperties {
       nested_urn_config_pairs_;
   absl::optional<RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
-  absl::optional<RedactedFencedFrameProperty<FencedFrameReporting>>
+  absl::optional<RedactedFencedFrameProperty<ReportingMetadata>>
       reporting_metadata_;
 };
 

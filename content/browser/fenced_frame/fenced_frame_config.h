@@ -87,7 +87,7 @@ extern const char kUrnUuidPrefix[];
 GURL GenerateUrnUuid();
 
 using AdAuctionData = blink::FencedFrame::AdAuctionData;
-using ReportingMetadata = blink::FencedFrame::FencedFrameReporting;
+using ReportingMetadata = blink::mojom::FencedFrameReporting;
 using SharedStorageBudgetMetadata =
     blink::FencedFrame::SharedStorageBudgetMetadata;
 

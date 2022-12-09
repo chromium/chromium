@@ -1048,8 +1048,8 @@ void FrameLoader::CommitNavigation(
     }
   }
   if (is_requestor_same_origin) {
-    const absl::optional<blink::FencedFrameReporting>&
-        old_fenced_frame_reporting = document_loader_->FencedFrameReporting();
+    const mojom::blink::FencedFrameReportingPtr& old_fenced_frame_reporting =
+        document_loader_->FencedFrameReporting();
     // In urn iframes, embedder-initiated navigations may be same-origin, so
     // this isn't true.
     if (navigation_params->fenced_frame_reporting) {
@@ -1062,9 +1062,9 @@ void FrameLoader::CommitNavigation(
       navigation_params->fenced_frame_reporting.emplace();
       for (const auto& [destination, event_type_url] :
            old_fenced_frame_reporting->metadata) {
-        base::flat_map<std::string, GURL> data;
+        base::flat_map<WebString, WebURL> data;
         for (const auto& [event_type, url] : event_type_url) {
-          data.emplace(event_type.Utf8(), url);
+          data.emplace(event_type, url);
         }
         navigation_params->fenced_frame_reporting->metadata.emplace(
             destination, std::move(data));

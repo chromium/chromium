@@ -9,68 +9,6 @@
 
 namespace mojo {
 
-// static
-blink::mojom::ReportingDestination
-EnumTraits<blink::mojom::ReportingDestination,
-           blink::FencedFrame::ReportingDestination>::
-    ToMojom(blink::FencedFrame::ReportingDestination input) {
-  switch (input) {
-    case blink::FencedFrame::ReportingDestination::kBuyer:
-      return blink::mojom::ReportingDestination::kBuyer;
-    case blink::FencedFrame::ReportingDestination::kSeller:
-      return blink::mojom::ReportingDestination::kSeller;
-    case blink::FencedFrame::ReportingDestination::kComponentSeller:
-      return blink::mojom::ReportingDestination::kComponentSeller;
-    case blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl:
-      return blink::mojom::ReportingDestination::kSharedStorageSelectUrl;
-  }
-  NOTREACHED();
-  return blink::mojom::ReportingDestination::kBuyer;
-}
-
-// static
-const base::flat_map<blink::FencedFrame::ReportingDestination,
-                     base::flat_map<std::string, GURL>>&
-StructTraits<blink::mojom::FencedFrameReportingDataView,
-             blink::FencedFrame::FencedFrameReporting>::
-    metadata(const blink::FencedFrame::FencedFrameReporting& input) {
-  return input.metadata;
-}
-
-// static
-bool StructTraits<blink::mojom::FencedFrameReportingDataView,
-                  blink::FencedFrame::FencedFrameReporting>::
-    Read(blink::mojom::FencedFrameReportingDataView data,
-         blink::FencedFrame::FencedFrameReporting* out) {
-  if (!data.ReadMetadata(&out->metadata)) {
-    return false;
-  }
-  return true;
-}
-
-// static
-bool EnumTraits<blink::mojom::ReportingDestination,
-                blink::FencedFrame::ReportingDestination>::
-    FromMojom(blink::mojom::ReportingDestination input,
-              blink::FencedFrame::ReportingDestination* out) {
-  switch (input) {
-    case blink::mojom::ReportingDestination::kBuyer:
-      *out = blink::FencedFrame::ReportingDestination::kBuyer;
-      return true;
-    case blink::mojom::ReportingDestination::kSeller:
-      *out = blink::FencedFrame::ReportingDestination::kSeller;
-      return true;
-    case blink::mojom::ReportingDestination::kComponentSeller:
-      *out = blink::FencedFrame::ReportingDestination::kComponentSeller;
-      return true;
-    case blink::mojom::ReportingDestination::kSharedStorageSelectUrl:
-      *out = blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
-      return true;
-  }
-  NOTREACHED();
-  return false;
-}
-
 blink::mojom::PotentiallyOpaqueURLPtr
 StructTraits<blink::mojom::FencedFrameConfigDataView,
              blink::FencedFrame::RedactedFencedFrameConfig>::
@@ -161,7 +99,7 @@ StructTraits<blink::mojom::FencedFrameConfigDataView,
         blink::mojom::Opaque::kOpaque);
   }
   return blink::mojom::PotentiallyOpaqueReportingMetadata::NewTransparent(
-      *config.reporting_metadata_->potentially_opaque_value);
+      config.reporting_metadata_->potentially_opaque_value->Clone());
 }
 
 bool StructTraits<blink::mojom::FencedFrameConfigDataView,
@@ -226,7 +164,7 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
   if (reporting_metadata) {
     if (reporting_metadata->is_transparent()) {
       out_config->reporting_metadata_.emplace(
-          absl::make_optional(reporting_metadata->get_transparent()));
+          absl::make_optional(*reporting_metadata->get_transparent()));
     } else {
       out_config->reporting_metadata_.emplace(absl::nullopt);
     }
@@ -328,7 +266,7 @@ StructTraits<blink::mojom::FencedFramePropertiesDataView,
         blink::mojom::Opaque::kOpaque);
   }
   return blink::mojom::PotentiallyOpaqueReportingMetadata::NewTransparent(
-      *properties.reporting_metadata_->potentially_opaque_value);
+      properties.reporting_metadata_->potentially_opaque_value->Clone());
 }
 
 bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
@@ -395,7 +333,7 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
   if (reporting_metadata) {
     if (reporting_metadata->is_transparent()) {
       out_properties->reporting_metadata_.emplace(
-          absl::make_optional(reporting_metadata->get_transparent()));
+          absl::make_optional(*reporting_metadata->get_transparent()));
     } else {
       out_properties->reporting_metadata_.emplace(absl::nullopt);
     }

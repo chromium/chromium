@@ -1052,10 +1052,24 @@ void FillMiscNavigationParams(
       }
     }
 
-    if (commit_params.fenced_frame_properties->reporting_metadata()) {
-      navigation_params->fenced_frame_reporting =
+    if (commit_params.fenced_frame_properties->reporting_metadata() &&
+        commit_params.fenced_frame_properties->reporting_metadata()
+            ->potentially_opaque_value.has_value()) {
+      const auto& reporting_metadata_value =
           commit_params.fenced_frame_properties->reporting_metadata()
-              ->potentially_opaque_value;
+              ->potentially_opaque_value.value();
+
+      navigation_params->fenced_frame_reporting.emplace();
+      for (const auto& [destination, metadata] :
+           reporting_metadata_value.metadata) {
+        base::flat_map<blink::WebString, blink::WebURL> data;
+        for (const auto& [event_type, url] : metadata) {
+          data.emplace(blink::WebString::FromUTF8(event_type),
+                       blink::WebURL(url));
+        }
+        navigation_params->fenced_frame_reporting->metadata.emplace(
+            destination, std::move(data));
+      }
     }
   }
 

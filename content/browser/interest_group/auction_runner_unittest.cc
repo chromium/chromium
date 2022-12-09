@@ -73,7 +73,7 @@ namespace {
 
 using InterestGroupKey = blink::InterestGroupKey;
 using PostAuctionSignals = InterestGroupAuction::PostAuctionSignals;
-using blink::FencedFrame::ReportingDestination;
+using blink::mojom::ReportingDestination;
 using PrivateAggregationRequests = AuctionRunner::PrivateAggregationRequests;
 
 const std::string kBidder1Name{"Ad Platform"};

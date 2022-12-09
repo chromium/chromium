@@ -24,17 +24,17 @@ namespace blink {
 
 namespace {
 
-blink::FencedFrame::ReportingDestination ToPublicDestination(
+mojom::blink::ReportingDestination ToMojom(
     const V8FenceReportingDestination& destination) {
   switch (destination.AsEnum()) {
     case V8FenceReportingDestination::Enum::kBuyer:
-      return blink::FencedFrame::ReportingDestination::kBuyer;
+      return mojom::blink::ReportingDestination::kBuyer;
     case V8FenceReportingDestination::Enum::kSeller:
-      return blink::FencedFrame::ReportingDestination::kSeller;
+      return mojom::blink::ReportingDestination::kSeller;
     case V8FenceReportingDestination::Enum::kComponentSeller:
-      return blink::FencedFrame::ReportingDestination::kComponentSeller;
+      return mojom::blink::ReportingDestination::kComponentSeller;
     case V8FenceReportingDestination::Enum::kSharedStorageSelectUrl:
-      return blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
+      return mojom::blink::ReportingDestination::kSharedStorageSelectUrl;
   }
 }
 
@@ -97,7 +97,7 @@ void Fence::reportEvent(ScriptState* script_state,
   DCHECK(fenced_frame);
   DCHECK(fenced_frame->GetDocument());
 
-  const absl::optional<blink::FencedFrameReporting>& fenced_frame_reporting =
+  const mojom::blink::FencedFrameReportingPtr& fenced_frame_reporting =
       fenced_frame->GetDocument()->Loader()->FencedFrameReporting();
   if (!fenced_frame_reporting) {
     AddConsoleMessage("This frame did not register reporting metadata.");
@@ -106,8 +106,7 @@ void Fence::reportEvent(ScriptState* script_state,
 
   for (const V8FenceReportingDestination& web_destination :
        event->destination()) {
-    blink::FencedFrame::ReportingDestination destination =
-        ToPublicDestination(web_destination);
+    mojom::blink::ReportingDestination destination = ToMojom(web_destination);
 
     const auto metadata_iter =
         fenced_frame_reporting->metadata.find(destination);
