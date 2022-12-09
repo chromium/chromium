@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {decodeTimestamp} from 'chrome://chrome-signin/gaia_auth_host/saml_timestamps.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {decodeTimestamp} from 'chrome://webui-test/gaia_auth_host/saml_timestamps.js';
 
 const ROUNDTRIP_DATA = [
   '1980-01-01',

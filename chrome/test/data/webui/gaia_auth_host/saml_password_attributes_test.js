@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {readPasswordAttributes} from 'chrome://chrome-signin/gaia_auth_host/saml_password_attributes.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {readPasswordAttributes} from 'chrome://webui-test/gaia_auth_host/saml_password_attributes.js';
 
 let xmlTestData;
 let xmlTestDataWithAttributesRemoved;

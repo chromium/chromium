@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_dice_support || is_chromeos_ash)
 
 # Creates the necessary GRDP file with local test files and the core
 # files from c/b/r/gaia_auth_host.
@@ -25,8 +28,4 @@ generate_grd("build_grdp") {
 
   # Rewrite the resource path for saml_with_password_attributes.xml
   resource_path_rewrites = [ "../../chromeos/login/saml_with_password_attributes.xml|saml_with_password_attributes.xml" ]
-
-  # Add the core files from c/b/r/gaia_auth_host as well.
-  deps = [ "//chrome/browser/resources/gaia_auth_host:preprocess_src" ]
-  manifest_files = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/gaia_auth_host_existing_manifest.json" ]
 }

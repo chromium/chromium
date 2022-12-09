@@ -97,7 +97,6 @@ if (include_js_tests) {
       "color_provider_css_colors_browsertest.js",
       "cr_components/cr_components_browsertest.js",
       "cr_elements/cr_elements_browsertest.js",
-      "gaia_auth_host/gaia_auth_host_browsertest.js",
       "histograms/histograms_internals_ui_browsertest.js",
       "history/history_browsertest.js",
       "invalidations/about_invalidations_browsertest.js",
@@ -187,6 +186,10 @@ if (include_js_tests) {
         "welcome/a11y_tests.js",
         "welcome/welcome_browsertest.js",
       ]
+    }
+
+    if (enable_dice_support || is_chromeos_ash) {
+      sources += [ "gaia_auth_host/gaia_auth_host_browsertest.js" ]
     }
 
     if (enable_webui_certificate_viewer) {
@@ -493,7 +496,6 @@ generate_grd("build_grd") {
     "cr_components:build_grdp",
     "cr_elements:build_grdp",
     "downloads:build_grdp",
-    "gaia_auth_host:build_grdp",
     "history:build_grdp",
     "js:build_grdp",
     "metrics_internals:build_grdp",
@@ -515,7 +517,6 @@ generate_grd("build_grd") {
     "$target_gen_dir/password_manager/resources.grdp",
     "$target_gen_dir/cr_components/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
-    "$target_gen_dir/gaia_auth_host/resources.grdp",
     "$target_gen_dir/downloads/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/history/resources.grdp",
@@ -594,6 +595,11 @@ generate_grd("build_grd") {
       "$target_gen_dir/app_settings/resources.grdp",
       "$target_gen_dir/app_home/resources.grdp",
     ]
+  }
+
+  if (enable_dice_support || is_chromeos_ash) {
+    deps += [ "gaia_auth_host:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/gaia_auth_host/resources.grdp" ]
   }
 
   if (is_chromeos_ash) {

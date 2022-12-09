@@ -346,17 +346,20 @@ bool IsValidChromeSigninReason(const GURL& url) {
 }  // namespace
 
 InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
+  // Always instantiate the WebUIDataSource so that tests pulling deps from
+  // from chrome://chrome-signin/gaia_auth_host/ can work.
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = CreateWebUIDataSource(profile);
+  content::WebUIDataSource::Add(profile, source);
+
   if (!IsValidChromeSigninReason(web_ui->GetWebContents()->GetVisibleURL()))
     return;
 
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource* source = CreateWebUIDataSource(profile);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string username =
       ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();
   AddEduStrings(source, username);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  content::WebUIDataSource::Add(profile, source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   web_ui->AddMessageHandler(

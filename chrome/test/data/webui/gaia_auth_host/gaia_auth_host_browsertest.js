@@ -21,7 +21,7 @@ var GaiaAuthHostBrowserTest = class extends testing.Test {
 
   /** @override */
   get webuiHost() {
-    return 'dummyurl';
+    return 'chrome-signin';
   }
 };
 
