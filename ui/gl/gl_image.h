@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
@@ -32,7 +33,16 @@ class ProcessMemoryDump;
 namespace gpu {
 class DawnEGLImageRepresentation;
 class D3DImageBacking;
+class D3DImageBackingFactoryTest;
+class IOSurfaceImageBackingFactory;
+class IOSurfaceImageBackingFactoryNewTestBase;
+class OverlayD3DImageRepresentation;
 class TestOverlayImageRepresentation;
+
+FORWARD_DECLARE_TEST(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess);
+FORWARD_DECLARE_TEST(D3DImageBackingFactoryTestSwapChain,
+                     CreateAndPresentSwapChain);
+FORWARD_DECLARE_TEST(D3DImageBackingFactoryTest, CreateFromSharedMemory);
 }  // namespace gpu
 
 namespace gpu::gles2 {
@@ -41,6 +51,7 @@ class Texture;
 
 namespace media {
 class GLImagePbuffer;
+class DXVAVideoDecodeAccelerator;
 class VTVideoDecodeAccelerator;
 }
 
@@ -55,6 +66,7 @@ class GLImageD3D;
 class GLImageDXGI;
 class GLImageIOSurface;
 class GLImageMemory;
+class SwapChainPresenter;
 
 // Encapsulates an image that can be bound and/or copied to a texture, hiding
 // platform specific management.
@@ -107,26 +119,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // this.
   virtual void SetColorSpace(const gfx::ColorSpace& color_space);
 
-  // An identifier for subclasses. Necessary for safe downcasting.
-  enum class Type {
-    NONE,
-    MEMORY,
-    IOSURFACE,
-    DXGI_IMAGE,
-    D3D,
-    DCOMP_SURFACE,
-    PBUFFER
-  };
-  virtual Type GetType() const;
-
-  // Safe downcasts. All functions return nullptr if |image| does not exist or
-  // does not have the specified type.
-  static GLImageD3D* ToGLImageD3D(GLImage* image);
-  static GLImageMemory* ToGLImageMemory(GLImage* image);
-  static GLImageIOSurface* ToGLImageIOSurface(GLImage* image);
-  static GLImageDXGI* ToGLImageDXGI(GLImage* image);
-  static media::GLImagePbuffer* ToGLImagePbuffer(GLImage* image);
-
  protected:
   // NOTE: We are in the process of eliminating client usage of GLImage. As part
   // of this effort, we are incrementally moving its public interface to be
@@ -143,6 +135,18 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
                             uint64_t process_tracing_id,
                             const std::string& dump_name);
 
+  // An identifier for subclasses. Necessary for safe downcasting.
+  enum class Type {
+    NONE,
+    MEMORY,
+    IOSURFACE,
+    DXGI_IMAGE,
+    D3D,
+    DCOMP_SURFACE,
+    PBUFFER
+  };
+  virtual Type GetType() const;
+
   // Returns the NativePixmap backing the GLImage. If not backed by a
   // NativePixmap, returns null.
   virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap();
@@ -152,13 +156,33 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   gfx::ColorSpace color_space_;
 
  private:
+  // Safe downcasts. All functions return nullptr if |image| does not exist or
+  // does not have the specified type.
+  static GLImageD3D* ToGLImageD3D(GLImage* image);
+  static GLImageMemory* ToGLImageMemory(GLImage* image);
+  static GLImageIOSurface* ToGLImageIOSurface(GLImage* image);
+  static GLImageDXGI* ToGLImageDXGI(GLImage* image);
+  static media::GLImagePbuffer* ToGLImagePbuffer(GLImage* image);
+
+  friend class SwapChainPresenter;
   friend class gpu::DawnEGLImageRepresentation;
   friend class gpu::D3DImageBacking;
+  friend class gpu::D3DImageBackingFactoryTest;
+  friend class gpu::IOSurfaceImageBackingFactory;
+  friend class gpu::IOSurfaceImageBackingFactoryNewTestBase;
+  friend class gpu::OverlayD3DImageRepresentation;
   friend class gpu::TestOverlayImageRepresentation;
   friend class gpu::gles2::Texture;
+  friend class media::DXVAVideoDecodeAccelerator;
   friend class media::VTVideoDecodeAccelerator;
   friend class ui::SurfacelessGlRenderer;
   friend class ui::SurfacelessSkiaGlRenderer;
+  FRIEND_TEST_ALL_PREFIXES(gpu::CompoundImageBackingTest,
+                           NoUploadOnOverlayMemoryAccess);
+  FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTestSwapChain,
+                           CreateAndPresentSwapChain);
+  FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTest,
+                           CreateFromSharedMemory);
 
   friend class base::RefCounted<GLImage>;
 };

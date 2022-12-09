@@ -49,7 +49,6 @@
 using testing::AtLeast;
 
 namespace gpu {
-namespace {
 
 class IOSurfaceImageBackingFactoryTest : public testing::Test {
  public:
@@ -707,6 +706,12 @@ class IOSurfaceImageBackingFactoryNewTestBase
   viz::SharedImageFormat get_format() { return GetParam(); }
 
  protected:
+  // Hide the access that parameterized tests make to restricted interfaces of
+  // GLImage here to ease friending.
+  void AssertGLImageHasTypeNone(gl::GLImage* image) {
+    ASSERT_EQ(image->GetType(), gl::GLImage::Type::NONE);
+  }
+
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
   scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
@@ -1187,7 +1192,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
       shared_image_manager_->Register(std::move(backing),
                                       memory_type_tracker_.get());
   scoped_refptr<gl::GLImage> image = GetImageFromMailbox(mailbox);
-  ASSERT_EQ(image->GetType(), gl::GLImage::Type::NONE);
+  AssertGLImageHasTypeNone(image.get());
   auto* stub_image = static_cast<StubImage*>(image.get());
   EXPECT_FALSE(stub_image->bound());
   int update_counter = stub_image->update_counter();
@@ -1230,5 +1235,4 @@ INSTANTIATE_TEST_SUITE_P(Service,
                          kSharedImageFormats,
                          TestParamToString);
 
-}  // anonymous namespace
 }  // namespace gpu

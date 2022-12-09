@@ -137,6 +137,8 @@ bool IsD3DSharedImageSupported() {
   return true;
 }
 
+}  // anonymous namespace
+
 class D3DImageBackingFactoryTestBase : public testing::Test {
  public:
   void SetUp() override {
@@ -2105,5 +2107,4 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
   }
 }
 
-}  // anonymous namespace
 }  // namespace gpu
