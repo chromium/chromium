@@ -31,6 +31,9 @@ class Ed25519Signature {
 
   static Ed25519Signature Create(base::span<const uint8_t, kLength> bytes);
 
+  bool operator==(const Ed25519Signature& other) const;
+  bool operator!=(const Ed25519Signature& other) const;
+
   [[nodiscard]] bool Verify(base::span<const uint8_t> message,
                             const Ed25519PublicKey& public_key) const;
 

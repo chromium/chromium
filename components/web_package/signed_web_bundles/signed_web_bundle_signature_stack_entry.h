@@ -29,6 +29,9 @@ class SignedWebBundleSignatureStackEntry {
 
   ~SignedWebBundleSignatureStackEntry();
 
+  bool operator==(const SignedWebBundleSignatureStackEntry& other) const;
+  bool operator!=(const SignedWebBundleSignatureStackEntry& other) const;
+
   const Ed25519PublicKey& public_key() const { return public_key_; }
   const Ed25519Signature& signature() const { return signature_; }
 

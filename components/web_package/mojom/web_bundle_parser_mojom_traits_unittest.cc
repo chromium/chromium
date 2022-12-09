@@ -56,7 +56,7 @@ TEST(StructTraitsTest, Ed25519Signature) {
       IsTrue());
 
   ASSERT_THAT(output.bytes_.has_value(), IsTrue());
-  EXPECT_THAT(input.bytes(), Eq(output.bytes()));
+  EXPECT_THAT(input, Eq(output));
 }
 
 }  // namespace web_package

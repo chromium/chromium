@@ -18,6 +18,18 @@ SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(
       public_key_(public_key),
       signature_(signature) {}
 
+bool SignedWebBundleSignatureStackEntry::operator==(
+    const SignedWebBundleSignatureStackEntry& other) const {
+  return complete_entry_cbor_ == other.complete_entry_cbor_ &&
+         attributes_cbor_ == other.attributes_cbor_ &&
+         public_key_ == other.public_key_ && signature_ == other.signature_;
+}
+
+bool SignedWebBundleSignatureStackEntry::operator!=(
+    const SignedWebBundleSignatureStackEntry& other) const {
+  return !operator==(other);
+}
+
 SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(
     const SignedWebBundleSignatureStackEntry&) = default;
 
