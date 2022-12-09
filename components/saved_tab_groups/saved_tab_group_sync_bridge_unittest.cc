@@ -54,6 +54,8 @@ bool AreGroupSpecificsEqual(const sync_pb::SavedTabGroupSpecifics& sp1,
     return false;
   if (sp1.group().color() != sp2.group().color())
     return false;
+  if (sp1.group().position() != sp2.group().position())
+    return false;
   if (sp1.creation_time_windows_epoch_micros() !=
       sp2.creation_time_windows_epoch_micros()) {
     return false;
@@ -157,6 +159,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncData) {
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
   group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.SetPosition(0);
 
   // Note: Here the change type does not matter. The initial merge will add
   // all elements in the change list into the model resolving any conflicts if
@@ -209,12 +212,13 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncDataWithExistingData) {
   // Create an updated version of `group` using the same creation time and 1
   // less tab.
   SavedTabGroup updated_group(u"New Title", tab_groups::TabGroupColorId::kPink,
-                              {}, group_guid, absl::nullopt,
+                              {}, group_guid, absl::nullopt, absl::nullopt,
                               group_creation_time);
   SavedTabGroupTab updated_tab_1(GURL("https://support.google.com"), u"Support",
                                  group_guid, nullptr, tab_1_guid, absl::nullopt,
                                  tab_1_creation_time);
   updated_group.AddTab(0, updated_tab_1);
+  updated_group.SetPosition(0);
 
   syncer::EntityChangeList entity_change_list = CreateEntityChangeListFromGroup(
       updated_group, syncer::EntityChange::ChangeType::ACTION_UPDATE);
@@ -273,6 +277,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, OrphanedTabAddedIntoGroupWhenFound) {
   SavedTabGroup missing_group(u"New Group Title",
                               tab_groups::TabGroupColorId::kOrange, {},
                               orphaned_guid);
+  missing_group.SetPosition(0);
   syncer::EntityChangeList missing_group_change_list;
   missing_group_change_list.push_back(
       CreateEntityChange(missing_group.ToSpecifics(),
@@ -400,6 +405,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
   group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.SetPosition(0);
 
   bridge_->ApplySyncChanges(
       bridge_->CreateMetadataChangeList(),
@@ -465,6 +471,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateSyncData) {
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
   group.AddTab(0, tab_1).AddTab(1, tab_2);
+  group.SetPosition(0);
 
   bridge_->ApplySyncChanges(
       bridge_->CreateMetadataChangeList(),

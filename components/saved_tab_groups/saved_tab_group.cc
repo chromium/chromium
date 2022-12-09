@@ -25,23 +25,20 @@ SavedTabGroup::SavedTabGroup(
     const tab_groups::TabGroupColorId& color,
     const std::vector<SavedTabGroupTab>& urls,
     absl::optional<base::GUID> saved_guid,
+    absl::optional<int> position,
     absl::optional<tab_groups::TabGroupId> local_group_id,
     absl::optional<base::Time> creation_time_windows_epoch_micros,
     absl::optional<base::Time> update_time_windows_epoch_micros)
-    : saved_guid_(saved_guid.has_value() ? saved_guid.value()
-                                         : base::GUID::GenerateRandomV4()),
+    : saved_guid_(saved_guid.value_or(base::GUID::GenerateRandomV4())),
       local_group_id_(local_group_id),
       title_(title),
       color_(color),
       saved_tabs_(urls),
+      position_(position.value_or(kUnsetPosition)),
       creation_time_windows_epoch_micros_(
-          creation_time_windows_epoch_micros.has_value()
-              ? creation_time_windows_epoch_micros.value()
-              : base::Time::Now()),
+          creation_time_windows_epoch_micros.value_or(base::Time::Now())),
       update_time_windows_epoch_micros_(
-          update_time_windows_epoch_micros.has_value()
-              ? update_time_windows_epoch_micros.value()
-              : base::Time::Now()) {}
+          update_time_windows_epoch_micros.value_or(base::Time::Now())) {}
 
 SavedTabGroup::SavedTabGroup(const SavedTabGroup& other) = default;
 
@@ -116,6 +113,12 @@ SavedTabGroup& SavedTabGroup::SetLocalGroupId(
 SavedTabGroup& SavedTabGroup::SetUpdateTimeWindowsEpochMicros(
     base::Time update_time_windows_epoch_micros) {
   update_time_windows_epoch_micros_ = update_time_windows_epoch_micros;
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::SetPosition(int position) {
+  position_ = position;
+  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 
@@ -205,15 +208,18 @@ SavedTabGroup SavedTabGroup::FromSpecifics(
   const tab_groups::TabGroupColorId color =
       SyncColorToTabGroupColor(specific.group().color());
   const std::u16string& title = base::UTF8ToUTF16(specific.group().title());
+  int position = specific.group().position();
 
   base::GUID guid = base::GUID::ParseLowercase(specific.guid());
   base::Time creation_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specific.creation_time_windows_epoch_micros()));
   base::Time update_time = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specific.update_time_windows_epoch_micros()));
+  SavedTabGroup group = SavedTabGroup(title, color, {}, guid, position,
+                                      absl::nullopt, creation_time);
+  group.SetUpdateTimeWindowsEpochMicros(update_time);
 
-  return SavedTabGroup(title, color, {}, guid, absl::nullopt, creation_time,
-                       update_time);
+  return group;
 }
 
 std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::ToSpecifics()
@@ -233,6 +239,7 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroup::ToSpecifics()
   sync_pb::SavedTabGroup* pb_group = pb_specific->mutable_group();
   pb_group->set_color(TabGroupColorToSyncColor(color()));
   pb_group->set_title(base::UTF16ToUTF8(title()));
+  pb_group->set_position(position());
 
   return pb_specific;
 }

@@ -37,6 +37,70 @@ base::GUID GenerateNextGUID() {
   return guid;
 }
 
+void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
+                              const std::vector<SavedTabGroupTab>& v2) {
+  ASSERT_EQ(v1.size(), v2.size());
+  for (size_t i = 0; i < v1.size(); i++) {
+    SavedTabGroupTab tab1 = v1[i];
+    SavedTabGroupTab tab2 = v2[i];
+    EXPECT_EQ(tab1.url(), tab2.url());
+    EXPECT_EQ(tab1.title(), tab2.title());
+    EXPECT_EQ(tab1.favicon(), tab2.favicon());
+  }
+}
+
+bool CompareSavedTabGroups(const SavedTabGroup& g1, const SavedTabGroup& g2) {
+  if (g1.title() != g2.title())
+    return false;
+  if (g1.color() != g2.color())
+    return false;
+  if (g1.position() != g2.position())
+    return false;
+  if (g1.saved_guid() != g2.saved_guid())
+    return false;
+  if (g1.creation_time_windows_epoch_micros() !=
+      g2.creation_time_windows_epoch_micros()) {
+    return false;
+  }
+
+  return true;
+}
+
+SavedTabGroup CreateSavedTabGroup(
+    const std::u16string& group_title,
+    const tab_groups::TabGroupColorId& color,
+    const std::vector<SavedTabGroupTab>& group_tabs,
+    const base::GUID& id) {
+  return SavedTabGroup(group_title, color, group_tabs, id);
+}
+
+SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
+                                        const std::u16string& title,
+                                        const base::GUID& group_guid) {
+  SavedTabGroupTab tab(GURL(url), title, group_guid);
+  tab.SetFavicon(gfx::Image());
+  return tab;
+}
+
+SavedTabGroup CreateTestSavedTabGroup() {
+  base::GUID id = GenerateNextGUID();
+  const std::u16string title = u"Test Test";
+  const tab_groups::TabGroupColorId& color = tab_groups::TabGroupColorId::kBlue;
+
+  SavedTabGroupTab tab1 =
+      CreateSavedTabGroupTab("www.google.com", u"Google", id);
+  SavedTabGroupTab tab2 =
+      CreateSavedTabGroupTab("chrome://newtab", u"new tab", id);
+
+  tab1.SetFavicon(gfx::Image());
+  tab2.SetFavicon(gfx::Image());
+
+  std::vector<SavedTabGroupTab> tabs = {tab1, tab2};
+
+  SavedTabGroup group(title, color, tabs, id);
+  return group;
+}
+
 }  // namespace
 
 // Serves to test the functions in SavedTabGroupModelObserver.
@@ -92,40 +156,6 @@ class SavedTabGroupModelObserverTest : public ::testing::Test,
     retrieved_new_index_ = -1;
     reordered_called_ = false;
     retrieved_guid_ = base::GUID::GenerateRandomV4();
-  }
-
-  SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
-                                          const std::u16string& title) {
-    SavedTabGroupTab tab(GURL(base_path_ + url), title,
-                         base::GUID::GenerateRandomV4());
-    tab.SetFavicon(gfx::Image());
-    return tab;
-  }
-
-  SavedTabGroup CreateTestSavedTabGroup() {
-    base::GUID id_4 = GenerateNextGUID();
-    const std::u16string title_4 = u"Test Test";
-    const tab_groups::TabGroupColorId& color_4 =
-        tab_groups::TabGroupColorId::kBlue;
-
-    SavedTabGroupTab tab1 = CreateSavedTabGroupTab("4th group", u"first tab");
-    SavedTabGroupTab tab2 = CreateSavedTabGroupTab("2nd link", u"new tab");
-    std::vector<SavedTabGroupTab> group_4_tabs = {tab1, tab2};
-
-    SavedTabGroup group_4(title_4, color_4, group_4_tabs);
-    return group_4;
-  }
-
-  void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
-                                const std::vector<SavedTabGroupTab>& v2) {
-    ASSERT_EQ(v1.size(), v2.size());
-    for (size_t i = 0; i < v1.size(); i++) {
-      SavedTabGroupTab tab1 = v1[i];
-      SavedTabGroupTab tab2 = v2[i];
-      EXPECT_EQ(tab1.url(), tab2.url());
-      EXPECT_EQ(tab1.title(), tab2.title());
-      EXPECT_EQ(tab1.favicon(), tab2.favicon());
-    }
   }
 
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
@@ -203,34 +233,6 @@ class SavedTabGroupModelTest : public ::testing::Test {
     }
   }
 
-  SavedTabGroupTab CreateSavedTabGroupTab(const std::string& url,
-                                          const std::u16string& title,
-                                          const base::GUID& group_guid) {
-    SavedTabGroupTab tab(GURL(base_path_ + url), title, group_guid);
-    tab.SetFavicon(gfx::Image());
-    return tab;
-  }
-
-  SavedTabGroup CreateSavedTabGroup(
-      const std::u16string& group_title,
-      const tab_groups::TabGroupColorId& color,
-      const std::vector<SavedTabGroupTab>& group_tabs,
-      const base::GUID& id) {
-    return SavedTabGroup(group_title, color, group_tabs, id);
-  }
-
-  void CompareSavedTabGroupTabs(const std::vector<SavedTabGroupTab>& v1,
-                                const std::vector<SavedTabGroupTab>& v2) {
-    EXPECT_EQ(v1.size(), v2.size());
-    for (size_t i = 0; i < v1.size(); i++) {
-      const SavedTabGroupTab& tab1 = v1[i];
-      const SavedTabGroupTab& tab2 = v2[i];
-      EXPECT_EQ(tab1.url(), tab2.url());
-      EXPECT_EQ(tab1.title(), tab2.title());
-      EXPECT_EQ(tab1.favicon(), tab2.favicon());
-    }
-  }
-
   std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
   std::string base_path_ = "file:///c:/tmp/";
   base::GUID id_1_;
@@ -241,8 +243,7 @@ class SavedTabGroupModelTest : public ::testing::Test {
 // Tests that SavedTabGroupModel::Count holds 3 elements initially.
 TEST_F(SavedTabGroupModelTest, InitialCountThree) {
   EXPECT_EQ(saved_tab_group_model_->Count(), 3);
-  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(),
-            static_cast<unsigned long>(3));
+  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), 3u);
 }
 
 // Tests that SavedTabGroupModel::Contains returns the 3, the number of starting
@@ -557,6 +558,243 @@ TEST_F(SavedTabGroupModelTest, MergeTabsFromModel) {
             merged_tab.creation_time_windows_epoch_micros());
   EXPECT_EQ(tab2.update_time_windows_epoch_micros(),
             merged_tab.update_time_windows_epoch_micros());
+}
+
+// Tests that groups inserted in the model are in order stay inserted in sorted
+// order.
+TEST_F(SavedTabGroupModelTest, GroupsSortedWithInOrderPositions) {
+  RemoveTestData();
+
+  // Create an arbitrary number of groups.
+  SavedTabGroup group_1(u"Group 1", tab_groups::TabGroupColorId::kRed, {});
+  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kOrange, {});
+  SavedTabGroup group_3(u"Group 3", tab_groups::TabGroupColorId::kYellow, {});
+  SavedTabGroup group_4(u"Group 4", tab_groups::TabGroupColorId::kGreen, {});
+  SavedTabGroup group_5(u"Group 5", tab_groups::TabGroupColorId::kBlue, {});
+  SavedTabGroup group_6(u"Group 6", tab_groups::TabGroupColorId::kPurple, {});
+
+  // Set the positions the groups should sit in the bookmarks bar.
+  group_1.SetPosition(0);
+  group_2.SetPosition(1);
+  group_3.SetPosition(2);
+  group_4.SetPosition(3);
+  group_5.SetPosition(4);
+  group_6.SetPosition(5);
+
+  // This is the order we expect the groups in the model to be.
+  std::vector<SavedTabGroup> groups = {group_1, group_2, group_3,
+                                       group_4, group_5, group_6};
+
+  // Add the groups into the model in order.
+  saved_tab_group_model_->Add(group_1);
+  saved_tab_group_model_->Add(group_2);
+  saved_tab_group_model_->Add(group_3);
+  saved_tab_group_model_->Add(group_4);
+  saved_tab_group_model_->Add(group_5);
+  saved_tab_group_model_->Add(group_6);
+
+  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), groups.size());
+  for (size_t i = 0; i < groups.size(); ++i) {
+    EXPECT_TRUE(CompareSavedTabGroups(
+        groups[i], saved_tab_group_model_->saved_tab_groups()[i]));
+  }
+}
+
+// Tests that groups inserted in the model out of order are still inserted in
+// sorted order.
+TEST_F(SavedTabGroupModelTest, GroupsSortedWithOutOfOrderPositions) {
+  RemoveTestData();
+
+  // Create an arbitrary number of groups.
+  SavedTabGroup group_1(u"Group 1", tab_groups::TabGroupColorId::kRed, {});
+  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kOrange, {});
+  SavedTabGroup group_3(u"Group 3", tab_groups::TabGroupColorId::kYellow, {});
+  SavedTabGroup group_4(u"Group 4", tab_groups::TabGroupColorId::kGreen, {});
+  SavedTabGroup group_5(u"Group 5", tab_groups::TabGroupColorId::kBlue, {});
+  SavedTabGroup group_6(u"Group 6", tab_groups::TabGroupColorId::kPurple, {});
+
+  // Set the positions the groups should sit in the bookmarks bar.
+  group_1.SetPosition(0);
+  group_2.SetPosition(1);
+  group_3.SetPosition(2);
+  group_4.SetPosition(3);
+  group_5.SetPosition(4);
+  group_6.SetPosition(5);
+
+  // This is the order we expect the groups in the model to be.
+  std::vector<SavedTabGroup> groups = {group_1, group_2, group_3,
+                                       group_4, group_5, group_6};
+
+  // Add the groups into the model in an arbitrary order.
+  saved_tab_group_model_->Add(group_6);
+  saved_tab_group_model_->Add(group_1);
+  saved_tab_group_model_->Add(group_4);
+  saved_tab_group_model_->Add(group_3);
+  saved_tab_group_model_->Add(group_5);
+  saved_tab_group_model_->Add(group_2);
+
+  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), groups.size());
+  for (size_t i = 0; i < groups.size(); ++i) {
+    EXPECT_TRUE(CompareSavedTabGroups(
+        groups[i], saved_tab_group_model_->saved_tab_groups()[i]));
+  }
+}
+
+// Tests that groups inserted in the model with gaps between the positions are
+// still inserted in sorted order.
+TEST_F(SavedTabGroupModelTest, GroupsSortedWithGapsInPositions) {
+  RemoveTestData();
+
+  // Create an arbitrary number of groups.
+  SavedTabGroup group_1(u"Group 1", tab_groups::TabGroupColorId::kRed, {});
+  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kOrange, {});
+  SavedTabGroup group_3(u"Group 3", tab_groups::TabGroupColorId::kYellow, {});
+  SavedTabGroup group_4(u"Group 4", tab_groups::TabGroupColorId::kGreen, {});
+  SavedTabGroup group_5(u"Group 5", tab_groups::TabGroupColorId::kBlue, {});
+  SavedTabGroup group_6(u"Group 6", tab_groups::TabGroupColorId::kPurple, {});
+
+  // Set the positions the groups should sit in the bookmarks bar.
+  group_1.SetPosition(0);
+  group_2.SetPosition(3);
+  group_3.SetPosition(8);
+  group_4.SetPosition(19);
+  group_5.SetPosition(21);
+  group_6.SetPosition(34);
+
+  // This is the order we expect the groups in the model to be.
+  std::vector<SavedTabGroup> groups = {group_1, group_2, group_3,
+                                       group_4, group_5, group_6};
+
+  // Add the groups into the model in an arbitrary order.
+  saved_tab_group_model_->Add(group_6);
+  saved_tab_group_model_->Add(group_1);
+  saved_tab_group_model_->Add(group_4);
+  saved_tab_group_model_->Add(group_3);
+  saved_tab_group_model_->Add(group_5);
+  saved_tab_group_model_->Add(group_2);
+
+  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), groups.size());
+  for (size_t i = 0; i < groups.size(); ++i) {
+    EXPECT_TRUE(CompareSavedTabGroups(
+        groups[i], saved_tab_group_model_->saved_tab_groups()[i]));
+  }
+}
+
+// Tests that groups inserted in the model with gaps and in decreasing order
+// between the positions are still inserted in increasing sorted order.
+TEST_F(SavedTabGroupModelTest, GroupsSortedWithDecreasingPositions) {
+  RemoveTestData();
+
+  // Create an arbitrary number of groups.
+  SavedTabGroup group_1(u"Group 1", tab_groups::TabGroupColorId::kRed, {});
+  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kOrange, {});
+  SavedTabGroup group_3(u"Group 3", tab_groups::TabGroupColorId::kYellow, {});
+  SavedTabGroup group_4(u"Group 4", tab_groups::TabGroupColorId::kGreen, {});
+  SavedTabGroup group_5(u"Group 5", tab_groups::TabGroupColorId::kBlue, {});
+  SavedTabGroup group_6(u"Group 6", tab_groups::TabGroupColorId::kPurple, {});
+
+  // Set the positions the groups should sit in the bookmarks bar.
+  group_1.SetPosition(0);
+  group_2.SetPosition(3);
+  group_3.SetPosition(8);
+  group_4.SetPosition(19);
+  group_5.SetPosition(21);
+  group_6.SetPosition(34);
+
+  // This is the order we expect the groups in the model to be.
+  std::vector<SavedTabGroup> groups = {group_1, group_2, group_3,
+                                       group_4, group_5, group_6};
+
+  // Add the groups into the model in an arbitrary order.
+  saved_tab_group_model_->Add(group_6);
+  saved_tab_group_model_->Add(group_5);
+  saved_tab_group_model_->Add(group_4);
+  saved_tab_group_model_->Add(group_3);
+  saved_tab_group_model_->Add(group_2);
+  saved_tab_group_model_->Add(group_1);
+
+  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), groups.size());
+  for (size_t i = 0; i < groups.size(); ++i) {
+    EXPECT_TRUE(CompareSavedTabGroups(
+        groups[i], saved_tab_group_model_->saved_tab_groups()[i]));
+  }
+}
+
+// Tests that groups inserted in the model with a more recent update time take
+// precedence over groups with the same position.
+TEST_F(SavedTabGroupModelTest, GroupWithSamePositionSortedByUpdateTime) {
+  RemoveTestData();
+
+  // Create an arbitrary number of groups.
+  SavedTabGroup group_1(u"Group 1", tab_groups::TabGroupColorId::kRed, {});
+  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kOrange, {});
+
+  // Set the positions the groups should sit in the bookmarks bar.
+  group_1.SetPosition(0);
+  group_2.SetPosition(0);
+
+  // This is the order we expect the groups in the model to be.
+  std::vector<SavedTabGroup> groups = {group_2, group_1};
+
+  // Add the groups into the model in an arbitrary order.
+  saved_tab_group_model_->Add(group_1);
+  saved_tab_group_model_->Add(group_2);
+
+  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), groups.size());
+  for (size_t i = 0; i < groups.size(); ++i) {
+    EXPECT_TRUE(CompareSavedTabGroups(
+        groups[i], saved_tab_group_model_->saved_tab_groups()[i]));
+  }
+}
+
+// Tests that groups inserted in the model with no position are inserted at the
+// back of the model and have their position set to the last index at the time
+// they were inserted.
+TEST_F(SavedTabGroupModelTest, GroupsWithNoPositionInsertedAtEnd) {
+  RemoveTestData();
+
+  // Create an arbitrary number of groups.
+  SavedTabGroup group_1(u"Group 1", tab_groups::TabGroupColorId::kRed, {});
+  SavedTabGroup group_2(u"Group 2", tab_groups::TabGroupColorId::kOrange, {});
+  SavedTabGroup group_3(u"Group 3", tab_groups::TabGroupColorId::kYellow, {});
+  SavedTabGroup group_4(u"Group 4", tab_groups::TabGroupColorId::kGreen, {});
+  SavedTabGroup group_5(u"Group 5", tab_groups::TabGroupColorId::kBlue, {});
+  SavedTabGroup group_6(u"Group 6", tab_groups::TabGroupColorId::kPurple, {});
+
+  // Set the positions the groups should sit in the bookmarks bar.
+  group_1.SetPosition(0);
+  group_2.SetPosition(1);
+  group_3.SetPosition(2);
+  group_4.SetPosition(3);
+  group_5.SetPosition(4);
+
+  // This is the order we expect the groups in the model to be.
+  std::vector<SavedTabGroup> groups = {group_1, group_2, group_3,
+                                       group_4, group_5, group_6};
+
+  // Add the groups into the model in an arbitrary order.
+  saved_tab_group_model_->Add(group_1);
+  saved_tab_group_model_->Add(group_2);
+  saved_tab_group_model_->Add(group_3);
+  saved_tab_group_model_->Add(group_4);
+  saved_tab_group_model_->Add(group_5);
+  saved_tab_group_model_->Add(group_6);
+
+  groups[5].SetPosition(5);
+
+  EXPECT_EQ(saved_tab_group_model_->saved_tab_groups().size(), groups.size());
+
+  // Expect the 6th group to have a position of 5 (0-based indexing).
+  EXPECT_EQ(saved_tab_group_model_
+                ->saved_tab_groups()
+                    [saved_tab_group_model_->saved_tab_groups().size() - 1]
+                .position(),
+            groups[5].position());
+
+  for (size_t i = 0; i < groups.size(); ++i) {
+    EXPECT_TRUE(CompareSavedTabGroups(
+        groups[i], saved_tab_group_model_->saved_tab_groups()[i]));
+  }
 }
 
 // Tests that SavedTabGroupModelObserver::Added passes the correct element from

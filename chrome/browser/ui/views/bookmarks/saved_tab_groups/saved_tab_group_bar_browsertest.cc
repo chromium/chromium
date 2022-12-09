@@ -21,6 +21,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using SavedTabGroupBarBrowserTest = InProcessBrowserTest;
 
@@ -123,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
       std::u16string(u"test_title_1"), tab_groups::TabGroupColorId::kGrey,
       {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid)
            .SetFavicon(favicon::GetDefaultFavicon())},
-      guid, group_id));
+      guid, absl::nullopt, group_id));
   EXPECT_TRUE(model->group_model()->GetTabGroup(group_id)->IsSaved());
 
   // Remove the group from the SavedTabGroupModel and expect it is no longer

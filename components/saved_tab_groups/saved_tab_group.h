@@ -24,11 +24,14 @@
 // tab_group_editor_bubble_view.
 class SavedTabGroup {
  public:
+  static constexpr int kUnsetPosition = -1;
+
   SavedTabGroup(
       const std::u16string& title,
       const tab_groups::TabGroupColorId& color,
       const std::vector<SavedTabGroupTab>& urls,
       absl::optional<base::GUID> saved_guid = absl::nullopt,
+      absl::optional<int> position = absl::nullopt,
       absl::optional<tab_groups::TabGroupId> local_group_id = absl::nullopt,
       absl::optional<base::Time> creation_time_windows_epoch_micros =
           absl::nullopt,
@@ -53,6 +56,8 @@ class SavedTabGroup {
   const std::vector<SavedTabGroupTab>& saved_tabs() const {
     return saved_tabs_;
   }
+  int position() const { return position_; }
+
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
   // Accessors for Tabs based on id.
@@ -75,6 +80,7 @@ class SavedTabGroup {
       absl::optional<tab_groups::TabGroupId> tab_group_id);
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
       base::Time update_time_windows_epoch_micros);
+  SavedTabGroup& SetPosition(int position);
 
   // Tab mutators.
   // Adds `tab` to `saved_tabs_` at the specified `index` unless the added tab
@@ -135,6 +141,11 @@ class SavedTabGroup {
 
   // The URLS and later webcontents (such as favicons) of the saved tab group.
   std::vector<SavedTabGroupTab> saved_tabs_;
+
+  // The current position of the group in relation to all other saved groups.
+  // A value of -1 means that the group was not assigned a position and will be
+  // assigned one when it is added into the SavedTabGroupModel.
+  int position_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;

@@ -139,6 +139,16 @@ class SavedTabGroupModel {
   void RemoveObserver(SavedTabGroupModelObserver* observer);
 
  private:
+  // Updates all group positions to match the index they are currently stored
+  // at.
+  void UpdatePositionsImpl();
+
+  // Insert `group` into sorted order based on its position compared to already
+  // stored groups in `saved_tab_groups_`. It should be noted that
+  // `saved_tab_groups` must already be in sorted order for this function to
+  // work as intended. To do this, UpdatePositionsImpl() can be called.
+  void InsertGroupImpl(const SavedTabGroup& group);
+
   // Implementations of CRUD operations.
   std::unique_ptr<SavedTabGroup> RemoveImpl(int index);
   void UpdateVisualDataImpl(int index,
@@ -147,7 +157,10 @@ class SavedTabGroupModel {
   // Obsevers of the model.
   base::ObserverList<SavedTabGroupModelObserver>::Unchecked observers_;
 
-  // Storage of all saved tab groups in the order they are displayed.
+  // Storage of all saved tab groups in the order they are displayed. The
+  // position of the groups must maintain sorted order as sync may not propagate
+  // an entire update completely leaving us with missing groups / gaps between
+  // the positions.
   std::vector<SavedTabGroup> saved_tab_groups_;
 };
 

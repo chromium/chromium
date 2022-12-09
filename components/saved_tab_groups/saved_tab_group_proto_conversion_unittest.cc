@@ -75,7 +75,7 @@ TEST_F(SavedTabGroupConversionTest, GroupToSpecificRetainsData) {
   absl::optional<base::Time> creation_time_windows_epoch_micros = time_;
   absl::optional<base::Time> update_time_windows_epoch_micros = time_;
   SavedTabGroup group(title, color, {}, saved_guid, absl::nullopt,
-                      creation_time_windows_epoch_micros,
+                      absl::nullopt, creation_time_windows_epoch_micros,
                       update_time_windows_epoch_micros);
 
   // Use the group to create a STGSpecific.
@@ -176,7 +176,7 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
   absl::optional<base::Time> creation_time_windows_epoch_micros = time_;
   absl::optional<base::Time> update_time_windows_epoch_micros = time_;
   SavedTabGroup group1(title, color, {}, saved_guid, absl::nullopt,
-                       creation_time_windows_epoch_micros,
+                       absl::nullopt, creation_time_windows_epoch_micros,
                        update_time_windows_epoch_micros);
 
   // Create a new group with the same data and update it. Calling set functions

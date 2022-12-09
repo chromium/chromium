@@ -161,7 +161,7 @@ void TabGroup::SaveGroup() {
   if (!backend || !backend->model())
     return;
   SavedTabGroup saved_tab_group(visual_data_->title(), visual_data_->color(),
-                                tabs, saved_group_guid, id_);
+                                tabs, saved_group_guid, absl::nullopt, id_);
   backend->model()->Add(saved_tab_group);
 }
 
