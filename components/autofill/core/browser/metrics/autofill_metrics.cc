@@ -156,6 +156,9 @@ ConvertSettingsVisibleFieldTypeForMetrics(ServerFieldType field_type) {
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::
           kHonorificPrefix;
 
+    case ServerFieldType::COMPANY_NAME:
+      return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kCompany;
+
     default:
       return AutofillMetrics::SettingsVisibleFieldTypeForMetrics::kUndefined;
   }

@@ -140,7 +140,8 @@ class AutofillMetrics {
     kStreetAddress = 8,
     kDependentLocality = 9,
     kHonorificPrefix = 10,
-    kMaxValue = kHonorificPrefix
+    kCompany = 11,
+    kMaxValue = kCompany
   };
 
   // Metric to measure if a submitted card's expiration date matches the same

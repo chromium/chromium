@@ -9378,6 +9378,7 @@ others/histograms.xml -->
   <int value="8" label="StreetAddress"/>
   <int value="9" label="DependentLocality"/>
   <int value="10" label="HonorificPrefix"/>
+  <int value="11" label="Company"/>
 </enum>
 
 <enum name="AutofillSilentUpdatesProfileImportType">
