@@ -34,11 +34,13 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/drag_window_resizer.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -3545,6 +3547,45 @@ TEST_F(FloatOverviewSessionTest, ClickingWithFloatedWindow) {
   GetEventGenerator()->set_current_screen_location(
       gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
   GetEventGenerator()->ClickLeftButton();
+}
+
+// Tests that dragging a normal window while there is a floated window to a new
+// desk does not result in a crash. Regression test for b/261757970.
+TEST_F(FloatOverviewSessionTest, DraggingToNewDeskWithFloatedWindow) {
+  // Create one normal and one floated window.
+  auto normal_window = CreateAppWindow();
+  auto floated_window = CreateAppWindow();
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  // Enter overview and start dragging on the normal window.
+  ToggleOverview();
+  OverviewItem* normal_item = GetOverviewItemForWindow(normal_window.get());
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->set_current_screen_location(
+      gfx::ToRoundedPoint(normal_item->target_bounds().CenterPoint()));
+  generator->PressLeftButton();
+
+  // Drag the normal window to the new desk button; this will create a new desk
+  // and drop the normal window in it.
+  OverviewGrid* overview_grid =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+  const auto* desks_bar_view = overview_grid->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view);
+  const auto* zero_state_new_desk_button =
+      desks_bar_view->zero_state_new_desk_button();
+  ASSERT_TRUE(zero_state_new_desk_button);
+  ASSERT_TRUE(zero_state_new_desk_button->GetVisible());
+  generator->DragMouseTo(
+      zero_state_new_desk_button->GetBoundsInScreen().CenterPoint());
+
+  // Check that a new desk has been created, and there should be no crash when
+  // dropping the window.
+  generator->ReleaseLeftButton();
+  auto* controller = DesksController::Get();
+  EXPECT_EQ(2u, controller->desks().size());
+  EXPECT_TRUE(
+      base::Contains(controller->desks()[1]->windows(), normal_window.get()));
 }
 
 class TabletModeOverviewSessionTest : public OverviewTestBase {

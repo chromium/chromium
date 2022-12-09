@@ -369,8 +369,17 @@ OverviewWindowDragController::CompleteDrag(
   }
 
   did_move_ = false;
-  if (float_drag_helper_)
-    float_drag_helper_->Shutdown(item_->GetWindow());
+  if (float_drag_helper_) {
+    // `item_` may be null if `CompleteNormalDrag()` resulted in moving the
+    // window into another desk. At this point, we can just reset
+    // `float_drag_helper_` to return the containers into the correct stacking
+    // order, since the animation will not animate over the floated window if it
+    // is already above the desk bar.
+    if (item_)
+      float_drag_helper_->Shutdown(item_->GetWindow());
+    else
+      float_drag_helper_.reset();
+  }
   item_ = nullptr;
   current_drag_behavior_ = DragBehavior::kNoDrag;
   UnpauseOcclusionTracker();
