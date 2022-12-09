@@ -25,7 +25,7 @@ interface SettingMetric {
 export function convertPrefToSettingMetric(
     prefKey: string, prefValue: unknown): SettingMetric|null {
   switch (prefKey) {
-    // device_page/keyboard.js
+    // device_page/keyboard.ts
     case 'settings.language.send_function_keys':
       assert(typeof prefValue === 'boolean');
       return {
@@ -33,11 +33,26 @@ export function convertPrefToSettingMetric(
         value: {boolValue: prefValue} as SettingChangeValue,
       };
 
-    // device_page/pointers.js
+    // device_page/pointers.ts
     case 'settings.touchpad.sensitivity2':
       assert(typeof prefValue === 'number');
       return {
         setting: Setting.kTouchpadSpeed,
+        value: {intValue: prefValue} as SettingChangeValue,
+      };
+
+    // os_a11y_page/display_and_magnification_page.ts
+    case 'settings.a11y.screen_magnifier_focus_following':
+      assert(typeof prefValue === 'boolean');
+      return {
+        setting: Setting.kFullscreenMagnifierFocusFollowing,
+        value: {boolValue: prefValue} as SettingChangeValue,
+      };
+
+    case 'settings.a11y.screen_magnifier_mouse_following_mode':
+      assert(typeof prefValue === 'number');
+      return {
+        setting: Setting.kFullscreenMagnifierMouseFollowingMode,
         value: {intValue: prefValue} as SettingChangeValue,
       };
 
