@@ -57,6 +57,18 @@ parentMessagePipe.registerHandler(
           /** @type {boolean} */ (message.isVirtualKeyboardEnabled));
     });
 
+let androidNetworkInfoCallback = null;
+parentMessagePipe.registerHandler(
+    Message.ANDROID_NETWORK_INFO, async (message) => {
+      if (!androidNetworkInfoCallback) {
+        return;
+      }
+
+      androidNetworkInfoCallback(
+          /** @type {boolean} */ (message.isDifferentNetwork),
+          /** @type {boolean} */ (message.androidDeviceOnCellular));
+    });
+
 // The implementation of echeapi.d.ts
 const EcheApiBindingImpl = new (class {
   closeWindow() {
@@ -144,6 +156,10 @@ const EcheApiBindingImpl = new (class {
     virtualKeyboardCallback = callback;
   }
 
+  onAndroidDeviceNetworkInfoChanged(callback) {
+    console.log('echeapi receiver.js onAndroidDeviceNetworkInfoChanged');
+    androidNetworkInfoCallback = callback;
+  }
 })();
 
 // Declare module echeapi and bind the implementation to echeapi.d.ts
@@ -183,6 +199,9 @@ echeapi.system.registerStreamActionReceiver =
     EcheApiBindingImpl.onStreamAction.bind(EcheApiBindingImpl);
 echeapi.system.registerVirtualKeyboardChangedReceiver =
     EcheApiBindingImpl.onReceivedVirtualKeyboardChanged.bind(
+        EcheApiBindingImpl);
+echeapi.system.registerAndroidNetworkInfoChangedReceiver =
+    EcheApiBindingImpl.onAndroidDeviceNetworkInfoChanged.bind(
         EcheApiBindingImpl);
 window['echeapi'] = echeapi;
 console.log('echeapi receiver.js finish bind the implementation of echeapi');

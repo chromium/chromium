@@ -139,6 +139,24 @@ void SystemInfoProvider::SetTabletModeChanged(bool enabled) {
   observer_remote_->OnReceivedTabletModeChanged(enabled);
 }
 
+void SystemInfoProvider::SetAndroidDeviceNetworkInfoChanged(
+    bool is_different_network,
+    bool android_device_on_cellular) {
+  PA_LOG(INFO) << "echeapi SystemInfoProvider "
+                  "SetAndroidDeviceNetworkInfoChanged is_different_network:"
+               << is_different_network;
+  PA_LOG(INFO)
+      << "echeapi SystemInfoProvider "
+         "SetAndroidDeviceNetworkInfoChanged android_device_on_cellular:"
+      << android_device_on_cellular;
+  if (!observer_remote_.is_bound())
+    return;
+
+  PA_LOG(VERBOSE) << "OnAndroidDeviceNetworkInfoChanged";
+  observer_remote_->OnAndroidDeviceNetworkInfoChanged(
+      is_different_network, android_device_on_cellular);
+}
+
 // TabletModeObserver implementation:
 void SystemInfoProvider::OnTabletModeStarted() {
   SetTabletModeChanged(true);

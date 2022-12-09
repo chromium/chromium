@@ -59,6 +59,12 @@ interface SystemInfoObserver {
   // process. TODO(b/184119538): Need to handle the resize issue and virtual
   // keyboard in table mode.
   OnReceivedTabletModeChanged(bool is_tablet_mode);
+
+  // Interface for monitoring the network state of the Android device.
+  // The state is sent by the remote device during the signaling process
+  // and processed by CrOS.
+  OnAndroidDeviceNetworkInfoChanged(bool is_different_network,
+          bool android_device_on_cellular);
 };
 
 // Interface for generating uid. The uid is unique and persistent.
@@ -81,6 +87,8 @@ enum WebNotificationType {
     LAUNCH_NOTIFICATION_FAILED,
     TABLET_MODE,
     WIFI_NOT_READY,
+    DIFFERENT_WIFI_NETWORKS,
+    REMOTE_DEVICE_ON_CELLULAR,
 };
 
 // Interface for showing a native notification which was generated from WebUI.

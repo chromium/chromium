@@ -65,6 +65,8 @@ class SystemInfoProvider
   void OnTabletModeEnded() override;
 
   void SetTabletModeChanged(bool enabled);
+  void SetAndroidDeviceNetworkInfoChanged(bool is_different_network,
+                                          bool android_device_on_cellular);
 
   // network_config::CrosNetworkConfigObserver overrides:
   void OnNetworkStateChanged(

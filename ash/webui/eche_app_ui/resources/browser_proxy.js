@@ -121,6 +121,17 @@ displayStreamHandler.setStreamActionObserver(
            Message.TABLET_MODE, {/** @type {boolean} */ isTabletMode});
      });
 
+ // Add Android network info listener and send result via pipes.
+ systemInfoObserverRouter.onAndroidDeviceNetworkInfoChanged.addListener(
+     (isDifferentNetwork, androidDeviceOnCellular) => {
+       console.log(
+           'echeapi browser_proxy.js onAndroidDeviceNetworkInfoChanged');
+       guestMessagePipe.sendMessage(Message.TABLET_MODE, {
+         /** @type {boolean} */ isDifferentNetwork,
+         /** @type {boolean} */ androidDeviceOnCellular,
+       });
+     });
+
  // Add stream action listener and send result via pipes.
  streamActionObserverRouter.onStreamAction.addListener((action) => {
    console.log(`echeapi browser_proxy.js OnStreamAction ${action}`);

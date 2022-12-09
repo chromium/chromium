@@ -155,6 +155,7 @@ class FakeObserver : public mojom::SystemInfoObserver {
     return num_backlight_state_calls_;
   }
   size_t num_tablet_state_calls() const { return num_tablet_state_calls_; }
+  size_t num_android_state_calls() const { return num_android_state_calls_; }
 
   // mojom::SystemInfoObserver:
   void OnScreenBacklightStateChanged(
@@ -173,6 +174,15 @@ class FakeObserver : public mojom::SystemInfoObserver {
     }
   }
 
+  void OnAndroidDeviceNetworkInfoChanged(
+      bool is_different_network,
+      bool android_device_on_cellular) override {
+    ++num_android_state_calls_;
+    if (task_runner_) {
+      task_runner_->Finish();
+    }
+  }
+
   static void setTaskRunner(TaskRunner* task_runner) {
     task_runner_ = task_runner;
   }
@@ -182,6 +192,7 @@ class FakeObserver : public mojom::SystemInfoObserver {
  private:
   size_t num_backlight_state_calls_ = 0;
   size_t num_tablet_state_calls_ = 0;
+  size_t num_android_state_calls_ = 0;
   static TaskRunner* task_runner_;
 };
 
@@ -249,6 +260,10 @@ class SystemInfoProviderTest : public testing::Test {
         ash::ScreenBacklightState::OFF);
   }
 
+  void SetAndroidDeviceNetworkInfoChanged() {
+    system_info_provider_->SetAndroidDeviceNetworkInfoChanged(false, false);
+  }
+
   void OnTabletModeStarted() { system_info_provider_->OnTabletModeStarted(); }
 
   void OnTabletModeEnded() { system_info_provider_->OnTabletModeEnded(); }
@@ -269,6 +284,9 @@ class SystemInfoProviderTest : public testing::Test {
   }
   size_t GetNumBacklightStateObserverCalls() const {
     return fake_observer_->num_backlight_state_calls();
+  }
+  size_t GetNumAndroidStateObserverCalls() const {
+    return fake_observer_->num_android_state_calls();
   }
   TaskRunner task_runner_;
 
@@ -334,6 +352,15 @@ TEST_F(SystemInfoProviderTest, ObserverCalledWhenTabletModeEnded) {
   task_runner_.WaitForResult();
 
   EXPECT_EQ(1u, GetNumTabletStateObserverCalls());
+}
+
+TEST_F(SystemInfoProviderTest,
+       ObserverCalledWhenAndroidDeviceNetworkStateChanged) {
+  FakeObserver::setTaskRunner(&task_runner_);
+  SetAndroidDeviceNetworkInfoChanged();
+  task_runner_.WaitForResult();
+
+  EXPECT_EQ(1u, GetNumAndroidStateObserverCalls());
 }
 
 }  // namespace eche_app

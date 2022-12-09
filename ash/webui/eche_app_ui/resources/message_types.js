@@ -107,4 +107,6 @@
   STREAM_ACTION: 'stream_action',
   // Message for virtual keyboard state
   IS_VIRTUAL_KEYBOARD_ENABLED: 'is_virtual_keyboard_enabled',
+  // Message for Android network info
+  ANDROID_NETWORK_INFO: 'android-network-info',
 };
