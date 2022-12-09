@@ -642,8 +642,14 @@ void DownloadBubbleRowView::UpdateLabels() {
   primary_label_->SetText(model_->GetFileNameToReportUser().LossyDisplayName());
   secondary_label_->SetText(model_->GetStatusText());
 
-  transparent_button_->SetAccessibleName(base::JoinString(
-      {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
+  if (ui_info_.has_subpage) {
+    transparent_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_MAIN_BUTTON_SUBPAGE, primary_label_->GetText(),
+        secondary_label_->GetText()));
+  } else {
+    transparent_button_->SetAccessibleName(base::JoinString(
+        {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
+  }
 
   if (GetWidget()) {
     secondary_label_->SetEnabledColor(

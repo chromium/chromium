@@ -2583,6 +2583,10 @@ are declared in tools/grit/grit_rule.gni.
                desc="Label for the Delete button on the blocked download bubble subpage.">
         Delete
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_MAIN_BUTTON_SUBPAGE"
+               desc="Accessibility label for the main button on the download bubble main page. It opens the bubble subpage when activated.">
+        <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> <ph name="STATUS">$2<ex>blocked dangerous</ex></ph> more details
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_RESUME"
                desc="Label for the button prompting to resume a paused download">
         Resume
