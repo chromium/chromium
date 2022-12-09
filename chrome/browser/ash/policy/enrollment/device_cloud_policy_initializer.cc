@@ -81,9 +81,6 @@ void DeviceCloudPolicyInitializer::OnStoreError(CloudPolicyStore* store) {
 void DeviceCloudPolicyInitializer::OnDeviceCloudPolicyManagerConnected() {
   // Do nothing.
 }
-void DeviceCloudPolicyInitializer::OnDeviceCloudPolicyManagerDisconnected() {
-  // Do nothing.
-}
 void DeviceCloudPolicyInitializer::OnDeviceCloudPolicyManagerGotRegistry() {
   // `policy_manager_->HasSchemaRegistry()` is one of requirements for
   // StartConnection. Make another attempt when `policy_manager_` gets its

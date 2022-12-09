@@ -68,7 +68,6 @@ class DeviceCloudPolicyInitializer
 
   // DeviceCloudPolicyManagerAsh::Observer
   void OnDeviceCloudPolicyManagerConnected() override;
-  void OnDeviceCloudPolicyManagerDisconnected() override;
   void OnDeviceCloudPolicyManagerGotRegistry() override;
 
   void SetSystemURLLoaderFactoryForTesting(

@@ -533,12 +533,6 @@ void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerConnected() {
   }
 }
 
-void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerDisconnected() {
-  DCHECK(!device_cloud_policy_initializer_);
-
-  RestartDeviceCloudPolicyInitializer();
-}
-
 void BrowserPolicyConnectorAsh::OnDeviceCloudPolicyManagerGotRegistry() {
   // Do nothing.
 }

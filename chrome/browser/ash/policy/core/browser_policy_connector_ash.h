@@ -237,7 +237,6 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
 
   // DeviceCloudPolicyManagerAsh::Observer:
   void OnDeviceCloudPolicyManagerConnected() override;
-  void OnDeviceCloudPolicyManagerDisconnected() override;
   void OnDeviceCloudPolicyManagerGotRegistry() override;
 
   // TODO(crbug.com/1187628): Combine the following two functions into one to

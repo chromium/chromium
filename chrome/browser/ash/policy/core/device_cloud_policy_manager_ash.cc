@@ -273,15 +273,6 @@ void DeviceCloudPolicyManagerAsh::OnPolicyStoreReady(
   CreateManagedSessionServiceAndReporters();
 }
 
-void DeviceCloudPolicyManagerAsh::Disconnect() {
-  status_uploader_.reset();
-  syslog_uploader_.reset();
-  heartbeat_scheduler_.reset();
-  core()->Disconnect();
-
-  NotifyDisconnected();
-}
-
 void DeviceCloudPolicyManagerAsh::SetSigninProfileSchemaRegistry(
     SchemaRegistry* schema_registry) {
   DCHECK(!signin_profile_forwarding_schema_registry_);
@@ -300,11 +291,6 @@ void DeviceCloudPolicyManagerAsh::OnStateKeysUpdated() {
 void DeviceCloudPolicyManagerAsh::NotifyConnected() {
   for (auto& observer : observers_)
     observer.OnDeviceCloudPolicyManagerConnected();
-}
-
-void DeviceCloudPolicyManagerAsh::NotifyDisconnected() {
-  for (auto& observer : observers_)
-    observer.OnDeviceCloudPolicyManagerDisconnected();
 }
 
 void DeviceCloudPolicyManagerAsh::NotifyGotRegistry() {

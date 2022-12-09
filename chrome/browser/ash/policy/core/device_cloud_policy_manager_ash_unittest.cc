@@ -540,11 +540,10 @@ class DeviceCloudPolicyManagerAshObserverTest
 
   // DeviceCloudPolicyManagerAsh::Observer:
   MOCK_METHOD0(OnDeviceCloudPolicyManagerConnected, void());
-  MOCK_METHOD0(OnDeviceCloudPolicyManagerDisconnected, void());
   MOCK_METHOD0(OnDeviceCloudPolicyManagerGotRegistry, void());
 };
 
-TEST_F(DeviceCloudPolicyManagerAshObserverTest, ConnectAndDisconnect) {
+TEST_F(DeviceCloudPolicyManagerAshObserverTest, Connect) {
   LockDevice();
   device_settings_service_->LoadImmediately();
   FlushDeviceSettings();
@@ -560,11 +559,6 @@ TEST_F(DeviceCloudPolicyManagerAshObserverTest, ConnectAndDisconnect) {
   Mock::VerifyAndClearExpectations(&device_management_service_);
   Mock::VerifyAndClearExpectations(this);
   EXPECT_TRUE(manager_->IsConnected());
-
-  // Disconnect the manager.
-  EXPECT_CALL(*this, OnDeviceCloudPolicyManagerDisconnected());
-  manager_->Disconnect();
-  EXPECT_FALSE(manager_->IsConnected());
 }
 
 TEST_F(DeviceCloudPolicyManagerAshObserverTest, GetSchemaRegistry) {

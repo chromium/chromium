@@ -29,9 +29,6 @@ class FakeDeviceCloudPolicyManager : public DeviceCloudPolicyManagerAsh {
       delete;
 
   ~FakeDeviceCloudPolicyManager() override;
-
-  // DeviceCloudPolicyManagerAsh:
-  void Disconnect() override;
 };
 
 }  // namespace policy

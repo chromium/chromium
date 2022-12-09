@@ -25,6 +25,4 @@ FakeDeviceCloudPolicyManager::~FakeDeviceCloudPolicyManager() {
   Shutdown();
 }
 
-void FakeDeviceCloudPolicyManager::Disconnect() {}
-
 }  // namespace policy
