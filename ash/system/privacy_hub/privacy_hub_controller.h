@@ -45,7 +45,7 @@ class ASH_EXPORT PrivacyHubController {
   CameraPrivacySwitchController camera_controller_;
   MicrophonePrivacySwitchController microphone_controller_;
   GeolocationPrivacySwitchController geolocation_switch_controller_;
-  raw_ptr<PrivacyHubDelegate> frontend_;
+  raw_ptr<PrivacyHubDelegate> frontend_ = nullptr;
 };
 
 }  // namespace ash
