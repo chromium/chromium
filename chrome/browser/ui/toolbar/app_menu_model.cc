@@ -924,10 +924,10 @@ void AppMenuModel::Build() {
     auto* provider =
         web_app::WebAppProvider::GetForLocalAppsUnchecked(browser_->profile());
     // Only applies to apps that open in an app window.
-    if (provider->registrar().GetAppUserDisplayMode(*app_id) !=
+    if (provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) !=
         web_app::UserDisplayMode::kBrowser) {
-      const std::u16string short_name =
-          base::UTF8ToUTF16(provider->registrar().GetAppShortName(*app_id));
+      const std::u16string short_name = base::UTF8ToUTF16(
+          provider->registrar_unsafe().GetAppShortName(*app_id));
       const std::u16string truncated_name = gfx::TruncateString(
           short_name, kMaxAppNameLength, gfx::CHARACTER_BREAK);
       AddItem(
