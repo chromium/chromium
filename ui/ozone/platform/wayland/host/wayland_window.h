@@ -238,6 +238,7 @@ class WaylandWindow : public PlatformWindow,
     WindowTiledEdges tiled_edges;
   };
 
+  // Configure related:
   virtual void HandleToplevelConfigure(int32_t width,
                                        int32_t height,
                                        const WindowStates& window_states);
@@ -266,6 +267,23 @@ class WaylandWindow : public PlatformWindow,
   // size that GPU renders at.
   virtual void UpdateVisualSize(const gfx::Size& size_px);
 
+  // Called by shell surfaces to indicate that this window can start submitting
+  // frames. Updating state based on configure is handled separately to this.
+  void OnSurfaceConfigureEvent();
+
+  // Tells if the surface has already been configured. This will be true after
+  // the first set of configure event and ack request, meaning that wl_surface
+  // can attach buffers.
+  virtual bool IsSurfaceConfigured() = 0;
+
+  // Sends configure acknowledgement to the wayland server.
+  virtual void AckConfigure(uint32_t serial) = 0;
+
+  // Updates the window decorations, if possible at the moment. Denotes that
+  // window will request new window_geometry, if there're no existing state
+  // changes in flight to server.
+  virtual void UpdateDecorations();
+
   // Handles close requests.
   virtual void OnCloseRequest();
 
@@ -279,24 +297,11 @@ class WaylandWindow : public PlatformWindow,
   virtual void OnDragLeave();
   virtual void OnDragSessionClose(ui::mojom::DragOperation operation);
 
-  // Tells if the surface has already been configured.
-  virtual bool IsSurfaceConfigured() = 0;
-
-  // Called by shell surfaces to indicate that this window can start submitting
-  // frames.
-  void OnSurfaceConfigureEvent();
-
   // Sets the window geometry.
   virtual void SetWindowGeometry(gfx::Rect bounds);
 
   // Returns the offset of the window geometry within the window surface.
   gfx::Vector2d GetWindowGeometryOffsetInDIP() const;
-
-  // Sends configure acknowledgement to the wayland server.
-  virtual void AckConfigure(uint32_t serial) = 0;
-
-  // Updates the window decorations, if possible at the moment.
-  virtual void UpdateDecorations();
 
   // Returns the effective decoration insets.
   gfx::Insets GetDecorationInsetsInDIP() const;
@@ -385,9 +390,6 @@ class WaylandWindow : public PlatformWindow,
   // Updates mask for this window.
   virtual void UpdateWindowMask() = 0;
 
-  // Processes the pending bounds in dip.
-  void ProcessPendingBoundsDip(uint32_t serial);
-
   // [Deprecated]
   // If the given |bounds_px| violates size constraints set for this window,
   // fixes them so they don't.
@@ -396,6 +398,12 @@ class WaylandWindow : public PlatformWindow,
   // If the given |bounds_dip| violates size constraints set for this window,
   // fixes them so they don't.
   gfx::Rect AdjustBoundsToConstraintsDIP(const gfx::Rect& bounds_dip);
+
+  const gfx::Size& restored_size_dip() const { return restored_size_dip_; }
+
+  // Configure related:
+  // Processes the pending bounds in dip.
+  void ProcessPendingBoundsDip(uint32_t serial);
 
   // Processes the size information form visual size update and returns true if
   // any pending configure is fulfilled.
@@ -410,8 +418,6 @@ class WaylandWindow : public PlatformWindow,
   }
   gfx::Size pending_size_px() const { return pending_size_px_; }
   void set_pending_size_px(const gfx::Size& size) { pending_size_px_ = size; }
-
-  const gfx::Size& restored_size_dip() const { return restored_size_dip_; }
 
  private:
   friend class WaylandBufferManagerViewportTest;
