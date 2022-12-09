@@ -183,6 +183,7 @@ std::wstring HandlePath(HANDLE handle) {
     PLOG(ERROR) << "Could not get full path for handle " << handle;
     return std::wstring();
   }
+  full_path.resize(result);
   return full_path;
 }
 
