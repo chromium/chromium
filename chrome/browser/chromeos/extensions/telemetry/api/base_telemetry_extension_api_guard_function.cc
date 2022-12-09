@@ -41,7 +41,7 @@ void BaseTelemetryExtensionApiGuardFunction::OnCanAccessApi(std::string error) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!IsCrosApiAvailable()) {
-    error = "Not supported by ash browser";
+    error = "Not implemented.";
     Respond(Error(
         base::StringPrintf("API chrome.%s failed. %s", name(), error.c_str())));
     return;

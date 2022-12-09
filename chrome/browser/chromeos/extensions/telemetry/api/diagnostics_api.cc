@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/diagnostics_api.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,8 +16,18 @@
 #include "chrome/browser/chromeos/extensions/telemetry/api/remote_diagnostics_service_strategy.h"
 #include "chrome/common/chromeos/extensions/api/diagnostics.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/strings/stringprintf.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+static constexpr char kNotSupportedByAshBrowserError[] = "Not implemented.";
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace diag = api::os_diagnostics;
 
@@ -346,7 +357,38 @@ void OsDiagnosticsRunSignalStrengthRoutineFunction::RunIfAllowed() {
 // OsDiagnosticsRunSmartctlCheckRoutineFunction --------------------------------
 
 void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunSmartctlCheckRoutine(GetOnResult());
+  std::unique_ptr<api::os_diagnostics::RunSmartctlCheckRoutine::Params> params(
+      api::os_diagnostics::RunSmartctlCheckRoutine::Params::Create(args()));
+
+  crosapi::mojom::UInt32ValuePtr percentage_used;
+  if (params && params->request && params->request->percentage_used_threshold) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(b/261181600): Remove this code as soon as version skew is no issue
+    // anymore.
+
+    auto* lacros_service = LacrosService::Get();
+    // Check if ash chrome supports calling the routine with a parameter.
+    if (!lacros_service || lacros_service->GetInterfaceVersion(
+                               crosapi::mojom::DiagnosticsService::Uuid_) < 1) {
+      // TODO(b/261181443): Move this to a super class.
+      Respond(Error(base::StringPrintf("API chrome.%s failed. %s", name(),
+                                       kNotSupportedByAshBrowserError)));
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    percentage_used = crosapi::mojom::UInt32Value::New(
+        params->request->percentage_used_threshold.value());
+  }
+
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  // Backwards compatibility: Calling the routine with an null parameter
+  // results in the same behaviour as the former `RunSmartctlCheckRoutine`
+  // without any parameters.
+  GetRemoteService()->RunSmartctlCheckRoutine(std::move(percentage_used),
+                                              std::move(cb));
 }
 
 }  // namespace chromeos

@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom-forward.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,6 +37,9 @@ crosapi::mojom::DiagnosticsNonInteractiveRoutineUpdatePtr UncheckedConvertPtr(
 
 crosapi::mojom::DiagnosticsRunRoutineResponsePtr UncheckedConvertPtr(
     cros_healthd::mojom::RunRoutineResponsePtr input);
+
+cros_healthd::mojom::NullableUint32Ptr UncheckedConvertPtr(
+    crosapi::mojom::UInt32ValuePtr value);
 
 }  // namespace unchecked
 

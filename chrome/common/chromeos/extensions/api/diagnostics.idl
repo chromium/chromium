@@ -29,7 +29,8 @@ namespace os.diagnostics {
     gateway_can_be_pinged,
     sensitive_sensor,
     nvme_self_test,
-    fingerprint_alive
+    fingerprint_alive,
+    smartctl_check_with_percentage_used
   };
 
   enum RoutineStatus {
@@ -131,6 +132,10 @@ namespace os.diagnostics {
     long wear_level_threshold;
   };
 
+  dictionary RunSmartctlCheckRequest {
+    long? percentage_used_threshold;
+  };
+
   dictionary RunRoutineResponse {
     long id;
 
@@ -198,6 +203,6 @@ namespace os.diagnostics {
 
     [supportsPromises] static void runSignalStrengthRoutine(RunRoutineCallback callback);
 
-    [supportsPromises] static void runSmartctlCheckRoutine(RunRoutineCallback callback);
+    [supportsPromises] static void runSmartctlCheckRoutine(optional RunSmartctlCheckRequest request, RunRoutineCallback callback);
   };
 };

@@ -102,6 +102,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kFingerprintAlive:
       *out = RoutineType::ROUTINE_TYPE_FINGERPRINT_ALIVE;
       return true;
+    case MojoRoutineType::kSmartctlCheckWithPercentageUsed:
+      *out = RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK_WITH_PERCENTAGE_USED;
+      return true;
     default:
       return false;
   }

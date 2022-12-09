@@ -21,6 +21,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -51,6 +52,16 @@ class TelemetryExtensionDiagnosticsApiBrowserTest
     chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
     return lacros_service &&
            lacros_service->IsAvailable<crosapi::mojom::DiagnosticsService>();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  template <typename Interface>
+  bool InterfaceVersionHigherOrEqual(int version) {
+    auto* lacros_service = chromeos::LacrosService::Get();
+
+    return lacros_service &&
+           lacros_service->GetInterfaceVersion(Interface::Uuid_) >= version;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -387,6 +398,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor,
         crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest,
         crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive,
+        crosapi::mojom::DiagnosticsRoutineEnum::
+            kSmartctlCheckWithPercentageUsed,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -420,7 +433,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "smartctl_check",
               "sensitive_sensor",
               "nvme_self_test",
-              "fingerprint_alive"
+              "fingerprint_alive",
+              "smartctl_check_with_percentage_used"
             ]
           }, response);
         chrome.test.succeed();
@@ -1530,5 +1544,91 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
     ]);
   )");
 }
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunSmartctlCheckRoutineWithPercentageUsedSuccess) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Only run this tests when Ash does support the new parameter for
+  // SmartctlCheck. The parameter is supported from version 1 onwards.
+  if (!InterfaceVersionHigherOrEqual<crosapi::mojom::DiagnosticsService>(1)) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response =
+        crosapi::mojom::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status =
+        crosapi::mojom::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunSmartctlCheckRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    base::Value::Dict expected_result;
+    expected_result.Set("percentage_used_threshold", 42);
+
+    fake_service_impl->SetExpectedLastPassedParameters(
+        std::move(expected_result));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::mojom::DiagnosticsRoutineEnum::
+            kSmartctlCheckWithPercentageUsed);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runSmartctlCheckRoutine() {
+        const response =
+          await chrome.os.diagnostics.runSmartctlCheckRoutine(
+            {
+              percentage_used_threshold: 42
+            }
+          );
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/261181600): Remove this code as soon as version skew is no issue
+// anymore. We only do version skew testing in Lacros.
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionDiagnosticsApiBrowserTest,
+    RunSmartctlCheckRoutineWithPercentageUsedVersionSkewSuccess) {
+  // Set the interface version to a version that does not support the parameter.
+  crosapi::mojom::BrowserInitParamsPtr init_params =
+      BrowserInitParams::GetForTests()->Clone();
+  init_params->interface_versions
+      .value()[crosapi::mojom::DiagnosticsService::Uuid_] = 0;
+  BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+
+  // Expect an error message if Ash does not support the SmartctlCheck
+  // interface with a parameter.
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runSmartctlCheckRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runSmartctlCheckRoutine(
+              {
+                percentage_used_threshold: 42
+              }
+            ),
+            'Error: API chrome.os.diagnostics.runSmartctlCheckRoutine ' +
+            'failed. Not implemented.'
+        );
+        chrome.test.succeed();
+      },
+    ]);
+  )");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace chromeos

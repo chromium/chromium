@@ -15,6 +15,7 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -373,11 +374,10 @@ void DiagnosticsServiceAsh::RunSignalStrengthRoutine(
 }
 
 void DiagnosticsServiceAsh::RunSmartctlCheckRoutine(
+    crosapi::mojom::UInt32ValuePtr percentage_used_threshold,
     RunSmartctlCheckRoutineCallback callback) {
-  // TODO(b/248215517): Migrate to new interface and support
-  // percentage_used_threshold argument.
   GetService()->RunSmartctlCheckRoutine(
-      cros_healthd::mojom::NullableUint32Ptr(),
+      converters::ConvertDiagnosticsPtr(std::move(percentage_used_threshold)),
       base::BindOnce(
           [](crosapi::mojom::DiagnosticsService::RunSmartctlCheckRoutineCallback
                  callback,

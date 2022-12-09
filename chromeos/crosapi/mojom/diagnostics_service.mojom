@@ -14,8 +14,11 @@
 
 module crosapi.mojom;
 
+import "chromeos/crosapi/mojom/nullable_primitives.mojom";
+
 // Interface for exposing diagnostics service. Implemented in ash-chrome.
 //
+// Next version: 2
 // Next ID: 23
 [Stable, Uuid="14bc6194-c059-4048-9bea-ca6823eeda82",
 RenamedFrom="ash.health.mojom.DiagnosticsService"]
@@ -71,15 +74,28 @@ interface DiagnosticsService {
   RunBatteryHealthRoutine@3() => (DiagnosticsRunRoutineResponse response);
 
   // Requests that the SmartctlCheck routine is created and started on the
-  // platform. This routine checks available spare NVMe capacity against the
-  // threshold.
+  // platform. This routine passes iff a NVMe drive's:
+  // 1. Critical Warning == 0x00 (no warning)
+  // 2. Available Spare >= Available Spare Threshold
+  // 3. Percentage Used <= Percentage Used Threshold (from request)
+  // In addition, above values are also returned in the output.
   // The availability of this routine can be determined by checking that
-  // kSmartctlCheck is returned by GetAvailableRoutines.
+  // kSmartctlCheck (without |percentage_used_threshold|) or
+  // kSmartctlCheckWithPercentageUsed (with |percentage_used_threshold|) is
+  // returned by GetAvailableRoutines.
+  //
+  // The request:
+  // * |percentage_used_threshold| - an optional threshold number in percentage,
+  //                                 range [0, 255] inclusive, that the routine
+  //                                 examines `percentage_used` against. If not
+  //                                 specified, the routine will default to the
+  //                                 max allowed value (255).
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunSmartctlCheckRoutine@4() => (DiagnosticsRunRoutineResponse response);
+  RunSmartctlCheckRoutine@4([MinVersion=1] UInt32Value?
+      percentage_used_threshold) => (DiagnosticsRunRoutineResponse response);
 
   // Requests that the AcPower routine is created and started on the
   // platform. This routine checks the status of the power supply, and if
@@ -360,7 +376,7 @@ interface DiagnosticsService {
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// Next ID: 22
+// Next ID: 23
 [Stable, Extensible, RenamedFrom="ash.health.mojom.DiagnosticRoutineEnum"]
 enum DiagnosticsRoutineEnum {
   [Default] kUnknown = 15,
@@ -385,6 +401,7 @@ enum DiagnosticsRoutineEnum {
   kDnsResolverPresent = 19,
   kSensitiveSensor = 20,
   kFingerprintAlive = 21,
+  kSmartctlCheckWithPercentageUsed = 22,
 };
 
 // Enumeration of each of the possible statuses for a diagnostics routine.

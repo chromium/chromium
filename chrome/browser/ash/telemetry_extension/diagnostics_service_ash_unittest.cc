@@ -14,6 +14,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -82,6 +83,8 @@ TEST_F(DiagnosticsServiceAshTest, GetAvailableRoutinesSuccess) {
       cros_healthd::mojom::DiagnosticRoutineEnum::kSensitiveSensor,
       cros_healthd::mojom::DiagnosticRoutineEnum::kNvmeSelfTest,
       cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive,
+      cros_healthd::mojom::DiagnosticRoutineEnum::
+          kSmartctlCheckWithPercentageUsed,
   });
 
   base::test::TestFuture<
@@ -114,7 +117,9 @@ TEST_F(DiagnosticsServiceAshTest, GetAvailableRoutinesSuccess) {
           crosapi::mojom::DiagnosticsRoutineEnum::kSmartctlCheck,
           crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor,
           crosapi::mojom::DiagnosticsRoutineEnum::kNvmeSelfTest,
-          crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive));
+          crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive,
+          crosapi::mojom::DiagnosticsRoutineEnum::
+              kSmartctlCheckWithPercentageUsed));
 }
 
 TEST_F(DiagnosticsServiceAshTest, GetRoutineUpdateSuccess) {
@@ -455,7 +460,22 @@ TEST_F(DiagnosticsServiceAshTest, RunSmartctlCheckRoutineSuccess) {
 
   base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
       future;
-  diagnostics_service()->RunSmartctlCheckRoutine(future.GetCallback());
+  diagnostics_service()->RunSmartctlCheckRoutine(nullptr, future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(result, cros_healthd::mojom::DiagnosticRoutineEnum::
+                               kSmartctlCheckWithPercentageUsed);
+}
+
+TEST_F(DiagnosticsServiceAshTest, RunSmartctlCheckRoutineWithParameterSuccess) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunSmartctlCheckRoutine(
+      crosapi::mojom::UInt32Value::New(42), future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   const auto& result = future.Get();

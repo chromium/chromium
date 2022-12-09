@@ -9,6 +9,7 @@
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -106,6 +107,7 @@ class DiagnosticsServiceAsh : public crosapi::mojom::DiagnosticsService {
   void RunSignalStrengthRoutine(
       RunSignalStrengthRoutineCallback callback) override;
   void RunSmartctlCheckRoutine(
+      crosapi::mojom::UInt32ValuePtr percentage_used_threshold,
       RunSmartctlCheckRoutineCallback callback) override;
 
   // Pointer to real implementation.

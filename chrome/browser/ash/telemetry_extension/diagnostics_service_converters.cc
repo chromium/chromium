@@ -8,6 +8,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -66,6 +67,10 @@ crosapi::mojom::DiagnosticsRunRoutineResponsePtr UncheckedConvertPtr(
       input->id, Convert(input->status));
 }
 
+cros_healthd::mojom::NullableUint32Ptr UncheckedConvertPtr(
+    crosapi::mojom::UInt32ValuePtr value) {
+  return cros_healthd::mojom::NullableUint32::New(value->value);
+}
 }  // namespace unchecked
 
 absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
@@ -115,6 +120,10 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kSensitiveSensor;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kFingerprintAlive:
       return crosapi::mojom::DiagnosticsRoutineEnum::kFingerprintAlive;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::
+        kSmartctlCheckWithPercentageUsed:
+      return crosapi::mojom::DiagnosticsRoutineEnum::
+          kSmartctlCheckWithPercentageUsed;
     default:
       return absl::nullopt;
   }

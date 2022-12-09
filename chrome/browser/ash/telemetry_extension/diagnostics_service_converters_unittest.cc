@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/diagnostics_service.mojom.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -72,6 +74,9 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kSensitiveSensor);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kFingerprintAlive),
             crosapi::DiagnosticsRoutineEnum::kFingerprintAlive);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::
+                        kSmartctlCheckWithPercentageUsed),
+            crosapi::DiagnosticsRoutineEnum::kSmartctlCheckWithPercentageUsed);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);
@@ -203,6 +208,16 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiskReadRoutineTypeEnum) {
             cros_healthd::DiskReadRoutineTypeEnum::kLinearRead);
   EXPECT_EQ(Convert(crosapi::DiagnosticsDiskReadRoutineTypeEnum::kRandomRead),
             cros_healthd::DiskReadRoutineTypeEnum::kRandomRead);
+}
+
+TEST(DiagnosticsServiceConvertersTest, ConvertUInt32ValuePtr) {
+  namespace cros_healthd = cros_healthd::mojom;
+  namespace crosapi = ::crosapi::mojom;
+
+  EXPECT_EQ(ConvertDiagnosticsPtr(crosapi::UInt32ValuePtr()),
+            cros_healthd::NullableUint32Ptr());
+  EXPECT_EQ(ConvertDiagnosticsPtr(crosapi::UInt32Value::New(42)),
+            cros_healthd::NullableUint32::New(42));
 }
 
 }  // namespace converters
