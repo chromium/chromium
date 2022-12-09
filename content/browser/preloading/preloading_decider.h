@@ -40,14 +40,22 @@ class CONTENT_EXPORT PreloadingDecider
   // Receives and processes on pointer hover event for 'url' target link.
   void OnPointerHover(const GURL& url);
 
-  // Set the new preloading decider observer for testing and returns the old
+  // Sets the new preloading decider observer for testing and returns the old
   // one.
   PreloadingDeciderObserverForTesting* SetObserverForTesting(
       PreloadingDeciderObserverForTesting* observer);
 
+  // Sets the new prerenderer for testing and returns the old one.
+  std::unique_ptr<Prerenderer> SetPrerendererForTesting(
+      std::unique_ptr<Prerenderer> prerenderer);
+
   // Processes the received speculation rules candidates list.
   void UpdateSpeculationCandidates(
       std::vector<blink::mojom::SpeculationCandidatePtr>& candidates);
+
+  // Returns true if the |url|, |action| pair is in the on-standby list.
+  bool IsOnStandByForTesting(const GURL& url,
+                             blink::mojom::SpeculationAction action);
 
  private:
   explicit PreloadingDecider(RenderFrameHost* rfh);
@@ -58,20 +66,33 @@ class CONTENT_EXPORT PreloadingDecider
   // false if no on-standby candidate is found for the given |url|, or the
   // Prefetcher does not accept the candidate.
   bool MaybePrefetch(const GURL& url);
-  // Whether a prefetch was attempted for the |url| and was it failed or
-  // discarded by the Prefetcher.
+
+  // Returns true if a prefetch was attempted for the |url| and is not failed or
+  // discarded by Prefetcher yet, and we should wait for it to finish.
   bool ShouldWaitForPrefetchResult(const GURL& url);
+
+  // Prerenders the |url| if it is safe and eligible to be prerendered. Returns
+  // false if no on-standby candidate is found for the given |url|, or the
+  // Prerenderer does not accept the candidate.
+  bool MaybePrerender(const GURL& url);
+
+  // Returns true if a prerender was attempted for the |url| and is not failed
+  // or discarded by Prerenderer yet, and we should wait for it to finish.
+  bool ShouldWaitForPrerenderResult(const GURL& url);
+
   // Helper function to add a preloading prediction for the |url|
   void AddPreloadingPrediction(const GURL& url, PreloadingPredictor predictor);
 
   using SpeculationCandidateKey =
       std::pair<GURL, blink::mojom::SpeculationAction>;
+
   // |on_standby_candidates_| stores preloading candidates for each target URL,
   // action pairs that are safe to perform but are not marked as |kEager| and
   // should be performed when we are confident enough that the user will most
   // likely navigate to the target URL.
   std::map<SpeculationCandidateKey, blink::mojom::SpeculationCandidatePtr>
       on_standby_candidates_;
+
   // |processed_candidates_| stores all target URL, action pairs that are
   // already processed by prefetcher or prerenderer. Right now it is needed to
   // avoid adding such candidates back to |on_standby_candidates_| whenever
@@ -81,7 +102,7 @@ class CONTENT_EXPORT PreloadingDecider
   raw_ptr<PreloadingDeciderObserverForTesting> observer_for_testing_;
   Preconnector preconnector_;
   Prefetcher prefetcher_;
-  Prerenderer prerenderer_;
+  std::unique_ptr<Prerenderer> prerenderer_;
 };
 
 }  // namespace content

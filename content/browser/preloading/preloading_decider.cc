@@ -5,6 +5,7 @@
 #include "content/browser/preloading/preloading_decider.h"
 
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/prerenderer_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
 
@@ -16,7 +17,7 @@ PreloadingDecider::PreloadingDecider(content::RenderFrameHost* rfh)
       observer_for_testing_(nullptr),
       preconnector_(render_frame_host()),
       prefetcher_(render_frame_host()),
-      prerenderer_(render_frame_host()) {}
+      prerenderer_(std::make_unique<PrerendererImpl>(render_frame_host())) {}
 
 PreloadingDecider::~PreloadingDecider() = default;
 
@@ -35,14 +36,27 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
   if (observer_for_testing_) {
     observer_for_testing_->OnPointerDown(url);
   }
-  // For pointer down link selection heuristics, we call |MaybePrefetch| to
-  // check whether prefetching the |url| is safe and if so we request the new
-  // prefetch and return. Otherwise, we call |ShouldWaitForPrefetchResult| to
-  // check whether there is an active prefetch in progress for the |url| and
-  // return if there is one. At last, we request a preconnect for the |url| if
-  // prefetching the |url| is not allowed or has failed before.
+  // For pointer down link selection heuristics, we first call |MaybePrerender|
+  // to check whether it is safe to prerender the |url| and if so we request to
+  // prerender the |url| and return. Otherwise, by calling
+  // |ShouldWaitForPrerenderResult| we check whether there is an active
+  // prerender is in progress for |url| or will return if there is one. We then
+  // call |MaybePrefetch| to check whether prefetching the |url| is safe and if
+  // so we request the new prefetch and return. Otherwise, we call
+  // |ShouldWaitForPrefetchResult| to check whether there is an active prefetch
+  // in progress for the |url| and return if there is one. At last, we request a
+  // preconnect for the |url| if prefetching the |url| is not allowed or has
+  // failed before.
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesPointerDownHeuristics)) {
+    if (MaybePrerender(url)) {
+      AddPreloadingPrediction(url,
+                              PreloadingPredictor::kUrlPointerDownOnAnchor);
+      return;
+    }
+    if (ShouldWaitForPrerenderResult(url))
+      return;
+
     if (MaybePrefetch(url)) {
       AddPreloadingPrediction(url,
                               PreloadingPredictor::kUrlPointerDownOnAnchor);
@@ -63,6 +77,16 @@ void PreloadingDecider::OnPointerHover(const GURL& url) {
   }
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesPointerHoverHeuristics)) {
+    // First try to prerender the |url|, if not possible try to prefetch,
+    // otherwise try to preconnect to it.
+    if (MaybePrerender(url)) {
+      AddPreloadingPrediction(url,
+                              PreloadingPredictor::kUrlPointerDownOnAnchor);
+      return;
+    }
+    if (ShouldWaitForPrerenderResult(url))
+      return;
+
     if (MaybePrefetch(url)) {
       AddPreloadingPrediction(url,
                               PreloadingPredictor::kUrlPointerHoverOnAnchor);
@@ -88,13 +112,9 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   // |candidates| list to prevent them from being initiated and will add them
   // to |on_standby_candidates_| to be later considered by the heuristics logic.
   auto should_mark_as_on_standby = [&](const auto& candidate) {
-    const SpeculationCandidateKey key{candidate->url, candidate->action};
+    SpeculationCandidateKey key{candidate->url, candidate->action};
     if (candidate->eagerness != blink::mojom::SpeculationEagerness::kEager &&
-        processed_candidates_.find(key) == processed_candidates_.end() &&
-        candidate->action ==
-            blink::mojom::SpeculationAction::
-                kPrefetch) {  // for now link selection heuristics only
-                              // applies to the |kPrefetch| action
+        processed_candidates_.find(key) == processed_candidates_.end()) {
       on_standby_candidates_.emplace(std::move(key), candidate.Clone());
       // TODO(isaboori) In current implementation, after calling prefetcher
       // ProcessCandidatesForPrefetch, the prefetch_service starts checking the
@@ -123,7 +143,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
   base::EraseIf(candidates, should_mark_as_on_standby);
 
   prefetcher_.ProcessCandidatesForPrefetch(candidates);
-  prerenderer_.ProcessCandidatesForPrerender(candidates);
+  prerenderer_->ProcessCandidatesForPrerender(candidates);
 }
 
 bool PreloadingDecider::MaybePrefetch(const GURL& url) {
@@ -154,9 +174,43 @@ bool PreloadingDecider::ShouldWaitForPrefetchResult(const GURL& url) {
   return !prefetcher_.IsPrefetchAttemptFailedOrDiscarded(url);
 }
 
+bool PreloadingDecider::MaybePrerender(const GURL& url) {
+  SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrerender};
+  auto it = on_standby_candidates_.find(key);
+  if (it == on_standby_candidates_.end()) {
+    return false;
+  }
+
+  bool result = prerenderer_->MaybePrerender(it->second.Clone());
+
+  on_standby_candidates_.erase(it);
+  processed_candidates_.insert(std::move(key));
+  return result;
+}
+
+bool PreloadingDecider::ShouldWaitForPrerenderResult(const GURL& url) {
+  auto it = processed_candidates_.find(
+      {url, blink::mojom::SpeculationAction::kPrerender});
+  if (it == processed_candidates_.end())
+    return false;
+  return prerenderer_->ShouldWaitForPrerenderResult(url);
+}
+
 PreloadingDeciderObserverForTesting* PreloadingDecider::SetObserverForTesting(
     PreloadingDeciderObserverForTesting* observer) {
   return std::exchange(observer_for_testing_, observer);
+}
+
+std::unique_ptr<Prerenderer> PreloadingDecider::SetPrerendererForTesting(
+    std::unique_ptr<Prerenderer> prerenderer) {
+  return std::exchange(prerenderer_, std::move(prerenderer));
+}
+
+bool PreloadingDecider::IsOnStandByForTesting(
+    const GURL& url,
+    blink::mojom::SpeculationAction action) {
+  return on_standby_candidates_.find({url, action}) !=
+         on_standby_candidates_.end();
 }
 
 }  // namespace content

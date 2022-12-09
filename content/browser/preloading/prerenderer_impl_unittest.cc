@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/preloading/prerenderer.h"
+#include "content/browser/preloading/prerenderer_impl.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -84,7 +84,7 @@ class PrerendererTest : public RenderViewHostTestHarness {
 // speculation candidates.
 TEST_F(PrerendererTest, StartPrerender) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  Prerenderer prerenderer(*GetRenderFrameHost());
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
 
   const GURL kPrerenderingUrl = GetSameOriginUrl("/empty.html");
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -98,7 +98,7 @@ TEST_F(PrerendererTest, StartPrerender) {
 // first prerender candidate in the candidate list.
 TEST_F(PrerendererTest, ProcessFirstSameOriginPrerenderCandidate) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  Prerenderer prerenderer(*GetRenderFrameHost());
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
 
   const GURL kFirstPrerenderingUrlCrossSite = GetCrossSiteUrl("/title.html");
   const GURL kSecondPrerenderingUrlSameOrigin =
@@ -125,7 +125,7 @@ TEST_F(PrerendererTest, ProcessFirstSameOriginPrerenderCandidate) {
 // from candidates list.
 TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  Prerenderer prerenderer(*GetRenderFrameHost());
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
 
   const GURL urls[]{GetSameOriginUrl("/title1.html"),
                     GetSameOriginUrl("/title2.html")};
@@ -147,6 +147,38 @@ TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
       std::vector<blink::mojom::SpeculationCandidatePtr>{});
   EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[0]));
   EXPECT_FALSE(registry->FindHostByUrlForTesting(urls[1]));
+}
+
+// Tests that it is possible to start a prerender using MaybePrerender and
+// ShouldWaitForPrerenderResult methods.
+TEST_F(PrerendererTest, MaybePrerenderAndShouldWaitForPrerenderResult) {
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
+
+  const GURL kUrlToCancel = GetSameOriginUrl("/to_cancel.html");
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidateToCancel;
+  candidateToCancel.push_back(CreatePrerenderCandidate(kUrlToCancel));
+
+  // Candidate is not processed yet. So, it should return false.
+  EXPECT_FALSE(prerenderer.ShouldWaitForPrerenderResult(kUrlToCancel));
+  // Process the candidate.
+  prerenderer.ProcessCandidatesForPrerender(std::move(candidateToCancel));
+  EXPECT_TRUE(prerenderer.ShouldWaitForPrerenderResult(kUrlToCancel));
+  // Cancel the prerender
+  prerenderer.ProcessCandidatesForPrerender(
+      std::vector<blink::mojom::SpeculationCandidatePtr>{});
+  EXPECT_FALSE(prerenderer.ShouldWaitForPrerenderResult(kUrlToCancel));
+
+  const GURL kPrerenderingUrl = GetSameOriginUrl("/empty.html");
+  const auto candidate = CreatePrerenderCandidate(kPrerenderingUrl);
+
+  // Candidate is not processed yet. So, it should return false.
+  EXPECT_FALSE(prerenderer.ShouldWaitForPrerenderResult(kPrerenderingUrl));
+  // MaybePrerender the candidate and check if ShouldWaitForPrerenderResult
+  // returns true.
+  EXPECT_TRUE(prerenderer.MaybePrerender(candidate));
+  EXPECT_TRUE(prerenderer.ShouldWaitForPrerenderResult(kPrerenderingUrl));
+  EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
 }  // namespace
