@@ -3476,6 +3476,7 @@ crbug.com/626703 external/wpt/fetch/content-type/response.window.html [ Timeout 
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-dynamic-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-will-change/will-change-abspos-cb-001.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/a-element.html [ Failure ]
+crbug.com/892337 external/wpt/resource-timing/content-type-parsing.html [ Failure ]
 
 # Out-of-order pointerevents: https://github.com/w3c/pointerevents/issues/355
 crbug.com/1186788 [ Linux ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure Pass Timeout ]
