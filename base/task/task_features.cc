@@ -22,6 +22,10 @@ namespace base {
 // must be aware that all tests sharing a process will have the same state,
 // regardless of future ScopedFeatureList instances.
 
+BASE_FEATURE(kUseUtilityThreadGroup,
+             "UseUtilityThreadGroup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNoWorkerThreadReclaim,
              "NoWorkerThreadReclaim",
              base::FEATURE_DISABLED_BY_DEFAULT);

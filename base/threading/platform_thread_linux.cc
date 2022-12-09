@@ -147,6 +147,7 @@ FilePath ThreadTypeToCgroupDirectory(const FilePath& cgroup_filepath,
                                      ThreadType thread_type) {
   switch (thread_type) {
     case ThreadType::kBackground:
+    case ThreadType::kUtility:
     case ThreadType::kResourceEfficient:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadType::kDefault:
@@ -246,6 +247,7 @@ void SetThreadLatencySensitivity(ProcessId process_id,
 
   switch (thread_type) {
     case ThreadType::kBackground:
+    case ThreadType::kUtility:
     case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
       break;
@@ -317,23 +319,24 @@ const struct sched_param kRealTimePrio = {8};
 }  // namespace
 
 const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[4] = {
+    kThreadPriorityToNiceValueMapForTest[5] = {
         {ThreadPriorityForTest::kRealtimeAudio, -10},
         {ThreadPriorityForTest::kDisplay, -8},
         {ThreadPriorityForTest::kNormal, 0},
+        {ThreadPriorityForTest::kUtility, 1},
         {ThreadPriorityForTest::kBackground, 10},
 };
 
-const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[6] = {
-    {ThreadType::kBackground, 10},      {ThreadType::kResourceEfficient, 0},
-    {ThreadType::kDefault, 0},
+const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
+    {ThreadType::kBackground, 10},       {ThreadType::kUtility, 1},
+    {ThreadType::kResourceEfficient, 0}, {ThreadType::kDefault, 0},
 #if BUILDFLAG(IS_CHROMEOS)
     {ThreadType::kCompositing, -8},
 #else
     // TODO(1329208): Experiment with bringing IS_LINUX inline with IS_CHROMEOS.
     {ThreadType::kCompositing, 0},
 #endif
-    {ThreadType::kDisplayCritical, -8}, {ThreadType::kRealtimeAudio, -10},
+    {ThreadType::kDisplayCritical, -8},  {ThreadType::kRealtimeAudio, -10},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {

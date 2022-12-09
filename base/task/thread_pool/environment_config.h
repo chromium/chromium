@@ -19,6 +19,8 @@ namespace internal {
 enum EnvironmentType {
   FOREGROUND = 0,
   FOREGROUND_BLOCKING,
+  UTILITY,
+  UTILITY_BLOCKING,
   BACKGROUND,
   BACKGROUND_BLOCKING,
   ENVIRONMENT_COUNT  // Always last.
@@ -38,13 +40,19 @@ struct EnvironmentParams {
 constexpr EnvironmentParams kEnvironmentParams[] = {
     {"Foreground", base::ThreadType::kDefault},
     {"ForegroundBlocking", base::ThreadType::kDefault},
+    {"Utility", base::ThreadType::kUtility},
+    {"UtilityBlocking", base::ThreadType::kUtility},
     {"Background", base::ThreadType::kBackground},
     {"BackgroundBlocking", base::ThreadType::kBackground},
 };
 
 // Returns true if this platform supports having WorkerThreads running with a
-// background priority.
+// background thread type.
 bool BASE_EXPORT CanUseBackgroundThreadTypeForWorkerThread();
+
+// Returns true if this platform supports having WorkerThreads running with a
+// utility thread type.
+bool BASE_EXPORT CanUseUtilityThreadTypeForWorkerThread();
 
 }  // namespace internal
 }  // namespace base

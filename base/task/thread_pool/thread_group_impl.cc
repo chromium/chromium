@@ -341,8 +341,11 @@ ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
                                  StringPiece thread_group_label,
                                  ThreadType thread_type_hint,
                                  TrackedRef<TaskTracker> task_tracker,
-                                 TrackedRef<Delegate> delegate)
-    : ThreadGroup(std::move(task_tracker), std::move(delegate)),
+                                 TrackedRef<Delegate> delegate,
+                                 ThreadGroup* predecessor_thread_group)
+    : ThreadGroup(std::move(task_tracker),
+                  std::move(delegate),
+                  predecessor_thread_group),
       histogram_label_(histogram_label),
       thread_group_label_(thread_group_label),
       thread_type_hint_(thread_type_hint),
@@ -367,12 +370,13 @@ void ThreadGroupImpl::Start(
   in_start().no_worker_reclaim = FeatureList::IsEnabled(kNoWorkerThreadReclaim);
   in_start().may_block_threshold =
       may_block_threshold ? may_block_threshold.value()
-                          : (thread_type_hint_ == ThreadType::kDefault
+                          : (thread_type_hint_ != ThreadType::kBackground
                                  ? kForegroundMayBlockThreshold
                                  : kBackgroundMayBlockThreshold);
   in_start().blocked_workers_poll_period =
-      thread_type_hint_ == ThreadType::kDefault ? kForegroundBlockedWorkersPoll
-                                                : kBackgroundBlockedWorkersPoll;
+      thread_type_hint_ != ThreadType::kBackground
+          ? kForegroundBlockedWorkersPoll
+          : kBackgroundBlockedWorkersPoll;
 
   ScopedCommandsExecutor executor(this);
   CheckedAutoLock auto_lock(lock_);

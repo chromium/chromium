@@ -104,6 +104,10 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       SetThreadRole("chromium.base.threading.background");
       break;
 
+    case ThreadType::kUtility:
+      SetThreadRole("chromium.base.threading.utility");
+      break;
+
     case ThreadType::kResourceEfficient:
       SetThreadRole("chromium.base.threading.resource-efficient");
       break;
@@ -134,6 +138,7 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   const ThreadType thread_type = PlatformThread::GetCurrentThreadType();
   switch (thread_type) {
     case ThreadType::kBackground:
+    case ThreadType::kUtility:
     case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
     case ThreadType::kCompositing:

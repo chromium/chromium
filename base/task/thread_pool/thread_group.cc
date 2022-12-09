@@ -266,6 +266,27 @@ void ThreadGroup::InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
   replacement_thread_group_ = destination_thread_group;
 }
 
+void ThreadGroup::HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
+    ThreadGroup* destination_thread_group) {
+  CheckedAutoLock current_thread_group_lock(lock_);
+  CheckedAutoLock destination_thread_group_lock(
+      destination_thread_group->lock_);
+  PriorityQueue new_priority_queue;
+  TaskSourceSortKey top_sort_key;
+  // This works because all USER_BLOCKING tasks are at the front of the queue.
+  while (!priority_queue_.IsEmpty() &&
+         (top_sort_key = priority_queue_.PeekSortKey()).priority() ==
+             TaskPriority::USER_BLOCKING) {
+    new_priority_queue.Push(priority_queue_.PopTaskSource(), top_sort_key);
+  }
+  while (!priority_queue_.IsEmpty()) {
+    top_sort_key = priority_queue_.PeekSortKey();
+    destination_thread_group->priority_queue_.Push(
+        priority_queue_.PopTaskSource(), top_sort_key);
+  }
+  priority_queue_ = std::move(new_priority_queue);
+}
+
 bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   DCHECK(TS_UNCHECKED_READ(max_allowed_sort_key_).is_lock_free());
 

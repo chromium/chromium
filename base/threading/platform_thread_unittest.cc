@@ -246,7 +246,8 @@ namespace {
 constexpr ThreadType kAllThreadTypes[] = {
     ThreadType::kRealtimeAudio,     ThreadType::kDisplayCritical,
     ThreadType::kCompositing,       ThreadType::kDefault,
-    ThreadType::kResourceEfficient, ThreadType::kBackground};
+    ThreadType::kResourceEfficient, ThreadType::kUtility,
+    ThreadType::kBackground};
 
 class ThreadTypeTestThread : public FunctionTestThread {
  public:
@@ -279,6 +280,10 @@ class ThreadPriorityTestThread : public FunctionTestThread {
 
  private:
   void RunTest() override {
+    testing::Message message;
+    message << "thread_type: " << static_cast<int>(thread_type_);
+    SCOPED_TRACE(message);
+
     EXPECT_EQ(PlatformThread::GetCurrentThreadType(), ThreadType::kDefault);
     PlatformThread::SetCurrentThreadType(thread_type_);
     EXPECT_EQ(PlatformThread::GetCurrentThreadType(), thread_type_);
@@ -429,6 +434,8 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
     EXPECT_TRUE(PlatformThread::CanChangeThreadType(type, type));
   }
 #if BUILDFLAG(IS_FUCHSIA)
+  EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
+                                                   ThreadType::kUtility));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(
       ThreadType::kBackground, ThreadType::kResourceEfficient));
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
@@ -440,6 +447,9 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
   EXPECT_FALSE(PlatformThread::CanChangeThreadType(ThreadType::kCompositing,
                                                    ThreadType::kBackground));
 #else
+  EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
+                                                ThreadType::kUtility),
+            kCanIncreasePriority);
   EXPECT_EQ(PlatformThread::CanChangeThreadType(ThreadType::kBackground,
                                                 ThreadType::kResourceEfficient),
             kCanIncreasePriority);
@@ -476,6 +486,8 @@ TEST(PlatformThreadTest, CanChangeThreadType) {
 TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
   TestPriorityResultingFromThreadType(ThreadType::kBackground,
                                       ThreadPriorityForTest::kBackground);
+  TestPriorityResultingFromThreadType(ThreadType::kUtility,
+                                      ThreadPriorityForTest::kUtility);
   TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
                                       ThreadPriorityForTest::kNormal);
   TestPriorityResultingFromThreadType(ThreadType::kDefault,

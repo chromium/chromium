@@ -141,12 +141,14 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
                             scoped_refptr<Sequence> sequence) override;
   bool ShouldYield(const TaskSource* task_source) override;
 
+  const std::string histogram_label_;
   const std::unique_ptr<TaskTrackerImpl> task_tracker_;
   ServiceThread service_thread_;
   DelayedTaskManager delayed_task_manager_;
   PooledSingleThreadTaskRunnerManager single_thread_task_runner_manager_;
 
   std::unique_ptr<ThreadGroup> foreground_thread_group_;
+  std::unique_ptr<ThreadGroup> utility_thread_group_;
   std::unique_ptr<ThreadGroup> background_thread_group_;
 
   // Whether this TaskScheduler was started.

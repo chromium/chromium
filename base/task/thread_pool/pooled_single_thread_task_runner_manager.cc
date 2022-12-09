@@ -57,14 +57,23 @@ namespace {
 // thread pool.
 bool g_manager_is_alive = false;
 
+bool g_use_utility_thread_group = false;
+
 size_t GetEnvironmentIndexForTraits(const TaskTraits& traits) {
   const bool is_background =
       traits.priority() == TaskPriority::BEST_EFFORT &&
       traits.thread_policy() == ThreadPolicy::PREFER_BACKGROUND &&
       CanUseBackgroundThreadTypeForWorkerThread();
-  if (traits.may_block() || traits.with_base_sync_primitives())
-    return is_background ? BACKGROUND_BLOCKING : FOREGROUND_BLOCKING;
-  return is_background ? BACKGROUND : FOREGROUND;
+  const bool is_utility =
+      !is_background && traits.priority() <= TaskPriority::USER_VISIBLE &&
+      traits.thread_policy() == ThreadPolicy::PREFER_BACKGROUND &&
+      g_use_utility_thread_group;
+  if (traits.may_block() || traits.with_base_sync_primitives()) {
+    return is_background ? BACKGROUND_BLOCKING
+           : is_utility  ? UTILITY_BLOCKING
+                         : FOREGROUND_BLOCKING;
+  }
+  return is_background ? BACKGROUND : is_utility ? UTILITY : FOREGROUND;
 }
 
 // Allows for checking the PlatformThread::CurrentRef() against a set
@@ -530,6 +539,7 @@ PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunnerManager(
 PooledSingleThreadTaskRunnerManager::~PooledSingleThreadTaskRunnerManager() {
   DCHECK(g_manager_is_alive);
   g_manager_is_alive = false;
+  g_use_utility_thread_group = false;
 }
 
 void PooledSingleThreadTaskRunnerManager::Start(
@@ -541,6 +551,9 @@ void PooledSingleThreadTaskRunnerManager::Start(
   DCHECK(io_thread_task_runner);
   io_thread_task_runner_ = std::move(io_thread_task_runner);
 #endif  // (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
+
+  g_use_utility_thread_group = CanUseUtilityThreadTypeForWorkerThread() &&
+                               FeatureList::IsEnabled(kUseUtilityThreadGroup);
 
   decltype(workers_) workers_to_start;
   {
@@ -635,10 +648,7 @@ PooledSingleThreadTaskRunnerManager::CreateTaskRunnerImpl(
         worker_name += "Shared";
       worker_name += environment_params.name_suffix;
       worker = CreateAndRegisterWorkerThread<DelegateType>(
-          worker_name, thread_mode,
-          CanUseBackgroundThreadTypeForWorkerThread()
-              ? environment_params.thread_type_hint
-              : ThreadType::kDefault);
+          worker_name, thread_mode, environment_params.thread_type_hint);
       new_worker = true;
     }
     started = started_;

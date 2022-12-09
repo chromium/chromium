@@ -46,12 +46,29 @@ bool CanUseBackgroundThreadTypeForWorkerThreadImpl() {
   return true;
 }
 
+bool CanUseUtilityThreadTypeForWorkerThreadImpl() {
+#if !BUILDFLAG(IS_ANDROID)
+  // Same as CanUseBackgroundThreadTypeForWorkerThreadImpl()
+  if (!PlatformThread::CanChangeThreadType(ThreadType::kUtility,
+                                           ThreadType::kDefault))
+    return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  return true;
+}
+
 }  // namespace
 
 bool CanUseBackgroundThreadTypeForWorkerThread() {
-  static const bool can_use_background_priority_for_worker_thread =
+  static const bool can_use_background_thread_type_for_worker_thread =
       CanUseBackgroundThreadTypeForWorkerThreadImpl();
-  return can_use_background_priority_for_worker_thread;
+  return can_use_background_thread_type_for_worker_thread;
+}
+
+bool CanUseUtilityThreadTypeForWorkerThread() {
+  static const bool can_use_utility_thread_type_for_worker_thread =
+      CanUseUtilityThreadTypeForWorkerThreadImpl();
+  return can_use_utility_thread_type_for_worker_thread;
 }
 
 }  // namespace internal

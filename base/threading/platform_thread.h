@@ -96,6 +96,9 @@ enum class ThreadType : int {
   // Suitable for threads that have the least urgency and lowest priority, and
   // can be interrupted or delayed by other types.
   kBackground,
+  // Suitable for threads that are less important than normal type, and can be
+  // interrupted or delayed by threads with kDefault type.
+  kUtility,
   // Suitable for threads that produce user-visible artifacts but aren't
   // latency sensitive. The underlying platform will try to be economic
   // in its usage of resources for this thread, if possible.
@@ -118,6 +121,7 @@ enum class ThreadType : int {
 // the underlying effects of SetCurrentThreadType.
 enum class ThreadPriorityForTest : int {
   kBackground,
+  kUtility,
   kNormal,
   // The priority obtained via ThreadType::kDisplayCritical (and potentially
   // other ThreadTypes).

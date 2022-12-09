@@ -414,6 +414,9 @@ void SetCurrentThreadPriority(ThreadType thread_type,
               ? THREAD_PRIORITY_LOWEST
               : THREAD_MODE_BACKGROUND_BEGIN;
       break;
+    case ThreadType::kUtility:
+      desired_priority = THREAD_PRIORITY_BELOW_NORMAL;
+      break;
     case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
       desired_priority = THREAD_PRIORITY_NORMAL;
@@ -462,6 +465,7 @@ void SetCurrentThreadQualityOfService(ThreadType thread_type) {
   bool desire_ecoqos = false;
   switch (thread_type) {
     case ThreadType::kBackground:
+    case ThreadType::kUtility:
     case ThreadType::kResourceEfficient:
       desire_ecoqos = true;
       break;
@@ -534,13 +538,15 @@ ThreadPriorityForTest PlatformThread::GetCurrentThreadPriorityForTest() {
   // -6 when THREAD_MODE_BACKGROUND_* is used. THREAD_PRIORITY_IDLE,
   // THREAD_PRIORITY_LOWEST and THREAD_PRIORITY_BELOW_NORMAL are other possible
   // negative values.
-  if (priority < THREAD_PRIORITY_NORMAL)
+  if (priority < THREAD_PRIORITY_BELOW_NORMAL)
     return ThreadPriorityForTest::kBackground;
 
   switch (priority) {
     case kWin7BackgroundThreadModePriority:
       DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
       return ThreadPriorityForTest::kBackground;
+    case THREAD_PRIORITY_BELOW_NORMAL:
+      return ThreadPriorityForTest::kUtility;
     case kWin7NormalPriority:
       DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
       [[fallthrough]];

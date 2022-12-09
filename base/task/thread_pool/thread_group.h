@@ -96,6 +96,11 @@ class BASE_EXPORT ThreadGroup {
   void InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
       ThreadGroup* destination_thread_group);
 
+  // Move all task sources except the ones with TaskPriority::USER_BLOCKING,
+  // from this ThreadGroup's PriorityQueue to the |destination_thread_group|'s.
+  void HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
+      ThreadGroup* destination_thread_group);
+
   // Returns true if a task with |sort_key| running in this thread group should
   // return ASAP, either because its priority is not allowed to run or because
   // work of higher priority is pending. Thread-safe but may return an outdated

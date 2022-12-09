@@ -28,23 +28,26 @@ namespace internal {
 // result in heavy throttling and force the thread onto a little core on
 // big.LITTLE devices.
 const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[4] = {
+    kThreadPriorityToNiceValueMapForTest[5] = {
         {ThreadPriorityForTest::kRealtimeAudio, -16},
         {ThreadPriorityForTest::kDisplay, -4},
         {ThreadPriorityForTest::kNormal, 0},
+        {ThreadPriorityForTest::kUtility, 1},
         {ThreadPriorityForTest::kBackground, 10},
 };
 
 // - kBackground corresponds to Android's PRIORITY_BACKGROUND = 10 value and can
 // result in heavy throttling and force the thread onto a little core on
 // big.LITTLE devices.
+// - kUtility corresponds to Android's THREAD_PRIORITY_LESS_FAVORABLE = 1 value.
 // - kCompositing and kDisplayCritical corresponds to Android's PRIORITY_DISPLAY
 // = -4 value.
 // - kRealtimeAudio corresponds to Android's PRIORITY_AUDIO = -16 value.
-const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[6] = {
-    {ThreadType::kBackground, 10},      {ThreadType::kResourceEfficient, 0},
-    {ThreadType::kDefault, 0},          {ThreadType::kCompositing, -4},
-    {ThreadType::kDisplayCritical, -4}, {ThreadType::kRealtimeAudio, -16},
+const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7] = {
+    {ThreadType::kBackground, 10},       {ThreadType::kUtility, 1},
+    {ThreadType::kResourceEfficient, 0}, {ThreadType::kDefault, 0},
+    {ThreadType::kCompositing, -4},      {ThreadType::kDisplayCritical, -4},
+    {ThreadType::kRealtimeAudio, -16},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {

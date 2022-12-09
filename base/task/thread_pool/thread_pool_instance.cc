@@ -21,10 +21,26 @@ namespace {
 // |g_thread_pool| is intentionally leaked on shutdown.
 ThreadPoolInstance* g_thread_pool = nullptr;
 
+size_t GetDefaultMaxNumUtilityThreads(size_t max_num_foreground_threads_in) {
+  int num_of_efficient_processors = SysInfo::NumberOfEfficientProcessors();
+  if (num_of_efficient_processors != 0) {
+    DCHECK_GT(num_of_efficient_processors, 0);
+    return static_cast<size_t>(num_of_efficient_processors);
+  }
+  return std::max<size_t>(1, max_num_foreground_threads_in / 2);
+}
+
 }  // namespace
 
 ThreadPoolInstance::InitParams::InitParams(size_t max_num_foreground_threads_in)
-    : max_num_foreground_threads(max_num_foreground_threads_in) {}
+    : max_num_foreground_threads(max_num_foreground_threads_in),
+      max_num_utility_threads(
+          GetDefaultMaxNumUtilityThreads(max_num_foreground_threads_in)) {}
+
+ThreadPoolInstance::InitParams::InitParams(size_t max_num_foreground_threads_in,
+                                           size_t max_num_utility_threads_in)
+    : max_num_foreground_threads(max_num_foreground_threads_in),
+      max_num_utility_threads(max_num_utility_threads_in) {}
 
 ThreadPoolInstance::InitParams::~InitParams() = default;
 

@@ -316,6 +316,13 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
       else
         [[NSThread currentThread] setThreadPriority:0];
       break;
+    case ThreadType::kUtility:
+      priority = ThreadPriorityForTest::kUtility;
+      if (use_thread_qos)
+        pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
+      else
+        [[NSThread currentThread] setThreadPriority:0.5];
+      break;
     case ThreadType::kResourceEfficient:
       if (use_thread_qos) {
         pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);

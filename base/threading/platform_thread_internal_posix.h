@@ -27,13 +27,13 @@ struct ThreadPriorityToNiceValuePairForTest {
 // The elements must be listed in the order of increasing priority (lowest
 // priority first), that is, in the order of decreasing nice values (highest
 // nice value first).
-extern const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[6];
+extern const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[7];
 
 // The elements must be listed in the order of decreasing priority (highest
 // priority first), that is, in the order of increasing nice values (lowest nice
 // value first).
 extern const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[4];
+    kThreadPriorityToNiceValueMapForTest[5];
 
 // Returns the nice value matching |priority| based on the platform-specific
 // implementation of kThreadTypeToNiceValueMap.

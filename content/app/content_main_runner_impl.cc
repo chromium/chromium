@@ -40,6 +40,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
@@ -460,6 +461,11 @@ void PreSandboxInit() {
     blink::WebFontRenderStyle::SetSkiaFontManager(
         SkFontMgr_New_Android(&custom));
   }
+
+  // Preload and cache the results since the methods may use the prlimit64
+  // system call that is not allowed by all sandbox types.
+  base::internal::CanUseBackgroundThreadTypeForWorkerThread();
+  base::internal::CanUseUtilityThreadTypeForWorkerThread();
 }
 #endif  // BUILDFLAG(USE_ZYGOTE_HANDLE)
 
