@@ -345,7 +345,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrFailed) {
 
   base::Value::List list_args;
   list_args.Append(kSendXhrCallback);
-  base::ListValue args;
+  base::Value::List args;
   args.Append(kTestXhrUrl);
   args.Append(kTestXhrMethod);
   args.Append(kTestXhrRequestBody);
