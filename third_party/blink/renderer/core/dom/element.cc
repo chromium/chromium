@@ -802,7 +802,7 @@ Element& Element::CloneWithoutAttributesAndChildren(Document& factory) const {
 }
 
 Attr* Element::DetachAttribute(wtf_size_t index) {
-  DCHECK(GetElementData());
+  DCHECK(HasElementData());
   const Attribute& attribute = GetElementData()->Attributes().at(index);
   Attr* attr_node = AttrIfExists(attribute.GetName());
   if (attr_node) {
@@ -817,7 +817,7 @@ Attr* Element::DetachAttribute(wtf_size_t index) {
 
 void Element::DetachAttrNodeAtIndex(Attr* attr, wtf_size_t index) {
   DCHECK(attr);
-  DCHECK(GetElementData());
+  DCHECK(HasElementData());
 
   const Attribute& attribute = GetElementData()->Attributes().at(index);
   DCHECK(attribute.GetName() == attr->GetQualifiedName());
@@ -1048,7 +1048,7 @@ PopoverData* Element::GetPopoverData() const {
 }
 
 inline void Element::SynchronizeAttribute(const QualifiedName& name) const {
-  if (!GetElementData())
+  if (!HasElementData())
     return;
   if (UNLIKELY(name == html_names::kStyleAttr &&
                GetElementData()->style_attribute_is_dirty())) {
@@ -1091,7 +1091,7 @@ bool Element::hasAttribute(const QualifiedName& name) const {
 
 bool Element::HasAttributeIgnoringNamespace(
     const AtomicString& local_name) const {
-  if (!GetElementData())
+  if (!HasElementData())
     return false;
   WTF::AtomicStringTable::WeakResult hint =
       WeakLowercaseIfNecessary(local_name);
@@ -1107,7 +1107,7 @@ bool Element::HasAttributeIgnoringNamespace(
 }
 
 void Element::SynchronizeAllAttributes() const {
-  if (!GetElementData())
+  if (!HasElementData())
     return;
   // NOTE: AnyAttributeMatches in selector_checker.cc currently assumes that all
   // lazy attributes have a null namespace.  If that ever changes we'll need to
@@ -1120,14 +1120,14 @@ void Element::SynchronizeAllAttributes() const {
 }
 
 void Element::SynchronizeAllAttributesExceptStyle() const {
-  if (!GetElementData())
+  if (!HasElementData())
     return;
   if (GetElementData()->svg_attributes_are_dirty())
     To<SVGElement>(this)->SynchronizeSVGAttribute(AnyQName());
 }
 
 const AtomicString& Element::getAttribute(const QualifiedName& name) const {
-  if (!GetElementData())
+  if (!HasElementData())
     return g_null_atom;
   SynchronizeAttribute(name);
   if (const Attribute* attribute = GetElementData()->Attributes().Find(name))
@@ -2422,7 +2422,7 @@ static inline ClassStringContent ClassStringHasClassName(
 }
 
 void Element::ClassAttributeChanged(const AtomicString& new_class_string) {
-  DCHECK(GetElementData());
+  DCHECK(HasElementData());
   ClassStringContent class_string_content_type =
       ClassStringHasClassName(new_class_string);
   const bool should_fold_case = GetDocument().InQuirksMode();
@@ -2524,9 +2524,9 @@ bool Element::HasEquivalentAttributes(const Element& other) const {
   other.SynchronizeAllAttributes();
   if (GetElementData() == other.GetElementData())
     return true;
-  if (GetElementData())
+  if (HasElementData())
     return GetElementData()->IsEquivalent(other.GetElementData());
-  if (other.GetElementData())
+  if (other.HasElementData())
     return other.GetElementData()->IsEquivalent(GetElementData());
   return true;
 }
@@ -4643,7 +4643,7 @@ void Element::removeAttributeNS(const AtomicString& namespace_uri,
 }
 
 Attr* Element::getAttributeNode(const AtomicString& local_name) {
-  if (!GetElementData())
+  if (!HasElementData())
     return nullptr;
   WTF::AtomicStringTable::WeakResult hint =
       WeakLowercaseIfNecessary(local_name);
@@ -4657,7 +4657,7 @@ Attr* Element::getAttributeNode(const AtomicString& local_name) {
 
 Attr* Element::getAttributeNodeNS(const AtomicString& namespace_uri,
                                   const AtomicString& local_name) {
-  if (!GetElementData())
+  if (!HasElementData())
     return nullptr;
   QualifiedName q_name(g_null_atom, local_name, namespace_uri);
   SynchronizeAttribute(q_name);
@@ -4668,7 +4668,7 @@ Attr* Element::getAttributeNodeNS(const AtomicString& namespace_uri,
 }
 
 bool Element::hasAttribute(const AtomicString& local_name) const {
-  if (!GetElementData())
+  if (!HasElementData())
     return false;
   WTF::AtomicStringTable::WeakResult hint =
       WeakLowercaseIfNecessary(local_name);
@@ -4679,7 +4679,7 @@ bool Element::hasAttribute(const AtomicString& local_name) const {
 
 bool Element::hasAttributeNS(const AtomicString& namespace_uri,
                              const AtomicString& local_name) const {
-  if (!GetElementData())
+  if (!HasElementData())
     return false;
   QualifiedName q_name(g_null_atom, local_name, namespace_uri);
   SynchronizeAttribute(q_name);
@@ -6608,7 +6608,7 @@ KURL Element::HrefURL() const {
 
 KURL Element::GetURLAttribute(const QualifiedName& name) const {
 #if DCHECK_IS_ON()
-  if (GetElementData()) {
+  if (HasElementData()) {
     if (const Attribute* attribute = Attributes().Find(name))
       DCHECK(IsURLAttribute(*attribute));
   }
@@ -6619,7 +6619,7 @@ KURL Element::GetURLAttribute(const QualifiedName& name) const {
 
 KURL Element::GetNonEmptyURLAttribute(const QualifiedName& name) const {
 #if DCHECK_IS_ON()
-  if (GetElementData()) {
+  if (HasElementData()) {
     if (const Attribute* attribute = Attributes().Find(name))
       DCHECK(IsURLAttribute(*attribute));
   }
@@ -7251,7 +7251,7 @@ void Element::CreateUniqueElementData() {
 
 void Element::SynchronizeStyleAttributeInternal() const {
   DCHECK(IsStyledElement());
-  DCHECK(GetElementData());
+  DCHECK(HasElementData());
   DCHECK(GetElementData()->style_attribute_is_dirty());
   GetElementData()->SetStyleAttributeIsDirty(false);
   const CSSPropertyValueSet* inline_style = InlineStyle();
@@ -7749,7 +7749,7 @@ void Element::SetActive(bool active) {
 
 void Element::InvalidateStyleAttribute(
     bool only_changed_independent_properties) {
-  DCHECK(GetElementData());
+  DCHECK(HasElementData());
   GetElementData()->SetStyleAttributeIsDirty(true);
   SetNeedsStyleRecalc(only_changed_independent_properties
                           ? kInlineIndependentStyleChange
@@ -7915,7 +7915,7 @@ void Element::SynchronizeAttributeHinted(
     WTF::AtomicStringTable::WeakResult hint) const {
   // This version of SynchronizeAttribute() is streamlined for the case where
   // you don't have a full QualifiedName, e.g when called from DOM API.
-  if (!GetElementData())
+  if (!HasElementData())
     return;
   // TODO(ajwong): Does this unnecessarily synchronize style attributes on
   // SVGElements?
@@ -7943,7 +7943,7 @@ void Element::SynchronizeAttributeHinted(
 const AtomicString& Element::GetAttributeHinted(
     const AtomicString& name,
     WTF::AtomicStringTable::WeakResult hint) const {
-  if (!GetElementData())
+  if (!HasElementData())
     return g_null_atom;
   SynchronizeAttributeHinted(name, hint);
   if (const Attribute* attribute =
@@ -7955,7 +7955,7 @@ const AtomicString& Element::GetAttributeHinted(
 std::pair<wtf_size_t, const QualifiedName> Element::LookupAttributeQNameHinted(
     AtomicString name,
     WTF::AtomicStringTable::WeakResult hint) const {
-  if (!GetElementData()) {
+  if (!HasElementData()) {
     return std::make_pair(
         kNotFound,
         QualifiedName(g_null_atom, LowercaseIfNecessary(std::move(name)),
@@ -8050,7 +8050,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
 }
 
 wtf_size_t Element::FindAttributeIndex(const QualifiedName& name) {
-  if (GetElementData())
+  if (HasElementData())
     return GetElementData()->Attributes().FindIndex(name);
   return kNotFound;
 }
@@ -8161,7 +8161,7 @@ Attr* Element::setAttributeNode(Attr* attr_node,
 
 void Element::RemoveAttributeHinted(const AtomicString& name,
                                     WTF::AtomicStringTable::WeakResult hint) {
-  if (!GetElementData())
+  if (!HasElementData())
     return;
 
   wtf_size_t index = GetElementData()->Attributes().FindIndexHinted(name, hint);

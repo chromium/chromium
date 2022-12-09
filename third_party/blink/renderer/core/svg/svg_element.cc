@@ -1029,7 +1029,7 @@ void SVGElement::EnsureAttributeAnimValUpdated() {
 }
 
 void SVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
-  DCHECK(GetElementData());
+  DCHECK(HasElementData());
   DCHECK(GetElementData()->svg_attributes_are_dirty());
   if (name == AnyQName()) {
     for (SVGAnimatedPropertyBase* property :

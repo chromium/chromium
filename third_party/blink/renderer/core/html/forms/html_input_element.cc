@@ -555,7 +555,7 @@ void HTMLInputElement::UpdateType() {
 
   if (did_respect_height_and_width !=
       input_type_->ShouldRespectHeightAndWidthAttributes()) {
-    DCHECK(GetElementData());
+    DCHECK(HasElementData());
     AttributeCollection attributes = AttributesWithoutUpdate();
     if (const Attribute* height = attributes.Find(html_names::kHeightAttr)) {
       TextControlElement::AttributeChanged(AttributeModificationParams(

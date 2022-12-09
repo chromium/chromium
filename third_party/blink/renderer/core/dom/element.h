@@ -473,7 +473,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void InvalidateStyleAttribute(bool only_changed_independent_properties);
 
   const CSSPropertyValueSet* InlineStyle() const {
-    return GetElementData() ? GetElementData()->inline_style_.Get() : nullptr;
+    return HasElementData() ? GetElementData()->inline_style_.Get() : nullptr;
   }
 
   void SetInlineStyleProperty(CSSPropertyID,
@@ -1182,6 +1182,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   Element* ImplicitAnchorElement() const;
 
  protected:
+  bool HasElementData() const { return element_data_; }
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
 
@@ -1615,7 +1616,7 @@ inline bool Element::FastHasAttribute(const QualifiedName& name) const {
   DCHECK(FastAttributeLookupAllowed(name))
       << TagQName().ToString().Utf8() << "/@" << name.ToString().Utf8();
 #endif
-  return GetElementData() &&
+  return HasElementData() &&
          GetElementData()->Attributes().FindIndex(name) != kNotFound;
 }
 
@@ -1625,7 +1626,7 @@ inline const AtomicString& Element::FastGetAttribute(
   DCHECK(FastAttributeLookupAllowed(name))
       << TagQName().ToString().Utf8() << "/@" << name.ToString().Utf8();
 #endif
-  if (GetElementData()) {
+  if (HasElementData()) {
     if (const Attribute* attribute = GetElementData()->Attributes().Find(name))
       return attribute->Value();
   }
@@ -1633,20 +1634,20 @@ inline const AtomicString& Element::FastGetAttribute(
 }
 
 inline AttributeCollection Element::Attributes() const {
-  if (!GetElementData())
+  if (!HasElementData())
     return AttributeCollection();
   SynchronizeAllAttributes();
   return GetElementData()->Attributes();
 }
 
 inline AttributeCollection Element::AttributesWithoutUpdate() const {
-  if (!GetElementData())
+  if (!HasElementData())
     return AttributeCollection();
   return GetElementData()->Attributes();
 }
 
 inline AttributeCollection Element::AttributesWithoutStyleUpdate() const {
-  if (!GetElementData())
+  if (!HasElementData())
     return AttributeCollection();
   SynchronizeAllAttributesExceptStyle();
   return GetElementData()->Attributes();
@@ -1683,7 +1684,7 @@ inline void Element::SetIdAttribute(const AtomicString& value) {
 
 inline const SpaceSplitString& Element::ClassNames() const {
   DCHECK(HasClass());
-  DCHECK(GetElementData());
+  DCHECK(HasElementData());
   return GetElementData()->ClassNames();
 }
 
@@ -1692,21 +1693,21 @@ inline bool Element::HasClassName(const AtomicString& class_name) const {
 }
 
 inline bool Element::HasID() const {
-  return GetElementData() && GetElementData()->HasID();
+  return HasElementData() && GetElementData()->HasID();
 }
 
 inline bool Element::HasClass() const {
-  return GetElementData() && GetElementData()->HasClass();
+  return HasElementData() && GetElementData()->HasClass();
 }
 
 inline UniqueElementData& Element::EnsureUniqueElementData() {
-  if (!GetElementData() || !GetElementData()->IsUnique())
+  if (!HasElementData() || !GetElementData()->IsUnique())
     CreateUniqueElementData();
   return To<UniqueElementData>(*element_data_);
 }
 
 inline const CSSPropertyValueSet* Element::PresentationAttributeStyle() {
-  if (!GetElementData())
+  if (!HasElementData())
     return nullptr;
   if (GetElementData()->presentation_attribute_style_is_dirty())
     UpdatePresentationAttributeStyle();
