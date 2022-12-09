@@ -14,7 +14,6 @@
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
 
 namespace ukm {
@@ -76,13 +75,21 @@ class METRICS_EXPORT UkmSource {
     // and same page history navigation.
     bool is_same_document_navigation = false;
 
+    // Represents the same origin status of the navigation compared to the
+    // previous document.
+    enum SourceSameOriginStatus {
+      SOURCE_SAME_ORIGIN_STATUS_UNSET = 0,
+      SOURCE_SAME_ORIGIN,
+      SOURCE_CROSS_ORIGIN,
+    };
+
     // Whether this is the same origin as the previous document.
     //
     // This is set to the NavigationHandle's same origin state when the
     // navigation is committed, is not a same document navigation and is not
     // committed as an error page. Otherwise, this remains unset.
-    SameOriginStatus same_origin_status =
-        SameOriginStatus::SAME_ORIGIN_STATUS_UNSET;
+    SourceSameOriginStatus same_origin_status =
+        SourceSameOriginStatus::SOURCE_SAME_ORIGIN_STATUS_UNSET;
 
     // Whether this navigation is initiated by the renderer.
     bool is_renderer_initiated = false;
