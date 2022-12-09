@@ -53,7 +53,7 @@ void LoadFromDisk(base::ScopedFD pb_fd, base::ScopedFD visual_tflite_model_fd) {
 void ClientSidePhishingComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    absl::optional<base::Value::Dict> manifest) {
+    base::Value::Dict manifest) {
   DCHECK(version.IsValid());
 
   auto pb_iterator =

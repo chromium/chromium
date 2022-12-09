@@ -77,7 +77,7 @@ class ComponentLoaderPolicy {
   virtual void ComponentLoaded(
       const base::Version& version,
       base::flat_map<std::string, base::ScopedFD>& fd_map,
-      absl::optional<base::Value::Dict> manifest) = 0;
+      base::Value::Dict manifest) = 0;
 
   // Called if connection to the service fails, components files are not found
   // or if the manifest file is missing or invalid.

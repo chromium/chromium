@@ -56,7 +56,7 @@ TrustTokenKeyCommitmentsComponentLoaderPolicy::
 void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    absl::optional<base::Value::Dict> manifest) {
+    base::Value::Dict manifest) {
   auto keys_fd_iterator = fd_map.find(kTrustTokenKeyCommitmentsFileName);
   if (keys_fd_iterator == fd_map.end()) {
     VLOG(1) << "TrustTokenKeyCommitmentsComponentLoaderPolicy#ComponentLoaded "

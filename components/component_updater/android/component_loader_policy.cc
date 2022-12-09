@@ -177,7 +177,7 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
   RecordComponentLoadStatusHistogram(loader_policy_->GetMetricsSuffix(),
                                      ComponentLoadResult::kComponentLoaded);
   ComponentsInfoHolder::GetInstance()->AddComponent(GetComponentId(), version);
-  loader_policy_->ComponentLoaded(version, fd_map, std::move(manifest));
+  loader_policy_->ComponentLoaded(version, fd_map, std::move(*manifest));
 }
 
 void AndroidComponentLoaderPolicy::ComponentLoadFailedInternal(

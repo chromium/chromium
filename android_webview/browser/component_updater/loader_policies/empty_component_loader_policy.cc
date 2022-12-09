@@ -38,7 +38,7 @@ const uint8_t kFakePublicKeySHA256[32] = {
 void EmptyComponentLoaderPolicy::ComponentLoaded(
     const base::Version& /*version*/,
     base::flat_map<std::string, base::ScopedFD>& /*fd_map*/,
-    absl::optional<base::Value::Dict> /*manifest*/) {}
+    base::Value::Dict /*manifest*/) {}
 
 void EmptyComponentLoaderPolicy::ComponentLoadFailed(
     component_updater::ComponentLoadResult /*error*/) {}
