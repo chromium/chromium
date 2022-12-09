@@ -189,9 +189,7 @@ bool CanvasRenderingContext2D::IsOriginTopLeft() const {
 }
 
 bool CanvasRenderingContext2D::IsComposited() const {
-  if (Canvas2DLayerBridge* layer_bridge = canvas()->GetCanvas2DLayerBridge())
-    return layer_bridge->IsComposited();
-  return false;
+  return IsAccelerated();
 }
 
 void CanvasRenderingContext2D::Stop() {
