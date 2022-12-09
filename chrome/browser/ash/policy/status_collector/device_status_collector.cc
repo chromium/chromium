@@ -2384,7 +2384,6 @@ bool DeviceStatusCollector::GetNetworkStatus(
     em::NetworkState::ConnectionState state_constant;
   } kConnectionStateMap[] = {
       {shill::kStateIdle, em::NetworkState::IDLE},
-      {shill::kStateCarrier, em::NetworkState::CARRIER},
       {shill::kStateAssociation, em::NetworkState::ASSOCIATION},
       {shill::kStateConfiguration, em::NetworkState::CONFIGURATION},
       {shill::kStateReady, em::NetworkState::READY},

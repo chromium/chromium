@@ -927,12 +927,12 @@ message NetworkInterface {
 // any specific interface, or may be visible across multiple interfaces.
 message NetworkState {
   // The current state of this network.
-  // CARRIER (1) and OFFLINE (7) are not used by the client.
+  // OFFLINE (7) is not used by the client.
   enum ConnectionState {
+    reserved 1;   // CARRIER
     reserved 10;  // ACTIVATION_FAILURE
 
     IDLE = 0;
-    CARRIER = 1;
     ASSOCIATION = 2;
     CONFIGURATION = 3;
     READY = 4;
