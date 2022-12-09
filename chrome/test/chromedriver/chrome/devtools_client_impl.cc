@@ -18,6 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
 #include "chrome/test/chromedriver/chrome/log.h"
@@ -296,6 +298,9 @@ Status DevToolsClientImpl::StartBidiServer(std::string bidi_mapper_script,
                   "BiDi tunnel is already set up in this client"};
   }
   Status status{kOk};
+  // TODO(https://crbug.com/chromedriver/4295#c1): implement the proper solution
+  // by waiting for the initial page navigation to be finished.
+  base::PlatformThread::Sleep(base::Milliseconds(200));
   // Page clients have target_id coinciding with id
   std::string target_id = id_;
   {
