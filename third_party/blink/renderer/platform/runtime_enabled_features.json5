@@ -812,7 +812,7 @@
     },
     {
       name: "CSSPictureInPicture",
-      status: "experimental",
+      status: "stable",
       depends_on: ["PictureInPictureAPI"],
     },
     {
