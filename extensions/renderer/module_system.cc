@@ -225,17 +225,23 @@ void ModuleSystem::Invalidate() {
   // TODO(1276144): remove checks once investigation finished.
   CHECK(!has_been_invalidated_);
   has_been_invalidated_ = true;
+
+  v8::Isolate* isolate = GetIsolate();
   // Clear the module system properties from the global context. It's polite,
   // and we use this as a signal in lazy handlers that we no longer exist.
   {
-    v8::HandleScope scope(GetIsolate());
-    v8::Local<v8::Object> global = context()->v8_context()->Global();
-    // TODO(1276144): remove checks once investigation finished.
-    v8::Local<v8::Value> dummy_value;
-    CHECK(GetPrivate(global, kModulesField, &dummy_value));
-    DeletePrivate(global, kModulesField);
-    CHECK(GetPrivate(global, kModuleSystem, &dummy_value));
-    DeletePrivate(global, kModuleSystem);
+    // Note: It isn't safe to access v8::Private if IsExecutionTerminating
+    // returns true. It crashes if we do so: http://crbug.com/1276144.
+    if (!isolate->IsExecutionTerminating()) {
+      v8::HandleScope scope(GetIsolate());
+      v8::Local<v8::Object> global = context()->v8_context()->Global();
+      // TODO(1276144): remove checks once investigation finished.
+      v8::Local<v8::Value> dummy_value;
+      CHECK(GetPrivate(global, kModulesField, &dummy_value));
+      DeletePrivate(global, kModulesField);
+      CHECK(GetPrivate(global, kModuleSystem, &dummy_value));
+      DeletePrivate(global, kModuleSystem);
+    }
   }
 
   // Invalidate all active and clobbered NativeHandlers we own.
