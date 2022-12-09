@@ -4,13 +4,7 @@
 
 #include "gpu/command_buffer/service/native_image_buffer.h"
 
-#include <list>
-
-#include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
-#include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_implementation.h"
 
 #if !BUILDFLAG(IS_MAC)
@@ -33,25 +27,10 @@ class NativeImageBufferEGL : public NativeImageBuffer {
  private:
   NativeImageBufferEGL(EGLDisplay display, EGLImageKHR image);
   ~NativeImageBufferEGL() override;
-  void AddClient(gl::GLImage* client) override;
-  void RemoveClient(gl::GLImage* client) override;
-  bool IsClient(gl::GLImage* client) override;
   void BindToTexture(GLenum target) const override;
 
   const EGLDisplay egl_display_;
   const EGLImageKHR egl_image_;
-
-  base::Lock lock_;
-
-  struct ClientInfo {
-    explicit ClientInfo(gl::GLImage* client);
-    ~ClientInfo();
-
-    raw_ptr<gl::GLImage> client;
-    bool needs_wait_before_read;
-  };
-  std::list<ClientInfo> client_infos_;
-  raw_ptr<gl::GLImage> write_client_;
 };
 
 scoped_refptr<NativeImageBufferEGL> NativeImageBufferEGL::Create(
@@ -85,52 +64,16 @@ scoped_refptr<NativeImageBufferEGL> NativeImageBufferEGL::Create(
   return new NativeImageBufferEGL(egl_display, egl_image);
 }
 
-NativeImageBufferEGL::ClientInfo::ClientInfo(gl::GLImage* client)
-    : client(client), needs_wait_before_read(true) {}
-
-NativeImageBufferEGL::ClientInfo::~ClientInfo() = default;
-
 NativeImageBufferEGL::NativeImageBufferEGL(EGLDisplay display,
                                            EGLImageKHR image)
-    : egl_display_(display),
-      egl_image_(image),
-      write_client_(nullptr) {
+    : egl_display_(display), egl_image_(image) {
   DCHECK(egl_display_ != EGL_NO_DISPLAY);
   DCHECK(egl_image_ != EGL_NO_IMAGE_KHR);
 }
 
 NativeImageBufferEGL::~NativeImageBufferEGL() {
-  DCHECK(client_infos_.empty());
   if (egl_image_ != EGL_NO_IMAGE_KHR)
     eglDestroyImageKHR(egl_display_, egl_image_);
-}
-
-void NativeImageBufferEGL::AddClient(gl::GLImage* client) {
-  base::AutoLock lock(lock_);
-  client_infos_.emplace_back(client);
-}
-
-void NativeImageBufferEGL::RemoveClient(gl::GLImage* client) {
-  base::AutoLock lock(lock_);
-  if (write_client_ == client)
-    write_client_ = nullptr;
-  for (std::list<ClientInfo>::iterator it = client_infos_.begin();
-       it != client_infos_.end(); it++) {
-    if (it->client == client) {
-      client_infos_.erase(it);
-      return;
-    }
-  }
-  NOTREACHED();
-}
-
-bool NativeImageBufferEGL::IsClient(gl::GLImage* client) {
-  base::AutoLock lock(lock_);
-  for (auto & client_info : client_infos_) {
-    if (client_info.client == client)
-      return true;
-  }
-  return false;
 }
 
 void NativeImageBufferEGL::BindToTexture(GLenum target) const {
@@ -142,22 +85,7 @@ void NativeImageBufferEGL::BindToTexture(GLenum target) const {
 
 #endif
 
-class NativeImageBufferStub : public NativeImageBuffer {
- public:
-  NativeImageBufferStub() = default;
-
-  NativeImageBufferStub(const NativeImageBufferStub&) = delete;
-  NativeImageBufferStub& operator=(const NativeImageBufferStub&) = delete;
-
- private:
-  ~NativeImageBufferStub() override = default;
-  void AddClient(gl::GLImage* client) override {}
-  void RemoveClient(gl::GLImage* client) override {}
-  bool IsClient(gl::GLImage* client) override { return true; }
-  void BindToTexture(GLenum target) const override {}
-};
-
-}  // anonymous namespace
+}  // namespace
 
 // static
 scoped_refptr<NativeImageBuffer> NativeImageBuffer::Create(GLuint texture_id) {
@@ -167,9 +95,6 @@ scoped_refptr<NativeImageBuffer> NativeImageBuffer::Create(GLuint texture_id) {
     case gl::kGLImplementationEGLANGLE:
       return NativeImageBufferEGL::Create(texture_id);
 #endif
-    case gl::kGLImplementationMockGL:
-    case gl::kGLImplementationStubGL:
-      return new NativeImageBufferStub;
     default:
       NOTREACHED();
       return nullptr;

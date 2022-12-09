@@ -8,10 +8,6 @@
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 
-namespace gl {
-class GLImage;
-}
-
 namespace gpu {
 namespace gles2 {
 
@@ -22,9 +18,6 @@ class NativeImageBuffer : public base::RefCountedThreadSafe<NativeImageBuffer> {
   NativeImageBuffer(const NativeImageBuffer&) = delete;
   NativeImageBuffer& operator=(const NativeImageBuffer&) = delete;
 
-  virtual void AddClient(gl::GLImage* client) = 0;
-  virtual void RemoveClient(gl::GLImage* client) = 0;
-  virtual bool IsClient(gl::GLImage* client) = 0;
   virtual void BindToTexture(GLenum target) const = 0;
 
  protected:
