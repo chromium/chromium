@@ -37,8 +37,8 @@ base::Value CreateLogValue(const WebAppCommand& command,
   dict.Set("name", command.name());
   dict.Set("id", command.id());
   base::Value debug_value = command.ToDebugValue();
-  if (!debug_value.is_none() &&
-      !(debug_value.is_dict() && !debug_value.DictEmpty())) {
+  bool is_empty_dict = debug_value.is_dict() && debug_value.DictEmpty();
+  if (!debug_value.is_none() && !is_empty_dict) {
     dict.Set("value", command.ToDebugValue());
   }
   if (result) {
@@ -244,6 +244,13 @@ base::Value WebAppCommandManager::ToDebugValue() {
 }
 
 void WebAppCommandManager::LogToInstallManager(base::Value log) {
+  if (log.is_none())
+    return;
+#if DCHECK_IS_ON()
+  // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
+  // production builds.
+  DVLOG(1) << log.DebugString();
+#endif
   provider_->install_manager().TakeCommandErrorLog(PassKey(), std::move(log));
 }
 
@@ -298,6 +305,12 @@ void WebAppCommandManager::OnCommandComplete(
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {
+  DCHECK(!value.is_none());
+#if DCHECK_IS_ON()
+  // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
+  // production builds.
+  DVLOG(1) << value.DebugString();
+#endif
   static constexpr const int kMaxLogLength = 20;
   command_debug_log_.push_front(std::move(value));
   if (command_debug_log_.size() > kMaxLogLength)
