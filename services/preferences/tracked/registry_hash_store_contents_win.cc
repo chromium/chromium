@@ -191,7 +191,7 @@ void RegistryHashStoreContentsWin::ImportEntry(const std::string& path,
       << "RegistryHashStoreContents does not support the ImportEntry operation";
 }
 
-const base::DictionaryValue* RegistryHashStoreContentsWin::GetContents() const {
+const base::Value::Dict* RegistryHashStoreContentsWin::GetContents() const {
   NOTREACHED()
       << "RegistryHashStoreContents does not support the GetContents operation";
   return NULL;

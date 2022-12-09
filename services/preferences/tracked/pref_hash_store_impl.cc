@@ -99,6 +99,11 @@ std::string PrefHashStoreImpl::ComputeMac(const std::string& path,
   return pref_hash_calculator_.Calculate(path, value);
 }
 
+std::string PrefHashStoreImpl::ComputeMac(const std::string& path,
+                                          const base::Value::Dict* dict) {
+  return pref_hash_calculator_.Calculate(path, dict);
+}
+
 std::unique_ptr<base::DictionaryValue> PrefHashStoreImpl::ComputeSplitMacs(
     const std::string& path,
     const base::DictionaryValue* split_values) {
@@ -147,7 +152,7 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::
     ~PrefHashStoreTransactionImpl() {
   if (super_mac_dirty_ && outer_->use_super_mac_) {
     // Get the dictionary of hashes (or NULL if it doesn't exist).
-    const base::DictionaryValue* hashes_dict = contents_->GetContents();
+    const base::Value::Dict* hashes_dict = contents_->GetContents();
     contents_->SetSuperMac(outer_->ComputeMac("", hashes_dict));
   }
 }

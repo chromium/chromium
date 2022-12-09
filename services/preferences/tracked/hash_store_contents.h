@@ -10,11 +10,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}  // namespace base
+#include "base/values.h"
 
 // Provides access to the contents of a preference hash store. The store
 // contains the following data:
@@ -76,7 +72,7 @@ class HashStoreContents {
   virtual bool RemoveEntry(const std::string& path) = 0;
 
   // Only needed if this store supports super MACs.
-  virtual const base::DictionaryValue* GetContents() const = 0;
+  virtual const base::Value::Dict* GetContents() const = 0;
 
   // Retrieves the super MAC value previously stored by SetSuperMac. May be
   // empty if no super MAC has been stored or if this store does not support

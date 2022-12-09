@@ -17,7 +17,7 @@ using ValueState =
 
 class PrefHashStoreImplTest : public testing::Test {
  public:
-  PrefHashStoreImplTest() : contents_(&pref_store_contents_) {}
+  PrefHashStoreImplTest() : contents_(&pref_store_contents_.GetDict()) {}
 
   PrefHashStoreImplTest(const PrefHashStoreImplTest&) = delete;
   PrefHashStoreImplTest& operator=(const PrefHashStoreImplTest&) = delete;
@@ -178,7 +178,7 @@ TEST_F(PrefHashStoreImplTest, ImportExportOperations) {
 
   // Make a copy of the stored hash for future use.
   const base::Value* hash =
-      GetHashStoreContents()->GetContents()->FindKey("path1");
+      GetHashStoreContents()->GetContents()->Find("path1");
   ASSERT_TRUE(hash);
   base::Value path_1_string_1_hash_copy(hash->Clone());
   hash = nullptr;

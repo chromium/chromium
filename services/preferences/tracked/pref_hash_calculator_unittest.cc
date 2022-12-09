@@ -65,7 +65,9 @@ TEST(PrefHashCalculatorTest, TestCurrentAlgorithm) {
             calc1.Calculate("pref_path", &dictionary_value_1_equivalent));
 
   // NULL value is supported.
-  ASSERT_FALSE(calc1.Calculate("pref_path", NULL).empty());
+  ASSERT_FALSE(
+      calc1.Calculate("pref_path", static_cast<const base::Value*>(nullptr))
+          .empty());
 }
 
 // Tests the output against a known value to catch unexpected algorithm changes.

@@ -397,7 +397,7 @@ class MockHashStoreContents : public HashStoreContents {
   void ImportEntry(const std::string& path,
                    const base::Value* in_value) override;
   bool RemoveEntry(const std::string& path) override;
-  const base::DictionaryValue* GetContents() const override;
+  const base::Value::Dict* GetContents() const override;
   std::string GetSuperMac() const override;
   void SetSuperMac(const std::string& super_mac) override;
 
@@ -526,7 +526,7 @@ bool MockHashStoreContents::RemoveEntry(const std::string& path) {
   return true;
 }
 
-const base::DictionaryValue* MockHashStoreContents::GetContents() const {
+const base::Value::Dict* MockHashStoreContents::GetContents() const {
   ADD_FAILURE() << "Unexpected call.";
   return nullptr;
 }

@@ -170,7 +170,7 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     DCHECK(store);
 
     base::Value string_value(value);
-    DictionaryHashStoreContents contents(store);
+    DictionaryHashStoreContents contents(store ? &store->GetDict() : nullptr);
     pref_hash_store->BeginTransaction(&contents)->StoreHash(key, &string_value);
   }
 
@@ -224,11 +224,11 @@ class TrackedPreferencesMigrationTest : public testing::Test {
         break;
     }
     DCHECK(store);
-    const base::DictionaryValue* hash_store_contents =
-        DictionaryHashStoreContents(store).GetContents();
-    return hash_store_contents &&
-           hash_store_contents->GetString(expected_pref_in_hash_store,
-                                          static_cast<std::string*>(NULL));
+    const base::Value::Dict* hash_store_contents =
+        DictionaryHashStoreContents(store ? &store->GetDict() : nullptr)
+            .GetContents();
+    return hash_store_contents && hash_store_contents->FindStringByDottedPath(
+                                      expected_pref_in_hash_store);
   }
 
   // Both stores need to hand their prefs over in order for migration to kick

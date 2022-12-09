@@ -143,7 +143,8 @@ void PrefHashFilter::ClearResetTime(PrefService* user_prefs) {
 }
 
 void PrefHashFilter::Initialize(base::DictionaryValue* pref_store_contents) {
-  DictionaryHashStoreContents dictionary_contents(pref_store_contents);
+  DictionaryHashStoreContents dictionary_contents(
+      pref_store_contents ? &pref_store_contents->GetDict() : nullptr);
   std::unique_ptr<PrefHashStoreTransaction> hash_store_transaction(
       pref_hash_store_->BeginTransaction(&dictionary_contents));
   for (auto it = tracked_paths_.begin(); it != tracked_paths_.end(); ++it) {
@@ -174,7 +175,8 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::FilterSerializeData(
   if (!changed_paths_.empty()) {
     base::TimeTicks checkpoint = base::TimeTicks::Now();
     {
-      DictionaryHashStoreContents dictionary_contents(pref_store_contents);
+      DictionaryHashStoreContents dictionary_contents(
+          pref_store_contents ? &pref_store_contents->GetDict() : nullptr);
       std::unique_ptr<PrefHashStoreTransaction> hash_store_transaction(
           pref_hash_store_->BeginTransaction(&dictionary_contents));
 
@@ -222,7 +224,8 @@ void PrefHashFilter::FinalizeFilterOnLoad(
 
   bool did_reset = false;
   {
-    DictionaryHashStoreContents dictionary_contents(pref_store_contents.get());
+    DictionaryHashStoreContents dictionary_contents(
+        pref_store_contents ? &pref_store_contents->GetDict() : nullptr);
     std::unique_ptr<PrefHashStoreTransaction> hash_store_transaction(
         pref_hash_store_->BeginTransaction(&dictionary_contents));
 

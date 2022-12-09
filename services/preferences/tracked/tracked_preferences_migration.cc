@@ -122,7 +122,8 @@ void ScheduleSourcePrefStoreCleanup(
 void CleanupMigratedHashes(const PrefNameSet& migrated_pref_names,
                            PrefHashStore* origin_pref_hash_store,
                            base::DictionaryValue* origin_pref_store) {
-  DictionaryHashStoreContents dictionary_contents(origin_pref_store);
+  DictionaryHashStoreContents dictionary_contents(
+      origin_pref_store ? &origin_pref_store->GetDict() : nullptr);
   std::unique_ptr<PrefHashStoreTransaction> transaction(
       origin_pref_hash_store->BeginTransaction(&dictionary_contents));
   for (std::set<std::string>::const_iterator it = migrated_pref_names.begin();
@@ -141,9 +142,11 @@ void MigratePrefsFromOldToNewStore(const PrefNameSet& pref_names,
                                    PrefHashStore* new_hash_store,
                                    bool* old_store_needs_cleanup,
                                    bool* new_store_altered) {
-  const base::DictionaryValue* old_hash_store_contents =
-      DictionaryHashStoreContents(old_store).GetContents();
-  DictionaryHashStoreContents dictionary_contents(new_store);
+  const base::Value::Dict* old_hash_store_contents =
+      DictionaryHashStoreContents(old_store ? &old_store->GetDict() : nullptr)
+          .GetContents();
+  DictionaryHashStoreContents dictionary_contents(
+      new_store ? &new_store->GetDict() : nullptr);
   std::unique_ptr<PrefHashStoreTransaction> new_hash_store_transaction(
       new_hash_store->BeginTransaction(&dictionary_contents));
 
@@ -178,7 +181,7 @@ void MigratePrefsFromOldToNewStore(const PrefNameSet& pref_names,
     if (destination_hash_missing || migrated_value) {
       const base::Value* old_hash = nullptr;
       if (old_hash_store_contents)
-        old_hash = old_hash_store_contents->FindPath(pref_name);
+        old_hash = old_hash_store_contents->FindByDottedPath(pref_name);
       if (old_hash) {
         new_hash_store_transaction->ImportHash(pref_name, old_hash);
         *new_store_altered = true;

@@ -54,6 +54,9 @@ class PrefHashStoreImpl : public PrefHashStore {
  private:
   class PrefHashStoreTransactionImpl;
 
+  std::string ComputeMac(const std::string& path,
+                         const base::Value::Dict* new_dict);
+
   const PrefHashCalculator pref_hash_calculator_;
   bool use_super_mac_;
 };

@@ -100,21 +100,31 @@ bool VerifyDigestString(const std::string& key,
 // Renders |value| as a string. |value| may be NULL, in which case the result
 // is an empty string. This method can be expensive and its result should be
 // re-used rather than recomputed where possible.
+
+std::string ValueAsString(const base::Value::Dict* value) {
+  if (!value)
+    return std::string();
+
+  base::Value::Dict dict = value->Clone();
+  RemoveEmptyValueDictEntries(dict);
+
+  std::string value_as_string;
+  JSONStringValueSerializer serializer(&value_as_string);
+  serializer.Serialize(dict);
+
+  return value_as_string;
+}
+
 std::string ValueAsString(const base::Value* value) {
   if (!value)
     return std::string();
 
+  if (value->is_dict())
+    return ValueAsString(&value->GetDict());
+
   std::string value_as_string;
   JSONStringValueSerializer serializer(&value_as_string);
-  if (value->is_dict()) {
-    // Dictionary values may contain empty lists and sub-dictionaries. Make a
-    // deep copy with those removed to make the hash more stable.
-    base::Value::Dict dict = value->GetDict().Clone();
-    RemoveEmptyValueDictEntries(dict);
-    serializer.Serialize(dict);
-  } else {
-    serializer.Serialize(*value);
-  }
+  serializer.Serialize(*value);
 
   return value_as_string;
 }
@@ -147,11 +157,30 @@ std::string PrefHashCalculator::Calculate(const std::string& path,
                          GetMessage(device_id_, path, ValueAsString(value)));
 }
 
+std::string PrefHashCalculator::Calculate(const std::string& path,
+                                          const base::Value::Dict* dict) const {
+  return GetDigestString(seed_,
+                         GetMessage(device_id_, path, ValueAsString(dict)));
+}
+
 PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
     const std::string& path,
     const base::Value* value,
     const std::string& digest_string) const {
-  const std::string value_as_string(ValueAsString(value));
+  return Validate(path, ValueAsString(value), digest_string);
+}
+
+PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
+    const std::string& path,
+    const base::Value::Dict* dict,
+    const std::string& digest_string) const {
+  return Validate(path, ValueAsString(dict), digest_string);
+}
+
+PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
+    const std::string& path,
+    const std::string& value_as_string,
+    const std::string& digest_string) const {
   if (VerifyDigestString(seed_, GetMessage(device_id_, path, value_as_string),
                          digest_string)) {
     return VALID;

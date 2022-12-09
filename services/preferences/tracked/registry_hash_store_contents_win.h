@@ -50,7 +50,7 @@ class RegistryHashStoreContentsWin : public HashStoreContents {
   // Unsupported HashStoreContents overrides:
   void ImportEntry(const std::string& path,
                    const base::Value* in_value) override;
-  const base::DictionaryValue* GetContents() const override;
+  const base::Value::Dict* GetContents() const override;
   std::string GetSuperMac() const override;
   void SetSuperMac(const std::string& super_mac) override;
 

@@ -5,11 +5,9 @@
 #ifndef SERVICES_PREFERENCES_TRACKED_PREF_HASH_CALCULATOR_H_
 #define SERVICES_PREFERENCES_TRACKED_PREF_HASH_CALCULATOR_H_
 
-#include <string>
+#include "base/values.h"
 
-namespace base {
-class Value;
-}  // namespace base
+#include <string>
 
 // Calculates and validates preference value hashes.
 class PrefHashCalculator {
@@ -38,14 +36,23 @@ class PrefHashCalculator {
   // |value| may be null if the preference has no value.
   std::string Calculate(const std::string& path,
                         const base::Value* value) const;
+  std::string Calculate(const std::string& path,
+                        const base::Value::Dict* dict) const;
 
   // Validates the provided preference hash using current and legacy hashing
   // algorithms.
   ValidationResult Validate(const std::string& path,
                             const base::Value* value,
                             const std::string& hash) const;
+  ValidationResult Validate(const std::string& path,
+                            const base::Value::Dict* dict,
+                            const std::string& hash) const;
 
  private:
+  ValidationResult Validate(const std::string& path,
+                            const std::string& value_as_string,
+                            const std::string& hash) const;
+
   const std::string seed_;
   const std::string device_id_;
   const std::string legacy_device_id_;
