@@ -157,9 +157,9 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
     # upstream in LLVM but hasn't rolled into Chromium. Also see:
     # * https://github.com/rust-lang/rust/issues/92181
     # * https://reviews.llvm.org/D116528
-    RUSTENV['RUSTFLAGS_BOOTSTRAP'] = (
-        f'-Clinker={clang_path} -Clink-arg=-fuse-ld=lld '
-        f'-Clink-arg=-Wl,--no-gc-sections)')
+    RUSTENV['RUSTFLAGS_BOOTSTRAP'] = (f'-Clinker={clang_path} '
+                                      f'-Clink-arg=-fuse-ld=lld '
+                                      f'-Clink-arg=-Wl,--no-gc-sections')
     if gcc_toolchain_flag:
         RUSTENV['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={gcc_toolchain_flag} '
     if gcc_toolchain_path:
