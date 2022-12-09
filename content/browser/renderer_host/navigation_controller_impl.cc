@@ -2661,6 +2661,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
     scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
     bool is_form_submission,
     const absl::optional<blink::Impression>& impression,
+    blink::mojom::NavigationInitiatorActivationAndAdStatus
+        initiator_activation_and_ad_status,
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
@@ -2778,6 +2780,8 @@ void NavigationControllerImpl::NavigateFromFrameProxy(
   params.impression = impression;
   params.download_policy = std::move(download_policy);
   params.is_form_submission = is_form_submission;
+  params.initiator_activation_and_ad_status =
+      initiator_activation_and_ad_status;
 
   std::unique_ptr<NavigationRequest> request =
       CreateNavigationRequestFromLoadParams(
@@ -3760,6 +3764,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   DCHECK_EQ(is_view_source_mode, virtual_url.SchemeIs(kViewSourceScheme));
 
   blink::NavigationDownloadPolicy download_policy = params.download_policy;
+
   // Update |download_policy| if the virtual URL is view-source.
   if (is_view_source_mode)
     download_policy.SetDisallowed(blink::NavigationDownloadType::kViewSource);
@@ -3855,8 +3860,8 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
       params.initiator_process_id, extra_headers_crlf, frame_entry, entry,
       params.is_form_submission,
       params.navigation_ui_data ? params.navigation_ui_data->Clone() : nullptr,
-      params.impression, params.is_pdf,
-      is_embedder_initiated_fenced_frame_navigation);
+      params.impression, params.initiator_activation_and_ad_status,
+      params.is_pdf, is_embedder_initiated_fenced_frame_navigation);
   navigation_request->set_from_download_cross_origin_redirect(
       params.from_download_cross_origin_redirect);
   navigation_request->set_force_new_browsing_instance(
@@ -3983,6 +3988,8 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
       entry->extra_headers(), frame_entry, entry, is_form_submission,
       nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kDidNotStartWithTransientActivation,
       false /* is_pdf */);
 }
 

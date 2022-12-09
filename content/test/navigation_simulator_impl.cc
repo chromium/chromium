@@ -1320,7 +1320,9 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           nullptr /* trust_token_params */, impression_,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,
-          absl::nullopt /* web_bundle_token */);
+          absl::nullopt /* web_bundle_token */,
+          blink::mojom::NavigationInitiatorActivationAndAdStatus::
+              kDidNotStartWithTransientActivation);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_start = base::TimeTicks::Now();
   common_params->input_start = navigation_input_start_;

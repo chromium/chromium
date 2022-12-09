@@ -1,0 +1,28 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Provided by the renderer ----------------------------------------------------
+//
+// This enum represents the navigation initiator's user activation and ad
+// status. This is used by FrameHost::CreateNewWindow
+// FrameHost::BeginNavigation, FrameHost::OpenURL and RemoteFrameHost::OpenURL.
+// This enum will be propagated to the NavigationHandle without being filtered,
+// and should not be propagated to the committed document in the renderer (in
+// contrast to CommonNavigationParams::has_user_gesture, which is propagated to
+// the committed document in the renderer but may have been filtered out when
+// navigating from proxies).
+enum NavigationInitiatorActivationAndAdStatus {
+  // The navigation did not start with a transient user activation.
+  kDidNotStartWithTransientActivation,
+
+  // The navigation started with a transient user activation, and is not related
+  // to ad.
+  kStartedWithTransientActivationFromNonAd,
+
+  // The navigation started with a transient user activation, and is related to
+  // ad (i.e. from an ad iframe or has ad script in stack).
+  kStartedWithTransientActivationFromAd,
+};

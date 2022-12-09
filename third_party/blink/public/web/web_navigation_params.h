@@ -106,6 +106,10 @@ struct BLINK_EXPORT WebNavigationInfo {
   // Whether the navigation initiator frame is an ad frame.
   bool initiator_frame_is_ad = false;
 
+  // Whether there is ad script in stack when the navigation is initiated. Note
+  // that will also be true if the initiator frame is ad.
+  bool is_ad_script_in_stack = false;
+
   // Whether this is a navigation in the opener frame initiated
   // by the window.open'd frame.
   bool is_opener_navigation = false;

@@ -64,6 +64,7 @@
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/gurl.h"
@@ -251,6 +252,8 @@ class CONTENT_EXPORT NavigationRequest
       bool is_form_submission,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       const absl::optional<blink::Impression>& impression,
+      blink::mojom::NavigationInitiatorActivationAndAdStatus
+          initiator_activation_and_ad_status,
       bool is_pdf,
       bool is_embedder_initiated_fenced_frame_navigation = false);
 
@@ -336,6 +339,8 @@ class CONTENT_EXPORT NavigationRequest
   bool IsInFencedFrameTree() const override;
   FrameType GetNavigatingFrameType() const override;
   bool IsRendererInitiated() override;
+  blink::mojom::NavigationInitiatorActivationAndAdStatus
+  GetNavigationInitiatorActivationAndAdStatus() override;
   bool IsSameOrigin() override;
   bool WasServerRedirect() override;
   const std::vector<GURL>& GetRedirectChain() override;

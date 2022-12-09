@@ -95,7 +95,9 @@ class NavigationURLLoaderTest : public testing::Test {
             nullptr /* trust_token_params */, absl::nullopt /* impression */,
             base::TimeTicks() /* renderer_before_unload_start */,
             base::TimeTicks() /* renderer_before_unload_end */,
-            absl::nullopt /* web_bundle_token */);
+            absl::nullopt /* web_bundle_token */,
+            blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                kDidNotStartWithTransientActivation);
     auto common_params = blink::CreateCommonNavigationParams();
     common_params->url = url;
     common_params->initiator_origin = url::Origin::Create(url);

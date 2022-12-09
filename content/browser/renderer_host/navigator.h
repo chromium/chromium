@@ -19,6 +19,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
+#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -157,6 +158,8 @@ class CONTENT_EXPORT Navigator {
       bool has_user_gesture,
       bool is_form_submission,
       const absl::optional<blink::Impression>& impression,
+      blink::mojom::NavigationInitiatorActivationAndAdStatus
+          initiator_activation_and_ad_status,
       base::TimeTicks navigation_start_time,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_unfenced_top_navigation = false,

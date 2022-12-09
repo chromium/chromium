@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 
 namespace content {
 
@@ -273,6 +274,12 @@ void Portal::Navigate(const GURL& url,
   // TODO(crbug.com/1290239): Measure the start time in the renderer process.
   const auto navigation_start_time = base::TimeTicks::Now();
 
+  // TODO(yaoxia): figure out if we need to propagate this.
+  blink::mojom::NavigationInitiatorActivationAndAdStatus
+      initiator_activation_and_ad_status =
+          blink::mojom::NavigationInitiatorActivationAndAdStatus::
+              kDidNotStartWithTransientActivation;
+
   // TODO(https://crbug.com/1074422): It is possible for a portal to be
   // navigated by a frame other than the owning frame. Find a way to route the
   // correct initiator of the portal navigation to this call.
@@ -287,7 +294,8 @@ void Portal::Navigate(const GURL& url,
       should_replace_entry, download_policy, "GET", nullptr, "", nullptr,
       network::mojom::SourceLocation::New(), false,
       /*is_form_submission=*/false,
-      /*impression=*/absl::nullopt, navigation_start_time);
+      /*impression=*/absl::nullopt, initiator_activation_and_ad_status,
+      navigation_start_time);
 
   std::move(callback).Run();
 }

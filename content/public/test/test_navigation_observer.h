@@ -16,6 +16,7 @@
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -98,6 +99,12 @@ class TestNavigationObserver {
   // Returns true if the last finished navigation (that matched URL / net error
   // filters, if set) succeeded.
   bool last_navigation_succeeded() const { return last_navigation_succeeded_; }
+
+  // The last navigation initiator's user activation and ad status.
+  blink::mojom::NavigationInitiatorActivationAndAdStatus
+  last_navigation_initiator_activation_and_ad_status() const {
+    return last_navigation_initiator_activation_and_ad_status_;
+  }
 
   // Returns the initiator origin of the last finished navigation (that matched
   // URL / net error filters, if set).
@@ -239,6 +246,12 @@ class TestNavigationObserver {
 
   // True if the last navigation succeeded.
   bool last_navigation_succeeded_;
+
+  // The last navigation initiator's user activation and ad status.
+  blink::mojom::NavigationInitiatorActivationAndAdStatus
+      last_navigation_initiator_activation_and_ad_status_ =
+          blink::mojom::NavigationInitiatorActivationAndAdStatus::
+              kDidNotStartWithTransientActivation;
 
   // True if we have called EventTriggered following wait. This is used for
   // internal checks-- we expect certain conditions to be valid until we call

@@ -213,6 +213,7 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   bool is_opener_navigation = false;
   bool initiator_frame_has_download_sandbox_flag = false;
   bool initiator_frame_is_ad = false;
+  bool is_ad_script_in_stack = false;
 
   absl::optional<LocalFrameToken> initiator_frame_token =
       base::OptionalFromPtr(frame_request.GetInitiatorFrameToken());
@@ -230,6 +231,8 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
   if (window->GetFrame()) {
     is_opener_navigation = window->GetFrame()->Opener() == this;
     initiator_frame_is_ad = window->GetFrame()->IsAdFrame();
+    is_ad_script_in_stack = window->GetFrame()->IsAdScriptInStack();
+
     if (frame_request.ClientRedirectReason() != ClientNavigationReason::kNone) {
       probe::FrameRequestedNavigation(window->GetFrame(), this, url,
                                       frame_request.ClientRedirectReason(),
@@ -295,6 +298,10 @@ void RemoteFrame::Navigate(FrameLoadRequest& frame_request,
           GetSecurityContext()->GetSecurityOrigin()),
       initiator_frame_has_download_sandbox_flag,
       initiator_frame_is_ad);
+
+  params->initiator_activation_and_ad_status =
+      GetNavigationInitiatorActivationAndAdStatus(request.HasUserGesture(),
+                                                  is_ad_script_in_stack);
 
   GetRemoteFrameHostRemote().OpenURL(std::move(params));
 }

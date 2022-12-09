@@ -4330,6 +4330,8 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
       network::mojom::SourceLocation::New(), nullptr,
       false /*is_form_submission*/, absl::nullopt,
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kDidNotStartWithTransientActivation,
       base::TimeTicks::Now() /* navigation_start_time */);
 
   // Clean up the handler.
@@ -4371,6 +4373,8 @@ TEST_F(NavigationControllerTest,
       should_replace_current_entry, blink::NavigationDownloadPolicy(), "GET",
       nullptr, "", network::mojom::SourceLocation::New(), nullptr,
       false /*is_form_submission*/, absl::nullopt,
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kDidNotStartWithTransientActivation,
       base::TimeTicks::Now() /* navigation_start_time */);
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
@@ -4704,6 +4708,8 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
       blink::NavigationDownloadPolicy(), "GET", nullptr, "",
       network::mojom::SourceLocation::New(), nullptr,
       false /*is_form_submission*/, absl::nullopt,
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kDidNotStartWithTransientActivation,
       base::TimeTicks::Now() /* navigation_start_time */);
 
   NavigationRequest* request =

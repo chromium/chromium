@@ -35,8 +35,12 @@ function createAdFramePromise(url, name, sbox_attr) {
   });
 }
 
-function windowOpenFromAdScript() {
-  window.open();
+function windowOpenFromAdScript(url) {
+  window.open(url);
+}
+
+function navigateIframeFromAdScript(name, url) {
+  document.getElementsByName(name)[0].src = url;
 }
 
 async function createDocWrittenAdFrame(name, base_url) {

@@ -604,6 +604,7 @@ void LocalFrameClientImpl::BeginNavigation(
         origin_window->IsSandboxed(
             network::mojom::blink::WebSandboxFlags::kDownloads);
     navigation_info->initiator_frame_is_ad = frame->IsAdFrame();
+    navigation_info->is_ad_script_in_stack = frame->IsAdScriptInStack();
   }
 
   // The frame has navigated either by itself or by the action of the

@@ -29,6 +29,7 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -300,6 +301,12 @@ class NavigationController {
 
     // Download policy to be applied if this navigation turns into a download.
     blink::NavigationDownloadPolicy download_policy;
+
+    // Common begin navigation status.
+    blink::mojom::NavigationInitiatorActivationAndAdStatus
+        initiator_activation_and_ad_status =
+            blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                kDidNotStartWithTransientActivation;
 
     // Indicates that this navigation is for PDF content in a renderer.
     bool is_pdf = false;

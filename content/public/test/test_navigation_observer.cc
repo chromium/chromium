@@ -274,6 +274,8 @@ void TestNavigationObserver::OnDidFinishNavigation(
   last_initiator_process_id_ = navigation_handle->GetInitiatorProcessID();
   last_navigation_succeeded_ =
       navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage();
+  last_navigation_initiator_activation_and_ad_status_ =
+      navigation_handle->GetNavigationInitiatorActivationAndAdStatus();
   last_net_error_code_ = navigation_handle->GetNetErrorCode();
   last_nav_entry_id_ =
       NavigationRequest::From(navigation_handle)->nav_entry_id();

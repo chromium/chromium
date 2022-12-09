@@ -1092,8 +1092,10 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
       frame_tree_node, std::move(common_params), std::move(commit_params),
       /*browser_initiated=*/true, was_opener_suppressed, initiator_frame_token,
       initiator_process_id, extra_headers, frame_entry, entry,
-      is_form_submission, std::move(navigation_ui_data), impression, is_pdf,
-      is_embedder_initiated_fenced_frame_navigation);
+      is_form_submission, std::move(navigation_ui_data), impression,
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kDidNotStartWithTransientActivation,
+      is_pdf, is_embedder_initiated_fenced_frame_navigation);
 }
 
 // static
@@ -1111,6 +1113,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     bool is_form_submission,
     std::unique_ptr<NavigationUIData> navigation_ui_data,
     const absl::optional<blink::Impression>& impression,
+    blink::mojom::NavigationInitiatorActivationAndAdStatus
+        initiator_activation_and_ad_status,
     bool is_pdf,
     bool is_embedder_initiated_fenced_frame_navigation) {
   TRACE_EVENT1("navigation", "NavigationRequest::Create", "browser_initiated",
@@ -1141,7 +1145,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       nullptr /* trust_token_params */, impression,
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
-      std::move(web_bundle_token_params));
+      std::move(web_bundle_token_params), initiator_activation_and_ad_status);
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
@@ -7184,6 +7188,11 @@ SiteInstanceImpl* NavigationRequest::GetSourceSiteInstance() {
 
 bool NavigationRequest::IsRendererInitiated() {
   return !commit_params_->is_browser_initiated;
+}
+
+blink::mojom::NavigationInitiatorActivationAndAdStatus
+NavigationRequest::GetNavigationInitiatorActivationAndAdStatus() {
+  return begin_params_->initiator_activation_and_ad_status;
 }
 
 bool NavigationRequest::IsSameOrigin() {

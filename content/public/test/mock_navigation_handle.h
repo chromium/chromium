@@ -66,6 +66,11 @@ class MockNavigationHandle : public NavigationHandle {
   }
   // By default, MockNavigationHandles are renderer-initiated navigations.
   bool IsRendererInitiated() override { return is_renderer_initiated_; }
+  blink::mojom::NavigationInitiatorActivationAndAdStatus
+  GetNavigationInitiatorActivationAndAdStatus() override {
+    return blink::mojom::NavigationInitiatorActivationAndAdStatus::
+        kDidNotStartWithTransientActivation;
+  }
   bool IsSameOrigin() override {
     NOTIMPLEMENTED();
     return false;

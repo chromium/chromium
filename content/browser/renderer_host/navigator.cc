@@ -881,6 +881,8 @@ void Navigator::NavigateFromFrameProxy(
     bool has_user_gesture,
     bool is_form_submission,
     const absl::optional<blink::Impression>& impression,
+    blink::mojom::NavigationInitiatorActivationAndAdStatus
+        initiator_activation_and_ad_status,
     base::TimeTicks navigation_start_time,
     bool is_embedder_initiated_fenced_frame_navigation,
     bool is_unfenced_top_navigation,
@@ -926,9 +928,9 @@ void Navigator::NavigateFromFrameProxy(
       referrer_to_use, page_transition, should_replace_current_entry,
       download_policy, method, post_body, extra_headers,
       std::move(source_location), std::move(blob_url_loader_factory),
-      is_form_submission, impression, navigation_start_time,
-      is_embedder_initiated_fenced_frame_navigation, is_unfenced_top_navigation,
-      force_new_browsing_instance);
+      is_form_submission, impression, initiator_activation_and_ad_status,
+      navigation_start_time, is_embedder_initiated_fenced_frame_navigation,
+      is_unfenced_top_navigation, force_new_browsing_instance);
 }
 
 void Navigator::BeforeUnloadCompleted(FrameTreeNode* frame_tree_node,

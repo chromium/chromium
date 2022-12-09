@@ -1022,6 +1022,267 @@ INSTANTIATE_TEST_SUITE_P(
                           NavigationInitiationType::kAnchorLinkActivate),
         ::testing::Bool()));
 
+class AdClickNavigationHandleStatusBrowserTest : public AdTaggingBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Popups without user gesture is blocked by default. Turn off the switch
+    // here so as to test more variations of the landing page's status.
+    command_line->AppendSwitch(embedder_support::kDisablePopupBlocking);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+                       BrowserInitiated) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+
+  content::TestNavigationObserver navigation_observer(web_contents());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  EXPECT_EQ(
+      navigation_observer.last_navigation_initiator_activation_and_ad_status(),
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kDidNotStartWithTransientActivation);
+}
+
+IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest, WindowOpen) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  GURL popup_url =
+      embedded_test_server()->GetURL("c.com", "/ad_tagging/frame_factory.html");
+
+  // Popup from ad script without gesture
+  {
+    browser()->tab_strip_model()->MoveSelectedTabsTo(0);
+
+    content::WebContentsAddedObserver observer;
+    content::ExecuteScriptAsyncWithoutUserGesture(
+        GetWebContents()->GetPrimaryMainFrame(),
+        content::JsReplace("windowOpenFromAdScript($1)", popup_url));
+
+    content::WebContents* new_web_contents = observer.GetWebContents();
+    content::TestNavigationObserver navigation_observer(new_web_contents);
+    navigation_observer.Wait();
+
+    ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kDidNotStartWithTransientActivation);
+  }
+
+  // Popup from non-ad script with gesture
+  {
+    browser()->tab_strip_model()->MoveSelectedTabsTo(0);
+
+    content::WebContentsAddedObserver observer;
+    content::ExecuteScriptAsync(
+        GetWebContents()->GetPrimaryMainFrame(),
+        content::JsReplace("window.open($1)", popup_url));
+
+    content::WebContents* new_web_contents = observer.GetWebContents();
+    content::TestNavigationObserver navigation_observer(new_web_contents);
+    navigation_observer.Wait();
+
+    ASSERT_EQ(3, browser()->tab_strip_model()->count());
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kStartedWithTransientActivationFromNonAd);
+  }
+
+  // Popup from ad script with gesture
+  {
+    browser()->tab_strip_model()->MoveSelectedTabsTo(0);
+
+    content::WebContentsAddedObserver observer;
+    content::ExecuteScriptAsync(
+        GetWebContents()->GetPrimaryMainFrame(),
+        content::JsReplace("windowOpenFromAdScript($1)", popup_url));
+
+    content::WebContents* new_web_contents = observer.GetWebContents();
+    content::TestNavigationObserver navigation_observer(new_web_contents);
+    navigation_observer.Wait();
+
+    ASSERT_EQ(4, browser()->tab_strip_model()->count());
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kStartedWithTransientActivationFromAd);
+  }
+
+  RenderFrameHost* child =
+      CreateSrcFrame(GetWebContents(),
+                     embedded_test_server()->GetURL(
+                         "b.com", "/ad_tagging/frame_factory.html?1&ad=true"));
+
+  // Popup from ad iframe without gesture
+  {
+    browser()->tab_strip_model()->MoveSelectedTabsTo(0);
+
+    content::WebContentsAddedObserver observer;
+    content::ExecuteScriptAsyncWithoutUserGesture(
+        child, content::JsReplace("window.open($1)", popup_url));
+
+    content::WebContents* new_web_contents = observer.GetWebContents();
+    content::TestNavigationObserver navigation_observer(new_web_contents);
+    navigation_observer.Wait();
+
+    ASSERT_EQ(5, browser()->tab_strip_model()->count());
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kDidNotStartWithTransientActivation);
+  }
+
+  // Popup from ad iframe with gesture
+  {
+    browser()->tab_strip_model()->MoveSelectedTabsTo(0);
+
+    content::WebContentsAddedObserver observer;
+    content::ExecuteScriptAsync(
+        child, content::JsReplace("window.open($1)", popup_url));
+
+    content::WebContents* new_web_contents = observer.GetWebContents();
+    content::TestNavigationObserver navigation_observer(new_web_contents);
+    navigation_observer.Wait();
+
+    ASSERT_EQ(6, browser()->tab_strip_model()->count());
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kStartedWithTransientActivationFromAd);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+                       SetTopLocationFromCrossOriginAdIframe) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  RenderFrameHost* child =
+      CreateSrcFrame(GetWebContents(),
+                     embedded_test_server()->GetURL(
+                         "b.com", "/ad_tagging/frame_factory.html?1&ad=true"));
+
+  GURL new_url =
+      embedded_test_server()->GetURL("c.com", "/ad_tagging/frame_factory.html");
+
+  content::TestNavigationObserver navigation_observer(web_contents());
+  EXPECT_TRUE(
+      content::ExecJs(child, content::JsReplace("top.location = $1", new_url)));
+  navigation_observer.Wait();
+
+  EXPECT_EQ(
+      navigation_observer.last_navigation_initiator_activation_and_ad_status(),
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kStartedWithTransientActivationFromAd);
+}
+
+IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+                       SetTopLocationFromCrossOriginNonAdIframe) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  RenderFrameHost* child = CreateSrcFrame(
+      GetWebContents(), embedded_test_server()->GetURL(
+                            "b.com", "/ad_tagging/frame_factory.html"));
+
+  GURL new_url =
+      embedded_test_server()->GetURL("c.com", "/ad_tagging/frame_factory.html");
+
+  content::TestNavigationObserver navigation_observer(web_contents());
+  EXPECT_TRUE(
+      content::ExecJs(child, content::JsReplace("top.location = $1", new_url)));
+  navigation_observer.Wait();
+
+  EXPECT_EQ(
+      navigation_observer.last_navigation_initiator_activation_and_ad_status(),
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kStartedWithTransientActivationFromNonAd);
+}
+
+IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+                       NavigateCrossOriginIframeFromNonAdScript) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  {
+    content::TestNavigationObserver navigation_observer(web_contents(), 1);
+    CreateSrcFrame(GetWebContents(),
+                   embedded_test_server()->GetURL(
+                       "b.com", "/ad_tagging/frame_factory.html?1&ad=true"));
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kStartedWithTransientActivationFromNonAd);
+  }
+
+  {
+    GURL new_url = embedded_test_server()->GetURL(
+        "c.com", "/ad_tagging/frame_factory.html");
+
+    content::TestNavigationObserver navigation_observer(GetWebContents(), 1);
+    EXPECT_TRUE(content::ExecJs(
+        GetWebContents()->GetPrimaryMainFrame(),
+        content::JsReplace("document.getElementsByName('frame_0')[0].src = $1",
+                           new_url)));
+    navigation_observer.Wait();
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kStartedWithTransientActivationFromNonAd);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+                       NavigateCrossOriginIframeFromAdScript) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  {
+    content::TestNavigationObserver navigation_observer(GetWebContents(), 1);
+    CreateSrcFrame(GetWebContents(),
+                   embedded_test_server()->GetURL(
+                       "b.com", "/ad_tagging/frame_factory.html?1&ad=true"));
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kStartedWithTransientActivationFromNonAd);
+  }
+
+  {
+    GURL new_url = embedded_test_server()->GetURL(
+        "c.com", "/ad_tagging/frame_factory.html");
+
+    content::TestNavigationObserver navigation_observer(GetWebContents(), 1);
+    EXPECT_TRUE(content::ExecJs(
+        GetWebContents()->GetPrimaryMainFrame(),
+        content::JsReplace("navigateIframeFromAdScript('frame_0', $1)",
+                           new_url)));
+    navigation_observer.Wait();
+
+    EXPECT_EQ(navigation_observer
+                  .last_navigation_initiator_activation_and_ad_status(),
+              blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                  kStartedWithTransientActivationFromAd);
+  }
+}
+
 class AdTaggingEventFromSubframeBrowserTest
     : public AdTaggingBrowserTest,
       public ::testing::WithParamInterface<
@@ -1365,6 +1626,115 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
     EXPECT_TRUE(EvaluatedChildFrameLoad(kNotAdUrl));
     EXPECT_FALSE(IsAdFrame(inner_frame));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
+                       AdClickNavigationHandleStatus_PopupFromAdFencedFrame) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL("frame_factory.html?primary")));
+
+  const GURL kOuterUrl = GetURL("frame_factory.html?fencedframe&ad=true");
+  RenderFrameHost* fenced_frame =
+      CreateFencedFrame(PrimaryMainFrame(), kOuterUrl);
+
+  ASSERT_TRUE(EvaluatedChildFrameLoad(kOuterUrl));
+  ASSERT_TRUE(IsAdFrame(fenced_frame));
+
+  GURL new_url = GetURL("frame_factory.html?primary123");
+
+  content::WebContentsAddedObserver observer;
+  content::ExecuteScriptAsync(fenced_frame,
+                              content::JsReplace("window.open($1)", new_url));
+
+  content::WebContents* new_web_contents = observer.GetWebContents();
+  content::TestNavigationObserver navigation_observer(new_web_contents);
+  navigation_observer.Wait();
+
+  EXPECT_EQ(
+      navigation_observer.last_navigation_initiator_activation_and_ad_status(),
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kStartedWithTransientActivationFromAd);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AdTaggingFencedFrameBrowserTest,
+    AdClickNavigationHandleStatus_PopupFromNonAdFencedFrame) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL("frame_factory.html?primary")));
+
+  const GURL kOuterUrl = GetURL("frame_factory.html?fencedframe");
+  RenderFrameHost* fenced_frame =
+      CreateFencedFrame(PrimaryMainFrame(), kOuterUrl);
+
+  ASSERT_TRUE(EvaluatedChildFrameLoad(kOuterUrl));
+  ASSERT_FALSE(IsAdFrame(fenced_frame));
+
+  GURL new_url = GetURL("frame_factory.html?primary");
+
+  content::WebContentsAddedObserver observer;
+  content::ExecuteScriptAsync(fenced_frame,
+                              content::JsReplace("window.open($1)", new_url));
+
+  content::WebContents* new_web_contents = observer.GetWebContents();
+  content::TestNavigationObserver navigation_observer(new_web_contents);
+  navigation_observer.Wait();
+
+  EXPECT_EQ(
+      navigation_observer.last_navigation_initiator_activation_and_ad_status(),
+      blink::mojom::NavigationInitiatorActivationAndAdStatus::
+          kStartedWithTransientActivationFromNonAd);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AdTaggingFencedFrameBrowserTest,
+    AdClickNavigationHandleStatus_TopNavigationFromOpaqueModeAdFencedFrame) {
+  GURL main_url = GetURL("frame_factory.html?primary");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  const GURL kOuterUrl = GetURL("frame_factory.html?fencedframe&ad=true");
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          PrimaryMainFrame(), kOuterUrl, net::OK,
+          blink::mojom::FencedFrameMode::kOpaqueAds);
+
+  GURL new_url = GetURL("frame_factory.html?primary");
+
+  content::TestNavigationObserver top_navigation_observer(web_contents());
+  EXPECT_TRUE(
+      ExecJs(fenced_frame,
+             content::JsReplace("window.open($1, '_unfencedTop')", new_url)));
+  top_navigation_observer.Wait();
+
+  EXPECT_EQ(top_navigation_observer
+                .last_navigation_initiator_activation_and_ad_status(),
+            blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                kStartedWithTransientActivationFromAd);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AdTaggingFencedFrameBrowserTest,
+    AdClickNavigationHandleStatus_TopNavigationFromOpaqueModeNonAdFencedFrame) {
+  GURL main_url = GetURL("frame_factory.html?primary");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  const GURL kOuterUrl = GetURL("frame_factory.html?fencedframe");
+  content::RenderFrameHost* fenced_frame =
+      fenced_frame_test_helper().CreateFencedFrame(
+          PrimaryMainFrame(), kOuterUrl, net::OK,
+          blink::mojom::FencedFrameMode::kOpaqueAds);
+
+  GURL new_url = GetURL("frame_factory.html?primary");
+
+  content::TestNavigationObserver top_navigation_observer(web_contents());
+  EXPECT_TRUE(
+      ExecJs(fenced_frame,
+             content::JsReplace("window.open($1, '_unfencedTop')", new_url)));
+  top_navigation_observer.Wait();
+
+  EXPECT_EQ(top_navigation_observer
+                .last_navigation_initiator_activation_and_ad_status(),
+            blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                kStartedWithTransientActivationFromNonAd);
 }
 
 }  // namespace

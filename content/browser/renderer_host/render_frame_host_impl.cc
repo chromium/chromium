@@ -7110,7 +7110,8 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
         /*post_body=*/nullptr, params->extra_headers,
         /*blob_url_loader_factory=*/nullptr,
         network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
-        params->is_form_submission, params->impression, base::TimeTicks::Now(),
+        params->is_form_submission, params->impression,
+        params->initiator_activation_and_ad_status, base::TimeTicks::Now(),
         /*is_embedder_initiated_fenced_frame_navigation=*/false,
         /*is_unfenced_top_navigation=*/true,
         /*force_new_browsing_instance=*/true);

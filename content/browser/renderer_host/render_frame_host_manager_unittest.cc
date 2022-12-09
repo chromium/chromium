@@ -435,6 +435,8 @@ class RenderFrameHostManagerTest
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
             entry->extra_headers(), frame_entry, entry, is_form_submission,
             nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+            blink::mojom::NavigationInitiatorActivationAndAdStatus::
+                kDidNotStartWithTransientActivation,
             false /* is_pdf */);
 
     // Simulates request creation that triggers the 1st internal call to

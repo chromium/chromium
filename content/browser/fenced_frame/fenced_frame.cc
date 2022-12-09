@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
+#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -108,6 +109,14 @@ void FencedFrame::Navigate(const GURL& url,
   // need to provide a `source_site_instance`.
   url::Origin initiator_origin;
 
+  // TODO(yaoxia): implement this. This information will be propagated to the
+  // `NavigationHandle`. Skip propagating here is fine for now, because we are
+  // currently only interested navigation that occurs in the outermost RFH.
+  blink::mojom::NavigationInitiatorActivationAndAdStatus
+      initiator_activation_and_ad_status =
+          blink::mojom::NavigationInitiatorActivationAndAdStatus::
+              kDidNotStartWithTransientActivation;
+
   inner_root->navigator().NavigateFromFrameProxy(
       inner_root->current_frame_host(), validated_url,
       /*initiator_frame_token=*/nullptr,
@@ -119,7 +128,8 @@ void FencedFrame::Navigate(const GURL& url,
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
       /*is_form_submission=*/false,
-      /*impression=*/absl::nullopt, navigation_start_time,
+      /*impression=*/absl::nullopt, initiator_activation_and_ad_status,
+      navigation_start_time,
       /*is_embedder_initiated_fenced_frame_navigation=*/true);
 }
 

@@ -5497,6 +5497,11 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
       info->url_request.RequestorOrigin().CanAccess(
           frame_->GetSecurityOrigin()),
       has_download_sandbox_flag, from_ad);
+
+  params->initiator_activation_and_ad_status =
+      blink::GetNavigationInitiatorActivationAndAdStatus(
+          info->url_request.HasUserGesture(), info->is_ad_script_in_stack);
+
   GetFrameHost()->OpenURL(std::move(params));
 }
 
@@ -5765,6 +5770,11 @@ void RenderFrameImpl::BeginNavigationInternal(
             -1 /* render_process_id, to be filled in the browser process */));
   }
 
+  blink::mojom::NavigationInitiatorActivationAndAdStatus
+      initiator_activation_and_ad_status =
+          blink::GetNavigationInitiatorActivationAndAdStatus(
+              info->url_request.HasUserGesture(), info->is_ad_script_in_stack);
+
   blink::mojom::BeginNavigationParamsPtr begin_navigation_params =
       blink::mojom::BeginNavigationParams::New(
           info->initiator_frame_token,
@@ -5779,7 +5789,8 @@ void RenderFrameImpl::BeginNavigationInternal(
               ? info->url_request.TrustTokenParams()->Clone()
               : nullptr,
           info->impression, renderer_before_unload_start,
-          renderer_before_unload_end, web_bundle_token_params);
+          renderer_before_unload_end, web_bundle_token_params,
+          initiator_activation_and_ad_status);
 
   mojo::PendingAssociatedRemote<mojom::NavigationClient>
       navigation_client_remote;
@@ -6263,6 +6274,10 @@ WebView* RenderFrameImpl::CreateNewWindow(
       // so its value here is irrelevant.
       /*openee_can_access_opener_origin=*/true,
       !GetWebFrame()->IsAllowedToDownload(), GetWebFrame()->IsAdFrame());
+
+  params->initiator_activation_and_ad_status =
+      blink::GetNavigationInitiatorActivationAndAdStatus(
+          request.HasUserGesture(), GetWebFrame()->IsAdScriptInStack());
 
   // We preserve this information before sending the message since |params| is
   // moved on send.

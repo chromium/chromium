@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -706,7 +707,8 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
       params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
-      params->is_form_submission, params->impression, navigation_start_time);
+      params->is_form_submission, params->impression,
+      params->initiator_activation_and_ad_status, navigation_start_time);
 }
 
 void RenderFrameProxyHost::UpdateViewportIntersection(
