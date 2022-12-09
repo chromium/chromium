@@ -477,4 +477,22 @@ TEST_F(UserPerformanceTuningManagerTest, HasBatteryChanged) {
   EXPECT_FALSE(manager()->DeviceHasBattery());
 }
 
+TEST_F(UserPerformanceTuningManagerTest,
+       BatteryPercentageWithoutFullChargedCapacity) {
+  local_state_.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabledBelowThreshold));
+  StartManager();
+
+  battery_level_provider_->SetBatteryState(
+      base::BatteryLevelProvider::BatteryState({
+          .battery_count = 0,
+          .current_capacity = 100,
+          .full_charged_capacity = 0,
+      }));
+  sampling_source_->SimulateEvent();
+  EXPECT_EQ(100, manager()->SampledBatteryPercentage());
+}
+
 }  // namespace performance_manager::user_tuning

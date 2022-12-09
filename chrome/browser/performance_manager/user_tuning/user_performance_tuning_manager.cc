@@ -370,8 +370,10 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
     return;
   }
 
-  battery_percentage_ = *(battery_state->current_capacity) * 100 /
-                        *(battery_state->full_charged_capacity);
+  battery_percentage_ = *(battery_state->full_charged_capacity) > 0
+                            ? *(battery_state->current_capacity) * 100 /
+                                  *(battery_state->full_charged_capacity)
+                            : 100;
 
   bool was_below_threshold = is_below_low_battery_threshold_;
 
