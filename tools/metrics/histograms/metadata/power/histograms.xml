@@ -22,6 +22,21 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="BatteryCapacityType">
+<!--
+    Variants describing the type of battery capacity.
+  -->
+
+  <variant name="Actual"
+      summary="Actual capacity of the battery pack. This is usually a few
+               percentage over the design capacity for a new battery and
+               gradully degrade to 80-90% over the course of 2-4 years."/>
+  <variant name="Design"
+      summary="The design capacity of the battery pack from the manufacturer.
+               This is used to calculated promised battery life claim when
+               the device is released."/>
+</variants>
+
 <variants name="IntervalType">
 <!--
     Variants describing if the histogram contains all samples, only the first
@@ -794,6 +809,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Power.BatteryCapacity.{BatteryCapacityType}" units="mWh"
+    expires_after="2023-05-12">
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Chrome OS {BatteryCapacityType} battery capacity in milliwatt-hours.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryChargeHealth" units="%"
     expires_after="2023-05-13">
   <owner>puthik@chromium.org</owner>
@@ -989,6 +1013,33 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts the number of times we have read the battery status from sysfs and if
     it gave us sensible values. Chrome OS only.
+  </summary>
+</histogram>
+
+<histogram name="Power.BatteryLife.{BatteryCapacityType}" units="minute"
+    expires_after="2023-05-12">
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Chrome OS battery life while in active state, measured in minutes using
+    {BatteryCapacityType} full capacity of the battery pack.
+
+    This is calculated using size of the battery divide by battery discharge
+    rate sampling in Power.BatteryDischargeRate. Note that the size of the
+    battery is derated by the low battery shutdown percent.
+  </summary>
+</histogram>
+
+<histogram name="Power.BatteryLifeWhileSuspended.{BatteryCapacityType}"
+    units="hour" expires_after="2023-05-12">
+  <owner>puthik@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <summary>
+    Chrome OS battery life while suspended, measured in hours using
+    {BatteryCapacityType} full capacity of the battery pack.
+
+    This is calculated using size of the battery divide by battery discharge
+    rate sampling in Power.BatteryDischargeRateWhileSuspended.
   </summary>
 </histogram>
 
