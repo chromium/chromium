@@ -2318,6 +2318,16 @@
     "expiry_milestone": 118
   },
   {
+    "name": "enable-feed-bottom-sign-in-promo",
+    "owners": [ "sczs", "tinazwang" ],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "enable-feed-card-menu-sign-in-promo",
+    "owners": [ "sczs", "tinazwang" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-feed-position-on-ntp",
     "owners": ["clank-start","hanxi"],
     "expiry_milestone": 120

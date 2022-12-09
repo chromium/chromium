@@ -32,6 +32,14 @@ BASE_FEATURE(kEnableGoodVisitsMetric,
              "EnableGoodVisitsMetric",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableFeedBottomSignInPromo,
+             "EnableFeedBottomSignInPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableFeedCardMenuSignInPromo,
+             "EnableFeedCardMenuSignInPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh. This is used because registering for
 // background refreshes must happen early in app initialization and FeatureList
@@ -165,4 +173,12 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFeedBackgroundRefresh, kBackgroundRefreshMaxAgeInSeconds,
       /*default=*/0);
+}
+
+bool IsFeedBottomSignInPromoEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedBottomSignInPromo);
+}
+
+bool IsFeedCardMenuSignInPromoEnabled() {
+  return base::FeatureList::IsEnabled(kEnableFeedCardMenuSignInPromo);
 }

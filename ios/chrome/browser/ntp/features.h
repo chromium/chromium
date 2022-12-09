@@ -17,6 +17,18 @@ BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
 // Use IsWebChannelsEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableWebChannels);
 
+// Feature flag to enable Feed bottom sign-in promo feature, which displays a
+// sign-in promotion card at the bottom of the Discover Feed for signed out
+// users. Use IsFeedBottomSignInPromoEnabled() instead of this constant
+// directly.
+BASE_DECLARE_FEATURE(kEnableFeedBottomSignInPromo);
+
+// Feature flag to enable Feed card menu promo feature, which displays a sign-in
+// promotion UI when signed out users click on personalization options within
+// the feed card menu.
+// Use IsFeedCardMenuSignInPromoEnabled() instead of this constant directly.
+BASE_DECLARE_FEATURE(kEnableFeedCardMenuSignInPromo);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
@@ -95,5 +107,11 @@ double GetBackgroundRefreshIntervalInSeconds();
 
 // Returns the background refresh max age in seconds.
 double GetBackgroundRefreshMaxAgeInSeconds();
+
+// YES if enabled Feed bottom sign-in promo.
+bool IsFeedBottomSignInPromoEnabled();
+
+// YES if enabled Feed card menu promo.
+bool IsFeedCardMenuSignInPromoEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

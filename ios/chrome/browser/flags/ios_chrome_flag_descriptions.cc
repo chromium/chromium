@@ -277,6 +277,18 @@ const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =
     "If Enabled the Feed will be removed from the NTP";
 
+const char kEnableFeedBottomSignInPromoName[] =
+    "Enable Feed bottom sign-in promotion";
+const char kEnableFeedBottomSignInPromoDescription[] =
+    "Display a sign-in promotion card at the bottom of the Discover Feed for "
+    "signed out users.";
+
+const char kEnableFeedCardMenuSignInPromoName[] =
+    "Enable Feed card menu sign-in promotion";
+const char kEnableFeedCardMenuSignInPromoDescription[] =
+    "Display a sign-in promotion UI when signed out users click on "
+    "personalization options within the feed card menu.";
+
 const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
     "Enable the Fullscreen API for web content (iOS 16.0+).";

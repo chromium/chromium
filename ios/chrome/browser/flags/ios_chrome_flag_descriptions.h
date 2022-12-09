@@ -202,6 +202,16 @@ extern const char kEnableCompromisedPasswordsMutingDescription[];
 extern const char kEnableDiscoverFeedTopSyncPromoName[];
 extern const char kEnableDiscoverFeedTopSyncPromoDescription[];
 
+// Title and description for the flag to enable the sign-in promotion at the
+// bottom of the discover feed.
+extern const char kEnableFeedBottomSignInPromoName[];
+extern const char kEnableFeedBottomSignInPromoDescription[];
+
+// Title and description for the flag to enable the sign-in promotion triggered
+// by the discover feed card menu.
+extern const char kEnableFeedCardMenuSignInPromoName[];
+extern const char kEnableFeedCardMenuSignInPromoDescription[];
+
 // Title and description for the flag to enable DMToken deletion.
 extern const char kDmTokenDeletionName[];
 extern const char kDmTokenDeletionDescription[];
