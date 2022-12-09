@@ -80,6 +80,10 @@ const URLRow* TestHistoryBackendForSync::FindURLRow(const GURL& url) const {
   return nullptr;
 }
 
+bool TestHistoryBackendForSync::CanAddURL(const GURL& url) const {
+  return true;
+}
+
 bool TestHistoryBackendForSync::IsExpiredVisitTime(
     const base::Time& time) const {
   return time < base::Time::Now() - kExpiryThreshold;

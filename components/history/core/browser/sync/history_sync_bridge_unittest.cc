@@ -483,6 +483,24 @@ TEST_F(HistorySyncBridgeTest, MergesRemoteChanges) {
   EXPECT_EQ(backend()->GetVisits()[0].visit_duration, base::Microseconds(1000));
 }
 
+TEST_F(HistorySyncBridgeTest, DoesNotApplyUnsyncableRemoteChanges) {
+  // Add some "unsyncable" URLs on the server:
+  // file:// URLs don't make sense to sync.
+  sync_pb::HistorySpecifics remote_entity1 =
+      CreateSpecifics(base::Time::Now() - base::Minutes(2), "remote_cache_guid",
+                      GURL("file:///path/to/file"));
+  // "data://" URLs can be arbitrarily large, and thus shouldn't be synced.
+  sync_pb::HistorySpecifics remote_entity2 =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      GURL("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="));
+
+  ApplyInitialSyncChanges({remote_entity1, remote_entity2});
+
+  // Since all remote URLs were invalid, they should not have been added to the
+  // backend.
+  EXPECT_TRUE(backend()->GetURLs().empty());
+}
+
 TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
   const GURL local_url("https://local.com");
   const GURL remote_url("https://remote.com");

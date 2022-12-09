@@ -569,6 +569,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       scoped_refptr<base::SequencedTaskRunner> origin_loop,
       const base::CancelableTaskTracker::IsCanceledCallback& is_canceled);
 
+  bool CanAddURL(const GURL& url) const override;
+
   bool GetAllTypedURLs(URLRows* urls);
 
   bool GetVisitsForURL(URLID id, VisitVector* visits);

@@ -38,6 +38,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   const URLRow* FindURLRow(const GURL& url) const;
 
   // HistoryBackendForSync implementation.
+  bool CanAddURL(const GURL& url) const override;
   bool IsExpiredVisitTime(const base::Time& time) const override;
   bool GetURLByID(URLID url_id, URLRow* url_row) override;
   bool GetVisitByID(VisitID visit_id, VisitRow* visit_row) override;

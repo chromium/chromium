@@ -402,13 +402,31 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   return entity_data;
 }
 
+// Returns whether all of the URLs in `specifics` are actually considered
+// syncable, and eligible for being added to the history DB.
+bool SpecificsContainsOnlyValidURLs(
+    const sync_pb::HistorySpecifics& specifics,
+    const HistoryBackendForSync* history_backend) {
+  for (int i = 0; i < specifics.redirect_entries_size(); i++) {
+    GURL url(specifics.redirect_entries(i).url());
+    // Note: If HistoryBackend::CanAddURL() is false, then the backend would
+    // reject this item anyway. But checking it here allows for better error
+    // recording (as a specifics error, rather than a DB error).
+    if (!ShouldSync(url) || !history_backend->CanAddURL(url)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class SpecificsError {
   kMissingRequiredFields = 0,
   kTooOld = 1,
   kTooNew = 2,
-  kMaxValue = kTooNew
+  kUnwantedURL = 3,
+  kMaxValue = kUnwantedURL
 };
 
 // Checks the given `specifics` for validity, i.e. whether it passes some basic
@@ -424,8 +442,6 @@ absl::optional<SpecificsError> GetSpecificsError(
     return SpecificsError::kMissingRequiredFields;
   }
 
-  // TODO(crbug.com/1364576): Filter out URLs that shouldn't be synced.
-
   base::Time visit_time = GetVisitTime(specifics);
 
   // Already-expired visits are not valid. (They wouldn't really cause any harm,
@@ -437,6 +453,14 @@ absl::optional<SpecificsError> GetSpecificsError(
   // Visits that are too far in the future are not valid.
   if (visit_time > base::Time::Now() + kMaxWriteToTheFuture) {
     return SpecificsError::kTooNew;
+  }
+
+  // Visits to "unwanted" URLs are not valid. Such "unwanted" URLs usually
+  // shouldn't end up on the server in the first place, but in some cases they
+  // might (e.g. due to older clients still using SESSIONS, which is less
+  // strict about filtering URLs).
+  if (!SpecificsContainsOnlyValidURLs(specifics, history_backend)) {
+    return SpecificsError::kUnwantedURL;
   }
 
   return {};
@@ -502,8 +526,8 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
     absl::optional<SpecificsError> specifics_error =
         GetSpecificsError(specifics, history_backend_);
     if (specifics_error.has_value()) {
-      DLOG(ERROR) << "Skipping invalid visit, reason "
-                  << static_cast<int>(*specifics_error);
+      DVLOG(1) << "Skipping invalid visit, reason "
+               << static_cast<int>(*specifics_error);
       RecordSpecificsError(*specifics_error);
       continue;
     }

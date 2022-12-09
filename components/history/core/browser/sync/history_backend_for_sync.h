@@ -23,6 +23,8 @@ class HistoryBackendForSync {
  public:
   virtual bool IsExpiredVisitTime(const base::Time& time) const = 0;
 
+  virtual bool CanAddURL(const GURL& url) const = 0;
+
   virtual bool GetURLByID(URLID url_id, URLRow* url_row) = 0;
   virtual bool GetVisitByID(VisitID visit_id, VisitRow* visit_row) = 0;
   virtual bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) = 0;

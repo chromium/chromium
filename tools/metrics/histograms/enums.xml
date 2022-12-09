@@ -97422,6 +97422,7 @@ would be helpful to identify which type is being sent.
              redirect entries)"/>
   <int value="1" label="Too old (already expired)"/>
   <int value="2" label="Too new (too far in the future)"/>
+  <int value="3" label="Unwanted URL (e.g. file: or chrome:)"/>
 </enum>
 
 <enum name="SyncIncomingInvalidationStatus">
