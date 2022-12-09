@@ -92,6 +92,10 @@ class WaylandTestBase {
   // Does nothing if XkbCommon is not used.
   void MaybeSetUpXkb();
 
+  // A helper method to ensure that information for all displays are populated
+  // and ready.
+  void WaitForAllDisplaysReady();
+
   // Creates a Wayland window with the specified delegate, type, and bounds.
   std::unique_ptr<WaylandWindow> CreateWaylandWindowWithParams(
       PlatformWindowType type,

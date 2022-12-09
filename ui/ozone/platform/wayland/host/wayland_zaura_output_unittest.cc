@@ -162,6 +162,8 @@ TEST_F(WaylandZAuraOutputTest, ActiveDisplay) {
     secondary_id = secondary->GetAuraOutput()->display_id();
   });
 
+  WaitForAllDisplaysReady();
+
   auto* platform_screen = output_manager_->wayland_screen();
   DCHECK(platform_screen);
   ASSERT_EQ(2u, platform_screen->GetAllDisplays().size());

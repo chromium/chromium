@@ -2557,6 +2557,8 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
     output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
   });
 
+  WaitForAllDisplaysReady();
+
   // Client side WaylandOutput ids.
   ASSERT_EQ(2u, screen_->GetAllDisplays().size());
   const uint32_t output1_id =
@@ -2598,6 +2600,8 @@ TEST_P(WaylandWindowTest, GetPreferredOutput) {
     wl::TestOutput* output3 = server->CreateAndInitializeOutput();
     output3->SetRect(gfx::Rect(0, 1081, 1920, 1080));
   });
+
+  WaitForAllDisplaysReady();
 
   ASSERT_EQ(3u, screen_->GetAllDisplays().size());
   const uint32_t output3_id =
@@ -2693,6 +2697,8 @@ TEST_P(WaylandWindowTest, GetChildrenPreferredOutput) {
     wl::TestOutput* output2 = server->CreateAndInitializeOutput();
     output2->SetRect(gfx::Rect(1921, 0, 1920, 1080));
   });
+
+  WaitForAllDisplaysReady();
 
   // Client side WaylandOutput ids.
   ASSERT_EQ(2u, screen_->GetAllDisplays().size());

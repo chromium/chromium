@@ -204,6 +204,8 @@ TEST_P(WaylandScreenTest, EnteredOutputListAfterDisplayRemoval) {
         output3->Flush();
       });
 
+  WaitForAllDisplaysReady();
+
   EXPECT_EQ(3u, platform_screen_->GetAllDisplays().size());
 
   const uint32_t surface_id = window_->root_surface()->get_surface_id();
@@ -302,6 +304,8 @@ TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
         output2->Flush();
       });
 
+  WaitForAllDisplaysReady();
+
   // Ensure that second display is not a primary one and have a different id.
   int64_t added_display_id = observer.GetDisplay().id();
   EXPECT_NE(platform_screen_->GetPrimaryDisplay().id(), added_display_id);
@@ -329,6 +333,8 @@ TEST_P(WaylandScreenTest, MultipleOutputsAddedAndRemoved) {
         output2->SetRect(output2_rect);
         output2->Flush();
       });
+
+  WaitForAllDisplaysReady();
 
   // The newly added display is not a primary yet.
   added_display_id = observer.GetDisplay().id();
@@ -558,6 +564,8 @@ TEST_P(WaylandScreenTest, GetDisplayMatching) {
         output2->Flush();
       });
 
+  WaitForAllDisplaysReady();
+
   const display::Display second_display = observer.GetDisplay();
   EXPECT_EQ(second_display.bounds(), output2_rect);
 
@@ -669,6 +677,8 @@ TEST_P(WaylandScreenTest, GetDisplayForAcceleratedWidget) {
         output2->SetRect(output2_rect);
         output2->Flush();
       });
+
+  WaitForAllDisplaysReady();
 
   const display::Display secondary_display = observer.GetDisplay();
   EXPECT_EQ(secondary_display.bounds(), output2_rect);

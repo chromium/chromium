@@ -1100,6 +1100,8 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
     output2->SetScale(2);
   });
 
+  WaitForAllDisplaysReady();
+
   const std::vector<display::Display>& displays = screen_->GetAllDisplays();
   EXPECT_EQ(displays.size(), 2u);
 
