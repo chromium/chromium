@@ -132,12 +132,10 @@ function check_PointerEvent(event, testNamePrefix) {
         assert_less_than_equal(event.pressure, 1, "pressure is less than or equal to 1");
 
         if (event.buttons === 0) {
-            assert_equals(event.pressure, 0, "pressure is 0 for mouse with no buttons pressed");
-        }
-
-        // TA: 1.7, 1.8
-        if (event.pointerType === "mouse") {
-            if (event.buttons !== 0) {
+            assert_equals(event.pressure, 0, "pressure is 0 with no buttons pressed");
+        } else {
+            assert_greater_than(event.pressure, 0, "pressure is greater than 0 with a button pressed");
+            if (event.pointerType === "mouse") {
                 assert_equals(event.pressure, 0.5, "pressure is 0.5 for mouse with a button pressed");
             }
         }
@@ -337,6 +335,16 @@ function clickInTarget(pointerType, target) {
                    .pointerDown()
                    .pointerUp()
                    .send();
+}
+
+function rightClickInTarget(pointerType, target) {
+    let pointerId = pointerType + "Pointer1";
+    let actions = new test_driver.Actions();
+    return actions.addPointer(pointerId, pointerType)
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown({button:actions.ButtonType.RIGHT})
+        .pointerUp({button:actions.ButtonType.RIGHT})
+        .send();
 }
 
 function twoFingerDrag(target) {
