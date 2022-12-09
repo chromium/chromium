@@ -3367,7 +3367,7 @@ class StringTest(unittest.TestCase):
                                'changelist. Run '
                                'tools/translate/upload_screenshots.py to '
                                'upload them instead:')
-  GENERATE_SIGNATURES_MESSAGE = ('You are adding or modifying UI strings.\n'
+  ADD_SIGNATURES_MESSAGE = ('You are adding UI strings.\n'
                                  'To ensure the best translations, take '
                                  'screenshots of the relevant UI '
                                  '(https://g.co/chrome/translation) and add '
@@ -3406,7 +3406,7 @@ class StringTest(unittest.TestCase):
                        self.NEW_GRDP_CONTENTS1, action='M')])
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     self.assertEqual(1, len(warnings))
-    self.assertEqual(self.GENERATE_SIGNATURES_MESSAGE, warnings[0].message)
+    self.assertEqual(self.ADD_SIGNATURES_MESSAGE, warnings[0].message)
     self.assertEqual('error', warnings[0].type)
     self.assertEqual([
       os.path.join('part_grdp', 'IDS_PART_TEST2.png.sha1'),
@@ -3422,7 +3422,7 @@ class StringTest(unittest.TestCase):
     warnings = PRESUBMIT.CheckStrings(input_api, MockOutputApi())
     self.assertEqual(1, len(warnings))
     self.assertEqual('error', warnings[0].type)
-    self.assertEqual(self.GENERATE_SIGNATURES_MESSAGE, warnings[0].message)
+    self.assertEqual(self.ADD_SIGNATURES_MESSAGE, warnings[0].message)
     self.assertEqual([
         os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
         os.path.join('part_grdp', 'IDS_PART_TEST2.png.sha1'),
@@ -3491,7 +3491,7 @@ class StringTest(unittest.TestCase):
     self.assertEqual([os.path.join('test_grd', 'IDS_TEST1.png')],
                      warnings[0].items)
     self.assertEqual('error', warnings[1].type)
-    self.assertEqual(self.GENERATE_SIGNATURES_MESSAGE, warnings[1].message)
+    self.assertEqual(self.ADD_SIGNATURES_MESSAGE, warnings[1].message)
     self.assertEqual([os.path.join('test_grd', 'IDS_TEST1.png.sha1')],
                      warnings[1].items)
 
@@ -3528,7 +3528,7 @@ class StringTest(unittest.TestCase):
                       os.path.join('test_grd', 'IDS_TEST1.png')],
                      warnings[0].items)
     self.assertEqual('error', warnings[0].type)
-    self.assertEqual(self.GENERATE_SIGNATURES_MESSAGE, warnings[1].message)
+    self.assertEqual(self.ADD_SIGNATURES_MESSAGE, warnings[1].message)
     self.assertEqual([os.path.join('part_grdp', 'IDS_PART_TEST1.png.sha1'),
                       os.path.join('test_grd', 'IDS_TEST1.png.sha1')],
                       warnings[1].items)

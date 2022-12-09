@@ -5851,6 +5851,7 @@ def CheckStrings(input_api, output_api):
     #   .sha1 files aren't removed, warn the developer to remove them.
     unnecessary_screenshots = []
     missing_sha1 = []
+    missing_sha1_modified = []
     unnecessary_sha1_files = []
 
     # This checks verifies that the ICU syntax of messages this CL touched is
@@ -5866,6 +5867,12 @@ def CheckStrings(input_api, output_api):
                                            message_id + '.png.sha1')
         if sha1_path not in new_or_added_paths:
             missing_sha1.append(sha1_path)
+
+    def _CheckScreenshotModified(screenshots_dir, message_id):
+        sha1_path = input_api.os_path.join(screenshots_dir,
+                                           message_id + '.png.sha1')
+        if sha1_path not in new_or_added_paths:
+            missing_sha1_modified.append(sha1_path)
 
     def _CheckScreenshotRemoved(screenshots_dir, message_id):
         sha1_path = input_api.os_path.join(screenshots_dir,
@@ -6082,7 +6089,7 @@ def CheckStrings(input_api, output_api):
                 _CheckScreenshotAdded(screenshots_dir, added_id)
 
             for modified_id in modified_ids:
-                _CheckScreenshotAdded(screenshots_dir, modified_id)
+                _CheckScreenshotModified(screenshots_dir, modified_id)
 
             for removed_id in removed_ids:
                 _CheckScreenshotRemoved(screenshots_dir, removed_id)
@@ -6106,10 +6113,18 @@ def CheckStrings(input_api, output_api):
         if missing_sha1:
             results.append(
                 output_api.PresubmitError(
-                    'You are adding or modifying UI strings.\n'
+                    'You are adding UI strings.\n'
                     'To ensure the best translations, take screenshots of the relevant UI '
                     '(https://g.co/chrome/translation) and add these files to your '
                     'changelist:', sorted(missing_sha1)))
+
+        if missing_sha1_modified:
+            results.append(
+                output_api.PresubmitError(
+                    'You are modifying UI strings or their meanings.\n'
+                    'To ensure the best translations, take screenshots of the relevant UI '
+                    '(https://g.co/chrome/translation) and add these files to your '
+                    'changelist:', sorted(missing_sha1_modified)))
 
         if unnecessary_sha1_files:
             results.append(
