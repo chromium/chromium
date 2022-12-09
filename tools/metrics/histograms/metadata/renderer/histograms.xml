@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.CriticalFonts.PreloadedFontLoadTime" units="ms"
+<histogram name="Renderer.CriticalFonts.PreloadedFontsLoadTime" units="ms"
     expires_after="2023-05-01">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
