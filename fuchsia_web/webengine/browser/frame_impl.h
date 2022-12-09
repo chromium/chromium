@@ -24,6 +24,7 @@
 #include "base/fuchsia/scoped_fx_logger.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/timer/timer.h"
 #include "build/chromecast_buildflags.h"
 #include "components/media_control/browser/media_blocker.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
@@ -281,6 +282,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   void SetContentAreaSettings(
       fuchsia::web::ContentAreaSettings settings) override;
   void ResetContentAreaSettings() override;
+  void Close(fuchsia::web::FrameCloseRequest request) override;
 
   // content::WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) override;
@@ -415,6 +417,9 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
   std::unique_ptr<ReceiverSessionClient> receiver_session_client_;
 #endif
+
+  // Used to implement graceful `Close()` with `timeout` specified.
+  base::OneShotTimer close_page_timeout_;
 
   base::WeakPtrFactory<FrameImpl> weak_factory_{this};
 };

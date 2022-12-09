@@ -1250,6 +1250,41 @@ void FrameImpl::ResetContentAreaSettings() {
   UpdateRenderFrameZoomLevel(web_contents_->GetPrimaryMainFrame());
 }
 
+void FrameImpl::Close(fuchsia::web::FrameCloseRequest request) {
+  // By default allow a couple of seconds in case the page content needs to
+  // e.g. collate metrics and send them to the network.
+  constexpr auto kDefaultFrameCloseTimeout = base::Seconds(2u);
+
+  auto timeout = request.has_timeout()
+                     ? base::TimeDelta::FromZxDuration(request.timeout())
+                     : kDefaultFrameCloseTimeout;
+
+  // If the content does not need any handlers to be run, or a zero timeout was
+  // specified, then teardown the content immediately and close.
+  if (!web_contents_->NeedToFireBeforeUnloadOrUnloadEvents() ||
+      timeout.is_zero()) {
+    CloseAndDestroyFrame(ZX_OK);
+    return;
+  }
+
+  // Request that `web_contents_` allow the page to gracefully teardown:
+  // - Destroy the WindowTreeHost, causing the page to receive "pagehide" and
+  //   "visibilitychange" events.
+  // - Fire the "beforeunload" event, ignoring the result.
+  // - Fire the "onunload" event, and teardown the page if that completes.
+  DestroyWindowTreeHost();
+  web_contents_->DispatchBeforeUnload(false /* auto_cancel */);
+  web_contents_->ClosePage();
+
+  // (Re-)start the teardown timeout. If the page closes before this timer
+  // fires then `CloseContents()` will be invoked, causing the `Frame` to be
+  // closed with `ZX_OK`.
+  close_page_timeout_.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&FrameImpl::CloseAndDestroyFrame, base::Unretained(this),
+                     ZX_ERR_TIMED_OUT));
+}
+
 void FrameImpl::CloseContents(content::WebContents* source) {
   DCHECK_EQ(source, web_contents_.get());
   CloseAndDestroyFrame(ZX_OK);

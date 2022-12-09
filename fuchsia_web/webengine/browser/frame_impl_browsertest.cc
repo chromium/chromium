@@ -4,10 +4,12 @@
 
 #include <fuchsia/element/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
+#include <lib/zx/time.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
@@ -46,6 +48,7 @@ namespace {
 constexpr char kPage1Path[] = "/title1.html";
 constexpr char kPage2Path[] = "/title2.html";
 constexpr char kPage3Path[] = "/websql.html";
+constexpr char kReportCloseEventsPath[] = "/report_close_events.html";
 constexpr char kVisibilityPath[] = "/visibility.html";
 constexpr char kWaitSizePath[] = "/wait-size.html";
 constexpr char kPage1Title[] = "title 1";
@@ -1049,7 +1052,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ChildFrameNavigationIgnored) {
   fuchsia::web::WebMessage message;
   message.set_data(base::MemBufferFromString("test", "test"));
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
-  frame->PostMessage(page_url.DeprecatedGetOriginAsURL().spec(),
+  frame->PostMessage(embedded_test_server()->GetOrigin().Serialize(),
                      std::move(message),
                      CallbackToFitFunction(post_result.GetCallback()));
 
@@ -1234,4 +1237,208 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ContentAreaSettings) {
     EXPECT_EQ(web_prefs.preferred_color_scheme,
               blink::mojom::PreferredColorScheme::kLight);
   }
+}
+
+// Verifies that a `Frame` closes correctly if `Close()` is called before any
+// page is loaded.
+IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_BeforeNavigation) {
+  auto frame = FrameForTest::Create(context(), {});
+
+  base::RunLoop loop;
+  frame.ptr().set_error_handler(
+      [quit = loop.QuitClosure()](zx_status_t status) {
+        EXPECT_EQ(status, ZX_OK);
+        std::move(quit).Run();
+      });
+
+  // Request to gracefully close the Frame, which should be immediate since
+  // nothing has been loaded into it yet.
+  frame->Close({});
+
+  loop.Run();
+}
+
+// Helper class for `Frame.Close()` tests, that navigates the `Frame` to an
+// event-recording page, and connects to accumulate the list of events it
+// receives.
+// If `hang_on_event` is true then the web page will be configured to busy-loop
+// as soon as any event is received, to allow timeouts to be simulated.
+class FrameForTestWithMessageLog : public FrameForTest {
+ public:
+  FrameForTestWithMessageLog(FrameForTest frame,
+                             net::EmbeddedTestServer& test_server,
+                             bool hang_on_event = false)
+      : FrameForTest(std::move(frame)) {
+    // Navigate to a page that will record the relevant events.
+    const GURL page_url(test_server.GetURL(kReportCloseEventsPath));
+    if (!LoadUrlAndExpectResponse(GetNavigationController(),
+                                  fuchsia::web::LoadUrlParams(),
+                                  page_url.spec())) {
+      ADD_FAILURE();
+      loop_.Quit();
+      return;
+    }
+    navigation_listener().RunUntilUrlEquals(page_url);
+
+    // Connect a message port over which to receive notifications of events.
+    fuchsia::web::WebMessage message;
+    message.set_data(base::MemBufferFromString(
+        hang_on_event ? "hang_on_event" : "init", "test"));
+    message.mutable_outgoing_transfer()->push_back(
+        std::move(fuchsia::web::OutgoingTransferable().set_message_port(
+            message_port_.NewRequest())));
+
+    base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
+    get()->PostMessage(test_server.GetOrigin().Serialize(), std::move(message),
+                       CallbackToFitFunction(post_result.GetCallback()));
+    if (!post_result.Wait()) {
+      ADD_FAILURE();
+      loop_.Quit();
+      return;
+    }
+
+    // If the FrameForTest becomes disconnected then store the epitaph, for
+    // tests to verify.
+    ptr().set_error_handler(CallbackToFitFunction(epitaph_.GetCallback()));
+
+    // Start reading messages from the port into a queue, until the port closes.
+    message_port_.set_error_handler(
+        [quit = loop_.QuitClosure()](zx_status_t) { std::move(quit).Run(); });
+    message_port_->ReceiveMessage(
+        fit::bind_member(this, &FrameForTestWithMessageLog::OnMessage));
+  }
+
+  void RunUntilMessagePortClosed() { loop_.Run(); }
+
+  base::test::TestFuture<zx_status_t>& epitaph() { return epitaph_; }
+
+  const std::vector<std::string>& events() const { return events_; }
+
+ private:
+  void OnMessage(fuchsia::web::WebMessage message) {
+    events_.push_back(std::move(*base::StringFromMemBuffer(message.data())));
+    message_port_->ReceiveMessage(
+        fit::bind_member(this, &FrameForTestWithMessageLog::OnMessage));
+  }
+
+  base::RunLoop loop_;
+  fuchsia::web::MessagePortPtr message_port_;
+  std::vector<std::string> events_;
+  base::test::TestFuture<zx_status_t> epitaph_;
+};
+
+// Verifies that `Close()`ing a `Frame` without an explicit timeout allows
+// graceful teardown, including firing the expected set of events
+// ("beforeunload", "pagehide" and "onunload").
+IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_EventsWithDefaultTimeout) {
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  FrameForTestWithMessageLog frame(FrameForTest::Create(context(), {}),
+                                   *embedded_test_server());
+
+  // Request to gracefully close the Frame, which should trigger the
+  // relevant event handlers, and then quickly tear-down.
+  frame->Close({});
+
+  frame.RunUntilMessagePortClosed();
+
+  // Verify that the expected events were delivered!
+  ASSERT_EQ(frame.events().size(), 3u);
+  EXPECT_EQ(frame.events()[0], "window.beforeunload");
+  EXPECT_EQ(frame.events()[1], "window.pagehide");
+  EXPECT_EQ(frame.events()[2], "window.unload");
+
+  EXPECT_EQ(frame.epitaph().Get(), ZX_OK);
+}
+
+// Verifies that `Close()`ing a `Frame` with an explicit timeout allows
+// graceful teardown, dispatching the expected events.
+IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_EventsWithNonZeroTimeout) {
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  FrameForTestWithMessageLog frame(FrameForTest::Create(context(), {}),
+                                   *embedded_test_server());
+
+  // Request to gracefully close the Frame, which should trigger the
+  // relevant event handlers, and then quickly tear-down.
+  // Use a timeout long enough that the test would have timed-out if
+  // teardown had taken so long.
+  frame->Close(std::move(fuchsia::web::FrameCloseRequest().set_timeout(
+      TestTimeouts::action_max_timeout().ToZxDuration())));
+
+  frame.RunUntilMessagePortClosed();
+
+  // Verify that the expected events were delivered!
+  ASSERT_EQ(frame.events().size(), 3u);
+  EXPECT_EQ(frame.events()[0], "window.beforeunload");
+  EXPECT_EQ(frame.events()[1], "window.pagehide");
+  EXPECT_EQ(frame.events()[2], "window.unload");
+
+  EXPECT_EQ(frame.epitaph().Get(), ZX_OK);
+}
+
+// Verifies that if a `Frame` is `Close()`d with a timeout and takes too long
+// to close then `ZX_ERR_TIMED_OUT` is reported.
+IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_WithInsufficientTimeout) {
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  FrameForTestWithMessageLog frame(FrameForTest::Create(context(), {}),
+                                   *embedded_test_server(),
+                                   /* hang_on_event= */ true);
+
+  // Request to gracefully close the Frame, by specifying a non-zero timeout.
+  // This can be arbitrarily short, since we are deliberately provoking timeout.
+  frame->Close(std::move(fuchsia::web::FrameCloseRequest().set_timeout(
+      base::Milliseconds(1u).ToZxDuration())));
+
+  frame.RunUntilMessagePortClosed();
+
+  // Regardless of how many events may have been delivered, teardown should
+  // have timed-out.
+  EXPECT_EQ(frame.epitaph().Get(), ZX_ERR_TIMED_OUT);
+}
+
+// Verifies that `Close()`ing a `Frame` with a zero timeout takes immediate
+// effect.
+IN_PROC_BROWSER_TEST_F(FrameImplTest, Close_NoEventsWithZeroTimeout) {
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  FrameForTestWithMessageLog frame(FrameForTest::Create(context(), {}),
+                                   *embedded_test_server());
+
+  // Request to close the frame immediately.
+  frame->Close(std::move(fuchsia::web::FrameCloseRequest().set_timeout(0u)));
+
+  frame.RunUntilMessagePortClosed();
+
+  // Verify that no events were observed.
+  EXPECT_EQ(frame.events().size(), 0u);
+
+  EXPECT_EQ(frame.epitaph().Get(), ZX_OK);
+}
+
+// Verifies that disconnecting a `Frame` takes immediate effect.
+IN_PROC_BROWSER_TEST_F(FrameImplTest, Disconnect_NoEvents) {
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  FrameForTestWithMessageLog frame(FrameForTest::Create(context(), {}),
+                                   *embedded_test_server());
+
+  // Request to close the frame immediately.
+  frame.ptr() = nullptr;
+
+  frame.RunUntilMessagePortClosed();
+
+  // Verify that no events were observed.
+  EXPECT_EQ(frame.events().size(), 0u);
 }

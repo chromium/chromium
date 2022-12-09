@@ -1,0 +1,25 @@
+<script>
+  window.eventLogPort = null;
+  window.shouldHangOnEvent = false;
+
+  window.addEventListener('message', function(event) {
+    console.assert(event.ports && event.ports.length == 1);
+    window.eventLogPort = event.ports[0]
+    window.shouldHangOnEvent = event.data == 'hang_on_event';
+  });
+
+  let event_list = [
+    'beforeunload',
+    'pagehide',
+    'unload',
+  ];
+
+  for (const event of event_list) {
+    window.addEventListener(event, event => {
+      window.eventLogPort.postMessage(`window.${event.type}`);
+      if (window.shouldHangOnEvent) {
+        while (true) {}
+      }
+    });
+  }
+</script>
