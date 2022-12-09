@@ -41874,15 +41874,23 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FeedEngagementType">
-  <int value="0" label="Engaged - scrolled an inch or interacted"/>
-  <int value="1" label="Engaged Simple - scrolled any amount or interacted"/>
-  <int value="2" label="Interacted - opened page or used menu"/>
-  <int value="3" label="DEPRECATED: Scrolled - scrolled any amount"/>
-  <int value="4" label="Scrolled - scrolled any amount"/>
-  <int value="5"
-      label="Good Visit - User (a) had a good explicit interaction, (b) spent
-             a long time in the feed and scrolled, or (c) spent a long time
-             viewing or opening a piece of content."/>
+  <int value="0" label="Engaged">
+    Visit - user scrolled an inch or interacted
+  </int>
+  <int value="1" label="Engaged Simple">
+    Visit - user scrolled any amount or interacted&quot;
+  </int>
+  <int value="2" label="Interacted">
+    Interaction - Opening a page or using the menu&quot;
+  </int>
+<!-- <int value="3" label="Scrolled">Deprecated - formerly scrolled any amount</int> -->
+
+  <int value="4" label="Scrolled">Interaction - Scrolled any amount</int>
+  <int value="5" label="Good Visit">
+    Visit - user (a) had a good explicit interaction, (b) spent a minute in the
+    feed and scrolled, or (c) spent ten seconds viewing or opening a piece of
+    content.
+  </int>
 </enum>
 
 <enum name="FeedHostMismatch">

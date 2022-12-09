@@ -2083,18 +2083,16 @@ chromium-metrics-reviews@google.com.
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
-    Tracks each instance of user engagement with {FeedType}, by scrolling or
-    interacting with a card (opening the URL or using the menu). Note that each
-    event type reports samples very differently and buckets can't be directly
-    compared. We're mostly interested in unique user counts. We track every
-    interaction, and we report ENGAGED and ENGAGED_SIMPLE once per user visit. A
-    user visit is when the user scrolls or interacts with the NTP more than 5
-    minutes after the previous visit. The SCROLLED engagement type represents a
-    single instance of the user scrolling, and is reported once per Feed visit.
-    The INTERACTED engagement type represents one instance of using the menu or
-    opening a feed article into its own tab. SCROLLED and INTERACTED are
-    reported for every occurrence, thus we could end up with more scrolled and
-    interected than ENGAGED or ENGAGED_SIMPLE samples.
+    Tracks user behavior with {FeedType}. Each bucket is one of two types of
+    metric. Per-visit metrics sample once per &quot;visit&quot;, which is a
+    cluster of user activities separated by less than 5 minutes of inactivity.
+    Per-visit metrics record a sample at the moment that the visit's criteria
+    are first met. Per-interaction metrics are not clustered and report samples
+    immediately. In the UI, Bucket Proportion and Total Count are not meaningful
+    as these metrics are not independent. All buckets of this metric can be
+    moved by changes in the Discover service as well as by client changes.
+    go/discover-oncall describes how to get in touch with Discover oncall
+    engineers.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="the For-You Feed"/>
