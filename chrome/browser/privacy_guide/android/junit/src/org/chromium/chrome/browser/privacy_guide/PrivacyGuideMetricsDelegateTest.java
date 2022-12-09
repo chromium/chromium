@@ -127,6 +127,20 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    public void testMSBB_changeMSBBOnUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(true);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeMSBBOn"));
+    }
+
+    @Test
+    @SmallTest
+    public void testMSBB_changeMSBBOffUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(false);
+        assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeMSBBOff"));
+    }
+
+    @Test
+    @SmallTest
     public void testSync_changeHistorySyncOnUserAction() {
         PrivacyGuideMetricsDelegate.recordMetricsOnSyncChange(true);
         assertTrue(

@@ -92,6 +92,17 @@ class PrivacyGuideMetricsDelegate {
     }
 
     /**
+     * A method to record metrics on MSBB toggle change of the Privacy Guide's {@link MSBBFragment}.
+     */
+    static void recordMetricsOnMSBBChange(boolean isMSBBOn) {
+        if (isMSBBOn) {
+            RecordUserAction.record("Settings.PrivacyGuide.ChangeMSBBOn");
+        } else {
+            RecordUserAction.record("Settings.PrivacyGuide.ChangeMSBBOff");
+        }
+    }
+
+    /**
      * A method to record metrics on the History Sync toggle change of the Privacy Guide's {@link
      * SyncFragment}.
      */

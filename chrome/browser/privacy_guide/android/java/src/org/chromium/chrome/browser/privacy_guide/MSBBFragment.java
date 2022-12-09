@@ -31,9 +31,10 @@ public class MSBBFragment extends Fragment {
         msbbSwitch.setChecked(UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                 Profile.getLastUsedRegularProfile()));
 
-        msbbSwitch.setOnCheckedChangeListener(
-                (button, isChecked)
-                        -> UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                Profile.getLastUsedRegularProfile(), isChecked));
+        msbbSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(isChecked);
+            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                    Profile.getLastUsedRegularProfile(), isChecked);
+        });
     }
 }
