@@ -54,6 +54,11 @@ class FreeDiskSpaceImpl : public FreeDiskSpaceDelegate {
 
 }  // namespace
 
+// TODO(b/261530666): This was chosen arbitrarily, this should be experimented
+// with and potentially made dynamic depending on feedback of the in progress
+// queue.
+constexpr base::TimeDelta kPeriodicRemovalInterval = base::Seconds(10);
+
 constexpr char kGCacheFolderName[] = "GCache";
 
 DriveFsPinManager::InProgressSyncingItems::InProgressSyncingItems() = default;
@@ -92,6 +97,19 @@ size_t DriveFsPinManager::InProgressSyncingItems::GetItemCount() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Remaining syncing items: " << in_progress_items_.size();
   return in_progress_items_.size();
+}
+
+std::vector<std::string>
+DriveFsPinManager::InProgressSyncingItems::GetUnstartedItems() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::string> unstarted_items;
+  for (const auto& item : in_progress_items_) {
+    if (item.second.second > 0) {
+      continue;
+    }
+    unstarted_items.emplace_back(item.first);
+  }
+  return unstarted_items;
 }
 
 DriveFsPinManager::DriveFsPinManager(bool enabled,
@@ -174,7 +192,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
   }
 
   if (items.value().size() == 0) {
-    VLOG(2) << "Iterated all files and calculated " << size_required_
+    VLOG(1) << "Iterated all files and calculated " << size_required_
             << " bytes required with " << free_space_ << " bytes available in "
             << timer_.Elapsed().InMilliseconds() << "ms";
     StartBatchPinning();
@@ -185,7 +203,7 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
           << " for space calculation";
   for (const auto& item : items.value()) {
     if (item->metadata->pinned) {
-      VLOG(1) << "Item is already pinned, ignoring in space calculation";
+      VLOG(2) << "Item is already pinned, ignoring in space calculation";
       continue;
     }
     size_required_ += item->metadata->size;
@@ -225,6 +243,14 @@ void DriveFsPinManager::StartBatchPinning() {
   search_query_->GetNextPage(
       base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  // Start a periodic task that removes any files that are already available
+  // offline from the `in_progress_items_` map.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DriveFsPinManager::PeriodicallyRemovePinnedItems,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kPeriodicRemovalInterval);
 }
 
 void DriveFsPinManager::OnSearchResultsForPinning(
@@ -269,7 +295,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
 
   for (const auto& item : items.value()) {
     if (item->metadata->pinned) {
-      VLOG(1) << "Item is already pinned, ignoring when batch pinning";
+      VLOG(2) << "Item is already pinned, ignoring when batch pinning";
       continue;
     }
     base::FilePath path(item->path);
@@ -284,7 +310,7 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
                                      drive::FileError status) {
   if (status != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Failed pinning an item: " << status;
-    VLOG(2) << "Path that failed to pin: " << path << " with error "
+    VLOG(1) << "Path that failed to pin: " << path << " with error "
             << drive::FileErrorToString(status);
     Complete(PinError::kErrorFailedToPinItem);
     return;
@@ -321,6 +347,52 @@ void DriveFsPinManager::MaybeStartSearch(size_t remaining_items) {
     search_query_->GetNextPage(
         base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
                        weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void DriveFsPinManager::PeriodicallyRemovePinnedItems() {
+  VLOG(1) << "Periodically removing pinned items";
+
+  syncing_items_.AsyncCall(&InProgressSyncingItems::GetUnstartedItems)
+      .Then(base::BindOnce(&DriveFsPinManager::GetMetadata,
+                           weak_ptr_factory_.GetWeakPtr()));
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&DriveFsPinManager::PeriodicallyRemovePinnedItems,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kPeriodicRemovalInterval);
+}
+
+void DriveFsPinManager::GetMetadata(
+    const std::vector<std::string> unstarted_paths) {
+  for (const auto& path : unstarted_paths) {
+    base::FilePath file_path(path);
+    drivefs_interface_->GetMetadata(
+        file_path,
+        base::BindOnce(&DriveFsPinManager::OnMetadataRetrieved,
+                       weak_ptr_factory_.GetWeakPtr(), file_path.value()));
+  }
+
+  syncing_items_.AsyncCall(&InProgressSyncingItems::GetItemCount)
+      .Then(base::BindOnce(&DriveFsPinManager::MaybeStartSearch,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveFsPinManager::OnMetadataRetrieved(const std::string path,
+                                            drive::FileError error,
+                                            mojom::FileMetadataPtr metadata) {
+  if (error != drive::FILE_ERROR_OK) {
+    LOG(ERROR) << "Failed to retrieve metadata: " << error;
+    return;
+  }
+
+  if (metadata->available_offline || metadata->size == 0) {
+    VLOG(2) << "File " << path
+            << " has already been pinned or is a 0 byte file, removing from in "
+               "progress items";
+    syncing_items_.AsyncCall(&InProgressSyncingItems::RemoveItem)
+        .WithArgs(std::move(path));
   }
 }
 

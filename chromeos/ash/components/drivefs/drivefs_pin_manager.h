@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/elapsed_timer.h"
@@ -26,6 +27,10 @@ namespace drivefs::pinning {
 
 // Constant representing the GCache folder name.
 extern const char kGCacheFolderName[];
+
+// The periodic removal task is ran to ensure any leftover items in the syncing
+// map are identified as being `available_offline` or 0 byte files.
+extern const base::TimeDelta kPeriodicRemovalInterval;
 
 // Errors that are returned via the completion callback that indicate either
 // which stage the failure was at or whether the initial setup was a success.
@@ -122,6 +127,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
     // Return the number of items currently being tracked as in progress.
     size_t GetItemCount();
 
+    // Returns any items that have 0 `bytes_to_transfer` which corresponds to
+    // items that haven't received a syncing status update.
+    std::vector<std::string> GetUnstartedItems();
+
    private:
     SEQUENCE_CHECKER(sequence_checker_);
     // A map that tracks the in progress items by their key to a pair of
@@ -159,6 +168,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // actually completion of the file being downloaded, that is monitored via
   // `OnSyncingStatusUpdate`.
   void OnFilePinned(const std::string& path, drive::FileError status);
+
+  // Invoked at a regular interval to look at the map of in progress items and
+  // ensure they are all still not available offline (i.e. still syncing). In
+  // certain cases (e.g. hosted docs like gdocs) they will not emit a syncing
+  // status update but will get pinned.
+  void PeriodicallyRemovePinnedItems();
+
+  // For any paths that are in the unstarted phase (i.e. no `bytes_to_transfer`
+  // registered), the metadata must be retrieved to verify their
+  // `available_offline` boolean is true OR the size is 0.
+  void GetMetadata(const std::vector<std::string> unstarted_paths);
+  void OnMetadataRetrieved(const std::string path,
+                           drive::FileError error,
+                           mojom::FileMetadataPtr metadata);
 
   // If there are no remaining items left, get the next search query page.
   void MaybeStartSearch(size_t remaining_items);

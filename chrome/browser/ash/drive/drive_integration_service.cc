@@ -1444,6 +1444,7 @@ void DriveIntegrationService::SetBulkPinningEnabled(bool enabled) {
     pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
         profile_->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled),
         profile_->GetPath(), GetDriveFsInterface());
+    drivefs_holder_->drivefs_host()->AddObserver(pin_manager_.get());
   }
 
   VLOG(1) << "Setting bulk pinning enabled: " << enabled;
