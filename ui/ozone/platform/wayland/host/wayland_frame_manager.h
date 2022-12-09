@@ -36,6 +36,7 @@ struct WaylandFrame {
  public:
   // A frame originated from gpu process, and hence, requires acknowledgements.
   WaylandFrame(uint32_t frame_id,
+               int64_t seq,
                WaylandSurface* root_surface,
                wl::WaylandOverlayConfig root_config,
                base::circular_deque<
@@ -87,6 +88,10 @@ struct WaylandFrame {
   absl::optional<gfx::PresentationFeedback> feedback = absl::nullopt;
   // Whether this frame has had OnPresentation sent for it.
   bool presentation_acked;
+
+  // The sequence ID for this frame. This is used to know when the proper
+  // buffers associated with a configure arrive.
+  [[maybe_unused]] int64_t seq = -1;
 };
 
 // This is the frame update manager that configures graphical window/surface

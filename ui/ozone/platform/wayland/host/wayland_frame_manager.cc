@@ -62,6 +62,7 @@ uint32_t GetPresentationKindFlags(uint32_t flags) {
 
 WaylandFrame::WaylandFrame(
     uint32_t frame_id,
+    int64_t seq,
     WaylandSurface* root_surface,
     wl::WaylandOverlayConfig root_config,
     base::circular_deque<
@@ -72,7 +73,8 @@ WaylandFrame::WaylandFrame(
       root_config(std::move(root_config)),
       subsurfaces_to_overlays(std::move(subsurfaces_to_overlays)),
       submission_acked(false),
-      presentation_acked(false) {}
+      presentation_acked(false),
+      seq(seq) {}
 
 WaylandFrame::WaylandFrame(
     WaylandSurface* root_surface,

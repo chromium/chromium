@@ -285,7 +285,7 @@ void WaylandBufferManagerHost::CommitOverlays(
   if (!window)
     return;
 
-  window->CommitOverlays(frame_id, overlays);
+  window->CommitOverlays(frame_id, data.seq, overlays);
 }
 
 void WaylandBufferManagerHost::DestroyBuffer(uint32_t buffer_id) {

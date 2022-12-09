@@ -112,6 +112,7 @@ class WaylandWindow : public PlatformWindow,
   // subsurface_stack_below_.size() >= below.
   bool ArrangeSubsurfaceStack(size_t above, size_t below);
   bool CommitOverlays(uint32_t frame_id,
+                      int64_t seq,
                       std::vector<wl::WaylandOverlayConfig>& overlays);
 
   // Called when the focus changed on this window.
