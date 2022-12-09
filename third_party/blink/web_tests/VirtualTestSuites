@@ -1073,19 +1073,13 @@
   {
     "prefix": "prerender",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/speculation-rules/prerender",
-      "wpt_internal/prerender",
-      "http/tests/inspector-protocol/prerender"
-    ],
-    "exclusive_tests": [
-      "external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html",
-      "external/wpt/speculation-rules/prerender/csp-script-src-inline-speculation-rules.html",
-      "external/wpt/speculation-rules/prerender/csp-script-src-unsafe-inline.html"
-    ],
+    "bases": [ "external/wpt/speculation-rules/prerender",
+               "wpt_internal/prerender",
+               "http/tests/inspector-protocol/prerender"],
+    "exclusive_tests": ["external/wpt/speculation-rules/prerender/referrer-policy-from-rules.html"],
     "args": [
       "--enable-blink-features=SpeculationRulesReferrerPolicyKey",
-      "--enable-features=SameSiteCrossOriginForSpeculationRulesPrerender,Prerender2ContentSecurityPolicyExtensions"
+      "--enable-features=SameSiteCrossOriginForSpeculationRulesPrerender"
     ],
     "expires": "Jul 1, 2023"
   },
