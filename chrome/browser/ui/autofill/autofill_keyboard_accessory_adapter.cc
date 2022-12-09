@@ -92,6 +92,11 @@ void AutofillKeyboardAccessoryAdapter::OnSuggestionsChanged() {
   view_->Show();
 }
 
+void AutofillKeyboardAccessoryAdapter::AxAnnounce(const std::u16string& text) {
+  DCHECK(view_) << "AxAnnounce called before a View was set!";
+  view_->AxAnnounce(text);
+}
+
 absl::optional<int32_t> AutofillKeyboardAccessoryAdapter::GetAxUniqueId() {
   NOTIMPLEMENTED() << "See https://crbug.com/985927";
   return absl::nullopt;

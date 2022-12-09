@@ -51,6 +51,9 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
     // Requests to show this view with the data provided by the controller.
     virtual void Show() = 0;
 
+    // Makes announcement for acessibility.
+    virtual void AxAnnounce(const std::u16string& text);
+
     // Ask to confirm a deletion. Triggers the callback upon confirmation.
     virtual void ConfirmDeletion(const std::u16string& confirmation_title,
                                  const std::u16string& confirmation_body,
@@ -72,7 +75,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
                             absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
-  void AxAnnounce(const std::u16string& text) override {}
+  void AxAnnounce(const std::u16string& text) override;
   absl::optional<int32_t> GetAxUniqueId() override;
 
   // AutofillPopupController implementation.

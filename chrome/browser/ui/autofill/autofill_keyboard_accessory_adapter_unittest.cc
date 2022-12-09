@@ -45,6 +45,7 @@ class MockAccessoryView
   MOCK_METHOD0(Initialize, bool());
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD0(Show, void());
+  MOCK_METHOD1(AxAnnounce, void(const std::u16string&));
   MOCK_METHOD3(ConfirmDeletion,
                void(const std::u16string&,
                     const std::u16string&,

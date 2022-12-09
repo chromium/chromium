@@ -14,6 +14,7 @@
 #include "chrome/android/chrome_jni_headers/AutofillPopupBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
+#include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -139,6 +140,10 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
 
   Java_AutofillPopupBridge_show(env, java_object_, data_array,
                                 controller_->IsRTL());
+}
+
+void AutofillPopupViewAndroid::AxAnnounce(const std::u16string& text) {
+  AnnounceTextForA11y(text);
 }
 
 absl::optional<int32_t> AutofillPopupViewAndroid::GetAxUniqueId() {

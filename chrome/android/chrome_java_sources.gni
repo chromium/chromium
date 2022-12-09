@@ -117,6 +117,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/video_tutorials/VideoTutorialListActivity.java",
   "java/src/org/chromium/chrome/browser/app/video_tutorials/VideoTutorialShareHelper.java",
   "java/src/org/chromium/chrome/browser/app/video_tutorials/VideoTutorialsServiceUtils.java",
+  "java/src/org/chromium/chrome/browser/autofill/AutofillAccessibilityUtils.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillExpirationDateFixFlowPrompt.java",
   "java/src/org/chromium/chrome/browser/autofill/AutofillLogger.java",

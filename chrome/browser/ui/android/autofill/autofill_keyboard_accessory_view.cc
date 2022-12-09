@@ -15,6 +15,7 @@
 #include "chrome/android/features/keyboard_accessory/jni_headers/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
+#include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -103,6 +104,10 @@ void AutofillKeyboardAccessoryView::Show() {
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array,
                                                 controller_->IsRTL());
+}
+
+void AutofillKeyboardAccessoryView::AxAnnounce(const std::u16string& text) {
+  AnnounceTextForA11y(text);
 }
 
 void AutofillKeyboardAccessoryView::ConfirmDeletion(
