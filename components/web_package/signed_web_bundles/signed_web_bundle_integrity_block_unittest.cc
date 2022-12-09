@@ -7,30 +7,32 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_package {
 
 namespace {
 
-constexpr uint8_t kEd25519PublicKey1[32] = {0, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0,
-                                            0, 8, 0, 8, 0, 0, 0, 0, 0, 0, 0,
-                                            0, 8, 8, 8, 0, 0, 0, 0, 0, 0};
+using testing::ElementsAreArray;
 
-constexpr uint8_t kEd25519PublicKey2[32] = {0, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0,
-                                            0, 8, 0, 8, 8, 0, 8, 0, 0, 0, 0,
-                                            0, 8, 8, 8, 8, 8, 8, 0, 0, 0};
+constexpr std::array<uint8_t, 32> kEd25519PublicKey1 = {
+    0, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 8, 0,
+    0, 0, 0, 0, 0, 0, 0, 8, 8, 8, 0, 0, 0, 0, 0, 0};
 
-constexpr uint8_t kEd25519Signature1[64] = {
+constexpr std::array<uint8_t, 32> kEd25519PublicKey2 = {
+    0, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 8, 0, 8, 8,
+    0, 8, 0, 0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 0, 0, 0};
+
+constexpr std::array<uint8_t, 64> kEd25519Signature1 = {
     0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-constexpr uint8_t kEd25519Signature2[64] = {
+constexpr std::array<uint8_t, 64> kEd25519Signature2 = {
     0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -77,7 +79,8 @@ TEST(SignedWebBundleIntegrityBlockTest, EmptySignatureStack) {
       SignedWebBundleIntegrityBlock::Create(std::move(raw_integrity_block));
   ASSERT_FALSE(integrity_block.has_value());
   EXPECT_EQ(integrity_block.error(),
-            "Cannot create an integrity block without any signatures.");
+            "Cannot create an integrity block: The signature stack needs at "
+            "least one entry.");
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
@@ -98,19 +101,18 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithOneSignature) {
 
   auto public_key_stack = integrity_block->GetPublicKeyStack();
   EXPECT_EQ(public_key_stack.size(), 1ul);
-  EXPECT_TRUE(
-      base::ranges::equal(public_key_stack[0].bytes(), kEd25519PublicKey1));
+  EXPECT_EQ(public_key_stack[0].bytes(), kEd25519PublicKey1);
 
   auto signature_stack = integrity_block->signature_stack();
   EXPECT_EQ(signature_stack.size(), 1ul);
-  EXPECT_TRUE(base::ranges::equal(signature_stack[0].public_key().bytes(),
-                                  kEd25519PublicKey1));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[0].signature().bytes(),
-                                  kEd25519Signature1));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[0].complete_entry_cbor(),
-                                  kCompleteEntryCbor1));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[0].attributes_cbor(),
-                                  kAttributesCbor1));
+  EXPECT_EQ(signature_stack.entries()[0].public_key().bytes(),
+            kEd25519PublicKey1);
+  EXPECT_EQ(signature_stack.entries()[0].signature().bytes(),
+            kEd25519Signature1);
+  EXPECT_THAT(signature_stack.entries()[0].complete_entry_cbor(),
+              ElementsAreArray(kCompleteEntryCbor1));
+  EXPECT_THAT(signature_stack.entries()[0].attributes_cbor(),
+              ElementsAreArray(kAttributesCbor1));
 }
 
 TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
@@ -133,29 +135,27 @@ TEST(SignedWebBundleIntegrityBlockTest, ValidIntegrityBlockWithTwoSignatures) {
   EXPECT_EQ(integrity_block->size_in_bytes(), 42ul);
   auto public_key_stack = integrity_block->GetPublicKeyStack();
   EXPECT_EQ(public_key_stack.size(), 2ul);
-  EXPECT_TRUE(
-      base::ranges::equal(public_key_stack[0].bytes(), kEd25519PublicKey1));
-  EXPECT_TRUE(
-      base::ranges::equal(public_key_stack[1].bytes(), kEd25519PublicKey2));
+  EXPECT_EQ(public_key_stack[0].bytes(), kEd25519PublicKey1);
+  EXPECT_EQ(public_key_stack[1].bytes(), kEd25519PublicKey2);
 
   auto signature_stack = integrity_block->signature_stack();
   EXPECT_EQ(signature_stack.size(), 2ul);
-  EXPECT_TRUE(base::ranges::equal(signature_stack[0].public_key().bytes(),
-                                  kEd25519PublicKey1));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[0].signature().bytes(),
-                                  kEd25519Signature1));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[0].complete_entry_cbor(),
-                                  kCompleteEntryCbor1));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[0].attributes_cbor(),
-                                  kAttributesCbor1));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[1].public_key().bytes(),
-                                  kEd25519PublicKey2));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[1].signature().bytes(),
-                                  kEd25519Signature2));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[1].complete_entry_cbor(),
-                                  kCompleteEntryCbor2));
-  EXPECT_TRUE(base::ranges::equal(signature_stack[1].attributes_cbor(),
-                                  kAttributesCbor2));
+  EXPECT_EQ(signature_stack.entries()[0].public_key().bytes(),
+            kEd25519PublicKey1);
+  EXPECT_EQ(signature_stack.entries()[0].signature().bytes(),
+            kEd25519Signature1);
+  EXPECT_THAT(signature_stack.entries()[0].complete_entry_cbor(),
+              ElementsAreArray(kCompleteEntryCbor1));
+  EXPECT_THAT(signature_stack.entries()[0].attributes_cbor(),
+              ElementsAreArray(kAttributesCbor1));
+  EXPECT_EQ(signature_stack.entries()[1].public_key().bytes(),
+            kEd25519PublicKey2);
+  EXPECT_EQ(signature_stack.entries()[1].signature().bytes(),
+            kEd25519Signature2);
+  EXPECT_THAT(signature_stack.entries()[1].complete_entry_cbor(),
+              ElementsAreArray(kCompleteEntryCbor2));
+  EXPECT_THAT(signature_stack.entries()[1].attributes_cbor(),
+              ElementsAreArray(kAttributesCbor2));
 }
 
 }  // namespace web_package

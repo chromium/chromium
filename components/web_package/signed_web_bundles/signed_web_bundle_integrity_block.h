@@ -12,7 +12,7 @@
 #include "base/types/expected.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack.h"
 
 namespace web_package {
 
@@ -52,20 +52,22 @@ class SignedWebBundleIntegrityBlock {
   // The first public key in the vector is the first key that signed the Web
   // Bundle, the second key is the public key that countersigned the signature
   // of the first key, and so on.
+  //
+  // TODO(crbug.com/1376076): Remove this method - consumers should instead use
+  // `::signature_stack`.
   const std::vector<Ed25519PublicKey> GetPublicKeyStack() const;
 
-  const std::vector<SignedWebBundleSignatureStackEntry>& signature_stack()
-      const {
+  const SignedWebBundleSignatureStack& signature_stack() const {
     return signature_stack_;
   }
 
  private:
   explicit SignedWebBundleIntegrityBlock(
       uint64_t size,
-      std::vector<SignedWebBundleSignatureStackEntry>&& signature_stack);
+      SignedWebBundleSignatureStack&& signature_stack);
 
   uint64_t size_;
-  std::vector<SignedWebBundleSignatureStackEntry> signature_stack_;
+  SignedWebBundleSignatureStack signature_stack_;
 };
 
 }  // namespace web_package

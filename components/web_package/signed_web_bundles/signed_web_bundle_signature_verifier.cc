@@ -144,7 +144,7 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   }
 
   const SignedWebBundleSignatureStackEntry& signature_stack_entry =
-      integrity_block.signature_stack()[0];
+      integrity_block.signature_stack().entries()[0];
 
   // The algorithm shown in [1] is a more abstract view of the verification
   // process, i.e., it does not take the actual technical limitations imposed by
