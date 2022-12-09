@@ -16,6 +16,39 @@ interface SettingMetric {
   value: SettingChangeValue;
 }
 
+interface SettingAndType {
+  setting: Setting;
+  type: 'boolean'|'number';
+}
+
+// Sorted and grouped by page alphabetically.
+const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
+  // device_page/keyboard.ts
+  'settings.language.send_function_keys': {
+    setting: Setting.kKeyboardFunctionKeys,
+    type: 'boolean',
+  },
+  // device_page/pointers.ts
+  'settings.touchpad.sensitivity2': {
+    setting: Setting.kTouchpadSpeed,
+    type: 'number',
+  },
+  // os_a11y_page/display_and_magnification_page.ts
+  'settings.a11y.screen_magnifier_focus_following': {
+    setting: Setting.kFullscreenMagnifierFocusFollowing,
+    type: 'boolean',
+  },
+  'settings.a11y.screen_magnifier_mouse_following_mode': {
+    setting: Setting.kFullscreenMagnifierMouseFollowingMode,
+    type: 'number',
+  },
+  // os_privacy_page/os_privacy_page.js
+  'cros.device.peripheral_data_access_enabled': {
+    setting: Setting.kPeripheralDataAccessProtection,
+    type: 'boolean',
+  },
+};
+
 // Converts a given settings pref to a pair of setting ID and setting change
 // value. Used to record metrics about changes to pref-based settings.
 // The cast "as SettingChangeValue" addresses a known compile issue in TS where
@@ -24,45 +57,21 @@ interface SettingMetric {
 // as the value.
 export function convertPrefToSettingMetric(
     prefKey: string, prefValue: unknown): SettingMetric|null {
-  switch (prefKey) {
-    // device_page/keyboard.ts
-    case 'settings.language.send_function_keys':
-      assert(typeof prefValue === 'boolean');
-      return {
-        setting: Setting.kKeyboardFunctionKeys,
-        value: {boolValue: prefValue} as SettingChangeValue,
-      };
+  const settingAndType = PREF_TO_SETTING_MAP[prefKey];
+  if (!settingAndType) {
+    // Pref to setting metric not implemented.
+    return null;
+  }
 
-    // device_page/pointers.ts
-    case 'settings.touchpad.sensitivity2':
+  const {type, setting} = settingAndType;
+  switch (type) {
+    case 'boolean':
+      assert(typeof prefValue === 'boolean');
+      return {setting, value: {boolValue: prefValue} as SettingChangeValue};
+
+    case 'number':
       assert(typeof prefValue === 'number');
-      return {
-        setting: Setting.kTouchpadSpeed,
-        value: {intValue: prefValue} as SettingChangeValue,
-      };
-
-    // os_a11y_page/display_and_magnification_page.ts
-    case 'settings.a11y.screen_magnifier_focus_following':
-      assert(typeof prefValue === 'boolean');
-      return {
-        setting: Setting.kFullscreenMagnifierFocusFollowing,
-        value: {boolValue: prefValue} as SettingChangeValue,
-      };
-
-    case 'settings.a11y.screen_magnifier_mouse_following_mode':
-      assert(typeof prefValue === 'number');
-      return {
-        setting: Setting.kFullscreenMagnifierMouseFollowingMode,
-        value: {intValue: prefValue} as SettingChangeValue,
-      };
-
-    // os_privacy_page/os_privacy_page.js
-    case 'cros.device.peripheral_data_access_enabled':
-      assert(typeof prefValue === 'boolean');
-      return {
-        setting: Setting.kPeripheralDataAccessProtection,
-        value: {boolValue: prefValue} as SettingChangeValue,
-      };
+      return {setting, value: {intValue: prefValue} as SettingChangeValue};
 
     // pref to setting metric not implemented.
     default:
