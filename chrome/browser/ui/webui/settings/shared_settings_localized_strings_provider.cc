@@ -81,14 +81,6 @@ bool ShouldShowLacrosSideBySideWarningInLacros() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-std::string BuildOSSettingsUrl(const std::string& sub_page) {
-  std::string os_settings_url = chrome::kChromeUIOSSettingsURL;
-  os_settings_url.append(sub_page);
-  return os_settings_url;
-}
-#endif
-
 void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"captionsTitle", IDS_SETTINGS_CAPTIONS},
@@ -183,72 +175,6 @@ void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source) {
                           liveCaptionMultiLanguageEnabled);
 }
 
-void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"urlKeyedAnonymizedDataCollection",
-     IDS_SETTINGS_ENABLE_URL_KEYED_ANONYMIZED_DATA_COLLECTION},
-    {"urlKeyedAnonymizedDataCollectionDesc",
-     IDS_SETTINGS_ENABLE_URL_KEYED_ANONYMIZED_DATA_COLLECTION_DESC},
-    {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
-#if !BUILDFLAG(IS_CHROMEOS)
-    {"signinAllowedTitle", IDS_SETTINGS_SIGNIN_ALLOWED},
-    {"signinAllowedDescription", IDS_SETTINGS_SIGNIN_ALLOWED_DESC},
-#endif
-    {"searchSuggestPref", IDS_SETTINGS_SUGGEST_PREF},
-    {"enablePersonalizationLogging", IDS_SETTINGS_ENABLE_LOGGING_PREF},
-    {"enablePersonalizationLoggingDesc", IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC},
-    {"spellingDescription", IDS_SETTINGS_SPELLING_PREF_DESC},
-    {"searchSuggestPrefDesc", IDS_SETTINGS_SUGGEST_PREF_DESC},
-    {"linkDoctorPref", IDS_SETTINGS_LINKDOCTOR_PREF},
-    {"linkDoctorPrefDesc", IDS_SETTINGS_LINKDOCTOR_PREF_DESC},
-    {"driveSuggestPref", IDS_DRIVE_SUGGEST_PREF},
-    {"driveSuggestPrefDesc", IDS_DRIVE_SUGGEST_PREF_DESC},
-    {"priceEmailNotificationsPref", IDS_PRICE_TRACKING_SETTINGS_TITLE},
-    {"priceEmailNotificationsPrefDesc",
-     IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION},
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-}
-
-void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"autofillCheckboxLabel", IDS_SETTINGS_AUTOFILL_CHECKBOX_LABEL},
-      {"historyCheckboxLabel", IDS_SETTINGS_HISTORY_CHECKBOX_LABEL},
-      {"extensionsCheckboxLabel", IDS_SETTINGS_EXTENSIONS_CHECKBOX_LABEL},
-      {"openTabsCheckboxLabel", IDS_SETTINGS_OPEN_TABS_CHECKBOX_LABEL},
-      {"wifiConfigurationsCheckboxLabel",
-       IDS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL},
-      {"syncEverythingCheckboxLabel",
-       IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
-      {"appCheckboxLabel", IDS_SETTINGS_APPS_CHECKBOX_LABEL},
-      {"enablePaymentsIntegrationCheckboxLabel",
-       IDS_AUTOFILL_ENABLE_PAYMENTS_INTEGRATION_CHECKBOX_LABEL},
-      {"nonPersonalizedServicesSectionLabel",
-       IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
-      {"customizeSyncLabel", IDS_SETTINGS_CUSTOMIZE_SYNC},
-      {"syncData", IDS_SETTINGS_SYNC_DATA},
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-}
-
-void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"syncingTo", IDS_SETTINGS_PEOPLE_SYNCING_TO_ACCOUNT},
-      {"peopleSignIn", IDS_PROFILES_DICE_SIGNIN_BUTTON},
-      {"syncPaused", IDS_SETTINGS_PEOPLE_SYNC_PAUSED},
-      {"turnOffSync", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
-      {"settingsCheckboxLabel", IDS_SETTINGS_SETTINGS_CHECKBOX_LABEL},
-      {"syncNotWorking", IDS_SETTINGS_PEOPLE_SYNC_NOT_WORKING},
-      {"syncDisabled", IDS_PROFILES_DICE_SYNC_DISABLED_TITLE},
-      {"syncPasswordsNotWorking",
-       IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING},
-      {"peopleSignOut", IDS_SETTINGS_PEOPLE_SIGN_OUT},
-      {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
-      {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -262,20 +188,14 @@ void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-void AddSyncPageStrings(content::WebUIDataSource* html_source) {
+void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"syncDisabledByAdministrator", IDS_SIGNED_IN_WITH_SYNC_DISABLED_BY_POLICY},
-    {"passwordsCheckboxLabel", IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL},
     {"passphrasePlaceholder", IDS_SETTINGS_PASSPHRASE_PLACEHOLDER},
-    {"peopleSignInSyncPagePromptSecondaryWithAccount",
-     IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
-    {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
-     IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
     {"existingPassphraseTitle", IDS_SETTINGS_EXISTING_PASSPHRASE_TITLE},
     {"submitPassphraseButton", IDS_SETTINGS_SUBMIT_PASSPHRASE},
     {"encryptWithGoogleCredentialsLabel",
      IDS_SETTINGS_ENCRYPT_WITH_GOOGLE_CREDENTIALS_LABEL},
-    {"bookmarksCheckboxLabel", IDS_SETTINGS_BOOKMARKS_CHECKBOX_LABEL},
     {"encryptionOptionsTitle", IDS_SETTINGS_ENCRYPTION_OPTIONS},
     {"mismatchedPassphraseError", IDS_SETTINGS_MISMATCHED_PASSPHRASE_ERROR},
     {"emptyPassphraseError", IDS_SETTINGS_EMPTY_PASSPHRASE_ERROR},
@@ -283,15 +203,9 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
     {"syncPageTitle", IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
     {"passphraseConfirmationPlaceholder",
      IDS_SETTINGS_PASSPHRASE_CONFIRMATION_PLACEHOLDER},
-    {"readingListCheckboxLabel", IDS_SETTINGS_READING_LIST_CHECKBOX_LABEL},
     {"syncLoading", IDS_SETTINGS_SYNC_LOADING},
     {"syncDataEncryptedText", IDS_SETTINGS_SYNC_DATA_ENCRYPTED_TEXT},
     {"sync", IDS_SETTINGS_SYNC},
-    {"cancelSync", IDS_SETTINGS_SYNC_SETTINGS_CANCEL_SYNC},
-    {"syncSetupCancelDialogTitle", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_TITLE},
-    {"syncSetupCancelDialogBody", IDS_SETTINGS_SYNC_SETUP_CANCEL_DIALOG_BODY},
-    {"personalizeGoogleServicesTitle",
-     IDS_SETTINGS_PERSONALIZE_GOOGLE_SERVICES_TITLE},
     {"manageSyncedDataTitle",
      IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_TITLE_UNIFIED_CONSENT},
     {"enterPassphraseLabel", IDS_SYNC_ENTER_PASSPHRASE_BODY},
@@ -299,7 +213,6 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
     {"existingPassphraseLabelWithDate",
      IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM_WITH_DATE},
     {"existingPassphraseLabel", IDS_SYNC_FULL_ENCRYPTION_BODY_CUSTOM},
-    {"themeCheckboxLabel", IDS_SETTINGS_THEME_CHECKBOX_LABEL},
   // Settings warning for Lacros side-by-side mode.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"syncSettingsLacrosSideBySideWarning",
@@ -307,9 +220,6 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     {"syncSettingsLacrosSideBySideWarning",
      IDS_SYNC_SETTINGS_SIDE_BY_SIDE_WARNING_LACROS},
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-    {"browserSyncFeatureLabel", IDS_BROWSER_SETTINGS_SYNC_FEATURE_LABEL},
 #endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -328,11 +238,6 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
       "passphraseRecover",
       l10n_util::GetStringFUTF8(IDS_SETTINGS_PASSPHRASE_RECOVER,
                                 base::ASCIIToUTF16(sync_dashboard_url)));
-  html_source->AddString("activityControlsUrl",
-                         chrome::kGoogleAccountActivityControlsURL);
-  html_source->AddString(
-      "activityControlsUrlInPrivacyGuide",
-      chrome::kGoogleAccountActivityControlsURLInPrivacyGuide);
   html_source->AddString("syncDashboardUrl", sync_dashboard_url);
   html_source->AddString(
       "passphraseExplanationText",
@@ -355,18 +260,6 @@ void AddSyncPageStrings(content::WebUIDataSource* html_source) {
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddBoolean("shouldShowLacrosSideBySideWarning",
                           ShouldShowLacrosSideBySideWarningInLacros());
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  html_source->AddString(
-      "osSyncSetupSettingsUrl",
-      BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSetupSubpagePath));
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  html_source->AddString(
-      "osSyncSettingsUrl",
-      BuildOSSettingsUrl(chromeos::settings::mojom::kSyncSubpagePath));
 #endif
 
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);

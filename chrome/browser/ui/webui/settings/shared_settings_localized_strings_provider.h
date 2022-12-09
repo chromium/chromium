@@ -20,22 +20,14 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source);
 // Adds strings used by the <settings-live-caption> element.
 void AddLiveCaptionSectionStrings(content::WebUIDataSource* html_source);
 
-// Adds strings used by the <settings-personalization-options> element.
-void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source);
-
-// Adds strings used by the <settings-sync-controls> element.
-void AddSyncControlsStrings(content::WebUIDataSource* html_source);
-
-// Adds strings used by the <settings-sync-account-control> element.
-void AddSyncAccountControlStrings(content::WebUIDataSource* html_source);
-
 #if BUILDFLAG(IS_CHROMEOS)
 // Adds strings used by the <settings-password-prompt-dialog> element.
 void AddPasswordPromptDialogStrings(content::WebUIDataSource* html_source);
 #endif
 
-// Adds strings used by the <settings-sync-page> element.
-void AddSyncPageStrings(content::WebUIDataSource* html_source);
+// Adds strings used by both <settings-sync-page> and <os-settings-sync-page>
+// elements.
+void AddSharedSyncPageStrings(content::WebUIDataSource* html_source);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds load time data used by the <settings-nearby-share-subpage>.

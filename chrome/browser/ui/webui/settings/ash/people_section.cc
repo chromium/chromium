@@ -384,6 +384,13 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"syncEverythingCheckboxLabel",
        IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
+      {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
+      {"syncEverythingCheckboxLabel",
+       IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
+      {"nonPersonalizedServicesSectionLabel",
+       IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
+      {"customizeSyncLabel", IDS_SETTINGS_CUSTOMIZE_SYNC},
+      {"syncData", IDS_SETTINGS_SYNC_DATA},
       {"wallpaperCheckboxLabel", IDS_OS_SETTINGS_WALLPAPER_CHECKBOX_LABEL},
       {"osSyncTurnOff", IDS_OS_SETTINGS_SYNC_TURN_OFF},
       {"osSyncSettingsCheckboxLabel",
@@ -395,6 +402,11 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL},
       {"osSyncTurnOn", IDS_OS_SETTINGS_SYNC_TURN_ON},
       {"osSyncFeatureLabel", IDS_OS_SETTINGS_SYNC_FEATURE_LABEL},
+      {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
+      {"spellingDescription", IDS_SETTINGS_SPELLING_PREF_DESC},
+      {"enablePersonalizationLogging", IDS_SETTINGS_ENABLE_LOGGING_PREF},
+      {"enablePersonalizationLoggingDesc",
+       IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -588,10 +600,8 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                             ShouldShowParentalControlSettings(profile()),
                             supervised_user_service_);
 
-  ::settings::AddSyncControlsStrings(html_source);
-  ::settings::AddSyncAccountControlStrings(html_source);
   ::settings::AddPasswordPromptDialogStrings(html_source);
-  ::settings::AddSyncPageStrings(html_source);
+  ::settings::AddSharedSyncPageStrings(html_source);
 }
 
 void PeopleSection::AddHandlers(content::WebUI* web_ui) {
