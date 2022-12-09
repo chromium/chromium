@@ -59,6 +59,17 @@ struct CredentialFacet {
 // correspond to multiple PasswordForms.
 // TODO(crbug.com/1374029): Use class here instead of struct.
 struct CredentialUIEntry {
+  // Structure which represents affiliated domain and can be used by the UI to
+  // display affiliated domains as links.
+  struct DomainInfo {
+    // A human readable version of the URL of the credential's origin. For
+    // android credentials this is usually the app name.
+    std::string name;
+
+    // The URL that will be linked to when an entry is clicked.
+    GURL url;
+  };
+
   struct Less {
     bool operator()(const CredentialUIEntry& lhs,
                     const CredentialUIEntry& rhs) const;
@@ -131,6 +142,12 @@ struct CredentialUIEntry {
   // Returns the first URL among all the URLs in the facets associated with this
   // entry.
   GURL GetURL() const;
+
+  // Returns a vector of pairs, where the first element is formatted string
+  // representing website or an Android application and a second parameter is a
+  // link which should be opened when item is clicked. Can be used by the UI to
+  // display all the affiliated domains.
+  std::vector<DomainInfo> GetAffiliatedDomains() const;
 };
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);

@@ -100,8 +100,14 @@ declare global {
         isMuted: boolean;
       }
 
+      export interface DomainInfo {
+        name: string;
+        url: string;
+      }
+
       export interface PasswordUiEntry {
         urls: UrlCollection;
+        affiliatedDomains?: DomainInfo[];
         username: string;
         password?: string;
         federationText?: string;

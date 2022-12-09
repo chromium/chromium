@@ -7,10 +7,24 @@
 #include <vector>
 
 #include "components/password_manager/core/browser/password_form.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace password_manager {
+
+namespace {
+
+using testing::ElementsAre;
+using testing::UnorderedElementsAre;
+
+// Creates matcher for a given domain info
+auto ExpectDomain(const std::string& name, const GURL& url) {
+  return AllOf(testing::Field(&CredentialUIEntry::DomainInfo::name, name),
+               testing::Field(&CredentialUIEntry::DomainInfo::url, url));
+}
+
+}  // namespace
 
 TEST(CredentialUIEntryTest, CredentialUIEntryWithForm) {
   std::u16string username = u"testUsername00";
@@ -82,6 +96,47 @@ TEST(CredentialUIEntryTest, CredentialUIEntryWithFormsVector) {
   EXPECT_EQ(entry.username, username);
   EXPECT_EQ(entry.password, password);
   EXPECT_EQ(entry.blocked_by_user, false);
+}
+
+TEST(CredentialUIEntryTest, TestGetAffiliatedDomains) {
+  std::vector<PasswordForm> forms;
+
+  PasswordForm android_form;
+  android_form.signon_realm = "android://certificate_hash@com.test.client/";
+  android_form.app_display_name = "g3.com";
+  android_form.affiliated_web_realm = "https://test.com";
+
+  PasswordForm web_form;
+  web_form.signon_realm = "https://g.com/";
+  web_form.url = GURL(web_form.signon_realm);
+
+  CredentialUIEntry entry = CredentialUIEntry({android_form, web_form});
+  EXPECT_THAT(entry.GetAffiliatedDomains(),
+              UnorderedElementsAre(
+                  ExpectDomain(android_form.app_display_name,
+                               GURL(android_form.affiliated_web_realm)),
+                  ExpectDomain("g.com", web_form.url)));
+}
+
+TEST(CredentialUIEntryTest, TestGetAffiliatedDomainsHttpForm) {
+  PasswordForm form;
+  form.signon_realm = "http://g.com/";
+  form.url = GURL(form.signon_realm);
+
+  CredentialUIEntry entry = CredentialUIEntry({form});
+  EXPECT_THAT(entry.GetAffiliatedDomains(),
+              ElementsAre(ExpectDomain("http://g.com", GURL(form.url))));
+}
+
+TEST(CredentialUIEntryTest, TestGetAffiliatedDomainsEmptyAndroidForm) {
+  PasswordForm android_form;
+  android_form.signon_realm = "android://certificate_hash@com.test.client/";
+
+  CredentialUIEntry entry = CredentialUIEntry({android_form});
+  EXPECT_THAT(entry.GetAffiliatedDomains(),
+              ElementsAre(ExpectDomain(
+                  "client.test.com", GURL("https://play.google.com/store/apps/"
+                                          "details?id=com.test.client"))));
 }
 
 }  // namespace password_manager

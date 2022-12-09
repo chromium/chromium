@@ -9,8 +9,22 @@
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
+#include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/url_formatter/elide_url.h"
 
 namespace password_manager {
+
+namespace {
+
+constexpr char kPlayStoreAppPrefix[] =
+    "https://play.google.com/store/apps/details?id=";
+
+std::string GetOrigin(const url::Origin& origin) {
+  return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+      origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+}
+
+}  // namespace
 
 // CredentialFacet
 
@@ -168,6 +182,32 @@ std::string CredentialUIEntry::GetAffiliatedWebRealm() const {
 GURL CredentialUIEntry::GetURL() const {
   DCHECK(!facets.empty());
   return facets[0].url;
+}
+
+std::vector<CredentialUIEntry::DomainInfo>
+CredentialUIEntry::GetAffiliatedDomains() const {
+  std::vector<CredentialUIEntry::DomainInfo> domains;
+  for (const auto& facet : facets) {
+    CredentialUIEntry::DomainInfo domain;
+    password_manager::FacetURI facet_uri =
+        password_manager::FacetURI::FromPotentiallyInvalidSpec(
+            facet.signon_realm);
+    if (facet_uri.IsValidAndroidFacetURI()) {
+      domain.name = facet.display_name.empty()
+                        ? password_manager::SplitByDotAndReverse(
+                              facet_uri.android_package_name())
+                        : facet.display_name;
+      domain.url =
+          facet.affiliated_web_realm.empty()
+              ? GURL(kPlayStoreAppPrefix + facet_uri.android_package_name())
+              : GURL(facet.affiliated_web_realm);
+    } else {
+      domain.name = GetOrigin(url::Origin::Create(facet.url));
+      domain.url = facet.url;
+    }
+    domains.push_back(std::move(domain));
+  }
+  return domains;
 }
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {

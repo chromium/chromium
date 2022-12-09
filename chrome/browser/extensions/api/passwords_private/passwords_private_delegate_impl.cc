@@ -922,10 +922,24 @@ void PasswordsPrivateDelegateImpl::AuthenticateWithBiometrics(
 #endif
 }
 
-extensions::api::passwords_private::PasswordUiEntry
+api::passwords_private::PasswordUiEntry
 PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
     CredentialUIEntry credential) {
-  extensions::api::passwords_private::PasswordUiEntry entry;
+  api::passwords_private::PasswordUiEntry entry;
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordsGrouping)) {
+    entry.affiliated_domains =
+        std::vector<api::passwords_private::DomainInfo>();
+    base::ranges::transform(
+        credential.GetAffiliatedDomains(),
+        std::back_inserter(entry.affiliated_domains.value()),
+        [](const CredentialUIEntry::DomainInfo& domain) {
+          api::passwords_private::DomainInfo domainInfo;
+          domainInfo.name = domain.name;
+          domainInfo.url = domain.url.spec();
+          return domainInfo;
+        });
+  }
   entry.urls = extensions::CreateUrlCollectionFromCredential(credential);
   entry.username = base::UTF16ToUTF8(credential.username);
   entry.stored_in = extensions::StoreSetFromCredential(credential);

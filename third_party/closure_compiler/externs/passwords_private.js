@@ -142,7 +142,16 @@ chrome.passwordsPrivate.CompromisedInfo;
 
 /**
  * @typedef {{
+ *   name: string,
+ *   url: string
+ * }}
+ */
+chrome.passwordsPrivate.DomainInfo;
+
+/**
+ * @typedef {{
  *   urls: !chrome.passwordsPrivate.UrlCollection,
+ *   affiliatedDomains: (!Array<!chrome.passwordsPrivate.DomainInfo>|undefined),
  *   username: string,
  *   password: (string|undefined),
  *   federationText: (string|undefined),

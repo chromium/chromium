@@ -40,7 +40,7 @@
   direction: rtl;
 }
 
-.elide-left > span {
+.elide-left > a {
   direction: ltr;
   /* This styling is necessary to fix the display of domains starting with
    * numbers.

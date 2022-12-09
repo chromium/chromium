@@ -25,7 +25,6 @@ export interface PasswordDetailsCardElement {
     copyUsernameButton: CrIconButtonElement,
     deleteButton: CrButtonElement,
     editButton: CrButtonElement,
-    linkValue: HTMLElement,
     passwordValue: CrInputElement,
     showPasswordButton: CrIconButtonElement,
     toast: CrToastElement,

@@ -4,12 +4,11 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {Page, PasswordDetailsCardElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {CrInputElement, Page, PasswordDetailsCardElement, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createPasswordEntry} from './test_util.js';
@@ -37,8 +36,6 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(password.username, card.$.usernameValue.value);
     assertEquals(password.password, card.$.passwordValue.value);
     assertEquals('password', card.$.passwordValue.type);
-    assertEquals(password.urls.shown, card.$.linkValue.textContent!.trim());
-    assertEquals(password.urls.link, card.$.linkValue.getAttribute('href'));
     const note: CrInputElement|null =
         card.shadowRoot!.querySelector('#noteValue');
     assertTrue(!!note);
@@ -63,8 +60,6 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(password.username, card.$.usernameValue.value);
     assertEquals(password.federationText, card.$.passwordValue.value);
     assertEquals('text', card.$.passwordValue.type);
-    assertEquals(password.urls.shown, card.$.linkValue.textContent!.trim());
-    assertEquals(password.urls.link, card.$.linkValue.getAttribute('href'));
     const note: CrInputElement|null =
         card.shadowRoot!.querySelector('#noteValue');
     assertFalse(!!note);
@@ -117,5 +112,31 @@ suite('PasswordDetailsCardTest', function() {
     assertEquals(
         loadTimeData.getString('passwordCopiedToClipboard'),
         card.$.toast.textContent!.trim());
+  });
+
+  test('Links properly displayed', async function() {
+    const password = createPasswordEntry(
+        {url: 'test.com', username: 'vik', password: 'password69'});
+    password.affiliatedDomains = [
+      {name: 'test.com', url: 'https://test.com/'},
+      {name: 'Test App', url: 'https://m.test.com/'},
+    ];
+
+    const card = document.createElement('password-details-card');
+    card.password = password;
+    document.body.appendChild(card);
+    await flushTasks();
+
+    const listItemElements =
+        card.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
+    assertEquals(listItemElements.length, password.affiliatedDomains.length);
+
+    password.affiliatedDomains.forEach((expectedDomain, i) => {
+      const listItemElement = listItemElements[i];
+
+      assertTrue(!!listItemElement);
+      assertEquals(expectedDomain.name, listItemElement.textContent!.trim());
+      assertEquals(expectedDomain.url, listItemElement.href);
+    });
   });
 });
