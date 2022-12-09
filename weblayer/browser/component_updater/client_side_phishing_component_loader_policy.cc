@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -54,7 +53,7 @@ void LoadFromDisk(base::ScopedFD pb_fd, base::ScopedFD visual_tflite_model_fd) {
 void ClientSidePhishingComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    absl::optional<base::Value::Dict> manifest) {
   DCHECK(version.IsValid());
 
   auto pb_iterator =

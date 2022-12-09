@@ -39,30 +39,31 @@
 #include "components/component_updater/android/components_info_holder.h"
 #include "components/component_updater/android/embedded_component_loader_jni_headers/ComponentLoaderPolicyBridge_jni.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 namespace {
 
 constexpr char kManifestFileName[] = "manifest.json";
 
-std::unique_ptr<base::DictionaryValue> ReadManifest(
+absl::optional<base::Value::Dict> ReadManifest(
     const std::string& manifest_content) {
   JSONStringValueDeserializer deserializer(manifest_content);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
-  return (root && root->is_dict())
-             ? std::unique_ptr<base::DictionaryValue>(
-                   static_cast<base::DictionaryValue*>(root.release()))
-             : nullptr;
+  if (root && root->is_dict())
+    return std::move(*root).TakeDict();
+
+  return absl::nullopt;
 }
 
-std::unique_ptr<base::DictionaryValue> ReadManifestFromFd(int fd) {
+absl::optional<base::Value::Dict> ReadManifestFromFd(int fd) {
   std::string content;
   base::ScopedFILE file_stream(
       base::FileToFILE(base::File(std::move(fd)), "r"));
   return base::ReadStreamToString(file_stream.get(), &content)
              ? ReadManifest(content)
-             : nullptr;
+             : absl::nullopt;
 }
 
 void RecordComponentLoadStatusHistogram(const std::string& suffix,
@@ -155,7 +156,7 @@ AndroidComponentLoaderPolicy::GetComponentId(JNIEnv* env) {
 
 void AndroidComponentLoaderPolicy::NotifyNewVersion(
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    absl::optional<base::Value::Dict> manifest) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!manifest) {
@@ -163,7 +164,7 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
     return;
   }
   std::string version_ascii;
-  if (const std::string* ptr = manifest->FindStringKey("version")) {
+  if (const std::string* ptr = manifest->FindString("version")) {
     if (base::IsStringASCII(*ptr))
       version_ascii = *ptr;
   }

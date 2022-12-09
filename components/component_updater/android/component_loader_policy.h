@@ -17,11 +17,12 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "components/component_updater/android/component_loader_policy_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Version;
-class DictionaryValue;
 }  // namespace base
 
 namespace component_updater {
@@ -76,7 +77,7 @@ class ComponentLoaderPolicy {
   virtual void ComponentLoaded(
       const base::Version& version,
       base::flat_map<std::string, base::ScopedFD>& fd_map,
-      std::unique_ptr<base::DictionaryValue> manifest) = 0;
+      absl::optional<base::Value::Dict> manifest) = 0;
 
   // Called if connection to the service fails, components files are not found
   // or if the manifest file is missing or invalid.
@@ -137,7 +138,7 @@ class AndroidComponentLoaderPolicy {
   std::string GetComponentId() const;
 
   void NotifyNewVersion(base::flat_map<std::string, base::ScopedFD>& fd_map,
-                        std::unique_ptr<base::DictionaryValue> manifest);
+                        absl::optional<base::Value::Dict> manifest);
 
   void ComponentLoadFailedInternal(ComponentLoadResult error);
 

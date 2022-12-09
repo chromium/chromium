@@ -7,11 +7,12 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "android_webview/browser/aw_browser_process.h"
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/values.h"
@@ -38,14 +39,15 @@ OriginTrialsComponentLoaderPolicy::~OriginTrialsComponentLoaderPolicy() =
 void OriginTrialsComponentLoaderPolicy::ComponentLoaded(
     const base::Version& version,
     base::flat_map<std::string, base::ScopedFD>& fd_map,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    absl::optional<base::Value::Dict> manifest) {
+  DCHECK(manifest);
   // Read the configuration from the manifest and set values in browser
   // local_state. These will be used on the next browser restart.
   // If an individual configuration value is missing, treat as a reset to the
   // browser defaults.
   embedder_support::ReadOriginTrialsConfigAndPopulateLocalState(
       android_webview::AwBrowserProcess::GetInstance()->local_state(),
-      manifest ? std::move(manifest->GetDict()) : base::Value::Dict());
+      manifest ? std::move(*manifest) : base::Value::Dict());
 }
 
 void OriginTrialsComponentLoaderPolicy::ComponentLoadFailed(

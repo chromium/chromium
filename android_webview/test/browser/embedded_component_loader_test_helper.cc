@@ -5,7 +5,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -52,10 +51,9 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
   AvailableComponentLoaderPolicy() = default;
   ~AvailableComponentLoaderPolicy() override = default;
 
-  void ComponentLoaded(
-      const base::Version& version,
-      base::flat_map<std::string, base::ScopedFD>& fd_map,
-      std::unique_ptr<base::DictionaryValue> manifest) override {
+  void ComponentLoaded(const base::Version& version,
+                       base::flat_map<std::string, base::ScopedFD>& fd_map,
+                       absl::optional<base::Value::Dict> manifest) override {
     // Make sure these values match the values in the
     // EmbeddedComponentLoaderTest.
     ExpectTrueToJava(version.GetString() == "123.456.789",
@@ -85,10 +83,9 @@ class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
   UnavailableComponentLoaderPolicy() = default;
   ~UnavailableComponentLoaderPolicy() override = default;
 
-  void ComponentLoaded(
-      const base::Version& version,
-      base::flat_map<std::string, base::ScopedFD>& fd_map,
-      std::unique_ptr<base::DictionaryValue> manifest) override {
+  void ComponentLoaded(const base::Version& version,
+                       base::flat_map<std::string, base::ScopedFD>& fd_map,
+                       absl::optional<base::Value::Dict> manifest) override {
     ExpectTrueToJava(
         false, "UnavailableComponentLoaderPolicy#ComponentLoaded is called");
   }

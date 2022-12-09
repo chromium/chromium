@@ -12,10 +12,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
+#include "base/values.h"
 #include "components/component_updater/android/component_loader_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
 class Version;
 }  // namespace base
 
@@ -35,10 +36,9 @@ class EmptyComponentLoaderPolicy
       delete;
 
   // The following methods override ComponentLoaderPolicy.
-  void ComponentLoaded(
-      const base::Version& version,
-      base::flat_map<std::string, base::ScopedFD>& fd_map,
-      std::unique_ptr<base::DictionaryValue> manifest) override;
+  void ComponentLoaded(const base::Version& version,
+                       base::flat_map<std::string, base::ScopedFD>& fd_map,
+                       absl::optional<base::Value::Dict> manifest) override;
   void ComponentLoadFailed(
       component_updater::ComponentLoadResult error) override;
   void GetHash(std::vector<uint8_t>* hash) const override;
