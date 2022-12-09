@@ -29,11 +29,29 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("projector_xhr_loader", R"(
           semantics: {
             sender: "ChromeOS Projector"
-            description: "ChromeOS send Projector XHR requests"
+            description: "ChromeOS send Projector XHR requests. This is the "
+              "network call between the chromeOS Projector(Screencast) app and "
+              "the server. If the screencast app is enabled, the XHR requests "
+              "are made by the app to the allowlisted URLs after authorizing "
+              "the request with end user credentials or API key or auth token."
+            trigger: "When the user launches the Screencast app to create and "
+              "view screencasts."
+            data: "The recordings and transcripts done via the Screencast app."
             destination: GOOGLE_OWNED_SERVICE
           }
           policy: {
             cookies_allowed: YES
+            cookies_store: "user"
+            setting: "The admin can enable or disable this feature via Google "
+              "Admin console. On homepage, go to Devices > Chrome. On the left,"
+              "click Settings > Users & browsers. Scroll down to Content and "
+              "locate Screencast to enable/diable it. The feature is enabled "
+              "by default."
+            chrome_policy {
+              ProjectorEnabled {
+                ProjectorEnabled: true
+              }
+            }
           })");
 
 constexpr char kAuthorizationHeaderPrefix[] = "Bearer ";

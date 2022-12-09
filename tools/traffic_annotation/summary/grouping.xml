@@ -269,6 +269,7 @@ after discussions on the right group.
       <annotation id="customization_document"/>
       <annotation id="password_sync_token_fetcher"/>
       <annotation id="nearby_webrtc_connection"/>
+      <annotation id="projector_xhr_loader"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
