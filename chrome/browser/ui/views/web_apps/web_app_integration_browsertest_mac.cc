@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "content/public/test/browser_test.h"
 
@@ -34,15 +35,12 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   helper_.CheckWindowCreated();
   helper_.ClosePwa();
 
-  // Make the default profile be the last active profile by activating the
-  // originally created browser window. This way we can make sure that
-  // launching works correctly even if the last active profile isn't the profile
-  // the app is installed in.
-  browser()->window()->Activate();
-  content::RunAllTasksUntilIdle();
-  EXPECT_EQ(
-      g_browser_process->profile_manager()->GetLastUsedProfileDir().BaseName(),
-      base::FilePath("Default"));
+  // Make the default profile be the last active profile. This way we can make
+  // sure that launching works correctly even if the last active profile isn't
+  // the profile the app is installed in.
+  profiles::SetLastUsedProfile(base::FilePath("Default"));
+  EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfile(),
+            browser()->profile());
 
   helper_.LaunchFromAppShimFallback(Site::kStandalone);
   helper_.CheckWindowCreated();
