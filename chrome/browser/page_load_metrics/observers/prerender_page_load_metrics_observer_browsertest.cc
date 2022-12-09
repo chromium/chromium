@@ -15,12 +15,22 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 
 using PrerenderPageLoad = ukm::builders::PrerenderPageLoad;
 using PageLoad = ukm::builders::PageLoad;
+
+namespace {
+const char kResponseWithNoStore[] =
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Type: text/html; charset=utf-8\r\n"
+    "Cache-Control: no-store\r\n"
+    "\r\n"
+    "The server speaks HTTP!";
+}
 
 class PrerenderPageLoadMetricsObserverBrowserTest
     : public MetricIntegrationTest {
@@ -221,6 +231,11 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_FALSE(ukm_recorder().EntryHasMetric(
       prerendered_page_entry,
       PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name));
+  // Expect that when the response has no Cache-control:no-store we still record
+  // the `kMainFrameResource_RequestHasNoStoreName` metric for prerender.
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry,
+      PrerenderPageLoad::kMainFrameResource_RequestHasNoStoreName));
 
   const ukm::mojom::UkmEntry* initiator_page_entry = entries[initial_url].get();
   ASSERT_TRUE(initiator_page_entry);
@@ -493,4 +508,70 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(
       prerendered_page_entry,
       PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+}
+
+// Tests that metrics are recoreded correctly with Cache-control:no store when
+// prerender is activated.
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
+                       ActivationWithNoStoreResponse) {
+  // Create a HTTP response to control prerendering main-frame navigation.
+  net::test_server::ControllableHttpResponse main_document_response(
+      embedded_test_server(), "/main_document");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL("/main_document");
+
+  // Navigate to an initial page in primary frame tree.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
+
+  // Start a prerender, and navigate to a page that doesn't commit navigation.
+  {
+    content::test::PrerenderHostRegistryObserver registry_observer(
+        *web_contents());
+    prerender_helper_.AddPrerenderAsync(kPrerenderingUrl);
+    registry_observer.WaitForTrigger(kPrerenderingUrl);
+  }
+
+  int host_id = prerender_helper_.GetHostForUrl(kPrerenderingUrl);
+  content::test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                          host_id);
+  EXPECT_FALSE(prerender_observer.was_activated());
+
+  // Complete the prerender response with no cache and finish ongoing prerender
+  // main frame navigation. Start navigation in primary page to
+  // kPrerenderingUrl.
+  content::TestActivationManager primary_page_manager(web_contents(),
+                                                      kPrerenderingUrl);
+  ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("location = $1", kPrerenderingUrl)));
+
+  main_document_response.WaitForRequest();
+  main_document_response.Send(kResponseWithNoStore);
+  main_document_response.Done();
+  primary_page_manager.WaitForNavigationFinished();
+  prerender_observer.WaitForActivation();
+
+  // Force navigation to another page, which should force logging of metrics
+  // persisted at the end of the page load lifetime.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+
+  const ukm::mojom::UkmEntry* prerendered_page_entry =
+      entries[kPrerenderingUrl].get();
+  ASSERT_TRUE(prerendered_page_entry);
+
+  // RequestHasNoStore should be recorded with value 1 as the response has
+  // Cache-control no-store in it.
+  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      prerendered_page_entry,
+      PrerenderPageLoad::kMainFrameResource_RequestHasNoStoreName));
+  ukm_recorder().ExpectEntryMetric(
+      prerendered_page_entry,
+      PrerenderPageLoad::kMainFrameResource_RequestHasNoStoreName, 1);
 }

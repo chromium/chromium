@@ -11,6 +11,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
@@ -97,6 +98,13 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
   embedder_histogram_suffix_ =
       navigation_handle->GetPrerenderEmbedderHistogramSuffix();
 
+  const net::HttpResponseHeaders* response_headers =
+      navigation_handle->GetResponseHeaders();
+  if (response_headers) {
+    main_frame_resource_has_no_store_ =
+        response_headers->HasHeaderValue("cache-control", "no-store");
+  }
+
   // |navigation_handle| here is for the activation navigation, while
   // |GetDelegate().GetNavigationStart()| is the start time of initial prerender
   // navigation.
@@ -106,11 +114,15 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
       AppendSuffix(internal::kHistogramPrerenderNavigationToActivation),
       navigation_to_activation, base::Milliseconds(10), base::Minutes(10), 100);
 
-  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
-      .SetWasPrerendered(true)
-      .SetTiming_NavigationToActivation(
-          navigation_to_activation.InMilliseconds())
-      .Record(ukm::UkmRecorder::Get());
+  ukm::builders::PrerenderPageLoad builder(GetDelegate().GetPageUkmSourceId());
+  if (main_frame_resource_has_no_store_.has_value()) {
+    builder.SetMainFrameResource_RequestHasNoStore(
+        main_frame_resource_has_no_store_.value() ? 1 : 0);
+  }
+
+  builder.SetWasPrerendered(true).SetTiming_NavigationToActivation(
+      navigation_to_activation.InMilliseconds());
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(

@@ -77,6 +77,12 @@ class PrerenderPageLoadMetricsObserver
   // embedder histogram suffix when the trigger type is kEmbedder.
   std::string AppendSuffix(const std::string& histogram_name) const;
 
+  // Set to true if the activation navigation main frame resource has a
+  // 'Cache-control: no-store' response header and set to false otherwise. Not
+  // set if Chrome did not receive response headers or if the prerendered page
+  // load was not activated.
+  absl::optional<bool> main_frame_resource_has_no_store_;
+
   // The type to trigger prerendering.
   absl::optional<content::PrerenderTriggerType> trigger_type_;
   // The suffix of a prerender embedder. This value is valid only when

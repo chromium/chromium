@@ -294,6 +294,11 @@ class UkmPageLoadMetricsObserver
   // didn't get a response from the CookieManager before recording metrics.
   absl::optional<bool> main_frame_request_had_cookies_;
 
+  // Set to true if the main frame resource has a 'Cache-control: no-store'
+  // response header and set to false otherwise. Not set if there is no response
+  // header present.
+  absl::optional<bool> main_frame_resource_has_no_store_;
+
   // The browser context this navigation is operating in.
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 

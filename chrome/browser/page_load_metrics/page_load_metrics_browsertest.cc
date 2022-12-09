@@ -122,6 +122,13 @@ namespace {
 
 constexpr char kCacheablePathPrefix[] = "/cacheable";
 
+const char kResponseWithNoStore[] =
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Type: text/html; charset=utf-8\r\n"
+    "Cache-Control: no-store\r\n"
+    "\r\n"
+    "The server speaks HTTP!";
+
 constexpr char kCreateFrameAtPositionScript[] = R"(
   var new_iframe = document.createElement('iframe');
   new_iframe.src = $1;
@@ -1096,6 +1103,81 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, CachedPage) {
   }
 
   VerifyNavigationMetrics({url});
+}
+
+// Test that we log kMainFrameResource_RequestHasNoStore when response has
+// cache-control:no-store response header.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MainFrameHasNoStore) {
+  // Create a HTTP response to control main-frame navigation to send no-store
+  // response.
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/main_document");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL kUrl = embedded_test_server()->GetURL("/main_document");
+
+  // Load the document and specify no-store for the main resource.
+  content::TestNavigationManager navigation_manager(web_contents(), kUrl);
+  browser()->OpenURL(content::OpenURLParams(kUrl, content::Referrer(),
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            ui::PAGE_TRANSITION_TYPED, false));
+
+  // The navigation starts.
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+  navigation_manager.ResumeNavigation();
+
+  // The response's headers are received.
+  response.WaitForRequest();
+  response.Send(kResponseWithNoStore);
+  response.Done();
+  EXPECT_TRUE(navigation_manager.WaitForResponse());
+  navigation_manager.ResumeNavigation();
+  navigation_manager.WaitForNavigationFinished();
+  NavigateToUntrackedUrl();
+
+  auto entries =
+      test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const auto& kv : entries) {
+    auto* const no_store_entry = kv.second.get();
+    test_ukm_recorder_->ExpectEntrySourceHasUrl(no_store_entry, kUrl);
+
+    // RequestHasNoStore event should be recorded with value 1 as the response
+    // as no-store in it.
+    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
+        no_store_entry, PageLoad::kMainFrameResource_RequestHasNoStoreName));
+    test_ukm_recorder_->ExpectEntryMetric(
+        no_store_entry, PageLoad::kMainFrameResource_RequestHasNoStoreName, 1);
+  }
+}
+
+// Test that we set kMainFrameResource_RequestHasNoStore to false when response
+// has no cache-control:no-store header.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       MainFrameDoesnotHaveNoStore) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an URL to see if metrics are recorded.
+  const GURL kUrl = embedded_test_server()->GetURL("/title1.html");
+
+  // Navigate to the |kUrl| with no cache-control: no store header.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  NavigateToUntrackedUrl();
+
+  auto entries =
+      test_ukm_recorder_->GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  for (const auto& kv : entries) {
+    auto* const no_store_entry = kv.second.get();
+    test_ukm_recorder_->ExpectEntrySourceHasUrl(no_store_entry, kUrl);
+
+    // RequestHasNoStore event should be recorded with value false.
+    EXPECT_TRUE(test_ukm_recorder_->EntryHasMetric(
+        no_store_entry, PageLoad::kMainFrameResource_RequestHasNoStoreName));
+    test_ukm_recorder_->ExpectEntryMetric(
+        no_store_entry, PageLoad::kMainFrameResource_RequestHasNoStoreName, 0);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NewPageInNewForegroundTab) {

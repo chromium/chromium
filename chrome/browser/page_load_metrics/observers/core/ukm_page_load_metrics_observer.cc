@@ -326,8 +326,11 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
   connection_info_ = navigation_handle->GetConnectionInfo();
   const net::HttpResponseHeaders* response_headers =
       navigation_handle->GetResponseHeaders();
-  if (response_headers)
+  if (response_headers) {
     http_response_code_ = response_headers->response_code();
+    main_frame_resource_has_no_store_ =
+        response_headers->HasHeaderValue("cache-control", "no-store");
+  }
   // The PageTransition for the navigation may be updated on commit.
   page_transition_ = navigation_handle->GetPageTransition();
   was_cached_ = navigation_handle->WasResponseCached();
@@ -872,6 +875,12 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
     builder.SetNet_DownstreamKbpsEstimate_OnNavigationStart(
         static_cast<int64_t>(downstream_kbps_estimate_.value()));
   }
+
+  if (main_frame_resource_has_no_store_.has_value()) {
+    builder.SetMainFrameResource_RequestHasNoStore(
+        main_frame_resource_has_no_store_.value() ? 1 : 0);
+  }
+
   if (GetDelegate().DidCommit() && was_cached_) {
     builder.SetWasCached(1);
   }
