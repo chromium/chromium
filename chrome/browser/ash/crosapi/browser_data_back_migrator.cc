@@ -1105,7 +1105,15 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
       crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone;
   if (policy_init_state ==
       crosapi::browser_util::PolicyInitState::kBeforeInit) {
-    // TODO(b/244572632): Read cached flag.
+    auto parsed = crosapi::browser_util::ParseLacrosDataBackwardMigrationMode(
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            crosapi::browser_util::
+                kLacrosDataBackwardMigrationModePolicySwitch));
+
+    migration_mode =
+        parsed.has_value()
+            ? parsed.value()
+            : crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone;
   } else {
     DCHECK_EQ(policy_init_state,
               crosapi::browser_util::PolicyInitState::kAfterInit);

@@ -229,6 +229,28 @@ void FeatureFlagsUpdate::UpdateSessionManager() {
     }
   }
 
+  const PrefService::Preference* lacros_data_backward_migration_mode_pref =
+      g_browser_process->local_state()->FindPreference(
+          ::prefs::kLacrosDataBackwardMigrationMode);
+  if (lacros_data_backward_migration_mode_pref->IsManaged()) {
+    auto value =
+        lacros_data_backward_migration_mode_pref->GetValue()->GetString();
+    auto* entry = ::about_flags::GetCurrentFlagsState()->FindFeatureEntryByName(
+        crosapi::browser_util::
+            kLacrosDataBackwardMigrationModePolicyInternalName);
+    DCHECK(entry);
+    int index;
+    for (index = 0; index < entry->NumOptions(); ++index) {
+      if (value == entry->ChoiceForOption(index).command_line_value)
+        break;
+    }
+    if (static_cast<size_t>(index) != entry->choices.size()) {
+      LOG(ERROR) << "Updating the lacros_data_backward_migration_mode: "
+                 << index;
+      flags.insert(entry->NameForOption(index));
+    }
+  }
+
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(
       primary_user->GetAccountId());
   SessionManagerClient::Get()->SetFeatureFlagsForUser(

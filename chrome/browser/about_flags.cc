@@ -978,6 +978,22 @@ const FeatureEntry::Choice kLacrosAvailabilityPolicyChoices[] = {
      crosapi::browser_util::kLacrosAvailabilityPolicyLacrosOnly},
 };
 
+const FeatureEntry::Choice kLacrosDataBackwardMigrationModePolicyChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyNone,
+     crosapi::browser_util::kLacrosDataBackwardMigrationModePolicySwitch,
+     crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyNone},
+    {crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyKeepNone,
+     crosapi::browser_util::kLacrosDataBackwardMigrationModePolicySwitch,
+     crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyKeepNone},
+    {crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyKeepSafeData,
+     crosapi::browser_util::kLacrosDataBackwardMigrationModePolicySwitch,
+     crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyKeepSafeData},
+    {crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyKeepAll,
+     crosapi::browser_util::kLacrosDataBackwardMigrationModePolicySwitch,
+     crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyKeepAll},
+};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const FeatureEntry::Choice kForceUIDirectionChoices[] = {
@@ -3774,6 +3790,10 @@ const FeatureEntry kFeatureEntries[] = {
     // Used to carry the policy value crossing the Chrome process lifetime.
     {crosapi::browser_util::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
+    // Used to carry the policy value crossing the Chrome process lifetime.
+    {crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyInternalName,
+     "", "", kOsCrOS,
+     MULTI_VALUE_TYPE(kLacrosDataBackwardMigrationModePolicyChoices)},
     {kLacrosSupportInternalName, flag_descriptions::kLacrosSupportName,
      flag_descriptions::kLacrosSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLacrosSupport)},
@@ -9666,6 +9686,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // Skip lacros-availability-policy always. This is a pseudo entry
   // and used to carry the policy value crossing the Chrome's lifetime.
   if (!strcmp(crosapi::browser_util::kLacrosAvailabilityPolicyInternalName,
+              entry.internal_name)) {
+    return true;
+  }
+
+  // Skip lacros-backward-data-migration-policy always. This is a pseudo entry
+  // and used to carry the policy value crossing the Chrome's lifetime.
+  if (!strcmp(crosapi::browser_util::
+                  kLacrosDataBackwardMigrationModePolicyInternalName,
               entry.internal_name)) {
     return true;
   }

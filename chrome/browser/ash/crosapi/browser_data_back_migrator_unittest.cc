@@ -338,6 +338,7 @@ TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeCommonIndexedDB) {
 }
 
 namespace {
+
 // This implementation of RAII for LacrosDataBackwardMigrationMode is intended
 // to make it easy reset the state between runs.
 class ScopedLacrosDataBackwardMigrationModeCache {
@@ -366,6 +367,29 @@ class ScopedLacrosDataBackwardMigrationModeCache {
     crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(policy);
   }
 };
+
+// This implementation of RAII for the backward migration flag to make it easy
+// to reset state between tests.
+class ScopedLacrosDataBackwardMigrationModeCommandLine {
+ public:
+  explicit ScopedLacrosDataBackwardMigrationModeCommandLine(
+      crosapi::browser_util::LacrosDataBackwardMigrationMode mode) {
+    base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+    cmdline->AppendSwitchASCII(
+        crosapi::browser_util::kLacrosDataBackwardMigrationModePolicySwitch,
+        GetLacrosDataBackwardMigrationModeName(mode));
+  }
+  ScopedLacrosDataBackwardMigrationModeCommandLine(
+      const ScopedLacrosDataBackwardMigrationModeCommandLine&) = delete;
+  ScopedLacrosDataBackwardMigrationModeCommandLine& operator=(
+      const ScopedLacrosDataBackwardMigrationModeCommandLine&) = delete;
+  ~ScopedLacrosDataBackwardMigrationModeCommandLine() {
+    base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
+    cmdline->RemoveSwitch(
+        crosapi::browser_util::kLacrosDataBackwardMigrationModePolicySwitch);
+  }
+};
+
 }  // namespace
 
 class BrowserDataBackMigratorTriggeringTest : public testing::Test {
@@ -405,6 +429,15 @@ TEST_F(BrowserDataBackMigratorTriggeringTest, FeatureEnabledAfterInit) {
 
   EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
       crosapi::browser_util::PolicyInitState::kAfterInit));
+}
+
+TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledBeforeInit) {
+  // Simulate the flag being set by session_manager.
+  ScopedLacrosDataBackwardMigrationModeCommandLine scoped_cmdline(
+      crosapi::browser_util::LacrosDataBackwardMigrationMode::kKeepAll);
+
+  EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
+      crosapi::browser_util::PolicyInitState::kBeforeInit));
 }
 
 TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledAfterInit) {

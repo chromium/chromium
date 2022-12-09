@@ -4371,6 +4371,15 @@
     "expiry_milestone": 120
   },
   {
+    "name": "lacros-data-backward-migration-policy",
+    "owners": [ "vsavu", "lacros-team@google.com" ],
+    // Once Lacros is launched, and all users switch to use lacros fully,
+    // this flag can be removed. Backward migration itself will be removed
+    // when Ash is no longer a browser.
+    // TODO(https://crbug.com/1148474).
+    "expiry_milestone": 130
+  },
+  {
     "name": "lacros-merge-icu-data-file",
     "owners": [ "andreaorru", "hidehiko", "lacros-team@google.com" ],
     "expiry_milestone": 130

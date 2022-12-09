@@ -56928,6 +56928,8 @@ from previous Chrome versions.
   <int value="-2075870708" label="MediaRemotingEncrypted:disabled"/>
   <int value="-2075807193" label="enable-webusb-on-any-origin"/>
   <int value="-2075725205" label="disable-new-zip-unpacker"/>
+  <int value="-2075720567"
+      label="lacros-data-backward-migration-policy:disabled"/>
   <int value="-2075607807" label="CSSOverflowForReplacedElements:disabled"/>
   <int value="-2074936999" label="AutoDisableAccessibilityV2:disabled"/>
   <int value="-2074080173" label="NightLight:disabled"/>
@@ -64093,6 +64095,7 @@ from previous Chrome versions.
   <int value="2104439359"
       label="OmniboxDefaultTypedNavigationsToHttps:enabled"/>
   <int value="2104788328" label="use-winrt-midi-api"/>
+  <int value="2106254561" label="lacros-data-backward-migration-policy"/>
   <int value="2106798283" label="SafetyTip:disabled"/>
   <int value="2106855416" label="HostWindowsInAppShimProcess:enabled"/>
   <int value="2107406401" label="UseDnsHttpsSvcb:disabled"/>
@@ -64115,6 +64118,8 @@ from previous Chrome versions.
   <int value="2121056855" label="IncreaseInputAudioBufferSize:disabled"/>
   <int value="2121550859" label="PreferHtmlOverPlugins:enabled"/>
   <int value="2121776031" label="auto-virtual-keyboard"/>
+  <int value="2121870664"
+      label="lacros-data-backward-migration-policy:enabled"/>
   <int value="2122023503" label="enable-win32k-lockdown-mimetypes"/>
   <int value="2122863344" label="WebViewSurfaceControl:disabled"/>
   <int value="2122876605" label="enable-bleeding-edge-rendering-fast-paths"/>
