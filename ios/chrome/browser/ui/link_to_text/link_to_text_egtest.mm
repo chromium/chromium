@@ -218,14 +218,8 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 }
 
 // Tests that a link can be generated for a simple text selection.
-// TODO(crbug.com/1232101) Re-enable flakey tests.
-- (void)DISABLE_testGenerateLinkForSimpleText {
-  // TODO(crbug.com/1149603): Re-enable this test on iPad once presenting
-  // popovers work.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test is disabled on iPad.");
-  }
-
+- (void)testGenerateLinkForSimpleText {
+  [ChromeEarlGrey clearPasteboard];
   GURL pageURL = self.testServer->GetURL(kTestURL);
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];
@@ -270,22 +264,16 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
 
   // Assert the values stored in the pasteboard. Lower-casing the expected
   // GURL as that is what the JS library is doing.
-  std::vector<TextFragment> fragments{
-      TextFragment(base::ToLowerASCII(kToBeSelectedText))};
-  GURL expectedGURL =
-      shared_highlighting::AppendFragmentDirectives(pageURL, fragments);
+  NSString* stringURL = base::SysUTF8ToNSString(pageURL.spec());
+  NSString* fragment = @"#:~:text=bar-,";
+  NSString* selectedText =
+      base::SysUTF8ToNSString(base::ToLowerASCII(kToBeSelectedText));
 
-  // Wait for the value to be in the pasteboard.
-  GREYCondition* getPasteboardValue = [GREYCondition
-      conditionWithName:@"Could not get an expected URL from the pasteboard."
-                  block:^{
-                    return expectedGURL == [ChromeEarlGrey pasteboardURL];
-                  }];
+  NSString* expectedURL =
+      [NSString stringWithFormat:@"%@%@%@", stringURL, fragment, selectedText];
+  [ChromeEarlGrey verifyStringCopied:expectedURL];
 
-  GREYAssert(
-      [getPasteboardValue
-          waitWithTimeout:base::test::ios::kWaitForActionTimeout.InSecondsF()],
-      @"Could not get expected URL from pasteboard.");
+  [ChromeEarlGrey clearPasteboard];
 }
 
 - (void)testBadSelectionDisablesGenerateLink {

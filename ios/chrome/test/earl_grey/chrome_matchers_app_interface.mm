@@ -805,7 +805,13 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)systemSelectionCalloutOverflowButton {
-  return grey_accessibilityID(@"show.next.items.menu.button");
+  if (@available(iOS 16.0, *)) {
+    return grey_allOf(
+        grey_accessibilityLabel(@"Forward"),
+        grey_kindOfClass(NSClassFromString(@"_UIEditMenuPageButton")), nil);
+  } else {
+    return grey_accessibilityID(@"show.next.items.menu.button");
+  }
 }
 
 + (id<GREYMatcher>)copyActivityButton {
