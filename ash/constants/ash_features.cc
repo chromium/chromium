@@ -1358,7 +1358,7 @@ BASE_FEATURE(kLockScreenInlineReply,
 // Enables new flow for Education license packaged devices.
 BASE_FEATURE(kEducationEnrollmentOobeFlow,
              "EducationEnrollmentOobeFlow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables notifications on the lock screen.
 BASE_FEATURE(kLockScreenNotifications,
