@@ -447,9 +447,8 @@ void InputController::Close() {
   sync_writer_->Close();
 
 #if defined(AUDIO_POWER_MONITORING)
-  // Send UMA stats if enabled.
+  // Send stats if enabled.
   if (power_measurement_is_enabled_) {
-    LogSilenceState(silence_state_);
     log_string = base::StringPrintf("%s(silence_state=%s)", kLogStringPrefix,
                                     SilenceStateToString(silence_state_));
     event_handler_->OnLog(log_string);
@@ -649,10 +648,6 @@ void InputController::UpdateSilenceState(bool silence) {
   }
 }
 
-void InputController::LogSilenceState(SilenceState value) {
-  UMA_HISTOGRAM_ENUMERATION("Media.AudioInputControllerSessionSilenceReport",
-                            value, SILENCE_STATE_MAX + 1);
-}
 #endif
 
 void InputController::LogCaptureStartupResult(CaptureStartupResult result) {
