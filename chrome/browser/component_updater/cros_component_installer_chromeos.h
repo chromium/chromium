@@ -78,10 +78,10 @@ class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value& manifest,
+      const base::Value::Dict& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value& manifest,
+  bool VerifyInstallation(const base::Value::Dict& manifest,
                           const base::FilePath& install_dir) const override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
@@ -109,7 +109,7 @@ class EnvVersionInstallerPolicy : public CrOSComponentInstallerPolicy {
   // ComponentInstallerPolicy:
   void ComponentReady(const base::Version& version,
                       const base::FilePath& path,
-                      base::Value manifest) override;
+                      base::Value::Dict manifest) override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
  private:
@@ -134,7 +134,7 @@ class LacrosInstallerPolicy : public CrOSComponentInstallerPolicy {
   // ComponentInstallerPolicy:
   void ComponentReady(const base::Version& version,
                       const base::FilePath& path,
-                      base::Value manifest) override;
+                      base::Value::Dict manifest) override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
   static void SetAshVersionForTest(const char* version);
@@ -154,7 +154,7 @@ class DemoAppInstallerPolicy : public CrOSComponentInstallerPolicy {
   // ComponentInstallerPolicy:
   void ComponentReady(const base::Version& version,
                       const base::FilePath& path,
-                      base::Value manifest) override;
+                      base::Value::Dict manifest) override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 };
 

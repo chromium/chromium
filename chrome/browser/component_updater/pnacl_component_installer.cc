@@ -116,10 +116,10 @@ base::DictionaryValue* ReadPnaclManifest(const base::FilePath& unpack_path) {
 
 // Check that the component's manifest is for PNaCl, and check the
 // PNaCl manifest indicates this is the correct arch-specific package.
-bool CheckPnaclComponentManifest(const base::Value& manifest,
+bool CheckPnaclComponentManifest(const base::Value::Dict& manifest,
                                  const base::DictionaryValue& pnacl_manifest) {
   // Make sure we have the right |manifest| file.
-  const std::string* name = manifest.FindStringKey("name");
+  const std::string* name = manifest.FindString("name");
   if (!name || !base::IsStringASCII(*name)) {
     LOG(WARNING) << "'name' field is missing from manifest!";
     return false;
@@ -133,7 +133,7 @@ bool CheckPnaclComponentManifest(const base::Value& manifest,
     return false;
   }
 
-  const std::string* proposed_version = manifest.FindStringKey("version");
+  const std::string* proposed_version = manifest.FindString("version");
   if (!proposed_version || !base::IsStringASCII(*proposed_version)) {
     LOG(WARNING) << "'version' field is missing from manifest!";
     return false;
@@ -175,14 +175,14 @@ class PnaclComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value& manifest,
+      const base::Value::Dict& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value& manifest,
+  bool VerifyInstallation(const base::Value::Dict& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value manifest) override;
+                      base::Value::Dict manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
@@ -203,7 +203,7 @@ bool PnaclComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 PnaclComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -211,7 +211,7 @@ PnaclComponentInstallerPolicy::OnCustomInstall(
 void PnaclComponentInstallerPolicy::OnCustomUninstall() {}
 
 bool PnaclComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   std::unique_ptr<base::DictionaryValue> pnacl_manifest(
       ReadPnaclManifest(install_dir));
@@ -225,7 +225,7 @@ bool PnaclComponentInstallerPolicy::VerifyInstallation(
 void PnaclComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   CheckVersionCompatiblity(version);
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},

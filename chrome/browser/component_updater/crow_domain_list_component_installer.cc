@@ -73,7 +73,7 @@ bool CrowDomainListComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 CrowDomainListComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // No custom steps.
 }
@@ -88,7 +88,7 @@ base::FilePath CrowDomainListComponentInstallerPolicy::GetInstalledPath(
 void CrowDomainListComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
@@ -99,7 +99,7 @@ void CrowDomainListComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool CrowDomainListComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // Checking the component downloaded successfully is sufficient here;
   // the config parser will validate later.

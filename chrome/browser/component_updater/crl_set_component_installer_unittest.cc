@@ -83,10 +83,10 @@ class CRLSetComponentInstallerTest : public PlatformTest {
 
   void InstallCRLSet(const base::FilePath& raw_crl_file) {
     base::CopyFile(raw_crl_file, temp_dir_.GetPath().AppendASCII("crl-set"));
-    ASSERT_TRUE(policy_->VerifyInstallation(
-        base::Value(base::Value::Type::DICTIONARY), temp_dir_.GetPath()));
+    ASSERT_TRUE(
+        policy_->VerifyInstallation(base::Value::Dict(), temp_dir_.GetPath()));
     policy_->ComponentReady(base::Version("1.0"), temp_dir_.GetPath(),
-                            base::Value(base::Value::Type::DICTIONARY));
+                            base::Value::Dict());
     task_environment_.RunUntilIdle();
   }
 

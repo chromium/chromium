@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_switches.h"
@@ -83,7 +84,7 @@ bool TrustTokenKeyCommitmentsComponentInstallerPolicy::
 
 update_client::CrxInstaller::Result
 TrustTokenKeyCommitmentsComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -105,7 +106,7 @@ TrustTokenKeyCommitmentsComponentInstallerPolicy::GetInstalledPath(
 void TrustTokenKeyCommitmentsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
@@ -116,7 +117,7 @@ void TrustTokenKeyCommitmentsComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool TrustTokenKeyCommitmentsComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the commitments here, since we'll do the
   // checking in NetworkService::SetTrustTokenKeyCommitments.

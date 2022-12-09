@@ -32,9 +32,9 @@ constexpr uint8_t kSha256Hash[] = {
     0x54, 0xb0, 0xd2, 0xdd, 0xa5, 0x6e, 0x05, 0x6b, 0xe8, 0x73, 0x47,
     0xf6, 0xc4, 0x11, 0x9f, 0xbc, 0xb3, 0x09, 0xb3, 0x5b, 0x40};
 
-base::Value test_manifest(const base::Version& version) {
-  base::Value manifest(base::Value::Type::DICTIONARY);
-  manifest.SetStringKey("version", version.GetString());
+base::Value::Dict test_manifest(const base::Version& version) {
+  base::Value::Dict manifest;
+  manifest.Set("version", version.GetString());
   return manifest;
 }
 
@@ -72,10 +72,10 @@ class TestAwComponentInstallerPolicy : public AwComponentInstallerPolicy {
       const TestAwComponentInstallerPolicy&) = delete;
 
   MOCK_METHOD2(OnCustomInstall,
-               update_client::CrxInstaller::Result(const base::Value&,
+               update_client::CrxInstaller::Result(const base::Value::Dict&,
                                                    const base::FilePath&));
   MOCK_CONST_METHOD2(VerifyInstallation,
-                     bool(const base::Value& manifest,
+                     bool(const base::Value::Dict& manifest,
                           const base::FilePath& dir));
   MOCK_CONST_METHOD0(SupportsGroupPolicyEnabledComponentUpdates, bool());
   MOCK_CONST_METHOD0(RequiresNetworkEncryption, bool());

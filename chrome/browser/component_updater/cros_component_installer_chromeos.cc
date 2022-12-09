@@ -158,7 +158,7 @@ bool CrOSComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 CrOSComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   cros_component_installer_->EmitInstalledSignal(GetName());
 
@@ -173,7 +173,7 @@ void CrOSComponentInstallerPolicy::OnCustomUninstall() {
 }
 
 bool CrOSComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   return true;
 }
@@ -203,8 +203,8 @@ EnvVersionInstallerPolicy::~EnvVersionInstallerPolicy() = default;
 
 void EnvVersionInstallerPolicy::ComponentReady(const base::Version& version,
                                                const base::FilePath& path,
-                                               base::Value manifest) {
-  std::string* min_env_version = manifest.FindStringKey("min_env_version");
+                                               base::Value::Dict manifest) {
+  std::string* min_env_version = manifest.FindString("min_env_version");
   if (!min_env_version)
     return;
 
@@ -241,7 +241,7 @@ LacrosInstallerPolicy::~LacrosInstallerPolicy() = default;
 
 void LacrosInstallerPolicy::ComponentReady(const base::Version& version,
                                            const base::FilePath& path,
-                                           base::Value manifest) {
+                                           base::Value::Dict manifest) {
   // Each version of Lacros guarantees it will be compatible through the next
   // major ash/OS version. For example, Lacros 89 will work with ash/OS 90,
   // but may not work with ash/OS 91.
@@ -283,7 +283,7 @@ DemoAppInstallerPolicy::~DemoAppInstallerPolicy() = default;
 
 void DemoAppInstallerPolicy::ComponentReady(const base::Version& version,
                                             const base::FilePath& path,
-                                            base::Value manifest) {
+                                            base::Value::Dict manifest) {
   cros_component_installer_->RegisterCompatiblePath(GetName(), path);
 }
 

@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/values.h"
 #include "chrome/browser/resource_coordinator/intervention_policy_database.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -57,7 +58,7 @@ bool InterventionPolicyDatabaseComponentInstallerPolicy::
 
 update_client::CrxInstaller::Result
 InterventionPolicyDatabaseComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -66,7 +67,7 @@ void InterventionPolicyDatabaseComponentInstallerPolicy::OnCustomUninstall() {}
 
 // Called during startup and installation before ComponentReady().
 bool InterventionPolicyDatabaseComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(
       install_dir.Append(kInterventionPolicyDatabaseBinaryPbFileName));
@@ -78,7 +79,7 @@ bool InterventionPolicyDatabaseComponentInstallerPolicy::VerifyInstallation(
 void InterventionPolicyDatabaseComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   DCHECK(database_);
   database_->InitializeDatabaseWithProtoFile(
       install_dir.Append(kInterventionPolicyDatabaseBinaryPbFileName), version,

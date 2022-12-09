@@ -48,11 +48,11 @@ class ComponentInstallerPolicy {
 
   // Verifies that a working installation resides within the directory specified
   // by |install_dir|. |install_dir| is of the form <base directory>/<version>.
-  // |manifest| should have been read from the manifest file in |install_dir|.
-  // |manifest| is a DICTIONARY base::Value. Called only from a thread belonging
-  // to a blocking thread pool. The implementation of this function must be
-  // efficient since the function can be called when Chrome starts.
-  virtual bool VerifyInstallation(const base::Value& manifest,
+  // |manifest| should have been read from the manifest file in
+  // |install_dir|. Called only from a thread belonging to a blocking thread
+  // pool. The implementation of this function must be efficient since the
+  // function can be called when Chrome starts.
+  virtual bool VerifyInstallation(const base::Value::Dict& manifest,
                                   const base::FilePath& install_dir) const = 0;
 
   // Returns true if the component supports a group policy to enable updates.
@@ -64,12 +64,12 @@ class ComponentInstallerPolicy {
   virtual bool RequiresNetworkEncryption() const = 0;
 
   // OnCustomInstall is called during the installation process. Components that
-  // require custom installation operations should implement them here.
-  // Returns a failure result if a custom operation failed, and
-  // update_client::InstallError::NONE otherwise. |manifest| is a DICTIONARY
-  // base::Value. Called only from a thread belonging to a blocking thread pool.
+  // require custom installation operations should implement them here. Returns
+  // a failure result if a custom operation failed, and
+  // update_client::InstallError::NONE otherwise. Called only from a thread
+  // belonging to a blocking thread pool.
   virtual update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value& manifest,
+      const base::Value::Dict& manifest,
       const base::FilePath& install_dir) = 0;
 
   // OnCustomUninstall is called during the unregister (uninstall) process.
@@ -87,11 +87,10 @@ class ComponentInstallerPolicy {
   // such as updating paths elsewhere in Chrome. Called on the UI thread.
   // |version| is the version of the component.
   // |install_dir| is the path to the install directory for this version.
-  // |manifest| is the manifest for this version of the component, and is a
-  // DICTIONARY base::Value.
+  // |manifest| is the manifest for this version of the component.
   virtual void ComponentReady(const base::Version& version,
                               const base::FilePath& install_dir,
-                              base::Value manifest) = 0;
+                              base::Value::Dict manifest) = 0;
 
   // Returns a relative path that will be appended to the component updater
   // root directories to find the data for this particular component.
@@ -173,7 +172,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
     base::FilePath install_dir;
     base::Version version;
     std::string fingerprint;
-    absl::optional<base::Value> manifest;
+    absl::optional<base::Value::Dict> manifest;
 
    private:
     friend class base::RefCountedThreadSafe<RegistrationInfo>;
@@ -191,7 +190,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
                            scoped_refptr<RegistrationInfo> registration_info);
   update_client::CrxInstaller::Result InstallHelper(
       const base::FilePath& unpack_path,
-      base::Value* manifest,
+      base::Value::Dict* manifest,
       base::Version* version,
       base::FilePath* install_path);
   void StartRegistration(const base::Version& registered_version,
@@ -199,7 +198,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
   void FinishRegistration(scoped_refptr<RegistrationInfo> registration_info,
                           RegisterCallback register_callback,
                           base::OnceClosure callback);
-  absl::optional<base::Value> GetValidInstallationManifest(
+  absl::optional<base::Value::Dict> GetValidInstallationManifest(
       const base::FilePath& path);
   absl::optional<base::Version> SelectComponentVersion(
       const base::Version& registered_version,
@@ -210,7 +209,7 @@ class ComponentInstaller final : public update_client::CrxInstaller {
       const base::FilePath& base_dir,
       const absl::optional<base::Version>& selected_version);
   absl::optional<base::FilePath> GetComponentDirectory();
-  void ComponentReady(base::Value manifest);
+  void ComponentReady(base::Value::Dict manifest);
   void UninstallOnTaskRunner();
 
   THREAD_CHECKER(thread_checker_);

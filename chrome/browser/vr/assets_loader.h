@@ -11,12 +11,12 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/vr/assets_load_status.h"
 #include "chrome/browser/vr/vr_base_export.h"
 
 namespace base {
-class Value;
 class SingleThreadTaskRunner;
 class Version;
 }  // namespace base
@@ -56,7 +56,7 @@ class VR_BASE_EXPORT AssetsLoader {
   // Tells VR assets that a new VR assets component version is ready for use.
   void OnComponentReady(const base::Version& version,
                         const base::FilePath& install_dir,
-                        base::Value manifest);
+                        base::Value::Dict manifest);
 
   // Loads asset files and calls |on_loaded| passing the loaded asset files.
   // |on_loaded| will be called on the caller's thread. Component must be ready

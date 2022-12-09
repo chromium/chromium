@@ -79,7 +79,7 @@ bool AssetsLoader::AssetsSupported() {
 
 void AssetsLoader::OnComponentReady(const base::Version& version,
                                     const base::FilePath& install_dir,
-                                    base::Value manifest) {
+                                    base::Value::Dict manifest) {
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AssetsLoader::OnComponentReadyInternal,

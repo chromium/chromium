@@ -138,7 +138,7 @@ bool CommerceHeuristicsInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 CommerceHeuristicsInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -148,7 +148,7 @@ void CommerceHeuristicsInstallerPolicy::OnCustomUninstall() {}
 void CommerceHeuristicsInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
@@ -159,7 +159,7 @@ void CommerceHeuristicsInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool CommerceHeuristicsInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(
              GetCommerceGlobalHeuristicsInstalledPath(install_dir)) &&

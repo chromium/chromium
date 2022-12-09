@@ -17,13 +17,13 @@ namespace component_updater {
 void ChromeOriginTrialsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   // Read the configuration from the manifest and set values in browser
   // local_state. These will be used on the next browser restart.
   // If an individual configuration value is missing, treat as a reset to the
   // browser defaults.
   embedder_support::ReadOriginTrialsConfigAndPopulateLocalState(
-      g_browser_process->local_state(), std::move(manifest.GetDict()));
+      g_browser_process->local_state(), std::move(manifest));
 }
 
 void RegisterOriginTrialsComponent(ComponentUpdateService* updater_service) {

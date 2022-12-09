@@ -64,10 +64,10 @@ void OriginTrialsComponentInstallerPolicy::GetHash(
 }
 
 bool OriginTrialsComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // Test if the "origin-trials" key is present in the manifest.
-  return !!manifest.FindKey(kManifestOriginTrialsKey);
+  return manifest.contains(kManifestOriginTrialsKey);
 }
 
 bool OriginTrialsComponentInstallerPolicy::
@@ -81,7 +81,7 @@ bool OriginTrialsComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 OriginTrialsComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -91,7 +91,7 @@ void OriginTrialsComponentInstallerPolicy::OnCustomUninstall() {}
 void OriginTrialsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {}
+    base::Value::Dict manifest) {}
 
 base::FilePath OriginTrialsComponentInstallerPolicy::GetRelativeInstallDir()
     const {

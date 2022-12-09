@@ -389,8 +389,8 @@ TEST_F(CrOSComponentInstallerTest, CompatibilityOK) {
   EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
   base::FilePath path("/path");
-  base::Value manifest(base::Value::Type::DICTIONARY);
-  manifest.SetStringKey("min_env_version", "2.1");
+  base::Value::Dict manifest;
+  manifest.Set("min_env_version", "2.1");
   policy.ComponentReady(version, path, std::move(manifest));
   // Component is compatible and was registered.
   EXPECT_EQ(path, installer->GetCompatiblePath("component"));
@@ -405,7 +405,7 @@ TEST_F(CrOSComponentInstallerTest, CompatibilityMissingManifest) {
   EnvVersionInstallerPolicy policy(config, installer.get());
   base::Version version;
   base::FilePath path("/path");
-  base::Value manifest(base::Value::Type::DICTIONARY);
+  base::Value::Dict manifest;
   policy.ComponentReady(version, path, std::move(manifest));
   // No compatible path was registered.
   EXPECT_EQ(base::FilePath(), installer->GetCompatiblePath("component"));
@@ -435,15 +435,15 @@ TEST_F(CrOSComponentInstallerTest, LacrosMinVersion) {
   LacrosInstallerPolicy policy(config, installer.get());
 
   // Simulate finding an incompatible existing install.
-  policy.ComponentReady(
-      base::Version("8.0.0.0"), base::FilePath("/lacros/8.0.0.0"),
-      /*manifest=*/base::Value(base::Value::Type::DICTIONARY));
+  policy.ComponentReady(base::Version("8.0.0.0"),
+                        base::FilePath("/lacros/8.0.0.0"),
+                        /*manifest=*/base::Value::Dict());
   EXPECT_TRUE(installer->GetCompatiblePath("lacros-fishfood").empty());
 
   // Simulate finding a compatible existing install.
-  policy.ComponentReady(
-      base::Version("9.0.0.0"), base::FilePath("/lacros/9.0.0.0"),
-      /*manifest=*/base::Value(base::Value::Type::DICTIONARY));
+  policy.ComponentReady(base::Version("9.0.0.0"),
+                        base::FilePath("/lacros/9.0.0.0"),
+                        /*manifest=*/base::Value::Dict());
   EXPECT_EQ("/lacros/9.0.0.0",
             installer->GetCompatiblePath("lacros-fishfood").MaybeAsASCII());
 

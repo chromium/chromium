@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -20,10 +21,9 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
-class Value;
 class FilePath;
 class Version;
-}
+}  // namespace base
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -69,17 +69,17 @@ class SwReporterInstallerPolicy : public ComponentInstallerPolicy {
   void SetRandomReporterCohortForTesting(const std::string& cohort_name);
 
   // ComponentInstallerPolicy implementation.
-  bool VerifyInstallation(const base::Value& manifest,
+  bool VerifyInstallation(const base::Value::Dict& manifest,
                           const base::FilePath& dir) const override;
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value& manifest,
+      const base::Value::Dict& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value manifest) override;
+                      base::Value::Dict manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;

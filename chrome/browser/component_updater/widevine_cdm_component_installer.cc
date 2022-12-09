@@ -107,7 +107,7 @@ base::FilePath GetPlatformDirectory(const base::FilePath& base_path) {
 // file so that startup can load this new version next time.
 void RegisterWidevineCdmWithChrome(const base::Version& cdm_version,
                                    const base::FilePath& cdm_path,
-                                   base::Value manifest) {
+                                   base::Value::Dict manifest) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // This check must be a subset of the check in VerifyInstallation() to
@@ -155,14 +155,14 @@ class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value& manifest,
+      const base::Value::Dict& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::Value& manifest,
+  bool VerifyInstallation(const base::Value::Dict& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& path,
-                      base::Value manifest) override;
+                      base::Value::Dict manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
@@ -171,7 +171,7 @@ class WidevineCdmComponentInstallerPolicy : public ComponentInstallerPolicy {
   // Updates CDM path if necessary.
   void UpdateCdmPath(const base::Version& cdm_version,
                      const base::FilePath& cdm_install_dir,
-                     base::Value manifest);
+                     base::Value::Dict manifest);
 };
 
 WidevineCdmComponentInstallerPolicy::WidevineCdmComponentInstallerPolicy() =
@@ -188,7 +188,7 @@ bool WidevineCdmComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 WidevineCdmComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -199,7 +199,7 @@ void WidevineCdmComponentInstallerPolicy::OnCustomUninstall() {}
 void WidevineCdmComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& path,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   if (!IsCdmManifestCompatibleWithChrome(manifest)) {
     VLOG(1) << "Installed Widevine CDM component is incompatible.";
     return;
@@ -215,7 +215,7 @@ void WidevineCdmComponentInstallerPolicy::ComponentReady(
 }
 
 bool WidevineCdmComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   base::FilePath cdm_path = GetCdmPathFromInstallDir(install_dir);
 
@@ -249,7 +249,7 @@ WidevineCdmComponentInstallerPolicy::GetInstallerAttributes() const {
 void WidevineCdmComponentInstallerPolicy::UpdateCdmPath(
     const base::Version& cdm_version,
     const base::FilePath& cdm_install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   // On some platforms (e.g. Mac) we use symlinks for paths. Convert paths to
   // absolute paths to avoid unexpected failure. base::MakeAbsoluteFilePath()
   // requires IO so it can only be done in this function.

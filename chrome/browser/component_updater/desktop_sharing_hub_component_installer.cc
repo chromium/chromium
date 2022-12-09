@@ -78,7 +78,7 @@ bool DesktopSharingHubComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 DesktopSharingHubComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -93,7 +93,7 @@ base::FilePath DesktopSharingHubComponentInstallerPolicy::GetInstalledPath(
 void DesktopSharingHubComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
@@ -110,7 +110,7 @@ void DesktopSharingHubComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool DesktopSharingHubComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in PopulateFromDynamicUpdate().

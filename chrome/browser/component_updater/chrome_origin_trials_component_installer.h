@@ -30,7 +30,7 @@ class ChromeOriginTrialsComponentInstallerPolicy
  private:
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value manifest) override;
+                      base::Value::Dict manifest) override;
 };
 
 // Call once during startup to make the component update service aware of

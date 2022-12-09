@@ -116,14 +116,15 @@ void ComponentInstaller::OnUpdateError(int error) {
 }
 
 Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
-                                         base::Value* manifest,
+                                         base::Value::Dict* manifest,
                                          base::Version* version,
                                          base::FilePath* install_path) {
-  base::Value local_manifest = update_client::ReadManifest(unpack_path);
-  if (!local_manifest.is_dict())
+  base::Value local_manifest_value = update_client::ReadManifest(unpack_path);
+  if (!local_manifest_value.is_dict())
     return Result(InstallError::BAD_MANIFEST);
+  base::Value::Dict local_manifest(std::move(local_manifest_value).TakeDict());
 
-  const std::string* version_ascii = local_manifest.FindStringKey("version");
+  const std::string* version_ascii = local_manifest.FindString("version");
   if (!version_ascii || !base::IsStringASCII(*version_ascii))
     return Result(InstallError::INVALID_VERSION);
 
@@ -198,7 +199,7 @@ void ComponentInstaller::Install(
     std::unique_ptr<InstallParams> /*install_params*/,
     ProgressCallback /*progress_callback*/,
     Callback callback) {
-  base::Value manifest;
+  base::Value::Dict manifest;
   base::Version version;
   base::FilePath install_path;
   const Result result =
@@ -245,18 +246,19 @@ bool ComponentInstaller::FindPreinstallation(
     return false;
   }
 
-  base::Value manifest = update_client::ReadManifest(path);
-  if (!manifest.is_dict()) {
+  base::Value manifest_value = update_client::ReadManifest(path);
+  if (!manifest_value.is_dict()) {
     DVLOG(1) << "Manifest does not exist: " << path.MaybeAsASCII();
     return false;
   }
+  base::Value::Dict manifest(std::move(manifest_value).TakeDict());
 
   if (!installer_policy_->VerifyInstallation(manifest, path)) {
     DVLOG(1) << "Installation verification failed: " << path.MaybeAsASCII();
     return false;
   }
 
-  std::string* version_lexical = manifest.FindStringKey("version");
+  std::string* version_lexical = manifest.FindString("version");
   if (!version_lexical || !base::IsStringASCII(*version_lexical)) {
     DVLOG(1) << "Failed to get component version from the manifest.";
     return false;
@@ -281,19 +283,25 @@ bool ComponentInstaller::FindPreinstallation(
 
 // Checks to see if the installation found in |path| is valid, and returns
 // its manifest if it is.
-absl::optional<base::Value> ComponentInstaller::GetValidInstallationManifest(
-    const base::FilePath& path) {
-  base::Value manifest = update_client::ReadManifest(path);
-  if (!manifest.is_dict() ||
-      !installer_policy_->VerifyInstallation(manifest, path)) {
-    PLOG(ERROR) << "Failed to read manifest or verify installation for "
+absl::optional<base::Value::Dict>
+ComponentInstaller::GetValidInstallationManifest(const base::FilePath& path) {
+  base::Value manifest_value = update_client::ReadManifest(path);
+  if (!manifest_value.is_dict()) {
+    PLOG(ERROR) << "Failed to read manifest for "
+                << installer_policy_->GetName() << " (" << path.MaybeAsASCII()
+                << ").";
+    return absl::nullopt;
+  }
+  base::Value::Dict manifest(std::move(manifest_value).TakeDict());
+
+  if (!installer_policy_->VerifyInstallation(manifest, path)) {
+    PLOG(ERROR) << "Failed to verify installation for "
                 << installer_policy_->GetName() << " (" << path.MaybeAsASCII()
                 << ").";
     return absl::nullopt;
   }
 
-  const base::Value::List* accept_archs =
-      manifest.GetDict().FindList("accept_arch");
+  const base::Value::List* accept_archs = manifest.FindList("accept_arch");
   if (accept_archs != nullptr &&
       base::ranges::none_of(*accept_archs, [](const base::Value& v) {
         static const char* current_arch =
@@ -317,7 +325,7 @@ absl::optional<base::Version> ComponentInstaller::SelectComponentVersion(
 
   absl::optional<base::Version> selected_version;
   base::FilePath selected_path;
-  absl::optional<base::Value> selected_manifest;
+  absl::optional<base::Value::Dict> selected_manifest;
 
   const base::Version bundled_version = registration_info->version.IsValid()
                                             ? registration_info->version
@@ -341,7 +349,7 @@ absl::optional<base::Version> ComponentInstaller::SelectComponentVersion(
 
     if (!selected_version || version > *selected_version ||
         (target_version && version == *target_version)) {
-      absl::optional<base::Value> candidate_manifest =
+      absl::optional<base::Value::Dict> candidate_manifest =
           GetValidInstallationManifest(path);
       if (candidate_manifest) {
         selected_version = version;
@@ -525,7 +533,7 @@ void ComponentInstaller::FinishRegistration(
     std::move(callback).Run();
 }
 
-void ComponentInstaller::ComponentReady(base::Value manifest) {
+void ComponentInstaller::ComponentReady(base::Value::Dict manifest) {
   VLOG(1) << "Component ready, version " << current_version_.GetString()
           << " in " << current_install_dir_.value();
   installer_policy_->ComponentReady(current_version_, current_install_dir_,

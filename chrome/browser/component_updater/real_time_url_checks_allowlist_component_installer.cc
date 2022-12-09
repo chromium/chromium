@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "components/safe_browsing/android/real_time_url_checks_allowlist.h"
 #include "components/safe_browsing/core/common/features.h"
 
@@ -69,7 +70,7 @@ bool RealTimeUrlChecksAllowlistComponentInstallerPolicy::
 
 update_client::CrxInstaller::Result
 RealTimeUrlChecksAllowlistComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -85,7 +86,7 @@ RealTimeUrlChecksAllowlistComponentInstallerPolicy::GetInstalledPath(
 void RealTimeUrlChecksAllowlistComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadFromDisk, GetInstalledPath(install_dir)));
@@ -93,7 +94,7 @@ void RealTimeUrlChecksAllowlistComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool RealTimeUrlChecksAllowlistComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in |PopulateFromDynamicUpdate()|.

@@ -11,9 +11,9 @@
 #include <vector>
 
 #include "android_webview/nonembedded/component_updater/aw_component_installer_policy.h"
+#include "base/values.h"
 
 namespace base {
-class Value;
 class FilePath;
 }  // namespace base
 
@@ -44,9 +44,9 @@ class AwComponentInstallerPolicyShim : public AwComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value& manifest,
+      const base::Value::Dict& manifest,
       const base::FilePath& install_dir) override;
-  bool VerifyInstallation(const base::Value& manifest,
+  bool VerifyInstallation(const base::Value::Dict& manifest,
                           const base::FilePath& install_dir) const override;
   base::FilePath GetRelativeInstallDir() const override;
   std::string GetName() const override;

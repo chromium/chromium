@@ -37,7 +37,7 @@ class ZxcvbnDataComponentInstallerPolicy : public ComponentInstallerPolicy {
       FILE_PATH_LITERAL("us_tv_and_film.txt");
 
   // ComponentInstallerPolicy overrides:
-  bool VerifyInstallation(const base::Value& manifest,
+  bool VerifyInstallation(const base::Value::Dict& manifest,
                           const base::FilePath& install_dir) const override;
 
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
@@ -45,14 +45,14 @@ class ZxcvbnDataComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool RequiresNetworkEncryption() const override;
 
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::Value& manifest,
+      const base::Value::Dict& manifest,
       const base::FilePath& install_dir) override;
 
   void OnCustomUninstall() override;
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value manifest) override;
+                      base::Value::Dict manifest) override;
 
   base::FilePath GetRelativeInstallDir() const override;
 

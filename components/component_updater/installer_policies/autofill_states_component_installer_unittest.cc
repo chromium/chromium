@@ -29,7 +29,7 @@ class AutofillStatesDataComponentInstallerPolicyTest : public ::testing::Test {
 
   const base::Version& version() const { return fake_version_; }
 
-  const base::Value& manifest() const { return manifest_; }
+  const base::Value::Dict& manifest() const { return manifest_; }
 
   const base::FilePath& GetPath() const {
     return component_install_dir_.GetPath();
@@ -50,7 +50,7 @@ class AutofillStatesDataComponentInstallerPolicyTest : public ::testing::Test {
   std::unique_ptr<PrefService> pref_service_;
 
  private:
-  base::Value manifest_ = base::Value(base::Value::Type::DICTIONARY);
+  base::Value::Dict manifest_ = base::Value::Dict();
   base::ScopedTempDir component_install_dir_;
   std::vector<const char*> filenames_;
   base::FilePath fake_install_dir_;
@@ -78,8 +78,7 @@ TEST_F(AutofillStatesDataComponentInstallerPolicyTest, VerifyInstallation) {
 TEST_F(AutofillStatesDataComponentInstallerPolicyTest,
        InstallDirSavedToPrefOnComponentReady) {
   AutofillStatesComponentInstallerPolicy policy(pref_service_.get());
-  policy.ComponentReadyForTesting(version(), GetPath(),
-                                  base::Value(base::Value::Type::DICTIONARY));
+  policy.ComponentReadyForTesting(version(), GetPath(), base::Value::Dict());
   ASSERT_EQ(GetPath(), pref_service_->GetFilePath(
                            autofill::prefs::kAutofillStatesDataDir));
 }

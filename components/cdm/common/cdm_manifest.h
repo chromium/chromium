@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_CDM_COMMON_CDM_MANIFEST_H_
 #define COMPONENTS_CDM_COMMON_CDM_MANIFEST_H_
 
+#include "base/values.h"
+
 namespace base {
 class FilePath;
-class Value;
 class Version;
 }  // namespace base
 
@@ -20,12 +21,12 @@ struct CdmCapability;
 // Checks the module API, CDM interface API, and Host API.
 // This should never fail except in rare cases where the component has not been
 // updated recently or the user downgrades Chrome.
-bool IsCdmManifestCompatibleWithChrome(const base::Value& manifest);
+bool IsCdmManifestCompatibleWithChrome(const base::Value::Dict& manifest);
 
 // Extracts the necessary information from |manifest| and updates |capability|.
 // Returns true on success, false if there are errors in the manifest.
 // If this method returns false, |capability| may or may not be updated.
-bool ParseCdmManifest(const base::Value& manifest,
+bool ParseCdmManifest(const base::Value::Dict& manifest,
                       media::CdmCapability* capability);
 
 // Reads the file |manifest_path| which is assumed to be a CDM manifest and

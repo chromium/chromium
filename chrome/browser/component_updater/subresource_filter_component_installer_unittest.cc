@@ -162,8 +162,8 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   }
 
   void LoadSubresourceFilterRuleset(int ruleset_format) {
-    base::Value manifest(base::Value::Type::DICTIONARY);
-    manifest.SetIntKey(
+    base::Value::Dict manifest;
+    manifest.Set(
         SubresourceFilterComponentInstallerPolicy::kManifestRulesetFormatKey,
         ruleset_format);
     ASSERT_TRUE(policy_->VerifyInstallation(manifest, component_install_dir()));

@@ -258,8 +258,7 @@ class SwReporterInstallerTest : public ::testing::Test {
 
 TEST_F(SwReporterInstallerTest, MissingManifest) {
   SwReporterInstallerPolicy policy(&test_prefs_, on_component_ready_callback_);
-  policy.ComponentReady(default_version_, default_path_,
-                        base::Value(base::Value::Type::DICTIONARY));
+  policy.ComponentReady(default_version_, default_path_, base::Value::Dict());
   ExpectLaunchError(kMissingPromptSeed);
 }
 
@@ -387,7 +386,7 @@ TEST_F(SwReporterInstallerTest, SingleInvocation) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
 
   // The SwReporter should be launched once with the given arguments.
   EXPECT_EQ(default_version_, extracted_invocations_.version());
@@ -447,7 +446,7 @@ TEST_F(SwReporterInstallerTest, MultipleInvocations) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
 
   // The SwReporter should be launched four times with the given arguments.
   EXPECT_EQ(default_version_, extracted_invocations_.version());
@@ -491,7 +490,7 @@ TEST_F(SwReporterInstallerTest, MissingSuffix) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -509,7 +508,7 @@ TEST_F(SwReporterInstallerTest, EmptySuffix) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectInvocationFromManifest("", "20220421SEED123", L"random argument");
 }
 
@@ -525,7 +524,7 @@ TEST_F(SwReporterInstallerTest, MissingSuffixAndArgs) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -543,7 +542,7 @@ TEST_F(SwReporterInstallerTest, EmptySuffixAndArgs) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectInvocationFromManifest("", "20220421SEED123", {});
 }
 
@@ -561,7 +560,7 @@ TEST_F(SwReporterInstallerTest, EmptySuffixAndArgsWithEmptyString) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectInvocationFromManifest("", "20220421SEED123", {});
 }
 
@@ -578,7 +577,7 @@ TEST_F(SwReporterInstallerTest, MissingArguments) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -596,7 +595,7 @@ TEST_F(SwReporterInstallerTest, EmptyArguments) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectInvocationFromManifest("TestSuffix", "20220421SEED123", {});
 }
 
@@ -614,7 +613,7 @@ TEST_F(SwReporterInstallerTest, EmptyArgumentsWithEmptyString) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectInvocationFromManifest("TestSuffix", "20220421SEED123", {});
 }
 
@@ -623,7 +622,7 @@ TEST_F(SwReporterInstallerTest, EmptyManifest) {
 
   static constexpr char kTestManifest[] = "{}";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kMissingPromptSeed);
 }
 
@@ -635,7 +634,7 @@ TEST_F(SwReporterInstallerTest, MissingLaunchParams) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectDefaultInvocation("20220421SEED123");
 }
 
@@ -648,7 +647,7 @@ TEST_F(SwReporterInstallerTest, EmptyLaunchParams) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectDefaultInvocation("20220421SEED123");
 }
 
@@ -665,7 +664,7 @@ TEST_F(SwReporterInstallerTest, MissingPromptSeed) {
         ]
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kMissingPromptSeed);
 }
 
@@ -683,7 +682,7 @@ TEST_F(SwReporterInstallerTest, BadSuffix) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -704,7 +703,7 @@ TEST_F(SwReporterInstallerTest, SuffixTooLong) {
   std::string manifest =
       base::StringPrintf(kTestManifest, suffix_too_long.c_str());
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(manifest));
+                        (*base::JSONReader::Read(manifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -723,7 +722,7 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_ArgumentsIsNotAList) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -741,7 +740,7 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_InvocationParamsIsNotAList) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -760,7 +759,7 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_SuffixIsAList) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -780,7 +779,7 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_PromptIsNotABoolean) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -793,7 +792,7 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_LaunchParamsIsScalar) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -806,7 +805,7 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_LaunchParamsIsDict) {
         "prompt_seed": "20220421SEED123"
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kBadParams);
 }
 
@@ -819,7 +818,7 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_PromptSeedIsList) {
         "prompt_seed": ["20220421SEED123"]
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kMissingPromptSeed);
 }
 
@@ -832,7 +831,7 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_PromptSeedIsInt) {
         "prompt_seed": 20220421
       })json";
   policy.ComponentReady(default_version_, default_path_,
-                        *base::JSONReader::Read(kTestManifest));
+                        (*base::JSONReader::Read(kTestManifest)).TakeDict());
   ExpectLaunchError(kMissingPromptSeed);
 }
 

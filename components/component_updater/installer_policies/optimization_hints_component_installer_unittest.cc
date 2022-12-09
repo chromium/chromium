@@ -77,9 +77,9 @@ class OptimizationHintsComponentInstallerTest : public PlatformTest {
   }
 
   void LoadOptimizationHints(const base::Version& ruleset_format) {
-    base::Value manifest(base::Value::Type::DICTIONARY);
+    base::Value::Dict manifest;
     if (ruleset_format.IsValid()) {
-      manifest.SetStringKey(
+      manifest.Set(
           OptimizationHintsComponentInstallerPolicy::kManifestRulesetFormatKey,
           ruleset_format.GetString());
     }

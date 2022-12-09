@@ -78,8 +78,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     if (manifest.empty()) {
       manifest.Set(kManifestOriginTrialsKey, base::Value());
     }
-    ASSERT_TRUE(policy_->VerifyInstallation(base::Value(manifest.Clone()),
-                                            temp_dir_.GetPath()));
+    ASSERT_TRUE(policy_->VerifyInstallation(manifest, temp_dir_.GetPath()));
     embedder_support::ReadOriginTrialsConfigAndPopulateLocalState(
         local_state(), std::move(manifest));
   }

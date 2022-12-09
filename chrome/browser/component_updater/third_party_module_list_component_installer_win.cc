@@ -93,7 +93,7 @@ bool ThirdPartyModuleListComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 ThirdPartyModuleListComponentInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -106,7 +106,7 @@ void ThirdPartyModuleListComponentInstallerPolicy::OnCustomUninstall() {}
 void ThirdPartyModuleListComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   // Forward the notification to the ThirdPartyConflictsManager on the
   // ModuleDatabase task runner. The manager is responsible for the work of
   // actually loading the module list, etc, on background threads.
@@ -116,7 +116,7 @@ void ThirdPartyModuleListComponentInstallerPolicy::ComponentReady(
 }
 
 bool ThirdPartyModuleListComponentInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) const {
   // This is called during startup and installation before ComponentReady().
   // The component is considered valid if the expected file exists in the

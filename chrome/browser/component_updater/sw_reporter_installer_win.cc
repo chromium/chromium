@@ -36,6 +36,7 @@
 #include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
@@ -284,7 +285,7 @@ void SwReporterInstallerPolicy::SetRandomReporterCohortForTesting(
 }
 
 bool SwReporterInstallerPolicy::VerifyInstallation(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& dir) const {
   return base::PathExists(dir.Append(kSwReporterExeName));
 }
@@ -299,7 +300,7 @@ bool SwReporterInstallerPolicy::RequiresNetworkEncryption() const {
 }
 
 update_client::CrxInstaller::Result SwReporterInstallerPolicy::OnCustomInstall(
-    const base::Value& manifest,
+    const base::Value::Dict& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -309,10 +310,9 @@ void SwReporterInstallerPolicy::OnCustomUninstall() {}
 void SwReporterInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    base::Value manifest) {
+    base::Value::Dict manifest) {
   ScheduleSoftwareReporterWithManifest(
-      install_dir.Append(kSwReporterExeName), version,
-      std::move(manifest).TakeDict(),
+      install_dir.Append(kSwReporterExeName), version, std::move(manifest),
       // Unless otherwise specified by a unit test, This will post
       // |safe_browsing::OnSwReporterReady| to the UI thread.
       on_component_ready_callback_);
