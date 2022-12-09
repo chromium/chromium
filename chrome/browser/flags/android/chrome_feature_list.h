@@ -83,6 +83,7 @@ BASE_DECLARE_FEATURE(kContextualSearchDisableOnlineDetection);
 BASE_DECLARE_FEATURE(kContextualSearchForceCaption);
 BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);
 BASE_DECLARE_FEATURE(kContextualSearchThinWebViewImplementation);
+BASE_DECLARE_FEATURE(kDeferKeepScreenOnDuringGesture);
 BASE_DECLARE_FEATURE(kDirectActions);
 BASE_DECLARE_FEATURE(kDontPrefetchLibraries);
 BASE_DECLARE_FEATURE(kDownloadAutoResumptionThrottling);

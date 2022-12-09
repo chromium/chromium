@@ -236,6 +236,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchForceCaption,
     &kContextualSearchSuppressShortView,
     &kContextualSearchThinWebViewImplementation,
+    &kDeferKeepScreenOnDuringGesture,
     &kDirectActions,
     &kDuetTabStripIntegrationAndroid,
     &kExperimentsForAgsa,
@@ -734,6 +735,10 @@ BASE_FEATURE(kContextualSearchSuppressShortView,
 
 BASE_FEATURE(kContextualSearchThinWebViewImplementation,
              "ContextualSearchThinWebViewImplementation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDeferKeepScreenOnDuringGesture,
+             "DeferKeepScreenOnDuringGesture",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDirectActions, "DirectActions", base::FEATURE_ENABLED_BY_DEFAULT);
