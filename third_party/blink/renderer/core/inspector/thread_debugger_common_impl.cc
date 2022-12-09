@@ -173,12 +173,12 @@ v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
                                               v8::Isolate* isolate_,
                                               int max_depth) {
   static const char kAttributes[] = "attributes";
+  static const char kBackendNodeId[] = "backendNodeId";
   static const char kChildren[] = "children";
   static const char kChildNodeCount[] = "childNodeCount";
   static const char kLocalName[] = "localName";
   static const char kNamespaceURI[] = "namespaceURI";
   static const char kNode[] = "node";
-  static const char kNodeName[] = "nodeName";
   static const char kNodeType[] = "nodeType";
   static const char kNodeValue[] = "nodeValue";
 
@@ -188,11 +188,14 @@ v8::Local<v8::Object> SerializeNodeToV8Object(Node* node,
   serialized_value_values.push_back(
       v8::Number::New(isolate_, node->getNodeType()));
 
-  serialized_value_keys.push_back(V8String(isolate_, kNodeValue));
-  serialized_value_values.push_back(V8String(isolate_, node->nodeValue()));
+  if (!node->nodeValue().IsNull()) {
+    serialized_value_keys.push_back(V8String(isolate_, kNodeValue));
+    serialized_value_values.push_back(V8String(isolate_, node->nodeValue()));
+  }
 
-  serialized_value_keys.push_back(V8String(isolate_, kNodeName));
-  serialized_value_values.push_back(V8String(isolate_, node->nodeValue()));
+  DOMNodeId backend_node_id = DOMNodeIds::IdForNode(node);
+  serialized_value_keys.push_back(V8String(isolate_, kBackendNodeId));
+  serialized_value_values.push_back(v8::Number::New(isolate_, backend_node_id));
 
   if (node->IsElementNode()) {
     Element* element = To<Element>(node);
