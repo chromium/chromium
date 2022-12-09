@@ -1,0 +1,2576 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains the key pinning list in a machine readable format.
+
+// The top-level element is a dictionary with two keys: "pinsets" maps details
+// of certificate pinning to a name and "entries" contains the pins details for
+// each host.
+//
+// "pinsets" is a list of objects. Each object has the following members:
+//   name: (string) the name of the pinset
+//   static_spki_hashes: (list of strings) the set of allowed SPKIs hashes
+//   bad_static_spki_hashes: (optional list of strings) the set of forbidden
+//       SPKIs hashes
+//   report_uri: (optional string) the URI to send violation reports to;
+//       reports will be in the format defined in RFC 7469
+//
+// For a given pinset, a certificate is accepted if at least one of the
+// "static_spki_hashes" SPKIs is found in the chain and none of the
+// "bad_static_spki_hashes" SPKIs are. SPKIs are specified as names, which must
+// match up with the file of certificates.
+//
+// "entries" is a list of objects. Each object has the following members:
+//   name: (string) the DNS name of the host in question.
+//   include_subdomains: (optional boolean) Apply the pinset to subdomains.
+//   pins: (string) the |name| member of an object in |pinsets|.
+//
+// This file is meant to be used in conjunction with
+// 'transport_security_state_static.pins', which defines the SPKI values that
+// the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
+// refer to, and the timestamp at which the pins list was last updated.
+//
+{
+  "pinsets": [
+    {
+      "name": "test",
+      "static_spki_hashes": [
+        "TestSPKI"
+      ],
+      "report_uri": "http://report-example.test/test"
+    },
+    {
+      "name": "google",
+      "static_spki_hashes": [
+        "GoogleBackup2048",
+        "GTSCA1O1",
+        "GTSRootR1",
+        "GTSRootR2",
+        "GTSRootR3",
+        "GTSRootR4",
+        "GlobalSignRootCA_R2"
+      ],
+      "bad_static_spki_hashes": [
+        "GlobalSignExtendedValidationCA",
+        "GlobalSignExtendedValidationCA_G2",
+        "GlobalSignExtendedValidationCA_SHA256_G2"
+      ],
+      "report_uri": "http://clients3.google.com/cert_upload_json"
+    },
+    {
+      "name": "tor",
+      "static_spki_hashes": [
+        "RapidSSL",
+        "DigiCertEVRoot",
+        "Tor1",
+        "Tor2",
+        "Tor3",
+        "LetsEncryptAuthorityPrimary_X1_X3",
+        "LetsEncryptAuthorityBackup_X2_X4",
+        "R3LetsEncrypt",
+        "R4LetsEncrypt"
+      ]
+    },
+    {
+      "name": "twitterCom",
+      "static_spki_hashes": [
+        "VeriSignClass1",
+        "VeriSignClass3_G4",
+        "VeriSignClass4_G3",
+        "VeriSignClass3_G3",
+        "VeriSignClass1_G3",
+        "VeriSignClass2_G3",
+        "VeriSignClass3_G2",
+        "VeriSignClass2_G2",
+        "VeriSignClass3_G5",
+        "VeriSignUniversal",
+        "GeoTrustGlobal",
+        "GeoTrustGlobal2",
+        "GeoTrustUniversal",
+        "GeoTrustUniversal2",
+        "GeoTrustPrimary",
+        "GeoTrustPrimary_G2",
+        "GeoTrustPrimary_G3",
+        "DigiCertGlobalRoot",
+        "DigiCertEVRoot",
+        "DigiCertAssuredIDRoot",
+        "Twitter1"
+      ],
+      "report_uri": "http://l.twimg.com/i/hpkp_report"
+    },
+    {
+      "name": "twitterCDN",
+      "static_spki_hashes": [
+        "VeriSignClass1",
+        "VeriSignClass3_G4",
+        "VeriSignClass4_G3",
+        "VeriSignClass3_G3",
+        "VeriSignClass1_G3",
+        "VeriSignClass2_G3",
+        "VeriSignClass3_G2",
+        "VeriSignClass2_G2",
+        "VeriSignClass3_G5",
+        "VeriSignUniversal",
+        "GeoTrustGlobal",
+        "GeoTrustGlobal2",
+        "GeoTrustUniversal",
+        "GeoTrustUniversal2",
+        "GeoTrustPrimary",
+        "GeoTrustPrimary_G2",
+        "GeoTrustPrimary_G3",
+        "DigiCertGlobalRoot",
+        "DigiCertEVRoot",
+        "DigiCertAssuredIDRoot",
+        "Twitter1",
+        "Entrust_2048",
+        "Entrust_EV",
+        "Entrust_G2",
+        "Entrust_SSL",
+        "AAACertificateServices",
+        "AddTrustClass1CARoot",
+        "AddTrustExternalCARoot",
+        "AddTrustPublicCARoot",
+        "AddTrustQualifiedCARoot",
+        "COMODOCertificationAuthority",
+        "SecureCertificateServices",
+        "TrustedCertificateServices",
+        "UTNDATACorpSGC",
+        "UTNUSERFirstClientAuthenticationandEmail",
+        "UTNUSERFirstHardware",
+        "UTNUSERFirstObject",
+        "GTECyberTrustGlobalRoot",
+        "BaltimoreCyberTrustRoot",
+        "GlobalSignRootCA",
+        "GlobalSignRootCA_R2",
+        "GlobalSignRootCA_R3"
+      ],
+      "report_uri": "http://l.twimg.com/i/hpkp_report"
+    },
+    {
+      "name": "dropbox",
+      "static_spki_hashes": [
+        "DigiCertAssuredIDRoot",
+        "DigiCertGlobalRoot",
+        "DigiCertEVRoot",
+        "EntrustRootEC1",
+        "Entrust_G2",
+        "Entrust_EV",
+        "Entrust_2048",
+        "TheGoDaddyGroupClass2",
+        "GoDaddyRoot_G2",
+        "GoDaddySecure"
+      ],
+      "report_uri": "https://log.getdropbox.com/hpkp"
+    },
+    {
+      "name": "facebook",
+      "static_spki_hashes": [
+        "SymantecClass3EVG3",
+        "DigiCertECCSecureServerCA",
+        "DigiCertEVRoot",
+        "FacebookBackup"
+      ]
+    },
+    {
+      "name": "spideroak",
+      "static_spki_hashes": [
+        "GeoTrustGlobal",
+        "DigiCertEVRoot",
+        "SpiderOak2",
+        "SpiderOak3"
+      ]
+    },
+    {
+      "name": "yahoo",
+      "static_spki_hashes": [
+        "DigiCertAssuredIDRoot",
+        "DigiCertGlobalRoot",
+        "DigiCertGlobalRootG2",
+        "DigiCertGlobalRootG3",
+        "DigiCertTrustedRootG4",
+        "DigiCertEVRoot",
+        "GlobalSignRootCA",
+        "GlobalSignRootCA_R3"
+      ],
+      "report_uri": "http://csp.yahoo.com/beacon/csp?src=yahoocom-hpkp-report-only"
+    }
+  ],
+  "entries": [
+    {
+      "name": "pinningtest.appspot.com",
+      "include_subdomains": true,
+      "pins": "test"
+    },
+    {
+      "name": "pinning-test.badssl.com",
+      "include_subdomains": true,
+      "pins": "test"
+    },
+    {
+      "name": "example.test",
+      "include_subdomains": true,
+      "pins": "test"
+    },
+    {
+      "name": "google",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "hangout",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "mail.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "plus.sandbox.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "remotedesktop.corp.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "corp.goog",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "accounts.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "admin.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "apis.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "appengine.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "calendar.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "checkout.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "chrome.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "classroom.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "cloud.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "code.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "contributor.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "datastudio.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "dl.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "docs.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "domains.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "drive.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "encrypted.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "fi.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "glass.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "goto.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "groups.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "hangouts.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "history.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "hostedtalkgadget.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "inbox.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "lens.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "login.corp.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "mail-settings.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "meet.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "myaccount.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "myactivity.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "passwords.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "pixel.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "play.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "plus.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "profiles.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "script.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "security.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "sites.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "spreadsheets.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "talkgadget.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "talk.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wallet.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "payments.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "xn--7xa.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "dns.google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "build.chromium.org",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "bugs.chromium.org",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "cdn.ampproject.org",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "chrome.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "chrome-devtools-frontend.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "chromereporting-pa.googleapis.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "chromiumcodereview.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "codereview.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "codereview.chromium.org",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "crbug.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "crosbug.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "crrev.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "firebaseio.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "g.co",
+      "include_subdomains": false,
+      "pins": "google"
+    },
+    {
+      "name": "www.g.co",
+      "include_subdomains": false,
+      "pins": "google"
+    },
+    {
+      "name": "g4w.co",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "gmail.com",
+      "include_subdomains": false,
+      "pins": "google"
+    },
+    {
+      "name": "goo.gl",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googlecode.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googlemail.com",
+      "include_subdomains": false,
+      "pins": "google"
+    },
+    {
+      "name": "googleplex.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googlesource.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "gvt2.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "gvt3.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "developer.android.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "market.android.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "oauthaccountmanager.googleapis.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "passwordsleakcheck-pa.googleapis.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "translate.googleapis.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "tunnel.googlezip.net",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "tunnel-staging.googlezip.net",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "withgoogle.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "withyoutube.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "www.gmail.com",
+      "include_subdomains": false,
+      "pins": "google"
+    },
+    {
+      "name": "www.googlemail.com",
+      "include_subdomains": false,
+      "pins": "google"
+    },
+    {
+      "name": "google-analytics.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "stats.g.doubleclick.net",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "chromiumbugs.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "youtube.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "ua5v.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "webfilings.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "webfilings-eu.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "webfilings-eu-mirror.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "webfilings-mirror-hrd.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-bigsky-master.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-demo-eu.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-demo-hrd.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-dogfood-hrd.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-pentest.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-staging-hr.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-training-hrd.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-training-master.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "wf-trial-hrd.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "w-spotlight.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "xbrlsuccess.appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "2mdn.net",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "android.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "appspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "blogger.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "blogspot.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "doubleclick.net",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "ggpht.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ac",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ad",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googleadservices.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ae",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.af",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ag",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.am",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googleapis.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.as",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.at",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.az",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ba",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.be",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.bf",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.bg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.bi",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.bj",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.bs",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.by",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ca",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cat",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cc",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cd",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cf",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ch",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ci",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cl",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.ao",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.bw",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.ck",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.cr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.hu",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.id",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.il",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.im",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.in",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.je",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.jp",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.ke",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.kr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.ls",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.af",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ag",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ai",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.ma",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ar",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.au",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.bd",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.bh",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.bn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.bo",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.br",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.by",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.bz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.cn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.co",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.cu",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.cy",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.do",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ec",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.eg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.et",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.fj",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ge",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.gh",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.gi",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.gr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.gt",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.hk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.iq",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.jm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.jo",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.kh",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.kw",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.lb",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ly",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googlecommerce.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.mt",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.mx",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.my",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.na",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.nf",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ng",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ni",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.np",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.nr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.om",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.pa",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.pe",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ph",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.pk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.pl",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.pr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.py",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.qa",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ru",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.sa",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.sb",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.sg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.sl",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.sv",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.tj",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.tn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.tr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.tw",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ua",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.uy",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.vc",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.ve",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.com.vn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.mz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.nz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.th",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.tz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.ug",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.uk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.uz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.ve",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.vi",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.za",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.zm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.co.zw",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cv",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.cz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.de",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.dj",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.dk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.dm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.dz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ee",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.es",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.fi",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.fm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.fr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ga",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ge",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.gg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.gl",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.gm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.gp",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.gr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googlegroups.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.gy",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.hk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.hn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.hr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ht",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.hu",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ie",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.im",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.info",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.iq",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.is",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.it.ao",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.it",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.je",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.jobs",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.jo",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.jp",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.kg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ki",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.kz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.la",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.li",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.lk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.lt",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.lu",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.lv",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.md",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.me",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.mg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.mk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ml",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.mn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ms",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.mu",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.mv",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.mw",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ne",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ne.jp",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.net",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.nl",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.no",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.nr",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.nu",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.off.ai",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.pk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.pl",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.pn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ps",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.pt",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ro",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.rs",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ru",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.rw",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.sc",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.se",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.sh",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.si",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.sk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.sm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.sn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.so",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.st",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googlesyndication.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googletagmanager.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googletagservices.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.td",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.tg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.tk",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.tl",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.tm",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.tn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.to",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.tt",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googleusercontent.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ua",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.us",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.uz",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.vg",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googlevideo.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.vu",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "googleweblight.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "google.ws",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "gstatic.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "gstatic.cn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "gvt1.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "static.googleadsserving.cn",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "urchin.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "www.googlegroups.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "youtu.be",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "youtube-nocookie.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "ytimg.com",
+      "include_subdomains": true,
+      "pins": "google"
+    },
+    {
+      "name": "at.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "au.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "az.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "be.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "bi.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "br.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ca.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "cd.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "cg.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "chfr.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "chit.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ch.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "cl.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "cn.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "co.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "cr.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ct.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "de.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "dk.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "do.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "en-maktoob.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "espanol.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "es.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "fi.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "fj.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "fr.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "gl.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "gm.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "gr.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "hk.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "hn.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "hu.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "id.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ie.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "in.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "it.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "kr.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "kz.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "li.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "lt.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "lu.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "lv.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "maktoob.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "malaysia.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "mt.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "mu.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "mw.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "mx.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ni.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "nl.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "no.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "np.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "nz.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "pa.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "pe.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ph.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "pk.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "pl.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "pr.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "py.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "qc.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ro.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ru.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "rw.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "se.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "sg.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "sv.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "th.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "tr.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "tv.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "tw.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ua.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "uk.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "uy.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "uz.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "ve.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "vn.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "xa.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "za.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "zh.search.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "login.yahoo.com",
+      "include_subdomains": true,
+      "pins": "yahoo"
+    },
+    {
+      "name": "mail.yahoo.com",
+      "include_subdomains": false,
+      "pins": "yahoo"
+    },
+    {
+      "name": "edit.yahoo.com",
+      "include_subdomains": true,
+      "pins": "yahoo"
+    },
+    {
+      "name": "facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "www.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "m.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "tablet.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "secure.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "pixel.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "apps.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "upload.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "developers.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "touch.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "mbasic.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "code.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "t.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "mtouch.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "business.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "research.facebook.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "messenger.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "www.messenger.com",
+      "include_subdomains": true,
+      "pins": "facebook"
+    },
+    {
+      "name": "twitter.com",
+      "include_subdomains": false,
+      "pins": "twitterCom"
+    },
+    {
+      "name": "www.twitter.com",
+      "include_subdomains": true,
+      "pins": "twitterCom"
+    },
+    {
+      "name": "api.twitter.com",
+      "include_subdomains": true,
+      "pins": "twitterCDN"
+    },
+    {
+      "name": "oauth.twitter.com",
+      "include_subdomains": true,
+      "pins": "twitterCom"
+    },
+    {
+      "name": "mobile.twitter.com",
+      "include_subdomains": true,
+      "pins": "twitterCom"
+    },
+    {
+      "name": "dev.twitter.com",
+      "include_subdomains": true,
+      "pins": "twitterCom"
+    },
+    {
+      "name": "business.twitter.com",
+      "include_subdomains": true,
+      "pins": "twitterCom"
+    },
+    {
+      "name": "platform.twitter.com",
+      "include_subdomains": true,
+      "pins": "twitterCDN"
+    },
+    {
+      "name": "twimg.com",
+      "include_subdomains": true,
+      "pins": "twitterCDN"
+    },
+    {
+      "name": "torproject.org",
+      "include_subdomains": false,
+      "pins": "tor"
+    },
+    {
+      "name": "blog.torproject.org",
+      "include_subdomains": true,
+      "pins": "tor"
+    },
+    {
+      "name": "check.torproject.org",
+      "include_subdomains": true,
+      "pins": "tor"
+    },
+    {
+      "name": "www.torproject.org",
+      "include_subdomains": true,
+      "pins": "tor"
+    },
+    {
+      "name": "dist.torproject.org",
+      "include_subdomains": true,
+      "pins": "tor"
+    },
+    {
+      "name": "dropbox.com",
+      "include_subdomains": true,
+      "pins": "dropbox"
+    },
+    {
+      "name": "www.dropbox.com",
+      "include_subdomains": true,
+      "pins": "dropbox"
+    },
+    {
+      "name": "dropboxstatic.com",
+      "include_subdomains": true,
+      "pins": "dropbox"
+    },
+    {
+      "name": "dropboxusercontent.com",
+      "include_subdomains": true,
+      "pins": "dropbox"
+    },
+    {
+      "name": "spideroak.com",
+      "include_subdomains": true,
+      "pins": "spideroak"
+    }
+  ]
+}
