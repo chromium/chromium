@@ -44,6 +44,14 @@
     width: 100%;
   }
 
+  .image-container img {
+    height: 100%;
+    left: 50%;
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
   .label {
     color: var(--cr-primary-text-color);
     text-align: center;
@@ -107,7 +115,12 @@
     <template is="dom-repeat" id="collectionsRepeat" items="[[collections_]]">
       <div class="tile collection" tabindex="0" role="button"
           on-click="onCollectionClick_">
-        <div class="image-container"></div>
+        <div class="image-container">
+          <img is="cr-auto-img"
+              auto-src="[[item.previewImageUrl.url]]"
+              draggable="false">
+          </img>
+        </div>
         <div class="label">[[item.label]]</div>
       </div>
     </template>
