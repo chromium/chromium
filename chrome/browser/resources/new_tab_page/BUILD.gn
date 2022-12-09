@@ -164,6 +164,7 @@ ts_library_sourcemaps("build_ts") {
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
+    "//ui/webui/resources/js/browser_command:build_ts",
   ]
 
   definitions = [
