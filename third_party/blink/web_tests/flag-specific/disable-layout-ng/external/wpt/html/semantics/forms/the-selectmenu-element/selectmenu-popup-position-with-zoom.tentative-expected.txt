@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS The popover should be bottom left positioned
+FAIL The popover should be top left positioned assert_equals: expected 0 but got 216
+FAIL The popover should be bottom right positioned assert_equals: expected 0 but got 7
+FAIL The popover should be top right positioned assert_equals: expected 0 but got 17
+Harness: the test ran to completion.
+
