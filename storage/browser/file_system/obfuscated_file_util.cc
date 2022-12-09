@@ -37,6 +37,7 @@
 #include "storage/browser/file_system/sandbox_origin_database.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/common/database/database_identifier.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -828,8 +829,16 @@ base::File::Error ObfuscatedFileUtil::DeleteDirectory(
   if (!db->GetFileWithPath(url.path(), &file_id))
     return base::File::FILE_ERROR_NOT_FOUND;
   if (!file_id) {
-    // Cannot remove the root directory.
-    return base::File::FILE_ERROR_ACCESS_DENIED;
+    // Attempting to remove the root directory. Delete the whole file system.
+    // This code should only be reached by the File System Access API when
+    // deleting the root of an Origin Private File System. All sandboxed URLs
+    // coming from that API are guaranteed to include bucket information.
+    DCHECK(url.bucket().has_value());
+    DCHECK(url.type() == kFileSystemTypeTemporary);
+    DeleteDirectoryForBucketAndType(url.bucket().value(), url.type());
+    context->change_observers()->Notify(&FileChangeObserver::OnRemoveDirectory,
+                                        url);
+    return base::File::FILE_OK;
   }
   FileInfo file_info;
   if (!db->GetFileInfo(file_id, &file_info)) {

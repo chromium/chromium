@@ -94,5 +94,12 @@ directory_test(async (t, root) => {
 
 promise_test(async (t) => {
   const root = await navigator.storage.getDirectory();
-  await promise_rejects_dom(t, 'NoModificationAllowedError', root.remove());
-}, 'cannot remove the root of a sandbox file system');
+  await root.getFileHandle('file.txt', {create: true});
+  assert_array_equals(await getSortedDirectoryEntries(root), ['file.txt']);
+
+  await root.remove();
+
+  // Creates a fresh sandboxed file system.
+  const newRoot = await navigator.storage.getDirectory();
+  assert_array_equals(await getSortedDirectoryEntries(newRoot), []);
+}, 'can remove the root of a sandbox file system');
