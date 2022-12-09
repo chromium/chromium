@@ -3855,9 +3855,6 @@ static const FakeNetworkState kFakeNetworks[] = {
      shill::kStateReady, em::NetworkState::READY, "", "", true},
     {"failure", "/device/wifi", shill::kTypeWifi, 1, -87, shill::kStateFailure,
      em::NetworkState::FAILURE, "", "", true},
-    {"activation-failure", "/device/cellular1", shill::kTypeCellular, 0, 0,
-     shill::kStateActivationFailure, em::NetworkState::ACTIVATION_FAILURE, "",
-     "", true},
     {"unknown", "", shill::kTypeWifi, 1, -87, shill::kStateIdle,
      em::NetworkState::IDLE, "", "", true},
 };

@@ -549,51 +549,10 @@ void MobileActivator::EvaluateCellularNetwork(const NetworkState* network) {
 
 MobileActivator::PlanActivationState MobileActivator::PickNextState(
     const NetworkState* network) const {
-  PlanActivationState new_state = state_;
   if (!network->IsConnectedState())
-    new_state = PickNextOfflineState(network);
+    return PickNextOfflineState(network);
   else
-    new_state = PickNextOnlineState(network);
-
-  if (new_state != PlanActivationState::kError &&
-      network->connection_state() == shill::kStateActivationFailure) {
-    // Check for this special case when we try to do activate partially
-    // activated device. If that attempt failed, try to disconnect to clear the
-    // state and reconnect again.
-    const std::string& activation = network->activation_state();
-    if ((activation == shill::kActivationStatePartiallyActivated ||
-         activation == shill::kActivationStateActivating) &&
-        (network->GetError().empty() ||
-         network->GetError() == shill::kErrorOtaspFailed)) {
-      NET_LOG(EVENT) << "Activation failure detected for "
-                     << NetworkId(network);
-      switch (state_) {
-        case PlanActivationState::kOTASP:
-          new_state = PlanActivationState::kDelayOTASP;
-          break;
-        case PlanActivationState::kInitiatingActivation:
-        case PlanActivationState::kTryingOTASP:
-          new_state = PlanActivationState::kStart;
-          break;
-        case PlanActivationState::kStart:
-          // We are just starting, so this must be previous activation attempt
-          // failure.
-          new_state = PlanActivationState::kTryingOTASP;
-          break;
-        case PlanActivationState::kDelayOTASP:
-          new_state = state_;
-          break;
-        default:
-          new_state = PlanActivationState::kError;
-          break;
-      }
-    } else {
-      LOG(WARNING) << "Unexpected activation failure for " << network->path();
-      new_state = PlanActivationState::kError;
-    }
-  }
-
-  return new_state;
+    return PickNextOnlineState(network);
 }
 
 MobileActivator::PlanActivationState MobileActivator::PickNextOfflineState(
