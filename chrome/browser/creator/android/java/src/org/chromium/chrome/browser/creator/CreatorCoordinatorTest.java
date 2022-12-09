@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.creator.test.R;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.feed.FeedStream;
 import org.chromium.chrome.browser.feed.FeedStreamJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -53,6 +55,12 @@ public class CreatorCoordinatorTest {
     private SnackbarManager mSnackbarManager;
     @Mock
     private Profile mProfile;
+    @Mock
+    private WebContentsCreator mCreatorWebContents;
+    @Mock
+    private NewTabCreator mCreatorOpenTab;
+    @Mock
+    private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
     private final String mTitle = "Example";
     private final String mUrl = "example.com";
 
@@ -78,8 +86,9 @@ public class CreatorCoordinatorTest {
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
-        mCreatorCoordinator = new CreatorCoordinator(
-                mActivity, sWebFeedId, mSnackbarManager, mWindowAndroid, mProfile, mTitle, mUrl);
+        mCreatorCoordinator = new CreatorCoordinator(mActivity, sWebFeedId, mSnackbarManager,
+                mWindowAndroid, mProfile, mTitle, mUrl, mCreatorWebContents, mCreatorOpenTab,
+                mShareDelegateSupplier);
     }
 
     @Test

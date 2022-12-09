@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- A toolbar layout designed for bottom-sheet based components -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/creator_tab_toolbar_height">
+  <LinearLayout
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/creator_tab_toolbar_height"
+      android:orientation="vertical">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:orientation="horizontal">
+      <org.chromium.ui.widget.ChromeImageView
+          android:id="@+id/favicon"
+          android:layout_width="24dp"
+          android:layout_height="24dp"
+          android:layout_alignParentBottom="true"
+          android:layout_marginEnd="16dp"
+          android:layout_marginBottom="14dp"
+          android:scaleType="fitCenter"
+          tools:ignore="ContentDescription" />
+      <ImageView
+          android:id="@+id/drag_handlebar"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal|top"
+          android:layout_marginTop="4dp"
+          android:layout_centerHorizontal="true"
+          android:importantForAccessibility="no"
+          android:src="@drawable/drag_handlebar" />
+      <org.chromium.ui.widget.ChromeImageView
+          android:id="@+id/close"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
+          android:paddingTop="8dp"
+          android:paddingBottom="8dp"
+          android:paddingStart="8dp"
+          android:paddingEnd="8dp"
+          android:layout_alignParentEnd="true"
+          android:layout_alignParentBottom="true"
+          android:layout_marginBottom="6dp"
+          android:src="@drawable/btn_close"
+          android:contentDescription="@string/close"
+          app:tint="@macro/default_icon_color" />
+      <org.chromium.ui.widget.ChromeImageView
+          android:id="@+id/open_in_new_tab"
+          android:layout_width="40dp"
+          android:layout_height="40dp"
+          android:paddingTop="8dp"
+          android:paddingBottom="8dp"
+          android:paddingStart="8dp"
+          android:paddingEnd="8dp"
+          android:layout_toStartOf="@+id/close"
+          android:layout_alignParentBottom="true"
+          android:layout_marginEnd="8dp"
+          android:layout_marginBottom="6dp"
+          android:src="@drawable/open_in_new_tab"
+          android:contentDescription="@string/contextmenu_open_in_new_tab"
+          android:visibility="gone"
+          app:tint="@macro/default_icon_color" />
+      <TextView
+          android:id="@+id/title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:layout_marginEnd="16dp"
+          android:layout_toStartOf="@id/open_in_new_tab"
+          android:layout_toEndOf="@id/favicon"
+          android:textAlignment="viewStart"
+          android:ellipsize="end"
+          android:singleLine="true"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+      <org.chromium.ui.widget.ChromeImageView
+          android:id="@+id/security_icon"
+          android:layout_width="16dp"
+          android:layout_height="16dp"
+          android:layout_alignStart="@id/title"
+          android:layout_below="@id/title"
+          android:layout_marginTop="3dp"
+          app:tint="@macro/default_icon_color" />
+      <TextView
+          android:id="@+id/origin"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_toStartOf="@id/open_in_new_tab"
+          android:layout_toEndOf="@id/security_icon"
+          android:layout_below="@id/title"
+          android:layout_marginStart="4dp"
+          android:textAlignment="viewStart"
+          android:ellipsize="start"
+          android:singleLine="true"
+          android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp" />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:max="100" />
+  </LinearLayout>
+  <org.chromium.components.browser_ui.widget.FadingShadowView
+      android:id="@+id/shadow"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/action_bar_shadow_height"
+      android:layout_marginTop="@dimen/creator_tab_toolbar_height"/>
+</FrameLayout>

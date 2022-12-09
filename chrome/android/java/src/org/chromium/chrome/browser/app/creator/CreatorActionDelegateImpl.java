@@ -11,6 +11,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.creator.CreatorCoordinator;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -27,12 +28,14 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     private final Context mActivityContext;
     private final Profile mProfile;
     private final SnackbarManager mSnackbarManager;
+    private CreatorCoordinator mCreatorCoordinator;
 
-    public CreatorActionDelegateImpl(
-            Context activityContext, Profile profile, SnackbarManager snackbarManager) {
+    public CreatorActionDelegateImpl(Context activityContext, Profile profile,
+            SnackbarManager snackbarManager, CreatorCoordinator creatorCoordinator) {
         mActivityContext = activityContext;
         mProfile = profile;
         mSnackbarManager = snackbarManager;
+        mCreatorCoordinator = creatorCoordinator;
     }
 
     @Override
@@ -50,8 +53,10 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             boolean offTheRecord = (disposition == WindowOpenDisposition.OFF_THE_RECORD);
             new TabDelegate(offTheRecord).createNewTab(params, TabLaunchType.FROM_LINK, null);
             return;
+        } else if (disposition == WindowOpenDisposition.CURRENT_TAB) {
+            mCreatorCoordinator.requestOpenSheet(new GURL(params.getUrl()));
+            return;
         }
-
         // TODO(crbug.com/1395448) open in ephemeral tab or thin web view.
         Log.w(TAG, "OpenSuggestionUrl: Unhandled disposition " + disposition);
     }
