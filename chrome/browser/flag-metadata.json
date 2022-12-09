@@ -6043,7 +6043,7 @@
       "zoraiznaeem",
       "chromeos-foundations@google.com"
     ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "run-video-capture-service-in-browser",
