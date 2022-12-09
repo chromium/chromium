@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -112,6 +113,7 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenNewTabs) {
   SendKeyPress(ui::VKEY_CONTROL);
   SendKeyPress(ui::VKEY_T);
   EXPECT_EQ(tab_count, tab_strip_model->count());
+  EXPECT_EQ(tab_count - 1, tab_strip_model->active_index());
 
   // Shortcut should not work after disabling sticky keys.
   SetStickyKeysEnabled(false);
@@ -225,6 +227,43 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OverlayShown) {
     SendKeyPress(key_code);
     EXPECT_FALSE(controller->GetOverlayForTest());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenIncognitoWindow) {
+  ui_test_utils::BrowserChangeObserver browser_change_observer(
+      /*browser=*/nullptr,
+      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+
+  SetStickyKeysEnabled(true);
+  StickyKeysOverlay* overlay =
+      Shell::Get()->sticky_keys_controller()->GetOverlayForTest();
+  ASSERT_TRUE(overlay);
+
+  // Overlay is shown on first modifier key press.
+  EXPECT_FALSE(overlay->is_visible());
+  SendKeyPress(ui::VKEY_SHIFT);
+  EXPECT_TRUE(overlay->is_visible());
+  SendKeyPress(ui::VKEY_CONTROL);
+  EXPECT_TRUE(overlay->is_visible());
+  SendKeyPress(ui::VKEY_N);
+
+  Browser* incognito_browser = browser_change_observer.Wait();
+  EXPECT_TRUE(incognito_browser->profile()->IsIncognitoProfile());
+}
+
+IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CyclesWindows) {
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  browser2->window()->Activate();
+  EXPECT_TRUE(browser2->window()->IsActive());
+  EXPECT_FALSE(browser()->window()->IsActive());
+
+  SetStickyKeysEnabled(true);
+
+  SendKeyPress(ui::VKEY_MENU);  // alt key.
+  SendKeyPress(ui::VKEY_TAB);
+
+  EXPECT_TRUE(browser()->window()->IsActive());
+  EXPECT_FALSE(browser2->window()->IsActive());
 }
 
 }  // namespace ash
