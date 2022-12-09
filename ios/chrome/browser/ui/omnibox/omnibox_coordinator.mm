@@ -244,6 +244,7 @@
   OmniboxPopupCoordinator* coordinator = [[OmniboxPopupCoordinator alloc]
       initWithBaseViewController:nil
                          browser:self.browser
+          autocompleteController:_editView->model()->autocomplete_controller()
                        popupView:std::move(popupView)];
   coordinator.presenterDelegate = presenterDelegate;
 

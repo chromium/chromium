@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_input.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_result.h"
@@ -62,6 +63,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 /// highlighted on down arrow key.
 @property(nonatomic, assign) NSInteger preselectedGroupIndex;
 
+// Autocomplete controller backing this mediator.
+// It is observed through OmniboxPopupViewIOS.
+@property(nonatomic, assign) AutocompleteController* autocompleteController;
+
 @end
 
 @implementation OmniboxPopupMediator {
@@ -69,8 +74,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
 
   OmniboxPopupMediatorDelegate* _delegate;  // weak
-
-  AutocompleteResult _currentResult;
 }
 @synthesize consumer = _consumer;
 @synthesize hasResults = _hasResults;
@@ -82,10 +85,12 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
                     (std::unique_ptr<image_fetcher::ImageDataFetcher>)
                         imageFetcher
                   faviconLoader:(FaviconLoader*)faviconLoader
+         autocompleteController:(AutocompleteController*)autocompleteController
                        delegate:(OmniboxPopupMediatorDelegate*)delegate {
   self = [super init];
   if (self) {
     DCHECK(delegate);
+    DCHECK(autocompleteController);
     _delegate = delegate;
     _imageFetcher = std::move(imageFetcher);
     _faviconLoader = faviconLoader;
@@ -93,22 +98,22 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     _pedalSectionExtractor = [[PedalSectionExtractor alloc] init];
     _pedalSectionExtractor.delegate = self;
     _preselectedGroupIndex = 0;
+    _autocompleteController = autocompleteController;
   }
   return self;
 }
 
 - (void)updateMatches:(const AutocompleteResult&)result {
-  _currentResult.Reset();
-  _currentResult.CopyFrom(result);
   self.nonPedalSuggestions = nil;
 
-  self.hasResults = !_currentResult.empty();
+  self.hasResults = !self.autocompleteResult.empty();
   if (base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
     [self.consumer newResultsAvailable];
   } else {
     // Avoid calling consumer visible size and set all suggestions as visible to
     // get only one grouping.
-    [self requestResultsWithVisibleSuggestionCount:_currentResult.size()];
+    [self requestResultsWithVisibleSuggestionCount:self.autocompleteResult
+                                                       .size()];
   }
 
   if (self.debugInfoConsumer) {
@@ -143,10 +148,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     (NSUInteger)visibleSuggestionCount {
   // If no suggestions are visible, consider all of them visible.
   if (visibleSuggestionCount == 0) {
-    visibleSuggestionCount = _currentResult.size();
+    visibleSuggestionCount = self.autocompleteResult.size();
   }
   NSUInteger visibleSuggestions =
-      MIN(visibleSuggestionCount, _currentResult.size());
+      MIN(visibleSuggestionCount, self.autocompleteResult.size());
   if (visibleSuggestions > 0) {
     // Groups visible suggestions by search vs url. Skip the first suggestion
     // because it's the omnibox content.
@@ -154,7 +159,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   }
   // Groups hidden suggestions by search vs url.
   [self groupCurrentSuggestionsFrom:visibleSuggestions
-                                 to:_currentResult.size()];
+                                 to:self.autocompleteResult.size()];
 
   NSArray<id<AutocompleteSuggestionGroup>>* groups = [self wrappedMatches];
 
@@ -376,10 +381,9 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
     (const AutocompleteResult&)autocompleteResult {
   NSMutableArray<id<AutocompleteSuggestion>>* wrappedMatches =
       [[NSMutableArray alloc] init];
-  for (size_t i = 0; i < _currentResult.size(); i++) {
+  for (size_t i = 0; i < self.autocompleteResult.size(); i++) {
     const AutocompleteMatch& match =
-        ((const AutocompleteResult&)_currentResult).match_at((NSUInteger)i);
-
+        self.autocompleteResult.match_at((NSUInteger)i);
     if (match.type == AutocompleteMatchType::TILE_NAVSUGGEST) {
       DCHECK(match.type == AutocompleteMatchType::TILE_NAVSUGGEST);
       DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
@@ -474,10 +478,10 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 
   // Group the suggestions by the section Id.
   NSMutableArray<id<AutocompleteSuggestion>>* allMatches =
-      [self extractMatches:_currentResult];
+      [self extractMatches:self.autocompleteResult];
   NSArray<id<AutocompleteSuggestionGroup>>* allGroups =
       [self groupSuggestions:allMatches
-          usingACResultAsHeaderMap:_currentResult];
+          usingACResultAsHeaderMap:self.autocompleteResult];
   [groups addObjectsFromArray:allGroups];
 
   // Before inserting pedals above all, back up non-pedal suggestions for
@@ -498,12 +502,15 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   return groups;
 }
 
+- (const AutocompleteResult&)autocompleteResult {
+  DCHECK(self.autocompleteController);
+  return self.autocompleteController->result();
+}
+
 - (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end {
-  DCHECK(begin <= _currentResult.size());
-  DCHECK(end <= _currentResult.size());
-  AutocompleteResult::GroupSuggestionsBySearchVsURL(
-      std::next(_currentResult.begin(), begin),
-      std::next(_currentResult.begin(), end));
+  DCHECK(begin <= self.autocompleteResult.size());
+  DCHECK(end <= self.autocompleteResult.size());
+  self.autocompleteController->GroupSuggestionsBySearchVsURL(begin, end);
 }
 
 #pragma mark - CarouselItemMenuProvider

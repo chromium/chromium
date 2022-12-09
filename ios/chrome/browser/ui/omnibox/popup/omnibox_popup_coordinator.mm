@@ -65,6 +65,9 @@
 @property(nonatomic, strong) PopupUIConfiguration* uiConfiguration;
 @property(nonatomic, strong) SharingCoordinator* sharingCoordinator;
 
+// Owned by OmniboxEditModel.
+@property(nonatomic, assign) AutocompleteController* autocompleteController;
+
 @end
 
 @implementation OmniboxPopupCoordinator
@@ -74,9 +77,12 @@
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
+        autocompleteController:(AutocompleteController*)autocompleteController
                      popupView:(std::unique_ptr<OmniboxPopupViewIOS>)popupView {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
+    DCHECK(autocompleteController);
+    _autocompleteController = autocompleteController;
     _popupView = std::move(popupView);
     _popupViewController = [[OmniboxPopupViewController alloc] init];
     _popupReturnDelegate = _popupViewController;
@@ -93,10 +99,12 @@
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
 
   self.mediator = [[OmniboxPopupMediator alloc]
-      initWithFetcher:std::move(imageFetcher)
-        faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                          self.browser->GetBrowserState())
-             delegate:_popupView.get()];
+             initWithFetcher:std::move(imageFetcher)
+               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
+                                 self.browser->GetBrowserState())
+      autocompleteController:self.autocompleteController
+
+                    delegate:_popupView.get()];
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   self.mediator.dispatcher =

@@ -12,6 +12,9 @@
 /// (excluded) with `GroupSuggestionsBySearchVsURL`.
 - (void)groupCurrentSuggestionsFrom:(NSUInteger)begin to:(NSUInteger)end;
 
+/// Returns `AutocompleteResult` from `autocompleteController`.
+- (const AutocompleteResult&)autocompleteResult;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_MEDIATOR_PRIVATE_H_

@@ -10,9 +10,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/search_engines/template_url_service.h"
+#import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "ios/chrome/browser/ui/omnibox/popup/favicon_retriever.h"
@@ -98,7 +103,8 @@ void PopulateAutocompleteMatches(const TestData* data,
 class OmniboxPopupMediatorTest : public PlatformTest {
  public:
   OmniboxPopupMediatorTest()
-      : resultConsumerGroups_(),
+      : autocomplete_result_(),
+        resultConsumerGroups_(),
         resultConsumerGroupIndex_(0),
         groupBySearchVSURLArguments_() {}
 
@@ -106,15 +112,28 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    std::unique_ptr<image_fetcher::ImageDataFetcher> mockImageDataFetcher =
+    // Setup for AutocompleteController.
+    auto template_url_service = std::make_unique<TemplateURLService>(
+        /*prefs=*/nullptr, std::make_unique<SearchTermsData>(),
+        /*web_data_service=*/nullptr,
+        std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure());
+    auto client = std::make_unique<MockAutocompleteProviderClient>();
+    client->set_template_url_service(std::move(template_url_service));
+    auto autocomplete_controller =
+        std::make_unique<testing::StrictMock<AutocompleteController>>(
+            std::move(client), 0);
+
+    std::unique_ptr<image_fetcher::ImageDataFetcher> mock_image_data_fetcher =
         std::make_unique<MockImageDataFetcher>();
+
     mockResultConsumer_ =
         OCMProtocolMock(@protocol(AutocompleteResultConsumer));
 
     mediator_ = [[OmniboxPopupMediator alloc]
-        initWithFetcher:std::move(mockImageDataFetcher)
-          faviconLoader:nil
-               delegate:&delegate_];
+               initWithFetcher:std::move(mock_image_data_fetcher)
+                 faviconLoader:nil
+        autocompleteController:autocomplete_controller.get()
+                      delegate:&delegate_];
     mediator_.consumer = mockResultConsumer_;
 
     // Stubs call to AutocompleteResultConsumer::updateMatches and stores
@@ -129,9 +148,9 @@ class OmniboxPopupMediatorTest : public PlatformTest {
           [invocation getArgument:&resultConsumerGroupIndex_ atIndex:3];
         });
 
+    id partialMockMediator_ = OCMPartialMock(mediator_);
     // Stubs call to OmniboxPopupMediator::groupCurrentSuggestionsFrom and
     // stores arguments.
-    id partialMockMediator_ = OCMPartialMock(mediator_);
     OCMStub([[partialMockMediator_ ignoringNonObjectArgs]
                 groupCurrentSuggestionsFrom:0
                                          to:0])
@@ -142,6 +161,10 @@ class OmniboxPopupMediatorTest : public PlatformTest {
           [invocation getArgument:&end atIndex:3];
           groupBySearchVSURLArguments_.push_back({begin, end});
         });
+
+    // Stubs call to `autocompleteResult`.
+    OCMStub([partialMockMediator_ autocompleteResult])
+        .andReturn(&autocomplete_result_);
   }
 
   void SetVisibleSuggestionCount(NSUInteger visibleSuggestionCount) {
@@ -182,9 +205,11 @@ class OmniboxPopupMediatorTest : public PlatformTest {
     EXPECT_EQ(end, std::get<1>(groupBySearchVSURLArguments_[index]));
   }
 
+  // Message loop for the main test thread.
+  base::test::TaskEnvironment environment_;
   OmniboxPopupMediator* mediator_;
   MockOmniboxPopupMediatorDelegate delegate_;
-  AutocompleteResult autocompleteResult_;
+  AutocompleteResult autocomplete_result_;
   id mockResultConsumer_;
   NSArray<id<AutocompleteSuggestionGroup>>* resultConsumerGroups_;
   NSInteger resultConsumerGroupIndex_;
@@ -199,19 +224,17 @@ TEST_F(OmniboxPopupMediatorTest, Init) {
 // Tests that update matches with no matches returns no suggestion groups.
 TEST_F(OmniboxPopupMediatorTest, UpdateMatchesEmpty) {
   SetVisibleSuggestionCount(0);
-  AutocompleteResult empty_results = AutocompleteResult();
-  [mediator_ updateMatches:empty_results];
+  [mediator_ updateMatches:autocomplete_result_];
   EXPECT_EQ(0ul, resultConsumerGroups_.count);
 }
 
 // Tests that the number of suggestions matches the number of matches.
 TEST_F(OmniboxPopupMediatorTest, UpdateMatchesCount) {
   SetVisibleSuggestionCount(0);
-  AutocompleteResult results = AutocompleteResult();
-  results.AppendMatches(GetAutocompleteMatches());
-  [mediator_ updateMatches:results];
+  autocomplete_result_.AppendMatches(GetAutocompleteMatches());
+  [mediator_ updateMatches:autocomplete_result_];
   EXPECT_EQ(1ul, resultConsumerGroups_.count);
-  EXPECT_EQ(results.size(),
+  EXPECT_EQ(autocomplete_result_.size(),
             resultConsumerGroups_[resultConsumerGroupIndex_].suggestions.count);
 }
 
@@ -222,13 +245,12 @@ TEST_F(OmniboxPopupMediatorTest, UpdateMatchesSorting) {
   feature_list->InitAndDisableFeature(omnibox::kAdaptiveSuggestionsCount);
   SetVisibleSuggestionCount(0);
 
-  AutocompleteResult results = AutocompleteResult();
-  results.AppendMatches(GetAutocompleteMatches());
-  [mediator_ updateMatches:results];
+  autocomplete_result_.AppendMatches(GetAutocompleteMatches());
+  [mediator_ updateMatches:autocomplete_result_];
   EXPECT_EQ(1ul, resultConsumerGroups_.count);
   // Expect SearchVSURL skipping the first suggestion because its the omnibox's
   // content.
-  ExpectGroupBySearchVSURL(0, 1, results.size());
+  ExpectGroupBySearchVSURL(0, 1, autocomplete_result_.size());
 }
 
 // Tests that with adaptive suggestions, if all suggestions are visible, they
@@ -238,15 +260,14 @@ TEST_F(OmniboxPopupMediatorTest, AdaptiveSuggestionsAllVisible) {
       std::make_unique<base::test::ScopedFeatureList>();
   feature_list->InitAndEnableFeature(omnibox::kAdaptiveSuggestionsCount);
 
-  AutocompleteResult results = AutocompleteResult();
-  results.AppendMatches(GetAutocompleteMatches());
-  SetVisibleSuggestionCount(results.size());
-  [mediator_ updateMatches:results];
+  autocomplete_result_.AppendMatches(GetAutocompleteMatches());
+  SetVisibleSuggestionCount(autocomplete_result_.size());
+  [mediator_ updateMatches:autocomplete_result_];
 
   EXPECT_EQ(1ul, resultConsumerGroups_.count);
   // Expect SearchVSURL skipping the first suggestion because its the omnibox's
   // content.
-  ExpectGroupBySearchVSURL(0, 1, results.size());
+  ExpectGroupBySearchVSURL(0, 1, autocomplete_result_.size());
 }
 
 // Tests that with adaptive suggestions, if only part of the suggestions are
@@ -260,16 +281,16 @@ TEST_F(OmniboxPopupMediatorTest, AdaptiveSuggestionsPartVisible) {
   const NSUInteger visibleSuggestionCount = 5;
   SetVisibleSuggestionCount(visibleSuggestionCount);
   // Configure matches.
-  AutocompleteResult results = AutocompleteResult();
-  results.AppendMatches(GetAutocompleteMatches());
+  autocomplete_result_.AppendMatches(GetAutocompleteMatches());
   // Call update matches on mediator.
-  [mediator_ updateMatches:results];
+  [mediator_ updateMatches:autocomplete_result_];
 
   EXPECT_EQ(1ul, resultConsumerGroups_.count);
   // Expect SearchVSURL skipping the first suggestion because its the omnibox's
   // content.
   ExpectGroupBySearchVSURL(0, 1, visibleSuggestionCount);
-  ExpectGroupBySearchVSURL(1, visibleSuggestionCount, results.size());
+  ExpectGroupBySearchVSURL(1, visibleSuggestionCount,
+                           autocomplete_result_.size());
 }
 
 }  // namespace

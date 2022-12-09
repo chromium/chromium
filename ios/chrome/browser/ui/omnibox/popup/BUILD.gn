@@ -269,6 +269,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/image_fetcher/core",
     "//components/omnibox/browser",
+    "//components/omnibox/browser:test_support",
+    "//components/search_engines",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/common/ui/favicon",
