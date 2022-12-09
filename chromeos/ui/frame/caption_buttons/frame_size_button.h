@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button_delegate.h"
-#include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/window/frame_caption_button.h"

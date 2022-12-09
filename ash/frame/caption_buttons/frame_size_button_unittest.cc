@@ -16,12 +16,14 @@
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "chromeos/ui/wm/features.h"
@@ -49,7 +51,6 @@ using ::chromeos::FrameSizeButton;
 using ::chromeos::MultitaskButton;
 using ::chromeos::MultitaskMenu;
 using ::chromeos::MultitaskMenuEntryType;
-using ::chromeos::MultitaskMenuView;
 using ::chromeos::SplitButtonView;
 using ::chromeos::WindowStateType;
 
@@ -781,6 +782,15 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   const gfx::Rect work_area_bounds_in_screen =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
 
+  // Verify the metrics initial states.
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                chromeos::kPartialSplitOneThirdUserAction),
+            0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                chromeos::kPartialSplitTwoThirdsUserAction),
+            0);
+
   // Snap to primary with 0.67f screen ratio.
   ShowMultitaskMenu();
   generator->MoveMouseTo(multitask_menu()
@@ -792,6 +802,9 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state()->GetStateType());
   EXPECT_EQ(window_state()->window()->bounds().width(),
             work_area_bounds_in_screen.width() * 0.67);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                chromeos::kPartialSplitTwoThirdsUserAction),
+            1);
 
   // Snap to secondary with 0.33f screen ratio.
   ShowMultitaskMenu();
@@ -807,6 +820,9 @@ TEST_F(MultitaskMenuTest, TestMultitaskMenuPartialSplit) {
   EXPECT_EQ(WindowStateType::kSecondarySnapped, window_state()->GetStateType());
   EXPECT_EQ(window_state()->window()->bounds().width(),
             work_area_bounds_in_screen.width() * 0.33);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                chromeos::kPartialSplitOneThirdUserAction),
+            1);
 }
 
 // Test Full Button Functionality.
@@ -848,7 +864,7 @@ TEST_F(MultitaskMenuTest, LongTouchShowsMultitaskMenu) {
   EXPECT_TRUE(bubble_widget);
 
   histogram_tester.ExpectBucketCount(
-      MultitaskMenuView::GetEntryTypeHistogramName(),
+      chromeos::GetEntryTypeHistogramName(),
       MultitaskMenuEntryType::kFrameSizeButtonLongTouch, 1);
 }
 
@@ -859,19 +875,18 @@ TEST_F(MultitaskMenuTest, EntryTypeHistogram) {
   // Check that mouse hover increments the correct bucket.
   GetEventGenerator()->MoveMouseTo(CenterPointInScreen(size_button()));
   histogram_tester.ExpectBucketCount(
-      MultitaskMenuView::GetEntryTypeHistogramName(),
+      chromeos::GetEntryTypeHistogramName(),
       MultitaskMenuEntryType::kFrameSizeButtonHover, 1);
 
   // Check that long press increments the correct bucket.
   GetEventGenerator()->MoveMouseTo(CenterPointInScreen(size_button()));
   GetEventGenerator()->PressLeftButton();
   histogram_tester.ExpectBucketCount(
-      MultitaskMenuView::GetEntryTypeHistogramName(),
+      chromeos::GetEntryTypeHistogramName(),
       MultitaskMenuEntryType::kFrameSizeButtonLongPress, 1);
 
   // Check total counts for each histogram to ensure calls aren't counted in
   // multiple buckets.
-  histogram_tester.ExpectTotalCount(
-      MultitaskMenuView::GetEntryTypeHistogramName(), 2);
+  histogram_tester.ExpectTotalCount(chromeos::GetEntryTypeHistogramName(), 2);
 }
 }  // namespace ash

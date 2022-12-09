@@ -19,19 +19,6 @@ enum class SnapDirection;
 class MultitaskButton;
 class SplitButtonView;
 
-constexpr char kMultitaskMenuEntryTypeHistogram[] =
-    "Ash.Float.MultitaskMenuEntryType";
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// MultitaskMenuEntryType in /src/tools/metrics/histograms/enums.xml.
-enum class MultitaskMenuEntryType {
-  kFrameSizeButtonHover = 0,
-  kFrameSizeButtonLongPress = 1,
-  kFrameSizeButtonLongTouch = 2,
-  kMaxValue = kFrameSizeButtonLongTouch,
-};
-
 // Contains buttons which can fullscreen, snap, or float a window.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
     : public views::View {
@@ -54,8 +41,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   MultitaskMenuView& operator=(const MultitaskMenuView&) = delete;
 
   ~MultitaskMenuView() override;
-
-  static std::string GetEntryTypeHistogramName();
 
   // For testing.
   SplitButtonView* half_button_for_testing() {

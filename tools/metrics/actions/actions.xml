@@ -21817,6 +21817,22 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="MultitaskMenu_PartialSplit_OneThird">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
+  <description>
+    Recorded when a window is partial split to one third.
+  </description>
+</action>
+
+<action name="MultitaskMenu_PartialSplit_TwoThirds">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>shidi@chromium.org</owner>
+  <description>
+    Recorded when a window is partial split to two thirds.
+  </description>
+</action>
+
 <action name="MultiWindowResizerClick">
   <owner>michelefan@chromium.org</owner>
   <owner>xdai@chromium.org</owner>

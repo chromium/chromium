@@ -8,15 +8,16 @@
 
 #include "base/callback_forward.h"
 #include "base/check.h"
+#include "base/metrics/user_metrics.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
-#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_button.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
@@ -132,13 +133,6 @@ MultitaskMenuView::MultitaskMenuView(
 
 MultitaskMenuView::~MultitaskMenuView() = default;
 
-// static
-std::string MultitaskMenuView::GetEntryTypeHistogramName() {
-  return std::string(kMultitaskMenuEntryTypeHistogram)
-      .append(TabletState::Get()->InTabletMode() ? ".TabletMode"
-                                                 : ".ClamshellMode");
-}
-
 void MultitaskMenuView::SplitButtonPressed(bool left_top) {
   SnapController::Get()->CommitSnap(
       window_, GetSnapDirectionForWindow(window_, left_top), kDefaultSnapRatio);
@@ -155,6 +149,10 @@ void MultitaskMenuView::PartialButtonPressed(bool left_top) {
                                         ? kTwoThirdSnapRatio
                                         : kOneThirdSnapRatio);
   on_any_button_pressed_.Run();
+
+  base::RecordAction(base::UserMetricsAction(
+      snap == SnapDirection::kPrimary ? kPartialSplitTwoThirdsUserAction
+                                      : kPartialSplitOneThirdUserAction));
 }
 
 void MultitaskMenuView::FullScreenButtonPressed() {

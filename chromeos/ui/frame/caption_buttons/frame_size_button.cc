@@ -8,12 +8,12 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -85,11 +85,6 @@ SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
       NOTREACHED();
       return SnapDirection::kNone;
   }
-}
-
-void RecordMultitaskMenuEntryType(MultitaskMenuEntryType entry_type) {
-  base::UmaHistogramEnumeration(MultitaskMenuView::GetEntryTypeHistogramName(),
-                                entry_type);
 }
 
 }  // namespace
