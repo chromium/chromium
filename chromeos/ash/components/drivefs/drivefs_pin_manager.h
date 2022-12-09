@@ -44,6 +44,8 @@ enum class PinError {
   kErrorRetrievingSearchResultsForPinning = 6,
   kErrorResultsReturnedInvalidForPinning = 7,
   kErrorFailedToPinItem = 8,
+  kErrorSearchQueryNotBound = 9,
+  kErrorManagerStopped = 10,
 };
 
 // A delegate to aid in mocking the free disk scenarios for testing, in non-test
@@ -95,6 +97,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // automatically. The complete callback will be called once the initial
   // pinning has completed.
   void Start(base::OnceCallback<void(PinError)> complete_callback);
+
+  // Stop the syncing setup.
+  void Stop();
 
   // drivefs::DriveFsHostObserver
   void OnSyncingStatusUpdate(const mojom::SyncingStatus& status) override;
@@ -186,7 +191,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsPinManager
   // If there are no remaining items left, get the next search query page.
   void MaybeStartSearch(size_t remaining_items);
 
+  // Denotes whether the feature is enabled. If the feature is disabled no setup
+  // nor monitoring occurs.
   bool enabled_ = false;
+
+  // Denotes whether the initial setup has finished. The feature must be enabled
+  // for this to be used.
+  bool setup_complete_ = false;
   int64_t size_required_ = 0;
   int64_t free_space_ = 0;
   base::OnceCallback<void(PinError)> complete_callback_;

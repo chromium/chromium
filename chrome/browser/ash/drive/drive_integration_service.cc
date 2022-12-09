@@ -1018,10 +1018,21 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
         base::BindOnce(&DriveIntegrationService::OnEnableMirroringStatusUpdate,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  if (ash::features::IsDriveFsBulkPinningEnabled()) {
+    pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
+        profile_->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled),
+        profile_->GetPath(), GetDriveFsInterface());
+  }
 }
 
 void DriveIntegrationService::OnUnmounted(
     absl::optional<base::TimeDelta> remount_delay) {
+  if (ash::features::IsDriveFsBulkPinningEnabled() && pin_manager_) {
+    pin_manager_->Stop();
+    drivefs_holder_->drivefs_host()->RemoveObserver(pin_manager_.get());
+    pin_manager_.reset();
+  }
   UmaEmitUnmountOutcome(remount_delay ? DriveMountStatus::kTemporaryUnavailable
                                       : DriveMountStatus::kUnknownFailure);
   MaybeRemountFileSystem(remount_delay, false);
@@ -1435,26 +1446,23 @@ void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
 
 void DriveIntegrationService::SetBulkPinningEnabled(bool enabled) {
   if (!ash::features::IsDriveFsBulkPinningEnabled() || !IsMounted() ||
-      !GetDriveFsInterface()) {
+      !GetDriveFsInterface() || !pin_manager_) {
     return;
-  }
-
-  if (!pin_manager_) {
-    VLOG(1) << "Lazily creating the pin manager";
-    pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
-        profile_->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled),
-        profile_->GetPath(), GetDriveFsInterface());
-    drivefs_holder_->drivefs_host()->AddObserver(pin_manager_.get());
   }
 
   VLOG(1) << "Setting bulk pinning enabled: " << enabled;
   pin_manager_->SetBulkPinningEnabled(enabled);
 
   if (enabled) {
+    drivefs_holder_->drivefs_host()->AddObserver(pin_manager_.get());
     pin_manager_->Start(
         base::BindOnce(&DriveIntegrationService::OnBulkPinningFinished,
                        weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+
+  pin_manager_->Stop();
+  drivefs_holder_->drivefs_host()->RemoveObserver(pin_manager_.get());
 }
 
 void DriveIntegrationService::OnBulkPinningFinished(

@@ -148,12 +148,17 @@ void DriveFsPinManager::Start(
   VLOG(1) << "Caculating free disk space";
   timer_.Begin();
   complete_callback_ = std::move(complete_callback);
+  setup_complete_ = false;
 
   base::FilePath gcache_path(profile_path_.AppendASCII(kGCacheFolderName));
 
   free_disk_space_->AmountOfFreeDiskSpace(
       gcache_path, base::BindOnce(&DriveFsPinManager::OnFreeDiskSpaceRetrieved,
                                   weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveFsPinManager::Stop() {
+  Complete(PinError::kErrorManagerStopped);
 }
 
 void DriveFsPinManager::OnFreeDiskSpaceRetrieved(int64_t free_space) {
@@ -220,6 +225,11 @@ void DriveFsPinManager::OnSearchResultForSizeCalculation(
     return;
   }
 
+  if (!search_query_.is_bound()) {
+    Complete(PinError::kErrorSearchQueryNotBound);
+    return;
+  }
+
   search_query_->GetNextPage(
       base::BindOnce(&DriveFsPinManager::OnSearchResultForSizeCalculation,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -230,7 +240,9 @@ void DriveFsPinManager::Complete(PinError status) {
   search_query_.reset();
   free_space_ = 0;
   size_required_ = 0;
-  std::move(complete_callback_).Run(status);
+  if (complete_callback_) {
+    std::move(complete_callback_).Run(status);
+  }
 }
 
 void DriveFsPinManager::StartBatchPinning() {
@@ -271,6 +283,7 @@ void DriveFsPinManager::OnSearchResultsForPinning(
   if (items.value().size() == 0) {
     VLOG(1) << "Finished pinning all files in "
             << timer_.Elapsed().InMilliseconds() << "ms";
+    setup_complete_ = true;
     Complete(PinError::kSuccess);
     return;
   }
@@ -286,6 +299,10 @@ void DriveFsPinManager::OnSearchResultsForPinning(
                              });
 
   if (unpinned_items == 0) {
+    if (!search_query_.is_bound()) {
+      Complete(PinError::kErrorSearchQueryNotBound);
+      return;
+    }
     VLOG(1) << "All items in current batch are already pinned";
     search_query_->GetNextPage(
         base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
@@ -321,6 +338,10 @@ void DriveFsPinManager::OnFilePinned(const std::string& path,
 
 void DriveFsPinManager::OnSyncingStatusUpdate(
     const mojom::SyncingStatus& status) {
+  if (!enabled_ || setup_complete_) {
+    return;
+  }
+
   for (const auto& item : status.item_events) {
     auto cloned_item = item.Clone();
     // TODO(b/259454320): Hosted files (e.g. gdoc) do not send an update via the
@@ -343,6 +364,11 @@ void DriveFsPinManager::OnSyncingStatusUpdate(
 }
 
 void DriveFsPinManager::MaybeStartSearch(size_t remaining_items) {
+  if (!search_query_.is_bound()) {
+    Complete(PinError::kErrorSearchQueryNotBound);
+    return;
+  }
+
   if (remaining_items == 0) {
     search_query_->GetNextPage(
         base::BindOnce(&DriveFsPinManager::OnSearchResultsForPinning,
