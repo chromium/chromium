@@ -211,7 +211,7 @@ crbug.com/1383735 http/tests/devtools/modify-cross-domain-rule.js [ Failure Pass
 
 # ====== Popover and Anchor Positioning failures from here ======
 
-crbug.com/1307772 external/wpt/html/semantics/popovers/popover-attribute-basic.tentative.html [ Failure Pass Crash ]
+crbug.com/1307772 external/wpt/html/semantics/popovers/popover-attribute-basic.tentative.html [ Failure Pass ]
 
 # ====== Popover and Anchor Positioning failures to here ======
 

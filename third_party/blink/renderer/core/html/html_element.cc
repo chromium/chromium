@@ -1475,25 +1475,19 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
       GetDocument().GetExecutionContext()));
   DCHECK(HasPopoverAttribute());
   auto& document = GetDocument();
-  auto original_type = PopoverType();
-  if (original_type == PopoverValueType::kAuto) {
+  if (PopoverType() == PopoverValueType::kAuto) {
     // Hide any popovers above us in the stack.
     HideAllPopoversUntil(this, document, focus_behavior, forcing_level);
 
     // The 'beforetoggle' event handlers could have changed this popover, e.g.
     // by changing its type, removing it from the document, or calling
     // hidePopover().
-    if (!HasPopoverAttribute() || !isConnected() ||
-        GetPopoverData()->visibilityState() !=
-            PopoverVisibilityState::kShowing ||
-        PopoverType() != original_type) {
-      DCHECK(!GetDocument().PopoverStack().Contains(this));
+    auto& stack = document.PopoverStack();
+    if (!stack.Contains(this)) {
       return;
     }
 
-    // Then remove this popover from the stack, if present. If the popover
-    // is already hidden, it won't be in the stack.
-    auto& stack = document.PopoverStack();
+    // Then remove this popover from the stack.
     DCHECK(!stack.empty());
     DCHECK_EQ(stack.back(), this);
     stack.pop_back();
@@ -1533,17 +1527,15 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   auto result = DispatchEvent(*event);
   DCHECK_EQ(result, DispatchEventResult::kNotCanceled);
 
+  // The 'beforetoggle' event handler could have changed this popover, e.g. by
+  // changing its type, removing it from the document, or calling showPopover().
+  if (!isConnected() || !popoverOpen()) {
+    return;
+  }
+
   // Stop matching `:open`:
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kTransitioning);
   PseudoStateChanged(CSSSelector::kPseudoOpen);
-
-  // The 'beforetoggle' event handler could have changed this popover, e.g. by
-  // changing its type, removing it from the document, or calling showPopover().
-  if (!isConnected() || !HasPopoverAttribute() ||
-      GetPopoverData()->visibilityState() !=
-          PopoverVisibilityState::kTransitioning) {
-    return;
-  }
 
   // Grab all animations, so that we can "finish" the hide operation once
   // they complete. This will *also* force a style update, ensuring property
