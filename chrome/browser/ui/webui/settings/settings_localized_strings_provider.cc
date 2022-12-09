@@ -697,6 +697,8 @@ void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
     {"resetAutomatedDialogTitle", IDS_SETTINGS_RESET_AUTOMATED_DIALOG_TITLE},
     {"resetProfileBannerButton", IDS_SETTINGS_RESET_BANNER_RESET_BUTTON_TEXT},
     {"resetProfileBannerDescription", IDS_SETTINGS_RESET_BANNER_TEXT},
+    {"resetLearnMoreAccessibilityText",
+     IDS_SETTINGS_RESET_LEARN_MORE_ACCESSIBILITY_TEXT},
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"resetCleanupComputerTrigger",
      IDS_SETTINGS_RESET_CLEAN_UP_COMPUTER_TRIGGER},

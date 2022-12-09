@@ -2510,6 +2510,9 @@
   <message name="IDS_SETTINGS_RESET_BANNER_RESET_BUTTON_TEXT" desc="The text on the reset button in the Automatic Settings Reset Banner suggesting to reset ALL settings after an automatic reset of SOME settings.">
     Reset all settings
   </message>
+  <message name="IDS_SETTINGS_RESET_LEARN_MORE_ACCESSIBILITY_TEXT" desc="Accessibility label for a 'Learn more' link that links out to a help article about resetting settings.">
+    Learn more about resetting settings
+  </message>
 
   <!-- Reset card title and Chrome Cleanup item on Windows -->
   <if expr="is_win and _google_chrome">

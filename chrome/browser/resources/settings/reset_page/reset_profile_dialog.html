@@ -17,11 +17,9 @@
         <span inner-h-t-m-l="[[getExplanationText_(
               isTriggered_, triggeredResetToolName_)]]">
         </span>
-        <span>
-          <a href="$i18nRaw{resetPageLearnMoreUrl}" target="_blank">
-            $i18n{learnMore}
-          </a>
-        </span>
+        <a href="$i18nRaw{resetPageLearnMoreUrl}"
+            aria-label="$i18n{resetLearnMoreAccessibilityText}"
+            target="_blank">$i18n{learnMore}</a>
       </div>
       <div slot="button-container">
         <paper-spinner-lite id="resetSpinner" active="[[clearingInProgress_]]">
