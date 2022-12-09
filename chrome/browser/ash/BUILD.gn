@@ -1653,6 +1653,8 @@ source_set("ash") {
     "login/screens/assistant_optin_flow_screen.h",
     "login/screens/base_screen.cc",
     "login/screens/base_screen.h",
+    "login/screens/choobe_screen.cc",
+    "login/screens/choobe_screen.h",
     "login/screens/chrome_user_selection_screen.cc",
     "login/screens/chrome_user_selection_screen.h",
     "login/screens/chromevox_hint/chromevox_hint_detector.cc",

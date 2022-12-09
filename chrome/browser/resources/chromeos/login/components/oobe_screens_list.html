@@ -80,11 +80,11 @@
 
 </style>
 <div id="screensList">
-  <template is="dom-repeat" items="{{screensList}}">
-    <cr-button class="screen-item" on-click="onclick_">
+  <template is="dom-repeat" items="{{screensList}}" as="screen">
+    <cr-button class="screen-item" on-click="onClick_">
       <div class="flex horizontal layout center-justified center">
-          <iron-icon class="screen-icon" icon="[[item.icon]]"></iron-icon>
-          <div class="screen-title">[[item.title]]</div>
+          <iron-icon class="screen-icon" icon="[[screen.icon]]"></iron-icon>
+          <div class="screen-title">[[i18nDynamic(locale, screen.title)]]</div>
       </div>
     </cr-button>
   </template>

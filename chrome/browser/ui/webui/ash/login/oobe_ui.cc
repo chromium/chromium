@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/webui/ash/login/assistant_optin_flow_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/auto_enrollment_check_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
@@ -287,6 +288,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   source->AddBoolean("isOsInstallAllowed", switches::IsOsInstallAllowed());
   source->AddBoolean("isOobeFlow", is_oobe_flow);
   source->AddBoolean("isMaterialNext", features::IsOobeMaterialNextEnabled());
+  source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
 
   // Configure shared resources
   AddProductLogoResources(source);
@@ -480,6 +482,10 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<SmartPrivacyProtectionScreenHandler>());
 
   AddScreenHandler(std::make_unique<ThemeSelectionScreenHandler>());
+
+  if (features::IsOobeChoobeEnabled()) {
+    AddScreenHandler(std::make_unique<ChoobeScreenHandler>());
+  }
 
   AddScreenHandler(std::make_unique<LocalStateErrorScreenHandler>());
 

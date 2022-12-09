@@ -2697,6 +2697,8 @@ static_library("ui") {
       "webui/ash/login/base_webui_handler.h",
       "webui/ash/login/check_passwords_against_cryptohome_helper.cc",
       "webui/ash/login/check_passwords_against_cryptohome_helper.h",
+      "webui/ash/login/choobe_screen_handler.cc",
+      "webui/ash/login/choobe_screen_handler.h",
       "webui/ash/login/consolidated_consent_screen_handler.cc",
       "webui/ash/login/consolidated_consent_screen_handler.h",
       "webui/ash/login/cookie_waiter.cc",

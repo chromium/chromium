@@ -52,9 +52,16 @@ export class OobeScreensList extends OobeScreensListBase {
         value: [],
       },
       /**
-       * Number of screens selected.
+       * List of selected screens.
        */
       screensSelected: {
+        type: Array,
+        value: [],
+      },
+      /**
+       * Number of selected screens.
+       */
+      selectedScreensCount: {
         type: Number,
         value: 0,
         notify: true,
@@ -62,14 +69,32 @@ export class OobeScreensList extends OobeScreensListBase {
     };
   }
 
-  onclick_(e) {
-    var selected = e.model.item.selected;
-    e.model.item.selected = !selected;
+  /**
+   * Initialize the list of screens.
+   */
+  init(screens) {
+    this.screensList = screens;
+  }
+
+  /**
+   * Return the list of selected screens.
+   */
+  getScreenSelected() {
+    return this.screensSelected;
+  }
+
+  onClick_(e) {
+    const clickedScreen = e.model.screen;
+    const selected = clickedScreen.selected;
+    clickedScreen.selected = !selected;
     e.currentTarget.setAttribute('checked', !selected);
     if (!selected) {
-      this.screensSelected++;
+      this.selectedScreensCount++;
+      this.screensSelected.push(clickedScreen.screenID);
     } else {
-      this.screensSelected--;
+      this.selectedScreensCount--;
+      this.screensSelected.splice(
+          this.screensSelected.indexOf(clickedScreen.screenID), 1);
     }
   }
 }

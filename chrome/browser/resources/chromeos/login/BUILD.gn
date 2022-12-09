@@ -259,6 +259,7 @@ preprocess_if_expr("preprocess_gen_js_files") {
     "screens/common/arc_terms_of_service.js",
     "screens/common/assistant_optin.js",
     "screens/common/autolaunch.js",
+    "screens/common/choobe.js",
     "screens/common/consolidated_consent.js",
     "screens/common/cryptohome_recovery_setup.js",
     "screens/common/device_disabled.js",

@@ -1,0 +1,33 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+<style include="oobe-dialog-host-styles">
+</style>
+<oobe-adaptive-dialog id="choobeDialog" role="presentation"
+      for-step="overview">
+    <iron-icon slot="icon" icon="oobe-32:game-controller"></iron-icon>
+    <h1 slot="title" id="choobe-title">
+      [[i18nDynamic(locale, 'choobeScreenTitle')]]
+    </h1>
+    <div slot="subtitle" id="choobe-subtitle">
+      [[i18nDynamic(locale, 'choobeScreenDescription')]]
+    </div>
+    <div slot="content" class="layout vertical landscape-vertical-centered">
+      <oobe-screens-list id="screensList"
+              selected-screens-count="{{numberOfSelectedScreens_}}">
+      </oobe-screens-list>
+    </div>
+    <div slot="bottom-buttons">
+        <oobe-text-button id="skipButton"
+            text-key="choobeScreenSkip" on-click="onSkip_" border>
+        </oobe-text-button>
+        <oobe-next-button id="nextButton" class="focus-on-show"
+            on-click="onNextClicked_"
+            disabled="[[!canProceed_(numberOfSelectedScreens_)]]">
+        </oobe-next-button>
+    </div>
+</oobe-adaptive-dialog>

@@ -48,6 +48,8 @@ oobe_auto_imports = [
   "chrome/browser/resources/chromeos/login/components/keyboard_utils_for_injection.html|KEYBOARD_UTILS_FOR_INJECTION",
   "chrome/browser/resources/chromeos/login/components/long_touch_detector.html|LongTouchDetector",
   "chrome/browser/resources/chromeos/login/components/oobe_apps_list.html|OobeAppsList",
+  "chrome/browser/resources/chromeos/login/components/oobe_screens_list.html|OobeScreensList",
+  "chrome/browser/resources/chromeos/login/components/oobe_types.html|OobeTypes",
   "chrome/browser/resources/chromeos/login/components/oobe_a11y_option.html|OobeA11yOption",
   "chrome/browser/resources/chromeos/login/components/web_view_helper.html|WebViewHelper",
   "chrome/browser/resources/chromeos/login/components/web_view_loader.html|WebViewLoader,CLEAR_ANCHORS_CONTENT_SCRIPT",

@@ -12,6 +12,7 @@ import './screens/common/app_launch_splash.js';
 import './screens/common/arc_terms_of_service.js';
 import './screens/common/assistant_optin.js';
 import './screens/common/autolaunch.js';
+import './screens/common/choobe.js';
 import './screens/common/consolidated_consent.js';
 import './screens/common/cryptohome_recovery_setup.js';
 import './screens/common/device_disabled.js';
@@ -80,6 +81,11 @@ export const commonScreensList = [
   },
   {tag: 'assistant-optin-element', id: 'assistant-optin-flow'},
   {tag: 'autolaunch-element', id: 'autolaunch'},
+  {
+    tag: 'choobe-element',
+    id: 'choobe',
+    condition: 'isChoobeEnabled',
+  },
   {tag: 'consolidated-consent-element', id: 'consolidated-consent'},
   {tag: 'cryptohome-recovery-setup-element', id: 'cryptohome-recovery-setup'},
   {tag: 'device-disabled-element', id: 'device-disabled'},
