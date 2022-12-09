@@ -120,7 +120,7 @@ def _get_tester_group_and_name(context_node, builder_proto_by_key, tester_ref):
 def _target_builder_prop(context_node, builder_proto_by_key, target_builder):
     p = {"builder_id": _builder_ref_to_builder_id(target_builder.builder)}
     if target_builder.dimensions:
-        p["dimensions"] = t.dimensions
+        p["dimensions"] = target_builder.dimensions
     if target_builder.testers != None:
         testers = []
         p["tester_filter"] = testers

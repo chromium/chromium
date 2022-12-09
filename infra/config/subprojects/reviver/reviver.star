@@ -5,6 +5,7 @@
 load("//lib/builders.star", "builder", "cpu", "defaults", "free_space", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/dimensions.star", "dimensions")
 load("//lib/polymorphic.star", "polymorphic")
 
 luci.bucket(
@@ -76,7 +77,12 @@ polymorphic.launcher(
     name = "linux-launcher",
     runner = "reviver/runner",
     target_builders = [
-        "ci/Linux Tests",
+        polymorphic.target_builder(
+            builder = "ci/Linux Builder",
+            testers = [
+                "ci/Linux Tests",
+            ],
+        ),
     ],
     # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
     schedule = "0 5-11/3 * * *",
@@ -86,7 +92,19 @@ polymorphic.launcher(
     name = "win-launcher",
     runner = "reviver/runner",
     target_builders = [
-        "ci/Win10 Tests x64",
+        polymorphic.target_builder(
+            builder = "ci/Win x64 Builder",
+            dimensions = dimensions.dimensions(
+                os = os.WINDOWS_DEFAULT,
+                cpu = cpu.X86_64,
+                builderless = True,
+                pool = ci.DEFAULT_POOL,
+                free_space = free_space.standard,
+            ),
+            testers = [
+                "ci/Win10 Tests x64",
+            ],
+        ),
     ],
     # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
     schedule = "0 5-11/3 * * *",
@@ -96,7 +114,19 @@ polymorphic.launcher(
     name = "mac-launcher",
     runner = "reviver/runner",
     target_builders = [
-        "ci/Mac12 Tests",
+        polymorphic.target_builder(
+            builder = "ci/Mac Builder",
+            dimensions = dimensions.dimensions(
+                os = os.MAC_DEFAULT,
+                cpu = cpu.X86_64,
+                builderless = True,
+                pool = ci.DEFAULT_POOL,
+                free_space = free_space.standard,
+            ),
+            testers = [
+                "ci/Mac12 Tests",
+            ],
+        ),
     ],
     # To avoid peak hours, we run it at 5~11 UTC, 21~27 PST.
     schedule = "0 5-11/3 * * *",
@@ -124,7 +154,12 @@ polymorphic.launcher(
     name = "lacros-coordinator",
     runner = "reviver/runner",
     target_builders = [
-        "ci/linux-lacros-tester-rel",
+        polymorphic.target_builder(
+            builder = "ci/linux-lacros-builder-rel",
+            testers = [
+                "ci/linux-lacros-tester-rel",
+            ],
+        ),
     ],
     os = os.LINUX_DEFAULT,
     pool = ci.DEFAULT_POOL,
