@@ -99,7 +99,7 @@ TrackAudioRenderer::PendingReconfig::PendingReconfig(
 // media::AudioRendererSink::RenderCallback implementation
 int TrackAudioRenderer::Render(base::TimeDelta delay,
                                base::TimeTicks delay_timestamp,
-                               const media::AudioGlitchInfo& glitch_info,
+                               int prior_frames_skipped,
                                media::AudioBus* audio_bus) {
   TRACE_EVENT2("audio", "TrackAudioRenderer::Render", "delay (ms)",
                delay.InMillisecondsF(), "delay_timestamp (ms)",

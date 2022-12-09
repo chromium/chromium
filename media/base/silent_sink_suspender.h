@@ -52,7 +52,7 @@ class MEDIA_EXPORT SilentSinkSuspender
   // AudioRendererSink::RenderCallback implementation.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             const AudioGlitchInfo& glitch_info,
+             int prior_frames_skipped,
              AudioBus* dest) override;
   void OnRenderError() override;
 

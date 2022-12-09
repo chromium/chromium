@@ -66,7 +66,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   // AudioRendererSink::RenderCallback implementation.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             const media::AudioGlitchInfo& glitch_info,
+             int prior_frames_skipped,
              media::AudioBus* dest) override;
 
   void OnRenderError() override;

@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_timestamp_helper.h"
 
 namespace {
@@ -420,7 +419,7 @@ void WebEngineAudioOutputDevice::PumpSamples(base::TimeTicks playback_time) {
       return;
 
     frames_filled =
-        callback_->Render(playback_time - now, now, {}, audio_bus_.get());
+        callback_->Render(playback_time - now, now, 0, audio_bus_.get());
   }
 
   if (frames_filled) {

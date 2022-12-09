@@ -12,7 +12,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/base/audio_capturer_source.h"
-#include "media/base/audio_glitch_info.h"
 #include "media/base/limits.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -297,7 +296,7 @@ TEST_F(RendererWebAudioDeviceImplTest, NullSink_RenderWorks) {
   SetupDevice(blink::WebAudioSinkDescriptor(kFrameToken));
   webaudio_device_->Start();
   mock_audio_renderer_sink_->callback_->Render(
-      base::TimeDelta::Min(), base::TimeTicks::Now(), {},
+      base::TimeDelta::Min(), base::TimeTicks::Now(), 0,
       media::AudioBus::Create(1, kHardwareBufferSize).get());
   webaudio_device_->Stop();
 }
@@ -342,12 +341,12 @@ TEST_F(RendererWebAudioDeviceImplTest,
   SetupDevice(blink::WebAudioSinkDescriptor(kFrameToken));
   webaudio_device_->Start();
   mock_audio_renderer_sink_->callback_->Render(
-      base::TimeDelta::Min(), base::TimeTicks::Now(), {},
+      base::TimeDelta::Min(), base::TimeTicks::Now(), 0,
       media::AudioBus::Create(1, kHardwareBufferSize).get());
   webaudio_device_->Stop();
   webaudio_device_->Start();
   mock_audio_renderer_sink_->callback_->Render(
-      base::TimeDelta::Min(), base::TimeTicks::Now(), {},
+      base::TimeDelta::Min(), base::TimeTicks::Now(), 0,
       media::AudioBus::Create(1, kHardwareBufferSize).get());
   webaudio_device_->Stop();
 }

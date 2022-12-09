@@ -20,7 +20,6 @@
 #include "chromecast/media/audio/audio_output_service/output_stream_connection.h"
 #include "chromecast/media/base/default_monotonic_clock.h"
 #include "media/base/audio_bus.h"
-#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bind_to_current_loop.h"
@@ -365,7 +364,7 @@ int CastAudioOutputDevice::ReadBuffer(base::TimeDelta delay,
     return 0;
   }
   return active_render_callback_->Render(delay, base::TimeTicks(),
-                                         /*glitch_info=*/{}, audio_bus);
+                                         /*frames_skipped=*/0, audio_bus);
 }
 
 }  // namespace media

@@ -17,8 +17,6 @@
 
 namespace media {
 
-struct AudioGlitchInfo;
-
 // AudioRendererSink is an interface representing the end-point for
 // rendered audio.  An implementation is expected to
 // periodically call Render() on a callback object.
@@ -36,7 +34,7 @@ class AudioRendererSink
     // |delay_timestamp| represents the time when |delay| was obtained.
     virtual int Render(base::TimeDelta delay,
                        base::TimeTicks delay_timestamp,
-                       const AudioGlitchInfo& glitch_info,
+                       int prior_frames_skipped,
                        AudioBus* dest) = 0;
     // Signals an error has occurred.
     virtual void OnRenderError() = 0;

@@ -6,16 +6,7 @@
 
 #include <utility>
 
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-
 namespace media {
-
-std::string AudioGlitchInfo::ToString() const {
-  return base::StrCat(
-      {"duration (ms): ", base::NumberToString(duration.InMilliseconds()),
-       ", count: ", base::NumberToString(count)});
-}
 
 AudioGlitchInfo& AudioGlitchInfo::operator+=(const AudioGlitchInfo& other) {
   duration += other.duration;

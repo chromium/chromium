@@ -26,9 +26,8 @@ FakeAudioRenderCallback::~FakeAudioRenderCallback() = default;
 
 int FakeAudioRenderCallback::Render(base::TimeDelta delay,
                                     base::TimeTicks delay_timestamp,
-                                    const AudioGlitchInfo& glitch_info,
+                                    int prior_frames_skipped,
                                     AudioBus* audio_bus) {
-  cumulative_glitch_info_ += glitch_info;
   return RenderInternal(audio_bus, delay, volume_);
 }
 
