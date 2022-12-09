@@ -78,10 +78,6 @@ VIZ_RESOURCE_FORMAT_EXPORT wgpu::TextureFormat ToDawnFormat(
 VIZ_RESOURCE_FORMAT_EXPORT WGPUTextureFormat
 ToWGPUFormat(ResourceFormat format);
 
-#if BUILDFLAG(IS_APPLE)
-VIZ_RESOURCE_FORMAT_EXPORT unsigned int ToMTLPixelFormat(ResourceFormat format);
-#endif
-
 // Gets the closest SkColorType for a given `format` and `plane_index`. For
 // single planar formats (eg. RGBA) the plane_index is not required and is
 // default to 0; in such cases the corresponding function with ResourceFormat is

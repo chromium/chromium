@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
@@ -137,10 +138,15 @@ std::unique_ptr<SkiaImageRepresentation> PbufferImageBacking::ProduceSkia(
   }
 
   if (!cached_promise_texture_) {
+    bool angle_rgbx_internal_format = context_state->feature_info()
+                                          ->feature_flags()
+                                          .angle_rgbx_internal_format;
+    GLenum gl_texture_storage_format = TextureStorageFormat(
+        format(), angle_rgbx_internal_format, /*plane_index=*/0);
     GrBackendTexture backend_texture;
     GetGrBackendTexture(
         context_state->feature_info(), GL_TEXTURE_2D, size(),
-        passthrough_texture_->service_id(), format().resource_format(),
+        passthrough_texture_->service_id(), gl_texture_storage_format,
         context_state->gr_context()->threadSafeProxy(), &backend_texture);
     cached_promise_texture_ = SkPromiseImageTexture::Make(backend_texture);
   }

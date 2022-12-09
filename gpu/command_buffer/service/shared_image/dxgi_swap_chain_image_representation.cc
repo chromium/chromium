@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/dxgi_swap_chain_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -92,11 +93,15 @@ SkiaGLImageRepresentationDXGISwapChain::Create(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker) {
   GrBackendTexture backend_texture;
+  bool angle_rgbx_internal_format =
+      context_state->feature_info()->feature_flags().angle_rgbx_internal_format;
+  GLenum gl_texture_storage_format = TextureStorageFormat(
+      backing->format(), angle_rgbx_internal_format, /*plane_index=*/0);
   if (!GetGrBackendTexture(
           context_state->feature_info(),
           gl_representation->GetTextureBase()->target(), backing->size(),
           gl_representation->GetTextureBase()->service_id(),
-          (backing->format()).resource_format(),
+          gl_texture_storage_format,
           context_state->gr_context()->threadSafeProxy(), &backend_texture)) {
     return nullptr;
   }

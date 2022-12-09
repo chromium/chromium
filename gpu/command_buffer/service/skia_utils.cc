@@ -105,17 +105,6 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
 
 GLuint GetGrGLBackendTextureFormat(
     const gles2::FeatureInfo* feature_info,
-    viz::ResourceFormat resource_format,
-    sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
-  GLenum gl_storage_format = viz::TextureStorageFormat(
-      resource_format,
-      feature_info->feature_flags().angle_rgbx_internal_format);
-  return GetGrGLBackendTextureFormat(feature_info, gl_storage_format,
-                                     gr_context_thread_safe);
-}
-
-GLuint GetGrGLBackendTextureFormat(
-    const gles2::FeatureInfo* feature_info,
     GLenum gl_storage_format,
     sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
   // TODO(hitawala): Internalize the skia version specifics to a
@@ -164,21 +153,6 @@ GLuint GetGrGLBackendTextureFormat(
   }
 
   return internal_format;
-}
-
-bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,
-                         GLenum target,
-                         const gfx::Size& size,
-                         GLuint service_id,
-                         viz::ResourceFormat resource_format,
-                         sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe,
-                         GrBackendTexture* gr_texture) {
-  GLenum gl_storage_format = viz::TextureStorageFormat(
-      resource_format,
-      feature_info->feature_flags().angle_rgbx_internal_format);
-  return GetGrBackendTexture(feature_info, target, size, service_id,
-                             gl_storage_format, gr_context_thread_safe,
-                             gr_texture);
 }
 
 bool GetGrBackendTexture(const gles2::FeatureInfo* feature_info,

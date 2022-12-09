@@ -65,9 +65,6 @@ viz_component("resource_format_utils") {
   if (enable_vulkan) {
     deps += [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
   }
-  if (is_mac) {
-    sources += [ "resources/resource_format_utils_mac.mm" ]
-  }
 }
 
 # TODO(rivr): To reduce link times, merge these context provider components
