@@ -159,6 +159,8 @@ void CaptureModeDemoToolsController::RefreshKeyComboViewer() {
     demo_tools_widget_->Init(CreateWidgetParams(video_recording_watcher_));
     key_combo_view_ =
         demo_tools_widget_->SetContentsView(std::make_unique<KeyComboView>());
+    demo_tools_widget_->SetVisibilityAnimationTransition(
+        views::Widget::ANIMATE_NONE);
     ui::Layer* layer = demo_tools_widget_->GetLayer();
     layer->SetFillsBoundsOpaquely(false);
     layer->SetMasksToBounds(true);
