@@ -833,6 +833,7 @@ public class TabPersistentStore {
                     TabRestoreMethod.CREATE_NEW_TAB, TabRestoreMethod.NUM_ENTRIES);
 
             // restoredIndex might not be the one used in createNewTab so update accordingly.
+            tabId = fallbackTab.getId();
             restoredIndex = model.indexOf(fallbackTab);
         }
 
