@@ -15,6 +15,7 @@
 #include "base/process/process.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "mojo/core/channel.h"
 #include "mojo/core/ipcz_driver/object.h"
 #include "mojo/core/system_impl_export.h"
@@ -41,7 +42,8 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   };
   Transport(EndpointTypes endpoint_types,
             Channel::Endpoint endpoint,
-            base::Process remote_process);
+            base::Process remote_process,
+            bool is_remote_process_untrusted = false);
 
   // Static helper that is slightly more readable due to better type deduction
   // than MakeRefCounted<T>.
@@ -194,6 +196,13 @@ class MOJO_SYSTEM_IMPL_EXPORT Transport : public Object<Transport>,
   // broker, since brokers are implicitly trusted; and it's currently
   // meaningless on platforms other than Windows.
   bool is_trusted_by_peer_ = false;
+
+#if BUILDFLAG(IS_WIN)
+  // Indicates whether the remote process is "untrusted" in Mojo parlance,
+  // meaning this Transport restricts what kinds of objects can be transferred
+  // from this end (Windows only.)
+  bool is_remote_process_untrusted_;
+#endif
 
   // The channel endpoint which will be used by this Transport to construct and
   // start its underlying Channel instance once activated. Not guarded by a lock

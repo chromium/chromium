@@ -80,7 +80,8 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     const TransportOptions& options,
     base::Process remote_process = base::Process(),
     MojoProcessErrorHandler error_handler = nullptr,
-    uintptr_t error_handler_context = 0) {
+    uintptr_t error_handler_context = 0,
+    bool is_remote_process_untrusted = false) {
   CHECK_EQ(endpoint.num_platform_handles, 1u);
   auto handle =
       PlatformHandle::FromMojoPlatformHandle(&endpoint.platform_handles[0]);
@@ -95,7 +96,8 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     channel_endpoint = PlatformChannelEndpoint(std::move(handle));
   }
   auto transport = base::MakeRefCounted<Transport>(
-      endpoint_types, std::move(channel_endpoint), std::move(remote_process));
+      endpoint_types, std::move(channel_endpoint), std::move(remote_process),
+      is_remote_process_untrusted);
   transport->SetErrorHandler(error_handler, error_handler_context);
   transport->set_leak_channel_on_shutdown(options.leak_channel_on_shutdown);
   transport->set_is_peer_trusted(options.is_peer_trusted);
@@ -210,6 +212,16 @@ MojoResult Invitation::Send(
     flags |= IPCZ_CONNECT_NODE_TO_BROKER;
   }
 
+  // NOTE: "Untrusted" from Mojo flags here means something different than the
+  // notion of trust captured by Transport below. The latter is about general
+  // relative trust between two Transport endpoints, while Mojo's "untrusted"
+  // bit essentially means that the remote process is especially untrustworthy
+  // (e.g. a Chrome renderer) and should be subject to additional constraints
+  // regarding what types of objects can be transferred to it.
+  const bool is_remote_process_untrusted =
+      options &&
+      (options->flags & MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS) != 0;
+
   const bool is_peer_elevated =
       options && (options->flags & MOJO_SEND_INVITATION_FLAG_ELEVATED);
 #if !BUILDFLAG(IS_WIN)
@@ -221,7 +233,8 @@ MojoResult Invitation::Send(
        .destination = is_isolated ? Transport::kBroker : Transport::kNonBroker},
       *transport_endpoint,
       {.is_peer_trusted = is_peer_elevated, .is_trusted_by_peer = true},
-      std::move(remote_process), error_handler, error_handler_context);
+      std::move(remote_process), error_handler, error_handler_context,
+      is_remote_process_untrusted);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }

@@ -113,7 +113,8 @@ struct IPCZ_ALIGN(8) TransportHeader {
 bool EncodeHandle(PlatformHandle& handle,
                   const base::Process& remote_process,
                   HandleOwner handle_owner,
-                  HANDLE& out_handle) {
+                  HANDLE& out_handle,
+                  bool is_remote_process_untrusted) {
   DCHECK(handle.is_valid());
   if (handle_owner == HandleOwner::kSender) {
     // Nothing to do when sending handles that belong to us. The recipient must
@@ -129,6 +130,14 @@ bool EncodeHandle(PlatformHandle& handle,
   // handle to the remote process.
   DCHECK_EQ(handle_owner, HandleOwner::kRecipient);
   DCHECK(remote_process.IsValid());
+#if BUILDFLAG(IS_WIN)
+  if (is_remote_process_untrusted) {
+    // TODO(https://crbug.com/1335974): Implement additional constraints
+    // regarding what type of handles may or may not be transferred to untrusted
+    // processes.
+  }
+#endif
+
   return ::DuplicateHandle(::GetCurrentProcess(), handle.ReleaseHandle(),
                            remote_process.Handle(), &out_handle, 0, FALSE,
                            DUPLICATE_SAME_ACCESS | DUPLICATE_CLOSE_SOURCE);
@@ -173,10 +182,15 @@ scoped_refptr<base::SingleThreadTaskRunner>& GetIOTaskRunnerStorage() {
 
 Transport::Transport(EndpointTypes endpoint_types,
                      Channel::Endpoint endpoint,
-                     base::Process remote_process)
+                     base::Process remote_process,
+                     bool is_remote_process_untrusted)
     : endpoint_types_(endpoint_types),
       remote_process_(std::move(remote_process)),
-      inactive_endpoint_(std::move(endpoint)) {}
+#if BUILDFLAG(IS_WIN)
+      is_remote_process_untrusted_(is_remote_process_untrusted),
+#endif
+      inactive_endpoint_(std::move(endpoint)) {
+}
 
 // static
 scoped_refptr<Transport> Transport::Create(EndpointTypes endpoint_types,
@@ -412,7 +426,7 @@ IpczResult Transport::SerializeObject(ObjectBase& object,
   for (size_t i = 0; i < object_num_handles; ++i) {
 #if BUILDFLAG(IS_WIN)
     ok &= EncodeHandle(platform_handles[i], remote_process_, handle_owner,
-                       handle_data[i]);
+                       handle_data[i], is_remote_process_untrusted_);
 #else
     handles[i] = TransmissiblePlatformHandle::ReleaseAsHandle(
         base::MakeRefCounted<TransmissiblePlatformHandle>(
