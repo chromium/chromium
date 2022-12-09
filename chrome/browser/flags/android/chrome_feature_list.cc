@@ -237,9 +237,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchSuppressShortView,
     &kContextualSearchThinWebViewImplementation,
     &kDirectActions,
-    &kDownloadFileProvider,
-    &kDownloadNotificationBadge,
-    &kDownloadRename,
     &kDuetTabStripIntegrationAndroid,
     &kExperimentsForAgsa,
     &kExploreSites,
@@ -747,18 +744,6 @@ BASE_FEATURE(kDownloadAutoResumptionThrottling,
 
 BASE_FEATURE(kDownloadHomeForExternalApp,
              "DownloadHomeForExternalApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDownloadFileProvider,
-             "DownloadFileProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDownloadNotificationBadge,
-             "DownloadNotificationBadge",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDownloadRename,
-             "DownloadRename",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDuetTabStripIntegrationAndroid,

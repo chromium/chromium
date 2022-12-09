@@ -347,7 +347,7 @@ public class DownloadUtils {
         // It's ok to use blocking calls on main thread here, since the user is waiting to open or
         // share the file to other apps.
         boolean isOnSDCard = DownloadDirectoryProvider.isDownloadOnSDCard(filePath);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_FILE_PROVIDER) && isOnSDCard) {
+        if (isOnSDCard) {
             // Use custom file provider to generate content URI for download on SD card.
             return DownloadFileProvider.createContentUri(filePath);
         }

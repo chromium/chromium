@@ -91,8 +91,7 @@ public final class DownloadNotificationFactory {
         // TODO(xingliu): Write a unit test for this class.
         String channelId = ChromeChannelDefinitions.ChannelId.DOWNLOADS;
         if (LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())
-                && downloadStatus == DownloadNotificationService.DownloadStatus.COMPLETED
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_NOTIFICATION_BADGE)) {
+                && downloadStatus == DownloadNotificationService.DownloadStatus.COMPLETED) {
             channelId = ChromeChannelDefinitions.ChannelId.COMPLETED_DOWNLOADS;
         }
         NotificationWrapperBuilder builder =

@@ -303,8 +303,6 @@ public abstract class ChromeFeatureList {
     public static final String DIRECT_ACTIONS = "DirectActions";
     public static final String ENABLE_IPH = "EnableIPH";
     public static final String DNS_OVER_HTTPS = "DnsOverHttps";
-    public static final String DOWNLOAD_FILE_PROVIDER = "DownloadFileProvider";
-    public static final String DOWNLOAD_NOTIFICATION_BADGE = "DownloadNotificationBadge";
     public static final String DOWNLOADS_FOREGROUND = "DownloadsForeground";
     public static final String DOWNLOADS_AUTO_RESUMPTION_NATIVE = "DownloadsAutoResumptionNative";
     public static final String DOWNLOAD_OFFLINE_CONTENT_PROVIDER =
