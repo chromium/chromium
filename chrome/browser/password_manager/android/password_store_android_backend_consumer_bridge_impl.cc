@@ -9,6 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendConsumerBridgeImpl_jni.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
@@ -49,12 +50,14 @@ PasswordStoreAndroidBackendConsumerBridge::Create() {
 
 PasswordStoreAndroidBackendConsumerBridgeImpl::
     PasswordStoreAndroidBackendConsumerBridgeImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   java_object_ = Java_PasswordStoreAndroidBackendConsumerBridgeImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 }
 
 PasswordStoreAndroidBackendConsumerBridgeImpl::
     ~PasswordStoreAndroidBackendConsumerBridgeImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   Java_PasswordStoreAndroidBackendConsumerBridgeImpl_destroy(
       base::android::AttachCurrentThread(), java_object_);
 }
@@ -66,6 +69,7 @@ PasswordStoreAndroidBackendConsumerBridgeImpl::GetJavaBridge() const {
 
 void PasswordStoreAndroidBackendConsumerBridgeImpl::SetConsumer(
     base::WeakPtr<Consumer> consumer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   consumer_ = consumer;
 }
 
@@ -73,6 +77,7 @@ void PasswordStoreAndroidBackendConsumerBridgeImpl::OnCompleteWithLogins(
     JNIEnv* env,
     jint job_id,
     const base::android::JavaParamRef<jbyteArray>& passwords) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
   consumer_->OnCompleteWithLogins(JobId(job_id), CreateFormsVector(passwords));
 }
@@ -84,6 +89,7 @@ void PasswordStoreAndroidBackendConsumerBridgeImpl::OnError(
     jint api_error_code,
     jboolean has_connection_result,
     jint connection_result_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
   // Posting the tasks to the same sequence prevents that synchronous responses
   // try to finish tasks before their registration was completed.
@@ -107,6 +113,7 @@ void PasswordStoreAndroidBackendConsumerBridgeImpl::OnError(
 void PasswordStoreAndroidBackendConsumerBridgeImpl::OnLoginChanged(
     JNIEnv* env,
     jint job_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
   // Notifying that a login changed without providing a changelist prompts the
   // caller to explicitly check the remaining logins.

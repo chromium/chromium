@@ -55,6 +55,9 @@ source_set("backend") {
     "password_store_android_backend.h",
     "password_store_android_backend_api_error_codes.h",
     "password_store_android_backend_bridge.h",
+    "password_store_android_backend_bridge_helper.h",
+    "password_store_android_backend_bridge_helper_impl.cc",
+    "password_store_android_backend_bridge_helper_impl.h",
     "password_store_android_backend_bridge_impl.cc",
     "password_store_android_backend_bridge_impl.h",
     "password_store_android_backend_consumer_bridge.h",
@@ -422,6 +425,7 @@ source_set("unit_tests") {
     "password_generation_controller_impl_unittest.cc",
     "password_manager_error_message_delegate_unittest.cc",
     "password_manager_settings_service_android_impl_unittest.cc",
+    "password_store_android_backend_bridge_helper_impl_unittest.cc",
     "password_store_android_backend_unittest.cc",
     "password_sync_controller_delegate_android_unittest.cc",
   ]

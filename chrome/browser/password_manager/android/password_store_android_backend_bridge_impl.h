@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_BRIDGE_IMPL_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/thread_annotations.h"
+#include "base/threading/thread_checker.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 
 namespace password_manager {
@@ -14,11 +16,15 @@ namespace password_manager {
 // JNI code is expensive to test. Therefore, any logic beyond data conversion
 // should either live in `PasswordStoreAndroidBackend` or a component that is
 // used by the java-side of this bridge.
+// Class could be instantiated and deleted on any thread. All methods should be
+// called on a single threaded sequence bound to a single background thread.
+// This class instance itself could be created and destroyed on any thread.
+// Thread affinity come from the JNIEnv which could only be used from a single
+// physical thread where JNIEnv was created.
 class PasswordStoreAndroidBackendBridgeImpl
     : public PasswordStoreAndroidBackendBridge {
  public:
-  explicit PasswordStoreAndroidBackendBridgeImpl(
-      const PasswordStoreAndroidBackendConsumerBridge& consumer_bridge);
+  PasswordStoreAndroidBackendBridgeImpl();
   PasswordStoreAndroidBackendBridgeImpl(
       PasswordStoreAndroidBackendBridgeImpl&&) = delete;
   PasswordStoreAndroidBackendBridgeImpl(
@@ -29,20 +35,25 @@ class PasswordStoreAndroidBackendBridgeImpl
       const PasswordStoreAndroidBackendBridgeImpl&) = delete;
   ~PasswordStoreAndroidBackendBridgeImpl() override;
 
+  void Init(const PasswordStoreAndroidBackendConsumerBridge& consumer_bridge)
+      override;
+
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.
-  [[nodiscard]] JobId GetAllLogins(Account account) override;
-  [[nodiscard]] JobId GetAutofillableLogins(Account account) override;
-  [[nodiscard]] JobId GetLoginsForSignonRealm(const std::string& signon_realm,
-                                              Account account) override;
-  [[nodiscard]] JobId AddLogin(const PasswordForm& form,
+  void GetAllLogins(JobId job_id, Account account) override;
+  void GetAutofillableLogins(JobId job_id, Account account) override;
+  void GetLoginsForSignonRealm(JobId job_id,
+                               const std::string& signon_realm,
                                Account account) override;
-  [[nodiscard]] JobId UpdateLogin(const PasswordForm& form,
-                                  Account account) override;
-  [[nodiscard]] JobId RemoveLogin(const PasswordForm& form,
-                                  Account account) override;
-
-  [[nodiscard]] JobId GetNextJobId();
+  void AddLogin(JobId job_id,
+                const password_manager::PasswordForm& form,
+                Account account) override;
+  void UpdateLogin(JobId job_id,
+                   const password_manager::PasswordForm& form,
+                   Account account) override;
+  void RemoveLogin(JobId job_id,
+                   const password_manager::PasswordForm& form,
+                   Account account) override;
 
   void ShowErrorNotification() override;
 
@@ -51,7 +62,11 @@ class PasswordStoreAndroidBackendBridgeImpl
 
   // This object is an instance of PasswordStoreAndroidBackendBridgeImpl, i.e.
   // the Java counterpart to this class.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  base::android::ScopedJavaGlobalRef<jobject> java_object_
+      GUARDED_BY_CONTEXT(thread_checker_);
+
+  // All operations should be called on the same background thread.
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace password_manager

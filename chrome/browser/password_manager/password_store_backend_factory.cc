@@ -32,7 +32,7 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
   return std::make_unique<PasswordStoreBuiltInBackend>(
       CreateLoginDatabaseForProfileStorage(login_db_path));
 #else  // BUILDFLAG(IS_ANDROID) && !USE_LEGACY_PASSWORD_STORE_BACKEND
-  if (PasswordStoreAndroidBackendBridge::CanCreateBackend() &&
+  if (PasswordStoreAndroidBackendBridgeHelper::CanCreateBackend() &&
       base::FeatureList::IsEnabled(
           password_manager::features::kUnifiedPasswordManagerAndroid)) {
     // Re-enrollment happens before the initial migration and any possible

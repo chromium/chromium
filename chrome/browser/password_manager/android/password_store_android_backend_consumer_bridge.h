@@ -61,7 +61,8 @@ class PasswordStoreAndroidBackendConsumerBridge {
   // Sets the `consumer` that is notified on job completion.
   virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;
 
-  // Returns reference to the Java JNI bridge object.
+  // Returns reference to the Java JNI bridge object which is Java counterpart
+  // of this class.
   virtual base::android::ScopedJavaGlobalRef<jobject> GetJavaBridge() const = 0;
 
   // Factory function for creating the bridge. Implementation is pulled in by

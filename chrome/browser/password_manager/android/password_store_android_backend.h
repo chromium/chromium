@@ -18,6 +18,7 @@
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
@@ -85,9 +86,7 @@ class PasswordStoreAndroidBackend
   explicit PasswordStoreAndroidBackend(PrefService* prefs);
   PasswordStoreAndroidBackend(
       base::PassKey<class PasswordStoreAndroidBackendTest>,
-      std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge>
-          consumer_bridge,
-      std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge,
+      std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
       std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
       std::unique_ptr<PasswordSyncControllerDelegateAndroid>
           sync_controller_delegate,
@@ -338,7 +337,7 @@ class PasswordStoreAndroidBackend
   std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge> consumer_bridge_;
 
   // This object is the proxy to the JNI bridge that performs the API requests.
-  std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;
+  std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper_;
 
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;
 

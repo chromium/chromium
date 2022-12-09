@@ -60,9 +60,12 @@ class PasswordStoreAndroidBackendConsumerBridgeImpl
   base::WeakPtr<Consumer> consumer_ = nullptr;
 
   // This object is an instance of
-  // PasswordStoreAndroidBackendConsumerBridgeImpl, i.e. the Java counterpart to
-  // this class.
+  // `PasswordStoreAndroidBackendConsumerBridgeImpl`, i.e. the Java counterpart
+  // to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
+
+  // All callbacks should be called on the same background thread.
+  SEQUENCE_CHECKER(main_sequence_checker_);
 };
 
 }  // namespace password_manager

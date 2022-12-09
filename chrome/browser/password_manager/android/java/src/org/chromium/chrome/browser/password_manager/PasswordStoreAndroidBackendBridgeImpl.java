@@ -10,6 +10,7 @@ import android.content.Context;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -21,6 +22,7 @@ import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.Optional;
 
@@ -58,7 +60,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
         mBackend.getAllLogins(getAccount(syncingAccount),
                 passwords
                 -> mConsumerBridge.onCompleteWithLogins(jobId, passwords),
-                exception -> mConsumerBridge.handleAndroidBackendException(jobId, exception));
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
     @CalledByNative
@@ -66,7 +68,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
         mBackend.getAutofillableLogins(getAccount(syncingAccount),
                 passwords
                 -> mConsumerBridge.onCompleteWithLogins(jobId, passwords),
-                exception -> mConsumerBridge.handleAndroidBackendException(jobId, exception));
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
     @CalledByNative
@@ -74,7 +76,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
         mBackend.getLoginsForSignonRealm(signonRealm, getAccount(syncingAccount),
                 passwords
                 -> mConsumerBridge.onCompleteWithLogins(jobId, passwords),
-                exception -> mConsumerBridge.handleAndroidBackendException(jobId, exception));
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
     @CalledByNative
@@ -82,7 +84,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
         mBackend.addLogin(pwdWithLocalData, getAccount(syncingAccount),
                 ()
                         -> mConsumerBridge.onLoginChanged(jobId),
-                exception -> mConsumerBridge.handleAndroidBackendException(jobId, exception));
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
     @CalledByNative
@@ -90,7 +92,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
         mBackend.updateLogin(pwdWithLocalData, getAccount(syncingAccount),
                 ()
                         -> mConsumerBridge.onLoginChanged(jobId),
-                exception -> mConsumerBridge.handleAndroidBackendException(jobId, exception));
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
     @CalledByNative
@@ -98,7 +100,16 @@ class PasswordStoreAndroidBackendBridgeImpl {
         mBackend.removeLogin(pwdSpecificsData, getAccount(syncingAccount),
                 ()
                         -> mConsumerBridge.onLoginChanged(jobId),
-                exception -> mConsumerBridge.handleAndroidBackendException(jobId, exception));
+                exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
+    }
+
+    private void handleAndroidBackendExceptionOnUiThread(@JobId int jobId, Exception exception) {
+        // Error callback could be either triggered
+        // - by the GMS Core on the UI thread
+        // - by the password store downstream backend on the operation thread
+        // |runOrPostTask| ensures callback will always be executed on the UI thread.
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                () -> mConsumerBridge.handleAndroidBackendException(jobId, exception));
     }
 
     private Optional<Account> getAccount(String syncingAccount) {
@@ -106,8 +117,15 @@ class PasswordStoreAndroidBackendBridgeImpl {
         return Optional.of(AccountUtils.createAccountFromName(syncingAccount));
     }
 
+    // This method interacts with the UI and should be executed on the UI thread. Native bridge
+    // however does not have JNIEnv for UI thread and calls this method on background thread.
+    // Operation is reposted on the default UI sequence for execution.
     @CalledByNative
     private void showErrorUi() {
+        PostTask.postTask(UiThreadTaskTraits.USER_VISIBLE, () -> showErrorUiOnMainThread());
+    }
+
+    private void showErrorUiOnMainThread() {
         Context context = ContextUtils.getApplicationContext();
         // The context can sometimes be null in tests.
         if (context == null) return;

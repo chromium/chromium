@@ -19,6 +19,9 @@ namespace password_manager {
 // `PasswordStoreAndroidBackend` or a component that is used by the java-side of
 // this bridge. Consumer bridge is defined separately in
 // `PasswordStoreAndroidBackendConsumerBridge`.
+// All methods should be called on the same single threaded sequence bound to
+// the background thread. Instance could be constructed and destroyed on any
+// thread.
 class PasswordStoreAndroidBackendBridge {
  public:
   using SyncingAccount =
@@ -28,67 +31,77 @@ class PasswordStoreAndroidBackendBridge {
 
   virtual ~PasswordStoreAndroidBackendBridge() = default;
 
+  // Perform bridge and Java counterpart initialization. This method should be
+  // executed on the same thread where all operations will run.
+  // `consumer_bridge` will be set to handle callbacks from the Java side and
+  // should outlive this object.
+  virtual void Init(
+      const PasswordStoreAndroidBackendConsumerBridge& consumer_bridge) = 0;
+
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the
-  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // job with the given JobId succeeds. `syncing_account` is used to decide
   // which storage to use. If `syncing_account` is absl::nullopt local storage
   // will be used.
-  [[nodiscard]] virtual JobId GetAllLogins(Account account) = 0;
+  virtual void GetAllLogins(JobId job_id, Account account) = 0;
 
   // Triggers an asynchronous request to retrieve all autofillable
   // (non-blocklisted) passwords. The registered `Consumer` is notified with
-  // `OnCompleteWithLogins` when the job with the returned JobId succeeds.
+  // `OnCompleteWithLogins` when the job with the given JobId succeeds.
   // `syncing_account` is used to decide which storage to use. If
   // `syncing_account` is absl::nullopt local storage will be used.
-  [[nodiscard]] virtual JobId GetAutofillableLogins(Account account) = 0;
+  virtual void GetAutofillableLogins(JobId job_id, Account account) = 0;
 
   // Triggers an asynchronous request to retrieve stored passwords with
   // matching |signon_realm|. The returned results must be validated (e.g
   // matching "sample.com" also returns logins for "not-sample.com").
   // The registered `Consumer` is notified with `OnCompleteWithLogins` when the
-  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // job with the given JobId succeeds. `syncing_account` is used to decide
   // which storage to use. If `syncing_account` is absl::nullopt local storage
   // will be used.
-  [[nodiscard]] virtual JobId GetLoginsForSignonRealm(
-      const std::string& signon_realm,
-      Account account) = 0;
+  virtual void GetLoginsForSignonRealm(JobId job_id,
+                                       const std::string& signon_realm,
+                                       Account account) = 0;
 
   // Triggers an asynchronous request to add |form| to store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
-  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // job with the given JobId succeeds. `syncing_account` is used to decide
   // which storage to use. If `syncing_account` is absl::nullopt local storage
   // will be used.
-  [[nodiscard]] virtual JobId AddLogin(const PasswordForm& form,
-                                       Account account) = 0;
+  virtual void AddLogin(JobId job_id,
+                        const PasswordForm& form,
+                        Account account) = 0;
 
   // Triggers an asynchronous request to update |form| in store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
-  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // job with the given JobId succeeds. `syncing_account` is used to decide
   // which storage to use. If `syncing_account` is absl::nullopt local storage
   // will be used.
-  [[nodiscard]] virtual JobId UpdateLogin(const PasswordForm& form,
-                                          Account account) = 0;
+  virtual void UpdateLogin(JobId job_id,
+                           const PasswordForm& form,
+                           Account account) = 0;
 
   // Triggers an asynchronous request to remove |form| from store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
-  // job with the returned JobId succeeds. `syncing_account` is used to decide
+  // job with the given JobId succeeds. `syncing_account` is used to decide
   // which storage to use. If `syncing_account` is absl::nullopt local storage
   // will be used.
-  [[nodiscard]] virtual JobId RemoveLogin(const PasswordForm& form,
-                                          Account account) = 0;
+  virtual void RemoveLogin(JobId job_id,
+                           const PasswordForm& form,
+                           Account account) = 0;
 
   // Displays a notification when a store backend request finishes with an
   // unrecoverable error. TODO(crbug.com/1344576) Remove when not required
   // anymore.
+  // This method interacts with the UI but should also be called on the
+  // background thread as native bridge does not have JNIEnv for the UI thread.
+  // Operation will be actually be executed on the UI thread by the Java bridge.
   virtual void ShowErrorNotification() = 0;
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
   // Ensure `CanCreateBackend` returns true before calling this method.
-  // `consumer_bridge` will be set to handle callbacks from the Java side and
-  // should outlive this object.
-  static std::unique_ptr<PasswordStoreAndroidBackendBridge> Create(
-      const PasswordStoreAndroidBackendConsumerBridge& consumer_bridge);
+  static std::unique_ptr<PasswordStoreAndroidBackendBridge> Create();
 
   // Method that checks whether a backend can be created or whether `Create`
   // would fail. It returns true iff all nontransient prerequisistes are

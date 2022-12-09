@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.base.ThreadUtils.assertOnUiThread;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -25,7 +23,8 @@ public abstract class PasswordStoreAndroidBackendFactory {
      * @return The shared {@link PasswordStoreAndroidBackendFactory} instance.
      */
     public static PasswordStoreAndroidBackendFactory getInstance() {
-        assertOnUiThread();
+        // TODO(crbug.com/1394715): assert running on background thread once CanCreateBackend is
+        // updated to use non-UI thread.
         if (sInstance == null) sInstance = new PasswordStoreAndroidBackendFactoryImpl();
         return sInstance;
     }
