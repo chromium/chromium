@@ -12,10 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/arc/app_shortcuts/arc_app_shortcuts_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 

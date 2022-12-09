@@ -4,7 +4,7 @@ This Chrome OS string matching library provides functionality to compute the
 similarity scores between two given strings.
 
 This library's main use is within the launcher backend ranking system
-(`chrome/browser/ui/app_list/search/`).
+(`chrome/browser/ash/app_list/search/`).
 
 The entry points to this library are via either:
 

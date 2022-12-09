@@ -14,7 +14,7 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 
 namespace app_list {
 

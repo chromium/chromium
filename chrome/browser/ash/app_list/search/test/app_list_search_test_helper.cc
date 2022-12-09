@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
 
 #include "base/run_loop.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/browser.h"
 
 namespace app_list {

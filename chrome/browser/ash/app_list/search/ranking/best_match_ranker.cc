@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/ranking/constants.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/types.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 
 namespace app_list {
 namespace {

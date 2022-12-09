@@ -9,7 +9,7 @@
 
 #include "ash/components/arc/mojom/app.mojom-forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 
 class Profile;
 class AppListControllerDelegate;

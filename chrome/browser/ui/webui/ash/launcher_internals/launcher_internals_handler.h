@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_ASH_LAUNCHER_INTERNALS_LAUNCHER_INTERNALS_HANDLER_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"

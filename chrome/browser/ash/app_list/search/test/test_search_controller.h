@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_TEST_TEST_SEARCH_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_TEST_TEST_SEARCH_CONTROLLER_H_
 
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 
 class ChromeSearchResult;
 

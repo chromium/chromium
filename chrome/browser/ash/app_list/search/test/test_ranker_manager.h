@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace app_list {

@@ -19,11 +19,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_delegate.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_sync_model_sanitizer.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item_manager.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "extensions/common/constants.h"
 #include "ui/base/models/menu_model.h"
 

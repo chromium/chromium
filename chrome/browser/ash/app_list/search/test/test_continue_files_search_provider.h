@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_TEST_TEST_CONTINUE_FILES_SEARCH_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_TEST_TEST_CONTINUE_FILES_SEARCH_PROVIDER_H_
 
-#include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 
 namespace app_list {
 

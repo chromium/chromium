@@ -12,8 +12,8 @@
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;

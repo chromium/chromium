@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/app_list/search/ranking/ftrl_ranker.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
 #include "chrome/browser/ash/app_list/search/util/ftrl_optimizer.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 
 namespace app_list {
 

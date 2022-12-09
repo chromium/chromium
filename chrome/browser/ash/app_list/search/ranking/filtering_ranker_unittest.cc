@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/filtering_ranker.h"
 
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/types.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom-forward.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

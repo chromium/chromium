@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace app_list {

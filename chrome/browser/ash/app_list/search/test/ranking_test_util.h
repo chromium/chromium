@@ -9,7 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
-#include "chrome/browser/ui/app_list/search/types.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

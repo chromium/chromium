@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/time/time.h"
-#include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"

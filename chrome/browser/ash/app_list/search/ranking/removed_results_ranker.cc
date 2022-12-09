@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/removed_results_ranker.h"
 
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ash/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
 namespace {

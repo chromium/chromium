@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_TEST_TEST_RESULT_H_
 
 #include "base/test/task_environment.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 
 namespace app_list {
 

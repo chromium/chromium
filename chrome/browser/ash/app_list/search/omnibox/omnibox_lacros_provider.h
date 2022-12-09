@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/autocomplete_input.h"

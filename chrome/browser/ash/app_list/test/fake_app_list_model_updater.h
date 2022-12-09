@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "base/observer_list.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 
 class ChromeAppListItem;
 

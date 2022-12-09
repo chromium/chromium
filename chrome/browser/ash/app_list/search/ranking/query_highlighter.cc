@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/app_list/search/ranking/query_highlighter.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"

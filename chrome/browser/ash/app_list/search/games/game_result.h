@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_discovery_service/app_discovery_util.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "url/gurl.h"
 
 class AppListControllerDelegate;

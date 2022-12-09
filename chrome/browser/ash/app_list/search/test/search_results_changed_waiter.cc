@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 
 namespace app_list {
 

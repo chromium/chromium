@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_discovery_service/result.h"
-#include "chrome/browser/ui/app_list/search/search_provider.h"
+#include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 
 class AppListControllerDelegate;

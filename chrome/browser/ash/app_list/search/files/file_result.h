@@ -10,7 +10,7 @@
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

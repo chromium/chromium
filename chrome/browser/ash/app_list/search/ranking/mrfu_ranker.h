@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_RANKING_MRFU_RANKER_H_
 
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/app_list/search/util/ftrl_optimizer.h"
 #include "chrome/browser/ash/app_list/search/util/mrfu_cache.h"
-#include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
 

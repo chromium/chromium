@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/app_list/search/ranking/continue_ranker.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 
 namespace app_list {
 

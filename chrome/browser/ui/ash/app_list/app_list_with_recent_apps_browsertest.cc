@@ -4,9 +4,9 @@
 
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
-#include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/window.h"

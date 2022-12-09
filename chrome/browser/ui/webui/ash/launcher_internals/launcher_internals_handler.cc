@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/types_util.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 
 namespace ash {
 

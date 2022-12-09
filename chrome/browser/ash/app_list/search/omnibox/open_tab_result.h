@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

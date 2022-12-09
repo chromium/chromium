@@ -6,9 +6,9 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/containers/flat_set.h"
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/constants.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 
 namespace app_list {

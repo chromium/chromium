@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/app_list/search/types.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 
 class Profile;
 

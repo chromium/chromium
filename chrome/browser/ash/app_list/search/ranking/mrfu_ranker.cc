@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/app_list/search/ranking/mrfu_ranker.h"
 
+#include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/app_list/search/util/ftrl_optimizer.h"
-#include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ui/app_list/search/types.h"
 
 namespace app_list {
 
