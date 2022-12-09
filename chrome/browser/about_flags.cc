@@ -3117,18 +3117,6 @@ constexpr FeatureEntry::FeatureVariation kLensStandaloneVariations[] = {
      std::size(kLensStandaloneWithSidePanel), nullptr},
 };
 
-constexpr FeatureEntry::FeatureParam
-    kLensInstructionChipWithImageSelectionIcon[] = {
-        {"use-selection-icon-with-image", "true"}};
-constexpr FeatureEntry::FeatureParam kLensInstructionChipWithAltString[] = {
-    {"use-alt-chip-string", "true"}};
-constexpr FeatureEntry::FeatureVariation kLensInstructionChipVariations[] = {
-    {"With Image Selection Icon", kLensInstructionChipWithImageSelectionIcon,
-     std::size(kLensInstructionChipWithImageSelectionIcon), nullptr},
-    {"With Alt Text", kLensInstructionChipWithAltString,
-     std::size(kLensInstructionChipWithAltString), nullptr},
-};
-
 constexpr FeatureEntry::FeatureParam kLensFormatOptimizationJPEG[] = {
     {"use-webp-image-search", "false"},
     {"use-webp-region-search", "false"},
@@ -8267,15 +8255,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(lens::features::kLensStandalone,
                                     kLensStandaloneVariations,
                                     "GoogleLensDesktopContextMenuSearch")},
-
-    {"enable-lens-instruction-chip-improvements",
-     flag_descriptions::kEnableLensInstructionChipImprovementsName,
-     flag_descriptions::kEnableLensInstructionChipImprovementsDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         lens::features::kLensInstructionChipImprovements,
-         kLensInstructionChipVariations,
-         "LensInstructionChipImprovements")},
 
     {"enable-lens-region-search-static-page",
      flag_descriptions::kLensRegionSearchStaticPageName,

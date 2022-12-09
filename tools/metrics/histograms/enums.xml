@@ -60062,7 +60062,6 @@ from previous Chrome versions.
   <int value="-275619817"
       label="disable-proximity-auth-bluetooth-low-energy-discovery"/>
   <int value="-275164173" label="QuickUnlockPinSignin:enabled"/>
-  <int value="-275050010" label="LensInstructionChipImprovements:disabled"/>
   <int value="-273821346"
       label="MaintainShelfStateWhenEnteringOverview:disabled"/>
   <int value="-273570157" label="EnableBloom:enabled"/>
@@ -62252,7 +62251,6 @@ from previous Chrome versions.
   <int value="1026169964" label="MicMuteNotifications:enabled"/>
   <int value="1026981579" label="TLS13HardeningForLocalAnchors:enabled"/>
   <int value="1027252926" label="SyncSupportSecondaryAccount:enabled"/>
-  <int value="1029425023" label="LensInstructionChipImprovements:enabled"/>
   <int value="1030608602" label="AutofillAssistantProactiveHelp:enabled"/>
   <int value="1030922819" label="AlignWakeUps:enabled"/>
   <int value="1031239808" label="ForceMajorVersion100InUserAgent:disabled"/>

@@ -1252,12 +1252,6 @@ const char kEnableLensStandaloneDescription[] =
     "Enables Lens image and region search to learn about the visual content "
     "you see while you browse and shop on the web.";
 
-const char kEnableLensInstructionChipImprovementsName[] =
-    "Enable improvements to the Lens instruction chip.";
-const char kEnableLensInstructionChipImprovementsDescription[] =
-    "Enables improvements to the Lens instruction chip when using the region "
-    "search feature.";
-
 const char kEnableRegionSearchOnPdfViewerName[] =
     "Enable Region Search on PDF viewer.";
 const char kEnableRegionSearchOnPdfViewerDescription[] =

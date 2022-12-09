@@ -2595,11 +2595,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-lens-instruction-chip-improvements",
-    "owners": [ "schechter@google.com", "juanmojica@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "enable-lens-region-search-static-page",
     "owners": ["juanmojica@google.com", "stanfield@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 112

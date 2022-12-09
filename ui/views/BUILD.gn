@@ -27,7 +27,6 @@ aggregate_vector_icons("views_vector_icons") {
     "checkbox_normal.icon",
     "close.icon",
     "drag_general_selection.icon",
-    "drag_image_selection.icon",
     "ic_close.icon",
     "info.icon",
     "launch.icon",

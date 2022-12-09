@@ -38,10 +38,6 @@ BASE_FEATURE(kEnableRegionSearchOnPdfViewer,
              "LensEnableRegionSearchOnPdfViewer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensInstructionChipImprovements,
-             "LensInstructionChipImprovements",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableImageSearchSidePanelFor3PDse,
              "EnableImageSearchSidePanelFor3PDse",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -96,12 +92,6 @@ const base::FeatureParam<bool> kUseSidePanelForScreenshotSharing{
 
 const base::FeatureParam<bool> kEnablePersistentBubble{
     &kLensSearchImageInScreenshotSharing, "enable-persistent-bubble", false};
-
-const base::FeatureParam<bool> kUseSelectionIconWithImage{
-    &kLensInstructionChipImprovements, "use-selection-icon-with-image", false};
-
-const base::FeatureParam<bool> kUseAltChipString{
-    &kLensInstructionChipImprovements, "use-alt-chip-string", false};
 
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
     &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
@@ -200,20 +190,6 @@ bool IsLensSidePanelEnabledForRegionSearch() {
 bool IsLensInScreenshotSharingEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone) &&
          base::FeatureList::IsEnabled(kLensSearchImageInScreenshotSharing);
-}
-
-bool IsLensInstructionChipImprovementsEnabled() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensInstructionChipImprovements);
-}
-
-bool UseSelectionIconWithImage() {
-  return IsLensInstructionChipImprovementsEnabled() &&
-         kUseSelectionIconWithImage.Get();
-}
-
-bool UseAltChipString() {
-  return IsLensInstructionChipImprovementsEnabled() && kUseAltChipString.Get();
 }
 
 // Does not check if kLensSearchImageInScreenshotSharing is enabled because this
