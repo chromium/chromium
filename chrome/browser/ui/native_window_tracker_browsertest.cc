@@ -21,9 +21,9 @@ IN_PROC_BROWSER_TEST_F(NativeWindowTrackerTest, Basic) {
   std::unique_ptr<views::NativeWindowTracker> tracker =
       views::NativeWindowTracker::Create(
           browser()->window()->GetNativeWindow());
-  EXPECT_FALSE(tracker->WasNativeWindowClosed());
+  EXPECT_FALSE(tracker->WasNativeWindowDestroyed());
 
   browser()->window()->Close();
   content::RunAllPendingInMessageLoop();
-  EXPECT_TRUE(tracker->WasNativeWindowClosed());
+  EXPECT_TRUE(tracker->WasNativeWindowDestroyed());
 }

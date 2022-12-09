@@ -23,7 +23,7 @@ class VIEWS_EXPORT NativeWindowTrackerCocoa : public NativeWindowTracker {
   ~NativeWindowTrackerCocoa() override;
 
   // NativeWindowTracker:
-  bool WasNativeWindowClosed() const override;
+  bool WasNativeWindowDestroyed() const override;
 
  private:
   base::scoped_nsobject<BridgedNativeWindowTracker> bridge_;

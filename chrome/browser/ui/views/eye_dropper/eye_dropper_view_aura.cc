@@ -40,7 +40,7 @@ EyeDropperView::PreEventDispatchHandler::KeyboardHandler::KeyboardHandler(
 }
 
 EyeDropperView::PreEventDispatchHandler::KeyboardHandler::~KeyboardHandler() {
-  if (!parent_tracker_->WasNativeWindowClosed())
+  if (!parent_tracker_->WasNativeWindowDestroyed())
     parent_->RemovePreTargetHandler(this);
 }
 

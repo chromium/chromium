@@ -20,7 +20,7 @@ NativeWindowTrackerAura::~NativeWindowTrackerAura() {
     window_->RemoveObserver(this);
 }
 
-bool NativeWindowTrackerAura::WasNativeWindowClosed() const {
+bool NativeWindowTrackerAura::WasNativeWindowDestroyed() const {
   return window_ == nullptr;
 }
 

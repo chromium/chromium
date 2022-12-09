@@ -94,7 +94,7 @@ void UninstallDialog::OnLoadIcon(IconValuePtr icon_value) {
     return;
   }
 
-  if (parent_window_ && parent_window_tracker_->WasNativeWindowClosed()) {
+  if (parent_window_ && parent_window_tracker_->WasNativeWindowDestroyed()) {
     OnDialogClosed(false, false, false);
     return;
   }

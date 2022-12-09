@@ -105,7 +105,7 @@ void ExtensionUninstallDialog::ConfirmUninstall(
   if (!profile_)
     return;
 
-  if (parent() && parent_window_tracker_->WasNativeWindowClosed()) {
+  if (parent() && parent_window_tracker_->WasNativeWindowDestroyed()) {
     OnDialogClosed(CLOSE_ACTION_CANCELED);
     return;
   }
@@ -133,7 +133,7 @@ void ExtensionUninstallDialog::OnIconUpdated(ChromeAppIcon* icon) {
 
   dialog_shown_ = true;
 
-  if (parent() && parent_window_tracker_->WasNativeWindowClosed()) {
+  if (parent() && parent_window_tracker_->WasNativeWindowDestroyed()) {
     OnDialogClosed(CLOSE_ACTION_CANCELED);
     return;
   }

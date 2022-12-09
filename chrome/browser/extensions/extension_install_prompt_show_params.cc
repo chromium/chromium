@@ -52,7 +52,7 @@ content::WebContents* ExtensionInstallPromptShowParams::GetParentWebContents() {
 
 gfx::NativeWindow ExtensionInstallPromptShowParams::GetParentWindow() {
   return (native_window_tracker_ &&
-          !native_window_tracker_->WasNativeWindowClosed())
+          !native_window_tracker_->WasNativeWindowDestroyed())
              ? parent_window_
              : nullptr;
 }
@@ -62,5 +62,5 @@ bool ExtensionInstallPromptShowParams::WasParentDestroyed() {
       parent_web_contents_.WasInvalidated();
   return parent_web_contents_destroyed ||
          (native_window_tracker_ &&
-          native_window_tracker_->WasNativeWindowClosed());
+          native_window_tracker_->WasNativeWindowDestroyed());
 }

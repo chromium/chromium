@@ -259,7 +259,8 @@ void PrintJobSubmitter::ShowPrintJobConfirmationDialog(
     const gfx::Image& extension_icon) {
   // If the browser window was closed during API request handling, change
   // |native_window_| appropriately.
-  if (native_window_tracker_ && native_window_tracker_->WasNativeWindowClosed())
+  if (native_window_tracker_ &&
+      native_window_tracker_->WasNativeWindowDestroyed())
     native_window_ = gfx::kNullNativeWindow;
 
   extensions::ShowPrintJobConfirmationDialog(

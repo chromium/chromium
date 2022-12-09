@@ -60,7 +60,7 @@ NativeWindowTrackerCocoa::NativeWindowTrackerCocoa(
 
 NativeWindowTrackerCocoa::~NativeWindowTrackerCocoa() {}
 
-bool NativeWindowTrackerCocoa::WasNativeWindowClosed() const {
+bool NativeWindowTrackerCocoa::WasNativeWindowDestroyed() const {
   return [bridge_ wasNSWindowClosed];
 }
 

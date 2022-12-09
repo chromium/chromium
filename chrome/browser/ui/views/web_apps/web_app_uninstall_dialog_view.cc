@@ -239,7 +239,7 @@ void WebAppUninstallDialogViews::ConfirmUninstall(
   app_id_ = app_id;
   closed_callback_ = std::move(closed_callback);
 
-  if (parent_ && parent_window_tracker_->WasNativeWindowClosed()) {
+  if (parent_ && parent_window_tracker_->WasNativeWindowDestroyed()) {
     UninstallCancelled();
     return;
   }
@@ -266,7 +266,7 @@ void WebAppUninstallDialogViews::OnIconsRead(
     std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (parent_ && parent_window_tracker_->WasNativeWindowClosed()) {
+  if (parent_ && parent_window_tracker_->WasNativeWindowDestroyed()) {
     UninstallCancelled();
     return;
   }

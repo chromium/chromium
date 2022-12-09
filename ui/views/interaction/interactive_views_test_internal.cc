@@ -30,7 +30,7 @@ class InteractiveViewsTestPrivate::WindowHintCacheEntry {
   WindowHintCacheEntry& operator=(WindowHintCacheEntry&& other) = default;
 
   bool IsValid() const {
-    return window_ && tracker_ && !tracker_->WasNativeWindowClosed();
+    return window_ && tracker_ && !tracker_->WasNativeWindowDestroyed();
   }
 
   gfx::NativeWindow GetWindow() const {

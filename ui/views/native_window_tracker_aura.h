@@ -23,7 +23,7 @@ class VIEWS_EXPORT NativeWindowTrackerAura : public NativeWindowTracker,
   ~NativeWindowTrackerAura() override;
 
   // NativeWindowTracker:
-  bool WasNativeWindowClosed() const override;
+  bool WasNativeWindowDestroyed() const override;
 
  private:
   // aura::WindowObserver:

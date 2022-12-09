@@ -53,7 +53,7 @@ bool WebstoreInstallWithPrompt::CheckRequestorAlive() const {
     // Assume the requestor is always alive if |parent_window_| is null.
     return true;
   }
-  return !parent_window_tracker_->WasNativeWindowClosed();
+  return !parent_window_tracker_->WasNativeWindowDestroyed();
 }
 
 std::unique_ptr<ExtensionInstallPrompt::Prompt>

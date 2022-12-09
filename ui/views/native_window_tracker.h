@@ -20,7 +20,7 @@ class VIEWS_EXPORT NativeWindowTracker {
   static std::unique_ptr<NativeWindowTracker> Create(gfx::NativeWindow window);
 
   // Returns true if the native window passed to Create() has been closed.
-  virtual bool WasNativeWindowClosed() const = 0;
+  virtual bool WasNativeWindowDestroyed() const = 0;
 };
 
 }  // namespace views
