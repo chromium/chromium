@@ -58,6 +58,8 @@ class TabSharingInfoBarDelegateTest
     bool can_share_instead;
     int tab_index = 0;
     absl::optional<FocusTarget> focus_target;
+    TabSharingInfoBarDelegate::TabShareType capture_type =
+        TabSharingInfoBarDelegate::TabShareType::CAPTURE;
   };
 
   TabSharingInfoBarDelegateTest()
@@ -71,7 +73,7 @@ class TabSharingInfoBarDelegateTest
         prefs.can_share_instead
             ? TabSharingInfoBarDelegate::ButtonState::ENABLED
             : TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN,
-        prefs.focus_target, tab_sharing_mock_ui(),
+        prefs.focus_target, tab_sharing_mock_ui(), prefs.capture_type,
         favicons_used_for_switch_to_tab_button_);
   }
 
@@ -349,4 +351,50 @@ TEST_P(TabSharingInfoBarDelegateTest, InfobarNotDismissedOnNavigation) {
   EXPECT_EQ(infobar_manager->infobar_count(), 1u);
   NavigateAndCommit(web_contents, GURL("http://bar"));
   EXPECT_EQ(infobar_manager->infobar_count(), 1u);
+}
+
+// Test that the infobar on another not cast tab has the correct layout:
+// "|icon| Casting |tab_being_cast| [Stop casting] [Cast this tab instead]"
+TEST_P(TabSharingInfoBarDelegateTest, InfobarOnNotCastTab) {
+  AddTab(browser(), GURL("about:blank"));
+  ConfirmInfoBarDelegate* const delegate = CreateDelegate(
+      {.shared_tab_name = kSharedTabName,
+       .app_name = std::u16string(),
+       .shared_tab = false,
+       .can_share_instead = true,
+       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST});
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               vector_icons::kScreenShareIcon.name);
+  EXPECT_EQ(
+      delegate->GetMessageText(),
+      l10n_util::GetStringFUTF16(
+          IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL, kSharedTabName));
+  EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK |
+                                        ConfirmInfoBarDelegate::BUTTON_CANCEL);
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
+            l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_STOP_BUTTON));
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL),
+            l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_CAST_BUTTON));
+  EXPECT_FALSE(delegate->IsCloseable());
+}
+
+// Test that the infobar on the tab being cast has the correct layout:
+// "|icon| Casting this tab [Stop casting]"
+TEST_P(TabSharingInfoBarDelegateTest, InfobarOnCastTab) {
+  AddTab(browser(), GURL("about:blank"));
+  ConfirmInfoBarDelegate* const delegate = CreateDelegate(
+      {.shared_tab_name = std::u16string(),
+       .app_name = std::u16string(),
+       .shared_tab = true,
+       .can_share_instead = false,
+       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST});
+  EXPECT_STREQ(delegate->GetVectorIcon().name,
+               vector_icons::kScreenShareIcon.name);
+  EXPECT_EQ(delegate->GetMessageText(),
+            l10n_util::GetStringUTF16(
+                IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL));
+  EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK);
+  EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
+            l10n_util::GetStringUTF16(IDS_TAB_CASTING_INFOBAR_STOP_BUTTON));
+  EXPECT_FALSE(delegate->IsCloseable());
 }

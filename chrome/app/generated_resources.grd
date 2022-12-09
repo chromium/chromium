@@ -3942,6 +3942,22 @@ are declared in tools/grit/grit_rule.gni.
        Switch to captured tab
       </message>
 
+      <!-- Tab casting infobar -->
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_CURRENT_TAB_LABEL" desc="Text displayed on an infobar when current tab is being casted.">
+       Casting this tab
+      </message>
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_UNTITLED_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) untitled tab is being casted.">
+       Casting a tab
+      </message>
+      <message name="IDS_TAB_CASTING_INFOBAR_CASTING_ANOTHER_TAB_LABEL" desc="Text displayed on an infobar when another (non-current) tab is being shacastedred.">
+       Casting <ph name="TAB_NAME">$1<ex>youtube.com</ex></ph>
+      </message>
+      <message name="IDS_TAB_CASTING_INFOBAR_CAST_BUTTON" desc="Text displayed on the button to cast current tab.">
+       Cast this tab instead
+      </message>
+      <message name="IDS_TAB_CASTING_INFOBAR_STOP_BUTTON" desc="Text displayed on the button to stop casting a tab.">
+       Stop casting
+      </message>
 
       <!-- Task Manager Window -->
       <if expr="not is_android">

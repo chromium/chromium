@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
-#include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -129,10 +128,11 @@ std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     const content::DesktopMediaID& media_id,
     std::u16string app_name,
     bool favicons_used_for_switch_to_tab_button,
-    bool app_preferred_current_tab) {
+    bool app_preferred_current_tab,
+    TabSharingInfoBarDelegate::TabShareType capture_type) {
   return std::make_unique<TabSharingUIViews>(
       capturer, media_id, app_name, favicons_used_for_switch_to_tab_button,
-      app_preferred_current_tab);
+      app_preferred_current_tab, capture_type);
 }
 
 TabSharingUIViews::TabSharingUIViews(
@@ -140,7 +140,8 @@ TabSharingUIViews::TabSharingUIViews(
     const content::DesktopMediaID& media_id,
     std::u16string app_name,
     bool favicons_used_for_switch_to_tab_button,
-    bool app_preferred_current_tab)
+    bool app_preferred_current_tab,
+    TabSharingInfoBarDelegate::TabShareType capture_type)
     : capture_session_id_(next_capture_session_id_++),
       capturer_(capturer),
       capturer_origin_(GetOriginFromId(capturer)),
@@ -155,7 +156,8 @@ TabSharingUIViews::TabSharingUIViews(
           media_id.web_contents_id.main_render_frame_id))),
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button),
-      app_preferred_current_tab_(app_preferred_current_tab) {
+      app_preferred_current_tab_(app_preferred_current_tab),
+      capture_type_(capture_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Observe(shared_tab_);
@@ -448,7 +450,7 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, app_name_,
       shared_tab_ == contents /*shared_tab*/,
-      share_this_tab_instead_button_state, focus_target, this,
+      share_this_tab_instead_button_state, focus_target, this, capture_type_,
       favicons_used_for_switch_to_tab_button_);
 }
 

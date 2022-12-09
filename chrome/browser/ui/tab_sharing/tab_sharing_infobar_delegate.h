@@ -49,6 +49,15 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
     NOT_SHOWN,
   };
 
+  // The user-facing mechanism that initiated the tab capture influences the UX
+  // elements and language that should be presented to the user.
+  // CAPTURE: getDisplayMedia, usually goes with "share".
+  // CAST: Chromecasting, usually goes with "cast".
+  enum class TabShareType {
+    CAPTURE,
+    CAST,
+  };
+
   class TabSharingInfoBarDelegateButton;
 
   // Creates a tab sharing infobar, which has 1-2 buttons.
@@ -68,6 +77,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
       ButtonState share_this_tab_instead_button_state,
       absl::optional<FocusTarget> focus_target,
       TabSharingUI* ui,
+      TabShareType capture_type,
       bool favicons_used_for_switch_to_tab_button = false);
 
   ~TabSharingInfoBarDelegate() override;
@@ -79,6 +89,7 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
                             ButtonState share_this_tab_instead_button_state,
                             absl::optional<FocusTarget> focus_target,
                             TabSharingUI* ui,
+                            TabShareType capture_type,
                             bool favicons_used_for_switch_to_tab_button);
 
   // ConfirmInfoBarDelegate:
@@ -106,6 +117,9 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
   const bool favicons_used_for_switch_to_tab_button_;
+
+  // Indicates whether this instance is used for casting or capturing.
+  const TabShareType capture_type_;
 
   std::unique_ptr<TabSharingInfoBarDelegateButton> secondary_button_;
   std::unique_ptr<TabSharingInfoBarDelegateButton> tertiary_button_;

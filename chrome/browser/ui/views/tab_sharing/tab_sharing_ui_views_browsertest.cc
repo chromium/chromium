@@ -184,7 +184,8 @@ class TabSharingUIViewsBrowserTest
         GetGlobalId(browser, capturing_tab),
         GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
         favicons_used_for_switch_to_tab_button_,
-        /*app_preferred_current_tab=*/false);
+        /*app_preferred_current_tab=*/false,
+        TabSharingInfoBarDelegate::TabShareType::CAPTURE);
 
     if (favicons_used_for_switch_to_tab_button_) {
       for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
@@ -732,7 +733,8 @@ class MultipleTabSharingUIViewsBrowserTest : public InProcessBrowserTest {
           GetGlobalId(browser, capturing_tab),
           GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
           /*favicons_used_for_switch_to_tab_button=*/false,
-          /*app_preferred_current_tab=*/false));
+          /*app_preferred_current_tab=*/false,
+          TabSharingInfoBarDelegate::TabShareType::CAPTURE));
       tab_sharing_ui_views_[tab_sharing_ui_views_.size() - 1]->OnStarted(
           base::OnceClosure(), content::MediaStreamUI::SourceCallback(),
           std::vector<content::DesktopMediaID>{});
@@ -842,7 +844,8 @@ class TabSharingUIViewsPreferCurrentTabBrowserTest
         GetGlobalId(browser(), kTab0),
         GetDesktopMediaID(browser(), captured_tab), u"example-sharing.com",
         /*favicons_used_for_switch_to_tab_button=*/false,
-        /*app_preferred_current_tab=*/true);
+        /*app_preferred_current_tab=*/true,
+        TabSharingInfoBarDelegate::TabShareType::CAPTURE);
     tab_sharing_ui_views_->OnStarted(base::OnceClosure(), source_change_cb,
                                      std::vector<content::DesktopMediaID>{});
   }
