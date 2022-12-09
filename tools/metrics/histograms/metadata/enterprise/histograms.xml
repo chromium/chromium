@@ -1122,6 +1122,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.Errors.Adaptor"
+    enum="EnterpriseDlpPolicyCrOSAdaptorError" expires_after="2023-06-01">
+  <owner>accorsi@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when an error occurs during adaptor usage in the Data Leak
+    Prevention daemon.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.Errors.Fanotify"
     enum="EnterpriseDlpPolicyCrOSFanotifyError" expires_after="2023-06-01">
   <owner>accorsi@google.com</owner>

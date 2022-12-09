@@ -30815,6 +30815,23 @@ Called by update_document_policy_enum.py.-->
   <int value="902" label="SERVICE_POLICY_NOT_FOUND"/>
 </enum>
 
+<enum name="EnterpriseDlpPolicyCrOSAdaptorError">
+  <summary>
+    Type of errors triggered by the adaptor usage in the ChromeOS Data Leak
+    Prevention daemon.
+  </summary>
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Invalid proto error"/>
+  <int value="2" label="Database not ready error"/>
+  <int value="3" label="Database connection error"/>
+  <int value="4" label="Inode retrieval error"/>
+  <int value="5" label="Create pipe error"/>
+  <int value="6" label="Restriction detection error"/>
+  <int value="7" label="Add file error"/>
+  <int value="8" label="FD dup error"/>
+  <int value="9" label="FD close error"/>
+</enum>
+
 <enum name="EnterpriseDlpPolicyCrOSFanotifyError">
   <summary>
     Type of errors triggered by fanotify usage in the ChromeOS Data Leak
