@@ -12,6 +12,9 @@ namespace ash {
 // Controller class to manage power/battery sounds.
 class ASH_EXPORT PowerSoundsController : public PowerStatus::Observer {
  public:
+  static const char kPluggedInBatteryLevelHistogramName[];
+  static const char kUnpluggedBatteryLevelHistogramName[];
+
   PowerSoundsController();
   PowerSoundsController(const PowerSoundsController&) = delete;
   PowerSoundsController& operator=(const PowerSoundsController&) = delete;

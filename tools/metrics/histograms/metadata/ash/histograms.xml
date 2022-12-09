@@ -3789,6 +3789,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PowerSoundsController.PluggedInBatteryLevel" units="%"
+    expires_after="2023-12-21">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <summary>
+    Record the battery level when a charger is connected and the battery status
+    is from discharging to charging.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PowerSoundsController.UnpluggedBatteryLevel" units="%"
+    expires_after="2023-12-21">
+  <owner>hongyulong@chromium.org</owner>
+  <owner>nupurjain@google.com</owner>
+  <summary>
+    Record the battery level when a charger is unplugged and the battery status
+    is from charging to discharging.
+  </summary>
+</histogram>
+
 <histogram name="Ash.PrivacyIndicators.AnimationSmoothness" units="%"
     expires_after="2023-09-19">
   <owner>leandre@chromium.org</owner>

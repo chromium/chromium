@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "ui/message_center/message_center.h"
 
@@ -41,6 +42,14 @@ bool CanPlaySounds() {
 
 }  // namespace
 
+// static
+const char PowerSoundsController::kPluggedInBatteryLevelHistogramName[] =
+    "Ash.PowerSoundsController.PluggedInBatteryLevel";
+
+// static
+const char PowerSoundsController::kUnpluggedBatteryLevelHistogramName[] =
+    "Ash.PowerSoundsController.UnpluggedBatteryLevel";
+
 PowerSoundsController::PowerSoundsController() {
   PowerStatus* power_status = PowerStatus::Get();
   power_status->AddObserver(this);
@@ -68,6 +77,14 @@ void PowerSoundsController::SetPowerStatus(int battery_level,
 
   battery_level_ = battery_level;
   is_line_power_connected_ = is_line_power_connected;
+
+  // Records the battery level only for the device plugged in or Unplugged.
+  if (old_line_power_connected != is_line_power_connected) {
+    base::UmaHistogramPercentage(is_line_power_connected_
+                                     ? kPluggedInBatteryLevelHistogramName
+                                     : kUnpluggedBatteryLevelHistogramName,
+                                 battery_level_);
+  }
 
   if (!CanPlaySounds())
     return;
