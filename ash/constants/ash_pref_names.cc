@@ -1138,21 +1138,6 @@ const char kShowPostRebootNotification[] = "ash.show_post_reboot_notification";
 const char kPersonalizationKeyboardBacklightColor[] =
     "ash.personalization.keyboard_backlight_color";
 
-// This integer pref indicates keyboard brightness which is currently set,
-// represented as a percentage. A pref with this name is registered in two
-// different contexts:
-// - User profile:
-//   Indicates the brightness set by the user for their profile.
-//   Can be "recommended" through device policy DeviceKeyboardBrightness.
-// - Local state:
-//   Indicates the brightness used on the sign-in screen.
-//   Can be "recommended" through device policy DeviceKeyboardBrightness
-//   (the brightness can be updated by pressing Alt+F6, Alt+F7, so the local
-//   state will only be used to set the brightness when entering the sign-in
-//   screen).
-const char kPersonalizationKeyboardBrightness[] =
-    "ash.personalization.keyboard_brightness";
-
 // Integer pref corresponding to the autozoom state, the value should be one of
 // cros::mojom::CameraAutoFramingState.
 const char kAutozoomState[] = "ash.camera.autozoom_state";

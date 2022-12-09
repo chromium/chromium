@@ -1436,19 +1436,6 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_keyboard_brightness()) {
-    const em::KeyboardBrightnessProto& container(policy.keyboard_brightness());
-    if (container.has_percentage()) {
-      // This policy is interpreted as "Recommended".
-      // See the comment at the definition of the
-      // ash::prefs::kPersonalizationKeyboardBrightness pref (to which this
-      // policy will be mapped) for more details.
-      policies->Set(key::kDeviceKeyboardBrightness, POLICY_LEVEL_RECOMMENDED,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.percentage()), nullptr);
-    }
-  }
-
   if (policy.has_allow_redeem_offers()) {
     const em::AllowRedeemChromeOsRegistrationOffersProto& container(
         policy.allow_redeem_offers());

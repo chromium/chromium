@@ -1380,11 +1380,6 @@ message KeyboardBacklightColorProto {
   optional BacklightColor color = 1 [default = BACKLIGHT_UNSPECIFIED];
 }
 
-// Default keyboard brightness percentage.
-message KeyboardBrightnessProto {
-  optional int32 percentage = 1;
-}
-
 // Specifies how user policy from device GPOs interacts with user policy from
 // user GPOs. In 'MERGE' mode, device GPOs take preference in case of conflicts.
 // Applies to Active Directory management mode only.
@@ -1910,5 +1905,4 @@ message ChromeDeviceSettingsProto {
   optional StringPolicyProto device_printing_client_name_template = 137;
   optional DeviceReportXDREventsProto device_report_xdr_events = 138;
   optional KeyboardBacklightColorProto keyboard_backlight_color = 139;
-  optional KeyboardBrightnessProto keyboard_brightness = 140;
 }

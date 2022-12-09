@@ -1031,13 +1031,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDeviceKeyboardBacklightColor,
     ash::prefs::kPersonalizationKeyboardBacklightColor,
     base::Value::Type::INTEGER },
-  // Note that this pref exists in both user PrefStore and local_state
-  // PrefStore, and it is intended that the device policy is mapped to
-  // both. See the comment at the definition of
-  // ash::prefs::kPersonalizationKeyboardBrightness for details.
-  { key::kDeviceKeyboardBrightness,
-    ash::prefs::kPersonalizationKeyboardBrightness,
-    base::Value::Type::INTEGER },
   { key::kRebootAfterUpdate,
     prefs::kRebootAfterUpdate,
     base::Value::Type::BOOLEAN },

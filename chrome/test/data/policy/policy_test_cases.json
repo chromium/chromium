@@ -21204,57 +21204,6 @@
       }
     ]
   },
-  "DeviceKeyboardBrightness": {
-    "os": [
-      "chromeos_ash"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "ash.personalization.keyboard_brightness": {
-            "location": "local_state",
-            "default_value": 60,
-            "check_for_recommended": true
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "ash.personalization.keyboard_brightness": {
-            "location": "user_profile",
-            "default_value": 60,
-            "check_for_recommended": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceKeyboardBrightness": 40
-        },
-        "prefs": {
-          "ash.personalization.keyboard_brightness": {
-            "location": "local_state",
-            "value": 40,
-            "check_for_recommended": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "DeviceKeyboardBrightness": 40
-        },
-        "prefs": {
-          "ash.personalization.keyboard_brightness": {
-            "location": "user_profile",
-            "value": 40,
-            "check_for_recommended": true
-          }
-        }
-      }
-    ]
-  },
   "ShowCastSessionsStartedByOtherDevices": {
     "os": [
       "win",

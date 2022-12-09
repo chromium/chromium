@@ -1038,7 +1038,7 @@ policies:
   1037: ThrottleNonVisibleCrossOriginIframesAllowed
   1038: PdfLocalFileAccessAllowedForDomains
   1039: FloatingWorkspaceV2Enabled
-  1040: DeviceKeyboardBrightness
+  1040: ''
   1041: NewBaseUrlInheritanceBehaviorAllowed
   1042: ShowCastSessionsStartedByOtherDevices
 atomic_groups:

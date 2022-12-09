@@ -4,20 +4,10 @@
 
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 
-#include "ash/constants/ash_pref_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
-#include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
-
-static constexpr int kDefaultKeyboardBrightness = 60;
-
-// static
-void KeyboardBrightnessController::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kPersonalizationKeyboardBrightness,
-                                kDefaultKeyboardBrightness);
-}
 
 void KeyboardBrightnessController::HandleKeyboardBrightnessDown() {
   chromeos::PowerManagerClient::Get()->DecreaseKeyboardBrightness();

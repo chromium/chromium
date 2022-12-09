@@ -37,7 +37,6 @@
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
-#include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/network/cellular_setup_notifier.h"
@@ -101,7 +100,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   LogoutButtonTray::RegisterProfilePrefs(registry);
   LogoutConfirmationController::RegisterProfilePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
-  KeyboardBrightnessController::RegisterPrefs(registry);
   KeyboardControllerImpl::RegisterProfilePrefs(registry);
   MediaControllerImpl::RegisterProfilePrefs(registry);
   MessageCenterController::RegisterProfilePrefs(registry);
@@ -161,7 +159,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
     TopShortcutsView::RegisterLocalStatePrefs(registry);
   glanceables_util::RegisterLocalStatePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
-  KeyboardBrightnessController::RegisterPrefs(registry);
 }
 
 void RegisterSigninProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
