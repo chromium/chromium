@@ -341,4 +341,21 @@ suite('CursorAndTouchpadPageTests', function() {
       assertEquals(alternateValue, pref.value);
     });
   });
+
+  test(
+      'cursor highlight pref enabled when cursor highlight enabled',
+      async () => {
+        await initPage();
+        const cursorHighlightToggle =
+            page.shadowRoot.querySelector('#cursorHighlightToggle');
+        assertTrue(isVisible(cursorHighlightToggle));
+        assertFalse(cursorHighlightToggle.checked);
+        assertFalse(page.prefs.settings.a11y.cursor_highlight.value);
+        cursorHighlightToggle.click();
+
+        await waitBeforeNextRender(page);
+        flush();
+        assertTrue(cursorHighlightToggle.checked);
+        assertTrue(page.prefs.settings.a11y.cursor_highlight.value);
+      });
 });
