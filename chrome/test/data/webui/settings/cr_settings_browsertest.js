@@ -498,12 +498,9 @@ TEST_F('CrSettingsPersonalizationOptionsTest', 'AllBuilds', function() {
 });
 
 GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-// TODO(crbug.com/1399684): failing on linux-chromeos-chrome
-TEST_F(
-    'CrSettingsPersonalizationOptionsTest', 'DISABLED_OfficialBuild',
-    function() {
-      runMochaSuite('PersonalizationOptionsTests_OfficialBuild');
-    });
+TEST_F('CrSettingsPersonalizationOptionsTest', 'OfficialBuild', function() {
+  runMochaSuite('PersonalizationOptionsTests_OfficialBuild');
+});
 GEN('#endif');
 
 var CrSettingsPrivacyPageTest = class extends CrSettingsBrowserTest {

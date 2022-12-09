@@ -262,14 +262,12 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     testElement.remove();
   });
 
+  // On ChromeOS Ash, the spellcheck toggle is in OS Settings, not browser
+  // settings. TODO (https://www.crbug.com/1396704): Add this test in the OS
+  // settings test for the OS version of personalization options, once OS
+  // Settings supports TypeScript tests.
+  // <if expr="not chromeos_ash">
   test('Spellcheck toggle', function() {
-    // <if expr="chromeos_ash">
-    // On ChromeOS spellcheck toggle is shown in OS settings only.
-    loadTimeData.overrideValues({
-      isOSSettings: true,
-    });
-    // </if>
-
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
@@ -280,10 +278,6 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     const shadowRoot = testElement.shadowRoot!;
     assertFalse(
         shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.hidden);
-    // <if expr="chromeos_ash">
-    assertTrue(
-        shadowRoot.querySelector<HTMLElement>('#spellCheckLink')!.hidden);
-    // </if>
 
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
@@ -309,13 +303,11 @@ suite('PersonalizationOptionsTests_OfficialBuild', function() {
     shadowRoot.querySelector<HTMLElement>('#spellCheckControl')!.click();
     assertTrue(testElement.prefs.spellcheck.use_spelling_service.value);
   });
+  // </if>
 
-  // Spellcheck link is shown on Chrome OS in Browser settings only.
+  // Only the spellcheck link is shown on Chrome OS in Browser settings.
   // <if expr="chromeos_ash">
   test('Spellcheck link', function() {
-    loadTimeData.overrideValues({
-      isOSSettings: false,
-    });
     testElement.prefs = {
       profile: {password_manager_leak_detection: {value: true}},
       safebrowsing:
