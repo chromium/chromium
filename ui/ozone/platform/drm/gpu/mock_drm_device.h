@@ -8,6 +8,8 @@
 #include <drm_mode.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <xf86drm.h>
+
 #include <limits>
 #include <map>
 #include <memory>
@@ -21,6 +23,11 @@
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 
 namespace ui {
+
+template <class Object>
+Object* DrmAllocator(size_t num_of_objects = 1) {
+  return static_cast<Object*>(drmMalloc(num_of_objects * sizeof(Object)));
+}
 
 // The real DrmDevice makes actual DRM calls which we can't use in unit tests.
 class MockDrmDevice : public DrmDevice {

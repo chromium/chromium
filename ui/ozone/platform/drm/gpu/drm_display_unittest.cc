@@ -9,8 +9,10 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/linux/test/mock_gbm_device.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
@@ -41,6 +43,39 @@ MATCHER_P2(MatchesPowerFunction, scale, exponent, "") {
 namespace ui {
 
 namespace {
+constexpr gfx::Size kNativeDisplaySize(1920, 1080);
+
+std::unique_ptr<HardwareDisplayControllerInfo> GetDisplayInfo(
+    uint8_t index = 0) {
+  // Initialize a list of display modes.
+  constexpr size_t kNumModes = 5;
+  drmModeModeInfo modes[kNumModes] = {
+      {.hdisplay = 640, .vdisplay = 400},
+      {.hdisplay = 640, .vdisplay = 480},
+      {.hdisplay = 800, .vdisplay = 600},
+      {.hdisplay = 1024, .vdisplay = 768},
+      // Last mode, which should be the largest, is the native mode.
+      {.hdisplay = kNativeDisplaySize.width(),
+       .vdisplay = kNativeDisplaySize.height()}};
+
+  // Initialize a connector.
+  ScopedDrmConnectorPtr connector(DrmAllocator<drmModeConnector>());
+  connector->connector_id = 123;
+  connector->connection = DRM_MODE_CONNECTED;
+  connector->count_props = 0;
+  connector->count_modes = kNumModes;
+  connector->modes = DrmAllocator<drmModeModeInfo>(kNumModes);
+  std::memcpy(connector->modes, &modes[0], kNumModes * sizeof(drmModeModeInfo));
+
+  // Initialize a CRTC.
+  ScopedDrmCrtcPtr crtc(DrmAllocator<drmModeCrtc>());
+  crtc->crtc_id = 456;
+  crtc->mode_valid = 1;
+  crtc->mode = connector->modes[kNumModes - 1];
+
+  return std::make_unique<HardwareDisplayControllerInfo>(
+      std::move(connector), std::move(crtc), index);
+}
 
 class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
  public:
@@ -115,8 +150,18 @@ class DrmDisplayTest : public testing::Test {
  protected:
   DrmDisplayTest()
       : mock_drm_device_(base::MakeRefCounted<MockDrmDevice>(
-            std::make_unique<MockGbmDevice>())),
-        drm_display_(mock_drm_device_) {}
+            std::make_unique<MockGbmDevice>())) {
+    auto info = GetDisplayInfo();
+    auto snapshot = display::FakeDisplaySnapshot::Builder()
+                        .SetId(123456)
+                        .SetBaseConnectorId(info->connector()->connector_id)
+                        .SetNativeMode(kNativeDisplaySize)
+                        .SetCurrentMode(kNativeDisplaySize)
+                        .SetColorSpace(gfx::ColorSpace::CreateSRGB())
+                        .Build();
+    drm_display_ = std::make_unique<DrmDisplay>(mock_drm_device_, info.get(),
+                                                snapshot.get());
+  }
 
   MockHardwareDisplayPlaneManager* AddMockHardwareDisplayPlaneManager() {
     auto mock_hardware_display_plane_manager =
@@ -131,11 +176,11 @@ class DrmDisplayTest : public testing::Test {
 
   base::test::TaskEnvironment env_;
   scoped_refptr<DrmDevice> mock_drm_device_;
-  DrmDisplay drm_display_;
+  std::unique_ptr<DrmDisplay> drm_display_;
 };
 
 TEST_F(DrmDisplayTest, SetColorSpace) {
-  drm_display_.set_is_hdr_capable_for_testing(true);
+  drm_display_->set_is_hdr_capable_for_testing(true);
   MockHardwareDisplayPlaneManager* plane_manager =
       AddMockHardwareDisplayPlaneManager();
 
@@ -144,7 +189,7 @@ TEST_F(DrmDisplayTest, SetColorSpace) {
 
   const auto kHDRColorSpace = gfx::ColorSpace::CreateHDR10();
   EXPECT_CALL(*plane_manager, SetGammaCorrection(_, SizeIs(0), SizeIs(0)));
-  drm_display_.SetColorSpace(kHDRColorSpace);
+  drm_display_->SetColorSpace(kHDRColorSpace);
 
   const auto kSDRColorSpace = gfx::ColorSpace::CreateREC709();
   constexpr float kSDRLevel = 0.85;
@@ -152,7 +197,7 @@ TEST_F(DrmDisplayTest, SetColorSpace) {
   EXPECT_CALL(*plane_manager,
               SetGammaCorrection(_, SizeIs(0),
                                  MatchesPowerFunction(kSDRLevel, kExponent)));
-  drm_display_.SetColorSpace(kSDRColorSpace);
+  drm_display_->SetColorSpace(kSDRColorSpace);
 }
 
 TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionNonHDRDisplay) {
@@ -163,12 +208,12 @@ TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionNonHDRDisplay) {
       .WillByDefault(::testing::Return(true));
 
   EXPECT_CALL(*plane_manager, SetGammaCorrection(_, SizeIs(0), SizeIs(0)));
-  drm_display_.SetGammaCorrection(std::vector<display::GammaRampRGBEntry>(),
-                                  std::vector<display::GammaRampRGBEntry>());
+  drm_display_->SetGammaCorrection(std::vector<display::GammaRampRGBEntry>(),
+                                   std::vector<display::GammaRampRGBEntry>());
 }
 
 TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionHDRDisplay) {
-  drm_display_.set_is_hdr_capable_for_testing(true);
+  drm_display_->set_is_hdr_capable_for_testing(true);
   MockHardwareDisplayPlaneManager* plane_manager =
       AddMockHardwareDisplayPlaneManager();
 
@@ -180,8 +225,8 @@ TEST_F(DrmDisplayTest, SetEmptyGammaCorrectionHDRDisplay) {
   EXPECT_CALL(*plane_manager,
               SetGammaCorrection(_, SizeIs(0),
                                  MatchesPowerFunction(kSDRLevel, kExponent)));
-  drm_display_.SetGammaCorrection(std::vector<display::GammaRampRGBEntry>(),
-                                  std::vector<display::GammaRampRGBEntry>());
+  drm_display_->SetGammaCorrection(std::vector<display::GammaRampRGBEntry>(),
+                                   std::vector<display::GammaRampRGBEntry>());
 }
 
 TEST_F(DrmDisplayTest, SetVrrEnabled) {
@@ -189,10 +234,10 @@ TEST_F(DrmDisplayTest, SetVrrEnabled) {
       AddMockHardwareDisplayPlaneManager();
 
   EXPECT_CALL(*plane_manager, SetVrrEnabled(_, _)).WillOnce(Return(false));
-  EXPECT_FALSE(drm_display_.SetVrrEnabled(true));
+  EXPECT_FALSE(drm_display_->SetVrrEnabled(true));
 
   EXPECT_CALL(*plane_manager, SetVrrEnabled(_, _)).WillOnce(Return(true));
-  EXPECT_TRUE(drm_display_.SetVrrEnabled(true));
+  EXPECT_TRUE(drm_display_->SetVrrEnabled(true));
 }
 
 }  // namespace ui

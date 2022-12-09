@@ -212,9 +212,9 @@ DrmDisplayHostManager::DrmDisplayHostManager(
   for (auto& display_info : display_infos) {
     // Create a dummy DisplaySnapshot and resolve display ID collisions.
     std::unique_ptr<display::DisplaySnapshot> current_display_snapshot =
-        CreateDisplaySnapshot(
-            display_info.get(), primary_drm_device_handle_->fd(),
-            primary_drm_device_handle_->sys_path(), 0, gfx::Point());
+        CreateDisplaySnapshot(display_info.get(),
+                              primary_drm_device_handle_->fd(),
+                              primary_drm_device_handle_->sys_path(), 0);
 
     const auto colliding_display_snapshot_iter =
         edid_id_collision_map.find(current_display_snapshot->edid_display_id());

@@ -4,15 +4,10 @@
 
 #include "ui/ozone/platform/drm/gpu/mock_drm_device.h"
 
-#include <stdint.h>
-#include <xf86drm.h>
-
-#include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "skia/ext/legacy_display_globals.h"
@@ -50,11 +45,6 @@ constexpr uint32_t kCommitModesetFlags = DRM_MODE_ATOMIC_ALLOW_MODESET;
 // This also happens to be the same set of flags as would be used for a
 // pageflip, or other atomic property changes that do not require modesetting.
 constexpr uint32_t kSeamlessModesetFlags = 0;
-
-template <class Object>
-Object* DrmAllocator() {
-  return static_cast<Object*>(drmMalloc(sizeof(Object)));
-}
 
 ScopedDrmObjectPropertyPtr CreatePropertyObject(
     const std::vector<DrmDevice::Property>& properties) {

@@ -128,6 +128,8 @@ void DrmGpuDisplayManager::SetDisplaysConfiguredCallback(
   displays_configured_callback_ = std::move(callback);
 }
 
+// TODO(b/261628945): Refactor this code to utilize DrmDevice instead of using
+// DRM FDs directly. That way, this code can be tested via MockDrmDevice.
 MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
   std::vector<std::unique_ptr<DrmDisplay>> old_displays;
   old_displays.swap(displays_);
@@ -148,35 +150,21 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
     // Receiving a signal that DRM state was updated. Need to reset the plane
     // manager's resource cache since IDs may have changed.
     drm->plane_manager()->ResetConnectorsCache(drm->GetResources());
+
+    // Create new DisplaySnapshots and resolve display ID collisions.
     auto display_infos = GetDisplayInfosAndUpdateCrtcs(drm->get_fd());
     for (const auto& display_info : display_infos) {
-      auto it = base::ranges::find_if(
-          old_displays,
-          DisplayComparator(drm, display_info->crtc()->crtc_id,
-                            display_info->connector()->connector_id));
-      std::unique_ptr<DrmDisplay> current_drm_display;
-      if (it != old_displays.end()) {
-        current_drm_display = std::move(*it);
-        old_displays.erase(it);
-      } else {
-        current_drm_display = std::make_unique<DrmDisplay>(drm);
-      }
+      params_list.emplace_back(CreateDisplaySnapshot(
+          display_info.get(), drm->get_fd(), drm->device_path(),
+          static_cast<uint8_t>(device_index)));
 
-      // Create the new DisplaySnapshot and resolve display ID collisions.
-      std::unique_ptr<display::DisplaySnapshot> current_display_snapshot =
-          CreateDisplaySnapshot(display_info.get(),
-                                current_drm_display->drm()->get_fd(),
-                                current_drm_display->drm()->device_path(),
-                                static_cast<uint8_t>(device_index),
-                                current_drm_display->origin());
-
+      display::DisplaySnapshot* current_display_snapshot =
+          params_list.back().get();
       const auto colliding_display_snapshot_iter = edid_id_collision_map.find(
           current_display_snapshot->edid_display_id());
       if (colliding_display_snapshot_iter != edid_id_collision_map.end()) {
         collision_detected = true;
 
-        // Resolve collisions by adding each colliding display's connector index
-        // to its display ID.
         current_display_snapshot->AddIndexToDisplayId();
 
         display::DisplaySnapshot* colliding_display_snapshot =
@@ -185,17 +173,17 @@ MovableDisplaySnapshots DrmGpuDisplayManager::GetDisplays() {
         edid_id_collision_map[colliding_display_snapshot->edid_display_id()] =
             colliding_display_snapshot;
       }
-
-      // Do not use |display_info| beyond this point, since some of its internal
-      // references will be surrendered.
-      current_drm_display->Update(display_info.get(),
-                                  current_display_snapshot.get());
-
-      // Update the map with the new (or potentially resolved) display snapshot.
       edid_id_collision_map[current_display_snapshot->edid_display_id()] =
-          current_display_snapshot.get();
-      params_list.push_back(std::move(current_display_snapshot));
-      displays_.push_back(std::move(current_drm_display));
+          current_display_snapshot;
+    }
+    DCHECK_EQ(display_infos.size(), params_list.size());
+
+    // Create a new DrmDisplay with each of the corresponding display info and
+    // display snapshot. Note: do not use |display_infos| beyond this point,
+    // since some of the objects' internal references will be surrendered.
+    for (size_t i = 0; i < display_infos.size(); ++i) {
+      displays_.emplace_back(std::make_unique<DrmDisplay>(
+          drm, display_infos[i].get(), params_list[i].get()));
     }
     device_index++;
   }
@@ -314,12 +302,6 @@ bool DrmGpuDisplayManager::ConfigureDisplays(
 
   if (displays_configured_callback_)
     displays_configured_callback_.Run();
-
-  const bool test_only = modeset_flag == display::kTestModeset;
-  if (!test_only && config_success) {
-    for (const auto& controller : controllers_to_configure)
-      FindDisplay(controller.display_id)->SetOrigin(controller.origin);
-  }
 
   return config_success;
 }
