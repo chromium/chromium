@@ -165,12 +165,11 @@ HRESULT AppInventoryManager::UploadAppInventory(
     }
   }
 
-  request_dict_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
-  request_dict_->SetStringKey(kUploadAppInventoryRequestUserSidParameterName,
-                              base::WideToUTF8(context.user_sid));
-  request_dict_->SetStringKey(kDmToken, base::WideToUTF8(dm_token_value));
-  request_dict_->SetStringKey(kObfuscatedGaiaId,
-                              base::WideToUTF8(obfuscated_user_id));
+  request_dict_ = std::make_unique<base::Value::Dict>();
+  request_dict_->Set(kUploadAppInventoryRequestUserSidParameterName,
+                     base::WideToUTF8(context.user_sid));
+  request_dict_->Set(kDmToken, base::WideToUTF8(dm_token_value));
+  request_dict_->Set(kObfuscatedGaiaId, base::WideToUTF8(obfuscated_user_id));
   std::wstring known_resource_id =
       context.device_resource_id.empty()
           ? GetUserDeviceResourceId(context.user_sid)
@@ -182,12 +181,11 @@ HRESULT AppInventoryManager::UploadAppInventory(
                  << context.user_sid;
     return E_FAIL;
   }
-  request_dict_->SetStringKey(
-      kUploadAppInventoryRequestDeviceResourceIdParameterName,
-      base::WideToUTF8(known_resource_id));
+  request_dict_->Set(kUploadAppInventoryRequestDeviceResourceIdParameterName,
+                     base::WideToUTF8(known_resource_id));
 
-  request_dict_->SetKey(kUploadAppInventoryRequestWin32AppsParameterName,
-                        GetInstalledWin32Apps());
+  request_dict_->Set(kUploadAppInventoryRequestWin32AppsParameterName,
+                     GetInstalledWin32Apps());
 
   absl::optional<base::Value> request_result;
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(

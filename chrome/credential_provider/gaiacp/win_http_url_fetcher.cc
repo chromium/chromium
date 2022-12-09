@@ -421,18 +421,16 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     const GURL& request_url,
     std::string access_token,
     const std::vector<std::pair<std::string, std::string>>& headers,
-    const base::Value& request_dict,
+    const base::Value::Dict& request_dict,
     const base::TimeDelta& request_timeout,
     unsigned int request_retries,
     absl::optional<base::Value>* request_result) {
   DCHECK(request_result);
 
   std::string request_body;
-  if (request_dict.is_dict()) {
-    if (!base::JSONWriter::Write(request_dict, &request_body)) {
-      LOGFN(ERROR) << "base::JSONWriter::Write failed";
-      return E_FAIL;
-    }
+  if (!base::JSONWriter::Write(request_dict, &request_body)) {
+    LOGFN(ERROR) << "base::JSONWriter::Write failed";
+    return E_FAIL;
   }
 
   for (unsigned int try_count = 0; try_count <= request_retries; ++try_count) {

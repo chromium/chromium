@@ -37,9 +37,9 @@ TEST_P(GcpWinHttpUrlFetcherTest,
       GURL("https://test-service.googleapis.com/v1/testEndpoint");
   const std::string access_token = "test-access-token";
 
-  base::Value request(base::Value::Type::DICTIONARY);
-  request.SetStringKey("request-str-key", "request-str-value");
-  request.SetIntKey("request-int-key", 1234);
+  base::Value::Dict request;
+  request.Set("request-str-key", "request-str-value");
+  request.Set("request-int-key", 1234);
   base::TimeDelta request_timeout = base::Milliseconds(timeout_in_millis);
   absl::optional<base::Value> request_result;
 
@@ -120,7 +120,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
     ASSERT_EQ(header1_value, request_data.headers.at(header1));
     absl::optional<base::Value> body_value =
         base::JSONReader::Read(request_data.body);
-    ASSERT_EQ(request, body_value.value());
+    ASSERT_EQ(request, body_value->GetDict());
   }
 }
 

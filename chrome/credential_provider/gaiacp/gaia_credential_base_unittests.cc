@@ -3453,33 +3453,33 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   ASSERT_TRUE(has_upload_failed ? FAILED(hr) : SUCCEEDED(hr));
 
   // Assert on the request parameters sent in the UploadDeviceDetails rpc.
-  const base::Value& request_dict =
+  const base::Value::Dict& request_dict =
       fake_gem_device_details_manager()->GetRequestDictForTesting();
-  ASSERT_NE(nullptr, request_dict.FindStringKey("machine_guid"));
-  ASSERT_EQ(*request_dict.FindStringKey("machine_guid"),
+  ASSERT_NE(nullptr, request_dict.FindString("machine_guid"));
+  ASSERT_EQ(*request_dict.FindString("machine_guid"),
             base::WideToUTF8(machine_guid));
-  ASSERT_NE(nullptr, request_dict.FindStringKey("device_serial_number"));
-  ASSERT_EQ(*request_dict.FindStringKey("device_serial_number"),
+  ASSERT_NE(nullptr, request_dict.FindString("device_serial_number"));
+  ASSERT_EQ(*request_dict.FindString("device_serial_number"),
             base::WideToUTF8(serial_number));
-  ASSERT_NE(nullptr, request_dict.FindStringKey("device_domain"));
-  ASSERT_EQ(*request_dict.FindStringKey("device_domain"),
+  ASSERT_NE(nullptr, request_dict.FindString("device_domain"));
+  ASSERT_EQ(*request_dict.FindString("device_domain"),
             base::WideToUTF8(domain));
-  ASSERT_NE(nullptr, request_dict.FindStringKey("account_username"));
-  ASSERT_EQ(*request_dict.FindStringKey("account_username"),
+  ASSERT_NE(nullptr, request_dict.FindString("account_username"));
+  ASSERT_EQ(*request_dict.FindString("account_username"),
             base::WideToUTF8(kDefaultUsername));
-  ASSERT_NE(nullptr, request_dict.FindStringKey("user_sid"));
-  ASSERT_EQ(*request_dict.FindStringKey("user_sid"),
-            base::WideToUTF8((BSTR)sid));
-  ASSERT_NE(nullptr, request_dict.FindStringKey("os_edition"));
-  ASSERT_EQ(*request_dict.FindStringKey("os_edition"), os_version);
-  ASSERT_TRUE(request_dict.FindBoolKey("is_ad_joined_user").has_value());
-  ASSERT_EQ(request_dict.FindBoolKey("is_ad_joined_user").value(), true);
-  ASSERT_TRUE(request_dict.FindKey("wlan_mac_addr")->is_list());
-  ASSERT_EQ(*request_dict.FindStringKey("dm_token"), dm_token);
+  ASSERT_NE(nullptr, request_dict.FindString("user_sid"));
+  ASSERT_EQ(*request_dict.FindString("user_sid"), base::WideToUTF8((BSTR)sid));
+  ASSERT_NE(nullptr, request_dict.FindString("os_edition"));
+  ASSERT_EQ(*request_dict.FindString("os_edition"), os_version);
+  ASSERT_TRUE(request_dict.FindBool("is_ad_joined_user").has_value());
+  ASSERT_EQ(request_dict.FindBool("is_ad_joined_user").value(), true);
+  const base::Value::List* wlan_mac_addr =
+      request_dict.FindList("wlan_mac_addr");
+  ASSERT_TRUE(wlan_mac_addr);
+  ASSERT_EQ(*request_dict.FindString("dm_token"), dm_token);
 
   std::vector<std::string> actual_mac_address_list;
-  for (const base::Value& value :
-       request_dict.FindKey("wlan_mac_addr")->GetList()) {
+  for (const base::Value& value : *wlan_mac_addr) {
     ASSERT_TRUE(value.is_string());
     actual_mac_address_list.push_back(value.GetString());
   }
@@ -3487,7 +3487,7 @@ TEST_P(GcpGaiaCredentialBaseUploadDeviceDetailsTest, UploadDeviceDetails) {
   ASSERT_TRUE(base::ranges::equal(actual_mac_address_list, mac_addresses));
 
   if (registry_has_device_resource_id) {
-    ASSERT_EQ(*request_dict.FindStringKey("device_resource_id"),
+    ASSERT_EQ(*request_dict.FindString("device_resource_id"),
               device_resource_id);
   }
 

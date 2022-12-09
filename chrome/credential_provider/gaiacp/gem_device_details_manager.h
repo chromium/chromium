@@ -67,7 +67,7 @@ class GemDeviceDetailsManager {
 
   // Gets the request dictionary used to invoke the GEM service for
   // the purpose of testing.
-  const base::Value& GetRequestDictForTesting() { return *request_dict_; }
+  const base::Value::Dict& GetRequestDictForTesting() { return *request_dict_; }
 
   // Get the upload device details http response status for the
   // purpose of unit testing.
@@ -76,7 +76,7 @@ class GemDeviceDetailsManager {
  private:
   base::TimeDelta upload_device_details_request_timeout_;
   HRESULT upload_status_;
-  std::unique_ptr<base::Value> request_dict_;
+  std::unique_ptr<base::Value::Dict> request_dict_;
   HRESULT UploadDeviceDetailsInternal(const std::string access_token,
                                       const std::wstring obfuscated_user_id,
                                       const std::wstring dm_token,

@@ -6,6 +6,7 @@
 #define CHROME_CREDENTIAL_PROVIDER_EXTENSION_APP_INVENTORY_MANAGER_H_
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/win/windows_types.h"
 #include "chrome/credential_provider/extension/task_manager.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -56,7 +57,7 @@ class AppInventoryManager {
 
  private:
   base::TimeDelta upload_app_inventory_request_timeout_;
-  std::unique_ptr<base::Value> request_dict_;
+  std::unique_ptr<base::Value::Dict> request_dict_;
 };
 
 }  // namespace credential_provider

@@ -270,9 +270,8 @@ HRESULT EncryptUserPasswordUsingEscrowService(
 
   std::string resource_id;
   std::string public_key;
-  base::Value request_dict(base::Value::Type::DICTIONARY);
-  request_dict.SetStringKey(kGenerateKeyPairRequestDeviceIdParameterName,
-                            device_id);
+  base::Value::Dict request_dict;
+  request_dict.Set(kGenerateKeyPairRequestDeviceIdParameterName, device_id);
   absl::optional<base::Value> request_result;
 
   // Fetch the results and extract the |resource_id| for the key and the

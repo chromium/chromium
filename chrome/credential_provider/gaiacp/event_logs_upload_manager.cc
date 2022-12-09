@@ -489,15 +489,15 @@ HRESULT EventLogsUploadManager::MakeUploadLogChunkRequest(
 
   size_t num_events_to_upload = log_entries_value_list->GetList().size();
 
-  base::Value request_dict(base::Value::Type::DICTIONARY);
-  request_dict.SetStringKey(kRequestSerialNumberParameterName,
-                            base::WideToUTF8(serial_number));
-  request_dict.SetStringKey(kRequestMachineGuidParameterName,
-                            base::WideToUTF8(machine_guid));
-  request_dict.SetIntKey(kRequestChunkIdParameterName, chunk_id);
+  base::Value::Dict request_dict;
+  request_dict.Set(kRequestSerialNumberParameterName,
+                   base::WideToUTF8(serial_number));
+  request_dict.Set(kRequestMachineGuidParameterName,
+                   base::WideToUTF8(machine_guid));
+  request_dict.Set(kRequestChunkIdParameterName, static_cast<int>(chunk_id));
   base::Value log_entries =
       base::Value::FromUniquePtrValue(std::move(log_entries_value_list));
-  request_dict.SetKey(kRequestLogEntriesParameterName, std::move(log_entries));
+  request_dict.Set(kRequestLogEntriesParameterName, std::move(log_entries));
   absl::optional<base::Value> request_result;
 
   // Make the upload HTTP request.
