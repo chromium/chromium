@@ -902,6 +902,18 @@ bool WebAppShortcutCreator::BuildShortcut(
     return false;
   }
 
+#if defined(ADDRESS_SANITIZER)
+  const base::FilePath asan_library_path =
+      framework_bundle_path.Append("Versions")
+          .Append("Current")
+          .Append("libclang_rt.asan_osx_dynamic.dylib");
+  if (!base::CopyFile(asan_library_path, destination_executable_path.Append(
+                                             asan_library_path.BaseName()))) {
+    LOG(ERROR) << "Failed to copy asan library: " << asan_library_path;
+    return false;
+  }
+#endif
+
   // Copy the Info.plist.
   if (!base::CopyFile(plist_path,
                       destination_contents_path.Append("Info.plist"))) {
