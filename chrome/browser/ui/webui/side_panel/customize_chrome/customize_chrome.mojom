@@ -65,8 +65,15 @@ interface CustomizeChromePageHandler {
 
   // Returns the collections of background images.
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
+
   // Triggers a call to |CustomizeChromePage.SetTheme()|.
   UpdateTheme();
+
+  // Sets Chrome's theme according to the default color.
+  SetDefaultColor();
+
+  // Sets Chrome's theme according to |foreground_color|.
+  SetForegroundColor(skia.mojom.SkColor foreground_color);
 };
 
 // WebUI-side handler for requests from the browser.

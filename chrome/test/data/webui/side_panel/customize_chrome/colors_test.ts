@@ -60,6 +60,12 @@ suite('ColorsTest', () => {
         });
       });
 
+  test('sets default color', () => {
+    colorsElement.$.defaultColor.click();
+
+    assertEquals(1, handler.getCallCount('setDefaultColor'));
+  });
+
   test('renders chrome colors', async () => {
     const colors = {
       colors: [
@@ -81,5 +87,21 @@ suite('ColorsTest', () => {
     assertDeepEquals({value: 3}, colorElements[1]!.backgroundColor);
     assertDeepEquals({value: 4}, colorElements[1]!.foregroundColor);
     assertEquals('bar', colorElements[1]!.title);
+  });
+
+  test('sets chrome color', async () => {
+    const colors = {
+      colors: [
+        {id: 1, name: 'foo', background: {value: 1}, foreground: {value: 2}},
+      ],
+    };
+
+    chromeColorsResolver.resolve(colors);
+    await waitAfterNextRender(colorsElement);
+    colorsElement.shadowRoot!.querySelector<ColorElement>(
+                                 '.chrome-color')!.click();
+
+    assertEquals(1, handler.getCallCount('setForegroundColor'));
+    assertEquals(2, handler.getArgs('setForegroundColor')[0].value);
   });
 });

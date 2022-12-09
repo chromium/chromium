@@ -19,6 +19,10 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
 
+namespace chrome_colors {
+class ChromeColorsService;
+}  // namespace chrome_colors
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -51,6 +55,8 @@ class CustomizeChromePageHandler
   void GetBackgroundCollections(
       GetBackgroundCollectionsCallback callback) override;
   void UpdateTheme() override;
+  void SetDefaultColor() override;
+  void SetForegroundColor(SkColor foreground_color) override;
 
  private:
   // ui::NativeThemeObserver:
@@ -75,6 +81,7 @@ class CustomizeChromePageHandler
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;
   raw_ptr<ThemeService> theme_service_;
+  raw_ptr<chrome_colors::ChromeColorsService> chrome_colors_service_;
 
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};

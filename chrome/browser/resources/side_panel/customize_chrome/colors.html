@@ -17,17 +17,19 @@
         id="defaultColor"
         background-color="[[defaultColor_.background]]"
         foreground-color="[[defaultColor_.foreground]]"
-        title="$i18n{defaultColorName}">
+        title="$i18n{defaultColorName}"
+        on-click="onDefaultColorClick_">
     </customize-chrome-color>
   </customize-chrome-check-mark-wrapper>
-  <template is="dom-repeat" items="[[colors_]]">
+  <template id="chromeColors" is="dom-repeat" items="[[colors_]]">
     <!-- TODO(crbug.com/1384229): Only set checked if selected. -->
     <customize-chrome-check-mark-wrapper checked>
       <customize-chrome-color
           class="chrome-color"
           background-color="[[item.background]]"
           foreground-color="[[item.foreground]]"
-          title="[[item.name]]">
+          title="[[item.name]]"
+          on-click="onChromeColorClick_">
       </customize-chrome-color>
     </customize-chrome-check-mark-wrapper>
   </template>

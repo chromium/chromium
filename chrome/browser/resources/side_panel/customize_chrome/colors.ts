@@ -7,7 +7,7 @@ import './color.js';
 import './check_mark_wrapper.js';
 
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ColorElement} from './color.js';
 import {getTemplate} from './colors.html.js';
@@ -32,6 +32,7 @@ export const DARK_DEFAULT_COLOR: Color = {
 export interface ColorsElement {
   $: {
     defaultColor: ColorElement,
+    chromeColors: DomRepeat,
   };
 }
 
@@ -86,6 +87,15 @@ export class ColorsElement extends PolymerElement {
   private computeDefaultColor_(): Color {
     return this.theme_.systemDarkMode ? DARK_DEFAULT_COLOR :
                                         LIGHT_DEFAULT_COLOR;
+  }
+
+  private onDefaultColorClick_() {
+    CustomizeChromeApiProxy.getInstance().handler.setDefaultColor();
+  }
+
+  private onChromeColorClick_(e: Event) {
+    CustomizeChromeApiProxy.getInstance().handler.setForegroundColor(
+        this.$.chromeColors.itemForElement(e.target as HTMLElement).foreground);
   }
 }
 
