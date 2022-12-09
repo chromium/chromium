@@ -78,13 +78,14 @@ using OverlayImage = GLImage*;
 // Contains per frame data, and is passed along with SwapBuffer, PostSubbuffer,
 // CommitOverlayPlanes type methods.
 struct FrameData {
-  FrameData() = default;
+  explicit FrameData(int64_t seq = -1) : seq(seq) {}
   ~FrameData() = default;
 
-  FrameData(const FrameData&) = delete;
-  FrameData& operator=(const FrameData&) = delete;
-  FrameData(FrameData&& other) = default;
-  FrameData& operator=(FrameData&& other) = default;
+  // Sequence number for this frame. The reserved value of -1 means that there
+  // is no sequence number specified (that is, corresponds to no sequence
+  // point). This may happen for some cases, like the ozone demo, tests, or
+  // users of GLSurface other than SkiaRenderer.
+  int64_t seq = -1;
 };
 
 // Encapsulates a surface that can be rendered to with GL, hiding platform

@@ -105,6 +105,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     SwapFrameData& operator=(const SwapFrameData&) = delete;
 
     std::vector<ui::LatencyInfo> latency_info;
+    int64_t seq = -1;
     bool top_controls_visible_height_changed = false;
 #if BUILDFLAG(IS_MAC)
     gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;

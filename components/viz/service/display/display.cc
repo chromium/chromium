@@ -888,6 +888,8 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     IssueDisplayRenderingStatsEvent();
     DirectRenderer::SwapFrameData swap_frame_data;
     swap_frame_data.latency_info = std::move(frame.latency_info);
+    swap_frame_data.seq =
+        current_surface_id_.local_surface_id().child_sequence_number();
     swap_frame_data.choreographer_vsync_id = params.choreographer_vsync_id;
     if (frame.top_controls_visible_height.has_value()) {
       swap_frame_data.top_controls_visible_height_changed =
