@@ -274,25 +274,30 @@ export class ApnDetailDialog extends ApnDetailDialogElementBase {
     assert(this.guid);
     assert(this.mode !== ApnDetailDialogMode.VIEW);
     if (this.mode === ApnDetailDialogMode.CREATE) {
-      this.createCustomApn_();
+      // Note: apnProperties is undefined when we are in the create mode.
+      assert(!this.apnProperties);
+      this.networkConfig_.createCustomApn(this.guid, this.getApnProperties_());
+    } else if (this.mode === ApnDetailDialogMode.EDIT) {
+      assert(!!this.apnProperties.id);
+      this.networkConfig_.modifyCustomApn(
+          this.guid, this.getApnProperties_(this.apnProperties));
     }
-    // TODO(b/162365553): When the mode is edit call modifyCustomApn()
-
     this.$.apnDetailDialog.close();
   }
 
-  /** @private */
-  createCustomApn_() {
-    const apnProperties = /** @type {!ApnProperties} */ ({
-      accessPointName: this.apn_,
-      username: this.username_,
-      password: this.password_,
-      authenticationType: Number(this.selectedAuthType_),
-      ipType: Number(this.selectedIpType_),
-      // TODO(b/162365553): Check that ApnTypes is non-empty
-      apnTypes: this.getSelectedApnTypes_(),
-    });
-    this.networkConfig_.createCustomApn(this.guid, apnProperties);
+  /**
+   * @return {!ApnProperties}
+   * @private
+   */
+  getApnProperties_(apnProperties = {}) {
+    apnProperties.accessPointName = this.apn_;
+    apnProperties.username = this.username_;
+    apnProperties.password = this.password_;
+    apnProperties.authenticationType = Number(this.selectedAuthType_);
+    apnProperties.ipType = Number(this.selectedIpType_);
+    // TODO(b/162365553): Check that ApnTypes is non-empty
+    apnProperties.apnTypes = this.getSelectedApnTypes_();
+    return /** @type {!ApnProperties}*/ (apnProperties);
   }
 
   /**

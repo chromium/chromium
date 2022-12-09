@@ -296,6 +296,33 @@ suite('ApnDetailDialog', function() {
             .innerText);
     assertFalse(!!apnDetailDialog.shadowRoot.querySelector('#apnDoneBtn'));
     assertAllInputsEnabled();
+
+    // Case: clicking on the action button calls the correct method
+    const network = OncMojo.getDefaultManagedProperties(
+        NetworkType.kCellular, apnDetailDialog.guid);
+    mojoApi_.setManagedPropertiesForTest(network);
+    await flushTasks();
+    const managedProperties =
+        await mojoApi_.getManagedProperties(apnDetailDialog.guid);
+    assertTrue(!!managedProperties);
+    managedProperties.result.typeProperties.cellular = {
+      customApnList: [apnWithId],
+    };
+    const newExpectedApn = 'modified';
+    apnDetailDialog.$.apnInput.value = newExpectedApn;
+    apnDetailDialog.shadowRoot.querySelector('#apnDetailActionBtn').click();
+    await mojoApi_.whenCalled('modifyCustomApn');
+
+    const apn =
+        managedProperties.result.typeProperties.cellular.customApnList[0];
+    assertEquals(newExpectedApn, apn.accessPointName);
+    assertEquals(apnWithId.id, apn.id);
+    assertEquals(apnWithId.username, apn.username);
+    assertEquals(apnWithId.password, apn.password);
+    assertEquals(apnWithId.authenticationType, apn.authenticationType);
+    assertEquals(apnWithId.ipType, apn.ipType);
+    assertEquals(apnWithId.apnTypes.length, apn.apnTypes.length);
+    assertEquals(apnWithId.apnTypes[0], apn.apnTypes[0]);
   });
 
 });
