@@ -14,24 +14,7 @@ assert(!is_android, "Android does not use these settings")
 
 if (is_chromeos_ash) {
   group("closure_compile") {
-    deps = [
-      ":closure_compile_local",
-      "chromeos:closure_compile_module",
-    ]
-  }
-
-  js_type_check("closure_compile_local") {
-    is_polymer3 = true
-    closure_flags = settings_closure_flags
-    deps = [ ":router" ]
-  }
-
-  js_library("router") {
-    deps = [
-      "//ui/webui/resources/js:assert",
-      "//ui/webui/resources/js:load_time_data.m",
-    ]
-    externs_list = [ "$externs_path/metrics_private.js" ]
+    deps = [ "chromeos:closure_compile_module" ]
   }
 }
 
@@ -357,13 +340,12 @@ build_webui("build") {
     "relaunch_mixin.ts",
     "reset_page/reset_browser_proxy.ts",
     "route.ts",
-    "router.js",
+    "router.ts",
     "safety_check_page/safety_check_browser_proxy.ts",
     "search_engines_page/search_engines_browser_proxy.ts",
     "search_settings.ts",
     "settings.ts",
     "settings_page/main_page_mixin.ts",
-    "settings_routes.ts",
     "site_settings/constants.ts",
     "site_settings/site_settings_mixin.ts",
     "site_settings/site_settings_permissions_browser_proxy.ts",

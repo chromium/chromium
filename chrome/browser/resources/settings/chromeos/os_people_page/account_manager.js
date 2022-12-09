@@ -23,7 +23,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../../router.js';
+import {Route} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {getImage} from '../icon.js';
 import {recordSettingChange} from '../metrics_recorder.js';

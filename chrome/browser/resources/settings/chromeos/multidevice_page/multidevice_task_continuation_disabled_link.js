@@ -19,7 +19,7 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Router} from '../../router.js';
+import {Router} from '../router.js';
 import {routes} from '../os_route.js';
 
 /**

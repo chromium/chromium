@@ -18,7 +18,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';

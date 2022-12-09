@@ -31,7 +31,7 @@ import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://res
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsPrefsElement} from '../../prefs/prefs.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';

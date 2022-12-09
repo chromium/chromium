@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {Route} from '../../router.js';
+import {Route} from '../router.js';
 import {routes} from '../os_route.js';
 
 import {getInputMethodSettings, SettingsType} from './input_method_settings.js';

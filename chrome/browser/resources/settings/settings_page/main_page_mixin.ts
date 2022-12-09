@@ -11,7 +11,7 @@ import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {MinimumRoutes, Route, Router} from '../router.js';
+import {Route, Router} from '../router.js';
 // clang-format on
 
 /**
@@ -44,7 +44,7 @@ function classifyRoute(route: Route|null): RouteState {
   if (!route) {
     return RouteState.INITIAL;
   }
-  const routes = Router.getInstance().getRoutes() as MinimumRoutes;
+  const routes = Router.getInstance().getRoutes();
   if (route === routes.BASIC) {
     return RouteState.TOP_LEVEL;
   }
@@ -125,8 +125,8 @@ export const MainPageMixin = dedupingMixin(
         }
 
         private shouldExpandAdvanced_(route: Route): boolean {
-          const routes = Router.getInstance().getRoutes() as MinimumRoutes;
-          return this.tagName === 'SETTINGS-BASIC-PAGE' && routes.ADVANCED &&
+          const routes = Router.getInstance().getRoutes();
+          return this.tagName === 'SETTINGS-BASIC-PAGE' && !!routes.ADVANCED &&
               routes.ADVANCED.contains(route);
         }
 

@@ -25,7 +25,7 @@ import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://reso
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Router} from '../../router.js';
+import {Router} from '../router.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 

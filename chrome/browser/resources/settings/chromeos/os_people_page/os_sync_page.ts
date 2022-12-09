@@ -37,7 +37,7 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n
 import {FocusConfig} from '../../focus_config.js';
 import {loadTimeData} from '../../i18n_setup.js';
 
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';

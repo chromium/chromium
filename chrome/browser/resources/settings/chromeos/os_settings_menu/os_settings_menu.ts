@@ -19,7 +19,7 @@ import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {castExists} from '../assert_extras.js';
 import {routes} from '../os_route.js';
 

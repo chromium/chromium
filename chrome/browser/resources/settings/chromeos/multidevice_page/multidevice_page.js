@@ -24,7 +24,7 @@ import {beforeNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://r
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {NearbyShareSettingsBehavior, NearbyShareSettingsBehaviorInterface} from '../../shared/nearby_share_settings_behavior.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';

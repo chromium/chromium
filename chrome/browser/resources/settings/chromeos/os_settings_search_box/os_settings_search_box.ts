@@ -27,7 +27,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {SearchResultsObserverInterface as PersonalizationSearchResultsObserverInterface, SearchResultsObserverReceiver as PersonalizationSearchResultsObserverReceiver} from '../../mojom-webui/personalization/search.mojom-webui.js';
 import {ParentResultBehavior, SearchResultsObserverInterface, SearchResultsObserverReceiver} from '../../mojom-webui/search/search.mojom-webui.js';
-import {Router} from '../../router.js';
+import {Router} from '../router.js';
 import {castExists} from '../assert_extras.js';
 import {recordSearch} from '../metrics_recorder.js';
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';

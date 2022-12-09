@@ -18,7 +18,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {App, AppNotificationsHandlerInterface, AppNotificationsObserverReceiver} from '../../../mojom-webui/os_apps_page/app_notification_handler.mojom-webui.js';
 import {SettingChangeValue} from '../../../mojom-webui/search/user_action_recorder.mojom-webui.js';
 import {Setting} from '../../../mojom-webui/setting.mojom-webui.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../../deep_linking_behavior.js';
 import {recordSettingChange} from '../../metrics_recorder.js';
 import {routes} from '../../os_route.js';

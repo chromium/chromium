@@ -49,7 +49,7 @@ import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/ser
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';

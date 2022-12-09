@@ -36,7 +36,7 @@ import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
 import {SettingsSliderElement} from '../../controls/settings_slider.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../router.js';
 import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';

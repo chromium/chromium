@@ -25,7 +25,7 @@ import {DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {cast, castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {getImage} from '../icon.js';

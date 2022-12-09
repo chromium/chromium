@@ -25,7 +25,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';

@@ -26,7 +26,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {routes} from '../os_route.js';

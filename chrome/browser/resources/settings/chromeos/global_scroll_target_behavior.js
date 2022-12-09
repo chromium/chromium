@@ -15,7 +15,7 @@
  */
 
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {Route, Router} from '../router.js';
+import {Route, Router} from './router.js';
 import {RouteObserverBehavior} from './route_observer_behavior.js';
 
 let scrollTargetResolver = new PromiseResolver();

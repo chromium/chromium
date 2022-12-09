@@ -33,7 +33,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {beforeNextRender, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {castExists} from '../assert_extras.js';
 import {MainPageMixin} from '../main_page_mixin.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';

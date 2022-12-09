@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MinimumRoutes, Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {MinimumRoutes, Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from './router.js';
 
 import {castExists} from './assert_extras.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';

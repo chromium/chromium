@@ -20,7 +20,7 @@ import {SearchResult as PersonalizationSearchResult} from '../../mojom-webui/per
 import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../../mojom-webui/search/search.mojom-webui.js';
 import {SearchResultIcon} from '../../mojom-webui/search/search_result_icon.mojom-webui.js';
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
-import {Router} from '../../router.js';
+import {Router} from '../router.js';
 import {SearchResult} from '../search/combined_search_handler.js';
 
 import {getTemplate} from './os_search_result_row.html.js';

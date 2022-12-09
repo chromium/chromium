@@ -4,7 +4,7 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData, Route, Router} from 'chrome://settings/settings.js';
+import {loadTimeData, Route, Router, SettingsRoutes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -49,7 +49,8 @@ suite('SettingsSubpage', function() {
       SYNC: peopleRoute.createChild('/syncSetup'),
     };
 
-    Router.resetInstanceForTesting(new Router(testRoutes));
+    Router.resetInstanceForTesting(
+        new Router(testRoutes as unknown as SettingsRoutes));
 
     setupPopstateListener();
 
