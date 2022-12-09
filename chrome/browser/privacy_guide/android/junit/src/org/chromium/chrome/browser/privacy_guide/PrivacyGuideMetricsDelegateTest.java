@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
+import org.chromium.components.content_settings.CookieControlsMode;
 
 /**
  * JUnit tests of the class {@link PrivacyGuideMetricsDelegate}.
@@ -178,5 +179,29 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testSafeBrowsing_changeSafeBrowsingOff() {
         PrivacyGuideMetricsDelegate.recordMetricsOnSafeBrowsingChange(
                 SafeBrowsingState.NO_SAFE_BROWSING);
+    }
+
+    @Test
+    @SmallTest
+    public void testCookies_changeCookiesBlock3PIncognitoUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnCookieControlsChange(
+                CookieControlsMode.INCOGNITO_ONLY);
+        assertTrue(mActionTester.getActions().contains(
+                "Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito"));
+    }
+
+    @Test
+    @SmallTest
+    public void testCookies_changeCookiesBlock3PUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnCookieControlsChange(
+                CookieControlsMode.BLOCK_THIRD_PARTY);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeCookiesBlock3P"));
+    }
+
+    @Test(expected = AssertionError.class)
+    @SmallTest
+    public void testCookies_changeCookiesOff() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnCookieControlsChange(CookieControlsMode.OFF);
     }
 }

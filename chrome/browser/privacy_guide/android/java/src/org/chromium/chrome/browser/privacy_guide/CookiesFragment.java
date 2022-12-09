@@ -85,6 +85,7 @@ public class CookiesFragment extends Fragment implements RadioGroup.OnCheckedCha
     }
 
     private void setCookieControlsMode(@CookieControlsMode int cookieControlsMode) {
+        PrivacyGuideMetricsDelegate.recordMetricsOnCookieControlsChange(cookieControlsMode);
         UserPrefs.get(Profile.getLastUsedRegularProfile())
                 .setInteger(PrefNames.COOKIE_CONTROLS_MODE, cookieControlsMode);
     }

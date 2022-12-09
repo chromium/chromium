@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy_guide;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
+import org.chromium.components.content_settings.CookieControlsMode;
 
 /**
  * A delegate class to record metrics associated with each card inside
@@ -128,6 +129,23 @@ class PrivacyGuideMetricsDelegate {
                 break;
             default:
                 assert false : "Unexpected SafeBrowsingState " + safeBrowsingState;
+        }
+    }
+
+    /**
+     * A method to record metrics on Cookie Controls radio button change of the Privacy Guide's
+     * {@link CookiesFragment}.
+     */
+    static void recordMetricsOnCookieControlsChange(@CookieControlsMode int cookieControlsMode) {
+        switch (cookieControlsMode) {
+            case CookieControlsMode.INCOGNITO_ONLY:
+                RecordUserAction.record("Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito");
+                break;
+            case CookieControlsMode.BLOCK_THIRD_PARTY:
+                RecordUserAction.record("Settings.PrivacyGuide.ChangeCookiesBlock3P");
+                break;
+            default:
+                assert false : "Unexpected CookieControlMode " + cookieControlsMode;
         }
     }
 }

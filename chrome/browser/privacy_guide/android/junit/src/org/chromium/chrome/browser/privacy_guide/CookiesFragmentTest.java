@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
@@ -58,6 +59,7 @@ public class CookiesFragmentTest {
     private FragmentScenario mScenario;
     private RadioButtonWithDescription mBlockThirdPartyIncognito;
     private RadioButtonWithDescription mBlockThirdParty;
+    private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
     public void setUp() {
@@ -135,5 +137,21 @@ public class CookiesFragmentTest {
                 .setInteger(PrefNames.COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
         verify(mWebsitePreferenceNativesMock)
                 .setContentSettingEnabled(mProfile, ContentSettingsType.COOKIES, true);
+    }
+
+    @Test
+    public void testSelectBlockThirdPartyIncognito_changeCookiesBlock3PIncognitoUserAction() {
+        initFragmentWithCookiesState(CookieControlsMode.BLOCK_THIRD_PARTY, true);
+        mBlockThirdPartyIncognito.performClick();
+        assertTrue(mActionTester.getActions().contains(
+                "Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito"));
+    }
+
+    @Test
+    public void testSelectBlockThirdPartyAlways_changeCookiesBlock3PUserAction() {
+        initFragmentWithCookiesState(CookieControlsMode.INCOGNITO_ONLY, true);
+        mBlockThirdParty.performClick();
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeCookiesBlock3P"));
     }
 }
