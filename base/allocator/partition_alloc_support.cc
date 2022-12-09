@@ -35,9 +35,9 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/base_tracing.h"
@@ -181,7 +181,7 @@ void RunThreadCachePeriodicPurge() {
   instance.RunPeriodicPurge();
   TimeDelta delay =
       Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
-  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
 
@@ -207,7 +207,7 @@ void StartThreadCachePeriodicPurge() {
   auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
   TimeDelta delay =
       Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
-  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
 

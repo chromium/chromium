@@ -22,13 +22,12 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/synchronization/waitable_event_watcher.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libevent/event.h"
@@ -191,7 +190,8 @@ void QuitMessageLoopAndStart(OnceClosure quit_closure) {
   std::move(quit_closure).Run();
 
   RunLoop runloop(RunLoop::Type::kNestableTasksAllowed);
-  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, runloop.QuitClosure());
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                        runloop.QuitClosure());
   runloop.Run();
 }
 
@@ -202,7 +202,7 @@ class NestedPumpWatcher : public MessagePumpLibevent::FdWatcher {
 
   void OnFileCanReadWithoutBlocking(int /* fd */) override {
     RunLoop runloop;
-    ThreadTaskRunnerHandle::Get()->PostTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, BindOnce(&QuitMessageLoopAndStart, runloop.QuitClosure()));
     runloop.Run();
   }
@@ -231,7 +231,8 @@ class QuitWatcher : public BaseWatcher {
 
   void OnFileCanReadWithoutBlocking(int /* fd */) override {
     // Post a fatal closure to the MessageLoop before we quit it.
-    ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, BindOnce(&FatalClosure));
+    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, BindOnce(&FatalClosure));
 
     if (quit_closure_)
       std::move(quit_closure_).Run();
@@ -278,7 +279,7 @@ TEST_P(MessagePumpLibeventTest, QuitWatcher) {
                           std::move(write_fd_task), io_runner()));
 
   // Queue |event| to signal on |sequence_manager|.
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, BindOnce(&WaitableEvent::Signal, Unretained(&event)));
 
   // Now run the MessageLoop.

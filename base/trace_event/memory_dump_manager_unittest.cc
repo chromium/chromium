@@ -18,14 +18,13 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager_test_utils.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "base/trace_event/memory_dump_request_args.h"
@@ -228,7 +227,7 @@ class MemoryDumpManagerTest : public testing::Test {
            std::unique_ptr<ProcessMemoryDump> pmd) {
           *curried_success = success;
           EXPECT_EQ(curried_expected_guid, dump_guid);
-          ThreadTaskRunnerHandle::Get()->PostTask(
+          SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
               FROM_HERE, std::move(curried_quit_closure));
         },
         Unretained(&success), run_loop.QuitClosure(), test_guid);
@@ -281,7 +280,7 @@ class MemoryDumpManagerTestAsCoordinator : public MemoryDumpManagerTest {
 // called.
 TEST_F(MemoryDumpManagerTest, SingleDumper) {
   MockMemoryDumpProvider mdp;
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
 
   // Now repeat enabling the memory category and check that the dumper is
   // invoked this time.
@@ -313,7 +312,7 @@ TEST_F(MemoryDumpManagerTest, SingleDumper) {
 TEST_F(MemoryDumpManagerTest, CheckMemoryDumpArgs) {
   MockMemoryDumpProvider mdp;
 
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
   EnableForTracing();
   EXPECT_CALL(mdp, OnMemoryDump(IsDetailedDump(), _));
   EXPECT_TRUE(RequestProcessDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
@@ -324,7 +323,7 @@ TEST_F(MemoryDumpManagerTest, CheckMemoryDumpArgs) {
 
   // Check that requesting dumps with low level of detail actually propagates to
   // OnMemoryDump() call on dump providers.
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
   EnableForTracing();
   EXPECT_CALL(mdp, OnMemoryDump(IsLightDump(), _));
   EXPECT_TRUE(RequestProcessDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
@@ -339,7 +338,7 @@ TEST_F(MemoryDumpManagerTest, CheckMemoryDumpArgs) {
 TEST_F(MemoryDumpManagerTest, CheckMemoryDumpArgsDeterministic) {
   MockMemoryDumpProvider mdp;
 
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
   EnableForTracing();
   EXPECT_CALL(mdp, OnMemoryDump(IsDeterministicDump(), _));
   EXPECT_TRUE(RequestProcessDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
@@ -350,7 +349,7 @@ TEST_F(MemoryDumpManagerTest, CheckMemoryDumpArgsDeterministic) {
 
   // Check that requesting dumps with deterministic option set to false
   // actually propagates to OnMemoryDump() call on dump providers.
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
   EnableForTracing();
   EXPECT_CALL(mdp, OnMemoryDump(IsNotDeterministicDump(), _));
   EXPECT_TRUE(RequestProcessDumpAndWait(MemoryDumpType::EXPLICITLY_TRIGGERED,
@@ -366,7 +365,7 @@ TEST_F(MemoryDumpManagerTest, MultipleDumpers) {
   MockMemoryDumpProvider mdp2;
 
   // Enable only mdp1.
-  RegisterDumpProvider(&mdp1, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp1, SingleThreadTaskRunner::GetCurrentDefault());
   EnableForTracing();
   EXPECT_CALL(mdp1, OnMemoryDump(_, _));
   EXPECT_CALL(mdp2, OnMemoryDump(_, _)).Times(0);
@@ -408,7 +407,7 @@ TEST_F(MemoryDumpManagerTest, MultipleDumpers) {
 TEST_F(MemoryDumpManagerTest, MAYBE_RegistrationConsistency) {
   MockMemoryDumpProvider mdp;
 
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
 
   {
     EXPECT_CALL(mdp, OnMemoryDump(_, _));
@@ -430,7 +429,7 @@ TEST_F(MemoryDumpManagerTest, MAYBE_RegistrationConsistency) {
     DisableTracing();
   }
 
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
   mdm_->UnregisterDumpProvider(&mdp);
 
   {
@@ -442,9 +441,9 @@ TEST_F(MemoryDumpManagerTest, MAYBE_RegistrationConsistency) {
     DisableTracing();
   }
 
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
   mdm_->UnregisterDumpProvider(&mdp);
-  RegisterDumpProvider(&mdp, ThreadTaskRunnerHandle::Get());
+  RegisterDumpProvider(&mdp, SingleThreadTaskRunner::GetCurrentDefault());
 
   {
     EXPECT_CALL(mdp, OnMemoryDump(_, _));
@@ -619,8 +618,10 @@ TEST_F(MemoryDumpManagerTest, UnregisterDumperWhileDumping) {
   MockMemoryDumpProvider mdp1;
   MockMemoryDumpProvider mdp2;
 
-  RegisterDumpProvider(&mdp1, ThreadTaskRunnerHandle::Get(), kDefaultOptions);
-  RegisterDumpProvider(&mdp2, ThreadTaskRunnerHandle::Get(), kDefaultOptions);
+  RegisterDumpProvider(&mdp1, SingleThreadTaskRunner::GetCurrentDefault(),
+                       kDefaultOptions);
+  RegisterDumpProvider(&mdp2, SingleThreadTaskRunner::GetCurrentDefault(),
+                       kDefaultOptions);
   EnableForTracing();
 
   EXPECT_CALL(mdp1, OnMemoryDump(_, _))
@@ -717,7 +718,7 @@ TEST_F(MemoryDumpManagerTest, TearDownThreadWhileDumping) {
     TestIOThread* other_thread = threads[other_idx].get();
     // TestIOThread isn't thread-safe and must be stopped on the |main_runner|.
     scoped_refptr<SequencedTaskRunner> main_runner =
-        SequencedTaskRunnerHandle::Get();
+        SequencedTaskRunner::GetCurrentDefault();
     auto on_dump = [other_thread, main_runner, &on_memory_dump_call_count](
                        const MemoryDumpArgs& args, ProcessMemoryDump* pmd) {
       PostTaskAndWait(

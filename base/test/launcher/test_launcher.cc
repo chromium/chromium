@@ -59,7 +59,6 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -845,7 +844,7 @@ void TestRunner::Run(const std::vector<std::string>& test_names) {
   for (size_t i = 0; i < runner_count_; i++) {
     task_runners_.push_back(ThreadPool::CreateSequencedTaskRunner(
         {MayBlock(), TaskShutdownBehavior::BLOCK_SHUTDOWN}));
-    ThreadTaskRunnerHandle::Get()->PostTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         BindOnce(&TestRunner::LaunchNextTask, weak_ptr_factory_.GetWeakPtr(),
                  task_runners_.back(), FilePath()));
@@ -891,14 +890,15 @@ void TestRunner::LaunchNextTask(scoped_refptr<TaskRunner> task_runner,
     task_runner->PostTask(
         FROM_HERE,
         BindOnce(&TestLauncher::LaunchChildGTestProcess, Unretained(launcher_),
-                 ThreadTaskRunnerHandle::Get(), batch, task_temp_dir,
+                 SingleThreadTaskRunner::GetCurrentDefault(), batch,
+                 task_temp_dir,
                  CreateChildTempDirIfSupported(task_temp_dir, child_index++)));
     post_to_current_runner = ShouldReuseStateFromLastBatch(batch);
   }
   task_runner->PostTask(
-      FROM_HERE,
-      BindOnce(&TestRunner::ClearAndLaunchNext, Unretained(this),
-               ThreadTaskRunnerHandle::Get(), task_runner, task_temp_dir));
+      FROM_HERE, BindOnce(&TestRunner::ClearAndLaunchNext, Unretained(this),
+                          SingleThreadTaskRunner::GetCurrentDefault(),
+                          task_runner, task_temp_dir));
 }
 
 // Returns the number of files and directories in |dir|, or 0 if |dir| is empty.

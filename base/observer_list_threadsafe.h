@@ -21,7 +21,6 @@
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
 
@@ -117,7 +116,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   // Adds |observer| to the list. |observer| must not already be in the list.
   AddObserverResult AddObserver(ObserverType* observer) {
-    DCHECK(SequencedTaskRunnerHandle::IsSet())
+    DCHECK(SequencedTaskRunner::HasCurrentDefault())
         << "An observer can only be registered when SequencedTaskRunnerHandle "
            "is set. If this is in a unit test, you're likely merely missing a "
            "base::test::(SingleThread)TaskEnvironment in your fixture. "
@@ -132,7 +131,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
     // Add |observer| to the list of observers.
     DCHECK(!Contains(observers_, observer));
     const scoped_refptr<SequencedTaskRunner> task_runner =
-        SequencedTaskRunnerHandle::Get();
+        SequencedTaskRunner::GetCurrentDefault();
     // Each observer gets a unique identifier. These unique identifiers are used
     // to avoid execution of pending posted-tasks over removed or released
     // observers.

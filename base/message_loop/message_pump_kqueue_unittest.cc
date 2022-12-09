@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -89,7 +88,7 @@ TEST_F(MessagePumpKqueueTest, MachPortBasicWatch) {
   PortWatcher watcher(run_loop.QuitClosure());
   MessagePumpKqueue::MachPortWatchController controller(FROM_HERE);
 
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, BindOnce(
                      [](mach_port_t port, mach_msg_id_t msgid, RunLoop* loop) {
                        mach_msg_return_t kr = SendEmptyMessage(port, msgid);
@@ -120,7 +119,7 @@ TEST_F(MessagePumpKqueueTest, MachPortStopWatching) {
 
   pump()->WatchMachReceivePort(port.get(), &controller, &watcher);
 
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       BindOnce(
           [](MessagePumpKqueue::MachPortWatchController* controller) {
@@ -128,7 +127,7 @@ TEST_F(MessagePumpKqueueTest, MachPortStopWatching) {
           },
           Unretained(&controller)));
 
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, BindOnce(
                      [](mach_port_t port) {
                        EXPECT_EQ(KERN_SUCCESS, SendEmptyMessage(port, 100));
@@ -186,7 +185,7 @@ TEST_F(MessagePumpKqueueTest, MultipleMachWatchers) {
   pump()->WatchMachReceivePort(port2.get(), &controller2, &watcher2);
 
   // Start ping-ponging with by sending the first message to port1.
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, BindOnce(
                      [](mach_port_t port1) {
                        ASSERT_EQ(KERN_SUCCESS,

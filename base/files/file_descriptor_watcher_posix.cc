@@ -16,7 +16,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
@@ -63,7 +62,7 @@ class FileDescriptorWatcher::Controller::Watcher
   // Runs tasks on the sequence on which this was instantiated (i.e. the
   // sequence on which the callback must run).
   const scoped_refptr<SequencedTaskRunner> callback_task_runner_ =
-      SequencedTaskRunnerHandle::Get();
+      SequencedTaskRunner::GetCurrentDefault();
 
   // The Controller that created this Watcher. This WeakPtr is bound to the
   // |controller_| thread and can only be used by this Watcher to post back to

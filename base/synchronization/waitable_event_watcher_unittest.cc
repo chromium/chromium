@@ -10,11 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,7 +61,7 @@ TEST_P(WaitableEventWatcherTest, BasicSignalManual) {
 
   WaitableEventWatcher watcher;
   watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
-                        SequencedTaskRunnerHandle::Get());
+                        SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
 
@@ -78,7 +78,7 @@ TEST_P(WaitableEventWatcherTest, BasicSignalAutomatic) {
 
   WaitableEventWatcher watcher;
   watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
-                        SequencedTaskRunnerHandle::Get());
+                        SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
 
@@ -98,7 +98,7 @@ TEST_P(WaitableEventWatcherTest, BasicCancel) {
   WaitableEventWatcher watcher;
 
   watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
-                        SequencedTaskRunnerHandle::Get());
+                        SequencedTaskRunner::GetCurrentDefault());
 
   watcher.StopWatching();
 }
@@ -117,7 +117,7 @@ TEST_P(WaitableEventWatcherTest, CancelAfterSet) {
   WaitableEventWatcher::EventCallback callback = BindOnce(
       &DecrementCountContainer::OnWaitableEventSignaled, Unretained(&delegate));
   watcher.StartWatching(&event, std::move(callback),
-                        SequencedTaskRunnerHandle::Get());
+                        SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
 
@@ -145,7 +145,7 @@ TEST_P(WaitableEventWatcherTest, OutlivesTaskEnvironment) {
       watcher = std::make_unique<WaitableEventWatcher>();
 
       watcher->StartWatching(&event, BindOnce(&QuitWhenSignaled),
-                             SequencedTaskRunnerHandle::Get());
+                             SequencedTaskRunner::GetCurrentDefault());
     }
   }
 }
@@ -158,7 +158,7 @@ TEST_P(WaitableEventWatcherTest, SignaledAtStartManual) {
 
   WaitableEventWatcher watcher;
   watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
-                        SequencedTaskRunnerHandle::Get());
+                        SequencedTaskRunner::GetCurrentDefault());
 
   RunLoop().Run();
 
@@ -173,7 +173,7 @@ TEST_P(WaitableEventWatcherTest, SignaledAtStartAutomatic) {
 
   WaitableEventWatcher watcher;
   watcher.StartWatching(&event, BindOnce(&QuitWhenSignaled),
-                        SequencedTaskRunnerHandle::Get());
+                        SequencedTaskRunner::GetCurrentDefault());
 
   RunLoop().Run();
 
@@ -195,10 +195,10 @@ TEST_P(WaitableEventWatcherTest, StartWatchingInCallback) {
             // |event| is manual, so the second watcher will run
             // immediately.
             watcher->StartWatching(event, BindOnce(&QuitWhenSignaled),
-                                   SequencedTaskRunnerHandle::Get());
+                                   SequencedTaskRunner::GetCurrentDefault());
           },
           &watcher),
-      SequencedTaskRunnerHandle::Get());
+      SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
 
@@ -230,13 +230,13 @@ TEST_P(WaitableEventWatcherTest, MultipleWatchersManual) {
   watcher1.StartWatching(
       &event,
       BindOnce(BindLambdaForTesting(callback), Unretained(&watcher1_counter)),
-      SequencedTaskRunnerHandle::Get());
+      SequencedTaskRunner::GetCurrentDefault());
 
   WaitableEventWatcher watcher2;
   watcher2.StartWatching(
       &event,
       BindOnce(BindLambdaForTesting(callback), Unretained(&watcher2_counter)),
-      SequencedTaskRunnerHandle::Get());
+      SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
   run_loop.Run();
@@ -272,13 +272,13 @@ TEST_P(WaitableEventWatcherTest, MultipleWatchersAutomatic) {
   watcher1.StartWatching(
       &event,
       BindOnce(callback, Unretained(&current_run_loop), Unretained(&counter1)),
-      SequencedTaskRunnerHandle::Get());
+      SequencedTaskRunner::GetCurrentDefault());
 
   WaitableEventWatcher watcher2;
   watcher2.StartWatching(
       &event,
       BindOnce(callback, Unretained(&current_run_loop), Unretained(&counter2)),
-      SequencedTaskRunnerHandle::Get());
+      SequencedTaskRunner::GetCurrentDefault());
 
   event.Signal();
   {
@@ -327,7 +327,7 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
                                     WaitableEvent::InitialState::NOT_SIGNALED);
 
     watcher.StartWatching(event, BindOnce(&QuitWhenSignaled),
-                          SequencedTaskRunnerHandle::Get());
+                          SequencedTaskRunner::GetCurrentDefault());
 
     if (delay_after_delete) {
       // On Windows that sleep() improves the chance to catch some problems.
@@ -357,7 +357,7 @@ TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
         WaitableEvent::InitialState::NOT_SIGNALED);
 
     watcher.StartWatching(event.get(), BindOnce(&QuitWhenSignaled),
-                          SequencedTaskRunnerHandle::Get());
+                          SequencedTaskRunner::GetCurrentDefault());
     event->Signal();
     event.reset();
 
@@ -382,7 +382,7 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteWatcherBeforeCallback) {
 
   test::TaskEnvironment task_environment(main_thread_type);
   scoped_refptr<SingleThreadTaskRunner> task_runner =
-      ThreadTaskRunnerHandle::Get();
+      SingleThreadTaskRunner::GetCurrentDefault();
 
   // Flag used to esnure that the |watcher_callback| never runs.
   bool did_callback = false;

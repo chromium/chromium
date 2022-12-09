@@ -21,14 +21,11 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_pending_task.h"
 #include "base/threading/thread_checker_impl.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 
 namespace base {
-
-class ThreadTaskRunnerHandle;
 
 // ATTENTION: Prefer using base::test::SingleThreadTaskEnvironment with a
 // base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME trait instead.
@@ -124,8 +121,8 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     ~ScopedContext();
 
    private:
-    ThreadTaskRunnerHandleOverrideForTesting
-        thread_task_runner_handle_override_;
+    SingleThreadTaskRunner::CurrentHandleOverrideForTesting
+        single_thread_task_runner_current_default_handle_override_;
   };
 
   enum class Type {

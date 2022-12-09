@@ -6,10 +6,10 @@
 
 #include "base/check.h"
 #include "base/debug/stack_trace.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_local.h"
-#include "base/threading/thread_task_runner_handle.h"
 
 namespace {
 bool g_log_thread_and_sequence_checker_binding = false;
@@ -90,7 +90,7 @@ bool ThreadCheckerImpl::CalledOnValidThread(
     // the thread to which this ThreadCheckerImpl is bound is fortuitous.
     if (sequence_token_.IsValid() &&
         (sequence_token_ != SequenceToken::GetForCurrentThread() ||
-         !ThreadTaskRunnerHandle::IsSet())) {
+         !SingleThreadTaskRunner::HasCurrentDefault())) {
       if (out_bound_at && bound_at_) {
         *out_bound_at = std::make_unique<debug::StackTrace>(*bound_at_);
       }

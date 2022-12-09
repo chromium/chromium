@@ -7,10 +7,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,14 +28,14 @@ TEST(ScopedRunLoopTimeoutTest, TimesOut) {
   // Since the delayed task will be posted only after the message pump starts
   // running, the ScopedRunLoopTimeout will already have started to elapse,
   // so if Run() exits at the correct time then our delayed task will not run.
-  SequencedTaskRunnerHandle::Get()->PostTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       BindOnce(IgnoreResult(&SequencedTaskRunner::PostDelayedTask),
-               SequencedTaskRunnerHandle::Get(), FROM_HERE,
+               SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
                MakeExpectedNotRunClosure(FROM_HERE), kArbitraryTimeout));
 
   // This task should get to run before Run() times-out.
-  SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, MakeExpectedRunClosure(FROM_HERE), kArbitraryTimeout);
 
   // EXPECT_FATAL_FAILURE() can only reference globals and statics.
@@ -53,7 +53,7 @@ TEST(ScopedRunLoopTimeoutTest, RunTasksUntilTimeout) {
   // Posting a task with the same delay as our timeout, immediately before
   // calling Run(), means it should get to run. Since this uses QuitWhenIdle(),
   // the Run() timeout callback should also get to run.
-  SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, MakeExpectedRunClosure(FROM_HERE), kArbitraryTimeout);
 
   // EXPECT_FATAL_FAILURE() can only reference globals and statics.

@@ -44,7 +44,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -352,7 +351,7 @@ OnceClosure GetDeleteFileCallbackInternal(
     OnceCallback<void(bool)> reply_callback) {
   OnceCallback<void(bool)> bound_callback;
   if (!reply_callback.is_null()) {
-    bound_callback = BindPostTask(SequencedTaskRunnerHandle::Get(),
+    bound_callback = BindPostTask(SequencedTaskRunner::GetCurrentDefault(),
                                   std::move(reply_callback));
   }
   return BindOnce(&DeleteFileWithRetry, path, recursive, /*attempt=*/0,

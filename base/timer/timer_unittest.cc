@@ -18,7 +18,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -78,7 +77,8 @@ void RunTest_OneShotTimers_Cancel(
   auto* timer_ptr = timer.get();
 
   // This should run before the timer expires.
-  SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, std::move(timer));
+  SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                       std::move(timer));
 
   timer_ptr->Start(FROM_HERE, kTestDelay,
                    BindOnce(&Receiver::OnCalled, Unretained(&receiver)));
@@ -135,7 +135,8 @@ void RunTest_RepeatingTimer_Cancel(
   auto* timer_ptr = timer.get();
 
   // This should run before the timer expires.
-  SequencedTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, std::move(timer));
+  SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                       std::move(timer));
 
   timer_ptr->Start(FROM_HERE, delay,
                    BindRepeating(&Receiver::OnCalled, Unretained(&receiver)));

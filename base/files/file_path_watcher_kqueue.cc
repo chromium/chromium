@@ -17,8 +17,8 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 // On some platforms these are not defined.
 #if !defined(EV_RECEIPT)
@@ -269,7 +269,7 @@ bool FilePathWatcherKQueue::Watch(const FilePath& path,
   callback_ = callback;
   target_ = path;
 
-  set_task_runner(SequencedTaskRunnerHandle::Get());
+  set_task_runner(SequencedTaskRunner::GetCurrentDefault());
 
   kqueue_ = kqueue();
   if (kqueue_ == -1) {

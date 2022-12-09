@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -78,7 +78,7 @@ void MemoryDumpScheduler::StartInternal(MemoryDumpScheduler::Config config) {
   // TODO(lalitm): this is a tempoarary hack to delay the first scheduled dump
   // so that the child processes get tracing enabled notification via IPC.
   // See crbug.com/770151.
-  SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&MemoryDumpScheduler::Tick, Unretained(this), ++generation_),
       Milliseconds(200));
@@ -103,7 +103,7 @@ void MemoryDumpScheduler::Tick(uint32_t expected_generation) {
 
   callback_.Run(level_of_detail);
 
-  SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+  SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&MemoryDumpScheduler::Tick, Unretained(this),
                expected_generation),

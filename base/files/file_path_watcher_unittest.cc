@@ -25,7 +25,6 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,7 +60,8 @@ class TestDelegate;
 class NotificationCollector
     : public base::RefCountedThreadSafe<NotificationCollector> {
  public:
-  NotificationCollector() : task_runner_(ThreadTaskRunnerHandle::Get()) {}
+  NotificationCollector()
+      : task_runner_(SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   // Called from the file thread by the delegates.
   void OnChange(TestDelegate* delegate) {
@@ -218,7 +218,7 @@ class FilePathWatcherTest : public testing::Test {
     collector_->Reset(run_loop.QuitClosure());
 
     // Make sure we timeout if we don't get notified.
-    ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), timeout);
     run_loop.Run();
     return collector_->Success();

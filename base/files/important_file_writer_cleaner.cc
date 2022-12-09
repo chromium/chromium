@@ -14,9 +14,9 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -68,8 +68,9 @@ void ImportantFileWriterCleaner::AddDirectory(const FilePath& directory) {
 void ImportantFileWriterCleaner::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AutoLock scoped_lock(task_runner_lock_);
-  DCHECK(!task_runner_ || task_runner_ == SequencedTaskRunnerHandle::Get());
-  task_runner_ = SequencedTaskRunnerHandle::Get();
+  DCHECK(!task_runner_ ||
+         task_runner_ == SequencedTaskRunner::GetCurrentDefault());
+  task_runner_ = SequencedTaskRunner::GetCurrentDefault();
 }
 
 void ImportantFileWriterCleaner::Start() {

@@ -13,9 +13,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_features.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 
 namespace base {
@@ -83,7 +83,7 @@ void TimerBase::SetTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner) {
 }
 
 scoped_refptr<SequencedTaskRunner> TimerBase::GetTaskRunner() {
-  return task_runner_ ? task_runner_ : SequencedTaskRunnerHandle::Get();
+  return task_runner_ ? task_runner_ : SequencedTaskRunner::GetCurrentDefault();
 }
 
 void TimerBase::Stop() {

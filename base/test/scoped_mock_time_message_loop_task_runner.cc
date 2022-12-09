@@ -8,15 +8,15 @@
 #include "base/check_op.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_pending_task.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 
 namespace base {
 
 ScopedMockTimeMessageLoopTaskRunner::ScopedMockTimeMessageLoopTaskRunner()
     : task_runner_(new TestMockTimeTaskRunner),
-      previous_task_runner_(ThreadTaskRunnerHandle::Get()) {
+      previous_task_runner_(SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK(CurrentThread::Get());
   // To ensure that we process any initialization tasks posted to the
   // MessageLoop by a test fixture before replacing its TaskRunner.
@@ -26,7 +26,7 @@ ScopedMockTimeMessageLoopTaskRunner::ScopedMockTimeMessageLoopTaskRunner()
 
 ScopedMockTimeMessageLoopTaskRunner::~ScopedMockTimeMessageLoopTaskRunner() {
   DCHECK(previous_task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(task_runner_, ThreadTaskRunnerHandle::Get());
+  DCHECK_EQ(task_runner_, SingleThreadTaskRunner::GetCurrentDefault());
   for (auto& pending_task : task_runner_->TakePendingTasks()) {
     previous_task_runner_->PostDelayedTask(
         pending_task.location, std::move(pending_task.task),

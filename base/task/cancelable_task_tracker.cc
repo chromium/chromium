@@ -17,7 +17,6 @@
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
 
@@ -111,7 +110,7 @@ CancelableTaskTracker::TaskId CancelableTaskTracker::PostTaskAndReply(
   CHECK(weak_this_);
 
   // We need a SequencedTaskRunnerHandle to run |reply|.
-  DCHECK(SequencedTaskRunnerHandle::IsSet());
+  DCHECK(SequencedTaskRunner::HasCurrentDefault());
 
   auto flag = MakeRefCounted<TaskCancellationFlag>();
 
@@ -124,10 +123,11 @@ CancelableTaskTracker::TaskId CancelableTaskTracker::PostTaskAndReply(
       BindOnce(&CancelableTaskTracker::Untrack, Unretained(this), id);
   bool success = task_runner->PostTaskAndReply(
       from_here,
-      BindOnce(&RunIfNotCanceled, SequencedTaskRunnerHandle::Get(), flag,
-               std::move(task)),
-      BindOnce(&RunThenUntrackIfNotCanceled, SequencedTaskRunnerHandle::Get(),
-               flag, std::move(reply), std::move(untrack_closure)));
+      BindOnce(&RunIfNotCanceled, SequencedTaskRunner::GetCurrentDefault(),
+               flag, std::move(task)),
+      BindOnce(&RunThenUntrackIfNotCanceled,
+               SequencedTaskRunner::GetCurrentDefault(), flag, std::move(reply),
+               std::move(untrack_closure)));
 
   if (!success)
     return kBadTaskId;
@@ -139,7 +139,7 @@ CancelableTaskTracker::TaskId CancelableTaskTracker::PostTaskAndReply(
 CancelableTaskTracker::TaskId CancelableTaskTracker::NewTrackedTaskId(
     IsCanceledCallback* is_canceled_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(SequencedTaskRunnerHandle::IsSet());
+  DCHECK(SequencedTaskRunner::HasCurrentDefault());
 
   TaskId id = next_id_;
   next_id_++;  // int64_t is big enough that we ignore the potential overflow.
@@ -152,13 +152,14 @@ CancelableTaskTracker::TaskId CancelableTaskTracker::NewTrackedTaskId(
       BindOnce(&CancelableTaskTracker::Untrack, Unretained(this), id);
 
   // Will always run |untrack_closure| on current sequence.
-  ScopedClosureRunner untrack_runner(
-      BindOnce(&RunOrPostToTaskRunner, SequencedTaskRunnerHandle::Get(),
-               BindOnce(&RunIfNotCanceled, SequencedTaskRunnerHandle::Get(),
-                        flag, std::move(untrack_closure))));
+  ScopedClosureRunner untrack_runner(BindOnce(
+      &RunOrPostToTaskRunner, SequencedTaskRunner::GetCurrentDefault(),
+      BindOnce(&RunIfNotCanceled, SequencedTaskRunner::GetCurrentDefault(),
+               flag, std::move(untrack_closure))));
 
-  *is_canceled_cb = BindRepeating(&IsCanceled, SequencedTaskRunnerHandle::Get(),
-                                  flag, std::move(untrack_runner));
+  *is_canceled_cb =
+      BindRepeating(&IsCanceled, SequencedTaskRunner::GetCurrentDefault(), flag,
+                    std::move(untrack_runner));
 
   Track(id, std::move(flag));
   return id;

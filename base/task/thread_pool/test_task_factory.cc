@@ -10,8 +10,8 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/threading/sequenced_task_runner_handle.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -63,21 +63,21 @@ void TestTaskFactory::RunTaskCallback(size_t task_index,
   switch (execution_mode_) {
     case TaskSourceExecutionMode::kJob:
     case TaskSourceExecutionMode::kParallel:
-      EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
-      EXPECT_FALSE(SequencedTaskRunnerHandle::IsSet());
+      EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+      EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
       break;
     case TaskSourceExecutionMode::kSequenced:
-      EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
-      EXPECT_TRUE(SequencedTaskRunnerHandle::IsSet());
-      EXPECT_EQ(task_runner_, SequencedTaskRunnerHandle::Get());
+      EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+      EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+      EXPECT_EQ(task_runner_, SequencedTaskRunner::GetCurrentDefault());
       break;
     case TaskSourceExecutionMode::kSingleThread:
       // SequencedTaskRunnerHandle inherits from ThreadTaskRunnerHandle so
       // both are expected to be "set" in the kSingleThread case.
-      EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
-      EXPECT_TRUE(SequencedTaskRunnerHandle::IsSet());
-      EXPECT_EQ(task_runner_, ThreadTaskRunnerHandle::Get());
-      EXPECT_EQ(task_runner_, SequencedTaskRunnerHandle::Get());
+      EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
+      EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+      EXPECT_EQ(task_runner_, SingleThreadTaskRunner::GetCurrentDefault());
+      EXPECT_EQ(task_runner_, SequencedTaskRunner::GetCurrentDefault());
       break;
   }
 

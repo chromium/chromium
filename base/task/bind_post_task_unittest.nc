@@ -7,9 +7,9 @@
 
 #include "base/task/bind_post_task.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
 
@@ -21,7 +21,7 @@ int ReturnInt() {
 // OnceCallback with non-void return type.
 void WontCompile() {
   OnceCallback<int()> cb = BindOnce(&ReturnInt);
-  auto post_cb = BindPostTask(SequencedTaskRunnerHandle::Get(), std::move(cb));
+  auto post_cb = BindPostTask(SequencedTaskRunner::GetCurrentDefault(), std::move(cb));
   std::move(post_cb).Run();
 }
 
@@ -29,7 +29,7 @@ void WontCompile() {
 // RepeatingCallback with non-void return type.
 void WontCompile() {
   RepeatingCallback<int()> cb = BindRepeating(&ReturnInt);
-  auto post_cb = BindPostTask(SequencedTaskRunnerHandle::Get(), std::move(cb));
+  auto post_cb = BindPostTask(SequencedTaskRunner::GetCurrentDefault(), std::move(cb));
   std::move(post_cb).Run();
 }
 

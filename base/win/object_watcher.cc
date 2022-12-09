@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace win {
@@ -77,10 +77,10 @@ bool ObjectWatcher::StartWatchingInternal(HANDLE object,
                                           const Location& from_here) {
   DCHECK(delegate);
   DCHECK(!wait_object_) << "Already watching an object";
-  DCHECK(SequencedTaskRunnerHandle::IsSet());
+  DCHECK(SequencedTaskRunner::HasCurrentDefault());
 
   location_ = from_here;
-  task_runner_ = SequencedTaskRunnerHandle::Get();
+  task_runner_ = SequencedTaskRunner::GetCurrentDefault();
 
   run_once_ = execute_only_once;
 

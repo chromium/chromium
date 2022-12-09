@@ -36,10 +36,8 @@
 #include "base/test/test_waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -540,8 +538,8 @@ static void RunTaskRunnerHandleVerificationTask(
 
   // Confirm that the test conditions are right (no TaskRunnerHandles set
   // already).
-  EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
-  EXPECT_FALSE(SequencedTaskRunnerHandle::IsSet());
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
 
   test::QueueAndRunTaskSource(
       tracker,
@@ -549,13 +547,13 @@ static void RunTaskRunnerHandleVerificationTask(
                                    std::move(task_runner), execution_mode));
 
   // TaskRunnerHandle state is reset outside of task's scope.
-  EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
-  EXPECT_FALSE(SequencedTaskRunnerHandle::IsSet());
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
 }
 
 static void VerifyNoTaskRunnerHandle() {
-  EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
-  EXPECT_FALSE(SequencedTaskRunnerHandle::IsSet());
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, TaskRunnerHandleIsNotSetOnParallel) {
@@ -571,9 +569,9 @@ TEST_P(ThreadPoolTaskTrackerTest, TaskRunnerHandleIsNotSetOnParallel) {
 
 static void VerifySequencedTaskRunnerHandle(
     const SequencedTaskRunner* expected_task_runner) {
-  EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
-  EXPECT_TRUE(SequencedTaskRunnerHandle::IsSet());
-  EXPECT_EQ(expected_task_runner, SequencedTaskRunnerHandle::Get());
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(expected_task_runner, SequencedTaskRunner::GetCurrentDefault());
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, SequencedTaskRunnerHandleIsSetOnSequenced) {
@@ -594,10 +592,10 @@ TEST_P(ThreadPoolTaskTrackerTest, SequencedTaskRunnerHandleIsSetOnSequenced) {
 
 static void VerifyThreadTaskRunnerHandle(
     const SingleThreadTaskRunner* expected_task_runner) {
-  EXPECT_TRUE(ThreadTaskRunnerHandle::IsSet());
+  EXPECT_TRUE(SingleThreadTaskRunner::HasCurrentDefault());
   // SequencedTaskRunnerHandle inherits ThreadTaskRunnerHandle for thread.
-  EXPECT_TRUE(SequencedTaskRunnerHandle::IsSet());
-  EXPECT_EQ(expected_task_runner, ThreadTaskRunnerHandle::Get());
+  EXPECT_TRUE(SequencedTaskRunner::HasCurrentDefault());
+  EXPECT_EQ(expected_task_runner, SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, ThreadTaskRunnerHandleIsSetOnSingleThreaded) {

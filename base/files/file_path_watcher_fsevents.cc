@@ -15,8 +15,8 @@
 #include "base/lazy_instance.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
 
@@ -90,7 +90,7 @@ bool FilePathWatcherFSEvents::Watch(const FilePath& path,
   if (type != Type::kRecursive)
     return false;
 
-  set_task_runner(SequencedTaskRunnerHandle::Get());
+  set_task_runner(SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
 
   FSEventStreamEventId start_event = FSEventsGetCurrentEventId();

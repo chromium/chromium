@@ -9,9 +9,9 @@
 #include "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 @interface TestModalAlertCloser : NSObject
@@ -39,7 +39,8 @@ void RunTaskInMode(CFRunLoopMode mode, OnceClosure task) {
   // Since this task is "ours" rather than a system task, allow nesting.
   CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
   CancelableOnceClosure cancelable(std::move(task));
-  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, cancelable.callback());
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                        cancelable.callback());
   while (CFRunLoopRunInMode(mode, 0, true) == kCFRunLoopRunHandledSource)
     ;
 }
@@ -55,13 +56,13 @@ TEST(MessagePumpMacTest, ScopedPumpMessagesInPrivateModes) {
   CFRunLoopMode kPrivate = CFSTR("NSUnhighlightMenuRunLoopMode");
 
   // Work is seen when running in the default mode.
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       BindOnce(&RunTaskInMode, kRegular, MakeExpectedRunClosure(FROM_HERE)));
   EXPECT_NO_FATAL_FAILURE(RunLoop().RunUntilIdle());
 
   // But not seen when running in a private mode.
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       BindOnce(&RunTaskInMode, kPrivate, MakeExpectedNotRunClosure(FROM_HERE)));
   EXPECT_NO_FATAL_FAILURE(RunLoop().RunUntilIdle());
@@ -69,26 +70,26 @@ TEST(MessagePumpMacTest, ScopedPumpMessagesInPrivateModes) {
   {
     ScopedPumpMessagesInPrivateModes allow_private;
     // Now the work should be seen.
-    ThreadTaskRunnerHandle::Get()->PostTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         BindOnce(&RunTaskInMode, kPrivate, MakeExpectedRunClosure(FROM_HERE)));
     EXPECT_NO_FATAL_FAILURE(RunLoop().RunUntilIdle());
 
     // The regular mode should also work the same.
-    ThreadTaskRunnerHandle::Get()->PostTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         BindOnce(&RunTaskInMode, kRegular, MakeExpectedRunClosure(FROM_HERE)));
     EXPECT_NO_FATAL_FAILURE(RunLoop().RunUntilIdle());
   }
 
   // And now the scoper is out of scope, private modes should no longer see it.
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       BindOnce(&RunTaskInMode, kPrivate, MakeExpectedNotRunClosure(FROM_HERE)));
   EXPECT_NO_FATAL_FAILURE(RunLoop().RunUntilIdle());
 
   // Only regular modes see it.
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       BindOnce(&RunTaskInMode, kRegular, MakeExpectedRunClosure(FROM_HERE)));
   EXPECT_NO_FATAL_FAILURE(RunLoop().RunUntilIdle());
@@ -130,17 +131,17 @@ TEST(MessagePumpMacTest, QuitWithModalWindow) {
   // Check that quitting the run loop while a modal window is shown applies to
   // |run_loop| rather than the internal NSApplication modal run loop.
   RunLoop run_loop;
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([&] {
         CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
         ScopedPumpMessagesInPrivateModes pump_private;
         [NSApp runModalForWindow:window];
       }));
-  ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                          base::BindLambdaForTesting([&] {
-                                            [NSApp stopModal];
-                                            run_loop.Quit();
-                                          }));
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] {
+        [NSApp stopModal];
+        run_loop.Quit();
+      }));
 
   EXPECT_NO_FATAL_FAILURE(run_loop.Run());
 }

@@ -21,7 +21,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -446,13 +445,13 @@ TEST_F(ThreadControllerWithMessagePumpTest, SetDefaultTaskRunner) {
   scoped_refptr<SingleThreadTaskRunner> task_runner1 =
       MakeRefCounted<FakeTaskRunner>();
   thread_controller_.SetDefaultTaskRunner(task_runner1);
-  EXPECT_EQ(task_runner1, ThreadTaskRunnerHandle::Get());
+  EXPECT_EQ(task_runner1, SingleThreadTaskRunner::GetCurrentDefault());
 
   // Check that we are correctly supporting overriding.
   scoped_refptr<SingleThreadTaskRunner> task_runner2 =
       MakeRefCounted<FakeTaskRunner>();
   thread_controller_.SetDefaultTaskRunner(task_runner2);
-  EXPECT_EQ(task_runner2, ThreadTaskRunnerHandle::Get());
+  EXPECT_EQ(task_runner2, SingleThreadTaskRunner::GetCurrentDefault());
 }
 
 TEST_F(ThreadControllerWithMessagePumpTest, EnsureWorkScheduled) {

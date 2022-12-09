@@ -18,7 +18,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace win {
@@ -125,7 +125,7 @@ HRESULT PostAsyncOperationCompletedHandler(
         return std::make_pair(async_operation, async_status);
       })
           .Then(base::BindPostTask(
-              base::SequencedTaskRunnerHandle::Get(),
+              base::SequencedTaskRunner::GetCurrentDefault(),
               base::BindOnce(
                   [](IAsyncOperationCompletedHandlerT<T> completed_handler,
                      AsyncResult async_result) {

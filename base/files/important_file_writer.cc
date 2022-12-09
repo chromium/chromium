@@ -31,7 +31,6 @@
 #include "base/task/task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_thread_priority.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -95,8 +94,8 @@ void DeleteTmpFileWithRetry(File tmp_file,
   constexpr TimeDelta kDeleteFileRetryDelay = Milliseconds(250);
 
   if (!DeleteFile(tmp_file_path) && ++attempt < kMaxDeleteAttempts &&
-      SequencedTaskRunnerHandle::IsSet()) {
-    SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      SequencedTaskRunner::HasCurrentDefault()) {
+    SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         BindOnce(&DeleteTmpFileWithRetry, base::File(), tmp_file_path, attempt),
         kDeleteFileRetryDelay);

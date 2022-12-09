@@ -33,11 +33,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_id_name_manager.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
@@ -516,12 +516,14 @@ TraceLog::ThreadLocalEventBuffer::ThreadLocalEventBuffer(TraceLog* trace_log)
 
   // This is to report the local memory usage when memory-infra is enabled.
   MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "ThreadLocalEventBuffer", ThreadTaskRunnerHandle::Get());
+      this, "ThreadLocalEventBuffer",
+      SingleThreadTaskRunner::GetCurrentDefault());
 
   auto thread_id = PlatformThread::CurrentId();
 
   AutoLock lock(trace_log->lock_);
-  trace_log->thread_task_runners_[thread_id] = ThreadTaskRunnerHandle::Get();
+  trace_log->thread_task_runners_[thread_id] =
+      SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 TraceLog::ThreadLocalEventBuffer::~ThreadLocalEventBuffer() {
@@ -604,7 +606,8 @@ void TraceLog::SetAddTraceEventOverrides(
 
 struct TraceLog::RegisteredAsyncObserver {
   explicit RegisteredAsyncObserver(WeakPtr<AsyncEnabledStateObserver> observer)
-      : observer(observer), task_runner(ThreadTaskRunnerHandle::Get()) {}
+      : observer(observer),
+        task_runner(SingleThreadTaskRunner::GetCurrentDefault()) {}
   ~RegisteredAsyncObserver() = default;
 
   WeakPtr<AsyncEnabledStateObserver> observer;
@@ -693,7 +696,7 @@ void TraceLog::InitializeThreadLocalEventBufferIfSupported() {
   // For a thread without a message loop or if the message loop may be blocked,
   // the trace events will be added into the main buffer directly.
   if (thread_blocks_message_loop_.Get() || !CurrentThread::IsSet() ||
-      !ThreadTaskRunnerHandle::IsSet()) {
+      !SingleThreadTaskRunner::HasCurrentDefault()) {
     return;
   }
   HEAP_PROFILER_SCOPED_IGNORE;
@@ -1090,7 +1093,7 @@ void TraceLog::SetDisabledWhileLocked(uint8_t modes_to_disable) {
   // If the current thread has an active task runner, allow nested tasks to run
   // while stopping the session. This is needed by some tests, e.g., to allow
   // data sources to properly flush themselves.
-  if (ThreadTaskRunnerHandle::IsSet()) {
+  if (SingleThreadTaskRunner::HasCurrentDefault()) {
     RunLoop stop_loop(RunLoop::Type::kNestableTasksAllowed);
     auto quit_closure = stop_loop.QuitClosure();
     tracing_session_->SetOnStopCallback(
@@ -1303,7 +1306,9 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
         perfetto::trace_processor::TraceProcessorStorage::CreateInstance(
             processor_config);
     json_output_writer_.reset(new JsonStringOutputWriter(
-        use_worker_thread ? ThreadTaskRunnerHandle::Get() : nullptr, cb));
+        use_worker_thread ? SingleThreadTaskRunner::GetCurrentDefault()
+                          : nullptr,
+        cb));
   } else {
     proto_output_callback_ = std::move(cb);
   }
@@ -1340,8 +1345,8 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
   {
     AutoLock lock(lock_);
     DCHECK(!flush_task_runner_);
-    flush_task_runner_ = SequencedTaskRunnerHandle::IsSet()
-                             ? SequencedTaskRunnerHandle::Get()
+    flush_task_runner_ = SequencedTaskRunner::HasCurrentDefault()
+                             ? SequencedTaskRunner::GetCurrentDefault()
                              : nullptr;
     DCHECK(thread_task_runners_.empty() || flush_task_runner_);
     flush_output_callback_ = cb;

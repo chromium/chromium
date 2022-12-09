@@ -9,12 +9,12 @@
 #include "base/cancelable_callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -88,8 +88,8 @@ TEST(TestMockTimeTaskRunnerTest, Basic) {
 // A default TestMockTimeTaskRunner shouldn't result in a thread association.
 TEST(TestMockTimeTaskRunnerTest, DefaultUnbound) {
   auto unbound_mock_time_task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
-  EXPECT_FALSE(ThreadTaskRunnerHandle::IsSet());
-  EXPECT_FALSE(SequencedTaskRunnerHandle::IsSet());
+  EXPECT_FALSE(SingleThreadTaskRunner::HasCurrentDefault());
+  EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
   EXPECT_DEATH_IF_SUPPORTED({ RunLoop().RunUntilIdle(); }, "");
 }
 
@@ -98,28 +98,28 @@ TEST(TestMockTimeTaskRunnerTest, RunLoopDriveableWhenBound) {
       TestMockTimeTaskRunner::Type::kBoundToThread);
 
   int counter = 0;
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce([](int* counter) { *counter += 1; },
                                 Unretained(&counter)));
-  ThreadTaskRunnerHandle::Get()->PostTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce([](int* counter) { *counter += 32; },
                                 Unretained(&counter)));
-  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 256; },
                      Unretained(&counter)),
       Seconds(3));
-  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 64; },
                      Unretained(&counter)),
       Seconds(1));
-  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 1024; },
                      Unretained(&counter)),
       Minutes(20));
-  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 4096; },
                      Unretained(&counter)),
@@ -137,9 +137,9 @@ TEST(TestMockTimeTaskRunnerTest, RunLoopDriveableWhenBound) {
 
   {
     RunLoop run_loop;
-    ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), Seconds(1));
-    ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 8192; },
                        Unretained(&counter)),
@@ -160,9 +160,9 @@ TEST(TestMockTimeTaskRunnerTest, RunLoopDriveableWhenBound) {
 
   {
     RunLoop run_loop;
-    ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, run_loop.QuitWhenIdleClosure(), Seconds(5));
-    ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 16384; },
                        Unretained(&counter)),
@@ -181,7 +181,7 @@ TEST(TestMockTimeTaskRunnerTest, RunLoopDriveableWhenBound) {
   // do this, this is just done here for the purpose of extensively testing the
   // RunLoop approach).
   RunLoop run_loop;
-  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitWhenIdleClosure(), Days(50));
 
   run_loop.Run();
@@ -205,7 +205,8 @@ TEST(TestMockTimeTaskRunnerTest, AvoidCaptureWhenBound) {
         TestMockTimeTaskRunner::Type::kBoundToThread);
 
     task_runner->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
-                            captured = ThreadTaskRunnerHandle::Get();
+                            captured =
+                                SingleThreadTaskRunner::GetCurrentDefault();
                           }));
     task_runner->RunUntilIdle();
   }

@@ -10,7 +10,6 @@
 #include "base/sequence_checker_impl.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -58,7 +57,7 @@ class BindPostTaskTest : public testing::Test {
  protected:
   test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<SequencedTaskRunner> task_runner_ =
-      SequencedTaskRunnerHandle::Get();
+      SequencedTaskRunner::GetCurrentDefault();
 };
 
 TEST_F(BindPostTaskTest, OnceClosure) {

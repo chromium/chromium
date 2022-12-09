@@ -22,11 +22,11 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/simple_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 
@@ -379,7 +379,7 @@ void Thread::ThreadMain() {
   // This binds CurrentThread and ThreadTaskRunnerHandle.
   delegate_->BindToCurrentThread(timer_slack_);
   DCHECK(CurrentThread::Get());
-  DCHECK(ThreadTaskRunnerHandle::IsSet());
+  DCHECK(SingleThreadTaskRunner::HasCurrentDefault());
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)) || BUILDFLAG(IS_FUCHSIA)
   // Allow threads running a MessageLoopForIO to use FileDescriptorWatcher API.
   std::unique_ptr<FileDescriptorWatcher> file_descriptor_watcher;

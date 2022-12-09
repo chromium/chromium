@@ -8,7 +8,7 @@
 
 #include "base/observer_list.h"
 #include "base/observer_list_threadsafe.h"
-#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/tracing_buildflags.h"
 
@@ -30,7 +30,7 @@ class MemoryPressureObserver {
     // TODO(crbug.com/1063868): DCHECK instead of silently failing when a
     // MemoryPressureListener is created in a non-sequenced context. Tests will
     // need to be adjusted for that to work.
-    if (SequencedTaskRunnerHandle::IsSet()) {
+    if (SequencedTaskRunner::HasCurrentDefault()) {
       async_observers_->AddObserver(listener);
     }
 

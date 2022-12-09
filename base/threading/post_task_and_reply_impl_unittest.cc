@@ -11,8 +11,8 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -220,7 +220,7 @@ TEST_F(PostTaskAndReplyImplTest, ReplyDoesNotRun) {
 TEST_F(PostTaskAndReplyImplTest,
        PostTaskToStoppedTaskRunnerWithoutSequencedContext) {
   reply_runner_.reset();
-  EXPECT_FALSE(SequencedTaskRunnerHandle::IsSet());
+  EXPECT_FALSE(SequencedTaskRunner::HasCurrentDefault());
   post_runner_->StopAcceptingTasks();
 
   // Expect the post to return false, but not to crash.

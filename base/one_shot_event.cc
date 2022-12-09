@@ -11,7 +11,6 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -56,7 +55,8 @@ void OneShotEvent::Post(const Location& from_here,
 void OneShotEvent::PostDelayed(const Location& from_here,
                                OnceClosure task,
                                const TimeDelta& delay) const {
-  PostImpl(from_here, std::move(task), ThreadTaskRunnerHandle::Get(), delay);
+  PostImpl(from_here, std::move(task),
+           SingleThreadTaskRunner::GetCurrentDefault(), delay);
 }
 
 void OneShotEvent::Signal() {

@@ -151,7 +151,7 @@ TestMockTimeTaskRunner::TestOrderedPendingTask::operator=(
 // Ref. TestMockTimeTaskRunner::RunsTasksInCurrentSequence().
 TestMockTimeTaskRunner::ScopedContext::ScopedContext(
     scoped_refptr<TestMockTimeTaskRunner> scope)
-    : thread_task_runner_handle_override_(scope) {
+    : single_thread_task_runner_current_default_handle_override_(scope) {
   scope->RunUntilIdle();
 }
 
