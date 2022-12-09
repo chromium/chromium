@@ -29,7 +29,9 @@ using file_manager::file_tasks::OfficeTaskResult;
 
 const char kOpenWebActionId[] = "OPEN_WEB";
 
-void OpenDriveUrl(const GURL& url) {
+// Open a hosted MS Office file e.g. .docx, from a url hosted in
+// DriveFS. Check the file was successfully uploaded to DriveFS.
+void OpenUploadedDriveUrl(const GURL& url) {
   if (url.is_empty()) {
     UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
                               OfficeTaskResult::FAILED);
@@ -40,14 +42,33 @@ void OpenDriveUrl(const GURL& url) {
   file_manager::util::OpenNewTabForHostedOfficeFile(url);
 }
 
-// Copied from file_tasks.cc.
-void OpenODFSUrl(const storage::FileSystemURL& uploaded_file_url) {
-  if (!uploaded_file_url.is_valid()) {
+// Open an already hosted MS Office file e.g. .docx, from a url hosted in
+// DriveFS. Check there was no error retrieving the file's metadata.
+void OpenAlreadyHostedDriveUrl(drive::FileError error,
+                               drivefs::mojom::FileMetadataPtr metadata) {
+  if (error != drive::FILE_ERROR_OK) {
+    UMA_HISTOGRAM_ENUMERATION(
+        file_manager::file_tasks::kDriveErrorMetricName,
+        file_manager::file_tasks::OfficeDriveErrors::NO_METADATA);
+    LOG(ERROR) << "Drive metadata error: " << error;
+    return;
+  }
+
+  GURL hosted_url(metadata->alternate_url);
+  bool opened = file_manager::util::OpenNewTabForHostedOfficeFile(hosted_url);
+
+  if (opened) {
+    UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
+                              OfficeTaskResult::OPENED);
+  }
+}
+
+void OpenODFSUrl(const storage::FileSystemURL& url) {
+  if (!url.is_valid()) {
     LOG(ERROR) << "Invalid uploaded file URL";
     return;
   }
-  ash::file_system_provider::util::FileSystemURLParser parser(
-      uploaded_file_url);
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
     LOG(ERROR) << "Path not in FSP";
     return;
@@ -58,8 +79,32 @@ void OpenODFSUrl(const storage::FileSystemURL& uploaded_file_url) {
       base::BindOnce([](base::File::Error result) {
         if (result != base::File::Error::FILE_OK) {
           LOG(ERROR) << "Error executing action: " << result;
+          // TODO(cassycc): Run GetUserFallbackChoice().
         }
       }));
+}
+
+void OpenODFSUrls(const std::vector<storage::FileSystemURL>& file_urls) {
+  for (const auto& file_url : file_urls) {
+    OpenODFSUrl(file_url);
+  }
+}
+
+void OpenAlreadyHostedDriveUrls(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& file_urls) {
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  base::FilePath relative_path;
+  for (const auto& file_url : file_urls) {
+    if (integration_service->GetRelativeDrivePath(file_url.path(),
+                                                  &relative_path)) {
+      integration_service->GetDriveFsInterface()->GetMetadata(
+          relative_path, base::BindOnce(&OpenAlreadyHostedDriveUrl));
+    } else {
+      LOG(ERROR) << "Unexpected error obtaining the relative path ";
+    }
+  }
 }
 
 void StartUpload(Profile* profile,
@@ -68,7 +113,7 @@ void StartUpload(Profile* profile,
   if (cloud_provider == CloudProvider::kGoogleDrive) {
     for (const auto& file_url : file_urls) {
       DriveUploadHandler::Upload(profile, file_url,
-                                 base::BindOnce(&OpenDriveUrl));
+                                 base::BindOnce(&OpenUploadedDriveUrl));
     }
   } else if (cloud_provider == CloudProvider::kOneDrive) {
     for (const auto& file_url : file_urls) {
@@ -95,6 +140,28 @@ void ConfirmMoveOrStartUpload(
   }
 }
 
+bool FileIsOnDriveFS(Profile* profile, const base::FilePath& file_path) {
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  base::FilePath relative_path;
+  return integration_service->GetRelativeDrivePath(file_path, &relative_path);
+}
+
+bool FileIsOnODFS(Profile* profile, const FileSystemURL& url) {
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    return false;
+  }
+
+  file_system_provider::ProviderId provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          file_manager::file_tasks::kODFSExtensionId);
+  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
+    return false;
+  }
+  return true;
+}
+
 void OnDialogComplete(Profile* profile,
                       const std::vector<storage::FileSystemURL>& file_urls,
                       const std::string& action) {
@@ -111,10 +178,11 @@ void OnDialogComplete(Profile* profile,
     SetPowerPointFileHandler(
         profile, file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint);
     SetOfficeSetupComplete(profile);
-    ConfirmMoveOrStartUpload(profile, file_urls, CloudProvider::kGoogleDrive);
+    OpenOrMoveFiles(profile, file_urls, CloudProvider::kGoogleDrive);
   } else if (action == kUserActionConfirmOrUploadToOneDrive) {
-    // Default handlers have already been set by this point for Office/OneDrive.
-    ConfirmMoveOrStartUpload(profile, file_urls, CloudProvider::kOneDrive);
+    // Default handlers have already been set by this point for
+    // Office/OneDrive.
+    OpenOrMoveFiles(profile, file_urls, CloudProvider::kOneDrive);
   } else if (action == kUserActionUploadToGoogleDrive) {
     StartUpload(profile, file_urls, CloudProvider::kGoogleDrive);
   } else if (action == kUserActionUploadToOneDrive) {
@@ -133,22 +201,39 @@ void OnDialogComplete(Profile* profile,
 
 }  // namespace
 
-bool UploadAndOpen(Profile* profile,
-                   const std::vector<storage::FileSystemURL>& file_urls,
-                   const CloudProvider cloud_provider) {
-  // Run the setup flow if it's never been completed.
-  if (!file_manager::file_tasks::OfficeSetupComplete(profile)) {
-    return CloudUploadDialog::Show(profile, file_urls,
-                                   mojom::DialogPage::kFileHandlerDialog);
-  }
-
+bool OpenFilesWithCloudProvider(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& file_urls,
+    const CloudProvider cloud_provider) {
   bool empty_selection = file_urls.empty();
   DCHECK(!empty_selection);
   if (empty_selection) {
     return false;
   }
-  ConfirmMoveOrStartUpload(profile, file_urls, cloud_provider);
+  // Run the setup flow if it's never been completed.
+  if (!file_manager::file_tasks::OfficeSetupComplete(profile)) {
+    return CloudUploadDialog::Show(profile, file_urls,
+                                   mojom::DialogPage::kFileHandlerDialog);
+  }
+  OpenOrMoveFiles(profile, file_urls, cloud_provider);
   return true;
+}
+
+void OpenOrMoveFiles(Profile* profile,
+                     const std::vector<storage::FileSystemURL>& file_urls,
+                     const CloudProvider cloud_provider) {
+  if (cloud_provider == CloudProvider::kGoogleDrive &&
+      FileIsOnDriveFS(profile, file_urls.front().path())) {
+    // The files are on Drive already.
+    OpenAlreadyHostedDriveUrls(profile, file_urls);
+  } else if (cloud_provider == CloudProvider::kOneDrive &&
+             FileIsOnODFS(profile, file_urls.front())) {
+    // The files are on OneDrive already.
+    OpenODFSUrls(file_urls);
+  } else {
+    // The files need to be moved.
+    ConfirmMoveOrStartUpload(profile, file_urls, cloud_provider);
+  }
 }
 
 // static

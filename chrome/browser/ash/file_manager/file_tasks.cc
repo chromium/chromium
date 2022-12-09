@@ -416,32 +416,6 @@ bool OpenFilesWithBrowser(Profile* profile,
   return num_opened > 0;
 }
 
-// Open a hosted MS Office file e.g. .docx, from a url hosted in DriveFS.
-void OpenHostedOfficeFile(Profile* profile,
-                          const TaskDescriptor& task,
-                          const std::vector<FileSystemURL>& file_urls,
-                          drive::FileError error,
-                          drivefs::mojom::FileMetadataPtr metadata) {
-  if (error != drive::FILE_ERROR_OK) {
-    UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
-                              OfficeDriveErrors::NO_METADATA);
-    LOG(ERROR) << "Drive metadata error: " << error;
-    return;
-  }
-
-  GURL hosted_url(metadata->alternate_url);
-  bool opened = util::OpenNewTabForHostedOfficeFile(hosted_url);
-
-  if (opened) {
-    UMA_HISTOGRAM_ENUMERATION(kDriveTaskResultMetricName,
-                              OfficeTaskResult::OPENED);
-  } else {
-    GetUserFallbackChoice(
-        profile, task, file_urls,
-        ash::office_fallback::FallbackReason::kInvalidGoogleDocsURL);
-  }
-}
-
 bool ExecuteWebDriveOfficeTask(Profile* profile,
                                const TaskDescriptor& task,
                                const std::vector<FileSystemURL>& file_urls) {
@@ -460,23 +434,8 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   if (integration_service && integration_service->IsMounted() &&
       integration_service->GetDriveFsInterface()) {
-    base::FilePath relative_path;
-    base::FilePath first_file_path = file_urls.front().path();
-    if (integration_service->GetRelativeDrivePath(first_file_path,
-                                                  &relative_path)) {
-      // The file is on Drive already: Open the URL.
-      integration_service->GetDriveFsInterface()->GetMetadata(
-          relative_path,
-          base::BindOnce(&OpenHostedOfficeFile, profile, task, file_urls));
-      return true;
-    } else {
-      // We need to move the file to Drive first. This flow will eventually
-      // open the file in the browser, too.
-      // TODO(b/247038054) Add user preference to decide whether or not the
-      // dialog should be shown.
-      return ash::cloud_upload::UploadAndOpen(
-          profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive);
-    }
+    return ash::cloud_upload::OpenFilesWithCloudProvider(
+        profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive);
   } else {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
                               OfficeDriveErrors::DRIVEFS_INTERFACE);
@@ -491,49 +450,6 @@ using ash::file_system_provider::ProvidedFileSystemInfo;
 using ash::file_system_provider::ProviderId;
 using ash::file_system_provider::Service;
 
-bool FileIsOnODFS(const FileSystemURL& url, Profile* profile) {
-  ash::file_system_provider::util::FileSystemURLParser parser(url);
-  if (!parser.Parse()) {
-    LOG(ERROR) << "Path not in FSP";
-    return false;
-  }
-
-  ProviderId provider_id = ProviderId::CreateFromExtensionId(kODFSExtensionId);
-  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
-    LOG(ERROR) << "Path on another FSP";
-    return false;
-  }
-  return true;
-}
-
-// Pre-condition: |url| is for a file which is on ODFS already.
-void OpenODFSUrl(Profile* profile,
-                 const TaskDescriptor& task,
-                 const std::vector<FileSystemURL>& file_urls) {
-  const FileSystemURL& url = file_urls.front();
-  ash::file_system_provider::util::FileSystemURLParser parser(url);
-
-  if (!parser.Parse()) {
-    LOG(ERROR) << "Path not in FSP";
-    return;
-  }
-
-  parser.file_system()->ExecuteAction(
-      {parser.file_path()}, kActionIdOpenWeb,
-      base::BindOnce(
-          [](Profile* profile, const TaskDescriptor& task,
-             const std::vector<FileSystemURL>& file_urls,
-             base::File::Error result) {
-            if (result != base::File::Error::FILE_OK) {
-              LOG(ERROR) << "Error executing action: " << result;
-              GetUserFallbackChoice(
-                  profile, task, file_urls,
-                  ash::office_fallback::FallbackReason::kErrorOpeningWeb);
-            }
-          },
-          profile, task, file_urls));
-}
-
 bool ExecuteOpenInOfficeTask(Profile* profile,
                              const TaskDescriptor& task,
                              const std::vector<FileSystemURL>& file_urls) {
@@ -544,19 +460,8 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
     // TODO(petermarshall): UMAs.
   }
 
-  if (FileIsOnODFS(file_urls.front(), profile)) {
-    OpenODFSUrl(profile, task, file_urls);
-    LOG(ERROR) << "File is on ODFS";
-    return true;
-  } else {
-    // We need to move the file to ODFS first. This flow will eventually open
-    // the file in the browser, too.
-    // TODO(b/247038054) Add user preference to decide whether or not the
-    // dialog should be shown.
-    LOG(ERROR) << "File can be moved to ODFS";
-    return ash::cloud_upload::UploadAndOpen(
-        profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
-  }
+  return ash::cloud_upload::OpenFilesWithCloudProvider(
+      profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
 }
 
 }  // namespace

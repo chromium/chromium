@@ -65,6 +65,7 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
@@ -2838,6 +2839,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "mountHidden") {
     DCHECK(hidden_volume_);
     ASSERT_TRUE(hidden_volume_->Mount(profile()));
+    return;
+  }
+
+  if (name == "setOfficeSetupComplete") {
+    absl::optional<bool> complete = value.FindBool("complete");
+    ASSERT_TRUE(complete.has_value());
+    file_tasks::SetOfficeSetupComplete(profile(), complete.value());
     return;
   }
 

@@ -89,6 +89,10 @@ testcase.openOfficeWordFile = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], [ENTRIES.smallDocxHosted]);
 
+  // Disable office setup flow so the dialog doesn't open when the file is
+  // opened.
+  await sendTestMessage({name: 'setOfficeSetupComplete', complete: true});
+
   // Open file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'openFile', appId, [ENTRIES.smallDocxHosted.nameText]));

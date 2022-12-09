@@ -33,10 +33,19 @@ enum class CloudProvider {
   kOneDrive,
 };
 
-// Initiates the upload workflow.
-bool UploadAndOpen(Profile* profile,
-                   const std::vector<storage::FileSystemURL>& file_urls,
-                   const CloudProvider cloud_provider);
+// Opens the `file_urls` from the `cloud_provider`. Runs setup for for Office
+// files if it has not been run before. Uploads the files to the cloud if
+// needed.
+bool OpenFilesWithCloudProvider(
+    Profile* profile,
+    const std::vector<storage::FileSystemURL>& file_urls,
+    const CloudProvider cloud_provider);
+
+// Open office files if they are in the correct cloud already.
+// Otherwise move the files before opening.
+void OpenOrMoveFiles(Profile* profile,
+                     const std::vector<storage::FileSystemURL>& file_urls,
+                     const CloudProvider cloud_provider);
 
 // Defines the web dialog used to help users upload Office files to the cloud.
 class CloudUploadDialog : public SystemWebDialogDelegate {
