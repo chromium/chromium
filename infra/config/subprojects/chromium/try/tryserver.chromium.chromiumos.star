@@ -124,6 +124,37 @@ try_.orchestrator_builder(
     use_orchestrator_pool = True,
 )
 
+try_.builder(
+    name = "lacros-amd64-generic-rel-skylab",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "checkout_lacros_sdk",
+                "chromeos",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+        ),
+        # TODO(https://crbug.com/1399919): change skylab_upload_location
+        # as a property. Change try builder as CI mirrors
+        skylab_upload_location = builder_config.skylab_upload_location(
+            gs_bucket = "chromium-try-skylab",
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
+    goma_backend = None,
+)
+
 try_.compilator_builder(
     name = "lacros-amd64-generic-rel-compilator",
     branch_selector = branches.STANDARD_MILESTONE,

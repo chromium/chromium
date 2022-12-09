@@ -161,6 +161,7 @@
       'chromeos-octopus-rel': 'chromeos_octopus_dchecks_reclient',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
+      'lacros-amd64-generic-rel-skylab': 'chromeos_amd64-generic_lacros_rel_skylab_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot_reclient',
@@ -416,7 +417,7 @@
       'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_lacros_rel_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel_reclient',
-      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi_reclient',
+      'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_skylab_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_fyi_reclient',
       'linux-annotator-rel': 'release_bot_reclient',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
@@ -1075,6 +1076,7 @@
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_reclient',
       # TODO (crbug.com/1287228): Remove when orchestrator is verified
       'lacros-amd64-generic-rel-orchestrator': 'chromeos_amd64-generic_lacros_rel_dchecks',
+      'lacros-amd64-generic-rel-skylab': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient',
       'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks',
@@ -2000,16 +2002,20 @@
       'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'dcheck_always_on',
     ],
 
+    'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient': [
+      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'dcheck_always_on', 'is_skylab',
+    ],
+
     'chromeos_amd64-generic_lacros_rel_fyi': [
       'chromeos_amd64-generic-crostoolchain', 'lacros', 'release', 'is_skylab',
     ],
 
-    'chromeos_amd64-generic_lacros_rel_fyi_reclient': [
-      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'is_skylab',
-    ],
-
     'chromeos_amd64-generic_lacros_rel_reclient': [
       'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release',
+    ],
+
+    'chromeos_amd64-generic_lacros_rel_skylab_reclient': [
+      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'is_skylab',
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients':[

@@ -1486,6 +1486,30 @@
       }
     ]
   },
+  "lacros-amd64-generic-rel-skylab": {
+    "additional_compile_targets": [
+      "chrome"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "bucket": "chromiumos-image-archive",
+        "cros_board": "eve",
+        "cros_img": "eve-public/R110-15264.0.0",
+        "name": "lacros_all_tast_tests EVE_PUBLIC",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "EVE_PUBLIC"
+      }
+    ]
+  },
   "lacros-arm-generic-rel": {
     "additional_compile_targets": [
       "chrome"
