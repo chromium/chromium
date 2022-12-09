@@ -95,5 +95,15 @@ bool CommandUnlinkIsSafe(const BrokerCommandSet& command_set,
                                            filename_to_use, nullptr);
 }
 
+bool CommandInotifyAddWatchIsSafe(const BrokerCommandSet& command_set,
+                                  const BrokerPermissionList& policy,
+                                  const char* requested_filename,
+                                  uint32_t mask,
+                                  const char** filename_to_use) {
+  return command_set.test(COMMAND_INOTIFY_ADD_WATCH) &&
+         policy.GetFileNameIfAllowedToInotifyAddWatch(requested_filename, mask,
+                                                      filename_to_use);
+}
+
 }  // namespace syscall_broker
 }  // namespace sandbox

@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <string.h>
+#include <sys/inotify.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -265,23 +266,65 @@ TEST(BrokerFilePermission, StatOnlyWithIntermediateDirs) {
   const char kLeading1[] = "/";
   const char kLeading2[] = "/tmp";
   const char kLeading3[] = "/tmp/good/path";
+  const char kBadPrefix[] = "/tmp/good/pa";
   const char kTrailing[] = "/tmp/good/path/bad";
 
   BrokerFilePermission perm =
       BrokerFilePermission::StatOnlyWithIntermediateDirs(kPath);
   // No open or access permission.
-  ASSERT_FALSE(perm.CheckOpen(kPath, O_RDONLY, NULL, NULL));
-  ASSERT_FALSE(perm.CheckOpen(kPath, O_WRONLY, NULL, NULL));
-  ASSERT_FALSE(perm.CheckOpen(kPath, O_RDWR, NULL, NULL));
-  ASSERT_FALSE(perm.CheckAccess(kPath, R_OK, NULL));
-  ASSERT_FALSE(perm.CheckAccess(kPath, W_OK, NULL));
+  ASSERT_FALSE(perm.CheckOpen(kPath, O_RDONLY, nullptr, nullptr));
+  ASSERT_FALSE(perm.CheckOpen(kPath, O_WRONLY, nullptr, nullptr));
+  ASSERT_FALSE(perm.CheckOpen(kPath, O_RDWR, nullptr, nullptr));
+  ASSERT_FALSE(perm.CheckAccess(kPath, R_OK, nullptr));
+  ASSERT_FALSE(perm.CheckAccess(kPath, W_OK, nullptr));
 
   // Stat for all leading paths, but not trailing paths.
-  ASSERT_TRUE(perm.CheckStat(kPath, NULL));
-  ASSERT_TRUE(perm.CheckStat(kLeading1, NULL));
-  ASSERT_TRUE(perm.CheckStat(kLeading2, NULL));
-  ASSERT_TRUE(perm.CheckStat(kLeading3, NULL));
-  ASSERT_FALSE(perm.CheckStat(kTrailing, NULL));
+  ASSERT_TRUE(perm.CheckStatWithIntermediates(kPath, nullptr));
+  ASSERT_TRUE(perm.CheckStatWithIntermediates(kLeading1, nullptr));
+  ASSERT_TRUE(perm.CheckStatWithIntermediates(kLeading2, nullptr));
+  ASSERT_TRUE(perm.CheckStatWithIntermediates(kLeading3, nullptr));
+  ASSERT_FALSE(perm.CheckStatWithIntermediates(kBadPrefix, nullptr));
+  ASSERT_FALSE(perm.CheckStatWithIntermediates(kTrailing, nullptr));
+}
+
+TEST(BrokerFilePermission, InotifyAddWatchWithIntermediateDirs) {
+  const char kPath[] = "/tmp/good/path";
+  const char kLeading1[] = "/";
+  const char kLeading2[] = "/tmp";
+  const char kLeading3[] = "/tmp/good/path";
+  const char kBadPrefix[] = "/tmp/good/pa";
+  const char kTrailing[] = "/tmp/good/path/bad";
+
+  const uint32_t kBadMask =
+      IN_CREATE | IN_DELETE | IN_CLOSE_WRITE | IN_MOVE | IN_ONLYDIR;
+  const uint32_t kGoodMask = kBadMask | IN_ATTRIB;
+
+  BrokerFilePermission perm =
+      BrokerFilePermission::InotifyAddWatchWithIntermediateDirs(kPath);
+  // No open or access permission.
+  ASSERT_FALSE(perm.CheckOpen(kPath, O_RDONLY, nullptr, nullptr));
+  ASSERT_FALSE(perm.CheckOpen(kPath, O_WRONLY, nullptr, nullptr));
+  ASSERT_FALSE(perm.CheckOpen(kPath, O_RDWR, nullptr, nullptr));
+  ASSERT_FALSE(perm.CheckAccess(kPath, R_OK, nullptr));
+  ASSERT_FALSE(perm.CheckAccess(kPath, W_OK, nullptr));
+
+  // Inotify_add_watch for all leading paths, but not trailing paths.
+  ASSERT_TRUE(
+      perm.CheckInotifyAddWatchWithIntermediates(kPath, kGoodMask, nullptr));
+  ASSERT_TRUE(perm.CheckInotifyAddWatchWithIntermediates(kLeading1, kGoodMask,
+                                                         nullptr));
+  ASSERT_TRUE(perm.CheckInotifyAddWatchWithIntermediates(kLeading2, kGoodMask,
+                                                         nullptr));
+  ASSERT_TRUE(perm.CheckInotifyAddWatchWithIntermediates(kLeading3, kGoodMask,
+                                                         nullptr));
+  ASSERT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kBadPrefix, kGoodMask,
+                                                          nullptr));
+  ASSERT_FALSE(perm.CheckInotifyAddWatchWithIntermediates(kTrailing, kGoodMask,
+                                                          nullptr));
+
+  // Fails without correct mask.
+  ASSERT_FALSE(
+      perm.CheckInotifyAddWatchWithIntermediates(kPath, kBadMask, nullptr));
 }
 
 TEST(BrokerFilePermission, ValidatePath) {

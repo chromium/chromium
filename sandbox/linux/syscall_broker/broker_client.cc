@@ -207,6 +207,38 @@ int BrokerClient::Unlink(const char* path) const {
   return PathOnlySyscall(COMMAND_UNLINK, path);
 }
 
+int BrokerClient::InotifyAddWatch(int fd,
+                                  const char* pathname,
+                                  uint32_t mask) const {
+  if (!pathname)
+    return -EFAULT;
+
+  if (fast_check_in_client_ &&
+      !CommandInotifyAddWatchIsSafe(policy_->allowed_command_set,
+                                    *policy_->file_permissions, pathname, mask,
+                                    nullptr)) {
+    return -policy_->file_permissions->denied_errno();
+  }
+
+  BrokerSimpleMessage message;
+  RAW_CHECK(message.AddIntToMessage(COMMAND_INOTIFY_ADD_WATCH));
+  RAW_CHECK(message.AddStringToMessage(pathname));
+  RAW_CHECK(message.AddIntToMessage(mask));
+
+  BrokerSimpleMessage reply;
+  ssize_t msg_len = message.SendRecvMsgWithFlagsMultipleFds(
+      ipc_channel_.get(), 0, base::span<const int>(&fd, 1), {}, &reply);
+
+  if (msg_len < 0)
+    return msg_len;
+
+  int return_value = -1;
+  if (!reply.ReadInt(&return_value))
+    return -ENOMEM;
+
+  return return_value;
+}
+
 int BrokerClient::PathOnlySyscall(BrokerCommand syscall_type,
                                   const char* pathname) const {
   BrokerSimpleMessage message;

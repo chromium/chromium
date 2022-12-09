@@ -4,6 +4,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <sys/inotify.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -15,13 +16,19 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/files/file_path_watcher.h"
+#include "base/files/file_path_watcher_inotify.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -261,6 +268,7 @@ class Syscaller {
   virtual int Mkdir(const char* pathname, mode_t mode) = 0;
   virtual int Rmdir(const char* path) = 0;
   virtual int Unlink(const char* path) = 0;
+  virtual int InotifyAddWatch(int fd, const char* path, uint32_t mask) = 0;
 };
 
 class IPCSyscaller : public Syscaller {
@@ -305,6 +313,11 @@ class IPCSyscaller : public Syscaller {
 
   int Unlink(const char* path) override {
     return broker_->GetBrokerClientSignalBased()->Unlink(path);
+  }
+
+  int InotifyAddWatch(int fd, const char* path, uint32_t mask) override {
+    return broker_->GetBrokerClientSignalBased()->InotifyAddWatch(fd, path,
+                                                                  mask);
   }
 
  private:
@@ -385,6 +398,13 @@ class DirectSyscaller : public Syscaller {
       return -errno;
     return ret;
   }
+
+  int InotifyAddWatch(int fd, const char* path, uint32_t mask) override {
+    int ret = syscall(__NR_inotify_add_watch, fd, path, mask);
+    if (ret < 0)
+      return -errno;
+    return ret;
+  }
 };
 #endif  // defined(DIRECT_SYSCALLER_ENABLED)
 
@@ -448,9 +468,21 @@ class LibcSyscaller : public Syscaller {
       return -errno;
     return ret;
   }
+
+  int InotifyAddWatch(int fd, const char* path, uint32_t mask) override {
+    int ret = inotify_add_watch(fd, path, mask);
+    if (ret < 0)
+      return -errno;
+    return ret;
+  }
 };
 
-enum class SyscallerType { IPCSyscaller = 0, DirectSyscaller, LibcSyscaller };
+enum class SyscallerType {
+  IPCSyscaller = 0,
+  DirectSyscaller,
+  LibcSyscaller,
+  NoSyscaller
+};
 
 // The testing infrastructure for the broker integration tests is built on the
 // same infrastructure that BPF_TEST or SANDBOX_TEST uses. Each individual test
@@ -598,6 +630,9 @@ class BPFTesterBrokerDelegate : public BPFTesterDelegate {
         break;
       case SyscallerType::LibcSyscaller:
         syscaller_ = std::make_unique<LibcSyscaller>();
+        break;
+      case SyscallerType::NoSyscaller:
+        syscaller_ = nullptr;
         break;
     }
   }
@@ -1125,7 +1160,7 @@ class CreateFileDelegate final : public BrokerTestDelegate {
     // Create a conflict for the temp filename.
     base::ScopedFD fd(
         open(existing_temp_file_str_.c_str(), O_RDWR | O_CREAT, 0600));
-    BPF_ASSERT_GE(fd.get(), 0);
+    ASSERT_GE(fd.get(), 0);
   }
 
   BrokerParams ChildSetUpPreSandbox() override {
@@ -2533,6 +2568,277 @@ class UnlinkFileRWCPermissionsDelegate final : public UnlinkTestDelegate {
 
 TEST(BrokerProcessIntegrationTest, UnlinkFileRWCPermissions) {
   RunAllBrokerTests<UnlinkFileRWCPermissionsDelegate>();
+}
+
+// Parent class for the inotify_add_watch() tests.
+class InotifyAddWatchDelegate : public BrokerTestDelegate {
+ public:
+  const uint32_t kBadMask =
+      IN_CREATE | IN_DELETE | IN_CLOSE_WRITE | IN_MOVE | IN_ONLYDIR;
+  const uint32_t kGoodMask = kBadMask | IN_ATTRIB;
+
+  static constexpr char kNestedTempDirName[] = "nested_temp_dir";
+  static constexpr char kBadPrefixName[] = "nested_t";
+
+  void ParentSetUp() override {
+    // Create two nested temp dirs.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDirUnderPath(
+        base::FilePath(kTempDirForTests)));
+    temp_dir_str_ = temp_dir_.GetPath().MaybeAsASCII();
+    ASSERT_FALSE(temp_dir_str_.empty());
+
+    ASSERT_TRUE(nested_temp_dir_.Set(
+        temp_dir_.GetPath().AppendASCII(kNestedTempDirName)));
+    nested_temp_dir_str_ = nested_temp_dir_.GetPath().MaybeAsASCII();
+    ASSERT_FALSE(nested_temp_dir_str_.empty());
+
+    temp_file_ = base::CreateAndOpenTemporaryFileInDir(
+        nested_temp_dir_.GetPath(), &temp_file_path_);
+    temp_file_path_str_ = temp_file_path_.MaybeAsASCII();
+    ASSERT_FALSE(temp_file_path_str_.empty());
+  }
+
+ protected:
+  // Parent temp directory.
+  base::ScopedTempDir temp_dir_;
+  std::string temp_dir_str_;
+
+  // A directory nested under |temp_dir_|.
+  base::ScopedTempDir nested_temp_dir_;
+  std::string nested_temp_dir_str_;
+
+  // In |nested_temp_dir_|.
+  base::FilePath temp_file_path_;
+  std::string temp_file_path_str_;
+  base::File temp_file_;
+};
+
+// Try inotify_add_watch() without the relevant broker command.
+class InotifyAddWatchNoCommandDelegate final : public InotifyAddWatchDelegate {
+ public:
+  BrokerParams ChildSetUpPreSandbox() override {
+    BrokerParams params;
+    params.allowed_command_set = syscall_broker::MakeBrokerCommandSet({});
+    params.permissions = {
+        BrokerFilePermission::InotifyAddWatchWithIntermediateDirs(
+            temp_file_path_str_),
+        BrokerFilePermission::ReadWriteCreateRecursive(nested_temp_dir_str_ +
+                                                       "/")};
+    return params;
+  }
+
+  void RunTestInSandboxedChild(Syscaller* syscaller) override {
+    base::ScopedFD inotify_instance(inotify_init());
+    BPF_ASSERT(inotify_instance.is_valid());
+    BPF_ASSERT_EQ(
+        -kFakeErrnoSentinel,
+        syscaller->InotifyAddWatch(inotify_instance.get(),
+                                   nested_temp_dir_str_.c_str(), kGoodMask));
+  }
+};
+
+TEST(BrokerProcessIntegrationTest, InotifyAddWatchNoCommand) {
+  RunAllBrokerTests<InotifyAddWatchNoCommandDelegate>();
+}
+
+// Try inotify_add_watch() without the relevant permissions.
+class InotifyAddWatchNoPermissionsDelegate final
+    : public InotifyAddWatchDelegate {
+ public:
+  BrokerParams ChildSetUpPreSandbox() override {
+    BrokerParams params;
+    params.allowed_command_set = syscall_broker::MakeBrokerCommandSet(
+        {syscall_broker::COMMAND_INOTIFY_ADD_WATCH});
+    params.permissions = {};
+    return params;
+  }
+
+  void RunTestInSandboxedChild(Syscaller* syscaller) override {
+    base::ScopedFD inotify_instance(inotify_init());
+    BPF_ASSERT(inotify_instance.is_valid());
+    BPF_ASSERT_EQ(
+        -kFakeErrnoSentinel,
+        syscaller->InotifyAddWatch(inotify_instance.get(),
+                                   nested_temp_dir_str_.c_str(), kGoodMask));
+  }
+};
+
+TEST(BrokerProcessIntegrationTest, InotifyAddWatchNoPermissions) {
+  RunAllBrokerTests<InotifyAddWatchNoPermissionsDelegate>();
+}
+
+// Try inotify_add_watch() with a variety of bad arguments.
+class InotifyAddWatchBadArgumentsDelegate final
+    : public InotifyAddWatchDelegate {
+ public:
+  void ParentSetUp() override {
+    InotifyAddWatchDelegate::ParentSetUp();
+
+    ASSERT_TRUE(
+        other_temp_dir_.Set(temp_dir_.GetPath().AppendASCII("other_temp_dir")));
+    other_temp_dir_str_ = other_temp_dir_.GetPath().MaybeAsASCII();
+    ASSERT_FALSE(other_temp_dir_str_.empty());
+
+    base::FilePath bad_prefix = temp_dir_.GetPath().AppendASCII(kBadPrefixName);
+    bad_prefix_str_ = bad_prefix.MaybeAsASCII();
+    ASSERT_FALSE(bad_prefix_str_.empty());
+  }
+
+  BrokerParams ChildSetUpPreSandbox() override {
+    BrokerParams params;
+    params.allowed_command_set = syscall_broker::MakeBrokerCommandSet(
+        {syscall_broker::COMMAND_INOTIFY_ADD_WATCH});
+    params.permissions = {
+        BrokerFilePermission::InotifyAddWatchWithIntermediateDirs(
+            temp_file_path_str_)};
+    return params;
+  }
+
+  void RunTestInSandboxedChild(Syscaller* syscaller) override {
+    base::ScopedFD inotify_instance(inotify_init());
+    BPF_ASSERT(inotify_instance.is_valid());
+    // Watch the correct directory with bad flags.
+    BPF_ASSERT_EQ(
+        -kFakeErrnoSentinel,
+        syscaller->InotifyAddWatch(inotify_instance.get(),
+                                   nested_temp_dir_str_.c_str(), kBadMask));
+
+    // Try to watch an unintended directory, should fail.
+    BPF_ASSERT_EQ(
+        -kFakeErrnoSentinel,
+        syscaller->InotifyAddWatch(inotify_instance.get(),
+                                   other_temp_dir_str_.c_str(), kGoodMask));
+
+    // Try to access a prefix that isn't a full directory.
+    BPF_ASSERT_EQ(-kFakeErrnoSentinel, syscaller->InotifyAddWatch(
+                                           inotify_instance.get(),
+                                           bad_prefix_str_.c_str(), kGoodMask));
+  }
+
+ protected:
+  // Another directory nested under |temp_dir_| with no sandbox permissions.
+  base::ScopedTempDir other_temp_dir_;
+  std::string other_temp_dir_str_;
+
+  // A prefix of |nested_temp_dir_| that doesn't match a valid directory.
+  std::string bad_prefix_str_;
+};
+
+TEST(BrokerProcessIntegrationTest, InotifyAddWatchBadArguments) {
+  RunAllBrokerTests<InotifyAddWatchBadArgumentsDelegate>();
+}
+
+// Use inottify_add_watch() successfully and verify it actually works.
+class InotifyAddWatchSuccessDelegate final : public InotifyAddWatchDelegate {
+ public:
+  BrokerParams ChildSetUpPreSandbox() override {
+    BrokerParams params;
+    params.allowed_command_set = syscall_broker::MakeBrokerCommandSet(
+        {syscall_broker::COMMAND_INOTIFY_ADD_WATCH,
+         syscall_broker::COMMAND_UNLINK});
+    params.permissions = {
+        BrokerFilePermission::InotifyAddWatchWithIntermediateDirs(
+            temp_file_path_str_),
+        BrokerFilePermission::ReadWriteCreateRecursive(nested_temp_dir_str_ +
+                                                       "/")};
+    return params;
+  }
+
+  void RunTestInSandboxedChild(Syscaller* syscaller) override {
+    base::ScopedFD inotify_instance(inotify_init());
+    BPF_ASSERT(inotify_instance.is_valid());
+    // This inotify_add_watch() call should succeed.
+    int wd = syscaller->InotifyAddWatch(
+        inotify_instance.get(), nested_temp_dir_str_.c_str(), kGoodMask);
+    BPF_ASSERT_GE(wd, 0);
+
+    // Unlinking the file generates an inotify notification.
+    BPF_ASSERT_GE(unlink(temp_file_path_str_.c_str()), 0);
+
+    // Read one inotify message and verify it names the correct watch descriptor
+    // |wd|. The test will timeout if no inotify notifications are ever
+    // generated.
+    std::vector<char> buf(4096);
+    BPF_ASSERT_GE(read(inotify_instance.get(), buf.data(), buf.size()), 0);
+    struct inotify_event* event =
+        reinterpret_cast<struct inotify_event*>(buf.data());
+    BPF_ASSERT_EQ(event->wd, wd);
+
+    // Removing the watch should succeed.
+    BPF_ASSERT_GE(inotify_rm_watch(inotify_instance.get(), wd), 0);
+  }
+};
+
+TEST(BrokerProcessIntegrationTest, InotifyAddWatchSuccess) {
+  RunAllBrokerTests<InotifyAddWatchSuccessDelegate>();
+}
+
+// Tests base::FilePathWatcher which uses inotify on Linux.
+// This is used in the network service sandbox.
+class BaseFilePathWatcherDelegate final : public InotifyAddWatchDelegate {
+ public:
+  BrokerParams ChildSetUpPreSandbox() override {
+    // Prewarm file accesses.
+    base::GetMaxNumberOfInotifyWatches();
+
+    BrokerParams params;
+    params.allowed_command_set = syscall_broker::MakeBrokerCommandSet(
+        {syscall_broker::COMMAND_INOTIFY_ADD_WATCH,
+         syscall_broker::COMMAND_OPEN});
+    params.permissions = {
+        BrokerFilePermission::InotifyAddWatchWithIntermediateDirs(
+            temp_file_path_str_),
+        BrokerFilePermission::ReadWriteCreateRecursive(nested_temp_dir_str_ +
+                                                       "/")};
+    return params;
+  }
+
+  void RunTestInSandboxedChild(Syscaller* syscaller) override {
+    base::test::SingleThreadTaskEnvironment task_environment(
+        base::test::TaskEnvironment::MainThreadType::IO);
+
+    // Watch the file and wait for a notification about that file from
+    // FilePathWatcher.
+    base::RunLoop run_loop;
+    base::FilePathWatcher file_watcher_;
+    BPF_ASSERT(file_watcher_.Watch(
+        temp_file_path_, base::FilePathWatcher::Type::kNonRecursive,
+        base::BindLambdaForTesting([&](const base::FilePath& path, bool error) {
+          BPF_ASSERT_EQ(temp_file_path_, path);
+          run_loop.Quit();
+        })));
+
+    // Our inotify file path watcher requires a file to be opened for writing
+    // *after* adding the watch, and then closed, in order to generate a
+    // notification. The actual call to Write() isn't even strictly necessary.
+    // Another way to generate a notification is
+    // base::DeleteFile(temp_file_path_).
+    base::File temp_file_again(temp_file_path_, base::File::FLAG_OPEN |
+                                                    base::File::FLAG_READ |
+                                                    base::File::FLAG_WRITE);
+    char buf2[] = "a";
+    BPF_ASSERT_EQ(temp_file_again.Write(0, buf2, sizeof(buf2)), sizeof(buf2));
+    temp_file_again.Flush();
+    temp_file_again.Close();
+    // Wait until we receive a notification about the file modification.
+    // Failure results in a test timeout.
+    run_loop.Run();
+  }
+};
+
+TEST(BrokerProcessIntegrationTest, BaseFilePathWatcherInotifyTest) {
+  const std::vector<BrokerTestConfiguration> inotify_test_configs = {
+      {"FastCheckInClient_NoSyscaller", true, SyscallerType::NoSyscaller,
+       BrokerType::SIGNAL_BASED},
+      {"NoFastCheckInClient_NoSyscaller", false, SyscallerType::NoSyscaller,
+       BrokerType::SIGNAL_BASED},
+  };
+
+  for (const BrokerTestConfiguration& test_config : inotify_test_configs) {
+    SCOPED_TRACE(test_config.test_name);
+    auto test_delegate = std::make_unique<BaseFilePathWatcherDelegate>();
+    RunSingleBrokerTest(test_delegate.get(), test_config);
+  }
 }
 
 #endif  // !defined(THREAD_SANITIZER)

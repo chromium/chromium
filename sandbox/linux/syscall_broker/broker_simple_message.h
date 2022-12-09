@@ -83,16 +83,16 @@ class SANDBOX_EXPORT BrokerSimpleMessage {
   // This returns a pointer to the next available data buffer in |data|. The
   // pointer is owned by |this| class. The resulting buffer is a string and
   // terminated with a '\0' character.
-  bool ReadString(const char** string);
+  [[nodiscard]] bool ReadString(const char** string);
 
   // This returns a pointer to the next available data buffer in the message
   // in |data|, and the length of the buffer in |length|. The buffer is owned
   // by |this| class.
-  bool ReadData(const char** data, size_t* length);
+  [[nodiscard]] bool ReadData(const char** data, size_t* length);
 
   // This reads the next available int from the message and stores it in
   // |result|.
-  bool ReadInt(int* result);
+  [[nodiscard]] bool ReadInt(int* result);
 
   // The maximum length of a message in the fixed size buffer.
   static constexpr size_t kMaxMessageLength = 4096;

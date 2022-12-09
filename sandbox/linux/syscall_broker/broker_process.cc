@@ -26,8 +26,10 @@
 #include "build/build_config.h"
 #include "sandbox/linux/syscall_broker/broker_channel.h"
 #include "sandbox/linux/syscall_broker/broker_client.h"
+#include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_host.h"
 #include "sandbox/linux/syscall_broker/broker_permission_list.h"
+#include "sandbox/linux/system_headers/linux_syscalls.h"
 
 namespace sandbox {
 
@@ -187,7 +189,9 @@ bool BrokerProcess::IsSyscallBrokerable(int sysno, bool fast_check) const {
       // If rmdir() doesn't exist, unlinkat is used with AT_REMOVEDIR.
       return !fast_check || policy_->allowed_command_set.test(COMMAND_RMDIR) ||
              policy_->allowed_command_set.test(COMMAND_UNLINK);
-
+    case __NR_inotify_add_watch:
+      return !fast_check ||
+             policy_->allowed_command_set.test(COMMAND_INOTIFY_ADD_WATCH);
     default:
       return false;
   }
