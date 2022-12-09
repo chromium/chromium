@@ -61,7 +61,7 @@ public class ChromeActivitySessionTracker {
             new HashMap<>();
 
     // Used to trigger variation changes (such as seed fetches) upon application foregrounding.
-    private VariationsSession mVariationsSession;
+    private final VariationsSession mVariationsSession;
 
     private boolean mIsInitialized;
     private boolean mIsStarted;
@@ -160,7 +160,7 @@ public class ChromeActivitySessionTracker {
     private void onForegroundSessionStart() {
         try (TraceEvent te = TraceEvent.scoped(
                      "ChromeActivitySessionTracker.onForegroundSessionStart")) {
-            UmaUtils.recordForegroundStartTime();
+            UmaUtils.recordForegroundStartTimeWithNative();
             updatePasswordEchoState();
             FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
                     .onSystemFontScaleChanged();
@@ -187,7 +187,7 @@ public class ChromeActivitySessionTracker {
      */
     private void onForegroundSessionEnd() {
         if (!mIsStarted) return;
-        UmaUtils.recordBackgroundTime();
+        UmaUtils.recordBackgroundTimeWithNative();
         ProfileManagerUtils.flushPersistentDataForAllProfiles();
         mIsStarted = false;
         mPowerBroadcastReceiver.onForegroundSessionEnd();

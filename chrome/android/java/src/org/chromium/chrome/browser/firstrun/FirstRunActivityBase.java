@@ -103,16 +103,21 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity {
     @Override
     public void onPause() {
         super.onPause();
-        UmaUtils.recordBackgroundTime();
+        // As with onResume() below, for historical reasons the FRE has been able to report
+        // background time before post-native initialization, unlike other activities. See
+        // http://crrev.com/436530.
+        UmaUtils.recordBackgroundTimeWithNative();
         flushPersistentData();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Since the FRE may be shown before any tab is shown, mark that this is the point at
-        // which Chrome went to foreground.
-        UmaUtils.recordForegroundStartTime();
+        // Since the FRE may be shown before any tab is shown, mark that this is the point at which
+        // Chrome went to foreground. Other activities can only
+        // recordForegroundStartTimeWithNative() after the post-native initialization has started.
+        // See http://crrev.com/436530.
+        UmaUtils.recordForegroundStartTimeWithNative();
     }
 
     @Override

@@ -53,8 +53,8 @@ public class UmaUtils {
 
     // All these values originate from SystemClock.uptimeMillis().
     private static long sApplicationStartTimeMs;
-    private static long sForegroundStartTimeMs;
-    private static long sBackgroundTimeMs;
+    private static long sForegroundStartWithNativeTimeMs;
+    private static long sBackgroundWithNativeTimeMs;
 
     private static boolean sSkipRecordingNextForegroundStartTimeForTesting;
 
@@ -95,9 +95,14 @@ public class UmaUtils {
     }
 
     /**
-     * Record the time at which Chrome was brought to foreground.
+     * Record the time at which Chrome was brought to foreground. Should be recorded only after
+     * post-native initialization has started.
+     *
+     * A notable exception is FRE. It records foreground time in OnResume(), which can happen before
+     * native. It was made in 2016 to allow native initialization in FRE without errors. See
+     * http://crrev.com/436530.
      */
-    public static void recordForegroundStartTime() {
+    public static void recordForegroundStartTimeWithNative() {
         if (sSkipRecordingNextForegroundStartTimeForTesting) {
             sSkipRecordingNextForegroundStartTimeForTesting = false;
             return;
@@ -106,36 +111,38 @@ public class UmaUtils {
         // Since this can be called from multiple places (e.g. ChromeActivitySessionTracker
         // and FirstRunActivity), only set the time if it hasn't been set previously or if
         // Chrome has been sent to background since the last foreground time.
-        if (sForegroundStartTimeMs == 0 || sForegroundStartTimeMs < sBackgroundTimeMs) {
-            if (sObservers != null && sForegroundStartTimeMs == 0) {
+        if (sForegroundStartWithNativeTimeMs == 0
+                || sForegroundStartWithNativeTimeMs < sBackgroundWithNativeTimeMs) {
+            if (sObservers != null && sForegroundStartWithNativeTimeMs == 0) {
                 for (Observer observer : sObservers) {
                     observer.onHasComeToForeground();
                 }
             }
-
-            sForegroundStartTimeMs = SystemClock.uptimeMillis();
+            sForegroundStartWithNativeTimeMs = SystemClock.uptimeMillis();
         }
     }
 
     /**
      * Record the time at which Chrome was sent to background.
+     *
+     * Should not be called before post-native initialization.
      */
-    public static void recordBackgroundTime() {
-        sBackgroundTimeMs = SystemClock.uptimeMillis();
+    public static void recordBackgroundTimeWithNative() {
+        sBackgroundWithNativeTimeMs = SystemClock.uptimeMillis();
     }
 
     /**
-     * Determines if Chrome was brought to foreground.
+     * Determines whether Chrome was brought to foreground after post-native initialization started.
      */
-    public static boolean hasComeToForeground() {
-        return sForegroundStartTimeMs != 0;
+    public static boolean hasComeToForegroundWithNative() {
+        return sForegroundStartWithNativeTimeMs != 0;
     }
 
     /**
      * Determines if Chrome was brought to background.
      */
-    public static boolean hasComeToBackground() {
-        return sBackgroundTimeMs != 0;
+    public static boolean hasComeToBackgroundWithNative() {
+        return sBackgroundWithNativeTimeMs != 0;
     }
 
     /**

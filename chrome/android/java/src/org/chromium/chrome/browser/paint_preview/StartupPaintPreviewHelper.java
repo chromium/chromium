@@ -152,7 +152,9 @@ public class StartupPaintPreviewHelper {
         startupPaintPreview.setActivityCreationTimestampMs(
                 paintPreviewHelper.mActivityCreationTime);
         startupPaintPreview.setShouldRecordFirstPaint(
-                () -> UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground());
+                ()
+                        -> UmaUtils.hasComeToForegroundWithNative()
+                        && !UmaUtils.hasComeToBackgroundWithNative());
         startupPaintPreview.setIsOfflinePage(() -> OfflinePageUtils.isOfflinePage(tab));
         for (PaintPreviewMetricsObserver observer : paintPreviewHelper.mMetricsObservers) {
             startupPaintPreview.addMetricsObserver(observer);

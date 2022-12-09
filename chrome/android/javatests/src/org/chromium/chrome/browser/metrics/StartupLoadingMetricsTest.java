@@ -320,7 +320,7 @@ public class StartupLoadingMetricsTest {
                         FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
 
         // Trigger the come-to-foreground event.
-        TestThreadUtils.runOnUiThreadBlocking(() -> UmaUtils.recordForegroundStartTime());
+        TestThreadUtils.runOnUiThreadBlocking(() -> UmaUtils.recordForegroundStartTimeWithNative());
 
         // Startup metrics should still not have been recorded...
         Assert.assertEquals(0,

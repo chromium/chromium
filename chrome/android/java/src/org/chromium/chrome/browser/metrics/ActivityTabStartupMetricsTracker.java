@@ -180,7 +180,8 @@ public class ActivityTabStartupMetricsTracker {
                 // The first paint not being recorded means that either (1) the browser is not
                 // marked as being in the foreground or (2) it has been backgrounded. Update
                 // |mRegisteredFirstPaintPreForeground| if appropriate.
-                if (!UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground()) {
+                if (!UmaUtils.hasComeToForegroundWithNative()
+                        && !UmaUtils.hasComeToBackgroundWithNative()) {
                     mRegisteredFirstPaintPreForeground = true;
                 }
             }
@@ -242,7 +243,8 @@ public class ActivityTabStartupMetricsTracker {
     private void registerFinishNavigation(boolean isTrackedPage) {
         if (!mShouldTrackStartupMetrics) return;
 
-        if (isTrackedPage && UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground()) {
+        if (isTrackedPage && UmaUtils.hasComeToForegroundWithNative()
+                && !UmaUtils.hasComeToBackgroundWithNative()) {
             mFirstCommitTimeMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit" + mHistogramSuffix,
@@ -253,8 +255,8 @@ public class ActivityTabStartupMetricsTracker {
             }
             RecordHistogram.recordBooleanHistogram(
                     FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, false);
-        } else if (isTrackedPage && !UmaUtils.hasComeToForeground()
-                && !UmaUtils.hasComeToBackground()) {
+        } else if (isTrackedPage && !UmaUtils.hasComeToForegroundWithNative()
+                && !UmaUtils.hasComeToBackgroundWithNative()) {
             mRegisteredFirstCommitPreForeground = true;
         }
 
@@ -278,7 +280,7 @@ public class ActivityTabStartupMetricsTracker {
         // record if the first commit time wasn't recorded.
         if (mFirstCommitTimeMs == 0) return;
 
-        if (UmaUtils.hasComeToForeground() && !UmaUtils.hasComeToBackground()) {
+        if (UmaUtils.hasComeToForegroundWithNative() && !UmaUtils.hasComeToBackgroundWithNative()) {
             long durationMs = firstContentfulPaintMs - mActivityStartTimeMs;
             RecordHistogram.recordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint" + mHistogramSuffix,
