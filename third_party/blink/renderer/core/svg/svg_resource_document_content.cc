@@ -128,6 +128,10 @@ const KURL& SVGResourceDocumentContent::Url() const {
   return resource_->Url();
 }
 
+bool SVGResourceDocumentContent::IsLoading() const {
+  return resource_->IsLoading();
+}
+
 void SVGResourceDocumentContent::Trace(Visitor* visitor) const {
   visitor->Trace(resource_);
   visitor->Trace(document_);

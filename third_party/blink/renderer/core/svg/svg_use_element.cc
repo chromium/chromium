@@ -80,7 +80,6 @@ SVGUseElement::SVGUseElement(Document& document)
           SVGLengthMode::kHeight,
           SVGLength::Initial::kUnitlessZero)),
       element_url_is_local_(true),
-      have_fired_load_event_(false),
       needs_shadow_tree_recreation_(false) {
   DCHECK(HasCustomStyleCallbacks());
 
@@ -192,12 +191,17 @@ bool SVGUseElement::IsStructurallyExternal() const {
          !EqualIgnoringFragmentIdentifier(element_url_, GetDocument().Url());
 }
 
+bool SVGUseElement::HaveLoadedRequiredResources() {
+  return !document_content_ || !document_content_->IsLoading();
+}
+
 void SVGUseElement::UpdateTargetReference() {
   const String& url_string = HrefString();
   element_url_ = GetDocument().CompleteURL(url_string);
   element_url_is_local_ = url_string.StartsWith('#');
   if (!IsStructurallyExternal() || !GetDocument().IsActive()) {
     ClearResource();
+    pending_event_.Cancel();
     document_content_ = nullptr;
     return;
   }
@@ -206,6 +210,8 @@ void SVGUseElement::UpdateTargetReference() {
                                 element_url_, document_content_->Url()))) {
     return;
   }
+
+  pending_event_.Cancel();
 
   if (element_url_.ProtocolIsData())
     UseCounter::Count(GetDocument(), WebFeature::kDataUrlInSvgUse);
@@ -600,32 +606,24 @@ gfx::RectF SVGUseElement::GetBBox() {
   return bbox;
 }
 
-void SVGUseElement::DispatchPendingEvent() {
-  DCHECK(IsStructurallyExternal());
-  DCHECK(have_fired_load_event_);
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
+void SVGUseElement::DispatchPendingEvent(const AtomicString& event_name) {
+  DispatchEvent(*Event::Create(event_name));
 }
 
 void SVGUseElement::NotifyFinished(Resource* resource) {
   if (!isConnected())
     return;
-
   InvalidateShadowTree();
-  if (resource->ErrorOccurred() || !document_content_->GetDocument()) {
-    DispatchEvent(*Event::Create(event_type_names::kError));
-  } else {
-    if (have_fired_load_event_)
-      return;
-    if (!IsStructurallyExternal())
-      return;
-    DCHECK(!have_fired_load_event_);
-    have_fired_load_event_ = true;
-    GetDocument()
-        .GetTaskRunner(TaskType::kDOMManipulation)
-        ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&SVGUseElement::DispatchPendingEvent,
-                                 WrapPersistent(this)));
-  }
+
+  const bool is_error =
+      resource->ErrorOccurred() || !document_content_->GetDocument();
+  const AtomicString& event_name =
+      is_error ? event_type_names::kError : event_type_names::kLoad;
+  DCHECK(!pending_event_.IsActive());
+  pending_event_ = PostCancellableTask(
+      *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
+      WTF::BindOnce(&SVGUseElement::DispatchPendingEvent, WrapPersistent(this),
+                    event_name));
 }
 
 String SVGUseElement::DebugName() const {

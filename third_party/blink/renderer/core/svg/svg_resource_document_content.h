@@ -52,6 +52,8 @@ class CORE_EXPORT SVGResourceDocumentContent final
   Document* GetDocument();
   const KURL& Url() const;
 
+  bool IsLoading() const;
+
   void Trace(Visitor*) const;
 
  private:
