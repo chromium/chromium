@@ -21,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "base/types/expected.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
@@ -65,19 +66,37 @@ class ProxyImplBase {
 
   HResultOr<Microsoft::WRL::ComPtr<Interface>> CreateInterface() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
 
-    Microsoft::WRL::ComPtr<IUnknown> server;
-    HRESULT hr = ::CoCreateInstance(Derived::GetClassGuid(scope_), nullptr,
-                                    CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
-    if (FAILED(hr)) {
-      VLOG(2) << "Failed to instantiate the update server: " << std::hex << hr;
+    // Retry creating the object if the call fails. Don't retry if
+    // the error is `REGDB_E_CLASSNOTREG` because the error can occur during
+    // normal operation and retrying on registration issues does not help.
+    HResultOr<Microsoft::WRL::ComPtr<IUnknown>> server =
+        [](REFCLSID clsid) -> decltype(server) {
+      constexpr int kNumTries = 2;
+      HRESULT hr = E_FAIL;
+      for (int i = 0; i != kNumTries; ++i) {
+        base::PlatformThread::Sleep(kCreateUpdaterInstanceDelay);
+        Microsoft::WRL::ComPtr<IUnknown> server;
+        hr = ::CoCreateInstance(clsid, nullptr, CLSCTX_LOCAL_SERVER,
+                                IID_PPV_ARGS(&server));
+        if (SUCCEEDED(hr)) {
+          return server;
+        }
+        VLOG(2) << "::CoCreateInstance failed " << std::hex << hr;
+        if (hr == REGDB_E_CLASSNOTREG) {
+          return base::unexpected(hr);
+        }
+      }
       return base::unexpected(hr);
+    }(Derived::GetClassGuid(scope_));
+
+    if (!server.has_value()) {
+      return base::unexpected(server.error());
     }
 
     Microsoft::WRL::ComPtr<Interface> server_interface;
     REFIID iid = IsSystemInstall(scope_) ? iid_system : iid_user;
-    hr = server.CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
+    HRESULT hr = server->CopyTo(iid, IID_PPV_ARGS_Helper(&server_interface));
     if (FAILED(hr)) {
       VLOG(2) << "Failed to query the interface: "
               << base::win::WStringFromGUID(iid) << ": " << std::hex << hr;
