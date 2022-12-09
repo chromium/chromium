@@ -98,8 +98,8 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
     buffer_manager_->CommitBuffer(widget_, buffer_id_, /*frame_id*/ buffer_id_,
-                                  gfx::Rect(size_), gfx::RoundedCornersF(),
-                                  buffer_scale, damage);
+                                  frame_data_, gfx::Rect(size_),
+                                  gfx::RoundedCornersF(), buffer_scale, damage);
   }
 
   void OnUse() {
@@ -140,6 +140,8 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     return pending_damage_region_;
   }
 
+  void set_frame_data(const gl::FrameData& data) { frame_data_ = data; }
+
  private:
   // The size of the buffer.
   gfx::Size size_;
@@ -167,6 +169,9 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   // Pending damage region if the buffer is pending to be submitted.
   gfx::Rect pending_damage_region_;
+
+  // Frame data.
+  gl::FrameData frame_data_;
 };
 
 class WaylandCanvasSurface::VSyncProvider : public gfx::VSyncProvider {
@@ -276,6 +281,7 @@ bool WaylandCanvasSurface::SupportsAsyncBufferSwap() const {
 void WaylandCanvasSurface::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
                                          gl::FrameData data) {
   if (pending_buffer_) {
+    pending_buffer_->set_frame_data(data);
     unsubmitted_buffers_.push_back(pending_buffer_);
     pending_buffer_ = nullptr;
   }

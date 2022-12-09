@@ -3223,7 +3223,7 @@ TEST_P(WaylandWindowTest, MAYBE_ReattachesBackgroundOnShow) {
   background.z_order = INT32_MIN;
   background.buffer_id = buffer_id1;
   overlays.push_back(std::move(background));
-  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 1u,
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 1u, gl::FrameData(),
                                       std::move(overlays));
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {
     auto* mock_surface = server->GetObject<wl::MockSurface>(surface_id);
@@ -3261,7 +3261,7 @@ TEST_P(WaylandWindowTest, MAYBE_ReattachesBackgroundOnShow) {
   primary.z_order = 0;
   primary.buffer_id = buffer_id2;
   overlays.push_back(std::move(primary));
-  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 2u,
+  buffer_manager_gpu_->CommitOverlays(window->GetWidget(), 2u, gl::FrameData(),
                                       std::move(overlays));
 
   PostToServerAndWait([surface_id](wl::TestWaylandServerThread* server) {

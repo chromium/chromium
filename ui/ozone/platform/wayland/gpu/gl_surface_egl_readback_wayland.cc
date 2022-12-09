@@ -123,9 +123,9 @@ void GLSurfaceEglReadbackWayland::SwapBuffersAsync(
 
   const auto bounds = gfx::Rect(GetSize());
   buffer_manager_->CommitBuffer(widget_, next_buffer->buffer_id_,
-                                /*frame_id*/ next_buffer->buffer_id_, bounds,
-                                gfx::RoundedCornersF(), surface_scale_factor_,
-                                bounds);
+                                /*frame_id*/ next_buffer->buffer_id_, data,
+                                bounds, gfx::RoundedCornersF(),
+                                surface_scale_factor_, bounds);
 }
 
 gfx::SurfaceOrigin GLSurfaceEglReadbackWayland::GetOrigin() const {

@@ -247,6 +247,7 @@ void WaylandBufferManagerGpu::CreateSolidColorBuffer(SkColor4f color,
 void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
                                            uint32_t frame_id,
                                            uint32_t buffer_id,
+                                           gl::FrameData data,
                                            const gfx::Rect& bounds_rect,
                                            const gfx::RoundedCornersF& corners,
                                            float surface_scale_factor,
@@ -262,12 +263,13 @@ void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
           gfx::RRectF(gfx::RectF(bounds_rect), corners), gfx::ColorSpace(),
           absl::nullopt),
       nullptr, buffer_id, surface_scale_factor);
-  CommitOverlays(widget, frame_id, std::move(overlay_configs));
+  CommitOverlays(widget, frame_id, data, std::move(overlay_configs));
 }
 
 void WaylandBufferManagerGpu::CommitOverlays(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
+    gl::FrameData data,
     std::vector<wl::WaylandOverlayConfig> overlays) {
   DCHECK(gpu_thread_runner_);
   if (!gpu_thread_runner_->BelongsToCurrentThread()) {
@@ -275,13 +277,13 @@ void WaylandBufferManagerGpu::CommitOverlays(
     gpu_thread_runner_->PostTask(
         FROM_HERE, base::BindOnce(&WaylandBufferManagerGpu::CommitOverlays,
                                   base::Unretained(this), widget, frame_id,
-                                  std::move(overlays)));
+                                  data, std::move(overlays)));
     return;
   }
 
   base::OnceClosure task = base::BindOnce(
       &WaylandBufferManagerGpu::CommitOverlaysTask, base::Unretained(this),
-      widget, frame_id, std::move(overlays));
+      widget, frame_id, data, std::move(overlays));
   RunOrQueueTask(std::move(task));
 }
 
@@ -497,11 +499,12 @@ void WaylandBufferManagerGpu::CreateSolidColorBufferTask(SkColor4f color,
 void WaylandBufferManagerGpu::CommitOverlaysTask(
     gfx::AcceleratedWidget widget,
     uint32_t frame_id,
+    gl::FrameData data,
     std::vector<wl::WaylandOverlayConfig> overlays) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   DCHECK(remote_host_);
 
-  remote_host_->CommitOverlays(widget, frame_id, std::move(overlays));
+  remote_host_->CommitOverlays(widget, frame_id, data, std::move(overlays));
 }
 
 void WaylandBufferManagerGpu::DestroyBufferTask(uint32_t buffer_id) {

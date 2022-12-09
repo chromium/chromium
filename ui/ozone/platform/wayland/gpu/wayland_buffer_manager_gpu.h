@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gl/gl_surface.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
 
@@ -124,6 +125,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   void CommitBuffer(gfx::AcceleratedWidget widget,
                     uint32_t frame_id,
                     uint32_t buffer_id,
+                    gl::FrameData data,
                     const gfx::Rect& bounds_rect,
                     const gfx::RoundedCornersF& corners,
                     float surface_scale_factor,
@@ -132,6 +134,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // |widget|.
   void CommitOverlays(gfx::AcceleratedWidget widget,
                       uint32_t frame_id,
+                      gl::FrameData data,
                       std::vector<wl::WaylandOverlayConfig> overlays);
 
   // Asks Wayland to destroy a wl_buffer.
@@ -228,6 +231,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                   uint32_t buf_id);
   void CommitOverlaysTask(gfx::AcceleratedWidget widget,
                           uint32_t frame_id,
+                          gl::FrameData data,
                           std::vector<wl::WaylandOverlayConfig> overlays);
   void DestroyBufferTask(uint32_t buffer_id);
 

@@ -11,6 +11,7 @@ import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gfx/mojom/swap_result.mojom";
+import "ui/gl/mojom/frame_data.mojom";
 import "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom";
 
 // Used by the GPU for communication with the WaylandBufferManagerHost in
@@ -79,9 +80,10 @@ interface WaylandBufferManagerHost {
   DestroyBuffer(uint32 buffer_id);
 
   // Send overlay configurations for a frame to a WaylandWindow with the
-  // following |widget| and |frame_id|.
+  // following |widget|, |frame_id|, and |overlays|.
   CommitOverlays(gfx.mojom.AcceleratedWidget widget,
                  uint32 frame_id,
+                 gl.mojom.FrameData data,
                  array<wl.mojom.WaylandOverlayConfig> overlays);
 };
 

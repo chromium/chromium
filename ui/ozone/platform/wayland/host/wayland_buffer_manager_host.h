@@ -22,6 +22,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
+#include "ui/gl/gl_surface.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
@@ -113,6 +114,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // and OnPresentation on successful swap and pixels presented.
   void CommitOverlays(gfx::AcceleratedWidget widget,
                       uint32_t frame_id,
+                      const gl::FrameData& data,
                       std::vector<wl::WaylandOverlayConfig> overlays) override;
 
   // Ensures a WaylandBufferHandle of |buffer_id| is created for the
