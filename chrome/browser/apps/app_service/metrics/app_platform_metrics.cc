@@ -1191,7 +1191,8 @@ void AppPlatformMetrics::UpdateUsageTime(
 
   // Also notify registered observers.
   for (auto& observer : observers_) {
-    observer.OnAppUsage(app_id, GetAppType(profile_, app_id), running_time);
+    observer.OnAppUsage(app_id, GetAppType(profile_, app_id), instance_id,
+                        running_time);
   }
 }
 

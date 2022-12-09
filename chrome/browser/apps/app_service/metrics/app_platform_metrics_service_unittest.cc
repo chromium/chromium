@@ -114,6 +114,7 @@ class MockAppPlatformMetricsObserver : public AppPlatformMetrics::Observer {
               OnAppUsage,
               (const std::string& app_id,
                AppType app_type,
+               const base::UnguessableToken& instance_id,
                base::TimeDelta running_time),
               (override));
 
@@ -2651,17 +2652,19 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
   // Set the window active state and verify the observer is notified
   // with the appropriate running time with every notification.
   const std::string& app_id = "a";
-  ModifyInstance(base::UnguessableToken::Create(), app_id, window.get(),
-                 kActiveInstanceState);
+  const base::UnguessableToken& instance_id = base::UnguessableToken::Create();
+  ModifyInstance(instance_id, app_id, window.get(), kActiveInstanceState);
 
   // Usage metrics are recorded every 5 minutes and on window inactivation, so
   // we can expect two notifications with relevant usage times (5 minutes + 3
   // minutes) across a 8 minute usage window.
   Sequence s;
-  EXPECT_CALL(observer_, OnAppUsage(app_id, AppType::kArc, base::Minutes(5)))
+  EXPECT_CALL(observer_,
+              OnAppUsage(app_id, AppType::kArc, instance_id, base::Minutes(5)))
       .Times(1)
       .InSequence(s);
-  EXPECT_CALL(observer_, OnAppUsage(app_id, AppType::kArc, base::Minutes(3)))
+  EXPECT_CALL(observer_,
+              OnAppUsage(app_id, AppType::kArc, instance_id, base::Minutes(3)))
       .Times(1)
       .InSequence(s);
 
@@ -2670,7 +2673,7 @@ TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppUsage) {
 
   // Set app inactive. This should also trigger the second notification with
   // usage time delta after the first one.
-  ModifyInstance(app_id, window.get(), kInactiveInstanceState);
+  ModifyInstance(instance_id, app_id, window.get(), kInactiveInstanceState);
 }
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotNotifyUnregisteredObservers) {
