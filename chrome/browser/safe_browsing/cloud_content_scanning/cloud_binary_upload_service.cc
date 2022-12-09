@@ -9,11 +9,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -123,12 +123,11 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
   if (IsConsumerScanRequest(request))
     return false;
 
-    // Allow the access token to be used on unmanaged devices, but not on
-    // managed devices that aren't affiliated.
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
+  // Allow the access token to be used on unmanaged devices, but not on
+  // managed devices that aren't affiliated.
+  if (!policy::IsDeviceCloudManaged())
     return true;
-#endif
+
   return chrome::enterprise_util::IsProfileAffiliated(profile);
 }
 

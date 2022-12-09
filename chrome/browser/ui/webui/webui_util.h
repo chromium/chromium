@@ -45,11 +45,6 @@ void AddLocalizedString(content::WebUIDataSource* source,
                         const std::string& message,
                         int id);
 
-// Returns whether the device is enterprise managed. Note that on Linux, there's
-// no good way of detecting whether the device is managed, so always return
-// false.
-bool IsEnterpriseManaged();
-
 #if defined(TOOLKIT_VIEWS)
 
 // Returns whether WebContents should use dark mode colors depending on the

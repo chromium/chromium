@@ -29,6 +29,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
@@ -215,7 +216,7 @@ bool IsProfileManaged(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool IsDeviceManaged() {
-  return webui::IsEnterpriseManaged();
+  return policy::IsDeviceEnterpriseManaged();
 }
 
 enum class DeviceReportingType {

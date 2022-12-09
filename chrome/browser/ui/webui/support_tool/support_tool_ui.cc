@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
@@ -383,5 +384,5 @@ SupportToolUI::SupportToolUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 SupportToolUI::~SupportToolUI() = default;
 
 bool SupportToolUI::IsEnabled(Profile* profile) {
-  return webui::IsEnterpriseManaged() || !profile->IsGuestSession();
+  return policy::IsDeviceEnterpriseManaged() || !profile->IsGuestSession();
 }

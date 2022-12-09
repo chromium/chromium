@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/crostini_handler.h"
@@ -212,7 +213,7 @@ bool IsProfileManaged(Profile* profile) {
 }
 
 bool IsDeviceManaged() {
-  return webui::IsEnterpriseManaged();
+  return policy::IsDeviceEnterpriseManaged();
 }
 
 bool IsAdbSideloadingAllowed() {

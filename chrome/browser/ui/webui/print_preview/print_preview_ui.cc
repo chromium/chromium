@@ -25,6 +25,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/pdf/pdf_extension_util.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/printing/background_printing_manager.h"
 #include "chrome/browser/printing/pdf_nup_converter_client.h"
 #include "chrome/browser/printing/print_job_manager.h"
@@ -352,7 +353,8 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
   source->AddBoolean("useSystemDefaultPrinter", system_default_printer);
 #endif
 
-  source->AddBoolean("isEnterpriseManaged", webui::IsEnterpriseManaged());
+  source->AddBoolean("isEnterpriseManaged",
+                     policy::IsDeviceEnterpriseManaged());
 }
 
 void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {

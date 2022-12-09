@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/settings/about_handler.h"
@@ -387,7 +388,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("deviceManager", GetDeviceManager());
 
   if (user_manager::UserManager::IsInitialized()) {
-    bool is_enterprise_managed = webui::IsEnterpriseManaged();
+    bool is_enterprise_managed = policy::IsDeviceEnterpriseManaged();
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     bool is_current_owner = user_manager->IsCurrentUserOwner();
 
@@ -426,7 +427,7 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("aboutProductOsWithLinuxLicense",
                          os_with_linux_license);
   html_source->AddBoolean("aboutEnterpriseManaged",
-                          webui::IsEnterpriseManaged());
+                          policy::IsDeviceEnterpriseManaged());
   html_source->AddBoolean("aboutIsArcEnabled",
                           arc::IsArcPlayStoreEnabledForProfile(profile()));
   html_source->AddBoolean("aboutIsDeveloperMode",

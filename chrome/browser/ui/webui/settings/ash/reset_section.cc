@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -48,7 +49,7 @@ const std::vector<SearchConcept>& GetResetSearchConcepts() {
 }
 
 bool IsPowerwashAllowed() {
-  return !webui::IsEnterpriseManaged() &&
+  return !policy::IsDeviceEnterpriseManaged() &&
          !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
          !user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 }

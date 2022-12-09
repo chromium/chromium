@@ -86,20 +86,6 @@ void AddLocalizedString(content::WebUIDataSource* source,
   source->AddString(message, str);
 }
 
-bool IsEnterpriseManaged() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->IsDeviceEnterpriseManaged();
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return base::IsManagedDevice();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsDeviceEnterprisedManaged();
-#else
-  return false;
-#endif
-}
-
 #if defined(TOOLKIT_VIEWS)
 
 namespace {
