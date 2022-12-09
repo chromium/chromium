@@ -353,3 +353,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfTree) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfTreeItem) {
   RunTestURL("widgets/xf_tree_item_unittest.js");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfIcon) {
+  RunTestURL("widgets/xf_icon_unittest.js");
+}
