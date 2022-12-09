@@ -1,13 +1,13 @@
 <style>
   :host {
     --cr-grid-gap: 0px;
+    --cr-column-width: auto;
   }
 
   #grid {
     display: grid;
-    grid-column-gap: var(--cr-grid-gap);
-    grid-row-gap: var(--cr-grid-gap);
-    grid-template-columns: repeat(var(--cr-grid-columns), auto);
+    grid-gap: var(--cr-grid-gap);
+    grid-template-columns: repeat(var(--cr-grid-columns), var(--cr-column-width));
     width: fit-content;
   }
 

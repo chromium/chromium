@@ -1,6 +1,11 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './categories.html.js';
@@ -9,7 +14,7 @@ import {CustomizeChromeApiProxy} from './customize_chrome_api_proxy.js';
 
 export interface CategoriesElement {
   $: {
-    backButton: HTMLButtonElement,
+    backButton: HTMLElement,
   };
 }
 

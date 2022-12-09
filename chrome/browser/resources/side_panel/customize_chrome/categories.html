@@ -1,12 +1,120 @@
-<button on-click="onBackClick_" id="backButton">
-  Go Back
-</button>
-<h1>Themes</h1>
-<dom-repeat id="collectionsRepeat" items="[[collections_]]">
-  <template>
-    <div class="tile" tabindex="0" role="button"
-        on-click="onCollectionClick_">
-      <div class="label">[[item.label]]</div>
+<style include="cr-hidden-style cr-icons">
+  #container {
+    margin: 0 16px 32px 16px;
+    max-width: 284px;
+  }
+
+  #headerContainer {
+    align-items: center;
+    display: flex;
+    margin: 10px 0;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    --cr-icon-button-margin-start: -8px;
+  }
+
+  h1 {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    margin: 0;
+    margin-inline-start: 6px;
+  }
+
+  cr-grid {
+    --cr-column-width: 1fr;
+    --cr-grid-gap: 16px 11px;
+  }
+
+  .tile {
+    cursor: pointer;
+    grid-column: span 2;
+    place-self: stretch;
+  }
+
+  .image-container {
+    /* TODO(crbug.com/1384246): use i18n for title */
+    background-color: var(--google-grey-100);
+    overflow: hidden;
+    padding-top: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  .label {
+    color: var(--cr-primary-text-color);
+    text-align: center;
+  }
+
+  .tile:nth-child(-n+4) {
+    grid-column: span 3;
+    padding-inline-end: 2.5px;
+  }
+
+  .tile:nth-child(-n+4):nth-child(even) {
+    padding-inline-end: 0;
+    padding-inline-start: 2.5px;
+  }
+
+  .tile:nth-child(-n+4) .image-container {
+    border-radius: 16px;
+  }
+
+  .tile:nth-child(-n+4) .label {
+    font-size: 13px;
+    line-height: 20px;
+    padding-top: 12px;
+  }
+
+  .image-container { 
+    border-radius: 12px;
+  }
+
+  .label {
+    font-size: 11px;
+    line-height: 16px;
+    padding-top: 7px;
+  }
+</style>
+<div id="container">
+  <div id="headerContainer">
+    <!-- TODO(crbug.com/1399596): use i18n for title -->
+    <cr-icon-button on-click="onBackClick_" id="backButton"
+        class="icon-arrow-back" title="Go Back">
+    </cr-icon-button>
+    <!-- TODO(crbug.com/1399596): use i18n for heading -->
+    <h1>Themes</h1>
+  </div>
+  <cr-grid columns="6">
+    <div class="tile" tabindex="0" role="button">
+      <div class="image-container"></div>
+      <!-- TODO(crbug.com/1399596): use i18n for label -->
+      <div class="label">Classic Chrome</div>
     </div>
-  </template>
-</dom-repeat>
+    <div class="tile" tabindex="0" role="button">
+      <div class="image-container"></div>
+      <!-- TODO(crbug.com/1399596): use i18n for label -->
+      <div class="label">Upload Image</div>
+    </div>
+    <div class="tile" tabindex="0" role="button">
+      <div class="image-container"></div>
+      <!-- TODO(crbug.com/1399596): use i18n for label -->
+      <div class="label">Chrome Colors</div>
+    </div>
+    <template is="dom-repeat" id="collectionsRepeat" items="[[collections_]]">
+      <div class="tile collection" tabindex="0" role="button"
+          on-click="onCollectionClick_">
+        <div class="image-container"></div>
+        <div class="label">[[item.label]]</div>
+      </div>
+    </template>
+    <div class="tile" tabindex="0" role="button">
+      <div class="image-container"></div>
+      <!-- TODO(crbug.com/1399596): use i18n for label -->
+      <div class="label">Chrome Web Store</div>
+    </div>
+  </cr-grid>
+</div>

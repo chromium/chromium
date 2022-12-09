@@ -48,9 +48,19 @@ suite('CategoriesTest', () => {
                 mock, new CustomizeChromePageCallbackRouter()));
   });
 
+  test('hide collection elements when collections empty', async () => {
+    await setInitialSettings(0);
+
+    const collections =
+        categoriesElement.shadowRoot!.querySelectorAll('.collection');
+    assertEquals(0, collections.length);
+  });
+
   test('creating element shows background collection tiles', async () => {
     await setInitialSettings(2);
-    const collections = categoriesElement.shadowRoot!.querySelectorAll('.tile');
+
+    const collections =
+        categoriesElement.shadowRoot!.querySelectorAll('.collection');
     assertEquals(2, collections.length);
     assertEquals(
         'collection_1', collections[0]!.querySelector('.label')!.textContent);
@@ -62,8 +72,8 @@ suite('CategoriesTest', () => {
     await setInitialSettings(1);
 
     const eventPromise = eventToPromise('collection-select', categoriesElement);
-    const category = categoriesElement.shadowRoot!.querySelector('.tile')! as
-        HTMLButtonElement;
+    const category = categoriesElement.shadowRoot!.querySelector(
+                         '.collection')! as HTMLButtonElement;
     category.click();
     const event = (await eventPromise) as CustomEvent<BackgroundCollection>;
     assertTrue(!!event);
