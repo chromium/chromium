@@ -68,10 +68,11 @@ enum AcceleratorLayoutStyle {
 // TODO(jimmyxgong): These are not the final enums, update once final categories
 // are available.
 enum AcceleratorCategory {
-  kSystem,
-  kWindowsAndDesk,
-  kTabsAndPages,
-  kTextAndInput,
+  kTabsAndWindows,
+  kPageAndWebBrowser,
+  kSystemAndDisplaySettings,
+  kTextEditing,
+  kAccessibility,
   kDebug,
   kDeveloper,
 };

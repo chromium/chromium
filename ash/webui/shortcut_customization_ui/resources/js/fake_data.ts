@@ -86,7 +86,7 @@ export const fakeAcceleratorConfig: MojoAcceleratorConfig = {
 
 export const fakeLayoutInfo: MojoLayoutInfo[] = [
   {
-    category: AcceleratorCategory.kSystem,
+    category: AcceleratorCategory.kTabsAndWindows,
     subCategory: AcceleratorSubcategory.kGeneral,
     description: stringToMojoString16('Snap Window Left'),
     style: LayoutStyle.kDefault,
@@ -94,7 +94,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     action: 0,
   },
   {
-    category: AcceleratorCategory.kSystem,
+    category: AcceleratorCategory.kTabsAndWindows,
     subCategory: AcceleratorSubcategory.kGeneral,
     description: stringToMojoString16('Snap Window Right'),
     style: LayoutStyle.kDefault,
@@ -102,7 +102,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     action: 1,
   },
   {
-    category: AcceleratorCategory.kSystem,
+    category: AcceleratorCategory.kTabsAndWindows,
     subCategory: AcceleratorSubcategory.kSystemApps,
     description: stringToMojoString16('Create Desk'),
     style: LayoutStyle.kDefault,
@@ -110,7 +110,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     action: 2,
   },
   {
-    category: AcceleratorCategory.kSystem,
+    category: AcceleratorCategory.kTabsAndWindows,
     subCategory: AcceleratorSubcategory.kSystemApps,
     description: stringToMojoString16('Remove Desk'),
     style: LayoutStyle.kDefault,
@@ -118,7 +118,7 @@ export const fakeLayoutInfo: MojoLayoutInfo[] = [
     action: 3,
   },
   {
-    category: AcceleratorCategory.kWindowsAndDesk,
+    category: AcceleratorCategory.kPageAndWebBrowser,
     subCategory: AcceleratorSubcategory.kSystemControls,
     description: stringToMojoString16('New Tab'),
     style: LayoutStyle.kDefault,
@@ -148,7 +148,7 @@ const createFakeMojoAccelInfo = (keyDisplay: string): MojoAcceleratorInfo => {
 const createFakeMojoLayoutInfo =
     (description: string, action: number): MojoLayoutInfo => {
       return {
-        category: AcceleratorCategory.kWindowsAndDesk,
+        category: AcceleratorCategory.kPageAndWebBrowser,
         subCategory: AcceleratorSubcategory.kSystemControls,
         description: stringToMojoString16(description),
         style: LayoutStyle.kDefault,

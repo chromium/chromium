@@ -128,14 +128,17 @@ suite('acceleratorLookupManagerTest', function() {
 
       getManager().setAcceleratorLayoutLookup(result.layoutInfos);
 
-      // We expect 2 subcategories for kSystem: kGeneral and kSystemApps.
+      // We expect 2 subcategories for kTabsAndWindows: kGeneral and
+      // kSystemApps.
       assertEquals(
-          2, getManager().getSubcategories(AcceleratorCategory.kSystem)!.size);
+          2,
+          getManager().getSubcategories(
+                          AcceleratorCategory.kTabsAndWindows)!.size);
       // We expect 1 subcategory for kWindowsAndDesk: kSystemControl.
       assertEquals(
           1,
           getManager().getSubcategories(
-                          AcceleratorCategory.kWindowsAndDesk)!.size);
+                          AcceleratorCategory.kPageAndWebBrowser)!.size);
     });
   });
 
@@ -151,10 +154,11 @@ suite('acceleratorLookupManagerTest', function() {
       // AcceleratorLookupManager, we expect the subcategories to be undefined.
       assertEquals(
           undefined,
-          getManager().getSubcategories(AcceleratorCategory.kSystem));
+          getManager().getSubcategories(AcceleratorCategory.kTabsAndWindows));
       assertEquals(
           undefined,
-          getManager().getSubcategories(AcceleratorCategory.kWindowsAndDesk));
+          getManager().getSubcategories(
+              AcceleratorCategory.kPageAndWebBrowser));
     });
   });
 

@@ -38,12 +38,12 @@ export class AcceleratorLookupManager {
   private acceleratorLookup_: AcceleratorLookupMap = new Map();
   /**
    * A multi-layered map container. The top-most layer is a map with the key
-   * as the accelerator's category (e.g. System, Tabs & Pages). The value of the
-   * top-most map is another map in which the key is the accelerator's
-   * subcategory (e.g. System Controls, System Apps) and the value is an
-   * Array of LayoutInfo. This map serves as a way to find all LayoutInfo's of
-   * a given subsection of accelerators, where each LayoutInfo corresponds to
-   * one AcceleratorRow.
+   * as the accelerator's category (e.g. Tabs & Windows, Page & Web Browser).
+   * The value of the top-most map is another map in which the key is the
+   * accelerator's subcategory (e.g. System Controls, System Apps) and the value
+   * is an Array of LayoutInfo. This map serves as a way to find all
+   * LayoutInfo's of a given subsection of accelerators, where each LayoutInfo
+   * corresponds to one AcceleratorRow.
    */
   private acceleratorLayoutLookup_: AcceleratorLayoutLookupMap = new Map();
   /**

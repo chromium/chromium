@@ -52,14 +52,16 @@ const categoryPrefix = 'category';
 export const getCategoryNameStringId =
     (category: AcceleratorCategory): string => {
       switch (category) {
-        case AcceleratorCategory.kSystem:
-          return `${categoryPrefix}System`;
-        case AcceleratorCategory.kWindowsAndDesk:
-          return `${categoryPrefix}WindowsAndDesk`;
-        case AcceleratorCategory.kTabsAndPages:
-          return `${categoryPrefix}TabsAndPages`;
-        case AcceleratorCategory.kTextAndInput:
-          return `${categoryPrefix}TextAndInput`;
+        case AcceleratorCategory.kTabsAndWindows:
+          return `${categoryPrefix}TabsAndWindows`;
+        case AcceleratorCategory.kPageAndWebBrowser:
+          return `${categoryPrefix}PageAndWebBrowser`;
+        case AcceleratorCategory.kSystemAndDisplaySettings:
+          return `${categoryPrefix}SystemAndDisplaySettings`;
+        case AcceleratorCategory.kTextEditing:
+          return `${categoryPrefix}TextEditing`;
+        case AcceleratorCategory.kAccessibility:
+          return `${categoryPrefix}Accessibility`;
         case AcceleratorCategory.kDebug:
           return `${categoryPrefix}Debug`;
         case AcceleratorCategory.kDeveloper:
