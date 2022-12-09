@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/url_constants.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -703,6 +706,11 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
     RegisterWebApp(std::move(iwa));
   }
 
+  void TearDown() override {
+    SetTrustedWebBundleIdsForTesting({});
+    IsolatedWebAppURLLoaderFactoryTest::TearDown();
+  }
+
   base::FilePath CreateSignedBundleAndWriteToDisk() {
     bool relative_urls = std::get<1>(GetParam());
     std::string base_url = relative_urls ? "/" : kEd25519AppOriginUrl.spec();
@@ -739,6 +747,11 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
     return web_bundle_path;
   }
 
+  void TrustWebBundleId() {
+    SetTrustedWebBundleIdsForTesting(
+        {*web_package::SignedWebBundleId::Create(kTestEd25519WebBundleId)});
+  }
+
   const GURL kEd25519AppOriginUrl = GURL(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     kTestEd25519WebBundleId}));
@@ -748,6 +761,7 @@ class IsolatedWebAppURLLoaderFactorySignedWebBundleTest
 
 TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest, RequestIndex) {
   CreateFactory();
+  TrustWebBundleId();
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kEd25519AppOriginUrl;
@@ -758,8 +772,23 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest, RequestIndex) {
 }
 
 TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
+       RequestIndexWithoutTrustedPublicKey) {
+  CreateFactory();
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = kEd25519AppOriginUrl;
+  int status = CreateLoaderAndRun(std::move(request));
+
+  // TODO(crbug.com/1365852): This should probably be `ERR_FAILED`, not
+  // `ERR_INVALID_WEB_BUNDLE`.
+  EXPECT_THAT(status, IsNetError(net::ERR_INVALID_WEB_BUNDLE));
+  EXPECT_THAT(ResponseInfo(), IsNull());
+}
+
+TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
        RequestResourceWithNon200StatusCode) {
   CreateFactory();
+  TrustWebBundleId();
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kEd25519AppOriginUrl.Resolve("/invalid-status-code");
@@ -771,6 +800,7 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
 TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
        RequestNonExistingResource) {
   CreateFactory();
+  TrustWebBundleId();
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kEd25519AppOriginUrl.Resolve("/non-existing");
@@ -784,6 +814,7 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
 TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
        SuccessfulRequestHasCorrectLengthFields) {
   CreateFactory();
+  TrustWebBundleId();
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kEd25519AppOriginUrl;
@@ -803,6 +834,7 @@ TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
 TEST_P(IsolatedWebAppURLLoaderFactorySignedWebBundleTest,
        NonExistingRequestHasCorrectLengthFields) {
   CreateFactory();
+  TrustWebBundleId();
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kEd25519AppOriginUrl.Resolve("/non-existing");
@@ -858,6 +890,7 @@ class IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest
 TEST_P(IsolatedWebAppURLLoaderFactoryFeatureFlagDisabledTest,
        RequestFailsWhenFeatureIsDisabled) {
   CreateFactory();
+  TrustWebBundleId();
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = kEd25519AppOriginUrl;

@@ -6,40 +6,40 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace web_app {
 
+IsolatedWebAppValidator::IsolatedWebAppValidator(
+    std::unique_ptr<const IsolatedWebAppTrustChecker>
+        isolated_web_app_trust_checker)
+    : isolated_web_app_trust_checker_(
+          std::move(isolated_web_app_trust_checker)) {}
+
+IsolatedWebAppValidator::~IsolatedWebAppValidator() = default;
+
 void IsolatedWebAppValidator::ValidateIntegrityBlock(
     const web_package::SignedWebBundleId& expected_web_bundle_id,
     const std::vector<web_package::Ed25519PublicKey>& public_key_stack,
     base::OnceCallback<void(absl::optional<std::string>)> callback) {
-  if (public_key_stack.empty()) {
-    std::move(callback).Run(
-        "The Isolated Web App must have at least one signature.");
+  // In here, we would also validate other properties of the Integrity Block,
+  // such as whether its version is supported (once we support multiple
+  // Integrity Block versions).
+
+  IsolatedWebAppTrustChecker::Result result =
+      isolated_web_app_trust_checker_->IsTrusted(expected_web_bundle_id,
+                                                 public_key_stack);
+  if (result.status != IsolatedWebAppTrustChecker::Result::Status::kTrusted) {
+    std::move(callback).Run(result.message);
     return;
   }
 
-  // The Web Bundle ID of the Isolated Web App must always be derived from the
-  // first public key in the stack.
-  auto actual_web_bundle_id =
-      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-          public_key_stack[0]);
-  if (actual_web_bundle_id != expected_web_bundle_id) {
-    std::move(callback).Run(
-        base::StringPrintf("The Web Bundle ID (%s) derived from the public key "
-                           "does not match the expected Web Bundle ID (%s).",
-                           actual_web_bundle_id.id().c_str(),
-                           expected_web_bundle_id.id().c_str()));
-    return;
-  }
-
-  // TODO(crbug.com/1365852): Check whether we trust the public keys contained
-  // in the integrity block here.
   std::move(callback).Run(absl::nullopt);
 }
 

@@ -22,9 +22,11 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "chrome/common/url_constants.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -57,7 +59,9 @@ class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
  public:
   explicit FakeIsolatedWebAppValidator(
       absl::optional<std::string> integrity_block_error)
-      : integrity_block_error_(integrity_block_error) {}
+      : IsolatedWebAppValidator(std::make_unique<IsolatedWebAppTrustChecker>(
+            TestingPrefServiceSimple())),
+        integrity_block_error_(integrity_block_error) {}
 
   void ValidateIntegrityBlock(
       const web_package::SignedWebBundleId& web_bundle_id,
@@ -134,7 +138,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
     integrity_block_->signature_stack = std::move(signature_stack);
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-        std::make_unique<IsolatedWebAppValidator>(),
+        std::make_unique<FakeIsolatedWebAppValidator>(absl::nullopt),
         base::BindRepeating(
             []() -> std::unique_ptr<
                      web_package::SignedWebBundleSignatureVerifier> {
