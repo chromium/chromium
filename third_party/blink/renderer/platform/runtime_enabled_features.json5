@@ -909,7 +909,7 @@
     // https://drafts.csswg.org/scroll-animations-1/#view-timeline-shorthand
     {
       name: "CSSViewTimeline",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "Database",
