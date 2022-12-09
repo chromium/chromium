@@ -1372,6 +1372,10 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         AlertDialog alertDialog =
                 new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
+                        .setTitle(String.format(
+                                getContext().getString(
+                                        R.string.website_settings_edit_site_dialog_title),
+                                site.getTitleForPreferenceRow()))
                         .setPositiveButton(R.string.cancel, null)
                         .setNegativeButton(R.string.remove,
                                 (dialog, which) -> {

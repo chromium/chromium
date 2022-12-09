@@ -245,6 +245,12 @@
     Enter web address
   </message>
 
+  <!-- Site settings Edit Exception dialog -->
+
+  <message name="IDS_WEBSITE_SETTINGS_EDIT_SITE_DIALOG_TITLE" desc="The title of the dialog to edit permissions for a website from a list.">
+    Site preference for <ph name="SITE_NAME">%1$s<ex>google.com</ex></ph>
+  </message>
+
   <!-- Site settings Clear Data Dialog and other ways of resetting permissions -->
 
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_TITLE" desc="Title of the confirmation dialog when the user ask to clear all data for an origin">
