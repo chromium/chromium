@@ -1020,7 +1020,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   GURL url = https_test_server.GetURL("/webrequest/simulate_click.html");
 
-  base::ListValue custom_args;
+  base::Value::List custom_args;
   custom_args.Append(url.spec());
   custom_args.Append(insecure_destination.spec());
 
