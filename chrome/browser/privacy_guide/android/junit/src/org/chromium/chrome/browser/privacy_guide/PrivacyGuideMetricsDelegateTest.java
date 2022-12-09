@@ -123,4 +123,20 @@ public class PrivacyGuideMetricsDelegateTest {
         triggerMSBBMetricsOnNext();
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.NextClickMSBB"));
     }
+
+    @Test
+    @SmallTest
+    public void testSync_changeHistorySyncOnUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnSyncChange(true);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeHistorySyncOn"));
+    }
+
+    @Test
+    @SmallTest
+    public void testSync_changeHistorySyncOffUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnSyncChange(false);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeHistorySyncOff"));
+    }
 }

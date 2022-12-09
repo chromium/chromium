@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
@@ -39,6 +40,11 @@ import java.util.Set;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SyncFragmentTest {
+    private static final String CHANGE_HISTORY_SYNC_ON_USER_ACTION =
+            "Settings.PrivacyGuide.ChangeHistorySyncOn";
+    private static final String CHANGE_HISTORY_SYNC_OFF_USER_ACTION =
+            "Settings.PrivacyGuide.ChangeHistorySyncOff";
+
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -50,6 +56,7 @@ public class SyncFragmentTest {
 
     private FragmentScenario mScenario;
     private SwitchCompat mHistorySyncButton;
+    private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
     public void setUp() {
@@ -136,5 +143,44 @@ public class SyncFragmentTest {
         mHistorySyncButton.performClick();
         verify(mSyncService, times(2)).setSelectedTypes(eq(false), mSetCaptor.capture());
         assertTrue(mSetCaptor.getAllValues().get(1).contains(UserSelectableType.HISTORY));
+    }
+
+    @Test
+    public void testTurnHistorySyncOn_changeHistorySyncOnUserAction() {
+        initFragmentWithSyncState(false, false);
+        mHistorySyncButton.performClick();
+        assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_ON_USER_ACTION));
+    }
+
+    @Test
+    public void testTurnHistorySyncOffWhenSyncAllOn_changeHistorySyncOffUserAction() {
+        initFragmentWithSyncState(true, true);
+        mHistorySyncButton.performClick();
+        assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
+    }
+
+    @Test
+    public void testTurnHistorySyncOffWhenSyncAllOff_changeHistorySyncOffUserAction() {
+        initFragmentWithSyncState(false, true);
+        mHistorySyncButton.performClick();
+        assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
+    }
+
+    @Test
+    public void testTurnHistorySyncOffThenOnWhenSyncAllOn_changeHistorySyncOffOnUserAction() {
+        initFragmentWithSyncState(true, true);
+        mHistorySyncButton.performClick();
+        assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
+        mHistorySyncButton.performClick();
+        assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_ON_USER_ACTION));
+    }
+
+    @Test
+    public void testTurnHistorySyncOffThenOnWhenSyncAllOff_changeHistorySyncOffOnUserAction() {
+        initFragmentWithSyncState(false, true);
+        mHistorySyncButton.performClick();
+        assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_OFF_USER_ACTION));
+        mHistorySyncButton.performClick();
+        assertTrue(mActionTester.getActions().contains(CHANGE_HISTORY_SYNC_ON_USER_ACTION));
     }
 }

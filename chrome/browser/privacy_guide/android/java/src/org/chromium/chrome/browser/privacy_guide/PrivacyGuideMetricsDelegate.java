@@ -89,4 +89,16 @@ class PrivacyGuideMetricsDelegate {
     static void recordMetricsForDoneButton() {
         RecordUserAction.record("Settings.PrivacyGuide.NextClickCompletion");
     }
+
+    /**
+     * A method to record metrics on the History Sync toggle change of the Privacy Guide's {@link
+     * SyncFragment}.
+     */
+    static void recordMetricsOnSyncChange(boolean isHistorySyncOn) {
+        if (isHistorySyncOn) {
+            RecordUserAction.record("Settings.PrivacyGuide.ChangeHistorySyncOn");
+        } else {
+            RecordUserAction.record("Settings.PrivacyGuide.ChangeHistorySyncOff");
+        }
+    }
 }

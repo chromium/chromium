@@ -46,6 +46,8 @@ public class SyncFragment extends Fragment implements CompoundButton.OnCheckedCh
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        PrivacyGuideMetricsDelegate.recordMetricsOnSyncChange(isChecked);
+
         boolean keepEverythingSynced = isChecked && mInitialKeepEverythingSynced;
 
         Set<Integer> syncTypes = mSyncService.getSelectedTypes();
