@@ -73,12 +73,6 @@ struct Config {
 
   // The `kJourneysLabels` feature and child params.
 
-  // Whether to assign labels to clusters. If the label exists, it will be shown
-  // in the UI. If the label doesn't exist, the UI will emphasize the top visit.
-  // Note: The default value here is meaningless, because the actual default
-  // value is derived from the base::Feature.
-  bool should_label_clusters = true;
-
   // Whether to assign labels to clusters from the hostnames of the cluster.
   // Does nothing if `should_label_clusters` is false. Note that since every
   // cluster has a hostname, this flag in conjunction with
@@ -88,6 +82,8 @@ struct Config {
   // Whether to assign labels to clusters from the Entities of the cluster.
   // Does nothing if `should_label_clusters` is false.
   bool labels_from_entities = false;
+
+  // The `kJourneysImages` feature and child params.
 
   // Whether to attempt to provide images for eligible Journeys (so far just
   // a proof of concept implementation for Entities only).
@@ -227,10 +223,6 @@ struct Config {
   // cluster.
   bool keyword_filter_on_noisy_visits = false;
 
-  // If enabled, adds the search terms of the visits that have them.
-  // TODO(crbug.com/1394812): Clean this flag up beyond M110.
-  bool keyword_filter_on_search_terms = true;
-
   // Maximum number of keywords to keep per cluster.
   size_t max_num_keywords_per_cluster = 20;
 
@@ -244,13 +236,6 @@ struct Config {
   // visit.
   int entity_relevance_threshold = 60;
 
-  // Whether to hide single-visit clusters on prominent UI surfaces.
-  bool should_hide_single_visit_clusters_on_prominent_ui_surfaces = true;
-
-  // Whether to filter clusters that are noisy from the UI. This will
-  // heuristically remove clusters that are unlikely to be "interesting".
-  bool should_filter_noisy_clusters = true;
-
   // Returns the threshold used to determine if a cluster, and its visits, has
   // too high site engagement to be likely useful.
   float noisy_cluster_visits_engagement_threshold = 15.0;
@@ -259,6 +244,8 @@ struct Config {
   // to prevent the cluster from being filtered out (i.e., marked as not visible
   // on the zero state UI).
   size_t number_interesting_visits_filter_threshold = 1;
+
+  // The `kJourneysCategoryFiltering` feature and child params.
 
   // Whether to determine whether to show/hide clusters on prominent UI surfaces
   // based on categories annotated for a visit.

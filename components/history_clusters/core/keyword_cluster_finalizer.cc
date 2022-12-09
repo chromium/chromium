@@ -168,8 +168,7 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
       }
     }
 
-    if (GetConfig().keyword_filter_on_search_terms &&
-        !visit.annotated_visit.content_annotations.search_terms.empty()) {
+    if (!visit.annotated_visit.content_annotations.search_terms.empty()) {
       const auto& search_terms =
           visit.annotated_visit.content_annotations.search_terms;
       auto search_it = keyword_to_data_map.find(search_terms);

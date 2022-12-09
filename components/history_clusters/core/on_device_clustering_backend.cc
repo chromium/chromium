@@ -347,28 +347,30 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
             &entity_id_to_entity_metadata_map));
   }
 
-  cluster_finalizers.push_back(
-      std::make_unique<ContentVisibilityClusterFinalizer>());
+  // Cluster finalizers that affect the appearance of a cluster on a UI surface.
   cluster_finalizers.push_back(
       std::make_unique<SimilarVisitDeduperClusterFinalizer>());
   cluster_finalizers.push_back(std::make_unique<RankingClusterFinalizer>());
-  if (GetConfig().should_hide_single_visit_clusters_on_prominent_ui_surfaces) {
-    cluster_finalizers.push_back(
-        std::make_unique<SingleVisitClusterFinalizer>());
-  }
-  // Add feature to turn on/off site engagement score filter.
-  if (engagement_score_provider_is_valid &&
-      GetConfig().should_filter_noisy_clusters) {
+  cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>(
+      &entity_id_to_entity_metadata_map));
+
+  // TODO(b/259466296): Guard the below cluster finalizers so that they don't
+  // run when we start persisting "basic" clusters at navigation, as these
+  // attributes will be computed on the fly.
+
+  // Cluster finalizers that affect the keywords for a cluster.
+  cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>(
+      &entity_id_to_entity_metadata_map));
+
+  // Cluster finalizers that affect the visibility of a cluster.
+  cluster_finalizers.push_back(
+      std::make_unique<ContentVisibilityClusterFinalizer>());
+  cluster_finalizers.push_back(std::make_unique<SingleVisitClusterFinalizer>());
+  if (engagement_score_provider_is_valid) {
     cluster_finalizers.push_back(std::make_unique<NoisyClusterFinalizer>());
   }
   if (GetConfig().should_use_categories_to_filter_on_prominent_ui_surfaces) {
     cluster_finalizers.push_back(std::make_unique<CategoryClusterFinalizer>());
-  }
-  cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>(
-      &entity_id_to_entity_metadata_map));
-  if (GetConfig().should_label_clusters) {
-    cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>(
-        &entity_id_to_entity_metadata_map));
   }
 
   // Group visits into clusters.

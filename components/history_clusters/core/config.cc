@@ -78,9 +78,6 @@ Config::Config() {
 
   // The `kJourneysLabels` feature and child params.
   {
-    should_label_clusters =
-        base::FeatureList::IsEnabled(internal::kJourneysLabels);
-
     labels_from_hostnames = GetFieldTrialParamByFeatureAsBool(
         internal::kJourneysLabels, "labels_from_hostnames",
         labels_from_hostnames);
@@ -219,10 +216,6 @@ Config::Config() {
         history_clusters::features::kOnDeviceClusteringKeywordFiltering,
         "keyword_filter_on_noisy_visits", keyword_filter_on_noisy_visits);
 
-    keyword_filter_on_search_terms = GetFieldTrialParamByFeatureAsBool(
-        history_clusters::features::kOnDeviceClusteringKeywordFiltering,
-        "keyword_filter_on_search_terms", keyword_filter_on_search_terms);
-
     max_num_keywords_per_cluster = GetFieldTrialParamByFeatureAsInt(
         features::kOnDeviceClusteringKeywordFiltering,
         "max_num_keywords_per_cluster", max_num_keywords_per_cluster);
@@ -247,16 +240,6 @@ Config::Config() {
     // Ensure that the value is [0.0 and 1.0].
     DCHECK_GE(content_visibility_threshold, 0.0f);
     DCHECK_LE(content_visibility_threshold, 1.0f);
-
-    should_hide_single_visit_clusters_on_prominent_ui_surfaces =
-        GetFieldTrialParamByFeatureAsBool(
-            features::kOnDeviceClustering,
-            "hide_single_visit_clusters_on_prominent_ui_surfaces",
-            should_hide_single_visit_clusters_on_prominent_ui_surfaces);
-
-    should_filter_noisy_clusters = GetFieldTrialParamByFeatureAsBool(
-        features::kOnDeviceClustering, "filter_noisy_clusters",
-        should_filter_noisy_clusters);
 
     noisy_cluster_visits_engagement_threshold =
         GetFieldTrialParamByFeatureAsDouble(

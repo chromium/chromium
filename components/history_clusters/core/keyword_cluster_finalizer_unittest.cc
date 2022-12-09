@@ -43,7 +43,6 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
 
     config_.keyword_filter_on_noisy_visits = false;
     config_.keyword_filter_on_entity_aliases = false;
-    config_.keyword_filter_on_search_terms = false;
     SetConfigForTesting(config_);
   }
 
@@ -95,9 +94,9 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
   cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
 
-  EXPECT_THAT(
-      cluster.GetKeywords(),
-      UnorderedElementsAre(u"readable-github", u"readable-otherentity"));
+  EXPECT_THAT(cluster.GetKeywords(),
+              UnorderedElementsAre(u"readable-github", u"readable-otherentity",
+                                   u"search"));
   ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"readable-github"));
   EXPECT_EQ(
       cluster.keyword_to_data_map.at(u"readable-github"),
@@ -109,6 +108,9 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
   EXPECT_EQ(
       cluster.keyword_to_data_map.at(u"readable-otherentity"),
       history::ClusterKeywordData(history::ClusterKeywordData::kEntity, 1, {}));
+  EXPECT_EQ(cluster.keyword_to_data_map.at(u"search"),
+            history::ClusterKeywordData(
+                history::ClusterKeywordData::kSearchTerms, 100, {}));
 }
 
 class KeywordClusterFinalizerIncludeAllTest
@@ -120,7 +122,6 @@ class KeywordClusterFinalizerIncludeAllTest
     config_.keyword_filter_on_noisy_visits = true;
     config_.keyword_filter_on_entity_aliases = true;
     config_.max_entity_aliases_in_keywords = 1;
-    config_.keyword_filter_on_search_terms = true;
     config_.max_num_keywords_per_cluster = 7;
     SetConfigForTesting(config_);
   }

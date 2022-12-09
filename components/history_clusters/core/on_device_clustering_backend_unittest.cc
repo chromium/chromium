@@ -134,7 +134,6 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
     config_.keyword_filter_on_noisy_visits = true;
     config_.keyword_filter_on_entity_aliases = true;
     config_.max_entity_aliases_in_keywords = 100;
-    config_.should_label_clusters = false;
     config_.entity_relevance_threshold = 60;
     config_.should_check_hosts_to_skip_clustering_for = true;
     SetConfigForTesting(config_);
@@ -230,7 +229,6 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
               ElementsAre(ElementsAre(testing::VisitResult(2, 1.0),
                                       testing::VisitResult(1, 1.0))));
   ASSERT_EQ(result_clusters.size(), 1u);
-  EXPECT_FALSE(result_clusters[0].label.has_value());
 }
 
 TEST_F(OnDeviceClusteringWithoutContentBackendTest,
