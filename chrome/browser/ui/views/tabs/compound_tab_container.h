@@ -153,6 +153,15 @@ class CompoundTabContainer : public TabContainer {
   int GetAvailableWidthForUnpinnedTabContainer(
       base::RepeatingCallback<int()> available_width_callback);
 
+  // Private getter to retrieve the visible rect of the scroll container.
+  absl::optional<gfx::Rect> GetVisibleContentRect();
+
+  // Animates and scrolls the tab container from the start_edge to the
+  // target_edge. If the target_edge is beyond the tab strip it will be clamped
+  // bounds of the tabstrip.
+  void AnimateScrollToShowXCoordinate(const int start_edge,
+                                      const int target_edge);
+
   const raw_ref<TabContainerController> controller_;
 
   // Adapts `pinned_tab_container_`'s interactions with the model to account for
@@ -173,6 +182,13 @@ class CompoundTabContainer : public TabContainer {
 
   const raw_ptr<TabHoverCardController, DanglingUntriaged>
       hover_card_controller_;
+
+  // The View that is to be scrolled by |tab_scrolling_animation_|. May be
+  // nullptr in tests.
+  const raw_ptr<views::View> scroll_contents_view_;
+
+  // Responsible for animating the scroll of the tab container.
+  std::unique_ptr<gfx::LinearAnimation> tab_scrolling_animation_;
 
   // Animates tabs between pinned and unpinned states.
   views::BoundsAnimator bounds_animator_;

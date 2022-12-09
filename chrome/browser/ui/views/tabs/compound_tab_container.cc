@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_container_impl.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_scrolling_animation.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_animation_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -225,6 +226,7 @@ CompoundTabContainer::CompoundTabContainer(
           tab_slot_controller,
           scroll_contents_view))),
       hover_card_controller_(hover_card_controller),
+      scroll_contents_view_(scroll_contents_view),
       bounds_animator_(this) {
   const views::FlexSpecification tab_container_flex_spec =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -367,7 +369,17 @@ void CompoundTabContainer::ScrollTabToVisible(int model_index) {
 }
 
 void CompoundTabContainer::ScrollTabContainerByOffset(int offset) {
-  // TODO(crbug.com/1346023): ditto
+  absl::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
+  if (!visible_content_rect.has_value() || offset == 0)
+    return;
+
+  // If tabcontainer is scrolled towards trailing tab, the start edge should
+  // have the x coordinate of the right bound. If it is scrolled towards the
+  // leading tab it should have the x coordinate of the left bound.
+  int start_edge =
+      (offset > 0) ? visible_content_rect->right() : visible_content_rect->x();
+
+  AnimateScrollToShowXCoordinate(start_edge, start_edge + offset);
 }
 
 void CompoundTabContainer::OnGroupCreated(const tab_groups::TabGroupId& group) {
@@ -799,6 +811,30 @@ int CompoundTabContainer::GetAvailableWidthForUnpinnedTabContainer(
   // The unpinned container gets the width the pinned container doesn't want.
   return GetAvailableWidthForTabContainer() -
          GetUnpinnedContainerIdealLeadingX();
+}
+
+absl::optional<gfx::Rect> CompoundTabContainer::GetVisibleContentRect() {
+  views::ScrollView* scroll_container =
+      views::ScrollView::GetScrollViewForContents(scroll_contents_view_);
+  if (!scroll_container)
+    return absl::nullopt;
+
+  return scroll_container->GetVisibleRect();
+}
+
+void CompoundTabContainer::AnimateScrollToShowXCoordinate(
+    const int start_edge,
+    const int target_edge) {
+  if (tab_scrolling_animation_)
+    tab_scrolling_animation_->Stop();
+
+  gfx::Rect start_rect(start_edge, 0, 0, 0);
+  gfx::Rect target_rect(target_edge, 0, 0, 0);
+
+  tab_scrolling_animation_ = std::make_unique<TabScrollingAnimation>(
+      scroll_contents_view_, bounds_animator_.container(),
+      bounds_animator_.GetAnimationDuration(), start_rect, target_rect);
+  tab_scrolling_animation_->Start();
 }
 
 BEGIN_METADATA(CompoundTabContainer, views::View)

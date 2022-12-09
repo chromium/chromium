@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_scrolling_animation.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_animation_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
@@ -46,48 +47,6 @@ gfx::ImageSkia* GetDropArrowImage(bool is_down) {
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
       is_down ? IDR_TAB_DROP_DOWN : IDR_TAB_DROP_UP);
 }
-
-// Helper class that manages the tab scrolling animation.
-class TabScrollingAnimation : public gfx::LinearAnimation,
-                              public gfx::AnimationDelegate {
- public:
-  explicit TabScrollingAnimation(
-      views::View* contents_view,
-      gfx::AnimationContainer* bounds_animator_container,
-      base::TimeDelta duration,
-      const gfx::Rect start_visible_rect,
-      const gfx::Rect end_visible_rect)
-      : gfx::LinearAnimation(duration,
-                             gfx::LinearAnimation::kDefaultFrameRate,
-                             this),
-        contents_view_(contents_view),
-        start_visible_rect_(start_visible_rect),
-        end_visible_rect_(end_visible_rect) {
-    SetContainer(bounds_animator_container);
-  }
-  TabScrollingAnimation(const TabScrollingAnimation&) = delete;
-  TabScrollingAnimation& operator=(const TabScrollingAnimation&) = delete;
-  ~TabScrollingAnimation() override = default;
-
-  void AnimateToState(double state) override {
-    gfx::Rect intermediary_rect(
-        start_visible_rect_.x() +
-            (end_visible_rect_.x() - start_visible_rect_.x()) * state,
-        start_visible_rect_.y(), start_visible_rect_.width(),
-        start_visible_rect_.height());
-
-    contents_view_->ScrollRectToVisible(intermediary_rect);
-  }
-
-  void AnimationEnded(const gfx::Animation* animation) override {
-    contents_view_->ScrollRectToVisible(end_visible_rect_);
-  }
-
- private:
-  const raw_ptr<views::View> contents_view_;
-  const gfx::Rect start_visible_rect_;
-  const gfx::Rect end_visible_rect_;
-};
 
 }  // namespace
 
