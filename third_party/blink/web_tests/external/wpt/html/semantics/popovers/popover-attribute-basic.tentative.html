@@ -84,6 +84,14 @@ window.onload = () => {
     assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/true, 'After togglePopover() on hidden popover, it should be visible');
     popover.togglePopover();
     assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/false, 'After togglePopover() on visible popover, it should be hidden');
+    popover.togglePopover(/*force=*/true);
+    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/true, 'After togglePopover(true) on hidden popover, it should be visible');
+    popover.togglePopover(/*force=*/true);
+    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/true, 'After togglePopover(true) on visible popover, it should be visible');
+    popover.togglePopover(/*force=*/false);
+    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/false, 'After togglePopover(false) on visible popover, it should be hidden');
+    popover.togglePopover(/*force=*/false);
+    assertPopoverVisibility(popover, /*isPopover*/true, /*expectedVisibility*/false, 'After togglePopover(false) on hidden popover, it should be hidden');
     const parent = popover.parentElement;
     popover.remove();
     assert_throws_dom("InvalidStateError",() => popover.showPopover(),'Calling showPopover on a disconnected popover should throw InvalidStateError');

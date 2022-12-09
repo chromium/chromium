@@ -1294,9 +1294,19 @@ bool HTMLElement::IsPopoverReady(PopoverTriggerAction action) const {
 void HTMLElement::togglePopover(ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
-  if (HasPopoverAttribute() && popoverOpen()) {
+  if (popoverOpen()) {
     hidePopover(exception_state);
   } else {
+    showPopover(exception_state);
+  }
+}
+
+void HTMLElement::togglePopover(bool force, ExceptionState& exception_state) {
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
+      GetDocument().GetExecutionContext()));
+  if (!force && popoverOpen()) {
+    hidePopover(exception_state);
+  } else if (force && !popoverOpen()) {
     showPopover(exception_state);
   }
 }

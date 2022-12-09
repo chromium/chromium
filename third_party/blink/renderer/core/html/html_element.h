@@ -223,6 +223,7 @@ class CORE_EXPORT HTMLElement : public Element {
                                 DOMExceptionCode& exception_code) const;
   bool IsPopoverReady(PopoverTriggerAction action) const;
   void togglePopover(ExceptionState& exception_state);
+  void togglePopover(bool force, ExceptionState& exception_state);
   void showPopover(ExceptionState& exception_state);
   void hidePopover(ExceptionState& exception_state);
   void HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
