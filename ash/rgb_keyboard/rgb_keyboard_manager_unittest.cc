@@ -150,6 +150,12 @@ TEST_P(RgbChangeTypeHistogramEmittedTest, RgbChangeTypeHistogramEmitted) {
       ash::rgb_keyboard::metrics::RgbKeyboardBacklightChangeType::
           kRainbowModeSelected,
       1);
+  manager_->SetZoneColor(/*zone=*/0, /*r=*/1, /*g=*/2, /*b=*/3);
+  histogram_tester.ExpectBucketCount(
+      name,
+      ash::rgb_keyboard::metrics::RgbKeyboardBacklightChangeType::
+          kStaticZoneColorChanged,
+      1);
 }
 
 TEST_F(RgbKeyboardManagerTest, ZoneCountIsCorrect) {

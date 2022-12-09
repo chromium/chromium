@@ -33,7 +33,8 @@ enum class RgbKeyboardCapabilityType {
 enum class RgbKeyboardBacklightChangeType {
   kStaticBackgroundColorChanged = 0,
   kRainbowModeSelected = 1,
-  kMaxValue = kRainbowModeSelected,
+  kStaticZoneColorChanged = 2,
+  kMaxValue = kStaticZoneColorChanged,
 };
 
 ASH_EXPORT std::string GetCapabilityTypeStr(

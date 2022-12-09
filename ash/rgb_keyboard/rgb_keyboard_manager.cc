@@ -115,7 +115,10 @@ void RgbKeyboardManager::SetZoneColor(int zone,
   VLOG(1) << "Setting RGB keyboard zone " << zone
           << " color to R:" << static_cast<int>(r)
           << " G:" << static_cast<int>(g) << " B:" << static_cast<int>(b);
-  // TODO(swifton): Add metrics.
+  ash::rgb_keyboard::metrics::EmitRgbBacklightChangeType(
+      ash::rgb_keyboard::metrics::RgbKeyboardBacklightChangeType::
+          kStaticZoneColorChanged,
+      capabilities_);
   RgbkbdClient::Get()->SetZoneColor(zone, r, g, b);
 }
 
