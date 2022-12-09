@@ -109,17 +109,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
                    base::span<const uint8_t> pixel_data) override;
 
  private:
-  struct BufferFormatInfo {
-    // Whether to allow SHARED_IMAGE_USAGE_SCANOUT.
-    bool allow_scanout = false;
-
-    // GL target to use for scanout images.
-    GLenum target_for_scanout = GL_TEXTURE_2D;
-
-    // BufferFormat for scanout images.
-    gfx::BufferFormat buffer_format = gfx::BufferFormat::RGBA_8888;
-  };
-
   scoped_refptr<gl::GLImage> MakeGLImage(int client_id,
                                          gfx::GpuMemoryBufferHandle handle,
                                          gfx::BufferFormat format,
@@ -139,15 +128,9 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       uint32_t usage,
       base::span<const uint8_t> pixel_data);
 
-  // WARNING: Format must be single plane.
-  const BufferFormatInfo& GetBufferFormatInfo(viz::SharedImageFormat format) {
-    return buffer_format_info_[format.resource_format()];
-  }
-
   // Factory used to generate GLImages for SCANOUT backings.
   const raw_ptr<ImageFactory> image_factory_ = nullptr;
 
-  BufferFormatInfo buffer_format_info_[viz::RESOURCE_FORMAT_MAX + 1];
   GpuMemoryBufferFormatSet gpu_memory_buffer_formats_;
 };
 

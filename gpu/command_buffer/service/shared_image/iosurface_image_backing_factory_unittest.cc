@@ -868,7 +868,7 @@ TEST_P(IOSurfaceImageBackingFactoryNewTest, InitialData) {
         shared_image_manager_->Register(std::move(backing),
                                         memory_type_tracker_.get());
     EXPECT_TRUE(shared_image);
-    GLenum expected_target = GL_TEXTURE_2D;
+    GLenum expected_target = GL_TEXTURE_RECTANGLE;
 
     {
       auto gl_representation =
