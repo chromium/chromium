@@ -356,17 +356,7 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
   DeviceTrustAshBrowserTest() {
     auto mock_challenge_key =
         std::make_unique<ash::attestation::MockTpmChallengeKey>();
-    if (use_v2_header()) {
-      mock_challenge_key->EnableFake();
-    } else {
-      // It is not possible to test the real TPM during browser test, which we
-      // are dependent on to decide, whether we can build a response from the
-      // challenge or not. Thus, we are purposely failing here for tests with
-      // the old VA header
-      mock_challenge_key->EnableFakeError(
-          ash::attestation::TpmChallengeKeyResultCode::
-              kChallengeBadBase64Error);
-    }
+    mock_challenge_key->EnableFake();
     ash::attestation::TpmChallengeKeyFactory::SetForTesting(
         std::move(mock_challenge_key));
 
