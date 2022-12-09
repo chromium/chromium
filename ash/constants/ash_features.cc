@@ -361,11 +361,6 @@ BASE_FEATURE(kCalendarJelly,
              "CalendarJelly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables to allow using document scanning feature via DLC in the camera app.
-BASE_FEATURE(kCameraAppDocScanDlc,
-             "CameraAppDocScanDlc",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables to allow low storage warning feature in the camera app.
 BASE_FEATURE(kCameraAppLowStorageWarning,
              "CameraAppLowStorageWarning",

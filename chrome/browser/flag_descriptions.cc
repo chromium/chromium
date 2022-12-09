@@ -5029,11 +5029,6 @@ const char kBruschettaAlphaMigrateDescription[] =
     "Enable this flag to migrate a Bruschetta installed during the alpha. "
     "Requires the bruschetta flag to be enabled.";
 
-const char kCameraAppDocScanDlcName[] = "Camera App Doc Scan DLC";
-const char kCameraAppDocScanDlcDescription[] =
-    "Enables this flag to allow downloading document scanning feature via DLC "
-    "and use it in the camera app";
-
 extern const char kCameraAppLowStorageWarningName[] =
     "Camera App Low Storage Warning";
 extern const char kCameraAppLowStorageWarningDescription[] =

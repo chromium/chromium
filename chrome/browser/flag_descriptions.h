@@ -2897,9 +2897,6 @@ extern const char kBruschettaDescription[];
 extern const char kBruschettaAlphaMigrateName[];
 extern const char kBruschettaAlphaMigrateDescription[];
 
-extern const char kCameraAppDocScanDlcName[];
-extern const char kCameraAppDocScanDlcDescription[];
-
 extern const char kCameraAppLowStorageWarningName[];
 extern const char kCameraAppLowStorageWarningDescription[];
 

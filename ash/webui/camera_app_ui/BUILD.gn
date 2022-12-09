@@ -83,7 +83,6 @@ source_set("document_scanning") {
   public_deps = [ "//dbus" ]
 
   deps = [
-    "//ash/constants",
     "//base",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",

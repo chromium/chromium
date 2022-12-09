@@ -779,11 +779,6 @@
     "expiry_milestone": 113
   },
   {
-    "name": "camera-app-doc-scan-dlc",
-    "owners": [ "wtlee" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "camera-app-low-storage-warning",
     "owners": [ "kamchonlathorn" ],
     "expiry_milestone": 114
