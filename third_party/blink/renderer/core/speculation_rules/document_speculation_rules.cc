@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/loader/speculation_rule_loader.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -23,12 +24,12 @@ namespace blink {
 namespace {
 
 // https://wicg.github.io/nav-speculation/prefetch.html#list-of-sufficiently-strict-speculative-navigation-referrer-policies
-bool AcceptableReferrerPolicy(mojom::blink::SpeculationAction action,
-                              const Referrer& referrer) {
-  // Lax referrer policies are acceptable for same-site prerenders. The browser
-  // is responsible for aborting a cross-site prerender with a lax referrer
-  // policy.
-  if (action == mojom::blink::SpeculationAction::kPrerender)
+bool AcceptableReferrerPolicy(const Referrer& referrer,
+                              bool is_initially_same_site) {
+  // Lax referrer policies are acceptable for same-site. The browser is
+  // responsible for aborting in the case of cross-site redirects with lax
+  // referrer policies.
+  if (is_initially_same_site)
     return true;
 
   switch (referrer.referrer_policy) {
@@ -170,10 +171,14 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
       network::mojom::ReferrerPolicy referrer_policy =
           rule->referrer_policy().value_or(document_referrer_policy);
       for (const KURL& url : rule->urls()) {
+        scoped_refptr<const SecurityOrigin> url_origin =
+            SecurityOrigin::Create(url);
+        const bool is_initially_same_site =
+            url_origin->IsSameSiteWith(execution_context->GetSecurityOrigin());
         Referrer referrer = SecurityPolicy::GenerateReferrer(
             referrer_policy, url, outgoing_referrer);
 
-        if (!AcceptableReferrerPolicy(action, referrer)) {
+        if (!AcceptableReferrerPolicy(referrer, is_initially_same_site)) {
           execution_context->AddConsoleMessage(
               mojom::blink::ConsoleMessageSource::kOther,
               mojom::blink::ConsoleMessageLevel::kWarning,
