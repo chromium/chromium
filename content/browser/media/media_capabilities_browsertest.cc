@@ -28,6 +28,7 @@ const char16_t kUnsupported16[] = u"UNSUPPORTED";
 const char16_t kError[] = u"ERROR";
 const char kFileString[] = "file";
 const char kMediaSourceString[] = "media-source";
+const char kWebRtcString[] = "webrtc";
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 const char* kPropSupported = kSupported;
@@ -43,7 +44,7 @@ enum StreamType {
   kVideoWithoutHdrMetadata
 };
 
-enum ConfigType { kFile, kMediaSource };
+enum ConfigType { kFile, kMediaSource, kWebRtc };
 
 }  // namespace
 
@@ -164,6 +165,8 @@ class MediaCapabilitiesTestWithConfigType
         return kFileString;
       case ConfigType::kMediaSource:
         return kMediaSourceString;
+      case ConfigType::kWebRtc:
+        return kWebRtcString;
       default:
         NOTREACHED();
         return "";
@@ -180,10 +183,16 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 
   const std::string& config_type = GetTypeString();
 
+  // Content types below are not supported for WebRtc.
+  const base::StringPiece type_supported =
+      GetParam() != kWebRtc ? kSupported : kUnsupported;
+  const base::StringPiece prop_type_supported =
+      GetParam() != kWebRtc ? kPropSupported : kUnsupported;
+
   EXPECT_TRUE(
       NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
 
-  EXPECT_EQ(kSupported,
+  EXPECT_EQ(type_supported,
             CanDecodeVideo(config_type, "'video/webm; codecs=\"vp8\"'"));
 
   // Only support the new vp09 format which provides critical profile
@@ -192,22 +201,22 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
             CanDecodeVideo(config_type, "'video/webm; codecs=\"vp9\"'"));
   // Requires command line flag switches::kEnableNewVp9CodecString
   EXPECT_EQ(
-      kSupported,
+      type_supported,
       CanDecodeVideo(config_type, "'video/webm; codecs=\"vp09.00.10.08\"'"));
 
   // VP09 is available in MP4 container irrespective of USE_PROPRIETARY_CODECS.
   EXPECT_EQ(
-      kSupported,
+      type_supported,
       CanDecodeVideo(config_type, "'video/mp4; codecs=\"vp09.00.10.08\"'"));
 
   // Supported when built with USE_PROPRIETARY_CODECS
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeVideo(config_type, "'video/mp4; codecs=\"avc1.42E01E\"'"));
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeVideo(config_type, "'video/mp4; codecs=\"avc1.42101E\"'"));
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeVideo(config_type, "'video/mp4; codecs=\"avc1.42701E\"'"));
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeVideo(config_type, "'video/mp4; codecs=\"avc1.42F01E\"'"));
 
   // Test a handful of invalid strings.
@@ -229,21 +238,27 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 
   const std::string& config_type = GetTypeString();
 
+  // Content types below are not supported for WebRtc.
+  const base::StringPiece type_supported =
+      GetParam() != kWebRtc ? kSupported : kUnsupported;
+  const base::StringPiece prop_type_supported =
+      GetParam() != kWebRtc ? kPropSupported : kUnsupported;
+
   EXPECT_TRUE(
       NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
 
-  EXPECT_EQ(kSupported,
+  EXPECT_EQ(type_supported,
             CanDecodeAudio(config_type, "'audio/webm; codecs=\"opus\"'"));
-  EXPECT_EQ(kSupported,
+  EXPECT_EQ(type_supported,
             CanDecodeAudio(config_type, "'audio/webm; codecs=\"vorbis\"'"));
-  EXPECT_EQ(kSupported,
+  EXPECT_EQ(type_supported,
             CanDecodeAudio(config_type, "'audio/mp4; codecs=\"flac\"'"));
-  EXPECT_EQ(kSupported, CanDecodeAudio(config_type, "'audio/mpeg'"));
+  EXPECT_EQ(type_supported, CanDecodeAudio(config_type, "'audio/mpeg'"));
 
   // Supported when built with USE_PROPRIETARY_CODECS
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeAudio(config_type, "'audio/mp4; codecs=\"mp4a.40.02\"'"));
-  EXPECT_EQ(kPropSupported, CanDecodeAudio(config_type, "'audio/aac'"));
+  EXPECT_EQ(prop_type_supported, CanDecodeAudio(config_type, "'audio/aac'"));
 
   // Test a handful of invalid strings.
   EXPECT_EQ(kUnsupported,
@@ -258,12 +273,9 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 
   const std::string& config_type = GetTypeString();
 
-  std::string type_supported = kSupported;
-  std::string prop_type_supported = kPropSupported;
-
-  // Content types below are supported for src=, but not MediaSource.
-  if (config_type == "media-source")
-    type_supported = prop_type_supported = kUnsupported;
+  // Content types below are supported for src=, but not MediaSource or WebRtc.
+  const base::StringPiece type_supported =
+      GetParam() == kFile ? kSupported : kUnsupported;
 
   EXPECT_TRUE(
       NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
@@ -298,6 +310,12 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 
   const std::string& config_type = GetTypeString();
 
+  // Content types below are not supported for WebRtc.
+  const base::StringPiece type_supported =
+      GetParam() != kWebRtc ? kSupported : kUnsupported;
+  const base::StringPiece prop_type_supported =
+      GetParam() != kWebRtc ? kPropSupported : kUnsupported;
+
   EXPECT_TRUE(
       NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
 
@@ -323,23 +341,23 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 
   // Supported codecs should remain supported when querying with
   // spatialRendering set to false.
-  EXPECT_EQ(kSupported, CanDecodeAudioWithSpatialRendering(
-                            config_type, "'audio/webm; codecs=\"opus\"'",
-                            /*spatial_rendering*/ false));
-  EXPECT_EQ(kSupported, CanDecodeAudioWithSpatialRendering(
-                            config_type, "'audio/webm; codecs=\"vorbis\"'",
-                            /*spatial_rendering*/ false));
-  EXPECT_EQ(kSupported, CanDecodeAudioWithSpatialRendering(
-                            config_type, "'audio/mp4; codecs=\"flac\"'",
-                            /*spatial_rendering*/ false));
-  EXPECT_EQ(kSupported,
+  EXPECT_EQ(type_supported, CanDecodeAudioWithSpatialRendering(
+                                config_type, "'audio/webm; codecs=\"opus\"'",
+                                /*spatial_rendering*/ false));
+  EXPECT_EQ(type_supported, CanDecodeAudioWithSpatialRendering(
+                                config_type, "'audio/webm; codecs=\"vorbis\"'",
+                                /*spatial_rendering*/ false));
+  EXPECT_EQ(type_supported, CanDecodeAudioWithSpatialRendering(
+                                config_type, "'audio/mp4; codecs=\"flac\"'",
+                                /*spatial_rendering*/ false));
+  EXPECT_EQ(type_supported,
             CanDecodeAudioWithSpatialRendering(config_type, "'audio/mpeg'",
                                                /*spatial_rendering*/ false));
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeAudioWithSpatialRendering(
                 config_type, "'audio/mp4; codecs=\"mp4a.40.02\"'",
                 /*spatial_rendering*/ false));
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeAudioWithSpatialRendering(config_type, "'audio/aac'",
                                                /*spatial_rendering*/ false));
 
@@ -371,22 +389,28 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
 
   const std::string& config_type = GetTypeString();
 
+  // Content types below are not supported for WebRtc.
+  const base::StringPiece type_supported =
+      GetParam() != kWebRtc ? kSupported : kUnsupported;
+  const base::StringPiece prop_type_supported =
+      GetParam() != kWebRtc ? kPropSupported : kUnsupported;
+
   EXPECT_TRUE(
       NavigateToURL(shell(), content::GetFileUrlWithQuery(file_path, "")));
 
   // All color gamuts and transfer functions should be supported.
-  EXPECT_EQ(kSupported, CanDecodeVideoWithHdrMetadata(
-                            config_type, "'video/webm; codecs=\"vp8\"'",
-                            /* colorGamut */ "srgb",
-                            /* transferFunction */ "srgb"));
-  EXPECT_EQ(kSupported, CanDecodeVideoWithHdrMetadata(
-                            config_type, "'video/webm; codecs=\"vp8\"'",
-                            /* colorGamut */ "p3",
-                            /* transferFunction */ "pq"));
-  EXPECT_EQ(kSupported, CanDecodeVideoWithHdrMetadata(
-                            config_type, "'video/webm; codecs=\"vp8\"'",
-                            /* colorGamut */ "rec2020",
-                            /* transferFunction */ "hlg"));
+  EXPECT_EQ(type_supported, CanDecodeVideoWithHdrMetadata(
+                                config_type, "'video/webm; codecs=\"vp8\"'",
+                                /* colorGamut */ "srgb",
+                                /* transferFunction */ "srgb"));
+  EXPECT_EQ(type_supported, CanDecodeVideoWithHdrMetadata(
+                                config_type, "'video/webm; codecs=\"vp8\"'",
+                                /* colorGamut */ "p3",
+                                /* transferFunction */ "pq"));
+  EXPECT_EQ(type_supported, CanDecodeVideoWithHdrMetadata(
+                                config_type, "'video/webm; codecs=\"vp8\"'",
+                                /* colorGamut */ "rec2020",
+                                /* transferFunction */ "hlg"));
 
   // No HdrMetadataType is currently supported.
   EXPECT_EQ(kUnsupported, CanDecodeVideoWithHdrMetadata(
@@ -406,12 +430,12 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                               /* hdrMetadataType */ "smpteSt2094-40"));
 
   // Make sure results are expected with some USE_PROPRIETARY_CODECS
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeVideoWithHdrMetadata(config_type,
                                           "'video/mp4; codecs=\"avc1.42E01E\"'",
                                           /* colorGamut */ "p3",
                                           /* transferFunction */ "pq"));
-  EXPECT_EQ(kPropSupported,
+  EXPECT_EQ(prop_type_supported,
             CanDecodeVideoWithHdrMetadata(config_type,
                                           "'video/mp4; codecs=\"avc1.42101E\"'",
                                           /* colorGamut */ "srgb",
@@ -430,5 +454,8 @@ INSTANTIATE_TEST_SUITE_P(File,
 INSTANTIATE_TEST_SUITE_P(MediaSource,
                          MediaCapabilitiesTestWithConfigType,
                          ::testing::Values(ConfigType::kMediaSource));
+INSTANTIATE_TEST_SUITE_P(WebRtc,
+                         MediaCapabilitiesTestWithConfigType,
+                         ::testing::Values(ConfigType::kWebRtc));
 
 }  // namespace content
