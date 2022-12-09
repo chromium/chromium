@@ -188,6 +188,7 @@ void RunAttestationCertificateCallback(
           SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
       return;
     case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
+    case attestation::ATTESTATION_NOT_AVAILABLE:
       std::move(callback).Run(base::unexpected(
           SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
       return;

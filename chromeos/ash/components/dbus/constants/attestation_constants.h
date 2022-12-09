@@ -63,7 +63,9 @@ enum AttestationStatus {
   // Failure, no specific reason
   ATTESTATION_UNSPECIFIED_FAILURE,
   // Failure, sending a bad request to an attestation server
-  ATTESTATION_SERVER_BAD_REQUEST_FAILURE
+  ATTESTATION_SERVER_BAD_REQUEST_FAILURE,
+  // Failure, attestation is not supported on this device
+  ATTESTATION_NOT_AVAILABLE
 };
 
 enum PrivacyCAType {

@@ -55,6 +55,13 @@ void CertCallbackBadRequestFailure(
                                 ATTESTATION_SERVER_BAD_REQUEST_FAILURE, ""));
 }
 
+void CertCallbackNotAvailableFailure(
+    AttestationFlow::CertificateCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ATTESTATION_NOT_AVAILABLE, ""));
+}
+
 void StatusCallbackSuccess(policy::CloudPolicyClient::StatusCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
@@ -219,6 +226,12 @@ TEST_P(MachineCertificateUploaderTest, GetCertificateUnspecifiedFailure) {
 TEST_P(MachineCertificateUploaderTest, GetCertificateBadRequestFailure) {
   EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
       .WillOnce(WithArgs<7>(Invoke(CertCallbackBadRequestFailure)));
+  RunUploader();
+}
+
+TEST_P(MachineCertificateUploaderTest, GetCertificateNotAvailableFailure) {
+  EXPECT_CALL(attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _))
+      .WillOnce(WithArgs<7>(Invoke(CertCallbackNotAvailableFailure)));
   RunUploader();
 }
 

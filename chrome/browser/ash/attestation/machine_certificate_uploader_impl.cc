@@ -281,11 +281,19 @@ void MachineCertificateUploaderImpl::MarkAsUploaded(
 
 void MachineCertificateUploaderImpl::HandleGetCertificateFailure(
     AttestationStatus status) {
-  if (status != ATTESTATION_SERVER_BAD_REQUEST_FAILURE) {
-    Reschedule();
-  } else {
-    certificate_uploaded_ = false;
-    RunCallbacks(certificate_uploaded_.value());
+  switch (status) {
+    case ATTESTATION_UNSPECIFIED_FAILURE:
+      Reschedule();
+      break;
+
+    case ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
+    case ATTESTATION_NOT_AVAILABLE:
+      certificate_uploaded_ = false;
+      RunCallbacks(certificate_uploaded_.value());
+      break;
+
+    case ATTESTATION_SUCCESS:
+      NOTREACHED();
   }
 }
 
