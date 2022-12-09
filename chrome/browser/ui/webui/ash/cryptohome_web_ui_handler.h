@@ -50,6 +50,11 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
   void OnGetTpmStatus(
       const ::tpm_manager::GetTpmNonsensitiveStatusReply& reply);
 
+  // Called when Cryptohome D-Bus GetAuthFactorExtendedInfo call completes.
+  // Gets requested AuthFactor with additional metadata in reply.
+  void OnGetAuthFactorExtendedInfo(
+      absl::optional<user_data_auth::GetAuthFactorExtendedInfoReply> reply);
+
   // Sets textcontent of the element whose id is |destination_id| to |value|.
   void SetCryptohomeProperty(const std::string& destination_id,
                              const base::Value& value);

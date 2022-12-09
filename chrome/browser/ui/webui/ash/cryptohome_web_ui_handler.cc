@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/cryptohome_web_ui_handler.h"
 
+#include <numeric>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
@@ -11,7 +13,10 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
+#include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_ui.h"
@@ -23,11 +28,31 @@ namespace ash {
 
 namespace {
 
+// Maximal number of RecoveryId entries we want to display.
+constexpr int kRecoveryIdHistoryDepth = 5;
+
 void ForwardToUIThread(base::OnceCallback<void(bool)> ui_callback,
                        bool result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(ui_callback), result));
+}
+
+user_data_auth::GetAuthFactorExtendedInfoRequest
+GenerateAuthFactorExtendedInfoRequest(int depth) {
+  user_data_auth::GetAuthFactorExtendedInfoRequest req;
+  user_data_auth::RecoveryExtendedInfoRequest req_extended_info;
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (primary_user) {
+    *req.mutable_account_id() =
+        cryptohome::CreateAccountIdentifierFromAccountId(
+            primary_user->GetAccountId());
+    *req.mutable_auth_factor_label() = kCryptohomeRecoveryKeyLabel;
+    req_extended_info.set_max_depth(depth);
+    *req.mutable_recovery_info_request() = std::move(req_extended_info);
+  }
+  return req;
 }
 
 }  // namespace
@@ -60,6 +85,12 @@ void CryptohomeWebUIHandler::OnPageLoaded(const base::Value::List& args) {
       base::BindOnce(&CryptohomeWebUIHandler::OnPkcs11IsTpmTokenReady,
                      weak_ptr_factory_.GetWeakPtr()));
 
+  user_data_auth::GetAuthFactorExtendedInfoRequest req =
+      GenerateAuthFactorExtendedInfoRequest(kRecoveryIdHistoryDepth);
+  userdataauth_client->GetAuthFactorExtendedInfo(
+      req, base::BindOnce(&CryptohomeWebUIHandler::OnGetAuthFactorExtendedInfo,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   auto ui_callback =
       base::BindOnce(&CryptohomeWebUIHandler::GotIsTPMTokenEnabledOnUIThread,
                      weak_ptr_factory_.GetWeakPtr());
@@ -91,6 +122,21 @@ void CryptohomeWebUIHandler::OnGetTpmStatus(
   SetCryptohomeProperty("tpm-is-owned", base::Value(reply.is_owned()));
   SetCryptohomeProperty("has-reset-lock-permissions",
                         base::Value(reply.has_reset_lock_permissions()));
+}
+
+void CryptohomeWebUIHandler::OnGetAuthFactorExtendedInfo(
+    absl::optional<user_data_auth::GetAuthFactorExtendedInfoReply> reply) {
+  std::string recovery_ids = "<empty>";
+  if (reply.has_value() &&
+      !reply->recovery_info_reply().recovery_ids().empty()) {
+    recovery_ids =
+        std::accumulate(reply->recovery_info_reply().recovery_ids().begin(),
+                        reply->recovery_info_reply().recovery_ids().end(),
+                        std::string(), [](std::string ss, std::string s) {
+                          return ss.empty() ? s : ss + " " + s;
+                        });
+  }
+  SetCryptohomeProperty("recovery_ids", base::Value(recovery_ids));
 }
 
 void CryptohomeWebUIHandler::OnIsMounted(
