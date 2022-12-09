@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "net/base/test_completion_callback.h"
@@ -241,6 +242,7 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
+  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback callback;
@@ -250,6 +252,9 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
 
   int error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.CertVerifier.PathBuilderIterationCount"),
+              testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
 }
 
 TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
@@ -285,6 +290,7 @@ TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
   {
     // Pretend the root is a known root.
     SetMockIsKnownRoot(true);
+    base::HistogramTester histogram_tester;
     CertVerifyResult verify_result;
     TestCompletionCallback verify_callback;
     Verify(chain.get(), "www.example.com",
@@ -297,6 +303,9 @@ TEST_F(CertVerifyProcBuiltinTest, CRLNotCheckedForKnownRoots) {
     // should be successful.
     EXPECT_THAT(error, IsOk());
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "Net.CertVerifier.PathBuilderIterationCount"),
+                testing::ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
   }
 }
 
@@ -346,6 +355,7 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
   scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
   ASSERT_TRUE(chain.get());
 
+  base::HistogramTester histogram_tester;
   CertVerifyResult verify_result;
   NetLogSource verify_net_log_source;
   TestCompletionCallback verify_callback;
@@ -369,6 +379,9 @@ TEST_F(CertVerifyProcBuiltinTest, RevocationCheckDeadlineCRL) {
   // Soft-fail revocation checking was used, therefore verification result
   // should be OK even though none of the CRLs could be retrieved.
   EXPECT_THAT(error, IsOk());
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Net.CertVerifier.PathBuilderIterationCount"),
+              testing::ElementsAre(base::Bucket(/*min=*/2, /*count=*/1)));
 }
 
 // Tests that if the verification deadline is exceeded during revocation

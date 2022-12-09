@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "crypto/sha2.h"
@@ -829,6 +830,9 @@ int CertVerifyProcBuiltin::VerifyInternal(
         cur_attempt.verification_type, cur_attempt.digest_policy, flags,
         ocsp_response, crl_set, net_fetcher_.get(), ev_metadata,
         &checked_revocation_for_some_path);
+
+    base::UmaHistogramCounts10000("Net.CertVerifier.PathBuilderIterationCount",
+                                  result.iteration_count);
 
     // TODO(crbug.com/634484): Log these in path_builder.cc so they include
     // correct timing information.

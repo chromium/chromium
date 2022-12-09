@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_error_params.h"
@@ -685,7 +684,6 @@ TEST_F(PathBuilderMultiRootTest, TestIterationLimit) {
       path_builder.SetIterationLimit(5);
     }
 
-    base::HistogramTester histogram_tester;
     auto result = path_builder.Run();
 
     EXPECT_EQ(!insufficient_limit, result.HasValidPath());
@@ -693,14 +691,8 @@ TEST_F(PathBuilderMultiRootTest, TestIterationLimit) {
 
     if (insufficient_limit) {
       EXPECT_EQ(2U, result.iteration_count);
-      EXPECT_THAT(histogram_tester.GetAllSamples(
-                      "Net.CertVerifier.PathBuilderIterationCount"),
-                  ElementsAre(base::Bucket(/*sample=*/2, /*count=*/1)));
     } else {
       EXPECT_EQ(3U, result.iteration_count);
-      EXPECT_THAT(histogram_tester.GetAllSamples(
-                      "Net.CertVerifier.PathBuilderIterationCount"),
-                  ElementsAre(base::Bucket(/*sample=*/3, /*count=*/1)));
     }
   }
 }

@@ -8,7 +8,6 @@
 #include <set>
 #include <unordered_set>
 
-#include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
 #include "net/cert/pki/cert_issuer_source.h"
 #include "net/cert/pki/certificate_policies.h"
@@ -55,11 +54,6 @@ std::string PathDebugString(const ParsedCertificateList& certs) {
     s += " " + CertDebugString(cert.get());
   }
   return s;
-}
-
-void RecordIterationCountHistogram(uint32_t iteration_count) {
-  base::UmaHistogramCounts10000("Net.CertVerifier.PathBuilderIterationCount",
-                                iteration_count);
 }
 
 // This structure describes a certificate and its trust level. Note that |cert|
@@ -780,7 +774,6 @@ CertPathBuilder::Result CertPathBuilder::Run() {
         AddResultPath(std::move(result_path));
       }
       out_result_.iteration_count = iteration_count;
-      RecordIterationCountHistogram(iteration_count);
       return std::move(out_result_);
     }
 
@@ -812,7 +805,6 @@ CertPathBuilder::Result CertPathBuilder::Run() {
 
     if (path_is_good && !explore_all_paths_) {
       out_result_.iteration_count = iteration_count;
-      RecordIterationCountHistogram(iteration_count);
       // Found a valid path, return immediately.
       return std::move(out_result_);
     }
