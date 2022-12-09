@@ -560,10 +560,9 @@ def execute_telemetry_benchmark(
   if return_code in (111, -1, 255):
     print('Exit code %s indicates that no stories were run, so we are marking '
           'this as a success.' % return_code)
-  if return_code == 1:
-    print ('run_benchmark returned exit code 1 which indicates there were '
-           'test failures in the run.')
-
+    return 0
+  if return_code:
+    return return_code
   return 0
 
 def parse_arguments(args):
