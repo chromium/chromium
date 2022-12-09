@@ -239,6 +239,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.CalculatorAppErasureScanResult"
+    enum="CalculatorAppErasureScanResult" expires_after="2023-06-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of scanning for a duplicate Calculator app erasure bug
+    https://crbug.com/1393284 and whether a fix was applied. Recorded at start
+    up of the browser process.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.CheckServiceWorker.Status"
     enum="ServiceWorkerOfflineCapability" expires_after="2023-02-26">
   <owner>asamidoi@chromium.org</owner>

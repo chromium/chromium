@@ -25,6 +25,19 @@ source_set("adjustments") {
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:types",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      # The specific issue that CalculatorAppErasureFixer targets, where both
+      # Chrome and Web calculator apps are mistakenly marked as user
+      # uninstalled, is only possible on Ash with Lacros disabled (see
+      # https://crbug.com/1393284).
+      "calculator_app_erasure_fixer.cc",
+      "calculator_app_erasure_fixer.h",
+    ]
+
+    deps += [ "//components/pref_registry" ]
+  }
 }
 
 source_set("adjustments_browser_tests") {
@@ -48,4 +61,22 @@ source_set("adjustments_browser_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = []
+  deps = []
+
+  if (is_chromeos_ash) {
+    sources += [ "calculator_app_erasure_fixer_unittest.cc" ]
+
+    deps += [
+      ":adjustments",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/test:test_support",
+    ]
+  }
 }

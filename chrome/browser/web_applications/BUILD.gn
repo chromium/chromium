@@ -711,6 +711,7 @@ group("unit_tests") {
 
   deps = [
     ":web_applications_unit_tests",
+    "//chrome/browser/web_applications/adjustments:unit_tests",
     "//chrome/browser/web_applications/app_service:unit_tests",
     "//chrome/browser/web_applications/extensions:unit_tests",
   ]

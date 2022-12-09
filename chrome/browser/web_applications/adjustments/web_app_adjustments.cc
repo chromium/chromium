@@ -30,6 +30,12 @@ WebAppAdjustments::WebAppAdjustments(Profile* profile) {
     preinstalled_web_app_duplication_fixer_ =
         std::make_unique<PreinstalledWebAppDuplicationFixer>(*profile);
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(web_app::kWebAppCalculatorAppErasureFixer)) {
+    calculator_app_erasure_fixer_ =
+        std::make_unique<CalculatorAppErasureFixer>(*profile);
+  }
+#endif
 }
 
 WebAppAdjustments::~WebAppAdjustments() = default;
@@ -77,6 +83,13 @@ content::BrowserContext* WebAppAdjustmentsFactory::GetBrowserContextToUse(
                      profile)
              ? context
              : nullptr;
+}
+
+void WebAppAdjustmentsFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CalculatorAppErasureFixer::RegisterProfilePrefs(registry);
+#endif
 }
 
 }  // namespace web_app
