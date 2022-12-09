@@ -4657,7 +4657,7 @@ class FencedFrameReportEventBrowserTest
     GURL reporting_url(
         https_server()->GetURL("c.test", "/_report_event_server.html"));
     fenced_frame_reporting
-        .metadata[blink::mojom::ReportingDestination::kBuyer]["click"] =
+        .metadata[blink::FencedFrame::ReportingDestination::kBuyer]["click"] =
         reporting_url;
     // Get the urn mapping object.
     FencedFrameURLMapping& url_mapping =
@@ -5021,10 +5021,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   // Add reporting metadata.
   ReportingMetadata fenced_frame_reporting;
   GURL reporting_url(https_server()->GetURL("c.test", "/title2.html"));
-  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
-                                 ["mouse interaction"] = reporting_url;
   fenced_frame_reporting
-      .metadata[blink::mojom::ReportingDestination::kBuyer]["click"] =
+      .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
+               ["mouse interaction"] = reporting_url;
+  fenced_frame_reporting
+      .metadata[blink::FencedFrame::ReportingDestination::kBuyer]["click"] =
       https_server()->GetURL("c.test", "/title1.html");
 
   GURL https_url(
@@ -5044,7 +5045,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_TRUE(mapping_observer.mapping_complete_observed());
   EXPECT_EQ(reporting_url,
             mapping_observer.reporting_metadata()
-                .metadata[blink::mojom::ReportingDestination::kBuyer]
+                .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
                          ["mouse interaction"]);
 
   EXPECT_EQ(https_url,

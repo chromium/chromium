@@ -501,10 +501,12 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccess) {
   GURL buyer_reporting_url("https://buyer_reporting.test");
   GURL seller_reporting_url("https://seller_reporting.test");
   ReportingMetadata fenced_frame_reporting;
-  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
-                                 ["mouse interaction"] = buyer_reporting_url;
-  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kSeller]
-                                 ["mouse interaction"] = seller_reporting_url;
+  fenced_frame_reporting
+      .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
+               ["mouse interaction"] = buyer_reporting_url;
+  fenced_frame_reporting
+      .metadata[blink::FencedFrame::ReportingDestination::kSeller]
+               ["mouse interaction"] = seller_reporting_url;
   absl::optional<GURL> urn_uuid = fenced_frame_url_mapping.AddFencedFrameURL(
       test_url, fenced_frame_reporting);
   EXPECT_TRUE(urn_uuid.has_value());
@@ -515,11 +517,11 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccess) {
   EXPECT_TRUE(observer.mapping_complete_observed());
   EXPECT_EQ(buyer_reporting_url,
             observer.reporting_metadata()
-                .metadata[blink::mojom::ReportingDestination::kBuyer]
+                .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
                          ["mouse interaction"]);
   EXPECT_EQ(seller_reporting_url,
             observer.reporting_metadata()
-                .metadata[blink::mojom::ReportingDestination::kSeller]
+                .metadata[blink::FencedFrame::ReportingDestination::kSeller]
                          ["mouse interaction"]);
 }
 
@@ -530,10 +532,12 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccessWithInterestGroupInfo) {
   GURL buyer_reporting_url("https://buyer_reporting.test");
   GURL seller_reporting_url("https://seller_reporting.test");
   ReportingMetadata fenced_frame_reporting;
-  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kBuyer]
-                                 ["mouse interaction"] = buyer_reporting_url;
-  fenced_frame_reporting.metadata[blink::mojom::ReportingDestination::kSeller]
-                                 ["mouse interaction"] = seller_reporting_url;
+  fenced_frame_reporting
+      .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
+               ["mouse interaction"] = buyer_reporting_url;
+  fenced_frame_reporting
+      .metadata[blink::FencedFrame::ReportingDestination::kSeller]
+               ["mouse interaction"] = seller_reporting_url;
 
   GURL top_level_url("https://bar.test");
   url::Origin interest_group_owner = url::Origin::Create(top_level_url);
@@ -552,11 +556,11 @@ TEST(FencedFrameURLMappingTest, ReportingMetadataSuccessWithInterestGroupInfo) {
   EXPECT_TRUE(observer.mapping_complete_observed());
   EXPECT_EQ(buyer_reporting_url,
             observer.reporting_metadata()
-                .metadata[blink::mojom::ReportingDestination::kBuyer]
+                .metadata[blink::FencedFrame::ReportingDestination::kBuyer]
                          ["mouse interaction"]);
   EXPECT_EQ(seller_reporting_url,
             observer.reporting_metadata()
-                .metadata[blink::mojom::ReportingDestination::kSeller]
+                .metadata[blink::FencedFrame::ReportingDestination::kSeller]
                          ["mouse interaction"]);
 }
 

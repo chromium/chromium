@@ -72,8 +72,8 @@ void FencedFrameURLMappingTestPeer::GetSharedStorageReportingMap(
 
   auto data_it =
       urn_it->second.reporting_metadata_->GetValueIgnoringVisibility()
-          .metadata.find(
-              blink::mojom::ReportingDestination::kSharedStorageSelectUrl);
+          .metadata.find(blink::FencedFrame::ReportingDestination::
+                             kSharedStorageSelectUrl);
 
   if (data_it !=
       urn_it->second.reporting_metadata_->GetValueIgnoringVisibility()

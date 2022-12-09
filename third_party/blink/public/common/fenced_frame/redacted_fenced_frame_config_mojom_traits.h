@@ -13,6 +13,28 @@ namespace mojo {
 
 template <>
 struct BLINK_COMMON_EXPORT
+    EnumTraits<blink::mojom::ReportingDestination,
+               blink::FencedFrame::ReportingDestination> {
+  static blink::mojom::ReportingDestination ToMojom(
+      blink::FencedFrame::ReportingDestination input);
+  static bool FromMojom(blink::mojom::ReportingDestination input,
+                        blink::FencedFrame::ReportingDestination* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::FencedFrameReportingDataView,
+                 blink::FencedFrame::FencedFrameReporting> {
+  static const base::flat_map<blink::FencedFrame::ReportingDestination,
+                              base::flat_map<std::string, GURL>>&
+  metadata(const blink::FencedFrame::FencedFrameReporting& input);
+
+  static bool Read(blink::mojom::FencedFrameReportingDataView data,
+                   blink::FencedFrame::FencedFrameReporting* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FencedFrameConfigDataView,
                  blink::FencedFrame::RedactedFencedFrameConfig> {
   static blink::mojom::PotentiallyOpaqueURLPtr mapped_url(
