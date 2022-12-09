@@ -17,6 +17,10 @@ namespace chrome_test_util {
 // successful or timed out.
 [[nodiscard]] bool ClearBrowsingHistory();
 
+// Clears browsing cookies and returns whether clearing the cookies was
+// successful or timed out.
+[[nodiscard]] bool ClearBrowsingCookies();
+
 // Clears browsing data and returns whether clearing was successful or timed
 // out.
 // TODO(crbug.com/1016960): The method will time out if it's called from

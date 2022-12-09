@@ -41,6 +41,11 @@
 // operation failed.
 + (NSError*)clearBrowsingHistory;
 
+// Clears browsing cookies and waits for cookies to finish clearing before
+// returning. Returns nil on success, or else an NSError indicating why the
+// operation failed.
++ (NSError*)clearBrowsingCookies;
+
 // Clears all web state browsing data and waits to finish clearing before
 // returning. Returns nil on success, otherwise an NSError indicating why
 // the operation failed.

@@ -615,6 +615,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // A GREYAssert is induced if cookies can not be returned.
 - (NSDictionary*)cookies;
 
+// Clears browsing cookies. Raises an EarlGrey exception if cookies is not
+// cleared within a timeout.
+- (void)clearBrowsingCookies;
+
 #pragma mark - Accessibility Utilities (EG2)
 
 // Verifies that all interactive elements on screen (or at least one of their

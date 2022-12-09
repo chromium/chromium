@@ -145,6 +145,15 @@ NSString* SerializedValue(const base::Value* value) {
       @"Clearing browser history timed out");
 }
 
++ (NSError*)clearBrowsingCookies {
+  if (chrome_test_util::ClearBrowsingCookies()) {
+    return nil;
+  }
+
+  return testing::NSErrorWithLocalizedDescription(
+      @"Clearing browser cookies timed out");
+}
+
 + (NSInteger)browsingHistoryEntryCountWithError:
     (NSError* __autoreleasing*)error {
   return chrome_test_util::GetBrowsingHistoryEntryCount(error);
