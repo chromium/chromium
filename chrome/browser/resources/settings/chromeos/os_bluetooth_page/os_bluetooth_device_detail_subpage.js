@@ -26,7 +26,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {AudioOutputCapability, BluetoothSystemProperties, DeviceConnectionState, DeviceType, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';

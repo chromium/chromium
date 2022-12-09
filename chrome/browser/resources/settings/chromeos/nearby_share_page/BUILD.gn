@@ -128,7 +128,7 @@ js_library("nearby_share_subpage") {
     "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
-    "../..:router",
+    "..:router",
     "//ash/webui/common/resources:i18n_behavior",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
     "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",

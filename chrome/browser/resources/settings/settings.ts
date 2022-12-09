@@ -75,7 +75,7 @@ export {RelaunchMixin, RestartType} from './relaunch_mixin.js';
 export {ResetBrowserProxy, ResetBrowserProxyImpl} from './reset_page/reset_browser_proxy.js';
 export {SettingsResetProfileBannerElement} from './reset_page/reset_profile_banner.js';
 export {buildRouter, routes} from './route.js';
-export {MinimumRoutes, Route, Router} from './router.js';
+export {SettingsRoutes, Route, Router} from './router.js';
 export {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckChromeCleanerStatus, SafetyCheckExtensionsStatus, SafetyCheckParentStatus, SafetyCheckPasswordsStatus, SafetyCheckSafeBrowsingStatus, SafetyCheckUpdatesStatus} from './safety_check_page/safety_check_browser_proxy.js';
 export {SafetyCheckIconStatus, SettingsSafetyCheckChildElement} from './safety_check_page/safety_check_child.js';
 // <if expr="_google_chrome and is_win">

@@ -4,7 +4,7 @@
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {Route, Router} from '../router.js';
+import {Route, Router} from './router.js';
 
 /** @polymerBehavior */
 export const RouteObserverBehavior = {

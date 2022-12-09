@@ -5,7 +5,7 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, MinimumRoutes, Route, Router, SettingsAboutPageElement} from 'chrome://settings/settings.js';
+import {AboutPageBrowserProxyImpl, LifetimeBrowserProxyImpl, Route, Router, SettingsAboutPageElement, SettingsRoutes} from 'chrome://settings/settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
@@ -23,12 +23,12 @@ import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/ch
 
 // clang-format on
 
-function setupRouter(): MinimumRoutes {
+function setupRouter(): SettingsRoutes {
   const routes = {
     ABOUT: new Route('/help'),
     ADVANCED: new Route('/advanced'),
     BASIC: new Route('/'),
-  };
+  } as unknown as SettingsRoutes;
   Router.resetInstanceForTesting(new Router(routes));
   return routes;
 }
@@ -49,7 +49,7 @@ suite('AboutPageTest_AllBuilds', function() {
   let aboutBrowserProxy: TestAboutPageBrowserProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
 
-  let testRoutes: MinimumRoutes;
+  let testRoutes: SettingsRoutes;
 
   setup(function() {
     loadTimeData.overrideValues({

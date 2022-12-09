@@ -26,7 +26,7 @@ import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resource
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {routes} from '../os_route.js';
 
 import {getTemplate} from './device_page.html.js';

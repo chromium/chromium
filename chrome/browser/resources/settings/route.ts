@@ -6,8 +6,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {pageVisibility} from './page_visibility.js';
-import {Route, Router} from './router.js';
-import {SettingsRoutes} from './settings_routes.js';
+import {Route, Router, SettingsRoutes} from './router.js';
 
 /**
  * Add all of the child routes that originate from the privacy route,
@@ -115,7 +114,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 /**
  * Adds Route objects for each path.
  */
-function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
+function createBrowserSettingsRoutes(): SettingsRoutes {
   const r: Partial<SettingsRoutes> = {};
 
   // Root pages.
@@ -124,6 +123,7 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
 
   r.SEARCH = r.BASIC.createSection(
       '/search', 'search', loadTimeData.getString('searchPageTitle'));
+
   if (!loadTimeData.getBoolean('isGuest')) {
     r.PEOPLE = r.BASIC.createSection(
         '/people', 'people', loadTimeData.getString('peoplePageTitle'));
@@ -255,18 +255,14 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
           loadTimeData.getString('performancePageTitle'));
     }
   }
-  return r;
+  return r as unknown as SettingsRoutes;
 }
 
 /**
  * @return A router with the browser settings routes.
  */
 export function buildRouter(): Router {
-  return new Router(createBrowserSettingsRoutes() as {
-    BASIC: Route,
-    ADVANCED: Route,
-    ABOUT: Route,
-  });
+  return new Router(createBrowserSettingsRoutes());
 }
 
 Router.setInstance(buildRouter());

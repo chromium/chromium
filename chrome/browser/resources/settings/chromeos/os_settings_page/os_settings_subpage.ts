@@ -27,7 +27,7 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polym
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
 
 import {getTemplate} from './os_settings_subpage.html.js';

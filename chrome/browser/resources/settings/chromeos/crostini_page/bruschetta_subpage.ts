@@ -13,7 +13,7 @@ import '../../settings_shared.css.js';
 
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {routes} from '../os_route.js';
 import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 

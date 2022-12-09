@@ -7,7 +7,7 @@
  * from the Url parameter.
  */
 
-import {Router} from '../router.js';
+import {Router} from './router.js';
 
 const SETTING_ID_URL_PARAM_NAME: string = 'settingId';
 

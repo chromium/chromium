@@ -22,7 +22,7 @@ import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_con
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
-import {Router} from '../../router.js';
+import {Router} from '../router.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 

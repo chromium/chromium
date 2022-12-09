@@ -20,7 +20,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 import {SettingsDropdownMenuElement} from '../../controls/settings_dropdown_menu.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 

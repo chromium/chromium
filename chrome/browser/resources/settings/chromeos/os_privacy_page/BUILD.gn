@@ -28,7 +28,7 @@ js_library("os_privacy_page") {
     "..:deep_linking_behavior",
     "..:os_route",
     "..:route_observer_behavior",
-    "../..:router",
+    "..:router",
     "../os_people_page:lock_screen",
     "../os_people_page:lock_state_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

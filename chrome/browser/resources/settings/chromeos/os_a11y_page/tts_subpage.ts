@@ -21,7 +21,7 @@ import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resource
 import {DomRepeat, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
 import {routes} from '../os_route.js';

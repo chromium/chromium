@@ -24,7 +24,7 @@ import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/po
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {getContactManager} from '../../shared/nearby_contact_manager.js';
 import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';

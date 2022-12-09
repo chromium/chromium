@@ -38,7 +38,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browser_proxy.js';
 import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
-import {Route, Router} from '../../router.js';
+import {Route, Router} from '../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {getImage} from '../icon.js';
 import {OSPageVisibility} from '../os_page_visibility.js';

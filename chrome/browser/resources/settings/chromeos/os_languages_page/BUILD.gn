@@ -143,7 +143,7 @@ js_library("input_method_util") {
     ":input_method_types",
     "..:os_route",
     "..:route_observer_behavior",
-    "../..:router",
+    "..:router",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -170,7 +170,7 @@ js_library("input_page") {
     "..:deep_linking_behavior",
     "..:os_route",
     "..:route_observer_behavior",
-    "../..:router",
+    "..:router",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:i18n_behavior",
     "//ui/webui/resources/js:assert",
@@ -222,7 +222,7 @@ js_library("os_languages_page_v2") {
     "..:metrics_recorder",
     "..:os_route",
     "..:route_observer_behavior",
-    "../..:router",
+    "..:router",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
@@ -241,7 +241,7 @@ js_library("os_languages_section") {
     ":languages",
     ":os_languages_page_v2",
     "..:os_route",
-    "../..:router",
+    "..:router",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:i18n_behavior",
     "//ui/webui/resources/js:assert",
@@ -256,7 +256,7 @@ js_library("smart_inputs_page") {
     "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
-    "../..:router",
+    "..:router",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }

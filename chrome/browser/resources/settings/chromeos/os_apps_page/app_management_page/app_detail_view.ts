@@ -16,7 +16,7 @@ import {getSelectedApp, recordAppManagementUserAction} from 'chrome://resources/
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {castExists} from '../../assert_extras.js';
 import {routes} from '../../os_route.js';
 

@@ -6,7 +6,7 @@ import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_j
 import {assert} from 'chrome://resources/js/assert.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../router.js';
+import {Route, Router} from './router.js';
 
 import {RouteObserverBehavior} from './route_observer_behavior.js';
 

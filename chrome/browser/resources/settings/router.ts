@@ -4,59 +4,129 @@
 
 import './i18n_setup.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
- * @typedef {{
- *   BASIC: !Route,
- *   ADVANCED: !Route,
- *   ABOUT: !Route,
- * }}
+ * Specifies all possible routes in settings.
  */
-export let MinimumRoutes;
+export interface SettingsRoutes {
+  ABOUT: Route;
+  ACCESSIBILITY: Route;
+  ADDRESSES: Route;
+  ADVANCED: Route;
+  APPEARANCE: Route;
+  AUTOFILL: Route;
+  BASIC: Route;
+  CAPTIONS: Route;
+  CERTIFICATES: Route;
+  CHECK_PASSWORDS: Route;
+  CHROME_CLEANUP: Route;
+  CLEAR_BROWSER_DATA: Route;
+  COOKIES: Route;
+  DEFAULT_BROWSER: Route;
+  DOWNLOADS: Route;
+  EDIT_DICTIONARY: Route;
+  FONTS: Route;
+  IMPORT_DATA: Route;
+  INCOMPATIBLE_APPLICATIONS: Route;
+  LANGUAGES: Route;
+  MANAGE_PROFILE: Route;
+  ON_STARTUP: Route;
+  PASSKEYS: Route;
+  PASSWORDS: Route;
+  PASSWORD_VIEW: Route;
+  DEVICE_PASSWORDS: Route;
+  PAYMENTS: Route;
+  PEOPLE: Route;
+  PERFORMANCE: Route;
+  PRIVACY: Route;
+  PRIVACY_GUIDE: Route;
+  PRIVACY_SANDBOX: Route;
+  PRIVACY_SANDBOX_AD_MEASUREMENT: Route;
+  PRIVACY_SANDBOX_FLEDGE: Route;
+  PRIVACY_SANDBOX_TOPICS: Route;
+  RESET: Route;
+  RESET_DIALOG: Route;
+  SAFETY_CHECK: Route;
+  SEARCH: Route;
+  SEARCH_ENGINES: Route;
+  SECURITY: Route;
+  SECURITY_KEYS: Route;
+  SECURITY_KEYS_PHONES: Route;
+  SIGN_OUT: Route;
+  SITE_SETTINGS: Route;
+  SITE_SETTINGS_ADS: Route;
+  SITE_SETTINGS_ALL: Route;
+  SITE_SETTINGS_AR: Route;
+  SITE_SETTINGS_AUTOMATIC_DOWNLOADS: Route;
+  SITE_SETTINGS_BACKGROUND_SYNC: Route;
+  SITE_SETTINGS_BLUETOOTH_DEVICES: Route;
+  SITE_SETTINGS_BLUETOOTH_SCANNING: Route;
+  SITE_SETTINGS_CAMERA: Route;
+  SITE_SETTINGS_CLIPBOARD: Route;
+  SITE_SETTINGS_COOKIES: Route;
+  SITE_SETTINGS_FEDERATED_IDENTITY_API: Route;
+  SITE_SETTINGS_HANDLERS: Route;
+  SITE_SETTINGS_HID_DEVICES: Route;
+  SITE_SETTINGS_IDLE_DETECTION: Route;
+  SITE_SETTINGS_IMAGES: Route;
+  SITE_SETTINGS_LOCAL_FONTS: Route;
+  SITE_SETTINGS_MIXEDSCRIPT: Route;
+  SITE_SETTINGS_JAVASCRIPT: Route;
+  SITE_SETTINGS_SENSORS: Route;
+  SITE_SETTINGS_SOUND: Route;
+  SITE_SETTINGS_LOCATION: Route;
+  SITE_SETTINGS_MICROPHONE: Route;
+  SITE_SETTINGS_MIDI_DEVICES: Route;
+  SITE_SETTINGS_FILE_SYSTEM_WRITE: Route;
+  SITE_SETTINGS_NOTIFICATIONS: Route;
+  SITE_SETTINGS_PAYMENT_HANDLER: Route;
+  SITE_SETTINGS_PDF_DOCUMENTS: Route;
+  SITE_SETTINGS_POPUPS: Route;
+  SITE_SETTINGS_PROTECTED_CONTENT: Route;
+  SITE_SETTINGS_SITE_DATA: Route;
+  SITE_SETTINGS_SITE_DETAILS: Route;
+  SITE_SETTINGS_USB_DEVICES: Route;
+  SITE_SETTINGS_SERIAL_PORTS: Route;
+  SITE_SETTINGS_VR: Route;
+  SITE_SETTINGS_WINDOW_MANAGEMENT: Route;
+  SITE_SETTINGS_ZOOM_LEVELS: Route;
+  SPELL_CHECK: Route;
+  SYNC: Route;
+  SYNC_ADVANCED: Route;
+  SYSTEM: Route;
+  TRIGGERED_RESET_DIALOG: Route;
+}
 
 /** Class for navigable routes. */
 export class Route {
+  path: string;
+  parent: Route|null = null;
+  depth: number = 0;
+  title: string|undefined;
+
   /**
-   * @param {string} path
-   * @param {string=} title
+   * Whether this route corresponds to a navigable dialog. Those routes must
+   * belong to a "section".
    */
-  constructor(path, title) {
-    /** @type {string} */
+  isNavigableDialog: boolean = false;
+
+  // Legacy property to provide compatibility with the old routing system.
+  section: string = '';
+
+  constructor(path: string, title?: string) {
     this.path = path;
-
-    /** @type {?Route} */
-    this.parent = null;
-
-    /** @type {number} */
-    this.depth = 0;
-
-    /** @type {string|undefined} */
     this.title = title;
-
-    /**
-     * @type {boolean} Whether this route corresponds to a navigable
-     *     dialog. Those routes must belong to a "section".
-     */
-    this.isNavigableDialog = false;
-
-    // Below are all legacy properties to provide compatibility with the old
-    // routing system.
-
-    /** @type {string} */
-    this.section = '';
   }
 
   /**
    * Returns a new Route instance that's a child of this route.
-   * @param {string} path Extends this route's path if it doesn't contain a
+   * @param path Extends this route's path if it doesn't contain a
    *     leading slash.
-   * @param {string=} title
-   * @return {!Route}
    */
-  createChild(path, title) {
+  createChild(path: string, title?: string): Route {
     assert(path);
 
     // |path| extends this route's path if it doesn't have a leading slash.
@@ -74,12 +144,8 @@ export class Route {
   /**
    * Returns a new Route instance that's a child section of this route.
    * TODO(tommycli): Remove once we've obsoleted the concept of sections.
-   * @param {string} path
-   * @param {string} section
-   * @param {string=} title
-   * @return {!Route}
    */
-  createSection(path, section, title) {
+  createSection(path: string, section: string, title?: string): Route {
     const route = this.createChild(path, title);
     route.section = section;
     return route;
@@ -88,19 +154,16 @@ export class Route {
   /**
    * Returns the absolute path string for this Route, assuming this function
    * has been called from within chrome://settings.
-   * @return {string}
    */
-  getAbsolutePath() {
+  getAbsolutePath(): string {
     return window.location.origin + this.path;
   }
 
   /**
    * Returns true if this route matches or is an ancestor of the parameter.
-   * @param {!Route} route
-   * @return {boolean}
    */
-  contains(route) {
-    for (let r = route; r != null; r = r.parent) {
+  contains(route: Route): boolean {
+    for (let r: Route|null = route; r != null; r = r.parent) {
       if (this === r) {
         return true;
       }
@@ -110,9 +173,8 @@ export class Route {
 
   /**
    * Returns true if this route is a subpage of a section.
-   * @return {boolean}
    */
-  isSubpage() {
+  isSubpage(): boolean {
     return !this.isNavigableDialog && !!this.parent && !!this.section &&
         this.parent.section === this.section;
   }
@@ -121,94 +183,82 @@ export class Route {
 /**
  * Regular expression that captures the leading slash, the content and the
  * trailing slash in three different groups.
- * @type {!RegExp}
  */
-const CANONICAL_PATH_REGEX = /(^\/)([\/-\w]+)(\/$)/;
+const CANONICAL_PATH_REGEX: RegExp = /(^\/)([\/-\w]+)(\/$)/;
 
-/** @type {?Router} */
-let routerInstance = null;
+let routerInstance: Router|null = null;
 
 export class Router {
-  /** @return {!Router} The singleton instance. */
-  static getInstance() {
-    return assert(routerInstance);
+  /**
+   * List of available routes. This is populated taking into account current
+   * state (like guest mode).
+   */
+  private routes_: SettingsRoutes;
+
+  /**
+   * The current active route. This updated is only by settings.navigateTo
+   * or settings.initializeRouteFromUrl.
+   */
+  currentRoute: Route;
+
+  /**
+   * The current query parameters. This is updated only by
+   * settings.navigateTo or settings.initializeRouteFromUrl.
+   */
+  private currentQueryParameters_: URLSearchParams = new URLSearchParams();
+
+  private wasLastRouteChangePopstate_: boolean = false;
+
+  private initializeRouteFromUrlCalled_: boolean = false;
+
+  private routeObservers_: Set<RouteObserverMixinInterface> = new Set();
+
+  /** @return The singleton instance. */
+  static getInstance(): Router {
+    assert(routerInstance);
+    return routerInstance;
   }
 
-  /** @param {!Router} instance */
-  static setInstance(instance) {
+  /** @param instance */
+  static setInstance(instance: Router) {
     assert(!routerInstance);
     routerInstance = instance;
   }
 
-  /** @param {!Router} instance */
-  static resetInstanceForTesting(instance) {
+  static resetInstanceForTesting(instance: Router) {
     if (routerInstance) {
       instance.routeObservers_ = routerInstance.routeObservers_;
     }
     routerInstance = instance;
   }
 
-  /** @param {!MinimumRoutes} availableRoutes */
-  constructor(availableRoutes) {
-    /**
-     * List of available routes. This is populated taking into account current
-     * state (like guest mode).
-     * @private {!MinimumRoutes}
-     */
+  constructor(availableRoutes: SettingsRoutes) {
     this.routes_ = availableRoutes;
-
-    /**
-     * The current active route. This updated is only by settings.navigateTo
-     * or settings.initializeRouteFromUrl.
-     * @type {!Route}
-     */
     this.currentRoute = this.routes_.BASIC;
-
-    /**
-     * The current query parameters. This is updated only by
-     * settings.navigateTo or settings.initializeRouteFromUrl.
-     * @private {!URLSearchParams}
-     */
-    this.currentQueryParameters_ = new URLSearchParams();
-
-    /** @private {boolean} */
-    this.wasLastRouteChangePopstate_ = false;
-
-    /** @private {boolean}*/
-    this.initializeRouteFromUrlCalled_ = false;
-
-    /** @private {!Set} */
-    this.routeObservers_ = new Set();
   }
 
-  /** @param {Object} observer */
-  addObserver(observer) {
+  addObserver(observer: RouteObserverMixinInterface) {
     assert(!this.routeObservers_.has(observer));
     this.routeObservers_.add(observer);
   }
 
-  /** @param {Object} observer */
-  removeObserver(observer) {
+  removeObserver(observer: RouteObserverMixinInterface) {
     assert(this.routeObservers_.delete(observer));
   }
 
-  /** @return {Route} */
-  getRoute(routeName) {
-    return this.routes_[routeName];
+  getRoute(routeName: string): Route {
+    return this.routeDictionary_()[routeName];
   }
 
-  /** @return {!Object} */
-  getRoutes() {
+  getRoutes(): SettingsRoutes {
     return this.routes_;
   }
 
   /**
    * Helper function to set the current route and notify all observers.
-   * @param {!Route} route
-   * @param {!URLSearchParams} queryParameters
-   * @param {boolean} isPopstate
    */
-  setCurrentRoute(route, queryParameters, isPopstate) {
+  setCurrentRoute(route: Route, queryParameters: URLSearchParams,
+                  isPopstate: boolean) {
     this.recordMetrics(route.path);
 
     const oldRoute = this.currentRoute;
@@ -224,9 +274,8 @@ export class Router {
 
   /**
    * Updates the page title to reflect the current route.
-   * @private
    */
-  updateTitle_() {
+  private updateTitle_() {
     if (this.currentRoute.title) {
       document.title = loadTimeData.getStringF(
           'settingsAltPageTitle', this.currentRoute.title);
@@ -242,37 +291,36 @@ export class Router {
     }
   }
 
-  /** @return {!Route} */
-  getCurrentRoute() {
+  getCurrentRoute(): Route {
     return this.currentRoute;
   }
 
-  /** @return {!URLSearchParams} */
-  getQueryParameters() {
+  getQueryParameters(): URLSearchParams {
     return new URLSearchParams(
         this.currentQueryParameters_);  // Defensive copy.
   }
 
-  /** @return {boolean} */
-  lastRouteChangeWasPopstate() {
+  lastRouteChangeWasPopstate(): boolean {
     return this.wasLastRouteChangePopstate_;
   }
 
+  private routeDictionary_(): {[key: string]: Route} {
+    return this.routes_ as unknown as {[key: string]: Route};
+  }
+
   /**
-   * @param {string} path
-   * @return {?Route} The matching canonical route, or null if none
-   *     matches.
+   * @return The matching canonical route, or null if none matches.
    */
-  getRouteForPath(path) {
+  getRouteForPath(path: string): Route|null {
     // Allow trailing slash in paths.
     const canonicalPath = path.replace(CANONICAL_PATH_REGEX, '$1$2');
 
     // TODO(tommycli): Use Object.values once Closure compilation supports it.
     const matchingKey =
         Object.keys(this.routes_)
-            .find((key) => this.routes_[key].path === canonicalPath);
+            .find((key) => this.routeDictionary_()[key].path === canonicalPath);
 
-    return matchingKey ? this.routes_[matchingKey] : null;
+    return matchingKey ? this.routeDictionary_()[matchingKey] : null;
   }
 
   /**
@@ -280,9 +328,8 @@ export class Router {
    * window history state. This changes the Settings route path, but doesn't
    * change the route itself, hence does not push a new route history entry.
    * Notifies routeChangedObservers.
-   * @param {!URLSearchParams} params
    */
-  updateRouteParams(params) {
+  updateRouteParams(params: URLSearchParams) {
     let url = this.currentRoute.path;
     const queryString = params.toString();
     if (queryString) {
@@ -301,13 +348,13 @@ export class Router {
 
   /**
    * Navigates to a canonical route and pushes a new history entry.
-   * @param {!Route} route
-   * @param {URLSearchParams=} dynamicParameters Navigations to the same
+   * @param dynamicParameters Navigations to the same
    *     URL parameters in a different order will still push to history.
-   * @param {boolean=} removeSearch Whether to strip the 'search' URL
+   * @param removeSearch Whether to strip the 'search' URL
    *     parameter during navigation. Defaults to false.
    */
-  navigateTo(route, dynamicParameters, removeSearch = false) {
+  navigateTo(route: Route, dynamicParameters?: URLSearchParams,
+      removeSearch: boolean = false) {
     // The ADVANCED route only serves as a parent of subpages, and should not
     // be possible to navigate to it directly.
     if (route === this.routes_.ADVANCED) {
@@ -340,9 +387,11 @@ export class Router {
    * this navigates to the immediate parent. This will never exit Settings.
    */
   navigateToPreviousRoute() {
-    const previousRoute = window.history.state &&
-        assert(this.getRouteForPath(
-            /** @type {string} */ (window.history.state)));
+    let previousRoute = null;
+    if (window.history.state) {
+      previousRoute = this.getRouteForPath(window.history.state);
+      assert(previousRoute);
+    }
 
     if (previousRoute && previousRoute.depth <= this.currentRoute.depth) {
       window.history.back();
@@ -379,18 +428,15 @@ export class Router {
 
   /**
    * Make a UMA note about visiting this URL path.
-   * @param {string} urlPath The url path (only).
+   * @param urlPath The url path (only).
    */
-  recordMetrics(urlPath) {
+  recordMetrics(urlPath: string) {
     assert(!urlPath.startsWith('chrome://'));
     assert(!urlPath.startsWith('settings'));
     assert(urlPath.startsWith('/'));
     assert(!urlPath.match(/\?/g));
 
-    const metricName = loadTimeData.valueExists('isOSSettings') &&
-            loadTimeData.getBoolean('isOSSettings') ?
-        'ChromeOS.Settings.PathVisited' :
-        'WebUI.Settings.PathVisited';
+    const metricName = 'WebUI.Settings.PathVisited';
     chrome.metricsPrivate.recordSparseValueWithPersistentHash(
         metricName, urlPath);
   }
@@ -403,51 +449,39 @@ export class Router {
   }
 }
 
-/**
- * @polymer
- * @mixinFunction
- */
-export const RouteObserverMixin = dedupingMixin(superClass => {
-  /**
-   * @polymer
-   * @mixinClass
-   */
-  class RouteObserverMixin extends superClass {
-    /** @override */
-    connectedCallback() {
-      super.connectedCallback();
+type Constructor<T> = new (...args: any[]) => T;
 
-      routerInstance.addObserver(this);
+export const RouteObserverMixin = dedupingMixin(
+    <T extends Constructor<PolymerElement>>(superClass: T): T&
+    Constructor<RouteObserverMixinInterface> => {
 
-      // Emulating Polymer data bindings, the observer is called when the
-      // element starts observing the route.
-      this.currentRouteChanged(routerInstance.currentRoute, undefined);
-    }
+      class RouteObserverMixin extends superClass implements
+          RouteObserverMixinInterface {
+        override connectedCallback() {
+          super.connectedCallback();
 
-    /** @override */
-    disconnectedCallback() {
-      super.disconnectedCallback();
+          assert(routerInstance);
+          routerInstance.addObserver(this);
 
-      routerInstance.removeObserver(this);
-    }
+          // Emulating Polymer data bindings, the observer is called when the
+          // element starts observing the route.
+          this.currentRouteChanged(routerInstance.currentRoute, undefined);
+        }
 
-    /**
-     * @param {!Route} newRoute
-     * @param {!Route=} oldRoute
-     */
-    currentRouteChanged(newRoute, oldRoute) {
-      assertNotReached();
-    }
-  }
+        override disconnectedCallback() {
+          super.disconnectedCallback();
 
-  return /** @type {?} */ (RouteObserverMixin);
-});
+          assert(routerInstance);
+          routerInstance.removeObserver(this);
+        }
 
-/** @interface */
-export class RouteObserverMixinInterface {
-  /**
-   * @param {!Route} newRoute
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(newRoute, oldRoute) {}
+        currentRouteChanged(_newRoute: Route, _oldRoute?: Route) {
+          assertNotReached();
+        }
+      }
+      return RouteObserverMixin;
+    });
+
+export interface RouteObserverMixinInterface {
+  currentRouteChanged(newRoute: Route, oldRoute?: Route): void;
 }
