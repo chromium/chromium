@@ -31,11 +31,6 @@ void CredentialLeakDialogViewAndroid::Show(ui::WindowAndroid* window_android) {
       base::android::ConvertUTF16ToJavaString(env, controller_->GetTitle()),
       base::android::ConvertUTF16ToJavaString(env,
                                               controller_->GetDescription()),
-      // Passing false as ShowAutomatedPasswordChangeButton function
-      // was deprecated as part of APC removal.
-      //  TODO (https://crbug.com/1386065): Remove this parameter from this
-      //  function and clean-up the usages of this function.
-      false,
       base::android::ConvertUTF16ToJavaString(
           env, controller_->GetAcceptButtonLabel()),
       controller_->ShouldShowCancelButton()

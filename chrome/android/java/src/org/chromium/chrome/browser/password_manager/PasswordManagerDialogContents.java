@@ -17,7 +17,6 @@ public class PasswordManagerDialogContents {
     private final String mTitle;
     private final String mDetails;
     private final String mPrimaryButtonText;
-    private final @IdRes int mPrimaryButtonIconId;
     private final @Nullable String mSecondaryButtonText;
     private final @IdRes int mIllustrationId;
     private final Callback<Integer> mButtonClickCallback;
@@ -29,23 +28,23 @@ public class PasswordManagerDialogContents {
     /**
      * Constructor for the dialog contents.
      *
-     * @param title The title of the dialog, to be displayed below the image.
-     * @param details The details text to be displayed under the title.
-     * @param illustrationId The resource id of the image displayed above the title.
-     * @param primaryButtonText The text of the primary button.
-     * @param primaryButtonIconId The resource ID of icon on the primary button, or 0 if none.
-     * @param secondaryButtonText The text of the secondary button or null if there shouldn't be a
-     *      secondary button.
-     * @param buttonClickCallback The callback handling the click on the buttons. It takes the type
-     *      of the button as a parameter.
+     * @param title               The title of the dialog, to be displayed below the
+     *                            image.
+     * @param details             The details text to be displayed under the title.
+     * @param illustrationId      The resource id of the image displayed above the
+     *                            title.
+     * @param primaryButtonText   The text of the primary button.
+     * @param secondaryButtonText The text of the secondary button or null if there
+     *                            shouldn't be a secondary button.
+     * @param buttonClickCallback The callback handling the click on the buttons. It
+     *                            takes the type of the button as a parameter.
      */
     public PasswordManagerDialogContents(String title, String details, int illustrationId,
-            String primaryButtonText, int primaryButtonIconId, @Nullable String secondaryButtonText,
+            String primaryButtonText, @Nullable String secondaryButtonText,
             Callback<Integer> buttonClickCallback) {
         mTitle = title;
         mDetails = details;
         mPrimaryButtonText = primaryButtonText;
-        mPrimaryButtonIconId = primaryButtonIconId;
         mSecondaryButtonText = secondaryButtonText;
         mIllustrationId = illustrationId;
         mButtonClickCallback = buttonClickCallback;
@@ -95,14 +94,6 @@ public class PasswordManagerDialogContents {
      */
     public String getPrimaryButtonText() {
         return mPrimaryButtonText;
-    }
-
-    /**
-     * Returns the resource ID for the icon displayed in the primary button, or
-     * 0 if no icon is displayed.
-     */
-    public int getPrimaryButtonIconId() {
-        return mPrimaryButtonIconId;
     }
 
     /**

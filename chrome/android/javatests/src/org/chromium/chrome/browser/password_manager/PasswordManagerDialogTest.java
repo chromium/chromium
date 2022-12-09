@@ -73,7 +73,7 @@ public class PasswordManagerDialogTest {
                     activity.findViewById(android.R.id.content),
                     activity.getBrowserControlsManager());
             PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE,
-                    DETAILS, R.drawable.password_checkup_warning, OK_BUTTON, 0, CANCEL_BUTTON,
+                    DETAILS, R.drawable.password_checkup_warning, OK_BUTTON, CANCEL_BUTTON,
                     mOnClick);
             contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
             mCoordinator.initialize(activity.getWindowAndroid().getContext().get(), contents);

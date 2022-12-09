@@ -63,7 +63,7 @@ public class SafeBrowsingPasswordReuseDialogBridge {
                 : this::onClickWithNegativeButtonDisabled;
 
         return new PasswordManagerDialogContents(credentialLeakTitle, credentialLeakDetails,
-                R.drawable.password_checkup_warning, positiveButton, 0, negativeButton, onClick);
+                R.drawable.password_checkup_warning, positiveButton, negativeButton, onClick);
     }
 
     @CalledByNative

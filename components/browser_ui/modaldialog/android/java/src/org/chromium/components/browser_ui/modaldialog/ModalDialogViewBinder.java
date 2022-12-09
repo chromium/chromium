@@ -39,8 +39,6 @@ public class ModalDialogViewBinder
             assert checkFilterTouchConsistency(model);
             view.setButtonText(ModalDialogProperties.ButtonType.POSITIVE,
                     model.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        } else if (ModalDialogProperties.POSITIVE_BUTTON_ICON == propertyKey) {
-            view.setPositiveButtonIcon(model.get(ModalDialogProperties.POSITIVE_BUTTON_ICON));
         } else if (ModalDialogProperties.POSITIVE_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
             view.setButtonContentDescription(ModalDialogProperties.ButtonType.POSITIVE,
                     model.get(ModalDialogProperties.POSITIVE_BUTTON_CONTENT_DESCRIPTION));

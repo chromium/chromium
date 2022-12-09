@@ -111,14 +111,6 @@ public class ModalDialogProperties {
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
 
-    /**
-     * The icon on the positive button.
-     * Note: Not intended for general usage; please seek Chrome UX approval for
-     * an exception.
-     */
-    public static final WritableObjectPropertyKey<Drawable> POSITIVE_BUTTON_ICON =
-            new WritableObjectPropertyKey();
-
     /** Content description for the positive button. */
     public static final WritableObjectPropertyKey<String> POSITIVE_BUTTON_CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -198,7 +190,7 @@ public class ModalDialogProperties {
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
             TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE_PARAGRAPH_1, MESSAGE_PARAGRAPH_2,
-            CUSTOM_VIEW, CUSTOM_BUTTON_BAR_VIEW, POSITIVE_BUTTON_TEXT, POSITIVE_BUTTON_ICON,
+            CUSTOM_VIEW, CUSTOM_BUTTON_BAR_VIEW, POSITIVE_BUTTON_TEXT,
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, FOOTER_MESSAGE,
             CANCEL_ON_TOUCH_OUTSIDE, FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK,
