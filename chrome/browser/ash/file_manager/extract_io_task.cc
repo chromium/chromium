@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/extract_io_task.h"
 
+#include <grp.h>
 #include <utility>
 
 #include "base/check_op.h"
@@ -23,6 +24,7 @@
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
 #include "third_party/zlib/google/redact.h"
 
@@ -105,19 +107,35 @@ void ExtractIOTask::FinishedExtraction(base::FilePath directory, bool success) {
   }
 }
 
+absl::optional<gid_t> GetDirectoriesOwnerGid() {
+  struct group grp, *result = nullptr;
+  std::vector<char> buffer(16384);
+  getgrnam_r("chronos-access", &grp, buffer.data(), buffer.size(), &result);
+  if (!result) {
+    return absl::nullopt;
+  }
+  return grp.gr_gid;
+}
+
 // Recursively walk directory and set 'u+rwx,g+x,o+x'.
 bool SetDirectoryPermissions(base::FilePath directory, bool success) {
   // Always set permissions in case of error mid-extract.
   base::FileEnumerator traversal(directory, true,
                                  base::FileEnumerator::DIRECTORIES);
+  const absl::optional<gid_t> owner_gid = GetDirectoriesOwnerGid();
   for (base::FilePath current = traversal.Next(); !current.empty();
        current = traversal.Next()) {
     base::SetPosixFilePermissions(current,
                                   base::FILE_PERMISSION_READ_BY_USER |
                                       base::FILE_PERMISSION_WRITE_BY_USER |
                                       base::FILE_PERMISSION_EXECUTE_BY_USER |
+                                      base::FILE_PERMISSION_READ_BY_GROUP |
                                       base::FILE_PERMISSION_EXECUTE_BY_GROUP |
                                       base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+    // Might not exist in tests.
+    if (owner_gid.has_value()) {
+      HANDLE_EINTR(chown(current.value().c_str(), -1, owner_gid.value()));
+    }
   }
   return success;
 }
@@ -163,8 +181,15 @@ bool CreateExtractionDirectory(const base::FilePath& destination_directory) {
         destination_directory, base::FILE_PERMISSION_READ_BY_USER |
                                    base::FILE_PERMISSION_WRITE_BY_USER |
                                    base::FILE_PERMISSION_EXECUTE_BY_USER |
+                                   base::FILE_PERMISSION_READ_BY_GROUP |
                                    base::FILE_PERMISSION_EXECUTE_BY_GROUP |
                                    base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+    // Might not exist in tests.
+    const absl::optional<gid_t> owner_gid = GetDirectoriesOwnerGid();
+    if (created_ok && owner_gid.has_value()) {
+      created_ok = HANDLE_EINTR(
+          chown(destination_directory.value().c_str(), -1, owner_gid.value()));
+    }
   }
   return created_ok;
 }
