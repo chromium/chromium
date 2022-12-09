@@ -76,18 +76,19 @@ fuchsia::web::Favicon GfxImageToFidlFavicon(gfx::Image gfx_image) {
 namespace {
 
 // For each field that differs between |old_entry| and |new_entry|, the field
-// is set to its new value in |difference|. |new_entry| is assumed to have been
-// fully-populated with fields.
+// is set to its new value in |difference|. All other fields in |difference| are
+// left unchanged, such that a series of DiffNavigationEntries() calls may be
+// used to accumulate differences across a progression of NavigationStates.
 void DiffNavigationEntries(const fuchsia::web::NavigationState& old_entry,
                            const fuchsia::web::NavigationState& new_entry,
                            fuchsia::web::NavigationState* difference) {
   DCHECK(difference);
 
-  // |new_entry| should not be empty when the difference is between states
-  // pre- and post-navigation. It is possible for non-navigation events (e.g.
-  // Renderer-process teardown) to trigger notifications, in which case both
-  // states may be empty (i.e. both come from the "initial" NavigationEntry).
-  if (new_entry.IsEmpty() && old_entry.IsEmpty()) {
+  // NavigationStates will only be empty for "initial" navigation entries, so
+  // if |new_entry| is empty then |old_entry| must necessarily also be empty,
+  // and there is no difference to report.
+  if (new_entry.IsEmpty()) {
+    CHECK(old_entry.IsEmpty());
     return;
   }
 

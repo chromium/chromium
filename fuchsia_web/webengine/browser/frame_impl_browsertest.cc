@@ -380,29 +380,32 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, GoBackAndForward) {
   frame.navigation_listener().RunUntilUrlTitleBackForwardEquals(
       title2, kPage2Title, true, false);
 
-  VerifyCanGoBackAndForward(frame, true, false);
   frame.GetNavigationController()->GoBack();
   frame.navigation_listener().RunUntilUrlTitleBackForwardEquals(
       title1, kPage1Title, false, true);
 
   // At the top of the navigation entry list; this should be a no-op.
-  VerifyCanGoBackAndForward(frame, false, true);
   frame.GetNavigationController()->GoBack();
 
   // Process the navigation request message.
   base::RunLoop().RunUntilIdle();
 
+  // Verify that the can-go-back/forward state has not changed.
   VerifyCanGoBackAndForward(frame, false, true);
+
   frame.GetNavigationController()->GoForward();
   frame.navigation_listener().RunUntilUrlTitleBackForwardEquals(
       title2, kPage2Title, true, false);
 
   // At the end of the navigation entry list; this should be a no-op.
-  VerifyCanGoBackAndForward(frame, true, false);
   frame.GetNavigationController()->GoForward();
 
   // Process the navigation request message.
   base::RunLoop().RunUntilIdle();
+
+  // Back/forward state should not have changed, since the request was a
+  // no-op.
+  VerifyCanGoBackAndForward(frame, true, false);
 }
 
 // An HTTP response stream whose response payload can be sent as "chunks"
