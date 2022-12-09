@@ -1220,6 +1220,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
   if (dependency_->IsUsingVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
     if (!ycbcr_info) {
+      // YCbCr info is required for YUV images.
       DCHECK(si_format.is_single_plane());
       // TODO(hitawala): Add multiplanar support for Skia-Vulkan.
       return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format));
