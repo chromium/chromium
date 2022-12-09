@@ -1065,7 +1065,7 @@ BluetoothAdapterFloss::StartLowEnergyScanSession(
     std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
     base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
   auto scan_session = std::make_unique<BluetoothLowEnergyScanSessionFloss>(
-      delegate,
+      std::move(filter), delegate,
       base::BindOnce(&BluetoothAdapterFloss::OnLowEnergyScanSessionDestroyed,
                      weak_ptr_factory_.GetWeakPtr()));
   FlossDBusManager::Get()->GetLEScanClient()->RegisterScanner(base::BindOnce(
@@ -1112,7 +1112,7 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
   FlossDBusManager::Get()->GetLEScanClient()->StartScan(
       base::BindOnce(&BluetoothAdapterFloss::OnStartScan,
                      weak_ptr_factory_.GetWeakPtr(), uuid, scanner_id),
-      scanner_id, ScanSettings{}, absl::nullopt);
+      scanner_id, ScanSettings{}, scanners_[uuid]->GetFlossScanFilter());
 }
 
 void BluetoothAdapterFloss::ScanResultReceived(ScanResult scan_result) {
