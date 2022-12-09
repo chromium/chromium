@@ -581,10 +581,14 @@ source_set("platform_base_connection_info") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/internal/platform/bluetooth_connection_info.cc" ]
+  sources = [
+    "src/internal/platform/bluetooth_connection_info.cc",
+    "src/internal/platform/wifi_lan_connection_info.cc",
+  ]
   public = [
     "src/internal/platform/bluetooth_connection_info.h",
     "src/internal/platform/connection_info.h",
+    "src/internal/platform/wifi_lan_connection_info.h",
   ]
   public_deps = [
     ":platform_base",
