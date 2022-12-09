@@ -179,12 +179,6 @@ export enum AspectRatioSet {
   RATIO_SQUARE = 1.0000,
 }
 
-export const NON_CROP_ASPECT_RATIO_SETS = [
-  AspectRatioSet.RATIO_4_3,
-  AspectRatioSet.RATIO_16_9,
-  AspectRatioSet.RATIO_OTHER,
-];
-
 export enum Rotation {
   ANGLE_0 = 0,
   ANGLE_90 = 90,

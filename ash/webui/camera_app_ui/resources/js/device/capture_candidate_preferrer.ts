@@ -9,7 +9,6 @@ import {
   AspectRatioSet,
   LocalStorageKey,
   Mode,
-  NON_CROP_ASPECT_RATIO_SETS,
   PhotoResolutionLevel,
   Resolution,
   VideoResolutionLevel,
@@ -132,6 +131,8 @@ export class CaptureCandidatePreferrer {
 
   private readonly videoResolutionOptionListeners:
       VideoResolutionOptionListener[] = [];
+
+  private preferPhotoAspectRatioOrder: AspectRatioSet[] = [];
 
   /**
    * Adds listener for photo resolution options.
@@ -528,14 +529,33 @@ export class CaptureCandidatePreferrer {
   }
 
   private buildPhotoOptions(deviceId: string, resolutions: Resolution[]): void {
+    const defaultPreferOrder = [
+      AspectRatioSet.RATIO_4_3,
+      AspectRatioSet.RATIO_16_9,
+      AspectRatioSet.RATIO_OTHER,
+    ];
+    // Making sure that the prefer aspect ratio has resolution which is equal to
+    // or larger than 720p.
+    const prioritizedAspectRatioSet =
+        defaultPreferOrder.find(
+            (ratio) => resolutions.some(
+                (r) => toAspectRatioSet(r) === ratio && r.height >= 720)) ??
+        defaultPreferOrder[0];
+    this.preferPhotoAspectRatioOrder = [
+      prioritizedAspectRatioSet,
+      ...defaultPreferOrder.filter(
+          (ratio) => ratio !== prioritizedAspectRatioSet),
+    ];
+
     /**
      * Categorizes the photo resolutions according to their aspect ratio and
      * sorts them.
      */
-    function groupResolutions(resolutions: Resolution[]):
+    function groupResolutions(
+        resolutions: Resolution[], preferAspectRatioSetOrder: AspectRatioSet[]):
         Map<AspectRatioSet, Resolution[]> {
       const resolutionGroups = new Map<AspectRatioSet, Resolution[]>();
-      for (const aspectRatioSet of NON_CROP_ASPECT_RATIO_SETS) {
+      for (const aspectRatioSet of preferAspectRatioSetOrder) {
         resolutionGroups.set(aspectRatioSet, []);
       }
 
@@ -546,9 +566,10 @@ export class CaptureCandidatePreferrer {
       return resolutionGroups;
     }
 
-    const resolutionGroups = groupResolutions(resolutions);
+    const resolutionGroups =
+        groupResolutions(resolutions, this.preferPhotoAspectRatioOrder);
     const options = new Map<AspectRatioSet, PhotoResolutionOption[]>();
-    for (const aspectRatioSet of NON_CROP_ASPECT_RATIO_SETS) {
+    for (const aspectRatioSet of this.preferPhotoAspectRatioOrder) {
       const resolutionGroup = resolutionGroups.get(aspectRatioSet);
       assert(resolutionGroup !== undefined);
       if (resolutionGroup.length > 0) {
@@ -705,7 +726,8 @@ export class CaptureCandidatePreferrer {
       return toAspectRatioSet(this.cameraConfig.captureCandidate.resolution);
     } else {
       return prefAspectRatioSet ??
-          getFallbackAspectRatioSet(aspectRatioOptionsMap);
+          getFallbackAspectRatioSet(
+                 aspectRatioOptionsMap, this.preferPhotoAspectRatioOrder);
     }
   }
 
@@ -895,14 +917,9 @@ export class CaptureCandidatePreferrer {
 }
 
 function getFallbackAspectRatioSet(
-    aspectRatioOptionsMap: Map<AspectRatioSet, PhotoResolutionOption[]>):
-    AspectRatioSet {
-  const preferenceOrder = [
-    AspectRatioSet.RATIO_4_3,
-    AspectRatioSet.RATIO_16_9,
-    AspectRatioSet.RATIO_OTHER,
-  ];
-  for (const aspectRatioSet of preferenceOrder) {
+    aspectRatioOptionsMap: Map<AspectRatioSet, PhotoResolutionOption[]>,
+    preferAspectRatioSetOrder: AspectRatioSet[]): AspectRatioSet {
+  for (const aspectRatioSet of preferAspectRatioSetOrder) {
     if (aspectRatioOptionsMap.has(aspectRatioSet)) {
       return aspectRatioSet;
     }
