@@ -146,6 +146,11 @@ class IndexedDBQuotaClientTest : public testing::Test,
   void AddFakeIndexedDB(const StorageKey& storage_key, int size) {
     // Create default bucket for `storage_key`.
     auto bucket = GetOrCreateBucket(storage_key, storage::kDefaultBucketName);
+    AddFakeIndexedDBForBucket(bucket, size);
+  }
+
+  void AddFakeIndexedDBForBucket(const storage::BucketLocator& bucket,
+                                 int size) {
     base::FilePath file_path_storage_key;
     {
       base::test::TestFuture<base::FilePath> future;
@@ -278,6 +283,21 @@ TEST_P(IndexedDBQuotaClientTest, GetBucketUsageMixedParty) {
   }
 }
 
+TEST_P(IndexedDBQuotaClientTest, GetBucketUsageCustom) {
+  IndexedDBQuotaClient client(*idb_context());
+
+  auto bucket_a = GetOrCreateBucket(kStorageKeyFirstPartyA, "inbox");
+  auto bucket_b = GetOrCreateBucket(kStorageKeyFirstPartyB, "drafts");
+  AddFakeIndexedDBForBucket(bucket_a, 6);
+  AddFakeIndexedDBForBucket(bucket_b, 3);
+  EXPECT_EQ(6, GetBucketUsage(client, bucket_a));
+  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+
+  AddFakeIndexedDBForBucket(bucket_a, 1000);
+  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
+  EXPECT_EQ(3, GetBucketUsage(client, bucket_b));
+}
+
 TEST_P(IndexedDBQuotaClientTest, GetStorageKeysForTypeFirstParty) {
   IndexedDBQuotaClient client(*idb_context());
 
@@ -368,6 +388,23 @@ TEST_P(IndexedDBQuotaClientTest, DeleteBucketMixedParty) {
   } else {
     EXPECT_EQ(0, GetBucketUsage(client, bucket_b));
   }
+}
+
+TEST_P(IndexedDBQuotaClientTest, DeleteBucketCustom) {
+  IndexedDBQuotaClient client(*idb_context());
+
+  auto bucket_a = GetOrCreateBucket(kStorageKeyFirstPartyA, "inbox");
+  auto bucket_b = GetOrCreateBucket(kStorageKeyFirstPartyB, "drafts");
+  AddFakeIndexedDBForBucket(bucket_a, 1000);
+  AddFakeIndexedDBForBucket(bucket_b, 50);
+  EXPECT_EQ(1000, GetBucketUsage(client, bucket_a));
+  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
+
+  blink::mojom::QuotaStatusCode delete_status =
+      DeleteBucketData(client, bucket_a);
+  EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, delete_status);
+  EXPECT_EQ(0, GetBucketUsage(client, bucket_a));
+  EXPECT_EQ(50, GetBucketUsage(client, bucket_b));
 }
 
 TEST_P(IndexedDBQuotaClientTest, NonDefaultBucketFirstParty) {

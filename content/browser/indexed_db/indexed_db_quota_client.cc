@@ -44,12 +44,6 @@ void IndexedDBQuotaClient::GetBucketUsage(const storage::BucketLocator& bucket,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(bucket.type, StorageType::kTemporary);
 
-  // Skip non-default buckets until Storage Buckets are supported for IndexedDB.
-  if (!bucket.is_default) {
-    std::move(callback).Run(0);
-    return;
-  }
-
   std::move(callback).Run(indexed_db_context_->GetBucketDiskUsage(bucket));
 }
 
@@ -71,12 +65,6 @@ void IndexedDBQuotaClient::DeleteBucketData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(bucket.type, StorageType::kTemporary);
   DCHECK(!callback.is_null());
-
-  // Skip non-default buckets until Storage Buckets are supported for IndexedDB.
-  if (!bucket.is_default) {
-    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
-    return;
-  }
 
   indexed_db_context_->DeleteBucketData(
       bucket,
