@@ -35,11 +35,7 @@ component("seatbelt") {
     ":seatbelt_export",
     ":seatbelt_proto",
   ]
-  public_deps = [
-    "//third_party/abseil-cpp:default",
-    "//third_party/protobuf:protobuf_lite",
-  ]
-  public_configs = [ "//third_party/abseil-cpp:absl_include_config" ]
+  public_deps = [ "//third_party/protobuf:protobuf_lite" ]
   defines = [ "SEATBELT_IMPLEMENTATION" ]
 }
 

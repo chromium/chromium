@@ -81,7 +81,7 @@ MULTIPROCESS_TEST_MAIN(FileReadAccess) {
   sandbox::SandboxCompiler compiler;
   compiler.SetProfile(kSandboxProfile);
   std::string error;
-  CHECK(compiler.CompileAndApplyProfile(&error)) << error;
+  CHECK(compiler.CompileAndApplyProfile(error)) << error;
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
@@ -170,7 +170,7 @@ MULTIPROCESS_TEST_MAIN(DirReadWriteAccess) {
   sandbox::SandboxCompiler compiler;
   compiler.SetProfile(kSandboxProfile);
   std::string error;
-  CHECK(compiler.CompileAndApplyProfile(&error)) << error;
+  CHECK(compiler.CompileAndApplyProfile(error)) << error;
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
 

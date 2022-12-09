@@ -10,7 +10,6 @@
 #include "sandbox/mac/seatbelt.h"
 #include "sandbox/mac/seatbelt.pb.h"
 #include "sandbox/mac/seatbelt_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"  // nogncheck
 
 namespace sandbox {
 
@@ -52,12 +51,14 @@ class SEATBELT_EXPORT SandboxCompiler {
   [[nodiscard]] bool SetParameter(const std::string& key,
                                   const std::string& value);
 
-  // Compiles and applies the profile; returns true on success.
-  bool CompileAndApplyProfile(std::string* error);
+  // Compiles and applies the profile; returns true on success and false
+  // on failure with a message set in the `error` parameter.
+  bool CompileAndApplyProfile(std::string& error);
 
-  // Compiles the policy into a sandbox policy proto. Returns `absl::nullopt` on
-  // error, with an error message set.
-  absl::optional<mac::SandboxPolicy> CompilePolicyToProto(std::string* error);
+  // Compiles the policy into a sandbox policy proto. Returns true on success,
+  // with `policy` set, or returns false on error with a message in the `error`
+  // parameter.
+  bool CompilePolicyToProto(mac::SandboxPolicy& policy, std::string& error);
 
  private:
   const Target mode_;

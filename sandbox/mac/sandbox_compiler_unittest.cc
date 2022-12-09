@@ -53,7 +53,7 @@ MULTIPROCESS_TEST_MAIN(BasicProfileProcess) {
   )");
 
   std::string error;
-  CHECK(compiler.CompileAndApplyProfile(&error));
+  CHECK(compiler.CompileAndApplyProfile(error));
 
   return 0;
 }
@@ -77,7 +77,7 @@ MULTIPROCESS_TEST_MAIN(BasicProfileWithParamProcess) {
   CHECK(compiler.SetParameter("DIR", "/"));
 
   std::string error;
-  CHECK(compiler.CompileAndApplyProfile(&error));
+  CHECK(compiler.CompileAndApplyProfile(error)) << error;
 
   return 0;
 }
@@ -100,7 +100,7 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalProcess) {
   )");
 
   std::string error;
-  CHECK(compiler.CompileAndApplyProfile(&error));
+  CHECK(compiler.CompileAndApplyProfile(error)) << error;
 
   // The profile compiled and applied successfully, now try and read 1 byte from
   // /dev/urandom.
@@ -137,7 +137,7 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalTestWithParamsProcess) {
   CHECK(compiler.SetParameter("URANDOM", "/dev/urandom"));
 
   std::string error;
-  CHECK(compiler.CompileAndApplyProfile(&error));
+  CHECK(compiler.CompileAndApplyProfile(error)) << error;
 
   // The profile compiled and applied successfully, now try and read 1 byte from
   // /dev/urandom.
@@ -170,7 +170,7 @@ MULTIPROCESS_TEST_MAIN(ProfileFunctionalityTestErrorProcess) {
   // Make sure that this invalid profile results in an error returned.
   std::string error;
   CHECK_EQ(error, "");
-  CHECK(!compiler.CompileAndApplyProfile(&error));
+  CHECK(!compiler.CompileAndApplyProfile(error)) << error;
   CHECK_NE(error, "");
 
   return 0;
@@ -195,17 +195,17 @@ TEST_P(SandboxCompilerTest, DuplicateKeys) {
   EXPECT_TRUE(compiler.SetParameter("key3", "value"));
   EXPECT_FALSE(compiler.SetParameter("key3", "value"));
 
-  absl::optional<mac::SandboxPolicy> policy =
-      compiler.CompilePolicyToProto(nullptr);
-  ASSERT_TRUE(policy.has_value());
+  mac::SandboxPolicy policy;
+  std::string error;
+  ASSERT_TRUE(compiler.CompilePolicyToProto(policy, error)) << error;
   if (GetParam() == SandboxCompiler::Target::kSource) {
-    EXPECT_EQ(3, policy->source().params_size());
-    EXPECT_FALSE(policy->source().profile().empty());
-    EXPECT_TRUE(policy->compiled().data().empty());
+    EXPECT_EQ(3, policy.source().params_size());
+    EXPECT_FALSE(policy.source().profile().empty());
+    EXPECT_TRUE(policy.compiled().data().empty());
   } else {
-    EXPECT_EQ(0, policy->source().params_size());
-    EXPECT_TRUE(policy->source().profile().empty());
-    EXPECT_FALSE(policy->compiled().data().empty());
+    EXPECT_EQ(0, policy.source().params_size());
+    EXPECT_TRUE(policy.source().profile().empty());
+    EXPECT_FALSE(policy.compiled().data().empty());
   }
 }
 

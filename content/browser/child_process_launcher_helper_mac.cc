@@ -153,13 +153,10 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
                              &compiler);
 
       std::string error;
-      absl::optional<sandbox::mac::SandboxPolicy> policy =
-          compiler.CompilePolicyToProto(&error);
-      if (!policy.has_value()) {
+      if (!compiler.CompilePolicyToProto(policy_, error)) {
         LOG(ERROR) << "Failed to compile sandbox policy: " << error;
         return false;
       }
-      policy_ = std::move(*policy);
 
       if (can_cache_policy) {
         SandboxProfileCache::Get().Insert(sandbox_type, policy_);

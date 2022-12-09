@@ -4,6 +4,7 @@
 
 #include "sandbox/mac/seatbelt.h"
 
+#include <errno.h>
 #include <unistd.h>
 
 extern "C" {
@@ -105,29 +106,6 @@ Seatbelt::Parameters::~Parameters() {
   }
 }
 
-Seatbelt::CompiledProfile::CompiledProfile(sandbox_profile_t* profile)
-    : profile_(profile) {}
-
-Seatbelt::CompiledProfile::~CompiledProfile() {
-  if (profile_) {
-    ::sandbox_free_profile(profile_);
-  }
-}
-
-Seatbelt::CompiledProfile::CompiledProfile(CompiledProfile&& other) {
-  profile_ = std::exchange(other.profile_, nullptr);
-}
-
-Seatbelt::CompiledProfile& Seatbelt::CompiledProfile::operator=(
-    CompiledProfile&& other) {
-  profile_ = std::exchange(other.profile_, nullptr);
-  return *this;
-}
-
-void Seatbelt::CompiledProfile::CopyData(std::string& output) const {
-  output.assign(reinterpret_cast<const char*>(profile_->data), profile_->size);
-}
-
 // Initialize the static member variables.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -158,24 +136,20 @@ bool Seatbelt::InitWithParams(const char* profile,
 }
 
 // static
-absl::optional<Seatbelt::CompiledProfile> Seatbelt::Compile(
-    const char* profile,
-    const Seatbelt::Parameters& params,
-    std::string* error) {
+bool Seatbelt::Compile(const char* profile,
+                       const Seatbelt::Parameters& params,
+                       std::string& compiled_profile,
+                       std::string* error) {
   char* errorbuf = nullptr;
-  sandbox_profile_t* compiled_profile =
+  sandbox_profile_t* sandbox_profile =
       ::sandbox_compile_string(profile, params.params(), &errorbuf);
-  if (!HandleSandboxResult(compiled_profile ? 0 : -1, errorbuf, error)) {
-    return absl::nullopt;
+  if (!HandleSandboxResult(sandbox_profile ? 0 : -1, errorbuf, error)) {
+    return false;
   }
-  return CompiledProfile(compiled_profile);
-}
-
-// static
-bool Seatbelt::ApplyCompiledProfile(const CompiledProfile& profile,
-                                    std::string* error) {
-  return HandleSandboxErrno(::sandbox_apply(profile.profile_),
-                            "sandbox_apply: ", error);
+  compiled_profile.assign(reinterpret_cast<const char*>(sandbox_profile->data),
+                          sandbox_profile->size);
+  ::sandbox_free_profile(sandbox_profile);
+  return true;
 }
 
 // static

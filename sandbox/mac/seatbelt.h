@@ -9,10 +9,8 @@
 #include <string>
 
 #include "sandbox/mac/seatbelt_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"  // nogncheck
 
 extern "C" {
-struct sandbox_profile_t;
 struct sandbox_params_t;
 }
 
@@ -52,31 +50,6 @@ class SEATBELT_EXPORT Seatbelt {
     sandbox_params_t* params_ = nullptr;
   };
 
-  // CompiledProfile holds the result of sandbox compilation. The binary
-  // representation can be accessed, copied, and transmitted to another process.
-  class CompiledProfile {
-   public:
-    ~CompiledProfile();
-
-    CompiledProfile(CompiledProfile&&);
-    CompiledProfile& operator=(CompiledProfile&&);
-
-    CompiledProfile(const CompiledProfile&) = delete;
-    CompiledProfile& operator=(const CompiledProfile&) = delete;
-
-    // Copies the compiled profile data to the destination `output` buffer.
-    // Note that the data are binary, but because this is used with the
-    // seatbelt.pb proto, which uses std::string for binary data, this
-    // interface takes std::string rather than std::vector<uint8_t>.
-    void CopyData(std::string& output) const;
-
-   private:
-    friend class Seatbelt;
-    explicit CompiledProfile(sandbox_profile_t* profile);
-
-    sandbox_profile_t* profile_;
-  };
-
   // Initializes the specified sandbox profile. Returns true on success with
   // the sandbox applied; otherwise, returns false and outputs the error in
   // `error`.
@@ -93,17 +66,20 @@ class SEATBELT_EXPORT Seatbelt {
                              std::string* error);
 
   // Compiles a profile string, with optional parameters, into binary
-  // representation. On error, returns `nullopt` with a message stored in
-  // `error`.
-  static absl::optional<CompiledProfile> Compile(const char* profile,
-                                                 const Parameters& params,
-                                                 std::string* error);
+  // representation. Returns true on success with the result of compilation
+  // stored in `compiled_profile`. On error, returns false with a message
+  // stored in the optional `error` parameter.
+  // Note that the data are binary, but because this is used with the
+  // seatbelt.pb proto, which uses std::string for binary data, this
+  // interface takes std::string rather than std::vector<uint8_t>.
+  static bool Compile(const char* profile,
+                      const Parameters& params,
+                      std::string& compiled_profile,
+                      std::string* error);
 
   // Applies a compiled binary sandbox profile to the current process. Returns
   // true on success; on failure, returns false with a message stored in
-  // `error`.
-  static bool ApplyCompiledProfile(const CompiledProfile& profile,
-                                   std::string* error);
+  // the optional `error` parameter.
   static bool ApplyCompiledProfile(const std::string& profile,
                                    std::string* error);
 

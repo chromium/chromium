@@ -105,7 +105,7 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   SetParametersForTest(&compiler, log_file, exec_file);
 
   std::string error;
-  bool result = compiler.CompileAndApplyProfile(&error);
+  bool result = compiler.CompileAndApplyProfile(error);
   CHECK(result) << error;
 
   // Test the properties of the sandbox profile.

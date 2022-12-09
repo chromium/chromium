@@ -46,7 +46,7 @@ bool SandboxCompiler::SetParameter(const std::string& key,
   return it.second;
 }
 
-bool SandboxCompiler::CompileAndApplyProfile(std::string* error) {
+bool SandboxCompiler::CompileAndApplyProfile(std::string& error) {
   if (mode_ == Target::kSource) {
     std::vector<const char*> params;
 
@@ -58,33 +58,28 @@ bool SandboxCompiler::CompileAndApplyProfile(std::string* error) {
     params.push_back(nullptr);
 
     return Seatbelt::InitWithParams(policy_.profile().c_str(), 0, params.data(),
-                                    error);
+                                    &error);
   } else if (mode_ == Target::kCompiled) {
-    absl::optional<Seatbelt::CompiledProfile> profile =
-        Seatbelt::Compile(policy_.profile().c_str(), params_, error);
-    if (profile) {
-      return Seatbelt::ApplyCompiledProfile(*profile, error);
+    std::string profile;
+    if (Seatbelt::Compile(policy_.profile().c_str(), params_, profile,
+                          &error)) {
+      return Seatbelt::ApplyCompiledProfile(profile, &error);
     }
   }
   return false;
 }
 
-absl::optional<mac::SandboxPolicy> SandboxCompiler::CompilePolicyToProto(
-    std::string* error) {
+bool SandboxCompiler::CompilePolicyToProto(mac::SandboxPolicy& policy,
+                                           std::string& error) {
   if (mode_ == Target::kSource) {
-    mac::SandboxPolicy policy;
     policy.mutable_source()->CopyFrom(policy_);
-    return policy;
+    return true;
   } else if (mode_ == Target::kCompiled) {
-    absl::optional<Seatbelt::CompiledProfile> profile =
-        Seatbelt::Compile(policy_.profile().c_str(), params_, error);
-    if (profile) {
-      mac::SandboxPolicy policy;
-      profile->CopyData(*policy.mutable_compiled()->mutable_data());
-      return policy;
-    }
+    return Seatbelt::Compile(policy_.profile().c_str(), params_,
+                             *policy.mutable_compiled()->mutable_data(),
+                             &error);
   }
-  return absl::nullopt;
+  return false;
 }
 
 }  // namespace sandbox
