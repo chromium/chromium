@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <View
+        android:layout_width="56dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_round_accent"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="添加收藏至"
+        android:textColor="?attr/textColorMajor"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginVertical="24dp"
+        />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.ark.browser.ui.widget.DrawableTintEditText
+                android:id="@+id/title_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="名称"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textCapSentences|textAutoCorrect"
+                android:singleLine="true"
+                android:background="@drawable/bg_edit_text_gray"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:textSize="13sp"
+                android:layout_marginBottom="6dp"
+                app:alertMessage="必须提供标题"
+                android:drawableStart="@drawable/ic_language_black_24dp"
+                android:drawablePadding="8dp"
+                android:cursorVisible="false"
+                android:textColor="?attr/textColorMajor"
+                android:textColorHint="?attr/textColorNormal"
+                android:layout_marginHorizontal="24dp"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintEditText
+                android:id="@+id/url_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="网址"
+                android:drawableStart="@drawable/ic_link_black_24dp"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textUri"
+                android:singleLine="true"
+                android:background="@drawable/bg_edit_text_gray"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textSize="13sp"
+                android:textColor="?attr/textColorMajor"
+                android:textColorHint="?attr/textColorNormal"
+                app:alertMessage="必须提供标题"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:drawablePadding="8dp"
+                android:cursorVisible="false"
+                android:layout_marginHorizontal="24dp"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <com.ark.browser.ui.widget.DrawableTintEditText
+                android:id="@+id/folder_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textSize="13sp"
+                android:text="test"
+                android:gravity="center_vertical"
+                android:drawableStart="@drawable/ic_folder_special_black_24dp"
+                android:background="@drawable/bg_edit_text_gray"
+                android:textColor="?attr/textColorMajor"
+                android:textColorHint="?attr/textColorNormal"
+                android:drawablePadding="8dp"
+                android:layout_marginHorizontal="24dp"
+                app:drawable_tint_color="?attr/textColorMajor"
+                />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <!--                    <FrameLayout-->
+                <!--                        android:layout_width="0dp"-->
+                <!--                        android:layout_height="match_parent"-->
+                <!--                        android:layout_weight="1">-->
+
+                <!--                        -->
+                <!--                        -->
+                <!--                    </FrameLayout>-->
+
+                <TextView
+                    android:id="@+id/add_to_bookmark"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/icon_add_bookmark"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:text="书签收藏"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/textColorMajor"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/add_to_home"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+
+                <!--                    <ImageView-->
+                <!--                        android:layout_width="wrap_content"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:layout_gravity="center_horizontal"-->
+                <!--                        android:src="@drawable/icon_bookmark_added_default"-->
+                <!--                        app:layout_constraintStart_toStartOf="@id/add_to_bookmark"-->
+                <!--                        app:layout_constraintTop_toTopOf="@id/add_to_bookmark"-->
+                <!--                        android:layout_marginTop="@dimen/dp8"-->
+                <!--                        android:layout_marginStart="16dp"-->
+                <!--                        />-->
+
+                <ImageView
+                    android:id="@+id/iv_selected_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/icon_selected_default"
+                    app:layout_constraintEnd_toEndOf="@id/add_to_bookmark"
+                    app:layout_constraintTop_toTopOf="@id/add_to_bookmark"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:visibility="gone"
+                    />
+
+                <TextView
+                    android:id="@+id/add_to_home"
+                    android:drawableTop="@drawable/icon_add_mainpage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="16dp"
+                    android:drawablePadding="8dp"
+                    android:text="主页图标"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="?attr/textColorMajor"
+                    app:layout_constraintStart_toEndOf="@id/add_to_bookmark"
+                    app:layout_constraintEnd_toStartOf="@id/add_to_launcher"
+                    />
+
+                <ImageView
+                    android:id="@+id/iv_selected_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/icon_selected_default"
+                    app:layout_constraintEnd_toEndOf="@id/add_to_home"
+                    app:layout_constraintTop_toTopOf="@id/add_to_home"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:visibility="gone"
+                    />
+
+                <TextView
+                    android:id="@+id/add_to_launcher"
+                    android:drawableTop="@drawable/icon_add_desktop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:padding="16dp"
+                    android:drawablePadding="8dp"
+                    android:text="桌面图标"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textColor="?attr/textColorMajor"
+                    app:layout_constraintStart_toEndOf="@id/add_to_home"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+
+                <ImageView
+                    android:id="@+id/iv_selected_3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/icon_selected_default"
+                    app:layout_constraintEnd_toEndOf="@id/add_to_launcher"
+                    app:layout_constraintTop_toTopOf="@id/add_to_launcher"
+                    android:layout_marginTop="22dp"
+                    android:layout_marginEnd="22dp"
+                    android:visibility="gone"
+                    />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <include layout="@layout/_dialog_buttons" />
+
+</LinearLayout>

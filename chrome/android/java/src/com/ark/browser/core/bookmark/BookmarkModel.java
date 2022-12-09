@@ -106,7 +106,7 @@ public class BookmarkModel extends BookmarkBridge {
     /**
      * @see org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem#getTitle()
      */
-    String getBookmarkTitle(BookmarkId bookmarkId) {
+    public String getBookmarkTitle(BookmarkId bookmarkId) {
         BookmarkItem bookmarkItem = getBookmarkById(bookmarkId);
         if (bookmarkItem == null) return "";
         return bookmarkItem.getTitle();

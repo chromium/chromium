@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.ark.browser.core.bookmark.BookmarkBridge;
+import com.ark.browser.core.bookmark.BookmarkModel;
+import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
 import com.ark.browser.ui.widget.indicator.CoolIndicator;
 import com.ark.browser.utils.ArkLogger;
@@ -19,6 +22,8 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -45,6 +50,15 @@ public class BottomController {
     private Tab mPage;
     private boolean mIsIncognito;
     private int mPrimaryColor;
+
+    private BookmarkModel mBookmarkModel;
+
+    private final BookmarkBridge.BookmarkModelObserver mBookmarksObserver = new BookmarkBridge.BookmarkModelObserver() {
+        @Override
+        public void bookmarkModelChanged() {
+            updateStarButton(mPage);
+        }
+    };
 
 
     public BottomController(View view) {
@@ -75,22 +89,36 @@ public class BottomController {
         starButton = view.findViewById(R.id.btn_star);
         starButton.setOnClickListener((View.OnClickListener) v -> {
 //            CollectionEditorDialog.newInstance((BookmarkId) null).show(v.getContext());
+            if (mPage == null) {
+                return;
+            }
+
+            CollectionEditorDialog.newInstance(mPage).show(v.getContext());
+
+//            BookmarkId bookmarkId = mBookmarkModel.getUserBookmarkIdForTab(mPage);
+//            if (bookmarkId == null) {
+//                mBookmarkModel.addBookmark(mBookmarkModel.getDefaultFolder(),
+//                        0, mPage.getTitle(), mPage.getUrl());
+//            } else {
+//                mBookmarkModel.deleteBookmark(bookmarkId);
+//            }
+
         });
 
         loadingTitle = view.findViewById(R.id.loading_title);
 
         loadingCancel = view.findViewById(R.id.loading_cancel);
         loadingCancel.setOnClickListener(v -> {
-//            Tab tab = PageCacheManager.getInstance().findPage(mCurrentPageInfo);
-//            if (tab != null) {
-//                if (tab.isLoading()) {
-//                    loadingCancel.setImageResource(R.drawable.qianxun_refresh);
-//                    tab.stopLoading();
-//                } else {
-//                    loadingCancel.setImageResource(R.drawable.qianxun_cancel);
-//                    tab.reload();
-//                }
-//            }
+            if (mPage == null) {
+                return;
+            }
+            if (mPage.isLoading()) {
+                loadingCancel.setImageResource(R.drawable.ic_refresh);
+                mPage.stopLoading();
+            } else {
+                loadingCancel.setImageResource(R.drawable.ic_cancel);
+                mPage.reload();
+            }
         });
 
 
@@ -191,17 +219,20 @@ public class BottomController {
      * @param tab 当前tab
      */
     public void updateStarButton(Tab tab) {
-//        if (mModel == null) {
-//            mModel = new BookmarkModel();
-//            mModel.addObserver(mBookmarksObserver);
-//        }
-//        if (tab != null
-//                && (mModel.doesBookmarkExist(new BookmarkId(tab.getBookmarkId(), BookmarkType.NORMAL))
-//                || HomepageManager.getFavoriteByUrl(tab.getUrl()) != null)) { // writer.hasItemInDatabase(tab.getUrl())
-//            starButton.setImageResource(R.drawable.ic_bookmark_added);
-//        } else {
-//            starButton.setImageResource(R.drawable.ic_add_bookmark);
-//        }
+        if (mBookmarkModel == null) {
+            mBookmarkModel = new BookmarkModel();
+            mBookmarkModel.addObserver(mBookmarksObserver);
+            mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+        }
+        if (!mBookmarkModel.isBookmarkModelLoaded()) {
+            mBookmarkModel.finishLoadingBookmarkModel(() -> updateStarButton(tab));
+            return;
+        }
+        if (tab != null && mBookmarkModel.hasBookmarkIdForTab(tab)) {
+            starButton.setImageResource(R.drawable.ic_bookmark_added);
+        } else {
+            starButton.setImageResource(R.drawable.ic_add_bookmark);
+        }
     }
 
     private void updateLoadProgress(int progress) {
@@ -241,6 +272,17 @@ public class BottomController {
         ArkLogger.e(TAG, "onPageDetached page=" + page.getId());
         page.removeObserver(mTabObserver);
         finishLoadProgress(false);
+    }
+
+    public void onDestroy() {
+        if (mPage != null) {
+            mPage.removeObserver(mTabObserver);
+        }
+        if (mBookmarkModel != null) {
+            mBookmarkModel.removeObserver(mBookmarksObserver);
+            mBookmarkModel.destroy();
+            mBookmarkModel = null;
+        }
     }
 
 

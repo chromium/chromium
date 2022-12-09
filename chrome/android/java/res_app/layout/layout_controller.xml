@@ -73,6 +73,7 @@
                     android:layout_height="match_parent"
                     android:paddingVertical="6dp"
                     android:paddingHorizontal="6dp"
+                    android:tint="?attr/textColorMajor"
                     android:src="@drawable/ic_add_bookmark"/>
 
                 <TextView android:id="@+id/loading_title"

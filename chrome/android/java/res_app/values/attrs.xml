@@ -65,6 +65,9 @@
         <attr name="shiftInterpolator" format="reference"/>
     </declare-styleable>
 
+    <declare-styleable name="EmptyAlertEditText">
+        <attr name="alertMessage" format="string" />
+    </declare-styleable>
 
     <attr name="backgroundColor" format="color" />
     <attr name="backgroundColorDark" format="color" />

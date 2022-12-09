@@ -1,10 +1,11 @@
 package com.ark.browser.ui.fragment.dialog;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import com.zpj.fragmentation.dialog.base.OverDragBottomDialogFragment;
 import com.zpj.skin.SkinEngine;
@@ -102,10 +103,11 @@ public class ClipboardInterceptDialog extends OverDragBottomDialogFragment<Clipb
             }
             dismiss();
         } else if (id == R.id.btn_share) {
-            ShareParams.Builder builder = new ShareParams.Builder(_mActivity, mText, mText)
-                    .setShareDirectly(false)
-                    .setSaveLastUsed(true);
-            ShareHelper.share(builder.build());
+            ZToast.error("TODO share");
+//            ShareParams.Builder builder = new ShareParams.Builder(_mActivity, mText, mText)
+//                    .setShareDirectly(false)
+//                    .setSaveLastUsed(true);
+//            ShareHelper.share(builder.build());
         } else if (id == R.id.tv_ok) {
             dismiss();
         }
