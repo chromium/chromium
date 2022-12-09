@@ -24,10 +24,6 @@ bool StubWebView::WasCrashed() {
   return false;
 }
 
-Status StubWebView::ConnectIfNecessary() {
-  return Status(kOk);
-}
-
 Status StubWebView::HandleEventsUntil(const ConditionalFunc& conditional_func,
                                       const Timeout& timeout) {
   return Status{kOk};

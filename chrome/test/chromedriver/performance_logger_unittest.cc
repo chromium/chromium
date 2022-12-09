@@ -60,7 +60,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
   // Overridden from DevToolsClient:
-  Status ConnectIfNecessary() override { return listener_->OnConnected(this); }
+  Status Connect() override { return listener_->OnConnected(this); }
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,
@@ -224,7 +224,7 @@ TEST(PerformanceLogger, TwoWebViews) {
   ExpectEnableDomains(&client1);
   ExpectEnableDomains(&client2);
   // OnConnected sends the enable command only to that client, not others.
-  client1.ConnectIfNecessary();
+  client1.Connect();
   ExpectEnableDomains(&client1);
   DevToolsCommand* cmd;
   ASSERT_FALSE(client2.PopSentCommand(&cmd));

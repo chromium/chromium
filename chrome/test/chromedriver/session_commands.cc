@@ -266,10 +266,6 @@ Status CheckSessionCreated(Session* session) {
   if (status.IsError())
     return Status(kSessionNotCreated, status);
 
-  status = web_view->ConnectIfNecessary();
-  if (status.IsError())
-    return Status(kSessionNotCreated, status);
-
   base::Value::List args;
   std::unique_ptr<base::Value> result(new base::Value(0));
   status = web_view->CallFunction(session->GetCurrentFrameId(),
@@ -718,9 +714,6 @@ Status ExecuteGetCurrentWindowHandle(Session* session,
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
-  status = web_view->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
   *value =
       std::make_unique<base::Value>(WebViewIdToWindowHandle(web_view->GetId()));
   return Status(kOk);
@@ -742,10 +735,6 @@ Status ExecuteClose(Session* session,
 
   WebView* web_view = nullptr;
   status = session->GetTargetWindow(&web_view);
-  if (status.IsError())
-    return status;
-
-  status = web_view->ConnectIfNecessary();
   if (status.IsError())
     return status;
 
@@ -872,9 +861,6 @@ Status ExecuteSwitchToWindow(Session* session,
       status = session->chrome->GetWebViewById(*it, &web_view);
       if (status.IsError())
         return status;
-      status = web_view->ConnectIfNecessary();
-      if (status.IsError())
-        return status;
       status = web_view->CallFunction(
           std::string(), kGetWindowNameScript, args, &result);
       if (status.IsError())
@@ -899,9 +885,6 @@ Status ExecuteSwitchToWindow(Session* session,
     // Connect to new window to apply session configuration
     WebView* web_view;
     status = session->chrome->GetWebViewById(web_view_id, &web_view);
-    if (status.IsError())
-      return status;
-    status = web_view->ConnectIfNecessary();
     if (status.IsError())
       return status;
 
@@ -1046,10 +1029,6 @@ Status ExecuteIsLoading(Session* session,
                         std::unique_ptr<base::Value>* value) {
   WebView* web_view = nullptr;
   Status status = session->GetTargetWindow(&web_view);
-  if (status.IsError())
-    return status;
-
-  status = web_view->ConnectIfNecessary();
   if (status.IsError())
     return status;
 

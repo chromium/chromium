@@ -42,7 +42,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
   // Overridden from DevToolsClient:
-  Status ConnectIfNecessary() override { return listener_->OnConnected(this); }
+  Status Connect() override { return listener_->OnConnected(this); }
 
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::Value::Dict& params,

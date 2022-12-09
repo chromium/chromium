@@ -27,7 +27,8 @@ class StubDevToolsClient : public DevToolsClient {
   Status StartBidiServer(std::string bidi_mapper_script) override;
   bool IsNull() const override;
   bool WasCrashed() override;
-  Status ConnectIfNecessary() override;
+  bool IsConnected() const override;
+  Status Connect() override;
   Status PostBidiCommand(base::Value::Dict command) override;
   Status SendCommand(const std::string& method,
                      const base::Value::Dict& params) override;
@@ -64,6 +65,7 @@ class StubDevToolsClient : public DevToolsClient {
   std::string session_id_;
   std::string tunnel_session_id_;
   std::list<DevToolsEventListener*> listeners_;
+  bool is_connected_ = false;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_STUB_DEVTOOLS_CLIENT_H_

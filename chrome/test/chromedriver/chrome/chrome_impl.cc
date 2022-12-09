@@ -144,10 +144,6 @@ Status ChromeImpl::UpdateWebViews(const WebViewsInfo& views_info,
         if (status.IsError()) {
           return status;
         }
-        status = web_views_.back()->ConnectIfNecessary();
-        if (status.IsError()) {
-          return status;
-        }
       }
     }
   }
@@ -168,12 +164,8 @@ Status ChromeImpl::GetWebViewById(const std::string& id, WebView** web_view) {
 Status ChromeImpl::NewWindow(const std::string& target_id,
                              WindowType type,
                              std::string* window_handle) {
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
-
   Window window;
-  status = GetWindow(target_id, &window);
+  Status status = GetWindow(target_id, &window);
   if (status.IsError())
     return Status(kNoSuchWindow);
 
@@ -197,11 +189,7 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
 
 Status ChromeImpl::CreateClient(const std::string& id,
                                 std::unique_ptr<DevToolsClientImpl>* client) {
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError()) {
-    return status;
-  }
-
+  Status status{kOk};
   std::string session_id;
   {
     base::Value::Dict params;
@@ -283,12 +271,6 @@ Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
       return status;
     }
 
-    status = web_view->ConnectIfNecessary();
-    // Ignore disconnected error, because the debugger might have closed when
-    // its container page was closed above.
-    if (status.IsError() && status.code() != kDisconnected)
-      return status;
-
     status = CloseWebView(*it);
     // Ignore disconnected error, because it may be closed already.
     if (status.IsError() && status.code() != kDisconnected)
@@ -306,14 +288,10 @@ Status ChromeImpl::CloseFrontends(const std::string& for_client_id) {
 }
 
 Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
-
   base::Value::Dict params;
   params.Set("targetId", target_id);
   base::Value result;
-  status = devtools_websocket_client_->SendCommandAndGetResult(
+  Status status = devtools_websocket_client_->SendCommandAndGetResult(
       "Browser.getWindowForTarget", params, &result);
   if (status.IsError())
     return status;
@@ -405,14 +383,10 @@ Status ChromeImpl::SetWindowRect(const std::string& target_id,
 }
 
 Status ChromeImpl::GetWindowBounds(int window_id, Window* window) {
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
-
   base::Value::Dict params;
   params.Set("windowId", window_id);
   base::Value result;
-  status = devtools_websocket_client_->SendCommandAndGetResult(
+  Status status = devtools_websocket_client_->SendCommandAndGetResult(
       "Browser.getWindowBounds", params, &result);
   if (status.IsError())
     return status;
@@ -423,10 +397,7 @@ Status ChromeImpl::GetWindowBounds(int window_id, Window* window) {
 Status ChromeImpl::SetWindowBounds(Window* window,
                                    const std::string& target_id,
                                    std::unique_ptr<base::Value::Dict> bounds) {
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
-
+  Status status{kOk};
   base::Value::Dict params;
   params.Set("windowId", window->id);
   const std::string normal = "normal";
@@ -568,11 +539,6 @@ Status ChromeImpl::GetWebViewsInfo(WebViewsInfo* views_info) {
   DCHECK(views_info);
   Status status{kOk};
 
-  status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError()) {
-    return status;
-  }
-
   base::Value::Dict params;
   base::Value result;
   status = devtools_websocket_client_->SendCommandAndGetResult(
@@ -690,12 +656,7 @@ Status ChromeImpl::CloseTarget(const std::string& id) {
 }
 
 Status ChromeImpl::CloseWebView(const std::string& id) {
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError()) {
-    return status;
-  }
-
-  status = CloseTarget(id);
+  Status status = CloseTarget(id);
   if (status.IsError()) {
     return status;
   }
@@ -714,23 +675,14 @@ Status ChromeImpl::ActivateWebView(const std::string& id) {
   if (webview && webview->IsServiceWorker())
     return Status(kOk);
 
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError()) {
-    return status;
-  }
-
   base::Value::Dict params;
   params.Set("targetId", id);
-  status =
+  Status status =
       devtools_websocket_client_->SendCommand("Target.activateTarget", params);
   return status;
 }
 
 Status ChromeImpl::SetAcceptInsecureCerts() {
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
-
   base::Value::Dict params;
   params.Set("ignore", true);
   return devtools_websocket_client_->SendCommand(
@@ -741,13 +693,9 @@ Status ChromeImpl::SetPermission(
     std::unique_ptr<base::Value::Dict> permission_descriptor,
     PermissionState desired_state,
     WebView* current_view) {
-  Status status = devtools_websocket_client_->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
-
   // Process URL.
   std::string current_url;
-  status = current_view->GetUrl(&current_url);
+  Status status = current_view->GetUrl(&current_url);
   if (status.IsError())
     current_url = "";
 

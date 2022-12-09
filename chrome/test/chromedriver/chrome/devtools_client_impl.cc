@@ -421,51 +421,41 @@ Status DevToolsClientImpl::AttachTo(DevToolsClientImpl* parent) {
                   "cannot attach to a parent that has no socket"};
   }
 
-  if (parent->IsConnected()) {
-    ResetListeners();
-    parent_ = parent;
-    parent_->children_[session_id_] = this;
-    Status status = OnConnected();
-    if (status.IsError()) {
-      return status;
-    }
-  } else {
-    parent_ = parent;
-    parent_->children_[session_id_] = this;
-  }
+  Status status{kOk};
 
-  return Status{kOk};
+  if (parent->IsConnected())
+    ResetListeners();
+
+  parent_ = parent;
+  parent_->children_[session_id_] = this;
+
+  if (parent->IsConnected())
+    status = OnConnected();
+
+  return status;
 }
 
-Status DevToolsClientImpl::ConnectIfNecessary() {
+Status DevToolsClientImpl::Connect() {
   if (stack_count_)
     return Status(kUnknownError, "cannot connect when nested");
-  if (IsNull()) {
+  if (!socket_) {
     return Status(kUnknownError, "cannot connect without a socket");
   }
+  if (socket_->IsConnected())
+    return Status(kOk);
 
-  if (parent_ == nullptr) {
-    // This is the browser level DevToolsClient
-    if (socket_->IsConnected())
-      return Status(kOk);
+  ResetListeners();
 
-    ResetListeners();
-
-    if (!socket_->Connect(url_)) {
-      // Try to close devtools frontend and then reconnect.
-      Status status = frontend_closer_func_.Run();
-      if (status.IsError())
-        return status;
-      if (!socket_->Connect(url_))
-        return Status(kDisconnected, "unable to connect to renderer");
-    }
-
-    return OnConnected();
-
-  } else {
-    // This is a page or frame level DevToolsClient
-    return parent_->ConnectIfNecessary();
+  if (!socket_->Connect(url_)) {
+    // Try to close devtools frontend and then reconnect.
+    Status status = frontend_closer_func_.Run();
+    if (status.IsError())
+      return status;
+    if (!socket_->Connect(url_))
+      return Status(kDisconnected, "unable to connect to renderer");
   }
+
+  return OnConnected();
 }
 
 void DevToolsClientImpl::ResetListeners() {
@@ -475,18 +465,12 @@ void DevToolsClientImpl::ResetListeners() {
                     "Some listeners might end-up working incorrectly.";
   }
 
-  // We are going to reconnect, therefore the remote end must be reconfigured
-  is_remote_end_configured_ = false;
-
-  // These lines must be before the SendCommandXxx calls in SetUpDevTools
   unnotified_connect_listeners_.clear();
   for (DevToolsEventListener* listener : listeners_) {
     if (listener->ListensToConnections()) {
       unnotified_connect_listeners_.push_back(listener);
     }
   }
-  unnotified_event_listeners_.clear();
-  response_info_map_.clear();
 
   for (auto child : children_) {
     child.second->ResetListeners();
@@ -526,10 +510,6 @@ Status DevToolsClientImpl::OnConnected() {
 }
 
 Status DevToolsClientImpl::SetUpDevTools() {
-  if (is_remote_end_configured_) {
-    return Status{kOk};
-  }
-
   if (id_ != kBrowserwideDevToolsClientId &&
       (GetOwner() == nullptr || !GetOwner()->IsServiceWorker())) {
     // This is a page or frame level DevToolsClient
@@ -553,7 +533,6 @@ Status DevToolsClientImpl::SetUpDevTools() {
       return status;
   }
 
-  is_remote_end_configured_ = true;
   return Status{kOk};
 }
 

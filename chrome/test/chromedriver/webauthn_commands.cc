@@ -96,10 +96,6 @@ Status ExecuteWebAuthnCommand(const WebAuthnCommand& command,
   if (status.IsError())
     return status;
 
-  status = web_view->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
-
   status = web_view->SendCommand("WebAuthn.enable", base::Value::Dict());
   if (status.IsError())
     return status;

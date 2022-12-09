@@ -348,31 +348,13 @@ bool WebViewImpl::WasCrashed() {
   return client_->WasCrashed();
 }
 
-Status WebViewImpl::ConnectIfNecessary() {
-  // The root client must never be IsNull as it has an instance of socket_.
-  // The child client can be IsNull but, by definition, the view has a parent.
-  DCHECK(!client_->IsNull() || parent_ != nullptr);
-  if (client_->IsNull() && parent_ == nullptr) {
-    return Status{kUnknownError, "Root WebView cannot be IsNull"};
-  }
-
-  if (parent_ != nullptr && client_->IsNull()) {
-    DevToolsClientImpl* root_client = static_cast<DevToolsClientImpl*>(
-        parent_->client_.get()->GetRootClient());
-    DevToolsClientImpl* client =
-        static_cast<DevToolsClientImpl*>(client_.get());
-    Status status = client->AttachTo(root_client);
-    if (status.IsError()) {
-      return status;
-    }
-  }
-  DCHECK(!client_->IsNull());
-  return client_->ConnectIfNecessary();
-}
-
 Status WebViewImpl::AttachTo(DevToolsClient* parent) {
   return static_cast<DevToolsClientImpl*>(client_.get())
       ->AttachTo(static_cast<DevToolsClientImpl*>(parent));
+}
+
+Status WebViewImpl::AttachChildView(WebViewImpl* child) {
+  return child->AttachTo(client_->GetRootClient());
 }
 
 Status WebViewImpl::HandleEventsUntil(const ConditionalFunc& conditional_func,

@@ -195,12 +195,13 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
         //   DomTracker.
         // The fix is to not replace an pre-existing frame_to_target_map_ entry.
       } else {
-        std::unique_ptr<WebViewImpl> child(
-            static_cast<WebViewImpl*>(web_view_)->CreateChild(*session_id,
-                                                              *target_id));
-        WebViewImplHolder child_holder(child.get());
-        frame_to_target_map_[*target_id] = std::move(child);
-        frame_to_target_map_[*target_id]->ConnectIfNecessary();
+        WebViewImpl* parent_view = static_cast<WebViewImpl*>(web_view_);
+        std::unique_ptr<WebViewImpl> child_view(
+            parent_view->CreateChild(*session_id, *target_id));
+        WebViewImplHolder child_holder(child_view.get());
+        WebViewImpl* p = child_view.get();
+        frame_to_target_map_[*target_id] = std::move(child_view);
+        parent_view->AttachChildView(p);
       }
     }
   } else if (method == "Target.detachedFromTarget") {

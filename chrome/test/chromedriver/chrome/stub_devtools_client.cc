@@ -40,11 +40,16 @@ bool StubDevToolsClient::IsNull() const {
   return false;
 }
 
+bool StubDevToolsClient::IsConnected() const {
+  return is_connected_;
+}
+
 bool StubDevToolsClient::WasCrashed() {
   return false;
 }
 
-Status StubDevToolsClient::ConnectIfNecessary() {
+Status StubDevToolsClient::Connect() {
+  is_connected_ = true;
   return Status(kOk);
 }
 

@@ -305,7 +305,7 @@ TEST(CreateChild, MultiLevel) {
   BrowserInfo browser_info;
   WebViewImpl level1(client_ptr->GetId(), true, nullptr, &browser_info,
                      std::move(client_uptr), nullptr, PageLoadStrategy::kEager);
-  Status status = client_ptr->ConnectIfNecessary();
+  Status status = client_ptr->Connect();
   ASSERT_EQ(kOk, status.code()) << status.message();
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> level2 =
@@ -332,7 +332,7 @@ TEST(CreateChild, IsNonBlocking_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), nullptr,
                           PageLoadStrategy::kEager);
-  Status status = client_ptr->ConnectIfNecessary();
+  Status status = client_ptr->Connect();
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_FALSE(parent_view.IsNonBlocking());
 
@@ -355,7 +355,7 @@ TEST(CreateChild, Load_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), nullptr,
                           PageLoadStrategy::kNone);
-  Status status = client_ptr->ConnectIfNecessary();
+  Status status = client_ptr->Connect();
   ASSERT_EQ(kOk, status.code()) << status.message();
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
@@ -381,7 +381,7 @@ TEST(CreateChild, WaitForPendingNavigations_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), nullptr,
                           PageLoadStrategy::kNone);
-  Status status = client_ptr->ConnectIfNecessary();
+  Status status = client_ptr->Connect();
   ASSERT_EQ(kOk, status.code()) << status.message();
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =
@@ -405,7 +405,7 @@ TEST(CreateChild, IsPendingNavigation_NoErrors) {
   WebViewImpl parent_view(client_ptr->GetId(), true, nullptr, &browser_info,
                           std::move(client_uptr), nullptr,
                           PageLoadStrategy::kNormal);
-  Status status = client_ptr->ConnectIfNecessary();
+  Status status = client_ptr->Connect();
   ASSERT_EQ(kOk, status.code()) << status.message();
   std::string sessionid = "2";
   std::unique_ptr<WebViewImpl> child_view =

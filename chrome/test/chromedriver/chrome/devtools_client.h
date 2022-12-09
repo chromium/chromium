@@ -45,8 +45,10 @@ class DevToolsClient {
 
   virtual bool IsNull() const = 0;
 
+  virtual bool IsConnected() const = 0;
+
   // Connect to DevTools if the DevToolsClient is disconnected.
-  virtual Status ConnectIfNecessary() = 0;
+  virtual Status Connect() = 0;
 
   virtual Status PostBidiCommand(base::Value::Dict command) = 0;
 

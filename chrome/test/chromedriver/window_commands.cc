@@ -667,10 +667,6 @@ Status ExecuteWindowCommand(const WindowCommand& command,
   if (status.IsError())
     return status;
 
-  status = web_view->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
-
   status = web_view->HandleReceivedEvents();
   if (status.IsError())
     return status;

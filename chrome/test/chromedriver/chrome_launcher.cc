@@ -351,18 +351,9 @@ Status CreateBrowserwideDevToolsClientAndConnect(
     if (listener->subscribes_to_browser())
       client->AddListener(listener.get());
   }
-  // Provide the client regardless of whether it connects, so that Chrome always
-  // has a valid |devtools_websocket_client_|. If not connected, no listeners
-  // will be notified, and client will just return kDisconnected errors if used.
+
   *browser_client = std::move(client);
-  // To avoid unnecessary overhead, only connect if tracing is enabled, since
-  // the browser-wide client is currently only used for tracing.
-  if (!perf_logging_prefs.trace_categories.empty()) {
-    Status status = (*browser_client)->ConnectIfNecessary();
-    if (status.IsError())
-      return status;
-  }
-  return Status(kOk);
+  return (*browser_client)->Connect();
 }
 
 Status LaunchRemoteChromeSession(

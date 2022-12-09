@@ -43,9 +43,6 @@ class WebView {
   // Return true if the web view was crashed.
   virtual bool WasCrashed() = 0;
 
-  // Make DevToolsCient connect to DevTools if it is disconnected.
-  virtual Status ConnectIfNecessary() = 0;
-
   // Handles events until the given function reports the condition is met
   // and there are no more received events to handle. If the given
   // function ever returns an error, returns immediately with the error.

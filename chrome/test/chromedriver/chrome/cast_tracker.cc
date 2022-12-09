@@ -9,7 +9,6 @@
 
 CastTracker::CastTracker(DevToolsClient* client)
     : sinks_(base::Value::List()), issue_("") {
-  client->ConnectIfNecessary();
   client->AddListener(this);
   client->SendCommand("Cast.enable", base::Value::Dict());
 }

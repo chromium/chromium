@@ -171,9 +171,6 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
   if (status.IsError()) {
     return status;
   }
-  status = web_view_tmp->ConnectIfNecessary();
-  if (status.IsError())
-    return status;
 
   status = web_view_tmp->WaitForPendingNavigations(
       std::string(), timeout, false);
@@ -214,7 +211,9 @@ Status ChromeDesktopImpl::QuitImpl() {
   // to allow Chrome to write out all the net logs to the log path.
   kill_gracefully = kill_gracefully || command_.HasSwitch("log-net-log");
   if (kill_gracefully) {
-    Status status = devtools_websocket_client_->ConnectIfNecessary();
+    Status status{kOk};
+    if (!devtools_websocket_client_->IsConnected())
+      status = devtools_websocket_client_->Connect();
     if (status.IsOk()) {
       status = devtools_websocket_client_->SendCommandAndIgnoreResponse(
           "Browser.close", base::Value::Dict());

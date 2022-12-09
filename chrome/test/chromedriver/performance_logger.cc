@@ -129,10 +129,6 @@ Status PerformanceLogger::OnEvent(DevToolsClient* client,
       status = session_->chrome->GetWebViewById(*target_id, &webview);
       if (status.IsError())
         return status;
-
-      status = webview->ConnectIfNecessary();
-      if (status.IsError())
-        return status;
     }
   }
   if (IsBrowserwideClient(client)) {

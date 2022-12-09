@@ -118,15 +118,15 @@ class DevToolsClientImpl : public DevToolsClient {
   // Such an object needs to be attached to some !IsNull() parent first.
   // Postcondition: IsNull() == (socket == nullptr && parent == nullptr)
   bool IsNull() const override;
-  bool IsConnected() const;
+  bool IsConnected() const override;
   bool WasCrashed() override;
   // Connect and configure the remote end.
   // The children are also connected and their remote ends are configured.
   // The listeners and the listeners of the children are notified appropriately.
   // Does nothing if the connection is already established.
-  // Precondition: !IsNull()
+  // Precondition: socket != nullptr
   // Postcondition: result.IsError() || IsConnected()
-  Status ConnectIfNecessary() override;
+  Status Connect() override;
   Status PostBidiCommand(base::Value::Dict command) override;
   Status SendCommand(const std::string& method,
                      const base::Value::Dict& params) override;
@@ -247,7 +247,6 @@ class DevToolsClientImpl : public DevToolsClient {
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
   int next_id_ = 1;  // The id identifying a particular request.
   int stack_count_ = 0;
-  bool is_remote_end_configured_ = false;
   bool is_main_page_ = false;
   bool bidi_server_is_launched_ = false;
   // Event tunneling is temporarily disabled in production.
