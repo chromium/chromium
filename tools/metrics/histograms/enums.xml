@@ -30844,6 +30844,9 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="fd error"/>
   <int value="5" label="Metadata mismatch error"/>
   <int value="6" label="fstat error"/>
+  <int value="7" label="Invalid file descriptor error"/>
+  <int value="8" label="Unexpected file handle type error"/>
+  <int value="9" label="Unexpected event info type error"/>
 </enum>
 
 <enum name="EnterpriseDlpPolicyFileAction">
