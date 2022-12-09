@@ -3932,6 +3932,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAmbientSubpageUIChangeName,
      flag_descriptions::kAmbientSubpageUIChangeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAmbientSubpageUIChange)},
+    {"screen-saver-preview", flag_descriptions::kScreenSaverPreviewName,
+     flag_descriptions::kScreenSaverPreviewDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kScreenSaverPreview)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

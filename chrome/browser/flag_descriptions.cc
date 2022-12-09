@@ -2582,6 +2582,11 @@ const char kThirdPartyStoragePartitioningDescription[] =
     "behavior. Please file bugs at https://bugs.chromium.org/p/chromium/issues/"
     "entry?labels=StoragePartitioning-trial-bugs&components=Blink%3EStorage.";
 
+const char kScreenSaverPreviewName[] = "Screen saver preview";
+const char kScreenSaverPreviewDescription[] =
+    "Enables the screen saver preview feature which allows the users to "
+    "preview current screen saver.";
+
 const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
 const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =
