@@ -28,8 +28,9 @@ class MediaStreamSourceTest : public testing::Test {
   void SetUp() override {
     source = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("audio_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("audio_track"), false /* remote */,
-        MediaStreamSource::kReadyStateLive, true /* requires_consumer */);
+        String::FromUTF8("audio_track"), /*remote=*/false,
+        /*platform_source=*/nullptr, MediaStreamSource::kReadyStateLive,
+        /*requires_consumer=*/true);
     bus = AudioBus::Create(2, 10);
   }
   ~MediaStreamSourceTest() override = default;

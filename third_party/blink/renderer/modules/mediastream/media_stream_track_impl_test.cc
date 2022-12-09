@@ -122,7 +122,7 @@ TEST_F(MediaStreamTrackImplTest, MutedStateUpdates) {
 
   MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
       "id", MediaStreamSource::StreamType::kTypeVideo, "name",
-      false /* remote */);
+      /*remote=*/false, /*platform_source=*/nullptr);
   MediaStreamComponent* component =
       MakeGarbageCollected<MediaStreamComponentImpl>(source);
   MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(

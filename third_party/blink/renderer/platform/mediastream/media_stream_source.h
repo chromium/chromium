@@ -89,24 +89,24 @@ class PLATFORM_EXPORT MediaStreamSource final
       ReadyState state = kReadyStateLive,
       bool requires_consumer = false);
 
-  // TODO(crbug.com/1302689): Remove once all callers have been migrated.
-  MediaStreamSource(const String& id,
-                    StreamType type,
-                    const String& name,
-                    bool remote,
-                    ReadyState state = kReadyStateLive,
-                    bool requires_consumer = false);
+  MediaStreamSource(
+      const String& id,
+      int64_t display_id,
+      StreamType type,
+      const String& name,
+      bool remote,
+      std::unique_ptr<WebPlatformMediaStreamSource> platform_source,
+      ReadyState state = kReadyStateLive,
+      bool requires_consumer = false);
 
   const String& Id() const { return id_; }
+  int64_t GetDisplayId() const { return display_id_; }
   StreamType GetType() const { return type_; }
   const String& GetName() const { return name_; }
   bool Remote() const { return remote_; }
 
   void SetGroupId(const String& group_id);
   const String& GroupId() { return group_id_; }
-
-  void SetDisplayId(int64_t display_id) { display_id_ = display_id; }
-  int64_t GetDisplayId() const { return display_id_; }
 
   void SetReadyState(ReadyState);
   ReadyState GetReadyState() const { return ready_state_; }

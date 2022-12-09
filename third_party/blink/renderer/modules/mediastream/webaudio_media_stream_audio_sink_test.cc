@@ -31,7 +31,8 @@ class WebAudioMediaStreamAudioSinkTest : public testing::Test {
     sink_bus_ = media::AudioBus::Create(sink_params_);
     auto* audio_source = MakeGarbageCollected<MediaStreamSource>(
         String::FromUTF8("dummy_source_id"), MediaStreamSource::kTypeAudio,
-        String::FromUTF8("dummy_source_name"), false /* remote */);
+        String::FromUTF8("dummy_source_name"), /*remote=*/false,
+        /*platform_source=*/nullptr);
     component_ = MakeGarbageCollected<MediaStreamComponentImpl>(
         String::FromUTF8("audio_track"), audio_source,
         std::make_unique<MediaStreamAudioTrack>(true));

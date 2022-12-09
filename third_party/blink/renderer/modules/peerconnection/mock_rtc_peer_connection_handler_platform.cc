@@ -107,7 +107,8 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
       auto* source = MakeGarbageCollected<MediaStreamSource>(
           String::FromUTF8("remoteAudioId"),
           MediaStreamSource::StreamType::kTypeAudio,
-          String::FromUTF8("remoteAudioName"), true /* remote */);
+          String::FromUTF8("remoteAudioName"), /*remote=*/true,
+          /*platform_source=*/nullptr);
       component_ =
           MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source);
     } else {
@@ -115,7 +116,8 @@ class DummyRTCRtpReceiverPlatform : public RTCRtpReceiverPlatform {
       auto* source = MakeGarbageCollected<MediaStreamSource>(
           String::FromUTF8("remoteVideoId"),
           MediaStreamSource::StreamType::kTypeVideo,
-          String::FromUTF8("remoteVideoName"), true /* remote */);
+          String::FromUTF8("remoteVideoName"), /*remote=*/true,
+          /*platform_source=*/nullptr);
       component_ =
           MakeGarbageCollected<MediaStreamComponentImpl>(source->Id(), source);
     }

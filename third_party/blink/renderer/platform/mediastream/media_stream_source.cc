@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/display/types/display_constants.h"
 
 namespace blink {
 
@@ -138,27 +139,6 @@ void MediaStreamSource::ConsumerWrapper::ConsumeAudio(AudioBus* bus,
   consumer_->ConsumeAudio(bus_vector_, number_of_frames);
 }
 
-MediaStreamSource::MediaStreamSource(const String& id,
-                                     StreamType type,
-                                     const String& name,
-                                     bool remote,
-                                     ReadyState ready_state,
-                                     bool requires_consumer)
-    : id_(id),
-      type_(type),
-      name_(name),
-      remote_(remote),
-      ready_state_(ready_state),
-      requires_consumer_(requires_consumer) {
-  SendLogMessage(
-      String::Format(
-          "MediaStreamSource({id=%s}, {type=%s}, {name=%s}, {remote=%d}, "
-          "{ready_state=%s})",
-          id.Utf8().c_str(), StreamTypeToString(type), name.Utf8().c_str(),
-          remote, ReadyStateToString(ready_state))
-          .Utf8());
-}
-
 MediaStreamSource::MediaStreamSource(
     const String& id,
     StreamType type,
@@ -168,13 +148,40 @@ MediaStreamSource::MediaStreamSource(
     ReadyState ready_state,
     bool requires_consumer)
     : MediaStreamSource(id,
+                        display::kInvalidDisplayId,
                         type,
                         name,
                         remote,
+                        std::move(platform_source),
                         ready_state,
-                        requires_consumer) {
-  platform_source_ = std::move(platform_source);
-  platform_source_->SetOwner(this);
+                        requires_consumer) {}
+
+MediaStreamSource::MediaStreamSource(
+    const String& id,
+    int64_t display_id,
+    StreamType type,
+    const String& name,
+    bool remote,
+    std::unique_ptr<WebPlatformMediaStreamSource> platform_source,
+    ReadyState ready_state,
+    bool requires_consumer)
+    : id_(id),
+      display_id_(display_id),
+      type_(type),
+      name_(name),
+      remote_(remote),
+      ready_state_(ready_state),
+      requires_consumer_(requires_consumer),
+      platform_source_(std::move(platform_source)) {
+  SendLogMessage(
+      String::Format(
+          "MediaStreamSource({id=%s}, {type=%s}, {name=%s}, {remote=%d}, "
+          "{ready_state=%s})",
+          id.Utf8().c_str(), StreamTypeToString(type), name.Utf8().c_str(),
+          remote, ReadyStateToString(ready_state))
+          .Utf8());
+  if (platform_source_)
+    platform_source_->SetOwner(this);
 }
 
 void MediaStreamSource::SetGroupId(const String& group_id) {

@@ -85,7 +85,8 @@ static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
 
 MediaStream* CreateMediaStream(V8TestingScope& scope) {
   auto* source = MakeGarbageCollected<MediaStreamSource>(
-      "sourceId", MediaStreamSource::kTypeAudio, "sourceName", false);
+      "sourceId", MediaStreamSource::kTypeAudio, "sourceName", false,
+      /*platform_source=*/nullptr);
   auto* component =
       MakeGarbageCollected<MediaStreamComponentImpl>("audioTrack", source);
 

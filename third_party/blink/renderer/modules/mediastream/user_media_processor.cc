@@ -1823,11 +1823,11 @@ MediaStreamSource* UserMediaProcessor::InitializeSourceObject(
                                            : MediaStreamSource::kTypeVideo;
 
   auto* source = MakeGarbageCollected<MediaStreamSource>(
-      String::FromUTF8(device.id), type, String::FromUTF8(device.name),
-      false /* remote */, std::move(platform_source));
+      String::FromUTF8(device.id), device.display_id, type,
+      String::FromUTF8(device.name), false /* remote */,
+      std::move(platform_source));
   if (device.group_id)
     source->SetGroupId(String::FromUTF8(*device.group_id));
-  source->SetDisplayId(device.display_id);
   return source;
 }
 
