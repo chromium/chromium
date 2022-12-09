@@ -5576,10 +5576,8 @@ class NavigationBrowserTestWithPerformanceManager
   }
 };
 
-// TODO(https://crbug.com/1233836): Test is flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(
-    NavigationBrowserTestWithPerformanceManager,
-    DISABLED_BeginNewNavigationAfterCommitNavigationInMainFrame) {
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
+                       BeginNewNavigationAfterCommitNavigationInMainFrame) {
   if (!AreAllSitesIsolatedForTesting())
     return;
 
@@ -5602,7 +5600,8 @@ IN_PROC_BROWSER_TEST_F(
   // Start a navigation that will create a speculative RFH in the existing
   // render process for b.com.
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
+      shell(), embedded_test_server()->GetURL(
+                   "b.com", "/infinitely_loading_image.html")));
 
   // Ensure the speculative RFH is in the expected process (i.e. the b.com
   // process that was created for the navigation in the new window earlier).
@@ -5632,18 +5631,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
 }
 
-// TODO(crbug.com/1233836): Test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame \
-  DISABLED_BeginNewNavigationAfterCommitNavigationInSubFrame
-#else
-#define MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame \
-  BeginNewNavigationAfterCommitNavigationInSubFrame
-#endif
-
-IN_PROC_BROWSER_TEST_F(
-    NavigationBrowserTestWithPerformanceManager,
-    MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame) {
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
+                       BeginNewNavigationAfterCommitNavigationInSubFrame) {
   if (!AreAllSitesIsolatedForTesting())
     return;
 
@@ -5672,8 +5661,8 @@ IN_PROC_BROWSER_TEST_F(
   // Start a navigation that will create a speculative RFH in the existing
   // render process for a.com.
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(
-      first_subframe_node,
-      embedded_test_server()->GetURL("a.com", "/title1.html")));
+      first_subframe_node, embedded_test_server()->GetURL(
+                               "a.com", "/infinitely_loading_image.html")));
 
   // Ensure the speculative RFH is in the expected process.
   RenderFrameHostImpl* speculative_render_frame_host =
