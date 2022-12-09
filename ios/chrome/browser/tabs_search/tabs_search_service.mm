@@ -178,6 +178,13 @@ void TabsSearchService::SearchHistory(
   history_service_->QueryHistory(term, options);
 }
 
+void TabsSearchService::Shutdown() {
+  // BrowsingHistoryService registers a SyncServiceObserver with the
+  // SyncService. Destroy it during shutdown to ensure it is removed
+  // before the SyncService destruction.
+  history_service_.reset();
+}
+
 #pragma mark - Private
 
 void TabsSearchService::SearchWithinBrowsers(

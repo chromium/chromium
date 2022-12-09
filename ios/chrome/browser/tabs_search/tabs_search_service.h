@@ -88,6 +88,9 @@ class TabsSearchService : public IOSBrowsingHistoryDriverDelegate,
   void SearchHistory(const std::u16string& term,
                      base::OnceCallback<void(size_t result_count)> completion);
 
+  // KeyedService implementation.
+  void Shutdown() override;
+
   TabsSearchService(const TabsSearchService&) = delete;
   TabsSearchService& operator=(const TabsSearchService&) = delete;
 
