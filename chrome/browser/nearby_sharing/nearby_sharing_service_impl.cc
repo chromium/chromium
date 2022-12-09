@@ -1764,7 +1764,15 @@ void NearbySharingServiceImpl::OnProcessShutdownTimerFired() {
     NS_LOG(INFO)
         << __func__
         << ": Shutdown Process timer fired, releasing process reference";
-    process_reference_.reset();
+
+    // Manually firing this callback will handle destroying
+    // |process_reference_|.
+    //
+    // The NearbyProcessManager would ordinarily be responsible for firing this
+    // callback, but it assumes that is unnecessary if the owner destroys the
+    // process reference, so we're responsible for calling it to ensure that
+    // downstream listeners are notified.
+    OnNearbyProcessStopped(NearbyProcessShutdownReason::kNormal);
   }
 }
 
