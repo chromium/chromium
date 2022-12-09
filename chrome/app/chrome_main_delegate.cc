@@ -1005,6 +1005,50 @@ bool ChromeMainDelegate::ShouldHandleConsoleControlEvents() {
 }
 #endif
 
+void ChromeMainDelegate::SetupTracing() {
+  // It is necessary to reset the unique_ptr before assigning a new value to it.
+  // This is to ensure that g_main_thread_instance inside
+  // tracing_sampler_profiler.cc comes out correctly -- the old
+  // TracingSamplerProfiler must destruct and clear g_main_thread_instance
+  // before CreateOnMainThread() runs.
+  tracing_sampler_profiler_.reset();
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  // Don't set up tracing in zygotes. Zygotes don't do much, and the tracing
+  // system won't work after a fork because all the thread IDs will change.
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProcessType) == switches::kZygoteProcess) {
+    return;
+  }
+#endif  // #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+
+  // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
+  // layer while TracingSamplerProfiler is outside of chrome/.
+  //
+  // When we're the browser on android, use only libunwindstack for the tracing
+  // sampler profiler because it can support java frames which is essential for
+  // the main thread.
+  base::RepeatingCallback tracing_factory =
+      base::BindRepeating(&CreateCoreUnwindersFactory);
+  tracing::TracingSamplerProfiler::UnwinderType unwinder_type =
+      tracing::TracingSamplerProfiler::UnwinderType::kCustomAndroid;
+#if BUILDFLAG(IS_ANDROID)
+  // If we are the browser process (missing process type), then use the
+  // experimental libunwindstack unwinder.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kProcessType) &&
+      chrome::android::IsJavaDrivenFeatureEnabled(
+          chrome::android::kUseLibunwindstackNativeUnwinderAndroid)) {
+    tracing_factory = base::BindRepeating(&CreateLibunwindstackUnwinderFactory);
+    unwinder_type = tracing::TracingSamplerProfiler::UnwinderType::
+        kLibunwindstackUnwinderAndroid;
+  }
+#endif
+  tracing_sampler_profiler_ =
+      tracing::TracingSamplerProfiler::CreateOnMainThread(
+          std::move(tracing_factory), unwinder_type);
+}
+
 absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::BootTimesRecorder::Get()->SaveChromeMainStats();
@@ -1053,30 +1097,7 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
   content::Profiling::ProcessStarted();
 
   // Setup tracing sampler profiler as early as possible at startup if needed.
-  // We pass in CreateCoreUnwindersFactory here since it lives in the chrome/
-  // layer while TracingSamplerProfiler is outside of chrome/.
-  //
-  // When we're the browser on android use libunwindstack completely for tracing
-  // sampler profiler because it can support java frames which is essential for
-  // the main thread.
-  base::RepeatingCallback tracing_factory =
-      base::BindRepeating(&CreateCoreUnwindersFactory);
-  tracing::TracingSamplerProfiler::UnwinderType unwinder_type =
-      tracing::TracingSamplerProfiler::UnwinderType::kCustomAndroid;
-#if BUILDFLAG(IS_ANDROID)
-  // If we are the browser process (missing process type), then use the
-  // experimental libunwindstack unwinder.
-  if (!command_line.HasSwitch(switches::kProcessType) &&
-      chrome::android::IsJavaDrivenFeatureEnabled(
-          chrome::android::kUseLibunwindstackNativeUnwinderAndroid)) {
-    tracing_factory = base::BindRepeating(&CreateLibunwindstackUnwinderFactory);
-    unwinder_type = tracing::TracingSamplerProfiler::UnwinderType::
-        kLibunwindstackUnwinderAndroid;
-  }
-#endif
-  tracing_sampler_profiler_ =
-      tracing::TracingSamplerProfiler::CreateOnMainThread(
-          std::move(tracing_factory), unwinder_type);
+  SetupTracing();
 
 #if BUILDFLAG(IS_WIN)
   v8_crashpad_support::SetUp();
@@ -1645,6 +1666,9 @@ void ChromeMainDelegate::ZygoteStarting(
 }
 
 void ChromeMainDelegate::ZygoteForked() {
+  // Set up tracing for processes forked off a zygote.
+  SetupTracing();
+
   content::Profiling::ProcessStarted();
   if (content::Profiling::BeingProfiled()) {
     base::debug::RestartProfilingAfterFork();

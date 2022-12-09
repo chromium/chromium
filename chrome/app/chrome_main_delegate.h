@@ -83,6 +83,10 @@ class ChromeMainDelegate : public content::ContentMainDelegate {
   // Initialization that happens in all process types.
   void CommonEarlyInitialization();
 
+  // Initializes |tracing_sampler_profiler_|. Deletes any existing
+  // |tracing_sampler_profiler_| as well.
+  void SetupTracing();
+
 #if BUILDFLAG(IS_MAC)
   void InitMacCrashReporter(const base::CommandLine& command_line,
                             const std::string& process_type);
