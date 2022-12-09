@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -90,7 +91,7 @@ class PasswordReuseManagerImplTest : public testing::Test {
     account_store_ = base::MakeRefCounted<TestPasswordStore>();
     account_store_->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
     reuse_manager_.Init(&prefs(), profile_store(), account_store());
-    RunUntilIdle();
+    FastForwardUntilNoTasksRemain();
   }
 
   void TearDown() override {
@@ -102,6 +103,9 @@ class PasswordReuseManagerImplTest : public testing::Test {
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void FastForwardUntilNoTasksRemain() {
+    task_environment_.FastForwardUntilNoTasksRemain();
+  }
   TestPasswordStore* profile_store() { return profile_store_.get(); }
   TestPasswordStore* account_store() { return account_store_.get(); }
   PasswordReuseManager* reuse_manager() { return &reuse_manager_; }

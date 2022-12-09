@@ -11339,30 +11339,6 @@
             ]
         }
     ],
-    "UnifiedPasswordManagerAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "api_error_list_version": "1",
-                        "fallback_on_user_affecting_read_operations": "true",
-                        "ignored_api_errors": "11005,11006",
-                        "min_gms_core_version_no_dots": "223012000",
-                        "retriable_api_errors": "7,17,20,22,11009"
-                    },
-                    "enable_features": [
-                        "UnifiedPasswordManagerAndroid",
-                        "UnifiedPasswordManagerErrorMessages",
-                        "UnifiedPasswordManagerReenrollment"
-                    ]
-                }
-            ]
-        }
-    ],
     "UnifiedSidePanel": [
         {
             "platforms": [

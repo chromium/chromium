@@ -1184,8 +1184,6 @@ TEST_F(ChromePasswordManagerClientAndroidTest, FocusedInputChangedGoodFrame) {
 
 TEST_F(ChromePasswordManagerClientAndroidTest,
        FocusedInputChangedFormsNotFetchedMessagesFeature) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      {password_manager::features::kUnifiedPasswordManagerErrorMessages});
   FormData observed_form_data = MakePasswordFormData();
   SetUpGenerationPreconditions(observed_form_data.url);
 
@@ -1205,32 +1203,6 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
       *weak_mock_pwd_controller,
       RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
                                  /*is_manual_generation_available=*/false));
-  GetClient()->FocusedInputChanged(
-      driver.get(), observed_form_data.fields[0].unique_renderer_id,
-      FocusedFieldType::kFillablePasswordField);
-}
-
-TEST_F(ChromePasswordManagerClientAndroidTest,
-       FocusedInputChangedFormsNotFetchedWithoutMessagesFeature) {
-  FormData observed_form_data = MakePasswordFormData();
-  SetUpGenerationPreconditions(observed_form_data.url);
-
-  std::unique_ptr<password_manager::ContentPasswordManagerDriver> driver =
-      CreateContentPasswordManagerDriver(main_rfh());
-
-  // Since the test uses a mock store, the consumer won't be called
-  // back with results, which simulates the password forms not being fetched
-  // before the field is focused.
-  driver->GetPasswordManager()->OnPasswordFormsParsed(driver.get(),
-                                                      {observed_form_data});
-
-  MockPasswordAccessoryControllerImpl* weak_mock_pwd_controller =
-      SetUpMockPwdAccessoryForClientUse(driver.get());
-
-  EXPECT_CALL(
-      *weak_mock_pwd_controller,
-      RefreshSuggestionsForField(FocusedFieldType::kFillablePasswordField,
-                                 /*is_manual_generation_available=*/true));
   GetClient()->FocusedInputChanged(
       driver.get(), observed_form_data.fields[0].unique_renderer_id,
       FocusedFieldType::kFillablePasswordField);

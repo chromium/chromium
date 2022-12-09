@@ -104,19 +104,22 @@ extern const base::FeatureParam<int> kMigrationVersion;
 // eviction due to error and will only be re-enrolled to the experiment if the
 // configured version is greater than the saved one.
 constexpr base::FeatureParam<int> kGmsApiErrorListVersion = {
-    &kUnifiedPasswordManagerAndroid, "api_error_list_version", 0};
+    &kUnifiedPasswordManagerAndroid, "api_error_list_version", 1};
 
 // Current list of the GMS Core API error codes that should be ignored and not
 // result in user eviction.
-// Codes DEVELOPER_ERROR=10, BAD_REQUEST=11008 are ignored to keep the default
-// pre-M107 behaviour.
+// Errors to ignore: AUTH_ERROR_RESOLVABLE, AUTH_ERROR_UNRESOLVABLE
 constexpr base::FeatureParam<std::string> kIgnoredGmsApiErrors = {
-    &kUnifiedPasswordManagerAndroid, "ignored_api_errors", "10,11008"};
+    &kUnifiedPasswordManagerAndroid, "ignored_api_errors", "11005,11006"};
 
 // Current list of the GMS Core API error codes considered retriable.
 // User could still be evicted if retries do not resolve the error.
+// Retriable errors: NETWORK_ERROR, API_NOT_CONNECTED,
+// CONNECTION_SUSPENDED_DURING_CALL, RECONNECTION_TIMED_OUT,
+// BACKEND_GENERIC
 constexpr base::FeatureParam<std::string> kRetriableGmsApiErrors = {
-    &kUnifiedPasswordManagerAndroid, "retriable_api_errors", ""};
+    &kUnifiedPasswordManagerAndroid, "retriable_api_errors",
+    "7,17,20,22,11009"};
 
 // Enables fallback to the Chrome built-in backend if the operation executed on
 // the GMS Core backend returns with error. Errors listed in the

@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -30,6 +31,11 @@ class AutoSigninFirstRunDialogAndroidTest
 
  protected:
   AutoSigninFirstRunDialogAndroid* CreateDialog();
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {{SyncServiceFactory::GetInstance(),
+             SyncServiceFactory::GetDefaultFactory()}};
+  }
 };
 
 AutoSigninFirstRunDialogAndroid*

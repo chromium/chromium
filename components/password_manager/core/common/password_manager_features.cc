@@ -249,12 +249,12 @@ BASE_FEATURE(kUnifiedCredentialManagerDryRun,
 // database will be unused but kept in sync for local passwords.
 BASE_FEATURE(kUnifiedPasswordManagerAndroid,
              "UnifiedPasswordManagerAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables showing contextual error messages when UPM encounters an auth error.
 BASE_FEATURE(kUnifiedPasswordManagerErrorMessages,
              "UnifiedPasswordManagerErrorMessages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the built-in sync functionality in PasswordSyncBridge becomes
 // unused, meaning that SyncService/SyncEngine will no longer download or
@@ -268,7 +268,7 @@ BASE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly,
 // that were previously evicted after experiencing errors.
 BASE_FEATURE(kUnifiedPasswordManagerReenrollment,
              "UnifiedPasswordManagerReenrollment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables all UI branding changes related to Unified Password Manager:
 // the strings containing 'Password Manager' and the password manager

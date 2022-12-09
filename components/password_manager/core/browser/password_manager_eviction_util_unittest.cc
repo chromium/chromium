@@ -237,19 +237,6 @@ TEST_F(PasswordManagerEvictionUtilTest,
       password_manager_upm_eviction::ShouldInvalidateEviction(pref_service()));
 }
 
-TEST_F(PasswordManagerEvictionUtilTest,
-       ShouldNotInvalidateEvictionBeforeParamsConfigured) {
-  feature_list()->InitAndEnableFeature(
-      password_manager::features::kUnifiedPasswordManagerAndroid);
-
-  pref_service()->SetBoolean(
-      password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-      true);
-
-  EXPECT_FALSE(
-      password_manager_upm_eviction::ShouldInvalidateEviction(pref_service()));
-}
-
 TEST_F(PasswordManagerEvictionUtilTest, ShouldNotIgnoreByDefault) {
   feature_list()->InitAndEnableFeature(
       password_manager::features::kUnifiedPasswordManagerAndroid);
