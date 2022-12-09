@@ -55,17 +55,13 @@ bool TabHoverCardTestUtil::IsHoverCardVisible(TabStrip* tab_strip) {
 int TabHoverCardTestUtil::GetHoverCardsSeenCount(Browser* browser) {
   return GetTabStrip(browser)
       ->hover_card_controller_for_testing()
-      ->metrics_for_testing()
-      ->cards_seen_count();
+      ->hover_cards_seen_count_for_testing();
 }
 
 // static
 TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(Browser* browser,
                                                                int tab_index) {
   auto* const tab_strip = GetTabStrip(browser);
-
-  LOG(ERROR) << "SimulateHoverTab, index: " << tab_index;
-  LOG(ERROR) << "TabStrip tab count: " << tab_strip->GetTabCount();
 
   // We don't use Tab::OnMouseEntered here to invoke the hover card because
   // that path is disabled in browser tests. If we enabled it, the real mouse

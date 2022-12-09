@@ -241,8 +241,7 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
 bool TabHoverCardController::disable_animations_for_testing_ = false;
 
 TabHoverCardController::TabHoverCardController(TabStrip* tab_strip)
-    : tab_strip_(tab_strip),
-      metrics_(std::make_unique<TabHoverCardMetrics>(this)) {
+    : tab_strip_(tab_strip) {
   // Possibly apply memory pressure override for testing.
   auto override = GetMemoryPressureOverride();
   if (override) {
@@ -302,7 +301,7 @@ void TabHoverCardController::UpdateHoverCard(
 
   switch (update_type) {
     case TabSlotController::HoverCardUpdateType::kSelectionChanged:
-      metrics_->TabSelectionChanged();
+      ResetCardsSeenCount();
       break;
     case TabSlotController::HoverCardUpdateType::kHover:
       if (!tab)
@@ -332,10 +331,6 @@ void TabHoverCardController::PreventImmediateReshow() {
   last_mouse_exit_timestamp_ = base::TimeTicks();
 }
 
-void TabHoverCardController::TabSelectedViaMouse(Tab* tab) {
-  metrics_->TabSelectedViaMouse(tab);
-}
-
 void TabHoverCardController::UpdateOrShowCard(
     Tab* tab,
     TabSlotController::HoverCardUpdateType update_type) {
@@ -356,7 +351,6 @@ void TabHoverCardController::UpdateOrShowCard(
   // Cancel any pending fades.
   if (hover_card_ && fade_animator_->IsFadingOut()) {
     fade_animator_->CancelFadeOut();
-    metrics_->CardFadeCanceled();
   }
 
   if (hover_card_) {
@@ -381,7 +375,7 @@ void TabHoverCardController::UpdateOrShowCard(
   // complex and time-consuming.
   const bool is_initial = !ShouldShowImmediately(tab);
   if (is_initial)
-    metrics_->InitialCardBeingShown();
+    ResetCardsSeenCount();
   if (is_initial && !disable_animations_for_testing_) {
     delayed_show_timer_.Start(
         FROM_HERE, GetShowDelay(tab->width()),
@@ -429,7 +423,6 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
     return;
   }
 
-  metrics_->CardFadingIn();
   fade_animator_->FadeIn();
 }
 
@@ -437,19 +430,19 @@ void TabHoverCardController::HideHoverCard() {
   if (!hover_card_ || hover_card_->GetWidget()->IsClosed())
     return;
 
+  // Required for test metrics.
+  hover_card_last_seen_on_tab_ = nullptr;
+
   if (thumbnail_observer_) {
     thumbnail_observer_->Observe(nullptr);
     thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
   }
 
   // Cancel any pending fade-in.
-  if (fade_animator_->IsFadingIn()) {
+  if (fade_animator_->IsFadingIn())
     fade_animator_->CancelFadeIn();
-    metrics_->CardFadeCanceled();
-  }
 
   // This needs to be called whether we're doing a fade or a pop out.
-  metrics_->CardWillBeHidden();
   slide_animator_->StopAnimation();
   if (!UseAnimations()) {
     hover_card_->GetWidget()->Close();
@@ -458,7 +451,6 @@ void TabHoverCardController::HideHoverCard() {
   if (fade_animator_->IsFadingOut())
     return;
 
-  metrics_->CardFadingOut();
   fade_animator_->FadeOut();
 }
 
@@ -501,16 +493,8 @@ void TabHoverCardController::OnViewVisibilityChanged(
     OnViewIsDeleting(observed_view);
 }
 
-size_t TabHoverCardController::GetTabCount() const {
-  return tab_count_metrics::TabCount();
-}
-
 bool TabHoverCardController::ArePreviewsEnabled() const {
   return static_cast<bool>(thumbnail_observer_);
-}
-
-views::Widget* TabHoverCardController::GetHoverCardWidget() {
-  return hover_card_ ? hover_card_->GetWidget() : nullptr;
 }
 
 void TabHoverCardController::CreateHoverCard(Tab* tab) {
@@ -703,12 +687,16 @@ bool TabHoverCardController::TargetTabIsValid() const {
 }
 
 void TabHoverCardController::OnCardFullyVisible() {
-  // We have to do a bunch of validity checks here because this happens on a
-  // callback and so the tab may no longer be valid (or part of the original
-  // tabstrip).
-  const bool has_preview = ArePreviewsEnabled() && TargetTabIsValid() &&
-                           !target_tab_->IsActive() && !waiting_for_preview();
-  metrics_->CardFullyVisibleOnTab(target_tab_, has_preview);
+  DCHECK(target_tab_);
+  if (target_tab_ == hover_card_last_seen_on_tab_)
+    return;
+  hover_card_last_seen_on_tab_ = target_tab_;
+  ++hover_cards_seen_count_;
+}
+
+void TabHoverCardController::ResetCardsSeenCount() {
+  hover_card_last_seen_on_tab_ = nullptr;
+  hover_cards_seen_count_ = 0;
 }
 
 void TabHoverCardController::OnFadeAnimationEnded(
@@ -720,7 +708,6 @@ void TabHoverCardController::OnFadeAnimationEnded(
   if (target_tab_ && fade_type == views::WidgetFadeAnimator::FadeType::kFadeIn)
     OnCardFullyVisible();
 
-  metrics_->CardFadeComplete();
   if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeOut)
     hover_card_->GetWidget()->Close();
 }
@@ -763,14 +750,11 @@ void TabHoverCardController::OnPreviewImageAvaialble(
     gfx::ImageSkia thumbnail_image) {
   DCHECK_EQ(thumbnail_observer_.get(), observer);
 
-  const bool was_waiting_for_preview = waiting_for_preview();
   thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
 
   // The hover card could be destroyed before the preview image is delivered.
   if (!hover_card_)
     return;
-  if (was_waiting_for_preview && target_tab_)
-    metrics_->ImageLoadedForTab(target_tab_);
   // Can still set image on a fading-out hover card (we can change this behavior
   // later if we want).
   hover_card_->SetTargetTabImage(thumbnail_image);

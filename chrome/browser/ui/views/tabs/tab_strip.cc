@@ -1424,12 +1424,6 @@ void TabStrip::SelectTab(Tab* tab, const ui::Event& event) {
     }
   }
 
-  // Selecting a tab via mouse affects what statistics we collect.
-  if (event.type() == ui::ET_MOUSE_PRESSED && !tab->IsActive() &&
-      hover_card_controller_) {
-    hover_card_controller_->TabSelectedViaMouse(tab);
-  }
-
   controller_->SelectTab(model_index, event);
 }
 

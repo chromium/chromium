@@ -834,6 +834,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabHoverCards.LastTabHoverCardPreviewTime{TabCountMetrics}"
     units="ms" expires_after="2023-01-01">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -863,6 +867,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabHoverCards.LastTabHoverCardViewedTime{TabCountMetrics}"
     units="ms" expires_after="2023-01-01">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -890,6 +898,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabHoverCards.TabHoverCardPreviewTime{TabCountMetrics}"
     units="ms" expires_after="2023-01-01">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -919,6 +931,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TabHoverCards.TabHoverCardsSeenBeforeTabSelection{TabCountMetrics}"
     units="hover cards" expires_after="2023-01-01">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -944,6 +960,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabHoverCards.TabHoverCardViewedTime{TabCountMetrics}"
     units="ms" expires_after="2023-01-01">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -972,6 +992,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="TabHoverCards.TabPreviewsSeenBeforeTabSelection{TabCountMetrics}"
     units="previews" expires_after="2023-01-01">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>dfried@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -998,6 +1022,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TabHoverCards.TimeSinceLastVisible" units="ms"
     expires_after="2023-01-01">
+  <obsolete>
+    Removed 12/2022. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
