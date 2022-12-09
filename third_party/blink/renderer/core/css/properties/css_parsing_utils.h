@@ -313,6 +313,8 @@ CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange&,
                                    const CSSParserContext&);
 CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange&,
                                          const CSSParserContext&);
+CSSValue* ConsumeAnimationDuration(CSSParserTokenRange&,
+                                   const CSSParserContext&);
 // https://drafts.csswg.org/scroll-animations-1/#typedef-timeline-range-name
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange&);
 CSSValue* ConsumeTimelineRangeNameAndPercent(CSSParserTokenRange&,

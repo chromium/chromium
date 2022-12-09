@@ -290,8 +290,7 @@ const CSSValue* AnimationDuration::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeTime, range, context,
-      CSSPrimitiveValue::ValueRange::kNonNegative);
+      css_parsing_utils::ConsumeAnimationDuration, range, context);
 }
 
 const CSSValue* AnimationDuration::CSSValueFromComputedStyleInternal(
@@ -304,7 +303,7 @@ const CSSValue* AnimationDuration::CSSValueFromComputedStyleInternal(
 const CSSValue* AnimationDuration::InitialValue() const {
   DEFINE_STATIC_LOCAL(
       const Persistent<CSSValue>, value,
-      (CSSNumericLiteralValue::Create(CSSTimingData::InitialDuration(),
+      (CSSNumericLiteralValue::Create(CSSTimingData::InitialDuration().value(),
                                       CSSPrimitiveValue::UnitType::kSeconds)));
   return value;
 }
@@ -7666,7 +7665,7 @@ const CSSValue* TransitionDuration::CSSValueFromComputedStyleInternal(
 const CSSValue* TransitionDuration::InitialValue() const {
   DEFINE_STATIC_LOCAL(
       const Persistent<CSSValue>, value,
-      (CSSNumericLiteralValue::Create(CSSTimingData::InitialDuration(),
+      (CSSNumericLiteralValue::Create(CSSTimingData::InitialDuration().value(),
                                       CSSPrimitiveValue::UnitType::kSeconds)));
   return value;
 }

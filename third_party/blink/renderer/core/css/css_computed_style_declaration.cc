@@ -79,7 +79,8 @@ void LogUnimplementedPropertyID(const CSSProperty& property) {
 void UseCountAnimationDelayZero(Document& document,
                                 const ComputedStyle& style) {
   if (const CSSAnimationData* animation_data = style.Animations()) {
-    const Vector<double>& duration = animation_data->DurationList();
+    const Vector<absl::optional<double>>& duration =
+        animation_data->DurationList();
     if (duration.size() == 1u && duration[0] == 0.0) {
       UseCounter::Count(document,
                         WebFeature::kCSSGetComputedAnimationDelayZero);

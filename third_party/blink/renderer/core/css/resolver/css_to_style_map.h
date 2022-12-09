@@ -70,7 +70,7 @@ class CSSToStyleMap {
   static Timing::Delay MapAnimationDelayStart(const CSSValue&);
   static Timing::Delay MapAnimationDelayEnd(const CSSValue&);
   static Timing::PlaybackDirection MapAnimationDirection(const CSSValue&);
-  static double MapAnimationDuration(const CSSValue&);
+  static absl::optional<double> MapAnimationDuration(const CSSValue&);
   static Timing::FillMode MapAnimationFillMode(const CSSValue&);
   static double MapAnimationIterationCount(const CSSValue&);
   static AtomicString MapAnimationName(const CSSValue&);

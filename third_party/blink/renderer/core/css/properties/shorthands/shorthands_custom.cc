@@ -64,8 +64,7 @@ CSSValue* ConsumeAnimationValue(CSSPropertyID property,
           CSSValueID::kNormal, CSSValueID::kAlternate, CSSValueID::kReverse,
           CSSValueID::kAlternateReverse>(range);
     case CSSPropertyID::kAnimationDuration:
-      return css_parsing_utils::ConsumeTime(
-          range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+      return css_parsing_utils::ConsumeAnimationDuration(range, context);
     case CSSPropertyID::kAnimationFillMode:
       return css_parsing_utils::ConsumeIdent<
           CSSValueID::kNone, CSSValueID::kForwards, CSSValueID::kBackwards,
@@ -3094,7 +3093,8 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
       list->Append(*ComputedStyleUtils::CreateTransitionPropertyValue(
           transition_data->PropertyList()[i]));
       list->Append(*CSSNumericLiteralValue::Create(
-          CSSTimingData::GetRepeated(transition_data->DurationList(), i),
+          CSSTimingData::GetRepeated(transition_data->DurationList(), i)
+              .value(),
           CSSPrimitiveValue::UnitType::kSeconds));
       list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
           CSSTimingData::GetRepeated(transition_data->TimingFunctionList(),
@@ -3109,9 +3109,9 @@ const CSSValue* Transition::CSSValueFromComputedStyleInternal(
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   // transition-property default value.
   list->Append(*CSSIdentifierValue::Create(CSSValueID::kAll));
-  list->Append(
-      *CSSNumericLiteralValue::Create(CSSTransitionData::InitialDuration(),
-                                      CSSPrimitiveValue::UnitType::kSeconds));
+  list->Append(*CSSNumericLiteralValue::Create(
+      CSSTransitionData::InitialDuration().value(),
+      CSSPrimitiveValue::UnitType::kSeconds));
   list->Append(*ComputedStyleUtils::ValueForAnimationTimingFunction(
       CSSTransitionData::InitialTimingFunction()));
   list->Append(*ComputedStyleUtils::ValueForAnimationDelayStart(

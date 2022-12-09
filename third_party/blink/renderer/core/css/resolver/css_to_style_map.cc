@@ -337,9 +337,14 @@ Timing::PlaybackDirection CSSToStyleMap::MapAnimationDirection(
   }
 }
 
-double CSSToStyleMap::MapAnimationDuration(const CSSValue& value) {
+absl::optional<double> CSSToStyleMap::MapAnimationDuration(
+    const CSSValue& value) {
   if (value.IsInitialValue())
     return CSSTimingData::InitialDuration();
+  if (auto* identifier = DynamicTo<CSSIdentifierValue>(value);
+      identifier && identifier->GetValueID() == CSSValueID::kAuto) {
+    return absl::nullopt;
+  }
   return To<CSSPrimitiveValue>(value).ComputeSeconds();
 }
 

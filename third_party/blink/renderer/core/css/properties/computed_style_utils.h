@@ -145,7 +145,7 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationDelayStart(const Timing::Delay& delay);
   static CSSValue* ValueForAnimationDelayEnd(const Timing::Delay& delay);
   static CSSValue* ValueForAnimationDirection(Timing::PlaybackDirection);
-  static CSSValue* ValueForAnimationDuration(double);
+  static CSSValue* ValueForAnimationDuration(const absl::optional<double>&);
   static CSSValue* ValueForAnimationFillMode(Timing::FillMode);
   static CSSValue* ValueForAnimationIterationCount(double iteration_count);
   static CSSValue* ValueForAnimationPlayState(EAnimPlayState);

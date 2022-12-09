@@ -1898,16 +1898,21 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDirectionList(
       &ValueForAnimationDirection);
 }
 
-CSSValue* ComputedStyleUtils::ValueForAnimationDuration(double duration) {
-  return CSSNumericLiteralValue::Create(duration,
+CSSValue* ComputedStyleUtils::ValueForAnimationDuration(
+    const absl::optional<double>& duration) {
+  if (!duration.has_value()) {
+    return CSSIdentifierValue::Create(CSSValueID::kAuto);
+  }
+  return CSSNumericLiteralValue::Create(duration.value(),
                                         CSSPrimitiveValue::UnitType::kSeconds);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationDurationList(
     const CSSTimingData* timing_data) {
   return CreateAnimationValueList(
-      timing_data ? timing_data->DurationList()
-                  : Vector<double>{CSSTimingData::InitialDuration()},
+      timing_data
+          ? timing_data->DurationList()
+          : Vector<absl::optional<double>>{CSSTimingData::InitialDuration()},
       &ValueForAnimationDuration);
 }
 

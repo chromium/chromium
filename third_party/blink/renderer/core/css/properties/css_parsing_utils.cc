@@ -3725,6 +3725,17 @@ CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange& range,
   return nullptr;
 }
 
+CSSValue* ConsumeAnimationDuration(CSSParserTokenRange& range,
+                                   const CSSParserContext& context) {
+  if (RuntimeEnabledFeatures::CSSScrollTimelineEnabled()) {
+    if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(range)) {
+      return ident;
+    }
+  }
+  return ConsumeTime(range, context,
+                     CSSPrimitiveValue::ValueRange::kNonNegative);
+}
+
 CSSValue* ConsumeTimelineRangeName(CSSParserTokenRange& range) {
   return ConsumeIdent<CSSValueID::kContain, CSSValueID::kCover,
                       CSSValueID::kEnter, CSSValueID::kExit>(range);
