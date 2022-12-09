@@ -8,5 +8,8 @@
   },
   "builder_group": "chromium.clang",
   "perf_dashboard_machine_group": "ChromiumClang",
-  "recipe": "chromium"
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium.clang"
+  ]
 }

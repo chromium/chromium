@@ -2,6 +2,7 @@ ci/CFI Linux CF
 ci/CFI Linux ToT
 ci/CrWinAsan
 ci/CrWinAsan(dll)
+ci/ToTAndroid
 ci/ToTAndroid (dbg)
 ci/ToTAndroid x64
 ci/ToTAndroid x86
