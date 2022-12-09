@@ -1157,7 +1157,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportEmpty) {
   gfx::GpuMemoryBufferHandle handle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, kClientId, std::move(handle), format, gfx::BufferPlane::DEFAULT,
-      kNullSurfaceHandle, size, color_space, surface_origin, alpha_type, usage);
+      size, color_space, surface_origin, alpha_type, usage);
   EXPECT_FALSE(backing);
 }
 
@@ -1181,7 +1181,7 @@ TEST_P(IOSurfaceImageBackingFactoryWithGMBTest, GpuMemoryBufferImportNative) {
   handle.type = gfx::NATIVE_PIXMAP;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, kClientId, std::move(handle), format, gfx::BufferPlane::DEFAULT,
-      kNullSurfaceHandle, size, color_space, surface_origin, alpha_type, usage);
+      size, color_space, surface_origin, alpha_type, usage);
   if (!can_create_scanout_or_gmb_shared_image(get_format())) {
     EXPECT_FALSE(backing);
     return;

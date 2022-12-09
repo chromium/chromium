@@ -309,9 +309,8 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
     if (!channel_->shared_image_stub()->CreateSharedImage(
             mailbox, channel_->client_id(), std::move(plane_handle),
-            plane_format, gfx::BufferPlane::DEFAULT, kNullSurfaceHandle,
-            plane_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-            kOpaque_SkAlphaType,
+            plane_format, gfx::BufferPlane::DEFAULT, plane_size,
+            gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
             SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_OOP_RASTERIZATION)) {
       DLOG(ERROR) << "Could not create SharedImage";
       return;

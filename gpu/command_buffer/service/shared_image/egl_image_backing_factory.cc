@@ -68,7 +68,6 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,
-    SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,

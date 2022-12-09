@@ -60,7 +60,6 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
                       gfx::GpuMemoryBufferHandle handle,
                       gfx::BufferFormat format,
                       gfx::BufferPlane plane,
-                      gpu::SurfaceHandle surface_handle,
                       const gfx::Size& size,
                       const gfx::ColorSpace& color_space,
                       GrSurfaceOrigin surface_origin,

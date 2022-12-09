@@ -37,18 +37,17 @@ namespace {
 class MockGpuDelegate : public MailboxVideoFrameConverter::GpuDelegate {
  public:
   MOCK_METHOD0(Initialize, bool());
-  MOCK_METHOD10(CreateSharedImage,
-                gpu::SharedImageStub::SharedImageDestructionCallback(
-                    const gpu::Mailbox& mailbox,
-                    gfx::GpuMemoryBufferHandle handle,
-                    gfx::BufferFormat format,
-                    gfx::BufferPlane plane,
-                    gpu::SurfaceHandle surface_handle,
-                    const gfx::Size& size,
-                    const gfx::ColorSpace& color_space,
-                    GrSurfaceOrigin surface_origin,
-                    SkAlphaType alpha_type,
-                    uint32_t usage));
+  MOCK_METHOD9(CreateSharedImage,
+               gpu::SharedImageStub::SharedImageDestructionCallback(
+                   const gpu::Mailbox& mailbox,
+                   gfx::GpuMemoryBufferHandle handle,
+                   gfx::BufferFormat format,
+                   gfx::BufferPlane plane,
+                   const gfx::Size& size,
+                   const gfx::ColorSpace& color_space,
+                   GrSurfaceOrigin surface_origin,
+                   SkAlphaType alpha_type,
+                   uint32_t usage));
   MOCK_METHOD2(UpdateSharedImage,
                bool(const gpu::Mailbox& mailbox,
                     gfx::GpuFenceHandle in_fence_handle));
@@ -216,7 +215,7 @@ TEST_F(MailboxVideoFrameConverterWithUnwrappedFramesTest,
           *mock_gpu_delegate_,
           CreateSharedImage(
               /*mailbox=*/_, /*handle=*/_, kBufferFormat,
-              gfx::BufferPlane::DEFAULT, gpu::kNullSurfaceHandle,
+              gfx::BufferPlane::DEFAULT,
               /*size=*/kVisibleRect.size(), /*color_space=*/_,
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, /*usage=*/_))
           .WillOnce(

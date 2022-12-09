@@ -94,7 +94,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,
-      SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -114,7 +113,6 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
                                          gfx::BufferFormat format,
                                          const gfx::ColorSpace& color_space,
                                          gfx::BufferPlane plane,
-                                         SurfaceHandle surface_handle,
                                          const gfx::Size& size);
 
   std::unique_ptr<SharedImageBacking> CreateSharedImageInternal(

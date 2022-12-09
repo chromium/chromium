@@ -60,7 +60,6 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,
-      gpu::SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -76,8 +75,8 @@ class GpuDelegateImpl : public MailboxVideoFrameConverter::GpuDelegate {
 
     if (!shared_image_stub->CreateSharedImage(
             mailbox, gpu::kPlatformVideoFramePoolClientId, std::move(handle),
-            format, plane, surface_handle, size, color_space, surface_origin,
-            alpha_type, usage)) {
+            format, plane, size, color_space, surface_origin, alpha_type,
+            usage)) {
       return base::NullCallback();
     }
 
@@ -461,9 +460,8 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   gpu::SharedImageStub::SharedImageDestructionCallback destroy_shared_image_cb =
       gpu_delegate_->CreateSharedImage(
           mailbox, std::move(gpu_memory_buffer_handle), *buffer_format,
-          gfx::BufferPlane::DEFAULT, gpu::kNullSurfaceHandle, shared_image_size,
-          src_color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-          shared_image_usage);
+          gfx::BufferPlane::DEFAULT, shared_image_size, src_color_space,
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage);
   if (destroy_shared_image_cb.is_null()) {
     OnError(FROM_HERE, "Failed to create shared image.");
     return false;

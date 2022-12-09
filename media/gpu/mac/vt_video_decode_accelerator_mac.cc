@@ -2236,8 +2236,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
       bool success = shared_image_stub->CreateSharedImage(
           mailbox, /*client_id=*/0, std::move(handle), buffer_format_,
-          planes[plane], gpu::kNullSurfaceHandle, frame_size, color_space,
-          kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage);
+          planes[plane], frame_size, color_space, kTopLeft_GrSurfaceOrigin,
+          kOpaque_SkAlphaType, shared_image_usage);
       if (!success) {
         DLOG(ERROR) << "Failed to create shared image";
         NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);

@@ -66,7 +66,6 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,
-      SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

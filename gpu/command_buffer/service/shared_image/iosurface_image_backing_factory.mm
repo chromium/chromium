@@ -402,7 +402,6 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,
-    SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -430,9 +429,8 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
       !NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format, plane)
           ? GL_TEXTURE_2D
           : gpu::GetPlatformSpecificTextureTarget();
-  scoped_refptr<gl::GLImage> image =
-      MakeGLImage(client_id, std::move(handle), buffer_format, color_space,
-                  plane, surface_handle, size);
+  scoped_refptr<gl::GLImage> image = MakeGLImage(
+      client_id, std::move(handle), buffer_format, color_space, plane, size);
   if (!image) {
     LOG(ERROR) << "Failed to create image.";
     return nullptr;
@@ -489,14 +487,13 @@ scoped_refptr<gl::GLImage> IOSurfaceImageBackingFactory::MakeGLImage(
     gfx::BufferFormat format,
     const gfx::ColorSpace& color_space,
     gfx::BufferPlane plane,
-    SurfaceHandle surface_handle,
     const gfx::Size& size) {
   if (!image_factory_)
     return nullptr;
 
   return image_factory_->CreateImageForGpuMemoryBuffer(
       std::move(handle), size, format, color_space, plane, client_id,
-      surface_handle);
+      kNullSurfaceHandle);
 }
 
 bool IOSurfaceImageBackingFactory::IsSupported(

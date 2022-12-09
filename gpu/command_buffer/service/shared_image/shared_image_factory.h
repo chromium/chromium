@@ -59,7 +59,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,
                          SkAlphaType alpha_type,
-                         gpu::SurfaceHandle surface_handle,
+                         SurfaceHandle surface_handle,
                          uint32_t usage);
   bool CreateSharedImage(const Mailbox& mailbox,
                          viz::SharedImageFormat si_format,
@@ -82,7 +82,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                          gfx::GpuMemoryBufferHandle handle,
                          gfx::BufferFormat format,
                          gfx::BufferPlane plane,
-                         SurfaceHandle surface_handle,
                          const gfx::Size& size,
                          const gfx::ColorSpace& color_space,
                          GrSurfaceOrigin surface_origin,

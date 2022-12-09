@@ -66,7 +66,6 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,
-      SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -135,9 +134,8 @@ class CompoundImageBackingTest : public testing::Test {
 
     return CompoundImageBacking::CreateSharedMemory(
         &test_factory_, allow_shm_overlays, Mailbox::GenerateForSharedImage(),
-        std::move(handle), buffer_format, gfx::BufferPlane::DEFAULT,
-        kNullSurfaceHandle, size, gfx::ColorSpace(),
-        kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+        std::move(handle), buffer_format, gfx::BufferPlane::DEFAULT, size,
+        gfx::ColorSpace(), kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
         SHARED_IMAGE_USAGE_DISPLAY_READ);
   }
 

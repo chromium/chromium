@@ -311,7 +311,6 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
     gfx::GpuMemoryBufferHandle handle,
     gfx::BufferFormat buffer_format,
     gfx::BufferPlane plane,
-    SurfaceHandle surface_handle,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -342,7 +341,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::CreateSharedMemory(
 
   return base::WrapUnique(new CompoundImageBacking(
       mailbox, si_format, plane_size, color_space, surface_origin, alpha_type,
-      usage, surface_handle, allow_shm_overlays, std::move(shm_backing),
+      usage, allow_shm_overlays, std::move(shm_backing),
       gpu_backing_factory->GetWeakPtr()));
 }
 
@@ -354,7 +353,6 @@ CompoundImageBacking::CompoundImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage,
-    SurfaceHandle surface_handle,
     bool allow_shm_overlays,
     std::unique_ptr<SharedMemoryImageBacking> shm_backing,
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory)
@@ -366,8 +364,7 @@ CompoundImageBacking::CompoundImageBacking(
                          alpha_type,
                          usage,
                          shm_backing->GetEstimatedSize(),
-                         /*is_thread_safe=*/false),
-      surface_handle_(surface_handle) {
+                         /*is_thread_safe=*/false) {
   DCHECK(shm_backing);
   DCHECK_EQ(size, shm_backing->size());
   elements_[0].backing = std::move(shm_backing);
@@ -619,7 +616,7 @@ void CompoundImageBacking::LazyCreateBacking(
   }
 
   backing = factory->CreateSharedImage(
-      mailbox(), format(), surface_handle_, size(), color_space(),
+      mailbox(), format(), kNullSurfaceHandle, size(), color_space(),
       surface_origin(), alpha_type(), usage() | SHARED_IMAGE_USAGE_CPU_UPLOAD,
       /*is_thread_safe=*/false);
   if (!backing) {

@@ -127,7 +127,6 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         gfx::GpuMemoryBufferHandle handle,
                                         gfx::BufferFormat format,
                                         gfx::BufferPlane plane,
-                                        SurfaceHandle surface_handle,
                                         const gfx::Size& size,
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
@@ -145,9 +144,9 @@ bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
     OnError();
     return false;
   }
-  if (!factory_->CreateSharedImage(
-          mailbox, client_id, std::move(handle), format, plane, surface_handle,
-          size, color_space, surface_origin, alpha_type, usage)) {
+  if (!factory_->CreateSharedImage(mailbox, client_id, std::move(handle),
+                                   format, plane, size, color_space,
+                                   surface_origin, alpha_type, usage)) {
     LOG(ERROR) << "SharedImageStub: Unable to create shared image";
     OnError();
     return false;
@@ -301,13 +300,11 @@ void SharedImageStub::OnCreateGMBSharedImage(
     mojom::CreateGMBSharedImageParamsPtr params) {
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateGMBSharedImage", "width",
                params->size.width(), "height", params->size.height());
-  // TODO(piman): add support for SurfaceHandle (for backbuffers for ozone/drm).
-  constexpr SurfaceHandle surface_handle = kNullSurfaceHandle;
   if (!CreateSharedImage(params->mailbox, channel_->client_id(),
                          std::move(params->buffer_handle), params->format,
-                         params->plane, surface_handle, params->size,
-                         params->color_space, params->surface_origin,
-                         params->alpha_type, params->usage)) {
+                         params->plane, params->size, params->color_space,
+                         params->surface_origin, params->alpha_type,
+                         params->usage)) {
     return;
   }
 

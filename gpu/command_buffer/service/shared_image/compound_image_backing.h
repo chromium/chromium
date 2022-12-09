@@ -60,7 +60,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat buffer_format,
       gfx::BufferPlane plane,
-      SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -135,7 +134,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
       uint32_t usage,
-      SurfaceHandle surface_handle,
       bool allow_shm_overlays,
       std::unique_ptr<SharedMemoryImageBacking> shm_backing,
       base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory);
@@ -165,8 +163,6 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // If successful this will update the estimated size of compound backing.
   void LazyCreateBacking(base::WeakPtr<SharedImageBackingFactory> factory,
                          std::unique_ptr<SharedImageBacking>& backing);
-
-  const SurfaceHandle surface_handle_;
 
   uint32_t latest_content_id_ = 1;
 

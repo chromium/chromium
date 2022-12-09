@@ -189,7 +189,6 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
       gfx::BufferPlane plane,
-      gpu::SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
