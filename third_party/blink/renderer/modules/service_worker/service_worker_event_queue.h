@@ -123,6 +123,13 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
   // This method must be called after the event queue is started.
   void SetIdleDelay(base::TimeDelta idle_delay);
 
+  // Resets the members for idle timeouts to cancel the idle callback.
+  void ResetIdleTimeout();
+
+  // Checks if the event queue is empty.
+  // Schedules idle timeout callback if there is no ongoing event.
+  void CheckEventQueue();
+
   // Returns true if the event queue thinks no events ran for a while, and has
   // triggered the |idle_callback_| passed to the constructor. It'll be reset to
   // false again when StartEvent() is called.
@@ -215,9 +222,6 @@ class MODULES_EXPORT ServiceWorkerEventQueue {
 
   // Processes all events in |queue_|.
   void ProcessEvents();
-
-  // Resets the members for idle timeouts to cancel the idle callback.
-  void ResetIdleTimeout();
 
   // True if the idle callback is scheduled to run.
   bool HasScheduledIdleCallback() const;

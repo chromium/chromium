@@ -236,6 +236,14 @@ void FakeServiceWorker::SetIdleDelay(base::TimeDelta delay) {
   idle_delay_ = delay;
 }
 
+void FakeServiceWorker::AddKeepAlive() {
+  NOTIMPLEMENTED();
+}
+
+void FakeServiceWorker::ClearKeepAlive() {
+  NOTIMPLEMENTED();
+}
+
 void FakeServiceWorker::AddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {

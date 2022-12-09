@@ -304,6 +304,13 @@ interface ServiceWorker {
   // events are handled.
   SetIdleDelay(mojo_base.mojom.TimeDelta delay);
 
+  // Resets the members for idle timeouts to cancel the idle callback.
+  AddKeepAlive();
+
+  // Check if the event queue is empty.
+  // Schedules idle timeout callback if there is no ongoing event.
+  ClearKeepAlive();
+
   // Adds a message to DevTools console which is associated with this worker.
   AddMessageToConsole(ConsoleMessageLevel level, string message);
 

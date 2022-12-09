@@ -247,6 +247,12 @@ void ServiceWorkerEventQueue::SetIdleDelay(base::TimeDelta idle_delay) {
   ScheduleIdleCallback(delta_until_idle);
 }
 
+void ServiceWorkerEventQueue::CheckEventQueue() {
+  if (!HasInflightEvent()) {
+    OnNoInflightEvent();
+  }
+}
+
 void ServiceWorkerEventQueue::UpdateStatus() {
   base::TimeTicks now = tick_clock_->NowTicks();
 
