@@ -1609,12 +1609,10 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPolicy_CacheSize6_ModerateCacheSize4-2_20220921",
+                    "name": "EnabledPolicy_CacheSize6_20220921",
                     "params": {
-                        "background_cache_size_on_moderate_pressure": "2",
                         "cache_size": "6",
-                        "foreground_cache_size": "0",
-                        "foreground_cache_size_on_moderate_pressure": "4"
+                        "foreground_cache_size": "0"
                     },
                     "enable_features": [
                         "BFCachePerformanceManagerPolicy",
