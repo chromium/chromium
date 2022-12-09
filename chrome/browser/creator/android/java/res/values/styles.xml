@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="CreatorActivityNoActionBar">
         <item name="windowActionBar">false</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
     </style>
 
     <style name="CreatorFollowFilledButton" parent="ButtonCompatBase">
@@ -27,9 +28,11 @@ found in the LICENSE file.
         <item name="android:drawablePadding">5dp</item>
         <item name="android:layout_marginEnd">5dp</item>
         <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick</item>
-        <item name="buttonTextColor">@macro/default_text_color_secondary</item>
-        <item name="buttonColor">@android:color/white</item>
+        <item name="buttonTextColor">@macro/default_text_color_accent1</item>
+        <item name="buttonColor">@android:color/transparent</item>
         <item name="rippleColor">@color/text_button_ripple_color_list</item>
+        <item name="borderWidth">@dimen/button_outlined_border_width</item>
+        <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
         <item name="buttonRaised">true</item>
     </style>
 
@@ -38,21 +41,23 @@ found in the LICENSE file.
         <item name="android:paddingEnd">14dp</item>
         <item name="android:drawablePadding">10dp</item>
         <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.TextSmall.Primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick</item>
         <item name="buttonTextColor">?attr/globalFilledButtonTextColor</item>
         <item name="buttonColor">?attr/globalFilledButtonBgColor</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
         <item name="buttonRaised">true</item>
     </style>
     <style name="CreatorFollowReverseButtonToolbar" parent="ButtonCompatBase">
-        <item name="android:paddingStart">12dp</item>
-        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingStart">6dp</item>
+        <item name="android:paddingEnd">14dp</item>
         <item name="android:drawablePadding">5dp</item>
         <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.TextSmall.Primary</item>
-        <item name="buttonTextColor">@macro/default_text_color_secondary</item>
-        <item name="buttonColor">@android:color/white</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick</item>
+        <item name="buttonTextColor">@macro/default_text_color_accent1</item>
+        <item name="buttonColor">@android:color/transparent</item>
         <item name="rippleColor">@color/text_button_ripple_color_list</item>
+        <item name="borderWidth">@dimen/button_outlined_border_width</item>
+        <item name="borderColor">?attr/globalOutlinedButtonBorderColor</item>
         <item name="buttonRaised">true</item>
     </style>
 </resources>

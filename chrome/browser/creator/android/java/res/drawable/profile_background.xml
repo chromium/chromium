@@ -4,14 +4,15 @@
      found in the LICENSE file.
 -->
 
-<shape
+<org.chromium.components.browser_ui.widget.SurfaceColorDrawable
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle" >
-  <solid android:color="?attr/colorSurfaceVariant" />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:shape="rectangle"
+    app:surfaceElevation="@dimen/default_elevation_1" >
   <corners android:radius="@dimen/card_rounded_corner_radius" />
   <padding
       android:top="10dp"
       android:bottom="10dp"
       android:left="20dp"
       android:right="20dp"/>
-</shape>
+</org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
