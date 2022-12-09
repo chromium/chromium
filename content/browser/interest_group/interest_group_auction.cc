@@ -60,7 +60,6 @@ namespace content {
 
 namespace {
 
-using blink::mojom::ReportingDestination;
 constexpr base::TimeDelta kMaxTimeout = base::Milliseconds(500);
 constexpr base::TimeDelta kKAnonymityExpiration = base::Days(7);
 

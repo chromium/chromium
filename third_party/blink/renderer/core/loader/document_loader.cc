@@ -303,7 +303,7 @@ struct SameSizeAsDocumentLoader
   std::unique_ptr<CodeCacheHost> code_cache_host;
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
-  mojom::blink::FencedFrameReportingPtr fenced_frame_reporting;
+  absl::optional<blink::FencedFrameReporting> fenced_frame_reporting;
   std::unique_ptr<ExtraData> extra_data;
   AtomicString reduced_accept_language;
   network::mojom::NavigationDeliveryType navigation_delivery_type;
@@ -562,12 +562,12 @@ DocumentLoader::DocumentLoader(
   }
 
   if (params_->fenced_frame_reporting) {
-    fenced_frame_reporting_ = mojom::blink::FencedFrameReporting::New();
+    fenced_frame_reporting_.emplace();
     for (const auto& [destination, metadata] :
          params_->fenced_frame_reporting->metadata) {
       HashMap<String, KURL> data;
       for (const auto& [event_type, url] : metadata) {
-        data.insert(event_type, url);
+        data.insert(String::FromUTF8(event_type), KURL(url));
       }
       fenced_frame_reporting_->metadata.insert(destination, std::move(data));
     }
@@ -659,9 +659,9 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
     params->fenced_frame_reporting.emplace();
     for (const auto& [destination, metadata] :
          fenced_frame_reporting_->metadata) {
-      base::flat_map<WebString, WebURL> data;
+      base::flat_map<std::string, GURL> data;
       for (const auto& [event_type, url] : metadata) {
-        data.emplace(event_type, url);
+        data.emplace(event_type.Utf8(), url);
       }
       params->fenced_frame_reporting->metadata.emplace(destination,
                                                        std::move(data));

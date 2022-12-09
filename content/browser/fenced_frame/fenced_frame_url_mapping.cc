@@ -227,13 +227,13 @@ void FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
   // capable of producing URLs that fenced frames can navigate to.
   if (blink::IsValidFencedFrameURL(mapping_result.mapped_url)) {
     ReportingMetadata reporting_metadata;
-    base::flat_map<blink::mojom::ReportingDestination,
+    base::flat_map<blink::FencedFrame::ReportingDestination,
                    SharedStorageReportingMap>
         reporting_metadata_map;
     reporting_metadata_map
-        [blink::mojom::ReportingDestination::kSharedStorageSelectUrl] =
+        [blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl] =
             std::move(mapping_result.reporting_map);
-    reporting_metadata = ReportingMetadata(std::move(reporting_metadata_map));
+    reporting_metadata.metadata = std::move(reporting_metadata_map);
 
     config =
         FencedFrameConfig(mapping_result.mapped_url,

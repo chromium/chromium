@@ -274,17 +274,17 @@ TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
 
   // Test `reporting_metadata`.
   {
-    auto test_reporting_metadata = blink::mojom::FencedFrameReporting::New();
+    auto test_reporting_metadata = blink::FencedFrame::FencedFrameReporting();
     test_reporting_metadata
-        ->metadata[blink::mojom::ReportingDestination::kBuyer]["test"] =
+        .metadata[blink::FencedFrame::ReportingDestination::kBuyer]["test"] =
         test_url;
     auto eq_fn = [](const ReportingMetadata& a, const ReportingMetadata& b) {
-      return a == b;
+      return a.metadata == b.metadata;
     };
     TEST_PROPERTY(FencedFrameConfig, reporting_metadata_,
-                  *test_reporting_metadata, eq_fn, eq_fn);
+                  test_reporting_metadata, eq_fn, eq_fn);
     TEST_PROPERTY(FencedFrameProperties, reporting_metadata_,
-                  *test_reporting_metadata, eq_fn, eq_fn);
+                  test_reporting_metadata, eq_fn, eq_fn);
   }
 }
 

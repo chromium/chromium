@@ -31,7 +31,6 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_data.h"
-#include "third_party/blink/public/platform/web_fenced_frame_reporting.h"
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
@@ -476,7 +475,7 @@ struct BLINK_EXPORT WebNavigationParams {
   // reporting metadata which in turn is a map from the event type to the
   // reporting url. Null, otherwise.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
-  absl::optional<WebFencedFrameReporting> fenced_frame_reporting;
+  absl::optional<FencedFrame::FencedFrameReporting> fenced_frame_reporting;
 
   // Whether the current context would be allowed to create an opaque-ads
   //  frame (based on the browser-side calculations). See
