@@ -99,6 +99,9 @@ void RgbKeyboardManager::SetZoneColor(int zone,
                                       uint8_t g,
                                       uint8_t b) {
   DCHECK(RgbkbdClient::Get());
+  background_type_ = BackgroundType::kStaticZones;
+  zone_colors_[zone] = SkColorSetRGB(r, g, b);
+
   if (zone < 0 || zone >= GetZoneCount()) {
     LOG(ERROR) << "Attempted to set an invalid zone: " << zone;
     return;
@@ -201,7 +204,12 @@ void RgbKeyboardManager::InitializeRgbKeyboard() {
                                SkColorGetG(background_color_),
                                SkColorGetB(background_color_));
       break;
-    // TODO(swifton): Add a case for zone colors.
+    case BackgroundType::kStaticZones:
+      for (auto const& [zone, color] : zone_colors_) {
+        SetZoneColor(zone, SkColorGetR(color), SkColorGetG(color),
+                     SkColorGetB(color));
+      }
+      break;
     case BackgroundType::kStaticRainbow:
       SetRainbowMode();
       break;

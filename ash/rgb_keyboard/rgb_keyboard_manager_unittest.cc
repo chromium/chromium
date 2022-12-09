@@ -338,6 +338,44 @@ TEST_F(RgbKeyboardManagerTest, RaceConditionStaticSingleColor) {
   }
 }
 
+TEST_F(RgbKeyboardManagerTest, RaceConditionStaticZoneColor) {
+  const int zone_1 = 0;
+  const uint8_t expected_r_1 = 1;
+  const uint8_t expected_g_1 = 2;
+  const uint8_t expected_b_1 = 3;
+
+  const int zone_2 = 3;
+  const uint8_t expected_r_2 = 4;
+  const uint8_t expected_g_2 = 5;
+  const uint8_t expected_b_2 = 6;
+
+  client_->set_should_run_rgb_keyboard_capabilities_callback(
+      /*should_run_callback=*/false);
+  InitializeManagerWithCapability(
+      rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
+
+  manager_->SetZoneColor(zone_1, expected_r_1, expected_g_1, expected_b_1);
+  manager_->SetZoneColor(zone_2, expected_r_2, expected_g_2, expected_b_2);
+
+  {
+    auto zone_colors = client_->get_zone_colors();
+    EXPECT_EQ(0u, zone_colors.size());
+  }
+
+  client_->set_should_run_rgb_keyboard_capabilities_callback(
+      /*should_run_callback=*/true);
+  client_->attempt_run_rgb_keyboard_capabilities_callback();
+
+  {
+    auto zone_colors = client_->get_zone_colors();
+    EXPECT_EQ(2u, zone_colors.size());
+    EXPECT_EQ(zone_colors[zone_1],
+              std::make_tuple(expected_r_1, expected_g_1, expected_b_1));
+    EXPECT_EQ(zone_colors[zone_2],
+              std::make_tuple(expected_r_2, expected_g_2, expected_b_2));
+  }
+}
+
 TEST_F(RgbKeyboardManagerTest, RaceConditionStaticRainbow) {
   client_->set_should_run_rgb_keyboard_capabilities_callback(
       /*should_run_callback=*/false);

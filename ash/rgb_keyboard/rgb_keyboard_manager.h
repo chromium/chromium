@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/ime/ime_controller_impl.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
 #include "third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h"
@@ -55,6 +56,7 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
     kNone,
     kStaticSingleColor,
     kStaticRainbow,
+    kStaticZones,
   };
 
   // ImeControllerImpl::Observer:
@@ -82,6 +84,9 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
   // Tracks the currently set background color when `background_type_` is set to
   // `BackgroundType::kStaticSingleColor`.
   SkColor background_color_;
+  // Tracks the currently set zone colors when `background_type_` is set to
+  // `BackgroundType::kStaticZones`.
+  base::flat_map<int, SkColor> zone_colors_;
   BackgroundType background_type_ = BackgroundType::kNone;
 
   base::ObserverList<RgbKeyboardManagerObserver> observers_;
