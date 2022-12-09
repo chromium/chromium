@@ -124,6 +124,7 @@ static_library("browser") {
     "autocomplete_provider_listener.h",
     "autocomplete_result.cc",
     "autocomplete_result.h",
+    "autocomplete_scoring_signals_annotator.h",
     "base_search_provider.cc",
     "base_search_provider.h",
     "bookmark_provider.cc",

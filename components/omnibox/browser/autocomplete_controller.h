@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/autocomplete_provider_debouncer.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/omnibox_log.h"
 #include "components/omnibox/browser/open_tab_provider.h"
@@ -281,6 +282,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   void UpdateResult(bool regenerate_result,
                     bool force_notify_default_match_changed);
 
+  // Updates ML scoring signals of suggestions in the autocomplete result.
+  void UpdateScoringSignals();
+
   // Updates `result` to populate each match's `associated_keyword` if that
   // match can show a keyword hint. `result` should be sorted by relevance
   // before this is called.
@@ -363,6 +367,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   raw_ptr<VoiceSuggestProvider> voice_suggest_provider_;
 
   raw_ptr<OpenTabProvider> open_tab_provider_;
+
+  // A vector of scoring signals annotators for URL suggestions.
+  // Unlike the other existing annotators (e.g., pedals and keywords), these
+  // signal annotations should be done before the sort and cull pass.
+  std::vector<std::unique_ptr<AutocompleteScoringSignalsAnnotator>>
+      url_scoring_signals_annotators_;
 
   // Input passed to Start.
   AutocompleteInput input_;
