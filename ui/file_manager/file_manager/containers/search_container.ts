@@ -5,8 +5,8 @@
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
 import {queryRequiredElement} from '../common/js/dom_utils.js';
-import {util} from '../common/js/util.js';
-import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchOptions, SearchRecency, SearchStatus, State} from '../externs/ts/state.js';
+import {str, util} from '../common/js/util.js';
+import {PropStatus, SearchData, SearchFileType, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
 import {updateSearch} from '../state/actions.js';
 import {getStore, Store} from '../state/store.js';
@@ -215,6 +215,7 @@ export class SearchContainer extends EventTarget {
     // Cache the last received search state for future comparisons.
     this.searchState_ = search;
     if (!search) {
+      this.closeSearch();
       return;
     }
     const query = search.query;
@@ -222,15 +223,15 @@ export class SearchContainer extends EventTarget {
       this.setQuery(query);
     }
     if (util.isSearchV2Enabled()) {
-      const status = search.status;
-      if (status === PropStatus.STARTED && query) {
+      if (search.status === PropStatus.STARTED && query) {
         this.showOptions_();
-      } else if (status === SearchStatus.INACTIVE) {
-        this.hideOptions_();
       }
     }
   }
 
+  /**
+   * Hides the element that allows users to manipulate search options.
+   */
   private hideOptions_() {
     const element = this.getSearchOptionsElement_();
     if (element) {
@@ -238,6 +239,10 @@ export class SearchContainer extends EventTarget {
     }
   }
 
+  /**
+   * Shows or creates the element that allows the user to manipulate search
+   * options.
+   */
   private showOptions_() {
     let element = this.getSearchOptionsElement_();
     if (!element) {
@@ -262,27 +267,69 @@ export class SearchContainer extends EventTarget {
     this.optionsContainer_.appendChild(element);
 
     element.id = 'search-options';
-    // TODO(majewski): Get strings from loadTimeData.
-    element.getLocationSelector().setOptions([
-      {value: SearchLocation.EVERYWHERE, text: 'Everywhere'},
-      {value: SearchLocation.THIS_CHROMEBOOK, text: 'This Chromebook'},
-      {value: SearchLocation.THIS_FOLDER, text: 'This folder', default: true},
-    ]);
-    element.getRecencySelector().setOptions([
-      {value: SearchRecency.ANYTIME, text: 'Anytime'},
-      {value: SearchRecency.TODAY, text: 'Today'},
-      {value: SearchRecency.YESTERDAY, text: 'Yesterday'},
-      {value: SearchRecency.LAST_WEEK, text: 'Last week'},
-      {value: SearchRecency.LAST_MONTH, text: 'Last month'},
-      {value: SearchRecency.LAST_YEAR, text: 'Last year'},
-    ]);
-    element.getFileTypeSelector().setOptions([
-      {value: SearchFileType.ALL_TYPES, text: 'Any'},
-      {value: SearchFileType.AUDIO, text: 'Audio'},
-      {value: SearchFileType.DOCUMENTS, text: 'Documents'},
-      {value: SearchFileType.IMAGES, text: 'Images'},
-      {value: SearchFileType.VIDEOS, text: 'Videos'},
-    ]);
+    element.getLocationSelector().options = [
+      {
+        value: SearchLocation.EVERYWHERE,
+        text: str('SEARCH_OPTIONS_LOCATION_EVERYWHERE'),
+      },
+      {
+        value: SearchLocation.THIS_CHROMEBOOK,
+        text: str('SEARCH_OPTIONS_LOCATION_THIS_CHROMEBOOK'),
+      },
+      {
+        value: SearchLocation.THIS_FOLDER,
+        text: str('SEARCH_OPTIONS_LOCATION_THIS_FOLDER'),
+        default: true,
+      },
+    ];
+    element.getRecencySelector().options = [
+      {
+        value: SearchRecency.ANYTIME,
+        text: str('SEARCH_OPTIONS_RECENCY_ALL_TIME'),
+      },
+      {
+        value: SearchRecency.TODAY,
+        text: str('SEARCH_OPTIONS_RECENCY_TODAY'),
+      },
+      {
+        value: SearchRecency.YESTERDAY,
+        text: str('SEARCH_OPTIONS_RECENCY_YESTERDAY'),
+      },
+      {
+        value: SearchRecency.LAST_WEEK,
+        text: str('SEARCH_OPTIONS_RECENCY_LAST_WEEK'),
+      },
+      {
+        value: SearchRecency.LAST_MONTH,
+        text: str('SEARCH_OPTIONS_RECENCY_LAST_MONTH'),
+      },
+      {
+        value: SearchRecency.LAST_YEAR,
+        text: str('SEARCH_OPTIONS_RECENCY_LAST_YEAR'),
+      },
+    ];
+    element.getFileTypeSelector().options = [
+      {
+        value: SearchFileType.ALL_TYPES,
+        text: str('SEARCH_OPTIONS_TYPES_ALL_TYPES'),
+      },
+      {
+        value: SearchFileType.AUDIO,
+        text: str('SEARCH_OPTIONS_TYPES_AUDIO'),
+      },
+      {
+        value: SearchFileType.DOCUMENTS,
+        text: str('SEARCH_OPTIONS_TYPES_DOCUMENTS'),
+      },
+      {
+        value: SearchFileType.IMAGES,
+        text: str('SEARCH_OPTIONS_TYPES_IMAGES'),
+      },
+      {
+        value: SearchFileType.VIDEOS,
+        text: str('SEARCH_OPTIONS_TYPES_VIDEOS'),
+      },
+    ];
     element.addEventListener(
         SEARCH_OPTIONS_CHANGED, this.onOptionsChanged_.bind(this));
     this.searchOptions_ = element;
@@ -426,13 +473,7 @@ export class SearchContainer extends EventTarget {
     // Do not initiate close transition if we are not open. This would leave us
     // in the CLOSING state, without ever getting to CLOSED state.
     if (this.inputState_ === SearchInputState.OPEN) {
-      if (util.isSearchV2Enabled()) {
-        this.store_.dispatch(updateSearch({
-          query: undefined,  // do not change
-          status: SearchStatus.INACTIVE,
-          options: undefined,  // do not change
-        }));
-      }
+      this.hideOptions_();
       this.inputState_ = SearchInputState.CLOSING;
       this.inputElement_.tabIndex = -1;
       this.inputElement_.disabled = true;

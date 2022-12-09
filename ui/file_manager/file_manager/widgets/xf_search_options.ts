@@ -9,11 +9,10 @@
  */
 
 import {getTemplate} from './xf_search_options.html.js';
-import {SELECTION_CHANGED, XfSelect} from './xf_select.js';
+import {XfSelect} from './xf_select.js';
 
 /**
  * The enumeration of strings used to identify the kind of option that changed.
- * @enum {string}
  */
 export enum OptionKind {
   LOCATION = 'location',
@@ -88,18 +87,21 @@ export class XfSearchOptionsElement extends HTMLElement {
    * closed.
    */
   connectedCallback(): void {
-    this.getLocationSelector().addEventListener(SELECTION_CHANGED, (event) => {
-      this.dispatchEvent(newSearchOptionsChangedEvent(
-          OptionKind.LOCATION, event.detail.value));
-    });
-    this.getRecencySelector().addEventListener(SELECTION_CHANGED, (event) => {
-      this.dispatchEvent(
-          newSearchOptionsChangedEvent(OptionKind.RECENCY, event.detail.value));
-    });
-    this.getFileTypeSelector().addEventListener(SELECTION_CHANGED, (event) => {
-      this.dispatchEvent(newSearchOptionsChangedEvent(
-          OptionKind.FILE_TYPE, event.detail.value));
-    });
+    this.getLocationSelector().addEventListener(
+        XfSelect.events.SELECTION_CHANGED, (event) => {
+          this.dispatchEvent(newSearchOptionsChangedEvent(
+              OptionKind.LOCATION, event.detail.value));
+        });
+    this.getRecencySelector().addEventListener(
+        XfSelect.events.SELECTION_CHANGED, (event) => {
+          this.dispatchEvent(newSearchOptionsChangedEvent(
+              OptionKind.RECENCY, event.detail.value));
+        });
+    this.getFileTypeSelector().addEventListener(
+        XfSelect.events.SELECTION_CHANGED, (event) => {
+          this.dispatchEvent(newSearchOptionsChangedEvent(
+              OptionKind.FILE_TYPE, event.detail.value));
+        });
   }
 
   /**

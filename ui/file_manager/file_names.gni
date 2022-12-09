@@ -300,7 +300,6 @@ ts_templates = [
   "file_manager/widgets/xf_dlp_restriction_details_dialog.html",
   "file_manager/widgets/xf_nudge.html",
   "file_manager/widgets/xf_search_options.html",
-  "file_manager/widgets/xf_select.html",
 ]
 
 ts_test_files = [

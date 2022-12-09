@@ -26,10 +26,10 @@ function getSearchOptionsElement(): XfSearchOptionsElement {
 export async function testChangeLocation(done: () => void) {
   const element = getSearchOptionsElement();
   const locationSelector = element.getLocationSelector();
-  locationSelector.setOptions([
+  locationSelector.options = [
     {value: SearchLocation.EVERYWHERE, text: 'Everywhere'},
     {value: SearchLocation.THIS_FOLDER, text: 'This folder', default: true},
-  ]);
+  ];
 
   element.addEventListener(SEARCH_OPTIONS_CHANGED, (event) => {
     const want = {kind: OptionKind.LOCATION, value: SearchLocation.EVERYWHERE};
@@ -42,10 +42,10 @@ export async function testChangeLocation(done: () => void) {
 export async function testChangeRecency(done: () => void) {
   const element = getSearchOptionsElement();
   const recencySelector = element.getRecencySelector();
-  recencySelector.setOptions([
+  recencySelector.options = [
     {value: SearchRecency.ANYTIME, text: 'Any time'},
     {value: SearchRecency.YESTERDAY, text: 'Yesterday'},
-  ]);
+  ];
 
   element.addEventListener(SEARCH_OPTIONS_CHANGED, (event) => {
     const want = {kind: OptionKind.RECENCY, value: SearchRecency.YESTERDAY};
@@ -58,10 +58,10 @@ export async function testChangeRecency(done: () => void) {
 export async function testChangeFileType(done: () => void) {
   const element = getSearchOptionsElement();
   const fileTypeSelector = element.getFileTypeSelector();
-  fileTypeSelector.setOptions([
+  fileTypeSelector.options = [
     {value: SearchFileType.ALL_TYPES, text: 'All types'},
     {value: SearchFileType.IMAGES, text: 'Images'},
-  ]);
+  ];
 
   element.addEventListener(SEARCH_OPTIONS_CHANGED, (event) => {
     const want = {kind: OptionKind.FILE_TYPE, value: SearchFileType.IMAGES};

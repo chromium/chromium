@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getTemplate} from './xf_select.html.js';
+/**
+ * @fileoverview xf-select element which is ChromeOS <select>..</select>.
+ * Disable type checking for closure, as it is done by the typescript compiler.
+ * @suppress{missingProperties}
+ */
+
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+
+import {css, CSSResultGroup, customElement, html, property, query, state, XfBase} from './xf_base.js';
 
 /**
  * The data structure used to set the new options on the select element.
@@ -36,10 +45,11 @@ export interface XfSelectedValue {
  * text visible to the user.
  *
  * const element = document.createElement('xf-select');
- * element.setOptions([
+ * element.options = [
  *   {value: 'value-a', text: 'Text of value A'},
  *   ...
- * ]);
+ * ];
+ * element.icon = 'select-location';
  * element.addEventListener(
  *     SELECTION_CHANGED, (event) => {
  *       if (event.detail.value === 'value-a') {
@@ -47,55 +57,229 @@ export interface XfSelectedValue {
  *       }
  *     });
  *
- * We explicitly disable type checking for closure, as it is done by the
- * typescript compiler.
- * @suppress{missingProperties}
  */
-export class XfSelect extends HTMLElement {
-  private boundSelectionListener_: (event: Event) => void;
+@customElement('xf-select')
+export class XfSelect extends XfBase {
+  /**
+   * The name of the icon to be used by the xf-select. This icon name must match
+   * the name of an icon in the
+   * //ui/file_manager/file_manager/foreground/images/files/ui/
+   */
+  @property({type: String, reflect: false}) icon = '';
 
-  constructor() {
-    super();
-    // Create element content.
-    const template = document.createElement('template');
-    template.innerHTML = getTemplate() as unknown as string;
-    const fragment = template.content.cloneNode(true);
-    this.attachShadow({mode: 'open'}).appendChild(fragment);
-    this.boundSelectionListener_ = this.onSelectionChanged.bind(this);
+  /**
+   * The options available for selection.
+   */
+  @property({type: Array, reflect: false}) options: XfOption[] = [];
+
+  /**
+   * The current selected value.
+   */
+  @property({type: String, reflect: true}) value: string = '';
+
+  static get events() {
+    return {
+      /** emits when the currently selected option changed. */
+      SELECTION_CHANGED: 'selection_changed',
+    } as const;
   }
 
   /**
-   * Initializes event listeners on the components of the widget.
+   * The button that toggles the options menu.
    */
-  connectedCallback(): void {
-    this.getSelect_().addEventListener('change', this.boundSelectionListener_);
-  }
+  @query('cr-button#dropdown-toggle')
+  private $toggleDropdownButton_?: CrButtonElement;
 
   /**
-   * Disconnects event listeners registered in the connectedCallback method.
+   * The options menu.
    */
-  disconnectedCallback(): void {
-    this.getSelect_().removeEventListener(
-        'change', this.boundSelectionListener_);
-  }
+  @query('cr-action-menu') private $optionsMenu_?: CrActionMenuElement;
 
   /**
-   * Sets the given value text pairs as the selectable options.
+   * Keeps track of whether we are showing the options menu.
    */
-  setOptions(optionList: XfOption[]) {
-    // Create new options.
-    const newOptions: Node[] = [];
-    for (const option of optionList) {
-      const optionElement = document.createElement('option');
-      optionElement.value = option.value;
-      optionElement.text = option.text;
-      if (option.default) {
-        optionElement.selected = true;
-      }
-      newOptions.push(optionElement);
+  @state() private optionsVisible_: boolean = false;
+
+  /**
+   * The currently selected option.
+   */
+  private selectedOption_: XfSelectedValue = {
+    index: -1,
+    value: '',
+    text: '',
+  };
+
+  static override get styles(): CSSResultGroup {
+    return getCSS();
+  }
+
+  override render() {
+    const selectedIndex = this.computeSelectedIndex_();
+    return html`
+        ${this.renderFilterChip_(selectedIndex)}
+        ${this.renderDropdown_()}
+    `;
+  }
+
+  override click() {
+    if (this.$toggleDropdownButton_) {
+      this.$toggleDropdownButton_.click();
     }
-    // Use new options to replace any children the select element may have.
-    this.getSelect_().replaceChildren(...newOptions);
+  }
+
+  /**
+   * Returns whether the component is expanded, with options visible, or
+   * collapsed.
+   */
+  get expanded(): boolean {
+    return this.optionsVisible_;
+  }
+
+  /**
+   * Returns a template of the chip that shows the currently selected filter
+   * value.
+   */
+  private renderFilterChip_(selectedIndex: number) {
+    const buttonLabel =
+        selectedIndex === -1 ? '' : this.options[selectedIndex]!.text;
+    const iconPart = this.icon ?
+        html`<span id="xf-select-icon" class="xf-select-icon ${
+            this.icon}"></span>` :
+        html``;
+    const labelPart = html`<span id="selected-option">${buttonLabel}</span>`;
+
+    return html`
+      <cr-button id="dropdown-toggle"
+              aria-haspopup="menu"
+              aria-expanded=${this.optionsVisible_}
+              @click=${this.onToggleOptions_}>
+        ${iconPart}${labelPart}<span id="dropdown-icon"></span>
+      </cr-button>`;
+  }
+
+  /**
+   * Returns a template of the dropdown which shows available choices.
+   */
+  private renderDropdown_() {
+    return html`<cr-action-menu>
+        ${this.options.map((option, index) => html`
+          <cr-button
+              class="dropdown-item"
+              role="menuitem"
+              @click=${() => this.onOptionSelected_(index)}
+              ?selected=${this.selectedOption_!.value === option.value}>
+            ${option.text}
+          </cr-button>`)}
+      </cr-action-menu>`;
+  }
+
+  override updated(changedProperties: Map<string, any>) {
+    if (changedProperties.has('value')) {
+      this.updateSelectedOption_(this.computeIndexForValue_(this.value));
+    }
+    if (changedProperties.has('options')) {
+      this.updateSelectedOption_(this.computeSelectedIndex_());
+    }
+  }
+
+  /**
+   * Attempts to find the index of the value among options.
+   */
+  private computeIndexForValue_(value: string|null): number {
+    let selectedIndex = -1;
+    if (value) {
+      selectedIndex = this.options.findIndex(e => e.value === this.value);
+    }
+    return selectedIndex;
+  }
+
+  /**
+   * If the index is within range of option list, updates the selected value to
+   * the one at the given index.
+   */
+  private updateSelectedOption_(index: number) {
+    if (index != this.selectedOption_.index) {
+      if (index >= 0 && index < this.options.length) {
+        this.selectedOption_ = {
+          index: index,
+          value: this.options[index]!.value,
+          text: this.options[index]!.text,
+        };
+        this.dispatchSelectionChanged_();
+      }
+    }
+  }
+
+  /**
+   * Attempts to establish the index of the selected item. The priority is given
+   * the the value attribute. If set, it decides which option is selected. If
+   * not set we pick either the first option, or the option with the default set
+   * to true.
+   */
+  private computeSelectedIndex_(): number {
+    let selectedIndex = this.computeIndexForValue_(this.value);
+    // If we could not match the value, look for the default option.
+    if (selectedIndex === -1) {
+      for (let i = this.options.length - 1; i >= 0; --i) {
+        if (this.options[i]!.default) {
+          selectedIndex = i;
+          break;
+        }
+      }
+    }
+    if (selectedIndex === -1 && this.options.length > 0) {
+      selectedIndex = 0;
+    }
+    this.updateSelectedOption_(selectedIndex);
+    return selectedIndex;
+  }
+
+  /**
+   * Invoked when the toggle button is clicked. Toggles the visibility of the
+   * dropdown options.
+   */
+  private onToggleOptions_(): void {
+    if (this.optionsVisible_) {
+      this.closeOptions_();
+    } else {
+      this.openOptions_();
+    }
+  }
+
+  /**
+   * Opens the dropdown options, providing they were closed.
+   */
+  private openOptions_() {
+    if (!this.optionsVisible_) {
+      const element: HTMLElement = this.$toggleDropdownButton_!;
+      const top = element.offsetTop + element.offsetHeight + 8;
+      this.$optionsMenu_!.showAt(element, {top: top});
+      this.optionsVisible_ = true;
+    }
+  }
+
+  /**
+   * Closes the dropdown options, providing they were open.
+   */
+  private closeOptions_() {
+    if (this.optionsVisible_) {
+      this.$optionsMenu_!.close();
+      this.optionsVisible_ = false;
+    }
+  }
+
+  /**
+   * Reacs to one of the options being selected. If the selection changed the
+   * currently selected option, it updates the value, which prompts
+   * re-rendering. It also posts a selection change event. Finally it always
+   * closes the option, regardless of change.
+   */
+  private onOptionSelected_(index: number) {
+    if (index !== this.selectedOption_.index) {
+      this.updateSelectedOption_(index);
+      this.value = this.selectedOption_.value;
+    }
+    this.closeOptions_();
   }
 
   /**
@@ -103,64 +287,72 @@ export class XfSelect extends HTMLElement {
    * set to -1, and text and value are set to an empty string.
    */
   getSelectedOption(): XfSelectedValue {
-    return this.getSelectedOptionOfSelect_(this.getSelect_());
+    return this.selectedOption_;
   }
 
   /**
-   * Sets the selected value of the xf-select. The |optionValue| should be one
-   * of the values of the options set on the select element. If the value
-   * changes, this element will trigger a new SELECTION_CHANGED event.
+   * Dispatches SELECTION_CHANGED event with the current value of the selected
+   * options.
    */
-  set value(newValue: string) {
-    const select = this.getSelect_();
-    const currentValue = select.value;
-    if (currentValue !== newValue) {
-      select.value = newValue;
-      select.dispatchEvent(new Event('change'));
-    }
-  }
-
-  /**
-   * Extracts the currently selected option for the given select element.
-   */
-  private getSelectedOptionOfSelect_(element: HTMLSelectElement):
-      XfSelectedValue {
-    const index = element.selectedIndex;
-    let value = '';
-    let text = '';
-
-    if (index !== -1) {
-      const option = element.options[index];
-      if (option) {
-        value = option.value;
-        text = option.text;
-      }
-    }
-    return {index, value, text};
-  }
-
-  private getSelect_(): HTMLSelectElement {
-    const element = this.shadowRoot!.querySelector('#select');
-    if (element) {
-      return element as HTMLSelectElement;
-    }
-    throw new Error('Failed to locate the select element');
-  }
-
-  private onSelectionChanged(event: Event): void {
-    this.dispatchEvent(new CustomEvent(SELECTION_CHANGED, {
+  private dispatchSelectionChanged_(): void {
+    this.dispatchEvent(new CustomEvent(XfSelect.events.SELECTION_CHANGED, {
       bubbles: true,
       composed: true,
-      detail:
-          this.getSelectedOptionOfSelect_(event.target as HTMLSelectElement),
+      detail: this.selectedOption_,
     }));
   }
 }
 
 /**
- * The name of the even generated by this widget.
+ * CSS used by the xf-select widget.
  */
-export const SELECTION_CHANGED = 'selection_changed';
+function getCSS(): CSSResultGroup {
+  return css`
+    cr-button {
+      --hover-bg-color: var(--cros-ripple-color);
+      --hover-border-color: var(--cros-button-stroke-color-secondary);
+      --text-color: var(--cros-text-color-secondary);
+      --ink-color: var(--cros-ripple-color);
+    }
+    #dropdown-toggle {
+      --border-color: var(--cros-button-stroke-color-secondary);
+      --cr-button-height: 29px;
+      --ripple-opacity: 100%;
+      border-radius: 20px;
+      margin-inline: 4px;
+      min-width: auto;
+      outline: none;
+      padding: 8px 12px;
+    }
+    .xf-select-icon {
+      height: 20px;
+      width: 20px;
+      margin-inline: 0 8px;
+    }
+    #xf-select-icon.select-location {
+      background:
+        url(/foreground/images/files/ui/select_location.svg) no-repeat;
+    }
+    #xf-select-icon.select-time {
+      background:
+        url(/foreground/images/files/ui/select_time.svg) no-repeat;
+    }
+    #xf-select-icon.select-filetype {
+      background:
+        url(/foreground/images/files/ui/select_filetype.svg) no-repeat;
+    }
+    #dropdown-icon {
+      background:
+        url(/foreground/images/files/ui/xf_select_dropdown.svg) no-repeat;
+      height: 20px;
+      width: 20px;
+      margin-inline: 8px 0;
+    }
+    cr-button.dropdown-item {
+      --focus-shadow-color: none;
+    }
+  `;
+}
 
 /**
  * A custom event that informs the container which option kind change to what
@@ -170,12 +362,10 @@ export type SelectionChangedEvent = CustomEvent<XfSelectedValue>;
 
 declare global {
   interface HTMLElementEventMap {
-    [SELECTION_CHANGED]: SelectionChangedEvent;
+    [XfSelect.events.SELECTION_CHANGED]: SelectionChangedEvent;
   }
 
   interface HTMLElementTagNameMap {
     'xf-select': XfSelect;
   }
 }
-
-customElements.define('xf-select', XfSelect);
