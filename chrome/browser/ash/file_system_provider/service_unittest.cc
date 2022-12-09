@@ -59,22 +59,22 @@ const char kFileSystemId[] = "camera/pictures/id .!@#$%^&*()_+";
 // TODO(mtomasz): Use the extension builder.
 scoped_refptr<extensions::Extension> CreateFakeExtension(
     const extensions::ExtensionId& extension_id) {
-  base::DictionaryValue manifest;
+  base::Value::Dict manifest;
   std::string error;
-  manifest.SetKey(extensions::manifest_keys::kVersion, base::Value("1.0.0.0"));
-  manifest.SetKey(extensions::manifest_keys::kManifestVersion, base::Value(2));
-  manifest.SetKey(extensions::manifest_keys::kName, base::Value("unused"));
+  manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0");
+  manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.Set(extensions::manifest_keys::kName, "unused");
 
-  base::ListValue permissions_list;
+  base::Value::List permissions_list;
   permissions_list.Append("fileSystemProvider");
-  manifest.SetKey(extensions::manifest_keys::kPermissions,
-                  std::move(permissions_list));
+  manifest.Set(extensions::manifest_keys::kPermissions,
+               std::move(permissions_list));
 
-  base::DictionaryValue capabilities;
-  capabilities.SetStringKey("source", "network");
-  capabilities.SetBoolKey("watchable", true);
-  manifest.SetKey(extensions::manifest_keys::kFileSystemProviderCapabilities,
-                  std::move(capabilities));
+  base::Value::Dict capabilities;
+  capabilities.Set("source", "network");
+  capabilities.Set("watchable", true);
+  manifest.Set(extensions::manifest_keys::kFileSystemProviderCapabilities,
+               std::move(capabilities));
 
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(

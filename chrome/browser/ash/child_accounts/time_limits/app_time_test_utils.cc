@@ -40,11 +40,11 @@ scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& name,
     const std::string& url,
     bool is_bookmark_app) {
-  base::Value manifest(base::Value::Type::DICTIONARY);
-  manifest.SetStringPath(extensions::manifest_keys::kName, name);
-  manifest.SetStringPath(extensions::manifest_keys::kVersion, "1");
-  manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.SetStringPath(extensions::manifest_keys::kLaunchWebURL, url);
+  base::Value::Dict manifest;
+  manifest.Set(extensions::manifest_keys::kName, name);
+  manifest.Set(extensions::manifest_keys::kVersion, "1");
+  manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL, url);
 
   std::string error;
   extensions::Extension::InitFromValueFlags flags =
@@ -53,8 +53,7 @@ scoped_refptr<extensions::Extension> CreateExtension(
   scoped_refptr<extensions::Extension> extension =
       extensions::Extension::Create(
           base::FilePath(), extensions::mojom::ManifestLocation::kUnpacked,
-          static_cast<base::DictionaryValue&>(manifest), flags, extension_id,
-          &error);
+          manifest, flags, extension_id, &error);
   return extension;
 }
 

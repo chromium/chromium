@@ -27,53 +27,49 @@ namespace {
 scoped_refptr<const extensions::Extension> CreateExtensionFromValues(
     const std::string& id,
     ManifestLocation location,
-    base::DictionaryValue* values,
+    base::Value::Dict& values,
     int flags) {
-  values->SetStringKey(extensions::manifest_keys::kName, "test");
-  values->SetStringKey(extensions::manifest_keys::kVersion, "0.1");
-  values->SetIntKey(extensions::manifest_keys::kManifestVersion, 2);
+  values.Set(extensions::manifest_keys::kName, "test");
+  values.Set(extensions::manifest_keys::kVersion, "0.1");
+  values.Set(extensions::manifest_keys::kManifestVersion, 2);
   std::string error;
-  return extensions::Extension::Create(base::FilePath(),
-                                       location,
-                                       *values,
-                                       flags,
-                                       id,
-                                       &error);
+  return extensions::Extension::Create(base::FilePath(), location, values,
+                                       flags, id, &error);
 }
 
 scoped_refptr<const extensions::Extension> CreateRegularExtension(
     const std::string& id) {
-  base::DictionaryValue values;
-  return CreateExtensionFromValues(id, ManifestLocation::kInternal, &values,
+  base::Value::Dict values;
+  return CreateExtensionFromValues(id, ManifestLocation::kInternal, values,
                                    extensions::Extension::NO_FLAGS);
 }
 
 scoped_refptr<const extensions::Extension> CreateExternalComponentExtension() {
-  base::DictionaryValue values;
+  base::Value::Dict values;
   return CreateExtensionFromValues(std::string(),
-                                   ManifestLocation::kExternalComponent,
-                                   &values, extensions::Extension::NO_FLAGS);
+                                   ManifestLocation::kExternalComponent, values,
+                                   extensions::Extension::NO_FLAGS);
 }
 
 scoped_refptr<const extensions::Extension> CreateComponentExtension() {
-  base::DictionaryValue values;
+  base::Value::Dict values;
   return CreateExtensionFromValues(std::string(), ManifestLocation::kComponent,
-                                   &values, extensions::Extension::NO_FLAGS);
+                                   values, extensions::Extension::NO_FLAGS);
 }
 
 scoped_refptr<const extensions::Extension> CreatePlatformAppWithExtraValues(
-    const base::DictionaryValue* extra_values,
+    const base::Value::Dict& extra_values,
     ManifestLocation location,
     int flags) {
-  base::DictionaryValue values;
-  values.SetStringPath("app.background.page", "background.html");
-  values.MergeDictionary(extra_values);
-  return CreateExtensionFromValues(std::string(), location, &values, flags);
+  base::Value::Dict values;
+  values.SetByDottedPath("app.background.page", "background.html");
+  values.Merge(extra_values.Clone());
+  return CreateExtensionFromValues(std::string(), location, values, flags);
 }
 
 scoped_refptr<const extensions::Extension> CreatePlatformApp() {
-  base::DictionaryValue values;
-  return CreatePlatformAppWithExtraValues(&values, ManifestLocation::kInternal,
+  base::Value::Dict values;
+  return CreatePlatformAppWithExtraValues(values, ManifestLocation::kInternal,
                                           extensions::Extension::NO_FLAGS);
 }
 
@@ -113,9 +109,9 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a minimal platform app can be installed from location
   // EXTERNAL_POLICY.
   {
-    base::DictionaryValue values;
+    base::Value::Dict values;
     extension = CreatePlatformAppWithExtraValues(
-        &values, ManifestLocation::kExternalPolicy,
+        values, ManifestLocation::kExternalPolicy,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -127,9 +123,9 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a minimal platform app can be installed from location
   // EXTERNAL_POLICY_DOWNLOAD.
   {
-    base::DictionaryValue values;
+    base::Value::Dict values;
     extension = CreatePlatformAppWithExtraValues(
-        &values, ManifestLocation::kExternalPolicyDownload,
+        values, ManifestLocation::kExternalPolicyDownload,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -141,9 +137,9 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a minimal platform app cannot be installed from location
   // UNPACKED.
   {
-    base::DictionaryValue values;
+    base::Value::Dict values;
     extension = CreatePlatformAppWithExtraValues(
-        &values, ManifestLocation::kUnpacked, extensions::Extension::NO_FLAGS);
+        values, ManifestLocation::kUnpacked, extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
     EXPECT_FALSE(provider.UserMayLoad(extension.get(), &error));
@@ -153,22 +149,20 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
 
   // Verify that a platform app with all safe manifest entries can be installed.
   {
-    base::DictionaryValue values;
-    values.SetStringKey(extensions::manifest_keys::kDescription, "something");
-    values.SetStringKey(extensions::manifest_keys::kShortName,
-                        "something else");
-    base::ListValue permissions;
+    base::Value::Dict values;
+    values.Set(extensions::manifest_keys::kDescription, "something");
+    values.Set(extensions::manifest_keys::kShortName, "something else");
+    base::Value::List permissions;
     permissions.Append("alarms");
     permissions.Append("background");
-    values.SetKey(extensions::manifest_keys::kPermissions,
-                  std::move(permissions));
-    base::ListValue optional_permissions;
+    values.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
+    base::Value::List optional_permissions;
     optional_permissions.Append("alarms");
     optional_permissions.Append("background");
-    values.SetKey(extensions::manifest_keys::kOptionalPermissions,
-                  std::move(optional_permissions));
+    values.Set(extensions::manifest_keys::kOptionalPermissions,
+               std::move(optional_permissions));
     extension = CreatePlatformAppWithExtraValues(
-        &values, ManifestLocation::kExternalPolicy,
+        values, ManifestLocation::kExternalPolicy,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -180,10 +174,10 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a platform app with a safe manifest entry under "app" can be
   // installed.
   {
-    base::DictionaryValue values;
-    values.SetStringPath("app.content_security_policy", "something2");
+    base::Value::Dict values;
+    values.SetByDottedPath("app.content_security_policy", "something2");
     extension = CreatePlatformAppWithExtraValues(
-        &values, ManifestLocation::kExternalPolicy,
+        values, ManifestLocation::kExternalPolicy,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -195,12 +189,13 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a hosted app with a safe manifest entry under "app" can be
   // installed.
   {
-    base::DictionaryValue values;
-    values.SetKey(extensions::manifest_keys::kApp, base::DictionaryValue());
-    values.SetPath(extensions::manifest_keys::kWebURLs, base::ListValue());
-    values.SetStringPath("app.content_security_policy", "something2");
+    base::Value::Dict values;
+    values.Set(extensions::manifest_keys::kApp, base::Value::Dict());
+    values.SetByDottedPath(extensions::manifest_keys::kWebURLs,
+                           base::Value::List());
+    values.SetByDottedPath("app.content_security_policy", "something2");
     extension = CreateExtensionFromValues(
-        std::string(), ManifestLocation::kExternalPolicy, &values,
+        std::string(), ManifestLocation::kExternalPolicy, values,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -212,14 +207,15 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a platform app with a url_handlers manifest entry and which is
   // installed through the web store can be installed.
   {
-    base::ListValue matches;
+    base::Value::List matches;
     matches.Append("https://example.com/*");
-    base::DictionaryValue values;
-    values.SetPath("url_handlers.example_com.matches", std::move(matches));
-    values.SetStringPath("url_handlers.example_com.title", "example title");
+    base::Value::Dict values;
+    values.SetByDottedPath("url_handlers.example_com.matches",
+                           std::move(matches));
+    values.SetByDottedPath("url_handlers.example_com.title", "example title");
 
     extension = CreatePlatformAppWithExtraValues(
-        &values, ManifestLocation::kExternalPolicy,
+        values, ManifestLocation::kExternalPolicy,
         extensions::Extension::FROM_WEBSTORE);
     ASSERT_TRUE(extension);
 
@@ -230,16 +226,15 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
 
   // Verify that a platform app with remote URL permissions can be installed.
   {
-    base::ListValue permissions;
+    base::Value::List permissions;
     permissions.Append("https://example.com/");
     permissions.Append("http://example.com/");
     permissions.Append("ftp://example.com/");
-    base::DictionaryValue values;
-    values.SetKey(extensions::manifest_keys::kPermissions,
-                  std::move(permissions));
+    base::Value::Dict values;
+    values.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
 
     extension = CreatePlatformAppWithExtraValues(
-        &values, ManifestLocation::kExternalPolicy,
+        values, ManifestLocation::kExternalPolicy,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -257,12 +252,11 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     socket.Set("socket", std::move(tcp_list));
     base::Value::List permissions;
     permissions.Append(std::move(socket));
-    base::DictionaryValue values;
-    values.SetKey(extensions::manifest_keys::kPermissions,
-                  base::Value(std::move(permissions)));
+    base::Value::Dict values;
+    values.Set(extensions::manifest_keys::kPermissions, std::move(permissions));
 
     extension = CreatePlatformAppWithExtraValues(
-        &values, ManifestLocation::kExternalPolicy,
+        values, ManifestLocation::kExternalPolicy,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -273,9 +267,9 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
 
   // Verify that an extension can be installed.
   {
-    base::DictionaryValue values;
+    base::Value::Dict values;
     extension = CreateExtensionFromValues(
-        std::string(), ManifestLocation::kExternalPolicy, &values,
+        std::string(), ManifestLocation::kExternalPolicy, values,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -286,10 +280,10 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
 
   // Verify that a shared_module can be installed.
   {
-    base::DictionaryValue values;
-    values.SetPath("export.whitelist", base::ListValue());  // nocheck
+    base::Value::Dict values;
+    values.SetByDottedPath("export.whitelist", base::Value::List());  // nocheck
     extension = CreateExtensionFromValues(
-        std::string(), ManifestLocation::kExternalPolicy, &values,
+        std::string(), ManifestLocation::kExternalPolicy, values,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
@@ -300,10 +294,10 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
 
   // Verify that a theme can be installed.
   {
-    base::DictionaryValue values;
-    values.SetKey("theme", base::DictionaryValue());
+    base::Value::Dict values;
+    values.Set("theme", base::Value::Dict());
     extension = CreateExtensionFromValues(
-        std::string(), ManifestLocation::kExternalPolicy, &values,
+        std::string(), ManifestLocation::kExternalPolicy, values,
         extensions::Extension::NO_FLAGS);
     ASSERT_TRUE(extension);
 
