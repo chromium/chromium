@@ -1185,12 +1185,8 @@ int RenderViewContextMenu::GetRegionSearchIdc() const {
 std::u16string RenderViewContextMenu::GetImageSearchProviderName(
     const TemplateURL* provider) const {
   if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
-    // Check if string should use `Google Lens` as visual search provider or
-    // `Google`.
-    if (!base::FeatureList::IsEnabled(lens::features::kLensStandalone) ||
-        lens::features::UseGoogleAsVisualSearchProvider()) {
-      return provider->short_name();
-    }
+    // The image search branding label should always be 'Google'.
+    return provider->short_name();
   }
   // image_search_branding_label() returns the provider short name if no
   // image_search_branding_label is set.
@@ -2207,15 +2203,8 @@ void RenderViewContextMenu::AppendClickToCallItem() {
 void RenderViewContextMenu::AppendRegionSearchItem() {
   int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
 
-  if (lens::features::UseRegionSearchMenuItemAltText1()) {
-    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
-  } else if (lens::features::UseRegionSearchMenuItemAltText2()) {
-    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2;
-  } else if (lens::features::UseRegionSearchMenuItemAltText3()) {
-    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3;
-  } else if (lens::features::IsLensFullscreenSearchEnabled()) {
-    // Default text for fullscreen search when enabled. This is the same string
-    // as the third alternative text option.
+  if (lens::features::IsLensFullscreenSearchEnabled()) {
+    // Default text for fullscreen search when enabled.
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
   }
 

@@ -790,12 +790,6 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="The name of the Lens Region Search command in the content area context menu">
             Search page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
-          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2" desc="The name of the Lens Region Search command in the content area context menu">
-            Search any part of the page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3" desc="The name of the Lens Region Search command in the content area context menu">
-            Search inside image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
-          </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH" desc="The name of the Lens Region Search command in the content area context menu">
             Search images with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
@@ -1058,12 +1052,6 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
             Search Page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google</ex></ph>
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
-            Search Any Part of the Page with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
-          </message>
-          <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
-              Search inside Image with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH" desc="In Title Case: The name of the Lens Region Search command in the content area context menu">
             Search Images with <ph name="VISUAL_SEARCH_PROVIDER">$1<ex>Google Lens</ex></ph>

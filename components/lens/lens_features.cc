@@ -20,7 +20,7 @@ BASE_FEATURE(kLensImageCompression,
 
 BASE_FEATURE(kLensSearchOptimizations,
              "LensSearchOptimizations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchImageInScreenshotSharing,
              "LensSearchImageInScreenshotSharing",
@@ -74,18 +74,6 @@ constexpr base::FeatureParam<int> kMaxAreaForRegionSearch{
 constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
     &kLensImageCompression, "dimensions-max-pixels", 1000};
 
-const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider{
-    &kLensSearchOptimizations, "use-google-as-visual-search-provider", true};
-
-const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1{
-    &kLensSearchOptimizations, "use-menu-item-alt-text-1", false};
-
-const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2{
-    &kLensSearchOptimizations, "use-menu-item-alt-text-2", false};
-
-const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3{
-    &kLensSearchOptimizations, "use-menu-item-alt-text-3", false};
-
 const base::FeatureParam<bool> kUseSidePanelForScreenshotSharing{
     &kLensSearchImageInScreenshotSharing,
     "use-side-panel-for-screenshot-sharing", false};
@@ -94,7 +82,7 @@ const base::FeatureParam<bool> kEnablePersistentBubble{
     &kLensSearchImageInScreenshotSharing, "enable-persistent-bubble", false};
 
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
-    &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
+    &kLensSearchOptimizations, "enable-lens-fullscreen-search", true};
 
 const base::FeatureParam<bool> kUseWebpInImageSearch{
     &kLensImageFormatOptimizations, "use-webp-image-search", true};
@@ -146,30 +134,6 @@ bool GetEnableLensHtmlRedirectFix() {
 
 bool GetEnableImageSearchUnifiedSidePanelFor3PDse() {
   return base::FeatureList::IsEnabled(kEnableImageSearchSidePanelFor3PDse);
-}
-
-bool UseRegionSearchMenuItemAltText1() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
-         kRegionSearchUseMenuItemAltText1.Get();
-}
-
-bool UseRegionSearchMenuItemAltText2() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
-         kRegionSearchUseMenuItemAltText2.Get();
-}
-
-bool UseRegionSearchMenuItemAltText3() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
-         kRegionSearchUseMenuItemAltText3.Get();
-}
-
-bool UseGoogleAsVisualSearchProvider() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
-         kUseGoogleAsVisualSearchProvider.Get();
 }
 
 bool IsLensFullscreenSearchEnabled() {
