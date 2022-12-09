@@ -16,6 +16,7 @@
     "@types/w3c-css-typed-object-model-level-1": "20180410.0.4",
     "@types/w3c-image-capture": "1.0.4",
     "@types/webrtc": "0.0.31",
+    "@types/wicg-file-system-access": "2020.09.05",
     "@typescript-eslint/eslint-plugin": "5.12.0",
     "@typescript-eslint/parser": "5.12.0",
     "babel-eslint": "10.0.2",
