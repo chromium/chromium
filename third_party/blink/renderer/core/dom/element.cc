@@ -140,6 +140,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -8256,14 +8257,23 @@ void Element::DecrementAnchoredPopoverCount() {
   EnsureElementRareData().DecrementAnchoredPopoverCount();
 }
 bool Element::HasAnchoredPopover() const {
-  return HasRareData() && GetElementRareData()->HasAnchoredPopover();
+  return (HasRareData() && GetElementRareData()->HasAnchoredPopover()) ||
+         IsA<HTMLSelectMenuElement>(this);
 }
 
 Element* Element::ImplicitAnchorElement() const {
   if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled())
     return nullptr;
-  if (const HTMLElement* html_element = DynamicTo<HTMLElement>(this))
-    return html_element->anchorElement();
+  const HTMLElement* html_element = DynamicTo<HTMLElement>(this);
+  if (!html_element) {
+    return nullptr;
+  }
+  if (Element* anchor = html_element->anchorElement()) {
+    return anchor;
+  }
+  if (Element* select_menu = html_element->ownerSelectMenuElement()) {
+    return select_menu;
+  }
   return nullptr;
 }
 

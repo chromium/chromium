@@ -601,6 +601,7 @@
       // Allows positioning a positioned element relative to another one.
       // https://drafts.csswg.org/css-anchor-1/
       name: "CSSAnchorPositioning",
+      implied_by: ["HTMLSelectMenuElement"],
       status: "experimental",
     },
     {

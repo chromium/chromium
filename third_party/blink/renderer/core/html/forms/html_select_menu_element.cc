@@ -342,7 +342,6 @@ bool HTMLSelectMenuElement::open() const {
 
 void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
-    listbox_part_->SetNeedsRepositioningForSelectMenu(true);
     listbox_part_->showPopover(ASSERT_NO_EXCEPTION);
     if (selectedOption()) {
       selectedOption()->Focus();
@@ -373,7 +372,6 @@ bool HTMLSelectMenuElement::SetListboxPart(HTMLElement* new_listbox_part) {
 
   if (listbox_part_) {
     listbox_part_->SetOwnerSelectMenuElement(nullptr);
-    listbox_part_->SetNeedsRepositioningForSelectMenu(false);
   }
 
   if (new_listbox_part) {

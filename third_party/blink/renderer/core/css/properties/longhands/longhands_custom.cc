@@ -185,8 +185,9 @@ const CSSValue* AnchorScroll::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   if (!style.AnchorScroll())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
-  if (style.AnchorScroll()->IsImplicit())
+  if (style.AnchorScroll()->IsImplicit()) {
     return CSSIdentifierValue::Create(CSSValueID::kImplicit);
+  }
   return MakeGarbageCollected<CSSCustomIdentValue>(
       style.AnchorScroll()->GetName().GetName());
 }
@@ -5949,7 +5950,17 @@ const CSSValue* PositionFallback::ParseSingleValue(
           css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(range)) {
     return value;
   }
-  return css_parsing_utils::ConsumeDashedIdent(range, context);
+  if (CSSValue* value = css_parsing_utils::ConsumeDashedIdent(range, context)) {
+    return value;
+  }
+  if (context.Mode() == kUASheetMode) {
+    CSSCustomIdentValue* value =
+        css_parsing_utils::ConsumeCustomIdent(range, context);
+    if (value && value->Value().StartsWith("-internal-")) {
+      return value;
+    }
+  }
+  return nullptr;
 }
 const CSSValue* PositionFallback::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,

@@ -247,12 +247,8 @@ class CORE_EXPORT HTMLElement : public Element {
                                    HidePopoverFocusBehavior,
                                    HidePopoverForcingLevel);
 
-  // TODO(crbug.com/1197720): The popover position should be provided by the new
-  // anchored positioning scheme.
-  void SetNeedsRepositioningForSelectMenu(bool flag);
   void SetOwnerSelectMenuElement(HTMLSelectMenuElement* element);
-  scoped_refptr<ComputedStyle> StyleForSelectMenuPopoverstyle(
-      const StyleRecalcContext&);
+  HTMLSelectMenuElement* ownerSelectMenuElement() const;
 
   bool DispatchFocusEvent(
       Element* old_focused_element,
@@ -300,9 +296,6 @@ class CORE_EXPORT HTMLElement : public Element {
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
   unsigned ParseBorderWidthAttribute(const AtomicString&) const;
-
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
-      const StyleRecalcContext&) override;
 
   void ChildrenChanged(const ChildrenChange&) override;
   bool CalculateAndAdjustAutoDirectionality(Node* stay_within);

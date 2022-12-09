@@ -1508,7 +1508,6 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   }
 
   GetPopoverData()->setInvoker(nullptr);
-  GetPopoverData()->setNeedsRepositioningForSelectMenu(false);
 
   // Fire the "closing" beforetoggle event.
   auto* event = BeforeToggleEvent::CreateBubble(
@@ -1901,23 +1900,6 @@ void HTMLElement::PopoverAnchorElementChanged() {
   }
 }
 
-void HTMLElement::SetNeedsRepositioningForSelectMenu(bool flag) {
-  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-      GetDocument().GetExecutionContext()));
-  DCHECK(HasPopoverAttribute());
-  auto* popover_data = GetPopoverData();
-  if (popover_data->needsRepositioningForSelectMenu() == flag)
-    return;
-  popover_data->setNeedsRepositioningForSelectMenu(flag);
-  if (flag) {
-    SetHasCustomStyleCallbacks();
-    SetNeedsStyleRecalc(kLocalStyleChange,
-                        StyleChangeReasonForTracing::Create(
-                            style_change_reason::kPopoverVisibilityChange));
-  }
-}
-
 void HTMLElement::SetOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
   DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
   DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
@@ -1926,91 +1908,9 @@ void HTMLElement::SetOwnerSelectMenuElement(HTMLSelectMenuElement* element) {
   GetPopoverData()->setOwnerSelectMenuElement(element);
 }
 
-// TODO(crbug.com/1197720): The popover position should be provided by the new
-// anchored positioning scheme.
-scoped_refptr<ComputedStyle> HTMLElement::StyleForSelectMenuPopoverstyle(
-    const StyleRecalcContext& style_recalc_context) {
-  DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-  DCHECK(HasPopoverAttribute());
-  DCHECK(GetPopoverData()->needsRepositioningForSelectMenu());
-  auto* owner_select = GetPopoverData()->ownerSelectMenuElement();
-  DCHECK(owner_select);
-
-  scoped_refptr<ComputedStyle> original_style =
-      OriginalStyleForLayoutObject(style_recalc_context);
-
-  LocalDOMWindow* window = GetDocument().domWindow();
-  if (!window)
-    return original_style;
-
-  ComputedStyleBuilder style_builder(*original_style);
-
-  gfx::RectF anchor_rect_in_screen =
-      owner_select->GetBoundingClientRectNoLifecycleUpdate();
-  const float anchor_zoom =
-      owner_select->GetLayoutObject()
-          ? owner_select->GetLayoutObject()->StyleRef().EffectiveZoom()
-          : 1;
-  anchor_rect_in_screen.Scale(anchor_zoom);
-  // Don't use the LocalDOMWindow innerHeight/innerWidth getters, as those can
-  // trigger a re-entrant style and layout update.
-  int avail_width = GetDocument().View()->Size().width();
-  int avail_height = GetDocument().View()->Size().height();
-  gfx::Rect avail_rect = gfx::Rect(0, 0, avail_width, avail_height);
-
-  // Remove any margins on the listbox part, so we can position it correctly.
-  style_builder.SetMarginTop(Length::Fixed(0));
-  style_builder.SetMarginLeft(Length::Fixed(0));
-  style_builder.SetMarginRight(Length::Fixed(0));
-  style_builder.SetMarginBottom(Length::Fixed(0));
-
-  // Position the listbox part where is more space available.
-  const float available_space_above =
-      anchor_rect_in_screen.y() - avail_rect.y();
-  const float available_space_below =
-      avail_rect.bottom() - anchor_rect_in_screen.bottom();
-  if (available_space_below < available_space_above) {
-    style_builder.SetMaxHeight(Length::Fixed(available_space_above));
-    style_builder.SetBottom(
-        Length::Fixed(avail_rect.bottom() - anchor_rect_in_screen.y()));
-    style_builder.SetTop(Length::Auto());
-  } else {
-    style_builder.SetMaxHeight(Length::Fixed(available_space_below));
-    style_builder.SetTop(Length::Fixed(anchor_rect_in_screen.bottom()));
-  }
-
-  const float available_space_if_left_anchored =
-      avail_rect.right() - anchor_rect_in_screen.x();
-  const float available_space_if_right_anchored =
-      anchor_rect_in_screen.right() - avail_rect.x();
-  style_builder.SetMinWidth(Length::Fixed(anchor_rect_in_screen.width()));
-  if (available_space_if_left_anchored > anchor_rect_in_screen.width() ||
-      available_space_if_left_anchored > available_space_if_right_anchored) {
-    style_builder.SetLeft(Length::Fixed(anchor_rect_in_screen.x()));
-    style_builder.SetMaxWidth(Length::Fixed(available_space_if_left_anchored));
-  } else {
-    style_builder.SetRight(
-        Length::Fixed(avail_rect.right() - anchor_rect_in_screen.right()));
-    style_builder.SetLeft(Length::Auto());
-    style_builder.SetMaxWidth(Length::Fixed(available_space_if_right_anchored));
-  }
-
-  return style_builder.TakeStyle();
-}
-
-scoped_refptr<ComputedStyle> HTMLElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
-  DCHECK(HasCustomStyleCallbacks());
-  // TODO(crbug.com/1197720): This logic is for positioning the selectmenu
-  // popover. This should be replaced by the new anchored positioning scheme.
-  if (HasPopoverAttribute() &&
-      GetPopoverData()->needsRepositioningForSelectMenu()) {
-    DCHECK(RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled());
-    DCHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
-        GetDocument().GetExecutionContext()));
-    return StyleForSelectMenuPopoverstyle(style_recalc_context);
-  }
-  return Element::CustomStyleForLayoutObject(style_recalc_context);
+HTMLSelectMenuElement* HTMLElement::ownerSelectMenuElement() const {
+  return GetPopoverData() ? GetPopoverData()->ownerSelectMenuElement()
+                          : nullptr;
 }
 
 bool HTMLElement::DispatchFocusEvent(

@@ -62,13 +62,6 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   Element* invoker() const { return invoker_; }
   void setInvoker(Element* element) { invoker_ = element; }
 
-  void setNeedsRepositioningForSelectMenu(bool flag) {
-    needs_repositioning_for_select_menu_ = flag;
-  }
-  bool needsRepositioningForSelectMenu() {
-    return needs_repositioning_for_select_menu_;
-  }
-
   Element* previouslyFocusedElement() const {
     return previously_focused_element_;
   }
@@ -128,9 +121,6 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   Member<Element> anchor_element_;
   Member<PopoverAnchorObserver> anchor_observer_;
 
-  // TODO(crbug.com/1197720): The popover position should be provided by the new
-  // anchored positioning scheme.
-  bool needs_repositioning_for_select_menu_ = false;
   WeakMember<HTMLSelectMenuElement> owner_select_menu_element_;
 };
 

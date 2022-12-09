@@ -1559,11 +1559,14 @@ StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
   if (!prelude.AtEnd())
     return nullptr;
 
-  String name;  // <dashed-ident>
+  // <dashed-ident>, and -internal-* for UA sheets only.
+  String name;
   if (name_token.GetType() == kIdentToken) {
     name = name_token.Value().ToString();
-    if (!name.StartsWith("--"))
+    if (!name.StartsWith("--") &&
+        !(context_->Mode() == kUASheetMode && name.StartsWith("-internal-"))) {
       return nullptr;
+    }
   } else {
     return nullptr;
   }

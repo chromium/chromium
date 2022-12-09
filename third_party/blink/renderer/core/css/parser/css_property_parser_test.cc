@@ -824,7 +824,8 @@ TEST(CSSPropertyParserTest, ParseRevertLayer) {
 
 // anchor() and anchor-size() shouldn't parse when the feature is disabled.
 TEST(CSSPropertyParserTest, AnchorPositioningDisabled) {
-  ScopedCSSAnchorPositioningForTest disabled_scope(false);
+  ScopedHTMLSelectMenuElementForTest select_menu_disabled(false);
+  ScopedCSSAnchorPositioningForTest anchor_positioning_disabled(false);
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
