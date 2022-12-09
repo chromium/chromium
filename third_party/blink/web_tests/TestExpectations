@@ -209,6 +209,12 @@ crbug.com/881555 external/wpt/css/css-position/sticky/position-sticky-fixed-ance
 crbug.com/1383735 http/tests/devtools/elements/styles-1/add-new-rule-inline-style-csp.js [ Failure Pass ]
 crbug.com/1383735 http/tests/devtools/modify-cross-domain-rule.js [ Failure Pass ]
 
+# ====== Popover and Anchor Positioning failures from here ======
+
+crbug.com/1307772 external/wpt/html/semantics/popovers/popover-attribute-basic.tentative.html [ Failure Pass Crash ]
+
+# ====== Popover and Anchor Positioning failures to here ======
+
 # Sheriff on 2020-09-03
 crbug.com/1124352 media/picture-in-picture/clear-after-request.html [ Crash Pass ]
 crbug.com/1124352 media/picture-in-picture/controls/picture-in-picture-button.html [ Crash Pass ]
@@ -1194,6 +1200,7 @@ crbug.com/1179497 external/wpt/css/css-tables/col-definite-max-size-001.html [ F
 crbug.com/1179497 external/wpt/css/css-tables/col-definite-min-size-001.html [ Failure ]
 crbug.com/1179497 external/wpt/css/css-tables/col-definite-size-001.html [ Failure ]
 crbug.com/910725 external/wpt/css/css-tables/tentative/paint/overflow-hidden-table.html [ Failure ]
+crbug.com/1395226 external/wpt/css/css-tables/html5-table-formatting-3.html [ Failure ]
 
 # [css-contain]
 
@@ -1606,6 +1613,7 @@ crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/fractions/frac-1.
 # Tests failing only on certain platforms.
 crbug.com/6606 [ Win ] external/wpt/mathml/presentation-markup/operators/mo-axis-height-1.html [ Failure ]
 crbug.com/6606 [ Mac ] external/wpt/mathml/relations/text-and-math/use-typo-metrics-1.html [ Failure ]
+crbug.com/1395443 [ Win ] external/wpt/mathml/presentation-markup/mrow/inferred-mrow-stretchy.html [ Pass Crash ]
 
 # Additonal presentation-markup failures
 crbug.com/6606 external/wpt/mathml/presentation-markup/operators/mo-lspace-rspace-2.html [ Failure ]
