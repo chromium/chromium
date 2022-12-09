@@ -101,32 +101,31 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
       return "Only one navigator.credentials.get request may be outstanding at "
              "one time.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound: {
-      return "The provider's FedCM manifest list file cannot be found.";
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound: {
+      return "The provider's FedCM well-known file cannot be found.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse: {
-      return "The provider's FedCM manifest list file fetch resulted in an "
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse: {
+      return "The provider's FedCM well-known file fetch resulted in an "
              "error response code.";
     }
-    case FederatedAuthRequestResult::
-        kErrorFetchingManifestListInvalidResponse: {
-      return "Provider's FedCM manifest list file is invalid.";
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse: {
+      return "Provider's FedCM well-known file is invalid.";
     }
-    case FederatedAuthRequestResult::kErrorManifestNotInManifestList: {
-      return "Provider's FedCM manifest not listed in its manifest list.";
+    case FederatedAuthRequestResult::kErrorConfigNotInWellKnown: {
+      return "Provider's FedCM config file not listed in its well-known file.";
     }
-    case FederatedAuthRequestResult::kErrorManifestListTooBig: {
-      return "Provider's FedCM manifest list contains too many providers.";
+    case FederatedAuthRequestResult::kErrorWellKnownTooBig: {
+      return "Provider's FedCM well-known file contains too many config URLs.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound: {
-      return "The provider's FedCM manifest configuration cannot be found.";
+    case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound: {
+      return "The provider's FedCM config file cannot be found.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse: {
-      return "The provider's FedCM manifest configuration fetch resulted in an "
+    case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse: {
+      return "The provider's FedCM config file fetch resulted in an "
              "error response code.";
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse: {
-      return "Provider's FedCM manifest configuration is invalid.";
+    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse: {
+      return "Provider's FedCM config file is invalid.";
     }
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound: {
       return "The provider's client metadata endpoint cannot be found.";
@@ -193,14 +192,14 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     }
     case FederatedAuthRequestResult::kShouldEmbargo:
     case FederatedAuthRequestResult::kErrorDisabledInSettings:
-    case FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingManifestListInvalidResponse:
-    case FederatedAuthRequestResult::kErrorManifestNotInManifestList:
-    case FederatedAuthRequestResult::kErrorManifestListTooBig:
-    case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse:
+    case FederatedAuthRequestResult::kErrorConfigNotInWellKnown:
+    case FederatedAuthRequestResult::kErrorWellKnownTooBig:
+    case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse:
+    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse:
     case FederatedAuthRequestResult::
@@ -245,10 +244,10 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
     case FederatedAuthRequestResult::kErrorRpPageNotVisible: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kUserFailure;
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse:
-    case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound:
-    case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse:
+    case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound:
+    case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse:
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound:
@@ -258,12 +257,12 @@ FederatedAuthRequestResultToMetricsEndpointErrorCode(
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
           kIdpServerUnavailable;
     }
-    case FederatedAuthRequestResult::kErrorManifestNotInManifestList:
-    case FederatedAuthRequestResult::kErrorManifestListTooBig: {
+    case FederatedAuthRequestResult::kErrorConfigNotInWellKnown:
+    case FederatedAuthRequestResult::kErrorWellKnownTooBig: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::kManifestError;
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestListInvalidResponse:
-    case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse:
+    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse:
     case FederatedAuthRequestResult::
         kErrorFetchingClientMetadataInvalidResponse: {
       return IdpNetworkRequestManager::MetricsEndpointErrorCode::
@@ -284,8 +283,8 @@ base::TimeDelta GetRandomRejectionTime() {
 std::string FormatUrlForDisplay(const GURL& url) {
   // We do not use url_formatter::FormatUrlForSecurityDisplay() directly because
   // our UI intentionally shows only the eTLD+1, as it makes for a shorter text
-  // that is also clearer to users. The identity provider's root manifest is in
-  // the root of the eTLD+1, and sign-in status within identity provider and
+  // that is also clearer to users. The identity provider's well-known file is
+  // in the root of the eTLD+1, and sign-in status within identity provider and
   // relying party can be domain-wide because it relies on cookies.
   std::string formatted_url_str =
       net::IsLocalhost(url)

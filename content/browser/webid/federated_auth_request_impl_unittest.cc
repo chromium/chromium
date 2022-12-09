@@ -122,7 +122,7 @@ static const std::initializer_list<IdentityRequestAccount> kMultipleAccounts{
         LoginState::kSignUp         // login_state
     }};
 
-static const std::set<std::string> kManifestList{kProviderUrlFull};
+static const std::set<std::string> kWellKnown{kProviderUrlFull};
 
 struct IdentityProviderParameters {
   const char* provider;
@@ -183,11 +183,11 @@ struct MockClientIdConfiguration {
   const char* terms_of_service_url;
 };
 
-struct MockManifestList {
+struct MockWellKnown {
   std::set<std::string> provider_urls;
 };
 
-struct MockManifest {
+struct MockConfig {
   FetchStatus fetch_status;
   const char* accounts_endpoint;
   const char* token_endpoint;
@@ -196,8 +196,8 @@ struct MockManifest {
 };
 
 struct MockIdpInfo {
-  MockManifestList manifest_list;
-  MockManifest manifest;
+  MockWellKnown well_known;
+  MockConfig config;
   MockClientIdConfiguration client_metadata;
   FetchStatus accounts_response;
   AccountList accounts;
@@ -225,7 +225,7 @@ static const RequestParameters kDefaultRequestParameters{
     /*prefer_auto_sign_in=*/false};
 
 static const MockIdpInfo kDefaultIdentityProviderInfo{
-    {kManifestList},
+    {kWellKnown},
     {
         {ParseStatus::kSuccess, net::HTTP_OK},
         kAccountsEndpoint,
@@ -492,8 +492,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     const char* provider_key = ConvertProviderToChar(provider);
     std::set<GURL> url_set(
-        config_.idp_info[provider_key].manifest_list.provider_urls.begin(),
-        config_.idp_info[provider_key].manifest_list.provider_urls.end());
+        config_.idp_info[provider_key].well_known.provider_urls.begin(),
+        config_.idp_info[provider_key].well_known.provider_urls.end());
     FetchStatus success{ParseStatus::kSuccess, net::HTTP_OK};
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), success, url_set));
@@ -508,20 +508,20 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     const char* provider_key = ConvertProviderToChar(provider);
     IdpNetworkRequestManager::Endpoints endpoints;
     endpoints.token =
-        GURL(config_.idp_info[provider_key].manifest.token_endpoint);
+        GURL(config_.idp_info[provider_key].config.token_endpoint);
     endpoints.accounts =
-        GURL(config_.idp_info[provider_key].manifest.accounts_endpoint);
+        GURL(config_.idp_info[provider_key].config.accounts_endpoint);
     endpoints.client_metadata =
-        GURL(config_.idp_info[provider_key].manifest.client_metadata_endpoint);
+        GURL(config_.idp_info[provider_key].config.client_metadata_endpoint);
     endpoints.metrics =
-        GURL(config_.idp_info[provider_key].manifest.metrics_endpoint);
+        GURL(config_.idp_info[provider_key].config.metrics_endpoint);
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
-                       config_.idp_info[provider_key].manifest.fetch_status,
+                       config_.idp_info[provider_key].config.fetch_status,
                        endpoints, idp_metadata));
   }
 
@@ -534,7 +534,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     MockIdpInfo info;
     for (const auto& idp_info : config_.idp_info) {
       info = idp_info.second;
-      if (GURL(info.manifest.client_metadata_endpoint) == endpoint)
+      if (GURL(info.config.client_metadata_endpoint) == endpoint)
         break;
     }
 
@@ -555,7 +555,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     MockIdpInfo info;
     for (const auto& idp_info : config_.idp_info) {
       info = idp_info.second;
-      if (GURL(info.manifest.accounts_endpoint) == accounts_url)
+      if (GURL(info.config.accounts_endpoint) == accounts_url)
         break;
     }
 
@@ -830,25 +830,24 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
              "triggered."},
             {FederatedAuthRequestResult::kErrorDisabledInSettings,
              "Third-party sign in was disabled in browser Site Settings."},
-            {FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound,
-             "The provider's FedCM manifest list file cannot be found."},
-            {FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse,
-             "The provider's FedCM manifest list file fetch resulted in an "
+            {FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound,
+             "The provider's FedCM well-known file cannot be found."},
+            {FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse,
+             "The provider's FedCM well-known file fetch resulted in an "
              "error response code."},
-            {FederatedAuthRequestResult::
-                 kErrorFetchingManifestListInvalidResponse,
-             "Provider's FedCM manifest list file is invalid."},
-            {FederatedAuthRequestResult::kErrorManifestNotInManifestList,
-             "Provider's FedCM manifest not listed in its manifest list."},
-            {FederatedAuthRequestResult::kErrorManifestListTooBig,
-             "Provider's FedCM manifest list contains too many providers."},
-            {FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
-             "The provider's FedCM manifest configuration cannot be found."},
-            {FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
-             "The provider's FedCM manifest configuration fetch resulted in an "
+            {FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse,
+             "Provider's FedCM well-known file is invalid."},
+            {FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
+             "Provider's FedCM config file not listed in its well-known file."},
+            {FederatedAuthRequestResult::kErrorWellKnownTooBig,
+             "Provider's FedCM well-known contains too many providers."},
+            {FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound,
+             "The provider's FedCM config file cannot be found."},
+            {FederatedAuthRequestResult::kErrorFetchingConfigNoResponse,
+             "The provider's FedCM config file fetch resulted in an "
              "error response code."},
-            {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-             "Provider's FedCM manifest configuration is invalid."},
+            {FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+             "Provider's FedCM config file is invalid."},
             {FederatedAuthRequestResult::kError, "Error retrieving a token."},
             {FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
              "The provider's accounts list fetch resulted in an error response "
@@ -1138,8 +1137,8 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulRequest) {
               kConfigurationValid);
 }
 
-// Test successful manifest list fetching.
-TEST_F(FederatedAuthRequestImplTest, ManifestListSuccess) {
+// Test successful well-known fetching.
+TEST_F(FederatedAuthRequestImplTest, WellKnownSuccess) {
   // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
   // to IdpNetworkRequestManager methods.
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
@@ -1151,51 +1150,50 @@ TEST_F(FederatedAuthRequestImplTest, ManifestListSuccess) {
               kConfigurationValid);
 }
 
-// Test the provider url is not in the manifest list.
-TEST_F(FederatedAuthRequestImplTest, ManifestListNotInList) {
+// Test the provider url is not in the well-known.
+TEST_F(FederatedAuthRequestImplTest, WellKnownNotInList) {
   RequestExpectations request_not_in_list = {
       RequestTokenStatus::kError,
-      {FederatedAuthRequestResult::kErrorManifestNotInManifestList},
+      {FederatedAuthRequestResult::kErrorConfigNotInWellKnown},
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
 
   const char* idp_config_url =
       kDefaultRequestParameters.identity_providers[0].provider;
-  const char* kManifestListMismatchConfigUrl = "https://mismatch.example";
-  EXPECT_NE(std::string(idp_config_url), kManifestListMismatchConfigUrl);
+  const char* kWellKnownMismatchConfigUrl = "https://mismatch.example";
+  EXPECT_NE(std::string(idp_config_url), kWellKnownMismatchConfigUrl);
 
   MockConfiguration config = kConfigurationValid;
-  config.idp_info[idp_config_url].manifest_list = {
-      {kManifestListMismatchConfigUrl}};
+  config.idp_info[idp_config_url].well_known = {{kWellKnownMismatchConfigUrl}};
   RunAuthTest(kDefaultRequestParameters, request_not_in_list, config);
 }
 
-// Test that not having the filename in the manifest list fails.
-TEST_F(FederatedAuthRequestImplTest, ManifestListHasNoFilename) {
+// Test that not having the filename in the well-known fails.
+TEST_F(FederatedAuthRequestImplTest, WellKnownHasNoFilename) {
   IdentityProviderParameters identity_provider{"https://idp.example/foo",
                                                kClientId, kNonce};
   RequestParameters parameters{
       std::vector<IdentityProviderParameters>{identity_provider},
       /*prefer_auto_sign_in=*/false};
   MockConfiguration config{kConfigurationValid};
-  config.idp_info[kProviderUrlFull].manifest_list.provider_urls =
+  config.idp_info[kProviderUrlFull].well_known.provider_urls =
       std::set<std::string>{GURL(kProviderUrlFull).GetWithoutFilename().spec()};
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      {FederatedAuthRequestResult::kErrorManifestNotInManifestList},
+      {FederatedAuthRequestResult::kErrorConfigNotInWellKnown},
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::MANIFEST};
   RunAuthTest(parameters, expectations, config);
 }
 
-// Test that request fails if manifest is missing token endpoint.
+// Test that request fails if config is missing token endpoint.
 TEST_F(FederatedAuthRequestImplTest, MissingTokenEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].manifest.token_endpoint = "";
+  configuration.idp_info[kProviderUrlFull].config.token_endpoint = "";
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse},
+      {FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse},
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1204,20 +1202,20 @@ TEST_F(FederatedAuthRequestImplTest, MissingTokenEndpoint) {
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
   ASSERT_EQ(2U, messages.size());
   EXPECT_EQ(
-      "Manifest is missing or has an invalid URL for the following "
+      "Config file is missing or has an invalid URL for the following "
       "endpoints:\n"
       "\"id_assertion_endpoint\"\n",
       messages[0]);
-  EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
+  EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
 }
 
-// Test that request fails if manifest is missing accounts endpoint.
+// Test that request fails if config is missing accounts endpoint.
 TEST_F(FederatedAuthRequestImplTest, MissingAccountsEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].manifest.accounts_endpoint = "";
+  configuration.idp_info[kProviderUrlFull].config.accounts_endpoint = "";
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse},
+      {FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse},
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1226,18 +1224,17 @@ TEST_F(FederatedAuthRequestImplTest, MissingAccountsEndpoint) {
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
   ASSERT_EQ(2U, messages.size());
   EXPECT_EQ(
-      "Manifest is missing or has an invalid URL for the following "
+      "Config file is missing or has an invalid URL for the following "
       "endpoints:\n"
       "\"accounts_endpoint\"\n",
       messages[0]);
-  EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
+  EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
 }
 
-// Test that client metadata endpoint is not required in manifest.
+// Test that client metadata endpoint is not required in config.
 TEST_F(FederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].manifest.client_metadata_endpoint =
-      "";
+  configuration.idp_info[kProviderUrlFull].config.client_metadata_endpoint = "";
   RequestExpectations expectations = {
       RequestTokenStatus::kSuccess,
       {FederatedAuthRequestResult::kSuccess},
@@ -1250,11 +1247,11 @@ TEST_F(FederatedAuthRequestImplTest, MissingClientMetadataEndpoint) {
 // than identity provider.
 TEST_F(FederatedAuthRequestImplTest, AccountEndpointDifferentOriginIdp) {
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].manifest.accounts_endpoint =
+  configuration.idp_info[kProviderUrlFull].config.accounts_endpoint =
       kCrossOriginAccountsEndpoint;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse},
+      {FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse},
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1341,16 +1338,16 @@ TEST_F(FederatedAuthRequestImplTest, ClientMetadataNoTermsOfServiceUrl) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 
-// Test that request fails if all of the endpoints in the manifest are invalid.
+// Test that request fails if all of the endpoints in the config are invalid.
 TEST_F(FederatedAuthRequestImplTest, AllInvalidEndpoints) {
   // Both an empty url and cross origin urls are invalid endpoints.
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].manifest.accounts_endpoint =
+  configuration.idp_info[kProviderUrlFull].config.accounts_endpoint =
       "https://cross-origin-1.com";
-  configuration.idp_info[kProviderUrlFull].manifest.token_endpoint = "";
+  configuration.idp_info[kProviderUrlFull].config.token_endpoint = "";
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      {FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse},
+      {FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse},
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST | FetchedEndpoint::MANIFEST_LIST};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
@@ -1358,12 +1355,12 @@ TEST_F(FederatedAuthRequestImplTest, AllInvalidEndpoints) {
       RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
   ASSERT_EQ(2U, messages.size());
   EXPECT_EQ(
-      "Manifest is missing or has an invalid URL for the following "
+      "Config file is missing or has an invalid URL for the following "
       "endpoints:\n"
       "\"id_assertion_endpoint\"\n"
       "\"accounts_endpoint\"\n",
       messages[0]);
-  EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
+  EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
 }
 
 // Test Logout method success with multiple relying parties.
@@ -2553,14 +2550,14 @@ TEST_F(FederatedAuthRequestImplTest, FirstIdpManifestListInvalid) {
   list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
 
   // Intentionally fail the 1st provider's request by having an invalid
-  // manifest list.
+  // well-known file.
   MockConfiguration configuration = kConfigurationMultiIdpValid;
-  configuration.idp_info[kProviderUrlFull].manifest_list.provider_urls =
+  configuration.idp_info[kProviderUrlFull].well_known.provider_urls =
       std::set<std::string>{"https://not-in-list.example"};
 
   RequestExpectations expectations = {
       RequestTokenStatus::kSuccess,
-      {FederatedAuthRequestResult::kErrorManifestNotInManifestList},
+      {FederatedAuthRequestResult::kErrorConfigNotInWellKnown},
       /*selected_idp_config_url=*/kProviderTwoUrlFull,
       FetchedEndpoint::MANIFEST_MULTI | FetchedEndpoint::MANIFEST_LIST_MULTI |
           FetchedEndpoint::CLIENT_METADATA | FetchedEndpoint::ACCOUNTS |
@@ -2578,12 +2575,12 @@ TEST_F(FederatedAuthRequestImplTest, SecondIdpManifestListInvalid) {
   // Intentionally fail the 2nd provider's request by having an invalid
   // manifest list.
   MockConfiguration configuration = kConfigurationMultiIdpValid;
-  configuration.idp_info[kProviderTwoUrlFull].manifest_list.provider_urls =
+  configuration.idp_info[kProviderTwoUrlFull].well_known.provider_urls =
       std::set<std::string>{"https://not-in-list.example"};
 
   RequestExpectations expectations = {
       RequestTokenStatus::kSuccess,
-      {FederatedAuthRequestResult::kErrorManifestNotInManifestList},
+      {FederatedAuthRequestResult::kErrorConfigNotInWellKnown},
       /*selected_idp_config_url=*/kProviderUrlFull,
       FetchedEndpoint::MANIFEST_MULTI | FetchedEndpoint::MANIFEST_LIST_MULTI |
           FetchedEndpoint::CLIENT_METADATA | FetchedEndpoint::ACCOUNTS |
@@ -2600,14 +2597,14 @@ TEST_F(FederatedAuthRequestImplTest, AllManifestListsInvalid) {
   // Intentionally fail the requests for both IdPs by returning an invalid
   // manifest list.
   MockConfiguration configuration = kConfigurationMultiIdpValid;
-  configuration.idp_info[kProviderUrlFull].manifest_list.provider_urls =
+  configuration.idp_info[kProviderUrlFull].well_known.provider_urls =
       std::set<std::string>{"https://not-in-list.example"};
-  configuration.idp_info[kProviderTwoUrlFull].manifest_list.provider_urls =
+  configuration.idp_info[kProviderTwoUrlFull].well_known.provider_urls =
       std::set<std::string>{"https://not-in-list.example"};
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
-      {FederatedAuthRequestResult::kErrorManifestNotInManifestList},
+      {FederatedAuthRequestResult::kErrorConfigNotInWellKnown},
       /*selected_idp_config_url=*/absl::nullopt,
       FetchedEndpoint::MANIFEST_MULTI | FetchedEndpoint::MANIFEST_LIST_MULTI};
 

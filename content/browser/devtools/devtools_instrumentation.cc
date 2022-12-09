@@ -185,30 +185,29 @@ std::string FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorTooManyRequests: {
       return FederatedAuthRequestIssueReasonEnum::TooManyRequests;
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound: {
-      return FederatedAuthRequestIssueReasonEnum::ManifestListHttpNotFound;
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::WellKnownHttpNotFound;
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse: {
-      return FederatedAuthRequestIssueReasonEnum::ManifestListNoResponse;
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::WellKnownNoResponse;
     }
-    case FederatedAuthRequestResult::
-        kErrorFetchingManifestListInvalidResponse: {
-      return FederatedAuthRequestIssueReasonEnum::ManifestListInvalidResponse;
+    case FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::WellKnownInvalidResponse;
     }
-    case FederatedAuthRequestResult::kErrorManifestNotInManifestList: {
-      return FederatedAuthRequestIssueReasonEnum::ManifestNotInManifestList;
+    case FederatedAuthRequestResult::kErrorConfigNotInWellKnown: {
+      return FederatedAuthRequestIssueReasonEnum::ConfigNotInWellKnown;
     }
-    case FederatedAuthRequestResult::kErrorManifestListTooBig: {
-      return FederatedAuthRequestIssueReasonEnum::ManifestListTooBig;
+    case FederatedAuthRequestResult::kErrorWellKnownTooBig: {
+      return FederatedAuthRequestIssueReasonEnum::WellKnownTooBig;
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound: {
-      return FederatedAuthRequestIssueReasonEnum::ManifestHttpNotFound;
+    case FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::ConfigHttpNotFound;
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse: {
-      return FederatedAuthRequestIssueReasonEnum::ManifestNoResponse;
+    case FederatedAuthRequestResult::kErrorFetchingConfigNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ConfigNoResponse;
     }
-    case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse: {
-      return FederatedAuthRequestIssueReasonEnum::ManifestInvalidResponse;
+    case FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ConfigInvalidResponse;
     }
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::ClientMetadataHttpNotFound;

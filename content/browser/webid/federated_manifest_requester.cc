@@ -12,7 +12,7 @@ namespace {
 
 // Maximum number of provider URLs in the manifest list.
 // TODO(cbiesinger): Determine what the right number is.
-static constexpr size_t kMaxProvidersInManifestList = 1ul;
+static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
 
 }  // namespace
 
@@ -91,27 +91,25 @@ void FederatedManifestRequester::OnManifestListFetched(
 
     switch (status.parse_status) {
       case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
-        OnError(
-            fetch_result,
-            FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound,
-            TokenStatus::kManifestListHttpNotFound,
-            additional_console_error_message);
+        OnError(fetch_result,
+                FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound,
+                TokenStatus::kManifestListHttpNotFound,
+                additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
-        OnError(
-            fetch_result,
-            FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse,
-            TokenStatus::kManifestListNoResponse,
-            additional_console_error_message);
+        OnError(fetch_result,
+                FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse,
+                TokenStatus::kManifestListNoResponse,
+                additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
-        OnError(fetch_result,
-                FederatedAuthRequestResult::
-                    kErrorFetchingManifestListInvalidResponse,
-                TokenStatus::kManifestListInvalidResponse,
-                additional_console_error_message);
+        OnError(
+            fetch_result,
+            FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse,
+            TokenStatus::kManifestListInvalidResponse,
+            additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kSuccess: {
@@ -120,8 +118,8 @@ void FederatedManifestRequester::OnManifestListFetched(
     }
   }
 
-  if (urls.size() > kMaxProvidersInManifestList) {
-    OnError(fetch_result, FederatedAuthRequestResult::kErrorManifestListTooBig,
+  if (urls.size() > kMaxProvidersInWellKnownFile) {
+    OnError(fetch_result, FederatedAuthRequestResult::kErrorWellKnownTooBig,
             TokenStatus::kManifestListTooBig,
             /*additional_console_error_message=*/absl::nullopt);
     return;
@@ -147,7 +145,7 @@ void FederatedManifestRequester::OnManifestListFetched(
 
   if (!provider_url_is_valid) {
     OnError(fetch_result,
-            FederatedAuthRequestResult::kErrorManifestNotInManifestList,
+            FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
             TokenStatus::kManifestNotInManifestList,
             /*additional_console_error_message=*/absl::nullopt);
     return;
@@ -173,24 +171,23 @@ void FederatedManifestRequester::OnManifestFetched(
     switch (status.parse_status) {
       case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
         OnError(fetch_result,
-                FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
+                FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound,
                 TokenStatus::kManifestHttpNotFound,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
         OnError(fetch_result,
-                FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
+                FederatedAuthRequestResult::kErrorFetchingConfigNoResponse,
                 TokenStatus::kManifestNoResponse,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
-        OnError(
-            fetch_result,
-            FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
-            TokenStatus::kManifestInvalidResponse,
-            additional_console_error_message);
+        OnError(fetch_result,
+                FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
+                TokenStatus::kManifestInvalidResponse,
+                additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kSuccess: {
@@ -210,7 +207,7 @@ void FederatedManifestRequester::OnManifestFetched(
                                 fetch_result.endpoints.accounts);
   if (!is_token_valid || !is_accounts_valid) {
     std::string console_message =
-        "Manifest is missing or has an invalid URL for the following "
+        "Config file is missing or has an invalid URL for the following "
         "endpoints:\n";
     if (!is_token_valid) {
       console_message += "\"id_assertion_endpoint\"\n";
@@ -220,7 +217,7 @@ void FederatedManifestRequester::OnManifestFetched(
     }
 
     OnError(fetch_result,
-            FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
+            FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
             TokenStatus::kManifestInvalidResponse, console_message);
     return;
   }

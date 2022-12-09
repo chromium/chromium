@@ -838,14 +838,14 @@ experimental domain Audits
     enum
       ShouldEmbargo
       TooManyRequests
-      ManifestListHttpNotFound
-      ManifestListNoResponse
-      ManifestListInvalidResponse
-      ManifestNotInManifestList
-      ManifestListTooBig
-      ManifestHttpNotFound
-      ManifestNoResponse
-      ManifestInvalidResponse
+      WellKnownHttpNotFound
+      WellKnownNoResponse
+      WellKnownInvalidResponse
+      ConfigNotInWellKnown
+      WellKnownTooBig
+      ConfigHttpNotFound
+      ConfigNoResponse
+      ConfigInvalidResponse
       ClientMetadataHttpNotFound
       ClientMetadataNoResponse
       ClientMetadataInvalidResponse
