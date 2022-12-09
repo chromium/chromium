@@ -2900,6 +2900,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      1);
+
+  histogram_tester_.ExpectTotalCount(
+      "Storage.SharedStorage.Timing.UrlMappingDuringNavigation", 1);
 }
 
 // Tests that the URN from SelectURL() is valid in different

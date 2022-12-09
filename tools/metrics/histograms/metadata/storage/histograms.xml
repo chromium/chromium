@@ -850,6 +850,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Timing.UrlMappingDuringNavigation"
+    units="ms" expires_after="2023-12-08">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time for a URN to resolve during a navigation. Recorded for
+    every navigation to a URN that originates from sharedStorage.selectURL().
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Worklet.DestroyedStatus"
     enum="SharedStorageWorkletDestroyedStatus" expires_after="2023-07-31">
   <owner>cammie@chromium.org</owner>

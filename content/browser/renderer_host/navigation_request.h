@@ -2149,6 +2149,9 @@ class CONTENT_EXPORT NavigationRequest
   // synchronously.
   bool is_deferred_on_fenced_frame_url_mapping_ = false;
 
+  // The start time of fenced frame url mapping.
+  base::TimeTicks fenced_frame_url_mapping_start_time_;
+
   // The root frame tree node id of the prerendered page. This will be a valid
   // FrameTreeNode id when this navigation will activate a prerendered page.
   // For all other navigations this will be

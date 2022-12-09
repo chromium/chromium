@@ -2115,6 +2115,8 @@ void NavigationRequest::BeginNavigation() {
     // `is_deferred_on_fenced_frame_url_mapping_` to false.
     is_deferred_on_fenced_frame_url_mapping_ = true;
 
+    fenced_frame_url_mapping_start_time_ = base::TimeTicks::Now();
+
     // OnFencedFrameURLMappingComplete() and BeginNavigationImpl() will be
     // invoked after this.
     fenced_frame_urls_map.ConvertFencedFrameURNToURL(common_params_->url,
@@ -2281,6 +2283,16 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   if (!frame_tree_node_->IsFencedFrameRoot()) {
     CHECK(blink::features::IsAllowURNsInIframeEnabled());
     fenced_frame_properties_->partition_nonce_ = absl::nullopt;
+  }
+
+  // This implies the URN is created from shared storage.
+  if (fenced_frame_properties_->shared_storage_budget_metadata_) {
+    base::TimeDelta time_spent_in_fenced_frame_url_mapping =
+        base::TimeTicks::Now() - fenced_frame_url_mapping_start_time_;
+
+    base::UmaHistogramTimes(
+        "Storage.SharedStorage.Timing.UrlMappingDuringNavigation",
+        time_spent_in_fenced_frame_url_mapping);
   }
 
   BeginNavigationImpl();  // DO NOT ADD CODE after this, because it might have
