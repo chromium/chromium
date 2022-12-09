@@ -11,6 +11,7 @@ import 'chrome://resources/ash/common/cellular_setup/cellular_eid_dialog.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
@@ -21,47 +22,54 @@ import './esim_install_error_dialog.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/ash/common/cellular_setup/esim_manager_listener_behavior.js';
 import {getEuicc, getPendingESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {getSimSlotCount} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileInstallResult, ProfileState} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {CrosNetworkConfigRemote, GlobalPolicy, InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
+import {castExists} from '../assert_extras.js';
+import {MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
 import {MultiDeviceFeatureState, MultiDevicePageContentData} from '../multidevice_page/multidevice_constants.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {ESimManagerListenerBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const CellularNetworksListElementBase = mixinBehaviors(
-    [ESimManagerListenerBehavior, I18nBehavior, WebUIListenerBehavior],
-    PolymerElement);
+import {getTemplate} from './cellular_networks_list.html.js';
 
-/** @polymer */
+declare global {
+  interface HTMLElementEventMap {
+    'install-profile': CustomEvent<{iccid: string}>;
+  }
+}
+
+const CellularNetworksListElementBase =
+    mixinBehaviors(
+        [ESimManagerListenerBehavior],
+        WebUiListenerMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUiListenerMixinInterface & ESimManagerListenerBehaviorInterface,
+    };
+
 class CellularNetworksListElement extends CellularNetworksListElementBase {
   static get is() {
-    return 'cellular-networks-list';
+    return 'cellular-networks-list' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * The list of network state properties for the items to display.
-       * @type {!Array<!OncMojo.NetworkStateProperties>}
        */
       networks: {
         type: Array,
@@ -78,7 +86,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * Device state for the cellular network type.
-       * @type {!OncMojo.DeviceStateProperties|undefined}
        */
       cellularDeviceState: Object,
 
@@ -89,7 +96,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       /**
        * If true, inhibited spinner can be shown, it will be shown
        * if true and cellular is inhibited.
-       * @type {boolean}
        */
       canShowSpinner: {
         type: Boolean,
@@ -98,17 +104,13 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       /**
        * Device state for the tether network type. This device state should be
        * used for instant tether networks.
-       * @type {!OncMojo.DeviceStateProperties|undefined}
        */
       tetherDeviceState: Object,
 
-      /** @type {!GlobalPolicy|undefined} */
       globalPolicy: Object,
 
       /**
        * The list of eSIM network state properties for display.
-       * @type {!Array<!OncMojo.NetworkStateProperties>}
-       * @private
        */
       eSimNetworks_: {
         type: Array,
@@ -120,8 +122,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       /**
        * Dictionary mapping pending eSIM profile iccids to pending eSIM
        * profiles.
-       * @type {!Map<string, ESimProfileRemote>}
-       * @private
        */
       profilesMap_: {
         type: Object,
@@ -133,8 +133,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       /**
        * The list of pending eSIM profiles to display after the list of eSIM
        * networks.
-       * @type {!Array<NetworkList.CustomItemState>}
-       * @private
        */
       eSimPendingProfileItems_: {
         type: Array,
@@ -145,8 +143,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * The list of pSIM network state properties for display.
-       * @type {!Array<!OncMojo.NetworkStateProperties>}
-       * @private
        */
       pSimNetworks_: {
         type: Array,
@@ -157,8 +153,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * The list of tether network state properties for display.
-       * @type {!Array<!OncMojo.NetworkStateProperties>}
-       * @private
        */
       tetherNetworks_: {
         type: Array,
@@ -167,13 +161,11 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         },
       },
 
-      /**@private */
       shouldShowEidDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       shouldShowInstallErrorDialog_: {
         type: Boolean,
         value: false,
@@ -181,7 +173,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * Euicc object representing the active euicc_ module on the device
-       * @private {?EuiccRemote}
        */
       euicc_: {
         type: Object,
@@ -190,8 +181,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * The current eSIM profile being installed.
-       * @type {?ESimProfileRemote}
-       * @private
        */
       installingESimProfile_: {
         type: Object,
@@ -200,8 +189,6 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
       /**
        * The error code returned when eSIM profile install attempt was made.
-       * @type {?ProfileInstallResult}
-       * @private
        */
       eSimProfileInstallError_: {
         type: Object,
@@ -211,15 +198,12 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       /**
        * Multi-device page data used to determine if the tether section should
        * be shown or not.
-       * @type {?MultiDevicePageContentData}
-       * @private
        */
       multiDevicePageContentData_: {
         type: Object,
         value: null,
       },
 
-      /** @private {boolean} */
       isDeviceInhibited_: {
         type: Boolean,
         computed: 'computeIsDeviceInhibited_(cellularDeviceState,' +
@@ -228,68 +212,73 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     };
   }
 
-  /** @override */
+  canShowSpinner: boolean;
+  cellularDeviceState: OncMojo.DeviceStateProperties|undefined;
+  globalPolicy: GlobalPolicy|undefined;
+  isConnectedToNonCellularNetwork: boolean;
+  networks: OncMojo.NetworkStateProperties[];
+  showTechnologyBadge: boolean;
+  tetherDeviceState: OncMojo.DeviceStateProperties|undefined;
+
+  private eSimPendingProfileItems_: NetworkList.CustomItemState[];
+  private eSimProfileInstallError_: ProfileInstallResult|null;
+  private eSimNetworks_: OncMojo.NetworkStateProperties[];
+  private euicc_: EuiccRemote|null;
+  private installingESimProfile_: ESimProfileRemote|null;
+  private isDeviceInhibited_: boolean;
+  private multiDevicePageContentData_: MultiDevicePageContentData|null;
+  private networkConfig_: CrosNetworkConfigRemote;
+  private profilesMap_: Map<string, ESimProfileRemote>;
+  private pSimNetworks_: OncMojo.NetworkStateProperties[];
+  private shouldShowEidDialog_: boolean;
+  private shouldShowInstallErrorDialog_: boolean;
+  private tetherNetworks_: OncMojo.NetworkStateProperties[];
+
   constructor() {
     super();
 
-    /** @private {!CrosNetworkConfigRemote} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
     this.fetchEuiccAndESimPendingProfileList_();
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('install-profile', this.installProfile_);
 
-    this.addWebUIListener(
+    this.addWebUiListener(
         'settings.updateMultidevicePageContentData',
         this.onMultiDevicePageContentDataChanged_.bind(this));
 
-    const browserProxy = MultiDeviceBrowserProxyImpl.getInstance();
-    browserProxy.getPageContentData().then(
+    MultiDeviceBrowserProxyImpl.getInstance().getPageContentData().then(
         this.onMultiDevicePageContentDataChanged_.bind(this));
   }
 
-  /**
-   * @param {!EuiccRemote} euicc
-   * ESimManagerListenerBehavior override
-   */
-  onProfileListChanged(euicc) {
+  override onProfileListChanged(euicc: EuiccRemote): void {
     this.fetchESimPendingProfileListForEuicc_(euicc);
   }
 
-  /**
-   * ESimManagerListenerBehavior override
-   */
-  onAvailableEuiccListChanged() {
+  override onAvailableEuiccListChanged(): void {
     this.fetchEuiccAndESimPendingProfileList_();
   }
 
-  /**
-   * @param {!ESimProfileRemote} profile
-   * ESimManagerListenerBehavior override
-   */
-  onProfileChanged(profile) {
-    profile.getProperties().then(response => {
-      const eSimPendingProfileItem =
-          this.eSimPendingProfileItems_.find(item => {
-            return item.customData.iccid === response.properties.iccid;
-          });
-      if (!eSimPendingProfileItem) {
-        return;
-      }
-      eSimPendingProfileItem.customItemType =
-          response.properties.state === ProfileState.kInstalling ?
-          NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
-          NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
+  override async onProfileChanged(profile: ESimProfileRemote): Promise<void> {
+    const response = await profile.getProperties();
+
+    const eSimPendingProfileItem = this.eSimPendingProfileItems_.find(item => {
+      return item.customData.iccid === response.properties.iccid;
     });
+    if (!eSimPendingProfileItem) {
+      return;
+    }
+    eSimPendingProfileItem.customItemType =
+        response.properties.state === ProfileState.kInstalling ?
+        NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
+        NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
   }
 
-  /** @private */
-  fetchEuiccAndESimPendingProfileList_() {
+  private fetchEuiccAndESimPendingProfileList_(): void {
     getEuicc().then(euicc => {
       if (!euicc) {
         return;
@@ -310,10 +299,8 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
   /**
    * Return true if esim section should be shown.
-   * @return {boolean}
-   * @private
    */
-  shouldShowEsimSection_() {
+  private shouldShowEsimSection_(): boolean {
     if (!this.cellularDeviceState) {
       return false;
     }
@@ -324,45 +311,31 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     return !!this.euicc_ && eSimSlots > 0;
   }
 
-  /**
-   * @param {!EuiccRemote} euicc
-   * @private
-   */
-  fetchESimPendingProfileListForEuicc_(euicc) {
-    getPendingESimProfiles(euicc).then(
-        this.processESimPendingProfiles_.bind(this));
+  private async fetchESimPendingProfileListForEuicc_(euicc: EuiccRemote):
+      Promise<void> {
+    const profiles = await getPendingESimProfiles(euicc);
+    this.processESimPendingProfiles_(profiles);
   }
 
-  /**
-   * @param {Array<!ESimProfileRemote>} profiles
-   * @private
-   */
-  processESimPendingProfiles_(profiles) {
+  private async processESimPendingProfiles_(profiles: ESimProfileRemote[]):
+      Promise<void> {
     this.profilesMap_ = new Map();
     const eSimPendingProfilePromises =
         profiles.map(this.createESimPendingProfilePromise_.bind(this));
-    Promise.all(eSimPendingProfilePromises).then(eSimPendingProfileItems => {
-      this.eSimPendingProfileItems_ = eSimPendingProfileItems;
-    });
+    const eSimPendingProfileItems =
+        await Promise.all(eSimPendingProfilePromises);
+    this.eSimPendingProfileItems_ = eSimPendingProfileItems;
   }
 
-  /**
-   * @param {!ESimProfileRemote} profile
-   * @return {!Promise<NetworkList.CustomItemState>}
-   * @private
-   */
-  createESimPendingProfilePromise_(profile) {
-    return profile.getProperties().then(response => {
-      this.profilesMap_.set(response.properties.iccid, profile);
-      return this.createESimPendingProfileItem_(response.properties);
-    });
+  private async createESimPendingProfilePromise_(profile: ESimProfileRemote):
+      Promise<NetworkList.CustomItemState> {
+    const response = await profile.getProperties();
+    this.profilesMap_.set(response.properties.iccid, profile);
+    return this.createESimPendingProfileItem_(response.properties);
   }
 
-  /**
-   * @param {!ESimProfileProperties} properties
-   * @return {NetworkList.CustomItemState}
-   */
-  createESimPendingProfileItem_(properties) {
+  private createESimPendingProfileItem_(properties: ESimProfileProperties):
+      NetworkList.CustomItemState {
     return {
       customItemType: properties.state === ProfileState.kInstalling ?
           NetworkList.CustomItemType.ESIM_INSTALLING_PROFILE :
@@ -378,13 +351,10 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     };
   }
 
-  /**
-   * @private
-   */
-  onNetworksListChanged_() {
-    const pSimNetworks = [];
-    const eSimNetworks = [];
-    const tetherNetworks = [];
+  private onNetworksListChanged_(): void {
+    const pSimNetworks: OncMojo.NetworkStateProperties[] = [];
+    const eSimNetworks: OncMojo.NetworkStateProperties[] = [];
+    const tetherNetworks: OncMojo.NetworkStateProperties[] = [];
 
     for (const network of this.networks) {
       if (network.type === NetworkType.kTether) {
@@ -403,24 +373,17 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     this.tetherNetworks_ = tetherNetworks;
   }
 
-  /**
-   * @param {...!Array<!NetworkList.NetworkListItemType>} lists
-   * @returns {boolean}
-   * @private
-   */
-  shouldShowNetworkSublist_(...lists) {
+  private shouldShowNetworkSublist_(
+      ...lists: NetworkList.NetworkListItemType[][]): boolean {
     const totalListLength = lists.reduce((accumulator, currentList) => {
       return accumulator + currentList.length;
     }, 0);
     return totalListLength > 0;
   }
 
-  /**
-   * @param {!OncMojo.DeviceStateProperties|undefined} cellularDeviceState
-   * @returns {boolean}
-   * @private
-   */
-  shouldShowPSimSection_(pSimNetworks, cellularDeviceState) {
+  private shouldShowPSimSection_(
+      pSimNetworks: OncMojo.NetworkStateProperties[],
+      cellularDeviceState: OncMojo.DeviceStateProperties|undefined): boolean {
     const {pSimSlots} = getSimSlotCount(cellularDeviceState);
     if (pSimSlots > 0) {
       return true;
@@ -432,20 +395,13 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     return this.shouldShowNetworkSublist_(pSimNetworks);
   }
 
-  /**
-   * @param {!MultiDevicePageContentData} newData
-   * @private
-   */
-  onMultiDevicePageContentDataChanged_(newData) {
+  private onMultiDevicePageContentDataChanged_(
+      newData: MultiDevicePageContentData): void {
     this.multiDevicePageContentData_ = newData;
   }
 
-  /**
-   * @param {?MultiDevicePageContentData} pageContentData
-   * @returns {boolean}
-   * @private
-   */
-  shouldShowTetherSection_(pageContentData) {
+  private shouldShowTetherSection_(pageContentData: MultiDevicePageContentData|
+                                   null): boolean {
     if (!pageContentData) {
       return false;
     }
@@ -453,11 +409,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         MultiDeviceFeatureState.ENABLED_BY_USER;
   }
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  onEsimLearnMoreClicked_(event) {
+  private onEsimLearnMoreClicked_(event: CustomEvent<{event: Event}>): void {
     event.detail.event.preventDefault();
     event.stopPropagation();
 
@@ -469,35 +421,25 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     this.dispatchEvent(showCellularSetupEvent);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onESimDotsClick_(e) {
-    const menu = /** @type {!CrActionMenuElement} */ (
-        this.shadowRoot.querySelector('#menu').get());
-    menu.showAt(/** @type {!HTMLElement} */ (e.target));
+  private onESimDotsClick_(e: Event): void {
+    const menu = this.shadowRoot!
+                     .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
+                         '#menu')!.get();
+    menu.showAt(e.target as HTMLElement);
   }
 
-  /** @private */
-  onShowEidDialogTap_() {
+  private onShowEidDialogTap_(): void {
     const actionMenu =
-        /** @type {!CrActionMenuElement} */ (
-            this.shadowRoot.querySelector('cr-action-menu'));
+        castExists(this.shadowRoot!.querySelector('cr-action-menu'));
     actionMenu.close();
     this.shouldShowEidDialog_ = true;
   }
 
-  /** @private */
-  onCloseEidDialog_() {
+  private onCloseEidDialog_(): void {
     this.shouldShowEidDialog_ = false;
   }
 
-  /**
-   * @param {Event} event
-   * @private
-   */
-  installProfile_(event) {
+  private installProfile_(event: CustomEvent<{iccid: string}>): void {
     if (!this.isConnectedToNonCellularNetwork) {
       const event = new CustomEvent('show-error-toast', {
         bubbles: true,
@@ -507,7 +449,8 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
       this.dispatchEvent(event);
       return;
     }
-    this.installingESimProfile_ = this.profilesMap_.get(event.detail.iccid);
+    this.installingESimProfile_ =
+        castExists(this.profilesMap_.get(event.detail.iccid));
     this.installingESimProfile_.installProfile('').then((response) => {
       if (response.result === ProfileInstallResult.kSuccess) {
         this.eSimProfileInstallError_ = null;
@@ -519,34 +462,24 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     });
   }
 
-  /** @private */
-  showInstallErrorDialog_() {
+  private showInstallErrorDialog_(): void {
     this.shouldShowInstallErrorDialog_ = true;
   }
 
-  /** @private */
-  onCloseInstallErrorDialog_() {
+  private onCloseInstallErrorDialog_(): void {
     this.shouldShowInstallErrorDialog_ = false;
   }
 
-  /**
-   * @param {!OncMojo.DeviceStateProperties|undefined} cellularDeviceState
-   * @return {boolean}
-   * @private
-   */
-  shouldShowAddESimButton_(cellularDeviceState) {
-    assert(!!this.euicc_);
+  private shouldShowAddESimButton_(cellularDeviceState:
+                                       OncMojo.DeviceStateProperties|
+                                   undefined): boolean {
+    assert(this.euicc_);
     return this.deviceIsEnabled_(cellularDeviceState);
   }
 
-  /**
-   * Return true if the add cellular button should be disabled.
-   * @param {!OncMojo.DeviceStateProperties|undefined} cellularDeviceState
-   * @param {!GlobalPolicy} globalPolicy
-   * @return {boolean}
-   * @private
-   */
-  isAddESimButtonDisabled_(cellularDeviceState, globalPolicy) {
+  private isAddESimButtonDisabled_(
+      cellularDeviceState: OncMojo.DeviceStateProperties|undefined,
+      globalPolicy: GlobalPolicy): boolean {
     if (this.isDeviceInhibited_) {
       return true;
     }
@@ -563,37 +496,25 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * Return true if the policy indicator that next to the add cellular button
    * should be shown. This policy icon indicates the reason of disabling the
    * add cellular button.
-   * @param {!GlobalPolicy} globalPolicy
-   * @return {boolean}
-   * @private
    */
-  shouldShowAddESimPolicyIcon_(globalPolicy) {
+  private shouldShowAddESimPolicyIcon_(globalPolicy: GlobalPolicy): boolean {
     return globalPolicy && globalPolicy.allowOnlyPolicyCellularNetworks;
   }
 
-  /**
-   * @param {!OncMojo.DeviceStateProperties|undefined} cellularDeviceState
-   * @return {boolean} True if the device is enabled.
-   * @private
-   */
-  deviceIsEnabled_(cellularDeviceState) {
+  private deviceIsEnabled_(cellularDeviceState: OncMojo.DeviceStateProperties|
+                           undefined): boolean {
     return !!cellularDeviceState &&
         cellularDeviceState.deviceState === DeviceStateType.kEnabled;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsDeviceInhibited_() {
+  private computeIsDeviceInhibited_(): boolean {
     if (!this.cellularDeviceState) {
       return false;
     }
     return OncMojo.deviceIsInhibited(this.cellularDeviceState);
   }
 
-  /** @private */
-  onAddEsimButtonTap_() {
+  private onAddEsimButtonTap_(): void {
     const event = new CustomEvent('show-cellular-setup', {
       bubbles: true,
       composed: true,
@@ -607,16 +528,12 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * slot, or policies prohibit users from adding a network, null is returned.
    * @return {?HTMLElement}
    */
-  getAddEsimButton() {
-    return /** @type {?HTMLElement} */ (
-        this.shadowRoot.querySelector('#addESimButton'));
+  getAddEsimButton(): CrIconButtonElement|null {
+    return this.shadowRoot!.querySelector<CrIconButtonElement>(
+        '#addESimButton');
   }
 
-  /**
-   * @return {string} Inhibited subtext message.
-   * @private
-   */
-  getInhibitedSubtextMessage_() {
+  private getInhibitedSubtextMessage_(): string {
     if (!this.cellularDeviceState) {
       return '';
     }
@@ -645,11 +562,11 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * Return true if the "No available eSIM profiles" subtext message or
    * download eSIM profile link should be shown in eSIM section. This message
    * should not be shown when adding new eSIM profiles.
-   * @return {boolean}
-   * @private
    */
-  shouldShowNoESimMessageOrDownloadLink_(
-      inhibitReason, eSimNetworks, eSimPendingProfiles) {
+  private shouldShowNoESimMessageOrDownloadLink_(
+      inhibitReason: InhibitReason,
+      eSimNetworks: NetworkList.NetworkListItemType[],
+      eSimPendingProfiles: NetworkList.CustomItemState[]): boolean {
     if (inhibitReason === InhibitReason.kInstallingProfile) {
       return false;
     }
@@ -661,16 +578,20 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * Return true if the "No available eSIM profiles" subtext message should be
    * shown in eSIM section. This message should not be shown when the download
    * eSIM profile link is shown.
-   * @return {boolean}
-   * @private
    */
-  shouldShowNoESimSubtextMessage_() {
+  private shouldShowNoESimSubtextMessage_(): boolean {
     if (this.globalPolicy &&
         this.globalPolicy.allowOnlyPolicyCellularNetworks) {
       return true;
     }
 
     return false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [CellularNetworksListElement.is]: CellularNetworksListElement;
   }
 }
 

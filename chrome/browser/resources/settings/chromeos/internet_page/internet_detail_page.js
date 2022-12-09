@@ -61,6 +61,19 @@ import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet
 import {TetherConnectionDialogElement} from './tether_connection_dialog.js';
 
 /**
+ * TODO(crbug/1315757) The following type definitions are only needed for
+ * Closure compiler and can be removed when this file is converted to TS.
+ *
+ * @constructor
+ * @extends {HTMLElement}
+ */
+export function CellularRoamingToggleButtonElement() {}
+
+/** @return {?CrToggleElement} */
+CellularRoamingToggleButtonElement.prototype.getCellularRoamingToggle =
+    function() {};
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {NetworkListenerBehaviorInterface}
@@ -508,7 +521,9 @@ class SettingsInternetDetailPageElement extends
     if (settingId === Setting.kCellularRoaming) {
       this.afterRenderShowDeepLink(
           settingId,
-          () => this.shadowRoot.querySelector('cellular-roaming-toggle-button')
+          () => /** @type {CellularRoamingToggleButtonElement} */ (
+                    this.shadowRoot.querySelector(
+                        'cellular-roaming-toggle-button'))
                     .getCellularRoamingToggle());
       // Stop deep link attempt since we completed it manually.
       return false;

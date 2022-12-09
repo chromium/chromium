@@ -4,15 +4,12 @@
 
 import {CellularSetupDelegate} from 'chrome://resources/ash/common/cellular_setup/cellular_setup_delegate.js';
 
-/** @implements {CellularSetupDelegate} */
-export class CellularSetupSettingsDelegate {
-  /** @override */
-  shouldShowPageTitle() {
+export class CellularSetupSettingsDelegate implements CellularSetupDelegate {
+  shouldShowPageTitle(): boolean {
     return false;
   }
 
-  /** @override */
-  shouldShowCancelButton() {
+  shouldShowCancelButton(): boolean {
     return true;
   }
 }

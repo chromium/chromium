@@ -13,99 +13,94 @@ import '../../settings_shared.css.js';
 
 import {CellularSetupDelegate} from 'chrome://resources/ash/common/cellular_setup/cellular_setup_delegate.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getTemplate} from './cellular_setup_dialog.html.js';
 import {CellularSetupSettingsDelegate} from './cellular_setup_settings_delegate.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OsSettingsCellularSetupDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+interface OsSettingsCellularSetupDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const OsSettingsCellularSetupDialogElementBase = I18nMixin(PolymerElement);
+
 class OsSettingsCellularSetupDialogElement extends
     OsSettingsCellularSetupDialogElementBase {
   static get is() {
-    return 'os-settings-cellular-setup-dialog';
+    return 'os-settings-cellular-setup-dialog' as const;
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * Name of cellular dialog page to be selected.
-       * @type {!CellularSetupPageName}
        */
       pageName: String,
 
-      /**
-       * @private {!CellularSetupDelegate}
-       */
       delegate_: Object,
 
-      /*** @private */
       dialogTitle_: {
         type: String,
       },
 
-      /*** @private */
       dialogHeader_: {
         type: String,
       },
     };
   }
 
-  /** @override */
+  pageName: CellularSetupPageName;
+  private delegate_: CellularSetupDelegate;
+  private dialogHeader_: string;
+  private dialogTitle_: string;
+
   constructor() {
     super();
 
     this.delegate_ = new CellularSetupSettingsDelegate();
   }
 
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('exit-cellular-setup', this.onExitCellularSetup_);
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();
   }
 
-  /** @private*/
-  onExitCellularSetup_() {
+  private onExitCellularSetup_(): void {
     this.$.dialog.close();
   }
 
-  /**
-   * @param {string} title
-   * @returns {boolean}
-   * @private
-   */
-  shouldShowDialogTitle_(title) {
+  private shouldShowDialogTitle_(): boolean {
     return !!this.dialogTitle_;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getDialogHeader_() {
+  private getDialogHeader_(): string {
     if (this.dialogHeader_) {
       return this.dialogHeader_;
     }
 
     return this.i18n('cellularSetupDialogTitle');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsCellularSetupDialogElement.is]:
+        OsSettingsCellularSetupDialogElement;
   }
 }
 

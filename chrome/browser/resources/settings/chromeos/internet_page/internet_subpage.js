@@ -45,6 +45,18 @@ import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterfa
 import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
 /**
+ * TODO(crbug/1315757) The following type definitions are only needed for
+ * Closure compiler and can be removed when this file is converted to TS.
+ *
+ * @constructor
+ * @extends {HTMLElement}
+ */
+export function CellularNetworksListElement() {}
+
+/** @return {?HTMLElement} */
+CellularNetworksListElement.prototype.getAddEsimButton = function() {};
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {NetworkListenerBehaviorInterface}
@@ -298,7 +310,8 @@ class SettingsInternetSubpageElement extends
     if (settingId === Setting.kAddESimNetwork) {
       afterNextRender(this, () => {
         const deepLinkElement =
-            this.shadowRoot.querySelector('cellular-networks-list')
+            /** @type {CellularNetworksListElement} */ (
+                this.shadowRoot.querySelector('cellular-networks-list'))
                 .getAddEsimButton();
         if (!deepLinkElement || deepLinkElement.hidden) {
           console.warn(`Element with deep link id ${settingId} not focusable.`);
