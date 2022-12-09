@@ -457,7 +457,20 @@ void AVIFImageDecoder::DecodeToYUV() {
 }
 
 int AVIFImageDecoder::RepetitionCount() const {
-  return decoded_frame_count_ > 1 ? kAnimationLoopInfinite : kAnimationNone;
+  if (decoded_frame_count_ > 1) {
+    switch (decoder_->repetitionCount) {
+      case AVIF_REPETITION_COUNT_INFINITE:
+        return kAnimationLoopInfinite;
+      case AVIF_REPETITION_COUNT_UNKNOWN:
+        // The AVIF file does not have repetitions specified using an EditList
+        // box. Loop infinitely for backward compatibility with older versions
+        // of Chrome.
+        return kAnimationLoopInfinite;
+      default:
+        return decoder_->repetitionCount;
+    }
+  }
+  return kAnimationNone;
 }
 
 bool AVIFImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {

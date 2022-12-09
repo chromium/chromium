@@ -728,16 +728,19 @@ void TestYUVRed(const char* file_name,
 }  // namespace
 
 TEST(AnimatedAVIFTests, ValidImages) {
+  // star-animated-8bpc.avif, star-animated-10bpc.avif, and
+  // star-animated-12bpc.avif contain an EditListBox whose `flags` field is
+  // equal to 0, meaning the edit list is not repeated. Therefore their
+  // `expected_repetition_count` is 0.
   TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-animated-8bpc.avif", 5u,
-                       kAnimationLoopInfinite);
+                       "/images/resources/avif/star-animated-8bpc.avif", 5u, 0);
   TestByteByByteDecode(
       &CreateAVIFDecoder,
       "/images/resources/avif/star-animated-8bpc-with-alpha.avif", 5u,
       kAnimationLoopInfinite);
   TestByteByByteDecode(&CreateAVIFDecoder,
                        "/images/resources/avif/star-animated-10bpc.avif", 5u,
-                       kAnimationLoopInfinite);
+                       0);
   TestByteByByteDecode(
       &CreateAVIFDecoder,
       "/images/resources/avif/star-animated-10bpc-with-alpha.avif", 5u,
@@ -745,7 +748,7 @@ TEST(AnimatedAVIFTests, ValidImages) {
 #if defined(HAVE_AVIF_BIT_DEPTH_12_SUPPORT)
   TestByteByByteDecode(&CreateAVIFDecoder,
                        "/images/resources/avif/star-animated-12bpc.avif", 5u,
-                       kAnimationLoopInfinite);
+                       0);
   TestByteByByteDecode(
       &CreateAVIFDecoder,
       "/images/resources/avif/star-animated-12bpc-with-alpha.avif", 5u,
