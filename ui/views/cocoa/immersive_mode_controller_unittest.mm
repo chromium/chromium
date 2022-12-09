@@ -103,9 +103,9 @@ TEST_F(CocoaImmersiveModeControllerTest, ImmersiveModeController) {
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
 }
 
-// Test that child windows in immersive mode properly balance the revealed lock
+// Test that child windows in immersive mode properly balance the titlebar lock
 // count.
-TEST_F(CocoaImmersiveModeControllerTest, ChildWindowRevealLock) {
+TEST_F(CocoaImmersiveModeControllerTest, ChildWindowTitlebarLock) {
   // Controller under test.
   auto immersive_mode_controller = std::make_unique<ImmersiveModeController>(
       browser(), overlay(), base::DoNothing());
@@ -114,20 +114,64 @@ TEST_F(CocoaImmersiveModeControllerTest, ChildWindowRevealLock) {
   // Create a popup.
   CocoaTestHelperWindow* popup = [[CocoaTestHelperWindow alloc] init];
   EXPECT_EQ(popup.isVisible, NO);
-  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 0);
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 0);
 
   // Add the popup as a child of overlay.
   [overlay() addChildWindow:popup ordered:NSWindowAbove];
   EXPECT_EQ(popup.isVisible, YES);
-  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 1);
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 1);
 
-  // Make sure that closing the popup results in the reveal lock count
+  // Make sure that closing the popup results in the titlebar lock count
   // decrementing.
   [popup close];
-  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 0);
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 0);
 }
 
-// Test that child windows in immersive mode properly balance the revealed lock
+// Test that reveal locks work as expected.
+TEST_F(CocoaImmersiveModeControllerTest, RevealLock) {
+  // Controller under test.
+  auto immersive_mode_controller = std::make_unique<ImmersiveModeController>(
+      browser(), overlay(), base::DoNothing());
+  immersive_mode_controller->Enable();
+
+  // Autohide top chrome.
+  immersive_mode_controller->UpdateToolbarVisibility(
+      mojom::ToolbarVisibilityStyle::kAutohide);
+  EXPECT_EQ(
+      browser()
+          .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
+      0);
+
+  // Grab 3 reveal locks and make sure that top chrome is displayed.
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
+  immersive_mode_controller->RevealLock();
+  immersive_mode_controller->RevealLock();
+  immersive_mode_controller->RevealLock();
+  EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 3);
+  EXPECT_EQ(
+      browser()
+          .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
+      browser()
+          .titlebarAccessoryViewControllers.firstObject.view.frame.size.height);
+
+  // Let go of 2 reveal locks and make sure that top chrome is still displayed.
+  immersive_mode_controller->RevealUnlock();
+  immersive_mode_controller->RevealUnlock();
+  EXPECT_EQ(
+      browser()
+          .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
+      browser()
+          .titlebarAccessoryViewControllers.firstObject.view.frame.size.height);
+
+  // Let go of the final reveal lock and make sure top chrome is hidden.
+  immersive_mode_controller->RevealUnlock();
+  EXPECT_EQ(
+      browser()
+          .titlebarAccessoryViewControllers.firstObject.fullScreenMinHeight,
+      0);
+}
+
+// Test that child windows in immersive mode properly balance the titlebar lock
 // count.
 TEST_F(CocoaImmersiveModeControllerTest,
        HiddenTitleBarAccessoryViewController) {
@@ -136,11 +180,11 @@ TEST_F(CocoaImmersiveModeControllerTest,
       browser(), overlay(), base::DoNothing());
   immersive_mode_controller->Enable();
 
-  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 0);
-  immersive_mode_controller->RevealLock();
-  immersive_mode_controller->RevealLock();
-  immersive_mode_controller->RevealLock();
-  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 3);
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 0);
+  immersive_mode_controller->TitlebarLock();
+  immersive_mode_controller->TitlebarLock();
+  immersive_mode_controller->TitlebarLock();
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 3);
 
   // One controller for Top Chrome, one for an AppKit workaround
   // (https://crbug.com/1369643) and another hidden controller that pins the
@@ -164,13 +208,13 @@ TEST_F(CocoaImmersiveModeControllerTest,
 
   // There is still an outstanding lock, make sure we still have the hidden
   // controller.
-  immersive_mode_controller->RevealUnlock();
-  immersive_mode_controller->RevealUnlock();
-  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 1);
+  immersive_mode_controller->TitlebarUnlock();
+  immersive_mode_controller->TitlebarUnlock();
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 1);
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 3u);
 
-  immersive_mode_controller->RevealUnlock();
-  EXPECT_EQ(immersive_mode_controller->revealed_lock_count(), 0);
+  immersive_mode_controller->TitlebarUnlock();
+  EXPECT_EQ(immersive_mode_controller->titlebar_lock_count(), 0);
   EXPECT_EQ(browser().titlebarAccessoryViewControllers.count, 2u);
 }
 

@@ -243,7 +243,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
   NSWindow* window = base::mac::ObjCCastStrict<NSWindow>(object);
   if (visible) {
     if (_controller) {
-      _controller->RevealLock();
+      _controller->TitlebarLock();
     }
     return;
   }
@@ -253,7 +253,7 @@ NSView* GetNSTitlebarContainerViewFromWindow(NSWindow* window) {
   // These assumptions makes adding and removing the visible observer trival.
   [window removeObserver:self forKeyPath:@"visible"];
   if (_controller) {
-    _controller->RevealUnlock();
+    _controller->TitlebarUnlock();
   }
 }
 
@@ -393,9 +393,10 @@ void ImmersiveModeController::UpdateToolbarVisibility(
   last_used_style_ = style;
 
   // Only make changes if there are no outstanding reveal locks.
-  if (revealed_lock_count_ > 0) {
+  if (titlebar_lock_count_ > 0 || reveal_lock_count_ > 0) {
     return;
   }
+
   switch (style) {
     case mojom::ToolbarVisibilityStyle::kAlways:
       immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight =
@@ -472,15 +473,31 @@ void ImmersiveModeController::ObserveOverlayChildWindows() {
   };
 }
 
-void ImmersiveModeController::RevealLock() {
-  revealed_lock_count_++;
+void ImmersiveModeController::TitlebarLock() {
+  titlebar_lock_count_++;
   SetTitlebarPinned(true);
 }
 
-void ImmersiveModeController::RevealUnlock() {
-  if (--revealed_lock_count_ < 1) {
+void ImmersiveModeController::TitlebarUnlock() {
+  if (--titlebar_lock_count_ < 1) {
     SetTitlebarPinned(false);
   }
+  DCHECK(titlebar_lock_count_ >= 0);
+}
+
+void ImmersiveModeController::RevealLock() {
+  reveal_lock_count_++;
+  immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight =
+      immersive_mode_titlebar_view_controller_.get().view.frame.size.height;
+}
+
+void ImmersiveModeController::RevealUnlock() {
+  if (--reveal_lock_count_ < 1 &&
+      immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight > 0 &&
+      last_used_style_ == mojom::ToolbarVisibilityStyle::kAutohide) {
+    immersive_mode_titlebar_view_controller_.get().fullScreenMinHeight = 0;
+  }
+  DCHECK(reveal_lock_count_ >= 0);
 }
 
 }  // namespace remote_cocoa

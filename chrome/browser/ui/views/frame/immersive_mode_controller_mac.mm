@@ -82,13 +82,10 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // void Layout(AnimateReveal);
   void LockDestroyed();
-  void SetMenuRevealed(bool revealed);
 
   raw_ptr<BrowserView> browser_view_ = nullptr;  // weak
   std::unique_ptr<ImmersiveRevealedLock> focus_lock_;
-  std::unique_ptr<ImmersiveRevealedLock> menu_lock_;
   bool enabled_ = false;
-  int revealed_lock_count_ = 0;
   base::ScopedObservation<views::View, views::ViewObserver>
       top_container_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
@@ -127,17 +124,6 @@ void ImmersiveModeControllerMac::Init(BrowserView* browser_view) {
   ns_window_mojo_ = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
                         browser_view_->GetWidget()->GetNativeWindow())
                         ->GetNSWindowMojo();
-}
-
-void ImmersiveModeControllerMac::SetMenuRevealed(bool revealed) {
-  if (revealed) {
-    if (!menu_lock_)
-      menu_lock_ = GetRevealedLock(ANIMATE_REVEAL_NO);
-  } else {
-    if (menu_lock_)
-      menu_lock_.reset();
-  }
-  browser_view_->InvalidateLayout();
 }
 
 void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
@@ -197,8 +183,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     browser_view_->overlay_widget()->SetNativeWindowProperty(
         views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView, nullptr);
 
-    menu_lock_.reset();
-    focus_lock_.reset();
+    browser_view_->OnImmersiveRevealEnded();
   }
 }
 
@@ -221,9 +206,7 @@ int ImmersiveModeControllerMac::GetTopContainerVerticalOffset(
 
 std::unique_ptr<ImmersiveRevealedLock>
 ImmersiveModeControllerMac::GetRevealedLock(AnimateReveal animate_reveal) {
-  revealed_lock_count_++;
-  if (enabled_ && revealed_lock_count_ == 1)
-    browser_view_->OnImmersiveRevealStarted();
+  ns_window_mojo_->ImmersiveFullscreenRevealLock();
   return std::make_unique<RevealedLock>(weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -239,7 +222,8 @@ void ImmersiveModeControllerMac::OnWidgetActivationChanged(
     bool active) {}
 
 void ImmersiveModeControllerMac::FullScreenOverlayViewWillAppear() {
-  SetMenuRevealed(true);
+  browser_view_->OnImmersiveRevealStarted();
+  browser_view_->InvalidateLayout();
 }
 
 void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,
@@ -268,9 +252,7 @@ void ImmersiveModeControllerMac::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void ImmersiveModeControllerMac::LockDestroyed() {
-  revealed_lock_count_--;
-  if (revealed_lock_count_ == 0)
-    browser_view_->OnImmersiveRevealEnded();
+  ns_window_mojo_->ImmersiveFullscreenRevealUnlock();
 }
 
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac() {

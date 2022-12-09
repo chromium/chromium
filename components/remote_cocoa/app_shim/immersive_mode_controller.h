@@ -40,12 +40,24 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   void OnTopViewBoundsChanged(const gfx::Rect& bounds);
   void UpdateToolbarVisibility(mojom::ToolbarVisibilityStyle style);
 
+  // Lock the titlebar in place forcing the attached top chrome to also lock in
+  // place. The titlebar will be unlocked once calls to TitlebarLock() are
+  // balanced with TitlebarUnlock(). When a lock is present, both the titlebar
+  // and the top chrome are visible.
+  void TitlebarLock();
+  void TitlebarUnlock();
+  int titlebar_lock_count() { return titlebar_lock_count_; }
+
   // Reveal top chrome leaving it visible until all outstanding calls to
-  // RevealLock() are balanced with RevealUnlock().
+  // RevealLock() are balanced with RevealUnlock(). Reveal locks will persist
+  // through calls to UpdateToolbarVisibility(). For example, the current
+  // ToolbarVisibilityStyle is set to kAlways and RevealLock() has been called.
+  // If ToolbarVisibilityStyle is then changed to kAutohide, top
+  // chrome will stay on screen until RevealUnlock() is called. At that point
+  // top chrome will autohide.
   void RevealLock();
   void RevealUnlock();
-
-  int revealed_lock_count() { return revealed_lock_count_; }
+  int reveal_lock_count() { return reveal_lock_count_; }
 
  private:
   // Pin or unpin the titlebar.
@@ -87,7 +99,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT ImmersiveModeController {
   base::scoped_nsobject<ImmersiveModeWindowObserver>
       immersive_mode_window_observer_;
 
-  int revealed_lock_count_ = 0;
+  int titlebar_lock_count_ = 0;
+  int reveal_lock_count_ = 0;
+
   mojom::ToolbarVisibilityStyle last_used_style_ =
       mojom::ToolbarVisibilityStyle::kAutohide;
 

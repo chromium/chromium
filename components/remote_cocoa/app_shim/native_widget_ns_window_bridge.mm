@@ -933,6 +933,18 @@ void NativeWidgetNSWindowBridge::OnTopContainerViewBoundsChanged(
   }
 }
 
+void NativeWidgetNSWindowBridge::ImmersiveFullscreenRevealLock() {
+  if (immersive_mode_controller_) {
+    immersive_mode_controller_->RevealLock();
+  }
+}
+
+void NativeWidgetNSWindowBridge::ImmersiveFullscreenRevealUnlock() {
+  if (immersive_mode_controller_) {
+    immersive_mode_controller_->RevealUnlock();
+  }
+}
+
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
   can_go_back_ = can_go_back;
 }

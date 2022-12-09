@@ -294,6 +294,14 @@ interface NativeWidgetNSWindow {
   // NSWindow hosting top chrome.
   OnTopContainerViewBoundsChanged(gfx.mojom.Rect bounds);
 
+  // Reveal top chrome leaving it visible until all outstanding calls to
+  // ImmersiveFullscreenRevealLock() are balanced with
+  // ImmersiveFullscreenRevealUnlock(). Top chrome will hover over content.
+  ImmersiveFullscreenRevealLock();
+
+  // Balances calls to ImmersiveFullscreenRevealLock().
+  ImmersiveFullscreenRevealUnlock();
+
   // Set whether can go back to the previous page.
   SetCanGoBack(bool can_go_back);
 

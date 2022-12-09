@@ -292,6 +292,8 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void UpdateToolbarVisibility(
       remote_cocoa::mojom::ToolbarVisibilityStyle style) override;
   void OnTopContainerViewBoundsChanged(const gfx::Rect& bounds) override;
+  void ImmersiveFullscreenRevealLock() override;
+  void ImmersiveFullscreenRevealUnlock() override;
   void SetCanGoBack(bool can_go_back) override;
   void SetCanGoForward(bool can_go_back) override;
 
