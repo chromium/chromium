@@ -28,6 +28,17 @@
 // the suggestion.
 @property(assign, readonly, nonatomic) BOOL requiresReauth;
 
+// If specified, this text will be announced when this suggestion is accepted.
+@property(copy, readonly, nonatomic) NSString* acceptanceA11yAnnouncement;
+
+// Returns FormSuggestion (immutable) with given values.
++ (FormSuggestion*)suggestionWithValue:(NSString*)value
+                    displayDescription:(NSString*)displayDescription
+                                  icon:(NSString*)icon
+                            identifier:(NSInteger)identifier
+                        requiresReauth:(BOOL)requiresReauth
+            acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement;
+
 // Returns FormSuggestion (immutable) with given values.
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription

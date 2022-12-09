@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -111,6 +112,11 @@ void GetFormField(autofill::FormFieldData* field,
     field->value = std::u16string();
   }
 }
+
+// Delay for setting an utterance to be queued, it is required to ensure that
+// standard announcements have already been started and thus would not interrupt
+// the enqueued utterance.
+constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
 }  // namespace
 
@@ -419,6 +425,34 @@ void GetFormField(autofill::FormFieldData* field,
   DCHECK(completion);
   _suggestionHandledCompletion = [completion copy];
 
+  if (suggestion.acceptanceA11yAnnouncement != nil) {
+    __weak AutofillAgent* weakSelf = self;
+    // The announcement is done asyncronously with certain delay to make sure
+    // it is not interrupted by (almost) immediate standard announcements.
+    dispatch_after(
+        dispatch_time(DISPATCH_TIME_NOW,
+                      kA11yAnnouncementQueueDelay.InNanoseconds()),
+        dispatch_get_main_queue(), ^{
+          AutofillAgent* strongSelf = weakSelf;
+          if (!strongSelf)
+            return;
+
+          // Queueing flag allows to preserve standard announcements, they
+          // are conveyed first and then announce this message.
+          // This is a tradeoff as there is no control over the standard
+          // utterances (they are interrupting) and it is not desirable
+          // to interrupt them. Hence acceptance announcement is done after
+          // standard ones (which takes seconds).
+          NSAttributedString* message = [[NSAttributedString alloc]
+              initWithString:suggestion.acceptanceA11yAnnouncement
+                  attributes:@{
+                    UIAccessibilitySpeechAttributeQueueAnnouncement : @YES
+                  }];
+          UIAccessibilityPostNotification(
+              UIAccessibilityAnnouncementNotification, message);
+        });
+  }
+
   if (suggestion.identifier > 0) {
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
@@ -608,12 +642,18 @@ void GetFormField(autofill::FormFieldData* field,
     if (!value)
       continue;
 
-    FormSuggestion* suggestion = [FormSuggestion
-        suggestionWithValue:value
-         displayDescription:displayDescription
-                       icon:base::SysUTF8ToNSString(popup_suggestion.icon)
-                 identifier:popup_suggestion.frontend_id
-             requiresReauth:NO];
+    NSString* acceptanceA11yAnnouncement =
+        popup_suggestion.acceptance_a11y_announcement.has_value()
+            ? SysUTF16ToNSString(*popup_suggestion.acceptance_a11y_announcement)
+            : nil;
+    FormSuggestion* suggestion =
+        [FormSuggestion suggestionWithValue:value
+                         displayDescription:displayDescription
+                                       icon:base::SysUTF8ToNSString(
+                                                popup_suggestion.icon)
+                                 identifier:popup_suggestion.frontend_id
+                             requiresReauth:NO
+                 acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 
     // Put "clear form" entry at the front of the suggestions.
     if (popup_suggestion.frontend_id == autofill::POPUP_ITEM_ID_CLEAR_FORM) {

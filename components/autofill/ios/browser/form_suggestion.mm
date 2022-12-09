@@ -11,10 +11,11 @@
 @implementation FormSuggestion
 
 - (instancetype)initWithValue:(NSString*)value
-           displayDescription:(NSString*)displayDescription
-                         icon:(NSString*)icon
-                   identifier:(NSInteger)identifier
-               requiresReauth:(BOOL)requiresReauth {
+            displayDescription:(NSString*)displayDescription
+                          icon:(NSString*)icon
+                    identifier:(NSInteger)identifier
+                requiresReauth:(BOOL)requiresReauth
+    acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement {
   self = [super init];
   if (self) {
     _value = [value copy];
@@ -22,8 +23,23 @@
     _icon = [icon copy];
     _identifier = identifier;
     _requiresReauth = requiresReauth;
+    _acceptanceA11yAnnouncement = [acceptanceA11yAnnouncement copy];
   }
   return self;
+}
+
++ (FormSuggestion*)suggestionWithValue:(NSString*)value
+                    displayDescription:(NSString*)displayDescription
+                                  icon:(NSString*)icon
+                            identifier:(NSInteger)identifier
+                        requiresReauth:(BOOL)requiresReauth
+            acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement {
+  return [[FormSuggestion alloc] initWithValue:value
+                            displayDescription:displayDescription
+                                          icon:icon
+                                    identifier:identifier
+                                requiresReauth:requiresReauth
+                    acceptanceA11yAnnouncement:acceptanceA11yAnnouncement];
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
@@ -35,7 +51,8 @@
                             displayDescription:displayDescription
                                           icon:icon
                                     identifier:identifier
-                                requiresReauth:requiresReauth];
+                                requiresReauth:requiresReauth
+                    acceptanceA11yAnnouncement:nil];
 }
 
 @end
