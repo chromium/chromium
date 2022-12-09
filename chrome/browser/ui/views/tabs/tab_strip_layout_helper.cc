@@ -71,9 +71,7 @@ TabStripLayoutHelper::TabStripLayoutHelper(
     : controller_(controller),
       get_tabs_callback_(get_tabs_callback),
       active_tab_width_(TabStyle::GetStandardWidth()),
-      inactive_tab_width_(TabStyle::GetStandardWidth()),
-      first_non_pinned_tab_index_(0),
-      first_non_pinned_tab_x_(0) {}
+      inactive_tab_width_(TabStyle::GetStandardWidth()) {}
 
 TabStripLayoutHelper::~TabStripLayoutHelper() = default;
 

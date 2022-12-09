@@ -50,8 +50,6 @@ class TabStripLayoutHelper {
 
   int active_tab_width() { return active_tab_width_; }
   int inactive_tab_width() { return inactive_tab_width_; }
-  int first_non_pinned_tab_index() { return first_non_pinned_tab_index_; }
-  int first_non_pinned_tab_x() { return first_non_pinned_tab_x_; }
 
   // Returns the number of pinned tabs in the tabstrip.
   size_t GetPinnedTabCount() const;
@@ -169,9 +167,6 @@ class TabStripLayoutHelper {
   // into these widths, the initial tabs in the strip will be 1 px larger.
   int active_tab_width_;
   int inactive_tab_width_;
-
-  int first_non_pinned_tab_index_;
-  int first_non_pinned_tab_x_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_LAYOUT_HELPER_H_
