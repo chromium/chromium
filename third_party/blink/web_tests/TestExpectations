@@ -3013,12 +3013,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/fullscreen/api/document-exit-fullscreen-nested-in-iframe.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-general.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/content-security-policy/embedded-enforcement/subsumption_algorithm-nonces.html [ Timeout ]
-crbug.com/626703 [ Mac10.15 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
-crbug.com/626703 [ Mac12 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
-crbug.com/626703 [ Mac12-arm64 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
-crbug.com/626703 [ Win11 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/prefetch-traverse-reload.sub.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
 crbug.com/626703 external/wpt/geolocation-API/enabled-by-permission-policy-attribute.https.sub.html [ Timeout ]
@@ -5399,7 +5393,6 @@ crbug.com/1219499 external/wpt/websockets/Create-blocked-port.any.html?wpt_flags
 crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Failure Pass Timeout ]
 
 # Sheriff
-crbug.com/1222097 http/tests/canvas/captureStream-on-detached-canvas.html [ Crash Failure Pass Timeout ]
 crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1222097 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/worker-inheritance.sub.https.html [ Crash Failure Pass Timeout ]
 crbug.com/1222097 external/wpt/uievents/order-of-events/mouse-events/mouseover-out.html [ Crash Failure Pass Timeout ]
