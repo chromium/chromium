@@ -27,6 +27,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/cpp/net_adapters.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -300,7 +301,11 @@ void ServiceWorkerSingleScriptUpdateChecker::OnUploadProgress(
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::OnTransferSizeUpdated(
-    int32_t transfer_size_diff) {}
+    int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::
+          kServiceWorkerSingleScriptUpdateChecker);
+}
 
 void ServiceWorkerSingleScriptUpdateChecker::OnComplete(
     const network::URLLoaderCompletionStatus& status) {

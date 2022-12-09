@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom-blink.h"
@@ -85,7 +86,10 @@ void NavigationPreloadRequest::OnUploadProgress(
 }
 
 void NavigationPreloadRequest::OnTransferSizeUpdated(
-    int32_t transfer_size_diff) {}
+    int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kNavigationPreloadRequest);
+}
 
 void NavigationPreloadRequest::OnComplete(
     const network::URLLoaderCompletionStatus& status) {

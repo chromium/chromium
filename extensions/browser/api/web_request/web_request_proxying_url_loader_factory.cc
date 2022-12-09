@@ -55,6 +55,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -484,6 +485,9 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::OnUploadProgress(
 
 void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kWebRequestProxyingURLLoaderFactory);
+
   target_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 

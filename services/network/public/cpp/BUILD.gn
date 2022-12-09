@@ -102,6 +102,7 @@ component("cpp") {
     "parsed_headers.h",
     "private_network_access_check_result.cc",
     "private_network_access_check_result.h",
+    "record_ontransfersizeupdate_utils.h",
     "request_destination.cc",
     "request_destination.h",
     "request_mode.cc",

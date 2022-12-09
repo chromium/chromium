@@ -36,6 +36,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/header_util.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -1652,6 +1653,8 @@ void InterceptionJob::OnUploadProgress(int64_t current_position,
 }
 
 void InterceptionJob::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kInterceptionJob);
   if (ShouldBypassForResponse())
     client_->OnTransferSizeUpdated(transfer_size_diff);
   else

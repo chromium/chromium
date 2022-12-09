@@ -39,6 +39,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/data_element.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/cpp/simple_url_loader_throttle.h"
@@ -1803,7 +1804,10 @@ void SimpleURLLoaderImpl::OnReceiveRedirect(
                               {} /* new_url */);
 }
 
-void SimpleURLLoaderImpl::OnTransferSizeUpdated(int32_t transfer_size_diff) {}
+void SimpleURLLoaderImpl::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kSimpleURLLoaderImpl);
+}
 
 void SimpleURLLoaderImpl::OnUploadProgress(
     int64_t current_position,

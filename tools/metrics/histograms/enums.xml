@@ -74542,6 +74542,46 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OnTransferSizeUpdatedFrom">
+  <int value="0" label="CacheAliasSearchPrefetchURLLoader (Proxy)"/>
+  <int value="1" label="CorsURLLoader (Proxy)"/>
+  <int value="2" label="DelegatingURLLoaderClient (Proxy)"/>
+  <int value="3" label="DownloadResponseHandler (No-op)"/>
+  <int value="4" label="DriveFsURLLoaderClient (No-op)"/>
+  <int value="5" label="EmptyURLLoaderClient (No-op)"/>
+  <int value="6" label="FakeEmbeddedWorkerInstanceClient (No-op)"/>
+  <int value="7" label="HeaderRewritingURLLoaderClient (Proxy)"/>
+  <int value="8" label="InterceptedRequest (Proxy)"/>
+  <int value="9" label="InterceptionJob (Proxy+Work)"/>
+  <int value="10" label="MimeSniffingURLLoader (Proxy)"/>
+  <int value="11" label="MojoURLLoaderClient (Work)"/>
+  <int value="12" label="NavigationBodyLoader (Work)"/>
+  <int value="13" label="NavigationPreloadRequest (No-op)"/>
+  <int value="14" label="NavigationURLLoaderImpl (No-op)"/>
+  <int value="15" label="ObjectNavigationFallbackBodyLoader (No-op)"/>
+  <int value="16" label="PrefetchProxyProxyingURLLoaderFactory (Proxy)"/>
+  <int value="17" label="PrefetchURLLoader (Proxy)"/>
+  <int value="18" label="PreloadURLLoaderClient (No-op)"/>
+  <int value="19" label="ProxyingURLLoaderFactory (Proxy)"/>
+  <int value="20" label="ResultRecordingClient (Proxy)"/>
+  <int value="21" label="ServiceWorkerNewScriptFetcher (No-op)"/>
+  <int value="22" label="ServiceWorkerSingleScriptUpdateChecker (No-op)"/>
+  <int value="23" label="SignedExchangeCertFetcher (No-op)"/>
+  <int value="24" label="SignedExchangeLoader (No-op)"/>
+  <int value="25" label="SignedExchangePrefetchHandler (No-op)"/>
+  <int value="26" label="SimpleURLLoaderImpl (No-op)"/>
+  <int value="27" label="StreamingSearchPrefetchURLLoader (Proxy+Work)"/>
+  <int value="28" label="ThrottlingURLLoader (MaybeProxy)"/>
+  <int value="29" label="URLLoaderClientCheckedRemote (Proxy)"/>
+  <int value="30" label="URLLoaderRelay (Proxy)"/>
+  <int value="31" label="URLLoaderStatusMonitor"/>
+  <int value="32" label="WebBundleURLLoaderClient (Proxy)"/>
+  <int value="33" label="WebRequestProxyingURLLoaderFactory (Proxy)"/>
+  <int value="34" label="WorkerMainScriptLoader (No-op)"/>
+  <int value="35" label="WorkerScriptFetcher (No-op)"/>
+  <int value="36" label="WorkerScriptLoader (Proxy)"/>
+</enum>
+
 <enum name="OobeUserClickTarget">
   <int value="0" label="Shut down button"/>
   <int value="1" label="Browse as guest button"/>

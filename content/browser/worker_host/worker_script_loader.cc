@@ -11,6 +11,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/url_request/redirect_util.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 
@@ -264,6 +265,8 @@ void WorkerScriptLoader::OnUploadProgress(
 
 void WorkerScriptLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kWorkerScriptLoader);
   client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 

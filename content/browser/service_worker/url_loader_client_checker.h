@@ -7,6 +7,7 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -55,6 +56,8 @@ class URLLoaderClientCheckedRemote final {
                                 std::move(callback));
     }
     void OnTransferSizeUpdated(int32_t transfer_size_diff) {
+      network::RecordOnTransferSizeUpdatedUMA(
+          network::OnTransferSizeUpdatedFrom::kURLLoaderClientCheckedRemote);
       client_->OnTransferSizeUpdated(transfer_size_diff);
     }
     NOINLINE void OnComplete(const network::URLLoaderCompletionStatus& status) {

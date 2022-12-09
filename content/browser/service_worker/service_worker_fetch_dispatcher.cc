@@ -132,6 +132,8 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
                               std::move(ack_callback));
   }
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
+    network::RecordOnTransferSizeUpdatedUMA(
+        network::OnTransferSizeUpdatedFrom::kDelegatingURLLoaderClient);
     client_->OnTransferSizeUpdated(transfer_size_diff);
   }
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {

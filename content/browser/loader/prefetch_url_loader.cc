@@ -18,6 +18,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -232,6 +233,8 @@ void PrefetchURLLoader::OnUploadProgress(int64_t current_position,
 }
 
 void PrefetchURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kPrefetchURLLoader);
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 

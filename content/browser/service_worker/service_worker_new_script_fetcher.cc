@@ -10,6 +10,7 @@
 #include "content/browser/service_worker/service_worker_new_script_loader.h"
 #include "content/public/browser/global_request_id.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -157,6 +158,9 @@ void ServiceWorkerNewScriptFetcher::OnUploadProgress(int64_t,
   url_loader_client_receiver_.ReportBadMessage("SWNSF_BAD_MSG");
 }
 void ServiceWorkerNewScriptFetcher::OnTransferSizeUpdated(int32_t) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kServiceWorkerNewScriptFetcher);
+
   url_loader_client_receiver_.ReportBadMessage("SWNSF_BAD_MSG");
 }
 void ServiceWorkerNewScriptFetcher::OnComplete(

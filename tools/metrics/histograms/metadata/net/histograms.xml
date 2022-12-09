@@ -2082,6 +2082,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.OnTransferSizeUpdated.Experimental.OverridenBy"
+    enum="OnTransferSizeUpdatedFrom" expires_after="2023-04-01">
+  <owner>amanvr@chromium.org</owner>
+  <owner>carlscab@chromium.org</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    Records the number of times OnTransferSizeUpdated is called from different
+    overriding methods. This UMA is useful to understand the distribution of
+    calls being made to this method and will help see the reductions in IPC when
+    we implement a prototype (b/257057692) where we remove unnecessary
+    URLLoaderClient::OnTransferSizeUpdated IPCs.
+  </summary>
+</histogram>
+
 <histogram name="Net.Prefetch.HitBytes" units="bytes" expires_after="M87">
   <owner>jkarlin@chromium.org</owner>
   <summary>

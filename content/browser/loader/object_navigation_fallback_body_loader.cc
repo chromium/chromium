@@ -20,6 +20,7 @@
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -321,6 +322,8 @@ void ObjectNavigationFallbackBodyLoader::OnUploadProgress(
 void ObjectNavigationFallbackBodyLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   // Not needed so implementation omitted.
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kObjectNavigationFallbackBodyLoader);
 }
 
 void ObjectNavigationFallbackBodyLoader::OnComplete(

@@ -987,6 +987,12 @@ void NavigationURLLoaderImpl::OnUploadProgress(
   NOTREACHED();
 }
 
+void NavigationURLLoaderImpl::OnTransferSizeUpdated(
+    int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kNavigationURLLoaderImpl);
+}
+
 void NavigationURLLoaderImpl::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   // Successful load must have used OnResponseStarted first. In this case, the

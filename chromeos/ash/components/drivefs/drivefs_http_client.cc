@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -133,7 +134,10 @@ class DriveFsURLLoaderClient : public network::mojom::URLLoaderClient,
     std::move(ack_callback).Run();
   }
 
-  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
+    network::RecordOnTransferSizeUpdatedUMA(
+        network::OnTransferSizeUpdatedFrom::kDriveFsURLLoaderClient);
+  }
 
   void OnComplete(const network::URLLoaderCompletionStatus& status) override {
     DCHECK(IsFirstCall(CallbackState::kRequestComplete));

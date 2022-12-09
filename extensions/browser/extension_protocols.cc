@@ -92,6 +92,7 @@
 #include "net/http/http_response_info.h"
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -155,6 +156,9 @@ class ResultRecordingClient : public network::mojom::URLLoaderClient {
   }
 
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
+    network::RecordOnTransferSizeUpdatedUMA(
+        network::OnTransferSizeUpdatedFrom::kResultRecordingClient);
+
     real_client_->OnTransferSizeUpdated(transfer_size_diff);
   }
 

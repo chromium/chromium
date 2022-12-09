@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
@@ -87,7 +88,10 @@ void EmptyURLLoaderClient::OnUploadProgress(int64_t current_position,
   std::move(callback).Run();
 }
 
-void EmptyURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {}
+void EmptyURLLoaderClient::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kEmptyURLLoaderClient);
+}
 
 void EmptyURLLoaderClient::OnComplete(const URLLoaderCompletionStatus& status) {
   done_status_ = status;

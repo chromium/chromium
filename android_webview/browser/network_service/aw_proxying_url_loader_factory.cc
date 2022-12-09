@@ -38,6 +38,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -608,6 +609,8 @@ void InterceptedRequest::OnUploadProgress(int64_t current_position,
 }
 
 void InterceptedRequest::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kInterceptedRequest);
   target_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 

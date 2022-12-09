@@ -26,6 +26,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
@@ -205,6 +206,9 @@ void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::OnUploadProgress(
 
 void PrefetchProxyProxyingURLLoaderFactory::InProgressRequest::
     OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::
+          kPrefetchProxyProxyingURLLoaderFactory);
   target_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 

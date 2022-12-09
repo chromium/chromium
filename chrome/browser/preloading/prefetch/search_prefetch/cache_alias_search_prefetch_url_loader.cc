@@ -16,6 +16,7 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -173,6 +174,8 @@ void CacheAliasSearchPrefetchURLLoader::OnUploadProgress(
 void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   DCHECK(forwarding_client_);
+  network::RecordOnTransferSizeUpdatedUMA(
+      network::OnTransferSizeUpdatedFrom::kCacheAliasSearchPrefetchURLLoader);
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
