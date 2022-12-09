@@ -23,8 +23,10 @@ but the renderer is in-process by default.
 ## Out-of-process renderer
 
 Starting in Oreo (API 26) WebView has a single out-of-process renderer (we
-sometimes refer to this as "multiprocess mode"). This is enabled for high-memory
-devices (low-memory devices still use an in-process renderer as before).
+sometimes refer to this as "multiprocess mode"). This is enabled for all 64-bit
+devices, for 32-bit devices with high memory, and for all devices starting in
+Android 11 (API 31). Low memory 32-bit devices running API26-30 still use an
+in-process renderer as before.
 
 The out-of-process renderer is enabled by a new Android API
 (`android:externalService`), to create sandboxed processes which run in the
