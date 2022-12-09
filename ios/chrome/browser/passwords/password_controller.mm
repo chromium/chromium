@@ -60,7 +60,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
@@ -371,12 +370,6 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
   return authenticatedIdentity.userEmail;
 }
 
-// The dispatcher used for ApplicationCommands.
-- (id<ApplicationCommands>)applicationCommandsHandler {
-  DCHECK(self.dispatcher);
-  return HandlerForProtocol(self.dispatcher, ApplicationCommands);
-}
-
 // The dispatcher used for PasswordBreachCommands.
 - (id<PasswordBreachCommands>)passwordBreachDispatcher {
   DCHECK(self.dispatcher);
@@ -456,25 +449,21 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 
   switch (type) {
     case PasswordInfoBarType::SAVE: {
+      // Count only new infobar showings, not replacements.
+      if (![self findInfobarOfType:InfobarType::kInfobarTypePasswordSave
+                            manual:manual]) {
+        base::UmaHistogramBoolean("PasswordManager.iOS.InfoBar.PasswordSave",
+                                  true);
+      }
+
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
           authenticatedIdentity.userEmail, isSyncUser,
-          /*password_update*/ false, std::move(form));
-      delegate->set_handler(self.applicationCommandsHandler);
-
-        // Count only new infobar showings, not replacements.
-        if (![self findInfobarOfType:InfobarType::kInfobarTypePasswordSave
-                              manual:manual]) {
-          base::UmaHistogramBoolean("PasswordManager.iOS.InfoBar.PasswordSave",
-                                    true);
-        }
-
-        // If manual save, skip showing banner.
-        bool skipBanner = manual;
-        std::unique_ptr<InfoBarIOS> infobar =
-            std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypePasswordSave,
-                                         std::move(delegate), skipBanner);
-        infoBarManager->AddInfoBar(std::move(infobar),
-                                   /*replace_existing=*/true);
+          /*password_update=*/false, std::move(form));
+      std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
+          InfobarType::kInfobarTypePasswordSave, std::move(delegate),
+          /*skip_banner=*/manual);
+      infoBarManager->AddInfoBar(std::move(infobar),
+                                 /*replace_existing=*/true);
       break;
     }
     case PasswordInfoBarType::UPDATE: {
@@ -487,12 +476,10 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 
         auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
             authenticatedIdentity.userEmail, isSyncUser,
-            /*password_update*/ true, std::move(form));
-        delegate->set_handler(self.applicationCommandsHandler);
-        // If manual save, skip showing banner.
+            /*password_update=*/true, std::move(form));
         std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
             InfobarType::kInfobarTypePasswordUpdate, std::move(delegate),
-            /*=skip_banner*/ manual);
+            /*skip_banner=*/manual);
         infoBarManager->AddInfoBar(std::move(infobar),
                                    /*replace_existing=*/true);
       break;

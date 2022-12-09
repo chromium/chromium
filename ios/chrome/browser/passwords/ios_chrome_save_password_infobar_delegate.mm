@@ -135,7 +135,11 @@ IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
                         ? PasswordInfobarType::kPasswordInfobarTypeUpdate
                         : PasswordInfobarType::kPasswordInfobarTypeSave),
       user_email_(user_email),
-      password_update_(password_update) {}
+      password_update_(password_update) {
+  if (is_sync_user) {
+    DCHECK([user_email_ length]);
+  }
+}
 
 IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
     // If by any reason this delegate gets dealloc before the Infobar is
@@ -182,11 +186,6 @@ NSString* IOSChromeSavePasswordInfoBarDelegate::GetPasswordText() const {
 
 NSString* IOSChromeSavePasswordInfoBarDelegate::GetURLHostText() const {
   return base::SysUTF8ToNSString(form_to_save_->GetURL().host());
-}
-
-void IOSChromeSavePasswordInfoBarDelegate::set_handler(
-    id<ApplicationCommands> handler) {
-  handler_ = handler;
 }
 
 bool IOSChromeSavePasswordInfoBarDelegate::ShouldExpire(

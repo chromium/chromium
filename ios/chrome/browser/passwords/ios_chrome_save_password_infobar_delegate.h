@@ -12,8 +12,6 @@
 
 #import "ios/chrome/browser/passwords/ios_chrome_password_infobar_metrics_recorder.h"
 
-@protocol ApplicationCommands;
-
 namespace password_manager {
 class PasswordFormManagerForUI;
 }
@@ -26,6 +24,7 @@ class PasswordFormManagerForUI;
 // and should Update the credentials instead of Saving new ones.
 class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  // If `is_sync_user` is true, `user_email` must be non-empty.
   IOSChromeSavePasswordInfoBarDelegate(
       NSString* user_email,
       bool is_sync_user,
@@ -57,10 +56,7 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // The URL host for which the credentials are being saved for.
   NSString* GetURLHostText() const;
 
-  // Sets the dispatcher for this delegate.
-  void set_handler(id<ApplicationCommands> handler);
-
-  // InfoBarDelegate implementation
+  // InfoBarDelegate implementation.
   bool ShouldExpire(const NavigationDetails& details) const override;
 
   // ConfirmInfoBarDelegate implementation.
@@ -91,11 +87,11 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // TODO(crbug.com/1394793): Fix dismissal handlers.
   virtual void InfobarDismissed();
 
-  // true if password is being updated at the moment the InfobarModal is
+  // True if password is being updated at the moment the InfobarModal is
   // created.
   bool IsPasswordUpdate() const;
 
-  // true if the current set of credentials has already been saved at the moment
+  // True if the current set of credentials has already been saved at the moment
   // the InfobarModal is created.
   bool IsCurrentPasswordSaved() const;
 
@@ -111,28 +107,26 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Whether to show the additional footer.
   const bool is_sync_user_;
 
-  // The PasswordInfobarType for this delegate. Set at initialization and won't
-  // change throughout the life of the delegate.
+  // The PasswordInfobarType for this delegate.
   const PasswordInfobarType infobar_type_;
 
   // Used to track the results we get from the info bar.
   password_manager::metrics_util::UIDismissalReason infobar_response_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;
 
-  NSString* user_email_;
+  // The signed-in / syncing account. In particular if `is_sync_user_` is true,
+  // this is non-empty.
+  __strong NSString* user_email_;
 
-  // Handler for calling Application commands.
-  __weak id<ApplicationCommands> handler_ = nil;
-
-  // true if password is being updated at the moment the InfobarModal is
+  // True if password is being updated at the moment the InfobarModal is
   // created.
   bool password_update_ = false;
 
-  // true if the current set of credentials has already been saved at the moment
+  // True if the current set of credentials has already been saved at the moment
   // the InfobarModal is created.
   bool current_password_saved_ = false;
 
-  // YES if an Infobar is being presented by this delegate.
+  // True if an Infobar is being presented by this delegate.
   bool infobar_presenting_ = false;
 };
 
