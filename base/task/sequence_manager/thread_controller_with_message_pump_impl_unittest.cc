@@ -230,11 +230,13 @@ class ThreadControllerWithMessagePumpTest : public testing::Test {
 
 TEST_F(ThreadControllerWithMessagePumpTest, ScheduleDelayedWork) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)),
+                       clock_.NowTicks());
   MockCallback<OnceClosure> task2;
   task_source_.AddTask(FROM_HERE, task2.Get());
   MockCallback<OnceClosure> task3;
-  task_source_.AddTask(FROM_HERE, task3.Get(), FromNow(Seconds(20)));
+  task_source_.AddTask(FROM_HERE, task3.Get(), FromNow(Seconds(20)),
+                       clock_.NowTicks());
 
   // Call a no-op DoWork. Expect that it doesn't do any work.
   clock_.Advance(Seconds(5));
@@ -297,7 +299,8 @@ TEST_F(ThreadControllerWithMessagePumpTest, SetNextDelayedDoWork_CapAtOneDay) {
 
 TEST_F(ThreadControllerWithMessagePumpTest, DelayedWork_CapAtOneDay) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Days(10)));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Days(10)),
+                       clock_.NowTicks());
 
   auto next_work_info = thread_controller_.DoWork();
   EXPECT_EQ(next_work_info.delayed_run_time, FromNow(Days(1)));
@@ -305,7 +308,8 @@ TEST_F(ThreadControllerWithMessagePumpTest, DelayedWork_CapAtOneDay) {
 
 TEST_F(ThreadControllerWithMessagePumpTest, DoWorkDoesntScheduleDelayedWork) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)),
+                       clock_.NowTicks());
 
   EXPECT_CALL(*message_pump_, ScheduleDelayedWork_TimeTicks(_)).Times(0);
   auto next_work_info = thread_controller_.DoWork();
@@ -734,11 +738,14 @@ TEST_F(ThreadControllerWithMessagePumpTest, NativeNestedMessageLoop) {
 
 TEST_F(ThreadControllerWithMessagePumpTest, RunWithTimeout) {
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(5)));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(5)),
+                       clock_.NowTicks());
   MockCallback<OnceClosure> task2;
-  task_source_.AddTask(FROM_HERE, task2.Get(), FromNow(Seconds(10)));
+  task_source_.AddTask(FROM_HERE, task2.Get(), FromNow(Seconds(10)),
+                       clock_.NowTicks());
   MockCallback<OnceClosure> task3;
-  task_source_.AddTask(FROM_HERE, task3.Get(), FromNow(Seconds(20)));
+  task_source_.AddTask(FROM_HERE, task3.Get(), FromNow(Seconds(20)),
+                       clock_.NowTicks());
 
   EXPECT_CALL(*message_pump_, Run(_))
       .WillOnce(Invoke([&](MessagePump::Delegate*) {
@@ -766,7 +773,8 @@ TEST_F(ThreadControllerWithMessagePumpTest, RunWithTimeout) {
 #if BUILDFLAG(IS_WIN)
 TEST_F(ThreadControllerWithMessagePumpTest, SetHighResolutionTimer) {
   MockCallback<OnceClosure> task;
-  task_source_.AddTask(FROM_HERE, task.Get(), FromNow(Seconds(5)));
+  task_source_.AddTask(FROM_HERE, task.Get(), FromNow(Seconds(5)),
+                       clock_.NowTicks());
 
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
 
@@ -801,7 +809,8 @@ TEST_F(ThreadControllerWithMessagePumpTest, SetHighResolutionTimer) {
 TEST_F(ThreadControllerWithMessagePumpTest,
        SetHighResolutionTimerWithPowerSuspend) {
   MockCallback<OnceClosure> task;
-  task_source_.AddTask(FROM_HERE, task.Get(), FromNow(Seconds(5)));
+  task_source_.AddTask(FROM_HERE, task.Get(), FromNow(Seconds(5)),
+                       clock_.NowTicks());
 
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
 
@@ -843,9 +852,11 @@ TEST_F(ThreadControllerWithMessagePumpTest,
   ThreadTaskRunnerHandle handle(MakeRefCounted<FakeTaskRunner>());
 
   MockCallback<OnceClosure> task1;
-  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)));
+  task_source_.AddTask(FROM_HERE, task1.Get(), FromNow(Seconds(10)),
+                       clock_.NowTicks());
   MockCallback<OnceClosure> task2;
-  task_source_.AddTask(FROM_HERE, task2.Get(), FromNow(Seconds(15)));
+  task_source_.AddTask(FROM_HERE, task2.Get(), FromNow(Seconds(15)),
+                       clock_.NowTicks());
 
   clock_.Advance(Seconds(5));
 

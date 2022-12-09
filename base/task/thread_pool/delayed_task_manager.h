@@ -61,9 +61,8 @@ class BASE_EXPORT DelayedTaskManager {
   // Returns the |delayed_run_time| of the next scheduled task, if any.
   absl::optional<TimeTicks> NextScheduledRunTime() const;
 
-  // Returns true if there are any pending tasks in the task source which
-  // require high resolution timing.
-  bool HasPendingHighResolutionTasksForTesting() const;
+  // Returns the DelayPolicy for the next delayed task.
+  subtle::DelayPolicy TopTaskDelayPolicyForTesting() const;
 
  private:
   struct DelayedTask {
@@ -129,7 +128,6 @@ class BASE_EXPORT DelayedTaskManager {
 
   IntrusiveHeap<DelayedTask, std::greater<>> delayed_task_queue_
       GUARDED_BY(queue_lock_);
-  int pending_high_res_task_count_ GUARDED_BY(queue_lock_){0};
 
   bool align_wake_ups_ GUARDED_BY(queue_lock_) = false;
 

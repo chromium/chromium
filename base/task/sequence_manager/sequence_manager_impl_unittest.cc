@@ -338,8 +338,7 @@ class FixtureWithMockMessagePump : public Fixture {
 
   TimeTicks FromStartAligned(TimeDelta delta) const override {
     if (wake_up_type_ == WakeUpType::kAlign) {
-      return (start_time_ + delta)
-          .SnappedToNextTick(TimeTicks(), Milliseconds(8));
+      return (start_time_ + delta).SnappedToNextTick(TimeTicks(), kLeeway);
     }
     return start_time_ + delta;
   }
@@ -449,7 +448,9 @@ class SequenceManagerTest
 auto GetTestTypes() {
   return testing::Values(
       std::make_tuple(RunnerType::kMessagePump, WakeUpType::kDefault),
+#if !BUILDFLAG(IS_WIN)
       std::make_tuple(RunnerType::kMessagePump, WakeUpType::kAlign),
+#endif
       std::make_tuple(RunnerType::kMockTaskRunner, WakeUpType::kDefault));
 }
 
@@ -917,7 +918,7 @@ TEST_P(SequenceManagerTest, DelayedTaskAtPosting_FlexiblePreferEarly) {
 
   TimeTicks start_time = sequence_manager()->NowTicks();
   std::vector<EnqueueOrder> run_order;
-  constexpr TimeDelta kDelay(Milliseconds(10));
+  constexpr TimeDelta kDelay(Milliseconds(20));
   auto handle = queue->task_runner()->PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
       BindOnce(&TestTask, 1, &run_order),
@@ -2424,21 +2425,21 @@ TEST_P(SequenceManagerTest,
 
   sequence_manager()->SetTimeDomain(domain.get());
   queue->task_runner()->PostDelayedTask(
-      FROM_HERE, BindOnce(&TestTask, 1, &run_order), Milliseconds(40));
+      FROM_HERE, BindOnce(&TestTask, 1, &run_order), Milliseconds(400));
 
   sequence_manager()->ResetTimeDomain();
   queue->task_runner()->PostDelayedTask(
-      FROM_HERE, BindOnce(&TestTask, 2, &run_order), Milliseconds(30));
+      FROM_HERE, BindOnce(&TestTask, 2, &run_order), Milliseconds(300));
 
   sequence_manager()->SetTimeDomain(domain.get());
   queue->task_runner()->PostDelayedTask(
-      FROM_HERE, BindOnce(&TestTask, 3, &run_order), Milliseconds(20));
+      FROM_HERE, BindOnce(&TestTask, 3, &run_order), Milliseconds(200));
 
   sequence_manager()->ResetTimeDomain();
   queue->task_runner()->PostDelayedTask(
-      FROM_HERE, BindOnce(&TestTask, 4, &run_order), Milliseconds(10));
+      FROM_HERE, BindOnce(&TestTask, 4, &run_order), Milliseconds(100));
 
-  FastForwardBy(Milliseconds(40));
+  FastForwardBy(Milliseconds(400));
   EXPECT_THAT(run_order, ElementsAre(4u, 3u, 2u, 1u));
 
   queue->ShutdownTaskQueue();

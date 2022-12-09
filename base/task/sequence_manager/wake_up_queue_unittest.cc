@@ -77,6 +77,8 @@ class MockWakeUpQueue : public WakeUpQueue {
 class WakeUpQueueTest : public testing::Test {
  public:
   void SetUp() final {
+    // A null clock triggers some assertions.
+    tick_clock_.Advance(Milliseconds(1));
     wake_up_queue_ = std::make_unique<MockWakeUpQueue>();
     task_queue_ = std::make_unique<TaskQueueImplForTest>(
         nullptr, wake_up_queue_.get(), TaskQueue::Spec(QueueName::TEST_TQ));

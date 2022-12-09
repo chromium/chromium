@@ -275,7 +275,7 @@ TEST_F(ResponsivenessWatcherTest, BlockedOrLowPriorityTask) {
 // Test that the queue duration of a delayed task is zero.
 TEST_F(ResponsivenessWatcherTest, DelayedTask) {
   base::PendingTask task(FROM_HERE, base::OnceClosure(),
-                         /*queue_time=*/base::TimeTicks(),
+                         /*queue_time=*/base::TimeTicks::Now(),
                          /*delayed_run_time=*/base::TimeTicks::Now());
   task_environment_.FastForwardBy(base::Seconds(1));
 

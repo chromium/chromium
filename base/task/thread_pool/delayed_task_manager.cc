@@ -87,6 +87,7 @@ void DelayedTaskManager::AddDelayedTask(
     scoped_refptr<TaskRunner> task_runner) {
   DCHECK(task.task);
   DCHECK(!task.delayed_run_time.is_null());
+  DCHECK(!task.queue_time.is_null());
 
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
@@ -97,8 +98,6 @@ void DelayedTaskManager::AddDelayedTask(
     CheckedAutoLock auto_lock(queue_lock_);
     auto [old_process_ripe_tasks_time, old_delay_policy] =
         GetTimeAndDelayPolicyToScheduleProcessRipeTasksLockRequired();
-    pending_high_res_task_count_ +=
-        (task.delay_policy == subtle::DelayPolicy::kPrecise);
     delayed_task_queue_.insert(DelayedTask(std::move(task),
                                            std::move(post_task_now_callback),
                                            std::move(task_runner)));
@@ -139,10 +138,6 @@ void DelayedTaskManager::ProcessRipeTasks() {
       // and the move doesn't alter the sort order.
       ripe_delayed_tasks.push_back(
           std::move(const_cast<DelayedTask&>(delayed_task_queue_.top())));
-      pending_high_res_task_count_ -=
-          (delayed_task_queue_.top().task.delay_policy ==
-           subtle::DelayPolicy::kPrecise);
-      DCHECK_GE(pending_high_res_task_count_, 0);
       delayed_task_queue_.pop();
     }
     std::tie(process_ripe_tasks_time, std::ignore) =
@@ -170,9 +165,9 @@ absl::optional<TimeTicks> DelayedTaskManager::NextScheduledRunTime() const {
   return delayed_task_queue_.top().task.delayed_run_time;
 }
 
-bool DelayedTaskManager::HasPendingHighResolutionTasksForTesting() const {
+subtle::DelayPolicy DelayedTaskManager::TopTaskDelayPolicyForTesting() const {
   CheckedAutoLock auto_lock(queue_lock_);
-  return pending_high_res_task_count_;
+  return delayed_task_queue_.top().task.delay_policy;
 }
 
 std::pair<TimeTicks, subtle::DelayPolicy> DelayedTaskManager::
@@ -184,9 +179,7 @@ std::pair<TimeTicks, subtle::DelayPolicy> DelayedTaskManager::
   }
 
   const DelayedTask& ripest_delayed_task = delayed_task_queue_.top();
-  subtle::DelayPolicy delay_policy =
-      pending_high_res_task_count_ ? subtle::DelayPolicy::kPrecise
-                                   : ripest_delayed_task.task.delay_policy;
+  subtle::DelayPolicy delay_policy = ripest_delayed_task.task.delay_policy;
 
   TimeTicks delayed_run_time = ripest_delayed_task.task.delayed_run_time;
   if (align_wake_ups_) {

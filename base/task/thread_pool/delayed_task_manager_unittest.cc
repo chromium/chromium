@@ -65,7 +65,12 @@ class ThreadPoolDelayedTaskManagerTest : public testing::Test {
       const ThreadPoolDelayedTaskManagerTest&) = delete;
 
  protected:
-  ThreadPoolDelayedTaskManagerTest() = default;
+  ThreadPoolDelayedTaskManagerTest() {
+    // A null clock triggers some assertions.
+    service_thread_task_runner_->AdvanceMockTickClock(Milliseconds(1));
+    task_ = ConstructMockedTask(
+        mock_callback_, service_thread_task_runner_->NowTicks(), kLongDelay);
+  }
   ~ThreadPoolDelayedTaskManagerTest() override = default;
 
   const scoped_refptr<TestMockTimeTaskRunner> service_thread_task_runner_ =
@@ -73,9 +78,7 @@ class ThreadPoolDelayedTaskManagerTest : public testing::Test {
   DelayedTaskManager delayed_task_manager_{
       service_thread_task_runner_->GetMockTickClock()};
   testing::StrictMock<MockCallback> mock_callback_;
-  Task task_{ConstructMockedTask(mock_callback_,
-                                 service_thread_task_runner_->NowTicks(),
-                                 kLongDelay)};
+  Task task_;
 };
 
 }  // namespace
@@ -288,10 +291,12 @@ TEST_F(ThreadPoolDelayedTaskManagerTest,
   // Send tasks to the DelayedTaskManager.
   delayed_task_manager_.AddDelayedTask(std::move(task_a),
                                        BindOnce(&PostTaskNow), nullptr);
-  EXPECT_FALSE(delayed_task_manager_.HasPendingHighResolutionTasksForTesting());
+  EXPECT_EQ(base::subtle::DelayPolicy::kFlexibleNoSooner,
+            delayed_task_manager_.TopTaskDelayPolicyForTesting());
   delayed_task_manager_.AddDelayedTask(std::move(task_b),
                                        BindOnce(&PostTaskNow), nullptr);
-  EXPECT_TRUE(delayed_task_manager_.HasPendingHighResolutionTasksForTesting());
+  EXPECT_EQ(base::subtle::DelayPolicy::kPrecise,
+            delayed_task_manager_.TopTaskDelayPolicyForTesting());
 
   // The task doesn't run before the delay has completed.
   service_thread_task_runner_->FastForwardBy(Milliseconds(10) -

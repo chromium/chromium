@@ -1110,13 +1110,8 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
     delay = absl::get<base::TimeTicks>(delayed_task.delay_or_delayed_run_time) -
             lazy_now->Now();
   }
-  if (explicit_high_resolution_timer_win) {
-    resolution =
-        delayed_task.delay_policy == base::subtle::DelayPolicy::kPrecise
-            ? WakeUpResolution::kHigh
-            : WakeUpResolution::kLow;
-  } else if (delay <
-             (2 * base::Milliseconds(Time::kMinLowResolutionThresholdMs))) {
+  if (!explicit_high_resolution_timer_win &&
+      delay < (2 * base::Milliseconds(Time::kMinLowResolutionThresholdMs))) {
     // Outside the kExplicitHighResolutionTimerWin experiment, We consider the
     // task needs a high resolution timer if the delay is more than 0 and less
     // than 32ms. This caps the relative error to less than 50% : a 33ms wait
