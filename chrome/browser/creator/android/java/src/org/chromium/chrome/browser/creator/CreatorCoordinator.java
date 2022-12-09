@@ -116,6 +116,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     private WebContentsCreator mCreatorWebContents;
     private NewTabCreator mCreatorOpenTab;
     private final UnownedUserDataSupplier<ShareDelegate> mBottomsheetShareDelegateSupplier;
+    private GURL mBottomSheetUrl;
 
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
 
@@ -316,6 +317,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
      * @param url The URL to be shown.
      */
     public void requestOpenSheet(GURL url) {
+        mBottomSheetUrl = url;
         if (mTabMediator == null) {
             float topControlsHeight =
                     mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
@@ -401,9 +403,10 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
     }
 
     private void openInNewTab() {
+        String url = mBottomSheetUrl.isValid() ? mBottomSheetUrl.getSpec() : mUrl;
         mBottomSheetController.hideContent(
                 mSheetContent, /* animate= */ true, StateChangeReason.PROMOTE_TAB);
-        mCreatorOpenTab.createNewTab(new LoadUrlParams(mUrl));
+        mCreatorOpenTab.createNewTab(new LoadUrlParams(url));
     }
 
     private void onToolbarClick() {
