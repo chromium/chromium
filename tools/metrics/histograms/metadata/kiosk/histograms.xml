@@ -336,6 +336,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Kiosk.SessionRestart.InternetAccess"
+    enum="KioskInternetAccessInfo" expires_after="2023-12-08">
+  <owner>irfedorova@google.com</owner>
+  <owner>chromeos-kiosk-eng@google.com</owner>
+  <summary>
+    ChromeOS only. Records the Internet access info of the previous kiosk
+    session during the session restart. The Internet access info is saved to the
+    local state every hour. The Internet access info contains information
+    whether device is offline and kiosk session supports offline mode.
+  </summary>
+</histogram>
+
 <histogram name="Kiosk.SessionRestart.Reason" enum="KioskSessionRestartReason"
     expires_after="2023-11-10">
   <owner>irfedorova@google.com</owner>

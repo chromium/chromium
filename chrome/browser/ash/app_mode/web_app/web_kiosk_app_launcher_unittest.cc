@@ -24,6 +24,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -124,6 +125,8 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+
     app_manager_ = std::make_unique<WebKioskAppManager>();
 
     ConstructLauncher(/*should_skip_install=*/false);
@@ -135,6 +138,7 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
     closer_.reset();
     launcher_.reset();
     app_manager_.reset();
+    network_handler_test_helper_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -198,6 +202,7 @@ class WebKioskAppLauncherTest : public BrowserWithTestWindowTest {
 
  private:
   std::unique_ptr<WebKioskAppManager> app_manager_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 
   MockAppLauncherDelegate delegate_;
   std::unique_ptr<WebKioskAppLauncher> launcher_;

@@ -16,6 +16,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 namespace ash {
 
@@ -29,13 +30,21 @@ void StartFloatingAccessibilityMenu() {
     accessibility_controller->ShowFloatingMenuIfEnabled();
 }
 
+bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
+  const extensions::Extension* primary_app =
+      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
+          app_id);
+  return extensions::OfflineEnabledInfo::IsOfflineEnabled(primary_app);
+}
+
 }  // namespace
 
 AppSessionAsh::AppSessionAsh(Profile* profile)
     : AppSession(profile),
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>()),
-      periodic_metrics_service_(std::make_unique<PeriodicMetricsService>()) {}
+      periodic_metrics_service_(std::make_unique<PeriodicMetricsService>(
+          g_browser_process->local_state())) {}
 
 AppSessionAsh::~AppSessionAsh() = default;
 
@@ -44,14 +53,21 @@ void AppSessionAsh::Init(const std::string& app_id) {
   StartFloatingAccessibilityMenu();
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
-  periodic_metrics_service_->StartRecordingPeriodicMetrics();
+
+  periodic_metrics_service_->RecordPreviousSessionMetrics();
+  periodic_metrics_service_->StartRecordingPeriodicMetrics(
+      IsOfflineEnabledForApp(app_id, profile()));
 }
 
 void AppSessionAsh::InitForWebKiosk(
     const absl::optional<std::string>& web_app_name) {
   chromeos::AppSession::InitForWebKiosk(web_app_name);
   StartFloatingAccessibilityMenu();
-  periodic_metrics_service_->StartRecordingPeriodicMetrics();
+
+  periodic_metrics_service_->RecordPreviousSessionMetrics();
+  // Web apps always support offline mode.
+  periodic_metrics_service_->StartRecordingPeriodicMetrics(
+      /*is_offline_enabled=*/true);
 }
 
 void AppSessionAsh::ShuttingDown() {

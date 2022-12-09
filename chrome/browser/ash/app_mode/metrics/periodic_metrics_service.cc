@@ -11,6 +11,12 @@
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
+#include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {
 
@@ -28,12 +34,38 @@ void ReportUsedPercentage(const char* histogram_name,
   base::UmaHistogramPercentage(histogram_name, percents);
 }
 
+bool IsDeviceOnline() {
+  const NetworkState* default_network =
+      NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
+  if (!default_network) {
+    // No connected network.
+    return false;
+  }
+  return default_network->IsOnline();
+}
+
+absl::optional<KioskInternetAccessInfo> GetSavedInternetAccessInfo(
+    const PrefService* prefs) {
+  const base::Value::Dict& metrics_dict = prefs->GetDict(prefs::kKioskMetrics);
+  const auto* internet_access_info_value =
+      metrics_dict.Find(kKioskInternetAccessInfo);
+  if (!internet_access_info_value)
+    return absl::nullopt;
+  auto internet_access_info = internet_access_info_value->GetIfInt();
+  if (!internet_access_info.has_value())
+    return absl::nullopt;
+  return static_cast<KioskInternetAccessInfo>(internet_access_info.value());
+}
+
 }  // namespace
 
 const char kKioskRamUsagePercentageHistogram[] = "Kiosk.RamUsagePercentage";
 const char kKioskSwapUsagePercentageHistogram[] = "Kiosk.SwapUsagePercentage";
 const char kKioskDiskUsagePercentageHistogram[] = "Kiosk.DiskUsagePercentage";
 const char kKioskChromeProcessCountHistogram[] = "Kiosk.ChromeProcessCount";
+const char kKioskSessionRestartInternetAccessHistogram[] =
+    "Kiosk.SessionRestart.InternetAccess";
+const char kKioskInternetAccessInfo[] = "internet-access";
 
 const base::TimeDelta kPeriodicMetricsInterval = base::Hours(1);
 
@@ -71,12 +103,19 @@ class DiskSpaceCalculator {
   base::WeakPtrFactory<DiskSpaceCalculator> weak_ptr_factory_{this};
 };
 
-PeriodicMetricsService::PeriodicMetricsService()
-    : disk_space_calculator_(std::make_unique<DiskSpaceCalculator>()) {}
+PeriodicMetricsService::PeriodicMetricsService(PrefService* prefs)
+    : prefs_(prefs),
+      disk_space_calculator_(std::make_unique<DiskSpaceCalculator>()) {}
 
 PeriodicMetricsService::~PeriodicMetricsService() = default;
 
-void PeriodicMetricsService::StartRecordingPeriodicMetrics() {
+void PeriodicMetricsService::RecordPreviousSessionMetrics() const {
+  RecordPreviousInternetAccessInfo();
+}
+
+void PeriodicMetricsService::StartRecordingPeriodicMetrics(
+    bool is_offline_enabled) {
+  is_offline_enabled_ = is_offline_enabled;
   // Record all periodic metrics at the beginning of the kiosk session and then
   // every `kPeriodicMetricsInterval`.
   RecordPeriodicMetrics();
@@ -89,6 +128,7 @@ void PeriodicMetricsService::RecordPeriodicMetrics() {
   RecordSwapUsage();
   RecordDiskSpaceUsage();
   RecordChromeProcessCount();
+  SaveInternetAccessInfo();
 }
 
 void PeriodicMetricsService::RecordRamUsage() const {
@@ -120,6 +160,32 @@ void PeriodicMetricsService::RecordChromeProcessCount() const {
   base::FilePath::StringType exe_name = chrome_path.BaseName().value();
   int process_count = base::GetProcessCount(exe_name, nullptr);
   base::UmaHistogramCounts100(kKioskChromeProcessCountHistogram, process_count);
+}
+
+void PeriodicMetricsService::RecordPreviousInternetAccessInfo() const {
+  absl::optional<KioskInternetAccessInfo>
+      previous_session_internet_access_info =
+          GetSavedInternetAccessInfo(prefs_);
+
+  if (previous_session_internet_access_info.has_value()) {
+    base::UmaHistogramEnumeration(
+        kKioskSessionRestartInternetAccessHistogram,
+        previous_session_internet_access_info.value());
+  }
+}
+
+void PeriodicMetricsService::SaveInternetAccessInfo() const {
+  bool is_device_online = IsDeviceOnline();
+  KioskInternetAccessInfo network_access_info =
+      is_device_online
+          ? (is_offline_enabled_
+                 ? KioskInternetAccessInfo::kOnlineAndAppSupportsOffline
+                 : KioskInternetAccessInfo::kOnlineAndAppRequiresInternet)
+          : (is_offline_enabled_
+                 ? KioskInternetAccessInfo::kOfflineAndAppSupportsOffline
+                 : KioskInternetAccessInfo::kOfflineAndAppRequiresInternet);
+  ScopedDictPrefUpdate(prefs_, prefs::kKioskMetrics)
+      ->Set(kKioskInternetAccessInfo, static_cast<int>(network_access_info));
 }
 
 }  // namespace ash
