@@ -346,4 +346,45 @@ TEST(WinUtil, StopGoogleUpdateProcesses) {
   EXPECT_TRUE(StopGoogleUpdateProcesses(GetTestScope()));
 }
 
+TEST(WinUtil, QuoteForCommandLineToArgvW) {
+  const struct {
+    std::vector<std::wstring> input_args;
+    const wchar_t* expected_output;
+  } test_cases[] = {
+      // Unformatted parameters.
+      {{L"abc=1"}, L"abc=1"},
+      {{L"abc=1", L"xyz=2"}, L"abc=1 xyz=2"},
+      {{L"abc=1", L"xyz=2", L"q"}, L"abc=1 xyz=2 q"},
+      {{L" abc=1  ", L"  xyz=2", L"q "}, L"abc=1 xyz=2 q"},
+      {{L"\"abc = 1\""}, L"\"abc = 1\""},
+      {{L"abc\" = \"1", L"xyz=2"}, L"\"abc = 1\" xyz=2"},
+      {{L"\"abc = 1\""}, L"\"abc = 1\""},
+      {{L"abc\" = \"1"}, L"\"abc = 1\""},
+  };
+
+  for (const auto& test_case : test_cases) {
+    std::wstring input_command_line =
+        base::StrCat({L"c:\\test\\process.exe ",
+                      base::JoinString(test_case.input_args, L" ")});
+    int num_args = 0;
+    ScopedLocalAlloc args(
+        ::CommandLineToArgvW(&input_command_line[0], &num_args));
+    ASSERT_EQ(num_args - 1U, test_case.input_args.size());
+
+    const wchar_t** argv = reinterpret_cast<const wchar_t**>(args.get());
+    std::wstring recreated_command_line;
+    for (int i = 1; i < num_args; ++i) {
+      recreated_command_line.append(QuoteForCommandLineToArgvW(argv[i]));
+
+      if (i + 1 < num_args)
+        recreated_command_line.push_back(L' ');
+    }
+
+    EXPECT_EQ(recreated_command_line, test_case.expected_output)
+        << "recreated_command_line '" << recreated_command_line
+        << "' did not match test_case.expected_output '"
+        << test_case.expected_output;
+  }
+}
+
 }  // namespace updater

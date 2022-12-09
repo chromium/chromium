@@ -972,4 +972,46 @@ base::FilePath GetExecutableRelativePath() {
   return base::FilePath::FromASCII(kExecutableName);
 }
 
+std::wstring QuoteForCommandLineToArgvW(const std::wstring& input) {
+  if (input.empty())
+    return L"\"\"";
+
+  std::wstring output;
+  const bool contains_whitespace =
+      input.find_first_of(L" \t") != std::wstring::npos;
+  if (contains_whitespace)
+    output.push_back(L'"');
+
+  size_t slash_count = 0;
+  for (auto i = input.begin(); i != input.end(); ++i) {
+    if (*i == L'"') {
+      // Before a quote, output 2n backslashes.
+      while (slash_count > 0) {
+        output.append(L"\\\\");
+        --slash_count;
+      }
+      output.append(L"\\\"");
+    } else if (*i != L'\\' || i + 1 == input.end()) {
+      // At the end of the string, or before a regular character, output queued
+      // slashes.
+      while (slash_count > 0) {
+        output.push_back(L'\\');
+        --slash_count;
+      }
+      // If this is a slash, it's also the last character. Otherwise, it is just
+      // a regular non-quote/non-slash character.
+      output.push_back(*i);
+    } else if (*i == L'\\') {
+      // This is a slash, possibly followed by a quote, not the last character.
+      // Queue it up and output it later.
+      ++slash_count;
+    }
+  }
+
+  if (contains_whitespace)
+    output.push_back(L'"');
+
+  return output;
+}
+
 }  // namespace updater

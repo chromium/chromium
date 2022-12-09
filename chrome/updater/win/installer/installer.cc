@@ -193,9 +193,12 @@ ProcessExitResult BuildCommandLineArguments(const wchar_t* cmd_line,
 
   // Append the command line arguments in `cmd_line` first.
   int num_args = 0;
-  wchar_t** const arg_list = ::CommandLineToArgvW(cmd_line, &num_args);
+  ScopedLocalAlloc scoped_arg_list(::CommandLineToArgvW(cmd_line, &num_args));
+  wchar_t** const arg_list =
+      reinterpret_cast<wchar_t** const>(scoped_arg_list.get());
   for (int i = 1; i != num_args; ++i) {
-    if (!args.append(L" ") || !args.append(arg_list[i])) {
+    if (!args.append(L" ") ||
+        !args.append(QuoteForCommandLineToArgvW(arg_list[i]).c_str())) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
   }

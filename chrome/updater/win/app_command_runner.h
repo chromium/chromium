@@ -19,13 +19,6 @@
 
 namespace updater {
 
-struct LocalAllocTraits {
-  static HLOCAL InvalidValue() { return nullptr; }
-  static void Free(HLOCAL mem) { ::LocalFree(mem); }
-};
-
-using ScopedLocalAlloc = base::ScopedGeneric<HLOCAL, LocalAllocTraits>;
-
 // AppCommandRunner loads and runs a pre-registered command line from the
 // registry.
 class AppCommandRunner {
