@@ -3760,6 +3760,16 @@ void RenderFrameHostManager::CommitPending(
   // happen for each same-site navigation.
   RenderViewHostImpl* old_rvh = old_render_frame_host->render_view_host();
   RenderViewHostImpl* new_rvh = render_frame_host_->render_view_host();
+
+  // TODO(crbug.com/1324149): Remove diagnostic asserts below.
+  if (is_main_frame && old_view) {
+    RenderWidgetHostViewBase* old_rwhvb =
+        static_cast<RenderWidgetHostViewBase*>(old_view);
+    CHECK(old_rwhvb->host());
+    CHECK_EQ(old_rwhvb->host(), old_rvh->GetWidget());
+    CHECK_EQ(old_rwhvb->host()->frame_tree(), &frame_tree_node_->frame_tree());
+  }
+
   if (is_main_frame && old_view && old_rvh != new_rvh) {
     // Note that this hides the RenderWidget but does not hide the Page. If it
     // did hide the Page then making a new RenderFrameHost on another call to
@@ -3774,6 +3784,15 @@ void RenderFrameHostManager::CommitPending(
   // another child frame, the RenderWidgetHostView comes from a parent, but if
   // this renderer frame is live its ancestors must be as well.
   DCHECK(new_view);
+
+  // TODO(crbug.com/1324149): Remove diagnostic asserts below.
+  if (is_main_frame) {
+    RenderWidgetHostViewBase* new_rwhvb =
+        static_cast<RenderWidgetHostViewBase*>(new_view);
+    CHECK(new_rwhvb->host());
+    CHECK_EQ(new_rwhvb->host(), new_rvh->GetWidget());
+    CHECK_EQ(new_rwhvb->host()->frame_tree(), &frame_tree_node_->frame_tree());
+  }
 
   if (focus_render_view) {
     if (is_main_frame) {
