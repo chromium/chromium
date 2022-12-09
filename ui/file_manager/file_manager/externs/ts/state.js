@@ -81,16 +81,6 @@ export const PropStatus = {
 };
 
 /**
- * The additional property states understood by the search container. When the
- * user actions cause search elements to be hidden, the search state in the
- * store becomes INACTIVE.
- * @enum {string}
- */
-export const SearchStatus = {
-  INACTIVE: 'INACTIVE',
-};
-
-/**
  * Task type is the source of the task, or what type of the app is this type
  * from. It has to match the `taskType` returned in the FileManagerPrivate.
  *
@@ -242,7 +232,7 @@ export let SearchOptions;
 /**
  * Data for search. It should be empty `{}` when the user isn't searching.
  * @typedef {{
- *   status: (PropStatus|SearchStatus|undefined),
+ *   status: (PropStatus|undefined),
  *   query: (string|undefined),
  *   options: (!SearchOptions|undefined),
  * }}
