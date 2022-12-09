@@ -7220,6 +7220,7 @@ domain Page
       serial
       shared-autofill
       shared-storage
+      smart-card
       storage-access
       sync-xhr
       trust-token-redemption

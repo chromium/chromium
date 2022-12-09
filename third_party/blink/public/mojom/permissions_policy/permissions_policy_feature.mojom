@@ -224,7 +224,10 @@ enum PermissionsPolicyFeature {
 
   // Controls use of Compute Pressure API.
   // https://wicg.github.io/compute-pressure/#policy-control
-  kComputePressure = 106
+  kComputePressure = 106,
+
+  // Web Smart Card API
+  kSmartCard = 107
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

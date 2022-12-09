@@ -358,6 +358,11 @@
       depends_on: ["SharedStorageAPI"],
     },
     {
+      name: "SmartCard",
+      permissions_policy_name: "smart-card",
+      depends_on: ["SmartCard"],
+    },
+    {
       name: "StorageAccessAPI",
       feature_default: "EnableForAll",
       permissions_policy_name: "storage-access",

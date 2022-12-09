@@ -41616,6 +41616,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="104" label="Unload"/>
   <int value="105" label="ClientHintPrefersReducedMotion"/>
   <int value="106" label="ComputePressure"/>
+  <int value="107" label="SmartCard"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">
