@@ -62,6 +62,17 @@ AST_MATCHER(clang::Type, anyCharType) {
   return Node.isAnyCharacterType();
 }
 
+AST_MATCHER(clang::FieldDecl, isInScratchSpace) {
+  const clang::SourceManager& source_manager =
+      Finder->getASTContext().getSourceManager();
+  clang::SourceLocation location = Node.getSourceRange().getBegin();
+  if (location.isInvalid())
+    return false;
+  clang::SourceLocation spelling_location =
+      source_manager.getSpellingLoc(location);
+  return source_manager.isWrittenInScratchSpace(spelling_location);
+}
+
 AST_MATCHER(clang::FieldDecl, isInThirdPartyLocation) {
   std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
                                      Node.getSourceRange().getBegin());
@@ -80,7 +91,8 @@ AST_MATCHER(clang::FieldDecl, isInGeneratedLocation) {
   std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
                                      Node.getSourceRange().getBegin());
 
-  return filename.find("/gen/") != std::string::npos;
+  return filename.find("/gen/") != std::string::npos ||
+         filename.rfind("gen/", 0) == 0;
 }
 
 AST_MATCHER_P(clang::FieldDecl,
@@ -95,7 +107,7 @@ AST_MATCHER_P(clang::FieldDecl,
               const FilterFile*,
               Filter) {
   clang::SourceLocation loc = Node.getSourceRange().getBegin();
-  if (loc.isInvalid() || !loc.isFileID())
+  if (loc.isInvalid())
     return false;
   std::string file_path =
       GetFilename(Finder->getASTContext().getSourceManager(), loc);

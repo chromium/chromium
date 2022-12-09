@@ -74,6 +74,14 @@ android_webview/public/
 third_party/blink/public/web/  # TODO: Consider renaming this directory to
                                # public/renderer?
 
+# Contains sysroot dirs like debian_bullseye_amd64-sysroot/ that are not part of the repository.
+build/linux/
+
+# glslang_tab.cpp.h uses #line directive and modifies the file path to
+# "MachineIndependent/glslang.y" so the isInThirdPartyLocation() filter cannot
+# catch it even though glslang_tab.cpp.h is in third_party/
+MachineIndependent/
+
 # Exclude paths in separate repositories - i.e. in directories that
 # 1. Contain a ".git" subdirectory
 # 2. And hasn't been excluded via "third_party/" substring in their path

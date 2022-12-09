@@ -111,10 +111,12 @@ clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
       fieldDecl(hasType(pointerType(pointee(qualType(allOf(
           isConstQualified(), hasUnqualifiedDesugaredType(anyCharType())))))));
 
+  // TODO(keishi): Skip field declarations in scratch space for now as we can't
+  // tell the correct file path.
   auto field_decl_matcher =
       fieldDecl(
           allOf(hasType(supported_pointer_types_matcher),
-                unless(anyOf(const_char_pointer_matcher,
+                unless(anyOf(const_char_pointer_matcher, isInScratchSpace(),
                              isExpansionInSystemHeader(), isInExternCContext(),
                              isRawPtrExclusionAnnotated(),
                              isInThirdPartyLocation(), isInGeneratedLocation(),
