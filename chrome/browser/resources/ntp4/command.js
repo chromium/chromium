@@ -21,8 +21,10 @@
  */
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {define as crUiDefine} from './ui.js';
+
 import {KeyboardShortcutList} from 'chrome://resources/js/keyboard_shortcut_list.js';
 
 import {dispatchPropertyChange, getPropertyDescriptor, PropertyKind} from './cr_deprecated.js';
@@ -43,7 +45,8 @@ Command.prototype = {
    * Initializes the command.
    */
   decorate() {
-    CommandManager.init(assert(this.ownerDocument));
+    assert(this.ownerDocument);
+    CommandManager.init(this.ownerDocument);
 
     if (this.hasAttribute('shortcut')) {
       this.shortcut = this.getAttribute('shortcut');

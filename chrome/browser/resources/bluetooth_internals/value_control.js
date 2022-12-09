@@ -6,7 +6,7 @@
  * Javascript for ValueControl, served from chrome://bluetooth-internals/.
  */
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {GattResult, Property} from './device.mojom-webui.js';
@@ -348,7 +348,8 @@ export class ValueControlElement extends CustomElement {
   readValue_() {
     this.readBtn_.disabled = true;
 
-    connectToDevice(assert(this.deviceAddress_))
+    assert(this.deviceAddress_);
+    connectToDevice(this.deviceAddress_)
         .then(function(device) {
           if (this.descriptorId_) {
             return device.readValueForDescriptor(
@@ -385,7 +386,8 @@ export class ValueControlElement extends CustomElement {
   writeValue_() {
     this.writeBtn_.disabled = true;
 
-    connectToDevice(assert(this.deviceAddress_))
+    assert(this.deviceAddress_);
+    connectToDevice(this.deviceAddress_)
         .then(function(device) {
           if (this.descriptorId_) {
             return device.writeValueForDescriptor(

@@ -8,7 +8,7 @@
 // patterns. Use Web Components in any new code.
 
 // clang-format off
-import {assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 import {dispatchPropertyChange} from './cr_deprecated.js';
@@ -54,7 +54,8 @@ class ContextMenuHandler extends EventTarget {
    * @param {!Menu} menu The menu to show.
    */
   showMenu(e, menu) {
-    menu.updateCommands(assertInstanceof(e.currentTarget, Node));
+    assertInstanceof(e.currentTarget, Node);
+    menu.updateCommands(e.currentTarget);
     if (!menu.hasVisibleItems()) {
       return;
     }

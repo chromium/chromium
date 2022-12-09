@@ -9,7 +9,7 @@
  * Served from chrome://bluetooth-internals/.
  */
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './object_fieldset.html.js';
@@ -60,7 +60,8 @@ export class ObjectFieldSetElement extends CustomElement {
 
     const nameMap = JSON.parse(this.dataset.nameMap);
     const valueObject = JSON.parse(this.dataset.value);
-    Object.keys(assert(valueObject)).forEach(function(propName) {
+    assert(valueObject);
+    Object.keys(valueObject).forEach(function(propName) {
       const value = valueObject[propName];
       if (value === false && !this.showAll) {
         return;

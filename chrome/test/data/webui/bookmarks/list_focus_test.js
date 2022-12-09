@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Command} from 'chrome://bookmarks/bookmarks.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -30,9 +30,9 @@ suite('<bookmarks-list>', function() {
    * @return {!HTMLElement}
    */
   function getItem(id) {
-    return assert(
-        Array.from(items).find(({itemId}) => itemId === id),
-        `Item ${id} does not exist in items.`);
+    const item = Array.from(items).find(({itemId}) => itemId === id);
+    assert(item, `Item ${id} does not exist in items.`);
+    return item;
   }
 
   /** @param {string} id */

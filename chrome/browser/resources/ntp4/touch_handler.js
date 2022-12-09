@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 /**
@@ -826,7 +826,8 @@ TouchHandler.prototype = {
     /** @type {Element} */
     let touchedElement;
     if (eventType === TouchHandler.EventType.TOUCH_START) {
-      touchedElement = assertInstanceof(touch.target, Element);
+      assertInstanceof(touch.target, Element);
+      touchedElement = touch.target;
     } else {
       touchedElement = assert(this.element_.ownerDocument.elementFromPoint(
           touch.clientX, touch.clientY));

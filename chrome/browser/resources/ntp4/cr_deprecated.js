@@ -7,7 +7,7 @@
  * JavaScript users. Do not use this file in new code.
  */
 
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 /**
  * Dispatches a simple event on an event target.

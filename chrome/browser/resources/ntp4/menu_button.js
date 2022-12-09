@@ -7,14 +7,14 @@
 // should only be used by legacy UIs that have not yet been updated to new
 // patterns. Use Web Components in any new code.
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {isWindows} from 'chrome://resources/js/platform.js';
-import {decorate, define as crUiDefine} from './ui.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {isWindows} from 'chrome://resources/js/platform.js';
 
 import {Menu} from './menu.js';
 import {MenuItem} from './menu_item.js';
 import {AnchorType, positionPopupAroundElement} from './position_util.js';
+import {decorate, define as crUiDefine} from './ui.js';
 
 
 /**
@@ -80,7 +80,8 @@ MenuButton.prototype = {
   },
   set menu(menu) {
     if (typeof menu === 'string' && menu[0] === '#') {
-      menu = assert(this.ownerDocument.getElementById(menu.slice(1)));
+      menu = this.ownerDocument.getElementById(menu.slice(1));
+      assert(menu);
       decorate(menu, Menu);
     }
 

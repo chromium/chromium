@@ -7,7 +7,7 @@
  *     chrome://bluetooth-internals/.
  */
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {$} from 'chrome://resources/js/util_ts.js';
 
 import {DiscoverySessionRemote} from './adapter.mojom-webui.js';
@@ -252,7 +252,8 @@ function setupDeviceSystem(response) {
     devicesPage.setScanStatus(ScanStatus.STARTING);
     adapterBroker.startDiscoverySession()
         .then(function(session) {
-          discoverySession = assert(session);
+          assert(session);
+          discoverySession = session;
 
           discoverySession.onConnectionError.addListener(() => {
             updateStoppedDiscoverySession();

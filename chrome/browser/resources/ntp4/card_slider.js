@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 import {isRTL} from 'chrome://resources/js/util_ts.js';
 
 import {dispatchSimpleEvent} from './cr_deprecated.js';
@@ -399,7 +399,8 @@ CardSlider.prototype = {
    * @param {!Element} card A card to add at the end of the card slider.
    */
   appendCard(card) {
-    this.cards_.push(assertInstanceof(card, Element));
+    assertInstanceof(card, Element);
+    this.cards_.push(card);
     this.fireAddedEvent_(card, this.cards_.length - 1);
   },
 
@@ -436,8 +437,8 @@ CardSlider.prototype = {
    * @param {!Element} card A card to be removed.
    */
   removeCard(card) {
-    this.removeCardAtIndex(
-        this.cards_.indexOf(assertInstanceof(card, Element)));
+    assertInstanceof(card, Element);
+    this.removeCardAtIndex(this.cards_.indexOf(card));
   },
 
   /**

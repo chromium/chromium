@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {$, appendParam, getRequiredElement} from 'chrome://resources/js/util_ts.js';

@@ -9,7 +9,7 @@
 
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {Command} from './command.js';
 import {getPropertyDescriptor, PropertyKind} from './cr_deprecated.js';
@@ -88,7 +88,8 @@ MenuItem.prototype = {
     }
 
     if (typeof command === 'string' && command[0] === '#') {
-      command = assert(this.ownerDocument.body.querySelector(command));
+      command = this.ownerDocument.body.querySelector(command);
+      assert(command);
       decorate(command, Command);
     }
 

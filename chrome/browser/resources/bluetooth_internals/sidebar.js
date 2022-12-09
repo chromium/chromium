@@ -6,7 +6,8 @@
  * Javascript for Sidebar, served from chrome://bluetooth-internals/.
  */
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
 import {PageManager, PageManagerObserver} from './page_manager.js';
 
 /** @typedef {{pageName: string, text: string}} */
@@ -22,17 +23,20 @@ export class Sidebar extends PageManagerObserver {
     /** @private {!Element} */
     this.sidebarDiv_ = sidebarDiv;
     /** @private {!Element} */
-    this.sidebarContent_ =
-        assert(this.sidebarDiv_.querySelector('.sidebar-content'));
+    this.sidebarContent_ = this.sidebarDiv_.querySelector('.sidebar-content');
+    assert(this.sidebarContent_);
+
     /** @private {!Element} */
-    this.sidebarList_ = assert(this.sidebarContent_.querySelector('ul'));
+    this.sidebarList_ = this.sidebarContent_.querySelector('ul');
+    assert(this.sidebarList_);
 
     this.sidebarList_.querySelectorAll('li button').forEach(function(item) {
       item.addEventListener('click', this.onItemClick_.bind(this));
     }, this);
 
     /** @private {!Element} */
-    this.overlayDiv_ = assert(this.sidebarDiv_.querySelector('.overlay'));
+    this.overlayDiv_ = this.sidebarDiv_.querySelector('.overlay');
+    assert(this.overlayDiv_);
     this.overlayDiv_.addEventListener('click', this.close.bind(this));
 
     window.matchMedia('screen and (max-width: 600px)')

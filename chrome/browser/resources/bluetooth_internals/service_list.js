@@ -5,7 +5,7 @@
 import './service_list_item.js';
 import './expandable_list.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {connectToDevice} from './device_broker.js';
 import {ExpandableListElement} from './expandable_list.js';
@@ -42,7 +42,8 @@ export class ServiceListElement extends ExpandableListElement {
   /** @override */
   createItem(data) {
     const item = document.createElement('service-list-item');
-    item.initialize(data, assert(this.deviceAddress_));
+    assert(this.deviceAddress_);
+    item.initialize(data, this.deviceAddress_);
     return item;
   }
 

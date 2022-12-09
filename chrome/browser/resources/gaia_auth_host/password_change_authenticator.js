@@ -6,17 +6,21 @@
  * @fileoverview Support password change on with SAML provider.
  */
 
-import {assert} from 'chrome://resources/js/assert.js';
+// clang-format off
 // <if expr="chromeos_ash">
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {$, appendParam} from 'chrome://resources/ash/common/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
 // </if>
 // <if expr="not chromeos_ash">
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {$, appendParam} from 'chrome://resources/js/util_ts.js';
+
 // </if>
 
 import {SamlHandler} from './saml_handler.js';
 import {WebviewEventManager} from './webview_event_manager.js';
+// clang-format on
 
 /** @const */
 export const oktaInjectedScriptName = 'oktaInjected';

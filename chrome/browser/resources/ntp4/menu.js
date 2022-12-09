@@ -7,11 +7,11 @@
 // should only be used by legacy UIs that have not yet been updated to new
 // patterns. Use Web Components in any new code.
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert_ts.js';
 
 import {getPropertyDescriptor, PropertyKind} from './cr_deprecated.js';
 import {MenuItem} from './menu_item.js';
-import {define as crUiDefine, decorate} from './ui.js';
+import {decorate, define as crUiDefine} from './ui.js';
 
 
 /**
@@ -104,7 +104,11 @@ Menu.prototype = {
     while (node && node.parentNode !== this && !(node instanceof MenuItem)) {
       node = node.parentNode;
     }
-    return node ? assertInstanceof(node, MenuItem) : null;
+    if (!node) {
+      return null;
+    }
+    assertInstanceof(node, MenuItem);
+    return node;
   },
 
   /**

@@ -10,7 +10,7 @@ import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
 import {dismissSnackbar, getSnackbarStateForTest, showSnackbar} from 'chrome://bluetooth-internals/snackbar.js';
 import {UUID} from 'chrome://bluetooth-internals/uuid.mojom-webui.js';
 import {ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {$} from 'chrome://resources/js/util_ts.js';
 
@@ -450,7 +450,8 @@ suite('bluetooth_internals', function() {
       } else if (typeof (value) === 'string') {
         assertEquals(value, valueCell.textContent);
       } else {
-        assert('boolean or string type expected but got ' + typeof (value));
+        assertNotReached(
+            'boolean or string type expected but got ' + typeof (value));
       }
     }
   }
@@ -526,8 +527,12 @@ suite('bluetooth_internals', function() {
         assertEquals(value, valueCell.classList.contains('checked'));
       } else if (typeof (value) === 'string') {
         assertEquals(value, valueCell.textContent);
+      } else if (typeof (value) === 'number') {
+        assertEquals(value.toString(), valueCell.textContent);
       } else {
-        assert('boolean or string type expected but got ' + typeof (value));
+        assertNotReached(
+            'boolean, number or string type expected but got ' +
+            typeof (value));
       }
     });
   }
