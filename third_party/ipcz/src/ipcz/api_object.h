@@ -41,6 +41,10 @@ class APIObject : public RefCounted {
         reinterpret_cast<APIObject*>(static_cast<uintptr_t>(handle)));
   }
 
+  // Returns an IpczHandle which can be used to reference this object. The
+  // reference is not owned by the caller.
+  IpczHandle handle() const { return reinterpret_cast<uintptr_t>(this); }
+
   // Releases ownership of a Ref<APIObject> to produce a new IpczHandle which
   // implicilty owns the released reference.
   static IpczHandle ReleaseAsHandle(Ref<APIObject> object) {

@@ -193,6 +193,7 @@ ipcz_source_set("util") {
   public = [
     "util/log.h",
     "util/multi_mutex_lock.h",
+    "util/overloaded.h",
     "util/ref_counted.h",
     "util/stack_trace.h",
     "util/strong_alias.h",
@@ -208,6 +209,7 @@ ipcz_source_set("impl") {
   visibility = [ ":*" ]
   public = [
     "ipcz/api_object.h",
+    "ipcz/application_object.h",
     "ipcz/block_allocator.h",
     "ipcz/box.h",
     "ipcz/buffer_pool.h",
@@ -247,6 +249,7 @@ ipcz_source_set("impl") {
   ]
   sources = [
     "ipcz/api_object.cc",
+    "ipcz/application_object.cc",
     "ipcz/block_allocator.cc",
     "ipcz/block_allocator_pool.cc",
     "ipcz/block_allocator_pool.h",

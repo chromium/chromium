@@ -38,10 +38,11 @@
 // details. They may also define new types of objects to be transmitted in
 // parcels via boxes.
 //
-// *Boxes* are opaque objects used to wrap driver-defined objects for seamless
-// transmission across portals. Drivers define how to serialize and deserialize
-// such objects, and applications use the Box() and Unbox() APIs to go between
-// concrete driver objects and transferrable handles.
+// *Boxes* are opaque objects used to wrap driver- or application-defined
+// objects for seamless transmission across portals. Applications use the Box()
+// and Unbox() APIs to go between concrete objects and transferrable box
+// handles, and ipcz delegates to the driver or application to serialize boxed
+// objects as needed for transmission.
 //
 // Overview
 // --------
@@ -699,6 +700,79 @@ typedef uint32_t IpczEndGetFlags;
 // aborted without consuming any data from the portal.
 #define IPCZ_END_GET_ABORT IPCZ_FLAG_BIT(0)
 
+// Enumerates the type of contents within a box.
+typedef uint32_t IpczBoxType;
+
+// A box which contains an opaque driver object.
+#define IPCZ_BOX_TYPE_DRIVER_OBJECT ((IpczBoxType)0)
+
+// A box which contains an opaque application-defined object with a custom
+// serializer.
+#define IPCZ_BOX_TYPE_APPLICATION_OBJECT ((IpczBoxType)1)
+
+// A box which contains a collection of bytes and ipcz handles.
+#define IPCZ_BOX_TYPE_SUBPARCEL ((IpczBoxType)2)
+
+// A function passed to Box() when boxing application objects. This function
+// implements serialization for the object identified by `object` in a manner
+// similar to IpczDriver's Serialize() function. If the object is not
+// serializable this must return IPCZ_RESULT_FAILED_PRECONDITION and ignore
+// other arguments.
+//
+// This may be called with insufficient capacity (`num_bytes` and `num_handles`)
+// in which case it should update those values with capacity requirements and
+// return IPCZ_RESULT_RESOURCE_EXHAUSTED.
+//
+// Otherwise the function must fill in `bytes` and `handles` with values that
+// effectively represent the opaque object identified by `object`, and return
+// IPCZ_RESULT_OK to indicate success.
+typedef IpczResult (*IpczApplicationObjectSerializer)(uintptr_t object,
+                                                      uint32_t flags,
+                                                      const void* options,
+                                                      void* data,
+                                                      size_t* num_bytes,
+                                                      IpczHandle* handles,
+                                                      size_t* num_handles);
+
+// A function passed to Box() when boxing application objects. This function
+// must clean up any resources associated with the opaque object identified by
+// `object`.
+typedef void (*IpczApplicationObjectDestructor)(uintptr_t object,
+                                                uint32_t flags,
+                                                const void* options);
+
+// Describes the contents of a box. Boxes may contain driver objects, arbitrary
+// application-defined objects, or collections of bytes and ipcz handles
+// (portals or other boxes).
+struct IPCZ_ALIGN(8) IpczBoxContents {
+  // The exact size of this structure in bytes. Must be set accurately before
+  // passing the structure to Box() or Unbox().
+  size_t size;
+
+  // The type of contents contained in the box.
+  IpczBoxType type;
+
+  union {
+    // A handle to a driver object, when `type` is IPCZ_BOX_TYPE_DRIVER_OBJECT.
+    IpczDriverHandle driver_object;
+
+    // An opaque object identifier which has meaning to `serializer` and
+    // `destructor` when `type` is IPCZ_BOX_TYPE_APPLICATION_OBJECT.
+    uintptr_t application_object;
+
+    // A handle to an ipcz parcel object referencing the box contents. This may
+    // be used with Get()/BeginGet()/EndGet() APIs to extract its serialized
+    // data and handles. Used for boxes of type IPCZ_BOX_TYPE_SUBPARCEL.
+    IpczHandle subparcel;
+  } object;
+
+  // Used only for IPCZ_BOX_TYPE_APPLICATION_OBJECT. ipcz may use these
+  // functions to serialize and/or destroy the opaque object identified by
+  // `object.application_object` above.
+  IpczApplicationObjectSerializer serializer;
+  IpczApplicationObjectDestructor destructor;
+};
+
 // See Unbox() and the IPCZ_UNBOX_* flags described below.
 typedef uint32_t IpczUnboxFlags;
 
@@ -906,9 +980,10 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // =======
   //
   // Releases the object identified by `handle`. If it's a portal, the portal is
-  // closed. If it's a node or parcel, the node or parcel is destroyed. If it's
-  // a wrapped driver object, the object is released via the driver API's
-  // Close().
+  // closed. If it's a node, parcel, or parcel fragment, the object is
+  // destroyed. If it's a boxed driver object, the object is released via the
+  // driver API's Close(). If it's a boxed application object, the object is
+  // destroyed using the object's boxed custom destructor.
   //
   // This function is NOT thread-safe. It is the application's responsibility to
   // ensure that no other threads are performing other operations on `handle`
@@ -1612,12 +1687,14 @@ struct IPCZ_ALIGN(8) IpczAPI {
   // Box()
   // =====
   //
-  // Boxes an object managed by a node's driver and returns a new IpczHandle to
-  // reference the box. If the driver is able to serialize the boxed object, the
-  // box can be placed into a portal for transmission to the other side.
+  // Boxes an object managed by the driver or application and returns a new
+  // IpczHandle to reference the box. If the driver or application is able to
+  // serialize the boxed object, the box can be placed into a portal for
+  // transmission to another node.
   //
   // Boxes can be sent through portals along with other IpczHandles, effectively
-  // allowing drivers to introduce new types of transferrable objects via boxes.
+  // allowing drivers and applications to introduce new types of transferrable
+  // objects via boxes.
   //
   // `flags` is ignored and must be 0.
   //
@@ -1625,20 +1702,24 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   // Returns:
   //
-  //    IPCZ_RESULT_OK if the driver handle was boxed and a new IpczHandle is
-  //        returned in `handle`.
+  //    IPCZ_RESULT_OK if the object was boxed and a new IpczHandle is returned
+  //        in `handle`.
   //
-  //    IPCZ_RESULT_INVALID_ARGUMENT if `driver_handle` was invalid.
-  IpczResult(IPCZ_API* Box)(IpczHandle node,                 // in
-                            IpczDriverHandle driver_handle,  // in
-                            uint32_t flags,                  // in
-                            const void* options,             // in
-                            IpczHandle* handle);             // out
+  //    IPCZ_RESULT_INVALID_ARGUMENT if `contents` is null or malformed, or if
+  //        `handle` is null.
+  IpczResult(IPCZ_API* Box)(IpczHandle node,                  // in
+                            const IpczBoxContents* contents,  // in
+                            uint32_t flags,                   // in
+                            const void* options,              // in
+                            IpczHandle* handle);              // out
 
   // Unbox()
   // =======
   //
-  // Unboxes a driver object from an IpczHandle previously produced by Box().
+  // Unboxes the contents of a box previously produced by Box(). Note that if
+  // a box was originally produced from an application object and subsequently
+  // transmitted to another node, it will be unboxed as a parcel fragment
+  // produced by the object's custom serializer.
   //
   // `flags` is ignored and must be 0.
   //
@@ -1646,15 +1727,15 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   // Returns:
   //
-  //    IPCZ_RESULT_OK if the driver object was successfully unboxed. A driver
-  //        handle to the object is placed in `*driver_handle`.
+  //    IPCZ_RESULT_OK if the object was successfully unboxed. A description of
+  //        the box contents is placed in `contents`.
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `handle` is invalid or does not
-  //        reference a box.
-  IpczResult(IPCZ_API* Unbox)(IpczHandle handle,                 // in
-                              IpczUnboxFlags flags,              // in
-                              const void* options,               // in
-                              IpczDriverHandle* driver_handle);  // out
+  //        reference a box, or if `contents` is null or malformed.
+  IpczResult(IPCZ_API* Unbox)(IpczHandle handle,           // in
+                              IpczUnboxFlags flags,        // in
+                              const void* options,         // in
+                              IpczBoxContents* contents);  // out
 };
 
 // A function which populates `api` with a table of ipcz API functions. The
