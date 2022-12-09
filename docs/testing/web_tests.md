@@ -191,7 +191,7 @@ to see a full list of options. A few of the most useful options are below:
 A test succeeds when its output matches the pre-defined expected results. If any
 tests fail, the test script will place the actual generated results, along with
 a diff of the actual and expected results, into
-`src/out/Default/layout_test_results/`, and by default launch a browser with a
+`src/out/Default/layout-test-results/`, and by default launch a browser with a
 summary and link to the results/diffs.
 
 The expected results for tests are in the
