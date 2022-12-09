@@ -28,7 +28,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -274,10 +273,7 @@ class VmCameraMicManagerPrivacyIndicatorsTest : public VmCameraMicManagerTest {
  public:
   // VmCameraMicManagerTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {apps::kAppServiceCapabilityAccessWithoutMojom,
-         features::kPrivacyIndicators},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kPrivacyIndicators}, {});
 
     VmCameraMicManagerTest::SetUp();
   }
@@ -470,14 +466,11 @@ class VmCameraMicManagerNotificationTest
   // VmCameraMicManagerTest:
   void SetUp() override {
     if (IsPrivacyIndicatorsFeatureEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {apps::kAppServiceCapabilityAccessWithoutMojom,
-           ash::features::kPrivacyIndicators},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          ash::features::kPrivacyIndicators);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          {apps::kAppServiceCapabilityAccessWithoutMojom},
-          {ash::features::kPrivacyIndicators});
+      scoped_feature_list_.InitAndDisableFeature(
+          ash::features::kPrivacyIndicators);
     }
 
     VmCameraMicManagerTest::SetUp();
@@ -580,14 +573,11 @@ class VmCameraMicManagerDebounceTest
   // VmCameraMicManagerTest:
   void SetUp() override {
     if (IsPrivacyIndicatorsFeatureEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {apps::kAppServiceCapabilityAccessWithoutMojom,
-           ash::features::kPrivacyIndicators},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          ash::features::kPrivacyIndicators);
     } else {
-      scoped_feature_list_.InitWithFeatures(
-          {apps::kAppServiceCapabilityAccessWithoutMojom},
-          {ash::features::kPrivacyIndicators});
+      scoped_feature_list_.InitAndDisableFeature(
+          ash::features::kPrivacyIndicators);
     }
 
     VmCameraMicManagerTest::SetUp();

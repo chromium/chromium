@@ -22,25 +22,3 @@ source_set("lib") {
     "//components/services/app_service/public/protos",
   ]
 }
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "app_service_mojom_impl_unittest.cc" ]
-
-  deps = [
-    ":lib",
-    "//components/prefs:test_support",
-    "//components/services/app_service/public/cpp:app_types",
-    "//components/services/app_service/public/cpp:app_update",
-    "//components/services/app_service/public/cpp:icon_types",
-    "//components/services/app_service/public/cpp:intents",
-    "//components/services/app_service/public/cpp:preferred_app",
-    "//components/services/app_service/public/cpp:preferred_apps",
-    "//components/services/app_service/public/cpp:publisher",
-    "//components/services/app_service/public/cpp:run_on_os_login",
-    "//components/services/app_service/public/cpp:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
-}

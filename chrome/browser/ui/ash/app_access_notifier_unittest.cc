@@ -28,7 +28,6 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
@@ -251,17 +250,15 @@ class AppAccessNotifierParameterizedTest
 
   // AppAccessNotifierBaseTest:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features{
-        apps::kAppServiceCapabilityAccessWithoutMojom};
     std::vector<base::test::FeatureRef> disabled_features;
 
-    (IsPrivacyIndicatorsFeatureEnabled() ? enabled_features : disabled_features)
-        .push_back(ash::features::kPrivacyIndicators);
+    if (!IsPrivacyIndicatorsFeatureEnabled())
+      disabled_features.push_back(ash::features::kPrivacyIndicators);
 
-    (IsCrosPrivacyHubEnabled() ? enabled_features : disabled_features)
-        .push_back(ash::features::kCrosPrivacyHub);
+    if (!IsCrosPrivacyHubEnabled())
+      disabled_features.push_back(ash::features::kCrosPrivacyHub);
 
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatures({}, disabled_features);
 
     AppAccessNotifierBaseTest::SetUp();
   }
@@ -287,10 +284,8 @@ class AppAccessNotifierPrivacyIndicatorTest : public AppAccessNotifierBaseTest {
 
   // AppAccessNotifierBaseTest:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {apps::kAppServiceCapabilityAccessWithoutMojom,
-         ash::features::kPrivacyIndicators},
-        {});
+    scoped_feature_list_.InitWithFeatures({ash::features::kPrivacyIndicators},
+                                          {});
     AppAccessNotifierBaseTest::SetUp();
   }
 

@@ -462,16 +462,7 @@ void WebAppsCrosapi::PublishImpl(std::vector<AppPtr> deltas) {
 
 void WebAppsCrosapi::PublishCapabilityAccessesImpl(
     std::vector<CapabilityAccessPtr> deltas) {
-  if (base::FeatureList::IsEnabled(
-          apps::kAppServiceCapabilityAccessWithoutMojom)) {
-    proxy()->OnCapabilityAccesses(std::move(deltas));
-    return;
-  }
-
-  for (auto& subscriber : subscribers_) {
-    subscriber->OnCapabilityAccesses(
-        apps::ConvertCapabilityAccessesToMojomCapabilityAccesses(deltas));
-  }
+  proxy()->OnCapabilityAccesses(std::move(deltas));
 }
 
 }  // namespace apps

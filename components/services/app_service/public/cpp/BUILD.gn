@@ -329,7 +329,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "app_capability_access_cache_mojom_unittest.cc",
     "app_capability_access_cache_unittest.cc",
     "app_capability_access_cache_wrapper_unittest.cc",
     "app_registry_cache_unittest.cc",

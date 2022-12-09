@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/media_controller.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -23,8 +22,6 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
-#include "components/services/app_service/public/cpp/features.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -213,10 +210,7 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
 class MediaClientAppUsingCameraTest : public testing::Test {
  public:
-  MediaClientAppUsingCameraTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        apps::kAppServiceCapabilityAccessWithoutMojom);
-  }
+  MediaClientAppUsingCameraTest() = default;
   MediaClientAppUsingCameraTest(const MediaClientAppUsingCameraTest&) = delete;
   MediaClientAppUsingCameraTest& operator=(
       const MediaClientAppUsingCameraTest&) = delete;
@@ -263,8 +257,6 @@ class MediaClientAppUsingCameraTest : public testing::Test {
     capability_access_cache_.OnCapabilityAccesses(
         std::move(capability_access_deltas));
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   const std::string kPrimaryProfileName = "primary_profile";
   const AccountId account_id_ = AccountId::FromUserEmail(kPrimaryProfileName);

@@ -16,7 +16,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "components/services/app_service/public/cpp/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_menu_constants.h"
@@ -339,16 +338,8 @@ void WebApps::ModifyWebAppCapabilityAccess(
     const std::string& app_id,
     absl::optional<bool> accessing_camera,
     absl::optional<bool> accessing_microphone) {
-  if (base::FeatureList::IsEnabled(
-          apps::kAppServiceCapabilityAccessWithoutMojom)) {
-    apps::AppPublisher::ModifyCapabilityAccess(
-        app_id, std::move(accessing_camera), std::move(accessing_microphone));
-    return;
-  }
-
-  PublisherBase::ModifyCapabilityAccess(subscribers_, app_id,
-                                        std::move(accessing_camera),
-                                        std::move(accessing_microphone));
+  apps::AppPublisher::ModifyCapabilityAccess(
+      app_id, std::move(accessing_camera), std::move(accessing_microphone));
 }
 
 std::vector<apps::AppPtr> WebApps::CreateWebApps() {

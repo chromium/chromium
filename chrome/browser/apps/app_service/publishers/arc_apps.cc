@@ -1510,24 +1510,11 @@ void ArcApps::OnPrivacyItemsChanged(
   }
 
   // Write the record to `AppCapabilityAccessCache`.
-  if (base::FeatureList::IsEnabled(
-          apps::kAppServiceCapabilityAccessWithoutMojom)) {
-    std::vector<CapabilityAccessPtr> accesses;
-    for (auto& item : capability_accesses) {
-      accesses.push_back(std::move(item.second));
-    }
-    proxy()->OnCapabilityAccesses(std::move(accesses));
-    return;
+  std::vector<CapabilityAccessPtr> accesses;
+  for (auto& item : capability_accesses) {
+    accesses.push_back(std::move(item.second));
   }
-
-  for (auto& subscriber : subscribers_) {
-    std::vector<apps::mojom::CapabilityAccessPtr> accesses;
-    for (const auto& item : capability_accesses) {
-      accesses.push_back(
-          ConvertCapabilityAccessToMojomCapabilityAccess(item.second));
-    }
-    subscriber->OnCapabilityAccesses(std::move(accesses));
-  }
+  proxy()->OnCapabilityAccesses(std::move(accesses));
 }
 
 void ArcApps::OnInstanceUpdate(const apps::InstanceUpdate& update) {

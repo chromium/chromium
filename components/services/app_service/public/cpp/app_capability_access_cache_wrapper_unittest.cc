@@ -5,12 +5,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
-#include "components/services/app_service/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,12 +18,6 @@ class AppCapabilityAccessCacheWrapperTest
     : public testing::Test,
       public AppCapabilityAccessCache::Observer {
  protected:
-  AppCapabilityAccessCacheWrapperTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(
-        apps::kAppServiceCapabilityAccessWithoutMojom);
-  }
-
   // AppCapabilityAccessCache::Observer:
   void OnCapabilityAccessUpdate(const CapabilityAccessUpdate& update) override {
     last_account_id_ = update.AccountId();
@@ -54,7 +46,6 @@ class AppCapabilityAccessCacheWrapperTest
   AccountId& account_id_2() { return account_id_2_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   AccountId last_account_id_;
   AccountId account_id_1_ = AccountId::FromUserEmail("fake_email@gmail.com");
   AccountId account_id_2_ = AccountId::FromUserEmail("fake_email2@gmail.com");
