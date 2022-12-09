@@ -25,7 +25,7 @@ import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import {Router} from '../router.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './sync_account_control.html.js';
 import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
@@ -349,7 +349,8 @@ export class SettingsSyncAccountControlElement extends
 
   private onErrorButtonTap_() {
     const router = Router.getInstance();
-    const routes = router.getRoutes();
+    const routes =
+        router.getRoutes() as {SIGN_OUT: Route, SYNC: Route, ABOUT: Route};
     switch (this.syncStatus.statusAction) {
       // <if expr="not chromeos_ash">
       case StatusAction.REAUTHENTICATE:
@@ -404,7 +405,7 @@ export class SettingsSyncAccountControlElement extends
   private onTurnOffButtonTap_() {
     /* This will route to people_page's disconnect dialog. */
     const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().SIGN_OUT);
+    router.navigateTo((router.getRoutes() as {SIGN_OUT: Route}).SIGN_OUT);
   }
 
   private onMenuButtonTap_() {

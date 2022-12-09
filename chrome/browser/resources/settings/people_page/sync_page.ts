@@ -39,7 +39,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
 
-import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
 // <if expr="chromeos_ash">
@@ -47,6 +47,22 @@ import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js
 // </if>
 
 import {getTemplate} from './sync_page.html.js';
+
+// TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
+// Settings.
+interface SyncRoutes {
+  BASIC: Route;
+  PEOPLE: Route;
+  SYNC: Route;
+  SYNC_ADVANCED: Route;
+  OS_SYNC: Route;
+  OS_PEOPLE: Route;
+}
+
+function getSyncRoutes(): SyncRoutes {
+  const router = Router.getInstance();
+  return router.getRoutes() as SyncRoutes;
+}
 
 export interface SettingsSyncPageElement {
   $: {
@@ -277,7 +293,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
     const router = Router.getInstance();
-    if (router.getCurrentRoute() === router.getRoutes().SYNC) {
+    if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
       this.onNavigateToPage_();
     }
   }
@@ -286,7 +302,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     super.disconnectedCallback();
 
     const router = Router.getInstance();
-    if (router.getRoutes().SYNC.contains(router.getCurrentRoute())) {
+    if (getSyncRoutes().SYNC.contains(router.getCurrentRoute())) {
       this.onNavigateAwayFromPage_();
     }
 
@@ -334,8 +350,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   private onFocusConfigChange_() {
-    this.focusConfig.set(
-        Router.getInstance().getRoutes().SYNC_ADVANCED.path, () => {
+    this.focusConfig.set(getSyncRoutes().SYNC_ADVANCED!.path, () => {
       const toFocus =
           this.shadowRoot!.querySelector<HTMLElement>('#sync-advanced-row');
       assert(toFocus);
@@ -356,7 +371,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.shadowRoot!.querySelector<CrDialogElement>(
                         '#setupCancelDialog')!.close();
     const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().BASIC);
+    router.navigateTo(getSyncRoutes().BASIC);
     chrome.metricsPrivate.recordUserAction(
         'Signin_Signin_ConfirmCancelAdvancedSyncSettings');
   }
@@ -368,12 +383,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   override currentRouteChanged() {
     const router = Router.getInstance();
-    if (router.getCurrentRoute() === router.getRoutes().SYNC) {
+    if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
       this.onNavigateToPage_();
       return;
     }
 
-    if (router.getRoutes().SYNC.contains(router.getCurrentRoute())) {
+    if (getSyncRoutes().SYNC.contains(router.getCurrentRoute())) {
       return;
     }
 
@@ -398,7 +413,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       // firing). Triggering navigation from within an observer leads to some
       // undefined behavior and runtime errors.
       requestAnimationFrame(() => {
-        router.navigateTo(router.getRoutes().SYNC);
+        router.navigateTo(getSyncRoutes().SYNC);
         this.showSetupCancelDialog_ = true;
         // Flush to make sure that the setup cancel dialog is attached.
         flush();
@@ -422,7 +437,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private onNavigateToPage_() {
     const router = Router.getInstance();
-    assert(router.getCurrentRoute() === router.getRoutes().SYNC);
+    assert(router.getCurrentRoute() === getSyncRoutes().SYNC);
     if (this.beforeunloadCallback_) {
       return;
     }
@@ -593,8 +608,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         this.pageStatus_ = pageStatus;
         return;
       case PageStatus.DONE:
-        if (router.getCurrentRoute() === router.getRoutes().SYNC) {
-          router.navigateTo(router.getRoutes().PEOPLE);
+        if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
+          router.navigateTo(getSyncRoutes().PEOPLE!);
         }
         return;
       case PageStatus.PASSPHRASE_FAILED:
@@ -638,7 +653,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private onSyncAdvancedClick_() {
     const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().SYNC_ADVANCED);
+    router.navigateTo(getSyncRoutes().SYNC_ADVANCED!);
   }
 
   /**
@@ -655,7 +670,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
           'Signin_Signin_CancelAdvancedSyncSettings');
     }
     const router = Router.getInstance();
-    router.navigateTo(router.getRoutes().BASIC);
+    router.navigateTo(getSyncRoutes().BASIC);
   }
 
   /**
@@ -666,7 +681,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     const passphraseInput = this.shadowRoot!.querySelector<CrInputElement>(
         '#existingPassphraseInput');
     const router = Router.getInstance();
-    if (passphraseInput && router.getCurrentRoute() === router.getRoutes().SYNC) {
+    if (passphraseInput && router.getCurrentRoute() === getSyncRoutes().SYNC) {
       passphraseInput.focus();
     }
   }
