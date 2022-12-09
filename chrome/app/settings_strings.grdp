@@ -1004,8 +1004,8 @@
   </message>
 
   <if expr="is_macosx">
-  <message name="IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC" desc="Label for a toggle that allows users to be authenticate using their TouchID when logging into webpages.">
-    Use TouchID when filling passwords
+  <message name="IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC" desc="Label for a toggle that allows users to be authenticate using their TouchID or any other means of authentication when logging into webpages.">
+    Use your screen lock when filling passwords
   </message>
   </if>
 
