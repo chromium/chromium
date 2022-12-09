@@ -635,7 +635,7 @@
     'skylab': {
       'cros_board': 'hana',
       'cros_chrome_version': '110.0.5447.0',
-      'cros_img': 'hana-release/R110-15263.0.0',
+      'cros_img': 'hana-release/R110-15269.0.0',
     },
     'enabled': False,
     'identifier': 'HANA_RELEASE_DEV',
@@ -680,7 +680,7 @@
     'skylab': {
       'cros_board': 'jacuzzi',
       'cros_chrome_version': '110.0.5447.0',
-      'cros_img': 'jacuzzi-release/R110-15263.0.0',
+      'cros_img': 'jacuzzi-release/R110-15269.0.0',
     },
     'enabled': False,
     'identifier': 'JACUZZI_RELEASE_DEV',
@@ -782,7 +782,7 @@
     'skylab': {
       'cros_board': 'strongbad',
       'cros_chrome_version': '110.0.5447.0',
-      'cros_img': 'strongbad-release/R110-15263.0.0',
+      'cros_img': 'strongbad-release/R110-15269.0.0',
     },
     'enabled': False,
     'identifier': 'strongbad_RELEASE_DEV',
