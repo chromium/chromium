@@ -1302,7 +1302,8 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
   AuthenticatorData authenticator_data(
       rp_id_hash, !mutable_state()->unset_up_bit,
-      mutable_state()->unset_uv_bit ? false : user_verified, 01ul,
+      mutable_state()->unset_uv_bit ? false : user_verified,
+      config_.backup_eligible, 01ul,
       ConstructAttestedCredentialData(key_handle, std::move(public_key)),
       std::move(extensions));
 
@@ -1699,8 +1700,8 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
         rp_id_hash,
         mutable_state()->unset_up_bit ? false : request.user_presence_required,
         mutable_state()->unset_uv_bit ? false : user_verified,
-        registration.second->counter, std::move(opt_attested_cred_data),
-        std::move(extensions));
+        config_.backup_eligible, registration.second->counter,
+        std::move(opt_attested_cred_data), std::move(extensions));
 
     std::vector<uint8_t> signature_buffer;
     if (config_.always_uv && !user_verified) {

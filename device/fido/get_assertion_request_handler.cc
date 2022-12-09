@@ -104,9 +104,11 @@ absl::optional<GetAssertionStatus> ConvertDeviceResponseCode(
 
 // ValidateResponseExtensions returns true iff |extensions| is valid as a
 // response to |request| and |options|.
-bool ValidateResponseExtensions(const CtapGetAssertionRequest& request,
-                                const CtapGetAssertionOptions& options,
-                                const cbor::Value& extensions) {
+bool ValidateResponseExtensions(
+    const CtapGetAssertionRequest& request,
+    const CtapGetAssertionOptions& options,
+    const AuthenticatorGetAssertionResponse& response,
+    const cbor::Value& extensions) {
   if (!extensions.is_map()) {
     return false;
   }
@@ -130,9 +132,12 @@ bool ValidateResponseExtensions(const CtapGetAssertionRequest& request,
         FIDO_LOG(ERROR) << "unsolicited devicePubKey extension output";
         return false;
       }
+      const bool backup_eligible_flag =
+          response.authenticator_data.backup_eligible();
       const absl::optional<const char*> error =
           CheckDevicePublicKeyExtensionForErrors(
-              it.second, request.device_public_key->attestation);
+              it.second, request.device_public_key->attestation,
+              backup_eligible_flag);
       if (error.has_value()) {
         FIDO_LOG(ERROR) << error.value();
         return false;
@@ -201,7 +206,7 @@ bool ResponseValid(bool is_first_response,
   const absl::optional<cbor::Value>& extensions =
       response.authenticator_data.extensions();
   if (extensions &&
-      !ValidateResponseExtensions(request, options, *extensions)) {
+      !ValidateResponseExtensions(request, options, response, *extensions)) {
     FIDO_LOG(ERROR) << "assertion response invalid due to extensions block: "
                     << cbor::DiagnosticWriter::Write(*extensions);
     return false;

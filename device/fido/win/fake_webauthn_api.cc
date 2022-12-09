@@ -198,7 +198,7 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorGetAssertion(
           /*user_present=*/true,
           /*user_verified=*/options->dwUserVerificationRequirement !=
               WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED,
-          registration->counter++,
+          /*backup_eligible=*/false, registration->counter++,
           /*attested_credential_data=*/absl::nullopt,
           /*extensions=*/absl::nullopt)
           .SerializeToByteArray();

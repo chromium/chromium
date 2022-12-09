@@ -28,6 +28,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   enum class Flag : uint8_t {
     kTestOfUserPresence = 1u << 0,
     kTestOfUserVerification = 1u << 2,
+    kBackupEligible = 1u << 3,
+    kBackupState = 1u << 4,
     kAttestation = 1u << 6,
     kExtensionDataIncluded = 1u << 7,
   };
@@ -50,6 +52,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
       base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
       bool user_present,
       bool user_verified,
+      bool backup_eligible,
       uint32_t sign_counter,
       absl::optional<AttestedCredentialData> attested_credential_data,
       absl::optional<cbor::Value> extensions);
@@ -108,6 +111,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
 
   bool extension_data_included() const {
     return flags_ & base::strict_cast<uint8_t>(Flag::kExtensionDataIncluded);
+  }
+
+  bool backup_eligible() const {
+    return flags_ & base::strict_cast<uint8_t>(Flag::kBackupEligible);
   }
 
   base::span<const uint8_t, kSignCounterLength> counter() const {

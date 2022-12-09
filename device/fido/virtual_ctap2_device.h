@@ -115,6 +115,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // device_public_key_drop_signature causes the signature (but not the
     // extension output) to be omitted.
     bool device_public_key_drop_signature = false;
+    // backup_eligible, if true, causes credentials to set the BE (Backup
+    // Eligible) flag to indicate that they can be synced.
+    bool backup_eligible = false;
 
     IncludeCredential include_credential_in_assertion_response =
         IncludeCredential::ONLY_IF_NEEDED;

@@ -1567,6 +1567,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                        DevicePublicKeyMakeCredential) {
   device::VirtualCtap2Device::Config config;
   config.device_public_key_support = true;
+  config.backup_eligible = true;
   auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
   virtual_device_factory->SetCtap2Config(config);
 
@@ -1607,6 +1608,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                        DevicePublicKeyGetAssertion) {
   device::VirtualCtap2Device::Config config;
   config.device_public_key_support = true;
+  config.backup_eligible = true;
   auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
   virtual_device_factory->SetCtap2Config(config);
   constexpr uint8_t kCredentialId[] = {1};

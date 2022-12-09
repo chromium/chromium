@@ -199,11 +199,15 @@ absl::optional<DevicePublicKeyOutput> DevicePublicKeyOutput::FromExtension(
 
 absl::optional<const char*> CheckDevicePublicKeyExtensionForErrors(
     const cbor::Value& extension_value,
-    AttestationConveyancePreference requested_attestation) {
+    AttestationConveyancePreference requested_attestation,
+    bool backup_eligible_flag) {
   absl::optional<DevicePublicKeyOutput> output =
       DevicePublicKeyOutput::FromExtension(extension_value);
   if (!output) {
     return "invalid devicePubKey extension output";
+  }
+  if (!backup_eligible_flag) {
+    return "DPK extension without BE flag set";
   }
   if (requested_attestation == AttestationConveyancePreference::kNone &&
       output->attestation_format != kNoneAttestationValue) {

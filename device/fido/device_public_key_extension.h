@@ -64,11 +64,13 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) DevicePublicKeyOutput {
 
 // CheckDevicePublicKeyExtensionForErrors checks that `extension_value` is a
 // sensible extension response given that `requested_attestation` was the DPK
-// attestation level in the request. It returns an error message on failure
-// or `absl::nullopt` on success.
+// attestation level in the request and `backup_eligible_flag` is the value of
+// the BE flag from the authenticator data. It returns an error message on
+// failure or `absl::nullopt` on success.
 absl::optional<const char*> CheckDevicePublicKeyExtensionForErrors(
     const cbor::Value& extension_value,
-    AttestationConveyancePreference requested_attestation);
+    AttestationConveyancePreference requested_attestation,
+    bool backup_eligible_flag);
 
 }  // namespace device
 

@@ -259,10 +259,12 @@ CredProtect CredProtectForAuthenticator(
 // ValidateResponseExtensions returns true iff |extensions| is valid as a
 // response to |request| from an authenticator that reports that it supports
 // |options|.
-bool ValidateResponseExtensions(const CtapMakeCredentialRequest& request,
-                                const MakeCredentialOptions& options,
-                                const FidoAuthenticator& authenticator,
-                                const cbor::Value& extensions) {
+bool ValidateResponseExtensions(
+    const CtapMakeCredentialRequest& request,
+    const MakeCredentialOptions& options,
+    const FidoAuthenticator& authenticator,
+    const AuthenticatorMakeCredentialResponse& response,
+    const cbor::Value& extensions) {
   if (!extensions.is_map()) {
     return false;
   }
@@ -314,9 +316,12 @@ bool ValidateResponseExtensions(const CtapMakeCredentialRequest& request,
         FIDO_LOG(ERROR) << "unsolicited devicePubKey extension output";
         return false;
       }
+      const bool backup_eligible_flag =
+          response.attestation_object.authenticator_data().backup_eligible();
       const absl::optional<const char*> error =
           CheckDevicePublicKeyExtensionForErrors(
-              it.second, request.device_public_key->attestation);
+              it.second, request.device_public_key->attestation,
+              backup_eligible_flag);
       if (error.has_value()) {
         FIDO_LOG(ERROR) << error.value();
         return false;
@@ -345,7 +350,7 @@ bool ResponseValid(const FidoAuthenticator& authenticator,
   const absl::optional<cbor::Value>& extensions =
       response.attestation_object.authenticator_data().extensions();
   if (extensions && !ValidateResponseExtensions(request, options, authenticator,
-                                                *extensions)) {
+                                                response, *extensions)) {
     FIDO_LOG(ERROR) << "Invalid extensions block: "
                     << cbor::DiagnosticWriter::Write(*extensions);
     return false;

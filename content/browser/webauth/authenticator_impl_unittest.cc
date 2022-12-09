@@ -4641,6 +4641,7 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyMakeCredential) {
   for (const bool dpk_support : {false, true}) {
     device::VirtualCtap2Device::Config config;
     config.device_public_key_support = dpk_support;
+    config.backup_eligible = true;
     // None attestation is needed because, otherwise, zeroing the AAGUID
     // invalidates the DPK signature.
     config.none_attestation = true;
@@ -4674,6 +4675,7 @@ TEST_F(AuthenticatorDevicePublicKeyTest,
 
   device::VirtualCtap2Device::Config config;
   config.device_public_key_support = true;
+  config.backup_eligible = true;
   virtual_device_factory_->SetCtap2Config(config);
 
   PublicKeyCredentialCreationOptionsPtr options =
@@ -4686,6 +4688,34 @@ TEST_F(AuthenticatorDevicePublicKeyTest,
   ASSERT_FALSE(HasDevicePublicKeyExtensionInAuthenticatorData(result.response));
 }
 
+TEST_F(AuthenticatorDevicePublicKeyTest,
+       DevicePublicKeyMakeCredentialRequiresBackupEligible) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  for (const bool backup_eligible : {false, true}) {
+    device::VirtualCtap2Device::Config config;
+    config.device_public_key_support = true;
+    config.none_attestation = true;
+    config.backup_eligible = backup_eligible;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+
+    if (backup_eligible) {
+      ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+      ASSERT_TRUE(static_cast<bool>(result.response->device_public_key));
+      ASSERT_TRUE(
+          HasDevicePublicKeyExtensionInAuthenticatorData(result.response));
+    } else {
+      ASSERT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    }
+  }
+}
+
 TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyGetAssertion) {
   NavigateAndCommit(GURL(kTestOrigin1));
 
@@ -4693,6 +4723,7 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyGetAssertion) {
   for (const bool dpk_support : {false, true}) {
     device::VirtualCtap2Device::Config config;
     config.device_public_key_support = dpk_support;
+    config.backup_eligible = true;
     virtual_device_factory_->SetCtap2Config(config);
 
     PublicKeyCredentialRequestOptionsPtr options =
@@ -4716,6 +4747,36 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyGetAssertion) {
   }
 }
 
+TEST_F(AuthenticatorDevicePublicKeyTest,
+       DevicePublicKeyGetAssertionRequiresBackupEligible) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  bool credential_injected = false;
+  for (const bool backup_eligible : {false, true}) {
+    device::VirtualCtap2Device::Config config;
+    config.device_public_key_support = true;
+    config.backup_eligible = backup_eligible;
+    virtual_device_factory_->SetCtap2Config(config);
+
+    PublicKeyCredentialRequestOptionsPtr options =
+        GetTestPublicKeyCredentialRequestOptions();
+    if (!credential_injected) {
+      ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+          options->allow_credentials[0].id, kTestRelyingPartyId));
+      credential_injected = true;
+    }
+    options->device_public_key = blink::mojom::DevicePublicKeyRequest::New();
+    GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+
+    if (backup_eligible) {
+      ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+      ASSERT_TRUE(static_cast<bool>(result.response->device_public_key));
+    } else {
+      ASSERT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    }
+  }
+}
+
 TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyBadResponse) {
   NavigateAndCommit(GURL(kTestOrigin1));
 
@@ -4725,6 +4786,7 @@ TEST_F(AuthenticatorDevicePublicKeyTest, DevicePublicKeyBadResponse) {
 
     device::VirtualCtap2Device::Config config;
     config.device_public_key_support = true;
+    config.backup_eligible = true;
     // None attestation is needed because, otherwise, zeroing the AAGUID
     // invalidates the DPK signature.
     config.none_attestation = true;
@@ -4884,6 +4946,7 @@ TEST_F(AuthenticatorDevicePublicKeyTest,
 
     device::VirtualCtap2Device::Config config;
     config.device_public_key_support = true;
+    config.backup_eligible = true;
     config.device_public_key_always_return_attestation = test.has_attestation;
     config.device_public_key_always_return_enterprise_attestation =
         test.enterprise_attestation_returned;
@@ -4989,6 +5052,7 @@ TEST_F(AuthenticatorDevicePublicKeyTest,
 
     device::VirtualCtap2Device::Config config;
     config.device_public_key_support = true;
+    config.backup_eligible = true;
     config.device_public_key_always_return_attestation = test.has_attestation;
     config.device_public_key_always_return_enterprise_attestation =
         test.enterprise_attestation_returned;
@@ -8580,6 +8644,7 @@ class AuthenticatorCableV2Test
     ret.include_credential_in_assertion_response =
         VirtualCtap2Device::Config::IncludeCredential::ALWAYS;
     ret.device_public_key_support = true;
+    ret.backup_eligible = true;
     // None attestation is needed because, otherwise, zeroing the AAGUID
     // invalidates the DPK signature.
     ret.none_attestation = true;
