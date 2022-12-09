@@ -216,6 +216,10 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_LEGACY_MIPMAP_BUILDER
 
+// To ensure chrome only has access to legacy vma memory query apis until all
+// skia changes to implement new api is completed.
+#define SK_USE_LEGACY_VMA_MEMORY_QUERY
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
