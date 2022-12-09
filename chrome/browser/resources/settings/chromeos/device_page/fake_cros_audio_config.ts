@@ -57,6 +57,7 @@ export const fakeBluetoothMic: AudioDevice = {
 // handle audio input.
 export interface AudioSystemProperties extends AudioSystemPropertiesMojom {
   inputDevices: AudioDevice[];
+  inputMuteState: MuteState;
 }
 
 export interface FakePropertiesObserverInterface {
@@ -68,6 +69,7 @@ export const defaultFakeAudioSystemProperties: AudioSystemProperties = {
   outputVolumePercent: 75,
   outputMuteState: MuteState.kNotMuted,
   inputDevices: [fakeInternalFrontMic, fakeBluetoothMic],
+  inputMuteState: MuteState.kNotMuted,
 };
 
 /** Creates an audio device based on provided device and isActive override. */
@@ -80,6 +82,7 @@ export function createAudioDevice(
 export interface FakeCrosAudioConfigInterface extends CrosAudioConfigInterface {
   setActiveDevice(outputDevice: AudioDevice): void;
   setOutputMuted(muted: boolean): void;
+  setInputMuted(muted: boolean): void;
 }
 
 export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
@@ -133,6 +136,16 @@ export class FakeCrosAudioConfig implements FakeCrosAudioConfigInterface {
   setOutputMuted(muted: boolean): void {
     this.audioSystemProperties.outputMuteState =
         muted ? MuteState.kMutedByUser : MuteState.kNotMuted;
+    this.notifyAudioSystemPropertiesUpdated();
+  }
+
+  /**
+   * Sets the input device mute state to `kMutedByUser` when true and
+   * `kNotMuted` when false.
+   */
+  setInputMuted(muted: boolean): void {
+    const muteState = muted ? MuteState.kMutedByUser : MuteState.kNotMuted;
+    this.audioSystemProperties.inputMuteState = muteState;
     this.notifyAudioSystemPropertiesUpdated();
   }
 

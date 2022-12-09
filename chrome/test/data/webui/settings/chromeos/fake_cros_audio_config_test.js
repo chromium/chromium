@@ -142,4 +142,28 @@ suite('FakeCrosAudioConfig', function() {
     crosAudioConfig.setOutputMuted(/*muted=*/ false);
     assertDeepEquals(propertiesOutputUnmute, onPropertiesUpdated.calls_[2][0]);
   });
+
+  test('VerifySetInputMutedTriggersMatchingPropertyUpdate', () => {
+    assertEquals(
+        crosAudioConfigMojomWebui.MuteState.kNotMuted,
+        onPropertiesUpdated.calls_[0][0].inputMuteState);
+
+    /** @type {AudioSystemProperties} */
+    const updateInputGainMuted = {
+      ...defaultProperties,
+      inputMuteState: crosAudioConfigMojomWebui.MuteState.kMutedByUser,
+    };
+    onPropertiesUpdated.addExpectation(updateInputGainMuted);
+    crosAudioConfig.setInputMuted(/*muted=*/ true);
+
+    assertEquals(
+        crosAudioConfigMojomWebui.MuteState.kMutedByUser,
+        onPropertiesUpdated.calls_[1][0].inputMuteState);
+    onPropertiesUpdated.addExpectation(defaultProperties);
+    crosAudioConfig.setInputMuted(/*muted=*/ false);
+
+    assertEquals(
+        crosAudioConfigMojomWebui.MuteState.kNotMuted,
+        onPropertiesUpdated.calls_[2][0].inputMuteState);
+  });
 });
