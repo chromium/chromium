@@ -461,7 +461,7 @@ window.onload = function() {
 In the C++:
 
 ```c++
-void OvenHandler::HandleStartPilotLight(cont base::ListValue* /*args*/) {
+void OvenHandler::HandleStartPilotLight(const base::Value::List& /*args*/) {
   AllowJavascript();
   // CallJavascriptFunction() and FireWebUIListener() are now safe to do.
   GetOven()->StartPilotLight();
@@ -634,10 +634,10 @@ and any
 callbacks in the chain.
 
 ```c++
-void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
+void OvenHandler::HandleBakeDonuts(const base::Value::List& args) {
   AllowJavascript();
   if (!GetOven()->HasGas()) {
-    RejectJavascriptCallback(args->GetList()[0],
+    RejectJavascriptCallback(args[0],
                              base::StringValue("need gas to cook the donuts!"));
   }
 ```
@@ -674,10 +674,10 @@ sendWithPromise('bakeDonuts').then(function(numDonutsBaked: number) {
 Some handling C++ might do this:
 
 ```c++
-void OvenHandler::HandleBakeDonuts(const base::ListValue* args) {
+void OvenHandler::HandleBakeDonuts(const base::Value::List& args) {
   AllowJavascript();
   double num_donuts_baked = GetOven()->BakeDonuts();
-  ResolveJavascriptCallback(args->GetList()[0], base::Value(num_donuts_baked));
+  ResolveJavascriptCallback(args[0], base::Value(num_donuts_baked));
 }
 ```
 
@@ -815,10 +815,10 @@ message handler's list is a callback ID. That ID is passed to
 JavaScript/TypeScript and calling the `then()` function.
 
 ```c++
-void DonutHandler::HandleGetNumberOfDonuts(const base::ListValue* args) {
+void DonutHandler::HandleGetNumberOfDonuts(const base::Value::List& args) {
   AllowJavascript();
 
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args[0];
   size_t num_donuts = GetOven()->GetNumberOfDonuts();
   ResolveJavascriptCallback(callback_id, base::Value(num_donuts));
 }
