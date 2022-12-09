@@ -1917,10 +1917,13 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
               removed_desk);
     }
 
+    // When windows are being closed, they do so asynchronously. So, to free up
+    // the desk container while the windows are being closed, we want to move
+    // those windows to the container `kShellWindowId_UnparentedContainer`.
     if (window != floated_window) {
-      aura::Window* removed_desk_container =
-          removed_desk->GetDeskContainerForRoot(window->GetRootWindow());
-      removed_desk_container->RemoveChild(window);
+      window->GetRootWindow()
+          ->GetChildById(kShellWindowId_UnparentedContainer)
+          ->AddChild(window);
     }
   }
 

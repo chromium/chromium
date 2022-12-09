@@ -8598,6 +8598,36 @@ TEST_P(DesksCloseAllTest, CanAddLastDeskWhileUndoToastIsBeingDisplayed) {
   EXPECT_FALSE(window.is_valid());
 }
 
+// Tests that windows in CloseAll will not be unparented while they are closing
+// asynchronously.
+TEST_P(DesksCloseAllTest, ClosingWindowsHaveParent) {
+  WindowHolder window(CreateAppWindow(gfx::Rect(), AppType::SYSTEM_APP,
+                                      ShellWindowId::kShellWindowId_Invalid,
+                                      new StuckWidgetDelegate()));
+
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  Desk* desk_1 = controller->desks()[0].get();
+  ASSERT_TRUE(desk_1->is_active());
+  EXPECT_TRUE(base::Contains(desk_1->windows(), window.window()));
+
+  RemoveDesk(desk_1, DeskCloseType::kCloseAllWindowsAndWait);
+
+  // Window will still be open because it has not yet been force-closed.
+  WaitForMilliseconds(
+      ToastData::kDefaultToastDuration.InMilliseconds() +
+      DesksController::kCloseAllWindowCloseTimeout.InMilliseconds() / 2);
+  ASSERT_EQ(1u, controller->desks().size());
+  ASSERT_TRUE(window.is_valid());
+
+  // Closing windows should be reparented to the
+  // `kShellWindowId_UnparentedContainer` window.
+  EXPECT_TRUE(window.window()->GetRootWindow());
+  EXPECT_EQ(kShellWindowId_UnparentedContainer,
+            window.window()->parent()->GetId());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
