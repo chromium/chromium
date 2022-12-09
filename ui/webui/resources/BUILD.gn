@@ -139,17 +139,18 @@ group("closure_compile") {
 
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
-checked_in_dts_files = [ "js/load_time_data.m.d.ts" ]
-
 if (is_chromeos_ash) {
-  checked_in_dts_files += [ "js/cr.m.d.ts" ]
-}
+  checked_in_dts_files = [
+    "js/cr.m.d.ts",
+    "js/load_time_data.m.d.ts",
+  ]
 
-# Copies checked-in .d.ts files to the preprocess folder so that they are
-# discovered by TSC the same way generated .d.ts files are.
-copy("copy_checked_in_dts_files") {
-  sources = checked_in_dts_files
-  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
+  # Copies checked-in .d.ts files to the preprocess folder so that they are
+  # discovered by TSC the same way generated .d.ts files are.
+  copy("copy_checked_in_dts_files") {
+    sources = checked_in_dts_files
+    outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
+  }
 }
 
 # Files for which .d.ts files will be auto-generated with ts_definitions().
@@ -216,8 +217,10 @@ ts_library("library") {
   ]
 
   # Checked-in .d.ts files.
-  foreach(_file, checked_in_dts_files) {
-    definitions += [ "$root_dir/$_file" ]
+  if (is_chromeos_ash) {
+    foreach(_file, checked_in_dts_files) {
+      definitions += [ "$root_dir/$_file" ]
+    }
   }
 
   # Auto-generated .d.ts files.
@@ -227,10 +230,13 @@ ts_library("library") {
 
   deps = [ "//third_party/polymer/v3_0:library" ]
   extra_deps += [
-    ":copy_checked_in_dts_files",
     ":generate_definitions",
     ":preprocess",
   ]
+
+  if (is_chromeos_ash) {
+    extra_deps += [ ":copy_checked_in_dts_files" ]
+  }
 }
 
 generate_grd("build_ts_grdp") {
@@ -246,10 +252,12 @@ ts_definitions("generate_definitions") {
   out_dir = preprocessed_folder
   js_files = generate_definitions_js_files
   extra_deps = [
-    # Copy checked-in d.ts files first, so that |generate_definitions| leverages
-    # these files, instead of accidentally auto-generating them.
-    ":copy_checked_in_dts_files",
     ":preprocess",
     "mojo:library",
   ]
+  if (is_chromeos_ash) {
+    # Copy checked-in d.ts files first, so that |generate_definitions| leverages
+    # these files, instead of accidentally auto-generating them.
+    extra_deps += [ ":copy_checked_in_dts_files" ]
+  }
 }
