@@ -56,6 +56,7 @@
     "Origin",
     "Origin-Trial",
     "Origin-Agent-Cluster",
+    "No-Vary-Search",
     "Permissions-Policy",
     "Permissions-Policy-Report-Only",
     "Ping-From",

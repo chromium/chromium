@@ -59,6 +59,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
@@ -2920,6 +2921,9 @@ void DocumentLoader::RecordUseCountersForCommit() {
 
   if (!response_.HttpHeaderField(http_names::kRequireDocumentPolicy).IsNull())
     CountUse(WebFeature::kRequireDocumentPolicyHeader);
+
+  if (!response_.HttpHeaderField(http_names::kNoVarySearch).IsNull())
+    CountUse(WebFeature::kNoVarySearch);
 
   if (was_blocked_by_document_policy_)
     CountUse(WebFeature::kDocumentPolicyCausedPageUnload);

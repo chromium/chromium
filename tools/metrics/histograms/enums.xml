@@ -41525,6 +41525,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4422" label="DialogCloseWatcherCancelSkipped"/>
   <int value="4423" label="DialogCloseWatcherCancelSkippedAndDefaultPrevented"/>
   <int value="4424" label="DialogCloseWatcherCloseSignalClosedMultiple"/>
+  <int value="4425" label="NoVarySearch"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
