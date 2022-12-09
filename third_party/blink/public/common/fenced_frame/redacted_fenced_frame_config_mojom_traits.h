@@ -5,11 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FENCED_FRAME_REDACTED_FENCED_FRAME_CONFIG_MOJOM_TRAITS_H_
 
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom-forward.h"
 
 namespace mojo {
+
+template <>
+struct BLINK_COMMON_EXPORT
+    EnumTraits<blink::mojom::Opaque, blink::FencedFrame::Opaque> {
+  static blink::mojom::Opaque ToMojom(blink::FencedFrame::Opaque input);
+  static bool FromMojom(blink::mojom::Opaque input,
+                        blink::FencedFrame::Opaque* out);
+};
 
 template <>
 struct BLINK_COMMON_EXPORT
@@ -31,6 +40,31 @@ struct BLINK_COMMON_EXPORT
 
   static bool Read(blink::mojom::FencedFrameReportingDataView data,
                    blink::FencedFrame::FencedFrameReporting* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::AdAuctionDataDataView,
+                                        blink::FencedFrame::AdAuctionData> {
+  static const url::Origin& interest_group_owner(
+      const blink::FencedFrame::AdAuctionData& input);
+  static const std::string& interest_group_name(
+      const blink::FencedFrame::AdAuctionData& input);
+
+  static bool Read(blink::mojom::AdAuctionDataDataView data,
+                   blink::FencedFrame::AdAuctionData* out_data);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
+                 blink::FencedFrame::SharedStorageBudgetMetadata> {
+  static const url::Origin& origin(
+      const blink::FencedFrame::SharedStorageBudgetMetadata& input);
+  static double budget_to_charge(
+      const blink::FencedFrame::SharedStorageBudgetMetadata& input);
+
+  static bool Read(blink::mojom::SharedStorageBudgetMetadataDataView data,
+                   blink::FencedFrame::SharedStorageBudgetMetadata* out_data);
 };
 
 template <>

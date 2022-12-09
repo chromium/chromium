@@ -599,6 +599,18 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.Opaque"
+          cpp = "::blink::FencedFrame::Opaque"
+        },
+        {
+          mojom = "blink.mojom.AdAuctionData"
+          cpp = "::blink::FencedFrame::AdAuctionData"
+        },
+        {
+          mojom = "blink.mojom.SharedStorageBudgetMetadata"
+          cpp = "::blink::FencedFrame::SharedStorageBudgetMetadata"
+        },
+        {
           mojom = "blink.mojom.ReportingDestination"
           cpp = "::blink::FencedFrame::ReportingDestination"
         },

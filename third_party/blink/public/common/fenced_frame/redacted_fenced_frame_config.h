@@ -26,6 +26,12 @@ FORWARD_DECLARE_TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest);
 
 namespace blink::FencedFrame {
 
+// This is used to represent the "opaque" union variant of "PotentiallyOpaque"
+// mojom types.
+enum class Opaque {
+  kOpaque,
+};
+
 enum ReportingDestination {
   kBuyer,
   kSeller,
@@ -43,7 +49,7 @@ struct BLINK_COMMON_EXPORT FencedFrameReporting {
       metadata;
 };
 
-struct AdAuctionData {
+struct BLINK_COMMON_EXPORT AdAuctionData {
   url::Origin interest_group_owner;
   std::string interest_group_name;
 };
