@@ -109,7 +109,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
     bubble_widget_->Close();
   }
 
-  CHECK(!TrayBubbleBase::IsInObserverList());
+  CHECK(!IsInObserverList());
 }
 
 void UnifiedSystemTrayBubble::InitializeObservers() {

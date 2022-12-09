@@ -15,10 +15,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(ActivationChangeObserver*,
                              kActivationChangeObserverKey,
                              nullptr)
 
-ActivationChangeObserver::~ActivationChangeObserver() {
-  CHECK(!IsInObserverList());
-}
-
 void SetActivationChangeObserver(aura::Window* window,
                                  ActivationChangeObserver* observer) {
   window->SetProperty(kActivationChangeObserverKey, observer);

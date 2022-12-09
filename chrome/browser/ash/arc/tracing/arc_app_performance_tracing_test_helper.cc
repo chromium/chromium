@@ -41,7 +41,6 @@ void ArcAppPerformanceTracingTestHelper::SetUp(Profile* profile) {
 
 void ArcAppPerformanceTracingTestHelper::TearDown() {
   DCHECK(profile_);
-  exo::WMHelper::GetInstance()->RemoveActivationObserver(GetTracing());
   wm_helper_.reset();
   profile_ = nullptr;
 }

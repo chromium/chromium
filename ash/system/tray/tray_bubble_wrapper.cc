@@ -51,7 +51,7 @@ TrayBubbleWrapper::~TrayBubbleWrapper() {
     bubble_widget_->RemoveObserver(this);
     bubble_widget_->Close();
   }
-  CHECK(!TrayBubbleBase::IsInObserverList());
+  CHECK(!IsInObserverList());
 }
 
 TrayBackgroundView* TrayBubbleWrapper::GetTray() const {
