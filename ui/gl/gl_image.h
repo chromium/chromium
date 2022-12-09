@@ -30,15 +30,24 @@ class ProcessMemoryDump;
 }  // namespace trace_event
 }  // namespace base
 
+namespace gl {
+class GLImage;
+}
+
 namespace gpu {
 class DawnEGLImageRepresentation;
 class D3DImageBacking;
 class D3DImageBackingFactoryTest;
+class GpuMemoryBufferFactoryAndroidHardwareBuffer;
+class GpuMemoryBufferFactoryDXGI;
+class GpuMemoryBufferFactoryIOSurface;
 class IOSurfaceImageBackingFactory;
 class IOSurfaceImageBackingFactoryNewTestBase;
 class OverlayD3DImageRepresentation;
 class TestOverlayImageRepresentation;
-
+void SetColorSpaceOnGLImage(gl::GLImage* gl_image,
+                            const gfx::ColorSpace& color_space);
+FORWARD_DECLARE_TEST(CALayerTreeTest, HDRTrigger);
 FORWARD_DECLARE_TEST(CompoundImageBackingTest, NoUploadOnOverlayMemoryAccess);
 FORWARD_DECLARE_TEST(D3DImageBackingFactoryTestSwapChain,
                      CreateAndPresentSwapChain);
@@ -46,6 +55,8 @@ FORWARD_DECLARE_TEST(D3DImageBackingFactoryTest, CreateFromSharedMemory);
 }  // namespace gpu
 
 namespace gpu::gles2 {
+class GLES2DecoderImpl;
+class GLES2DecoderPassthroughImpl;
 class Texture;
 }
 
@@ -56,12 +67,20 @@ class VTVideoDecodeAccelerator;
 }
 
 namespace ui {
+class NativePixmapEGLBinding;
 class SurfacelessGlRenderer;
 class SurfacelessSkiaGlRenderer;
 }  // namespace ui
 
+namespace viz {
+class ImageContextImpl;
+class SkiaOutputDeviceDComp;
+}  // namespace viz
+
 namespace gl {
 
+class DCompPresenterTest;
+class DirectCompositionSurfaceTest;
 class GLImageD3D;
 class GLImageDXGI;
 class GLImageIOSurface;
@@ -100,6 +119,16 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // Release image from texture currently bound to |target|.
   virtual void ReleaseTexImage(unsigned target);
 
+ protected:
+  // NOTE: We are in the process of eliminating client usage of GLImage. As part
+  // of this effort, we are incrementally moving its public interface to be
+  // protected with friend'ing of existing users. DO NOT ADD MORE client usage -
+  // instead, reach out to shared-image-team@ with your use case.
+  // See crbug.com/1382031.
+  GLImage() = default;
+
+  virtual ~GLImage() = default;
+
   // Define texture currently bound to |target| by copying image into it.
   // Returns true on success. It is valid for an implementation to always
   // return false.
@@ -118,16 +147,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // BT.709, or BT.2020) and range (limited or null), and |color_space| conveys
   // this.
   virtual void SetColorSpace(const gfx::ColorSpace& color_space);
-
- protected:
-  // NOTE: We are in the process of eliminating client usage of GLImage. As part
-  // of this effort, we are incrementally moving its public interface to be
-  // protected with friend'ing of existing users. DO NOT ADD MORE client usage -
-  // instead, reach out to shared-image-team@ with your use case.
-  // See crbug.com/1382031.
-  GLImage() = default;
-
-  virtual ~GLImage() = default;
 
   // Dumps information about the memory backing the GLImage to a dump named
   // |dump_name|.
@@ -164,19 +183,32 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   static GLImageDXGI* ToGLImageDXGI(GLImage* image);
   static media::GLImagePbuffer* ToGLImagePbuffer(GLImage* image);
 
+  friend class DCompPresenterTest;
+  friend class DirectCompositionSurfaceTest;
   friend class SwapChainPresenter;
   friend class gpu::DawnEGLImageRepresentation;
   friend class gpu::D3DImageBacking;
   friend class gpu::D3DImageBackingFactoryTest;
+  friend class gpu::GpuMemoryBufferFactoryAndroidHardwareBuffer;
+  friend class gpu::GpuMemoryBufferFactoryDXGI;
+  friend class gpu::GpuMemoryBufferFactoryIOSurface;
   friend class gpu::IOSurfaceImageBackingFactory;
   friend class gpu::IOSurfaceImageBackingFactoryNewTestBase;
   friend class gpu::OverlayD3DImageRepresentation;
   friend class gpu::TestOverlayImageRepresentation;
+  friend class gpu::gles2::GLES2DecoderImpl;
+  friend class gpu::gles2::GLES2DecoderPassthroughImpl;
   friend class gpu::gles2::Texture;
   friend class media::DXVAVideoDecodeAccelerator;
   friend class media::VTVideoDecodeAccelerator;
+  friend class ui::NativePixmapEGLBinding;
   friend class ui::SurfacelessGlRenderer;
   friend class ui::SurfacelessSkiaGlRenderer;
+  friend class viz::ImageContextImpl;
+  friend class viz::SkiaOutputDeviceDComp;
+  friend void gpu::SetColorSpaceOnGLImage(GLImage* gl_image,
+                                          const gfx::ColorSpace& color_space);
+  FRIEND_TEST_ALL_PREFIXES(gpu::CALayerTreeTest, HDRTrigger);
   FRIEND_TEST_ALL_PREFIXES(gpu::CompoundImageBackingTest,
                            NoUploadOnOverlayMemoryAccess);
   FRIEND_TEST_ALL_PREFIXES(gpu::D3DImageBackingFactoryTestSwapChain,

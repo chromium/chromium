@@ -139,6 +139,18 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> CreateNV12Texture(
   return texture;
 }
 
+bool AreColorsSimilar(int a, int b) {
+  // The precise colors may differ depending on the video processor, so allow
+  // a margin for error.
+  const int kMargin = 10;
+  return abs(SkColorGetA(a) - SkColorGetA(b)) < kMargin &&
+         abs(SkColorGetR(a) - SkColorGetR(b)) < kMargin &&
+         abs(SkColorGetG(a) - SkColorGetG(b)) < kMargin &&
+         abs(SkColorGetB(a) - SkColorGetB(b)) < kMargin;
+}
+
+}  // namespace
+
 class DirectCompositionSurfaceTest : public testing::Test {
  public:
   DirectCompositionSurfaceTest() : parent_window_(ui::GetHiddenWindow()) {}
@@ -195,6 +207,12 @@ class DirectCompositionSurfaceTest : public testing::Test {
         gl::init::CreateGLContext(nullptr, surface.get(), GLContextAttribs());
     EXPECT_TRUE(context->MakeCurrent(surface.get()));
     return context;
+  }
+
+  // Helper to allow for easy friending of the below restricted function.
+  void SetColorSpaceOnGLImage(gl::GLImage* gl_image,
+                              const gfx::ColorSpace& color_space) {
+    gl_image->SetColorSpace(color_space);
   }
 
   HWND parent_window_;
@@ -345,7 +363,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
 
   scoped_refptr<GLImageDXGI> image_dxgi(new GLImageDXGI(texture_size, nullptr));
   image_dxgi->SetTexture(texture, 0);
-  image_dxgi->SetColorSpace(gfx::ColorSpace::CreateREC709());
+  SetColorSpaceOnGLImage(image_dxgi.get(), gfx::ColorSpace::CreateREC709());
 
   {
     std::unique_ptr<ui::DCRendererLayerParams> params =
@@ -397,7 +415,7 @@ TEST_F(DirectCompositionSurfaceTest, NoPresentTwice) {
   scoped_refptr<GLImageDXGI> image_dxgi2(
       new GLImageDXGI(texture_size, nullptr));
   image_dxgi2->SetTexture(texture, 0);
-  image_dxgi2->SetColorSpace(gfx::ColorSpace::CreateREC709());
+  SetColorSpaceOnGLImage(image_dxgi2.get(), gfx::ColorSpace::CreateREC709());
 
   {
     std::unique_ptr<ui::DCRendererLayerParams> params =
@@ -434,7 +452,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithScaledOverlays) {
 
   scoped_refptr<GLImageDXGI> image_dxgi(new GLImageDXGI(texture_size, nullptr));
   image_dxgi->SetTexture(texture, 0);
-  image_dxgi->SetColorSpace(gfx::ColorSpace::CreateREC709());
+  SetColorSpaceOnGLImage(image_dxgi.get(), gfx::ColorSpace::CreateREC709());
 
   // HW supports scaled overlays.
   // The input texture size is maller than the window size.
@@ -510,7 +528,7 @@ TEST_F(DirectCompositionSurfaceTest, SwapchainSizeWithoutScaledOverlays) {
 
   scoped_refptr<GLImageDXGI> image_dxgi(new GLImageDXGI(texture_size, nullptr));
   image_dxgi->SetTexture(texture, 0);
-  image_dxgi->SetColorSpace(gfx::ColorSpace::CreateREC709());
+  SetColorSpaceOnGLImage(image_dxgi.get(), gfx::ColorSpace::CreateREC709());
 
   gfx::Rect quad_rect = gfx::Rect(42, 42);
 
@@ -574,7 +592,7 @@ TEST_F(DirectCompositionSurfaceTest, ProtectedVideos) {
 
   scoped_refptr<GLImageDXGI> image_dxgi(new GLImageDXGI(texture_size, nullptr));
   image_dxgi->SetTexture(texture, 0);
-  image_dxgi->SetColorSpace(gfx::ColorSpace::CreateREC709());
+  SetColorSpaceOnGLImage(image_dxgi.get(), gfx::ColorSpace::CreateREC709());
   gfx::Size window_size(640, 360);
 
   // Clear video
@@ -734,16 +752,6 @@ TEST_F(DirectCompositionPixelTest, DCLayersDisabled) {
   PixelTestSwapChain(false);
 }
 
-bool AreColorsSimilar(int a, int b) {
-  // The precise colors may differ depending on the video processor, so allow
-  // a margin for error.
-  const int kMargin = 10;
-  return abs(SkColorGetA(a) - SkColorGetA(b)) < kMargin &&
-         abs(SkColorGetR(a) - SkColorGetR(b)) < kMargin &&
-         abs(SkColorGetG(a) - SkColorGetG(b)) < kMargin &&
-         abs(SkColorGetB(a) - SkColorGetB(b)) < kMargin;
-}
-
 class DirectCompositionVideoPixelTest : public DirectCompositionPixelTest {
  protected:
   void TestVideo(const gfx::ColorSpace& color_space,
@@ -765,7 +773,7 @@ class DirectCompositionVideoPixelTest : public DirectCompositionPixelTest {
     scoped_refptr<GLImageDXGI> image_dxgi(
         new GLImageDXGI(texture_size, nullptr));
     image_dxgi->SetTexture(texture, 0);
-    image_dxgi->SetColorSpace(color_space);
+    SetColorSpaceOnGLImage(image_dxgi.get(), color_space);
 
     {
       std::unique_ptr<ui::DCRendererLayerParams> params =
@@ -853,7 +861,7 @@ TEST_F(DirectCompositionPixelTest, SoftwareVideoSwapchain) {
   auto uv_image = base::MakeRefCounted<GLImageRefCountedMemory>(uv_size);
   uv_image->Initialize(new base::RefCountedBytes(uv_data),
                        gfx::BufferFormat::RG_88);
-  y_image->SetColorSpace(gfx::ColorSpace::CreateREC709());
+  SetColorSpaceOnGLImage(y_image.get(), gfx::ColorSpace::CreateREC709());
 
   std::unique_ptr<ui::DCRendererLayerParams> params =
       std::make_unique<ui::DCRendererLayerParams>();
@@ -1578,5 +1586,4 @@ TEST_F(DirectCompositionTripleBufferingTest, VideoSwapChainBufferCount) {
   RunBufferCountTest(surface_, /*buffer_count=*/3u, /*for_video=*/true);
 }
 
-}  // namespace
 }  // namespace gl

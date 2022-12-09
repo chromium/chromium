@@ -22,6 +22,13 @@
 #include "ui/gl/scoped_binders.h"
 
 namespace gpu {
+
+// Helper to allow for easy friending of the below restricted function.
+void SetColorSpaceOnGLImage(gl::GLImage* gl_image,
+                            const gfx::ColorSpace& color_space) {
+  gl_image->SetColorSpace(color_space);
+}
+
 namespace {
 
 gles2::Texture* MakeGLTexture(
@@ -84,7 +91,7 @@ void GenGLTextureInternal(
     api->glDeleteTexturesFn(1, &service_id);
     return;
   }
-  egl_image->SetColorSpace(color_space);
+  SetColorSpaceOnGLImage(egl_image.get(), color_space);
 
   if (passthrough_texture) {
     *passthrough_texture = MakeGLTexturePassthrough(
