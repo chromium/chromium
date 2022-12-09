@@ -5,10 +5,8 @@
 #include "gpu/command_buffer/service/shared_image/raw_draw_image_backing.h"
 
 #include "base/logging.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "components/viz/common/resources/resource_sizes.h"
-#include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -16,7 +14,6 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
-#include "ui/gl/trace_util.h"
 
 namespace gpu {
 
@@ -138,26 +135,6 @@ SharedImageBackingType RawDrawImageBacking::GetType() const {
 
 void RawDrawImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   NOTIMPLEMENTED();
-}
-
-void RawDrawImageBacking::OnMemoryDump(
-    const std::string& dump_name,
-    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-    base::trace_event::ProcessMemoryDump* pmd,
-    uint64_t client_tracing_id) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  AutoLock auto_lock(this);
-
-  SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
-                                   client_tracing_id);
-
-  if (auto tracing_id = GrBackendTextureTracingID(backend_texture_)) {
-    // Add a |service_guid| which expresses shared ownership between the
-    // various GPU dumps.
-    auto service_guid = gl::GetGLTextureServiceGUIDForTracing(tracing_id);
-    pmd->CreateSharedGlobalAllocatorDump(service_guid);
-    pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
-  }
 }
 
 std::unique_ptr<RasterImageRepresentation> RawDrawImageBacking::ProduceRaster(

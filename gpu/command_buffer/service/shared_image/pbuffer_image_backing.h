@@ -42,10 +42,6 @@ class GPU_GLES2_EXPORT PbufferImageBacking
  private:
   // SharedImageBacking:
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override;
-  void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t client_tracing_id) override;
   SharedImageBackingType GetType() const override;
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(
       SharedImageManager* manager,

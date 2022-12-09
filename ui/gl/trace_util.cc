@@ -17,12 +17,6 @@ base::trace_event::MemoryAllocatorDumpGuid GetGLTextureClientGUIDForTracing(
                          context_group_tracing_id, texture_id));
 }
 
-base::trace_event::MemoryAllocatorDumpGuid GetGLTextureServiceGUIDForTracing(
-    uint64_t texture_tracing_id) {
-  return base::trace_event::MemoryAllocatorDumpGuid(base::StringPrintf(
-      "gl-texture-service-x-process/%" PRIx64, texture_tracing_id));
-}
-
 base::trace_event::MemoryAllocatorDumpGuid GetGLBufferGUIDForTracing(
     uint64_t context_group_tracing_id,
     uint32_t buffer_id) {

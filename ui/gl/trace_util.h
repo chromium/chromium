@@ -20,9 +20,6 @@ GL_EXPORT base::trace_event::MemoryAllocatorDumpGuid
 GetGLRenderbufferGUIDForTracing(uint64_t context_group_tracing_id,
                                 uint32_t renderbuffer_id);
 
-GL_EXPORT base::trace_event::MemoryAllocatorDumpGuid
-GetGLTextureServiceGUIDForTracing(uint64_t texture_tracing_id);
-
 GL_EXPORT base::trace_event::MemoryAllocatorDumpGuid GetGLBufferGUIDForTracing(
     uint64_t context_group_tracing_id,
     uint32_t buffer_id);

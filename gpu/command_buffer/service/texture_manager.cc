@@ -3767,6 +3767,11 @@ bool TextureManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
 
 void TextureManager::DumpTextureRef(base::trace_event::ProcessMemoryDump* pmd,
                                     TextureRef* ref) {
+  if (ref->shared_image()) {
+    // Shared images manage their own memory dumps.
+    return;
+  }
+
   uint32_t size = ref->texture()->estimated_size();
 
   // Ignore unallocated texture IDs.
@@ -3788,21 +3793,6 @@ void TextureManager::DumpTextureRef(base::trace_event::ProcessMemoryDump* pmd,
       memory_tracker_->ContextGroupTracingId(), ref->client_id());
   pmd->CreateSharedGlobalAllocatorDump(client_guid);
   pmd->AddOwnershipEdge(dump->guid(), client_guid);
-
-  // Add a |service_guid| which expresses shared ownership between the various
-  // |client_guid|s.
-  auto service_guid =
-      gl::GetGLTextureServiceGUIDForTracing(ref->texture()->service_id());
-  pmd->CreateSharedGlobalAllocatorDump(service_guid);
-
-  int importance = 0;  // Default importance.
-  // The link to the memory tracking |client_id| is given a higher importance
-  // than other refs.
-  if (!ref->texture()->has_lightweight_ref_ &&
-      (ref == ref->texture()->memory_tracking_ref_))
-    importance = 2;
-
-  pmd->AddOwnershipEdge(client_guid, service_guid, importance);
 
   // Dump all sub-levels held by the texture. They will appear below the main
   // gl/textures/client_X/texture_Y dump.

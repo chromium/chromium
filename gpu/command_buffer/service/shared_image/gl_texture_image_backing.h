@@ -46,10 +46,6 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
 
  private:
   // SharedImageBacking:
-  void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t client_tracing_id) override;
   SharedImageBackingType GetType() const override;
   gfx::Rect ClearedRect() const final;
   void SetClearedRect(const gfx::Rect& cleared_rect) final;

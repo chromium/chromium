@@ -24,7 +24,6 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/scoped_restore_texture.h"
-#include "ui/gl/trace_util.h"
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
 #include "gpu/command_buffer/service/shared_image/dawn_egl_image_representation.h"
@@ -645,13 +644,6 @@ void D3DImageBacking::OnMemoryDump(
     uint64_t client_tracing_id) {
   SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
                                    client_tracing_id);
-
-  // Add a |service_guid| which expresses shared ownership between the
-  // various GPU dumps.
-  base::trace_event::MemoryAllocatorDumpGuid service_guid =
-      gl::GetGLTextureServiceGUIDForTracing(gl_texture_->service_id());
-  pmd->CreateSharedGlobalAllocatorDump(service_guid);
-  pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
 
   // Swap chain textures only have one level backed by an image.
   if (auto* gl_image = GetGLImage())

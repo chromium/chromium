@@ -23,7 +23,6 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/scoped_binders.h"
-#include "ui/gl/trace_util.h"
 
 #include <EGL/egl.h>
 
@@ -449,15 +448,6 @@ void IOSurfaceImageBacking::OnMemoryDump(
     uint64_t client_tracing_id) {
   SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
                                    client_tracing_id);
-
-  // Add a |service_guid| which expresses shared ownership between the
-  // various GPU dumps.
-  for (auto iter : egl_state_map_) {
-    auto service_id = iter.second->GetGLServiceId();
-    auto service_guid = gl::GetGLTextureServiceGUIDForTracing(service_id);
-    pmd->CreateSharedGlobalAllocatorDump(service_guid);
-    pmd->AddOwnershipEdge(client_guid, service_guid, kOwningEdgeImportance);
-  }
 
   size_t size_bytes =
       IOSurfaceGetBytesPerRowOfPlane(io_surface_, io_surface_plane_) *
