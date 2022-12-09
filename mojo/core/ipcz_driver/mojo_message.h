@@ -90,7 +90,36 @@ class MojoMessage {
   // Forcibly serializes this message if it holds an unserialized context.
   MojoResult Serialize();
 
+  // Functions provided to ipcz when boxing MojoMessage objects for lazy
+  // serialization.
+  static IpczResult SerializeForIpcz(uintptr_t object,
+                                     uint32_t,
+                                     const void*,
+                                     void* data,
+                                     size_t* num_bytes,
+                                     IpczHandle* handles,
+                                     size_t* num_handles);
+  static void DestroyForIpcz(uintptr_t object, uint32_t, const void*);
+
+  // Boxes a MojoMessage object for transmission within another message. This is
+  // used to support transmission of unserialized MojoMessages through ipcz,
+  // with support for lazy serialization if needed.
+  static ScopedIpczHandle Box(std::unique_ptr<MojoMessage> message);
+
+  // Constructs a new MojoMessage from `message`, if `message` contains a single
+  // box with an application object or subparcel inside of it. In that case the
+  // application object or subparcel is interpreted as an embedded MojoMessage,
+  // and that MojoMessage is reconstituted and returned. Otherwise this returns
+  // null to indicate that `message` is not a wrapper around another
+  // MojoMessage.
+  static std::unique_ptr<MojoMessage> UnwrapFrom(MojoMessage& message);
+
  private:
+  IpczResult SerializeForIpczImpl(void* data,
+                                  size_t* num_bytes,
+                                  IpczHandle* handles,
+                                  size_t* num_handles);
+
   // The parcel backing this message, if any.
   ScopedIpczHandle parcel_;
 

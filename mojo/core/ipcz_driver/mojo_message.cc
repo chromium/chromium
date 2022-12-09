@@ -232,4 +232,147 @@ MojoResult MojoMessage::Serialize() {
   return MOJO_RESULT_OK;
 }
 
+// static
+IpczResult MojoMessage::SerializeForIpcz(uintptr_t object,
+                                         uint32_t,
+                                         const void*,
+                                         void* data,
+                                         size_t* num_bytes,
+                                         IpczHandle* handles,
+                                         size_t* num_handles) {
+  return reinterpret_cast<MojoMessage*>(object)->SerializeForIpczImpl(
+      data, num_bytes, handles, num_handles);
+}
+
+// static
+void MojoMessage::DestroyForIpcz(uintptr_t object, uint32_t, const void*) {
+  delete reinterpret_cast<MojoMessage*>(object);
+}
+
+// static
+ScopedIpczHandle MojoMessage::Box(std::unique_ptr<MojoMessage> message) {
+  const IpczBoxContents contents = {
+      .size = sizeof(contents),
+      .type = IPCZ_BOX_TYPE_APPLICATION_OBJECT,
+      .object = {.application_object = message->handle()},
+      .serializer = &SerializeForIpcz,
+      .destructor = &DestroyForIpcz,
+  };
+  ScopedIpczHandle box;
+  const IpczResult result =
+      GetIpczAPI().Box(GetIpczNode(), &contents, IPCZ_NO_FLAGS, nullptr,
+                       ScopedIpczHandle::Receiver(box));
+  CHECK_EQ(IPCZ_RESULT_OK, result);
+  std::ignore = message.release();
+  return box;
+}
+
+// static
+std::unique_ptr<MojoMessage> MojoMessage::UnwrapFrom(MojoMessage& message) {
+  if (!message.data().empty() || message.handles().size() != 1) {
+    // Wrapped messages are always a single box with no additional data.
+    return nullptr;
+  }
+
+  const IpczHandle box = message.handles()[0];
+  IpczBoxContents contents = {.size = sizeof(contents)};
+  const IpczResult peek_result =
+      GetIpczAPI().Unbox(box, IPCZ_UNBOX_PEEK, nullptr, &contents);
+  if (peek_result != IPCZ_RESULT_OK) {
+    return nullptr;
+  }
+
+  if (contents.type != IPCZ_BOX_TYPE_APPLICATION_OBJECT &&
+      contents.type != IPCZ_BOX_TYPE_SUBPARCEL) {
+    // Wrapped messages must always be represented either by a direct
+    // application object reference, or a serialized subparcel.
+    return nullptr;
+  }
+
+  const IpczResult unbox_result =
+      GetIpczAPI().Unbox(box, IPCZ_NO_FLAGS, nullptr, &contents);
+  DCHECK_EQ(IPCZ_RESULT_OK, unbox_result);
+
+  // The box is now gone. Reset the handle within the input message so that it
+  // doesn't attempt to close the box on destruction.
+  message.handles()[0] = IPCZ_INVALID_HANDLE;
+
+  if (contents.type == IPCZ_BOX_TYPE_APPLICATION_OBJECT) {
+    // The wrapped message was never serialized, so we can recover it as-is.
+    return base::WrapUnique(
+        reinterpret_cast<MojoMessage*>(contents.object.application_object));
+  }
+
+  DCHECK_EQ(contents.type, IPCZ_BOX_TYPE_SUBPARCEL);
+  ScopedIpczHandle subparcel(contents.object.subparcel);
+  size_t num_bytes = 0;
+  size_t num_handles = 0;
+  const IpczResult get_query_result =
+      GetIpczAPI().Get(subparcel.get(), IPCZ_NO_FLAGS, nullptr, nullptr,
+                       &num_bytes, nullptr, &num_handles, nullptr);
+  if (get_query_result != IPCZ_RESULT_RESOURCE_EXHAUSTED) {
+    return nullptr;
+  }
+
+  void* buffer;
+  std::vector<IpczHandle> handles(num_handles);
+  auto new_message = std::make_unique<ipcz_driver::MojoMessage>();
+  const MojoResult append_result = new_message->AppendData(
+      base::checked_cast<uint32_t>(num_bytes), nullptr, 0, &buffer, nullptr,
+      /*commit_size=*/true);
+  if (append_result != MOJO_RESULT_OK) {
+    return nullptr;
+  }
+
+  // Retrieve all data and handles from the subparcel and move them into the
+  // new MojoMessage object.
+  new_message->handles().resize(num_handles);
+  const IpczResult get_result = GetIpczAPI().Get(
+      subparcel.get(), IPCZ_NO_FLAGS, nullptr, buffer, &num_bytes,
+      new_message->handles().data(), &num_handles, nullptr);
+  if (get_result != IPCZ_RESULT_OK) {
+    return nullptr;
+  }
+
+  return new_message;
+}
+
+IpczResult MojoMessage::SerializeForIpczImpl(void* data,
+                                             size_t* num_bytes,
+                                             IpczHandle* handles,
+                                             size_t* num_handles) {
+  // NOTE: MOJO_RESULT_FAILED_PRECONDITION here indicates that the message is
+  // already internally serialized, so it's not an error and we can
+  // proceed with extracting the serialized contents below.
+  const MojoResult result = Serialize();
+  if (result != MOJO_RESULT_OK && result != MOJO_RESULT_FAILED_PRECONDITION) {
+    // Any other result indicates that the message cannot be serialized.
+    return IPCZ_RESULT_FAILED_PRECONDITION;
+  }
+
+  const size_t required_byte_capacity = data_.size();
+  const size_t required_handle_capacity = handles_.size();
+  const size_t byte_capacity = num_bytes ? *num_bytes : 0;
+  const size_t handle_capacity = num_handles ? *num_handles : 0;
+  if (num_bytes) {
+    *num_bytes = required_byte_capacity;
+  }
+  if (num_handles) {
+    *num_handles = required_handle_capacity;
+  }
+  if (byte_capacity < required_byte_capacity ||
+      handle_capacity < required_handle_capacity) {
+    return IPCZ_RESULT_RESOURCE_EXHAUSTED;
+  }
+  if ((byte_capacity && !data) || (handle_capacity && !handles)) {
+    return IPCZ_RESULT_INVALID_ARGUMENT;
+  }
+
+  memcpy(data, data_.data(), data_.size());
+  for (size_t i = 0; i < handles_.size(); ++i) {
+    handles[i] = std::exchange(handles_[i], IPCZ_INVALID_HANDLE);
+  }
+  return IPCZ_RESULT_OK;
+}
+
 }  // namespace mojo::core::ipcz_driver

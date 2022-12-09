@@ -6442,8 +6442,6 @@ crbug.com/1380069 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/p
 crbug.com/1380575 [ Linux ] virtual/scalefactor200/fast/forms/file/file-appearance-no-default-width.html [ Failure ]
 crbug.com/1378078 [ Debug Linux ] media/controls/slow-doubletap.html [ Failure ]
 crbug.com/1385491 [ Win ] external/wpt/selection/user-select-on-input-and-contenteditable.html [ Skip Timeout ]
-crbug.com/1385538 [ Win ] http/tests/serviceworker/postmessage-cross-process.html [ Failure ]
-crbug.com/1385538 [ Linux ] http/tests/serviceworker/postmessage-cross-process.html [ Failure ]
 crbug.com/1377056 [ Mac ] payments/payment-request-interface.html [ Failure ]
 crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-018-2.html [ Skip Timeout ]
 crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-002.html [ Skip Timeout ]
