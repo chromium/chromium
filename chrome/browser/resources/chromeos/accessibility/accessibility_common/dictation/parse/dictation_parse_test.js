@@ -18,122 +18,79 @@ DictationParseTest = class extends DictationE2ETestAllowConsole {
 // Tests that the InputTextStrategy always returns an InputTextViewMacro,
 // regardless of the speech input.
 AX_TEST_F('DictationParseTest', 'InputTextStrategy', async function() {
-  const strategy = this.getInputTextStrategy();
-  assertNotNullNorUndefined(strategy);
-  let macro = await strategy.parse('Hello world');
-  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  macro = await strategy.parse('delete two characters');
-  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  macro = await strategy.parse('select all');
-  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
+  /** @type {!Array<!ParseTestCase>} */
+  const testCases = [
+    new ParseTestCase('Hello world', {name: 'INPUT_TEXT_VIEW'}),
+    new ParseTestCase('delete two characters', {name: 'INPUT_TEXT_VIEW'}),
+    new ParseTestCase('select all', {name: 'INPUT_TEXT_VIEW'}),
+  ];
+
+  for (const test of testCases) {
+    await this.runInputTextParseTestCase(test);
+  }
 });
 
 // Tests that the SimpleParseStrategy returns the correct type of Macro given
 // speech input.
 AX_TEST_F('DictationParseTest', 'SimpleParseStrategy', async function() {
-  const strategy = this.getSimpleParseStrategy();
-  assertNotNullNorUndefined(strategy);
-  let macro = await strategy.parse('Hello world');
-  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('type delete');
-  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('delete');
-  assertEquals('DELETE_PREV_CHAR', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('move to the previous character');
-  assertEquals('NAV_PREV_CHAR', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('move to the next character');
-  assertEquals('NAV_NEXT_CHAR', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('move to the previous line');
-  assertEquals('NAV_PREV_LINE', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('move to the next line');
-  assertEquals('NAV_NEXT_LINE', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('copy');
-  assertEquals('COPY_SELECTED_TEXT', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('paste');
-  assertEquals('PASTE_TEXT', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('cut');
-  assertEquals('CUT_SELECTED_TEXT', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('undo');
-  assertEquals('UNDO_TEXT_EDIT', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('redo');
-  assertEquals('REDO_ACTION', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('select all');
-  assertEquals('SELECT_ALL_TEXT', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('unselect');
-  assertEquals('UNSELECT_TEXT', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('help');
-  assertEquals('LIST_COMMANDS', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('new line');
-  assertEquals('NEW_LINE', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('cancel');
-  assertEquals('STOP_LISTENING', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('delete the previous word');
-  assertEquals('DELETE_PREV_WORD', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('move to the next word');
-  assertEquals('NAV_NEXT_WORD', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
-  macro = await strategy.parse('move to the previous word');
-  assertEquals('NAV_PREV_WORD', macro.getMacroNameString());
-  assertFalse(macro.isSmart());
+  /** @type {!Array<!ParseTestCase>} */
+  const testCases = [
+    new ParseTestCase('Hello world', {name: 'INPUT_TEXT_VIEW'}),
+    new ParseTestCase('type delete', {name: 'INPUT_TEXT_VIEW'}),
+    new ParseTestCase('highlight the next word', {name: 'INPUT_TEXT_VIEW'}),
+    new ParseTestCase('repeat', {name: 'INPUT_TEXT_VIEW'}),
+    new ParseTestCase('delete', {name: 'DELETE_PREV_CHAR'}),
+    new ParseTestCase(
+        'move to the previous character', {name: 'NAV_PREV_CHAR'}),
+    new ParseTestCase('move to the next character', {name: 'NAV_NEXT_CHAR'}),
+    new ParseTestCase('move to the previous line', {name: 'NAV_PREV_LINE'}),
+    new ParseTestCase('move to the next line', {name: 'NAV_NEXT_LINE'}),
+    new ParseTestCase('copy', {name: 'COPY_SELECTED_TEXT'}),
+    new ParseTestCase('paste', {name: 'PASTE_TEXT'}),
+    new ParseTestCase('cut', {name: 'CUT_SELECTED_TEXT'}),
+    new ParseTestCase('undo', {name: 'UNDO_TEXT_EDIT'}),
+    new ParseTestCase('redo', {name: 'REDO_ACTION'}),
+    new ParseTestCase('select all', {name: 'SELECT_ALL_TEXT'}),
+    new ParseTestCase('unselect', {name: 'UNSELECT_TEXT'}),
+    new ParseTestCase('help', {name: 'LIST_COMMANDS'}),
+    new ParseTestCase('new line', {name: 'NEW_LINE'}),
+    new ParseTestCase('cancel', {name: 'STOP_LISTENING'}),
+    new ParseTestCase('delete the previous word', {name: 'DELETE_PREV_WORD'}),
+    new ParseTestCase('move to the next word', {name: 'NAV_NEXT_WORD'}),
+    new ParseTestCase('move to the previous word', {name: 'NAV_PREV_WORD'}),
+    new ParseTestCase(
+        'delete the previous sentence',
+        {name: 'DELETE_PREV_SENT', smart: true}),
+    new ParseTestCase(
+        'delete hello world', {name: 'SMART_DELETE_PHRASE', smart: true}),
+    new ParseTestCase(
+        'replace hello world with goodnight world',
+        {name: 'SMART_REPLACE_PHRASE', smart: true}),
+    new ParseTestCase(
+        'insert hello world before goodnight world',
+        {name: 'SMART_INSERT_BEFORE', smart: true}),
+    new ParseTestCase(
+        'select from hello world to goodnight world',
+        {name: 'SMART_SELECT_BTWN_INCL', smart: true}),
+    new ParseTestCase(
+        'move to the next sentence', {name: 'NAV_NEXT_SENT', smart: true}),
+    new ParseTestCase(
+        'move to the previous sentence', {name: 'NAV_PREV_SENT', smart: true}),
+  ];
 
-  // Smart macros.
-  macro = await strategy.parse('delete the previous sentence');
-  assertEquals('DELETE_PREV_SENT', macro.getMacroNameString());
-  assertTrue(macro.isSmart());
-  macro = await strategy.parse('delete hello world');
-  assertEquals('SMART_DELETE_PHRASE', macro.getMacroNameString());
-  assertTrue(macro.isSmart());
-  macro = await strategy.parse('replace hello world with goodnight world');
-  assertEquals('SMART_REPLACE_PHRASE', macro.getMacroNameString());
-  assertTrue(macro.isSmart());
-  macro = await strategy.parse('insert hello world before goodnight world');
-  assertEquals('SMART_INSERT_BEFORE', macro.getMacroNameString());
-  assertTrue(macro.isSmart());
-  macro = await strategy.parse('select from hello world to goodnight world');
-  assertEquals('SMART_SELECT_BTWN_INCL', macro.getMacroNameString());
-  assertTrue(macro.isSmart());
-  macro = await strategy.parse('move to the next sentence');
-  assertEquals('NAV_NEXT_SENT', macro.getMacroNameString());
-  assertTrue(macro.isSmart());
-  macro = await strategy.parse('move to the previous sentence');
-  assertEquals('NAV_PREV_SENT', macro.getMacroNameString());
-  assertTrue(macro.isSmart());
-
-  // Unsupported commands.
-  macro = await strategy.parse('highlight the next word');
-  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
-  macro = await strategy.parse('repeat');
-  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
+  for (const test of testCases) {
+    await this.runSimpleParseTestCase(test);
+  }
 });
 
 AX_TEST_F('DictationParseTest', 'NoSmartMacrosForRTLLocales', async function() {
-  const strategy = this.getSimpleParseStrategy();
-  assertNotNullNorUndefined(strategy);
   await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
   await this.getPref(Dictation.DICTATION_LOCALE_PREF);
 
-  let macro = await strategy.parse('insert hello world before goodnight world');
-  assertNotNullNorUndefined(macro);
-  assertTrue(macro.isSmart());
-  assertEquals('SMART_INSERT_BEFORE', macro.getMacroNameString());
+  // Add is smart here and below.
+  await this.runSimpleParseTestCase(new ParseTestCase(
+      'insert hello world before goodnight world',
+      {name: 'SMART_INSERT_BEFORE', smart: true}));
 
   // Change Dictation locale to a right-to-left locale.
   await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'ar-LB');
@@ -141,8 +98,7 @@ AX_TEST_F('DictationParseTest', 'NoSmartMacrosForRTLLocales', async function() {
 
   // Smart macros are not supported in right-to-left locales. In these cases,
   // we fall back to INPUT_TEXT_VIEW macros.
-  macro = await strategy.parse('insert hello world before goodnight world');
-  assertNotNullNorUndefined(macro);
-  assertFalse(macro.isSmart());
-  assertEquals('INPUT_TEXT_VIEW', macro.getMacroNameString());
+  await this.runSimpleParseTestCase(new ParseTestCase(
+      'insert hello world before goodnight world',
+      {name: 'INPUT_TEXT_VIEW', smart: false}));
 });

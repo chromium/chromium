@@ -4,26 +4,6 @@
 
 GEN_INCLUDE(['../dictation_test_base.js']);
 
-/** A class that represents a test case for parsing text. */
-class ParseTestCase {
-  /**
-   * @param {string} text The text to be parsed
-   * @param {string|undefined} expectedMacroName The expected name of the
-   *     resulting macro.
-   * @param {number|undefined} expectedRepeat The expected repeat value of the
-   *     resulting macro.
-   * @constructor
-   */
-  constructor(text, expectedMacroName, expectedRepeat) {
-    /** @type {string} */
-    this.text = text;
-    /** @type {string|undefined} */
-    this.expectedMacroName = expectedMacroName;
-    /** @type {number|undefined} */
-    this.expectedRepeat = expectedRepeat;
-  }
-}
-
 /**
  * Dictation tests for speech parsing with Pumpkin. These tests do not use the
  * live Pumpkin DLC, but instead use a local tar archive that mirrors the DLC.
@@ -70,28 +50,6 @@ DictationPumpkinParseTest = class extends DictationE2ETestAllowConsole {
       }, 300);
     });
   }
-
-  /**
-   * @param {!ParseTestCase} testCase
-   * @return {!Promise}
-   */
-  async runParseTestCase(testCase) {
-    const expectedMacroName = testCase.expectedMacroName;
-    const expectedRepeat = testCase.expectedRepeat;
-    const macro = await this.getPumpkinParseStrategy().parse(testCase.text);
-    if (!macro) {
-      assertEquals(undefined, expectedMacroName);
-      assertEquals(undefined, expectedRepeat);
-      return;
-    }
-
-    if (expectedMacroName) {
-      assertEquals(expectedMacroName, macro.getMacroNameString());
-    }
-    if (expectedRepeat) {
-      assertEquals(expectedRepeat, macro.repeat_);
-    }
-  }
 };
 
 // Tests that we can use the SandboxedPumpkinTagger to convert speech into a
@@ -103,48 +61,49 @@ AX_TEST_F('DictationPumpkinParseTest', 'Parse', async function() {
 
   /** @type {!Array<!ParseTestCase>} */
   const testCases = [
-    new ParseTestCase('Hello world'),
-    new ParseTestCase('dictate delete', 'INPUT_TEXT_VIEW'),
-    new ParseTestCase('backspace', 'DELETE_PREV_CHAR'),
-    new ParseTestCase('left one character', 'NAV_PREV_CHAR'),
-    new ParseTestCase('right one character', 'NAV_NEXT_CHAR'),
-    new ParseTestCase('up one line', 'NAV_PREV_LINE'),
-    new ParseTestCase('down one line', 'NAV_NEXT_LINE'),
-    new ParseTestCase('copy selected text', 'COPY_SELECTED_TEXT'),
-    new ParseTestCase('paste copied text', 'PASTE_TEXT'),
-    new ParseTestCase('cut highlighted text', 'CUT_SELECTED_TEXT'),
-    new ParseTestCase('undo that', 'UNDO_TEXT_EDIT'),
-    new ParseTestCase('redo that', 'REDO_ACTION'),
-    new ParseTestCase('select everything', 'SELECT_ALL_TEXT'),
-    new ParseTestCase('deselect selection', 'UNSELECT_TEXT'),
-    new ParseTestCase('what can I say', 'LIST_COMMANDS'),
-    new ParseTestCase('new line'),
-    new ParseTestCase('avada kedavra', 'STOP_LISTENING'),
-    new ParseTestCase('clear one word', 'DELETE_PREV_WORD'),
-    new ParseTestCase('erase sentence', 'DELETE_PREV_SENT'),
-    new ParseTestCase('right one word', 'NAV_NEXT_WORD'),
-    new ParseTestCase('back one word', 'NAV_PREV_WORD'),
-    new ParseTestCase('delete avada kedavra', 'SMART_DELETE_PHRASE'),
-    new ParseTestCase('replace hello with goodbye', 'SMART_REPLACE_PHRASE'),
+    new ParseTestCase('Hello world', {}),
+    new ParseTestCase('dictate delete', {name: 'INPUT_TEXT_VIEW'}),
+    new ParseTestCase('backspace', {name: 'DELETE_PREV_CHAR'}),
+    new ParseTestCase('left one character', {name: 'NAV_PREV_CHAR'}),
+    new ParseTestCase('right one character', {name: 'NAV_NEXT_CHAR'}),
+    new ParseTestCase('up one line', {name: 'NAV_PREV_LINE'}),
+    new ParseTestCase('down one line', {name: 'NAV_NEXT_LINE'}),
+    new ParseTestCase('copy selected text', {name: 'COPY_SELECTED_TEXT'}),
+    new ParseTestCase('paste copied text', {name: 'PASTE_TEXT'}),
+    new ParseTestCase('cut highlighted text', {name: 'CUT_SELECTED_TEXT'}),
+    new ParseTestCase('undo that', {name: 'UNDO_TEXT_EDIT'}),
+    new ParseTestCase('redo that', {name: 'REDO_ACTION'}),
+    new ParseTestCase('select everything', {name: 'SELECT_ALL_TEXT'}),
+    new ParseTestCase('deselect selection', {name: 'UNSELECT_TEXT'}),
+    new ParseTestCase('what can I say', {name: 'LIST_COMMANDS'}),
+    new ParseTestCase('new line', {}),
+    new ParseTestCase('avada kedavra', {name: 'STOP_LISTENING'}),
+    new ParseTestCase('clear one word', {name: 'DELETE_PREV_WORD'}),
+    new ParseTestCase('erase sentence', {name: 'DELETE_PREV_SENT'}),
+    new ParseTestCase('right one word', {name: 'NAV_NEXT_WORD'}),
+    new ParseTestCase('back one word', {name: 'NAV_PREV_WORD'}),
+    new ParseTestCase('delete avada kedavra', {name: 'SMART_DELETE_PHRASE'}),
     new ParseTestCase(
-        'insert hello in front of goodbye', 'SMART_INSERT_BEFORE'),
+        'replace hello with goodbye', {name: 'SMART_REPLACE_PHRASE'}),
+    new ParseTestCase(
+        'insert hello in front of goodbye', {name: 'SMART_INSERT_BEFORE'}),
     new ParseTestCase(
         'highlight everything between hello and goodbye',
-        'SMART_SELECT_BTWN_INCL'),
-    new ParseTestCase('forward one sentence', 'NAV_NEXT_SENT'),
-    new ParseTestCase('one sentence back', 'NAV_PREV_SENT'),
-    new ParseTestCase('clear', 'DELETE_ALL_TEXT'),
-    new ParseTestCase('to start', 'NAV_START_TEXT'),
-    new ParseTestCase('to end', 'NAV_END_TEXT'),
-    new ParseTestCase('highlight back one word', 'SELECT_PREV_WORD'),
-    new ParseTestCase('highlight right one word', 'SELECT_NEXT_WORD'),
-    new ParseTestCase('select next letter', 'SELECT_NEXT_CHAR'),
-    new ParseTestCase('select previous letter', 'SELECT_PREV_CHAR'),
-    new ParseTestCase('try that action again', 'REPEAT'),
+        {name: 'SMART_SELECT_BTWN_INCL'}),
+    new ParseTestCase('forward one sentence', {name: 'NAV_NEXT_SENT'}),
+    new ParseTestCase('one sentence back', {name: 'NAV_PREV_SENT'}),
+    new ParseTestCase('clear', {name: 'DELETE_ALL_TEXT'}),
+    new ParseTestCase('to start', {name: 'NAV_START_TEXT'}),
+    new ParseTestCase('to end', {name: 'NAV_END_TEXT'}),
+    new ParseTestCase('highlight back one word', {name: 'SELECT_PREV_WORD'}),
+    new ParseTestCase('highlight right one word', {name: 'SELECT_NEXT_WORD'}),
+    new ParseTestCase('select next letter', {name: 'SELECT_NEXT_CHAR'}),
+    new ParseTestCase('select previous letter', {name: 'SELECT_PREV_CHAR'}),
+    new ParseTestCase('try that action again', {name: 'REPEAT'}),
   ];
 
   for (const test of testCases) {
-    await this.runParseTestCase(test);
+    await this.runPumpkinParseTestCase(test);
   }
 });
 
@@ -156,20 +115,31 @@ AX_TEST_F(
 
       /** @type {!Array<!ParseTestCase>} */
       const testCases = [
-        new ParseTestCase('remove two characters', 'DELETE_PREV_CHAR', 2),
-        new ParseTestCase('left five characters', 'NAV_PREV_CHAR', 5),
-        new ParseTestCase('clear five words', 'DELETE_PREV_WORD', 5),
-        new ParseTestCase('forward three words', 'NAV_NEXT_WORD', 3),
-        new ParseTestCase('backward three words', 'NAV_PREV_WORD', 3),
-        new ParseTestCase('highlight back three words', 'SELECT_PREV_WORD', 3),
-        new ParseTestCase('highlight right three words', 'SELECT_NEXT_WORD', 3),
-        new ParseTestCase('select next three letters', 'SELECT_NEXT_CHAR', 3),
         new ParseTestCase(
-            'select previous three letters', 'SELECT_PREV_CHAR', 3),
+            'remove two characters', {name: 'DELETE_PREV_CHAR', repeat: 2}),
+        new ParseTestCase(
+            'left five characters', {name: 'NAV_PREV_CHAR', repeat: 5}),
+        new ParseTestCase(
+            'clear five words', {name: 'DELETE_PREV_WORD', repeat: 5}),
+        new ParseTestCase(
+            'forward three words', {name: 'NAV_NEXT_WORD', repeat: 3}),
+        new ParseTestCase(
+            'backward three words', {name: 'NAV_PREV_WORD', repeat: 3}),
+        new ParseTestCase(
+            'highlight back three words',
+            {name: 'SELECT_PREV_WORD', repeat: 3}),
+        new ParseTestCase(
+            'highlight right three words',
+            {name: 'SELECT_NEXT_WORD', repeat: 3}),
+        new ParseTestCase(
+            'select next three letters', {name: 'SELECT_NEXT_CHAR', repeat: 3}),
+        new ParseTestCase(
+            'select previous three letters',
+            {name: 'SELECT_PREV_CHAR', repeat: 3}),
       ];
 
       for (const test of testCases) {
-        await this.runParseTestCase(test);
+        await this.runPumpkinParseTestCase(test);
       }
     });
 
@@ -207,25 +177,36 @@ AX_TEST_F('DictationPumpkinParseTest', 'ChangeLocale', async function() {
   const testCases = [
     {
       locale: 'fr-FR',
-      testCase: new ParseTestCase('copier', 'COPY_SELECTED_TEXT'),
+      testCase: new ParseTestCase('copier', {name: 'COPY_SELECTED_TEXT'}),
     },
     {
       locale: 'fr-FR',
       testCase: new ParseTestCase(
-          'supprimer deux caractères précédent', 'DELETE_PREV_CHAR', 2),
+          'supprimer deux caractères précédent',
+          {name: 'DELETE_PREV_CHAR', repeat: 2}),
     },
-    {locale: 'it-IT', testCase: new ParseTestCase('annulla', 'UNDO_TEXT_EDIT')},
-    {locale: 'de-DE', testCase: new ParseTestCase('hilf mir', 'LIST_COMMANDS')},
-    {locale: 'es-ES', testCase: new ParseTestCase('ayuda', 'LIST_COMMANDS')},
+    {
+      locale: 'it-IT',
+      testCase: new ParseTestCase('annulla', {name: 'UNDO_TEXT_EDIT'}),
+    },
+    {
+      locale: 'de-DE',
+      testCase: new ParseTestCase('hilf mir', {name: 'LIST_COMMANDS'}),
+    },
+    {
+      locale: 'es-ES',
+      testCase: new ParseTestCase('ayuda', {name: 'LIST_COMMANDS'}),
+    },
     {
       locale: 'en-GB',
-      testCase: new ParseTestCase('copy selected text', 'COPY_SELECTED_TEXT'),
+      testCase:
+          new ParseTestCase('copy selected text', {name: 'COPY_SELECTED_TEXT'}),
     },
   ];
   for (const {locale, testCase} of testCases) {
     await this.setPref(Dictation.DICTATION_LOCALE_PREF, locale);
     await this.waitForPumpkinParseStrategy_();
-    await this.runParseTestCase(testCase);
+    await this.runPumpkinParseTestCase(testCase);
   }
 });
 
@@ -234,11 +215,12 @@ AX_TEST_F('DictationPumpkinParseTest', 'UnsupportedLocale', async function() {
   this.alwaysEnableCommands();
   await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'ja');
   await this.waitForPumpkinParseStrategy_();
-  await this.runParseTestCase(new ParseTestCase('copy selected text'));
+  await this.runPumpkinParseTestCase(
+      new ParseTestCase('copy selected text', {}));
   // Would produce an UNDO_TEXT_EDIT macro if Japanese was supported.
-  await this.runParseTestCase(new ParseTestCase('もとどおりにする'));
+  await this.runPumpkinParseTestCase(new ParseTestCase('もとどおりにする', {}));
   await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
   await this.waitForPumpkinParseStrategy_();
-  await this.runParseTestCase(
-      new ParseTestCase('copy selected text', 'COPY_SELECTED_TEXT'));
+  await this.runPumpkinParseTestCase(
+      new ParseTestCase('copy selected text', {name: 'COPY_SELECTED_TEXT'}));
 });

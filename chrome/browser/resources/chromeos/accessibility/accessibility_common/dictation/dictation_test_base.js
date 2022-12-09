@@ -10,6 +10,34 @@ GEN_INCLUDE(['../../common/testing/mock_language_settings_private.js']);
 GEN_INCLUDE(['../../common/testing/mock_speech_recognition_private.js']);
 
 /**
+ * @typedef {{
+ *   name: (string|undefined),
+ *   repeat: (number|undefined),
+ *   smart: (boolean|undefined),
+ * }}
+ */
+let ParseTestExpectations;
+
+/** A class that represents a test case for parsing text. */
+class ParseTestCase {
+  /**
+   * @param {string} text The text to be parsed
+   * @param {!ParseTestExpectations} expectations
+   * @constructor
+   */
+  constructor(text, expectations) {
+    /** @type {string} */
+    this.text = text;
+    /** @type {string|undefined} */
+    this.expectedName = expectations.name;
+    /** @type {number|undefined} */
+    this.expectedRepeat = expectations.repeat;
+    /** @type {boolean|undefined} */
+    this.expectedSmart = expectations.smart;
+  }
+}
+
+/**
  * Base class for tests for Dictation feature using accessibility common
  * extension browser tests.
  */
@@ -398,6 +426,59 @@ DictationE2ETestBase = class extends E2ETestBase {
    */
   alwaysEnableCommands() {
     LocaleInfo.alwaysEnableCommandsForTesting = true;
+  }
+
+  /**
+   * @param {!ParseTestCase} testCase
+   * @return {!Promise}
+   */
+  async runInputTextParseTestCase(testCase) {
+    const macro = await this.getInputTextStrategy().parse(testCase.text);
+    this.runParseTestCaseAssertions(testCase, macro);
+  }
+
+  /**
+   * @param {!ParseTestCase} testCase
+   * @return {!Promise}
+   */
+  async runSimpleParseTestCase(testCase) {
+    const macro = await this.getSimpleParseStrategy().parse(testCase.text);
+    this.runParseTestCaseAssertions(testCase, macro);
+  }
+
+  /**
+   * @param {!ParseTestCase} testCase
+   * @return {!Promise}
+   */
+  async runPumpkinParseTestCase(testCase) {
+    const macro = await this.getPumpkinParseStrategy().parse(testCase.text);
+    this.runParseTestCaseAssertions(testCase, macro);
+  }
+
+  /**
+   * @param {!ParseTestCase} testCase
+   * @param {?Macro} macro
+   */
+  runParseTestCaseAssertions(testCase, macro) {
+    const expectedName = testCase.expectedName;
+    const expectedRepeat = testCase.expectedRepeat;
+    const expectedSmart = testCase.expectedSmart;
+    if (!macro) {
+      assertEquals(undefined, expectedName);
+      assertEquals(undefined, expectedRepeat);
+      assertEquals(undefined, expectedSmart);
+      return;
+    }
+
+    if (expectedName) {
+      assertEquals(expectedName, macro.getMacroNameString());
+    }
+    if (expectedRepeat) {
+      assertEquals(expectedRepeat, macro.repeat_);
+    }
+    if (expectedSmart) {
+      assertEquals(expectedSmart, macro.isSmart());
+    }
   }
 };
 
