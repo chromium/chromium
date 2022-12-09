@@ -230,10 +230,11 @@ std::unique_ptr<views::RadioButton>
 CardUnmaskAuthenticationSelectionDialogView::CreateChallengeOptionRadioButton(
     CardUnmaskChallengeOption challenge_option) {
   auto radio_button = std::make_unique<views::RadioButton>();
-  radio_button->SetCallback(
-      base::BindRepeating(&CardUnmaskAuthenticationSelectionDialogController::
-                              SetSelectedChallengeOptionId,
-                          base::Unretained(controller_), challenge_option.id));
+  radio_button_checked_changed_subscriptions_.push_back(
+      radio_button->AddCheckedChangedCallback(base::BindRepeating(
+          &CardUnmaskAuthenticationSelectionDialogController::
+              SetSelectedChallengeOptionId,
+          base::Unretained(controller_), challenge_option.id)));
   radio_button->SetAccessibleName(
       controller_->GetAuthenticationModeLabel(challenge_option) + u". " +
       challenge_option.challenge_info);

@@ -72,6 +72,12 @@ class CardUnmaskAuthenticationSelectionDialogView
   // CardUnmaskAuthenticationSelectionDialog.
   raw_ptr<CardUnmaskAuthenticationSelectionDialogController> controller_ =
       nullptr;
+
+  // Vector of radio button checked changed subscriptions. Stored due to the
+  // requirement that the subscription must be in memory when the callback is
+  // used.
+  std::vector<base::CallbackListSubscription>
+      radio_button_checked_changed_subscriptions_;
 };
 
 }  // namespace autofill
