@@ -40,13 +40,13 @@ FactoryPingEmbargoState GetPingEmbargoState(
     StatisticsProvider* statistics_provider,
     const std::string& key_name,
     const char* uma_prefix) {
-  std::string ping_embargo_end_date;
-  if (!statistics_provider->GetMachineStatistic(key_name,
-                                                &ping_embargo_end_date)) {
+  const absl::optional<base::StringPiece> ping_embargo_end_date =
+      statistics_provider->GetMachineStatistic(key_name);
+  if (!ping_embargo_end_date) {
     return FactoryPingEmbargoState::kMissingOrMalformed;
   }
   base::Time parsed_time;
-  if (!base::Time::FromUTCString(ping_embargo_end_date.c_str(), &parsed_time)) {
+  if (!base::Time::FromUTCString(ping_embargo_end_date->data(), &parsed_time)) {
     LOG(ERROR) << key_name << " exists but cannot be parsed.";
     RecordEndDateValidity(uma_prefix,
                           EndDateValidityHistogramValue::kMalformed);
@@ -69,9 +69,8 @@ FactoryPingEmbargoState GetPingEmbargoState(
 
 FactoryPingEmbargoState GetEnterpriseManagementPingEmbargoState(
     StatisticsProvider* statistics_provider) {
-  std::string ping_embargo_end_date;
   if (statistics_provider->GetMachineStatistic(
-          kEnterpriseManagementEmbargoEndDateKey, &ping_embargo_end_date))
+          kEnterpriseManagementEmbargoEndDateKey))
     return GetPingEmbargoState(statistics_provider,
                                kEnterpriseManagementEmbargoEndDateKey,
                                "FactoryPingEmbargo");
