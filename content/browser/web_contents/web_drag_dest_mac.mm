@@ -97,10 +97,8 @@ void DropCompletionCallback(WebDragDest* drag_dest,
                             const content::DropContext context,
                             absl::optional<content::DropData> drop_data) {
   // This is an async callback. Make sure RWH is still valid.
-  if (!context.target_rwh ||
-      ![drag_dest isValidDragTarget:context.target_rwh.get()]) {
+  if (!context.target_rwh)
     return;
-  }
 
   [drag_dest completeDropAsync:drop_data withContext:context];
 }
@@ -384,6 +382,12 @@ void DropCompletionCallback(WebDragDest* drag_dest,
 - (void)setDragStartTrackersForProcess:(int)processID {
   _dragStartProcessID = processID;
   _dragStartViewID = GetRenderViewHostID(_webContents->GetRenderViewHost());
+}
+
+- (void)resetDragStartTrackers {
+  _dragStartProcessID = content::ChildProcessHost::kInvalidUniqueID;
+  _dragStartViewID = content::GlobalRoutingID(
+      content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE);
 }
 
 - (bool)isValidDragTarget:(content::RenderWidgetHostImpl*)targetRWH {

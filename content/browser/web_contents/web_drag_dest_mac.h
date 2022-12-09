@@ -141,6 +141,7 @@ CONTENT_EXPORT
 
 // Sets |dragStartProcessID_| and |dragStartViewID_|.
 - (void)setDragStartTrackersForProcess:(int)processID;
+- (void)resetDragStartTrackers;
 
 // Returns whether |targetRWH| is a valid RenderWidgetHost to be dragging
 // over. This enforces that same-page, cross-site drags are not allowed. See

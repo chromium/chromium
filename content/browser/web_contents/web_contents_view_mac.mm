@@ -547,6 +547,8 @@ bool WebContentsViewMac::DragPromisedFileTo(const base::FilePath& file_path,
 void WebContentsViewMac::EndDrag(uint32_t drag_operation,
                                  const gfx::PointF& local_point,
                                  const gfx::PointF& screen_point) {
+  [drag_dest_ resetDragStartTrackers];
+
   web_contents_->SystemDragEnded(drag_source_start_rwh_.get());
 
   // |localPoint| and |screenPoint| are in the root coordinate space, for
