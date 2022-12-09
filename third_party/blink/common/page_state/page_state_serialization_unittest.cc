@@ -484,10 +484,10 @@ TEST_F(PageStateSerializationTest, ScrollAnchorSelectorLengthLimited) {
 // Change to #if 1 to enable this code. Run this test to generate data, based on
 // the current serialization format, for the BackwardsCompat_vXX tests. This
 // will generate an expected.dat in the temp directory, which should be moved
-// //content/test/data/page_state/serialization_vXX.dat. A corresponding test
-// case for that version should also then be added below. You need to add such
-// a test for any addition/change to the schema of serialized page state.
-// If you're adding a field whose type is defined externally of
+// //third_party/blink/common/page_state/test_data/serialized_vXX.dat. A
+// corresponding test case for that version should also then be added below. You
+// need to add such a test for any addition/change to the schema of serialized
+// page state. If you're adding a field whose type is defined externally of
 // page_state.mojom, add an backwards compat test for that field specifically
 // by dumping a state object with only that field populated. See, e.g.,
 // BackwardsCompat_UrlString as an example.
