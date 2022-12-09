@@ -14,6 +14,10 @@
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 
+namespace mojo_base {
+class BigBuffer;
+}
+
 namespace blink {
 
 // A interface represents ArrayBuffer payload type in WebMessage.
@@ -35,6 +39,10 @@ class BLINK_COMMON_EXPORT WebMessageArrayBufferPayload {
   // larger than or equal to the payload. This method is always available
   // regarding various backing stores.
   virtual void CopyInto(base::span<uint8_t> dest) const = 0;
+
+  // Create a new WebMessageArrayBufferPayload from BigBuffer.
+  static std::unique_ptr<WebMessageArrayBufferPayload> CreateFromBigBuffer(
+      mojo_base::BigBuffer buffer);
 
   // Create a new WebMessageArrayBufferPayload from vector for testing.
   static std::unique_ptr<WebMessageArrayBufferPayload> CreateForTesting(

@@ -35,6 +35,18 @@ mojom("common_mojom") {
       traits_sources = [ "origin_matcher_mojom_traits.cc" ]
       traits_public_deps = [ ":common" ]
     },
+    {
+      types = [
+        {
+          mojom = "js_injection.mojom.JsWebMessage"
+          cpp = "::blink::WebMessagePayload"
+          move_only = true
+        },
+      ]
+      traits_headers = [ "web_message_mojom_traits.h" ]
+      traits_sources = [ "web_message_mojom_traits.cc" ]
+      traits_public_deps = [ "//third_party/blink/public/common" ]
+    },
   ]
   overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
   component_deps = [ "//third_party/blink/public/common" ]
@@ -59,7 +71,10 @@ source_set("common") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "origin_matcher_unittest.cc" ]
+  sources = [
+    "origin_matcher_unittest.cc",
+    "web_message_mojom_traits_unittest.cc",
+  ]
   deps = [
     ":common",
     ":common_mojom",

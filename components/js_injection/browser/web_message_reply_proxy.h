@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_JS_INJECTION_BROWSER_WEB_MESSAGE_REPLY_PROXY_H_
 #define COMPONENTS_JS_INJECTION_BROWSER_WEB_MESSAGE_REPLY_PROXY_H_
 
-#include "components/js_injection/common/interfaces.mojom-forward.h"
+#include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 namespace content {
 class Page;
@@ -19,7 +19,7 @@ class WebMessageReplyProxy {
   // To match the JavaScript call, this function would ideally be named
   // PostMessage(), but that conflicts with a Windows macro, so PostWebMessage()
   // is used.
-  virtual void PostWebMessage(mojom::JsWebMessagePtr message) = 0;
+  virtual void PostWebMessage(blink::WebMessagePayload message) = 0;
 
   // Returns true if the page associated with the channel is in the back
   // forward cache.

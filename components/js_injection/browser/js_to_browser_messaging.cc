@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
+#include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "url/origin.h"
 #include "url/url_util.h"
 
@@ -50,7 +51,7 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
   ~ReplyProxyImpl() override = default;
 
   // WebMessageReplyProxy:
-  void PostWebMessage(mojom::JsWebMessagePtr message) override {
+  void PostWebMessage(blink::WebMessagePayload message) override {
     java_to_js_messaging_->OnPostMessage(std::move(message));
   }
   bool IsInBackForwardCache() override {
@@ -83,7 +84,7 @@ void JsToBrowserMessaging::OnBackForwardCacheStateChanged() {
 }
 
 void JsToBrowserMessaging::PostMessage(
-    mojom::JsWebMessagePtr message,
+    blink::WebMessagePayload message,
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK(render_frame_host_);
 

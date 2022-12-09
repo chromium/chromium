@@ -132,8 +132,6 @@ source_set("browser") {
     "icon_helper.h",
     "js_java_interaction/aw_web_message_host_factory.cc",
     "js_java_interaction/aw_web_message_host_factory.h",
-    "js_java_interaction/converter.cc",
-    "js_java_interaction/converter.h",
     "js_java_interaction/js_reply_proxy.cc",
     "js_java_interaction/js_reply_proxy.h",
     "network_service/aw_network_change_notifier.cc",

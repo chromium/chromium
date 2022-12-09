@@ -44,7 +44,7 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
     Java_WebMessageListenerHolder_onPostMessage(
         env, listener_,
         base::android::ConvertUTF16ToJavaString(
-            env, message->message->get_string_value()),
+            env, absl::get<std::u16string>(message->message)),
         base::android::ConvertUTF8ToJavaString(env, origin_string_),
         is_main_frame_, jports, reply_proxy_.GetJavaPeer());
   }
