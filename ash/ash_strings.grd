@@ -1435,6 +1435,11 @@ Style notes:
         Scanning
       </message>
 
+       <!-- Video Conference tray-->
+      <message name="IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP" desc="The tooltip for the toggle bubble button in the video conference tray.">
+        Camera and audio controls
+      </message>
+
       <!-- Phone Hub tray-->
       <message name="IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME" desc="The accessible name of the Phone Hub tray bubble for screen readers.">
         Phone Hub

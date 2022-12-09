@@ -39,6 +39,7 @@ class VideoConferenceTrayButton : public IconButton {
  public:
   VideoConferenceTrayButton(PressedCallback callback,
                             const gfx::VectorIcon* icon,
+                            const gfx::VectorIcon* toggled_icon,
                             const int accessible_name_id);
 
   VideoConferenceTrayButton(const VideoConferenceTrayButton&) = delete;

@@ -31,6 +31,7 @@ namespace ash {
 
 namespace {
 
+constexpr float kTrayButtonsSpacing = 4;
 constexpr float kPrivacyIndicatorRadius = 4;
 constexpr float kIndicatorBorderWidth = 1;
 
@@ -39,9 +40,9 @@ class ToggleBubbleButton : public IconButton {
  public:
   ToggleBubbleButton(VideoConferenceTray* tray, PressedCallback callback)
       : IconButton(std::move(callback),
-                   IconButton::Type::kMedium,
+                   IconButton::Type::kMediumFloating,
                    &kUnifiedMenuExpandIcon,
-                   IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE,
+                   IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP,
                    /*is_togglable=*/true,
                    /*has_border=*/true),
         tray_(tray) {}
@@ -51,13 +52,16 @@ class ToggleBubbleButton : public IconButton {
 
   // IconButton:
   void PaintButtonContents(gfx::Canvas* canvas) override {
-    const gfx::Rect rect(GetContentsBounds());
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(GetBackgroundColor());
-    flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2,
-                       flags);
+    // Only draw the background when the button is toggled.
+    if (toggled()) {
+      const gfx::Rect rect(GetContentsBounds());
+      cc::PaintFlags flags;
+      flags.setAntiAlias(true);
+      flags.setColor(GetBackgroundColor());
+      flags.setStyle(cc::PaintFlags::kFill_Style);
+      canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2,
+                         flags);
+    }
 
     // Rotate the canvas to rotate the expand indicator according to toggle
     // state and shelf alignment. Note that when shelf alignment changes,
@@ -80,13 +84,19 @@ class ToggleBubbleButton : public IconButton {
 VideoConferenceTrayButton::VideoConferenceTrayButton(
     PressedCallback callback,
     const gfx::VectorIcon* icon,
+    const gfx::VectorIcon* toggled_icon,
     const int accessible_name_id)
     : IconButton(std::move(callback),
-                 IconButton::Type::kLarge,
+                 IconButton::Type::kMedium,
                  icon,
                  accessible_name_id,
                  /*is_togglable=*/true,
-                 /*has_border=*/true) {}
+                 /*has_border=*/true) {
+  // TODO(b/261620616): Update this color according to spec.
+  SetBackgroundToggledColorId(kColorAshControlBackgroundColorAlert);
+
+  SetToggledVectorIcon(*toggled_icon);
+}
 
 VideoConferenceTrayButton::~VideoConferenceTrayButton() = default;
 
@@ -132,22 +142,25 @@ void VideoConferenceTrayButton::PaintButtonContents(gfx::Canvas* canvas) {
 VideoConferenceTray::VideoConferenceTray(Shelf* shelf)
     : TrayBackgroundView(shelf,
                          TrayBackgroundViewCatalogName::kVideoConferenceTray) {
+  tray_container()->SetSpacingBetweenChildren(kTrayButtonsSpacing);
+
   audio_icon_ = tray_container()->AddChildView(
       std::make_unique<VideoConferenceTrayButton>(
           base::BindRepeating(&VideoConferenceTray::OnAudioButtonClicked,
                               weak_ptr_factory_.GetWeakPtr()),
-          &kPrivacyIndicatorsMicrophoneIcon,
+          &kPrivacyIndicatorsMicrophoneIcon, &kPrivacyIndicatorsMicrophoneIcon,
           IDS_PRIVACY_NOTIFICATION_TITLE_MIC));
   camera_icon_ = tray_container()->AddChildView(
       std::make_unique<VideoConferenceTrayButton>(
           base::BindRepeating(&VideoConferenceTray::OnCameraButtonClicked,
                               weak_ptr_factory_.GetWeakPtr()),
-          &kPrivacyIndicatorsCameraIcon,
+          &kPrivacyIndicatorsCameraIcon, &kVideoConferenceCameraMutedIcon,
           IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA));
   screen_share_icon_ = tray_container()->AddChildView(
       std::make_unique<VideoConferenceTrayButton>(
           base::BindRepeating(&VideoConferenceTray::OnScreenShareButtonClicked,
                               weak_ptr_factory_.GetWeakPtr()),
+          &kPrivacyIndicatorsScreenShareIcon,
           &kPrivacyIndicatorsScreenShareIcon,
           IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE));
   toggle_bubble_button_ =

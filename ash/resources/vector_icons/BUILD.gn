@@ -501,6 +501,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "unified_network_badge_vpn.icon",
     "unpinned.icon",
     "unrendered_html_placeholder.icon",
+    "video_conference_camera_muted.icon",
     "visibility.icon",
     "visibility_off.icon",
     "wallpaper.icon",

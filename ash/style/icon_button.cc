@@ -150,6 +150,11 @@ void IconButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   UpdateVectorIcon();
 }
 
+void IconButton::SetToggledVectorIcon(const gfx::VectorIcon& icon) {
+  toggled_icon_ = &icon;
+  UpdateVectorIcon();
+}
+
 void IconButton::SetBackgroundColor(const SkColor background_color) {
   if (background_color_ == background_color)
     return;
@@ -333,6 +338,8 @@ void IconButton::UpdateVectorIcon() {
             : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary)));
   }
 
+  const gfx::VectorIcon* icon =
+      toggled_ && toggled_icon_ ? toggled_icon_ : icon_;
   const SkColor icon_color = toggled_ ? toggled_icon_color : normal_icon_color;
   const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
 
@@ -342,7 +349,7 @@ void IconButton::UpdateVectorIcon() {
   // assumes that toggled/disabled images changes at the same time as the normal
   // image, which it currently does.
   const gfx::ImageSkia new_normal_image =
-      gfx::CreateVectorIcon(*icon_, icon_size, icon_color);
+      gfx::CreateVectorIcon(*icon, icon_size, icon_color);
   const gfx::ImageSkia& old_normal_image =
       GetImage(views::Button::STATE_NORMAL);
   if (!new_normal_image.isNull() && !old_normal_image.isNull() &&
@@ -353,7 +360,7 @@ void IconButton::UpdateVectorIcon() {
   SetImage(views::Button::STATE_NORMAL, new_normal_image);
   SetImage(
       views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(*icon_, icon_size,
+      gfx::CreateVectorIcon(*icon, icon_size,
                             ColorUtil::GetDisabledColor(normal_icon_color)));
 }
 
