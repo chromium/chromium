@@ -9,6 +9,8 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
@@ -40,10 +42,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface VoiceSearchTableViewController () {
+@interface VoiceSearchTableViewController () <PrefObserverDelegate> {
   PrefService* _prefs;  // weak
   StringPrefMember _selectedLanguage;
   BooleanPrefMember _ttsEnabled;
+
+  // Pref observer to track changes to the voice search locale pref.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
 }
 // Updates all cells to check the selected language and uncheck all the other.
 - (void)markAsCheckedLanguageAtIndex:(NSUInteger)index;
@@ -59,8 +66,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_VOICE_SEARCH_SETTING_TITLE);
     _prefs = prefs;
+    _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+    _prefChangeRegistrar.Init(prefs);
+
     _selectedLanguage.Init(prefs::kVoiceSearchLocale, _prefs);
     _ttsEnabled.Init(prefs::kVoiceSearchTTS, _prefs);
+
+    _prefObserverBridge->ObserveChangesForPreference(prefs::kVoiceSearchLocale,
+                                                     &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(prefs::kVoiceSearchTTS,
+                                                     &_prefChangeRegistrar);
   }
   return self;
 }
@@ -208,6 +223,38 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _ttsEnabled.SetValue(isOn);
 }
 
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kVoiceSearchTTS) {
+    [self updateTTSSwitchState];
+    return;
+  }
+
+  DCHECK(preferenceName == prefs::kVoiceSearchLocale);
+  NSUInteger indexOfSelectedLanguage = 0;
+  std::string selectedLocaleCode = _selectedLanguage.GetValue();
+
+  // The empty locale code corresponds to the default language, found at
+  // position 0 in displayed list of languages.
+  if (!selectedLocaleCode.empty()) {
+    voice::SpeechInputLocaleConfig* localeConfig =
+        voice::SpeechInputLocaleConfig::GetInstance();
+    const std::vector<voice::SpeechInputLocale>& availableLocales =
+        localeConfig->GetAvailableLocales();
+    for (NSUInteger i = 0; i < availableLocales.size(); i++) {
+      if (availableLocales[i].code == selectedLocaleCode) {
+        // Offset by 1 since the displayed list of languages starts with the
+        // default language, which is not part of `availableLocales`.
+        indexOfSelectedLanguage = i + 1;
+        break;
+      }
+    }
+  }
+
+  [self markAsCheckedLanguageAtIndex:indexOfSelectedLanguage];
+}
+
 #pragma mark - Private methods
 
 - (void)markAsCheckedLanguageAtIndex:(NSUInteger)index {
@@ -229,32 +276,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  // Some languages do not support TTS.  Disable the switch for those
-  // languages.
-  NSIndexPath* switchPath =
-      [self.tableViewModel indexPathForItemType:ItemTypeTTSEnabled
-                              sectionIdentifier:SectionIdentifierTTS];
-  TableViewSwitchCell* switchCell =
-      base::mac::ObjCCastStrict<TableViewSwitchCell>(
-          [self.tableView cellForRowAtIndexPath:switchPath]);
-
-  BOOL enabled = [self currentLanguageSupportsTTS];
-  BOOL on = enabled && _ttsEnabled.GetValue();
-
-  UISwitch* switchView = switchCell.switchView;
-  switchView.enabled = enabled;
-  switchCell.textLabel.textColor =
-      [TableViewSwitchCell defaultTextColorForState:switchView.state];
-  if (on != switchView.isOn) {
-    [switchView setOn:on animated:YES];
-  }
-  // Also update the switch item.
-  TableViewSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<TableViewSwitchItem>(
-          [self.tableViewModel itemAtIndexPath:switchPath]);
-  switchItem.enabled = enabled;
-  switchItem.on = on;
-
+  [self updateTTSSwitchState];
   [self reconfigureCellsForItems:modifiedItems];
 }
 
@@ -265,6 +287,37 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                ? localeConfig->GetDefaultLocale().code
                                : _selectedLanguage.GetValue();
   return localeConfig->IsTextToSpeechEnabledForCode(localeCode);
+}
+
+// Updates the TTS switch when the underlying preference changes or when the
+// current language changes.
+- (void)updateTTSSwitchState {
+  NSIndexPath* switchPath =
+      [self.tableViewModel indexPathForItemType:ItemTypeTTSEnabled
+                              sectionIdentifier:SectionIdentifierTTS];
+  TableViewSwitchCell* switchCell =
+      base::mac::ObjCCastStrict<TableViewSwitchCell>(
+          [self.tableView cellForRowAtIndexPath:switchPath]);
+
+  // Some languages do not support TTS.  Disable the switch for those
+  // languages.
+  BOOL enabled = [self currentLanguageSupportsTTS];
+  BOOL on = enabled && _ttsEnabled.GetValue();
+
+  UISwitch* switchView = switchCell.switchView;
+  switchView.enabled = enabled;
+  switchCell.textLabel.textColor =
+      [TableViewSwitchCell defaultTextColorForState:switchView.state];
+  if (on != switchView.isOn) {
+    [switchView setOn:on animated:YES];
+  }
+
+  // Also update the switch item.
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
+          [self.tableViewModel itemAtIndexPath:switchPath]);
+  switchItem.enabled = enabled;
+  switchItem.on = on;
 }
 
 @end
