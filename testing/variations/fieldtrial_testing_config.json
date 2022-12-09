@@ -6926,10 +6926,10 @@
             ],
             "experiments": [
                 {
-                    "name": "NoBackground-ForYou2",
+                    "name": "NoBackground-ForYou3",
                     "params": {
                         "new-user-modules": "nux-google-apps,nux-set-as-default,signin-view",
-                        "onboarding-group": "NoBackgroundSynthetic-ForYou2"
+                        "onboarding-group": "NoBackgroundSynthetic-ForYou3"
                     },
                     "enable_features": [
                         "NuxOnboarding"
