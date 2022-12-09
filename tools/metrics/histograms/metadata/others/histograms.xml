@@ -5428,8 +5428,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Eche.CompleteAppList.Available.Latency" units="ms"
+    expires_after="2023-05-18">
+  <owner>crisrael@google.com</owner>
+  <owner>jonmann@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    This metric tracks the time it takes from the phone becoming connected to
+    the Chromebook and sending the PhoneStatusSnapshot proto until the phone
+    sends over the entire apps list via the AppListUpdate proto. Emitted after
+    the app stream launcher loads the app list.
+  </summary>
+</histogram>
+
 <histogram name="Eche.Connection.Duration" units="ms"
-    expires_after="2022-10-04">
+    expires_after="2023-05-18">
   <owner>samchiu@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>

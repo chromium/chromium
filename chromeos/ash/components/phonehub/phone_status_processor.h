@@ -7,6 +7,7 @@
 
 #include <google/protobuf/repeated_field.h>
 
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
@@ -109,6 +110,8 @@ class PhoneStatusProcessor
   AppStreamManager* app_stream_manager_;
   AppStreamLauncherDataModel* app_stream_launcher_data_model_;
   IconDecoder* icon_decoder_;
+  base::TimeTicks connection_initialized_timestamp_ = base::TimeTicks();
+  bool has_received_first_app_list_update_ = false;
 
   base::WeakPtrFactory<PhoneStatusProcessor> weak_ptr_factory_{this};
 };
