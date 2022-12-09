@@ -511,9 +511,8 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
 void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
     const std::string& id,
     const SkBitmap& icon,
-    std::unique_ptr<base::DictionaryValue> parsed_manifest) {
+    base::Value::Dict parsed_manifest) {
   CHECK_EQ(details().id, id);
-  CHECK(parsed_manifest);
   parsed_manifest_ = std::move(parsed_manifest);
   icon_ = icon;
 
@@ -803,9 +802,10 @@ void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallProceed(
   // This gets cleared in CrxInstaller::ConfirmInstall(). TODO(asargent) - in
   // the future we may also want to add time-based expiration, where an
   // allowlist entry is only valid for some number of minutes.
+  DCHECK(parsed_manifest_);
   std::unique_ptr<WebstoreInstaller::Approval> approval(
       WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-          profile_, details().id, std::move(parsed_manifest_), false));
+          profile_, details().id, std::move(*parsed_manifest_), false));
   approval->use_app_installed_bubble = !!details().app_install_bubble;
   // If we are enabling the launcher, we should not show the app list in order
   // to train the user to open it themselves at least once.

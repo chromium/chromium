@@ -114,8 +114,7 @@ void WebstoreInstallHelper::OnJSONParsed(
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   manifest_parse_complete_ = true;
   if (result.has_value() && result->is_dict()) {
-    parsed_manifest_ = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(std::move(*result)));
+    parsed_manifest_ = std::move(*result).TakeDict();
   } else {
     error_ = (!result.has_value() || result.error().empty())
                  ? "Invalid JSON response"
@@ -132,7 +131,7 @@ void WebstoreInstallHelper::ReportResultsIfComplete() {
     return;
 
   if (error_.empty() && parsed_manifest_)
-    delegate_->OnWebstoreParseSuccess(id_, icon_, std::move(parsed_manifest_));
+    delegate_->OnWebstoreParseSuccess(id_, icon_, std::move(*parsed_manifest_));
   else
     delegate_->OnWebstoreParseFailure(id_, parse_error_, error_);
 }

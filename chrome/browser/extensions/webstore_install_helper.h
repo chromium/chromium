@@ -10,14 +10,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 class BitmapFetcher;
 
@@ -46,10 +44,9 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
 
     // Called when we've successfully parsed the manifest and decoded the icon
     // in the utility process.
-    virtual void OnWebstoreParseSuccess(
-        const std::string& id,
-        const SkBitmap& icon,
-        std::unique_ptr<base::DictionaryValue> parsed_manifest) = 0;
+    virtual void OnWebstoreParseSuccess(const std::string& id,
+                                        const SkBitmap& icon,
+                                        base::Value::Dict parsed_manifest) = 0;
 
     // Called to indicate a parse failure. The |result_code| parameter should
     // indicate whether the problem was with the manifest or icon.
@@ -102,7 +99,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
 
   // The results of successful decoding/parsing.
   SkBitmap icon_;
-  std::unique_ptr<base::DictionaryValue> parsed_manifest_;
+  absl::optional<base::Value::Dict> parsed_manifest_;
 
   // A details string for keeping track of any errors.
   std::string error_;

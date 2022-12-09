@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -82,6 +83,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -198,16 +200,16 @@ bool CreateTempDirectoryCopy(const base::FilePath& temp_dir,
 }
 
 // Modifies `manifest_dict` changing its manifest version to 3.
-bool ModifyManifestForManifestVersion3(base::DictionaryValue& manifest_dict) {
+bool ModifyManifestForManifestVersion3(base::Value::Dict& manifest_dict) {
   // This should only be used for manifest v2 extension.
   absl::optional<int> current_manifest_version =
-      manifest_dict.FindIntPath(manifest_keys::kManifestVersion);
+      manifest_dict.FindInt(manifest_keys::kManifestVersion);
   if (!current_manifest_version || *current_manifest_version != 2) {
     ADD_FAILURE() << manifest_dict << " should have a manifest version of 2.";
     return false;
   }
 
-  manifest_dict.SetIntPath(manifest_keys::kManifestVersion, 3);
+  manifest_dict.Set(manifest_keys::kManifestVersion, 3);
   return true;
 }
 
@@ -217,32 +219,31 @@ bool ModifyManifestForManifestVersion3(base::DictionaryValue& manifest_dict) {
 // background.persistent = false; persistent background pages and
 // background.page are not supported.
 bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
-                                     base::DictionaryValue& manifest_dict) {
+                                     base::Value::Dict& manifest_dict) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Retrieve the value of the "background" key and verify that it is
   // non-persistent and specifies JS files.
   // Persistent background pages or background pages that specify HTML files
   // are not supported.
-  base::Value* background_dict =
-      manifest_dict.FindKeyOfType("background", base::Value::Type::DICTIONARY);
+  base::Value::Dict* background_dict = manifest_dict.FindDict("background");
   if (!background_dict) {
     ADD_FAILURE() << extension_root.value()
                   << " 'background' key not found in manifest.json";
     return false;
   }
   {
-    base::Value* background_persistent = background_dict->FindKeyOfType(
-        "persistent", base::Value::Type::BOOLEAN);
-    if (!background_persistent) {
+    absl::optional<bool> background_persistent =
+        background_dict->FindBool("persistent");
+    if (!background_persistent.has_value()) {
       ADD_FAILURE() << extension_root.value()
                     << ": The \"persistent\" key must be specified to run as a "
                        "Service Worker-based extension.";
       return false;
     }
   }
-  base::Value* background_scripts_list =
-      background_dict->FindKeyOfType("scripts", base::Value::Type::LIST);
+  base::Value::List* background_scripts_list =
+      background_dict->FindList("scripts");
   if (!background_scripts_list) {
     ADD_FAILURE() << extension_root.value()
                   << ": Only event pages with JS script(s) can be loaded "
@@ -251,8 +252,7 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
   }
 
   // Number of JS scripts must be >= 1.
-  const base::Value::List& scripts_list = background_scripts_list->GetList();
-  if (scripts_list.size() < 1) {
+  if (background_scripts_list->size() < 1) {
     ADD_FAILURE() << extension_root.value()
                   << ": Only event pages with JS script(s) can be loaded "
                      " as SW extension.";
@@ -263,7 +263,7 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
   constexpr const char kGeneratedSWFileName[] = "generated_service_worker__.js";
 
   std::vector<std::string> script_filenames;
-  for (const base::Value& script : scripts_list)
+  for (const base::Value& script : *background_scripts_list)
     script_filenames.push_back(base::StrCat({"'", script.GetString(), "'"}));
 
   base::FilePath combined_script_filepath =
@@ -286,9 +286,9 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
 
   // Remove the existing background specification and replace it with a service
   // worker.
-  background_dict->RemoveKey("persistent");
-  background_dict->RemoveKey("scripts");
-  background_dict->SetStringPath("service_worker", kGeneratedSWFileName);
+  background_dict->Remove("persistent");
+  background_dict->Remove("scripts");
+  background_dict->Set("service_worker", kGeneratedSWFileName);
 
   return true;
 }
@@ -876,7 +876,7 @@ bool ExtensionBrowserTest::ModifyExtensionIfNeeded(
     return false;
 
   std::string error;
-  std::unique_ptr<base::DictionaryValue> manifest_dict =
+  absl::optional<base::Value::Dict> manifest_dict =
       file_util::LoadManifest(extension_root, &error);
   if (!manifest_dict) {
     ADD_FAILURE() << extension_root.value()

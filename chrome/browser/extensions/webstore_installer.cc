@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -240,14 +241,14 @@ std::unique_ptr<WebstoreInstaller::Approval>
 WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
     Profile* profile,
     const std::string& extension_id,
-    std::unique_ptr<base::DictionaryValue> parsed_manifest,
+    base::Value::Dict parsed_manifest,
     bool strict_manifest_check) {
   std::unique_ptr<Approval> result(new Approval());
   result->extension_id = extension_id;
   result->profile = profile;
-  result->manifest = std::make_unique<Manifest>(
-      mojom::ManifestLocation::kInvalidLocation,
-      std::move(*parsed_manifest).TakeDict(), extension_id);
+  result->manifest =
+      std::make_unique<Manifest>(mojom::ManifestLocation::kInvalidLocation,
+                                 std::move(parsed_manifest), extension_id);
   result->skip_install_dialog = true;
   result->manifest_check_level = strict_manifest_check ?
     MANIFEST_CHECK_LEVEL_STRICT : MANIFEST_CHECK_LEVEL_LOOSE;

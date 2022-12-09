@@ -168,10 +168,7 @@ std::unique_ptr<WebstoreInstaller::Approval>
 WebstoreStandaloneInstaller::CreateApproval() const {
   std::unique_ptr<WebstoreInstaller::Approval> approval(
       WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-          profile_, id_,
-          base::DictionaryValue::From(
-              base::Value::ToUniquePtrValue(base::Value(manifest_->Clone()))),
-          true));
+          profile_, id_, manifest_->Clone(), true));
   approval->skip_post_install_ui = !ShouldShowPostInstallUI();
   approval->use_app_installed_bubble = ShouldShowAppInstalledBubble();
   approval->installing_icon = gfx::ImageSkia::CreateFrom1xBitmap(icon_);
@@ -334,7 +331,7 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseFailure(
 void WebstoreStandaloneInstaller::OnWebstoreParseSuccess(
     const std::string& id,
     const SkBitmap& icon,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value::Dict manifest) {
   CHECK_EQ(id_, id);
 
   if (!CheckRequestorAlive()) {
@@ -342,7 +339,7 @@ void WebstoreStandaloneInstaller::OnWebstoreParseSuccess(
     return;
   }
 
-  manifest_ = std::move(*manifest).TakeDict();
+  manifest_ = std::move(manifest);
   icon_ = icon;
 
   OnManifestParsed();

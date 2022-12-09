@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
@@ -121,21 +122,17 @@ class WebstoreInstallerMV2BrowserTest : public WebstoreInstallerBrowserTest {
 
   // The manifest used by the test installer must match `kCrxFilename` manifest
   // in the test directory.
-  std::unique_ptr<base::DictionaryValue> GetManifest() {
-    std::unique_ptr<base::DictionaryValue> manifest(
-        DictionaryBuilder()
-            .Set("name", "Installer Extension")
-            .Set("manifest_version", 2)
-            .Set("version", "1.0")
-            .Set("permissions", ListBuilder().Append("tabs").Build())
-            .Build());
-    return manifest;
+  base::Value::Dict GetManifest() {
+    return DictionaryBuilder()
+        .Set("name", "Installer Extension")
+        .Set("manifest_version", 2)
+        .Set("version", "1.0")
+        .Set("permissions", ListBuilder().Append("tabs").Build())
+        .BuildDict();
   }
 };
 
 IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, WebstoreInstall) {
-  std::unique_ptr<base::DictionaryValue> manifest = GetManifest();
-
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_web_contents);
@@ -143,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, WebstoreInstall) {
   // Create an approval.
   std::unique_ptr<WebstoreInstaller::Approval> approval =
       WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-          browser()->profile(), kTestExtensionId, std::move(manifest), false);
+          browser()->profile(), kTestExtensionId, GetManifest(), false);
 
   // Create and run a WebstoreInstaller.
   base::RunLoop run_loop;
@@ -160,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, WebstoreInstall) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, SimultaneousInstall) {
-  std::unique_ptr<base::DictionaryValue> manifest = GetManifest();
+  base::Value::Dict manifest = GetManifest();
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -169,10 +166,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, SimultaneousInstall) {
   // Create an approval.
   std::unique_ptr<WebstoreInstaller::Approval> approval =
       WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-          browser()->profile(), kTestExtensionId,
-          base::DictionaryValue::From(
-              base::Value::ToUniquePtrValue(manifest->Clone())),
-          false);
+          browser()->profile(), kTestExtensionId, manifest.Clone(), false);
 
   // Create and run a WebstoreInstaller.
   base::RunLoop run_loop;
@@ -225,15 +219,13 @@ class WebstoreInstallerWithWithholdingUIBrowserTest
 
   // Th manifest used by the test installer must match
   // `kCrxWithPermissionsFilename` manifest in the test directory.
-  std::unique_ptr<base::DictionaryValue> GetManifest() {
-    std::unique_ptr<base::DictionaryValue> manifest(
-        DictionaryBuilder()
-            .Set("name", "Installer Extension")
-            .Set("manifest_version", 3)
-            .Set("version", "1.0")
-            .Set("host_permissions", ListBuilder().Append("<all_urls>").Build())
-            .Build());
-    return manifest;
+  base::Value::Dict GetManifest() {
+    return DictionaryBuilder()
+        .Set("name", "Installer Extension")
+        .Set("manifest_version", 3)
+        .Set("version", "1.0")
+        .Set("host_permissions", ListBuilder().Append("<all_urls>").Build())
+        .BuildDict();
   }
 
  private:
@@ -245,7 +237,6 @@ class WebstoreInstallerWithWithholdingUIBrowserTest
 IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
                        WithholdingHostsOnInstall) {
   bool shoud_withhold_permissions = GetParam();
-  std::unique_ptr<base::DictionaryValue> manifest = GetManifest();
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -255,8 +246,8 @@ IN_PROC_BROWSER_TEST_P(WebstoreInstallerWithWithholdingUIBrowserTest,
   // selected.
   std::unique_ptr<WebstoreInstaller::Approval> approval =
       WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-          browser()->profile(), kTestExtensionWithPermissionsId,
-          std::move(manifest), false);
+          browser()->profile(), kTestExtensionWithPermissionsId, GetManifest(),
+          false);
   approval->withhold_permissions = shoud_withhold_permissions;
 
   // Create and run a WebstoreInstaller.

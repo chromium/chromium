@@ -5,6 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
@@ -21,6 +22,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/file_manager/grit/file_manager_resources.h"
@@ -47,9 +49,9 @@ TEST_F(ChromeComponentExtensionResourceManagerTest,
 
   // Load the manifest data.
   std::string error;
-  std::unique_ptr<base::DictionaryValue> manifest(file_util::LoadManifest(
+  absl::optional<base::Value::Dict> manifest(file_util::LoadManifest(
       test_path, FILE_PATH_LITERAL("app.json"), &error));
-  ASSERT_TRUE(manifest.get()) << error;
+  ASSERT_TRUE(manifest) << error;
 
   // Build a path inside Chrome's resources directory where a component
   // extension might be installed.

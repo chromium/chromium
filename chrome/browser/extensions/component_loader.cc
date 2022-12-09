@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -49,6 +50,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -90,11 +92,10 @@ namespace {
 
 static bool enable_background_extensions_during_testing = false;
 
-std::string GenerateId(const base::DictionaryValue* manifest,
+std::string GenerateId(const base::Value::Dict& manifest,
                        const base::FilePath& path) {
   std::string id_input;
-  const std::string* raw_key =
-      manifest->GetDict().FindString(manifest_keys::kPublicKey);
+  const std::string* raw_key = manifest.FindString(manifest_keys::kPublicKey);
   CHECK(raw_key != nullptr);
   CHECK(Extension::ParsePEMKeyBytes(*raw_key, &id_input));
   std::string id = crx_file::id_util::GenerateId(id_input);
@@ -102,19 +103,19 @@ std::string GenerateId(const base::DictionaryValue* manifest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-std::unique_ptr<base::DictionaryValue> LoadManifestOnFileThread(
+absl::optional<base::Value::Dict> LoadManifestOnFileThread(
     const base::FilePath& root_directory,
     const base::FilePath::CharType* manifest_filename,
     bool localize_manifest) {
   DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
   std::string error;
-  std::unique_ptr<base::DictionaryValue> manifest(
+  absl::optional<base::Value::Dict> manifest(
       file_util::LoadManifest(root_directory, manifest_filename, &error));
   if (!manifest) {
     LOG(ERROR) << "Can't load "
                << root_directory.Append(manifest_filename).AsUTF8Unsafe()
                << ": " << error;
-    return nullptr;
+    return absl::nullopt;
   }
 
   if (localize_manifest) {
@@ -122,7 +123,7 @@ std::unique_ptr<base::DictionaryValue> LoadManifestOnFileThread(
     // from a read-only rootfs partition, so it is safe to set
     // |gzip_permission| to kAllowForTrustedSource.
     bool localized = extension_l10n_util::LocalizeExtension(
-        root_directory, &manifest->GetDict(),
+        root_directory, &manifest.value(),
         extension_l10n_util::GzippedMessagesPermission::kAllowForTrustedSource,
         &error);
     CHECK(localized) << error;
@@ -142,14 +143,14 @@ bool IsNormalSession() {
 }  // namespace
 
 ComponentLoader::ComponentExtensionInfo::ComponentExtensionInfo(
-    std::unique_ptr<base::DictionaryValue> manifest_param,
+    base::Value::Dict manifest_param,
     const base::FilePath& directory)
     : manifest(std::move(manifest_param)), root_directory(directory) {
   if (!root_directory.IsAbsolute()) {
     CHECK(base::PathService::Get(chrome::DIR_RESOURCES, &root_directory));
     root_directory = root_directory.Append(directory);
   }
-  extension_id = GenerateId(manifest.get(), root_directory);
+  extension_id = GenerateId(manifest, root_directory);
 }
 
 ComponentLoader::ComponentExtensionInfo::ComponentExtensionInfo(
@@ -185,7 +186,7 @@ void ComponentLoader::LoadAll() {
     Load(component_extension);
 }
 
-std::unique_ptr<base::DictionaryValue> ComponentLoader::ParseManifest(
+absl::optional<base::Value::Dict> ComponentLoader::ParseManifest(
     base::StringPiece manifest_contents) const {
   JSONStringValueDeserializer deserializer(manifest_contents);
   std::unique_ptr<base::Value> manifest =
@@ -193,9 +194,10 @@ std::unique_ptr<base::DictionaryValue> ComponentLoader::ParseManifest(
 
   if (!manifest.get() || !manifest->is_dict()) {
     LOG(ERROR) << "Failed to parse extension manifest.";
-    return nullptr;
+    return absl::nullopt;
   }
-  return base::DictionaryValue::From(std::move(manifest));
+
+  return std::move(*manifest).TakeDict();
 }
 
 std::string ComponentLoader::Add(int manifest_resource_id,
@@ -220,17 +222,15 @@ std::string ComponentLoader::Add(const base::StringPiece& manifest_contents,
                                  bool skip_allowlist) {
   // The Value is kept for the lifetime of the ComponentLoader. This is
   // required in case LoadAll() is called again.
-  std::unique_ptr<base::DictionaryValue> manifest =
-      ParseManifest(manifest_contents);
+  absl::optional<base::Value::Dict> manifest = ParseManifest(manifest_contents);
   if (manifest)
-    return Add(std::move(manifest), root_directory, skip_allowlist);
+    return Add(std::move(*manifest), root_directory, skip_allowlist);
   return std::string();
 }
 
-std::string ComponentLoader::Add(
-    std::unique_ptr<base::DictionaryValue> parsed_manifest,
-    const base::FilePath& root_directory,
-    bool skip_allowlist) {
+std::string ComponentLoader::Add(base::Value::Dict parsed_manifest,
+                                 const base::FilePath& root_directory,
+                                 bool skip_allowlist) {
   ComponentExtensionInfo info(std::move(parsed_manifest), root_directory);
   if (!ignore_allowlist_for_testing_ && !skip_allowlist &&
       !IsComponentExtensionAllowlisted(info.extension_id))
@@ -246,18 +246,18 @@ std::string ComponentLoader::Add(
 std::string ComponentLoader::AddOrReplace(const base::FilePath& path) {
   base::FilePath absolute_path = base::MakeAbsoluteFilePath(path);
   std::string error;
-  std::unique_ptr<base::DictionaryValue> manifest(
+  absl::optional<base::Value::Dict> manifest(
       file_util::LoadManifest(absolute_path, &error));
   if (!manifest) {
     LOG(ERROR) << "Could not load extension from '" << absolute_path.value()
                << "'. " << error;
     return std::string();
   }
-  Remove(GenerateId(manifest.get(), absolute_path));
+  Remove(GenerateId(*manifest, absolute_path));
 
   // We don't check component extensions loaded by path because this is only
   // used by developers for testing.
-  return Add(std::move(manifest), absolute_path, true);
+  return Add(std::move(*manifest), absolute_path, true);
 }
 
 void ComponentLoader::Reload(const std::string& extension_id) {
@@ -286,7 +286,7 @@ void ComponentLoader::Remove(const base::FilePath& root_directory) {
   // Find the ComponentExtensionInfo for the extension.
   for (const auto& component_extension : component_extensions_) {
     if (component_extension.root_directory == root_directory) {
-      Remove(GenerateId(component_extension.manifest.get(), root_directory));
+      Remove(GenerateId(component_extension.manifest, root_directory));
       break;
     }
   }
@@ -347,13 +347,12 @@ void ComponentLoader::AddWithNameAndDescription(
 
   // The Value is kept for the lifetime of the ComponentLoader. This is
   // required in case LoadAll() is called again.
-  std::unique_ptr<base::DictionaryValue> manifest =
-      ParseManifest(manifest_contents);
+  absl::optional<base::Value::Dict> manifest = ParseManifest(manifest_contents);
 
   if (manifest) {
-    manifest->SetStringKey(manifest_keys::kName, name_string);
-    manifest->SetStringKey(manifest_keys::kDescription, description_string);
-    Add(std::move(manifest), root_directory, true);
+    manifest->Set(manifest_keys::kName, name_string);
+    manifest->Set(manifest_keys::kDescription, description_string);
+    Add(std::move(*manifest), root_directory, true);
   }
 }
 
@@ -403,7 +402,7 @@ scoped_refptr<const Extension> ComponentLoader::CreateExtension(
   //               our component extensions to the new manifest version.
   int flags = Extension::REQUIRE_KEY;
   return Extension::Create(info.root_directory,
-                           mojom::ManifestLocation::kComponent, *info.manifest,
+                           mojom::ManifestLocation::kComponent, info.manifest,
                            flags, utf8_error);
 }
 
@@ -633,21 +632,20 @@ void ComponentLoader::FinishAddComponentFromDir(
     const absl::optional<std::string>& name_string,
     const absl::optional<std::string>& description_string,
     base::OnceClosure done_cb,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    absl::optional<base::Value::Dict> manifest) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!manifest)
     return;  // Error already logged.
 
   if (name_string)
-    manifest->SetStringKey(manifest_keys::kName, name_string.value());
+    manifest->Set(manifest_keys::kName, name_string.value());
 
   if (description_string) {
-    manifest->SetStringKey(manifest_keys::kDescription,
-                           description_string.value());
+    manifest->Set(manifest_keys::kDescription, description_string.value());
   }
 
   std::string actual_extension_id =
-      Add(std::move(manifest), root_directory, false);
+      Add(std::move(*manifest), root_directory, false);
   CHECK_EQ(extension_id, actual_extension_id);
   if (done_cb)
     std::move(done_cb).Run();

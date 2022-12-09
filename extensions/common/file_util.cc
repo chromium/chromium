@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -26,6 +25,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
@@ -40,6 +40,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "net/base/filename_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -216,17 +217,17 @@ scoped_refptr<Extension> LoadExtension(
     ManifestLocation location,
     int flags,
     std::string* error) {
-  std::unique_ptr<base::DictionaryValue> manifest;
+  absl::optional<base::Value::Dict> manifest;
   if (!manifest_file) {
     manifest = LoadManifest(extension_path, error);
   } else {
     manifest = LoadManifest(extension_path, manifest_file, error);
   }
-  if (!manifest.get())
+  if (!manifest)
     return nullptr;
 
   if (!extension_l10n_util::LocalizeExtension(
-          extension_path, &manifest->GetDict(),
+          extension_path, &manifest.value(),
           extension_l10n_util::GetGzippedMessagesPermissionForLocation(
               location),
           error)) {
@@ -246,20 +247,20 @@ scoped_refptr<Extension> LoadExtension(
   return extension;
 }
 
-std::unique_ptr<base::DictionaryValue> LoadManifest(
+absl::optional<base::Value::Dict> LoadManifest(
     const base::FilePath& extension_path,
     std::string* error) {
   return LoadManifest(extension_path, kManifestFilename, error);
 }
 
-std::unique_ptr<base::DictionaryValue> LoadManifest(
+absl::optional<base::Value::Dict> LoadManifest(
     const base::FilePath& extension_path,
     const base::FilePath::CharType* manifest_filename,
     std::string* error) {
   base::FilePath manifest_path = extension_path.Append(manifest_filename);
   if (!base::PathExists(manifest_path)) {
     *error = l10n_util::GetStringUTF8(IDS_EXTENSION_MANIFEST_UNREADABLE);
-    return nullptr;
+    return absl::nullopt;
   }
 
   JSONFileValueDeserializer deserializer(manifest_path);
@@ -275,15 +276,15 @@ std::unique_ptr<base::DictionaryValue> LoadManifest(
       *error = base::StringPrintf(
           "%s  %s", manifest_errors::kManifestParseError, error->c_str());
     }
-    return nullptr;
+    return absl::nullopt;
   }
 
   if (!root->is_dict()) {
     *error = l10n_util::GetStringUTF8(IDS_EXTENSION_MANIFEST_INVALID);
-    return nullptr;
+    return absl::nullopt;
   }
 
-  return base::DictionaryValue::From(std::move(root));
+  return std::move(*root).TakeDict();
 }
 
 bool ValidateExtension(const Extension* extension,

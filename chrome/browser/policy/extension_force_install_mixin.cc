@@ -256,7 +256,7 @@ std::string GenerateUpdateManifest(const extensions::ExtensionId& extension_id,
 bool ParseExtensionManifestData(const base::FilePath& extension_dir_path,
                                 base::Version* extension_version) {
   std::string error_message;
-  std::unique_ptr<base::DictionaryValue> extension_manifest;
+  absl::optional<base::Value::Dict> extension_manifest;
   {
     base::ScopedAllowBlockingForTesting scoped_allow_blocking;
     extension_manifest =
@@ -267,8 +267,8 @@ bool ParseExtensionManifestData(const base::FilePath& extension_dir_path,
                   << extension_dir_path.value() << ": " << error_message;
     return false;
   }
-  const std::string* version_string = extension_manifest->GetDict().FindString(
-      extensions::manifest_keys::kVersion);
+  const std::string* version_string =
+      extension_manifest->FindString(extensions::manifest_keys::kVersion);
   if (!version_string) {
     ADD_FAILURE() << "Failed to load extension version from "
                   << extension_dir_path.value()

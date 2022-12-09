@@ -23,10 +23,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace extensions {
 class Extension;
 class ScopedActiveInstall;
@@ -185,10 +181,9 @@ class WebstoreStandaloneInstaller
                                       const std::string& error) override;
 
   // WebstoreInstallHelper::Delegate interface implementation.
-  void OnWebstoreParseSuccess(
-      const std::string& id,
-      const SkBitmap& icon,
-      std::unique_ptr<base::DictionaryValue> parsed_manifest) override;
+  void OnWebstoreParseSuccess(const std::string& id,
+                              const SkBitmap& icon,
+                              base::Value::Dict parsed_manifest) override;
   void OnWebstoreParseFailure(const std::string& id,
                               InstallHelperResultCode result_code,
                               const std::string& error_message) override;

@@ -114,7 +114,7 @@ class WebstoreInstaller : public ExtensionRegistryObserver,
     static std::unique_ptr<Approval> CreateWithNoInstallPrompt(
         Profile* profile,
         const std::string& extension_id,
-        std::unique_ptr<base::DictionaryValue> parsed_manifest,
+        base::Value::Dict parsed_manifest,
         bool strict_manifest_check);
 
     ~Approval() override;

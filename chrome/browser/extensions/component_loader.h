@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -135,9 +134,8 @@ class ComponentLoader {
 
   // Information about a registered component extension.
   struct ComponentExtensionInfo {
-    ComponentExtensionInfo(
-        std::unique_ptr<base::DictionaryValue> manifest_param,
-        const base::FilePath& root_directory);
+    ComponentExtensionInfo(base::Value::Dict manifest_param,
+                           const base::FilePath& root_directory);
 
     ComponentExtensionInfo(const ComponentExtensionInfo&) = delete;
     ComponentExtensionInfo& operator=(const ComponentExtensionInfo&) = delete;
@@ -148,7 +146,7 @@ class ComponentLoader {
     ComponentExtensionInfo& operator=(ComponentExtensionInfo&& other);
 
     // The parsed contents of the extensions's manifest file.
-    std::unique_ptr<base::DictionaryValue> manifest;
+    base::Value::Dict manifest;
 
     // Directory where the extension is stored.
     base::FilePath root_directory;
@@ -157,15 +155,15 @@ class ComponentLoader {
     std::string extension_id;
   };
 
-  // Parses the given JSON manifest. Returns nullptr if it cannot be parsed or
-  // if the result is not a DictionaryValue.
-  std::unique_ptr<base::DictionaryValue> ParseManifest(
+  // Parses the given JSON manifest. Returns `absl::nullopt` if it cannot be
+  // parsed or if the result is not a base::Value::Dict.
+  absl::optional<base::Value::Dict> ParseManifest(
       base::StringPiece manifest_contents) const;
 
   std::string Add(const base::StringPiece& manifest_contents,
                   const base::FilePath& root_directory,
                   bool skip_allowlist);
-  std::string Add(std::unique_ptr<base::DictionaryValue> parsed_manifest,
+  std::string Add(base::Value::Dict parsed_manifest,
                   const base::FilePath& root_directory,
                   bool skip_allowlist);
 
@@ -213,7 +211,7 @@ class ComponentLoader {
       const absl::optional<std::string>& name_string,
       const absl::optional<std::string>& description_string,
       base::OnceClosure done_cb,
-      std::unique_ptr<base::DictionaryValue> manifest);
+      absl::optional<base::Value::Dict> manifest);
 
   // Finishes loading an extension tts engine.
   void FinishLoadSpeechSynthesisExtension(const char* extension_id);
