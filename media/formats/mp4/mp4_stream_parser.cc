@@ -786,15 +786,16 @@ bool MP4StreamParser::PrepareAACBuffer(
     std::vector<uint8_t>* frame_buf,
     std::vector<SubsampleEntry>* subsamples) const {
   // Append an ADTS header to every audio sample.
-  RCHECK(aac_config.ConvertEsdsToADTS(frame_buf));
+  int adts_header_size = 0;
+  RCHECK(aac_config.ConvertEsdsToADTS(frame_buf, &adts_header_size));
 
   // As above, adjust subsample information to account for the headers. AAC is
   // not required to use subsample encryption, so we may need to add an entry.
   if (subsamples->empty()) {
-    subsamples->push_back(SubsampleEntry(
-        kADTSHeaderMinSize, frame_buf->size() - kADTSHeaderMinSize));
+    subsamples->push_back(
+        SubsampleEntry(adts_header_size, frame_buf->size() - adts_header_size));
   } else {
-    (*subsamples)[0].clear_bytes += kADTSHeaderMinSize;
+    (*subsamples)[0].clear_bytes += adts_header_size;
   }
   return true;
 }

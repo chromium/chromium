@@ -183,11 +183,14 @@ ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
   return channel_layout_;
 }
 
-bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer) const {
+bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer,
+                            int* adts_header_size) const {
   // Don't append ADTS header for XHE-AAC; it doesn't have enough bits to signal
   // the correct profile.
-  if (profile_ == kXHeAAcType)
+  if (profile_ == kXHeAAcType) {
+    *adts_header_size = 0;
     return true;
+  }
 
   size_t size = buffer->size() + kADTSHeaderMinSize;
 
@@ -210,6 +213,7 @@ bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer) const {
   adts[5] = ((size & 7) << 5) + 0x1f;
   adts[6] = 0xfc;
 
+  *adts_header_size = kADTSHeaderMinSize;
   return true;
 }
 

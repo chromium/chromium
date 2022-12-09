@@ -51,10 +51,12 @@ class MEDIA_EXPORT AAC {
   ChannelLayout GetChannelLayout(bool sbr_in_mimetype) const;
 
   // This function converts a raw AAC frame into an AAC frame with an ADTS
-  // header. On success, the function returns true and stores the converted data
-  // in the buffer. The function returns false on failure and leaves the buffer
+  // header. On success, the function returns true, stores the converted data
+  // in the `buffer`, and sets the header size in `adts_header_size`. Otherwise
+  // the function returns false and leaves the `buffer` and `adts_header_size`
   // unchanged.
-  bool ConvertEsdsToADTS(std::vector<uint8_t>* buffer) const;
+  bool ConvertEsdsToADTS(std::vector<uint8_t>* buffer,
+                         int* adts_header_size) const;
 
   // If known, returns the AudioCodecProfile.
   AudioCodecProfile GetProfile() const;
