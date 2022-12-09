@@ -1041,6 +1041,8 @@ component("ash") {
     "style/icon_button.h",
     "style/icon_switch.cc",
     "style/icon_switch.h",
+    "style/knob_switch.cc",
+    "style/knob_switch.h",
     "style/option_button_base.cc",
     "style/option_button_base.h",
     "style/option_button_group.cc",
