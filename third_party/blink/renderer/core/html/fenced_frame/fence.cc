@@ -142,6 +142,28 @@ void Fence::reportEvent(ScriptState* script_state,
   }
 }
 
+HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
+    ExceptionState& exception_state) {
+  HeapVector<Member<FencedFrameConfig>> out;
+  const absl::optional<FencedFrame::RedactedFencedFrameProperties>&
+      fenced_frame_properties =
+          DomWindow()->document()->Loader()->FencedFrameProperties();
+  if (fenced_frame_properties.has_value() &&
+      fenced_frame_properties.value().nested_urn_config_pairs() &&
+      fenced_frame_properties.value()
+          .nested_urn_config_pairs()
+          ->potentially_opaque_value) {
+    for (const std::pair<GURL, FencedFrame::RedactedFencedFrameConfig>&
+             config_pair : fenced_frame_properties.value()
+                               .nested_urn_config_pairs()
+                               ->potentially_opaque_value.value()) {
+      FencedFrame::RedactedFencedFrameConfig config = config_pair.second;
+      out.push_back(FencedFrameConfig::From(config));
+    }
+  }
+  return out;
+}
+
 void Fence::AddConsoleMessage(const String& message) {
   DCHECK(DomWindow());
   DomWindow()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(

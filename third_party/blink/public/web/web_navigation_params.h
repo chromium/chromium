@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -506,6 +507,14 @@ struct BLINK_EXPORT WebNavigationParams {
   // Provides cached state from the previous Document that will be replaced by
   // this navigation for a ViewTransition.
   absl::optional<ViewTransitionState> view_transition_state;
+
+  // If this is a navigation to an "opaque-ads" fenced frame through an ad
+  // auction, this stores the collection of properties that were loaded into a
+  // fenced frame to specify its behavior. This is read into an inner
+  // `FencedFrameConfig` object to give a fenced frame access to the
+  // components associated with the winning bid in an auction.
+  absl::optional<FencedFrame::RedactedFencedFrameProperties>
+      fenced_frame_properties;
 };
 
 }  // namespace blink

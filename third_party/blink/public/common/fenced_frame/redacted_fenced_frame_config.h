@@ -73,6 +73,28 @@ struct BLINK_COMMON_EXPORT RedactedFencedFrameConfig {
   RedactedFencedFrameConfig();
   ~RedactedFencedFrameConfig();
 
+  const absl::optional<RedactedFencedFrameProperty<GURL>>& mapped_url() const {
+    return mapped_url_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<AdAuctionData>>&
+  ad_auction_data() const {
+    return ad_auction_data_;
+  }
+  const absl::optional<
+      RedactedFencedFrameProperty<std::vector<RedactedFencedFrameConfig>>>&
+  nested_configs() const {
+    return nested_configs_;
+  }
+  const absl::optional<
+      RedactedFencedFrameProperty<SharedStorageBudgetMetadata>>&
+  shared_storage_budget_metadata() const {
+    return shared_storage_budget_metadata_;
+  }
+  const absl::optional<RedactedFencedFrameProperty<ReportingMetadata>>&
+  reporting_metadata() const {
+    return reporting_metadata_;
+  }
+
  private:
   friend struct content::FencedFrameConfig;
   friend struct mojo::StructTraits<

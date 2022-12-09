@@ -1,5 +1,7 @@
 const STORE_URL = '/wpt_internal/fenced_frame/resources/key-value-store.py';
 const REMOTE_EXECUTOR_URL = '/wpt_internal/fenced_frame/resources/remote-context-executor.https.html';
+const FLEDGE_BIDDING_URL = '/wpt_internal/fenced_frame/resources/fledge-bidding-logic.js';
+const FLEDGE_DECISION_URL = '/wpt_internal/fenced_frame/resources/fledge-decision-logic.js';
 
 // Creates a URL that includes a list of stash key UUIDs that are being used
 // in the test. This allows us to generate UUIDs on the fly and let anything
@@ -43,6 +45,38 @@ async function generateURN(href, keylist = []) {
       "test-url-selection-operation", [{url: full_url}],
       {data: {'mockResult': 0}}
   );
+}
+
+// Similar to generateURN, but uses FLEDGE instead of Shared Storage as the
+// auctioning tool.
+// Note: this function, unlike generateURL, is asynchronous and needs to be
+// called with an await operator. @param {string} href - The base url of the
+// page being navigated to @param {string list} keylist - The list of key UUIDs
+// to be used. Note that order matters when extracting the keys
+async function generateURNFromFledge(href, keylist) {
+  const bidding_token = token();
+  const seller_token = token();
+
+  const full_url = generateURL(href, keylist);
+
+  const interestGroup = {
+    name: 'testAd1',
+    owner: location.origin,
+    biddingLogicUrl: new URL(FLEDGE_BIDDING_URL, location.origin),
+    ads: [{renderUrl: full_url, bid: 1}],
+    userBiddingSignals: {biddingToken: bidding_token},
+  };
+  // Pick an arbitrarily high duration to guarantee that we never leave the
+  // ad interest group while the test runs.
+  navigator.joinAdInterestGroup(interestGroup, /*durationSeconds=*/3000000);
+
+  const auctionConfig = {
+    seller: location.origin,
+    interestGroupBuyers: [location.origin],
+    decisionLogicUrl: new URL(FLEDGE_DECISION_URL, location.origin),
+    auctionSignals: {biddingToken: bidding_token, sellerToken: seller_token},
+  };
+  return navigator.runAdAuction(auctionConfig);
 }
 
 // Extracts a list of UUIDs from the from the current page's URL.
@@ -213,6 +247,8 @@ function attachFencedFrame(url, mode='') {
 function attachIFrame(url) {
   const iframe = document.createElement('iframe');
   iframe.src = url;
+  console.log(document);
+  console.log(document.body);
   document.body.append(iframe);
   return iframe;
 }

@@ -6,12 +6,33 @@
 
 namespace blink {
 
+// static
 FencedFrameConfig* FencedFrameConfig::Create(const String& url) {
   return MakeGarbageCollected<FencedFrameConfig>(url);
 }
 
+// static
+FencedFrameConfig* FencedFrameConfig::From(
+    const FencedFrame::RedactedFencedFrameConfig& config) {
+  return MakeGarbageCollected<FencedFrameConfig>(config);
+}
+
 FencedFrameConfig::FencedFrameConfig(const String& url)
     : url_(url), url_attribute_visibility_(AttributeVisibility::kTransparent) {}
+
+FencedFrameConfig::FencedFrameConfig(
+    const FencedFrame::RedactedFencedFrameConfig& config) {
+  const absl::optional<FencedFrame::RedactedFencedFrameProperty<GURL>>&
+      mapped_url = config.mapped_url();
+  if (!mapped_url) {
+    url_attribute_visibility_ = AttributeVisibility::kNull;
+  } else if (!mapped_url.value().potentially_opaque_value) {
+    url_attribute_visibility_ = AttributeVisibility::kOpaque;
+  } else {
+    url_attribute_visibility_ = AttributeVisibility::kTransparent;
+    url_ = KURL(mapped_url.value().potentially_opaque_value.value());
+  }
+}
 
 V8UnionOpaquePropertyOrUSVString* FencedFrameConfig::url() const {
   return Get<Attribute::kURL>();

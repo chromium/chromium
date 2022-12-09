@@ -307,6 +307,8 @@ struct SameSizeAsDocumentLoader
   AtomicString reduced_accept_language;
   network::mojom::NavigationDeliveryType navigation_delivery_type;
   absl::optional<ViewTransitionState> view_transition_state;
+  absl::optional<FencedFrame::RedactedFencedFrameProperties>
+      fenced_frame_properties;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -575,6 +577,9 @@ DocumentLoader::DocumentLoader(
         service_worker_network_provider_->GetControllerServiceWorkerMode();
   }
 
+  if (params_->fenced_frame_properties)
+    fenced_frame_properties_ = std::move(params_->fenced_frame_properties);
+
   frame_->SetAncestorOrSelfHasCSPEE(params_->ancestor_or_self_has_cspee);
   frame_->Client()->DidCreateDocumentLoader(this);
 }
@@ -661,6 +666,8 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
                                                        std::move(data));
     }
   }
+  if (fenced_frame_properties_)
+    params->fenced_frame_properties = std::move(fenced_frame_properties_);
   params->reduced_accept_language = reduced_accept_language_;
   params->navigation_delivery_type = navigation_delivery_type_;
   return params;

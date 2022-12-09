@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<title>window.fence.getNestedConfigs() test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+
+<body>
+<script>
+promise_test(async (t) => {
+  const key = token();
+  const urn = await generateURNFromFledge(
+      "resources/get-nested-configs-inner.html", [key]);
+  attachFencedFrame(urn, mode='opaque-ads');
+
+  const response = await nextValueFromServer(key);
+  const [length, first_url] = response.split(",");
+
+  assert_equals(length, '20', 'There should be 20 nested configurations.');
+  assert_equals(first_url, 'opaque', 'The first config should be opaque.');
+}, 'getNestedConfigs() created by FLEDGE should return configurations');
+
+promise_test(async (t) => {
+  const key = token();
+  const urn = await generateURN(
+      generateURL("resources/get-nested-configs-inner.html", [key]));
+  attachFencedFrame(urn, mode='opaque-ads');
+
+  const response = await nextValueFromServer(key);
+  const [length, first_url] = response.split(",");
+
+  assert_equals(length, '0', 'There should be 0 nested configurations.');
+}, 'getNestedConfigs() from a non-FLEDGE URN frame should be empty');
+
+promise_test(async (t) => {
+  const key = token();
+  const url = generateURL("resources/get-nested-configs-inner.html", [key]);
+  attachFencedFrame(url, mode='default');
+
+  const response = await nextValueFromServer(key);
+  const [length, first_url] = response.split(",");
+
+  assert_equals(length, '0', 'There should be 0 nested configurations.');
+}, 'getNestedConfigs() from a default mode frame should be empty');
+
+promise_test(async (t) => {
+  const key = token();
+  const urn = await generateURNFromFledge(
+      "resources/get-nested-configs-nested-iframe.html", [key]);
+  attachFencedFrame(urn, mode='opaque-ads');
+
+  const response = await nextValueFromServer(key);
+  const [length, first_url] = response.split(",");
+
+  assert_equals(length, '0', 'There should be 0 nested configurations.');
+}, 'getNestedConfigs() in a nested iframe should be empty');
+
+</script>
+</body>
+</html>

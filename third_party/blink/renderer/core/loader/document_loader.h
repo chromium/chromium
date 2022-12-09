@@ -39,6 +39,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/common/frame/view_transition_state.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
@@ -400,6 +401,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   const mojom::blink::FencedFrameReportingPtr& FencedFrameReporting() const {
     return fenced_frame_reporting_;
+  }
+
+  const absl::optional<FencedFrame::RedactedFencedFrameProperties>&
+  FencedFrameProperties() const {
+    return fenced_frame_properties_;
   }
 
   // Detect if the page is reloaded or after form submitted. This method is
@@ -795,6 +801,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Provides state from the previous Document that will be replaced by this
   // navigation for a ViewTransition.
   absl::optional<ViewTransitionState> view_transition_state_;
+
+  absl::optional<FencedFrame::RedactedFencedFrameProperties>
+      fenced_frame_properties_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

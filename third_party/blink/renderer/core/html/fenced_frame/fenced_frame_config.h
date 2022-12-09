@@ -7,6 +7,7 @@
 
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_fenced_frame_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_opaqueproperty_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_opaqueproperty_usvstring.h"
@@ -48,8 +49,16 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
   // Create an inner config with a given url, the url will be transparent.
   static FencedFrameConfig* Create(const String& url);
 
+  static FencedFrameConfig* From(
+      const FencedFrame::RedactedFencedFrameConfig& config);
+
   // Construct an inner config with a given url, the url will be transparent.
   explicit FencedFrameConfig(const String& url);
+
+  // Construct an inner config given a redacted fenced frame config
+  explicit FencedFrameConfig(
+      const FencedFrame::RedactedFencedFrameConfig& config);
+
   FencedFrameConfig(const FencedFrameConfig&) = delete;
   FencedFrameConfig& operator=(const FencedFrameConfig&) = delete;
 
