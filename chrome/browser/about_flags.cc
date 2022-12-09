@@ -6642,6 +6642,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"cros-labs-float-window", flag_descriptions::kFloatWindow,
      flag_descriptions::kFloatWindowDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::wm::features::kFloatWindow)},
+    {"cros-labs-overview-desk-navigation",
+     flag_descriptions::kOverviewDeskNavigationName,
+     flag_descriptions::kOverviewDeskNavigationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOverviewDeskNavigation)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

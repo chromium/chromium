@@ -57415,6 +57415,7 @@ from previous Chrome versions.
   <int value="-1813088913" label="CCTResizable90MaximumHeight:disabled"/>
   <int value="-1813070975" label="PageContentAnnotations:disabled"/>
   <int value="-1812838429" label="DragWindowToNewDesk:disabled"/>
+  <int value="-1812736745" label="OverviewDeskNavigation:enabled"/>
   <int value="-1812579951" label="ContentSuggestionsCategoryRanker:enabled"/>
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
   <int value="-1811394154" label="disable-webrtc-hw-vp8-encoding"/>
@@ -63613,6 +63614,7 @@ from previous Chrome versions.
   <int value="1831835753" label="MaterialDesignIncognitoNTP:enabled"/>
   <int value="1832552562" label="EnableVirtualKeyboardUkm:enabled"/>
   <int value="1833340282" label="SmartSuggestionForLargeDownloads:enabled"/>
+  <int value="1833845461" label="OverviewDeskNavigation:disabled"/>
   <int value="1834968807" label="OmniboxAutocompleteTitles:enabled"/>
   <int value="1835075399" label="PostQuantumCECPQ2:disabled"/>
   <int value="1835523483" label="OmniboxUIExperimentSwapTitleAndUrl:enabled"/>

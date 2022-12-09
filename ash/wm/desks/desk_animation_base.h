@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "base/callback.h"
@@ -54,6 +55,10 @@ class ASH_EXPORT DeskAnimationBase
   // implementation. Returns false if the animation does not support ending.
   virtual bool EndSwipeAnimation();
 
+  // Returns true if entering/exiting overview during the animation is allowed.
+  virtual bool CanEnterOverview() const;
+  virtual bool CanEndOverview() const;
+
   // RootWindowDeskSwitchAnimator::Delegate:
   void OnStartingDeskScreenshotTaken(int ending_desk_index) override;
   void OnEndingDeskScreenshotTaken() override;
@@ -72,6 +77,12 @@ class ASH_EXPORT DeskAnimationBase
       size_t index) const;
 
  protected:
+  // This will set `is_overview_toggle_allowed_` before and after calling
+  // `ActivateDeskInternal()`, allowing exiting/entering overview during the
+  // animation.
+  void ActivateDeskDuringAnimation(const Desk* desk,
+                                   bool update_window_activation);
+
   // Abstract functions that can be overridden by child classes to do different
   // things when phase (1), and phase (3) completes. Note that
   // `OnDeskSwitchAnimationFinishedInternal()` will be called before the desks
@@ -119,6 +130,14 @@ class ASH_EXPORT DeskAnimationBase
   // screenshot taken. This will only change for an activation animation, not a
   // remove animation.
   int visible_desk_changes_ = 0;
+
+  // Used for allowing us to enter or exit overview during a desk animation. If
+  // there is an ongoing desk animation, we want to prevent unwanted exit or
+  // enter overview toggling so that we don't end up in a strange or unexpected
+  // state. Toggling overview is only allowed when we are doing an internal desk
+  // activation, where we manually set the overview states of the old active
+  // desk and the new active desk.
+  bool is_overview_toggle_allowed_ = false;
 
   // Used for the Ash.Desks.AnimationLatency.* histograms. Null if no animation
   // is being prepared. In a continuous desk animation, the latency is reported

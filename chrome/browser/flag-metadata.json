@@ -1146,6 +1146,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "cros-labs-overview-desk-navigation",
+    "owners": [ "richui", "janetmac" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "cros-labs-window-cycle-shortcut",
     "owners": [ "andp", "benbecker", "nupurjain" ],
     "expiry_milestone": 120

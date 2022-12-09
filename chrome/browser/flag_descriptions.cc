@@ -2232,6 +2232,12 @@ const char kOverviewButtonName[] = "Overview button at the status area";
 const char kOverviewButtonDescription[] =
     "If enabled, always show the overview button at the status area.";
 
+const char kOverviewDeskNavigationName[] =
+    "CrOS Labs: Overview Desk Navigation";
+const char kOverviewDeskNavigationDescription[] =
+    "Stay in overview when navigating between desks using a swipe gesture or "
+    "keyboard shortcut.";
+
 const char kPageContentAnnotationsName[] = "Page content annotations";
 const char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";

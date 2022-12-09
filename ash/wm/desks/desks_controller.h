@@ -347,6 +347,12 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // one is active. Returns true if the activation was successful.
   bool MaybeActivateDeskRemovalUndoButtonOnHighlightedToast();
 
+  // Returns true if it's possible to enter or exit overview mode in the current
+  // configuration. This can be false at certain times, such as when there is an
+  // active desk animation.
+  bool CanEnterOverview() const;
+  bool CanEndOverview() const;
+
   // ::wm::ActivationChangeObserver:
   void OnWindowActivating(ActivationReason reason,
                           aura::Window* gaining_active,
@@ -384,10 +390,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
 
   bool HasDeskWithName(const std::u16string& desk_name) const;
 
-  // Activates the given |desk| and deactivates the currently active one. |desk|
-  // has to be an existing desk. If |update_window_activation| is true,
-  // the active desk on the deactivated desk will be deactivated, and the most-
-  // recently used window on the newly-activated desk will be deactivated. This
+  // Activates the given `desk` and deactivates the currently active one. `desk`
+  // has to be an existing desk. If `update_window_activation` is true, the
+  // active window on the deactivated desk will be deactivated, and the most-
+  // recently used window on the newly-activated desk will be activated. This
   // parameter is almost always true except when the active desk is being
   // removed while in overview mode. In that case, windows from the active desk
   // will move to another desk and remain in the overview grid, and no

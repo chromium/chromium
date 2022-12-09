@@ -20,7 +20,8 @@ enum class OverviewStartAction {
   k3FingerVerticalScroll,
   kDevTools,
   kTests,
-  kMaxValue = kTests,
+  kOverviewDeskSwitch,
+  kMaxValue = kOverviewDeskSwitch,
 };
 void RecordOverviewStartAction(OverviewStartAction type);
 

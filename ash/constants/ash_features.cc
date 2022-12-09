@@ -1553,6 +1553,12 @@ BASE_FEATURE(kOverviewButton,
              "OverviewButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables staying in overview when navigating between desks using a swipe
+// gesture or keyboard shortcut.
+BASE_FEATURE(kOverviewDeskNavigation,
+             "OverviewDeskNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables a notification warning users that their Thunderbolt device is not
 // supported on their CrOS device.
 BASE_FEATURE(kPcieBillboardNotification,
@@ -2880,6 +2886,10 @@ bool IsOsSettingsAppBadgingToggleEnabled() {
 
 bool IsOsSettingsSearchFeedbackEnabled() {
   return base::FeatureList::IsEnabled(kOsSettingsSearchFeedback);
+}
+
+bool IsOverviewDeskNavigationEnabled() {
+  return base::FeatureList::IsEnabled(kOverviewDeskNavigation);
 }
 
 bool IsPcieBillboardNotificationEnabled() {

@@ -1236,6 +1236,9 @@ extern const char kOsSettingsAppNotificationsPageDescription[];
 extern const char kOverviewButtonName[];
 extern const char kOverviewButtonDescription[];
 
+extern const char kOverviewDeskNavigationName[];
+extern const char kOverviewDeskNavigationDescription[];
+
 extern const char kOverlayScrollbarsName[];
 extern const char kOverlayScrollbarsDescription[];
 

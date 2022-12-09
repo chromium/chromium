@@ -34,6 +34,7 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
   bool Replace(bool moving_left, DesksSwitchSource source) override;
   bool UpdateSwipeAnimation(float scroll_delta_x) override;
   bool EndSwipeAnimation() override;
+  bool CanEnterOverview() const override;
   void OnStartingDeskScreenshotTakenInternal(int ending_desk_index) override;
   void OnDeskSwitchAnimationFinishedInternal() override;
   LatencyReportCallback GetLatencyReportCallback() const override;
@@ -45,7 +46,7 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
 
   // Prepares the desk associated with |index| for taking a screenshot. Exits
   // overview and splitview if necessary and then activates the desk. Restores
-  // splitview if necessary after activating the desk.
+  // splitview or overview if necessary after activating the desk.
   void PrepareDeskForScreenshot(int index);
 
   // The switch source that requested this animation.

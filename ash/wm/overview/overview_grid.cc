@@ -1934,6 +1934,10 @@ void OverviewGrid::UpdateSaveDeskButtons() {
                                 weak_ptr_factory_.GetWeakPtr())));
   }
 
+  // If a desk animation is in progress, we don't want to animate
+  // `save_desk_button_container_widget_`.
+  const bool in_desk_animation = DesksController::Get()->animation();
+
   // There may be an existing animation in progress triggered by
   // `PerformFadeOutLayer()` above, which animates a widget to 0.f before
   // calling `OnSaveDeskButtonContainerFadedOut()` to hide the widget on
@@ -1946,7 +1950,7 @@ void OverviewGrid::UpdateSaveDeskButtons() {
         ->StopAnimating();
     save_desk_button_container_widget_->Show();
     PerformFadeInLayer(save_desk_button_container_widget_->GetLayer(),
-                       /*animate=*/true);
+                       /*animate=*/!in_desk_animation);
   }
 
   // Enable/disable button and update tooltip.
@@ -1983,8 +1987,9 @@ void OverviewGrid::UpdateSaveDeskButtons() {
   // with the first overview item, which has an invisible border of
   // `kWindowMargin` thickness.
   ScopedOverviewAnimationSettings settings(
-      visibility_changed ? OVERVIEW_ANIMATION_NONE
-                         : OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW,
+      visibility_changed || in_desk_animation
+          ? OVERVIEW_ANIMATION_NONE
+          : OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW,
       save_desk_button_container_widget_->GetNativeWindow());
   gfx::Point available_origin =
       gfx::ToRoundedPoint(first_overview_item_bounds.origin()) +

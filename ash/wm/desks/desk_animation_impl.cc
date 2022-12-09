@@ -250,6 +250,13 @@ bool DeskActivationAnimation::EndSwipeAnimation() {
   return true;
 }
 
+bool DeskActivationAnimation::CanEnterOverview() const {
+  return DeskAnimationBase::CanEnterOverview() &&
+         (switch_source_ == DesksSwitchSource::kDeskSwitchShortcut ||
+          switch_source_ == DesksSwitchSource::kDeskSwitchTouchpad ||
+          switch_source_ == DesksSwitchSource::kIndexedDeskSwitchShortcut);
+}
+
 void DeskActivationAnimation::OnStartingDeskScreenshotTakenInternal(
     int ending_desk_index) {
   DCHECK_EQ(ending_desk_index_, ending_desk_index);
@@ -260,9 +267,8 @@ void DeskActivationAnimation::OnDeskSwitchAnimationFinishedInternal() {
   // During a chained animation we may not switch desks if a replaced target
   // desk does not require a new screenshot. If that is the case, activate the
   // proper desk here.
-  controller_->ActivateDeskInternal(
-      controller_->desks()[ending_desk_index_].get(),
-      update_window_activation_);
+  ActivateDeskDuringAnimation(controller_->desks()[ending_desk_index_].get(),
+                              update_window_activation_);
 }
 
 DeskAnimationBase::LatencyReportCallback
@@ -284,36 +290,13 @@ void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
   for (auto* root_window_controller : Shell::GetAllRootWindowControllers())
     root_window_controller->HideContextMenuNoAnimation();
 
-  // The order here matters. Overview must end before ending tablet split view
-  // before switching desks. (If clamshell split view is active on one or more
-  // displays, then it simply will end when we end overview.) That's because
-  // we don't want |TabletModeWindowManager| maximizing all windows because we
-  // cleared the snapped ones in |SplitViewController| first. See
-  // |TabletModeWindowManager::OnOverviewModeEndingAnimationComplete|.
-  // See also test coverage for this case in
-  // `TabletModeDesksTest.SnappedStateRetainedOnSwitchingDesksFromOverview`.
-  const bool in_overview =
-      Shell::Get()->overview_controller()->InOverviewSession();
-  if (in_overview) {
-    // Exit overview mode immediately without any animations before taking the
-    // ending desk screenshot. This makes sure that the ending desk
-    // screenshot will only show the windows in that desk, not overview stuff.
-    Shell::Get()->overview_controller()->EndOverview(
-        OverviewEndAction::kDeskActivation,
-        OverviewEnterExitType::kImmediateExit);
-  }
-  SplitViewController* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
-  split_view_controller->EndSplitView(
-      SplitViewController::EndReason::kDesksChange);
-
   // Check that ending_desk_index_ is in range.
   // See crbug.com/1346900.
   const auto& desks = controller_->desks();
   CHECK_LT(static_cast<size_t>(ending_desk_index_), desks.size());
 
-  controller_->ActivateDeskInternal(desks[ending_desk_index_].get(),
-                                    update_window_activation_);
+  ActivateDeskDuringAnimation(desks[ending_desk_index_].get(),
+                              update_window_activation_);
 
   MaybeRestoreSplitView(/*refresh_snapped_windows=*/true);
 }
@@ -368,9 +351,8 @@ void DeskRemovalAnimation::OnStartingDeskScreenshotTakenInternal(
   // will be activated after the active desk `desk_to_remove_index_` is
   // removed). This means that phase (2) will take a screenshot of that desk
   // before we move the windows of `desk_to_remove_index_` to that target desk.
-  controller_->ActivateDeskInternal(
-      controller_->desks()[ending_desk_index_].get(),
-      /*update_window_activation=*/false);
+  ActivateDeskDuringAnimation(controller_->desks()[ending_desk_index_].get(),
+                              /*update_window_activation=*/false);
 }
 
 void DeskRemovalAnimation::OnDeskSwitchAnimationFinishedInternal() {
