@@ -21,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/search/ntp_features.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_registrar.h"
@@ -160,6 +161,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
     enabled_features.push_back(features::kChromeWhatsNewUI);
     enabled_features.push_back(features::kSidePanelJourneys);
     enabled_features.push_back(features::kSupportTool);
+    enabled_features.push_back(ntp_features::kCustomizeChromeSidePanel);
     enabled_features.push_back(
         password_manager::features::kPasswordManagerRedesign);
     enabled_features.push_back(features::kReadAnything);
@@ -277,6 +279,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://connection-monitoring-detected",
     "chrome://crashes",
     "chrome://credits",
+    "chrome://customize-chrome-side-panel.top-chrome",
     // TODO(crbug/1396866): Enable when bug is fixed.
     // "chrome://customize-chrome-side-panel.top-chrome",
     "chrome://device-log",
