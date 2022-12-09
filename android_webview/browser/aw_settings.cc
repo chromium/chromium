@@ -347,9 +347,10 @@ void AwSettings::UpdateMixedContentModeLocked(
       Java_AwSettings_getMixedContentMode(env, obj));
 }
 
-void AwSettings::RenderViewHostChanged(content::RenderViewHost* old_host,
-                                       content::RenderViewHost* new_host) {
-  DCHECK_EQ(new_host, web_contents()->GetRenderViewHost());
+void AwSettings::RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                                        content::RenderFrameHost* new_host) {
+  if (!new_host->IsInPrimaryMainFrame())
+    return;
 
   UpdateEverything();
 }
