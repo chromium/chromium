@@ -4,6 +4,8 @@
 
 #include "net/cert/cert_verify_proc_mac.h"
 
+#include <Security/Security.h>
+
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -15,7 +17,6 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
-#include "net/cert/test_keychain_search_list_mac.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -32,62 +33,6 @@ using net::test::IsOk;
 namespace net {
 
 namespace {
-
-// Test that if a keychain is present which trusts a less-desirable root (ex,
-// one using SHA1), that the keychain reordering hack will cause the better
-// root in the System Roots to be used instead.
-// TODO(crbug.com/867174): Re-enable this test.
-TEST(CertVerifyProcMacTest, DISABLED_MacKeychainReordering) {
-  // Note: target cert expires Dec 30 23:59:59 2019 GMT
-  scoped_refptr<X509Certificate> cert = CreateCertificateChainFromFile(
-      GetTestCertsDirectory(), "gms.hongleong.com.my-verisign-chain.pem",
-      X509Certificate::FORMAT_AUTO);
-  ASSERT_TRUE(cert);
-
-// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
-// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
-// warnings are disabled in the meanwhile.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
-  // Create a test keychain search list that will Always Trust the SHA1
-  // cross-signed VeriSign Class 3 Public Primary Certification Authority - G5
-  std::unique_ptr<TestKeychainSearchList> test_keychain_search_list(
-      TestKeychainSearchList::Create());
-  ASSERT_TRUE(test_keychain_search_list);
-
-  base::FilePath keychain_path(GetTestCertsDirectory().AppendASCII(
-      "verisign_class3_g5_crosssigned-trusted.keychain"));
-  // SecKeychainOpen does not fail if the file doesn't exist, so assert it here
-  // for easier debugging.
-  ASSERT_TRUE(base::PathExists(keychain_path));
-  SecKeychainRef keychain;
-  OSStatus status =
-      SecKeychainOpen(keychain_path.MaybeAsASCII().c_str(), &keychain);
-  ASSERT_EQ(errSecSuccess, status);
-  ASSERT_TRUE(keychain);
-  base::ScopedCFTypeRef<SecKeychainRef> scoped_keychain(keychain);
-  test_keychain_search_list->AddKeychain(keychain);
-
-#pragma clang diagnostic pop
-
-  int flags = 0;
-  CertVerifyResult verify_result;
-  scoped_refptr<CertVerifyProc> verify_proc =
-      base::MakeRefCounted<CertVerifyProcMac>();
-  int error = verify_proc->Verify(
-      cert.get(), "gms.hongleong.com.my", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
-      CertificateList(), &verify_result, NetLogWithSource());
-
-  ASSERT_EQ(OK, error);
-  EXPECT_FALSE(verify_result.has_sha1);
-  ASSERT_TRUE(verify_result.verified_cert.get());
-
-  const auto& verified_intermediates =
-      verify_result.verified_cert->intermediate_buffers();
-  ASSERT_EQ(2U, verified_intermediates.size());
-}
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
 // Removal of its use is tracked in https://crbug.com/1348251 but deprecation
