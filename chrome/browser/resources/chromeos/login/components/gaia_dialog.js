@@ -166,7 +166,7 @@ class GaiaDialog extends GaiaDialogBase {
        */
       primaryActionButtonEnabled_: {
         type: Boolean,
-        value: true,
+        value: false,
       },
 
       /**
@@ -184,7 +184,7 @@ class GaiaDialog extends GaiaDialogBase {
        */
       secondaryActionButtonEnabled_: {
         type: Boolean,
-        value: true,
+        value: false,
       },
 
       /**
@@ -216,13 +216,6 @@ class GaiaDialog extends GaiaDialogBase {
 
   constructor() {
     super();
-    /**
-     * Emulate click on the primary action button when it is visible and
-     * enabled.
-     * @type {boolean}
-     * @private
-     */
-    this.clickPrimaryActionButtonForTesting_ = false;
     /**
      * Emulate click on the primary action button when it is visible and
      * enabled.

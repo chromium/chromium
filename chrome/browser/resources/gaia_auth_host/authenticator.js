@@ -555,6 +555,7 @@ export class Authenticator extends EventTarget {
     this.maybeClearGaiaTimeout_();
     this.syncTrustedVaultKeys_ = null;
     this.closeViewReceived_ = false;
+    this.disableAllActions_();
   }
 
   /**
@@ -1496,6 +1497,15 @@ export class Authenticator extends EventTarget {
     }
     window.clearTimeout(this.gaiaDoneTimer_);
     this.gaiaDoneTimer_ = null;
+  }
+
+  /**
+   * Disables all navigation actions until explicitly re-enabled by GAIA.
+   * @private
+   */
+  disableAllActions_() {
+    this.dispatchEvent(
+        new CustomEvent('setAllActionsEnabled', {detail: false}));
   }
 
   /**
