@@ -31,7 +31,7 @@ class IOBuffer;
 namespace ash {
 
 namespace file_system_manager {
-class RequestManager;
+class OperationRequestManager;
 }  // namespace file_system_manager
 
 namespace smb_client {
@@ -140,7 +140,7 @@ class SmbFileSystem : public file_system_provider::ProvidedFileSystemInterface,
   const file_system_provider::ProvidedFileSystemInfo& GetFileSystemInfo()
       const override;
 
-  file_system_provider::RequestManager* GetRequestManager() override;
+  file_system_provider::OperationRequestManager* GetRequestManager() override;
 
   file_system_provider::Watchers* GetWatchers() override;
 

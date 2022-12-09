@@ -35,7 +35,7 @@ namespace ash {
 namespace file_system_provider {
 
 class ProvidedFileSystemInfo;
-class RequestManager;
+class OperationRequestManager;
 
 // Represents metadata for either a file or a directory.
 struct EntryMetadata {
@@ -269,7 +269,7 @@ class ProvidedFileSystemInterface {
   virtual const OpenedFiles& GetOpenedFiles() const = 0;
 
   // Returns a request manager for the file system.
-  virtual RequestManager* GetRequestManager() = 0;
+  virtual OperationRequestManager* GetRequestManager() = 0;
 
   // Adds an observer on the file system.
   virtual void AddObserver(ProvidedFileSystemObserver* observer) = 0;

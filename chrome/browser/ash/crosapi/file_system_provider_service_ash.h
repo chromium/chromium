@@ -56,6 +56,10 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                          int64_t request_id,
                          base::Value::List args,
                          OperationFinishedCallback callback) override;
+  void MountFinished(const std::string& extension_id,
+                     int64_t request_id,
+                     base::Value::List args,
+                     MountFinishedCallback callback) override;
   void ExtensionLoaded(bool configurable,
                        bool watchable,
                        bool multiple_mounts,
@@ -92,6 +96,11 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                                     base::Value::List args,
                                     OperationFinishedCallback callback,
                                     Profile* profile);
+  void MountFinishedWithProfile(const std::string& extension_id,
+                                int64_t request_id,
+                                base::Value::List args,
+                                MountFinishedCallback callback,
+                                Profile* profile);
 
   // Exposed so that ash clients can work with Lacros file system providers.
   mojo::RemoteSet<mojom::FileSystemProvider>& remotes() { return remotes_; }

@@ -474,7 +474,7 @@ const ProvidedFileSystemInfo& FakeProvidedFileSystem::GetFileSystemInfo()
   return file_system_info_;
 }
 
-RequestManager* FakeProvidedFileSystem::GetRequestManager() {
+OperationRequestManager* FakeProvidedFileSystem::GetRequestManager() {
   NOTREACHED();
   return nullptr;
 }

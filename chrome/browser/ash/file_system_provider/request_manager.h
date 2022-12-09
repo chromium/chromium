@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -27,6 +26,7 @@ namespace file_system_provider {
 
 // Request type, passed to RequestManager::CreateRequest. For logging purposes.
 enum RequestType {
+  REQUEST_MOUNT,
   REQUEST_UNMOUNT,
   GET_METADATA,
   GET_ACTIONS,
@@ -106,11 +106,8 @@ class RequestManager {
     virtual void OnRequestTimeouted(int request_id) = 0;
   };
 
-  // Creates a request manager for |profile| and |provider_id|. Note, that
-  // there may be multiple instances of request managers per provider.
   RequestManager(Profile* profile,
-                 const std::string& provider_id,
-                 NotificationManagerInterface* notification_manager);
+                 raw_ptr<NotificationManagerInterface> notification_manager);
 
   RequestManager(const RequestManager&) = delete;
   RequestManager& operator=(const RequestManager&) = delete;
@@ -152,7 +149,7 @@ class RequestManager {
   // Destroys the request with the passed |request_id|.
   void DestroyRequest(int request_id);
 
- private:
+ protected:
   struct Request {
     Request();
 
@@ -168,8 +165,12 @@ class RequestManager {
     std::unique_ptr<HandlerInterface> handler;
   };
 
+  RequestManager(Profile* profile,
+                 raw_ptr<NotificationManagerInterface> notification_manager,
+                 base::TimeDelta timeout);
+
   // Called when a request with |request_id| timeouts.
-  void OnRequestTimeout(int request_id);
+  virtual void OnRequestTimeout(int request_id);
 
   // Called when an user either aborts the unresponsive request or lets it
   // continue.
@@ -180,12 +181,7 @@ class RequestManager {
   // Resets the timeout timer for the specified request.
   void ResetTimer(int request_id);
 
-  // Checks whether there is an ongoing interaction between the provider
-  // and user.
-  bool IsInteractingWithUser() const;
-
   raw_ptr<Profile> profile_;  // Not owned.
-  std::string provider_id_;
   std::map<int, std::unique_ptr<Request>> requests_;
   raw_ptr<NotificationManagerInterface> notification_manager_;  // Not owned.
   int next_id_;

@@ -7,11 +7,14 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
-#include "chrome/browser/ash/file_system_provider/request_manager.h"
+#include "chrome/browser/ash/file_system_provider/provider_interface.h"
+#include "chrome/browser/ash/file_system_provider/request_value.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "extensions/common/extension_id.h"
 
 using ash::file_system_provider::MountOptions;
 using ash::file_system_provider::OpenedFiles;
@@ -28,10 +31,32 @@ namespace {
 
 constexpr char kDeserializationError[] = "deserialization error";
 
-// Either returns a valid request manager or else an error string.
+// Either returns a valid request manager for provider-level requests, or else
+// an error string.
 base::expected<ash::file_system_provider::RequestManager*, std::string>
-GetRequestManager(Profile* profile,
-                  const mojom::FileSystemIdPtr& file_system_id) {
+GetProviderRequestManager(Profile* profile,
+                          extensions::ExtensionId extension_id) {
+  Service* service = Service::Get(profile);
+  if (!service) {
+    return base::unexpected("File system provider service not found.");
+  }
+
+  ash::file_system_provider::ProviderInterface* provider =
+      service->GetProvider(ProviderId::CreateFromExtensionId(extension_id));
+  if (!provider) {
+    return base::unexpected(
+        extensions::FileErrorToString(base::File::FILE_ERROR_NOT_FOUND));
+  }
+
+  return provider->GetRequestManager();
+}
+
+// Either returns a valid request manager for file system level requests, or
+// else an error string.
+base::expected<ash::file_system_provider::OperationRequestManager*, std::string>
+GetProvidedFileSystemRequestManager(
+    Profile* profile,
+    const mojom::FileSystemIdPtr& file_system_id) {
   Service* service = Service::Get(profile);
   if (!service) {
     return base::unexpected("File system provider service not found.");
@@ -55,7 +80,7 @@ std::string ForwardOperationResponse(mojom::FileSystemIdPtr file_system_id,
                                      std::unique_ptr<RequestValue> value,
                                      bool has_more,
                                      Profile* profile) {
-  auto manager = GetRequestManager(profile, file_system_id);
+  auto manager = GetProvidedFileSystemRequestManager(profile, file_system_id);
   if (!manager.has_value())
     return manager.error();
 
@@ -74,7 +99,7 @@ std::string ForwardOperationFailure(mojom::FileSystemIdPtr file_system_id,
                                     std::unique_ptr<RequestValue> value,
                                     base::File::Error error,
                                     Profile* profile) {
-  auto manager = GetRequestManager(profile, file_system_id);
+  auto manager = GetProvidedFileSystemRequestManager(profile, file_system_id);
   if (!manager.has_value())
     return manager.error();
 
@@ -261,10 +286,19 @@ void FileSystemProviderServiceAsh::OperationFinished(
     int64_t request_id,
     base::Value::List args,
     OperationFinishedCallback callback) {
-  OperationFinishedWithProfile(
-      response, std::move(file_system_id), request_id,
-      std::move(base::Value(std::move(args)).GetList()), std::move(callback),
-      ProfileManager::GetPrimaryUserProfile());
+  OperationFinishedWithProfile(response, std::move(file_system_id), request_id,
+                               std::move(args), std::move(callback),
+                               ProfileManager::GetPrimaryUserProfile());
+}
+
+void FileSystemProviderServiceAsh::MountFinished(
+    const std::string& extension_id,
+    int64_t request_id,
+    base::Value::List args,
+    MountFinishedCallback callback) {
+  MountFinishedWithProfile(extension_id, request_id, std::move(args),
+                           std::move(callback),
+                           ProfileManager::GetPrimaryUserProfile());
 }
 
 void FileSystemProviderServiceAsh::ExtensionLoaded(
@@ -527,6 +561,42 @@ void FileSystemProviderServiceAsh::OperationFinishedWithProfile(
     }
   }
   std::move(callback).Run(std::move(error));
+}
+
+void FileSystemProviderServiceAsh::MountFinishedWithProfile(
+    const std::string& extension_id,
+    int64_t request_id,
+    base::Value::List args,
+    MountFinishedCallback callback,
+    Profile* profile) {
+  auto manager = GetProviderRequestManager(profile, extension_id);
+  if (!manager.has_value()) {
+    std::move(callback).Run(manager.error());
+    return;
+  }
+
+  using extensions::api::file_system_provider_internal::RespondToMountRequest::
+      Params;
+  std::unique_ptr<Params> params = Params::Create(std::move(args));
+  if (!params) {
+    std::move(callback).Run(kDeserializationError);
+    return;
+  }
+  base::File::Error mount_error =
+      extensions::ProviderErrorToFileError(params->error);
+  base::File::Error result =
+      mount_error == base::File::FILE_OK
+          ? manager.value()->FulfillRequest(
+                request_id, /*response=*/std::make_unique<RequestValue>(),
+                /*has_more=*/false)
+          : manager.value()->RejectRequest(
+                request_id, /*response=*/std::make_unique<RequestValue>(),
+                mount_error);
+
+  std::string error_str;
+  if (result != base::File::FILE_OK)
+    error_str = extensions::FileErrorToString(result);
+  std::move(callback).Run(error_str);
 }
 
 }  // namespace crosapi

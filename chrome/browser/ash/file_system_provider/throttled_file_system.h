@@ -33,7 +33,7 @@ namespace ash {
 namespace file_system_provider {
 
 class Queue;
-class RequestManager;
+class OperationRequestManager;
 
 // Decorates ProvidedFileSystemInterface with throttling capabilities.
 class ThrottledFileSystem : public ProvidedFileSystemInterface {
@@ -113,7 +113,7 @@ class ThrottledFileSystem : public ProvidedFileSystemInterface {
                      bool recursive,
                      storage::AsyncFileUtil::StatusCallback callback) override;
   const ProvidedFileSystemInfo& GetFileSystemInfo() const override;
-  RequestManager* GetRequestManager() override;
+  OperationRequestManager* GetRequestManager() override;
   Watchers* GetWatchers() override;
   const OpenedFiles& GetOpenedFiles() const override;
   void AddObserver(ProvidedFileSystemObserver* observer) override;

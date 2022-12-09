@@ -61,7 +61,8 @@ class ExtensionProvider : public ProviderInterface,
   const ProviderId& GetId() const override;
   const std::string& GetName() const override;
   const IconSet& GetIconSet() const override;
-  bool RequestMount(Profile* profile) override;
+  RequestManager* GetRequestManager() override;
+  bool RequestMount(Profile* profile, RequestMountCallback callback) override;
 
  private:
   // This method is only partially functional since non-app extensions are not
@@ -77,6 +78,7 @@ class ExtensionProvider : public ProviderInterface,
   Capabilities capabilities_;
   std::string name_;
   IconSet icon_set_;
+  std::unique_ptr<RequestManager> request_manager_;
 };
 
 }  // namespace file_system_provider

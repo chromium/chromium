@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/files/file.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -106,7 +107,8 @@ class Service : public KeyedService,
   // Requests mounting a new file system by the providing extension with
   // |provider_id|. Returns false if the request could not been created, true
   // otherwise.
-  bool RequestMount(const ProviderId& provider_id);
+  bool RequestMount(const ProviderId& provider_id,
+                    RequestMountCallback callback);
 
   // Returns a list of information of all currently provided file systems. All
   // items are copied.
@@ -116,6 +118,10 @@ class Service : public KeyedService,
   // |provider_id|. All items are copied.
   std::vector<ProvidedFileSystemInfo> GetProvidedFileSystemInfoList(
       const ProviderId& provider_id);
+
+  // Returns a file system provider for the passed |provider_id|. If not found
+  // then returns nullptr.
+  ProviderInterface* GetProvider(const ProviderId& provider_id);
 
   // Returns an immutable map of all registered providers.
   const ProviderMap& GetProviders() const;
@@ -197,10 +203,6 @@ class Service : public KeyedService,
   // reason is UNMOUNT_REASON_USER then the file systems will not be remembered
   // for automagical remount in the future.
   void UnmountFileSystems(const ProviderId& provider_id, UnmountReason reason);
-
-  // Returns a file system provider for the passed |provider_id|. If not found
-  // then returns nullptr.
-  ProviderInterface* GetProvider(const ProviderId& provider_id);
 
   raw_ptr<Profile> profile_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;  // Not owned.

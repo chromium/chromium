@@ -122,8 +122,7 @@ enum FSPOperationResponse {
 // Implemented by Lacros.
 [Stable, Uuid="8cbcf151-c189-4fe9-90ff-892c7f5637a9"]
 interface FileSystemProvider {
-  // Allows Ash file system to forward an operation to Lacros extension
-  // providers.
+  // Allows Ash to forward requests to Lacros extension providers.
   // We use mojo_base.mojom.Value as the type because:
   //   * The extension API is stable.
   //   * Both the supplier and consumer of this information uses a type
@@ -208,6 +207,16 @@ interface FileSystemProviderService {
   [MinVersion=3]
   OperationFinished@9(FSPOperationResponse response,
       FileSystemId file_system_id, int64 request_id,
+      mojo_base.mojom.ListValue args) => (string error);
+
+  // The following function represents responses from the Extension after
+  // handling a mount request. As opposed to `OperationFinished`, these
+  // requests are handled per-provider instead of per provided file system
+  // (no `FileSystemId).
+  // |request_id| corresponds to ids passed in via methods on interface
+  // FileSystemProvider.
+  [MinVersion=4]
+  MountFinished@10(string extension_id, int64 request_id,
       mojo_base.mojom.ListValue args) => (string error);
 
   // Called by Lacros when a filesystem providing extension is loaded.

@@ -7,7 +7,6 @@
 
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/extension_function.h"
@@ -32,11 +31,16 @@ class FileSystemProviderBase : public ExtensionFunction {
   void RespondWithError(const std::string& error);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Whether ash supports the FileSystemProviderService interface.
-  bool InterfaceAvailable();
+  // Whether ash supports the FileSystemProviderService interface, and in
+  // particular its `MountFinished` method..
+  bool MountFinishedInterfaceAvailable();
+
+  // Whether ash supports the FileSystemProviderService interface, and in
+  // particular its `OperationFinished` method..
+  bool OperationFinishedInterfaceAvailable();
 
   // A helper function that returns a reference to a functional remote. Should
-  // only be called if InterfaceAvailable is true.
+  // only be called if the needed interface method is supported.
   mojo::Remote<crosapi::mojom::FileSystemProviderService>& GetRemote();
 #endif
 };
@@ -112,6 +116,10 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
     *request_id = params->request_id;
   }
 
+  // Forwards the result of the mount request to the file system provider
+  // service. Returns false if the forwarding failed.
+  bool ForwardMountResult(int64_t request_id, base::Value::List& args);
+
   // Forwards the result of the operation to the file system provider service.
   // Returns false if the forwarding failed.
   template <typename Params>
@@ -133,7 +141,7 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
             Profile::FromBrowserContext(browser_context()));
     return true;
 #else
-    if (!InterfaceAvailable())
+    if (!OperationFinishedInterfaceAvailable())
       return false;
     GetRemote()->OperationFinished(response, std::move(file_system_id),
                                    request_id, std::move(args),
@@ -141,6 +149,17 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
     return true;
 #endif
   }
+};
+
+class FileSystemProviderInternalRespondToMountRequestFunction
+    : public FileSystemProviderInternal {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileSystemProviderInternal.respondToMountRequest",
+                             FILESYSTEMPROVIDERINTERNAL_RESPONDTOMOUNTREQUEST)
+
+ protected:
+  ~FileSystemProviderInternalRespondToMountRequestFunction() override = default;
+  ResponseAction Run() override;
 };
 
 class FileSystemProviderInternalUnmountRequestedSuccessFunction

@@ -36,7 +36,7 @@ class IOBuffer;
 
 namespace ash::file_system_provider {
 
-class RequestManager;
+class OperationRequestManager;
 
 // Path of a sample fake file, which is added to the fake file system by
 // default.
@@ -156,7 +156,7 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
                      bool recursive,
                      storage::AsyncFileUtil::StatusCallback callback) override;
   const ProvidedFileSystemInfo& GetFileSystemInfo() const override;
-  RequestManager* GetRequestManager() override;
+  OperationRequestManager* GetRequestManager() override;
   Watchers* GetWatchers() override;
   const OpenedFiles& GetOpenedFiles() const override;
   void AddObserver(ProvidedFileSystemObserver* observer) override;

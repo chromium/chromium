@@ -173,7 +173,7 @@ const ProvidedFileSystemInfo& ThrottledFileSystem::GetFileSystemInfo() const {
   return file_system_->GetFileSystemInfo();
 }
 
-RequestManager* ThrottledFileSystem::GetRequestManager() {
+OperationRequestManager* ThrottledFileSystem::GetRequestManager() {
   return file_system_->GetRequestManager();
 }
 

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
+#include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/ash/smb_client/smb_file_system.h"
 
 class Profile;
@@ -35,7 +36,10 @@ class SmbProvider : public file_system_provider::ProviderInterface {
   const file_system_provider::ProviderId& GetId() const override;
   const std::string& GetName() const override;
   const file_system_provider::IconSet& GetIconSet() const override;
-  bool RequestMount(Profile* profile) override;
+  file_system_provider::RequestManager* GetRequestManager() override;
+  bool RequestMount(
+      Profile* profile,
+      ash::file_system_provider::RequestMountCallback callback) override;
 
  private:
   file_system_provider::ProviderId provider_id_;

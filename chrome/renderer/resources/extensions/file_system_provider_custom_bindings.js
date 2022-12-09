@@ -357,19 +357,18 @@ bindingUtil.registerEventArgumentMassager(
     massageArgumentsDefault);
 
 bindingUtil.registerEventArgumentMassager(
-    'fileSystemProvider.onMountRequested',
-    function(args, dispatch) {
+    'fileSystemProvider.onMountRequested', function(args, dispatch) {
+      var executionStart = Date.now();
+      var requestId = args[0];
       var onSuccessCallback = function() {
-        // chrome.fileManagerPrivate.addProvidedFileSystem doesn't accept
-        // any callbacks, so ignore the callback calls here.
-        // The callbacks exist for consistency with other on*Requested events.
+        fileSystemProviderInternal.respondToMountRequest(
+            requestId, 'OK', Date.now() - executionStart);
       };
       var onErrorCallback = function(error) {
         if (!verifyErrorForFailure(error))
           return;
-        // chrome.fileManagerPrivate.addProvidedFileSystem doesn't accept
-        // any callbacks, so ignore the callback calls here.
-        // The callbacks exist for consistency with other on*Requested events.
+        fileSystemProviderInternal.respondToMountRequest(
+            requestId, error, Date.now() - executionStart);
       }
       dispatch([onSuccessCallback, onErrorCallback]);
     });

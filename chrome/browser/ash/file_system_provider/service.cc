@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
@@ -258,11 +259,16 @@ bool Service::RequestUnmount(const ProviderId& provider_id,
   return true;
 }
 
-bool Service::RequestMount(const ProviderId& provider_id) {
+bool Service::RequestMount(const ProviderId& provider_id,
+                           RequestMountCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   ProviderInterface* const provider = GetProvider(provider_id);
-  return provider->RequestMount(profile_);
+  if (!provider) {
+    std::move(callback).Run(base::File::FILE_ERROR_FAILED);
+    return false;
+  }
+  return provider->RequestMount(profile_, std::move(callback));
 }
 
 std::vector<ProvidedFileSystemInfo> Service::GetProvidedFileSystemInfoList() {

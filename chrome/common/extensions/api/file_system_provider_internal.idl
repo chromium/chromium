@@ -8,6 +8,12 @@
  nodoc]
 namespace fileSystemProviderInternal {
   interface Functions {
+    // Internal. Callback for mount requests.
+    static void respondToMountRequest(
+        long requestId,
+        fileSystemProvider.ProviderError error,
+        long executionTime);
+
     // Internal. Success callback of the <code>onUnmountRequested</code>
     // event. Must be called when unmounting is completed.
     static void unmountRequestedSuccess(

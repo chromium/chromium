@@ -35433,6 +35433,7 @@ Called by update_extension_histograms.py.-->
   <int value="1738" label="OS_DIAGNOSTICS_RUNFINGERPRINTALIVEROUTINE"/>
   <int value="1739" label="DEVELOPERPRIVATE_UPDATESITEACCESS"/>
   <int value="1740" label="AUTOTESTPRIVATE_REFRESHREMOTECOMMANDS"/>
+  <int value="1741" label="FILESYSTEMPROVIDERINTERNAL_RESPONDTOMOUNTREQUEST"/>
 </enum>
 
 <enum name="ExtensionIconState">

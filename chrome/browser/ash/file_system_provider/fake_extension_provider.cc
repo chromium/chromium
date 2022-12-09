@@ -52,7 +52,14 @@ const IconSet& FakeExtensionProvider::GetIconSet() const {
   return icon_set_;
 }
 
-bool FakeExtensionProvider::RequestMount(Profile* profile) {
+RequestManager* FakeExtensionProvider::GetRequestManager() {
+  NOTREACHED();
+  return nullptr;
+}
+
+bool FakeExtensionProvider::RequestMount(Profile* profile,
+                                         RequestMountCallback callback) {
+  std::move(callback).Run(base::File::Error::FILE_OK);
   return true;
 }
 

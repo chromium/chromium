@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/file_system_provider/notification_manager.h"
+#include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/operations/abort.h"
 #include "chrome/browser/ash/file_system_provider/operations/add_watcher.h"
 #include "chrome/browser/ash/file_system_provider/operations/close_file.h"
@@ -33,7 +34,6 @@
 #include "chrome/browser/ash/file_system_provider/operations/truncate.h"
 #include "chrome/browser/ash/file_system_provider/operations/unmount.h"
 #include "chrome/browser/ash/file_system_provider/operations/write_file.h"
-#include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "extensions/browser/event_router.h"
@@ -138,10 +138,10 @@ ProvidedFileSystem::ProvidedFileSystem(
       file_system_info_(file_system_info),
       notification_manager_(
           new NotificationManager(profile_, file_system_info_)),
-      request_manager_(
-          new RequestManager(profile,
-                             file_system_info.provider_id().GetExtensionId(),
-                             notification_manager_.get())),
+      request_manager_(new OperationRequestManager(
+          profile,
+          file_system_info.provider_id().GetExtensionId(),
+          notification_manager_.get())),
       watcher_queue_(1) {
   DCHECK_EQ(ProviderId::EXTENSION, file_system_info.provider_id().GetType());
 }
@@ -161,7 +161,7 @@ void ProvidedFileSystem::SetEventRouterForTesting(
 void ProvidedFileSystem::SetNotificationManagerForTesting(
     std::unique_ptr<NotificationManagerInterface> notification_manager) {
   notification_manager_ = std::move(notification_manager);
-  request_manager_ = std::make_unique<RequestManager>(
+  request_manager_ = std::make_unique<OperationRequestManager>(
       profile_, file_system_info_.provider_id().GetExtensionId(),
       notification_manager_.get());
 }
@@ -494,7 +494,7 @@ const ProvidedFileSystemInfo& ProvidedFileSystem::GetFileSystemInfo() const {
   return file_system_info_;
 }
 
-RequestManager* ProvidedFileSystem::GetRequestManager() {
+OperationRequestManager* ProvidedFileSystem::GetRequestManager() {
   return request_manager_.get();
 }
 

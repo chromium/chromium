@@ -1,8 +1,8 @@
-// Copyright 2014 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_system_provider/request_manager.h"
+#include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 
 #include <stddef.h>
 
@@ -332,7 +332,7 @@ class FileSystemProviderRequestManagerTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     notification_manager_ = std::make_unique<FakeNotificationManager>();
-    request_manager_ = std::make_unique<RequestManager>(
+    request_manager_ = std::make_unique<OperationRequestManager>(
         profile_.get(), std::string() /* provider_id */,
         notification_manager_.get());
   }
@@ -695,8 +695,8 @@ TEST_F(FileSystemProviderRequestManagerTest, AbortOnDestroy) {
   int request_id;
 
   {
-    RequestManager request_manager(profile_.get(),
-                                   std::string() /* provider_id */, nullptr);
+    OperationRequestManager request_manager(
+        profile_.get(), std::string() /* provider_id */, nullptr);
     request_manager.AddObserver(&observer);
 
     request_id = request_manager.CreateRequest(

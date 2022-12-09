@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
@@ -128,7 +130,15 @@ void FileSystemProviderBase::RespondWithError(const std::string& error) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool FileSystemProviderBase::InterfaceAvailable() {
+bool FileSystemProviderBase::MountFinishedInterfaceAvailable() {
+  auto* service = chromeos::LacrosService::Get();
+  return service->GetInterfaceVersion(
+             crosapi::mojom::FileSystemProviderService::Uuid_) >=
+         int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
+                 kMountFinishedMinVersion};
+}
+
+bool FileSystemProviderBase::OperationFinishedInterfaceAvailable() {
   auto* service = chromeos::LacrosService::Get();
   return service->GetInterfaceVersion(
              crosapi::mojom::FileSystemProviderService::Uuid_) >=
@@ -193,7 +203,7 @@ ExtensionFunction::ResponseAction FileSystemProviderMountFunction::Run() {
       ->MountWithProfile(std::move(metadata), persistent, std::move(callback),
                          Profile::FromBrowserContext(browser_context()));
 #else
-  if (!InterfaceAvailable())
+  if (!OperationFinishedInterfaceAvailable())
     return RespondNow(Error(kInterfaceUnavailable));
   GetRemote()->Mount(std::move(metadata), persistent, std::move(callback));
 
@@ -218,7 +228,7 @@ ExtensionFunction::ResponseAction FileSystemProviderUnmountFunction::Run() {
       ->UnmountWithProfile(std::move(id), std::move(callback),
                            Profile::FromBrowserContext(browser_context()));
 #else
-  if (!InterfaceAvailable())
+  if (!OperationFinishedInterfaceAvailable())
     return RespondNow(Error(kInterfaceUnavailable));
   GetRemote()->Unmount(std::move(id), std::move(callback));
 #endif
@@ -235,7 +245,7 @@ ExtensionFunction::ResponseAction FileSystemProviderGetAllFunction::Run() {
       ->GetAllWithProfile(GetProviderId(), std::move(callback),
                           Profile::FromBrowserContext(browser_context()));
 #else
-  if (!InterfaceAvailable())
+  if (!OperationFinishedInterfaceAvailable())
     return RespondNow(Error(kInterfaceUnavailable));
   GetRemote()->GetAll(GetProviderId(), std::move(callback));
 #endif
@@ -270,7 +280,7 @@ ExtensionFunction::ResponseAction FileSystemProviderGetFunction::Run() {
       ->GetWithProfile(std::move(id), std::move(callback),
                        Profile::FromBrowserContext(browser_context()));
 #else
-  if (!InterfaceAvailable())
+  if (!OperationFinishedInterfaceAvailable())
     return RespondNow(Error(kInterfaceUnavailable));
   GetRemote()->Get(std::move(id), std::move(callback));
 #endif
@@ -320,7 +330,7 @@ ExtensionFunction::ResponseAction FileSystemProviderNotifyFunction::Run() {
                           std::move(changes), std::move(callback),
                           Profile::FromBrowserContext(browser_context()));
 #else
-  if (!InterfaceAvailable())
+  if (!OperationFinishedInterfaceAvailable())
     return RespondNow(Error(kInterfaceUnavailable));
   GetRemote()->Notify(std::move(id), std::move(watcher), type,
                       std::move(changes), std::move(callback));
@@ -336,6 +346,40 @@ void FileSystemProviderNotifyFunction::OnNotifyCompleted(
   }
 
   Respond(NoArguments());
+}
+
+bool FileSystemProviderInternal::ForwardMountResult(int64_t request_id,
+                                                    base::Value::List& args) {
+  auto callback =
+      base::BindOnce(&FileSystemProviderInternal::RespondWithError, this);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->file_system_provider_service_ash()
+      ->MountFinishedWithProfile(
+          extension_id(), request_id, std::move(args), std::move(callback),
+          Profile::FromBrowserContext(browser_context()));
+  return true;
+#else
+  if (!MountFinishedInterfaceAvailable())
+    return false;
+  GetRemote()->MountFinished(extension_id(), request_id, std::move(args),
+                             std::move(callback));
+  return true;
+#endif
+}
+
+ExtensionFunction::ResponseAction
+FileSystemProviderInternalRespondToMountRequestFunction::Run() {
+  using api::file_system_provider_internal::RespondToMountRequest::Params;
+  std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  int64_t request_id = params->request_id;
+  bool result = ForwardMountResult(request_id, mutable_args());
+  if (!result)
+    Respond(Error(kInterfaceUnavailable));
+  return RespondLater();
 }
 
 ExtensionFunction::ResponseAction

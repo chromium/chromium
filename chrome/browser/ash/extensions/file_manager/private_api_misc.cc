@@ -740,8 +740,10 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   using ash::file_system_provider::Service;
   Service* const service = Service::Get(browser_context());
 
-  if (!service->RequestMount(ProviderId::FromString(params->provider_id)))
+  if (!service->RequestMount(ProviderId::FromString(params->provider_id),
+                             base::DoNothing())) {
     return RespondNow(Error("Failed to request a new mount."));
+  }
 
   return RespondNow(WithArguments());
 }

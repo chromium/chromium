@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_system_provider/mount_request_handler.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
 #include "chrome/browser/profiles/profile.h"
@@ -95,23 +96,27 @@ const IconSet& ExtensionProvider::GetIconSet() const {
   return icon_set_;
 }
 
-bool ExtensionProvider::RequestMount(Profile* profile) {
+RequestManager* ExtensionProvider::GetRequestManager() {
+  return request_manager_.get();
+}
+
+bool ExtensionProvider::RequestMount(Profile* profile,
+                                     RequestMountCallback callback) {
   extensions::EventRouter* const event_router =
       extensions::EventRouter::Get(profile);
   DCHECK(event_router);
-
-  if (!event_router->ExtensionHasEventListener(
-          provider_id_.GetExtensionId(), extensions::api::file_system_provider::
-                                             OnMountRequested::kEventName)) {
+  // Create two callbacks of which only one will be called because
+  // RequestManager::CreateRequest() is guaranteed not to call |callback| if it
+  // signals an error (by returning request_id == 0).
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  const int request_id = request_manager_->CreateRequest(
+      REQUEST_MOUNT,
+      std::make_unique<MountRequestHandler>(event_router, provider_id_,
+                                            std::move(split_callback.first)));
+  if (!request_id) {
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_FAILED);
     return false;
   }
-
-  event_router->DispatchEventToExtension(
-      provider_id_.GetExtensionId(),
-      std::make_unique<extensions::Event>(
-          extensions::events::FILE_SYSTEM_PROVIDER_ON_MOUNT_REQUESTED,
-          extensions::api::file_system_provider::OnMountRequested::kEventName,
-          base::Value::List()));
 
   return true;
 }
@@ -120,7 +125,9 @@ ExtensionProvider::ExtensionProvider(
     Profile* profile,
     const extensions::ExtensionId& extension_id,
     const ProvidingExtensionInfo& info)
-    : provider_id_(ProviderId::CreateFromExtensionId(extension_id)) {
+    : provider_id_(ProviderId::CreateFromExtensionId(extension_id)),
+      request_manager_(
+          new RequestManager(profile, /*notification_manager=*/nullptr)) {
   capabilities_.configurable = info.capabilities.configurable();
   capabilities_.watchable = info.capabilities.watchable();
   capabilities_.multiple_mounts = info.capabilities.multiple_mounts();
@@ -135,7 +142,9 @@ ExtensionProvider::ExtensionProvider(Profile* profile,
                                      std::string name)
     : provider_id_(std::move(id)),
       capabilities_(std::move(capabilities)),
-      name_(std::move(name)) {
+      name_(std::move(name)),
+      request_manager_(
+          new RequestManager(profile, /*notification_manager=*/nullptr)) {
   ObserveAppServiceForIcons(profile);
 }
 

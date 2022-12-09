@@ -36,7 +36,8 @@ class FakeExtensionProvider : public ProviderInterface {
   const ProviderId& GetId() const override;
   const std::string& GetName() const override;
   const IconSet& GetIconSet() const override;
-  bool RequestMount(Profile* profile) override;
+  RequestManager* GetRequestManager() override;
+  bool RequestMount(Profile* profile, RequestMountCallback callback) override;
 
  protected:
   FakeExtensionProvider(const extensions::ExtensionId& extension_id,

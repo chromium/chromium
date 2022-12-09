@@ -15,11 +15,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/file_system_provider/abort_callback.h"
+#include "chrome/browser/ash/file_system_provider/operation_request_manager.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_observer.h"
 #include "chrome/browser/ash/file_system_provider/queue.h"
-#include "chrome/browser/ash/file_system_provider/request_manager.h"
 #include "storage/browser/file_system/async_file_util.h"
 #include "storage/browser/file_system/watcher_manager.h"
 #include "url/gurl.h"
@@ -163,7 +163,7 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
                      bool recursive,
                      storage::AsyncFileUtil::StatusCallback callback) override;
   const ProvidedFileSystemInfo& GetFileSystemInfo() const override;
-  RequestManager* GetRequestManager() override;
+  OperationRequestManager* GetRequestManager() override;
   Watchers* GetWatchers() override;
   const OpenedFiles& GetOpenedFiles() const override;
   void AddObserver(ProvidedFileSystemObserver* observer) override;
@@ -248,7 +248,7 @@ class ProvidedFileSystem : public ProvidedFileSystemInterface {
   extensions::EventRouter* event_router_;  // Not owned. May be NULL.
   ProvidedFileSystemInfo file_system_info_;
   std::unique_ptr<NotificationManagerInterface> notification_manager_;
-  std::unique_ptr<RequestManager> request_manager_;
+  std::unique_ptr<OperationRequestManager> request_manager_;
   Watchers watchers_;
   Queue watcher_queue_;
   OpenedFiles opened_files_;

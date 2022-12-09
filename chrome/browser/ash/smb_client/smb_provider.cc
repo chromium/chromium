@@ -55,7 +55,17 @@ const file_system_provider::IconSet& SmbProvider::GetIconSet() const {
   return icon_set_;
 }
 
-bool SmbProvider::RequestMount(Profile* profile) {
+file_system_provider::RequestManager* SmbProvider::GetRequestManager() {
+  NOTREACHED();
+  return nullptr;
+}
+
+bool SmbProvider::RequestMount(
+    Profile* profile,
+    ash::file_system_provider::RequestMountCallback callback) {
+  // Mount requests for SMB are handled by the SMB dialog. The callback
+  // isn't expected to be used.
+  std::move(callback).Run(base::File::Error::FILE_OK);
   smb_dialog::SmbShareDialog::Show();
   return true;
 }
