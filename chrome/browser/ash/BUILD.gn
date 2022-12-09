@@ -2341,6 +2341,8 @@ source_set("ash") {
     "policy/remote_commands/crd_host_delegate.cc",
     "policy/remote_commands/crd_host_delegate.h",
     "policy/remote_commands/crd_logging.h",
+    "policy/remote_commands/crd_remote_command_utils.cc",
+    "policy/remote_commands/crd_remote_command_utils.h",
     "policy/remote_commands/device_command_fetch_status_job.cc",
     "policy/remote_commands/device_command_fetch_status_job.h",
     "policy/remote_commands/device_command_get_available_routines_job.cc",

@@ -4,39 +4,35 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_start_crd_session_job.h"
 
+#include <iomanip>
 #include <memory>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/crd_logging.h"
+#include "chrome/browser/ash/policy/remote_commands/crd_remote_command_utils.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
-#include "chromeos/services/network_config/in_process_instance.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "components/user_manager/user_manager.h"
 #include "extensions/common/value_builder.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "remoting/host/chromeos/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/user_activity/user_activity_detector.h"
 
 namespace policy {
 
 namespace {
-
-namespace mojom = chromeos::network_config::mojom;
 
 using ResultCode = DeviceCommandStartCrdSessionJob::ResultCode;
 using extensions::DictionaryBuilder;
@@ -80,32 +76,6 @@ const char kResultMessageFieldName[] = "message";
 // FAILURE_NOT_IDLE result code.
 const char kResultLastActivityFieldName[] = "lastActivitySec";
 
-// Helper method that DVLOGs all the given networks.
-void LogNetworks(
-    std::vector<mojom::NetworkStatePropertiesPtr>::const_iterator begin,
-    std::vector<mojom::NetworkStatePropertiesPtr>::const_iterator end,
-    const char* type) {
-  CRD_DVLOG(3) << "Found " << (end - begin) << " " << type << " networks:";
-  for (auto it = begin; it < end; it++) {
-    const mojom::NetworkStateProperties& network = *it->get();
-    CRD_DVLOG(3) << "   --> " << network.name << " (" << network.guid << "): "
-                 << " ONC source: " << network.source
-                 << ", Type: " << network.type;
-  }
-}
-
-ash::KioskAppManagerBase* GetKioskAppManagerIfKioskAppIsRunning(
-    const user_manager::UserManager* user_manager) {
-  if (user_manager->IsLoggedInAsKioskApp())
-    return ash::KioskAppManager::Get();
-  if (user_manager->IsLoggedInAsArcKioskApp())
-    return ash::ArcKioskAppManager::Get();
-  if (user_manager->IsLoggedInAsWebKioskApp())
-    return ash::WebKioskAppManager::Get();
-
-  return nullptr;
-}
-
 void SendResultCodeToUma(ResultCode result_code) {
   base::UmaHistogramEnumeration("Enterprise.DeviceRemoteCommand.Crd.Result",
                                 result_code);
@@ -115,46 +85,6 @@ void SendSessionTypeToUma(
     DeviceCommandStartCrdSessionJob::UmaSessionType session_type) {
   base::UmaHistogramEnumeration(
       "Enterprise.DeviceRemoteCommand.Crd.SessionType", session_type);
-}
-
-bool IsNetworkManagedByPolicy(
-    const mojom::NetworkStatePropertiesPtr& network_properties) {
-  return network_properties->source == mojom::OncSource::kDevicePolicy ||
-         network_properties->source == mojom::OncSource::kUserPolicy;
-}
-
-// Returns if the ChromeOS device is in a managed environment or not.
-// We consider our environment to be managed if there is a
-//      * active (connected) network
-//      * with an ONC source set (meaning the network is managed)
-//      * which is not cellular
-//
-// The reasoning is that these conditions will only be met if the device is in
-// an office building or store, and these conditions will not be met if the
-// device is in a private setting like an user's home.
-bool IsInManagedEnvironment(
-    std::vector<mojom::NetworkStatePropertiesPtr> active_networks) {
-  const auto begin = active_networks.begin();
-  auto end = active_networks.end();
-
-  LogNetworks(begin, end, "active");
-
-  // Filter out the unmanaged networks.
-  end = std::remove_if(begin, end, [](const auto& network) {
-    return !IsNetworkManagedByPolicy(network);
-  });
-
-  // Filter out cellular networks, as managed cellular networks might be found
-  // even at the user's home.
-  end = std::remove_if(begin, end, [](const auto& network) {
-    return network->type == mojom::NetworkType::kCellular;
-  });
-
-  LogNetworks(begin, end, "managed");
-
-  // Now if any networks remain we are in a managed environment.
-  bool is_empty = (begin == end);
-  return !is_empty;
 }
 
 std::string CreateSuccessPayload(const std::string& access_code) {
@@ -190,71 +120,6 @@ DeviceOAuth2TokenService& GetOAuthService() {
 }
 
 }  // namespace
-
-////////////////////////////////////////////////////////////////////////////////
-// ManagedNetworkChecker
-////////////////////////////////////////////////////////////////////////////////
-
-// Helper class that asynchronously fetches the list of active (connected)
-// networks, and uses that information to decide if the admin is allowed to
-// start a curtained session.
-//
-// See `IsInManagedEnvironment()` for a more detailed description on the
-// algorithm used.
-class DeviceCommandStartCrdSessionJob::ManagedNetworkChecker {
- public:
-  using SuccessCallback = base::OnceClosure;
-
-  ManagedNetworkChecker(SuccessCallback success_callback,
-                        ErrorCallback error_callback)
-      : success_callback_(std::move(success_callback)),
-        error_callback_(std::move(error_callback)) {}
-  ManagedNetworkChecker(const ManagedNetworkChecker&) = delete;
-  ManagedNetworkChecker& operator=(const ManagedNetworkChecker&) = delete;
-  ~ManagedNetworkChecker() = default;
-
-  void Start() {
-    BindMojomService();
-    GetActiveNetworksAsync(
-        base::BindOnce(&ManagedNetworkChecker::CheckIsInManagedEnvironment,
-                       weak_factory_.GetWeakPtr()));
-  }
-
- private:
-  void BindMojomService() {
-    ash::network_config::BindToInProcessInstance(
-        network_service_.BindNewPipeAndPassReceiver());
-  }
-
-  void GetActiveNetworksAsync(
-      mojom::CrosNetworkConfig::GetNetworkStateListCallback on_success) {
-    CRD_DVLOG(1) << "Fetching active networks";
-    network_service_->GetNetworkStateList(
-        mojom::NetworkFilter::New(mojom::FilterType::kActive,  //
-                                  mojom::NetworkType::kAll,    //
-                                  mojom::kNoLimit),
-        std::move(on_success));
-  }
-
-  void CheckIsInManagedEnvironment(
-      std::vector<mojom::NetworkStatePropertiesPtr> networks) {
-    CRD_DVLOG(1) << "Received active networks";
-
-    if (IsInManagedEnvironment(std::move(networks))) {
-      std::move(success_callback_).Run();
-    } else {
-      std::move(error_callback_)
-          .Run(ResultCode::FAILURE_UNMANAGED_ENVIRONMENT, "");
-    }
-  }
-
-  mojo::Remote<mojom::CrosNetworkConfig> network_service_;
-
-  SuccessCallback success_callback_;
-  ErrorCallback error_callback_;
-
-  base::WeakPtrFactory<ManagedNetworkChecker> weak_factory_{this};
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // OAuthTokenFetcher
@@ -333,7 +198,7 @@ DeviceCommandStartCrdSessionJob::~DeviceCommandStartCrdSessionJob() = default;
 
 enterprise_management::RemoteCommand_Type
 DeviceCommandStartCrdSessionJob::GetType() const {
-  return enterprise_management::RemoteCommand_Type_DEVICE_START_CRD_SESSION;
+  return enterprise_management::RemoteCommand::DEVICE_START_CRD_SESSION;
 }
 
 void DeviceCommandStartCrdSessionJob::SetOAuthTokenForTest(
@@ -344,19 +209,22 @@ void DeviceCommandStartCrdSessionJob::SetOAuthTokenForTest(
 bool DeviceCommandStartCrdSessionJob::ParseCommandPayload(
     const std::string& command_payload) {
   absl::optional<base::Value> root(base::JSONReader::Read(command_payload));
-  if (!root)
+  if (!root || !root->is_dict()) {
+    LOG(WARNING) << "Rejecting remote command with invalid payload: "
+                 << std::quoted(command_payload);
     return false;
-  if (!root->is_dict())
-    return false;
+  }
+
+  const base::Value::Dict& root_dict = root->GetDict();
 
   idleness_cutoff_ =
-      base::Seconds(root->FindIntKey(kIdlenessCutoffFieldName).value_or(0));
+      base::Seconds(root_dict.FindInt(kIdlenessCutoffFieldName).value_or(0));
 
   acked_user_presence_ =
-      root->FindBoolKey(kAckedUserPresenceFieldName).value_or(false);
+      root_dict.FindBool(kAckedUserPresenceFieldName).value_or(false);
 
   curtain_local_user_session_ =
-      root->FindBoolKey(kCurtainLocalUserSession).value_or(false);
+      root_dict.FindBool(kCurtainLocalUserSession).value_or(false);
 
   if (base::FeatureList::IsEnabled(
           remoting::features::kForceCrdAdminRemoteAccess)) {
@@ -420,8 +288,6 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
 
 void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
     base::OnceClosure on_success) {
-  DCHECK_EQ(managed_network_checker_, nullptr);
-
   if (!curtain_local_user_session_) {
     // No need to check for managed networks if we are not going to curtain
     // off the local session.
@@ -429,11 +295,17 @@ void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
     return;
   }
 
-  managed_network_checker_ = std::make_unique<ManagedNetworkChecker>(
-      /*on_success=*/std::move(on_success),
-      /*on_error=*/GetErrorCallback());
-
-  managed_network_checker_->Start();
+  CalculateIsInManagedEnvironmentAsync(base::BindOnce(
+      [](base::OnceClosure on_success, ErrorCallback on_error,
+         bool is_in_managed_environment) {
+        if (is_in_managed_environment) {
+          std::move(on_success).Run();
+        } else {
+          std::move(on_error).Run(ResultCode::FAILURE_UNMANAGED_ENVIRONMENT,
+                                  /*error_messages=*/"");
+        }
+      },
+      std::move(on_success), GetErrorCallback()));
 }
 
 void DeviceCommandStartCrdSessionJob::FetchOAuthTokenASync(
@@ -499,60 +371,24 @@ void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
 
   SendResultCodeToUma(ResultCode::FAILURE_NOT_IDLE);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(failed_callback_),
-                     CreateNonIdlePayload(GetDeviceIdlenessPeriod())));
+      FROM_HERE, base::BindOnce(std::move(failed_callback_),
+                                CreateNonIdlePayload(GetDeviceIdleTime())));
 }
 
 bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
-  const UserSessionType current_user_type = GetUserSessionType();
-
-  CRD_DVLOG(2) << "User is of type " << UserTypeToString(current_user_type);
+  CRD_DVLOG(2) << "User is of type "
+               << UserSessionTypeToString(GetCurrentUserSessionType());
 
   if (curtain_local_user_session_) {
-    return current_user_type == UserSessionType::kNoUser;
+    return UserSessionSupportsRemoteAccess(GetCurrentUserSessionType());
+  } else {
+    return UserSessionSupportsRemoteSupport(GetCurrentUserSessionType());
   }
-
-  switch (current_user_type) {
-    case UserSessionType::kAffiliatedUser:
-    case UserSessionType::kAutoLaunchedKiosk:
-    case UserSessionType::kManagedGuestSession:
-    case UserSessionType::kManuallyLaunchedKiosk:
-      return true;
-    case UserSessionType::kNoUser:
-    case UserSessionType::kOther:
-      return false;
-  }
-  NOTREACHED();
-  return false;
-}
-
-DeviceCommandStartCrdSessionJob::UserSessionType
-DeviceCommandStartCrdSessionJob::GetUserSessionType() const {
-  const auto* user_manager = user_manager::UserManager::Get();
-
-  if (!user_manager->IsUserLoggedIn())
-    return UserSessionType::kNoUser;
-
-  if (user_manager->IsLoggedInAsAnyKioskApp()) {
-    if (IsRunningAutoLaunchedKiosk())
-      return UserSessionType::kAutoLaunchedKiosk;
-    else
-      return UserSessionType::kManuallyLaunchedKiosk;
-  }
-
-  if (user_manager->IsLoggedInAsPublicAccount())
-    return UserSessionType::kManagedGuestSession;
-
-  if (user_manager->GetActiveUser()->IsAffiliated())
-    return UserSessionType::kAffiliatedUser;
-
-  return UserSessionType::kOther;
 }
 
 DeviceCommandStartCrdSessionJob::UmaSessionType
 DeviceCommandStartCrdSessionJob::GetUmaSessionType() const {
-  switch (GetUserSessionType()) {
+  switch (GetCurrentUserSessionType()) {
     case UserSessionType::kAutoLaunchedKiosk:
       return UmaSessionType::kAutoLaunchedKiosk;
     case UserSessionType::kAffiliatedUser:
@@ -570,24 +406,8 @@ DeviceCommandStartCrdSessionJob::GetUmaSessionType() const {
   }
 }
 
-bool DeviceCommandStartCrdSessionJob::IsRunningAutoLaunchedKiosk() const {
-  const auto* user_manager = user_manager::UserManager::Get();
-  const auto* kiosk_app_manager =
-      GetKioskAppManagerIfKioskAppIsRunning(user_manager);
-
-  if (!kiosk_app_manager)
-    return false;
-  return kiosk_app_manager->current_app_was_auto_launched_with_zero_delay();
-}
-
 bool DeviceCommandStartCrdSessionJob::IsDeviceIdle() const {
-  return GetDeviceIdlenessPeriod() >= idleness_cutoff_;
-}
-
-base::TimeDelta DeviceCommandStartCrdSessionJob::GetDeviceIdlenessPeriod()
-    const {
-  return base::TimeTicks::Now() -
-         ui::UserActivityDetector::Get()->last_activity_time();
+  return GetDeviceIdleTime() >= idleness_cutoff_;
 }
 
 std::string DeviceCommandStartCrdSessionJob::GetRobotAccountUserName() const {
@@ -599,25 +419,24 @@ std::string DeviceCommandStartCrdSessionJob::GetRobotAccountUserName() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
-  switch (GetUserSessionType()) {
-    case UserSessionType::kAffiliatedUser:
-    case UserSessionType::kManagedGuestSession:
-      return true;
+  switch (GetCurrentUserSessionType()) {
     case UserSessionType::kAutoLaunchedKiosk:
     case UserSessionType::kManuallyLaunchedKiosk:
     case UserSessionType::kNoUser:
-    case UserSessionType::kOther:
       return false;
+
+    case UserSessionType::kAffiliatedUser:
+    case UserSessionType::kManagedGuestSession:
+    case UserSessionType::kOther:
+      return true;
   }
-  NOTREACHED();
-  return false;
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
   if (curtain_local_user_session_)
     return false;
 
-  switch (GetUserSessionType()) {
+  switch (GetCurrentUserSessionType()) {
     case UserSessionType::kAffiliatedUser:
     case UserSessionType::kManagedGuestSession:
       // We never terminate upon input for the user-session scenarios, because:
@@ -628,18 +447,15 @@ bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
       //      as pressing the button to accept the connection request counts as
       //      user input.
       return false;
+
     case UserSessionType::kAutoLaunchedKiosk:
     case UserSessionType::kManuallyLaunchedKiosk:
       return !acked_user_presence_;
+
     case UserSessionType::kNoUser:
     case UserSessionType::kOther:
-      // This method will only be called for user types for which we support
-      // CRD sessions.
-      NOTREACHED();
-      return false;
+      return true;
   }
-  NOTREACHED();
-  return false;
 }
 
 DeviceCommandStartCrdSessionJob::ErrorCallback
@@ -653,26 +469,6 @@ void DeviceCommandStartCrdSessionJob::TerminateImpl() {
   failed_callback_.Reset();
   weak_factory_.InvalidateWeakPtrs();
   delegate_->TerminateSession(base::OnceClosure());
-}
-
-const char* DeviceCommandStartCrdSessionJob::UserTypeToString(
-    UserSessionType value) const {
-  switch (value) {
-    case UserSessionType::kAutoLaunchedKiosk:
-      return "kAutoLaunchedKiosk";
-    case UserSessionType::kManuallyLaunchedKiosk:
-      return "kManuallyLaunchedKiosk";
-    case UserSessionType::kNoUser:
-      return "kNoUser";
-    case UserSessionType::kAffiliatedUser:
-      return "kAffiliatedUser";
-    case UserSessionType::kManagedGuestSession:
-      return "kManagedGuestSession";
-    case UserSessionType::kOther:
-      return "kOther";
-  }
-  NOTREACHED();
-  return "<invalid user type>";
 }
 
 }  // namespace policy

@@ -116,19 +116,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void TerminateImpl() override;
 
  private:
-  class ManagedNetworkChecker;
   class OAuthTokenFetcher;
-
-  enum class UserSessionType {
-    kAutoLaunchedKiosk,
-    kManuallyLaunchedKiosk,
-    kNoUser,
-    kAffiliatedUser,
-    kManagedGuestSession,
-    kOther,
-  };
-
-  const char* UserTypeToString(UserSessionType value) const;
 
   void CheckManagedNetworkASync(base::OnceClosure on_success);
   void FetchOAuthTokenASync(OAuthTokenCallback on_success);
@@ -139,11 +127,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   void FinishWithNotIdleError();
 
   bool UserTypeSupportsCrd() const;
-  UserSessionType GetUserSessionType() const;
   UmaSessionType GetUmaSessionType() const;
-  bool IsRunningAutoLaunchedKiosk() const;
   bool IsDeviceIdle() const;
-  base::TimeDelta GetDeviceIdlenessPeriod() const;
 
   std::string GetRobotAccountUserName() const;
   bool ShouldShowConfirmationDialog() const;
@@ -152,7 +137,6 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   ErrorCallback GetErrorCallback();
 
   std::unique_ptr<OAuthTokenFetcher> oauth_token_fetcher_;
-  std::unique_ptr<ManagedNetworkChecker> managed_network_checker_;
 
   // The callback that will be called when the access code was successfully
   // obtained.
