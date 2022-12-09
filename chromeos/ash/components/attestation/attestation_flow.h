@@ -138,6 +138,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       const absl::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback);
 
+ protected:
+  enum class EnrollState {
+    // Attestation enrollment failed.
+    kError,
+
+    // Attestation is enrolled.
+    kEnrolled,
+  };
+
+  using EnrollCallback = base::OnceCallback<void(EnrollState)>;
+
  private:
   // Handles the result of a call to `GetStatus()` for enrollment status.
   // Reports success if enrollment is complete and otherwise starts the process.
@@ -145,7 +156,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   // Parameters
   //   callback - Called with the success or failure of the enrollment.
   //   result - Result of `GetStatus()`, which contains `enrolled` field.
-  void OnEnrollmentCheckComplete(base::OnceCallback<void(bool)> callback,
+  void OnEnrollmentCheckComplete(EnrollCallback callback,
                                  const ::attestation::GetStatusReply& reply);
 
   // Asynchronously waits for attestation to be ready and start enrollment once
@@ -156,7 +167,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   end_time - Time after which preparation should time out.
   //   callback - Called with the success or failure of the enrollment.
   void WaitForAttestationPrepared(base::TimeTicks end_time,
-                                  base::OnceCallback<void(bool)> callback);
+                                  EnrollCallback callback);
 
   // Handles the result of a call to GetEnrollmentPreparations. Starts
   // enrollment on success and retries after `retry_delay_` if not.
@@ -167,7 +178,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   reply - Reply from the attestation service.
   void OnPreparedCheckComplete(
       base::TimeTicks end_time,
-      base::OnceCallback<void(bool)> callback,
+      EnrollCallback callback,
       const ::attestation::GetEnrollmentPreparationsReply& reply);
 
   // Called when the attestation daemon has finished creating an enrollment
@@ -178,7 +189,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   callback - Called with the success or failure of the enrollment.
   //   reply - The reply of `CreateEnrollRequest()`.
   void SendEnrollRequestToPCA(
-      base::OnceCallback<void(bool)> callback,
+      EnrollCallback callback,
       const ::attestation::CreateEnrollRequestReply& reply);
 
   // Called when the Privacy CA responds to an enrollment request.  The response
@@ -189,7 +200,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   callback - Called with the success or failure of the enrollment.
   //   success - The status of the Privacy CA operation.
   //   data - The response data from the Privacy CA.
-  void SendEnrollResponseToDaemon(base::OnceCallback<void(bool)> callback,
+  void SendEnrollResponseToDaemon(EnrollCallback callback,
                                   bool success,
                                   const std::string& data);
 
@@ -199,7 +210,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   // Parameters
   //   callback - Called with the success or failure of the enrollment.
   //   reply - The reply of `FinishEnroll()`.
-  void OnEnrollComplete(base::OnceCallback<void(bool)> callback,
+  void OnEnrollComplete(EnrollCallback callback,
                         const ::attestation::FinishEnrollReply& reply);
 
   // Asynchronously initiates the certificate request flow.  Attestation
@@ -227,7 +238,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       const std::string& key_name,
       const absl::optional<CertProfileSpecificData>& profile_specific_data,
       CertificateCallback callback,
-      bool enrolled);
+      EnrollState enroll_state);
 
   // Called with the reply to `GetKeyInfo()`. Will query the existing
   // certificate if it exists and otherwise start a new certificate request.

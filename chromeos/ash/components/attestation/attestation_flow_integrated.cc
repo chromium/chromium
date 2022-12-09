@@ -123,7 +123,7 @@ void AttestationFlowIntegrated::GetCertificate(
     const absl::optional<AttestationFlow::CertProfileSpecificData>&
         profile_specific_data,
     CertificateCallback callback) {
-  base::OnceCallback<void(bool)> start_certificate_request =
+  EnrollCallback start_certificate_request =
       base::BindOnce(&AttestationFlowIntegrated::StartCertificateRequest,
                      weak_factory_.GetWeakPtr(), certificate_profile,
                      account_id, request_origin, force_new_key, key_crypto_type,
@@ -135,7 +135,7 @@ void AttestationFlowIntegrated::GetCertificate(
 
 void AttestationFlowIntegrated::WaitForAttestationPrepared(
     base::TimeTicks end_time,
-    base::OnceCallback<void(bool)> callback) {
+    EnrollCallback callback) {
   ::attestation::GetEnrollmentPreparationsRequest request;
   request.set_aca_type(aca_type_);
   attestation_client_->GetEnrollmentPreparations(
@@ -146,11 +146,11 @@ void AttestationFlowIntegrated::WaitForAttestationPrepared(
 
 void AttestationFlowIntegrated::OnPreparedCheckComplete(
     base::TimeTicks end_time,
-    base::OnceCallback<void(bool)> callback,
+    EnrollCallback callback,
     const ::attestation::GetEnrollmentPreparationsReply& reply) {
   if (reply.status() == ::attestation::STATUS_SUCCESS &&
       IsPreparedWith(reply, aca_type_)) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(EnrollState::kEnrolled);
     return;
   }
 
@@ -163,7 +163,7 @@ void AttestationFlowIntegrated::OnPreparedCheckComplete(
         retry_delay_);
     return;
   }
-  std::move(callback).Run(false);
+  std::move(callback).Run(EnrollState::kError);
 }
 
 void AttestationFlowIntegrated::StartCertificateRequest(
@@ -175,11 +175,15 @@ void AttestationFlowIntegrated::StartCertificateRequest(
     const std::string& key_name,
     const absl::optional<CertProfileSpecificData>& profile_specific_data,
     CertificateCallback callback,
-    bool is_prepared) {
-  if (!is_prepared) {
-    LOG(ERROR) << __func__ << ": Not prepared.";
-    std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
-    return;
+    EnrollState enroll_state) {
+  switch (enroll_state) {
+    case EnrollState::kError:
+      LOG(ERROR) << __func__ << ": Not prepared.";
+      std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
+      return;
+
+    case EnrollState::kEnrolled:
+      break;
   }
 
   ::attestation::GetCertificateRequest request;
