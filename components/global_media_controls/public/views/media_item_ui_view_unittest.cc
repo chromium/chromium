@@ -355,17 +355,9 @@ TEST_F(MediaItemUIViewTest, SendsClicks) {
   SimulateHeaderClicked();
 }
 
-// TODO(crbug/1318789): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_GestureScrollDisabledWhenSlidingOut \
-  DISABLED_GestureScrollDisabledWhenSlidingOut
-#else
-#define MAYBE_GestureScrollDisabledWhenSlidingOut \
-  GestureScrollDisabledWhenSlidingOut
-#endif
-TEST_F(MediaItemUIViewTest, MAYBE_GestureScrollDisabledWhenSlidingOut) {
-  auto* scroll_view = new views::ScrollView();
-  item_ui()->SetScrollView(scroll_view);
+TEST_F(MediaItemUIViewTest, GestureScrollDisabledWhenSlidingOut) {
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  item_ui()->SetScrollView(scroll_view.get());
 
   // Vertical scroll bar should be enabled initially.
   EXPECT_EQ(scroll_view->GetVerticalScrollBarMode(),
