@@ -48,6 +48,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   // Invoked when a FLEDGE auction is complete.
   //
+  // `manually_aborted` is true only if the auction was successfully interrupted
+  //  by the call to Abort().
+  //
   // `winning_group_id` owner and name of the winning interest group (if any).
   //
   // `render_url` URL of auction winning ad to render. Null if there is no
@@ -56,20 +59,24 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // `ad_component_urls` is the list of ad component URLs returned by the
   //  winning bidder. Null if there is no winner or no list was returned.
   //
+  // `winning_group_ad_metadata` is the metadata associated with the winning ad,
+  //  to be made available to the interest group in future auctions in the
+  //  `prevWins` field. Empty if there was no winner.
+  //
   // `report_urls` Reporting URLs returned by seller worklet reportResult()
   //  methods and the winning bidder's reportWin() methods, if any.
   //
   // `debug_loss_report_urls` URLs to use for reporting loss result to bidders
-  // and the seller. Empty if no report should be sent.
+  //  and the seller. Empty if no report should be sent.
   //
   // `debug_win_report_urls` URLs to use for reporting win result to bidders and
-  // the seller. Empty if no report should be sent.
+  //  the seller. Empty if no report should be sent.
+  //
+  // `interest_groups_that_bid` is a list of the interest groups that made bids
+  // in the auction. Empty if the auction didn't run to completion.
   //
   // `errors` are various error messages to be used for debugging. These are too
   //  sensitive for the renderers to see.
-  //
-  // `manually_aborted` is true only if the auction was successfully interrupted
-  // by the call to Abort().
   //
   // If k-anonymity enforcement is on, `render_url_without_kanon_enforced`
   // and `ad_component_urls_without_kanon_enforced` would be set to what the
@@ -86,12 +93,14 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       absl::optional<blink::InterestGroupKey> winning_group_id,
       absl::optional<GURL> render_url,
       std::vector<GURL> ad_component_urls,
+      std::string winning_group_ad_metadata,
       std::vector<GURL> report_urls,
       std::vector<GURL> debug_loss_report_urls,
       std::vector<GURL> debug_win_report_urls,
       ReportingMetadata ad_beacon_map,
       std::map<url::Origin, PrivateAggregationRequests>
           private_aggregation_requests,
+      blink::InterestGroupSet interest_groups_that_bid,
       absl::optional<GURL> render_url_without_kanon_enforced,
       std::vector<GURL> ad_component_urls_without_kanon_enforced,
       absl::optional<GURL> render_url_with_kanon_simulated,
@@ -148,7 +157,12 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // `this` by closing mojo pipes and disposing of weak pointers. The owner must
   // be able to safely delete `this` when the callback is invoked. May only be
   // invoked if the auction has not yet completed.
-  void FailAuction(bool manually_aborted);
+  //
+  // `interest_groups_that_bid` is a list of the interest groups that bid in the
+  // auction.
+  void FailAuction(bool manually_aborted,
+                   blink::InterestGroupSet interest_groups_that_bid =
+                       blink::InterestGroupSet());
 
  private:
   enum class State {
@@ -188,7 +202,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // the auction. Otherwise, records which interest group won the auction and
   // collects parameters needed to invoke the auction callback.
   void OnReportingPhaseComplete(
-      const blink::InterestGroupSet& interest_groups_that_bid,
+      blink::InterestGroupSet interest_groups_that_bid,
       bool success);
 
   // After an auction completes (success or failure -- wherever `callback_` is

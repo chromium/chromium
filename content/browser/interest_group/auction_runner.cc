@@ -70,7 +70,9 @@ void AuctionRunner::Abort() {
   }
 }
 
-void AuctionRunner::FailAuction(bool manually_aborted) {
+void AuctionRunner::FailAuction(
+    bool manually_aborted,
+    blink::InterestGroupSet interest_groups_that_bid) {
   DCHECK(callback_);
   state_ = State::kFailed;
 
@@ -104,12 +106,15 @@ void AuctionRunner::FailAuction(bool manually_aborted) {
       !manually_aborted && may_have_valid_kanon_info &&
       (kanon_mode_ == auction_worklet::mojom::KAnonymityBidMode::kSimulate);
   std::move(callback_).Run(
-      this, manually_aborted, /*winning_group_key=*/absl::nullopt,
+      this, manually_aborted,
+      /*winning_group_key=*/absl::nullopt,
       /*render_url=*/absl::nullopt,
       /*ad_component_urls=*/{},
+      /*winning_group_ad_metadata=*/std::string(),
       /*report_urls=*/{}, std::move(debug_loss_report_urls),
       std::move(debug_win_report_urls),
       /*ad_beacon_map=*/{}, auction_.TakePrivateAggregationRequests(),
+      std::move(interest_groups_that_bid),
       /*render_url_without_kanon_enforced=*/
       report_kanon_enforce ? auction_.TakeRenderUrlWithoutKAnonEnforced()
                            : absl::nullopt,
@@ -172,8 +177,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   blink::InterestGroupSet interest_groups_that_bid;
   auction_.GetInterestGroupsThatBid(interest_groups_that_bid);
   if (!success) {
-    interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid);
-    FailAuction(/*manually_aborted=*/false);
+    FailAuction(/*manually_aborted=*/false,
+                std::move(interest_groups_that_bid));
     return;
   }
   // If the auction is ongoing, RecordInterestGroupBids is deferred until
@@ -188,25 +193,25 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
 }
 
 void AuctionRunner::OnReportingPhaseComplete(
-    const blink::InterestGroupSet& interest_groups_that_bid,
+    blink::InterestGroupSet interest_groups_that_bid,
     bool success) {
-  interest_group_manager_->RecordInterestGroupBids(interest_groups_that_bid);
   if (!success) {
-    FailAuction(/*manually_aborted=*/false);
+    FailAuction(/*manually_aborted=*/false,
+                std::move(interest_groups_that_bid));
     return;
   }
 
   DCHECK(callback_);
 
-  std::string ad_metadata;
+  std::string winning_group_ad_metadata;
   if (auction_.top_bid()->bid->bid_ad->metadata) {
     //`metadata` is already in JSON so no quotes are needed.
-    ad_metadata = base::StringPrintf(
+    winning_group_ad_metadata = base::StringPrintf(
         R"({"render_url":"%s","metadata":%s})",
         auction_.top_bid()->bid->render_url.spec().c_str(),
         auction_.top_bid()->bid->bid_ad->metadata.value().c_str());
   } else {
-    ad_metadata =
+    winning_group_ad_metadata =
         base::StringPrintf(R"({"render_url":"%s"})",
                            auction_.top_bid()->bid->render_url.spec().c_str());
   }
@@ -217,8 +222,8 @@ void AuctionRunner::OnReportingPhaseComplete(
   blink::InterestGroupKey winning_group_key(
       {winning_group.owner, winning_group.name});
 
-  interest_group_manager_->RecordInterestGroupWin(winning_group_key,
-                                                  ad_metadata);
+  // TODO(https://crbug.com/1396068): Only do this if/when the winning ad is
+  // loaded in a frame.
   interest_group_manager_->RegisterAdAsWon(
       *auction_.top_bid()->bid->interest_group,
       *auction_.top_bid()->bid->bid_ad);
@@ -251,9 +256,11 @@ void AuctionRunner::OnReportingPhaseComplete(
   std::move(callback_).Run(
       this, /*manually_aborted=*/false, std::move(winning_group_key),
       auction_.top_bid()->bid->render_url,
-      auction_.top_bid()->bid->ad_components, std::move(report_urls),
+      auction_.top_bid()->bid->ad_components,
+      std::move(winning_group_ad_metadata), std::move(report_urls),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
       std::move(ad_beacon_map), std::move(private_aggregation_requests),
+      std::move(interest_groups_that_bid),
       /*render_url_without_kanon_enforced=*/
       in_kanon_enforce ? auction_.TakeRenderUrlWithoutKAnonEnforced()
                        : absl::nullopt,

@@ -18,43 +18,81 @@
     return session.evaluateAsync(joinJs);
   }
 
-  async function runAdAuction() {
+  async function runAdAuctionAndNavigateFencedFrame() {
     const auctionJs = `
-    navigator.runAdAuction({
-      decisionLogicUrl: "${base}fledge_decision_logic.js.php",
-      seller: "${baseOrigin}",
-      interestGroupBuyers: ["${baseOrigin}"]})`;
+      (async function() {
+        url = await navigator.runAdAuction({
+            decisionLogicUrl: "${base}fledge_decision_logic.js.php",
+            seller: "${baseOrigin}",
+            interestGroupBuyers: ["${baseOrigin}"]});
+
+        const fencedFrame = document.createElement("fencedframe");
+        fencedFrame.mode = "opaque-ads";
+        fencedFrame.src = url;
+        document.body.appendChild(fencedFrame);
+      })();`;
     return session.evaluateAsync(auctionJs);
   }
 
-  const events = [];
-  dp.Storage.onInterestGroupAccessed((messageObject)=>{events.push(messageObject.params)});
-  await dp.Storage.setInterestGroupTracking({enable: false});
+  events = [];
+  async function logAndClearEvents() {
+    testRunner.log(`Events logged: ${events.length}`);
+    for (event of events) {
+      testRunner.log(
+        JSON.stringify(event, ['ownerOrigin', 'name', 'type'], 2));
+      data = await dp.Storage.getInterestGroupDetails(
+        {ownerOrigin: event.ownerOrigin, name: event.name});
+      const details = data.result.details;
+      details.expirationTime = 0;
+      testRunner.log(details);
+    }
+    events = [];
+  }
 
+  let observedBids = 0;
+  let resolveWaitForTwoBidsPromise;
+  const waitForTwoBidsPromise = new Promise((resolve, reject)=>{
+    resolveWaitForTwoBidsPromise = resolve;
+  });
+
+  dp.Storage.onInterestGroupAccessed((messageObject)=>{
+    events.push(messageObject.params);
+    if (messageObject.params.type == 'bid') {
+      ++observedBids;
+      if (observedBids == 2)
+        resolveWaitForTwoBidsPromise();
+    }
+  });
   await page.navigate(base + 'empty.html');
 
+  // Start tracking, join interest groups, and run an auction.
+  await dp.Storage.setInterestGroupTracking({enable: true});
+  testRunner.log("Start Tracking");
+  await joinInterestGroups(0);
+  await joinInterestGroups(1);
+  // Need to navigate a fenced frame to the winning ad for the bids to be
+  // recorded.
+  await runAdAuctionAndNavigateFencedFrame();
+  // Have to wait for the bids to be received, since there's no way to wait
+  // for the fenced frame navigation to complete directly. Only do this if
+  // FLEDGE is enabled and has sent events already, to avoid waiting for events
+  // that will never occur.
+  if (events.length > 0)
+    await waitForTwoBidsPromise;
+  await logAndClearEvents();
+
+  // Disable interest group logging, and run the same set of events. No new
+  // events should be logged. This has to be done after the logging test
+  // because there's no way to wait until something doesn't happen, and
+  // the logging of the bid events is potentially racy with enabling/disabling
+  // logging.
+  await dp.Storage.setInterestGroupTracking({enable: false});
+  testRunner.log("Stop Tracking");
   // These calls should not trigger any events, since tracking is disabled.
   await joinInterestGroups(0);
   await joinInterestGroups(1);
-  await runAdAuction();
+  await runAdAuctionAndNavigateFencedFrame();
+  logAndClearEvents();
 
-  testRunner.log(`Events logged: ${events.length}`);
-
-  await dp.Storage.setInterestGroupTracking({enable: true});
-  testRunner.log("Start Tracking");
-
-  await joinInterestGroups(0);
-  await joinInterestGroups(1);
-  await runAdAuction();
-
-  for (event of events) {
-    testRunner.log(
-      JSON.stringify(event, ['ownerOrigin', 'name', 'type'], 2));
-    data = await dp.Storage.getInterestGroupDetails(
-      {ownerOrigin: event.ownerOrigin, name: event.name});
-    const details = data.result.details;
-    details.expirationTime = 0;
-    testRunner.log(details);
-  }
   testRunner.completeTest();
   })

@@ -1,6 +1,6 @@
 Tests that interest groups are read and cleared.
-Events logged: 0
 Start Tracking
+Events logged: 7
 {
   "ownerOrigin": "https://a.test:8443",
   "name": "0",
@@ -155,4 +155,6 @@ Start Tracking
     trustedBiddingSignalsKeys : [
     ]
 }
+Stop Tracking
+Events logged: 0
 

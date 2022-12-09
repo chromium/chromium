@@ -3741,6 +3741,77 @@ function scoreAd(
   ASSERT_NE(auction_result, absl::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
+
+  // Running the auction alone should not result in updating the interest
+  // group's bid count or previous win list, no matter how much time passes.
+  task_environment()->RunUntilIdle();
+  auto storage_interest_group =
+      GetInterestGroup(interest_group.owner, interest_group.name);
+  ASSERT_TRUE(storage_interest_group);
+  EXPECT_EQ(0, storage_interest_group->bidding_browser_signals->bid_count);
+  EXPECT_EQ(0u,
+            storage_interest_group->bidding_browser_signals->prev_wins.size());
+
+  // Invoking the URN callback (which is done when the result is loaded in a
+  // frame) updates those fields.
+  InvokeCallbackForURN(*auction_result);
+  storage_interest_group =
+      GetInterestGroup(interest_group.owner, interest_group.name);
+  ASSERT_TRUE(storage_interest_group);
+  EXPECT_EQ(1, storage_interest_group->bidding_browser_signals->bid_count);
+  ASSERT_EQ(1u,
+            storage_interest_group->bidding_browser_signals->prev_wins.size());
+  ASSERT_EQ(
+      R"({"render_url":"https://example.com/render"})",
+      storage_interest_group->bidding_browser_signals->prev_wins[0]->ad_json);
+}
+
+// Add an interest group, and run an ad auction. Seller rejects the bid. Bid
+// count should be updated.
+TEST_F(AdAuctionServiceImplTest, RunAdAuctionSellerRejectsBid) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return -1;
+}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, absl::nullopt);
+
+  // The bid count should be updated immediately, since theere's no URN to wait
+  // to be loaded in a frame.
+  auto storage_interest_group =
+      GetInterestGroup(interest_group.owner, interest_group.name);
+  ASSERT_TRUE(storage_interest_group);
+  EXPECT_EQ(1, storage_interest_group->bidding_browser_signals->bid_count);
+  EXPECT_EQ(0u,
+            storage_interest_group->bidding_browser_signals->prev_wins.size());
 }
 
 // Run ad auction when number of urn mappings has reached limit, the action

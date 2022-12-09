@@ -1,4 +1,6 @@
 Tests that interest groups are read and cleared.
-Events logged: 0
 Start Tracking
+Events logged: 0
+Stop Tracking
+Events logged: 0
 
