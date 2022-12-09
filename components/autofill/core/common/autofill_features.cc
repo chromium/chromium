@@ -571,6 +571,15 @@ BASE_FEATURE(kAutofillVoteForSelectOptionValues,
              "AutofillVoteForSelectOptionValues",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls autofill popup style, if enabled it becomes more prominent,
+// i.e. its shadow becomes more emphasized, position is also updated.
+// TODO(crbug.com/1354136): Remove once the experiment is over.
+BASE_FEATURE(kAutofillMoreProminentPopup,
+             "AutofillMoreProminentPopup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAutofillMoreProminentPopupMaxOffsetToCenterParam{
+    &kAutofillMoreProminentPopup, "max_offset_to_center_px", 92};
+
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether the Autofill manual fallback for Addresses and Payments is
 // present on Android.

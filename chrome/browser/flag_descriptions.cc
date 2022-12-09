@@ -487,6 +487,11 @@ const char kAutofillPreventOverridingPrefilledValuesDescription[] =
     "When enabled, Autofill won't override any field values that have not been "
     "filled by Autofill";
 
+const char kAutofillMoreProminentPopupName[] = "More prominent Autofill popup";
+const char kAutofillMoreProminentPopupDescription[] =
+    "If enabled Autofill's popup becomes more prominent, i.e. its shadow "
+    "becomes more emphasized, position is also updated";
+
 const char kAutofillUseConsistentPopupSettingsIconsName[] =
     "Consistent Autofill settings icon";
 const char kAutofillUseConsistentPopupSettingsIconsDescription[] =
