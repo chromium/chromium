@@ -9,11 +9,7 @@ generate_grd("build_grdp") {
   grd_prefix = "webui_html"
   out_grd = "$target_gen_dir/resources.grdp"
   resource_path_prefix = "html"
-  input_files = [
-    "assert.html",
-    "load_time_data.html",
-    "test_loader.html",
-  ]
+  input_files = [ "test_loader.html" ]
 
   input_files_base_dir = rebase_path(".", "//")
 }
