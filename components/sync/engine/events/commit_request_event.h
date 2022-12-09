@@ -36,9 +36,7 @@ class CommitRequestEvent : public ProtocolEvent {
   base::Time GetTimestamp() const override;
   std::string GetType() const override;
   std::string GetDetails() const override;
-  std::unique_ptr<base::DictionaryValue> GetProtoMessage(
-      bool include_specifics) const override;
-
+  base::Value::Dict GetProtoMessage(bool include_specifics) const override;
   const base::Time timestamp_;
   const size_t num_items_;
   const ModelTypeSet contributing_types_;

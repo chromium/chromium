@@ -37,8 +37,7 @@ class GetUpdatesResponseEvent : public ProtocolEvent {
   base::Time GetTimestamp() const override;
   std::string GetType() const override;
   std::string GetDetails() const override;
-  std::unique_ptr<base::DictionaryValue> GetProtoMessage(
-      bool include_specifics) const override;
+  base::Value::Dict GetProtoMessage(bool include_specifics) const override;
 
   const base::Time timestamp_;
   const sync_pb::ClientToServerResponse response_;

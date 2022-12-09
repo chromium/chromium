@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
@@ -45,13 +46,14 @@ const char kSyncObsoleteKeystoreEncryptionBootstrapToken[] =
 void UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions,
     PrefService* pref_service) {
-  auto invalidation_dictionary = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict invalidation_dictionary;
   for (const auto& [type, version] : invalidation_versions) {
-    invalidation_dictionary->SetStringKey(
+    invalidation_dictionary.Set(
         base::NumberToString(GetSpecificsFieldNumberFromModelType(type)),
         base::NumberToString(version));
   }
-  pref_service->Set(kSyncInvalidationVersions2, *invalidation_dictionary);
+  pref_service->SetDict(kSyncInvalidationVersions2,
+                        std::move(invalidation_dictionary));
 }
 
 std::string GetLegacyModelTypeNameForInvalidationVersions(ModelType type) {

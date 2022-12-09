@@ -4,6 +4,7 @@
 
 #include "components/sync/engine/events/commit_response_event.h"
 
+#include "base/values.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
 namespace syncer {
@@ -32,12 +33,12 @@ std::string CommitResponseEvent::GetDetails() const {
   return "Result: " + result_.ToString();
 }
 
-std::unique_ptr<base::DictionaryValue> CommitResponseEvent::GetProtoMessage(
+base::Value::Dict CommitResponseEvent::GetProtoMessage(
     bool include_specifics) const {
-  return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(ClientToServerResponseToValue(
-          response_, {.include_specifics = include_specifics,
-                      .include_full_get_update_triggers = false})));
+  return ClientToServerResponseToValue(
+             response_, {.include_specifics = include_specifics,
+                         .include_full_get_update_triggers = false})
+      .TakeDict();
 }
 
 }  // namespace syncer

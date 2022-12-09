@@ -14,10 +14,6 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace syncer {
 
 // A light-weight container for sync entity data which represents either
@@ -90,7 +86,7 @@ struct EntityData {
   // specifics hasn't been set.
   bool is_deleted() const { return specifics.ByteSize() == 0; }
 
-  // Dumps all info into a DictionaryValue and returns it.
+  // Dumps all info into a base::Value::Dict and returns it.
   base::Value::Dict ToDictionaryValue() const;
 
   // Returns the estimate of dynamically allocated memory in bytes.

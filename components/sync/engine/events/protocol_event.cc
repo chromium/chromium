@@ -15,8 +15,7 @@ base::Value::Dict ProtocolEvent::ToValue(bool include_specifics) const {
   dict.Set("time", GetTimestamp().ToJsTime());
   dict.Set("type", GetType());
   dict.Set("details", GetDetails());
-  dict.Set("proto",
-           base::Value::FromUniquePtrValue(GetProtoMessage(include_specifics)));
+  dict.Set("proto", GetProtoMessage(include_specifics));
   return dict;
 }
 

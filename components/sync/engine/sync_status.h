@@ -21,7 +21,7 @@ namespace syncer {
 // This struct is closely tied to the AllStatus object which uses instances of
 // it to track and report on the sync engine's internal state, and the functions
 // in sync_ui_util.cc which convert the contents of this struct into a
-// DictionaryValue used to populate the chrome://sync-internals summary tab.
+// base::Value::Dict used to populate the chrome://sync-internals summary tab.
 struct SyncStatus {
   SyncStatus();
   SyncStatus(const SyncStatus& other);

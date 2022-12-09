@@ -71,7 +71,7 @@ inline constexpr char kOnInvalidationReceived[] = "onInvalidationReceived";
 
 using IncludeSensitiveData =
     base::StrongAlias<class IncludeSensitiveDataTag, bool>;
-// This function returns a DictionaryValue which contains all the information
+// This function returns a base::Value::Dict which contains all the information
 // required to populate the 'About' tab of chrome://sync-internals.
 // Note that |service| may be null.
 // If |include_sensitive_data| is false, Personally Identifiable Information

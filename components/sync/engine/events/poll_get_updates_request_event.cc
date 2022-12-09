@@ -4,6 +4,7 @@
 
 #include "components/sync/engine/events/poll_get_updates_request_event.h"
 
+#include "base/values.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 
 namespace syncer {
@@ -31,12 +32,12 @@ std::string PollGetUpdatesRequestEvent::GetDetails() const {
   return std::string();
 }
 
-std::unique_ptr<base::DictionaryValue>
-PollGetUpdatesRequestEvent::GetProtoMessage(bool include_specifics) const {
-  return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(ClientToServerMessageToValue(
-          request_, {.include_specifics = include_specifics,
-                     .include_full_get_update_triggers = false})));
+base::Value::Dict PollGetUpdatesRequestEvent::GetProtoMessage(
+    bool include_specifics) const {
+  return ClientToServerMessageToValue(
+             request_, {.include_specifics = include_specifics,
+                        .include_full_get_update_triggers = false})
+      .TakeDict();
 }
 
 }  // namespace syncer
