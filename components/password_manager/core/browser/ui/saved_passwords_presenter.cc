@@ -426,19 +426,17 @@ std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
   std::vector<CredentialUIEntry> credentials;
 
   auto it = sort_key_to_password_forms_.begin();
-  std::string current_key;
-
   while (it != sort_key_to_password_forms_.end()) {
-    if (current_key != it->first) {
-      current_key = it->first;
-      credentials.emplace_back(it->second);
-    } else {
-      // Aggregates store information which might be different across copies.
-      credentials.back().stored_in.insert(it->second.in_store);
+    auto current_key = it->first;
+    // Aggregate all passwords for the current key.
+    std::vector<PasswordForm> current_passwords_group;
+    while (it != sort_key_to_password_forms_.end() &&
+           it->first == current_key) {
+      current_passwords_group.push_back(it->second);
+      ++it;
     }
-    ++it;
+    credentials.emplace_back(current_passwords_group);
   }
-
   return credentials;
 }
 

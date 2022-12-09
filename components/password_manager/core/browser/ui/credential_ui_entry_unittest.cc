@@ -26,17 +26,17 @@ auto ExpectDomain(const std::string& name, const GURL& url) {
 
 }  // namespace
 
-TEST(CredentialUIEntryTest, CredentialUIEntryWithForm) {
-  std::u16string username = u"testUsername00";
-  std::u16string password = u"testPassword01";
+TEST(CredentialUIEntryTest, CredentialUIEntryFromForm) {
+  const std::u16string kUsername = u"testUsername00";
+  const std::u16string kPassword = u"testPassword01";
 
   PasswordForm form;
   form.app_display_name = "g.com";
   form.signon_realm = "https://g.com/";
   form.url = GURL(form.signon_realm);
   form.blocked_by_user = false;
-  form.username_value = username;
-  form.password_value = password;
+  form.username_value = kUsername;
+  form.password_value = kPassword;
   form.in_store = PasswordForm::Store::kProfileStore;
 
   CredentialUIEntry entry = CredentialUIEntry(form);
@@ -45,23 +45,26 @@ TEST(CredentialUIEntryTest, CredentialUIEntryWithForm) {
   EXPECT_EQ(entry.facets.size(), size);
   EXPECT_EQ(entry.facets[0].signon_realm, "https://g.com/");
   EXPECT_EQ(entry.stored_in.size(), size);
-  EXPECT_EQ(entry.username, username);
-  EXPECT_EQ(entry.password, password);
+  EXPECT_EQ(entry.username, kUsername);
+  EXPECT_EQ(entry.password, kPassword);
   EXPECT_EQ(entry.blocked_by_user, false);
 }
 
-TEST(CredentialUIEntryTest, CredentialUIEntryWithFormsVector) {
+TEST(CredentialUIEntryTest,
+     CredentialUIEntryFromFormsVectorWithIdenticalNotes) {
   std::vector<PasswordForm> forms;
-  std::u16string username = u"testUsername00";
-  std::u16string password = u"testPassword01";
+  const std::u16string kUsername = u"testUsername00";
+  const std::u16string kPassword = u"testPassword01";
+  const std::u16string kNote = u"Test New Note \n";
 
   PasswordForm form;
   form.app_display_name = "g.com";
   form.signon_realm = "https://g.com/";
   form.url = GURL(form.signon_realm);
   form.blocked_by_user = false;
-  form.username_value = username;
-  form.password_value = password;
+  form.username_value = kUsername;
+  form.password_value = kPassword;
+  form.SetNoteWithEmptyUniqueDisplayName(kNote);
   form.in_store = PasswordForm::Store::kProfileStore;
   forms.push_back(std::move(form));
 
@@ -70,8 +73,9 @@ TEST(CredentialUIEntryTest, CredentialUIEntryWithFormsVector) {
   form2.signon_realm = "https://g2.com/";
   form2.url = GURL(form2.signon_realm);
   form2.blocked_by_user = false;
-  form2.username_value = username;
-  form2.password_value = password;
+  form2.username_value = kUsername;
+  form2.password_value = kPassword;
+  form2.SetNoteWithEmptyUniqueDisplayName(kNote);
   form2.in_store = PasswordForm::Store::kAccountStore;
   forms.push_back(std::move(form2));
 
@@ -80,8 +84,8 @@ TEST(CredentialUIEntryTest, CredentialUIEntryWithFormsVector) {
   form3.signon_realm = "https://g3.com/";
   form3.url = GURL(form3.signon_realm);
   form3.blocked_by_user = false;
-  form3.username_value = username;
-  form3.password_value = password;
+  form3.username_value = kUsername;
+  form3.password_value = kPassword;
   form3.in_store = PasswordForm::Store::kAccountStore;
   forms.push_back(std::move(form3));
 
@@ -93,8 +97,9 @@ TEST(CredentialUIEntryTest, CredentialUIEntryWithFormsVector) {
   EXPECT_EQ(entry.facets[2].signon_realm, "https://g3.com/");
   unsigned long stored_in_size = 2;
   EXPECT_EQ(entry.stored_in.size(), stored_in_size);
-  EXPECT_EQ(entry.username, username);
-  EXPECT_EQ(entry.password, password);
+  EXPECT_EQ(entry.username, kUsername);
+  EXPECT_EQ(entry.password, kPassword);
+  EXPECT_EQ(entry.note, kNote);
   EXPECT_EQ(entry.blocked_by_user, false);
 }
 
@@ -137,6 +142,26 @@ TEST(CredentialUIEntryTest, TestGetAffiliatedDomainsEmptyAndroidForm) {
               ElementsAre(ExpectDomain(
                   "client.test.com", GURL("https://play.google.com/store/apps/"
                                           "details?id=com.test.client"))));
+}
+
+TEST(CredentialUIEntryTest,
+     CredentialUIEntryFromFormsVectorWithDifferentNotes) {
+  std::vector<PasswordForm> forms;
+  const std::u16string kNotes[] = {u"Note", u"", u"Another note"};
+
+  for (const auto& kNote : kNotes) {
+    PasswordForm form;
+    form.signon_realm = "https://g.com/";
+    form.url = GURL(form.signon_realm);
+    form.password_value = u"pwd";
+    form.SetNoteWithEmptyUniqueDisplayName(kNote);
+    forms.push_back(std::move(form));
+  }
+
+  CredentialUIEntry entry = CredentialUIEntry(forms);
+
+  // Notes are concatenated alphabetically.
+  EXPECT_EQ(entry.note, kNotes[2] + u"\n" + kNotes[0]);
 }
 
 }  // namespace password_manager
