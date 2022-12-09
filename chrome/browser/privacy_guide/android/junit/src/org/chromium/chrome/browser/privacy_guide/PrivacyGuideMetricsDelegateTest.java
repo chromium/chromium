@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
 
@@ -138,5 +139,30 @@ public class PrivacyGuideMetricsDelegateTest {
         PrivacyGuideMetricsDelegate.recordMetricsOnSyncChange(false);
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeHistorySyncOff"));
+    }
+
+    @Test
+    @SmallTest
+    public void testSafeBrowsing_changeSafeBrowsingEnhancedUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnSafeBrowsingChange(
+                SafeBrowsingState.ENHANCED_PROTECTION);
+        assertTrue(mActionTester.getActions().contains(
+                "Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced"));
+    }
+
+    @Test
+    @SmallTest
+    public void testSafeBrowsing_changeSafeBrowsingStandardUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnSafeBrowsingChange(
+                SafeBrowsingState.STANDARD_PROTECTION);
+        assertTrue(mActionTester.getActions().contains(
+                "Settings.PrivacyGuide.ChangeSafeBrowsingStandard"));
+    }
+
+    @Test(expected = AssertionError.class)
+    @SmallTest
+    public void testSafeBrowsing_changeSafeBrowsingOff() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnSafeBrowsingChange(
+                SafeBrowsingState.NO_SAFE_BROWSING);
     }
 }

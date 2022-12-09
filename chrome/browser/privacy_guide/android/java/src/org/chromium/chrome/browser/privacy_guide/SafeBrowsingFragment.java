@@ -82,8 +82,12 @@ public class SafeBrowsingFragment extends Fragment
     public void onCheckedChanged(RadioGroup radioGroup, int clickedButtonId) {
         if (clickedButtonId == R.id.enhanced_option) {
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
+            PrivacyGuideMetricsDelegate.recordMetricsOnSafeBrowsingChange(
+                    SafeBrowsingState.ENHANCED_PROTECTION);
         } else if (clickedButtonId == R.id.standard_option) {
             SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+            PrivacyGuideMetricsDelegate.recordMetricsOnSafeBrowsingChange(
+                    SafeBrowsingState.STANDARD_PROTECTION);
         } else {
             assert false : "Unknown clickedButtonId " + clickedButtonId;
         }

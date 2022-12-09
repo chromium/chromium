@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.privacy_guide;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 
 /**
  * A delegate class to record metrics associated with each card inside
@@ -99,6 +100,23 @@ class PrivacyGuideMetricsDelegate {
             RecordUserAction.record("Settings.PrivacyGuide.ChangeHistorySyncOn");
         } else {
             RecordUserAction.record("Settings.PrivacyGuide.ChangeHistorySyncOff");
+        }
+    }
+
+    /**
+     * A method to record metrics on Safe Browsing radio button change of the Privacy Guide's {@link
+     * SafeBrowsingFragment}.
+     */
+    static void recordMetricsOnSafeBrowsingChange(@SafeBrowsingState int safeBrowsingState) {
+        switch (safeBrowsingState) {
+            case SafeBrowsingState.ENHANCED_PROTECTION:
+                RecordUserAction.record("Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced");
+                break;
+            case SafeBrowsingState.STANDARD_PROTECTION:
+                RecordUserAction.record("Settings.PrivacyGuide.ChangeSafeBrowsingStandard");
+                break;
+            default:
+                assert false : "Unexpected SafeBrowsingState " + safeBrowsingState;
         }
     }
 }
