@@ -1,2 +1,0 @@
-HTTP/1.1 200 OK
-Attribution-Reporting-Register-Source:{"source_event_id":"5","destination":"https://d.test","aggregation_keys":{"key1":"0x5","key2":"0x159"}}
