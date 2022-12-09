@@ -10,7 +10,6 @@ include_rules = [
   "+base/numerics/clamped_math.h",
   "+base/path_service.h",
   "+base/supports_user_data.h",
-  "+base/win/wincrypt_shim.h",
 ]
 specific_include_rules = {
   "path_builder_unittest\.cc": [

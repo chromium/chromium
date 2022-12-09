@@ -4980,6 +4980,7 @@ test("net_unittests") {
 
     if (is_win) {
       sources += [ "cert/internal/trust_store_win_unittest.cc" ]
+      sources += [ "cert/internal/path_builder_trust_store_win_unittest.cc" ]
       libs += [ "crypt32.lib" ]
     }
   }
