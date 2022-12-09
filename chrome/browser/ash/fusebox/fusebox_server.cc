@@ -1518,7 +1518,6 @@ void Server::OnReadDirectory(
   for (const auto& entry : entry_list) {
     bool is_directory = entry.type == filesystem::mojom::FsFileType::DIRECTORY;
     auto* proto = iter->second.response_.add_entries();
-    proto->set_is_directory(is_directory);
     proto->set_name(entry.name.value());
     proto->set_mode_bits(MakeModeBits(is_directory, read_only));
   }
