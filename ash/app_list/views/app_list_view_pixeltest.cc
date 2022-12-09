@@ -6,9 +6,9 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
-#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -81,7 +81,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
   auto* test_helper = GetAppListTestHelper();
   SearchModel::SearchResults* results = test_helper->GetSearchResults();
   SetUpAnswerCardResult(results, 1, 1);
-  test_helper->GetProductivityLauncherSearchView()
+  test_helper->GetBubbleAppListSearchView()
       ->OnSearchResultContainerResultsChanged();
 
   HideCursor();

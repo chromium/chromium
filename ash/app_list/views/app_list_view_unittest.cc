@@ -19,6 +19,7 @@
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
+#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
@@ -27,7 +28,6 @@
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
-#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -599,7 +599,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     constexpr int kBestMatchContainerIndex = 1;
     return contents_view()
         ->search_result_page_view()
-        ->productivity_launcher_search_view_for_test()
+        ->search_view_for_test()
         ->result_container_views_for_test()[kBestMatchContainerIndex];
   }
 
@@ -1091,7 +1091,7 @@ TEST_F(AppListViewFocusTest, FirstResultSelectedAfterSearchResultsUpdated) {
   ResultSelectionController* selection_controller =
       contents_view()
           ->search_result_page_view()
-          ->productivity_launcher_search_view_for_test()
+          ->search_view_for_test()
           ->result_selection_controller_for_test();
 
   // Ensures the |ResultSelectionController| selects the correct result.

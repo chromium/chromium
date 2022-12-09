@@ -14,7 +14,7 @@
 namespace ash {
 
 class AppListViewDelegate;
-class ProductivityLauncherSearchView;
+class AppListSearchView;
 class SearchBoxView;
 class SearchResultPageAnchoredDialog;
 class SystemShadow;
@@ -64,9 +64,7 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   // UI.
   bool CanSelectSearchResults() const;
 
-  ProductivityLauncherSearchView* productivity_launcher_search_view_for_test() {
-    return productivity_launcher_search_view_;
-  }
+  AppListSearchView* search_view_for_test() { return search_view_; }
 
   SearchResultPageAnchoredDialog* dialog_for_test() {
     return dialog_controller_->dialog();
@@ -109,7 +107,7 @@ class ASH_EXPORT SearchResultPageView : public AppListPage {
   int GetCornerRadiusForSearchResultsState(SearchResultsState state);
 
   // Search result container used for productivity launcher.
-  ProductivityLauncherSearchView* productivity_launcher_search_view_ = nullptr;
+  AppListSearchView* search_view_ = nullptr;
 
   // View containing SearchCardView instances. Owned by view hierarchy.
   views::View* root_view_ = nullptr;

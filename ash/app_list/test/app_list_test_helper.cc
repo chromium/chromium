@@ -19,12 +19,12 @@
 #include "ash/app_list/views/app_list_bubble_view.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
+#include "ash/app_list/views/app_list_search_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/continue_section_view.h"
-#include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/constants/ash_features.h"
@@ -353,8 +353,7 @@ AppListTestHelper::GetOrderedResultCategories() {
   return AppListModelProvider::Get()->search_model()->ordered_categories();
 }
 
-ProductivityLauncherSearchView*
-AppListTestHelper::GetProductivityLauncherSearchView() {
+AppListSearchView* AppListTestHelper::GetBubbleAppListSearchView() {
   return app_list_controller_->bubble_presenter_for_test()
       ->bubble_view_for_test()
       ->search_page_->search_view();

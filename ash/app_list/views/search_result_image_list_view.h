@@ -21,7 +21,7 @@ class Label;
 namespace ash {
 
 // SearchResultImageListView displays a horizontal strip of
-// SearchResultImageViews inside the ProductivityLauncherSearchView.
+// SearchResultImageViews inside the AppListSearchView.
 class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
  public:
   METADATA_HEADER(SearchResultImageListView);

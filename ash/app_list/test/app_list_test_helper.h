@@ -35,7 +35,7 @@ class AppListView;
 class AppsContainerView;
 class ContinueSectionView;
 class PagedAppsGridView;
-class ProductivityLauncherSearchView;
+class AppListSearchView;
 class RecentAppsView;
 class ScrollableAppsGridView;
 class SearchBoxView;
@@ -150,7 +150,6 @@ class AppListTestHelper {
   ContinueSectionView* GetFullscreenContinueSectionView();
   SearchResultPageView* GetFullscreenSearchResultPageView();
   SearchResultPageAnchoredDialog* GetFullscreenSearchPageDialog();
-  ProductivityLauncherSearchView* GetProductivityLauncherSearchView();
   views::View* GetFullscreenLauncherAppsSeparatorView();
 
   // Whether the fullscreen/peeking launcher is showing the search results view.
@@ -173,6 +172,7 @@ class AppListTestHelper {
   SearchModel::SearchResults* GetSearchResults();
   views::View* GetBubbleLauncherAppsSeparatorView();
   std::vector<ash::AppListSearchResultCategory>* GetOrderedResultCategories();
+  AppListSearchView* GetBubbleAppListSearchView();
 
   test::AppListTestModel* model() { return &model_; }
   SearchModel* search_model() { return &search_model_; }

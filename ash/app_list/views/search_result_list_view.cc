@@ -68,7 +68,7 @@ constexpr int kAnswerCardMaxResults = 1;
 
 // Show animations for search result views and titles have a translation
 // distance of 'kAnimatedOffsetMultiplier' * i where i is the position of the
-// view in the 'ProductivityLauncherSearchView'.
+// view in the 'AppListSearchView'.
 constexpr int kAnimatedOffsetMultiplier = 4;
 
 // Maps 'AppListSearchResultCategory' to 'SearchResultListType'.
