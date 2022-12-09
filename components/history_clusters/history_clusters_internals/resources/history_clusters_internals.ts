@@ -72,7 +72,11 @@ function initialize() {
         logMessages.push(message);
         if (logMessageContainer) {
           const logmessage = logMessageContainer.insertRow();
-          logmessage.insertCell().innerHTML = `<pre>${message}</pre>`;
+          const cell = logmessage.insertCell();
+          cell.innerHTML = window.trustedTypes!.emptyHTML;
+          const pre = document.createElement('pre');
+          pre.textContent = message;
+          cell.appendChild(pre);
         }
       });
 }
