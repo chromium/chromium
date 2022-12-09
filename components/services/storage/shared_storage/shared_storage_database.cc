@@ -979,13 +979,15 @@ SharedStorageDatabase::GetEntriesForDevTools(url::Origin context_origin) {
   }
 
   static constexpr char kSelectSql[] =
-      "SELECT key,value FROM values_mapping WHERE context_origin=? "
+      "SELECT key,value FROM values_mapping "
+      "WHERE context_origin=? AND last_used_time>=? "
       "ORDER BY key";
 
   sql::Statement select_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
   std::string origin_str(SerializeOrigin(context_origin));
   select_statement.BindString(0, origin_str);
+  select_statement.BindTime(1, clock_->Now() - staleness_threshold_);
 
   while (select_statement.Step()) {
     entries.entries.emplace_back(

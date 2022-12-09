@@ -47,6 +47,7 @@ using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
 using TimeResult = SharedStorageDatabase::TimeResult;
+using EntriesResult = SharedStorageDatabase::EntriesResult;
 
 const int kBudgetIntervalHours = 24;
 const int kStalenessThresholdDays = 1;
@@ -1245,6 +1246,41 @@ TEST_P(SharedStorageDatabaseParamTest,
   // found.
   EXPECT_EQ(OperationResult::kSuccess, db_->Clear(kOrigin2));
   EXPECT_EQ(OperationResult::kNotFound, db_->GetCreationTime(kOrigin2).result);
+}
+
+TEST_P(SharedStorageDatabaseParamTest, GetEntriesForDevTools) {
+  const url::Origin kOrigin1 =
+      url::Origin::Create(GURL("http://www.example1.test"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key1", u"value1"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key2", u"value2"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin1, u"key3", u"value3"));
+
+  const url::Origin kOrigin2 =
+      url::Origin::Create(GURL("http://www.example2.test"));
+  EXPECT_EQ(OperationResult::kSet, db_->Set(kOrigin2, u"key1", u"value1"));
+
+  // Only `kOrigin1`'s entries are retrieved.
+  EntriesResult entries_result1 = db_->GetEntriesForDevTools(kOrigin1);
+  EXPECT_EQ(OperationResult::kSuccess, entries_result1.result);
+  EXPECT_THAT(entries_result1.entries,
+              ElementsAre(Pair("key1", "value1"), Pair("key2", "value2"),
+                          Pair("key3", "value3")));
+
+  // Advance the clock halfway towards expiration of the keys.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0));
+
+  // Update one key.
+  EXPECT_EQ(OperationResult::kSet, db_->Append(kOrigin1, u"key2", u"append"));
+
+  // Advance the clock to the expiration time for when the keys were initially
+  // set.
+  clock_.Advance(base::Days(kStalenessThresholdDays / 2.0) + base::Seconds(1));
+
+  // Only `kOrigin1`'s unexpired entries are retrieved.
+  EntriesResult entries_result2 = db_->GetEntriesForDevTools(kOrigin1);
+  EXPECT_EQ(OperationResult::kSuccess, entries_result2.result);
+  EXPECT_THAT(entries_result2.entries,
+              ElementsAre(Pair("key2", "value2append")));
 }
 
 class SharedStorageDatabasePurgeMatchingOriginsParamTest
