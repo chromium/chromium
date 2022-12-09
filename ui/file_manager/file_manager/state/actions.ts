@@ -6,7 +6,7 @@ import {SearchData} from '../externs/ts/state.js';
 import {BaseAction} from '../lib/base_store.js';
 
 import {ClearStaleCachedEntriesAction} from './actions/all_entries.js';
-import {ChangeDirectoryAction, ChangeSelectionAction} from './actions/current_directory.js';
+import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction} from './actions/current_directory.js';
 
 /**
  * Union of all types of Actions in Files app.
@@ -16,13 +16,14 @@ import {ChangeDirectoryAction, ChangeSelectionAction} from './actions/current_di
  * https://mariusschulz.com/blog/tagged-union-types-in-typescript
  */
 export type Action = ChangeDirectoryAction|ChangeSelectionAction|
-    ClearStaleCachedEntriesAction|SearchAction;
+    ChangeFileTasksAction|ClearStaleCachedEntriesAction|SearchAction;
 
 
 /** Enum to identify every Action in Files app. */
 export const enum ActionType {
   CHANGE_DIRECTORY = 'change-directory',
   CHANGE_SELECTION = 'change-selection',
+  CHANGE_FILE_TASKS = 'change-file-tasks',
   CLEAR_STALE_CACHED_ENTRIES = 'clear-stale-cached-entries',
   SEARCH = 'search',
 }

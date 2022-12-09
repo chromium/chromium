@@ -257,6 +257,9 @@ ts_files = [
   "file_manager/state/actions/all_entries.ts",
   "file_manager/state/actions/current_directory.ts",
 
+  # ActionsProducers.
+  "file_manager/state/actions_producers/current_directory.ts",
+
   # Reducers.
   "file_manager/state/reducers/root.ts",
   "file_manager/state/reducers/all_entries.ts",

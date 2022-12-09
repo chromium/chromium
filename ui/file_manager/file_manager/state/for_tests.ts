@@ -8,7 +8,7 @@ import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../externs/ts/state.js';
 
 import {changeDirectory, updateSelection} from './actions/current_directory.js';
-import {Store} from './store.js';
+import {StateSelector, Store, waitForState} from './store.js';
 
 /**
  * Compares 2 State objects and fails with nicely formatted message when it
@@ -33,4 +33,42 @@ export function changeSelection(store: Store, entries: Entry[]) {
     selectedKeys: entries.map(e => e.toURL()),
     entries,
   }));
+}
+
+/**
+ * Waits for a part of the Store to be in the expected state.
+ *
+ * Waits a maximum of 10 seconds, since in the unittest the Store manipulation
+ * has all async APIs mocked.
+ *
+ * Usage:
+ * let want: StoreSomething = {somePartOfStore: 'desired state'};
+ * store.dispatch(someActionsProducer(...));
+ * await waitDeepEquals(store, want, (state) => state.something);
+ */
+export async function waitDeepEquals(
+    store: Store, want: any, stateSelection: StateSelector) {
+  let got: any;
+  const timeout = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`waitDeepEquals timed out waiting for \n${want}`));
+    }, 10000);
+  });
+
+  const checker = waitForState(store, (state) => {
+    try {
+      got = stateSelection(state);
+      assertDeepEquals(want, got);
+      return true;
+    } catch (error: any) {
+      if (error.constructor?.name === 'AssertionError') {
+        return false;
+      }
+      console.log(error.stack);
+      console.error(error);
+      throw error;
+    }
+  });
+
+  await Promise.race([checker, timeout]);
 }

@@ -9,14 +9,17 @@ import {DialogType} from '../../common/js/dialog_type.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
-import {CurrentDirectory, PropStatus} from '../../externs/ts/state.js';
+import {CurrentDirectory, FileTasks, PropStatus} from '../../externs/ts/state.js';
+import {FakeFileSelectionHandler} from '../../foreground/js/fake_file_selection_handler.js';
 import {FileSelectionHandler} from '../../foreground/js/file_selection.js';
 import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../../foreground/js/metadata/mock_metadata.js';
 import {TaskController} from '../../foreground/js/task_controller.js';
 import {changeDirectory, updateSelection} from '../actions/current_directory.js';
-import {assertStateEquals} from '../for_tests.js';
-import {getEmptyState, getStore, Store} from '../store.js';
+import {fetchFileTasks} from '../actions_producers/current_directory.js';
+import {assertStateEquals, waitDeepEquals} from '../for_tests.js';
+import {getEmptyState, getFilesData, getStore, Store} from '../store.js';
+
 
 let fileSystem: MockFileSystem;
 
@@ -27,7 +30,8 @@ export function setUp() {
     volumeManager: volumeManager,
     metadataModel: new MockMetadataModel({}) as unknown as MetadataModel,
     crostini: {} as unknown as Crostini,
-    selectionHandler: {} as unknown as FileSelectionHandler,
+    selectionHandler: new FakeFileSelectionHandler() as unknown as
+        FileSelectionHandler,
     taskController: {} as unknown as TaskController,
     dialogType: DialogType.FULL_PAGE,
   };
@@ -137,7 +141,6 @@ export function testChangeDirectoryTwice() {
   assertStateEquals(want, store.getState().currentDirectory);
 }
 
-
 export function testChangeSelection() {
   const store = setupStore();
   const dir2 = fileSystem.entries['/dir-2'];
@@ -183,4 +186,85 @@ export function testChangeSelection() {
   want.selection.dirCount = 1;
   want.selection.fileCount = 1;
   assertStateEquals(want, store.getState().currentDirectory);
+}
+
+function mockGetFileTasks(tasks: chrome.fileManagerPrivate.FileTask[]) {
+  const mocked =
+      (_entries: Entry[],
+       callback: (resultingTasks: chrome.fileManagerPrivate.ResultingTasks) =>
+           void) => {
+        setTimeout(callback, 0, {tasks});
+      };
+  chrome.fileManagerPrivate.getFileTasks = mocked;
+}
+
+const fakeFileTasks: chrome.fileManagerPrivate.FileTask = {
+  descriptor: {
+    appId: 'handler-extension-id1',
+    taskType: 'app',
+    actionId: 'any',
+  },
+  isDefault: false,
+  isGenericFileHandler: false,
+  title: 'app 1',
+  iconUrl: undefined,
+};
+
+export async function testFetchTasks(done: () => void) {
+  const store = setupStore();
+  const dir2 = fileSystem.entries['/dir-2'];
+  const subDir = fileSystem.entries['/dir-2/sub-dir'];
+  const file = fileSystem.entries['/dir-2/file.txt'];
+  cd(store, dir2);
+  changeSelection(store, [subDir, file]);
+
+  const filesData = getFilesData(store.getState(), [file.toURL()]);
+  const want: FileTasks = {
+    policyDefaultHandlerStatus: undefined,
+    defaultTask: undefined,
+    tasks: [],
+    status: PropStatus.SUCCESS,
+  };
+
+  // Mock returning 0 tasks, returns SUCCESS and empty tasks.
+  mockGetFileTasks([]);
+  store.dispatch(fetchFileTasks(filesData));
+  await waitDeepEquals(store, want, (state) => {
+    return state.currentDirectory?.selection.fileTasks;
+  });
+
+  // Mock the private API results with one task which is the default task.
+  mockGetFileTasks([fakeFileTasks]);
+  want.tasks = [
+    {
+      iconType: '',
+      descriptor: {
+        appId: 'handler-extension-id1',
+        taskType: 'app',
+        actionId: 'any',
+      },
+      isDefault: false,
+      isGenericFileHandler: false,
+      title: 'app 1',
+      iconUrl: undefined,
+    },
+  ];
+  want.defaultTask = {...want.tasks[0]!};
+  store.dispatch(fetchFileTasks(filesData));
+  await waitDeepEquals(
+      store, want, (state) => state.currentDirectory?.selection.fileTasks);
+
+  // Mock the API task as genericFileHandler, so it shouldn't be a default task.
+  const genericTask = {
+    ...fakeFileTasks,
+    isGenericFileHandler: true,
+  };
+  mockGetFileTasks([genericTask]);
+  want.tasks[0]!.isGenericFileHandler = true;
+  want.defaultTask = undefined;
+  store.dispatch(fetchFileTasks(filesData));
+  await waitDeepEquals(
+      store, want, (state) => state.currentDirectory?.selection.fileTasks);
+
+  done();
 }

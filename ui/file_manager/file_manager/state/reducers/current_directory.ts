@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CurrentDirectory, FileKey, PropStatus, Selection, State} from '../../externs/ts/state.js';
+import {CurrentDirectory, FileKey, FileTasks, PropStatus, Selection, State} from '../../externs/ts/state.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
-import {ChangeDirectoryAction, ChangeSelectionAction} from '../actions/current_directory.js';
+import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction} from '../actions/current_directory.js';
 
 /**
  * @fileoverview
@@ -139,6 +139,34 @@ export function updateSelection(
     }
   }
 
+  const currentDirectory: CurrentDirectory = {
+    ...currentState.currentDirectory,
+    selection,
+  } as CurrentDirectory;
+
+  return {
+    ...currentState,
+    currentDirectory,
+  };
+}
+
+/** Updates the FileTasks in the selection for the current directory. */
+export function updateFileTasks(
+    currentState: State, action: ChangeFileTasksAction): State {
+  const initialSelection =
+      currentState.currentDirectory?.selection ?? getEmptySelection();
+
+  // Apply the changes over the current selection.
+  const fileTasks: FileTasks = {
+    ...initialSelection.fileTasks,
+    ...action.payload,
+  };
+
+  // Update the selection and current directory objects.
+  const selection: Selection = {
+    ...initialSelection,
+    fileTasks,
+  };
   const currentDirectory: CurrentDirectory = {
     ...currentState.currentDirectory,
     selection,

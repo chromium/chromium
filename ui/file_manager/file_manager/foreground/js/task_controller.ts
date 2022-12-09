@@ -96,6 +96,16 @@ export class TaskController {
   }
 
   /**
+   * Exposes the TaskHistory instance for the ActionsProducer.
+   *
+   * NOTE: This is a temporary workaround until the TaskHistory is migrated to
+   * the store.
+   */
+  get taskHistory(): TaskHistory {
+    return this.taskHistory_;
+  }
+
+  /**
    * Task combobox handler.
    *
    * @param event Event containing task which was clicked.

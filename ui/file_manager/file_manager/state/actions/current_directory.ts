@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {PropStatus} from '../../externs/ts/state.js';
+import {FileTasks, PropStatus} from '../../externs/ts/state.js';
 import {BaseAction} from '../../lib/base_store.js';
 import {ActionType} from '../actions.js';
 import {FileKey} from '../file_key.js';
@@ -27,6 +27,12 @@ export interface ChangeSelectionAction extends BaseAction {
   };
 }
 
+/** Action to update the FileTasks in the selection. */
+export interface ChangeFileTasksAction extends BaseAction {
+  type: ActionType.CHANGE_FILE_TASKS;
+  payload: FileTasks;
+}
+
 /** Factory for the ChangeDirectoryAction. */
 export function changeDirectory({to, toKey, status}: {
   to?: DirectoryEntry|FilesAppDirEntry, toKey: FileKey,
@@ -47,6 +53,14 @@ export function updateSelection(payload: ChangeSelectionAction['payload']):
     ChangeSelectionAction {
   return {
     type: ActionType.CHANGE_SELECTION,
+    payload,
+  };
+}
+
+/** Factory for the ChangeFileTasksAction. */
+export function updateFileTasks(payload: FileTasks): ChangeFileTasksAction {
+  return {
+    type: ActionType.CHANGE_FILE_TASKS,
     payload,
   };
 }

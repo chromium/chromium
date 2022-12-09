@@ -86,10 +86,12 @@ export function keyedKeepFirst<T extends BaseAction, Args extends any[]>(
         yield producedAction;
       }
     } catch (error) {
-      if (error instanceof ConcurrentActionInvalidatedError) {
-        // This error we don't want to clear the `inFlightKey`.
-        throw error;
+      if (!(error instanceof ConcurrentActionInvalidatedError)) {
+        // This error we don't want to clear the `inFlightKey`, because it's
+        // pointing to the actually valid AP instance.
+        inFlightKey = null;
       }
+      throw error;
     }
 
     // Clear the key if it wasn't invalidated.

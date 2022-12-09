@@ -26,11 +26,15 @@ export type ActionsProducer<T extends BaseAction, Args extends any[]> =
 /**
  * This is the type of the generator that is returned by the ActionsProducer.
  *
- * This is used to enforce the same type for yield and return, since the
- * built-in template accepts different types for both.
+ * This is used to enforce the type for the yield.
+ * The return should be always void, because consuming the generator using `for
+ * await()` doesn't consume the value from the return.
+ *
+ * Yielding `undefined` or a bare yield like `yield;` gives the concurrency
+ * model a chance to interrupt the ActionsProducer, when it's invalidated.
  * @template T the type for the action yielded by the ActionsProducer.
  */
-export type ActionsProducerGen<T> = AsyncGenerator<void|T, void|T>;
+export type ActionsProducerGen<T> = AsyncGenerator<void|T, void>;
 
 /**
  * Exception used to stop ActionsProducer when they're no longer valid.

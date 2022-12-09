@@ -6,7 +6,7 @@ import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
 
 import {cacheEntries, clearCachedEntries} from './all_entries.js';
-import {changeDirectory, updateSelection} from './current_directory.js';
+import {changeDirectory, updateFileTasks, updateSelection} from './current_directory.js';
 import {search} from './search.js';
 
 /**
@@ -27,6 +27,8 @@ export function rootReducer(currentState: State, action: Action): State {
       return changeDirectory(state, action);
     case ActionType.CHANGE_SELECTION:
       return updateSelection(state, action);
+    case ActionType.CHANGE_FILE_TASKS:
+      return updateFileTasks(state, action);
     case ActionType.CLEAR_STALE_CACHED_ENTRIES:
       return clearCachedEntries(state, action);
     case ActionType.SEARCH:
