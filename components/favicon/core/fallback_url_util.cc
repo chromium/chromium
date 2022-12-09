@@ -11,6 +11,9 @@
 
 namespace {
 const char* kFallbackIconTextForIP = "IP";
+#if BUILDFLAG(IS_IOS)
+const char* kFallbackIconTextForAndroidApp = "A";
+#endif
 }  // namespace
 
 namespace favicon {
@@ -24,6 +27,12 @@ std::u16string GetFallbackIconText(const GURL& url) {
     if (url.HostIsIPAddress())
       return base::ASCIIToUTF16(kFallbackIconTextForIP);
     domain = url.host();
+
+#if BUILDFLAG(IS_IOS)
+    // Return "A" if it's an Android app URL. iOS only.
+    if (url.is_valid() && url.spec().rfind("android://", 0) == 0)
+      return base::ASCIIToUTF16(kFallbackIconTextForAndroidApp);
+#endif
   }
   if (domain.empty())
     return std::u16string();
