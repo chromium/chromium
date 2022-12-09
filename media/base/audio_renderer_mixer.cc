@@ -117,7 +117,7 @@ void AudioRendererMixer::SetPauseDelayForTesting(base::TimeDelta delay) {
 
 int AudioRendererMixer::Render(base::TimeDelta delay,
                                base::TimeTicks delay_timestamp,
-                               int prior_frames_skipped,
+                               const AudioGlitchInfo& glitch_info,
                                AudioBus* audio_bus) {
   TRACE_EVENT0("audio", "AudioRendererMixer::Render");
   base::AutoLock auto_lock(lock_);
@@ -140,7 +140,7 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
 
   uint32_t frames_delayed =
       AudioTimestampHelper::TimeToFrames(delay, output_params_.sample_rate());
-  aggregate_converter_.ConvertWithInfo(frames_delayed, {}, audio_bus);
+  aggregate_converter_.ConvertWithInfo(frames_delayed, glitch_info, audio_bus);
   return audio_bus->frames();
 }
 

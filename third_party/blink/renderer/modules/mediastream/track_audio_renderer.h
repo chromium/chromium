@@ -131,7 +131,7 @@ class MODULES_EXPORT TrackAudioRenderer
   // on the IO thread.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             int prior_frames_skipped,
+             const media::AudioGlitchInfo& glitch_info,
              media::AudioBus* audio_bus) override;
   void OnRenderError() override;
 

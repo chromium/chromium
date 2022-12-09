@@ -55,7 +55,7 @@ void TtsPlayer::Resume() {
 
 int TtsPlayer::Render(base::TimeDelta delay,
                       base::TimeTicks delay_timestamp,
-                      int prior_frames_skipped,
+                      const media::AudioGlitchInfo& glitch_info,
                       media::AudioBus* dest) {
   size_t frames_in_buf = 0;
   {

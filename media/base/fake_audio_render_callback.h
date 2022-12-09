@@ -34,7 +34,7 @@ class FakeAudioRenderCallback : public AudioRendererSink::RenderCallback,
   // is set, will only fill half the buffer.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             int prior_frames_skipped,
+             const AudioGlitchInfo& glitch_info,
              AudioBus* audio_bus) override;
   MOCK_METHOD0(OnRenderError, void());
 

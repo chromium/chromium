@@ -8,6 +8,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/audio_glitch_info.h"
 
 namespace media {
 
@@ -94,7 +95,7 @@ bool FakeAudioRendererSink::Render(AudioBus* dest,
   if (state_ != kPlaying)
     return false;
 
-  *frames_written = callback_->Render(delay, base::TimeTicks::Now(), 0, dest);
+  *frames_written = callback_->Render(delay, base::TimeTicks::Now(), {}, dest);
   return true;
 }
 

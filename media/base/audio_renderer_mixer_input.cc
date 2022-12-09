@@ -227,7 +227,7 @@ double AudioRendererMixerInput::ProvideInput(
       AudioTimestampHelper::FramesToTime(frames_delayed, params_.sample_rate());
 
   int frames_filled =
-      callback_->Render(delay, base::TimeTicks::Now(), 0, audio_bus);
+      callback_->Render(delay, base::TimeTicks::Now(), glitch_info, audio_bus);
 
   // AudioConverter expects unfilled frames to be zeroed.
   if (frames_filled < audio_bus->frames()) {

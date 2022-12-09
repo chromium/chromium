@@ -171,12 +171,12 @@ class AudioRendererMixerTest
 
     // Render actual audio data.
     int frames = mixer_callback_->Render(
-        base::TimeDelta(), base::TimeTicks::Now(), 0, audio_bus_.get());
+        base::TimeDelta(), base::TimeTicks::Now(), {}, audio_bus_.get());
     if (frames != audio_bus_->frames())
       return false;
 
     // Render expected audio data (without scaling).
-    expected_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), 0,
+    expected_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
                                expected_audio_bus_.get());
 
     if (half_fill_) {
@@ -340,6 +340,44 @@ class AudioRendererMixerTest
       mixer_inputs_[i]->Stop();
   }
 
+  // Verify that glitch info is being propagated properly.
+  void GlitchInfoTest(int inputs) {
+    InitializeInputs(inputs);
+
+    // Play() all mixer inputs and ensure we get the right values.
+    for (auto& mixer_input : mixer_inputs_) {
+      mixer_input->Start();
+      mixer_input->Play();
+    }
+
+    AudioGlitchInfo glitch_info{.duration = base::Milliseconds(100),
+                                .count = 123};
+    AudioGlitchInfo expected_glitch_info;
+
+    for (int i = 0; i < kMixerCycles; ++i) {
+      expected_glitch_info += glitch_info;
+      mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(),
+                              glitch_info, audio_bus_.get());
+    }
+
+    // If the output buffer duration is not divisible by all the input buffer
+    // durations, all glitch info will not necessarily have been propagated yet.
+    // We call Render with empty glitch info a few more times to flush out any
+    // remaining glitch info.
+    for (int i = 0; i < kMixerCycles; ++i) {
+      mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
+                              audio_bus_.get());
+    }
+
+    for (auto& callback : fake_callbacks_) {
+      EXPECT_EQ(callback->cumulative_glitch_info(), expected_glitch_info);
+    }
+
+    for (auto& mixer_input : mixer_inputs_) {
+      mixer_input->Stop();
+    }
+  }
+
   scoped_refptr<AudioRendererMixerInput> CreateMixerInput() {
     auto input = base::MakeRefCounted<AudioRendererMixerInput>(
         this, base::UnguessableToken::Create(),
@@ -452,6 +490,11 @@ TEST_P(AudioRendererMixerTest, ManyInputMixedStopPlayOdd) {
   MixedStopPlayTest(kOddMixerInputs);
 }
 
+// Check that AudioGlitchInfo is propagated.
+TEST_P(AudioRendererMixerTest, PropagatesAudioGlitchInfo) {
+  GlitchInfoTest(kMixerInputs);
+}
+
 TEST_P(AudioRendererMixerBehavioralTest, OnRenderError) {
   InitializeInputs(kMixerInputs);
   for (size_t i = 0; i < mixer_inputs_.size(); ++i) {
@@ -500,7 +543,7 @@ TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
   const base::TimeDelta kSleepTime = base::Milliseconds(100);
   base::TimeTicks start_time = base::TimeTicks::Now();
   while (!pause_event.IsSignaled()) {
-    mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), 0,
+    mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
                             audio_bus_.get());
     base::PlatformThread::Sleep(kSleepTime);
     ASSERT_TRUE(base::TimeTicks::Now() - start_time < kTestTimeout);
@@ -516,7 +559,7 @@ TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
   // Ensure once the input is paused the sink eventually pauses.
   start_time = base::TimeTicks::Now();
   while (!pause_event.IsSignaled()) {
-    mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), 0,
+    mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
                             audio_bus_.get());
     base::PlatformThread::Sleep(kSleepTime);
     ASSERT_TRUE(base::TimeTicks::Now() - start_time < kTestTimeout);

@@ -267,7 +267,7 @@ class MODULES_EXPORT WebRtcAudioRenderer
   // These two methods are called on the AudioOutputDevice worker thread.
   int Render(base::TimeDelta delay,
              base::TimeTicks delay_timestamp,
-             int prior_frames_skipped,
+             const media::AudioGlitchInfo& glitch_info,
              media::AudioBus* audio_bus) override;
   void OnRenderError() override;
 

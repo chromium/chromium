@@ -119,7 +119,7 @@ class AudioStreamHandler::AudioStreamContainer
   // Following methods could be called from *ANY* thread.
   int Render(base::TimeDelta /* delay */,
              base::TimeTicks /* delay_timestamp */,
-             int /* prior_frames_skipped */,
+             const media::AudioGlitchInfo& /* glitch_info */,
              media::AudioBus* dest) override {
     base::AutoLock al(state_lock_);
     size_t bytes_written = 0;

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_glitch_info.h"
 
 namespace media {
 
@@ -37,7 +38,7 @@ SilentSinkSuspender::~SilentSinkSuspender() {
 
 int SilentSinkSuspender::Render(base::TimeDelta delay,
                                 base::TimeTicks delay_timestamp,
-                                int prior_frames_skipped,
+                                const AudioGlitchInfo& glitch_info,
                                 AudioBus* dest) {
   // Lock required since AudioRendererSink::Pause() is not synchronous, we need
   // to discard these calls during the transition to the fake sink.
@@ -53,7 +54,6 @@ int SilentSinkSuspender::Render(base::TimeDelta delay,
   // the audio data for a future transition out of silence.
   if (!dest) {
     DCHECK(is_using_fake_sink_);
-    DCHECK_EQ(prior_frames_skipped, 0);
     // |delay_timestamp| contains the value cached at
     // |latest_output_delay_timestamp_|
     // so we simulate the real sink output, promoting |delay_timestamp| with
@@ -80,7 +80,7 @@ int SilentSinkSuspender::Render(base::TimeDelta delay,
   }
 
   // Pass-through to client and request rendering.
-  callback_->Render(delay, delay_timestamp, prior_frames_skipped, dest);
+  callback_->Render(delay, delay_timestamp, glitch_info, dest);
 
   // Check for silence or real audio data and transition if necessary.
   if (!dest->AreFramesZero() || !detect_silence_) {
@@ -195,7 +195,7 @@ void SilentSinkSuspender::TransitionSinks(bool use_fake_sink) {
           // new timestamps being provided by FakeAudioWorker, in that it's call
           // to base::TimeTicks::Now() can be eliminated (use |now| instead),
           // along with its custom delay timestamp calculations.
-          suspender->Render(frozen_delay, frozen_delay_timestamp, 0, nullptr);
+          suspender->Render(frozen_delay, frozen_delay_timestamp, {}, nullptr);
         },
         this, latest_output_delay_, latest_output_delay_timestamp_));
   } else {

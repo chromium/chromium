@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -165,7 +166,7 @@ TEST_F(TtsServiceTest, BasicAudioBuffering) {
 
   auto bus = media::AudioBus::Create(1 /* channels */, 512 /* frames */);
   service_.playback_tts_stream_for_testing()->tts_player_for_testing()->Render(
-      base::Seconds(0), base::TimeTicks::Now(), 0 /* prior frames skipped */,
+      base::Seconds(0), base::TimeTicks::Now(), {} /* glitch info */,
       bus.get());
   observer.FlushForTesting();
 
@@ -178,7 +179,7 @@ TEST_F(TtsServiceTest, BasicAudioBuffering) {
       std::vector<float>(), 100 /* char_index */, false /* last buffer */);
   playback_tts_stream.FlushForTesting();
   service_.playback_tts_stream_for_testing()->tts_player_for_testing()->Render(
-      base::Seconds(0), base::TimeTicks::Now(), 0 /* prior frames skipped */,
+      base::Seconds(0), base::TimeTicks::Now(), {} /* glitch info */,
       bus.get());
   observer.FlushForTesting();
   EXPECT_EQ(1, backing_observer.start_count);
@@ -192,7 +193,7 @@ TEST_F(TtsServiceTest, BasicAudioBuffering) {
       std::vector<float>(), 9999 /* char_index */, true /* last buffer */);
   playback_tts_stream.FlushForTesting();
   service_.playback_tts_stream_for_testing()->tts_player_for_testing()->Render(
-      base::Seconds(0), base::TimeTicks::Now(), 0 /* prior frames skipped */,
+      base::Seconds(0), base::TimeTicks::Now(), {} /* glitch info */,
       bus.get());
   observer.FlushForTesting();
   EXPECT_EQ(1, backing_observer.start_count);
@@ -216,7 +217,7 @@ TEST_F(TtsServiceTest, ExplicitAudioTimepointing) {
 
   auto bus = media::AudioBus::Create(1 /* channels */, 512 /* frames */);
   service_.playback_tts_stream_for_testing()->tts_player_for_testing()->Render(
-      base::Seconds(0), base::TimeTicks::Now(), 0 /* prior frames skipped */,
+      base::Seconds(0), base::TimeTicks::Now(), {} /* glitch info */,
       bus.get());
   observer.FlushForTesting();
 
@@ -229,7 +230,7 @@ TEST_F(TtsServiceTest, ExplicitAudioTimepointing) {
       std::vector<float>(), -1 /* char_index */, false /* last buffer */);
   playback_tts_stream.FlushForTesting();
   service_.playback_tts_stream_for_testing()->tts_player_for_testing()->Render(
-      base::Seconds(0), base::TimeTicks::Now(), 0 /* prior frames skipped */,
+      base::Seconds(0), base::TimeTicks::Now(), {} /* glitch info */,
       bus.get());
   observer.FlushForTesting();
   EXPECT_EQ(1, backing_observer.start_count);
@@ -249,7 +250,7 @@ TEST_F(TtsServiceTest, ExplicitAudioTimepointing) {
       ->AddExplicitTimepoint(300, base::Seconds(0));
   playback_tts_stream.FlushForTesting();
   service_.playback_tts_stream_for_testing()->tts_player_for_testing()->Render(
-      base::Seconds(0), base::TimeTicks::Now(), 0 /* prior frames skipped */,
+      base::Seconds(0), base::TimeTicks::Now(), {} /* glitch info */,
       bus.get());
   observer.FlushForTesting();
   EXPECT_EQ(1, backing_observer.start_count);
@@ -263,7 +264,7 @@ TEST_F(TtsServiceTest, ExplicitAudioTimepointing) {
       std::vector<float>(), 9999 /* char_index */, true /* last buffer */);
   playback_tts_stream.FlushForTesting();
   service_.playback_tts_stream_for_testing()->tts_player_for_testing()->Render(
-      base::Seconds(0), base::TimeTicks::Now(), 0 /* prior frames skipped */,
+      base::Seconds(0), base::TimeTicks::Now(), {} /* glitch info */,
       bus.get());
   observer.FlushForTesting();
   EXPECT_EQ(1, backing_observer.start_count);

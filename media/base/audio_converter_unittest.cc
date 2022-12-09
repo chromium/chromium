@@ -116,7 +116,7 @@ class AudioConverterTest
     converter_->Convert(audio_bus_.get());
 
     // Render expected audio data.
-    expected_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), 0,
+    expected_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
                                expected_audio_bus_.get());
 
     // Zero out unused channels in the expected AudioBus just as AudioConverter
