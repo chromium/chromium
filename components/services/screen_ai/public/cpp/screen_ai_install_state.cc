@@ -77,10 +77,6 @@ void ScreenAIInstallState::RemoveObserver(
 
 void ScreenAIInstallState::SetComponentFolder(
     const base::FilePath& component_folder) {
-  // We do not expect the component to be changed after the first loading.
-  DCHECK_NE(state_, State::kReady);
-  DCHECK(component_binary_path_.empty());
-
   component_binary_path_ =
       component_folder.Append(GetComponentBinaryFileName());
 
