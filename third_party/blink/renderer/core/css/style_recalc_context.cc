@@ -71,6 +71,8 @@ StyleRecalcContext StyleRecalcContext::ForSlottedRules(
 }
 
 StyleRecalcContext StyleRecalcContext::ForPartRules(Element& host) const {
+  DCHECK(IsShadowHost(host));
+
   if (!container)
     return *this;
 

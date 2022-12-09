@@ -613,8 +613,17 @@ void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
     // Consider the ::part rules for the given scope.
     TreeScope& tree_scope = element->GetTreeScope();
     if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver()) {
-      ElementRuleCollector::PartRulesScope scope(
-          collector, const_cast<Element&>(*element));
+      // PartRulesScope must be provided with the host where we want to start
+      // the search for container query containers. For the first iteration of
+      // this loop, `element` is the `part_matching_element`, but we want to
+      // start the search at `part_matching_element`'s host. For subsequent
+      // iterations, `element` is the correct starting element/host.
+      const Element* host = (element == &part_matching_element)
+                                ? element->OwnerShadowHost()
+                                : element;
+      DCHECK(IsShadowHost(host));
+      ElementRuleCollector::PartRulesScope scope(collector,
+                                                 const_cast<Element&>(*host));
       collector.ClearMatchedRules();
       resolver->CollectMatchingPartPseudoRules(collector, current_names,
                                                for_shadow_pseudo);
