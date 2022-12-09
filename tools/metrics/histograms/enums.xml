@@ -88095,6 +88095,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Revalidate"/>
   <int value="2" label="Reload"/>
   <int value="3" label="Load"/>
+  <int value="4" label="Defer"/>
+  <int value="5" label="PreviouslyDeferredLoad"/>
 </enum>
 
 <enum name="RevokeTokenAction">

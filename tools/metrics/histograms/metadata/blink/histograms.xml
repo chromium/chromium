@@ -2093,35 +2093,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy"
-    enum="RevalidationPolicy" expires_after="2021-04-21">
+    enum="RevalidationPolicy" expires_after="2023-04-01">
   <owner>hiroshige@chromium.org</owner>
+  <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
     RevalidationPolicy used for non-preloading requests for each resource type.
-    https://crbug.com/579496
+    https://crbug.com/579496 https://crbug.com/1376866 Warning: this histogram
+    was expired from 2021/04/21 to 2022/12/09; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.AsyncScript"
-    enum="RevalidationPolicy" expires_after="2021-10-25">
+    enum="RevalidationPolicy" expires_after="2023-04-01">
   <owner>hiroshige@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
+  <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
     RevalidationPolicy used for non-preloading requests of async and defer
-    scripts. https://crbug.com/1043679
+    scripts. https://crbug.com/1043679 https://crbug.com/1376866 Warning: this
+    histogram was expired from 2021/10/25 to 2022/12/09; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.Dead"
-    enum="RevalidationPolicy" expires_after="2021-04-21">
+    enum="RevalidationPolicy" expires_after="2023-04-01">
   <owner>hiroshige@chromium.org</owner>
+  <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
     RevalidationPolicy used for requests that hit Resource only referenced from
     MemoryCache for each resource type. https://crbug.com/579496 Requests
     counted by this are also counted by Blink.MemoryCache.RevalidationPolicy or
-    Blink.MemoryCache.RevalidationPolicy.Preload.
+    Blink.MemoryCache.RevalidationPolicy.Preload. https://crbug.com/1376866
+    Warning: this histogram was expired from 2021/04/21 to 2022/12/09; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -2137,12 +2144,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.Preload"
-    enum="RevalidationPolicy" expires_after="2021-04-21">
+    enum="RevalidationPolicy" expires_after="2023-04-01">
   <owner>hiroshige@chromium.org</owner>
+  <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>
     RevalidationPolicy used for preloading requests for each resource type.
-    https://crbug.com/579496
+    https://crbug.com/579496 https://crbug.com/1376866 Warning: this histogram
+    was expired from 2021/04/21 to 2022/12/09; data may be missing.
   </summary>
 </histogram>
 

@@ -576,29 +576,39 @@ ResourceFetcher::IsControlledByServiceWorker() const {
   return properties_->GetControllerServiceWorkerMode();
 }
 
-bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
-                                        const FetchParameters& params,
-                                        RevalidationPolicy policy) {
-  // MHTML documents should not trigger actual loads (i.e. all resource requests
-  // should be fulfilled by the MHTML archive).
-  if (archive_)
-    return false;
-
+bool ResourceFetcher::ShouldDeferResource(ResourceType type,
+                                          const FetchParameters& params) const {
   // Defer a font load until it is actually needed unless this is a link
   // preload.
-  if (resource->GetType() == ResourceType::kFont && !params.IsLinkPreload())
-    return false;
+  if (type == ResourceType::kFont && !params.IsLinkPreload())
+    return true;
 
   // Defer loading images either when:
   // - images are disabled
   // - instructed to defer loading images from network
-  if (resource->GetType() == ResourceType::kImage &&
-      (ShouldDeferImageLoad(resource->Url()) ||
+  if (type == ResourceType::kImage &&
+      (ShouldDeferImageLoad(params.Url()) ||
        params.GetImageRequestBehavior() ==
            FetchParameters::ImageRequestBehavior::kDeferImageLoad)) {
-    return false;
+    return true;
   }
-  return policy != RevalidationPolicy::kUse || resource->StillNeedsLoad();
+
+  return false;
+}
+
+bool ResourceFetcher::ResourceAlreadyLoadStarted(Resource* resource,
+                                                 RevalidationPolicy policy) {
+  return policy == RevalidationPolicy::kUse && resource &&
+         !resource->StillNeedsLoad();
+}
+
+bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
+                                        RevalidationPolicy policy,
+                                        bool should_defer) const {
+  // MHTML documents should not trigger actual loads (i.e. all resource requests
+  // should be fulfilled by the MHTML archive).
+  return !archive_ && !should_defer &&
+         !ResourceAlreadyLoadStarted(resource, policy);
 }
 
 void ResourceFetcher::DidLoadResourceFromMemoryCache(
@@ -750,9 +760,33 @@ void ResourceFetcher::MakePreloadedResourceBlockOnloadIfNeeded(
   }
 }
 
+ResourceFetcher::RevalidationPolicyForMetrics
+ResourceFetcher::MapToPolicyForMetrics(RevalidationPolicy policy,
+                                       Resource* resource,
+                                       bool should_defer) {
+  if (should_defer && !ResourceAlreadyLoadStarted(resource, policy)) {
+    return RevalidationPolicyForMetrics::kDefer;
+  }
+  // A resource in memory cache but not yet loaded is a deferred resource
+  // created in previous loads.
+  if (policy == RevalidationPolicy::kUse && resource->StillNeedsLoad()) {
+    return RevalidationPolicyForMetrics::kPreviouslyDeferredLoad;
+  }
+  switch (policy) {
+    case RevalidationPolicy::kUse:
+      return RevalidationPolicyForMetrics::kUse;
+    case RevalidationPolicy::kRevalidate:
+      return RevalidationPolicyForMetrics::kRevalidate;
+    case RevalidationPolicy::kReload:
+      return RevalidationPolicyForMetrics::kReload;
+    case RevalidationPolicy::kLoad:
+      return RevalidationPolicyForMetrics::kLoad;
+  }
+}
+
 void ResourceFetcher::UpdateMemoryCacheStats(
     Resource* resource,
-    RevalidationPolicy policy,
+    RevalidationPolicyForMetrics policy,
     const FetchParameters& params,
     const ResourceFactory& factory,
     bool is_static_data,
@@ -1135,8 +1169,12 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     }
   }
 
-  UpdateMemoryCacheStats(resource, policy, params, factory, is_static_data,
-                         same_top_frame_site_resource_cached);
+  // Use factory.GetType() since resource can be nullptr here.
+  bool should_defer = ShouldDeferResource(factory.GetType(), params);
+
+  UpdateMemoryCacheStats(
+      resource, MapToPolicyForMetrics(policy, resource, should_defer), params,
+      factory, is_static_data, same_top_frame_site_resource_cached);
 
   switch (policy) {
     case RevalidationPolicy::kReload:
@@ -1153,7 +1191,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
           resource->ShouldRevalidateStaleResponse()) {
         ScheduleStaleRevalidate(resource);
       }
-
       break;
   }
   DCHECK(resource);
@@ -1229,7 +1266,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   // loading immediately. If revalidation policy was determined as |Revalidate|,
   // the resource was already initialized for the revalidation here, but won't
   // start loading.
-  if (ResourceNeedsLoad(resource, params, policy)) {
+  if (ResourceNeedsLoad(resource, policy, should_defer)) {
     if (!StartLoad(resource,
                    std::move(params.MutableResourceRequest().MutableBody()),
                    load_blocking_policy, params.GetRenderBlockingBehavior())) {
@@ -2097,6 +2134,19 @@ void ResourceFetcher::MoveResourceLoaderToNonBlocking(ResourceLoader* loader) {
 bool ResourceFetcher::StartLoad(Resource* resource) {
   DCHECK(resource->GetType() == ResourceType::kFont ||
          resource->GetType() == ResourceType::kImage);
+  // Currently the metrics collection codes are duplicated here and in
+  // UpdateMemoryCacheStats() because we have two calling paths for triggering a
+  // load here and RequestResource().
+  // TODO(https://crbug.com/1376866): Consider merging the duplicated code.
+  if (resource->GetType() == ResourceType::kFont) {
+    base::UmaHistogramEnumeration(
+        RESOURCE_HISTOGRAM_PREFIX "Font",
+        RevalidationPolicyForMetrics::kPreviouslyDeferredLoad);
+  } else {
+    base::UmaHistogramEnumeration(
+        RESOURCE_HISTOGRAM_PREFIX "Image",
+        RevalidationPolicyForMetrics::kPreviouslyDeferredLoad);
+  }
   return StartLoad(resource, ResourceRequestBody(),
                    ImageLoadBlockingPolicy::kDefault,
                    RenderBlockingBehavior::kNonBlocking);

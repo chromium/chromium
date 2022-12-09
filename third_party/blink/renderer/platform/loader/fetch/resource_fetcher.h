@@ -196,10 +196,6 @@ class PLATFORM_EXPORT ResourceFetcher
   // call this method explicitly on cases such as ResourceNeedsLoad() returning
   // false.
   bool StartLoad(Resource*);
-  bool StartLoad(Resource*,
-                 ResourceRequestBody,
-                 ImageLoadBlockingPolicy,
-                 RenderBlockingBehavior);
 
   void SetAutoLoadImages(bool);
   void SetImagesEnabled(bool);
@@ -342,6 +338,11 @@ class PLATFORM_EXPORT ResourceFetcher
     kIncludingKeepaliveLoaders,
   };
 
+  bool StartLoad(Resource*,
+                 ResourceRequestBody,
+                 ImageLoadBlockingPolicy,
+                 RenderBlockingBehavior);
+
   void InitializeRevalidation(ResourceRequest&, Resource*);
   // When |security_origin| of the ResourceLoaderOptions is not a nullptr, it'll
   // be used instead of the associated FetchContext's SecurityOrigin.
@@ -388,14 +389,31 @@ class PLATFORM_EXPORT ResourceFetcher
   void StopFetchingInternal(StopFetchingTarget);
   void StopFetchingIncludingKeepaliveLoaders();
 
-  // RevalidationPolicy enum values are used in UMAs https://crbug.com/579496.
   enum class RevalidationPolicy {
     kUse,
     kRevalidate,
     kReload,
     kLoad,
-    kMaxValue = kLoad
+    kMaxValue = kLoad,
   };
+  // The Blink.MemoryCache.RevalationPolicy UMA uses the following enum
+  // rather than RevalidationPolicy to record the deferred resources in
+  // the resource fetcher.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RevalidationPolicyForMetrics {
+    kUse,
+    kRevalidate,
+    kReload,
+    kLoad,
+    kDefer,
+    kPreviouslyDeferredLoad,
+    kMaxValue = kPreviouslyDeferredLoad,
+  };
+
+  // Friends required for accessing RevalidationPolicyForMetrics
+  FRIEND_TEST(ImageResourceCounterTest, RevalidationPolicyMetrics);
+  FRIEND_TEST(FontResourceTest, RevalidationPolicyMetrics);
 
   // A wrapper just for placing a trace_event macro.
   RevalidationPolicy DetermineRevalidationPolicy(
@@ -426,14 +444,24 @@ class PLATFORM_EXPORT ResourceFetcher
                                       bool is_static_data,
                                       RenderBlockingBehavior);
 
-  bool ResourceNeedsLoad(Resource*, const FetchParameters&, RevalidationPolicy);
+  bool ShouldDeferResource(ResourceType, const FetchParameters& params) const;
+
+  bool ResourceNeedsLoad(Resource*,
+                         RevalidationPolicy,
+                         bool should_defer) const;
+
+  static bool ResourceAlreadyLoadStarted(Resource*, RevalidationPolicy);
 
   void ResourceTimingReportTimerFired(TimerBase*);
 
   void ReloadImagesIfNotDeferred();
 
+  static RevalidationPolicyForMetrics MapToPolicyForMetrics(RevalidationPolicy,
+                                                            Resource*,
+                                                            bool should_defer);
+
   void UpdateMemoryCacheStats(Resource*,
-                              RevalidationPolicy,
+                              RevalidationPolicyForMetrics,
                               const FetchParameters&,
                               const ResourceFactory&,
                               bool is_static_data,
