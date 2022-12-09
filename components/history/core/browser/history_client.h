@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "sql/init_status.h"
 
@@ -17,16 +18,18 @@ namespace history {
 class HistoryBackendClient;
 class HistoryService;
 
+using CanAddURLCallback = base::RepeatingCallback<bool(const GURL&)>;
+
 // This class abstracts operations that depend on the embedder's environment,
 // e.g. Chrome.
 class HistoryClient {
  public:
-  HistoryClient() {}
+  HistoryClient() = default;
 
   HistoryClient(const HistoryClient&) = delete;
   HistoryClient& operator=(const HistoryClient&) = delete;
 
-  virtual ~HistoryClient() {}
+  virtual ~HistoryClient() = default;
 
   // Called upon HistoryService creation.
   virtual void OnHistoryServiceCreated(HistoryService* history_service) = 0;
@@ -34,9 +37,11 @@ class HistoryClient {
   // Called before HistoryService is shutdown.
   virtual void Shutdown() = 0;
 
-  // Returns true if this look like the type of URL that should be added to the
+  // Returns a callback that determined whether the given URL should be added to
   // history.
-  virtual bool CanAddURL(const GURL& url) = 0;
+  // NOTE: The callback must be safe to call from any thread! (This method
+  // should still only be called from the UI thread though.)
+  virtual CanAddURLCallback GetThreadSafeCanAddURLCallback() const = 0;
 
   // Notifies the embedder that there was a problem reading the database.
   virtual void NotifyProfileError(sql::InitStatus init_status,

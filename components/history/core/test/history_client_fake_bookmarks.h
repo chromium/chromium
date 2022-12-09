@@ -38,7 +38,7 @@ class HistoryClientFakeBookmarks : public HistoryClient {
   // HistoryClient implementation.
   void OnHistoryServiceCreated(HistoryService* history_service) override;
   void Shutdown() override;
-  bool CanAddURL(const GURL& url) override;
+  CanAddURLCallback GetThreadSafeCanAddURLCallback() const override;
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override;
   std::unique_ptr<HistoryBackendClient> CreateBackendClient() override;

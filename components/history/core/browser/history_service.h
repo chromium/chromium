@@ -1010,6 +1010,10 @@ class HistoryService : public KeyedService {
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url);
 
+  // Whether the given `url` should be added to history. See
+  // HistoryClient::GetCanAddURLCallback().
+  bool CanAddURL(const GURL& url);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The TaskRunner to which HistoryBackend tasks are posted. Nullptr once

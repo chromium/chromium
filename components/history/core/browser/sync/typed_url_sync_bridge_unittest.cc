@@ -21,7 +21,6 @@
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/sync/model/data_batch.h"
-#include "components/sync/model/sync_metadata_store.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/typed_url_specifics.pb.h"
@@ -256,6 +255,7 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
   TestHistoryBackendDelegate& operator=(const TestHistoryBackendDelegate&) =
       delete;
 
+  bool CanAddURL(const GURL& url) const override { return true; }
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override {}
   void SetInMemoryBackend(

@@ -133,6 +133,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
    public:
     virtual ~Delegate() = default;
 
+    // Returns whether the given URL can/should be added to the history.
+    virtual bool CanAddURL(const GURL& url) const = 0;
+
     // Called when the database cannot be read correctly for some reason.
     // `diagnostics` contains information about the underlying database
     // which can help in identifying the cause of the profile error.

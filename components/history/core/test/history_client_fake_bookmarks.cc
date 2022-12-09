@@ -7,6 +7,8 @@
 #include <map>
 #include <memory>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -153,8 +155,9 @@ void HistoryClientFakeBookmarks::OnHistoryServiceCreated(
 void HistoryClientFakeBookmarks::Shutdown() {
 }
 
-bool HistoryClientFakeBookmarks::CanAddURL(const GURL& url) {
-  return url.is_valid();
+CanAddURLCallback HistoryClientFakeBookmarks::GetThreadSafeCanAddURLCallback()
+    const {
+  return base::BindRepeating([](const GURL& url) { return url.is_valid(); });
 }
 
 void HistoryClientFakeBookmarks::NotifyProfileError(

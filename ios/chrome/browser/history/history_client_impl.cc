@@ -51,8 +51,9 @@ void HistoryClientImpl::Shutdown() {
   StopObservingBookmarkModel();
 }
 
-bool HistoryClientImpl::CanAddURL(const GURL& url) {
-  return ios::CanAddURLToHistory(url);
+history::CanAddURLCallback HistoryClientImpl::GetThreadSafeCanAddURLCallback()
+    const {
+  return base::BindRepeating(&ios::CanAddURLToHistory);
 }
 
 void HistoryClientImpl::NotifyProfileError(sql::InitStatus init_status,

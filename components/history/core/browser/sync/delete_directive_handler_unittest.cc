@@ -44,6 +44,7 @@ class TestHistoryBackendDelegate : public HistoryBackend::Delegate {
   TestHistoryBackendDelegate& operator=(const TestHistoryBackendDelegate&) =
       delete;
 
+  bool CanAddURL(const GURL& url) const override { return true; }
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override {}
   void SetInMemoryBackend(

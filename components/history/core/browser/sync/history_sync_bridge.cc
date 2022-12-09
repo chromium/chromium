@@ -536,6 +536,9 @@ absl::optional<syncer::ModelError> HistorySyncBridge::ApplySyncChanges(
           // Updating didn't work, so actually add the data instead.
           if (!AddEntityInBackend(&id_remapper, specifics)) {
             // Something went wrong.
+            // TODO(crbug.com/1364576): This can happen if the incoming URL
+            // shouldn't be added to the history DB. In that case, we should
+            // *not* record a DB error here.
             RecordDatabaseError(
                 SyncHistoryDatabaseError::kApplySyncChangesAddSyncedVisit);
             break;

@@ -8,12 +8,11 @@
 #include <memory>
 #include <set>
 
-#include "base/callback_forward.h"
+#include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/history/core/browser/history_client.h"
-#include "components/history/core/browser/history_service.h"
 
 class GURL;
 
@@ -38,7 +37,7 @@ class ChromeHistoryClient : public history::HistoryClient,
   void OnHistoryServiceCreated(
       history::HistoryService* history_service) override;
   void Shutdown() override;
-  bool CanAddURL(const GURL& url) override;
+  history::CanAddURLCallback GetThreadSafeCanAddURLCallback() const override;
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override;
   std::unique_ptr<history::HistoryBackendClient> CreateBackendClient() override;

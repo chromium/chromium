@@ -46,8 +46,9 @@ void ChromeHistoryClient::Shutdown() {
   StopObservingBookmarkModel();
 }
 
-bool ChromeHistoryClient::CanAddURL(const GURL& url) {
-  return CanAddURLToHistory(url);
+history::CanAddURLCallback ChromeHistoryClient::GetThreadSafeCanAddURLCallback()
+    const {
+  return base::BindRepeating(&CanAddURLToHistory);
 }
 
 void ChromeHistoryClient::NotifyProfileError(sql::InitStatus init_status,

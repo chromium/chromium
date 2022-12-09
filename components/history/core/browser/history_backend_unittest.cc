@@ -139,6 +139,7 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
   HistoryBackendTestDelegate& operator=(const HistoryBackendTestDelegate&) =
       delete;
 
+  bool CanAddURL(const GURL& url) const override;
   void NotifyProfileError(sql::InitStatus init_status,
                           const std::string& diagnostics) override {}
   void SetInMemoryBackend(
@@ -328,6 +329,11 @@ class HistoryBackendTestBase : public testing::Test {
 
   base::FilePath test_dir_;
 };
+
+bool HistoryBackendTestDelegate::CanAddURL(const GURL& url) const {
+  // For the purposes of these tests, accept all valid URLs except "chrome://".
+  return url.is_valid() && !url.SchemeIs("chrome");
+}
 
 void HistoryBackendTestDelegate::SetInMemoryBackend(
     std::unique_ptr<InMemoryHistoryBackend> backend) {
@@ -4263,6 +4269,46 @@ TEST_F(HistoryBackendTest, GetRedirectChain) {
   EXPECT_EQ(chain3[0].visit_id, chain3_ids[0]);
   EXPECT_EQ(chain3[1].visit_id, chain3_ids[1]);
   EXPECT_EQ(chain3[2].visit_id, chain3_ids[2]);
+}
+
+TEST_F(HistoryBackendTest, AddSyncedVisitAddsOnlyValidURLs) {
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  // Note: Per AddSyncedVisit() preconditions (DCHECKs), the passed visit MUST
+  // have visit_time and originator_cache_guid, but MUST NOT have visit_id or
+  // url_id.
+
+  // First, try to add some visits with unwanted URLs. These should *not* get
+  // added to the DB.
+  // Note that in this test, all valid URLs except "chrome://" ones are
+  // considered valid; see HistoryBackendTestDelegate::CanAddURL.
+  VisitRow foreign_visit;
+  foreign_visit.visit_time = base::Time::Now();
+  foreign_visit.transition = kLink;
+  foreign_visit.originator_cache_guid = "originator";
+  EXPECT_EQ(kInvalidVisitID,
+            backend_->AddSyncedVisit(GURL("chrome://settings"), u"Settings",
+                                     /*hidden=*/false, foreign_visit,
+                                     absl::nullopt, absl::nullopt));
+  EXPECT_EQ(kInvalidVisitID,
+            backend_->AddSyncedVisit(GURL("Not a URL at all"), u"Title",
+                                     /*hidden=*/false, foreign_visit,
+                                     absl::nullopt, absl::nullopt));
+
+  // A regular old URL should get added successfully.
+  VisitID added_id = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
+      absl::nullopt, absl::nullopt);
+  EXPECT_NE(added_id, kInvalidVisitID);
+  VisitRow added_visit;
+  EXPECT_TRUE(backend_->GetVisitByID(added_id, &added_visit));
+  EXPECT_EQ(foreign_visit.visit_time, added_visit.visit_time);
+  EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+      foreign_visit.transition, added_visit.transition));
+  EXPECT_EQ(foreign_visit.originator_cache_guid,
+            added_visit.originator_cache_guid);
 }
 
 TEST_F(HistoryBackendTest, DeleteAllForeignVisitsDoesNotDeleteLocalVisits) {

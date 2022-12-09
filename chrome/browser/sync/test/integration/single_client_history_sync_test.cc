@@ -835,6 +835,37 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       DoesNotDownloadUnwantedURLs) {
+  // Several visits to "unwanted" URLs exist on the server (e.g. a bad other
+  // client might have added them). These shouldn't be added to the history DB,
+  // per CanAddURLToHistory().
+  const GURL url1("chrome://settings");
+  const GURL url2("about:blank");
+  const GURL url3("javascript:alert(1);");
+
+  sync_pb::HistorySpecifics specifics1 = CreateSpecifics(
+      base::Time::Now() - base::Minutes(5), "other_cache_guid", url1, 101);
+  sync_pb::HistorySpecifics specifics2 = CreateSpecifics(
+      base::Time::Now() - base::Minutes(4), "other_cache_guid", url2, 102);
+  sync_pb::HistorySpecifics specifics3 = CreateSpecifics(
+      base::Time::Now() - base::Minutes(3), "other_cache_guid", url3, 103);
+
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics1));
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics2));
+  GetFakeServer()->InjectEntity(CreateFakeServerEntity(specifics3));
+
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // None of these should have made it into the history DB.
+  EXPECT_TRUE(
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url1).empty());
+  EXPECT_TRUE(
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url2).empty());
+  EXPECT_TRUE(
+      typed_urls_helper::GetVisitsForURLFromClient(/*index=*/0, url3).empty());
+}
+
 // Signing out or turning off Sync isn't possible in ChromeOS-Ash.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
