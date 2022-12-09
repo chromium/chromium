@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "ui/gl/gl_switches.h"
 
 namespace crosapi {
 
@@ -77,6 +78,11 @@ AshCrosapiTestEnv::AshCrosapiTestEnv() {
   // This switch is for filemanger test to install an app.
   // TODO(crbug.com/1376891): Remove settings for a specific test.
   command_line.AppendSwitchASCII(switches::kEnableFeatures, "WebAppsCrosapi");
+
+#if defined(MEMORY_SANITIZER)
+  // MSAN is incompatible with GL acceleration.
+  command_line.AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
+#endif
 
   // Waits for socket connection to establish.
   // TODO(crbug.com/1368029): Separate logs generated during setup from those
