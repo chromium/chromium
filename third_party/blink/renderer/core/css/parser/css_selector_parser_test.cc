@@ -970,37 +970,52 @@ TEST(CSSSelectorParserTest, WebKitScrollbarPseudoParsing) {
   }
 }
 
-// TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
-// JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-// :has() should be valid after all arguments are dropped.
 static const SelectorTestCase invalid_pseudo_has_arguments_data[] = {
     // clang-format off
     // restrict use of nested :has()
-    {":has(:has(.a))", "" /* should be ":has()" */},
+    {":has(:has(.a))", ""},
+    {":has(.a, :has(.b), .c)", ""},
+    {":has(.a, :has(.b))", ""},
+    {":has(:has(.a), .b)", ""},
+    {":has(:is(:has(.a)))", ":has(:is())"},
 
     // restrict use of pseudo element inside :has()
-    {":has(::-webkit-progress-bar)", "" /* should be ":has()" */},
-    {":has(::-webkit-progress-value)", "" /* should be ":has()" */},
-    {":has(::-webkit-slider-runnable-track)", "" /* should be ":has()" */},
-    {":has(::-webkit-slider-thumb)", "" /* should be ":has()" */},
-    {":has(::after)", "" /* should be ":has()" */},
-    {":has(::backdrop)", "" /* should be ":has()" */},
-    {":has(::before)", "" /* should be ":has()" */},
-    {":has(::cue)", "" /* should be ":has()" */},
-    {":has(::first-letter)", "" /* should be ":has()" */},
-    {":has(::first-line)", "" /* should be ":has()" */},
-    {":has(::grammar-error)", "" /* should be ":has()" */},
-    {":has(::marker)", "" /* should be ":has()" */},
-    {":has(::placeholder)", "" /* should be ":has()" */},
-    {":has(::selection)", "" /* should be ":has()" */},
-    {":has(::slotted(*))", "" /* should be ":has()" */},
-    {":has(::part(foo))", "" /* should be ":has()" */},
-    {":has(::spelling-error)", "" /* should be ":has()" */},
-    {":has(:after)", "" /* should be ":has()" */},
-    {":has(:before)", "" /* should be ":has()" */},
-    {":has(:cue)", "" /* should be ":has()" */},
-    {":has(:first-letter)", "" /* should be ":has()" */},
-    {":has(:first-line)", "" /* should be ":has()" */},
+    {":has(::-webkit-progress-bar)", ""},
+    {":has(::-webkit-progress-value)", ""},
+    {":has(::-webkit-slider-runnable-track)", ""},
+    {":has(::-webkit-slider-thumb)", ""},
+    {":has(::after)", ""},
+    {":has(::backdrop)", ""},
+    {":has(::before)", ""},
+    {":has(::cue)", ""},
+    {":has(::first-letter)", ""},
+    {":has(::first-line)", ""},
+    {":has(::grammar-error)", ""},
+    {":has(::marker)", ""},
+    {":has(::placeholder)", ""},
+    {":has(::selection)", ""},
+    {":has(::slotted(*))", ""},
+    {":has(::part(foo))", ""},
+    {":has(::spelling-error)", ""},
+    {":has(:after)", ""},
+    {":has(:before)", ""},
+    {":has(:cue)", ""},
+    {":has(:first-letter)", ""},
+    {":has(:first-line)", ""},
+
+    // drops empty :has()
+    {":has()", ""},
+    {":has(,,  ,, )", ""},
+
+    // drops :has() when it contains invalid argument
+    {":has(.a,,,,)", ""},
+    {":has(,,.a,,)", ""},
+    {":has(,,,,.a)", ""},
+    {":has(@x {,.b,}, .a)", ""},
+    {":has({,.b,} @x, .a)", ""},
+    {":has((@x), .a)", ""},
+    {":has((.b), .a)", ""},
+
     // clang-format on
 };
 
@@ -1008,68 +1023,33 @@ INSTANTIATE_TEST_SUITE_P(InvalidPseudoHasArguments,
                          SelectorParseTest,
                          testing::ValuesIn(invalid_pseudo_has_arguments_data));
 
-static const SelectorTestCase has_forgiving_data[] = {
-    // clang-format off
-    {":has(.a, :has(.b), .c)", ":has(.a, .c)"},
-    {":has(.a, :has(.b))", ":has(.a)"},
-    {":has(:has(.a), .b)", ":has(.b)"},
-
-    // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
-    // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-    // :has() should be valid after all arguments are dropped.
-    {":has(:has(.a))", "" /* should be ":has()" */},
-    {":has(,,  ,, )", "" /* should be ":has()" */},
-
-    {":has(.a,,,,)", ":has(.a)"},
-    {":has(,,.a,,)", ":has(.a)"},
-    {":has(,,,,.a)", ":has(.a)"},
-    {":has(@x {,.b,}, .a)", ":has(.a)"},
-    {":has({,.b,} @x, .a)", ":has(.a)"},
-    {":has((@x), .a)", ":has(.a)"},
-    {":has((.b), .a)", ":has(.a)"},
-    {":has(:is(:foo))", ":has(:is())"},
-    {":has(:is(:has(.a)))", ":has(:is())"},
-    // clang-format on
-};
-
-INSTANTIATE_TEST_SUITE_P(HasForgiving,
-                         SelectorParseTest,
-                         testing::ValuesIn(has_forgiving_data));
-
-// TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
-// JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-// :has() should be valid after all arguments are dropped.
 static const SelectorTestCase has_nesting_data[] = {
     // clang-format off
     // :has() is not allowed in the pseudos accepting only compound selectors:
-    {"::slotted(:has(.a))", "" /* should be "::slotted(:has())" */},
-    {":host(:has(.a))", "" /* should be ":host(:has())" */},
-    {":host-context(:has(.a))", "" /* should be ":host-context(:has())" */},
-    {"::cue(:has(.a))", "" /* should be "::cue(:has())" */},
+    {"::slotted(:has(.a))", ""},
+    {":host(:has(.a))", ""},
+    {":host-context(:has(.a))", ""},
+    {"::cue(:has(.a))", ""},
     // :has() is not allowed after pseudo elements:
-    {"::part(foo):has(:hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover:focus)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:focus, :hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:focus)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:focus, :--bar)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(.a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(.a:hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover.a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover + .a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(.a + :hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover:enabled)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:enabled:hover)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover, :where(.a))",
-     "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:hover, .a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:--bar, .a)", "" /* should be "::part(foo):has()" */},
-    {"::part(foo):has(:enabled)", "" /* should be "::part(foo):has()" */},
-    {"::-webkit-scrollbar:has(:enabled)",
-     "" /* should be "::-webkit-scrollbar:has()" */},
-    {"::selection:has(:window-inactive)",
-     "" /* should be "::selection:has()" */},
-    {"::-webkit-input-placeholder:has(:hover)",
-     "" /* should be "::-webkit-input-placeholder:has()" */},
+    {"::part(foo):has(:hover)", ""},
+    {"::part(foo):has(:hover:focus)", ""},
+    {"::part(foo):has(:focus, :hover)", ""},
+    {"::part(foo):has(:focus)", ""},
+    {"::part(foo):has(:focus, :--bar)", ""},
+    {"::part(foo):has(.a)", ""},
+    {"::part(foo):has(.a:hover)", ""},
+    {"::part(foo):has(:hover.a)", ""},
+    {"::part(foo):has(:hover + .a)", ""},
+    {"::part(foo):has(.a + :hover)", ""},
+    {"::part(foo):has(:hover:enabled)", ""},
+    {"::part(foo):has(:enabled:hover)", ""},
+    {"::part(foo):has(:hover, :where(.a))", ""},
+    {"::part(foo):has(:hover, .a)", ""},
+    {"::part(foo):has(:--bar, .a)", ""},
+    {"::part(foo):has(:enabled)", ""},
+    {"::-webkit-scrollbar:has(:enabled)", ""},
+    {"::selection:has(:window-inactive)", ""},
+    {"::-webkit-input-placeholder:has(:hover)", ""},
     // clang-format on
 };
 

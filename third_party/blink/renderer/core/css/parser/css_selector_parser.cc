@@ -403,56 +403,6 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
   return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
-CSSSelectorList* CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
-    CSSParserTokenRange& range) {
-  if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
-      in_supports_parsing_) {
-    CSSSelectorList* selector_list = ConsumeRelativeSelectorList(range);
-    if (!selector_list || !selector_list->IsValid())
-      return nullptr;
-    return selector_list;
-  }
-
-  CSSAtSupportsDropInvalidWhileForgivingParsingCounter
-      at_supports_drop_invalid_counter(context_);
-
-  ResetVectorAfterScope reset_vector(output_);
-  while (!range.AtEnd()) {
-    base::AutoReset<bool> reset_failure(&failed_parsing_, false);
-    CSSParserTokenRange argument = ConsumeNestedArgument(range);
-    wtf_size_t subpos = output_.size();
-    base::span<CSSSelector> selector = ConsumeRelativeSelector(argument);
-    if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
-      if (in_supports_parsing_) {
-        at_supports_drop_invalid_counter.Count();
-      }
-      output_.resize(subpos);  // Drop what we parsed so far.
-    } else {
-      MarkAsEntireComplexSelector(selector);
-    }
-    if (range.Peek().GetType() != kCommaToken)
-      break;
-    range.ConsumeIncludingWhitespace();
-  }
-
-  // :has() is not allowed in the pseudos accepting only compound selectors, or
-  // not allowed after pseudo elements.
-  // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
-  if (inside_compound_pseudo_ ||
-      restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
-      reset_vector.AddedElements().empty()) {
-    if (in_supports_parsing_)
-      at_supports_drop_invalid_counter.Count();
-
-    // TODO(blee@igalia.com) Workaround to make :has() unforgiving to avoid
-    // JQuery :has() issue: https://github.com/w3c/csswg-drafts/issues/7676
-    // Should return empty CSSSelectorList. (return CSSSelectorList::Empty())
-    return nullptr;
-  }
-
-  return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
-}
-
 CSSSelectorList* CSSSelectorParser::ConsumeRelativeSelectorList(
     CSSParserTokenRange& range) {
   ResetVectorAfterScope reset_vector(output_);
@@ -465,7 +415,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeRelativeSelectorList(
   }
 
   if (failed_parsing_)
-    return CSSSelectorList::Empty();
+    return nullptr;
 
   // :has() is not allowed in the pseudos accepting only compound selectors, or
   // not allowed after pseudo elements.
@@ -538,6 +488,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeRelativeSelector(
   std::reverse(reset_vector.AddedElements().begin(),
                reset_vector.AddedElements().end());
 
+  MarkAsEntireComplexSelector(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
 }
 
@@ -1291,9 +1242,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
       base::AutoReset<bool> found_complex_logical_combinations_in_has_argument(
           &found_complex_logical_combinations_in_has_argument_, false);
 
-      CSSSelectorList* selector_list =
-          ConsumeForgivingRelativeSelectorList(block);
-      if (!selector_list || !block.AtEnd())
+      CSSSelectorList* selector_list = ConsumeRelativeSelectorList(block);
+      if (!selector_list || !selector_list->IsValid() || !block.AtEnd())
         return false;
       selector.SetSelectorList(selector_list);
       if (found_pseudo_in_has_argument_)

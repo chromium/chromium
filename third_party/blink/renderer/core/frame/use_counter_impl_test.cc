@@ -678,23 +678,6 @@ TEST_F(UseCounterImplTest, CSSAtSupportsDropInvalidWhileForgivingParsing) {
   test_counter(":host(:is(,.a))", true);
   test_counter(":host(:is(.a .b))", true);
   test_counter("::part(foo):is(.a)", true);
-
-  test_counter(":has(.a)", false);
-  test_counter(":has(.a .b)", false);
-  test_counter(":has(.a, .b)", false);
-  test_counter(":has(:not(.a))", false);
-  test_counter(":has()", true);
-  test_counter(":has(:foo)", true);
-  test_counter(":has(:foo,.a)", true);
-  test_counter(":has(.a,:foo)", true);
-  test_counter(":has(,.a)", true);
-  test_counter(":has(::first-line)", true);
-  test_counter(":host(:has())", true);
-  test_counter(":host(:has(:foo))", true);
-  test_counter(":host(:has(,.a))", true);
-  test_counter(":host(:has(.a))", true);
-  test_counter("::part(foo):has(.a)", true);
-  test_counter(":has(:has(.a))", true);
 }
 
 }  // namespace blink
