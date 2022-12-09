@@ -5,10 +5,14 @@
 #include "ui/views/interaction/interactive_views_test.h"
 
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/base/test/ui_controls.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_tracker.h"
 
@@ -99,6 +103,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         if (!test->mouse_util().PerformGestures(
+                test->test_impl().GetWindowHintFor(el),
                 InteractionTestUtilMouse::MoveTo(
                     std::move(pos_callback).Run(el)))) {
           seq->FailForTesting();
@@ -125,6 +130,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ClickMouse(
          bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         if (!test->mouse_util().PerformGestures(
+                test->test_impl().GetWindowHintFor(el),
                 release ? InteractionTestUtilMouse::Click(button)
                         : InteractionTestUtilMouse::MouseGestures{
                               InteractionTestUtilMouse::MouseDown(button)})) {
@@ -148,6 +154,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
         test->test_impl().mouse_error_message_.clear();
         const gfx::Point target = std::move(pos_callback).Run(el);
         if (!test->mouse_util().PerformGestures(
+                test->test_impl().GetWindowHintFor(el),
                 release ? InteractionTestUtilMouse::DragAndRelease(target)
                         : InteractionTestUtilMouse::DragAndHold(target))) {
           seq->FailForTesting();
@@ -175,6 +182,7 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
         test->test_impl().mouse_error_message_.clear();
         if (!test->mouse_util().PerformGestures(
+                test->test_impl().GetWindowHintFor(el),
                 InteractionTestUtilMouse::MouseUp(button))) {
           return seq->FailForTesting();
         }

@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -174,7 +175,9 @@ void InteractionTestUtilMouse::MaybeCancelDrag(bool in_future) {
 #endif
 }
 
-bool InteractionTestUtilMouse::PerformGesturesImpl(MouseGestures gestures) {
+bool InteractionTestUtilMouse::PerformGesturesImpl(
+    MouseGestures gestures,
+    gfx::NativeWindow window_hint) {
   CHECK(!gestures.empty());
   CHECK(!performing_gestures_);
   base::AutoReset<bool> performing_gestures(&performing_gestures_, true);
@@ -190,7 +193,8 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(MouseGestures gestures) {
         case ui_controls::UP:
           CHECK(buttons_down_.erase(button->first));
           if (!ui_controls::SendMouseEventsNotifyWhenDone(
-                  button->first, button->second, run_loop.QuitClosure())) {
+                  button->first, button->second, run_loop.QuitClosure(),
+                  ui_controls::kNoAccelerator, window_hint)) {
             LOG(ERROR) << "Mouse button " << button->first << " up failed.";
             return false;
           }
@@ -201,7 +205,8 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(MouseGestures gestures) {
           CHECK(buttons_down_.insert(button->first).second);
           MaybeCancelDrag(false);
           if (!ui_controls::SendMouseEventsNotifyWhenDone(
-                  button->first, button->second, run_loop.QuitClosure())) {
+                  button->first, button->second, run_loop.QuitClosure(),
+                  ui_controls::kNoAccelerator, window_hint)) {
             LOG(ERROR) << "Mouse button " << button->first << " down failed.";
             return false;
           }
@@ -216,8 +221,8 @@ bool InteractionTestUtilMouse::PerformGesturesImpl(MouseGestures gestures) {
         dragging_ = true;
       }
 #endif
-      if (!ui_controls::SendMouseMoveNotifyWhenDone(move.x(), move.y(),
-                                                    run_loop.QuitClosure())) {
+      if (!ui_controls::SendMouseMoveNotifyWhenDone(
+              move.x(), move.y(), run_loop.QuitClosure(), window_hint)) {
         LOG(ERROR) << "Mouse move to " << move.ToString() << " failed.";
         return false;
       }

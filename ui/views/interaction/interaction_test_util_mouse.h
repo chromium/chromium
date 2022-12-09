@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/geometry/point.h"
@@ -61,7 +60,7 @@ class InteractionTestUtilMouse {
 
   // Perform the gesture or gestures specified, returns true on success.
   template <typename... Args>
-  bool PerformGestures(Args... gestures);
+  bool PerformGestures(gfx::NativeWindow window_hint, Args... gestures);
 
   // Cancels any pending actions and cleans up any resulting mouse state (i.e.
   // releases any buttons which were pressed).
@@ -74,7 +73,8 @@ class InteractionTestUtilMouse {
   static void AddGestures(MouseGestures& gestures, MouseGesture to_add);
   static void AddGestures(MouseGestures& gestures, MouseGestures to_add);
 
-  bool PerformGesturesImpl(MouseGestures gestures);
+  bool PerformGesturesImpl(MouseGestures gestures,
+                           gfx::NativeWindow window_hint);
 
   void MaybeCancelDrag(bool in_future);
 
@@ -102,10 +102,11 @@ class InteractionTestUtilMouse {
 };
 
 template <typename... Args>
-bool InteractionTestUtilMouse::PerformGestures(Args... gestures) {
+bool InteractionTestUtilMouse::PerformGestures(gfx::NativeWindow window_hint,
+                                               Args... gestures) {
   MouseGestures gesture_list;
   (AddGestures(gesture_list, std::move(gestures)), ...);
-  return PerformGesturesImpl(std::move(gesture_list));
+  return PerformGesturesImpl(std::move(gesture_list), window_hint);
 }
 
 }  // namespace test

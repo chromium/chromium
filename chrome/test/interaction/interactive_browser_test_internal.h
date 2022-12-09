@@ -17,7 +17,9 @@
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 
 class InteractiveBrowserTestApi;
@@ -42,6 +44,13 @@ class InteractiveBrowserTestPrivate
 
   static std::string DeepQueryToString(
       const WebContentsInteractionTestUtil::DeepQuery& deep_query);
+
+ protected:
+  // views::test::InteractiveViewsTestPrivate:
+  gfx::NativeWindow GetNativeWindowFromElement(
+      ui::TrackedElement* el) const override;
+  gfx::NativeWindow GetNativeWindowFromContext(
+      ui::ElementContext context) const override;
 
  private:
   friend InteractiveBrowserTestApi;
