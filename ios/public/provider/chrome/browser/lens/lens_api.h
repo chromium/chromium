@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/callback.h"
+#import "ios/public/provider/chrome/browser/lens/lens_query.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -81,6 +82,11 @@ void GenerateLensLoadParamsForImageAsync(UIImage* image,
                                          LensEntrypoint entry_point,
                                          bool is_incognito,
                                          LensWebParamsCallback completion);
+
+// Generates web load params for a Lens image search for the given
+// `query`. `completion` will be run on the main thread.
+void GenerateLensLoadParamsAsync(LensQuery* query,
+                                 LensWebParamsCallback completion);
 
 }  // namespace provider
 }  // namespace ios

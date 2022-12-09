@@ -138,8 +138,12 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   const bool isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
   __weak LensCoordinator* weakSelf = self;
 
-  ios::provider::GenerateLensLoadParamsForImageAsync(
-      command.image, command.entryPoint, isIncognito,
+  LensQuery* lensQuery = [LensQuery alloc];
+  lensQuery.image = command.image;
+  lensQuery.isIncognito = isIncognito;
+  lensQuery.entrypoint = command.entryPoint;
+  ios::provider::GenerateLensLoadParamsAsync(
+      lensQuery,
       base::BindOnce(^(const web::NavigationManager::WebLoadParams params) {
         [weakSelf openWebLoadParams:params];
       }));

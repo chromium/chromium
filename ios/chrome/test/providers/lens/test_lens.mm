@@ -69,5 +69,10 @@ void GenerateLensLoadParamsForImageAsync(UIImage* image,
   NOTREACHED() << "Lens is not supported.";
 }
 
+void GenerateLensLoadParamsAsync(LensQuery* query,
+                                 LensWebParamsCallback completion) {
+  NOTREACHED() << "Lens is not supported.";
+}
+
 }  // namespace provider
 }  // namespace ios
