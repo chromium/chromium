@@ -12,10 +12,10 @@
 // Cell representation for SettingsCheckItem.
 //  +---------------------------------------------------------+
 //  | +--------+                                +---------+   |
-//  | |        |  One line title                `trailing |   |
-//  | | leading`                                `image    |   |
-//  | | image  |  Multiline detail text         `spinner  |   |
-//  | |        |  Multiline detail text         `or button`   |
+//  | |        |  One line title                |trailing |   |
+//  | | leading|                                |image    |   |
+//  | | image  |  Multiline detail text         |spinner  |   |
+//  | |        |  Multiline detail text         |or button|   |
 //  | +--------+                                +---------+   |
 //  +---------------------------------------------------------+
 @interface SettingsCheckCell : TableViewCell

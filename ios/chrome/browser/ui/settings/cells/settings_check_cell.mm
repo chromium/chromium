@@ -10,6 +10,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -280,7 +282,10 @@
     return;
 
   self.infoButton.hidden = hidden;
-  if (!hidden) {
+  if (hidden) {
+    self.accessibilityCustomActions = nil;
+  } else {
+    self.accessibilityCustomActions = [self createAccessibilityActions];
     self.trailingImageView.hidden = YES;
     self.activityIndicator.hidden = YES;
   }
@@ -319,6 +324,7 @@
   [super prepareForReuse];
 
   self.textLabel.text = nil;
+  self.accessibilityCustomActions = nil;
   [self setInfoButtonEnabled:YES];
   [self.infoButton removeTarget:nil
                          action:nil
@@ -331,6 +337,24 @@
             backgroundColor:nil
                cornerRadius:0];
   [self hideActivityIndicator];
+}
+
+#pragma mark - Accessibility
+
+// Creates custom accessibility actions.
+- (NSArray*)createAccessibilityActions {
+  UIAccessibilityCustomAction* tapButtonAction =
+      [[UIAccessibilityCustomAction alloc]
+          initWithName:l10n_util::GetNSString(
+                           IDS_IOS_INFO_BUTTON_ACCESSIBILITY_HINT)
+                target:self
+              selector:@selector(handleInfoButtonTapForCell)];
+  return @[ tapButtonAction ];
+}
+
+// Handles accessibility action for tapping outside the info button.
+- (void)handleInfoButtonTapForCell {
+  [self.infoButton sendActionsForControlEvents:UIControlEventTouchUpInside];
 }
 
 @end
