@@ -127,6 +127,34 @@ TEST_F(LayoutViewTest, NamedPages) {
   }
 }
 
+TEST_F(LayoutViewTest, NamedPagesAbsPos) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <div style="page:woohoo;">
+      <div style="height:10px;"></div>
+      <div style="break-before:page; height:10px;"></div>
+      <div style="break-before:page; height:10px;">
+        <div style="position:absolute; height:150vh;"></div>
+      </div>
+      <div style="break-before:page; height:10px;"></div>
+      <div style="break-before:page; height:10px;"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  const LayoutView* view = GetDocument().GetLayoutView();
+  ASSERT_TRUE(view);
+
+  ScopedPrintContext print_context(&GetDocument().View()->GetFrame());
+  print_context->BeginPrintMode(500, 500);
+
+  EXPECT_EQ(view->NamedPageAtIndex(0), "woohoo");
+  EXPECT_EQ(view->NamedPageAtIndex(1), "woohoo");
+  EXPECT_EQ(view->NamedPageAtIndex(2), "woohoo");
+  EXPECT_EQ(view->NamedPageAtIndex(3), "woohoo");
+  EXPECT_EQ(view->NamedPageAtIndex(4), "woohoo");
+}
+
 struct HitTestConfig {
   bool layout_ng;
   mojom::EditingBehavior editing_behavior;
