@@ -2606,7 +2606,7 @@
   {
     "name": "enable-lens-standalone",
     "owners": [ "stanfield@google.com", "benwgold@google.com", "juanmojica@google.com" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 120
   },
   {
     "name": "enable-libinput-to-handle-touchpad",
