@@ -17,12 +17,15 @@ namespace web_package {
 // `SignedWebBundleIntegrityBlock` for more details of how this class is used.
 class SignedWebBundleSignatureStackEntry {
  public:
-  // Attempt to convert the provided Mojo signature stack entry into an instance
-  // of this class, returning a string describing the error on failure.
-  static base::expected<SignedWebBundleSignatureStackEntry, std::string> Create(
-      const mojom::BundleIntegrityBlockSignatureStackEntryPtr entry);
+  SignedWebBundleSignatureStackEntry(
+      const std::vector<uint8_t>& complete_entry_cbor,
+      const std::vector<uint8_t>& attributes_cbor,
+      const Ed25519PublicKey& public_key,
+      const Ed25519Signature& signature);
 
   SignedWebBundleSignatureStackEntry(const SignedWebBundleSignatureStackEntry&);
+  SignedWebBundleSignatureStackEntry& operator=(
+      const SignedWebBundleSignatureStackEntry&);
 
   ~SignedWebBundleSignatureStackEntry();
 
@@ -37,17 +40,11 @@ class SignedWebBundleSignatureStackEntry {
   }
 
  private:
-  SignedWebBundleSignatureStackEntry(
-      const std::vector<uint8_t>& complete_entry_cbor,
-      const std::vector<uint8_t>& attributes_cbor,
-      const Ed25519PublicKey& public_key,
-      const Ed25519Signature& signature);
+  std::vector<uint8_t> complete_entry_cbor_;
+  std::vector<uint8_t> attributes_cbor_;
 
-  const std::vector<uint8_t> complete_entry_cbor_;
-  const std::vector<uint8_t> attributes_cbor_;
-
-  const Ed25519PublicKey public_key_;
-  const Ed25519Signature signature_;
+  Ed25519PublicKey public_key_;
+  Ed25519Signature signature_;
 };
 
 }  // namespace web_package

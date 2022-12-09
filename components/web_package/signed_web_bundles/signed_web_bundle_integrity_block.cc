@@ -24,13 +24,9 @@ SignedWebBundleIntegrityBlock::Create(
 
   std::vector<SignedWebBundleSignatureStackEntry> signature_stack;
   for (const auto& raw_entry : integrity_block->signature_stack) {
-    auto entry = SignedWebBundleSignatureStackEntry::Create(raw_entry->Clone());
-    if (!entry.has_value()) {
-      return base::unexpected(
-          base::StringPrintf("Error while parsing signature stack entry: %s",
-                             entry.error().c_str()));
-    }
-    signature_stack.push_back(*entry);
+    signature_stack.emplace_back(raw_entry->complete_entry_cbor,
+                                 raw_entry->attributes_cbor,
+                                 raw_entry->public_key, raw_entry->signature);
   }
 
   return SignedWebBundleIntegrityBlock(integrity_block->size,
