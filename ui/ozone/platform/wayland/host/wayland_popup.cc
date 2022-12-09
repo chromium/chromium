@@ -180,10 +180,11 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
   gfx::Rect pending_bounds_dip(bounds_dip);
   if (pending_bounds_dip.IsEmpty())
     pending_bounds_dip.set_size(GetBoundsInDIP().size());
-  set_pending_bounds_dip(wl::TranslateBoundsToTopLevelCoordinates(
-      pending_bounds_dip, parent_window()->GetBoundsInDIP()));
-  set_pending_size_px(
-      delegate()->ConvertRectToPixels(pending_bounds_dip).size());
+  pending_configure_state_.bounds_dip =
+      wl::TranslateBoundsToTopLevelCoordinates(
+          pending_bounds_dip, parent_window()->GetBoundsInDIP());
+  pending_configure_state_.size_px =
+      delegate()->ConvertRectToPixels(pending_bounds_dip).size();
 }
 
 void WaylandPopup::HandleSurfaceConfigure(uint32_t serial) {

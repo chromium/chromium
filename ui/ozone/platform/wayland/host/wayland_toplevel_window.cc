@@ -460,7 +460,8 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   // the fullscreen mode, wayland may set the width and height to be 1. Instead,
   // explicitly set the bounds to the current desired ones or the previous
   // bounds.
-  gfx::Rect bounds_dip(pending_bounds_dip());
+  gfx::Rect bounds_dip(
+      pending_configure_state_.bounds_dip.value_or(gfx::Rect()));
   if (width_dip > 1 && height_dip > 1) {
     bounds_dip.SetRect(x, y, width_dip, height_dip);
     const auto insets = GetDecorationInsetsInDIP();
@@ -473,9 +474,10 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
                                                 : GetBoundsInDIP();
   }
 
-  set_pending_bounds_dip(AdjustBoundsToConstraintsDIP(bounds_dip));
-  set_pending_size_px(
-      delegate()->ConvertRectToPixels(pending_bounds_dip()).size());
+  bounds_dip = AdjustBoundsToConstraintsDIP(bounds_dip);
+  pending_configure_state_.bounds_dip = bounds_dip;
+  pending_configure_state_.size_px =
+      delegate()->ConvertRectToPixels(bounds_dip).size();
 
   // Store the restored bounds if current state differs from the normal state.
   // It can be client or compositor side change from normal to something else.
@@ -514,8 +516,6 @@ void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {
   ProcessPendingBoundsDip(serial);
-  set_pending_bounds_dip({});
-  set_pending_size_px({});
 }
 
 void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {

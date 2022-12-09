@@ -947,7 +947,11 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
 }
 
 void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
-  if (pending_bounds_dip_.IsEmpty() &&
+  auto pending_bounds_dip =
+      pending_configure_state_.bounds_dip.value_or(gfx::Rect());
+  auto pending_size_px = pending_configure_state_.size_px.value_or(gfx::Size());
+
+  if (pending_bounds_dip.IsEmpty() &&
       GetPlatformWindowState() == PlatformWindowState::kMinimized &&
       pending_configures_.empty()) {
     // In exo, widget creation is deferred until the surface has contents and
@@ -962,12 +966,12 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     SetWindowGeometry(bounds_in_dip);
     AckConfigure(serial);
     root_surface()->Commit();
-  } else if (delegate()->ConvertRectToPixels(pending_bounds_dip_) ==
+  } else if (delegate()->ConvertRectToPixels(pending_bounds_dip) ==
                  GetBoundsInPixels() &&
              pending_configures_.empty()) {
-    // If |pending_bounds_dip_| matches the current window bounds, and
+    // If |pending_bounds_dip| matches the current window bounds, and
     // |pending_configures_| is empty, which implies that the window is already
-    // rendering at |pending_bounds_dip_|, then a new frame matching it may take
+    // rendering at |pending_bounds_dip|, then a new frame matching it may take
     // some time to arrive, despite the window delegate receives the updated
     // bounds. Without a new frame, UpdateVisualSize() is not invoked, leaving
     // this configure sequence unacknowledged. E.g: With static window content,
@@ -975,11 +979,11 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     // the window to redraw. Hence, acknowledge this configure sequence now to
     // tell the Wayland compositor that the requested configuration for this
     // window has been applied.
-    SetWindowGeometry(pending_bounds_dip_);
+    SetWindowGeometry(pending_bounds_dip);
     AckConfigure(serial);
     connection()->Flush();
   } else if (!pending_configures_.empty() &&
-             pending_bounds_dip_.size() ==
+             pending_bounds_dip.size() ==
                  pending_configures_.back().bounds_dip.size()) {
     // There is an existing pending_configure with the same size, do not push a
     // new one. Instead, update the serial of the pending_configure.
@@ -990,7 +994,7 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     LOG_IF(WARNING, pending_configures_.size() > 100u)
         << "The queue of configures is longer than 100!";
     pending_configures_.push_back(
-        {pending_bounds_dip_, pending_size_px_, serial});
+        {pending_bounds_dip, pending_size_px, serial});
     // The Wayland compositor can generate xdg-shell.configure events more
     // frequently than frame updates from gpu process. Throttle
     // ApplyPendingBounds() such that we forward new bounds to
@@ -998,6 +1002,9 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     if (pending_configures_.size() <= 1)
       ApplyPendingBounds();
   }
+
+  // Reset pending state.
+  pending_configure_state_ = PendingConfigureState();
 }
 
 gfx::Rect WaylandWindow::AdjustBoundsToConstraintsPx(

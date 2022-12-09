@@ -412,12 +412,17 @@ class WaylandWindow : public PlatformWindow,
   // Applies pending bounds.
   virtual void ApplyPendingBounds();
 
-  gfx::Rect pending_bounds_dip() const { return pending_bounds_dip_; }
-  void set_pending_bounds_dip(const gfx::Rect& rect) {
-    pending_bounds_dip_ = rect;
-  }
-  gfx::Size pending_size_px() const { return pending_size_px_; }
-  void set_pending_size_px(const gfx::Size& size) { pending_size_px_ = size; }
+  // PendingConfigureState describes the content of a configure sent from the
+  // wayland server.
+  struct PendingConfigureState {
+    absl::optional<gfx::Rect> bounds_dip;
+    absl::optional<gfx::Size> size_px;
+  };
+
+  // This holds the requested state for the next configure from the server.
+  // The window may get several configuration events that update the pending
+  // bounds or other state.
+  PendingConfigureState pending_configure_state_;
 
  private:
   friend class WaylandBufferManagerViewportTest;
@@ -536,19 +541,6 @@ class WaylandWindow : public PlatformWindow,
   // any frame updates. This flag causes root_surface_->ApplyPendingBounds() to
   // be invoked during UpdateVisualSize() in unit tests.
   bool apply_pending_state_on_update_visual_size_for_testing_ = false;
-
-  // These bounds attributes below have suffixes that indicate units used.
-  // Wayland operates in DIP but the platform operates in physical pixels so
-  // our WaylandWindow is the link that has to translate the units. See also
-  // comments in the implementation.
-  //
-  // Bounds that will be applied when the window state is finalized. The window
-  // may get several configuration events that update the pending bounds, and
-  // only upon finalizing the state is the latest value stored as the current
-  // bounds via |ApplyPendingBounds|. Measured in DIP because updated in the
-  // handler that receives DIP from Wayland.
-  gfx::Rect pending_bounds_dip_;
-  gfx::Size pending_size_px_;
 
   // The size of the platform window before it went maximized or fullscreen in
   // dip.
