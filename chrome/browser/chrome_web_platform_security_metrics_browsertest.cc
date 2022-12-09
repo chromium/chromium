@@ -1796,6 +1796,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     document.body.appendChild(iframe);
   )"));
   CheckCounter(WebFeature::kAnonymousIframe, 0);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", false, 0);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1808,6 +1810,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     document.body.appendChild(iframe);
   )"));
   CheckCounter(WebFeature::kAnonymousIframe, 1);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", false, 1);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1824,6 +1828,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     });
   )"));
   CheckCounter(WebFeature::kAnonymousIframe, 0);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", false, 0);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1840,6 +1846,8 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     });
   )"));
   CheckCounter(WebFeature::kAnonymousIframe, 1);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", false, 1);
+  CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
@@ -1854,6 +1862,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
       document.body.appendChild(iframe);
     });
   )"));
+  CheckCounter(WebFeature::kAnonymousIframe, 0);
   CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", false, 0);
   CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 0);
 }
@@ -1880,6 +1889,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
       createIframe(true),
     ]);
   )"));
+  CheckCounter(WebFeature::kAnonymousIframe, 1);
   CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", false, 3);
   CheckHistogramCount("Navigation.AnonymousIframeIsSandboxed", true, 2);
 }
