@@ -193,8 +193,6 @@ target(link_target_type, "gles2_sources") {
     "memory_program_cache.h",
     "multi_draw_manager.cc",
     "multi_draw_manager.h",
-    "native_image_buffer.cc",
-    "native_image_buffer.h",
     "passthrough_abstract_texture_impl.cc",
     "passthrough_abstract_texture_impl.h",
     "passthrough_discardable_manager.cc",

@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/gl_utils.h"
-#include "gpu/command_buffer/service/native_image_buffer.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
@@ -380,15 +379,15 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
   // more granular since BindToTexture() do not need to be behind the lock.
   // We don't need to bind the |egl_image_buffer_| first time when it's created.
   bool bind_egl_image = true;
-  scoped_refptr<gles2::NativeImageBuffer> buffer;
+  EGLImageKHR egl_image;
   {
     AutoLock auto_lock(this);
 
     // |pixel_data| if present should only be used to initialize texture when we
-    // create |egl_image_buffer_| from it and not after it has been already
+    // create |egl_image_| from it and not after it has been already
     // created.
-    DCHECK(pixel_data.empty() || !egl_image_buffer_);
-    if (!egl_image_buffer_) {
+    DCHECK(pixel_data.empty() || !egl_image_.get());
+    if (!egl_image_.get()) {
       // Note that we only want to upload pixel data to a texture during init
       // time before we create |egl_image_buffer_| from it. If pixel data is
       // empty we only allocate memory for the texture object which is required
@@ -419,15 +418,20 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
                             pixel_data.data());
       }
 
-      // Use service id of the texture as a source to create the native buffer.
-      egl_image_buffer_ = gles2::NativeImageBuffer::Create(service_id);
-      if (!egl_image_buffer_) {
+      // Use service id of the texture as a source to create the EGLImage.
+      const EGLint egl_attrib_list[] = {EGL_GL_TEXTURE_LEVEL_KHR, 0,
+                                        EGL_IMAGE_PRESERVED_KHR, EGL_TRUE,
+                                        EGL_NONE};
+      egl_image_ = ui::MakeScopedEGLImage(
+          eglGetCurrentContext(), EGL_GL_TEXTURE_2D_KHR,
+          reinterpret_cast<EGLClientBuffer>(service_id), egl_attrib_list);
+      if (!egl_image_.get()) {
         api->glDeleteTexturesFn(1, &service_id);
         return {};
       }
       bind_egl_image = false;
     }
-    buffer = egl_image_buffer_;
+    egl_image = egl_image_.get();
 
     if (!pixel_data.empty()) {
       // If pixel data is being uploaded to the texture, that means we are
@@ -447,9 +451,11 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
     SetCleared();
 
   if (bind_egl_image) {
-    // If we already have the |egl_image_buffer_|, just bind it to the new
+    // If we already have the |egl_image_|, just bind it to the new
     // texture to make it an EGLImage sibling.
-    buffer->BindToTexture(target);
+    glEGLImageTargetTexture2DOES(target, egl_image);
+    DCHECK_EQ(static_cast<EGLint>(EGL_SUCCESS), eglGetError());
+    DCHECK_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
   }
 
   if (use_passthrough_) {
