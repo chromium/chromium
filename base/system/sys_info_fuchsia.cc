@@ -211,6 +211,12 @@ size_t SysInfo::VMAllocationGranularity() {
   return static_cast<size_t>(getpagesize());
 }
 
+// static
+int SysInfo::NumberOfEfficientProcessorsImpl() {
+  NOTIMPLEMENTED();
+  return 0;
+}
+
 SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
   const auto product_info = GetProductInfo();
 

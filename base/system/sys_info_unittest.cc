@@ -59,6 +59,10 @@ using SysInfoTest = PlatformTest;
 TEST_F(SysInfoTest, NumProcs) {
   // We aren't actually testing that it's correct, just that it's sane.
   EXPECT_GE(SysInfo::NumberOfProcessors(), 1);
+
+  EXPECT_GE(SysInfo::NumberOfEfficientProcessors(), 0);
+  EXPECT_LT(SysInfo::NumberOfEfficientProcessors(),
+            SysInfo::NumberOfProcessors());
 }
 
 #if BUILDFLAG(IS_MAC)

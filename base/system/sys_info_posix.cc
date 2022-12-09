@@ -14,10 +14,15 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include <algorithm>
+
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info_internal.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -260,5 +265,44 @@ std::string SysInfo::OperatingSystemArchitecture() {
 size_t SysInfo::VMAllocationGranularity() {
   return checked_cast<size_t>(getpagesize());
 }
+
+#if !BUILDFLAG(IS_MAC)
+// static
+int SysInfo::NumberOfEfficientProcessorsImpl() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  // Try to guess the CPU architecture and cores of each cluster by comparing
+  // the maximum frequencies of the available (online and offline) cores.
+  int num_cpus = SysInfo::NumberOfProcessors();
+  DCHECK_GE(num_cpus, 0);
+  std::vector<uint32_t> max_core_frequencies_khz(static_cast<size_t>(num_cpus),
+                                                 0);
+  for (int core_index = 0; core_index < num_cpus; ++core_index) {
+    std::string content;
+    auto path = StringPrintf(
+        "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", core_index);
+    if (!ReadFileToStringNonBlocking(FilePath(path), &content))
+      return 0;
+    if (!StringToUint(
+            content,
+            &max_core_frequencies_khz[static_cast<size_t>(core_index)]))
+      return 0;
+  }
+
+  auto [min_max_core_frequencies_khz_it, max_max_core_frequencies_khz_it] =
+      std::minmax_element(max_core_frequencies_khz.begin(),
+                          max_core_frequencies_khz.end());
+
+  if (*min_max_core_frequencies_khz_it == *max_max_core_frequencies_khz_it)
+    return 0;
+
+  return static_cast<int>(std::count(max_core_frequencies_khz.begin(),
+                                     max_core_frequencies_khz.end(),
+                                     *min_max_core_frequencies_khz_it));
+#else
+  NOTIMPLEMENTED();
+  return 0;
+#endif
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace base

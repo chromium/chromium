@@ -31,6 +31,12 @@ constexpr uint64_t kLowMemoryDeviceThresholdMB = 2048;
 }  // namespace
 
 // static
+int SysInfo::NumberOfEfficientProcessors() {
+  static int number_of_efficient_processors = NumberOfEfficientProcessorsImpl();
+  return number_of_efficient_processors;
+}
+
+// static
 uint64_t SysInfo::AmountOfPhysicalMemory() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableLowEndDeviceMode)) {

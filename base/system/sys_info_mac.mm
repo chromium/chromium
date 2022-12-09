@@ -30,17 +30,29 @@ namespace {
 
 bool g_is_cpu_security_mitigation_enabled = false;
 
+// Queries sysctlbyname() for the given key and returns the 32 bit integer value
+// from the system or absl::nullopt on failure.
+// https://github.com/apple/darwin-xnu/blob/2ff845c2e033bd0ff64b5b6aa6063a1f8f65aa32/bsd/sys/sysctl.h#L1224-L1225
+absl::optional<int> GetSysctlIntValue(const char* key_name) {
+  int value;
+  size_t len = sizeof(value);
+  if (sysctlbyname(key_name, &value, &len, nullptr, 0) != 0)
+    return absl::nullopt;
+  DCHECK_EQ(len, sizeof(value));
+  return value;
+}
+
 // Queries sysctlbyname() for the given key and returns the value from the
 // system or the empty string on failure.
-std::string GetSysctlValue(const char* key_name) {
+std::string GetSysctlStringValue(const char* key_name) {
   char value[256];
-  size_t len = std::size(value);
-  if (sysctlbyname(key_name, &value, &len, nullptr, 0) == 0) {
-    DCHECK_GE(len, 1u);
-    DCHECK_EQ('\0', value[len - 1]);
-    return std::string(value, len - 1);
-  }
-  return std::string();
+  size_t len = sizeof(value);
+  if (sysctlbyname(key_name, &value, &len, nullptr, 0) != 0)
+    return std::string();
+  DCHECK_GE(len, 1u);
+  DCHECK_LE(len, sizeof(value));
+  DCHECK_EQ('\0', value[len - 1]);
+  return std::string(value, len - 1);
 }
 
 }  // namespace
@@ -48,12 +60,7 @@ std::string GetSysctlValue(const char* key_name) {
 namespace internal {
 
 absl::optional<int> NumberOfPhysicalProcessors() {
-  int value;
-  size_t length = sizeof(value);
-
-  if (sysctlbyname("hw.physicalcpu_max", &value, &length, nullptr, 0) != 0)
-    return absl::nullopt;
-  return value;
+  return GetSysctlIntValue("hw.physicalcpu_max");
 }
 
 absl::optional<int> NumberOfProcessorsWhenCpuSecurityMitigationEnabled() {
@@ -105,6 +112,25 @@ std::string SysInfo::OperatingSystemArchitecture() {
 }
 
 // static
+int SysInfo::NumberOfEfficientProcessorsImpl() {
+  int num_perf_levels = GetSysctlIntValue("hw.nperflevels").value_or(1);
+  if (num_perf_levels == 1)
+    return 0;
+  DCHECK_GE(num_perf_levels, 2);
+
+  // Lower values of perflevel indicate higher-performance core types. See
+  // https://developer.apple.com/documentation/kernel/1387446-sysctlbyname/determining_system_capabilities?changes=l__5
+  int num_of_efficient_processors =
+      GetSysctlIntValue(
+          StringPrintf("hw.perflevel%d.logicalcpu", num_perf_levels - 1)
+              .c_str())
+          .value_or(0);
+  DCHECK_GE(num_of_efficient_processors, 0);
+
+  return num_of_efficient_processors;
+}
+
+// static
 uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
   struct host_basic_info hostinfo;
   mach_msg_type_number_t count = HOST_BASIC_INFO_COUNT;
@@ -131,12 +157,12 @@ uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
 
 // static
 std::string SysInfo::CPUModelName() {
-  return GetSysctlValue("machdep.cpu.brand_string");
+  return GetSysctlStringValue("machdep.cpu.brand_string");
 }
 
 // static
 std::string SysInfo::HardwareModelName() {
-  return GetSysctlValue("hw.model");
+  return GetSysctlStringValue("hw.model");
 }
 
 // static
