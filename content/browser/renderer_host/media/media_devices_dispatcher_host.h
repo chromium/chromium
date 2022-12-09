@@ -95,7 +95,6 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       GetVideoInputCapabilitiesCallback client_callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const std::string& default_device_id,
-      media::mojom::DeviceEnumerationResult result,
       const MediaDeviceEnumeration& enumeration);
 
   void GetDefaultAudioInputDeviceID(
@@ -105,7 +104,6 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   void GotDefaultAudioInputDeviceID(const std::string& default_device_id);
 
   void GotAudioInputEnumeration(const std::string& default_device_id,
-                                media::mojom::DeviceEnumerationResult result,
                                 const MediaDeviceEnumeration& enumeration);
 
   void GotAudioInputParameters(

@@ -61,12 +61,9 @@ const char kDefaultAudioDeviceID[] = "fake_audio_input_2";
 
 const auto kIgnoreLogMessageCB = base::DoNothing();
 
-void PhysicalDevicesEnumerated(
-    base::OnceClosure quit_closure,
-    MediaDeviceEnumeration* out,
-    media::mojom::DeviceEnumerationResult result_code,
-    const MediaDeviceEnumeration& enumeration) {
-  CHECK_EQ(result_code, media::mojom::DeviceEnumerationResult::kSuccess);
+void PhysicalDevicesEnumerated(base::OnceClosure quit_closure,
+                               MediaDeviceEnumeration* out,
+                               const MediaDeviceEnumeration& enumeration) {
   *out = enumeration;
   std::move(quit_closure).Run();
 }
@@ -311,11 +308,14 @@ class MediaDevicesDispatcherHostTest
   }
 
  protected:
-  void DevicesEnumerated(base::OnceClosure closure_after,
-                         EnumerationResponsePtr response) {
-    CHECK_EQ(response->result_code,
-             media::mojom::DeviceEnumerationResult::kSuccess);
-    enumerated_devices_ = response->enumeration;
+  void DevicesEnumerated(
+      base::OnceClosure closure_after,
+      const std::vector<std::vector<blink::WebMediaDeviceInfo>>& devices,
+      std::vector<blink::mojom::VideoInputDeviceCapabilitiesPtr>
+          video_input_capabilities,
+      std::vector<blink::mojom::AudioInputDeviceCapabilitiesPtr>
+          audio_input_capabilities) {
+    enumerated_devices_ = devices;
     std::move(closure_after).Run();
   }
 

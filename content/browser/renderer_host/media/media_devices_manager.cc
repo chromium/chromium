@@ -50,8 +50,6 @@ namespace content {
 
 namespace {
 
-using media::mojom::DeviceEnumerationResult;
-
 // Resolutions used if the source doesn't support capability enumeration.
 struct {
   uint16_t width;
@@ -419,6 +417,7 @@ void MediaDevicesManager::EnumerateDevices(
       DoEnumerateDevices(static_cast<MediaDeviceType>(i));
     }
   }
+
   if (all_results_cached)
     ProcessRequests();
 }
@@ -714,19 +713,8 @@ void MediaDevicesManager::OnDevicesEnumerated(
     EnumerateDevicesCallback callback,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const MediaDevicesManager::BoolDeviceTypes& has_permissions,
-    DeviceEnumerationResult enumeration_result,
     const MediaDeviceEnumeration& enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (enumeration_result != DeviceEnumerationResult::kSuccess) {
-    SendLogMessage(base::StringPrintf(
-        "OnDevicesEnumerated failing request with error code %d",
-        enumeration_result));
-    EnumerationResponsePtr response = blink::mojom::EnumerationResponse::New();
-    response->result_code = enumeration_result;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
 
   const bool video_input_capabilities_requested =
       has_permissions[static_cast<size_t>(
@@ -864,22 +852,18 @@ void MediaDevicesManager::GotAudioInputCapabilities(
 
 void MediaDevicesManager::FinalizeDevicesEnumerated(
     EnumerationState enumeration_state) {
-  EnumerationResponsePtr response = blink::mojom::EnumerationResponse::New();
-  response->result_code = DeviceEnumerationResult::kSuccess;
-  response->video_input_device_capabilities =
-      enumeration_state.video_input_capabilities_requested
-          ? ComputeVideoInputCapabilities(
-                enumeration_state.raw_enumeration_results[static_cast<size_t>(
-                    MediaDeviceType::MEDIA_VIDEO_INPUT)],
-                enumeration_state
-                    .hashed_enumeration_results[static_cast<size_t>(
-                        MediaDeviceType::MEDIA_VIDEO_INPUT)])
-          : std::vector<VideoInputDeviceCapabilitiesPtr>();
-  response->audio_input_device_capabilities =
-      std::move(enumeration_state.audio_capabilities);
-  response->enumeration =
-      std::move(enumeration_state.hashed_enumeration_results);
-  std::move(enumeration_state.completion_cb).Run(std::move(response));
+  std::move(enumeration_state.completion_cb)
+      .Run(std::move(enumeration_state.hashed_enumeration_results),
+           enumeration_state.video_input_capabilities_requested
+               ? ComputeVideoInputCapabilities(
+                     enumeration_state
+                         .raw_enumeration_results[static_cast<size_t>(
+                             MediaDeviceType::MEDIA_VIDEO_INPUT)],
+                     enumeration_state
+                         .hashed_enumeration_results[static_cast<size_t>(
+                             MediaDeviceType::MEDIA_VIDEO_INPUT)])
+               : std::vector<VideoInputDeviceCapabilitiesPtr>(),
+           std::move(enumeration_state.audio_capabilities));
 }
 
 std::vector<VideoInputDeviceCapabilitiesPtr>
@@ -945,30 +929,18 @@ void MediaDevicesManager::EnumerateAudioDevices(bool is_input) {
 }
 
 void MediaDevicesManager::VideoInputDevicesEnumerated(
-    DeviceEnumerationResult result_code,
+    media::mojom::DeviceEnumerationResult result_code,
     const media::VideoCaptureDeviceDescriptors& descriptors) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (result_code != DeviceEnumerationResult::kSuccess) {
+  if (result_code != media::mojom::DeviceEnumerationResult::kSuccess) {
     std::string log_message = base::StringPrintf(
         "VideoInputDevicesEnumerated got error %d", result_code);
     // Log to both WebRTC logs (for feedback reports) and text logs for
     // manually-collected chrome logs at customers.
     SendLogMessage(log_message);
     VLOG(1) << log_message;
-
-    // Fail all pending requests for video devices.
-    base::EraseIf(requests_, [result_code](EnumerationRequest& request) {
-      if (request.requested[static_cast<size_t>(
-              MediaDeviceType::MEDIA_VIDEO_INPUT)]) {
-        std::move(request.callback).Run(result_code, {});
-        return true;
-      }
-      return false;
-    });
-    cache_infos_[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]
-        .UpdateCompleted();
-
-    return;
+    // TODO(crbug.com/1313822): Propagate this as an error response to the
+    // page and expose in the JS API.
   }
   blink::WebMediaDeviceInfoArray snapshot;
   for (const auto& descriptor : descriptors) {
@@ -1101,8 +1073,7 @@ void MediaDevicesManager::ProcessRequests() {
 
   base::EraseIf(requests_, [this](EnumerationRequest& request) {
     if (IsEnumerationRequestReady(request)) {
-      std::move(request.callback)
-          .Run(DeviceEnumerationResult::kSuccess, current_snapshot_);
+      std::move(request.callback).Run(current_snapshot_);
       return true;
     }
     return false;

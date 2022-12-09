@@ -72,20 +72,15 @@ void EnumerateOutputDevices(MediaStreamManager* media_stream_manager,
 void TranslateDeviceId(const std::string& device_id,
                        const MediaDeviceSaltAndOrigin& salt_and_origin,
                        base::RepeatingCallback<void(const std::string&)> cb,
-                       media::mojom::DeviceEnumerationResult result,
                        const MediaDeviceEnumeration& device_array) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // TODO(crbug.com/1313822): Propagate errors rather than acting as if there
-  // are no devices.
-  if (result == media::mojom::DeviceEnumerationResult::kSuccess) {
-    for (const auto& device_info : device_array[static_cast<size_t>(
-             MediaDeviceType::MEDIA_AUDIO_OUTPUT)]) {
-      if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-              salt_and_origin.device_id_salt, salt_and_origin.origin, device_id,
-              device_info.device_id)) {
-        cb.Run(device_info.device_id);
-        break;
-      }
+  for (const auto& device_info :
+       device_array[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)]) {
+    if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
+            salt_and_origin.device_id_salt, salt_and_origin.origin, device_id,
+            device_info.device_id)) {
+      cb.Run(device_info.device_id);
+      break;
     }
   }
   // If we're unable to translate the device id, |cb| will not be run.

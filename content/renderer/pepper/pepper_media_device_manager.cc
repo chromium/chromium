@@ -263,10 +263,14 @@ void PepperMediaDeviceManager::OnDeviceOpened(
 void PepperMediaDeviceManager::DevicesEnumerated(
     DevicesOnceCallback client_callback,
     MediaDeviceType type,
-    blink::mojom::EnumerationResponsePtr response) {
+    const std::vector<blink::WebMediaDeviceInfoArray>& enumeration,
+    std::vector<blink::mojom::VideoInputDeviceCapabilitiesPtr>
+        video_input_capabilities,
+    std::vector<blink::mojom::AudioInputDeviceCapabilitiesPtr>
+        audio_input_capabilities) {
   std::move(client_callback)
-      .Run(FromMediaDeviceInfoArray(
-          type, response->enumeration[static_cast<size_t>(type)]));
+      .Run(FromMediaDeviceInfoArray(type,
+                                    enumeration[static_cast<size_t>(type)]));
 }
 
 blink::mojom::MediaStreamDispatcherHost*

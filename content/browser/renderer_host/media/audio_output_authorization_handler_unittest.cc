@@ -161,14 +161,13 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
     media_stream_manager_->media_devices_manager()->EnumerateDevices(
         devices_to_enumerate,
         base::BindOnce(
-            [](std::string* out, media::mojom::DeviceEnumerationResult,
-               const MediaDeviceEnumeration& enumeration) {
+            [](std::string* out, const MediaDeviceEnumeration& result) {
               // Index 0 is default, so use 1.
-              CHECK(enumeration[static_cast<size_t>(
-                                    MediaDeviceType::MEDIA_AUDIO_OUTPUT)]
+              CHECK(result[static_cast<size_t>(
+                               MediaDeviceType::MEDIA_AUDIO_OUTPUT)]
                         .size() > 1)
                   << "Expected to have a nondefault device.";
-              *out = enumeration[static_cast<size_t>(
+              *out = result[static_cast<size_t>(
                   MediaDeviceType::MEDIA_AUDIO_OUTPUT)][1]
                          .device_id;
             },

@@ -280,23 +280,17 @@ void AudioOutputAuthorizationHandler::TranslateDeviceID(
     const std::string& device_id,
     const std::string& salt,
     const url::Origin& security_origin,
-    media::mojom::DeviceEnumerationResult result,
     const MediaDeviceEnumeration& enumeration) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!media::AudioDeviceDescription::IsDefaultDevice(device_id));
 
-  // TODO(crbug.com/1313822): Propagate errors rather than acting as if there
-  // are no devices.
-  if (result == media::mojom::DeviceEnumerationResult::kSuccess) {
-    for (const blink::WebMediaDeviceInfo& device_info :
-         enumeration[static_cast<size_t>(
-             MediaDeviceType::MEDIA_AUDIO_OUTPUT)]) {
-      if (DoesMediaDeviceIDMatchHMAC(salt, security_origin, device_id,
-                                     device_info.device_id)) {
-        GetDeviceParameters(std::move(trace_scope), std::move(cb),
-                            device_info.device_id);
-        return;
-      }
+  for (const blink::WebMediaDeviceInfo& device_info :
+       enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_OUTPUT)]) {
+    if (DoesMediaDeviceIDMatchHMAC(salt, security_origin, device_id,
+                                   device_info.device_id)) {
+      GetDeviceParameters(std::move(trace_scope), std::move(cb),
+                          device_info.device_id);
+      return;
     }
   }
 

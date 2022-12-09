@@ -484,18 +484,13 @@ void FinalizeGetMediaDeviceIDForHMAC(
     const std::string& source_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::OnceCallback<void(const absl::optional<std::string>&)> callback,
-    media::mojom::DeviceEnumerationResult result,
     const MediaDeviceEnumeration& enumeration) {
-  // TODO(crbug.com/1313822): Propagate an error rather than acting as if there
-  // are no devices.
-  if (result == media::mojom::DeviceEnumerationResult::kSuccess) {
-    for (const auto& device : enumeration[static_cast<size_t>(type)]) {
-      if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
-              salt, security_origin, source_id, device.device_id)) {
-        task_runner->PostTask(
-            FROM_HERE, base::BindOnce(std::move(callback), device.device_id));
-        return;
-      }
+  for (const auto& device : enumeration[static_cast<size_t>(type)]) {
+    if (MediaStreamManager::DoesMediaDeviceIDMatchHMAC(
+            salt, security_origin, source_id, device.device_id)) {
+      task_runner->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), device.device_id));
+      return;
     }
   }
   task_runner->PostTask(FROM_HERE,
@@ -3029,20 +3024,12 @@ void MediaStreamManager::DevicesEnumerated(
     bool requested_audio_input,
     bool requested_video_input,
     const std::string& label,
-    media::mojom::DeviceEnumerationResult result,
     const MediaDeviceEnumeration& enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   DeviceRequest* request = FindRequest(label);
   if (!request)
     return;
-
-  if (result != media::mojom::DeviceEnumerationResult::kSuccess) {
-    // TODO(crbug.com/1313822): Propagate a more specific error depending on
-    // result.
-    FinalizeRequestFailed(label, request,
-                          MediaStreamRequestResult::NO_HARDWARE);
-    return;
-  }
 
   SendLogMessage(base::StringPrintf(
       "DevicesEnumerated({label=%s}, {requester_id=%d}, {request_type=%s})",

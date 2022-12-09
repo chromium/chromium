@@ -1011,15 +1011,14 @@ void AudioContext::InitializeMediaDeviceService() {
 }
 
 void AudioContext::DevicesEnumerated(
-    mojom::blink::EnumerationResponsePtr response) {
-  // TODO(crbug.com/1313822): Propagate an error when response->result_code !=
-  // kSuccess rather than acting as if there are no devices.
-  Vector<WebMediaDeviceInfo> output_devices;
-  if (response->result_code ==
-      media::mojom::DeviceEnumerationResult::kSuccess) {
-    output_devices = response->enumeration[static_cast<wtf_size_t>(
-        mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT)];
-  }
+    const Vector<Vector<WebMediaDeviceInfo>>& enumeration,
+    Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
+        video_input_capabilities,
+    Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
+        audio_input_capabilities) {
+  Vector<WebMediaDeviceInfo> output_devices =
+      enumeration[static_cast<wtf_size_t>(
+          mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT)];
 
   OnDevicesChanged(mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT,
                    output_devices);

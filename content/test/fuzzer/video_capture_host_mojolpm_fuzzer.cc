@@ -139,7 +139,6 @@ class VideoCaptureHostTestcase {
       const std::string& salt,
       const url::Origin& security_origin,
       blink::WebMediaDeviceInfoArray* out,
-      media::mojom::DeviceEnumerationResult,
       const content::MediaDeviceEnumeration& enumeration);
 
   // A callback which confirms opening device success. This provides the
@@ -489,7 +488,6 @@ void VideoCaptureHostTestcase::VideoInputDevicesEnumerated(
     const std::string& salt,
     const url::Origin& security_origin,
     blink::WebMediaDeviceInfoArray* out,
-    media::mojom::DeviceEnumerationResult,
     const content::MediaDeviceEnumeration& enumeration) {
   for (const auto& info :
        enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_VIDEO_INPUT)]) {

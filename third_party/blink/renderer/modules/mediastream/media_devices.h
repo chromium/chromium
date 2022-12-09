@@ -133,8 +133,10 @@ class MODULES_EXPORT MediaDevices final
   void DispatchScheduledEvents();
   void StartObserving();
   void StopObserving();
-  void DevicesEnumerated(ScriptPromiseResolver* resolver,
-                         mojom::blink::EnumerationResponsePtr response);
+  void DevicesEnumerated(ScriptPromiseResolver*,
+                         const Vector<Vector<WebMediaDeviceInfo>>&,
+                         Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>,
+                         Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>);
   void OnDispatcherHostConnectionError();
   mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
 

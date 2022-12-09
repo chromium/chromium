@@ -100,7 +100,6 @@ class CONTENT_EXPORT AudioOutputAuthorizationHandler {
                          const std::string& device_id,
                          const std::string& salt,
                          const url::Origin& security_origin,
-                         media::mojom::DeviceEnumerationResult result,
                          const MediaDeviceEnumeration& enumeration) const;
 
   void GetDeviceParameters(std::unique_ptr<TraceScope> trace_scope,

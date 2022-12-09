@@ -637,7 +637,6 @@ class CONTENT_EXPORT MediaStreamManager
   void DevicesEnumerated(bool requested_audio_input,
                          bool requested_video_input,
                          const std::string& label,
-                         media::mojom::DeviceEnumerationResult result,
                          const MediaDeviceEnumeration& enumeration);
 
   // Creates blink::MediaStreamDevices for |devices_infos| of |stream_type|. For

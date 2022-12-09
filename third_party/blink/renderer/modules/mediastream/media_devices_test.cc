@@ -35,7 +35,6 @@
 
 using base::HistogramTester;
 using blink::mojom::blink::MediaDeviceInfoPtr;
-using media::mojom::blink::DeviceEnumerationResult;
 using ::testing::_;
 
 namespace blink {
@@ -155,15 +154,9 @@ class MockMediaDevicesDispatcherHost final
                       blink::mojom::blink::MediaDeviceType::MEDIA_AUDIO_OUTPUT)]
           .push_back(device_info);
     }
-    mojom::blink::EnumerationResponsePtr response =
-        mojom::blink::EnumerationResponse::New();
-    response->result_code = enumerate_devices_result_code_;
-    response->enumeration = std::move(enumeration);
-    response->video_input_device_capabilities =
-        std::move(video_input_capabilities);
-    response->audio_input_device_capabilities =
-        std::move(audio_input_capabilities);
-    std::move(callback).Run(std::move(response));
+    std::move(callback).Run(std::move(enumeration),
+                            std::move(video_input_capabilities),
+                            std::move(audio_input_capabilities));
   }
 
   void GetVideoInputCapabilities(GetVideoInputCapabilitiesCallback) override {
@@ -253,11 +246,6 @@ class MockMediaDevicesDispatcherHost final
 
   void CloseBinding() { receiver_.reset(); }
 
-  void SetEnumerateDevicesResultCode(
-      DeviceEnumerationResult enumerate_devices_result_code) {
-    enumerate_devices_result_code_ = enumerate_devices_result_code;
-  }
-
   mojo::Remote<mojom::blink::MediaDevicesListener>& listener() {
     return listener_;
   }
@@ -269,8 +257,6 @@ class MockMediaDevicesDispatcherHost final
 #if !BUILDFLAG(IS_ANDROID)
   String next_crop_id_ = "";  // Empty, not null.
 #endif
-  DeviceEnumerationResult enumerate_devices_result_code_ =
-      DeviceEnumerationResult::kSuccess;
 };
 
 class MediaDevicesTest : public PageTestBase {
@@ -936,27 +922,5 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
   EXPECT_TRUE(base::GUID::ParseLowercase(crop_id.Ascii()).is_valid());
 }
 #endif
-
-TEST_F(MediaDevicesTest, EnumerateDevicesFailedResultCode) {
-  V8TestingScope scope;
-  HistogramTester histogram_tester;
-  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
-  media_devices->SetEnumerateDevicesCallbackForTesting(WTF::BindOnce(
-      &MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
-
-  dispatcher_host().SetEnumerateDevicesResultCode(
-      DeviceEnumerationResult::kUnknownError);
-
-  ScriptPromise promise = media_devices->enumerateDevices(
-      scope.GetScriptState(), scope.GetExceptionState());
-  ScriptPromiseTester tester(scope.GetScriptState(), promise);
-  tester.WaitUntilSettled();
-
-  EXPECT_TRUE(tester.IsRejected());
-  EXPECT_FALSE(dispatcher_host_connection_error());
-  EXPECT_FALSE(devices_enumerated());
-
-  histogram_tester.ExpectTotalCount(kEnumerateDevicesLatencyHistogram, 1);
-}
 
 }  // namespace blink

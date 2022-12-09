@@ -377,16 +377,8 @@ void MediaDevicesDispatcherHost::FinalizeGetVideoInputCapabilities(
     GetVideoInputCapabilitiesCallback client_callback,
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& default_device_id,
-    media::mojom::DeviceEnumerationResult result,
     const MediaDeviceEnumeration& enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // TODO(crbug.com/1313822): Propagate errors rather than acting as if there
-  // are no devices.
-  if (result != media::mojom::DeviceEnumerationResult::kSuccess) {
-    std::move(client_callback).Run({});
-    return;
-  }
-
   std::vector<blink::mojom::VideoInputDeviceCapabilitiesPtr>
       video_input_capabilities;
   for (const auto& device_info :
@@ -496,31 +488,24 @@ void MediaDevicesDispatcherHost::GotDefaultAudioInputDeviceID(
 
 void MediaDevicesDispatcherHost::GotAudioInputEnumeration(
     const std::string& default_device_id,
-    media::mojom::DeviceEnumerationResult result,
     const MediaDeviceEnumeration& enumeration) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_GT(pending_audio_input_capabilities_requests_.size(), 0U);
   DCHECK(current_audio_input_capabilities_.empty());
   DCHECK_EQ(num_pending_audio_input_parameters_, 0U);
-
-  // TODO(crbug.com/1313822): Propagate errors rather than acting as if there
-  // are no devices.
-  if (result == media::mojom::DeviceEnumerationResult::kSuccess) {
-    for (const auto& device_info :
-         enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)]) {
-      auto parameters = media::AudioParameters::UnavailableDeviceParams();
-      blink::mojom::AudioInputDeviceCapabilities capabilities(
-          device_info.device_id, device_info.group_id, parameters,
-          parameters.IsValid(), parameters.channels(), parameters.sample_rate(),
-          parameters.GetBufferDuration());
-      if (device_info.device_id == default_device_id)
-        current_audio_input_capabilities_.insert(
-            current_audio_input_capabilities_.begin(), std::move(capabilities));
-      else
-        current_audio_input_capabilities_.push_back(std::move(capabilities));
-    }
+  for (const auto& device_info :
+       enumeration[static_cast<size_t>(MediaDeviceType::MEDIA_AUDIO_INPUT)]) {
+    auto parameters = media::AudioParameters::UnavailableDeviceParams();
+    blink::mojom::AudioInputDeviceCapabilities capabilities(
+        device_info.device_id, device_info.group_id, parameters,
+        parameters.IsValid(), parameters.channels(), parameters.sample_rate(),
+        parameters.GetBufferDuration());
+    if (device_info.device_id == default_device_id)
+      current_audio_input_capabilities_.insert(
+          current_audio_input_capabilities_.begin(), std::move(capabilities));
+    else
+      current_audio_input_capabilities_.push_back(std::move(capabilities));
   }
-
   // No devices or fake devices, no need to read audio parameters.
   if (current_audio_input_capabilities_.empty() ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
