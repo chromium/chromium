@@ -1356,14 +1356,6 @@ void Value::MergeDictionary(const Value* dictionary) {
   return GetDict().Merge(dictionary->GetDict().Clone());
 }
 
-bool Value::GetAsDictionary(DictionaryValue** out_value) {
-  if (out_value && is_dict()) {
-    *out_value = static_cast<DictionaryValue*>(this);
-    return true;
-  }
-  return is_dict();
-}
-
 bool Value::GetAsDictionary(const DictionaryValue** out_value) const {
   if (out_value && is_dict()) {
     *out_value = static_cast<const DictionaryValue*>(this);

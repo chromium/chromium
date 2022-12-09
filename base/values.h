@@ -975,7 +975,6 @@ class BASE_EXPORT GSL_OWNER Value {
   //
   // DEPRECATED: prefer direct use `base::Value::Dict` where possible, or
   // `GetIfDict()` otherwise.
-  bool GetAsDictionary(DictionaryValue** out_value);
   bool GetAsDictionary(const DictionaryValue** out_value) const;
   // Note: Do not add more types. See the file-level comment above for why.
 
