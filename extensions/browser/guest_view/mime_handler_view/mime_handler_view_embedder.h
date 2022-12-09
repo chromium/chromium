@@ -29,14 +29,14 @@ namespace extensions {
 // MimeHandlerViewEmbedder is instantiated in response to a frame navigation to
 // a resource with a MIME type handled by MimeHandlerViewGuest. MHVE tracks the
 // navigation to the template HTML document injected by the
-// MimeHandlerViewAttachHelper and when the <iframe>'s RenderFrameHost is ready,
+// MimeHandlerViewAttachHelper and when the <embed>'s RenderFrameHost is ready,
 // proceeds with creating a BeforeUnloadControl on the renderer side. After the
 // renderer confirms the creation of BUC the MHVE will create and attach a
 // MHVG. At this point MHVE is no longer needed and it clears itself.
 // Note: the MHVE might go away sooner if:
-//   - A new navigation starts in the embedder frame or <iframe>,
+//   - A new navigation starts in the embedder frame,
 //   - the navigation to the resource fails, or,
-//.  - the embedder or the <iframe> are removed from DOM.
+//.  - the embedder or the injected <embed> are removed from DOM.
 class MimeHandlerViewEmbedder : public content::WebContentsObserver {
  public:
   // Returns the instance associated with an ongoing navigation in a frame
@@ -95,7 +95,8 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
       container_manager_;
 
   // The child frame of the template page at which we attach the guest contents.
-  raw_ptr<content::RenderFrameHost> outer_contents_rfh_ = nullptr;
+  raw_ptr<content::RenderFrameHost> placeholder_rfh_for_inner_contents_ =
+      nullptr;
 
   bool ready_to_create_mime_handler_view_ = false;
 

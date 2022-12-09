@@ -925,12 +925,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // make sense to attach an inner WebContents to the outer WebContents main
   // frame.
   // Essentially, this method will:
-  //  1- Cancel any ongoing navigation and navigation requests for this frame.
-  //  2- Dispatch beforeunload event on this frame and all of the frame's
+  //  1- Dispatch beforeunload event on this frame and all of the frame's
   //     subframes, and wait for all beforeunload events to complete.
-  //  3- Will create and return a new RenderFrameHost (destroying this one) if
-  //     this RenderFrameHost is a cross-process subframe.
-  // After steps 1-3 are completed, the callback is invoked asynchronously with
+  //  2- Will create and return a new RenderFrameHost (destroying this one) if
+  //     this RenderFrameHost is a cross-process subframe. (Note: This might not
+  //     be needed anymore now that MimeHandlerView's embedded case uses the
+  //     same code path as the full page case. See https://crbug.com/1398111).
+  // After steps 1-2 are completed, the callback is invoked asynchronously with
   // the RenderFrameHost which can be safely used for attaching. This
   // RenderFrameHost could be different than |this| which is the case if this
   // RenderFrameHost is for a cross-process frame. The callback could also be

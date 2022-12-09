@@ -2284,6 +2284,10 @@ void RenderFrameHostManager::PrepareForInnerDelegateAttach(
   attach_inner_delegate_callback_ = std::move(callback);
   DCHECK_EQ(attach_to_inner_delegate_state_, AttachToInnerDelegateState::NONE);
   attach_to_inner_delegate_state_ = AttachToInnerDelegateState::PREPARE_FRAME;
+
+  // TODO(https://crbug.com/1398111): Some of these may no longer be necessary
+  // now that MimeHandlerView's embedded case uses the same code path as the
+  // full page case.
   if (current_frame_host()->ShouldDispatchBeforeUnload(
           false /* check_subframes_only */)) {
     // If there are beforeunload handlers in the frame or a nested subframe we
@@ -4252,26 +4256,21 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
       "RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary",
       ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);
   DCHECK(is_attaching_inner_delegate());
-  // Remove all navigations and any speculative frames which might interfere
-  // with the loading state.
-  // TODO(https://crbug.com/1220337): Ensure that there are no pending commit
-  // cross-document NavigationRequests at this point. Maybe wait for all
-  // navigations to finish from PrepareForInnerDelegateAttach() before
-  // continuing instead of cancelling the navigations from here?
-  current_frame_host()->ResetOwnedNavigationRequests(
-      NavigationDiscardReason::kNewNavigation);
-  current_frame_host()->ResetLoadingState();
-  // Remove any speculative frames first and ongoing navigation state. This
-  // should reset the loading state for good.
-  frame_tree_node_->ResetNavigationRequest(
-      NavigationDiscardReason::kNewNavigation);
-  if (speculative_render_frame_host_) {
-    // The FrameTreeNode::ResetNavigationRequest call above may not have cleaned
-    // up the speculative RenderFrameHost if the NavigationRequest had already
-    // been transferred to RenderFrameHost. Ensure it is cleaned up now.
-    DiscardUnusedFrame(UnsetSpeculativeRenderFrameHost(
-        NavigationDiscardReason::kNewNavigation));
+  // There should be no navigations happening on the frame to attach the inner
+  // delegate to. This is guaranteed by `is_attaching_inner_delegate()` state
+  // checks, which will prevent NavigationRequests from being created on this
+  // frame. Since that state will be set synchronously after we got the
+  // RenderFrameCreated notification for this frame, no navigation should be
+  // able to start on the frame.
+  if (current_frame_host()->HasPendingCommitNavigation() ||
+      frame_tree_node_->navigation_request() ||
+      speculative_render_frame_host_) {
+    NOTREACHED();
+    base::debug::DumpWithoutCrashing();
+    NotifyPrepareForInnerDelegateAttachComplete(false /* success */);
+    return;
   }
+  DCHECK(!current_frame_host()->is_loading());
 
   DCHECK(!current_frame_host()->is_main_frame());
   if (current_frame_host()->GetSiteInstance() ==
@@ -4284,6 +4283,10 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
     NotifyPrepareForInnerDelegateAttachComplete(true /* success */);
     return;
   }
+
+  // TODO(https://crbug.com/1398111): Some of these may no longer be necessary
+  // now that MimeHandlerView's embedded case uses the same code path as the
+  // full page case.
 
   // We need a new RenderFrameHost in its parent's SiteInstance to be able to
   // safely use the WebContentsImpl attach API.
