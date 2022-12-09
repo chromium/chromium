@@ -10,12 +10,70 @@
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom-shared.h"
+#include "chromeos/ash/services/ime/public/mojom/japanese_settings.mojom.h"
 
 namespace ash {
 namespace input_method {
+
 namespace {
 
 namespace mojom = ::ash::ime::mojom;
+
+// The Japanese engine. This is the key for the settings object which lets us
+// know where to store the settings info.
+constexpr char kJapaneseEngineId[] = "nacl_mozc_jp";
+
+// This should be kept in sync with the values on the settings page's
+// InputMethodOptions. This should match
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js;l=71-88;drc=6c88edbfe6096489ccac66b3ef5c84d479892181.
+constexpr char kJapaneseAutomaticallySwitchToHalfwidth[] =
+    "AutomaticallySwitchToHalfwidth";
+constexpr char kJapaneseShiftKeyModeStyle[] = "ShiftKeyModeStyle";
+constexpr char kJapaneseUseInputHistory[] = "UseInputHistory";
+constexpr char kJapaneseUseSystemDictionary[] = "UseSystemDictionary";
+constexpr char kJapaneseNumberOfSuggestions[] = "numberOfSuggestions";
+constexpr char kJapaneseInputMode[] = "JapaneseInputMode";
+constexpr char kJapanesePunctuationStyle[] = "JapanesePunctuationStyle";
+constexpr char kJapaneseSymbolStyle[] = "JapaneseSymbolStyle";
+constexpr char kJapaneseSpaceInputStyle[] = "JapaneseSpaceInputStyle";
+constexpr char kJapaneseSelectionShortcut[] = "JapaneseSectionShortcut";
+constexpr char kJapaneseKeymapStyle[] = "JapaneseKeymapStyle";
+constexpr char kJapaneseDisablePersonalizedSuggestions[] =
+    "JapaneseDisableSuggestions";
+constexpr char kJapaneseAutomaticallySendStatisticsToGoogle[] =
+    "AutomaticallySendStatisticsToGoogle";
+
+// This should match the strings listed here:
+// https://crsrc.org/c/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_types.js;l=8-71;drc=7df206933530e6ac65a7e17a88757cbb780c829e
+// These are possible values for their corresponding enum type.
+constexpr char kJapaneseInputModeKana[] = "Kana";
+constexpr char kJapaneseInputModeRomaji[] = "Romaji";
+constexpr char kJapanesePunctuationStyleKutenTouten[] = "KutenTouten";
+constexpr char kJapanesePunctuationStyleCommaPeriod[] = "CommaPeriod";
+constexpr char kJapanesePunctuationStyleKutenPeriod[] = "KutenPeriod";
+constexpr char kJapanesePunctuationStyleCommaTouten[] = "CommaTouten";
+constexpr char kJapaneseSymbolStyleCornerBracketMiddleDot[] =
+    "CornerBracketMiddleDot";
+constexpr char kJapaneseSymbolStyleSquareBracketSlash[] = "SquareBracketSlash";
+constexpr char kJapaneseSymbolStyleCornerBracketSlash[] = "CornerBracketSlash";
+constexpr char kJapaneseSymbolStyleSquareBracketMiddleDot[] =
+    "SquareBracketMiddleDot";
+constexpr char kJapaneseSpaceInputStyleInputMode[] = "InputMode";
+constexpr char kJapaneseSpaceInputStyleFullwidth[] = "Fullwidth";
+constexpr char kJapaneseSpaceInputStyleHalfwidth[] = "Halfwidth";
+constexpr char kJapaneseSelectionShortcutNoShortcut[] = "NoShortcut";
+constexpr char kJapaneseSelectionShortcutDigits123456789[] = "Digits123456789";
+constexpr char kJapaneseSelectionShortcutAsdfghjkl[] = "ASDFGHJKL";
+constexpr char kJapaneseKeymapStyleCustom[] = "Custom";
+constexpr char kJapaneseKeymapStyleAtok[] = "Atok";
+constexpr char kJapaneseKeymapStyleMsIme[] = "MsIme";
+constexpr char kJapaneseKeymapStyleKotoeri[] = "Kotoeri";
+constexpr char kJapaneseKeymapStyleMobile[] = "Mobile";
+constexpr char kJapaneseKeymapStyleChromeOs[] = "ChromeOs";
+constexpr char kJapaneseShiftKeyModeStyleOff[] = "Off";
+constexpr char kJapaneseShiftKeyModeStyleAlphanumeric[] = "Alphanumeric";
+constexpr char kJapaneseShiftKeyModeStyleKatakana[] = "Katakana";
 
 // The values here should be kept in sync with
 // chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js
@@ -58,6 +116,15 @@ constexpr char kZhuyinPrefsSelectionKeys1234Qweras[] = "1234qweras";
 constexpr char kZhuyinPrefsPageSize10[] = "10";
 constexpr char kZhuyinPrefsPageSize9[] = "9";
 constexpr char kZhuyinPrefsPageSize8[] = "8";
+
+constexpr char kJapaneseMigrationCompleteKey[] = "is_migration_complete";
+
+const base::Value::Dict* GetJapaneseInputMethodSpecificSettings(
+    const PrefService& prefs) {
+  const base::Value::Dict& all_input_method_prefs =
+      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings);
+  return all_input_method_prefs.FindDict(kJapaneseEngineId);
+}
 
 std::string ValueOrEmpty(const std::string* str) {
   return str ? *str : "";
@@ -260,6 +327,159 @@ const base::Value::Dict& GetPrefsDictionaryForEngineId(
              : fallback_dictionary;
 }
 
+// Port the Prefs settings onto a Dict object for setting the user Prefs.
+// This converts the code in the corresponding pages:
+// https://crsrc.org/c/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.js;drc=6c88edbfe6096489ccac66b3ef5c84d479892181;l=72
+// https://crsrc.org/c/chromeos/ash/services/ime/public/mojom/japanese_settings.mojom;drc=e250164fc5bdefca32cb94157e9835ff8c2c9ee6;l=73
+base::Value::Dict ConvertConfigToJapaneseSettings(
+    const ime::mojom::JapaneseConfig config) {
+  base::Value::Dict japanese_settings;
+  switch (config.input_mode) {
+    case (mojom::InputMode::kRomaji):
+      japanese_settings.Set(kJapaneseInputMode,
+                            std::string(kJapaneseInputModeRomaji));
+      break;
+    case (mojom::InputMode::kKana):
+      japanese_settings.Set(kJapaneseInputMode,
+                            std::string(kJapaneseInputModeKana));
+      break;
+  }
+  switch (config.punctuation_style) {
+    case (mojom::PunctuationStyle::kKutenTouten):
+      japanese_settings.Set(kJapanesePunctuationStyle,
+                            std::string(kJapanesePunctuationStyleKutenTouten));
+      break;
+    case (mojom::PunctuationStyle::kCommaTouten):
+      japanese_settings.Set(kJapanesePunctuationStyle,
+                            std::string(kJapanesePunctuationStyleCommaTouten));
+      break;
+    case (mojom::PunctuationStyle::kKutenPeriod):
+      japanese_settings.Set(kJapanesePunctuationStyle,
+                            std::string(kJapanesePunctuationStyleKutenPeriod));
+      break;
+    case (mojom::PunctuationStyle::kCommaPeriod):
+      japanese_settings.Set(kJapanesePunctuationStyle,
+                            std::string(kJapanesePunctuationStyleCommaPeriod));
+      break;
+  }
+  switch (config.symbol_style) {
+    case (mojom::SymbolStyle::kCornerBracketMiddleDot):
+      japanese_settings.Set(
+          kJapaneseSymbolStyle,
+          std::string(kJapaneseSymbolStyleCornerBracketMiddleDot));
+      break;
+    case (mojom::SymbolStyle::kCornerBracketSlash):
+      japanese_settings.Set(
+          kJapaneseSymbolStyle,
+          std::string(kJapaneseSymbolStyleCornerBracketSlash));
+      break;
+    case (mojom::SymbolStyle::kSquareBracketSlash):
+      japanese_settings.Set(
+          kJapaneseSymbolStyle,
+          std::string(kJapaneseSymbolStyleSquareBracketSlash));
+      break;
+    case (mojom::SymbolStyle::kSquareBracketMiddleDot):
+      japanese_settings.Set(
+          kJapaneseSymbolStyle,
+          std::string(kJapaneseSymbolStyleSquareBracketMiddleDot));
+      break;
+  }
+
+  switch (config.space_input_style) {
+    case (mojom::SpaceInputStyle::kInputMode):
+      japanese_settings.Set(kJapaneseSpaceInputStyle,
+                            std::string(kJapaneseSpaceInputStyleInputMode));
+      break;
+    case (mojom::SpaceInputStyle::kHalfwidth):
+      japanese_settings.Set(kJapaneseSpaceInputStyle,
+                            std::string(kJapaneseSpaceInputStyleHalfwidth));
+      break;
+    case (mojom::SpaceInputStyle::kFullwidth):
+      japanese_settings.Set(kJapaneseSpaceInputStyle,
+                            std::string(kJapaneseSpaceInputStyleFullwidth));
+      break;
+  }
+
+  switch (config.selection_shortcut) {
+    case (mojom::SelectionShortcut::kNoShortcut):
+      japanese_settings.Set(kJapaneseSelectionShortcut,
+                            std::string(kJapaneseSelectionShortcutNoShortcut));
+      break;
+    case (mojom::SelectionShortcut::kAsdfghjkl):
+      japanese_settings.Set(kJapaneseSelectionShortcut,
+                            std::string(kJapaneseSelectionShortcutAsdfghjkl));
+      break;
+    case (mojom::SelectionShortcut::kDigits123456789):
+      japanese_settings.Set(
+          kJapaneseSelectionShortcut,
+          std::string(kJapaneseSelectionShortcutDigits123456789));
+      break;
+  }
+
+  switch (config.keymap_style) {
+    case (mojom::KeymapStyle::kCustom):
+      japanese_settings.Set(kJapaneseKeymapStyle,
+                            std::string(kJapaneseKeymapStyleCustom));
+      break;
+    case (mojom::KeymapStyle::kAtok):
+      japanese_settings.Set(kJapaneseKeymapStyle,
+                            std::string(kJapaneseKeymapStyleAtok));
+      break;
+    case (mojom::KeymapStyle::kMsIme):
+      japanese_settings.Set(kJapaneseKeymapStyle,
+                            std::string(kJapaneseKeymapStyleMsIme));
+      break;
+    case (mojom::KeymapStyle::kKotoeri):
+      japanese_settings.Set(kJapaneseKeymapStyle,
+                            std::string(kJapaneseKeymapStyleKotoeri));
+      break;
+    case (mojom::KeymapStyle::kMobile):
+      japanese_settings.Set(kJapaneseKeymapStyle,
+                            std::string(kJapaneseKeymapStyleMobile));
+      break;
+    case (mojom::KeymapStyle::kChromeOs):
+      japanese_settings.Set(kJapaneseKeymapStyle,
+                            std::string(kJapaneseKeymapStyleChromeOs));
+      break;
+    case (mojom::KeymapStyle::kNone):
+      // Note: For None type, we just default to MsIme. That is the default,
+      // since None seems to be unused.
+      japanese_settings.Set(kJapaneseKeymapStyle,
+                            std::string(kJapaneseKeymapStyleMsIme));
+      break;
+  }
+
+  japanese_settings.Set(kJapaneseAutomaticallySwitchToHalfwidth,
+                        config.automatically_switch_to_halfwidth);
+
+  switch (config.shift_key_mode_switch) {
+    case (mojom::ShiftKeyModeSwitch::kOff):
+      japanese_settings.Set(kJapaneseShiftKeyModeStyle,
+                            std::string(kJapaneseShiftKeyModeStyleOff));
+      break;
+    case (mojom::ShiftKeyModeSwitch::kAlphanumeric):
+      japanese_settings.Set(
+          kJapaneseShiftKeyModeStyle,
+          std::string(kJapaneseShiftKeyModeStyleAlphanumeric));
+      break;
+    case (mojom::ShiftKeyModeSwitch::kKatakana):
+      japanese_settings.Set(kJapaneseShiftKeyModeStyle,
+                            std::string(kJapaneseShiftKeyModeStyleKatakana));
+      break;
+  }
+
+  japanese_settings.Set(kJapaneseUseInputHistory, config.use_input_history);
+  japanese_settings.Set(kJapaneseUseSystemDictionary,
+                        config.use_system_dictionary);
+  japanese_settings.Set(kJapaneseNumberOfSuggestions,
+                        static_cast<int>(config.number_of_suggestions));
+  japanese_settings.Set(kJapaneseDisablePersonalizedSuggestions,
+                        config.disable_personalized_suggestions);
+  japanese_settings.Set(kJapaneseAutomaticallySendStatisticsToGoogle,
+                        config.send_statistics_to_google);
+  return japanese_settings;
+}
+
 }  // namespace
 
 mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
@@ -285,8 +505,74 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     return mojom::InputMethodSettings::NewZhuyinSettings(
         CreateZhuyinSettings(input_method_specific_pref));
   }
+  // TODO(b/232341104): Add the code to send the Japanese settings to
+  // the engine if the engine_id is nacl_mozc_jp or nacl_mozc_us.
+  // This will do the inverse of ConvertConfigToJapaneseSettings.
+  // This will be something like InputMethodSettings::NewJapaneseSettings(...)
 
   return nullptr;
+}
+
+bool IsJapaneseSettingsMigrationComplete(const PrefService& prefs) {
+  const base::Value::Dict* input_method_specific_pref_or_null =
+      GetJapaneseInputMethodSpecificSettings(prefs);
+  const base::Value::Dict empty_value;
+  const base::Value::Dict& input_method_specific_pref =
+      input_method_specific_pref_or_null ? *input_method_specific_pref_or_null
+                                         : empty_value;
+  const absl::optional<bool> value =
+      input_method_specific_pref.FindBool(kJapaneseMigrationCompleteKey);
+  return value.has_value() && *value;
+}
+
+void SetJapaneseSettingsMigrationComplete(PrefService& prefs, bool value) {
+  // To set just the migration flag, this copies the whole prefs object
+  // to change one entry - is_migrated, then re-set the whole
+  // InputMethodSpecificPrefs object.  Maybe there is a better way to do this?
+  const base::Value::Dict* input_method_specific_pref_or_null =
+      GetJapaneseInputMethodSpecificSettings(prefs);
+
+  base::Value::Dict japanese_settings =
+      (input_method_specific_pref_or_null != nullptr)
+          ? input_method_specific_pref_or_null->Clone()
+          : base::Value::Dict();
+  japanese_settings.Set(kJapaneseMigrationCompleteKey, value);
+
+  base::Value::Dict all_input_method_prefs =
+      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings).Clone();
+  all_input_method_prefs.Set(kJapaneseEngineId, std::move(japanese_settings));
+
+  prefs.SetDict(::prefs::kLanguageInputMethodSpecificSettings,
+                std::move(all_input_method_prefs));
+}
+
+// Migrate the settings to the prefs service and mark the migration as
+// completed.
+void MigrateJapaneseSettingsToPrefs(PrefService& prefs,
+                                    ime::mojom::JapaneseConfig config) {
+  const base::Value::Dict* input_method_specific_pref_or_null =
+      GetJapaneseInputMethodSpecificSettings(prefs);
+  base::Value::Dict japanese_settings =
+      (input_method_specific_pref_or_null != nullptr)
+          ? input_method_specific_pref_or_null->Clone()
+          : base::Value::Dict();
+
+  // Health check. This code should never be called if the migration has already
+  // happened.
+  CHECK(!japanese_settings.FindBool(kJapaneseMigrationCompleteKey));
+
+  japanese_settings.Merge(ConvertConfigToJapaneseSettings(config));
+
+  // Mark the Migration as completed.
+  japanese_settings.Set(kJapaneseMigrationCompleteKey, true);
+
+  // Set the config
+  base::Value::Dict all_input_method_prefs =
+      prefs.GetDict(::prefs::kLanguageInputMethodSpecificSettings).Clone();
+  all_input_method_prefs.Set(kJapaneseEngineId, std::move(japanese_settings));
+
+  prefs.SetDict(::prefs::kLanguageInputMethodSpecificSettings,
+                std::move(all_input_method_prefs));
 }
 
 }  // namespace input_method

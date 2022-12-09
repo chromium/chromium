@@ -15,6 +15,13 @@ ime::mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
     const PrefService& prefs,
     const std::string& engine_id);
 
+bool IsJapaneseSettingsMigrationComplete(const PrefService& prefs);
+
+void SetJapaneseSettingsMigrationComplete(PrefService& prefs, bool value);
+
+void MigrateJapaneseSettingsToPrefs(PrefService& prefs,
+                                    ime::mojom::JapaneseConfig config);
+
 }  // namespace input_method
 }  // namespace ash
 
