@@ -82,5 +82,9 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
 #endif
 );
 
+BASE_FEATURE(kPaymentHandlerMinimalHeaderUX,
+             "PaymentHandlerMinimalHeaderUX",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace payments

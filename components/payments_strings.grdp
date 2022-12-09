@@ -571,6 +571,9 @@
   <message name="IDS_PAYMENTS_BACK" desc="The screen reader string for the back arrow button in the Desktop Payments dialog">
     Back
   </message>
+  <message name="IDS_PAYMENTS_CLOSE" desc="The screen reader string for the close/exit icon in the Desktop Payments dialog">
+    Close
+  </message>
   <message name="IDS_PAYMENTS_EDIT" desc="The screen reader string for the pencil edit button in the Desktop Payments dialog">
     Edit
   </message>

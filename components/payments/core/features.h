@@ -65,6 +65,10 @@ BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 // credential store APIs, or if it can only rely on the user-profile database.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 
+// Desktop only, if enabled PaymentHandler will use the new minimal header UX.
+// See https://crbug.com/1385136.
+BASE_DECLARE_FEATURE(kPaymentHandlerMinimalHeaderUX);
+
 }  // namespace features
 }  // namespace payments
 

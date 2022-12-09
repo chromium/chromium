@@ -74,6 +74,9 @@ class PaymentRequestSheetController {
   // destroyed.
   void Stop() { is_active_ = false; }
 
+  // Called when the back button is pressed on the dialog.
+  void BackButtonPressed();
+
  protected:
   // Clears the content part of the view represented by this view controller and
   // calls FillContentView again to re-populate it with updated views.
@@ -139,16 +142,22 @@ class PaymentRequestSheetController {
   // +---------------------------+
   // | <- | header_content_view  |
   // +---------------------------+
-  void PopulateSheetHeaderView(views::View* view);
+  virtual void PopulateSheetHeaderView(views::View* view);
 
   // Creates and returns the view to be inserted in the header, next to the
   // close/back button. This is typically the sheet's title but it can be
   // overriden to return a different kind of view as long as it fits inside the
   // header.
+  //
+  // TODO(crbug.com/1385136): Remove once minimal PaymentHandler UX rolls out
+  // and this override is no longer needed.
   virtual std::unique_ptr<views::View> CreateHeaderContentView(
       views::View* header_view);
 
   // Returns the background to use for the header section of the sheet.
+  //
+  // TODO(crbug.com/1385136): Remove once minimal PaymentHandler UX rolls out
+  // and this override is no longer needed.
   virtual std::unique_ptr<views::Background> GetHeaderBackground(
       views::View* header_view);
 
@@ -184,6 +193,10 @@ class PaymentRequestSheetController {
   // Returns whether the controller should be controlling the UI.
   bool is_active() const { return is_active_; }
 
+  base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // Add the primary/secondary buttons to |container|.
   void AddPrimaryButton(views::View* container);
@@ -195,8 +208,6 @@ class PaymentRequestSheetController {
   // binding the method with a base::WeakPtr, which prohibits non-void return
   // values.
   void PerformPrimaryButtonAction(bool* is_enabled);
-
-  virtual void BackButtonPressed();
 
   base::WeakPtr<PaymentRequestSpec> const spec_;
   base::WeakPtr<PaymentRequestState> const state_;
