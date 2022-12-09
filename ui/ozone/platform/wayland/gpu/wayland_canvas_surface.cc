@@ -286,7 +286,8 @@ void WaylandCanvasSurface::OnSwapBuffers(SwapBuffersCallback swap_ack_callback,
     pending_buffer_ = nullptr;
   }
 
-  ProcessUnsubmittedBuffers();
+  if (!unsubmitted_buffers_.empty())
+    ProcessUnsubmittedBuffers();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(swap_ack_callback), size_));
 }
