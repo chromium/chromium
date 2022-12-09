@@ -38,6 +38,80 @@
 
 namespace updater::test {
 
+namespace {
+
+// CustomLogPrinter intercepts test part results and prints them using
+// Chromium logging, so that assertion failures are tagged with process IDs
+// and timestamps.
+class CustomLogPrinter : public testing::TestEventListener {
+ public:
+  // Takes ownership of impl.
+  explicit CustomLogPrinter(testing::TestEventListener* impl) : impl_(impl) {}
+  ~CustomLogPrinter() override = default;
+  CustomLogPrinter(const CustomLogPrinter&) = delete;
+  CustomLogPrinter& operator=(const CustomLogPrinter&) = delete;
+
+  // testing::TestEventListener
+  void OnTestProgramStart(const testing::UnitTest& unit_test) override {
+    impl_->OnTestProgramStart(unit_test);
+  }
+
+  void OnTestIterationStart(const testing::UnitTest& unit_test,
+                            int iteration) override {
+    impl_->OnTestIterationStart(unit_test, iteration);
+  }
+
+  void OnEnvironmentsSetUpStart(const testing::UnitTest& unit_test) override {
+    impl_->OnEnvironmentsSetUpStart(unit_test);
+  }
+
+  void OnEnvironmentsSetUpEnd(const testing::UnitTest& unit_test) override {
+    impl_->OnEnvironmentsSetUpEnd(unit_test);
+  }
+
+  void OnTestStart(const testing::TestInfo& test_info) override {
+    impl_->OnTestStart(test_info);
+  }
+
+  // Use Chromium's logging format, so that the process ID and timestamp of the
+  // result can be recorded and compared to other lines in the log files.
+  void OnTestPartResult(const testing::TestPartResult& result) override {
+    if (result.type() == testing::TestPartResult::kSuccess)
+      return;
+    logging::LogMessage(result.file_name(), result.line_number(),
+                        logging::LOGGING_ERROR)
+            .stream()
+        << result.message();
+  }
+
+  void OnTestEnd(const testing::TestInfo& test_info) override {
+    impl_->OnTestEnd(test_info);
+  }
+
+  void OnEnvironmentsTearDownStart(
+      const testing::UnitTest& unit_test) override {
+    impl_->OnEnvironmentsTearDownStart(unit_test);
+  }
+
+  void OnEnvironmentsTearDownEnd(const testing::UnitTest& unit_test) override {
+    impl_->OnEnvironmentsTearDownEnd(unit_test);
+  }
+
+  void OnTestIterationEnd(const testing::UnitTest& unit_test,
+                          int iteration) override {
+    impl_->OnTestIterationEnd(unit_test, iteration);
+  }
+
+  void OnTestProgramEnd(const testing::UnitTest& unit_test) override {
+    impl_->OnTestProgramEnd(unit_test);
+  }
+
+ private:
+  std::unique_ptr<testing::TestEventListener> impl_;
+};
+
+}  // namespace
+
 const char kChromeAppId[] = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
 
 bool IsProcessRunning(const base::FilePath::StringType& executable_name) {
@@ -124,6 +198,10 @@ void InitLoggingForUnitTest() {
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
+  testing::TestEventListeners& listeners =
+      testing::UnitTest::GetInstance()->listeners();
+  listeners.Append(new CustomLogPrinter(
+      listeners.Release(listeners.default_result_printer())));
 }
 
 #if BUILDFLAG(IS_WIN)
