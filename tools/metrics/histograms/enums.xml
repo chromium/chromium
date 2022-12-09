@@ -30849,6 +30849,20 @@ Called by update_document_policy_enum.py.-->
   <int value="9" label="Unexpected event info type error"/>
 </enum>
 
+<enum name="EnterpriseDlpPolicyCrOSFileDatabaseError">
+  <summary>
+    Type of errors triggered when using the file database in the ChromeOS Data
+    Leak Prevention daemon.
+  </summary>
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Connection error"/>
+  <int value="2" label="Create table error"/>
+  <int value="3" label="Insert error"/>
+  <int value="4" label="Select error"/>
+  <int value="5" label="Query error"/>
+  <int value="6" label="Multiple entries for same inode error"/>
+</enum>
+
 <enum name="EnterpriseDlpPolicyFileAction">
   <summary>
     Types of restricted file actions checked by Data Leak Prevention policy.
