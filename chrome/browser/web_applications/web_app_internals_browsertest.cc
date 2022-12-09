@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
   AppId app_id = InstallWebApp(embedded_test_server()->GetURL(
       "/banners/manifest_test_page.html?manifest=manifest_bad_icon.json"));
 
-  const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
+  const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);
   EXPECT_TRUE(web_app->is_generated_icon());
 

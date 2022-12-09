@@ -271,7 +271,8 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
   // Verify that a PWA is installed at kAppStartUrl's origin.
   absl::optional<AppId> installed_app =
-      provider()->registrar().FindInstalledAppWithUrlInScope(kDevAppStartUrl);
+      provider()->registrar_unsafe().FindInstalledAppWithUrlInScope(
+          kDevAppStartUrl);
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 
   CreateFactory();
@@ -293,7 +294,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 
   // Verify that a PWA is installed at kAppStartUrl's origin.
   absl::optional<AppId> installed_app =
-      provider()->registrar().FindAppWithUrlInScope(kDevAppStartUrl);
+      provider()->registrar_unsafe().FindAppWithUrlInScope(kDevAppStartUrl);
   EXPECT_THAT(installed_app.has_value(), IsTrue());
 
   CreateFactory();

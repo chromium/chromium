@@ -59,24 +59,24 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForAllTimes) {
     update->CreateApp(std::move(web_app3));
   }
 
-  EXPECT_EQ(3UL, provider()->registrar().GetAppIds().size());
+  EXPECT_EQ(3UL, provider()->registrar_unsafe().GetAppIds().size());
   EXPECT_EQ(launch_time1,
-            provider()->registrar().GetAppLastLaunchTime(app_id1));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id1));
   EXPECT_EQ(launch_time2,
-            provider()->registrar().GetAppLastLaunchTime(app_id2));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id2));
   EXPECT_EQ(launch_time3,
-            provider()->registrar().GetAppLastLaunchTime(app_id3));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id3));
 
   base::test::TestFuture<void> future;
   provider()->scheduler().ClearWebAppBrowsingData(
       base::Time(), base::Time::Now(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(base::Time(),
-            provider()->registrar().GetAppLastLaunchTime(app_id1));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id1));
   EXPECT_EQ(base::Time(),
-            provider()->registrar().GetAppLastLaunchTime(app_id2));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id2));
   EXPECT_EQ(base::Time(),
-            provider()->registrar().GetAppLastLaunchTime(app_id3));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id3));
 }
 
 TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
@@ -103,13 +103,13 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
     update->CreateApp(std::move(web_app3));
   }
 
-  EXPECT_EQ(3UL, provider()->registrar().GetAppIds().size());
+  EXPECT_EQ(3UL, provider()->registrar_unsafe().GetAppIds().size());
   EXPECT_EQ(launch_time1,
-            provider()->registrar().GetAppLastLaunchTime(app_id1));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id1));
   EXPECT_EQ(launch_time2,
-            provider()->registrar().GetAppLastLaunchTime(app_id2));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id2));
   EXPECT_EQ(launch_time3,
-            provider()->registrar().GetAppLastLaunchTime(app_id3));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id3));
 
   base::test::TestFuture<void> future;
   provider()->scheduler().ClearWebAppBrowsingData(
@@ -117,11 +117,11 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastLaunchTimeForSpecificTimeRange) {
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(launch_time1,
-            provider()->registrar().GetAppLastLaunchTime(app_id1));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id1));
   EXPECT_EQ(base::Time(),
-            provider()->registrar().GetAppLastLaunchTime(app_id2));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id2));
   EXPECT_EQ(launch_time3,
-            provider()->registrar().GetAppLastLaunchTime(app_id3));
+            provider()->registrar_unsafe().GetAppLastLaunchTime(app_id3));
 }
 
 TEST_F(ClearBrowsingDataCommandTest,
@@ -161,13 +161,13 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForAllTimes) {
     update->CreateApp(std::move(web_app3));
   }
 
-  EXPECT_EQ(3UL, provider()->registrar().GetAppIds().size());
+  EXPECT_EQ(3UL, provider()->registrar_unsafe().GetAppIds().size());
   EXPECT_EQ(badging_time1,
-            provider()->registrar().GetAppLastBadgingTime(app_id1));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id1));
   EXPECT_EQ(badging_time2,
-            provider()->registrar().GetAppLastBadgingTime(app_id2));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id2));
   EXPECT_EQ(badging_time3,
-            provider()->registrar().GetAppLastBadgingTime(app_id3));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id3));
 
   base::test::TestFuture<void> future;
   provider()->scheduler().ClearWebAppBrowsingData(
@@ -175,11 +175,11 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForAllTimes) {
 
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(base::Time(),
-            provider()->registrar().GetAppLastBadgingTime(app_id1));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id1));
   EXPECT_EQ(base::Time(),
-            provider()->registrar().GetAppLastBadgingTime(app_id2));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id2));
   EXPECT_EQ(base::Time(),
-            provider()->registrar().GetAppLastBadgingTime(app_id3));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id3));
 }
 
 TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
@@ -206,13 +206,13 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
     update->CreateApp(std::move(web_app3));
   }
 
-  EXPECT_EQ(3UL, provider()->registrar().GetAppIds().size());
+  EXPECT_EQ(3UL, provider()->registrar_unsafe().GetAppIds().size());
   EXPECT_EQ(badging_time1,
-            provider()->registrar().GetAppLastBadgingTime(app_id1));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id1));
   EXPECT_EQ(badging_time2,
-            provider()->registrar().GetAppLastBadgingTime(app_id2));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id2));
   EXPECT_EQ(badging_time3,
-            provider()->registrar().GetAppLastBadgingTime(app_id3));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id3));
 
   base::test::TestFuture<void> future;
   provider()->scheduler().ClearWebAppBrowsingData(
@@ -221,11 +221,11 @@ TEST_F(ClearBrowsingDataCommandTest, ClearLastBadgingTimeForSpecificTimeRange) {
   EXPECT_TRUE(future.Wait());
 
   EXPECT_EQ(badging_time1,
-            provider()->registrar().GetAppLastBadgingTime(app_id1));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id1));
   EXPECT_EQ(base::Time(),
-            provider()->registrar().GetAppLastBadgingTime(app_id2));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id2));
   EXPECT_EQ(badging_time3,
-            provider()->registrar().GetAppLastBadgingTime(app_id3));
+            provider()->registrar_unsafe().GetAppLastBadgingTime(app_id3));
 }
 
 }  // namespace web_app

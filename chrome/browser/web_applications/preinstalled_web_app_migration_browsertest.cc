@@ -125,7 +125,7 @@ class PreinstalledWebAppMigrationBrowserTest
   void TearDownOnMainThread() override {
     // We uninstall all web apps, as Ash is not restarted between Lacros tests.
     auto* const provider = WebAppProvider::GetForTest(profile());
-    const WebAppRegistrar& registrar = provider->registrar();
+    const WebAppRegistrar& registrar = provider->registrar_unsafe();
     std::vector<AppId> app_ids = registrar.GetAppIds();
     for (const auto& app_id : app_ids) {
       if (!registrar.IsInstalled(app_id)) {
@@ -256,7 +256,7 @@ class PreinstalledWebAppMigrationBrowserTest
 
   bool IsWebAppInstalled() {
     return WebAppProvider::GetForTest(profile())
-        ->registrar()
+        ->registrar_unsafe()
         .IsLocallyInstalled(GetWebAppId());
   }
 
@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     // User launch preference should migrate across and override
     // "launch_container": "window" in the JSON config.
     EXPECT_EQ(WebAppProvider::GetForTest(profile())
-                  ->registrar()
+                  ->registrar_unsafe()
                   .GetAppUserDisplayMode(web_app_id),
               UserDisplayMode::kBrowser);
   }
@@ -567,10 +567,10 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
   }
 
   // Platform apps run in an app window so we must migrate as standalone.
-  EXPECT_EQ(
-      WebAppProvider::GetForTest(profile())->registrar().GetAppUserDisplayMode(
-          GetWebAppId()),
-      UserDisplayMode::kStandalone);
+  EXPECT_EQ(WebAppProvider::GetForTest(profile())
+                ->registrar_unsafe()
+                .GetAppUserDisplayMode(GetWebAppId()),
+            UserDisplayMode::kStandalone);
 }
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,

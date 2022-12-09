@@ -159,10 +159,10 @@ IN_PROC_BROWSER_TEST_P(PreinstalledWebAppsBrowserTest, CheckInstalledFields) {
 
   for (const auto& expectation : kOfflineOnlyExpectations) {
     if (GetParam() == test::CrosapiParam::kDisabled) {
-      EXPECT_EQ(provider.registrar().GetAppLaunchUrl(expectation.app_id),
+      EXPECT_EQ(provider.registrar_unsafe().GetAppLaunchUrl(expectation.app_id),
                 GURL(expectation.launch_url));
     } else {
-      EXPECT_FALSE(provider.registrar().GetAppById(expectation.app_id));
+      EXPECT_FALSE(provider.registrar_unsafe().GetAppById(expectation.app_id));
     }
   }
 

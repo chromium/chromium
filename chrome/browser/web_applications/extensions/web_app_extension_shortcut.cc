@@ -135,8 +135,8 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
         shortcut_info->extension_id, extensions::ExtensionRegistry::EVERYTHING);
     bool is_app_installed = false;
     auto* app_provider = WebAppProvider::GetForWebApps(profile);
-    if (app_provider &&
-        app_provider->registrar().IsInstalled(shortcut_info->extension_id)) {
+    if (app_provider && app_provider->registrar_unsafe().IsInstalled(
+                            shortcut_info->extension_id)) {
       is_app_installed = true;
     }
 

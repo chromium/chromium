@@ -294,7 +294,7 @@ class WebAppInstallTaskTest : public WebAppTest {
   WebAppInstallTask& install_task() { return *install_task_; }
   FakeWebAppProvider& provider() { return *provider_; }
 
-  WebAppRegistrar& registrar() { return provider().registrar(); }
+  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
   FakeOsIntegrationManager& fake_os_integration_manager() {
     return static_cast<FakeOsIntegrationManager&>(
         provider().os_integration_manager());

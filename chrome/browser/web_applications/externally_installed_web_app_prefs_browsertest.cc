@@ -52,7 +52,8 @@ class ExternallyInstalledWebAppPrefsBrowserTest
   base::flat_set<GURL> GetAppUrls(ExternalInstallSource install_source) {
     base::flat_set<GURL> urls;
     for (const auto& id_and_url :
-         provider().registrar().GetExternallyInstalledApps(install_source)) {
+         provider().registrar_unsafe().GetExternallyInstalledApps(
+             install_source)) {
       for (const auto& url : id_and_url.second) {
         urls.emplace(url);
       }
@@ -92,7 +93,7 @@ IN_PROC_BROWSER_TEST_P(
   AppId id_a;
 
   // Start with no data in the DB.
-  WebAppRegistrar& registrar = provider().registrar();
+  WebAppRegistrar& registrar = provider().registrar_unsafe();
   EXPECT_FALSE(registrar.LookupExternalAppId(url_a).has_value());
   EXPECT_FALSE(registrar.HasExternalApp(id_a));
 
@@ -147,7 +148,7 @@ IN_PROC_BROWSER_TEST_P(
                           webapps::WebappInstallSource::EXTERNAL_POLICY);
   ExternallyInstalledWebAppPrefs prefs(profile()->GetPrefs());
   prefs.Insert(url, app_id, ExternalInstallSource::kExternalPolicy);
-  EXPECT_FALSE(provider().registrar().IsPlaceholderApp(
+  EXPECT_FALSE(provider().registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   prefs.SetIsPlaceholder(url, true);
   {
@@ -157,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(
       installed_app->AddPlaceholderInfoToManagementExternalConfigMap(
           WebAppManagement::kPolicy, /*is_placeholder=*/true);
   }
-  EXPECT_TRUE(provider().registrar().IsPlaceholderApp(
+  EXPECT_TRUE(provider().registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
 }
 
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(
                               prefs::kWebAppsExtensionIDs);
   update->Set("https://example.com", "add_id_string");
   // This should not crash on invalid pref data.
-  EXPECT_FALSE(provider().registrar().IsPlaceholderApp(
+  EXPECT_FALSE(provider().registrar_unsafe().IsPlaceholderApp(
       "app_id_string", WebAppManagement::kPolicy));
 }
 
@@ -306,8 +307,9 @@ IN_PROC_BROWSER_TEST_P(
                           /*overwrite_existing_manifest_fields=*/true,
                           webapps::WebappInstallSource::EXTERNAL_POLICY);
 
-  const WebApp* installed_app = provider().registrar().GetAppById(app_id);
-  EXPECT_FALSE(provider().registrar().IsPlaceholderApp(
+  const WebApp* installed_app =
+      provider().registrar_unsafe().GetAppById(app_id);
+  EXPECT_FALSE(provider().registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
 
   GURL install_url("https://app.com/install");
@@ -320,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(
       profile()->GetPrefs(), &provider().sync_bridge());
 
   // Verify install source, placeholder info and urls have been migrated.
-  EXPECT_TRUE(provider().registrar().IsPlaceholderApp(
+  EXPECT_TRUE(provider().registrar_unsafe().IsPlaceholderApp(
       app_id, WebAppManagement::kPolicy));
   const WebApp::ExternalConfigMap& config_map =
       installed_app->management_to_external_config_map();

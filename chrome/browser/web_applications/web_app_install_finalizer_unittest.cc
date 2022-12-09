@@ -136,7 +136,7 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
   WebAppInstallFinalizer& finalizer() { return provider().install_finalizer(); }
-  WebAppRegistrar& registrar() { return provider().registrar(); }
+  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
   WebAppInstallManager& install_manager() {
     return provider().install_manager();
   }

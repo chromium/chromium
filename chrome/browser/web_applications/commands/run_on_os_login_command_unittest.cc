@@ -94,7 +94,7 @@ class RunOnOsLoginCommandTest : public WebAppTest {
   }
 
  protected:
-  WebAppRegistrar& registrar() { return provider()->registrar(); }
+  WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
 
   WebAppSyncBridge& sync_bridge() { return provider()->sync_bridge(); }
 

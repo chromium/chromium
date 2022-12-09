@@ -158,7 +158,7 @@ class InstallFromSyncTest : public WebAppTest {
     return provider()->command_manager();
   }
 
-  WebAppRegistrar& registrar() { return provider()->registrar(); }
+  WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
 
   TestWebAppUrlLoader& command_manager_url_loader() const {
     return *command_manager_url_loader_;

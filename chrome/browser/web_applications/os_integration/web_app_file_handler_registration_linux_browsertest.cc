@@ -57,7 +57,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   WebAppRegistrar& registrar() {
-    return WebAppProvider::GetForTest(browser()->profile())->registrar();
+    return WebAppProvider::GetForTest(browser()->profile())->registrar_unsafe();
   }
 
   void InstallApp(ExternalInstallOptions install_options) {

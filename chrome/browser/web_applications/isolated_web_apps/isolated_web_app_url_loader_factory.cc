@@ -166,7 +166,7 @@ FindIsolatedWebApp(Profile* profile, const IsolatedWebAppUrlInfo& url_info) {
   // WebAppProvider is ready to ensure we never fail this DCHECK.
   auto* web_app_provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(web_app_provider->is_registry_ready());
-  const WebAppRegistrar& registrar = web_app_provider->registrar();
+  const WebAppRegistrar& registrar = web_app_provider->registrar_unsafe();
   const WebApp* iwa = registrar.GetAppById(url_info.app_id());
 
   if (iwa == nullptr || !iwa->is_locally_installed()) {

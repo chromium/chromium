@@ -60,7 +60,7 @@ class InstallIsolatedWebAppFromCommandLineBrowserTest
   WebAppRegistrar& GetWebAppRegistrar() {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     CHECK(provider != nullptr);
-    return provider->registrar();
+    return provider->registrar_unsafe();
   }
 
  private:

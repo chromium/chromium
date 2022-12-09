@@ -95,7 +95,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
   }
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
-  WebAppRegistrar& registrar() { return provider().registrar(); }
+  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
   GURL app_url() { return app_url_; }
 
  private:

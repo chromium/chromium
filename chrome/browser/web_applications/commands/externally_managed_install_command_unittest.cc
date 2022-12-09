@@ -163,8 +163,8 @@ TEST_F(ExternallyManagedInstallCommandTest, Success) {
   auto result = InstallAndWait(install_options, std::move(data_retriever));
   EXPECT_EQ(result.install_code,
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(
-      provider()->registrar().IsLocallyInstalled(result.installed_app_id));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(
+      result.installed_app_id));
 }
 
 TEST_F(ExternallyManagedInstallCommandTest, GetWebAppInstallInfoFailed) {
@@ -177,8 +177,8 @@ TEST_F(ExternallyManagedInstallCommandTest, GetWebAppInstallInfoFailed) {
   auto result = InstallAndWait(install_options, std::move(data_retriever));
   EXPECT_EQ(result.install_code,
             webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
-  EXPECT_FALSE(
-      provider()->registrar().IsLocallyInstalled(result.installed_app_id));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(
+      result.installed_app_id));
 }
 
 TEST_F(ExternallyManagedInstallCommandTest,
@@ -199,7 +199,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
 
     EXPECT_EQ(UserDisplayMode::kBrowser,
               provider()
-                  ->registrar()
+                  ->registrar_unsafe()
                   .GetAppById(result.installed_app_id)
                   ->user_display_mode());
   }
@@ -219,7 +219,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
 
     EXPECT_EQ(UserDisplayMode::kStandalone,
               provider()
-                  ->registrar()
+                  ->registrar_unsafe()
                   .GetAppById(result.installed_app_id)
                   ->user_display_mode());
   }
@@ -243,7 +243,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
 
     EXPECT_EQ(UserDisplayMode::kBrowser,
               provider()
-                  ->registrar()
+                  ->registrar_unsafe()
                   .GetAppById(result.installed_app_id)
                   ->user_display_mode());
   }
@@ -263,7 +263,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
 
     EXPECT_EQ(UserDisplayMode::kStandalone,
               provider()
-                  ->registrar()
+                  ->registrar_unsafe()
                   .GetAppById(result.installed_app_id)
                   ->user_display_mode());
   }
@@ -324,8 +324,8 @@ TEST_F(ExternallyManagedInstallCommandTest, UpgradeLock) {
 
   EXPECT_EQ(result.install_code,
             webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(
-      provider()->registrar().IsLocallyInstalled(result.installed_app_id));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(
+      result.installed_app_id));
 
   EXPECT_TRUE(callback_command_run);
 
@@ -354,7 +354,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     EXPECT_EQ(result.install_code,
               webapps::InstallResultCode::kSuccessNewInstall);
     EXPECT_EQ(0u, provider()
-                      ->registrar()
+                      ->registrar_unsafe()
                       .GetAppIconInfos(result.installed_app_id)
                       .size());
   }
@@ -393,7 +393,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
 
     // Verify icon information.
     const std::vector<apps::IconInfo> icon_info =
-        provider()->registrar().GetAppIconInfos(installed_app_id);
+        provider()->registrar_unsafe().GetAppIconInfos(installed_app_id);
     EXPECT_EQ(new_sizes.size(), icon_info.size());
     EXPECT_EQ(GetMockIconInfo(icon_size::k64), icon_info[0]);
     EXPECT_EQ(GetMockIconInfo(icon_size::k512), icon_info[1]);
@@ -438,7 +438,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     EXPECT_EQ(result.install_code,
               webapps::InstallResultCode::kSuccessNewInstall);
     const std::vector<apps::IconInfo>& icons_info_pre_reinstall =
-        provider()->registrar().GetAppIconInfos(installed_app_id);
+        provider()->registrar_unsafe().GetAppIconInfos(installed_app_id);
     EXPECT_EQ(old_sizes.size(), icons_info_pre_reinstall.size());
     EXPECT_EQ(GetMockIconInfo(icon_size::k256), icons_info_pre_reinstall[0]);
     LoadIconsFromDB(installed_app_id, old_sizes);
@@ -481,7 +481,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
 
     // Verify icon information.
     const std::vector<apps::IconInfo> new_icon_info =
-        provider()->registrar().GetAppIconInfos(updated_app_id);
+        provider()->registrar_unsafe().GetAppIconInfos(updated_app_id);
     EXPECT_EQ(new_sizes.size(), new_icon_info.size());
     EXPECT_EQ(GetMockIconInfo(icon_size::k64), new_icon_info[0]);
     EXPECT_EQ(GetMockIconInfo(icon_size::k512), new_icon_info[1]);
@@ -526,7 +526,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     EXPECT_EQ(result.install_code,
               webapps::InstallResultCode::kSuccessNewInstall);
     const std::vector<apps::IconInfo>& icons_info_pre_reinstall =
-        provider()->registrar().GetAppIconInfos(installed_app_id);
+        provider()->registrar_unsafe().GetAppIconInfos(installed_app_id);
     EXPECT_EQ(1u, icons_info_pre_reinstall.size());
     EXPECT_EQ(GetMockIconInfo(icon_size::k64), icons_info_pre_reinstall[0]);
     LoadIconsFromDB(installed_app_id, old_sizes);
@@ -571,7 +571,7 @@ TEST_F(ExternallyManagedInstallCommandTest,
     // Verify icon information, that new data is not written into the DB
     // and the old data still persists.
     const std::vector<apps::IconInfo> new_icon_info =
-        provider()->registrar().GetAppIconInfos(
+        provider()->registrar_unsafe().GetAppIconInfos(
             updated_result.installed_app_id);
     EXPECT_NE(new_sizes.size(), new_icon_info.size());
     LoadIconsFromDB(installed_app_id, new_sizes);

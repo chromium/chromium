@@ -163,7 +163,7 @@ void WebAppLockManager::AcquireLock(
 
   auto lock = std::make_unique<AppLock>(
       std::make_unique<content::PartitionedLockHolder>(),
-      provider_->registrar(), provider_->sync_bridge(),
+      provider_->registrar_unsafe(), provider_->sync_bridge(),
       provider_->install_finalizer(), provider_->os_integration_manager(),
       provider_->install_manager(), provider_->icon_manager(),
       provider_->translation_manager(), provider_->ui_manager());
@@ -184,7 +184,7 @@ void WebAppLockManager::AcquireLock(
   auto lock = std::make_unique<SharedWebContentsWithAppLock>(
       std::make_unique<content::PartitionedLockHolder>(),
       *provider_->command_manager().EnsureWebContentsCreated(PassKey()),
-      provider_->registrar(), provider_->sync_bridge(),
+      provider_->registrar_unsafe(), provider_->sync_bridge(),
       provider_->install_finalizer(), provider_->os_integration_manager(),
       provider_->install_manager(), provider_->icon_manager(),
       provider_->translation_manager(), provider_->ui_manager());
@@ -204,7 +204,7 @@ void WebAppLockManager::AcquireLock(
 
   auto lock = std::make_unique<FullSystemLock>(
       std::make_unique<content::PartitionedLockHolder>(),
-      provider_->registrar(), provider_->sync_bridge(),
+      provider_->registrar_unsafe(), provider_->sync_bridge(),
       provider_->install_finalizer(), provider_->os_integration_manager(),
       provider_->install_manager(), provider_->icon_manager(),
       provider_->translation_manager(), provider_->ui_manager());
@@ -226,7 +226,7 @@ WebAppLockManager::UpgradeAndAcquireLock(
   auto result_lock = std::make_unique<SharedWebContentsWithAppLock>(
       std::move(lock->holder_),
       *provider_->command_manager().EnsureWebContentsCreated(PassKey()),
-      provider_->registrar(), provider_->sync_bridge(),
+      provider_->registrar_unsafe(), provider_->sync_bridge(),
       provider_->install_finalizer(), provider_->os_integration_manager(),
       provider_->install_manager(), provider_->icon_manager(),
       provider_->translation_manager(), provider_->ui_manager());
@@ -251,7 +251,7 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
       std::make_unique<AppLockDescription>(app_ids);
 
   auto result_lock = std::make_unique<AppLock>(
-      std::move(lock->holder_), provider_->registrar(),
+      std::move(lock->holder_), provider_->registrar_unsafe(),
       provider_->sync_bridge(), provider_->install_finalizer(),
       provider_->os_integration_manager(), provider_->install_manager(),
       provider_->icon_manager(), provider_->translation_manager(),

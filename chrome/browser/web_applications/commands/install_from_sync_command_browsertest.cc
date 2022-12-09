@@ -56,9 +56,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
                 loop.Quit();
               })));
   loop.Run();
-  EXPECT_TRUE(provider->registrar().IsInstalled(id));
+  EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
   EXPECT_EQ(AreAppsLocallyInstalledBySync(),
-            provider->registrar().IsLocallyInstalled(id));
+            provider->registrar_unsafe().IsLocallyInstalled(id));
 
   SkColor icon_color =
       IconManagerReadAppIconPixel(provider->icon_manager(), id, 96);
@@ -116,9 +116,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   loop.Run();
   // Check first install.
   {
-    EXPECT_TRUE(provider->registrar().IsInstalled(id));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id));
     EXPECT_EQ(AreAppsLocallyInstalledBySync(),
-              provider->registrar().IsLocallyInstalled(id));
+              provider->registrar_unsafe().IsLocallyInstalled(id));
 
     SkColor icon_color =
         IconManagerReadAppIconPixel(provider->icon_manager(), id, 96);
@@ -126,9 +126,9 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   }
   // Check second install.
   {
-    EXPECT_TRUE(provider->registrar().IsInstalled(other_id));
+    EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(other_id));
     EXPECT_EQ(AreAppsLocallyInstalledBySync(),
-              provider->registrar().IsLocallyInstalled(other_id));
+              provider->registrar_unsafe().IsLocallyInstalled(other_id));
 
     SkColor icon_color =
         IconManagerReadAppIconPixel(provider->icon_manager(), other_id, 96);

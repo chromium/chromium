@@ -58,8 +58,8 @@ const base::UnguessableToken& WebAppTabHelper::GetAudioFocusGroupIdForTesting()
 
 WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   if (!launch_queue_) {
-    launch_queue_ = std::make_unique<WebAppLaunchQueue>(web_contents(),
-                                                        provider_->registrar());
+    launch_queue_ = std::make_unique<WebAppLaunchQueue>(
+        web_contents(), provider_->registrar_unsafe());
   }
   return *launch_queue_;
 }
@@ -67,8 +67,8 @@ WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
 void WebAppTabHelper::SetAppId(absl::optional<AppId> app_id) {
   // Empty string should not be used to indicate "no app ID".
   DCHECK(!app_id || !app_id->empty());
-  DCHECK(!app_id || provider_->registrar().IsInstalled(*app_id) ||
-         provider_->registrar().IsUninstalling(*app_id));
+  DCHECK(!app_id || provider_->registrar_unsafe().IsInstalled(*app_id) ||
+         provider_->registrar_unsafe().IsUninstalling(*app_id));
   if (app_id_ == app_id)
     return;
 
@@ -183,7 +183,7 @@ void WebAppTabHelper::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
 
 absl::optional<AppId> WebAppTabHelper::FindAppWithUrlInScope(
     const GURL& url) const {
-  return provider_->registrar().FindAppWithUrlInScope(url);
+  return provider_->registrar_unsafe().FindAppWithUrlInScope(url);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);

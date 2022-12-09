@@ -451,7 +451,7 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
   }
 #endif
 
-  WebAppRegistrar& app_registrar() { return provider()->registrar(); }
+  WebAppRegistrar& app_registrar() { return provider()->registrar_unsafe(); }
   WebAppSyncBridge& sync_bridge() { return provider()->sync_bridge(); }
   WebAppPolicyManager& policy_manager() { return provider()->policy_manager(); }
 

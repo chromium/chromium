@@ -38,7 +38,8 @@ void LinkCapturingPrefMigration::OnAppUpdate(const apps::AppUpdate& update) {
   if (!provider)
     return;
 
-  const WebApp* web_app = provider->registrar().GetAppById(update.AppId());
+  const WebApp* web_app =
+      provider->registrar_unsafe().GetAppById(update.AppId());
   if (!web_app)
     return;
 

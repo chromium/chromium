@@ -146,7 +146,7 @@ class ExternallyManagedAppManagerTest
 
   WebAppProvider& provider() { return *provider_; }
 
-  WebAppRegistrar& app_registrar() { return provider().registrar(); }
+  WebAppRegistrar& app_registrar() { return provider().registrar_unsafe(); }
 
   ExternallyInstalledWebAppPrefs& externally_installed_app_prefs() {
     return *externally_installed_app_prefs_;

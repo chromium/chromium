@@ -280,7 +280,7 @@ class WebAppIconManagerTest : public WebAppTest {
     run_loop.Run();
   }
 
-  WebAppRegistrar& registrar() { return provider().registrar(); }
+  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
   WebAppInstallManager& install_manager() { return *install_manager_; }
   WebAppSyncBridge& sync_bridge() { return provider().sync_bridge(); }
   WebAppIconManager& icon_manager() { return *icon_manager_; }

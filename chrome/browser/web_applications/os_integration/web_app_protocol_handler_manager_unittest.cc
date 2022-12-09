@@ -38,7 +38,7 @@ class WebAppProtocolHandlerManagerTest : public WebAppTest {
 
   WebAppProvider& provider() { return *provider_; }
 
-  WebAppRegistrar& app_registrar() { return provider().registrar(); }
+  WebAppRegistrar& app_registrar() { return provider().registrar_unsafe(); }
 
   AppId CreateWebAppWithProtocolHandlers(
       const GURL& start_url,

@@ -98,7 +98,7 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallInternal) {
           profile()));
 
   loop.Run();
-  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
 TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
@@ -132,7 +132,7 @@ TEST_F(WebAppUninstallCommandTest, SimpleUninstallExternal) {
           profile()));
 
   loop.Run();
-  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
 TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
@@ -165,7 +165,7 @@ TEST_F(WebAppUninstallCommandTest, FailedDataDeletion) {
           profile()));
 
   loop.Run();
-  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
 TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
@@ -199,7 +199,7 @@ TEST_F(WebAppUninstallCommandTest, FailedOsHooksSetting) {
           profile()));
 
   loop.Run();
-  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
 TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
@@ -227,7 +227,7 @@ TEST_F(WebAppUninstallCommandTest, TryToUninstallNonExistentApp) {
           profile()));
 
   loop.Run();
-  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
 TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
@@ -258,7 +258,7 @@ TEST_F(WebAppUninstallCommandTest, CommandManagerShutdownThrowsError) {
 
   provider()->command_manager().Shutdown();
   // App is not uninstalled.
-  EXPECT_NE(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_NE(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
 TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
@@ -295,7 +295,7 @@ TEST_F(WebAppUninstallCommandTest, UserUninstalledPrefsFilled) {
           profile()));
 
   loop.Run();
-  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
   EXPECT_TRUE(UserUninstalledPreinstalledWebAppPrefs(profile()->GetPrefs())
                   .DoesAppIdExist(app_id));
 }
@@ -308,7 +308,7 @@ TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
     ScopedRegistryUpdate update(&provider()->sync_bridge());
     update->CreateApp(std::move(web_app));
   }
-  EXPECT_TRUE(provider()->registrar().IsLocallyInstalled(app_id));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(app_id));
   OsHooksErrors result;
   EXPECT_CALL(*os_integration_manager_, UninstallAllOsHooks(app_id, testing::_))
       .WillOnce(base::test::RunOnceCallback<1>(result));
@@ -330,7 +330,7 @@ TEST_F(WebAppUninstallCommandTest, ExternalConfigMapMissing) {
           profile()));
 
   loop.Run();
-  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
                   "WebApp.Preinstalled.ExternalConfigMapAbsentDuringUninstall"),
@@ -390,8 +390,10 @@ TEST_F(WebAppUninstallCommandTest, RemoveSourceAndTriggerOSUninstallation) {
       base::BindLambdaForTesting([&](const AppId& app_id) {
         // The policy source will be removed and WebAppOsUninstallation is
         // registered.
-        EXPECT_FALSE(
-            provider()->registrar().GetAppById(app_id)->IsPolicyInstalledApp());
+        EXPECT_FALSE(provider()
+                         ->registrar_unsafe()
+                         .GetAppById(app_id)
+                         ->IsPolicyInstalledApp());
       }));
   provider()->command_manager().ScheduleCommand(std::move(command));
   run_loop.Run();
@@ -441,7 +443,7 @@ TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
           profile()));
 
   loop.Run();
-  EXPECT_EQ(provider()->registrar().GetAppById(app_id), nullptr);
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(

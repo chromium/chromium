@@ -163,7 +163,7 @@ bool PreinstalledWebAppDuplicationFixer::RemoveInstallUrlForPreinstalledApp(
   WebAppProvider* provider =
       WebAppProvider::GetForLocalAppsUnchecked(&*profile_);
   absl::optional<AppId> preinstalled_app_id =
-      provider->registrar().LookupExternalAppId(install_url);
+      provider->registrar_unsafe().LookupExternalAppId(install_url);
   if (!preinstalled_app_id.has_value())
     return external_prefs_removed;
 

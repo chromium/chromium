@@ -78,14 +78,15 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, SuccessInstall) {
           }));
   loop.Run();
 
-  EXPECT_TRUE(provider().registrar().IsActivelyInstalled(result_app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsActivelyInstalled(result_app_id));
   EXPECT_EQ(provider()
                 .os_integration_manager()
                 .AsTestOsIntegrationManager()
                 ->num_create_shortcuts_calls(),
             0u);
 
-  const WebApp* web_app = provider().registrar().GetAppById(result_app_id);
+  const WebApp* web_app =
+      provider().registrar_unsafe().GetAppById(result_app_id);
   ASSERT_TRUE(web_app);
 
   std::map<SquareSizePx, SkBitmap> icon_bitmaps =
@@ -114,7 +115,8 @@ IN_PROC_BROWSER_TEST_F(InstallFromInfoCommandTest, InstallWithParams) {
       base::BindLambdaForTesting(
           [&](const AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(provider().registrar().IsActivelyInstalled(app_id));
+            EXPECT_TRUE(
+                provider().registrar_unsafe().IsActivelyInstalled(app_id));
             loop.Quit();
           }),
       install_params);

@@ -125,7 +125,7 @@ absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
                                                      const GURL& url,
                                                      bool window_only) {
   auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  return provider ? provider->registrar().FindInstalledAppWithUrlInScope(
+  return provider ? provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
                         url, window_only)
                   : absl::nullopt;
 }

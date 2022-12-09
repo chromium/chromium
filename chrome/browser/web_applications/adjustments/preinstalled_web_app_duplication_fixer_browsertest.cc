@@ -113,11 +113,11 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
   }
 
   bool IsWebAppInstalled() const {
-    return provider_->registrar().IsInstalled(web_app_id());
+    return provider_->registrar_unsafe().IsInstalled(web_app_id());
   }
 
   bool IsWebAppExternallyInstalled() {
-    return provider_->registrar().LookupExternalAppId(install_url()) ==
+    return provider_->registrar_unsafe().LookupExternalAppId(install_url()) ==
            web_app_id();
   }
 
@@ -127,7 +127,7 @@ class PreinstalledWebAppDuplicationFixerBrowserTest
   }
 
   bool IsWebAppInSync() const {
-    return provider_->registrar()
+    return provider_->registrar_unsafe()
         .GetAppById(web_app_id())
         ->GetSources()
         .test(WebAppManagement::kSync);

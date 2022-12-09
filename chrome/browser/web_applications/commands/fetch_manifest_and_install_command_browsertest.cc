@@ -50,7 +50,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, SuccessInstall) {
       base::BindLambdaForTesting(
           [&](const AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(provider().registrar().IsLocallyInstalled(app_id));
+            EXPECT_TRUE(
+                provider().registrar_unsafe().IsLocallyInstalled(app_id));
             loop.Quit();
           }),
       /*use_fallback=*/false);
@@ -72,7 +73,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
       base::BindLambdaForTesting(
           [&](const AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(provider().registrar().IsLocallyInstalled(app_id));
+            EXPECT_TRUE(
+                provider().registrar_unsafe().IsLocallyInstalled(app_id));
           }),
       /*use_fallback=*/false);
 
@@ -83,7 +85,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
       base::BindLambdaForTesting(
           [&](const AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(provider().registrar().IsLocallyInstalled(app_id));
+            EXPECT_TRUE(
+                provider().registrar_unsafe().IsLocallyInstalled(app_id));
             loop.Quit();
           }),
       /*use_fallback=*/false);
@@ -105,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {
           [&](const AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code,
                       webapps::InstallResultCode::kNotValidManifestForWebApp);
-            EXPECT_FALSE(provider().registrar().IsLocallyInstalled(app_id));
+            EXPECT_FALSE(
+                provider().registrar_unsafe().IsLocallyInstalled(app_id));
             loop.Quit();
           }),
       /*use_fallback=*/false);
@@ -127,7 +131,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
       base::BindLambdaForTesting(
           [&](const AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kUserInstallDeclined);
-            EXPECT_FALSE(provider().registrar().IsLocallyInstalled(app_id));
+            EXPECT_FALSE(
+                provider().registrar_unsafe().IsLocallyInstalled(app_id));
             loop.Quit();
           }),
       /*use_fallback=*/false);
@@ -151,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       base::BindLambdaForTesting(
           [&](const AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
-            EXPECT_FALSE(provider().registrar().IsLocallyInstalled(app_id));
+            EXPECT_FALSE(
+                provider().registrar_unsafe().IsLocallyInstalled(app_id));
             loop.Quit();
           }),
       /*use_fallback=*/false);
@@ -181,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
       base::BindLambdaForTesting(
           [&](const AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            EXPECT_TRUE(provider().registrar().IsLocallyInstalled(app_id));
+            EXPECT_TRUE(
+                provider().registrar_unsafe().IsLocallyInstalled(app_id));
             loop.Quit();
           }),
       /*use_fallback=*/true);
@@ -203,9 +210,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
     update->CreateApp(std::move(web_app));
   }
 
-  EXPECT_FALSE(provider().registrar().IsLocallyInstalled(app_id));
-  EXPECT_TRUE(provider().registrar().IsInstalled(app_id));
-  EXPECT_EQ(provider().registrar().GetAppUserDisplayMode(app_id).value(),
+  EXPECT_FALSE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
             UserDisplayMode::kStandalone);
 
   EXPECT_FALSE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
@@ -224,11 +231,11 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
           }),
       /*use_fallback=*/true);
   loop.Run();
-  EXPECT_TRUE(provider().registrar().IsLocallyInstalled(app_id));
+  EXPECT_TRUE(provider().registrar_unsafe().IsLocallyInstalled(app_id));
 
   // Install defaults to `kBrowser` because `CreateDialogCallback` doesn't set
   // `open_as_window` to true.
-  EXPECT_EQ(provider().registrar().GetAppUserDisplayMode(app_id).value(),
+  EXPECT_EQ(provider().registrar_unsafe().GetAppUserDisplayMode(app_id).value(),
             UserDisplayMode::kBrowser);
 }
 

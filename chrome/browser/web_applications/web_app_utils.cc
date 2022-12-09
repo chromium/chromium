@@ -372,7 +372,7 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
     return nullptr;
   }
 
-  WebAppRegistrar& web_app_registrar = web_app_provider->registrar();
+  WebAppRegistrar& web_app_registrar = web_app_provider->registrar_unsafe();
   const absl::optional<AppId> app_id =
       web_app_registrar.FindAppWithUrlInScope(url);
   if (!app_id.has_value()) {
@@ -506,7 +506,7 @@ GetFileTypeAssociationsHandledByWebAppForDisplay(Profile* profile,
     return {};
 
   const apps::FileHandlers* file_handlers =
-      provider->registrar().GetAppFileHandlers(app_id);
+      provider->registrar_unsafe().GetAppFileHandlers(app_id);
 
   std::vector<std::u16string> extensions_for_display =
       TransformFileExtensionsForDisplay(
@@ -597,7 +597,7 @@ bool HasAppSettingsPage(Profile* profile, const GURL& url) {
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
   if (!provider)
     return false;
-  return provider->registrar().IsLocallyInstalled(app_id);
+  return provider->registrar_unsafe().IsLocallyInstalled(app_id);
 }
 
 bool IsInScope(const GURL& url, const GURL& scope) {

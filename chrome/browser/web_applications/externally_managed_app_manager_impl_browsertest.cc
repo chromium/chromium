@@ -55,7 +55,7 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
   Profile* profile() { return browser()->profile(); }
 
   WebAppRegistrar& registrar() {
-    return WebAppProvider::GetForTest(profile())->registrar();
+    return WebAppProvider::GetForTest(profile())->registrar_unsafe();
   }
 
   ExternallyManagedAppManager& externally_managed_app_manager() {

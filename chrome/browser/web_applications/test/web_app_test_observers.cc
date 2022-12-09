@@ -128,7 +128,7 @@ WebAppTestRegistryObserverAdapter::WebAppTestRegistryObserverAdapter(
 WebAppTestRegistryObserverAdapter::WebAppTestRegistryObserverAdapter(
     Profile* profile)
     : WebAppTestRegistryObserverAdapter(
-          &WebAppProvider::GetForTest(profile)->registrar()) {}
+          &WebAppProvider::GetForTest(profile)->registrar_unsafe()) {}
 
 WebAppTestRegistryObserverAdapter::~WebAppTestRegistryObserverAdapter() =
     default;

@@ -339,7 +339,7 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
     }
 
    protected:
-    WebAppRegistrar& registrar() { return provider().registrar(); }
+    WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
 
     FakeWebAppProvider& provider() {
       return externally_managed_app_manager_impl_->provider();
@@ -562,7 +562,7 @@ class ExternallyManagedAppManagerImplTest
     return *externally_managed_app_manager_impl_;
   }
 
-  WebAppRegistrar& registrar() { return provider().registrar(); }
+  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
 
   WebAppSyncBridge& sync_bridge() { return provider().sync_bridge(); }
 

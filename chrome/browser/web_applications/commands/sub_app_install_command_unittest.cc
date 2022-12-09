@@ -122,7 +122,7 @@ class SubAppInstallCommandTest : public WebAppTest {
 
   GURL sub_app_url() { return sub_app_url_; }
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
-  WebAppRegistrar& registrar() { return provider()->registrar(); }
+  WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
   TestWebAppUrlLoader& command_manager_url_loader() const {
     return *command_manager_url_loader_;
   }

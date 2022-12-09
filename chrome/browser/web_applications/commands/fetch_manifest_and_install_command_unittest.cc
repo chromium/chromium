@@ -210,7 +210,7 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
                      CreateDialogCallback(true, UserDisplayMode::kStandalone)),
       webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider()->registrar().IsLocallyInstalled(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
 }
 
@@ -230,7 +230,7 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithFallbackInstall) {
                      CreateDialogCallback(true, UserDisplayMode::kStandalone),
                      /*use_fallback=*/true),
       webapps::InstallResultCode::kSuccessNewInstall);
-  EXPECT_TRUE(provider()->registrar().IsLocallyInstalled(kWebAppId));
+  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
 }
 
@@ -242,7 +242,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
                      CreateDialogCallback(true, UserDisplayMode::kStandalone),
                      /*use_fallback=*/true),
       webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
-  EXPECT_FALSE(provider()->registrar().IsLocallyInstalled(kWebAppId));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
 }
 
@@ -261,7 +261,7 @@ TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
                      CreateDialogCallback(false, UserDisplayMode::kStandalone)),
       webapps::InstallResultCode::kUserInstallDeclined);
-  EXPECT_FALSE(provider()->registrar().IsLocallyInstalled(kWebAppId));
+  EXPECT_FALSE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
 }
 

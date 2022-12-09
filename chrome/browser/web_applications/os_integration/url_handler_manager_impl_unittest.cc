@@ -58,7 +58,7 @@ class UrlHandlerManagerImplTest : public WebAppTest {
     auto url_handler_manager =
         std::make_unique<UrlHandlerManagerImpl>(profile());
     url_handler_manager_ = url_handler_manager.get();
-    url_handler_manager->SetSubsystems(&provider_->registrar());
+    url_handler_manager->SetSubsystems(&provider_->registrar_unsafe());
 
     auto association_manager =
         std::make_unique<FakeWebAppOriginAssociationManager>();

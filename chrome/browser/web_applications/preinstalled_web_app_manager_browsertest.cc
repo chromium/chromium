@@ -195,7 +195,7 @@ class PreinstalledWebAppManagerBrowserTestBase
   }
 
   const WebAppRegistrar& registrar() {
-    return WebAppProvider::GetForTest(browser()->profile())->registrar();
+    return WebAppProvider::GetForTest(browser()->profile())->registrar_unsafe();
   }
 
   WebAppIconManager& icon_manager() {

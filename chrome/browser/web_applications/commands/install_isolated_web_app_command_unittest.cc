@@ -179,7 +179,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
   }
 
   WebAppRegistrar& web_app_registrar() {
-    return web_app_provider().registrar();
+    return web_app_provider().registrar_unsafe();
   }
 
   WebAppIconManager& web_app_icon_manager() {

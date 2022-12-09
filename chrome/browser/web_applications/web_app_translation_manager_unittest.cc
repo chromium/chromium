@@ -70,7 +70,7 @@ class WebAppTranslationManagerTest : public WebAppTest {
   }
 
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
-  WebAppRegistrar& registrar() { return provider().registrar(); }
+  WebAppRegistrar& registrar() { return provider().registrar_unsafe(); }
   WebAppTranslationManager& translation_manager() {
     return provider().translation_manager();
   }

@@ -125,7 +125,8 @@ IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest, Configure) {
   const AppId& app_id = LoadUrlAndInstallApp(test_url);
   EXPECT_TRUE(sync_future.Wait());
 
-  auto state = provider().registrar().GetAppCurrentOsIntegrationState(app_id);
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   if (OsIntegrationSubManagersEnabled()) {
     EXPECT_TRUE(state.has_value());
     EXPECT_THAT(state.value().shortcut_states().title(),
@@ -163,7 +164,8 @@ IN_PROC_BROWSER_TEST_P(ShortcutHandlingSubManagerBrowserTest,
   UninstallAppAndCleanData(app_id);
   EXPECT_TRUE(sync_future.Wait());
 
-  auto state = provider().registrar().GetAppCurrentOsIntegrationState(app_id);
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   EXPECT_FALSE(state.has_value());
 }
 

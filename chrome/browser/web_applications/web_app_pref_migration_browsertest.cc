@@ -36,7 +36,7 @@ class WebAppPrefMigrationBrowserTest : public InProcessBrowserTest {
   ~WebAppPrefMigrationBrowserTest() override = default;
 
   WebAppRegistrar& registrar() {
-    return WebAppProvider::GetForTest(browser()->profile())->registrar();
+    return WebAppProvider::GetForTest(browser()->profile())->registrar_unsafe();
   }
 
   PrefService* prefs() { return browser()->profile()->GetPrefs(); }
