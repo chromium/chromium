@@ -149,6 +149,13 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
+    protected void onFirstDrawComplete() {
+        super.onFirstDrawComplete();
+
+        FontPreloader.getInstance().onFirstDrawCustomTabActivity();
+    }
+
+    @Override
     public void finishNativeInitialization() {
         if (!mIntentDataProvider.isInfoPage()) {
             FirstRunSignInProcessor.openSyncSettingsIfScheduled(this);

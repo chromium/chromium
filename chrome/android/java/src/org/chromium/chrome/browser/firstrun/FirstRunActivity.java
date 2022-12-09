@@ -319,6 +319,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
+    protected void onFirstDrawComplete() {
+        super.onFirstDrawComplete();
+
+        FontPreloader.getInstance().onFirstDrawFre();
+    }
+
+    @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
 

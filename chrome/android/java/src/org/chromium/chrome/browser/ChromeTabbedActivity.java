@@ -198,6 +198,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
+import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -1797,6 +1798,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         mContentContainer = (ViewGroup) findViewById(android.R.id.content);
         mControlContainer = (ToolbarControlContainer) findViewById(R.id.control_container);
+
+        // Instead of overriding AsyncInitializationActivity#onFirstDrawComplete like the other
+        // activities, we're adding our own draw detector here because this activity's draw can be
+        // blocked by AppLaunchDrawBlocker, and #onFirstDrawComplete doesn't account for that.
+        FirstDrawDetector.waitForFirstDrawStrict(
+                mContentContainer, () -> FontPreloader.getInstance().onFirstDrawTabbedActivity());
 
         Supplier<Boolean> dialogVisibilitySupplier = null;
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(this)) {

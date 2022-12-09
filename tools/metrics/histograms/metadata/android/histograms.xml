@@ -23,6 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="ActivityType">
+  <variant name="" summary="activity"/>
   <variant name=".ChromeTabbedActivity" summary="ChromeTabbedActivity"/>
   <variant name=".CustomTabActivity" summary="CustomTabActivity"/>
   <variant name=".FirstRunActivity" summary="FirstRunActivity"/>
@@ -1532,6 +1533,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.Fonts.TimeDownloadableFontsRetrievedAfterFirstDraw{ActivityType}"
+    units="ms" expires_after="2023-06-15">
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Time it took to retrieve the downloadable fonts after the first draw of
+    {ActivityType}'s content view. Mutually exclusive with *BeforeFirstDraw.
+    Recorded when all downloadable fonts are retrieved.
+  </summary>
+  <token key="ActivityType" variants="ActivityType"/>
+</histogram>
+
+<histogram
     name="Android.Fonts.TimeDownloadableFontsRetrievedAfterPostInflationStartup{ActivityType}"
     units="ms" expires_after="2023-06-15">
   <owner>sinansahin@google.com</owner>
@@ -1540,6 +1554,19 @@ chromium-metrics-reviews@google.com.
     Time it took to retrieve the downloadable fonts after post-inflation
     startup. Mutually exclusive with *BeforePostInflationStartup. Recorded when
     all downloadable fonts are retrieved. {ActivityType}
+  </summary>
+  <token key="ActivityType" variants="ActivityType"/>
+</histogram>
+
+<histogram
+    name="Android.Fonts.TimeDownloadableFontsRetrievedBeforeFirstDraw{ActivityType}"
+    units="ms" expires_after="2023-06-15">
+  <owner>sinansahin@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Amount of time the downloadable fonts were retrieved before the first draw.
+    Mutually exclusive with *AfterFirstDraw. Recorded when the first #onDraw
+    call happens for the {ActivityType}'s content view.
   </summary>
   <token key="ActivityType" variants="ActivityType"/>
 </histogram>

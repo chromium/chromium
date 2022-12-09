@@ -615,7 +615,12 @@ public abstract class AsyncInitializationActivity
         if (mWindowAndroid != null) mWindowAndroid.onContextMenuClosed();
     }
 
-    private void onFirstDrawComplete() {
+    /**
+     * Called when the content view gets drawn for the first time. See {@link FirstDrawDetector} for
+     * details on the exact signals used to call this.
+     */
+    @CallSuper
+    protected void onFirstDrawComplete() {
         assert mFirstDrawComplete;
         assert !mStartupDelayed;
         TraceEvent.instant("onFirstDrawComplete");
