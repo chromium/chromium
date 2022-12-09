@@ -108,16 +108,6 @@ group("absl_component_deps") {
   visibility = [ ":absl" ]
 }
 
-group("default") {
-  deps = [
-    "absl/types:any",
-    "absl/types:bad_any_cast",
-    "absl/types:bad_optional_access",
-    "absl/types:optional",
-    "absl/types:span",
-  ]
-}
-
 config("absl_include_config") {
   include_dirs = [ "." ]
 }
