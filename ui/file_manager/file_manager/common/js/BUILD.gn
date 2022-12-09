@@ -37,7 +37,7 @@ group("js_modules") {
     ":lru_cache",
     ":metrics",
     ":metrics_base",
-    ":notifications_browser_proxy",
+    ":notifications",
     ":progress_center_common",
     ":recent_date_bucket",
     ":storage",
@@ -66,7 +66,7 @@ js_type_check("closure_compile_jsmodules") {
     ":metrics_base",
     ":mock_entry",
     ":mock_util",
-    ":notifications_browser_proxy",
+    ":notifications",
     ":progress_center_common",
     ":recent_date_bucket",
     ":storage",
@@ -257,7 +257,7 @@ js_library("mock_util") {
   deps = [ ":util" ]
 }
 
-js_library("notifications_browser_proxy") {
+js_library("notifications") {
   externs_list =
       [ "//ui/file_manager/file_manager/externs/app_window_common.js" ]
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {AsyncQueue} from '../../common/js/async_util.js';
-import {notifications} from '../../common/js/notifications_browser_proxy.js';
+import {notifications} from '../../common/js/notifications.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {getFilesAppIconURL} from '../../common/js/url_constants.js';
 import {str} from '../../common/js/util.js';

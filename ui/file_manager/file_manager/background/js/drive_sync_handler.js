@@ -6,7 +6,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {getUniqueParents} from '../../common/js/api.js';
 import {AsyncQueue, RateLimiter} from '../../common/js/async_util.js';
-import {notifications} from '../../common/js/notifications_browser_proxy.js';
+import {notifications} from '../../common/js/notifications.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
 import {getFilesAppIconURL, toFilesAppURL} from '../../common/js/url_constants.js';
 import {str, strf, util} from '../../common/js/util.js';
