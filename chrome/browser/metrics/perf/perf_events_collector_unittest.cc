@@ -56,6 +56,14 @@ const char kPerfITLBMissCyclesCmdAtom[] =
 const char kPerfITLBMissCyclesCmdTremont[] = "-- record -a -e r1085 -c 30001";
 const char kPerfLLCMissesCmd[] = "-- record -a -e r412e -g -c 30007";
 const char kPerfLLCMissesPreciseCmd[] = "-- record -a -e r412e:pp -g -c 30007";
+const char kPerfDTLBMissesDAPGoldmont[] =
+    "-- record -a -e mem_uops_retired.dtlb_miss_loads:pp -c 2003 -d";
+const char kPerfDTLBMissesDAPTremont[] = "-- record -a -e r11d0:pp -c 2003 -d";
+const char kPerfDTLBMissesDAPHaswell[] =
+    "-- record -a -e mem_uops_retired.stlb_miss_loads:pp -c 2003 -d";
+const char kPerfDTLBMissesDAPSkylake[] =
+    "-- record -a -e mem_inst_retired.stlb_miss_loads:pp -c 2003 -d";
+
 const char kPerfETMCmd[] =
     "--run_inject --inject_args inject;--itrace=i512il;--strip -- record -a -e "
     "cs_etm/autofdo/";
@@ -550,6 +558,8 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Haswell) {
                              &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdIvyBridge,
                              &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfDTLBMissesDAPHaswell,
+                             &RandomSelector::WeightAndValue::value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Skylake) {
@@ -575,6 +585,8 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Skylake) {
                              &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdSkylake,
                              &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfDTLBMissesDAPSkylake,
+                             &RandomSelector::WeightAndValue::value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
@@ -599,6 +611,8 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
   EXPECT_TRUE(base::Contains(cmds, kPerfLLCMissesCmd,
                              &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdSkylake,
+                             &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfDTLBMissesDAPSkylake,
                              &RandomSelector::WeightAndValue::value));
 }
 
@@ -626,6 +640,8 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Goldmont) {
                              &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdAtom,
                              &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfDTLBMissesDAPGoldmont,
+                             &RandomSelector::WeightAndValue::value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
@@ -652,6 +668,8 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_GoldmontPlus) {
                              &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdSkylake,
                              &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfDTLBMissesDAPGoldmont,
+                             &RandomSelector::WeightAndValue::value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tremont) {
@@ -676,6 +694,8 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tremont) {
   EXPECT_TRUE(base::Contains(cmds, kPerfLLCMissesPreciseCmd,
                              &RandomSelector::WeightAndValue::value));
   EXPECT_TRUE(base::Contains(cmds, kPerfITLBMissCyclesCmdTremont,
+                             &RandomSelector::WeightAndValue::value));
+  EXPECT_TRUE(base::Contains(cmds, kPerfDTLBMissesDAPTremont,
                              &RandomSelector::WeightAndValue::value));
 }
 
