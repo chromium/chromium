@@ -6,8 +6,6 @@ include_rules = [
   "+base/base_paths.h",
   "+base/callback_forward.h",
   "+base/files/file_util.h",
-  "+base/memory/ref_counted.h",
-  "+base/memory/scoped_refptr.h",
   "+base/metrics/histogram_functions.h",
   "+base/numerics/clamped_math.h",
   "+base/path_service.h",

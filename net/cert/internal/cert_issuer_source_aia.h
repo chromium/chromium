@@ -5,6 +5,7 @@
 #ifndef NET_CERT_INTERNAL_CERT_ISSUER_SOURCE_AIA_H_
 #define NET_CERT_INTERNAL_CERT_ISSUER_SOURCE_AIA_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/cert_issuer_source.h"
