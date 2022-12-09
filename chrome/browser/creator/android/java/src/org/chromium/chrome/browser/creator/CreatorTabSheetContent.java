@@ -260,7 +260,6 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     @Override
     public void destroy() {
         mThinWebView.destroy();
-        mShareDelegateSupplier.destroy();
     }
 
     @Override

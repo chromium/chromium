@@ -51,6 +51,7 @@ public class CreatorActivity extends SnackbarActivity {
     private ActivityTabProvider mActivityTabProvider;
     private ActivityLifecycleDispatcherImpl mLifecycleDispatcher;
     private UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
+    private UnownedUserDataSupplier<ShareDelegate> mTabShareDelegateSupplier;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
     private Profile mProfile;
 
@@ -62,6 +63,7 @@ public class CreatorActivity extends SnackbarActivity {
         mActivityTabProvider = new ActivityTabProvider();
         mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(this);
         mShareDelegateSupplier = new ShareDelegateSupplier();
+        mTabShareDelegateSupplier = new ShareDelegateSupplier();
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfile = Profile.getLastUsedRegularProfile();
         mProfileSupplier.set(mProfile);
@@ -71,7 +73,7 @@ public class CreatorActivity extends SnackbarActivity {
         mWindowAndroid = new ActivityWindowAndroid(this, false, intentRequestTracker);
         CreatorCoordinator coordinator = new CreatorCoordinator(this, mWebFeedId,
                 getSnackbarManager(), mWindowAndroid, mProfile, mTitle, mUrl,
-                this::createWebContents, this::createNewTab, new ShareDelegateSupplier());
+                this::createWebContents, this::createNewTab, mTabShareDelegateSupplier);
 
         mBottomSheetController = coordinator.getBottomSheetController();
         ShareDelegate shareDelegate = new ShareDelegateImpl(mBottomSheetController,
@@ -100,6 +102,13 @@ public class CreatorActivity extends SnackbarActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        mTabShareDelegateSupplier.destroy();
+        mShareDelegateSupplier.destroy();
+        super.onDestroy();
     }
 
     // This implements the CreatorWebContents interface.
