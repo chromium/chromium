@@ -167,51 +167,5 @@ TEST_F(PreloadingDeciderTest, OnPointerDownHeuristics) {
   EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
 }
 
-TEST_F(PreloadingDeciderTest, OnPointerHoverHeuristics) {
-  base::test::ScopedFeatureList scoped_enable_pointer_down_heuristics;
-  scoped_enable_pointer_down_heuristics.InitWithFeatures(
-      {blink::features::kSpeculationRulesPointerHoverHeuristics}, {});
-  MockContentBrowserClient browser_client;
-
-  auto* preloading_decider =
-      PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
-  EXPECT_TRUE(preloading_decider != nullptr);
-
-  auto* preconnect_delegate = browser_client.GetDelegate();
-  EXPECT_TRUE(preconnect_delegate != nullptr);
-
-  // Create list of SpeculationCandidatePtrs.
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-
-  auto candidate1 = blink::mojom::SpeculationCandidate::New();
-  candidate1->action = blink::mojom::SpeculationAction::kPrefetch;
-  candidate1->requires_anonymous_client_ip_when_cross_origin = true;
-  candidate1->url = GetCrossOriginUrl("/candidate1.html");
-  candidate1->referrer = blink::mojom::Referrer::New();
-  candidate1->eagerness = blink::mojom::SpeculationEagerness::kDefault;
-  candidates.push_back(std::move(candidate1));
-
-  preloading_decider->UpdateSpeculationCandidates(candidates);
-  // It should not pass kDefault candidates directly
-  EXPECT_TRUE(GetPrefetchService()->prefetches_.empty());
-
-  preloading_decider->OnPointerHover(GetCrossOriginUrl("/candidate1.html"));
-  EXPECT_FALSE(
-      preconnect_delegate->Target().has_value());  // Shouldn't preconnect
-  EXPECT_EQ(
-      1u,
-      GetPrefetchService()->prefetches_.size());  // It should only prefetch
-
-  // Another pointer hover should not change anything
-  preloading_decider->OnPointerHover(GetCrossOriginUrl("/candidate1.html"));
-  EXPECT_FALSE(preconnect_delegate->Target().has_value());
-  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
-
-  // It should preconnect if the target is not safe to prefetch
-  preloading_decider->OnPointerDown(GetCrossOriginUrl("/candidate2.html"));
-  EXPECT_TRUE(preconnect_delegate->Target().has_value());
-  EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
-}
-
 }  // namespace
 }  // namespace content

@@ -1547,13 +1547,12 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/speculation-rules/prefetch",
-      "http/tests/inspector-protocol/prefetch",
-      "wpt_internal/speculation-rules/prefetch"
+      "http/tests/inspector-protocol/prefetch"
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesReferrerPolicyKey,SpeculationRulesDocumentRules,SpeculationRulesPointerDownHeuristics,SpeculationRulesPointerHoverHeuristics",
-      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor,PrefetchNoVarySearch,SpeculationRulesPointerDownHeuristics,SpeculationRulesPointerHoverHeuristics",
+      "--enable-blink-features=SpeculationRulesPrefetchProxy,SpeculationRulesFetchFromHeader,SpeculationRulesReferrerPolicyKey,SpeculationRulesDocumentRules",
+      "--enable-features=SpeculationRulesPrefetchProxy,PrefetchUseContentRefactor,PrefetchNoVarySearch",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Jul 1, 2023"
