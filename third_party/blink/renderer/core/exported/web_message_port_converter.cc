@@ -11,11 +11,6 @@
 
 namespace blink {
 
-bool WebMessagePortConverter::IsMessagePort(v8::Isolate* isolate,
-                                            v8::Local<v8::Value> value) {
-  return V8MessagePort::HasInstance(value, isolate);
-}
-
 absl::optional<MessagePortChannel>
 WebMessagePortConverter::DisentangleAndExtractMessagePortChannel(
     v8::Isolate* isolate,
