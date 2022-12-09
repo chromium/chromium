@@ -9569,6 +9569,13 @@ experimental domain SystemInfo
       # supported.
       string commandLine
 
+  # Returns information about the feature state.
+  command getFeatureState
+    parameters
+      string featureState
+    returns
+      boolean featureEnabled
+
   # Returns information about all running processes.
   command getProcessInfo
     returns

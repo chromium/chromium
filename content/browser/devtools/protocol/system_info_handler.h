@@ -31,6 +31,8 @@ class SystemInfoHandler : public DevToolsDomainHandler,
   void GetInfo(std::unique_ptr<GetInfoCallback> callback) override;
   void GetProcessInfo(
       std::unique_ptr<GetProcessInfoCallback> callback) override;
+  Response GetFeatureState(const String& in_featureState,
+                           bool* featureEnabled) override;
 
  private:
   friend class SystemInfoHandlerGpuObserver;

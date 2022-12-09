@@ -30,6 +30,7 @@
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "content/browser/devtools/protocol/system_info.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/host_zoom_map_impl.h"
@@ -3781,6 +3782,26 @@ IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderFinalStatus::kMojoBinderPolicy, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
+                       CheckReportedPrerenderFeatures) {
+  AttachToBrowserTarget();
+  base::Value::Dict params;
+  params.Set("featureState", "PrerenderHoldback");
+  const base::Value::Dict* result =
+      SendCommand("SystemInfo.getFeatureState", std::move(params));
+  EXPECT_THAT(result->FindBool("featureEnabled"), false);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderHoldbackDevToolsProtocolTest,
+                       CheckReportedPrerenderFeatures) {
+  AttachToBrowserTarget();
+  base::Value::Dict params;
+  params.Set("featureState", "PrerenderHoldback");
+  const base::Value::Dict* result =
+      SendCommand("SystemInfo.getFeatureState", std::move(params));
+  EXPECT_THAT(result->FindBool("featureEnabled"), true);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderDevToolsProtocolTest,
