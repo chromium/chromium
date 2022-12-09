@@ -34,6 +34,7 @@
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -53,7 +54,6 @@ namespace web_app {
 
 namespace {
 
-const char kAppHost[] = "app.com";
 const char kNonAppHost[] = "nonapp.com";
 
 const int32_t kApplicationServerKeyLength = 65;
@@ -111,7 +111,7 @@ class ServiceWorkerVersionActivatedWaiter
  public:
   ServiceWorkerVersionActivatedWaiter(
       content::StoragePartition* storage_partition,
-      GURL& url)
+      const GURL& url)
       : BaseServiceWorkerVersionWaiter(storage_partition), url_(url) {}
 
   int64_t AwaitVersionActivated() { return future.Get(); }
@@ -124,7 +124,7 @@ class ServiceWorkerVersionActivatedWaiter
     }
   }
 
-  const GURL url_;
+  GURL url_;
   base::test::TestFuture<int64_t> future;
 };
 
@@ -189,14 +189,6 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
   IsolatedWebAppBrowserTest& operator=(const IsolatedWebAppBrowserTest&) =
       delete;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
-
-    std::string isolated_web_app_origins = std::string("https://") + kAppHost;
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    isolated_web_app_origins);
-  }
-
  protected:
   content::StoragePartition* default_storage_partition() {
     return browser()->profile()->GetDefaultStoragePartition();
@@ -217,8 +209,23 @@ class IsolatedWebAppBrowserTest : public IsolatedWebAppBrowserTestHarness {
   std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
 };
 
+class IsolatedWebAppUsingOriginsFlagBrowserTest
+    : public IsolatedWebAppBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolatedWebAppBrowserTestHarness::SetUpCommandLine(command_line);
+
+    std::string isolated_web_app_origins = std::string("https://") + kAppHost;
+    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
+                                    isolated_web_app_origins);
+  }
+
+ protected:
+  static constexpr char kAppHost[] = "app.com";
+};
+
 IN_PROC_BROWSER_TEST_F(
-    IsolatedWebAppBrowserTest,
+    IsolatedWebAppUsingOriginsFlagBrowserTest,
     CanInstallAppWithManifestFieldAndIsolatedAppOriginsFlag) {
   AppId app_id = InstallIsolatedWebApp(kAppHost);
   content::RenderFrameHost* app_frame = OpenApp(app_id);
@@ -460,43 +467,53 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
 class IsolatedWebAppBrowserServiceWorkerTest
     : public IsolatedWebAppBrowserTest {
  protected:
-  void SetUpOnMainThread() override {
-    IsolatedWebAppBrowserTest::SetUpOnMainThread();
-
-    app_url_ = https_server()->GetURL(
-        kAppHost, "/banners/isolated/register_service_worker.html");
-  }
-
   int64_t InstallIsolatedWebAppAndWaitForServiceWorker() {
-    AppId app_id = InstallIsolatedWebApp(app_url_);
+    web_app::IsolatedWebAppUrlInfo url_info = InstallDevModeProxyIsolatedWebApp(
+        isolated_web_app_dev_server().GetOrigin());
+    url_info_ = url_info;
 
-    auto* original_frame = OpenApp(app_id);
+    content::RenderFrameHost* original_frame = OpenApp(url_info.app_id());
+    CHECK_NE(default_storage_partition(),
+             original_frame->GetStoragePartition());
+
     app_web_contents_ =
         content::WebContents::FromRenderFrameHost(original_frame);
     app_window_ = GetBrowserFromFrame(original_frame);
-    app_frame_ = ui_test_utils::NavigateToURL(app_window_, app_url_);
+
+    GURL register_service_worker_page =
+        url_info.origin().GetURL().Resolve("register_service_worker.html");
+
+    app_frame_ =
+        ui_test_utils::NavigateToURL(app_window_, register_service_worker_page);
     storage_partition_ = app_frame_->GetStoragePartition();
-    EXPECT_NE(default_storage_partition(), storage_partition_);
+    CHECK_NE(default_storage_partition(), storage_partition_);
 
     ServiceWorkerVersionActivatedWaiter version_activated_waiter(
-        storage_partition_, app_url_);
+        storage_partition_, url_info.origin().GetURL());
 
     return version_activated_waiter.AwaitVersionActivated();
+  }
+
+  const web_app::IsolatedWebAppUrlInfo& url_info() const {
+    CHECK(url_info_.has_value());
+    return *url_info_;
   }
 
   raw_ptr<Browser, DanglingUntriaged> app_window_;
   raw_ptr<content::WebContents, DanglingUntriaged> app_web_contents_;
   raw_ptr<content::RenderFrameHost, DanglingUntriaged> app_frame_;
   raw_ptr<content::StoragePartition, DanglingUntriaged> storage_partition_;
+  absl::optional<web_app::IsolatedWebAppUrlInfo> url_info_;
 
-  GURL app_url_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<net::EmbeddedTestServer> isolated_web_app_dev_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserServiceWorkerTest,
                        ServiceWorkerPartitioned) {
   InstallIsolatedWebAppAndWaitForServiceWorker();
   test::CheckServiceWorkerStatus(
-      app_url_, storage_partition_,
+      url_info().origin().GetURL(), storage_partition_,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
 
@@ -519,7 +536,13 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
       content::BrowserContext* context,
       const PushMessagingAppIdentifier& app_identifier,
       const gcm::IncomingMessage& message) {
-    auto* push_service = PushMessagingServiceFactory::GetForProfile(context);
+    PushMessagingServiceImpl* push_service =
+        PushMessagingServiceFactory::GetForProfile(context);
+
+    CHECK_EQ(push_service->GetPermissionStatus(url_info_->origin().GetURL(),
+                                               /*user_visible=*/true),
+             blink::mojom::PermissionStatus::GRANTED);
+
     base::RunLoop run_loop;
     base::RepeatingClosure quit_barrier =
         base::BarrierClosure(2 /* num_closures */, run_loop.QuitClosure());
@@ -531,20 +554,11 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
 
   PushMessagingAppIdentifier GetAppIdentifierForServiceWorkerRegistration(
       int64_t service_worker_registration_id) {
-    GURL origin = url::Origin::Create(app_url_).GetURL();
-
     PushMessagingAppIdentifier app_identifier =
         PushMessagingAppIdentifier::FindByServiceWorker(
-            browser()->profile(), origin, service_worker_registration_id);
+            browser()->profile(), url_info().origin().GetURL(),
+            service_worker_registration_id);
     return app_identifier;
-  }
-
-  std::string RunScript(content::RenderFrameHost* app_frame,
-                        const std::string& script) {
-    std::string script_result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(app_frame, script,
-                                                       &script_result));
-    return script_result;
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
@@ -554,9 +568,14 @@ class IsolatedWebAppBrowserServiceWorkerPushTest
       scoped_testing_factory_installer_;
 };
 
+// TODO(crbug.com/1333966): Enable the test when permissions storage work for
+// isolated-app:// scheme. Currently permission settings aren't being stored
+// because permissions component doesn't support isolated-app:// scheme.  See
+// `ContentSettingsPattern::FromURL` and
+// `ContentSettingsPattern::FromURLNoWildcard` for details.
 IN_PROC_BROWSER_TEST_F(
     IsolatedWebAppBrowserServiceWorkerPushTest,
-    ServiceWorkerPartitionedWhenWakingUpDuetoPushNotification) {
+    DISABLED_ServiceWorkerPartitionedWhenWakingUpDueToPushNotification) {
   int64_t service_worker_version_id =
       InstallIsolatedWebAppAndWaitForServiceWorker();
 
@@ -565,12 +584,36 @@ IN_PROC_BROWSER_TEST_F(
       permissions::PermissionRequestManager::FromWebContents(app_web_contents_);
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
-  ASSERT_EQ("permission status - granted",
-            RunScript(app_frame_, "requestNotificationPermission()"));
+
+  ASSERT_EQ("permission status - granted", content::EvalJs(app_frame_, R"js(
+    (async () => {
+      return 'permission status - ' + await Notification.requestPermission();
+    })();
+  )js"));
 
   // Subscribe to push notifications and retrieve the app identifier.
-  std::string push_messaging_endpoint =
-      RunScript(app_frame_, "documentSubscribePush()");
+  std::string push_messaging_endpoint = content::EvalJs(app_frame_, R"js(
+// NIST P-256 public key made available to tests. Must be an uncompressed
+// point in accordance with SEC1 2.3.3.
+var kApplicationServerKey = new Uint8Array([
+  0x04, 0x55, 0x52, 0x6A, 0xA5, 0x6E, 0x8E, 0xAA, 0x47, 0x97, 0x36, 0x10, 0xC1,
+  0x66, 0x3C, 0x1E, 0x65, 0xBF, 0xA1, 0x7B, 0xEE, 0x48, 0xC9, 0xC6, 0xBB, 0xBF,
+  0x02, 0x18, 0x53, 0x72, 0x1D, 0x0C, 0x7B, 0xA9, 0xE3, 0x11, 0xB7, 0x03, 0x52,
+  0x21, 0xD3, 0x71, 0x90, 0x13, 0xA8, 0xC1, 0xCF, 0xED, 0x20, 0xF7, 0x1F, 0xD1,
+  0x7F, 0xF2, 0x76, 0xB6, 0x01, 0x20, 0xD8, 0x35, 0xA5, 0xD9, 0x3C, 0x43, 0xFD
+]);
+
+(async () => {
+  const registration = await navigator.serviceWorker.ready;
+  const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: kApplicationServerKey.buffer,
+  });
+  return subscription.endpoint;
+})();
+  )js")
+                                            .ExtractString();
+
   size_t last_slash = push_messaging_endpoint.rfind('/');
   ASSERT_EQ(kPushMessagingGcmEndpoint,
             push_messaging_endpoint.substr(0, last_slash + 1));
