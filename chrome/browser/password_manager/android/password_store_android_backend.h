@@ -17,8 +17,8 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
-#include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
@@ -74,14 +74,15 @@ enum class PasswordStoreOperation {
 
 // Android-specific password store backend that delegates every request to
 // Google Mobile Service.
-// It uses a `PasswordStoreAndroidBackendBridge` to send API requests for each
-// method it implements from `PasswordStoreBackend`. The response will invoke a
-// consumer method with an originally provided `JobId`. Based on that `JobId`,
-// this class maps ongoing jobs to the callbacks of the methods that originally
-// required the job since JNI itself can't preserve the callbacks.
+// It uses a `PasswordStoreAndroidBackendDispatcherBridge` to send API requests
+// for each method it implements from `PasswordStoreBackend`. The response will
+// invoke a consumer method via `PasswordStoreAndroidBackendReceiverBridge` with
+// an originally provided `JobId`. Based on that `JobId`, this class maps
+// ongoing jobs to the callbacks of the methods that originally required the job
+// since JNI itself can't preserve the callbacks.
 class PasswordStoreAndroidBackend
     : public PasswordStoreBackend,
-      public PasswordStoreAndroidBackendConsumerBridge::Consumer {
+      public PasswordStoreAndroidBackendReceiverBridge::Consumer {
  public:
   explicit PasswordStoreAndroidBackend(PrefService* prefs);
   PasswordStoreAndroidBackend(
@@ -148,7 +149,7 @@ class PasswordStoreAndroidBackend
     PasswordStoreOperation operation_;
   };
 
-  using JobId = PasswordStoreAndroidBackendBridge::JobId;
+  using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
   // Using a small_map should ensure that we handle rare cases with many jobs
   // like a bulk deletion just as well as the normal, rather small job load.
   using JobMap = base::small_map<
@@ -197,7 +198,7 @@ class PasswordStoreAndroidBackend
   // from the PasswordStoreBackend interface. |operation| is the
   // PasswordStoreOperation that invoked this method and |delay| is the amount
   // of time by which the call to this method was delayed. Calls
-  // GetAutofillableLogins from the PasswordStoreAndroidBackendBridge.
+  // GetAutofillableLogins from the PasswordStoreAndroidBackendDispatcherBridge.
   void GetAutofillableLoginsAsyncInternal(LoginsOrErrorReply callback,
                                           PasswordStoreOperation operation,
                                           base::TimeDelta delay);
@@ -208,7 +209,7 @@ class PasswordStoreAndroidBackend
   // call to this method was delayed. Returns the complete list of PasswordForms
   // (regardless of their blocklist status) for |account| with a |delay|.
   void GetAllLoginsForAccountInternal(
-      PasswordStoreAndroidBackendBridge::Account account,
+      PasswordStoreAndroidBackendDispatcherBridge::Account account,
       LoginsOrErrorReply callback,
       PasswordStoreOperation operation,
       base::TimeDelta delay);
@@ -218,7 +219,7 @@ class PasswordStoreAndroidBackend
   // |delay| is the amount of time by which the call to this method was delayed.
   void RemoveLoginForAccountInternal(
       const PasswordForm& form,
-      PasswordStoreAndroidBackendBridge::Account account,
+      PasswordStoreAndroidBackendDispatcherBridge::Account account,
       PasswordChangesOrErrorReply callback,
       PasswordStoreOperation operation,
       base::TimeDelta delay);
@@ -230,12 +231,14 @@ class PasswordStoreAndroidBackend
   void RetryOperation(base::OnceCallback<void(base::TimeDelta)> callback,
                       base::TimeDelta delay);
 
-  // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
-  void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::JobId job_id,
-                            std::vector<PasswordForm> passwords) override;
-  void OnLoginsChanged(PasswordStoreAndroidBackendBridge::JobId task_id,
-                       PasswordChanges changes) override;
-  void OnError(PasswordStoreAndroidBackendBridge::JobId job_id,
+  // Implements PasswordStoreAndroidBackendDispatcherBridge::Consumer interface.
+  void OnCompleteWithLogins(
+      PasswordStoreAndroidBackendDispatcherBridge::JobId job_id,
+      std::vector<PasswordForm> passwords) override;
+  void OnLoginsChanged(
+      PasswordStoreAndroidBackendDispatcherBridge::JobId task_id,
+      PasswordChanges changes) override;
+  void OnError(PasswordStoreAndroidBackendDispatcherBridge::JobId job_id,
                AndroidBackendError error) override;
 
   template <typename Callback>
@@ -295,13 +298,14 @@ class PasswordStoreAndroidBackend
   // Returns the complete list of PasswordForms (regardless of their blocklist
   // status) for |account|.
   void GetAllLoginsForAccount(
-      PasswordStoreAndroidBackendBridge::Account account,
+      PasswordStoreAndroidBackendDispatcherBridge::Account account,
       LoginsOrErrorReply callback);
 
   // Removes |form| from |account|.
-  void RemoveLoginForAccount(const PasswordForm& form,
-                             PasswordStoreAndroidBackendBridge::Account account,
-                             PasswordChangesOrErrorReply callback);
+  void RemoveLoginForAccount(
+      const PasswordForm& form,
+      PasswordStoreAndroidBackendDispatcherBridge::Account account,
+      PasswordChangesOrErrorReply callback);
 
   // Invoked synchronously by `lifecycle_helper_` when Chrome is foregrounded.
   // This should not cover the initial startup since the registration for the
@@ -332,11 +336,8 @@ class PasswordStoreAndroidBackend
   // called via JNI directly.
   JobMap request_for_job_ GUARDED_BY_CONTEXT(main_sequence_checker_);
 
-  // This object is the proxy to the JNI bridge that handles API callbacks from
-  // the Java side.
-  std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge> consumer_bridge_;
-
-  // This object is the proxy to the JNI bridge that performs the API requests.
+  // This object is the proxy to the dispatcher JNI bridge that performs the API
+  // requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper_;
 
   raw_ptr<const syncer::SyncService> sync_service_ = nullptr;

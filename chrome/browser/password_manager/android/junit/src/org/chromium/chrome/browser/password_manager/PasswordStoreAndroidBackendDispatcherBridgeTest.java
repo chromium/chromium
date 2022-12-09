@@ -44,13 +44,13 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 import java.util.Optional;
 
 /**
- * Tests that bridge calls as invoked by the password store reach the backend and return correctly.
+ * Tests that dispatcher bridge calls as invoked by the password store reach the backend.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-public class PasswordStoreAndroidBackendBridgeTest {
+public class PasswordStoreAndroidBackendDispatcherBridgeTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -71,17 +71,17 @@ public class PasswordStoreAndroidBackendBridgeTest {
             Optional.of(AccountUtils.createAccountFromName(sTestAccountEmail));
 
     @Mock
-    private PasswordStoreAndroidBackendConsumerBridgeImpl mConsumerBridgeMock;
+    private PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridgeMock;
     @Mock
     private PasswordStoreAndroidBackend mBackendMock;
 
-    private PasswordStoreAndroidBackendBridgeImpl mBackendBridge;
+    private PasswordStoreAndroidBackendDispatcherBridgeImpl mBackendDispatcherBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mBackendBridge =
-                new PasswordStoreAndroidBackendBridgeImpl(mConsumerBridgeMock, mBackendMock);
+        mBackendDispatcherBridge = new PasswordStoreAndroidBackendDispatcherBridgeImpl(
+                mBackendReceiverBridgeMock, mBackendMock);
     }
 
     @Test
@@ -89,14 +89,14 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 1337;
 
         // Ensure the backend is called with a valid success callback.
-        mBackendBridge.getAllLogins(kTestTaskId, sTestAccountEmail);
+        mBackendDispatcherBridge.getAllLogins(kTestTaskId, sTestAccountEmail);
         ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock).getAllLogins(eq(sTestAccount), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
         successCallback.getValue().onResult(kExpectedList);
-        verify(mConsumerBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
+        verify(mBackendReceiverBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
     }
 
     @Test
@@ -104,7 +104,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendBridge.getAllLogins(kTestTaskId, null);
+        mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
@@ -112,7 +112,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -120,7 +121,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendBridge.getAllLogins(kTestTaskId, sTestAccountEmail);
+        mBackendDispatcherBridge.getAllLogins(kTestTaskId, sTestAccountEmail);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock).getAllLogins(eq(sTestAccount), any(), failureCallback.capture());
@@ -129,7 +130,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new PasswordStoreAndroidBackend.BackendException(
                 "Sample failure", AndroidBackendErrorType.NO_ACCOUNT);
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -137,7 +139,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendBridge.getAllLogins(kTestTaskId, null);
+        mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
@@ -146,7 +148,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new ApiException(
                 new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -154,7 +157,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendBridge.getAllLogins(kTestTaskId, null);
+        mBackendDispatcherBridge.getAllLogins(kTestTaskId, null);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock).getAllLogins(eq(Optional.empty()), any(), failureCallback.capture());
@@ -165,7 +168,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
                 new Status(CommonStatusCodes.RESOLUTION_REQUIRED, "", pendingIntentMock));
         failureCallback.getValue().onResult(kExpectedException);
         verify(pendingIntentMock, never()).send();
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -173,7 +177,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 1337;
 
         // Ensure the backend is called with a valid success callback.
-        mBackendBridge.getAutofillableLogins(kTestTaskId, null);
+        mBackendDispatcherBridge.getAutofillableLogins(kTestTaskId, null);
         ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock)
                 .getAutofillableLogins(eq(Optional.empty()), successCallback.capture(), any());
@@ -181,7 +185,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
         successCallback.getValue().onResult(kExpectedList);
-        verify(mConsumerBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
+        verify(mBackendReceiverBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
     }
 
     @Test
@@ -189,7 +193,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendBridge.getAutofillableLogins(kTestTaskId, sTestAccountEmail);
+        mBackendDispatcherBridge.getAutofillableLogins(kTestTaskId, sTestAccountEmail);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock)
@@ -198,7 +202,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -206,7 +211,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 1337;
 
         // Ensure the backend is called with a valid success callback.
-        mBackendBridge.getLoginsForSignonRealm(kTestTaskId, "https://test_signon_realm.com", null);
+        mBackendDispatcherBridge.getLoginsForSignonRealm(
+                kTestTaskId, "https://test_signon_realm.com", null);
         ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock)
                 .getLoginsForSignonRealm(
@@ -215,7 +221,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
         successCallback.getValue().onResult(kExpectedList);
-        verify(mConsumerBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
+        verify(mBackendReceiverBridgeMock).onCompleteWithLogins(kTestTaskId, kExpectedList);
     }
 
     @Test
@@ -223,7 +229,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendBridge.getLoginsForSignonRealm(
+        mBackendDispatcherBridge.getLoginsForSignonRealm(
                 kTestTaskId, "https://test_signon_realm.com", sTestAccountEmail);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
@@ -233,7 +239,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -242,14 +249,14 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
-        mBackendBridge.addLogin(kTestTaskId, pwdWithLocalData, null);
+        mBackendDispatcherBridge.addLogin(kTestTaskId, pwdWithLocalData, null);
         ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
                 .addLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mConsumerBridgeMock).onLoginChanged(kTestTaskId);
+        verify(mBackendReceiverBridgeMock).onLoginChanged(kTestTaskId);
     }
 
     @Test
@@ -258,7 +265,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
-        mBackendBridge.addLogin(kTestTaskId, pwdWithLocalData, sTestAccountEmail);
+        mBackendDispatcherBridge.addLogin(kTestTaskId, pwdWithLocalData, sTestAccountEmail);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock).addLogin(any(), eq(sTestAccount), any(), failureCallback.capture());
@@ -266,7 +273,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -275,14 +283,14 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
-        mBackendBridge.updateLogin(kTestTaskId, pwdWithLocalData, null);
+        mBackendDispatcherBridge.updateLogin(kTestTaskId, pwdWithLocalData, null);
         ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
                 .updateLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mConsumerBridgeMock).onLoginChanged(kTestTaskId);
+        verify(mBackendReceiverBridgeMock).onLoginChanged(kTestTaskId);
     }
 
     @Test
@@ -291,7 +299,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         byte[] pwdWithLocalData = sTestPwdWithLocalData.build().toByteArray();
-        mBackendBridge.updateLogin(kTestTaskId, pwdWithLocalData, sTestAccountEmail);
+        mBackendDispatcherBridge.updateLogin(kTestTaskId, pwdWithLocalData, sTestAccountEmail);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock).updateLogin(any(), eq(sTestAccount), any(), failureCallback.capture());
@@ -299,7 +307,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 
     @Test
@@ -308,14 +317,14 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         // Ensure the backend is called with a valid success callback.
         byte[] pwdSpecificsData = sTestProfile.build().toByteArray();
-        mBackendBridge.removeLogin(kTestTaskId, pwdSpecificsData, null);
+        mBackendDispatcherBridge.removeLogin(kTestTaskId, pwdSpecificsData, null);
         ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
         verify(mBackendMock)
                 .removeLogin(any(), eq(Optional.empty()), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
-        verify(mConsumerBridgeMock).onLoginChanged(kTestTaskId);
+        verify(mBackendReceiverBridgeMock).onLoginChanged(kTestTaskId);
     }
 
     @Test
@@ -324,7 +333,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         // Ensure the backend is called with a valid failure callback.
         byte[] pwdSpecificsData = sTestProfile.build().toByteArray();
-        mBackendBridge.removeLogin(kTestTaskId, pwdSpecificsData, sTestAccountEmail);
+        mBackendDispatcherBridge.removeLogin(kTestTaskId, pwdSpecificsData, sTestAccountEmail);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
         verify(mBackendMock).removeLogin(any(), eq(sTestAccount), any(), failureCallback.capture());
@@ -332,6 +341,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
 
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
-        verify(mConsumerBridgeMock).handleAndroidBackendException(kTestTaskId, kExpectedException);
+        verify(mBackendReceiverBridgeMock)
+                .handleAndroidBackendException(kTestTaskId, kExpectedException);
     }
 }

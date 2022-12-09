@@ -21,9 +21,10 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
   PasswordStoreAndroidBackendBridgeHelperImpl();
   PasswordStoreAndroidBackendBridgeHelperImpl(
       base::PassKey<class PasswordStoreAndroidBackendBridgeHelperImplTest>,
-      std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge>
-          consumer_bridge,
-      std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge);
+      std::unique_ptr<PasswordStoreAndroidBackendReceiverBridge>
+          receiver_bridge,
+      std::unique_ptr<PasswordStoreAndroidBackendDispatcherBridge>
+          dispatcher_bridge);
 
   PasswordStoreAndroidBackendBridgeHelperImpl(
       PasswordStoreAndroidBackendBridgeHelperImpl&&) = delete;
@@ -54,10 +55,11 @@ class PasswordStoreAndroidBackendBridgeHelperImpl
   JobId GetNextJobId();
 
   // This object is the proxy to the JNI bridge that handles API callvacks.
-  std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge> consumer_bridge_;
+  std::unique_ptr<PasswordStoreAndroidBackendReceiverBridge> receiver_bridge_;
 
-  // This object is the proxy to the JNI bridge that performs the API requests.
-  std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;
+  // This object is the proxy to the JNI bridge that dispatch the API requests.
+  std::unique_ptr<PasswordStoreAndroidBackendDispatcherBridge>
+      dispatcher_bridge_;
 
   // Background thread pool task runner. Used to execute all backend operations
   // including JNI and/or GMS Core interaction. Limited to a single thread as

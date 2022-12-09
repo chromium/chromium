@@ -23,8 +23,8 @@
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
-#include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
-#include "chrome/browser/password_manager/android/password_store_android_backend_consumer_bridge.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
@@ -49,7 +49,7 @@ using testing::Return;
 using testing::StrictMock;
 using testing::VariantWith;
 using testing::WithArg;
-using JobId = PasswordStoreAndroidBackendBridge::JobId;
+using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
 constexpr char kTestAccount[] = "test@gmail.com";
 const std::u16string kTestUsername(u"Todd Tester");
@@ -84,9 +84,12 @@ MATCHER_P2(ExpectError, error_type, recovery_type, "") {
 
 MATCHER_P(ExpectSyncingAccount, expectation, "") {
   return absl::holds_alternative<
-             PasswordStoreAndroidBackendBridge::SyncingAccount>(arg) &&
+             PasswordStoreAndroidBackendDispatcherBridge::SyncingAccount>(
+             arg) &&
          expectation ==
-             absl::get<PasswordStoreAndroidBackendBridge::SyncingAccount>(arg)
+             absl::get<
+                 PasswordStoreAndroidBackendDispatcherBridge::SyncingAccount>(
+                 arg)
                  .value();
 }
 
@@ -212,7 +215,7 @@ class PasswordStoreAndroidBackendTest : public testing::Test {
   }
 
   PasswordStoreBackend& backend() { return *backend_; }
-  PasswordStoreAndroidBackendConsumerBridge::Consumer& consumer() {
+  PasswordStoreAndroidBackendReceiverBridge::Consumer& consumer() {
     return *backend_;
   }
   MockPasswordStoreAndroidBackendBridgeHelper* bridge_helper() {

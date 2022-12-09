@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendConsumerBridgeImpl.JobId;
+import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendReceiverBridgeImpl.JobId;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -27,27 +27,27 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import java.util.Optional;
 
 /**
- * Java-counterpart of the native PasswordStoreAndroidBackendBridgeImpl. It's part of the password
- * store backend that forwards password store operations to a downstream implementation.
+ * Java-counterpart of the native PasswordStoreAndroidBackendDispatcherBridgeImpl. It's part of the
+ * password store backend that forwards password store operations to a downstream implementation.
  */
 @JNINamespace("password_manager")
-class PasswordStoreAndroidBackendBridgeImpl {
+class PasswordStoreAndroidBackendDispatcherBridgeImpl {
     private final PasswordStoreAndroidBackend mBackend;
-    private final PasswordStoreAndroidBackendConsumerBridgeImpl mConsumerBridge;
+    private final PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridge;
 
-    PasswordStoreAndroidBackendBridgeImpl(
-            PasswordStoreAndroidBackendConsumerBridgeImpl consumerBridge,
+    PasswordStoreAndroidBackendDispatcherBridgeImpl(
+            PasswordStoreAndroidBackendReceiverBridgeImpl backendReceiverBridge,
             PasswordStoreAndroidBackend backend) {
-        mConsumerBridge = consumerBridge;
+        mBackendReceiverBridge = backendReceiverBridge;
         mBackend = backend;
         assert mBackend != null;
     }
 
     @CalledByNative
-    static PasswordStoreAndroidBackendBridgeImpl create(
-            PasswordStoreAndroidBackendConsumerBridgeImpl consumerBridge) {
-        return new PasswordStoreAndroidBackendBridgeImpl(
-                consumerBridge, PasswordStoreAndroidBackendFactory.getInstance().createBackend());
+    static PasswordStoreAndroidBackendDispatcherBridgeImpl create(
+            PasswordStoreAndroidBackendReceiverBridgeImpl backendReceiverBridge) {
+        return new PasswordStoreAndroidBackendDispatcherBridgeImpl(backendReceiverBridge,
+                PasswordStoreAndroidBackendFactory.getInstance().createBackend());
     }
 
     @CalledByNative
@@ -59,7 +59,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void getAllLogins(@JobId int jobId, String syncingAccount) {
         mBackend.getAllLogins(getAccount(syncingAccount),
                 passwords
-                -> mConsumerBridge.onCompleteWithLogins(jobId, passwords),
+                -> mBackendReceiverBridge.onCompleteWithLogins(jobId, passwords),
                 exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
@@ -67,7 +67,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void getAutofillableLogins(@JobId int jobId, String syncingAccount) {
         mBackend.getAutofillableLogins(getAccount(syncingAccount),
                 passwords
-                -> mConsumerBridge.onCompleteWithLogins(jobId, passwords),
+                -> mBackendReceiverBridge.onCompleteWithLogins(jobId, passwords),
                 exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
@@ -75,7 +75,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void getLoginsForSignonRealm(@JobId int jobId, String signonRealm, String syncingAccount) {
         mBackend.getLoginsForSignonRealm(signonRealm, getAccount(syncingAccount),
                 passwords
-                -> mConsumerBridge.onCompleteWithLogins(jobId, passwords),
+                -> mBackendReceiverBridge.onCompleteWithLogins(jobId, passwords),
                 exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
@@ -83,7 +83,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void addLogin(@JobId int jobId, byte[] pwdWithLocalData, String syncingAccount) {
         mBackend.addLogin(pwdWithLocalData, getAccount(syncingAccount),
                 ()
-                        -> mConsumerBridge.onLoginChanged(jobId),
+                        -> mBackendReceiverBridge.onLoginChanged(jobId),
                 exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
@@ -91,7 +91,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void updateLogin(@JobId int jobId, byte[] pwdWithLocalData, String syncingAccount) {
         mBackend.updateLogin(pwdWithLocalData, getAccount(syncingAccount),
                 ()
-                        -> mConsumerBridge.onLoginChanged(jobId),
+                        -> mBackendReceiverBridge.onLoginChanged(jobId),
                 exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
@@ -99,7 +99,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
     void removeLogin(@JobId int jobId, byte[] pwdSpecificsData, String syncingAccount) {
         mBackend.removeLogin(pwdSpecificsData, getAccount(syncingAccount),
                 ()
-                        -> mConsumerBridge.onLoginChanged(jobId),
+                        -> mBackendReceiverBridge.onLoginChanged(jobId),
                 exception -> handleAndroidBackendExceptionOnUiThread(jobId, exception));
     }
 
@@ -109,7 +109,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
         // - by the password store downstream backend on the operation thread
         // |runOrPostTask| ensures callback will always be executed on the UI thread.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> mConsumerBridge.handleAndroidBackendException(jobId, exception));
+                () -> mBackendReceiverBridge.handleAndroidBackendException(jobId, exception));
     }
 
     private Optional<Account> getAccount(String syncingAccount) {
@@ -117,8 +117,8 @@ class PasswordStoreAndroidBackendBridgeImpl {
         return Optional.of(AccountUtils.createAccountFromName(syncingAccount));
     }
 
-    // This method interacts with the UI and should be executed on the UI thread. Native bridge
-    // however does not have JNIEnv for UI thread and calls this method on background thread.
+    // This method interacts with the UI and should be executed on the UI thread. Native dispatcher
+    // bridge however does not have JNIEnv for UI thread and calls this method on background thread.
     // Operation is reposted on the default UI sequence for execution.
     @CalledByNative
     private void showErrorUi() {

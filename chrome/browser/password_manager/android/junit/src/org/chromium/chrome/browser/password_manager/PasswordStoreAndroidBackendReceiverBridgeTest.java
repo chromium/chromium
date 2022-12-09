@@ -37,7 +37,7 @@ import org.chromium.components.sync.protocol.PasswordSpecificsData;
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
-public class PasswordStoreAndroidBackendConsumerBridgeTest {
+public class PasswordStoreAndroidBackendReceiverBridgeTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
@@ -60,24 +60,25 @@ public class PasswordStoreAndroidBackendConsumerBridgeTest {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    private PasswordStoreAndroidBackendConsumerBridgeImpl.Natives mConsumerBridgeJniMock;
+    private PasswordStoreAndroidBackendReceiverBridgeImpl.Natives mBackendReceiverBridgeJniMock;
 
-    private PasswordStoreAndroidBackendConsumerBridgeImpl mConsumerBridge;
+    private PasswordStoreAndroidBackendReceiverBridgeImpl mBackendReceiverBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(PasswordStoreAndroidBackendConsumerBridgeImplJni.TEST_HOOKS,
-                mConsumerBridgeJniMock);
-        mConsumerBridge = new PasswordStoreAndroidBackendConsumerBridgeImpl(sDummyNativePointer);
+        mJniMocker.mock(PasswordStoreAndroidBackendReceiverBridgeImplJni.TEST_HOOKS,
+                mBackendReceiverBridgeJniMock);
+        mBackendReceiverBridge =
+                new PasswordStoreAndroidBackendReceiverBridgeImpl(sDummyNativePointer);
     }
 
     @Test
     public void testOnCompleteWithLoginsCallsBridge() {
         final byte[] kExpectedList = sTestLogins.build().toByteArray();
 
-        mConsumerBridge.onCompleteWithLogins(sTestJobId, kExpectedList);
-        verify(mConsumerBridgeJniMock)
+        mBackendReceiverBridge.onCompleteWithLogins(sTestJobId, kExpectedList);
+        verify(mBackendReceiverBridgeJniMock)
                 .onCompleteWithLogins(sDummyNativePointer, sTestJobId, kExpectedList);
     }
 
@@ -85,8 +86,8 @@ public class PasswordStoreAndroidBackendConsumerBridgeTest {
     public void testOnApiExceptionCallsBridgeOnError() {
         Exception kExpectedException = new ApiException(new Status(
                 new ConnectionResult(ConnectionResult.API_UNAVAILABLE), "Test API error"));
-        mConsumerBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
-        verify(mConsumerBridgeJniMock)
+        mBackendReceiverBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
+        verify(mBackendReceiverBridgeJniMock)
                 .onError(sDummyNativePointer, sTestJobId, AndroidBackendErrorType.EXTERNAL_ERROR,
                         CommonStatusCodes.API_NOT_CONNECTED, true,
                         ConnectionResult.API_UNAVAILABLE);
@@ -96,8 +97,8 @@ public class PasswordStoreAndroidBackendConsumerBridgeTest {
     public void testOnBackendExceptionCallsBridgeOnError() {
         Exception kExpectedException = new PasswordStoreAndroidBackend.BackendException(
                 "Test backend error", AndroidBackendErrorType.NO_ACCOUNT);
-        mConsumerBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
-        verify(mConsumerBridgeJniMock)
+        mBackendReceiverBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
+        verify(mBackendReceiverBridgeJniMock)
                 .onError(sDummyNativePointer, sTestJobId, AndroidBackendErrorType.NO_ACCOUNT, 0,
                         false, -1);
     }
@@ -105,15 +106,15 @@ public class PasswordStoreAndroidBackendConsumerBridgeTest {
     @Test
     public void testOnUnknownExceptionCallsBridgeOnError() {
         Exception kExpectedException = new Exception("Test error");
-        mConsumerBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
-        verify(mConsumerBridgeJniMock)
+        mBackendReceiverBridge.handleAndroidBackendException(sTestJobId, kExpectedException);
+        verify(mBackendReceiverBridgeJniMock)
                 .onError(sDummyNativePointer, sTestJobId, AndroidBackendErrorType.UNCATEGORIZED, 0,
                         false, -1);
     }
 
     @Test
     public void testOnLoginChangedCallsBridge() {
-        mConsumerBridge.onLoginChanged(sTestJobId);
-        verify(mConsumerBridgeJniMock).onLoginChanged(sDummyNativePointer, sTestJobId);
+        mBackendReceiverBridge.onLoginChanged(sTestJobId);
+        verify(mBackendReceiverBridgeJniMock).onLoginChanged(sDummyNativePointer, sTestJobId);
     }
 }

@@ -70,7 +70,7 @@ using password_manager::GetRegexForPSLFederatedMatching;
 using password_manager::GetRegexForPSLMatching;
 using sync_util::GetSyncingAccount;
 
-using JobId = PasswordStoreAndroidBackendConsumerBridge::JobId;
+using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
 std::vector<std::unique_ptr<PasswordForm>> WrapPasswordsIntoPointers(
@@ -178,10 +178,10 @@ LoginsResultOrError JoinRetrievedLoginsOrError(
   return joined_logins;
 }
 
-PasswordStoreAndroidBackendBridge::Account GetAccount(
+PasswordStoreAndroidBackendDispatcherBridge::Account GetAccount(
     absl::optional<std::string> syncing_account) {
   if (syncing_account.has_value()) {
-    return PasswordStoreAndroidBackendBridge::SyncingAccount(
+    return PasswordStoreAndroidBackendDispatcherBridge::SyncingAccount(
         syncing_account.value());
   }
   return PasswordStoreOperationTarget::kLocalStorage;
@@ -939,7 +939,7 @@ void PasswordStoreAndroidBackend::GetAutofillableLoginsAsyncInternal(
 }
 
 void PasswordStoreAndroidBackend::GetAllLoginsForAccountInternal(
-    PasswordStoreAndroidBackendBridge::Account account,
+    PasswordStoreAndroidBackendDispatcherBridge::Account account,
     LoginsOrErrorReply callback,
     PasswordStoreOperation operation,
     base::TimeDelta delay) {
@@ -950,7 +950,7 @@ void PasswordStoreAndroidBackend::GetAllLoginsForAccountInternal(
 
 void PasswordStoreAndroidBackend::RemoveLoginForAccountInternal(
     const PasswordForm& form,
-    PasswordStoreAndroidBackendBridge::Account account,
+    PasswordStoreAndroidBackendDispatcherBridge::Account account,
     PasswordChangesOrErrorReply callback,
     PasswordStoreOperation operation,
     base::TimeDelta delay) {
@@ -1236,7 +1236,7 @@ PasswordChangesOrErrorReply PasswordStoreAndroidBackend::
 }
 
 void PasswordStoreAndroidBackend::GetAllLoginsForAccount(
-    PasswordStoreAndroidBackendBridge::Account account,
+    PasswordStoreAndroidBackendDispatcherBridge::Account account,
     LoginsOrErrorReply callback) {
   GetAllLoginsForAccountInternal(
       account, std::move(callback),
@@ -1246,7 +1246,7 @@ void PasswordStoreAndroidBackend::GetAllLoginsForAccount(
 
 void PasswordStoreAndroidBackend::RemoveLoginForAccount(
     const PasswordForm& form,
-    PasswordStoreAndroidBackendBridge::Account account,
+    PasswordStoreAndroidBackendDispatcherBridge::Account account,
     PasswordChangesOrErrorReply callback) {
   RemoveLoginForAccountInternal(form, std::move(account), std::move(callback),
                                 PasswordStoreOperation::kRemoveLoginForAccount,

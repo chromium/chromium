@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_BRIDGE_HELPER_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
-#include "chrome/browser/password_manager/android/password_store_android_backend_consumer_bridge.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 
 namespace password_manager {
 
@@ -17,9 +17,9 @@ namespace password_manager {
 // sequence of the UI thread.
 class PasswordStoreAndroidBackendBridgeHelper {
  public:
-  using JobId = PasswordStoreAndroidBackendConsumerBridge::JobId;
-  using Account = PasswordStoreAndroidBackendConsumerBridge::Account;
-  using Consumer = PasswordStoreAndroidBackendConsumerBridge::Consumer;
+  using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
+  using Account = PasswordStoreAndroidBackendReceiverBridge::Account;
+  using Consumer = PasswordStoreAndroidBackendReceiverBridge::Consumer;
 
   virtual ~PasswordStoreAndroidBackendBridgeHelper() = default;
 
@@ -35,12 +35,12 @@ class PasswordStoreAndroidBackendBridgeHelper {
   static bool CanCreateBackend();
 
   // Sets the `consumer` that is notified on job completion as defined in
-  // `PasswordStoreAndroidBackendConsumerBridge::Consumer`.
+  // `PasswordStoreAndroidBackendReceiverBridge::Consumer`.
   virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;
 
-  // Password store backend bridge operations. Each operation is executed
-  // asynchronously and could be uniquely identified within the bridge helper
-  // instance using the returned JobId.
+  // Password store backend dispatcher bridge operations. Each operation is
+  // executed asynchronously and could be uniquely identified within the bridge
+  // helper instance using the returned JobId.
   [[nodiscard]] virtual JobId GetAllLogins(Account account) = 0;
   [[nodiscard]] virtual JobId GetAutofillableLogins(Account account) = 0;
   [[nodiscard]] virtual JobId GetLoginsForSignonRealm(

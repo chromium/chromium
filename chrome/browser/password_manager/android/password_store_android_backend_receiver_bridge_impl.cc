@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/password_store_android_backend_consumer_bridge_impl.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge_impl.h"
 
 #include <jni.h>
 #include <cstdint>
@@ -11,7 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendConsumerBridgeImpl_jni.h"
+#include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendReceiverBridgeImpl_jni.h"
 #include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
@@ -22,7 +22,7 @@ namespace password_manager {
 
 namespace {
 
-using JobId = PasswordStoreAndroidBackendConsumerBridge::JobId;
+using JobId = PasswordStoreAndroidBackendReceiverBridge::JobId;
 
 std::vector<PasswordForm> CreateFormsVector(
     const base::android::JavaRef<jbyteArray>& passwords) {
@@ -43,37 +43,37 @@ std::vector<PasswordForm> CreateFormsVector(
 
 }  // namespace
 
-std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge>
-PasswordStoreAndroidBackendConsumerBridge::Create() {
-  return std::make_unique<PasswordStoreAndroidBackendConsumerBridgeImpl>();
+std::unique_ptr<PasswordStoreAndroidBackendReceiverBridge>
+PasswordStoreAndroidBackendReceiverBridge::Create() {
+  return std::make_unique<PasswordStoreAndroidBackendReceiverBridgeImpl>();
 }
 
-PasswordStoreAndroidBackendConsumerBridgeImpl::
-    PasswordStoreAndroidBackendConsumerBridgeImpl() {
+PasswordStoreAndroidBackendReceiverBridgeImpl::
+    PasswordStoreAndroidBackendReceiverBridgeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  java_object_ = Java_PasswordStoreAndroidBackendConsumerBridgeImpl_create(
+  java_object_ = Java_PasswordStoreAndroidBackendReceiverBridgeImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 }
 
-PasswordStoreAndroidBackendConsumerBridgeImpl::
-    ~PasswordStoreAndroidBackendConsumerBridgeImpl() {
+PasswordStoreAndroidBackendReceiverBridgeImpl::
+    ~PasswordStoreAndroidBackendReceiverBridgeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  Java_PasswordStoreAndroidBackendConsumerBridgeImpl_destroy(
+  Java_PasswordStoreAndroidBackendReceiverBridgeImpl_destroy(
       base::android::AttachCurrentThread(), java_object_);
 }
 
 base::android::ScopedJavaGlobalRef<jobject>
-PasswordStoreAndroidBackendConsumerBridgeImpl::GetJavaBridge() const {
+PasswordStoreAndroidBackendReceiverBridgeImpl::GetJavaBridge() const {
   return java_object_;
 }
 
-void PasswordStoreAndroidBackendConsumerBridgeImpl::SetConsumer(
+void PasswordStoreAndroidBackendReceiverBridgeImpl::SetConsumer(
     base::WeakPtr<Consumer> consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   consumer_ = consumer;
 }
 
-void PasswordStoreAndroidBackendConsumerBridgeImpl::OnCompleteWithLogins(
+void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithLogins(
     JNIEnv* env,
     jint job_id,
     const base::android::JavaParamRef<jbyteArray>& passwords) {
@@ -82,7 +82,7 @@ void PasswordStoreAndroidBackendConsumerBridgeImpl::OnCompleteWithLogins(
   consumer_->OnCompleteWithLogins(JobId(job_id), CreateFormsVector(passwords));
 }
 
-void PasswordStoreAndroidBackendConsumerBridgeImpl::OnError(
+void PasswordStoreAndroidBackendReceiverBridgeImpl::OnError(
     JNIEnv* env,
     jint job_id,
     jint error_type,
@@ -106,11 +106,11 @@ void PasswordStoreAndroidBackendConsumerBridgeImpl::OnError(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &PasswordStoreAndroidBackendConsumerBridge::Consumer::OnError,
+          &PasswordStoreAndroidBackendReceiverBridge::Consumer::OnError,
           consumer_, JobId(job_id), std::move(error)));
 }
 
-void PasswordStoreAndroidBackendConsumerBridgeImpl::OnLoginChanged(
+void PasswordStoreAndroidBackendReceiverBridgeImpl::OnLoginChanged(
     JNIEnv* env,
     jint job_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);

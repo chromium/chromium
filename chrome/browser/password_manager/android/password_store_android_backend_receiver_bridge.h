@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_CONSUMER_BRIDGE_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_CONSUMER_BRIDGE_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_H_
 
 #include <vector>
 
@@ -23,7 +23,7 @@ namespace password_manager {
 // Any logic beyond data conversion should either live in
 // `PasswordStoreAndroidBackend` or a component that is used by the java-side of
 // this bridge.
-class PasswordStoreAndroidBackendConsumerBridge {
+class PasswordStoreAndroidBackendReceiverBridge {
  public:
   using SyncingAccount =
       base::StrongAlias<struct SyncingAccountTag, std::string>;
@@ -39,24 +39,23 @@ class PasswordStoreAndroidBackendConsumerBridge {
     virtual ~Consumer() = default;
 
     // Asynchronous response called with the `job_id` which was passed to the
-    // corresponding call to `PasswordStoreAndroidBackendBridge`, and with the
-    // requested `passwords`.
-    // Used in response to `GetAllLogins`.
+    // corresponding call to `PasswordStoreAndroidBackendDispatcherBridge`, and
+    // with the requested `passwords`. Used in response to `GetAllLogins`.
     virtual void OnCompleteWithLogins(JobId job_id,
                                       std::vector<PasswordForm> passwords) = 0;
 
     // Asynchronous response called with the `job_id` which was passed to the
-    // corresponding call to `PasswordStoreAndroidBackendBridge`, and with the
-    // PasswordChanges.
-    // Used in response to 'AddLogin', 'UpdateLogin' and `RemoveLogin`.
+    // corresponding call to `PasswordStoreAndroidBackendDispatcherBridge`, and
+    // with the PasswordChanges. Used in response to 'AddLogin', 'UpdateLogin'
+    // and `RemoveLogin`.
     virtual void OnLoginsChanged(JobId job_id, PasswordChanges changes) = 0;
 
     // Asynchronous response called with the `job_id` which was passed to the
-    // corresponding call to `PasswordStoreAndroidBackendBridge`.
+    // corresponding call to `PasswordStoreAndroidBackendDispatcherBridge`.
     virtual void OnError(JobId job_id, AndroidBackendError error) = 0;
   };
 
-  virtual ~PasswordStoreAndroidBackendConsumerBridge() = default;
+  virtual ~PasswordStoreAndroidBackendReceiverBridge() = default;
 
   // Sets the `consumer` that is notified on job completion.
   virtual void SetConsumer(base::WeakPtr<Consumer> consumer) = 0;
@@ -67,9 +66,9 @@ class PasswordStoreAndroidBackendConsumerBridge {
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.
-  static std::unique_ptr<PasswordStoreAndroidBackendConsumerBridge> Create();
+  static std::unique_ptr<PasswordStoreAndroidBackendReceiverBridge> Create();
 };
 
 }  // namespace password_manager
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_CONSUMER_BRIDGE_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_H_

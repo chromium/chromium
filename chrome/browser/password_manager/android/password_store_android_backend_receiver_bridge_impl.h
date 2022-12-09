@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_CONSUMER_BRIDGE_IMPL_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_CONSUMER_BRIDGE_IMPL_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_IMPL_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_IMPL_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/password_manager/android/password_store_android_backend_consumer_bridge.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 
 namespace password_manager {
 
@@ -14,19 +14,19 @@ namespace password_manager {
 // JNI code is expensive to test. Therefore, any logic beyond data conversion
 // should either live in `PasswordStoreAndroidBackend` or a component that is
 // used by the java-side of this bridge.
-class PasswordStoreAndroidBackendConsumerBridgeImpl
-    : public password_manager::PasswordStoreAndroidBackendConsumerBridge {
+class PasswordStoreAndroidBackendReceiverBridgeImpl
+    : public password_manager::PasswordStoreAndroidBackendReceiverBridge {
  public:
-  PasswordStoreAndroidBackendConsumerBridgeImpl();
-  PasswordStoreAndroidBackendConsumerBridgeImpl(
-      PasswordStoreAndroidBackendConsumerBridgeImpl&&) = delete;
-  PasswordStoreAndroidBackendConsumerBridgeImpl(
-      const PasswordStoreAndroidBackendConsumerBridgeImpl&) = delete;
-  PasswordStoreAndroidBackendConsumerBridgeImpl& operator=(
-      PasswordStoreAndroidBackendConsumerBridgeImpl&&) = delete;
-  PasswordStoreAndroidBackendConsumerBridgeImpl& operator=(
-      const PasswordStoreAndroidBackendConsumerBridgeImpl&) = delete;
-  ~PasswordStoreAndroidBackendConsumerBridgeImpl() override;
+  PasswordStoreAndroidBackendReceiverBridgeImpl();
+  PasswordStoreAndroidBackendReceiverBridgeImpl(
+      PasswordStoreAndroidBackendReceiverBridgeImpl&&) = delete;
+  PasswordStoreAndroidBackendReceiverBridgeImpl(
+      const PasswordStoreAndroidBackendReceiverBridgeImpl&) = delete;
+  PasswordStoreAndroidBackendReceiverBridgeImpl& operator=(
+      PasswordStoreAndroidBackendReceiverBridgeImpl&&) = delete;
+  PasswordStoreAndroidBackendReceiverBridgeImpl& operator=(
+      const PasswordStoreAndroidBackendReceiverBridgeImpl&) = delete;
+  ~PasswordStoreAndroidBackendReceiverBridgeImpl() override;
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaBridge() const override;
 
@@ -52,7 +52,7 @@ class PasswordStoreAndroidBackendConsumerBridgeImpl
                jint connection_result_code);
 
  private:
-  // Implements PasswordStoreAndroidBackendBridge interface.
+  // Implements PasswordStoreAndroidBackendReceiverBridge interface.
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
 
   // Weak reference to the `Consumer` that is notified when a job completes. It
@@ -60,7 +60,7 @@ class PasswordStoreAndroidBackendConsumerBridgeImpl
   base::WeakPtr<Consumer> consumer_ = nullptr;
 
   // This object is an instance of
-  // `PasswordStoreAndroidBackendConsumerBridgeImpl`, i.e. the Java counterpart
+  // `PasswordStoreAndroidBackendReceiverBridgeImpl`, i.e. the Java counterpart
   // to this class.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 
@@ -70,4 +70,4 @@ class PasswordStoreAndroidBackendConsumerBridgeImpl
 
 }  // namespace password_manager
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_CONSUMER_BRIDGE_IMPL_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_RECEIVER_BRIDGE_IMPL_H_
