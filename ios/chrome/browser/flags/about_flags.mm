@@ -1493,31 +1493,6 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
   return testing_policies;
 }
 
-// Generates a unique NSString based on currently monitored policies from
-// NSUserDefaults standardUserDefaults.
-NSString* TestingPoliciesHash() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  return [NSString
-      stringWithFormat:@"%d|%d|%d|%d|%@|%d|%d|%d|%d|%d|%d|%d|%d|%@|%d",
-                       [defaults boolForKey:@"DisallowChromeDataInBackups"],
-                       [defaults boolForKey:@"EnableSyncDisabledPolicy"],
-                       [defaults boolForKey:@"EnableSamplePolicies"],
-                       static_cast<int>([defaults
-                           integerForKey:@"IncognitoModeAvailability"]),
-                       [defaults stringForKey:@"RestrictAccountsToPatterns"],
-                       [defaults boolForKey:@"SyncTypesListBookmarks"],
-                       [defaults boolForKey:@"SyncTypesListReadingList"],
-                       [defaults boolForKey:@"SyncTypesListPreferences"],
-                       [defaults boolForKey:@"SyncTypesListPasswords"],
-                       [defaults boolForKey:@"SyncTypesListAutofill"],
-                       [defaults boolForKey:@"SyncTypesListTypedUrls"],
-                       [defaults boolForKey:@"SyncTypesListTabs"],
-                       static_cast<int>(
-                           [defaults integerForKey:@"BrowserSignin"]),
-                       [defaults stringForKey:@"NTPLocation"],
-                       static_cast<int>([defaults
-                           integerForKey:@"MetricsReportingEnabled"])];
-}
 }  // namespace
 
 // Add all switches from experimental flags to `command_line`.
@@ -1603,46 +1578,6 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
   }
 
   ios::provider::AppendSwitchesFromExperimentalSettings(defaults, command_line);
-}
-
-void MonitorExperimentalSettingsChanges() {
-  // Startup values for settings to be observed.
-  __block NSString* hash = TestingPoliciesHash();
-  static std::atomic_bool pending_check(false);
-
-  auto monitor = ^(NSNotification* notification) {
-    bool has_pending_check = pending_check.exchange(true);
-    if (has_pending_check)
-      return;
-
-    // Can be called from any thread from where the notification was sent,
-    // but since it may change standardUserDefaults, and that has to be on main
-    // thread, dispatch to main thread.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      // Check if observed settings have changed. Since source and destination
-      // are both user defaults, this is required to avoid cycling back here.
-      NSString* newHash = TestingPoliciesHash();
-      if (![newHash isEqualToString:hash]) {
-        hash = newHash;
-
-        // Publish update.
-        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-        NSMutableDictionary* testing_policies =
-            CreateExperimentalTestingPolicies();
-        NSDictionary* registration_defaults =
-            @{kPolicyLoaderIOSConfigurationKey : testing_policies};
-        [defaults registerDefaults:registration_defaults];
-      }
-
-      pending_check.store(false);
-    });
-  };
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserverForName:NSUserDefaultsDidChangeNotification
-                      object:nil
-                       queue:nil
-                  usingBlock:monitor];
 }
 
 void ConvertFlagsToSwitches(flags_ui::FlagsStorage* flags_storage,
