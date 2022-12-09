@@ -12,12 +12,11 @@
 #include "base/memory/raw_ref.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
-// Wraps two apps::mojom::CapabilityAccessPtr's, a prior state and a delta on
+// Wraps two apps::CapabilityAccessPtr's, a prior state and a delta on
 // top of that state. The state is conceptually the "sum" of all of the previous
 // deltas, with "addition" or "merging" simply being that the most recent
 // version of each field "wins".
@@ -38,22 +37,13 @@ namespace apps {
 // CapabilityAccessUpdate.
 //
 // See components/services/app_service/README.md for more details.
-//
-// TODO(crbug.com/1253250): Remove all mojom related code.
-// 1. Modify comments.
-// 2. Replace mojom related functions with non-mojom functions.
 class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
  public:
   // Modifies |state| by copying over all of |delta|'s known fields: those
   // fields whose values aren't "unknown". The |state| may not be nullptr.
-  static void Merge(apps::mojom::CapabilityAccess* state,
-                    const apps::mojom::CapabilityAccess* delta);
   static void Merge(CapabilityAccess* state, const CapabilityAccess* delta);
 
   // At most one of |state| or |delta| may be nullptr.
-  CapabilityAccessUpdate(const apps::mojom::CapabilityAccess* state,
-                         const apps::mojom::CapabilityAccess* delta,
-                         const AccountId& account_id);
   CapabilityAccessUpdate(const CapabilityAccess* state,
                          const CapabilityAccess* delta,
                          const AccountId& account_id);
@@ -76,12 +66,6 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
   const ::AccountId& AccountId() const;
 
  private:
-  // TODO(crbug.com/1253250): Remove when the non mojom struct is used.
-  bool ShouldUseNonMojomStruct() const;
-
-  raw_ptr<const apps::mojom::CapabilityAccess> mojom_state_ = nullptr;
-  raw_ptr<const apps::mojom::CapabilityAccess> mojom_delta_ = nullptr;
-
   raw_ptr<const CapabilityAccess> state_ = nullptr;
   raw_ptr<const CapabilityAccess, DanglingUntriaged> delta_ = nullptr;
 

@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
@@ -39,27 +38,6 @@ struct COMPONENT_EXPORT(APP_TYPES) CapabilityAccess {
 };
 
 using CapabilityAccessPtr = std::unique_ptr<CapabilityAccess>;
-
-// TODO(crbug.com/1253250): Remove these functions after migrating to non-mojo
-// AppService.
-COMPONENT_EXPORT(APP_TYPES)
-CapabilityAccessPtr ConvertMojomCapabilityAccessToCapabilityAccess(
-    const apps::mojom::CapabilityAccessPtr& mojom_capability_access);
-
-COMPONENT_EXPORT(APP_TYPES)
-apps::mojom::CapabilityAccessPtr ConvertCapabilityAccessToMojomCapabilityAccess(
-    const CapabilityAccessPtr& capability_access);
-
-COMPONENT_EXPORT(APP_TYPES)
-std::vector<CapabilityAccessPtr>
-ConvertMojomCapabilityAccessesToCapabilityAccesses(
-    const std::vector<apps::mojom::CapabilityAccessPtr>&
-        mojom_capability_accesses);
-
-COMPONENT_EXPORT(APP_TYPES)
-std::vector<apps::mojom::CapabilityAccessPtr>
-ConvertCapabilityAccessesToMojomCapabilityAccesses(
-    const std::vector<CapabilityAccessPtr>& capability_accesses);
 
 }  // namespace apps
 

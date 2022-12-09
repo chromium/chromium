@@ -59,8 +59,6 @@ class SubscriberCrosapi : public KeyedService,
   void OnApps(std::vector<apps::mojom::AppPtr> deltas,
               apps::mojom::AppType mojom_app_type,
               bool should_notify_initialized) override;
-  void OnCapabilityAccesses(
-      std::vector<apps::mojom::CapabilityAccessPtr> deltas) override;
   void Clone(mojo::PendingReceiver<apps::mojom::Subscriber> receiver) override;
   void OnCrosapiDisconnected();
 

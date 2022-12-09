@@ -17,7 +17,6 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
-#include "components/services/app_service/public/cpp/features.h"
 
 namespace apps {
 
@@ -110,8 +109,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   // The callee will consume the deltas. An apps::mojom::CapabilityAccessPtr has
   // the ownership semantics of a unique_ptr, and will be deleted when out of
   // scope. The caller presumably calls OnCapabilityAccesses(std::move(deltas)).
-  void OnCapabilityAccesses(
-      std::vector<apps::mojom::CapabilityAccessPtr> deltas);
   void OnCapabilityAccesses(std::vector<CapabilityAccessPtr> deltas);
 
   // Calls f, a void-returning function whose arguments are (const
@@ -182,14 +179,11 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   }
 
  private:
-  void DoOnCapabilityAccesses(
-      std::vector<apps::mojom::CapabilityAccessPtr> deltas);
   void DoOnCapabilityAccesses(std::vector<CapabilityAccessPtr> deltas);
 
   base::ObserverList<Observer> observers_;
 
   // Maps from app_id to the latest state: the "sum" of all previous deltas.
-  std::map<std::string, apps::mojom::CapabilityAccessPtr> mojom_states_;
   std::map<std::string, CapabilityAccessPtr> states_;
 
   // Track the deltas being processed or are about to be processed by
@@ -210,9 +204,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppCapabilityAccessCache {
   // Nested OnCapabilityAccesses calls are expected to be rare (but still dealt
   // with sensibly). In the typical case, OnCapabilityAccesses should call
   // DoOnCapabilityAccesses exactly once, and deltas_pending_ will stay empty.
-  std::map<std::string, apps::mojom::CapabilityAccess*>
-      mojom_deltas_in_progress_;
-  std::vector<apps::mojom::CapabilityAccessPtr> mojom_deltas_pending_;
   std::map<std::string, CapabilityAccess*> deltas_in_progress_;
   std::vector<CapabilityAccessPtr> deltas_pending_;
 

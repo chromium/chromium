@@ -81,24 +81,6 @@ std::set<std::string> AppCapabilityAccessCache::GetAppsAccessingMicrophone() {
 }
 
 void AppCapabilityAccessCache::OnCapabilityAccesses(
-    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-
-  if (!mojom_deltas_in_progress_.empty()) {
-    std::move(deltas.begin(), deltas.end(),
-              std::back_inserter(mojom_deltas_pending_));
-    return;
-  }
-
-  DoOnCapabilityAccesses(std::move(deltas));
-  while (!mojom_deltas_pending_.empty()) {
-    std::vector<apps::mojom::CapabilityAccessPtr> pending;
-    pending.swap(mojom_deltas_pending_);
-    DoOnCapabilityAccesses(std::move(pending));
-  }
-}
-
-void AppCapabilityAccessCache::OnCapabilityAccesses(
     std::vector<CapabilityAccessPtr> deltas) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
@@ -114,53 +96,6 @@ void AppCapabilityAccessCache::OnCapabilityAccesses(
     pending.swap(deltas_pending_);
     DoOnCapabilityAccesses(std::move(pending));
   }
-}
-
-void AppCapabilityAccessCache::DoOnCapabilityAccesses(
-    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
-  // Merge any deltas elements that have the same app_id. If an observer's
-  // OnCapabilityAccessUpdate calls back into this AppCapabilityAccessCache then
-  // we can therefore present a single delta for any given app_id.
-  for (auto& delta : deltas) {
-    auto d_iter = mojom_deltas_in_progress_.find(delta->app_id);
-    if (d_iter != mojom_deltas_in_progress_.end()) {
-      CapabilityAccessUpdate::Merge(d_iter->second, delta.get());
-    } else {
-      mojom_deltas_in_progress_[delta->app_id] = delta.get();
-    }
-  }
-
-  // The remaining for loops range over the deltas_in_progress_ map, not the
-  // deltas vector, so that OnCapabilityAccessUpdate is called only once per
-  // unique app_id.
-
-  // Notify the observers for every de-duplicated delta.
-  for (const auto& d_iter : mojom_deltas_in_progress_) {
-    auto s_iter = mojom_states_.find(d_iter.first);
-    apps::mojom::CapabilityAccess* state =
-        (s_iter != mojom_states_.end()) ? s_iter->second.get() : nullptr;
-    apps::mojom::CapabilityAccess* delta = d_iter.second;
-
-    for (auto& obs : observers_) {
-      obs.OnCapabilityAccessUpdate(
-          CapabilityAccessUpdate(state, delta, account_id_));
-    }
-  }
-
-  // Update the states for every de-duplicated delta.
-  for (const auto& d_iter : mojom_deltas_in_progress_) {
-    auto s_iter = mojom_states_.find(d_iter.first);
-    apps::mojom::CapabilityAccess* state =
-        (s_iter != mojom_states_.end()) ? s_iter->second.get() : nullptr;
-    apps::mojom::CapabilityAccess* delta = d_iter.second;
-
-    if (state) {
-      CapabilityAccessUpdate::Merge(state, delta);
-    } else {
-      mojom_states_.insert(std::make_pair(delta->app_id, delta->Clone()));
-    }
-  }
-  mojom_deltas_in_progress_.clear();
 }
 
 void AppCapabilityAccessCache::DoOnCapabilityAccesses(

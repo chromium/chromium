@@ -4,7 +4,6 @@
 
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 
-#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -109,36 +108,4 @@ TEST_F(CapabilityAccessUpdateTest, BothAreNonNull) {
   apps::CapabilityAccessPtr delta =
       std::make_unique<apps::CapabilityAccess>(app_id);
   TestCapabilityAccessUpdate(state.get(), delta.get());
-}
-
-TEST_F(CapabilityAccessUpdateTest, ConvertEmptyCapabilityAccesses) {
-  std::vector<apps::mojom::CapabilityAccessPtr> src;
-  EXPECT_EQ(src,
-            apps::ConvertCapabilityAccessesToMojomCapabilityAccesses(
-                apps::ConvertMojomCapabilityAccessesToCapabilityAccesses(src)));
-}
-
-TEST_F(CapabilityAccessUpdateTest, Convert) {
-  apps::mojom::CapabilityAccessPtr access1 =
-      apps::mojom::CapabilityAccess::New();
-  access1->app_id = "a";
-
-  apps::mojom::CapabilityAccessPtr access2 =
-      apps::mojom::CapabilityAccess::New();
-  access2->app_id = "b";
-  access2->camera = apps::mojom::OptionalBool::kTrue;
-
-  apps::mojom::CapabilityAccessPtr access3 =
-      apps::mojom::CapabilityAccess::New();
-  access3->app_id = "c";
-  access3->camera = apps::mojom::OptionalBool::kFalse;
-  access3->microphone = apps::mojom::OptionalBool::kTrue;
-
-  std::vector<apps::mojom::CapabilityAccessPtr> src;
-  src.push_back(std::move(access1));
-  src.push_back(std::move(access2));
-  src.push_back(std::move(access3));
-  EXPECT_EQ(src,
-            apps::ConvertCapabilityAccessesToMojomCapabilityAccesses(
-                apps::ConvertMojomCapabilityAccessesToCapabilityAccesses(src)));
 }

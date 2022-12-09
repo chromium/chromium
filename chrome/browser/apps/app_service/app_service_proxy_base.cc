@@ -734,11 +734,6 @@ void AppServiceProxyBase::OnCapabilityAccesses(
   app_capability_access_cache_.OnCapabilityAccesses(std::move(deltas));
 }
 
-void AppServiceProxyBase::OnCapabilityAccesses(
-    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
-  app_capability_access_cache_.OnCapabilityAccesses(std::move(deltas));
-}
-
 void AppServiceProxyBase::Clone(
     mojo::PendingReceiver<apps::mojom::Subscriber> receiver) {
   receivers_.Add(this, std::move(receiver));

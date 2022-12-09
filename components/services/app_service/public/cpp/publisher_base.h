@@ -48,13 +48,6 @@ class PublisherBase : public apps::mojom::Publisher {
   void Publish(apps::mojom::AppPtr app,
                const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers);
 
-  // Modifies CapabilityAccess to all subscribers in |subscribers|.
-  void ModifyCapabilityAccess(
-      const mojo::RemoteSet<apps::mojom::Subscriber>& subscribers,
-      const std::string& app_id,
-      absl::optional<bool> accessing_camera,
-      absl::optional<bool> accessing_microphone);
-
   mojo::Receiver<apps::mojom::Publisher>& receiver() { return receiver_; }
 
  private:

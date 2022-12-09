@@ -118,11 +118,6 @@ void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
   return;
 }
 
-void SubscriberCrosapi::OnCapabilityAccesses(
-    std::vector<apps::mojom::CapabilityAccessPtr> deltas) {
-  NOTIMPLEMENTED();
-}
-
 void SubscriberCrosapi::Clone(
     mojo::PendingReceiver<apps::mojom::Subscriber> receiver) {
   receivers_.Add(this, std::move(receiver));

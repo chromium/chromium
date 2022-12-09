@@ -120,10 +120,6 @@ interface Subscriber {
   // has finished initiating apps.
   OnApps(array<App> deltas, AppType app_type, bool should_notify_initialized);
 
-  // Receives a stream of accesses from publishers, and save to
-  // AppCapabilityAccess.
-  OnCapabilityAccesses(array<CapabilityAccess> deltas);
-
   // Binds this to the given receiver (message pipe endpoint), being to Mojo
   // interfaces what POSIX's dup is to file descriptors.
   //
