@@ -59,6 +59,12 @@ interface PageHandler {
   // successfully installed or was already installed.
   InstallOfficeWebApp() => (bool installed);
 
+  // Returns whether or not the OneDrive filesystem is mounted.
+  IsODFSMounted() => (bool mounted);
+
+  // Starts the OneDrive authentication process.
+  SignInToOneDrive() => (bool success);
+
   // Returns the user selected action and requests the dialog to be closed.
   RespondAndClose(UserAction response);
 

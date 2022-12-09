@@ -2,6 +2,28 @@
   a {
     color: var(--cros-text-color-prominent);
   }
+
+  #error-message {
+    align-items: center;
+    color: var(--cros-text-color-alert);
+    display: flex;
+  }
+
+  #error-message[hidden] {
+    /* display: flex overrides the hidden visibility */
+    display: none;
+  }
+
+  .icon {
+    -webkit-mask-image: url(icons/error.svg);
+    background-color: var(--cros-icon-color-alert);
+    height: 16px;
+    width: 17px;
+  }
+
+  .error-text {
+    margin-inline-start: 5px;
+  }
 </style>
 
 <!-- TODO(b/254586358): Use localized strings -->
@@ -19,8 +41,12 @@
   <p>
     You'll need to sign in with your Microsoft account to continue.
   </p>
+  <div id="error-message" hidden>
+    <div class="icon"></div>
+    <p class="error-text">Unable to connect to OneDrive. Please try again.</p>
+  </div>
 </div>
 <div slot="button-container">
-  <cr-button class="cancel-button">Cancel</cr-button>
+  <cr-button class="cancel-button">$i18n{cancel}</cr-button>
   <cr-button class="action-button">Connect to OneDrive</cr-button>
 </div>

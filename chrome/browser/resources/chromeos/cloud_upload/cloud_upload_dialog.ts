@@ -50,11 +50,12 @@ export class CloudUploadElement extends HTMLElement {
   }
 
   async init(): Promise<void> {
-    const [, {installed: isOfficeWebAppInstalled}] = await Promise.all([
-      this.processDialogArgs(),
-      this.proxy.handler.isOfficeWebAppInstalled(),
-    ]);
-    const odfsMounted = false;
+    const [, {installed: isOfficeWebAppInstalled}, {mounted: isOdfsMounted}] =
+        await Promise.all([
+          this.processDialogArgs(),
+          this.proxy.handler.isOfficeWebAppInstalled(),
+          this.proxy.handler.isODFSMounted(),
+        ]);
 
     // TODO(b/251046341): Adjust this once the rest of the pages are in place.
     this.pages.push(new WelcomePageElement());
@@ -63,7 +64,7 @@ export class CloudUploadElement extends HTMLElement {
       this.pages.push(new OfficePwaInstallPageElement());
     }
 
-    if (!odfsMounted) {
+    if (!isOdfsMounted) {
       this.pages.push(new SignInPageElement());
     }
 

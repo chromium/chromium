@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {BaseSetupPageElement, CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
+import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
 import {getTemplate} from './sign_in_page.html.js';
 
 /**
@@ -12,6 +13,10 @@ import {getTemplate} from './sign_in_page.html.js';
  * OneDrive.
  */
 export class SignInPageElement extends BaseSetupPageElement {
+  private get proxy(): CloudUploadBrowserProxy {
+    return CloudUploadBrowserProxy.getInstance();
+  }
+
   /**
    * Initialises the page specific content inside the page.
    */
@@ -24,9 +29,18 @@ export class SignInPageElement extends BaseSetupPageElement {
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
   }
 
-  private onConnectButtonClick(): void {
-    this.dispatchEvent(
-        new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));
+  async onConnectButtonClick(): Promise<void> {
+    const {success: signInSuccess} =
+        await this.proxy.handler.signInToOneDrive();
+    if (signInSuccess) {
+      this.dispatchEvent(
+          new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));
+    } else {
+      const connectButton = this.querySelector<HTMLElement>('.action-button')!;
+      const errorMessage = this.querySelector<HTMLElement>('#error-message')!;
+      connectButton.innerText = 'Retry';
+      errorMessage.toggleAttribute('hidden', false);
+    }
   }
 
   private onCancelButtonClick(): void {

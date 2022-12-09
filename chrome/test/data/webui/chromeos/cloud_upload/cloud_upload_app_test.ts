@@ -12,13 +12,14 @@ import {OneDriveUploadPageElement} from 'chrome://cloud-upload/one_drive_upload_
 import {SetupCancelDialogElement} from 'chrome://cloud-upload/setup_cancel_dialog.js';
 import {SignInPageElement} from 'chrome://cloud-upload/sign_in_page.js';
 import {WelcomePageElement} from 'chrome://cloud-upload/welcome_page.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 interface ProxyOptions {
   fileName?: string|null;
   officeWebAppInstalled: boolean;
   installOfficeWebAppResult: boolean;
+  odfsMounted: boolean;
 }
 
 /**
@@ -42,6 +43,8 @@ class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
         'isOfficeWebAppInstalled', {installed: options.officeWebAppInstalled});
     this.handler.setResultFor(
         'installOfficeWebApp', {installed: options.installOfficeWebAppResult});
+    this.handler.setResultFor('isODFSMounted', {mounted: options.odfsMounted});
+    this.handler.setResultFor('signInToOneDrive', {success: true});
   }
 
   isTest() {
@@ -149,6 +152,7 @@ suite('<cloud-upload>', () => {
       fileName: 'file.docx',
       officeWebAppInstalled: false,
       installOfficeWebAppResult: true,
+      odfsMounted: false,
     });
 
     // Go to the OneDrive upload page.
@@ -169,6 +173,7 @@ suite('<cloud-upload>', () => {
     await setUp({
       officeWebAppInstalled: false,
       installOfficeWebAppResult: true,
+      odfsMounted: false,
     });
 
     // Go to the OneDrive upload page.
@@ -181,25 +186,57 @@ suite('<cloud-upload>', () => {
     assertTrue(fileContainer.hidden);
   });
 
+  /**
+   * Tests that there is no PWA install page when the Office PWA is already
+   * installed.
+   */
   test('Set up OneDrive with Office PWA already installed', async () => {
     await setUp({
       officeWebAppInstalled: true,
       installOfficeWebAppResult: true,
+      odfsMounted: false,
     });
 
     await doWelcomePage();
-
-    // Make the setup skips the PWA install page and goes to the upload page.
-    // TODO(b/251046341): Once the sign in page is ready, this should check for
-    // that page instead.
-    assertEquals(null, cloudUploadApp.$('office-pwa-install-page'));
-
-    // Go to the OneDrive upload page.
     await doSignInPage();
 
     checkIsOneDriveUploadPage();
-    assertNotEquals(null, cloudUploadApp.$('upload-page'));
   });
+
+  /**
+   * Tests that there is no sign in page when ODFS is already mounted.
+   */
+  test('Set up OneDrive with user already signed in', async () => {
+    await setUp({
+      fileName: 'file.docx',
+      officeWebAppInstalled: false,
+      installOfficeWebAppResult: true,
+      odfsMounted: true,
+    });
+
+    await doWelcomePage();
+    await doPWAInstallPage();
+
+    checkIsOneDriveUploadPage();
+  });
+
+  /**
+   * Tests that there is no Office PWA install page or sign in page when the
+   * Office PWA is already installed and ODFS is already mounted.
+   */
+  test(
+      'Set up OneDrive with Office PWA already installed and already signed in',
+      async () => {
+        await setUp({
+          officeWebAppInstalled: true,
+          installOfficeWebAppResult: true,
+          odfsMounted: true,
+        });
+
+        await doWelcomePage();
+
+        checkIsOneDriveUploadPage();
+      });
 
   /**
    * Tests that clicking the open file button triggers the right
@@ -210,6 +247,7 @@ suite('<cloud-upload>', () => {
       fileName: 'file.docx',
       officeWebAppInstalled: false,
       installOfficeWebAppResult: true,
+      odfsMounted: false,
     });
     checkIsWelcomePage();
 
@@ -237,6 +275,7 @@ suite('<cloud-upload>', () => {
       fileName: 'file.docx',
       officeWebAppInstalled: false,
       installOfficeWebAppResult: true,
+      odfsMounted: false,
     });
 
     // Go to the OneDrive upload page.
@@ -261,6 +300,7 @@ suite('<cloud-upload>', () => {
         await setUp({
           officeWebAppInstalled: false,
           installOfficeWebAppResult: true,
+          odfsMounted: false,
         });
 
         // Go to the specified page.

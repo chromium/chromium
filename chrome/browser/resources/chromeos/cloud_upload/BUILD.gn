@@ -11,6 +11,7 @@ build_webui("build") {
     "icons/check.svg",
     "icons/docs.svg",
     "icons/download.svg",
+    "icons/error.svg",
     "icons/office.svg",
     "icons/sheets.svg",
     "icons/slides.svg",
