@@ -17,6 +17,8 @@ class FakeOsSettingsSections : public OsSettingsSections {
   FakeOsSettingsSections& operator=(const FakeOsSettingsSections& other) =
       delete;
   ~FakeOsSettingsSections() override;
+
+  void FillWithFakeSettings();
 };
 
 }  // namespace ash::settings

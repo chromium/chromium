@@ -6,19 +6,59 @@
 
 #include <sstream>
 
+#include "base/containers/contains.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-shared.h"
 #include "chrome/grit/generated_resources.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 FakeOsSettingsSection::FakeOsSettingsSection(mojom::Section section)
     : section_(section) {}
 
 FakeOsSettingsSection::~FakeOsSettingsSection() = default;
+
+void FakeOsSettingsSection::AddSubpageAndSetting(
+    absl::optional<chromeos::settings::mojom::Subpage> subpage,
+    absl::optional<chromeos::settings::mojom::Setting> setting) {
+  if (subpage) {
+    if (!base::Contains(subpages_, subpage.value())) {
+      // This is a new `subpage` and settings on this subpage.
+      subpages_.insert({subpage.value(), {}});
+    }
+
+    if (setting) {
+      subpages_[subpage.value()].push_back(setting.value());
+    }
+  } else {
+    // `subpage` is empty, this is a setting directly on the section.
+    CHECK(setting);
+    settings_.push_back(setting.value());
+  }
+}
+
+void FakeOsSettingsSection::RegisterHierarchy(
+    HierarchyGenerator* generator) const {
+  for (auto& it : subpages_) {
+    generator->RegisterTopLevelSubpage(
+        /* Arbitrary title string */ IDS_SETTINGS_KERBEROS_ACCOUNTS_PAGE_TITLE,
+        it.first,
+        /* Arbitrary icon */ mojom::SearchResultIcon::kAuthKey,
+        mojom::SearchResultDefaultRank::kMedium,
+        "fake/url_path_with_parameters");
+    RegisterNestedSettingBulk(it.first, it.second, generator);
+  }
+
+  for (auto& it : settings_) {
+    generator->RegisterTopLevelAltSetting(it);
+  }
+}
 
 int FakeOsSettingsSection::GetSectionNameMessageId() const {
   return IDS_INTERNAL_APP_SETTINGS;

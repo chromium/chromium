@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_sections.h"
 
+#include "base/rand_util.h"
 #include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_section.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
-FakeOsSettingsSections::FakeOsSettingsSections() : OsSettingsSections() {
+FakeOsSettingsSections::FakeOsSettingsSections() {
   for (const auto& section : AllSections()) {
     auto fake_section = std::make_unique<FakeOsSettingsSection>(section);
     sections_map_[section] = fake_section.get();
@@ -18,5 +21,29 @@ FakeOsSettingsSections::FakeOsSettingsSections() : OsSettingsSections() {
 }
 
 FakeOsSettingsSections::~FakeOsSettingsSections() = default;
+
+void FakeOsSettingsSections::FillWithFakeSettings() {
+  std::vector<chromeos::settings::mojom::Subpage> shuffled_subpages =
+      AllSubpages();
+  base::RandomShuffle(shuffled_subpages.begin(), shuffled_subpages.end());
+
+  std::vector<chromeos::settings::mojom::Setting> shuffled_settings =
+      AllSettings();
+  base::RandomShuffle(shuffled_settings.begin(), shuffled_settings.end());
+
+  auto subpage_it = shuffled_subpages.begin();
+  auto setting_it = shuffled_settings.begin();
+
+  for (const auto& section : AllSections()) {
+    auto* fake_section =
+        static_cast<FakeOsSettingsSection*>(sections_map_[section]);
+    // one subpage with one setting.
+    fake_section->AddSubpageAndSetting(*subpage_it, *setting_it);
+    // one setting directly on the section.
+    fake_section->AddSubpageAndSetting(absl::nullopt, *setting_it);
+    subpage_it++;
+    setting_it++;
+  }
+}
 
 }  // namespace ash::settings

@@ -5991,6 +5991,7 @@ static_library("test_support") {
     ]
     deps += [
       "//ash/public/cpp",
+      "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chromeos/ash/components/dbus",
       "//chromeos/ui/base",
     ]

@@ -10,6 +10,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::settings {
 
@@ -28,9 +30,15 @@ class FakeOsSettingsSection : public OsSettingsSection {
     return logged_metrics_;
   }
 
+  // Add fake subpage and settings information. If `subpage` is nullopt, the
+  // `setting` must exist and is attached directly to the section.
+  void AddSubpageAndSetting(
+      absl::optional<chromeos::settings::mojom::Subpage> subpage,
+      absl::optional<chromeos::settings::mojom::Setting> setting);
+
   // OsSettingsSection:
   void AddLoadTimeData(content::WebUIDataSource* html_source) override {}
-  void RegisterHierarchy(HierarchyGenerator* generator) const override {}
+  void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // Returns the settings app name as a default value.
   int GetSectionNameMessageId() const override;
@@ -58,6 +66,10 @@ class FakeOsSettingsSection : public OsSettingsSection {
 
  private:
   const chromeos::settings::mojom::Section section_;
+  std::map<chromeos::settings::mojom::Subpage,
+           std::vector<chromeos::settings::mojom::Setting>>
+      subpages_;
+  std::vector<chromeos::settings::mojom::Setting> settings_;
   // Use mutable to modify this vector within the overridden const LogMetric.
   mutable std::vector<chromeos::settings::mojom::Setting> logged_metrics_;
 };

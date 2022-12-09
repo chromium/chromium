@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 
 #include <utility>
+#include <vector>
 
+#include "base/containers/contains.h"
 #include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
@@ -289,5 +291,113 @@ std::vector<std::u16string> Hierarchy::GenerateHierarchyStrings(
       GetSectionMetadata(section).ToSearchResult(kDummyRelevanceScore)->text);
   return hierarchy_strings;
 }
+
+#ifdef DCHECK
+namespace {
+
+// Number of spaces for each indent level.
+constexpr int kIndent = 2;
+
+void PrintSettings(std::ostream& os,
+                   int indent,
+                   std::vector<mojom::Setting>& collection) {
+  for (auto& it : collection) {
+    os << std::string(indent, ' ') << "(s)" << it << std::endl;
+  }
+}
+
+void PrintSubpages(
+    std::ostream& os,
+    int indent,
+    std::vector<mojom::Subpage>& collection,
+    std::map<mojom::Subpage, std::vector<mojom::Subpage>>& subpage_subpage,
+    std::map<mojom::Subpage, std::vector<mojom::Setting>>& subpage_setting) {
+  for (auto& it : collection) {
+    os << std::string(indent, ' ') << "(p)" << it << std::endl;
+    PrintSettings(os, indent + kIndent, subpage_setting[it]);
+    PrintSubpages(os, indent + kIndent, subpage_subpage[it], subpage_subpage,
+                  subpage_setting);
+  }
+}
+
+}  // namespace
+
+std::ostream& operator<<(std::ostream& os, const Hierarchy& h) {
+  // This method logs all sections -> subpages -> settings
+
+  // First restructure the `Hierarchy` data into hierarchies we can work with.
+  std::map<mojom::Section, std::vector<mojom::Subpage>> section_subpage;
+  std::map<mojom::Section, std::vector<mojom::Setting>> section_setting;
+  std::map<mojom::Subpage, std::vector<mojom::Subpage>> subpage_subpage;
+  std::map<mojom::Subpage, std::vector<mojom::Setting>> subpage_setting;
+  std::vector<mojom::Subpage> none_exist_subpage;
+  std::vector<mojom::Setting> none_exist_setting;
+
+  for (auto& section_id : AllSections()) {
+    section_subpage.insert({section_id, {}});
+    section_setting.insert({section_id, {}});
+  }
+
+  for (auto& subpage_id : AllSubpages()) {
+    subpage_subpage.insert({subpage_id, {}});
+    subpage_setting.insert({subpage_id, {}});
+
+    if (!base::Contains(h.subpage_map_, subpage_id)) {
+      none_exist_subpage.push_back(subpage_id);
+      continue;
+    }
+
+    auto& subpage = h.GetSubpageMetadata(subpage_id);
+    if (subpage.parent_subpage) {
+      // if this is a nested subpage, only record the immediate parent subpage.
+      subpage_subpage[subpage.parent_subpage.value()].push_back(subpage_id);
+    } else {
+      section_subpage[subpage.section].push_back(subpage_id);
+    }
+  }
+
+  for (auto& setting_id : AllSettings()) {
+    if (!base::Contains(h.setting_map_, setting_id)) {
+      none_exist_setting.push_back(setting_id);
+      continue;
+    }
+    auto& setting = h.GetSettingMetadata(setting_id);
+
+    if (setting.primary.subpage) {
+      subpage_setting[setting.primary.subpage.value()].push_back(setting_id);
+    } else {
+      section_setting[setting.primary.section].push_back(setting_id);
+    }
+
+    for (auto& alt : setting.alternates) {
+      if (alt.subpage) {
+        subpage_setting[alt.subpage.value()].push_back(setting_id);
+      } else {
+        section_setting[alt.section].push_back(setting_id);
+      }
+    }
+  }
+
+  // Print out all the information.
+  os << "Settings Hierarchy:" << std::endl;
+  for (auto& section_id : AllSections()) {
+    auto& subpages = section_subpage[section_id];
+    auto& settings = section_setting[section_id];
+
+    os << "[" << section_id << "]" << std::endl;
+    PrintSubpages(os, kIndent, subpages, subpage_subpage, subpage_setting);
+    PrintSettings(os, kIndent, settings);
+  }
+
+  os << "Unused Subpages: " << std::endl;
+  PrintSubpages(os, kIndent, none_exist_subpage, subpage_subpage,
+                subpage_setting);
+
+  os << "Unused Settings: " << std::endl;
+  PrintSettings(os, kIndent, none_exist_setting);
+
+  return os;
+}
+#endif
 
 }  // namespace ash::settings
