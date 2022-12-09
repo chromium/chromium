@@ -22,8 +22,6 @@ source_set("x11") {
     "hit_test_x11.h",
     "native_pixmap_egl_x11_binding.cc",
     "native_pixmap_egl_x11_binding.h",
-    "native_pixmap_glx_binding.cc",
-    "native_pixmap_glx_binding.h",
     "os_exchange_data_provider_x11.cc",
     "os_exchange_data_provider_x11.h",
     "ozone_platform_x11.cc",

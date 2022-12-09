@@ -9,7 +9,6 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_surface_glx.h"
 
 namespace gl {
 
@@ -63,7 +62,7 @@ bool GLImageEGLPixmap::Initialize(x11::Pixmap pixmap) {
                                EGL_TEXTURE_TARGET, EGL_TEXTURE_2D, EGL_NONE};
 
   surface_ = eglCreatePixmapSurface(
-      display_, config, static_cast<::Pixmap>(pixmap), attrs.data());
+      display_, config, static_cast<EGLNativePixmapType>(pixmap), attrs.data());
   return surface_ != EGL_NO_SURFACE;
 }
 

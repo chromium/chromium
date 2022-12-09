@@ -2881,169 +2881,6 @@ EGL_EXTENSIONS_EXTRA = [
   'EGL_NOK_texture_from_pixmap',
 ]
 
-GLX_FUNCTIONS = [
-{ 'return_type': 'void',
-  'names': ['glXBindTexImageEXT'],
-  'arguments':
-      'Display* dpy, GLXDrawable drawable, int buffer, int* attribList', },
-{ 'return_type': 'GLXFBConfig*',
-  'names': ['glXChooseFBConfig'],
-  'arguments':
-      'Display* dpy, int screen, const int* attribList, int* nitems', },
-{ 'return_type': 'XVisualInfo*',
-  'names': ['glXChooseVisual'],
-  'arguments': 'Display* dpy, int screen, int* attribList', },
-{ 'return_type': 'void',
-  'names': ['glXCopyContext'],
-  'arguments':
-      'Display* dpy, GLXContext src, GLXContext dst, unsigned long mask', },
-{ 'return_type': 'void',
-  'names': ['glXCopySubBufferMESA'],
-  'arguments': 'Display* dpy, GLXDrawable drawable, '
-               'int x, int y, int width, int height', },
-{ 'return_type': 'GLXContext',
-  'names': ['glXCreateContext'],
-  'arguments':
-      'Display* dpy, XVisualInfo* vis, GLXContext shareList, int direct', },
-{ 'return_type': 'GLXContext',
-  'names': ['glXCreateContextAttribsARB'],
-  'arguments':
-      'Display* dpy, GLXFBConfig config, GLXContext share_context, int direct, '
-      'const int* attrib_list', },
-{ 'return_type': 'GLXPixmap',
-  'names': ['glXCreateGLXPixmap'],
-  'arguments': 'Display* dpy, XVisualInfo* visual, Pixmap pixmap', },
-{ 'return_type': 'GLXContext',
-  'names': ['glXCreateNewContext'],
-  'arguments': 'Display* dpy, GLXFBConfig config, int renderType, '
-               'GLXContext shareList, int direct', },
-{ 'return_type': 'GLXPbuffer',
-  'names': ['glXCreatePbuffer'],
-  'arguments': 'Display* dpy, GLXFBConfig config, const int* attribList', },
-{ 'return_type': 'GLXPixmap',
-  'names': ['glXCreatePixmap'],
-  'arguments': 'Display* dpy, GLXFBConfig config, '
-               'Pixmap pixmap, const int* attribList', },
-{ 'return_type': 'GLXWindow',
-  'names': ['glXCreateWindow'],
-  'arguments':
-      'Display* dpy, GLXFBConfig config, Window win, const int* attribList', },
-{ 'return_type': 'void',
-  'names': ['glXDestroyContext'],
-  'arguments': 'Display* dpy, GLXContext ctx', },
-{ 'return_type': 'void',
-  'names': ['glXDestroyGLXPixmap'],
-  'arguments': 'Display* dpy, GLXPixmap pixmap', },
-{ 'return_type': 'void',
-  'names': ['glXDestroyPbuffer'],
-  'arguments': 'Display* dpy, GLXPbuffer pbuf', },
-{ 'return_type': 'void',
-  'names': ['glXDestroyPixmap'],
-  'arguments': 'Display* dpy, GLXPixmap pixmap', },
-{ 'return_type': 'void',
-  'names': ['glXDestroyWindow'],
-  'arguments': 'Display* dpy, GLXWindow window', },
-{ 'return_type': 'const char*',
-  'names': ['glXGetClientString'],
-  'arguments': 'Display* dpy, int name', },
-{ 'return_type': 'int',
-  'names': ['glXGetConfig'],
-  'arguments': 'Display* dpy, XVisualInfo* visual, int attrib, int* value', },
-{ 'return_type': 'GLXContext',
-  'names': ['glXGetCurrentContext'],
-  'arguments': 'void', },
-{ 'return_type': 'Display*',
-  'names': ['glXGetCurrentDisplay'],
-  'arguments': 'void', },
-{ 'return_type': 'GLXDrawable',
-  'names': ['glXGetCurrentDrawable'],
-  'arguments': 'void', },
-{ 'return_type': 'GLXDrawable',
-  'names': ['glXGetCurrentReadDrawable'],
-  'arguments': 'void', },
-{ 'return_type': 'int',
-  'names': ['glXGetFBConfigAttrib'],
-  'arguments': 'Display* dpy, GLXFBConfig config, int attribute, int* value', },
-{ 'return_type': 'GLXFBConfig',
-  'names': ['glXGetFBConfigFromVisualSGIX'],
-  'arguments': 'Display* dpy, XVisualInfo* visualInfo', },
-{ 'return_type': 'GLXFBConfig*',
-  'names': ['glXGetFBConfigs'],
-  'arguments': 'Display* dpy, int screen, int* nelements', },
-{ 'return_type': 'bool',
-  'names': ['glXGetMscRateOML'],
-  'arguments':
-      'Display* dpy, GLXDrawable drawable, int32_t* numerator, '
-      'int32_t* denominator' },
-{ 'return_type': 'void',
-  'names': ['glXGetSelectedEvent'],
-  'arguments': 'Display* dpy, GLXDrawable drawable, unsigned long* mask', },
-{ 'return_type': 'bool',
-  'names': ['glXGetSyncValuesOML'],
-  'arguments':
-      'Display* dpy, GLXDrawable drawable, int64_t* ust, int64_t* msc, '
-      'int64_t* sbc' },
-{ 'return_type': 'XVisualInfo*',
-  'names': ['glXGetVisualFromFBConfig'],
-  'arguments': 'Display* dpy, GLXFBConfig config', },
-{ 'return_type': 'int',
-  'names': ['glXIsDirect'],
-  'arguments': 'Display* dpy, GLXContext ctx', },
-{ 'return_type': 'int',
-  'names': ['glXMakeContextCurrent'],
-  'arguments':
-      'Display* dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx', },
-{ 'return_type': 'int',
-  'names': ['glXMakeCurrent'],
-  'arguments': 'Display* dpy, GLXDrawable drawable, GLXContext ctx', },
-{ 'return_type': 'int',
-  'names': ['glXQueryContext'],
-  'arguments': 'Display* dpy, GLXContext ctx, int attribute, int* value', },
-{ 'return_type': 'void',
-  'names': ['glXQueryDrawable'],
-  'arguments':
-      'Display* dpy, GLXDrawable draw, int attribute, unsigned int* value', },
-{ 'return_type': 'int',
-  'names': ['glXQueryExtension'],
-  'arguments': 'Display* dpy, int* errorb, int* event', },
-{ 'return_type': 'const char*',
-  'names': ['glXQueryExtensionsString'],
-  'arguments': 'Display* dpy, int screen', },
-{ 'return_type': 'const char*',
-  'names': ['glXQueryServerString'],
-  'arguments': 'Display* dpy, int screen, int name', },
-{ 'return_type': 'int',
-  'names': ['glXQueryVersion'],
-  'arguments': 'Display* dpy, int* maj, int* min', },
-{ 'return_type': 'void',
-  'names': ['glXReleaseTexImageEXT'],
-  'arguments': 'Display* dpy, GLXDrawable drawable, int buffer', },
-{ 'return_type': 'void',
-  'names': ['glXSelectEvent'],
-  'arguments': 'Display* dpy, GLXDrawable drawable, unsigned long mask', },
-{ 'return_type': 'void',
-  'names': ['glXSwapBuffers'],
-  'arguments': 'Display* dpy, GLXDrawable drawable', },
-{ 'return_type': 'void',
-  'names': ['glXSwapIntervalEXT'],
-  'arguments': 'Display* dpy, GLXDrawable drawable, int interval', },
-{ 'return_type': 'void',
-  'names': ['glXSwapIntervalMESA'],
-  'arguments': 'unsigned int interval', },
-{ 'return_type': 'void',
-  'names': ['glXUseXFont'],
-  'arguments': 'Font font, int first, int count, int list', },
-{ 'return_type': 'void',
-  'names': ['glXWaitGL'],
-  'arguments': 'void', },
-{ 'return_type': 'int',
-  'names': ['glXWaitVideoSyncSGI'],
-  'arguments': 'int divisor, int remainder, unsigned int* count', },
-{ 'return_type': 'void',
-  'names': ['glXWaitX'],
-  'arguments': 'void', },
-]
-
 FUNCTION_SETS = [
   [GL_FUNCTIONS, 'gl', [
       'GL/gl.h',
@@ -3073,7 +2910,6 @@ FUNCTION_SETS = [
       'EGL_ANGLE_surface_d3d_texture_2d_share_handle',
     ],
   ],
-  [GLX_FUNCTIONS, 'glx', ['GL/glx.h', 'noninclude/GL/glxext.h'], []],
 ]
 
 GLES2_HEADERS_WITH_ENUMS = [
@@ -3911,7 +3747,7 @@ def ParseFunctionsFromHeader(header_file, extensions, versions):
   version_start = re.compile(
       r'#ifndef GL_(ES_|)VERSION((?:_[0-9])+)$')
   extension_start = re.compile(
-      r'#ifndef ((?:GL|EGL|GLX)_[A-Z]+_[a-zA-Z]\w+)')
+      r'#ifndef ((?:GL|EGL)_[A-Z]+_[a-zA-Z]\w+)')
   extension_function = re.compile(r'.+\s+([a-z]+\w+)\s*\(')
   typedef = re.compile(r'typedef .*')
   macro_start = re.compile(r'^#(if|ifdef|ifndef).*')

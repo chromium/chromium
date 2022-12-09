@@ -414,7 +414,6 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
   base::WeakPtrFactory<VaapiVideoDecodeAcceleratorTest> weak_ptr_factory_;
 };
 
-// Verify that it is possible to select DRM(egl) and TFP(glx) at runtime.
 TEST_P(VaapiVideoDecodeAcceleratorTest, SupportedPlatforms) {
   EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationNone,
             mock_vaapi_picture_factory_->GetVaapiImplementation(
@@ -427,9 +426,6 @@ TEST_P(VaapiVideoDecodeAcceleratorTest, SupportedPlatforms) {
   EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationAngle,
             mock_vaapi_picture_factory_->GetVaapiImplementation(
                 gl::kGLImplementationEGLANGLE));
-  EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationX11,
-            mock_vaapi_picture_factory_->GetVaapiImplementation(
-                gl::kGLImplementationDesktopGL));
 #elif BUILDFLAG(IS_OZONE)
   EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationDrm,
             mock_vaapi_picture_factory_->GetVaapiImplementation(

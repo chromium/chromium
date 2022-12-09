@@ -32,7 +32,6 @@ class MEDIA_GPU_EXPORT VaapiPictureFactory {
   enum VaapiImplementation {
     kVaapiImplementationNone = 0,
     kVaapiImplementationDrm,
-    kVaapiImplementationX11,
     kVaapiImplementationAngle,
   };
 
