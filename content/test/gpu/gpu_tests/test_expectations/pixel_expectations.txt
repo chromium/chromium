@@ -387,6 +387,9 @@ crbug.com/1382332 [ android ] Pixel_MediaRecorderFromVideoElement [ Failure ]
 crbug.com/1382332 [ android ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 crbug.com/1382332 [ fuchsia ] Pixel_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
+# Lacros failutres.
+crbug.com/1382332 [ desktop linux display-server-wayland passthrough intel ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
