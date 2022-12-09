@@ -55,6 +55,12 @@ absl::optional<bool> g_lacros_primary_browser_for_test;
 // result is stored in this variable which is used after that as a cache.
 absl::optional<LacrosAvailability> g_lacros_availability_cache;
 
+// At session start the value for LacrosDataBackwardMigrationMode logic is
+// applied and the result is stored in this variable which is used after that as
+// a cache.
+absl::optional<LacrosDataBackwardMigrationMode>
+    g_lacros_data_backward_migration_mode;
+
 // The rootfs lacros-chrome metadata keys.
 constexpr char kLacrosMetadataContentKey[] = "content";
 constexpr char kLacrosMetadataVersionKey[] = "version";
@@ -68,6 +74,20 @@ constexpr auto kLacrosAvailabilityMap =
         {"side_by_side", LacrosAvailability::kSideBySide},
         {"lacros_primary", LacrosAvailability::kLacrosPrimary},
         {"lacros_only", LacrosAvailability::kLacrosOnly},
+    });
+
+// The conversion map for LacrosDataBackwardMigrationMode policy data. The
+// values must match the ones from LacrosDataBackwardMigrationMode.yaml.
+constexpr auto kLacrosDataBackwardMigrationModeMap =
+    base::MakeFixedFlatMap<base::StringPiece, LacrosDataBackwardMigrationMode>({
+        {kLacrosDataBackwardMigrationModePolicyNone,
+         LacrosDataBackwardMigrationMode::kNone},
+        {kLacrosDataBackwardMigrationModePolicyKeepNone,
+         LacrosDataBackwardMigrationMode::kKeepNone},
+        {kLacrosDataBackwardMigrationModePolicyKeepSafeData,
+         LacrosDataBackwardMigrationMode::kKeepSafeData},
+        {kLacrosDataBackwardMigrationModePolicyKeepAll,
+         LacrosDataBackwardMigrationMode::kKeepAll},
     });
 
 // Some account types require features that aren't yet supported by lacros.
@@ -870,6 +890,20 @@ void CacheLacrosAvailability(const policy::PolicyMap& map) {
       value ? value->GetString() : base::StringPiece());
 }
 
+void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map) {
+  if (g_lacros_data_backward_migration_mode.has_value()) {
+    // Some browser tests might call this multiple times.
+    LOG(ERROR) << "Trying to cache LacrosDataBackwardMigrationMode and the "
+                  "value was set";
+    return;
+  }
+
+  const base::Value* value = map.GetValue(
+      policy::key::kLacrosDataBackwardMigrationMode, base::Value::Type::STRING);
+  g_lacros_data_backward_migration_mode = ParseLacrosDataBackwardMigrationMode(
+      value ? value->GetString() : base::StringPiece());
+}
+
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel) {
   // We default to the Dev component for UNKNOWN channels.
   static const auto kChannelToComponentInfoMap =
@@ -923,12 +957,25 @@ LacrosAvailability GetCachedLacrosAvailabilityForTesting() {
   return GetCachedLacrosAvailability();
 }
 
+// Returns the cached value of the LacrosDataBackwardMigrationMode policy.
+LacrosDataBackwardMigrationMode GetCachedLacrosDataBackwardMigrationMode() {
+  if (g_lacros_data_backward_migration_mode.has_value())
+    return g_lacros_data_backward_migration_mode.value();
+
+  // By default migration should be disabled.
+  return LacrosDataBackwardMigrationMode::kNone;
+}
+
 void SetLacrosLaunchSwitchSourceForTest(LacrosAvailability test_value) {
   g_lacros_availability_cache = test_value;
 }
 
 void ClearLacrosAvailabilityCacheForTest() {
   g_lacros_availability_cache.reset();
+}
+
+void ClearLacrosDataBackwardMigrationModeCacheForTest() {
+  g_lacros_data_backward_migration_mode.reset();
 }
 
 MigrationMode GetMigrationMode(const user_manager::User* user,
@@ -1065,6 +1112,28 @@ absl::optional<LacrosAvailability> ParseLacrosAvailability(
 
 base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value) {
   for (const auto& entry : kLacrosAvailabilityMap) {
+    if (entry.second == value)
+      return entry.first;
+  }
+
+  NOTREACHED();
+  return base::StringPiece();
+}
+
+absl::optional<LacrosDataBackwardMigrationMode>
+ParseLacrosDataBackwardMigrationMode(base::StringPiece value) {
+  auto* it = kLacrosDataBackwardMigrationModeMap.find(value);
+  if (it != kLacrosDataBackwardMigrationModeMap.end())
+    return it->second;
+
+  LOG(ERROR) << "Unknown LacrosDataBackwardMigrationMode policy value: "
+             << value;
+  return absl::nullopt;
+}
+
+base::StringPiece GetLacrosDataBackwardMigrationModeName(
+    LacrosDataBackwardMigrationMode value) {
+  for (const auto& entry : kLacrosDataBackwardMigrationModeMap) {
     if (entry.second == value)
       return entry.first;
   }

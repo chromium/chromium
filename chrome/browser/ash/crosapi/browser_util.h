@@ -87,6 +87,21 @@ enum class LacrosSelection {
   kMaxValue = kStateful,
 };
 
+// Represents the values of the LacrosDataBackwardMigrationMode string enum
+// policy. It controls what happens when we switch from Lacros back to Ash.
+// The values shall be consistent with the policy description.
+enum class LacrosDataBackwardMigrationMode {
+  // Indicates data backward migration is not performed. The Lacros folder is
+  // removed and Ash uses its existing state.
+  kNone,
+  // Not yet implemented.
+  kKeepNone,
+  // Not yet implemented.
+  kKeepSafeData,
+  // All data is migrated back from Lacros to Ash.
+  kKeepAll,
+};
+
 struct ComponentInfo {
   // The client-side component name.
   const char* const name;
@@ -154,6 +169,28 @@ extern const char kLacrosAvailabilityPolicyLacrosDisabled[];
 extern const char kLacrosAvailabilityPolicySideBySide[];
 extern const char kLacrosAvailabilityPolicyLacrosPrimary[];
 extern const char kLacrosAvailabilityPolicyLacrosOnly[];
+
+// The internal name in about_flags.cc for the `LacrosDataBackwardMigrationMode`
+// policy.
+inline constexpr const char
+    kLacrosDataBackwardMigrationModePolicyInternalName[] =
+        "lacros-data-backward-migration-policy";
+
+// The commandline flag name of `LacrosDataBackwardMigrationMode` policy.
+// The value should be the policy value as defined just below.
+inline constexpr const char kLacrosDataBackwardMigrationModePolicySwitch[] =
+    "lacros-data-backward-migration-policy";
+
+// The values for LacrosDataBackwardMigrationMode, they must match the ones
+// from LacrosDataBackwardMigrationMode.yaml.
+inline constexpr const char kLacrosDataBackwardMigrationModePolicyNone[] =
+    "none";
+inline constexpr const char kLacrosDataBackwardMigrationModePolicyKeepNone[] =
+    "keep_none";
+inline constexpr const char
+    kLacrosDataBackwardMigrationModePolicyKeepSafeData[] = "keep_safe_data";
+inline constexpr const char kLacrosDataBackwardMigrationModePolicyKeepAll[] =
+    "keep_all";
 
 // Boolean preference. Whether to launch lacros-chrome on login.
 extern const char kLaunchOnLoginPref[];
@@ -310,6 +347,10 @@ base::Version GetRootfsLacrosVersionMayBlock(
 // availability.
 void CacheLacrosAvailability(const policy::PolicyMap& map);
 
+// To be called at primary user login, to cache the policy value for the
+// LacrosDataBackwardMigrationMode policy.
+void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map);
+
 // Returns the lacros ComponentInfo for a given channel.
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel);
 
@@ -334,8 +375,15 @@ void SetCachedLacrosAvailabilityForTesting(
 // lacros-availability, modified by Finch flags and user flags as appropriate.
 LacrosAvailability GetCachedLacrosAvailabilityForTesting();
 
+// GetCachedLacrosDataBackwardMigrationMode returns the cached value of the
+// LacrosDataBackwardMigrationMode policy.
+LacrosDataBackwardMigrationMode GetCachedLacrosDataBackwardMigrationMode();
+
 // Clears the cached values for lacros availability policy.
 void ClearLacrosAvailabilityCacheForTest();
+
+// Clears the cached value for LacrosDataBackwardMigrationMode.
+void ClearLacrosDataBackwardMigrationModeCacheForTest();
 
 bool IsProfileMigrationEnabled(const AccountId& account_id);
 
@@ -412,6 +460,15 @@ absl::optional<LacrosAvailability> ParseLacrosAvailability(
 
 // Returns the policy value name from the given value.
 base::StringPiece GetLacrosAvailabilityPolicyName(LacrosAvailability value);
+
+// Parses the string representation of LacrosDataBackwardMigrationMode policy
+// value into the enum value. Returns nullopt on unknown value.
+absl::optional<LacrosDataBackwardMigrationMode>
+ParseLacrosDataBackwardMigrationMode(base::StringPiece value);
+
+// Returns the policy string representation from the given enum value.
+base::StringPiece GetLacrosDataBackwardMigrationModeName(
+    LacrosDataBackwardMigrationMode value);
 
 // Stores that "Go to files button" on the migration error screen is clicked.
 void SetGotoFilesClicked(PrefService* local_state,

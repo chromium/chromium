@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -330,6 +335,84 @@ TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeCommonIndexedDB) {
     ASSERT_TRUE(base::PathExists(ash_blob_path.Append(kLacrosDataFilePath)));
     ASSERT_TRUE(base::PathExists(ash_leveldb_path.Append(kLacrosDataFilePath)));
   }
+}
+
+namespace {
+// This implementation of RAII for LacrosDataBackwardMigrationMode is intended
+// to make it easy reset the state between runs.
+class ScopedLacrosDataBackwardMigrationModeCache {
+ public:
+  explicit ScopedLacrosDataBackwardMigrationModeCache(
+      crosapi::browser_util::LacrosDataBackwardMigrationMode mode) {
+    SetLacrosDataBackwardMigrationMode(mode);
+  }
+  ScopedLacrosDataBackwardMigrationModeCache(
+      const ScopedLacrosDataBackwardMigrationModeCache&) = delete;
+  ScopedLacrosDataBackwardMigrationModeCache& operator=(
+      const ScopedLacrosDataBackwardMigrationModeCache&) = delete;
+  ~ScopedLacrosDataBackwardMigrationModeCache() {
+    crosapi::browser_util::ClearLacrosDataBackwardMigrationModeCacheForTest();
+  }
+
+ private:
+  void SetLacrosDataBackwardMigrationMode(
+      crosapi::browser_util::LacrosDataBackwardMigrationMode mode) {
+    policy::PolicyMap policy;
+    policy.Set(policy::key::kLacrosDataBackwardMigrationMode,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
+               base::Value(GetLacrosDataBackwardMigrationModeName(mode)),
+               /*external_data_fetcher=*/nullptr);
+    crosapi::browser_util::CacheLacrosDataBackwardMigrationMode(policy);
+  }
+};
+}  // namespace
+
+class BrowserDataBackMigratorTriggeringTest : public testing::Test {
+ public:
+  void SetUp() override {
+    scoped_disabled_feature.InitAndDisableFeature(
+        ash::features::kLacrosProfileBackwardMigration);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_disabled_feature;
+};
+
+TEST_F(BrowserDataBackMigratorTriggeringTest, DefaultDisabledBeforeInit) {
+  EXPECT_FALSE(BrowserDataBackMigrator::IsBackMigrationEnabled(
+      crosapi::browser_util::PolicyInitState::kBeforeInit));
+}
+
+TEST_F(BrowserDataBackMigratorTriggeringTest, DefaultDisabledAfterInit) {
+  EXPECT_FALSE(BrowserDataBackMigrator::IsBackMigrationEnabled(
+      crosapi::browser_util::PolicyInitState::kAfterInit));
+}
+
+TEST_F(BrowserDataBackMigratorTriggeringTest, FeatureEnabledBeforeInit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kLacrosProfileBackwardMigration);
+
+  EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
+      crosapi::browser_util::PolicyInitState::kAfterInit));
+}
+
+TEST_F(BrowserDataBackMigratorTriggeringTest, FeatureEnabledAfterInit) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kLacrosProfileBackwardMigration);
+
+  EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
+      crosapi::browser_util::PolicyInitState::kAfterInit));
+}
+
+TEST_F(BrowserDataBackMigratorTriggeringTest, PolicyEnabledAfterInit) {
+  ScopedLacrosDataBackwardMigrationModeCache scoped_policy(
+      crosapi::browser_util::LacrosDataBackwardMigrationMode::kKeepAll);
+
+  EXPECT_TRUE(BrowserDataBackMigrator::IsBackMigrationEnabled(
+      crosapi::browser_util::PolicyInitState::kAfterInit));
 }
 
 }  // namespace ash

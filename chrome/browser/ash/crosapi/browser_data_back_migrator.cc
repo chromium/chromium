@@ -1101,14 +1101,29 @@ bool BrowserDataBackMigrator::IsBackMigrationEnabled(
     return false;
   }
 
+  crosapi::browser_util::LacrosDataBackwardMigrationMode migration_mode =
+      crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone;
   if (policy_init_state ==
       crosapi::browser_util::PolicyInitState::kBeforeInit) {
     // TODO(b/244572632): Read cached flag.
   } else {
     DCHECK_EQ(policy_init_state,
               crosapi::browser_util::PolicyInitState::kAfterInit);
-    // TODO(b/244572632): Read policy value.
+    migration_mode =
+        crosapi::browser_util::GetCachedLacrosDataBackwardMigrationMode();
   }
+
+  // Backward migration can be explicitly enabled by using the
+  // LacrosDataBackwardMigrationMode policy.
+  if (migration_mode ==
+      crosapi::browser_util::LacrosDataBackwardMigrationMode::kKeepAll)
+    return true;
+
+  // Modes beside none do not go through backward migration.
+  // None is the default, fall back to the feature instead.
+  if (migration_mode !=
+      crosapi::browser_util::LacrosDataBackwardMigrationMode::kNone)
+    return false;
 
   return base::FeatureList::IsEnabled(
       ash::features::kLacrosProfileBackwardMigration);

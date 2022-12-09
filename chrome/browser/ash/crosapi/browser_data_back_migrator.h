@@ -56,6 +56,8 @@ class BrowserDataBackMigrator {
   // 1. The kForceBrowserDataBackwardMigration debug flag.
   // 2. The LacrosDataBackwardMigrationMode policy.
   // 3. The kLacrosProfileBackwardMigration feature flag.
+  // The policy value is cached at the beginning of the session and not
+  // updated.
   static bool IsBackMigrationEnabled(
       crosapi::browser_util::PolicyInitState policy_init_state);
 
