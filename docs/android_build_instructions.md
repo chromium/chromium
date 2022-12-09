@@ -184,10 +184,10 @@ depending on the version of Android running on a device. Chrome uses this
 feature to package optimized versions for different OS versions.
 
 1. `chrome_modern_public_bundle` (ChromeModernPublic.aab)
-   * `minSdkVersion=25` (Nougat).
+   * `minSdkVersion=24` (Nougat).
    * WebView packaged independently (`system_webview_bundle`).
 2. `monochrome_public_bundle` (MonochromePublic.aab)
-   * `minSdkVersion=25` (Nougat).
+   * `minSdkVersion=24` (Nougat).
    * Contains both Chrome and WebView (to save disk space).
 3. `trichrome_chrome_bundle` (TrichromeChrome.aab)
    * `minSdkVersion=29` (Android 10).
