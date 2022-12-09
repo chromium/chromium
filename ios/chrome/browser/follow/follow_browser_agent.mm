@@ -9,6 +9,8 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/threading/sequenced_task_runner_handle.h"
+#import "base/time/time.h"
 #import "components/feed/core/shared_prefs/pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -42,6 +44,10 @@ constexpr int kFirstFollowModalShownMaxCount = 3;
 // migration code in `ShouldShowFirstFollowUI()` is removed.
 NSString* const kDisplayedFirstFollowModalCountKey =
     @"DisplayedFirstFollowModalCount";
+
+// Time delay in showing and announcing the notification after a site is
+// followed/unfollowed from follow feed management.
+const base::TimeDelta kSnackbarMessageVoiceOverDelay = base::Seconds(0.8);
 
 // Returns whether the First Follow UI must be displayed.
 bool ShouldShowFirstFollowUI(PrefService* pref_service) {
@@ -162,6 +168,44 @@ base::WeakPtr<FollowBrowserAgent> FollowBrowserAgent::AsWeakPtr() {
 
 FollowBrowserAgent::FollowBrowserAgent(Browser* browser) : browser_(browser) {}
 
+void FollowBrowserAgent::ShowOverlayMessage(FollowSource source,
+                                            NSString* message,
+                                            NSString* button_text,
+                                            MessageBlock message_action,
+                                            CompletionBlock completion_action) {
+  base::WeakPtr<FollowBrowserAgent> weak_ptr = AsWeakPtr();
+  base::OnceClosure closure =
+      base::BindOnce(&FollowBrowserAgent::ShowOverlayMessageHelper, weak_ptr,
+                     message, button_text, message_action, completion_action);
+
+  // Delay showing the snackbar message when voice over is on and the user has
+  // followed/unfollowed the site through feed management. This is to avoid the
+  // announcement being cut off by the addition of a new row to the feed
+  // management table.
+  // TODO(crbug.com/1398955): Temporary solution. A permanent solution should be
+  // in place to make sure that the agent verifies that the feed management UI
+  // is updated before showing the snackbar message.
+  if (UIAccessibilityIsVoiceOverRunning() &&
+      source == FollowSource::Management) {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, std::move(closure), kSnackbarMessageVoiceOverDelay);
+    return;
+  }
+
+  std::move(closure).Run();
+}
+
+void FollowBrowserAgent::ShowOverlayMessageHelper(
+    NSString* message,
+    NSString* button_text,
+    MessageBlock message_action,
+    CompletionBlock completion_action) {
+  [snack_bar_commands_ showSnackbarWithMessage:message
+                                    buttonText:button_text
+                                 messageAction:message_action
+                              completionAction:completion_action];
+}
+
 void FollowBrowserAgent::OnFollowResponse(WebPageURLs* web_page_urls,
                                           FollowSource source,
                                           FollowResult result,
@@ -249,11 +293,8 @@ void FollowBrowserAgent::OnFollowSuccess(WebPageURLs* web_page_urls,
               FollowConfirmationType::kFollowSucceedSnackbarShown];
     }
   };
-
-  [snack_bar_commands_ showSnackbarWithMessage:message
-                                    buttonText:button_text
-                                 messageAction:message_action
-                              completionAction:completion_action];
+  ShowOverlayMessage(source, message, button_text, message_action,
+                     completion_action);
 }
 
 void FollowBrowserAgent::OnFollowFailure(WebPageURLs* web_page_urls,
@@ -283,11 +324,8 @@ void FollowBrowserAgent::OnFollowFailure(WebPageURLs* web_page_urls,
                             FollowConfirmationType::kFollowErrorSnackbarShown];
     }
   };
-
-  [snack_bar_commands_ showSnackbarWithMessage:message
-                                    buttonText:button_text
-                                 messageAction:message_action
-                              completionAction:completion_action];
+  ShowOverlayMessage(source, message, button_text, message_action,
+                     completion_action);
 }
 
 void FollowBrowserAgent::OnUnfollowSuccess(WebPageURLs* web_page_urls,
@@ -325,11 +363,8 @@ void FollowBrowserAgent::OnUnfollowSuccess(WebPageURLs* web_page_urls,
               FollowConfirmationType::kUnfollowSucceedSnackbarShown];
     }
   };
-
-  [snack_bar_commands_ showSnackbarWithMessage:message
-                                    buttonText:button_text
-                                 messageAction:message_action
-                              completionAction:completion_action];
+  ShowOverlayMessage(source, message, button_text, message_action,
+                     completion_action);
 }
 
 void FollowBrowserAgent::OnUnfollowFailure(WebPageURLs* web_page_urls,
@@ -361,11 +396,8 @@ void FollowBrowserAgent::OnUnfollowFailure(WebPageURLs* web_page_urls,
               FollowConfirmationType::kUnfollowErrorSnackbarShown];
     }
   };
-
-  [snack_bar_commands_ showSnackbarWithMessage:message
-                                    buttonText:button_text
-                                 messageAction:message_action
-                              completionAction:completion_action];
+  ShowOverlayMessage(source, message, button_text, message_action,
+                     completion_action);
 }
 
 raw_ptr<FollowService> FollowBrowserAgent::GetFollowService() {

@@ -63,11 +63,29 @@ class FollowBrowserAgent final : public BrowserUserData<FollowBrowserAgent> {
   void RemoveObserver(Observer* observer);
 
  private:
+  using MessageBlock = void (^)(void);
+  using CompletionBlock = void (^)(BOOL success);
+
   friend class BrowserUserData<FollowBrowserAgent>;
 
   base::WeakPtr<FollowBrowserAgent> AsWeakPtr();
 
   explicit FollowBrowserAgent(Browser* browser);
+
+  // Show an overlay message at the bottom of the screen with action button.
+  // Invoked after a follow/unfollow request completes.
+  void ShowOverlayMessage(FollowSource source,
+                          NSString* message,
+                          NSString* button_text,
+                          MessageBlock message_action,
+                          CompletionBlock completion_action);
+
+  // Helper method that shows an overlay message at the bottom of the screen on
+  // invocation.
+  void ShowOverlayMessageHelper(NSString* message,
+                                NSString* button_text,
+                                MessageBlock message_action,
+                                CompletionBlock completion_action);
 
   // Invoked when a follow request completes.
   void OnFollowResponse(WebPageURLs* web_page_urls,
