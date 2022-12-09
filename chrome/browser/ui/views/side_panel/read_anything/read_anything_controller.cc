@@ -65,7 +65,7 @@ void ReadAnythingController::OnFontSizeChanged(bool increase) {
 }
 
 void ReadAnythingController::OnColorsChanged(int new_index) {
-  if (!model_->GetColorsModel()->IsValidColorsIndex(new_index))
+  if (!model_->GetColorsModel()->IsValidIndex(new_index))
     return;
 
   model_->SetSelectedColorsByIndex(new_index);
@@ -74,16 +74,12 @@ void ReadAnythingController::OnColorsChanged(int new_index) {
       prefs::kAccessibilityReadAnythingColorInfo, new_index);
 }
 
-ui::ComboboxModel* ReadAnythingController::GetColorsModel() {
+ReadAnythingMenuModel* ReadAnythingController::GetColorsModel() {
   return model_->GetColorsModel();
 }
 
-void ReadAnythingController::SetIconColorIds(ui::ColorId color_id) {
-  return model_->SetIconColorIds(color_id);
-}
-
 void ReadAnythingController::OnLineSpacingChanged(int new_index) {
-  if (!model_->GetLineSpacingModel()->IsValidLineSpacingIndex(new_index))
+  if (!model_->GetLineSpacingModel()->IsValidIndex(new_index))
     return;
 
   model_->SetSelectedLineSpacingByIndex(new_index);
@@ -92,12 +88,12 @@ void ReadAnythingController::OnLineSpacingChanged(int new_index) {
       prefs::kAccessibilityReadAnythingLineSpacing, new_index);
 }
 
-ui::ComboboxModel* ReadAnythingController::GetLineSpacingModel() {
+ReadAnythingMenuModel* ReadAnythingController::GetLineSpacingModel() {
   return model_->GetLineSpacingModel();
 }
 
 void ReadAnythingController::OnLetterSpacingChanged(int new_index) {
-  if (!model_->GetLetterSpacingModel()->IsValidLetterSpacingIndex(new_index))
+  if (!model_->GetLetterSpacingModel()->IsValidIndex(new_index))
     return;
 
   model_->SetSelectedLetterSpacingByIndex(new_index);
@@ -106,7 +102,7 @@ void ReadAnythingController::OnLetterSpacingChanged(int new_index) {
       prefs::kAccessibilityReadAnythingLetterSpacing, new_index);
 }
 
-ui::ComboboxModel* ReadAnythingController::GetLetterSpacingModel() {
+ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
   return model_->GetLetterSpacingModel();
 }
 

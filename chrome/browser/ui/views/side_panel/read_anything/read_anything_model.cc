@@ -48,32 +48,30 @@ void ReadAnythingModel::Init(const std::string& font_name,
   font_scale_ = GetValidFontScale(font_scale);
 
   size_t colors_index = static_cast<size_t>(colors);
-  if (colors_model_->IsValidColorsIndex(colors_index)) {
-    colors_model_->SetDefaultColorsIndexFromPref(colors_index);
+  if (colors_model_->IsValidIndex(colors_index)) {
+    colors_model_->SetSelectedIndex(colors_index);
   }
 
   size_t line_spacing_index = static_cast<size_t>(line_spacing);
-  if (line_spacing_model_->IsValidLineSpacingIndex(line_spacing_index)) {
-    line_spacing_model_->SetDefaultLineSpacingIndexFromPref(line_spacing_index);
+  if (line_spacing_model_->IsValidIndex(line_spacing_index)) {
+    line_spacing_model_->SetSelectedIndex(line_spacing_index);
   }
 
   size_t letter_spacing_index = static_cast<size_t>(letter_spacing);
-  if (letter_spacing_model_->IsValidLetterSpacingIndex(letter_spacing_index)) {
-    letter_spacing_model_->SetDefaultLetterSpacingIndexFromPref(
-        letter_spacing_index);
+  if (letter_spacing_model_->IsValidIndex(letter_spacing_index)) {
+    letter_spacing_model_->SetSelectedIndex(letter_spacing_index);
   }
 
   font_name_ = font_model_->GetFontNameAt(font_model_->GetStartingStateIndex());
-  colors_combobox_index_ = colors_model_->GetStartingStateIndex();
+  colors_combobox_index_ = colors_model_->GetSelectedIndex().value();
   auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
   foreground_color_id_ = initial_colors.foreground_color_id;
   background_color_id_ = initial_colors.background_color_id;
-  SetIconColorIds(initial_colors.foreground_color_id);
 
-  line_spacing = line_spacing_model_->GetLineSpacingAt(
-      line_spacing_model_->GetStartingStateIndex());
+  line_spacing_ = line_spacing_model_->GetLineSpacingAt(
+      line_spacing_model_->GetSelectedIndex().value());
   letter_spacing_ = letter_spacing_model_->GetLetterSpacingAt(
-      letter_spacing_model_->GetStartingStateIndex());
+      letter_spacing_model_->GetSelectedIndex().value());
 }
 
 void ReadAnythingModel::AddObserver(Observer* obs) {
@@ -96,7 +94,7 @@ void ReadAnythingModel::SetSelectedFontByIndex(size_t new_index) {
 
 void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   // Check that the index is valid.
-  DCHECK(colors_model_->IsValidColorsIndex(new_index));
+  DCHECK(colors_model_->IsValidIndex(new_index));
 
   colors_combobox_index_ = new_index;
   auto& new_colors = colors_model_->GetColorsAt(new_index);
@@ -106,15 +104,9 @@ void ReadAnythingModel::SetSelectedColorsByIndex(size_t new_index) {
   NotifyThemeChanged();
 }
 
-void ReadAnythingModel::SetIconColorIds(ui::ColorId color_id) {
-  colors_model_->SetIconColorId(color_id);
-  line_spacing_model_->SetIconColorId(color_id);
-  letter_spacing_model_->SetIconColorId(color_id);
-}
-
 void ReadAnythingModel::SetSelectedLineSpacingByIndex(size_t new_index) {
   // Check that the index is valid.
-  DCHECK(line_spacing_model_->IsValidLineSpacingIndex(new_index));
+  DCHECK(line_spacing_model_->IsValidIndex(new_index));
 
   line_spacing_ = line_spacing_model_->GetLineSpacingAt(new_index);
   NotifyThemeChanged();
@@ -122,7 +114,7 @@ void ReadAnythingModel::SetSelectedLineSpacingByIndex(size_t new_index) {
 
 void ReadAnythingModel::SetSelectedLetterSpacingByIndex(size_t new_index) {
   // Check that the index is valid.
-  DCHECK(letter_spacing_model_->IsValidLetterSpacingIndex(new_index));
+  DCHECK(letter_spacing_model_->IsValidIndex(new_index));
 
   letter_spacing_ = letter_spacing_model_->GetLetterSpacingAt(new_index);
   NotifyThemeChanged();
@@ -278,35 +270,20 @@ ReadAnythingColorsModel::ReadAnythingColorsModel() {
   colors_choices_.emplace_back(kYellowColors);
   colors_choices_.emplace_back(kBlueColors);
   colors_choices_.shrink_to_fit();
-}
-bool ReadAnythingColorsModel::IsValidColorsIndex(size_t index) {
-  return index < GetItemCount();
-}
 
-void ReadAnythingColorsModel::SetDefaultColorsIndexFromPref(size_t index) {
-  default_index_ = index;
+  for (std::vector<ColorInfo>::size_type i = 0; i < colors_choices_.size();
+       i++) {
+    AddCheckItem(i, colors_choices_[i].name);
+    SetIcon(i, GetDropDownIconAt(i));
+  }
+}
+bool ReadAnythingColorsModel::IsValidIndex(size_t index) {
+  return index < colors_choices_.size();
 }
 
 ReadAnythingColorsModel::ColorInfo& ReadAnythingColorsModel::GetColorsAt(
     size_t index) {
   return colors_choices_[index];
-}
-
-absl::optional<size_t> ReadAnythingColorsModel::GetDefaultIndex() const {
-  return default_index_;
-}
-
-size_t ReadAnythingColorsModel::GetItemCount() const {
-  return colors_choices_.size();
-}
-
-void ReadAnythingColorsModel::SetIconColorId(ui::ColorId color_id) {
-  icon_color_id_ = color_id;
-}
-
-ui::ImageModel ReadAnythingColorsModel::GetIconAt(size_t index) const {
-  return ui::ImageModel::FromVectorIcon(kPaletteIcon, icon_color_id_,
-                                        kColorsIconSize);
 }
 
 ui::ImageModel ReadAnythingColorsModel::GetDropDownIconAt(size_t index) const {
@@ -319,15 +296,6 @@ ui::ImageModel ReadAnythingColorsModel::GetDropDownIconAt(size_t index) const {
       gfx::ImageSkiaOperations::CreateResizedImage(
           *icon_skia_asset, skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
           gfx::Size(kColorsIconSize, kColorsIconSize)));
-}
-
-std::u16string ReadAnythingColorsModel::GetItemAt(size_t index) const {
-  // Only display the icon choice in the toolbar, so return empty string here.
-  return std::u16string();
-}
-
-std::u16string ReadAnythingColorsModel::GetDropDownTextAt(size_t index) const {
-  return colors_choices_[index].name;
 }
 
 ReadAnythingColorsModel::~ReadAnythingColorsModel() = default;
@@ -343,48 +311,19 @@ ReadAnythingLineSpacingModel::ReadAnythingLineSpacingModel() {
   lines_choices_.emplace_back(Spacing::kLoose);
   lines_choices_.emplace_back(Spacing::kVeryLoose);
   lines_choices_.shrink_to_fit();
+
+  for (auto& line_spacing : lines_choices_) {
+    AddCheckItem(static_cast<int>(line_spacing),
+                 GetLineSpacingName(line_spacing));
+  }
 }
 
-bool ReadAnythingLineSpacingModel::IsValidLineSpacingIndex(size_t index) {
-  return index < GetItemCount();
-}
-
-void ReadAnythingLineSpacingModel::SetDefaultLineSpacingIndexFromPref(
-    size_t index) {
-  default_index_ = index;
+bool ReadAnythingLineSpacingModel::IsValidIndex(size_t index) {
+  return index < lines_choices_.size();
 }
 
 Spacing ReadAnythingLineSpacingModel::GetLineSpacingAt(size_t index) {
-  DCHECK_LT(index, GetItemCount());
-
   return lines_choices_[index];
-}
-
-absl::optional<size_t> ReadAnythingLineSpacingModel::GetDefaultIndex() const {
-  return default_index_;
-}
-
-size_t ReadAnythingLineSpacingModel::GetItemCount() const {
-  return lines_choices_.size();
-}
-
-void ReadAnythingLineSpacingModel::SetIconColorId(ui::ColorId color_id) {
-  icon_color_id_ = color_id;
-}
-
-ui::ImageModel ReadAnythingLineSpacingModel::GetIconAt(size_t index) const {
-  return ui::ImageModel::FromVectorIcon(kLineSpacingIcon, icon_color_id_,
-                                        kColorsIconSize);
-}
-
-ui::ImageModel ReadAnythingLineSpacingModel::GetDropDownIconAt(
-    size_t index) const {
-  return ui::ImageModel();
-}
-
-std::u16string ReadAnythingLineSpacingModel::GetItemAt(size_t index) const {
-  // Only display the icon in the toolbar, so return empty string here.
-  return std::u16string();
 }
 
 std::u16string ReadAnythingLineSpacingModel::GetLineSpacingName(
@@ -401,45 +340,30 @@ std::u16string ReadAnythingLineSpacingModel::GetLineSpacingName(
   }
 }
 
-std::u16string ReadAnythingLineSpacingModel::GetDropDownTextAt(
-    size_t index) const {
-  DCHECK_LT(index, GetItemCount());
-  return GetLineSpacingName(lines_choices_[index]);
-}
-
 ReadAnythingLineSpacingModel::~ReadAnythingLineSpacingModel() = default;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingLetterSpacingModel
 ///////////////////////////////////////////////////////////////////////////////
-
 ReadAnythingLetterSpacingModel::ReadAnythingLetterSpacingModel() {
-  letter_spacing_choices_.emplace_back(Spacing::kTight);
-  letter_spacing_choices_.emplace_back(Spacing::kDefault);
-  letter_spacing_choices_.emplace_back(Spacing::kLoose);
-  letter_spacing_choices_.emplace_back(Spacing::kVeryLoose);
-  letter_spacing_choices_.shrink_to_fit();
+  choices_.emplace_back(Spacing::kTight);
+  choices_.emplace_back(Spacing::kDefault);
+  choices_.emplace_back(Spacing::kLoose);
+  choices_.emplace_back(Spacing::kVeryLoose);
+  choices_.shrink_to_fit();
+
+  for (auto& letter_spacing : choices_) {
+    AddCheckItem(static_cast<int>(letter_spacing),
+                 GetLetterSpacingName(letter_spacing));
+  }
 }
 
-bool ReadAnythingLetterSpacingModel::IsValidLetterSpacingIndex(size_t index) {
-  return index < GetItemCount();
-}
-
-void ReadAnythingLetterSpacingModel::SetDefaultLetterSpacingIndexFromPref(
-    size_t index) {
-  default_index_ = index;
-}
-
-absl::optional<size_t> ReadAnythingLetterSpacingModel::GetDefaultIndex() const {
-  return default_index_;
-}
-
-size_t ReadAnythingLetterSpacingModel::GetItemCount() const {
-  return letter_spacing_choices_.size();
+bool ReadAnythingLetterSpacingModel::IsValidIndex(size_t index) {
+  return index < choices_.size();
 }
 
 Spacing ReadAnythingLetterSpacingModel::GetLetterSpacingAt(size_t index) {
-  return letter_spacing_choices_[index];
+  return choices_[index];
 }
 
 // TODO (crbug.com/1266555): Change to translatable messages
@@ -460,31 +384,6 @@ std::u16string ReadAnythingLetterSpacingModel::GetLetterSpacingName(
       label = IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE;
   }
   return l10n_util::GetStringUTF16(label);
-}
-
-std::u16string ReadAnythingLetterSpacingModel::GetDropDownTextAt(
-    size_t index) const {
-  DCHECK_LT(index, GetItemCount());
-  return GetLetterSpacingName(letter_spacing_choices_[index]);
-}
-
-std::u16string ReadAnythingLetterSpacingModel::GetItemAt(size_t index) const {
-  // Only display the icon in the toolbar, so return empty string here.
-  return std::u16string();
-}
-
-void ReadAnythingLetterSpacingModel::SetIconColorId(ui::ColorId color_id) {
-  icon_color_id_ = color_id;
-}
-
-ui::ImageModel ReadAnythingLetterSpacingModel::GetIconAt(size_t index) const {
-  return ui::ImageModel::FromVectorIcon(kLetterSpacingIcon, icon_color_id_,
-                                        kColorsIconSize);
-}
-
-ui::ImageModel ReadAnythingLetterSpacingModel::GetDropDownIconAt(
-    size_t index) const {
-  return ui::ImageModel();
 }
 
 ReadAnythingLetterSpacingModel::~ReadAnythingLetterSpacingModel() = default;

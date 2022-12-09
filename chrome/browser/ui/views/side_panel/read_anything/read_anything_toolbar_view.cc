@@ -9,6 +9,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
@@ -62,42 +63,30 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
 
-  // Create theme selection combobox.
-  auto colors_combobox = std::make_unique<views::Combobox>();
-  colors_combobox->SetModel(delegate_->GetColorsModel());
-  colors_combobox->SetTooltipTextAndAccessibleName(
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_COLORS_COMBOBOX_LABEL));
-  colors_combobox->SetSizeToLargestLabel(false);
-  colors_combobox->SetCallback(
+  // Create theme selection menubutton.
+  auto colors_button = std::make_unique<ReadAnythingMenuButton>(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeColorsCallback,
-                          weak_pointer_factory_.GetWeakPtr()));
-  colors_combobox->SetShouldShowArrow(false);
-  colors_combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
+                          weak_pointer_factory_.GetWeakPtr()),
+      kPaletteIcon,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_COLORS_COMBOBOX_LABEL),
+      delegate_->GetColorsModel());
 
-  // Create line spacing combobox
-  auto lines_combobox = std::make_unique<views::Combobox>();
-  lines_combobox->SetModel(delegate_->GetLineSpacingModel());
-  lines_combobox->SetTooltipTextAndAccessibleName(
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_LINE_SPACING_COMBOBOX_LABEL));
-  lines_combobox->SetSizeToLargestLabel(false);
-  lines_combobox->SetCallback(
+  // Create line spacing menubutton.
+  auto line_spacing_button = std::make_unique<ReadAnythingMenuButton>(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLineSpacingCallback,
-                          weak_pointer_factory_.GetWeakPtr()));
-  lines_combobox->SetShouldShowArrow(false);
-  lines_combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
+                          weak_pointer_factory_.GetWeakPtr()),
+      kLineSpacingIcon,
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_LINE_SPACING_COMBOBOX_LABEL),
+      delegate_->GetLineSpacingModel());
 
-  // Create letter spacing selection combobox.
-  auto letter_spacing_combobox = std::make_unique<views::Combobox>();
-  letter_spacing_combobox->SetModel(delegate_->GetLetterSpacingModel());
-  letter_spacing_combobox->SetTooltipTextAndAccessibleName(
-      l10n_util::GetStringUTF16(
-          IDS_READ_ANYTHING_LETTER_SPACING_COMBOBOX_LABEL));
-  letter_spacing_combobox->SetSizeToLargestLabel(false);
-  letter_spacing_combobox->SetCallback(
+  // Create letter spacing menubutton.
+  auto letter_spacing_button = std::make_unique<ReadAnythingMenuButton>(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLetterSpacingCallback,
-                          weak_pointer_factory_.GetWeakPtr()));
-  letter_spacing_combobox->SetShouldShowArrow(false);
-  letter_spacing_combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
+                          weak_pointer_factory_.GetWeakPtr()),
+      kLetterSpacingIcon,
+      l10n_util::GetStringUTF16(
+          IDS_READ_ANYTHING_LETTER_SPACING_COMBOBOX_LABEL),
+      delegate_->GetLetterSpacingModel());
 
   // Add all views as children.
   font_combobox_ = AddChildView(std::move(combobox));
@@ -105,9 +94,9 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   decrease_text_size_button_ = AddChildView(std::move(decrease_size_button));
   increase_text_size_button_ = AddChildView(std::move(increase_size_button));
   AddChildView(Separator());
-  colors_combobox_ = AddChildView(std::move(colors_combobox));
-  lines_combobox_ = AddChildView(std::move(lines_combobox));
-  letter_spacing_combobox_ = AddChildView(std::move(letter_spacing_combobox));
+  colors_button_ = AddChildView(std::move(colors_button));
+  line_spacing_button_ = AddChildView(std::move(line_spacing_button));
+  letter_spacing_button_ = AddChildView(std::move(letter_spacing_button));
 
   // Start observing model after views creation so initial theme is applied.
   coordinator_->AddModelObserver(this);
@@ -131,20 +120,19 @@ void ReadAnythingToolbarView::IncreaseFontSizeCallback() {
 
 void ReadAnythingToolbarView::ChangeColorsCallback() {
   if (delegate_)
-    delegate_->OnColorsChanged(
-        colors_combobox_->GetSelectedIndex().value_or(0));
+    delegate_->OnColorsChanged(colors_button_->GetSelectedIndex().value_or(0));
 }
 
 void ReadAnythingToolbarView::ChangeLineSpacingCallback() {
   if (delegate_)
     delegate_->OnLineSpacingChanged(
-        lines_combobox_->GetSelectedIndex().value_or(1));
+        line_spacing_button_->GetSelectedIndex().value_or(1));
 }
 
 void ReadAnythingToolbarView::ChangeLetterSpacingCallback() {
   if (delegate_)
     delegate_->OnLetterSpacingChanged(
-        letter_spacing_combobox_->GetSelectedIndex().value_or(1));
+        letter_spacing_button_->GetSelectedIndex().value_or(1));
 }
 
 void ReadAnythingToolbarView::OnCoordinatorDestroyed() {
@@ -152,6 +140,9 @@ void ReadAnythingToolbarView::OnCoordinatorDestroyed() {
   coordinator_ = nullptr;
   delegate_ = nullptr;
   font_combobox_->SetModel(nullptr);
+  colors_button_->SetMenuModel(nullptr);
+  line_spacing_button_->SetMenuModel(nullptr);
+  letter_spacing_button_->SetMenuModel(nullptr);
 }
 
 void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
@@ -172,11 +163,11 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   SetBackground(views::CreateSolidBackground(background_skcolor));
   font_combobox_->SetBackground(
       views::CreateSolidBackground(background_skcolor));
-  colors_combobox_->SetBackground(
+  colors_button_->SetBackground(
       views::CreateSolidBackground(background_skcolor));
-  lines_combobox_->SetBackground(
+  line_spacing_button_->SetBackground(
       views::CreateSolidBackground(background_skcolor));
-  letter_spacing_combobox_->SetBackground(
+  letter_spacing_button_->SetBackground(
       views::CreateSolidBackground(background_skcolor));
 
   decrease_text_size_button_->UpdateIcon(kTextDecreaseIcon, kSmallIconSize,
@@ -185,11 +176,17 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   increase_text_size_button_->UpdateIcon(kTextIncreaseIcon, kLargeIconSize,
                                          foreground_skcolor);
 
+  colors_button_->SetIcon(kPaletteIcon, kLargeIconSize, foreground_skcolor);
+
+  line_spacing_button_->SetIcon(kLineSpacingIcon, kLargeIconSize,
+                                foreground_skcolor);
+  letter_spacing_button_->SetIcon(kLetterSpacingIcon, kLargeIconSize,
+                                  foreground_skcolor);
+
   for (views::Separator* separator : separators_) {
     separator->SetColorId(foreground_color_id);
   }
 
-  delegate_->SetIconColorIds(foreground_color_id);
   font_combobox_->SetForegroundColorId(foreground_color_id);
 }
 

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_button.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -35,12 +36,11 @@ class ReadAnythingToolbarView : public views::View,
    public:
     virtual void OnFontSizeChanged(bool increase) = 0;
     virtual void OnColorsChanged(int new_index) = 0;
-    virtual ui::ComboboxModel* GetColorsModel() = 0;
-    virtual void SetIconColorIds(ui::ColorId color_id) = 0;
+    virtual ReadAnythingMenuModel* GetColorsModel() = 0;
     virtual void OnLineSpacingChanged(int new_index) = 0;
-    virtual ui::ComboboxModel* GetLineSpacingModel() = 0;
+    virtual ReadAnythingMenuModel* GetLineSpacingModel() = 0;
     virtual void OnLetterSpacingChanged(int new_index) = 0;
-    virtual ui::ComboboxModel* GetLetterSpacingModel() = 0;
+    virtual ReadAnythingMenuModel* GetLetterSpacingModel() = 0;
   };
 
   ReadAnythingToolbarView(
@@ -81,9 +81,9 @@ class ReadAnythingToolbarView : public views::View,
   raw_ptr<views::Combobox> font_combobox_;
   raw_ptr<ReadAnythingButtonView> decrease_text_size_button_;
   raw_ptr<ReadAnythingButtonView> increase_text_size_button_;
-  raw_ptr<views::Combobox> colors_combobox_;
-  raw_ptr<views::Combobox> lines_combobox_;
-  raw_ptr<views::Combobox> letter_spacing_combobox_;
+  raw_ptr<ReadAnythingMenuButton> colors_button_;
+  raw_ptr<ReadAnythingMenuButton> line_spacing_button_;
+  raw_ptr<ReadAnythingMenuButton> letter_spacing_button_;
   std::vector<raw_ptr<views::Separator>> separators_;
 
   raw_ptr<ReadAnythingToolbarView::Delegate> delegate_;

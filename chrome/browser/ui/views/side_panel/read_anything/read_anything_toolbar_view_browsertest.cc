@@ -20,12 +20,11 @@ class MockReadAnythingToolbarViewDelegate
  public:
   MOCK_METHOD(void, OnFontSizeChanged, (bool increase), (override));
   MOCK_METHOD(void, OnColorsChanged, (int new_index), (override));
-  MOCK_METHOD(ui::ComboboxModel*, GetColorsModel, (), (override));
-  MOCK_METHOD(void, SetIconColorIds, (ui::ColorId color_id), (override));
+  MOCK_METHOD(ReadAnythingMenuModel*, GetColorsModel, (), (override));
   MOCK_METHOD(void, OnLineSpacingChanged, (int new_index), (override));
-  MOCK_METHOD(ui::ComboboxModel*, GetLineSpacingModel, (), (override));
+  MOCK_METHOD(ReadAnythingMenuModel*, GetLineSpacingModel, (), (override));
   MOCK_METHOD(void, OnLetterSpacingChanged, (int new_index), (override));
-  MOCK_METHOD(ui::ComboboxModel*, GetLetterSpacingModel, (), (override));
+  MOCK_METHOD(ReadAnythingMenuModel*, GetLetterSpacingModel, (), (override));
 };
 
 class MockReadAnythingFontComboboxDelegate
@@ -86,8 +85,6 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
     toolbar_view_->ChangeLetterSpacingCallback();
   }
 
-  void Separator() { toolbar_view_->Separator(); }
-
  protected:
   MockReadAnythingToolbarViewDelegate toolbar_delegate_;
   MockReadAnythingFontComboboxDelegate font_combobox_delegate_;
@@ -113,20 +110,20 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, IncreaseFontSizeCallback) {
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, ChangeColorsCallback) {
-  EXPECT_CALL(toolbar_delegate_, OnColorsChanged(0)).Times(1);
+  EXPECT_CALL(toolbar_delegate_, OnColorsChanged(_)).Times(1);
 
   ChangeColorsCallback();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, ChangeLineSpacingCallback) {
-  EXPECT_CALL(toolbar_delegate_, OnLineSpacingChanged(1)).Times(1);
+  EXPECT_CALL(toolbar_delegate_, OnLineSpacingChanged(_)).Times(1);
 
   ChangeLineSpacingCallback();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
                        ChangeLetterSpacingCallback) {
-  EXPECT_CALL(toolbar_delegate_, OnLetterSpacingChanged(1)).Times(1);
+  EXPECT_CALL(toolbar_delegate_, OnLetterSpacingChanged(_)).Times(1);
 
   ChangeLetterSpacingCallback();
 }
