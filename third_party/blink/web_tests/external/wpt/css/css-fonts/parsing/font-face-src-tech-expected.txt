@@ -3,16 +3,16 @@ PASS Check that src: url("foo.ttf") is valid
 PASS Check that src: url("foo.ttf") tech() is invalid
 PASS Check that src: url("foo.ttf") tech(features-opentype) is valid
 PASS Check that src: url("foo.ttf") tech(features-aat) is valid
-PASS Check that src: url("foo.ttf") tech(color-COLRv0) is valid
-PASS Check that src: url("foo.ttf") tech(color-COLRv1) is valid
+FAIL Check that src: url("foo.ttf") tech(color-COLRv0) is valid assert_equals: expected matching tech() lists expected "color-colrv0" but got "color-COLRv0"
+FAIL Check that src: url("foo.ttf") tech(color-COLRv1) is valid assert_equals: expected matching tech() lists expected "color-colrv1" but got "color-COLRv1"
 PASS Check that src: url("foo.ttf") tech(color-sbix) is valid
-PASS Check that src: url("foo.ttf") tech(color-CBDT) is valid
+FAIL Check that src: url("foo.ttf") tech(color-CBDT) is valid assert_equals: expected matching tech() lists expected "color-cbdt" but got "color-CBDT"
 PASS Check that src: url("foo.ttf") tech(variations) is valid
 PASS Check that src: url("foo.ttf") tech(palettes) is valid
 PASS Check that src: url("foo.ttf") tech("features-opentype") is invalid
 PASS Check that src: url("foo.ttf") tech("color-COLRv0") is invalid
 PASS Check that src: url("foo.ttf") tech("variations") is invalid
-PASS Check that src: url("foo.ttf") tech(features-opentype, color-COLRv0, variations, palettes) is valid
+FAIL Check that src: url("foo.ttf") tech(features-opentype, color-COLRv0, variations, palettes) is valid assert_equals: expected matching tech() lists expected "color-colrv0, features-opentype, palettes, variations" but got "color-COLRv0, features-opentype, palettes, variations"
 PASS Check that src: url("foo.ttf") tech(features-opentype color-COLRv0 variations palettes) is invalid
 PASS Check that src: url("foo.ttf") tech(feature-opentype) is invalid
 PASS Check that src: url("foo.ttf") tech(feature-aat) is invalid
