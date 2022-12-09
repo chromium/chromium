@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeEnabledTest,
   web_app::AppId app_id =
       *GetManager().GetAppIdForSystemApp(SystemWebAppType::HELP);
   web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(profile())->registrar();
+      web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
 
   EXPECT_EQ(registrar.GetAppThemeColor(app_id), SK_ColorWHITE);
   EXPECT_EQ(registrar.GetAppBackgroundColor(app_id), SK_ColorWHITE);
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationDarkLightModeDisabledTest,
   web_app::AppId app_id =
       *GetManager().GetAppIdForSystemApp(SystemWebAppType::HELP);
   web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForTest(profile())->registrar();
+      web_app::WebAppProvider::GetForTest(profile())->registrar_unsafe();
 
   EXPECT_EQ(registrar.GetAppThemeColor(app_id), SK_ColorWHITE);
   EXPECT_EQ(registrar.GetAppBackgroundColor(app_id), SK_ColorWHITE);
