@@ -2705,9 +2705,6 @@ extern const char kAmbientSubpageUIChangeDescription[];
 extern const char kApnRevampName[];
 extern const char kApnRevampDescription[];
 
-extern const char kAppDiscoveryForOobeName[];
-extern const char kAppDiscoveryForOobeDescription[];
-
 extern const char kArcCustomTabsExperimentName[];
 extern const char kArcCustomTabsExperimentDescription[];
 
