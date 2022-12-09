@@ -987,6 +987,24 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       }
       transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
+      // Ensure that `ycbcr_info` is provided when necessary.
+      // TODO(crbug.com/1399429): Avoid duplicating this logic.
+      if (IsYuvFormat(transfer_resource.format.resource_format()) &&
+          !transfer_resource.ycbcr_info) {
+        VkSamplerYcbcrModelConversion ycbcr_conversion =
+            (resource_color_space.GetMatrixID() ==
+             gfx::ColorSpace::MatrixID::BT709)
+                ? VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_709
+                : VK_SAMPLER_YCBCR_MODEL_CONVERSION_YCBCR_601;
+
+        transfer_resource.ycbcr_info = gpu::VulkanYCbCrInfo(
+            ToVkFormat(transfer_resource.format.resource_format()),
+            /*external_format=*/0, ycbcr_conversion,
+            VK_SAMPLER_YCBCR_RANGE_ITU_NARROW, VK_CHROMA_LOCATION_COSITED_EVEN,
+            VK_CHROMA_LOCATION_COSITED_EVEN,
+            /*format_features=*/0);
+      }
+
 #if BUILDFLAG(IS_ANDROID)
       transfer_resource.is_backed_by_surface_texture =
           video_frame->metadata().texture_owner;

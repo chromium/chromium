@@ -1220,7 +1220,6 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
   if (dependency_->IsUsingVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
     if (!ycbcr_info) {
-      // YCbCr info is required for YUV images.
       DCHECK(si_format.is_single_plane());
       // TODO(hitawala): Add multiplanar support for Skia-Vulkan.
       return GrBackendFormat::MakeVk(gpu::ToVkFormat(si_format));
@@ -1253,11 +1252,6 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
         gpu::ToMTLPixelFormat(si_format, plane_index));
 #endif
   } else {
-#if !BUILDFLAG(IS_LINUX)
-    // Skip the check as ycbcr info is always set by `VaapiVideoDecoder` on
-    // Linux.
-    DCHECK(!ycbcr_info);
-#endif
     // Convert internal format from GLES2 to platform GL.
     bool use_angle_rgbx_format = impl_on_gpu_->GetFeatureInfo()
                                      ->feature_flags()

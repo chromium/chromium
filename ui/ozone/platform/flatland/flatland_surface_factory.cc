@@ -205,6 +205,19 @@ FlatlandSurfaceFactory::CreateVulkanImplementation(
       allow_protected_memory);
 }
 
+std::vector<gfx::BufferFormat>
+FlatlandSurfaceFactory::GetSupportedFormatsForTexturing() const {
+  return {
+      gfx::BufferFormat::R_8,
+      gfx::BufferFormat::RG_88,
+      gfx::BufferFormat::RGBA_8888,
+      gfx::BufferFormat::RGBX_8888,
+      gfx::BufferFormat::BGRA_8888,
+      gfx::BufferFormat::BGRX_8888,
+      gfx::BufferFormat::YUV_420_BIPLANAR,
+  };
+}
+
 void FlatlandSurfaceFactory::AddSurface(gfx::AcceleratedWidget widget,
                                         FlatlandSurface* surface) {
   base::AutoLock lock(surface_lock_);

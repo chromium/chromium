@@ -66,6 +66,9 @@ GetResourceFormat(gfx::BufferFormat format);
 
 VIZ_RESOURCE_FORMAT_EXPORT bool GLSupportsFormat(ResourceFormat format);
 
+// Returns true formats that require YUV (aka YCbCr) sampler.
+VIZ_RESOURCE_FORMAT_EXPORT bool IsYuvFormat(ResourceFormat format);
+
 #if BUILDFLAG(ENABLE_VULKAN)
 VIZ_RESOURCE_FORMAT_EXPORT bool HasVkFormat(ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT VkFormat ToVkFormat(ResourceFormat format);

@@ -176,7 +176,8 @@ uint32_t GetPlatformSpecificTextureTarget() {
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   return GL_TEXTURE_EXTERNAL_OES;
 #elif BUILDFLAG(IS_FUCHSIA)
-  return GL_TEXTURE_2D;
+  // Fuchsia uses Vulkan.
+  return 0;
 #elif BUILDFLAG(IS_NACL)
   NOTREACHED();
   return 0;
