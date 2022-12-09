@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
@@ -193,11 +194,8 @@ NSInteger kTrailingSymbolSize = 18;
     ChromeAccountManagerServiceObserver,
     PasswordExporterDelegate,
     PasswordExportActivityViewControllerDelegate,
-    PasswordsConsumer,
     PopoverLabelViewControllerDelegate,
-    TableViewIllustratedEmptyViewDelegate,
-    UISearchBarDelegate,
-    UISearchControllerDelegate> {
+    TableViewIllustratedEmptyViewDelegate> {
   // The observable boolean that binds to the password manager setting state.
   // Saved passwords are only on if the password manager is enabled.
   PrefBackedBoolean* _passwordManagerEnabled;

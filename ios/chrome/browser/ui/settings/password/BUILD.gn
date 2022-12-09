@@ -74,6 +74,7 @@ source_set("password_ui") {
     "password_issues_presenter.h",
     "password_issues_table_view_controller.h",
     "password_issues_table_view_controller.mm",
+    "password_manager_view_controller+private.h",
     "password_manager_view_controller.h",
     "password_manager_view_controller.mm",
     "password_manager_view_controller_delegate.h",

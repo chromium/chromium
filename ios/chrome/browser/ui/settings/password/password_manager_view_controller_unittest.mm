@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/save_passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
@@ -58,17 +59,6 @@ using password_manager::MockBulkLeakCheckService;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using ::testing::Return;
-
-// Declaration to conformance to SavePasswordsConsumerDelegate and keep tests in
-// this file working.
-@interface PasswordManagerViewController (Test) <PasswordsConsumer,
-                                                 UISearchBarDelegate,
-                                                 UISearchControllerDelegate>
-- (void)updateExportPasswordsButton;
-
-- (BOOL)didReceivePasswords;
-
-@end
 
 // TODO(crbug.com/1324555): Remove this double and uses TestSyncUserSettings
 @interface TestPasswordsMediator : PasswordsMediator
