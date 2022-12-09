@@ -743,19 +743,6 @@ const base::Value* ExtensionPrefs::GetPrefAsValue(
   return value && value->is_dict() ? value : nullptr;
 }
 
-bool ExtensionPrefs::ReadPrefAsDictionary(
-    const std::string& extension_id,
-    base::StringPiece pref_key,
-    const base::DictionaryValue** out_value) const {
-  const base::Value* out = GetPrefAsValue(extension_id, pref_key);
-  if (!out)
-    return false;
-  if (out_value)
-    *out_value = &base::Value::AsDictionaryValue(*out);
-
-  return true;
-}
-
 const base::Value::Dict* ExtensionPrefs::ReadPrefAsDict(
     const std::string& extension_id,
     base::StringPiece pref_key) const {
@@ -1708,10 +1695,10 @@ int ExtensionPrefs::GetCreationFlags(const std::string& extension_id) const {
 int ExtensionPrefs::GetDelayedInstallCreationFlags(
     const std::string& extension_id) const {
   int creation_flags = Extension::NO_FLAGS;
-  const base::DictionaryValue* delayed_info = nullptr;
-  if (ReadPrefAsDictionary(extension_id, kDelayedInstallInfo, &delayed_info)) {
-    if (absl::optional<int> flags =
-            delayed_info->FindIntKey(kPrefCreationFlags)) {
+  const base::Value::Dict* delayed_info =
+      ReadPrefAsDict(extension_id, kDelayedInstallInfo);
+  if (delayed_info) {
+    if (absl::optional<int> flags = delayed_info->FindInt(kPrefCreationFlags)) {
       creation_flags = *flags;
     }
   }

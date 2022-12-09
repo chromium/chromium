@@ -76,14 +76,14 @@ bool LazyEventDispatchUtil::ReadPendingOnInstallInfoFromPref(
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
   DCHECK(prefs);
 
-  const base::DictionaryValue* info = nullptr;
-  if (!prefs->ReadPrefAsDictionary(
-          extension_id, kPrefPendingOnInstalledEventDispatchInfo, &info)) {
+  const base::Value::Dict* info = prefs->ReadPrefAsDict(
+      extension_id, kPrefPendingOnInstalledEventDispatchInfo);
+  if (!info) {
     return false;
   }
 
   const std::string* previous_version_string =
-      info->FindStringKey(kPrefPreviousVersion);
+      info->FindString(kPrefPreviousVersion);
   // |previous_version_string| can be empty.
   *previous_version = base::Version(
       previous_version_string ? *previous_version_string : std::string());

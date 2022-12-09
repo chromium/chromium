@@ -581,16 +581,15 @@ base::Version ServiceWorkerTaskQueue::RetrieveRegisteredServiceWorkerVersion(
     return it != off_the_record_registrations_.end() ? it->second
                                                      : base::Version();
   }
-  const base::DictionaryValue* info = nullptr;
-  ExtensionPrefs::Get(browser_context_)
-      ->ReadPrefAsDictionary(extension_id, kPrefServiceWorkerRegistrationInfo,
-                             &info);
+  const base::Value::Dict* info =
+      ExtensionPrefs::Get(browser_context_)
+          ->ReadPrefAsDict(extension_id, kPrefServiceWorkerRegistrationInfo);
   if (!info) {
     return base::Version();
   }
 
   if (const std::string* version_string =
-          info->FindStringKey(kServiceWorkerVersion)) {
+          info->FindString(kServiceWorkerVersion)) {
     return base::Version(*version_string);
   }
   return base::Version();

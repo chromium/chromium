@@ -50,15 +50,20 @@ std::unique_ptr<omnibox::SuggestResult> GetOmniboxDefaultSuggestion(
     Profile* profile,
     const std::string& extension_id) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
-
-  std::unique_ptr<omnibox::SuggestResult> suggestion;
-  const base::DictionaryValue* dict = nullptr;
-  if (prefs && prefs->ReadPrefAsDictionary(extension_id,
-                                           kOmniboxDefaultSuggestion,
-                                           &dict)) {
-    suggestion = std::make_unique<omnibox::SuggestResult>();
-    omnibox::SuggestResult::Populate(*dict, suggestion.get());
+  if (!prefs) {
+    return nullptr;
   }
+
+  const base::Value::Dict* dict =
+      prefs->ReadPrefAsDict(extension_id, kOmniboxDefaultSuggestion);
+  if (!dict) {
+    return nullptr;
+  }
+
+  auto suggestion = std::make_unique<omnibox::SuggestResult>();
+  omnibox::SuggestResult::Populate(base::Value(dict->Clone()),
+                                   suggestion.get());
+
   return suggestion;
 }
 
