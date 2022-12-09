@@ -53,8 +53,8 @@ using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialType;
 using blink::mojom::blink::DevicePublicKeyRequest;
 using blink::mojom::blink::DevicePublicKeyRequestPtr;
-using blink::mojom::blink::IdentityProvider;
-using blink::mojom::blink::IdentityProviderPtr;
+using blink::mojom::blink::IdentityProviderConfig;
+using blink::mojom::blink::IdentityProviderConfigPtr;
 using blink::mojom::blink::LargeBlobSupport;
 using blink::mojom::blink::LogoutRpsRequest;
 using blink::mojom::blink::LogoutRpsRequestPtr;
@@ -690,10 +690,10 @@ TypeConverter<RemoteDesktopClientOverridePtr,
 }
 
 // static
-IdentityProviderPtr
-TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
-    const blink::IdentityProviderConfig& provider) {
-  auto mojo_provider = IdentityProvider::New();
+IdentityProviderConfigPtr
+TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
+    Convert(const blink::IdentityProviderConfig& provider) {
+  auto mojo_provider = IdentityProviderConfig::New();
 
   mojo_provider->config_url = blink::KURL(provider.configURL());
   mojo_provider->client_id = provider.clientId();

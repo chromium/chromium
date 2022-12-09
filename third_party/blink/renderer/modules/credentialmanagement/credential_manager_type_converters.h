@@ -193,11 +193,9 @@ struct TypeConverter<blink::mojom::blink::RemoteDesktopClientOverridePtr,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::IdentityProviderPtr,
+struct TypeConverter<blink::mojom::blink::IdentityProviderConfigPtr,
                      blink::IdentityProviderConfig> {
-  // TODO(b/1394805): also rename the blink::mojom::blink::IdentityProviderPtr
-  // to use IdentityProviderConfigPtr.
-  static blink::mojom::blink::IdentityProviderPtr Convert(
+  static blink::mojom::blink::IdentityProviderConfigPtr Convert(
       const blink::IdentityProviderConfig&);
 };
 

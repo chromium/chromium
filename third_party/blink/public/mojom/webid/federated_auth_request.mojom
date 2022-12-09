@@ -48,7 +48,7 @@ struct LogoutRpsRequest {
 };
 
 // The details of an identity provider.
-struct IdentityProvider {
+struct IdentityProviderConfig {
   url.mojom.Url config_url;
 
   // Can be an empty string to be omitted in the request sent to the provider.
@@ -61,7 +61,7 @@ struct IdentityProvider {
 // The parameters for a get call for identity provider(s).
 struct IdentityProviderGetParameters {
   // Details of identity provider(s).
-  array<IdentityProvider> providers;
+  array<IdentityProviderConfig> providers;
 
   // Whether auto sign in is preferred by the caller.
   bool prefer_auto_sign_in;

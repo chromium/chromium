@@ -38,9 +38,9 @@
 #include "url/url_constants.h"
 
 using blink::mojom::FederatedAuthRequestResult;
-using blink::mojom::IdentityProvider;
+using blink::mojom::IdentityProviderConfig;
+using blink::mojom::IdentityProviderConfigPtr;
 using blink::mojom::IdentityProviderGetParametersPtr;
-using blink::mojom::IdentityProviderPtr;
 using blink::mojom::LogoutRpsStatus;
 using blink::mojom::RequestTokenStatus;
 using FederatedApiPermissionStatus =
@@ -321,7 +321,7 @@ FederatedAuthRequestPageData* GetPageData(RenderFrameHost* render_frame_host) {
 }  // namespace
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
-    blink::mojom::IdentityProvider provider,
+    blink::mojom::IdentityProviderConfig provider,
     bool prefer_auto_signin)
     : provider(std::move(provider)), prefer_auto_signin(prefer_auto_signin) {}
 
@@ -331,7 +331,7 @@ FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
     const IdentityProviderGetInfo&) = default;
 
 FederatedAuthRequestImpl::IdentityProviderInfo::IdentityProviderInfo(
-    blink::mojom::IdentityProvider provider,
+    blink::mojom::IdentityProviderConfig provider,
     IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata metadata,
     bool prefer_auto_signin)
@@ -950,7 +950,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 }
 
 void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
-    const IdentityProvider& idp,
+    const IdentityProviderConfig& idp,
     IdpNetworkRequestManager::AccountList& accounts) {
   // Populate the accounts login state.
   for (auto& account : accounts) {
@@ -1078,7 +1078,7 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
-    const IdentityProvider& idp,
+    const IdentityProviderConfig& idp,
     IdpNetworkRequestManager::FetchStatus status,
     const std::string& id_token) {
   if (!auth_request_callback_)
@@ -1104,7 +1104,7 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
 }
 
 void FederatedAuthRequestImpl::CompleteTokenRequest(
-    const IdentityProvider& idp,
+    const IdentityProviderConfig& idp,
     IdpNetworkRequestManager::FetchStatus status,
     const std::string& token) {
   DCHECK(!start_time_.is_null());

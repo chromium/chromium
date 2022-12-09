@@ -217,11 +217,11 @@ static const MockClientIdConfiguration kDefaultClientMetadata{
     kPrivacyPolicyUrl,
     kTermsOfServiceUrl};
 
-static const IdentityProviderParameters kDefaultIdentityProvider{
+static const IdentityProviderParameters kDefaultIdentityProviderConfig{
     kProviderUrlFull, kClientId, kNonce};
 
 static const RequestParameters kDefaultRequestParameters{
-    std::vector<IdentityProviderParameters>{kDefaultIdentityProvider},
+    std::vector<IdentityProviderParameters>{kDefaultIdentityProviderConfig},
     /*prefer_auto_sign_in=*/false};
 
 static const MockIdpInfo kDefaultIdentityProviderInfo{
@@ -762,11 +762,11 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     std::vector<blink::mojom::IdentityProviderGetParametersPtr> idp_get_params;
     for (const auto& identity_provider :
          request_parameters.identity_providers) {
-      std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
-      blink::mojom::IdentityProviderPtr idp_ptr =
-          blink::mojom::IdentityProvider::New(GURL(identity_provider.provider),
-                                              identity_provider.client_id,
-                                              identity_provider.nonce);
+      std::vector<blink::mojom::IdentityProviderConfigPtr> idp_ptrs;
+      blink::mojom::IdentityProviderConfigPtr idp_ptr =
+          blink::mojom::IdentityProviderConfig::New(
+              GURL(identity_provider.provider), identity_provider.client_id,
+              identity_provider.nonce);
       idp_ptrs.push_back(std::move(idp_ptr));
       blink::mojom::IdentityProviderGetParametersPtr get_params =
           blink::mojom::IdentityProviderGetParameters::New(
@@ -1096,7 +1096,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
   }
 
   void ComputeLoginStateAndReorderAccounts(
-      const blink::mojom::IdentityProvider& identity_provider,
+      const blink::mojom::IdentityProviderConfig& identity_provider,
       IdpNetworkRequestManager::AccountList& accounts) {
     federated_auth_request_impl_->ComputeLoginStateAndReorderAccounts(
         identity_provider, accounts);
@@ -2340,9 +2340,9 @@ TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
               kConfigurationValid);
 
   AccountList multiple_accounts = kMultipleAccounts;
-  blink::mojom::IdentityProviderPtr identity_provider =
-      blink::mojom::IdentityProvider::New(GURL(kProviderUrlFull), kClientId,
-                                          kNonce);
+  blink::mojom::IdentityProviderConfigPtr identity_provider =
+      blink::mojom::IdentityProviderConfig::New(GURL(kProviderUrlFull),
+                                                kClientId, kNonce);
   ComputeLoginStateAndReorderAccounts(*identity_provider, multiple_accounts);
 
   // Check the account order using the account ids.

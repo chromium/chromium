@@ -85,10 +85,10 @@ void WebIdentityRequester::AppendGetCall(
     return;
   }
 
-  Vector<mojom::blink::IdentityProviderPtr> idp_ptrs;
+  Vector<mojom::blink::IdentityProviderConfigPtr> idp_ptrs;
   for (const auto& provider : providers) {
-    mojom::blink::IdentityProviderPtr idp =
-        blink::mojom::blink::IdentityProvider::From(*provider);
+    mojom::blink::IdentityProviderConfigPtr idp =
+        blink::mojom::blink::IdentityProviderConfig::From(*provider);
     if (provider_to_resolver_.Contains(KURL(idp->config_url))) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,

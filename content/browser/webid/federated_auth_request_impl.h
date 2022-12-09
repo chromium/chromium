@@ -74,24 +74,24 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnRejectRequest();
 
   struct IdentityProviderGetInfo {
-    IdentityProviderGetInfo(blink::mojom::IdentityProvider,
+    IdentityProviderGetInfo(blink::mojom::IdentityProviderConfig,
                             bool prefer_auto_signin);
     ~IdentityProviderGetInfo();
     IdentityProviderGetInfo(const IdentityProviderGetInfo&);
 
-    blink::mojom::IdentityProvider provider;
+    blink::mojom::IdentityProviderConfig provider;
     bool prefer_auto_signin{false};
   };
 
   struct IdentityProviderInfo {
-    IdentityProviderInfo(blink::mojom::IdentityProvider,
+    IdentityProviderInfo(blink::mojom::IdentityProviderConfig,
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata,
                          bool prefer_auto_signin);
     ~IdentityProviderInfo();
     IdentityProviderInfo(const IdentityProviderInfo&);
 
-    blink::mojom::IdentityProvider provider;
+    blink::mojom::IdentityProviderConfig provider;
     IdpNetworkRequestManager::Endpoints endpoints;
     IdentityProviderMetadata metadata;
     bool prefer_auto_signin{false};
@@ -158,10 +158,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
-  void CompleteTokenRequest(const blink::mojom::IdentityProvider& idp,
+  void CompleteTokenRequest(const blink::mojom::IdentityProviderConfig& idp,
                             IdpNetworkRequestManager::FetchStatus status,
                             const std::string& token);
-  void OnTokenResponseReceived(const blink::mojom::IdentityProvider& idp,
+  void OnTokenResponseReceived(const blink::mojom::IdentityProviderConfig& idp,
                                IdpNetworkRequestManager::FetchStatus status,
                                const std::string& token);
   void DispatchOneLogout();
@@ -213,7 +213,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // reorders accounts so that those that are considered returning users are
   // before users that are not returning.
   void ComputeLoginStateAndReorderAccounts(
-      const blink::mojom::IdentityProvider& idp,
+      const blink::mojom::IdentityProviderConfig& idp,
       IdpNetworkRequestManager::AccountList& accounts);
 
   url::Origin GetEmbeddingOrigin() const;
