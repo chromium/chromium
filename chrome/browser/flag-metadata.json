@@ -4281,7 +4281,7 @@
   {
     "name": "ios-crashpad",
     "owners": [ "justincohen", "bling-flags@google.com" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "ios-force-translate-enabled",
@@ -6015,7 +6015,7 @@
     "name": "restore-session-from-cache",
     "owners": [ "justincohen", "gambard", "bling-flags@google.com" ],
     // Needed for manual testing of native session restore flow on iOS.
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "restrict-gamepad-access",
@@ -6533,7 +6533,7 @@
   {
     "name": "synthesized-restore-session",
     "owners": [ "justincohen", "ajuma" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 120
   },
   {
     "name": "system-color-chooser",
