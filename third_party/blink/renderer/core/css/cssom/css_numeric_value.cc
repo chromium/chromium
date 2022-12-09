@@ -86,9 +86,17 @@ CSSUnitValue* MaybeMultiplyAsUnitValue(const CSSNumericValueVector& values) {
 }
 
 CSSMathOperator CanonicalOperator(CSSMathOperator op) {
-  if (op == CSSMathOperator::kAdd || op == CSSMathOperator::kSubtract)
-    return CSSMathOperator::kAdd;
-  return CSSMathOperator::kMultiply;
+  switch (op) {
+    case CSSMathOperator::kAdd:
+    case CSSMathOperator::kSubtract:
+      return CSSMathOperator::kAdd;
+    case CSSMathOperator::kMultiply:
+    case CSSMathOperator::kDivide:
+      return CSSMathOperator::kMultiply;
+    default:
+      NOTREACHED();
+      return CSSMathOperator::kInvalid;
+  }
 }
 
 bool CanCombineNodes(const CSSMathExpressionNode& root,
@@ -98,9 +106,12 @@ bool CanCombineNodes(const CSSMathExpressionNode& root,
     return false;
   if (node.IsNestedCalc())
     return false;
+  const auto& node_exp = To<CSSMathExpressionOperation>(node);
+  if (node_exp.IsMinOrMax() || node_exp.IsClamp())
+    return false;
   return CanonicalOperator(
              To<CSSMathExpressionOperation>(root).OperatorType()) ==
-         CanonicalOperator(To<CSSMathExpressionOperation>(node).OperatorType());
+         CanonicalOperator(node_exp.OperatorType());
 }
 
 CSSNumericValue* NegateOrInvertIfRequired(CSSMathOperator parent_op,
