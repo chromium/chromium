@@ -1220,7 +1220,6 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
   for (LayerImpl* layer : *layer_list) {
     const TransformNode* transform_node =
         property_trees->transform_tree().Node(layer->transform_tree_index());
-
     layer->draw_properties().screen_space_transform =
         ScreenSpaceTransformInternal(layer, property_trees->transform_tree());
     layer->draw_properties().target_space_transform = DrawTransform(
@@ -1238,11 +1237,8 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
   // Compute effects and determine if render surfaces have contributing layers
   // that escape clip.
   for (LayerImpl* layer : *layer_list) {
-    float previous_opacity = layer->draw_properties().opacity;
     layer->draw_properties().opacity =
         LayerDrawOpacity(layer, property_trees->effect_tree());
-    if (previous_opacity != layer->draw_properties().opacity)
-      layer->SetNeedsPushProperties();
 
     RenderSurfaceImpl* render_target = layer->render_target();
     int lca_clip_id = LowestCommonAncestor(layer->clip_tree_index(),
@@ -1281,6 +1277,13 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
     layer->draw_properties().visible_drawable_content_rect =
         LayerDrawableContentRect(layer, visible_bounds_in_target_space,
                                  layer->draw_properties().clip_rect);
+  }
+
+  // Make sure that the layers push their properties. This isn't necessary for
+  // picture layers that always push their properties, but is important for
+  // other layers to invalidate the active tree.
+  for (LayerImpl* layer : *layer_list) {
+    layer->SetNeedsPushProperties();
   }
 }
 
