@@ -147,7 +147,7 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   }
 
   static bool IsDeletedValue(const MemberType& value) {
-    return value.Get() == cppgc::kSentinelPointer;
+    return value == cppgc::kSentinelPointer;
   }
 };
 
