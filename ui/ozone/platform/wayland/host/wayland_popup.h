@@ -38,7 +38,7 @@ class WaylandPopup : public WaylandWindow {
   void OnCloseRequest() override;
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   WaylandPopup* AsWaylandPopup() override;
-  void SetWindowGeometry(gfx::Rect bounds) override;
+  void SetWindowGeometry(gfx::Size size_dip) override;
   void UpdateWindowMask() override;
   void PropagateBufferScale(float new_scale) override;
 

@@ -532,8 +532,7 @@ void WaylandToplevelWindow::UpdateVisualSize(const gfx::Size& size_px) {
 
     if (set_geometry_on_next_frame_) {
       auto size_dip = gfx::ScaleToRoundedSize(size_px, 1.f / window_scale());
-      // TODO(crbug.com/3814157): Use DIP bounds instead.
-      SetWindowGeometry(gfx::Rect(size_dip));
+      SetWindowGeometry(size_dip);
       set_geometry_on_next_frame_ = false;
     }
   }
@@ -587,13 +586,13 @@ bool WaylandToplevelWindow::IsSurfaceConfigured() {
   return shell_toplevel() ? shell_toplevel()->IsConfigured() : false;
 }
 
-void WaylandToplevelWindow::SetWindowGeometry(gfx::Rect bounds_dip) {
+void WaylandToplevelWindow::SetWindowGeometry(gfx::Size size_dip) {
   DCHECK(connection()->SupportsSetWindowGeometry());
 
   if (!shell_toplevel_)
     return;
 
-  gfx::Rect geometry_dip(bounds_dip.size());
+  gfx::Rect geometry_dip(size_dip);
 
   const auto insets = GetDecorationInsetsInDIP();
   if (state_ == PlatformWindowState::kNormal && !insets.IsEmpty())

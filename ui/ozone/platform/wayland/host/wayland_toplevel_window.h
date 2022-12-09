@@ -81,7 +81,7 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   bool OnInitialize(PlatformWindowInitProperties properties) override;
   bool IsActive() const override;
-  void SetWindowGeometry(gfx::Rect bounds) override;
+  void SetWindowGeometry(gfx::Size size_dip) override;
   bool IsScreenCoordinatesEnabled() const override;
 
   // WmDragHandler overrides:

@@ -298,7 +298,7 @@ class WaylandWindow : public PlatformWindow,
   virtual void OnDragSessionClose(ui::mojom::DragOperation operation);
 
   // Sets the window geometry.
-  virtual void SetWindowGeometry(gfx::Rect bounds);
+  virtual void SetWindowGeometry(gfx::Size size_dip);
 
   // Returns the offset of the window geometry within the window surface.
   gfx::Vector2d GetWindowGeometryOffsetInDIP() const;

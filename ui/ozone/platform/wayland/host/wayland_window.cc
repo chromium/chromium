@@ -686,7 +686,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   return true;
 }
 
-void WaylandWindow::SetWindowGeometry(gfx::Rect bounds) {}
+void WaylandWindow::SetWindowGeometry(gfx::Size size_dip) {}
 
 gfx::Vector2d WaylandWindow::GetWindowGeometryOffsetInDIP() const {
   if (!frame_insets_px_.has_value())
@@ -963,7 +963,7 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     // As per spec, width and height must be greater than zero.
     if (bounds_in_dip.IsEmpty())
       bounds_in_dip = gfx::Rect(0, 0, 1, 1);
-    SetWindowGeometry(bounds_in_dip);
+    SetWindowGeometry(bounds_in_dip.size());
     AckConfigure(serial);
     root_surface()->Commit();
   } else if (delegate()->ConvertRectToPixels(pending_bounds_dip) ==
@@ -979,7 +979,7 @@ void WaylandWindow::ProcessPendingBoundsDip(uint32_t serial) {
     // the window to redraw. Hence, acknowledge this configure sequence now to
     // tell the Wayland compositor that the requested configuration for this
     // window has been applied.
-    SetWindowGeometry(pending_bounds_dip);
+    SetWindowGeometry(pending_bounds_dip.size());
     AckConfigure(serial);
     connection()->Flush();
   } else if (!pending_configures_.empty() &&
@@ -1072,7 +1072,7 @@ bool WaylandWindow::ProcessVisualSizeUpdate(const gfx::Size& size_px) {
 
   if (result != pending_configures_.end()) {
     auto serial = result->serial;
-    SetWindowGeometry(result->bounds_dip);
+    SetWindowGeometry(result->bounds_dip.size());
     AckConfigure(serial);
     connection()->Flush();
     pending_configures_.erase(pending_configures_.begin(), ++result);
