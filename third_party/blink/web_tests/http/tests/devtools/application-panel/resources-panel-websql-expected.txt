@@ -21,6 +21,7 @@ Storage
   Trust Tokens
   Interest Groups
   Shared Storage
+    http://127.0.0.1:8000
 Cache
   Cache Storage
   Back/forward cache
@@ -60,6 +61,7 @@ Storage
   Trust Tokens
   Interest Groups
   Shared Storage
+    http://127.0.0.1:8000
 Cache
   Cache Storage
   Back/forward cache
@@ -99,6 +101,7 @@ Storage
   Trust Tokens
   Interest Groups
   Shared Storage
+    http://127.0.0.1:8000
 Cache
   Cache Storage
   Back/forward cache
