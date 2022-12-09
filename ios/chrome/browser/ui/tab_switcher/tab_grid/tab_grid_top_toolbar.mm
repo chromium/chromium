@@ -7,6 +7,8 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
+#import "base/location.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
@@ -91,9 +93,15 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   if (mode == TabGridModeSearch) {
     // Focus the search bar, and make it a first responder once the user enter
     // to search mode. Doing that here instead in `setItemsForTraitCollection`
-    // makes sure it's only called once and allows the voicOver to transition
+    // makes sure it's only called once and allows VoiceOver to transition
     // smoothly and to say that there is a search field opened.
-    [_searchBar becomeFirstResponder];
+    // It is done on the next turn of the runloop as it has been seen to collide
+    // with other animations on some devices.
+    __weak __typeof(_searchBar) weakSearchBar = _searchBar;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSearchBar becomeFirstResponder];
+        }));
   }
 }
 
