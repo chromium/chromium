@@ -5579,8 +5579,11 @@
   },
   {
     "name": "permission-chip",
-    "owners": [ "elklm", "bsep", "engedy", "olesiamarukhno@google.com" ],
-    "expiry_milestone": 110
+    "owners": [
+      "elklm",
+      "//components/permissions/PERMISSIONS_OWNERS"
+    ],
+    "expiry_milestone": 115
   },
   {
     "name": "permission-chip-gesture",
@@ -6019,7 +6022,7 @@
   {
     "name": "revoke-notifications-permission-if-disabled-on-app-level",
     "owners": [ "elklm", "//components/permissions/PERMISSIONS_OWNERS" ],
-    "expiry_milestone": 110
+    "expiry_milestone": 115
   },
   {
     "name": "robust-audio-device-select-logic",
