@@ -132,9 +132,34 @@ void AttestationFlow::OnEnrollmentCheckComplete(
     return;
   }
 
-  // The device is not enrolled; check if it's enrollment prepared.
-  base::TimeTicks end_time = base::TimeTicks::Now() + ready_timeout_;
-  WaitForAttestationPrepared(end_time, std::move(callback));
+  // The device is not enrolled; check if it supports attestation.
+  GetFeatures(std::move(callback));
+}
+
+void AttestationFlow::GetFeatures(EnrollCallback callback) {
+  attestation_client_->GetFeatures(
+      ::attestation::GetFeaturesRequest(),
+      base::BindOnce(&AttestationFlow::OnGetFeaturesComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AttestationFlow::OnGetFeaturesComplete(
+    EnrollCallback callback,
+    const ::attestation::GetFeaturesReply& reply) {
+  if (reply.status() != ::attestation::STATUS_SUCCESS) {
+    LOG(ERROR) << "Attestation: Failed to get features; status: "
+               << reply.status();
+    std::move(callback).Run(EnrollState::kError);
+    return;
+  }
+
+  if (reply.is_available()) {
+    // Check if the device is enrollment prepared.
+    base::TimeTicks end_time = base::TimeTicks::Now() + ready_timeout_;
+    WaitForAttestationPrepared(end_time, std::move(callback));
+  } else {
+    std::move(callback).Run(EnrollState::kNotAvailable);
+  }
 }
 
 void AttestationFlow::WaitForAttestationPrepared(base::TimeTicks end_time,
@@ -238,6 +263,10 @@ void AttestationFlow::StartCertificateRequest(
   switch (enroll_state) {
     case EnrollState::kError:
       std::move(callback).Run(ATTESTATION_UNSPECIFIED_FAILURE, "");
+      return;
+
+    case EnrollState::kNotAvailable:
+      std::move(callback).Run(ATTESTATION_NOT_AVAILABLE, "");
       return;
 
     case EnrollState::kEnrolled:

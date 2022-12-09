@@ -95,6 +95,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
       CertificateCallback callback) override;
 
  private:
+  // Asynchronously requests attestation features.
+  //
+  // Parameters
+  //   callback - Called with the success or failure of the enrollment.
+  void GetFeatures(EnrollCallback callback);
+
+  // Handles the result of a call to `GetFeatures`.
+  // If the features indicate attestation is supported, starts the
+  // enrollment process.
+  //
+  // Parameters
+  //   callback - Called with the success or failure of the enrollment.
+  //   result - Result of `GetStatus()`, which contains `enrolled` field.
+  void OnGetFeaturesComplete(EnrollCallback callback,
+                             const ::attestation::GetFeaturesReply& reply);
+
   // Asynchronously waits for attestation to be ready and start enrollment once
   // it is. If attestation is not ready by the time the flow's timeout is
   // reached, fail.

@@ -602,6 +602,44 @@ TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Prepared) {
   Run();
 }
 
+TEST_F(AttestationFlowTest, GetCertificate_Attestation_Not_Available) {
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(false);
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_features_reply()
+      ->set_is_available(false);
+
+  // We're not expecting any server calls in this case; StrictMock will verify.
+  std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
+  EXPECT_CALL(*proxy, GetType()).WillRepeatedly(DoDefault());
+
+  StrictMock<MockObserver> observer;
+  EXPECT_CALL(observer, MockCertificateCallback(ATTESTATION_NOT_AVAILABLE, ""))
+      .Times(1);
+  AttestationFlow::CertificateCallback callback =
+      base::BindOnce(&AttestationFlowTest::QuitRunLoopCertificateCallback,
+                     base::Unretained(this),
+                     base::BindOnce(&MockObserver::MockCertificateCallback,
+                                    base::Unretained(&observer)));
+
+  std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
+  AttestationFlow flow(std::move(proxy_interface));
+  flow.set_ready_timeout(base::Milliseconds(20));
+  flow.set_retry_delay(base::Milliseconds(6));
+  flow.GetCertificate(
+      /*certificate_profile=*/PROFILE_ENTERPRISE_USER_CERTIFICATE,
+      /*account_id=*/EmptyAccountId(),
+      /*request_origin=*/"fake_origin", /*force_new_key=*/true,
+      /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/kFakeKeyName, /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/std::move(callback));
+
+  Run();
+}
+
 TEST_F(AttestationFlowTest, GetCertificate_Attestation_Never_Confirm_Prepared) {
   AttestationClient::Get()
       ->GetTestInterface()

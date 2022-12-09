@@ -427,6 +427,50 @@ TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNeverPrepared) {
       "ChromeOS.Attestation.GetCertificateStatus", 0);
 }
 
+TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationNotAvailable) {
+  AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
+      false);
+
+  AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_features_reply()
+      ->set_is_available(false);
+
+  ::attestation::GetCertificateRequest request;
+  request.set_certificate_profile(
+      ::attestation::CertificateProfile::ENTERPRISE_USER_CERTIFICATE);
+  request.set_username("username@email.com");
+  request.set_key_label("label");
+  request.set_request_origin("origin");
+  request.set_key_type(::attestation::KEY_TYPE_RSA);
+
+  AllowlistCertificateRequest(::attestation::ACAType::DEFAULT_ACA, request);
+
+  base::MockCallback<AttestationFlowIntegrated::CertificateCallback> callback;
+  AttestationStatus status = AttestationStatus::ATTESTATION_SUCCESS;
+  EXPECT_CALL(callback, Run(_, _)).WillOnce(SaveArg<0>(&status));
+
+  AttestationFlowIntegrated flow;
+  flow.set_ready_timeout_for_testing(base::Milliseconds(10));
+  flow.set_retry_delay_for_testing(base::Milliseconds(3));
+  flow.GetCertificate(
+      /*certificate_profile=*/static_cast<AttestationCertificateProfile>(
+          request.certificate_profile()),
+      /*account_id=*/AccountId::FromUserEmail(request.username()),
+      /*request_origin=*/request.request_origin(),
+      /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
+      /*key_name=*/request.key_label(),
+      /*profile_specific_data=*/absl::nullopt,
+      /*callback=*/
+      base::BindOnce(
+          &AttestationFlowIntegratedTest::QuitRunLoopCertificateCallback,
+          base::Unretained(this), callback.Get()));
+  Run();
+  EXPECT_EQ(status, AttestationStatus::ATTESTATION_NOT_AVAILABLE);
+  histogram_tester_.ExpectTotalCount(
+      "ChromeOS.Attestation.GetCertificateStatus", 0);
+}
+
 TEST_F(AttestationFlowIntegratedTest, GetCertificateAttestationTestAca) {
   AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
       true);

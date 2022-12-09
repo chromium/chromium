@@ -140,6 +140,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
 
  protected:
   enum class EnrollState {
+    // Attestation is not available on this device.
+    kNotAvailable,
+
     // Attestation enrollment failed.
     kError,
 
@@ -158,6 +161,22 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
   //   result - Result of `GetStatus()`, which contains `enrolled` field.
   void OnEnrollmentCheckComplete(EnrollCallback callback,
                                  const ::attestation::GetStatusReply& reply);
+
+  // Asynchronously requests attestation features.
+  //
+  // Parameters
+  //   callback - Called with the success or failure of the enrollment.
+  void GetFeatures(EnrollCallback callback);
+
+  // Handles the result of a call to `GetFeatures`.
+  // If the features indicate attestation is supported, starts the
+  // enrollment process.
+  //
+  // Parameters
+  //   callback - Called with the success or failure of the enrollment.
+  //   result - Result of `GetStatus()`, which contains `enrolled` field.
+  void OnGetFeaturesComplete(EnrollCallback callback,
+                             const ::attestation::GetFeaturesReply& reply);
 
   // Asynchronously waits for attestation to be ready and start enrollment once
   // it is. If attestation is not ready by the time the flow's timeout is
