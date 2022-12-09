@@ -29,12 +29,13 @@
 #include "extensions/browser/lazy_context_task_queue.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
-#include "extensions/common/mojom/event_dispatcher.mojom.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "ipc/ipc_sender.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -447,13 +448,13 @@ class EventRouter : public KeyedService,
   void AddFilterToEvent(const std::string& event_name,
                         const std::string& extension_id,
                         bool is_for_service_worker,
-                        const base::Value::Dict* filter);
+                        const base::Value::Dict& filter);
 
   // Removes a filter from an event.
   void RemoveFilterFromEvent(const std::string& event_name,
                              const std::string& extension_id,
                              bool is_for_service_worker,
-                             const base::Value::Dict* filter);
+                             const base::Value::Dict& filter);
 
   // Returns the dictionary of event filters that the given extension has
   // registered.
@@ -550,8 +551,8 @@ struct Event {
       Feature::Context,
       const Extension*,
       const base::Value::Dict*,
-      std::unique_ptr<base::Value::List>* event_args_out,
-      mojom::EventFilteringInfoPtr* event_filtering_info_out)>;
+      absl::optional<base::Value::List>& event_args_out,
+      mojom::EventFilteringInfoPtr& event_filtering_info_out)>;
 
   using DidDispatchCallback = base::RepeatingCallback<void(const EventTarget&)>;
 

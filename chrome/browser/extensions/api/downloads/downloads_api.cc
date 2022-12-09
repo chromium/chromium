@@ -65,11 +65,13 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/warning_service.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/base/filename_util.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_skia.h"
@@ -1004,8 +1006,8 @@ bool OnDeterminingFilenameWillDispatchCallback(
     Feature::Context target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    std::unique_ptr<base::Value::List>* event_args_out,
-    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
+    absl::optional<base::Value::List>& event_args_out,
+    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   *any_determiners = true;
   base::Time installed =
       ExtensionPrefs::Get(browser_context)->GetLastUpdateTime(extension->id());

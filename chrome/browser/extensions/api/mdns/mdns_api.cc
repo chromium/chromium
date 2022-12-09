@@ -216,7 +216,7 @@ void MDnsAPI::GetValidOnServiceListListeners(
     std::set<std::string>* extension_ids,
     ServiceTypeCounts* service_type_counts) {
   for (const auto& listener : GetEventListeners()) {
-    base::Value::Dict* filter = listener->filter();
+    const base::Value::Dict* filter = listener->filter();
 
     const std::string* service_type =
         filter->FindString(kEventFilterServiceTypeKey);

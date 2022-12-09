@@ -47,8 +47,8 @@ void AddEventListener(
     const std::string& extension_id,
     const std::string& service_type,
     extensions::EventListenerMap::ListenerList* listener_list) {
-  auto filter = std::make_unique<base::Value::Dict>();
-  filter->Set(kEventFilterServiceTypeKey, service_type);
+  base::Value::Dict filter;
+  filter.Set(kEventFilterServiceTypeKey, service_type);
   listener_list->push_back(EventListener::ForExtension(
       kEventFilterServiceTypeKey, extension_id, nullptr, std::move(filter)));
 }

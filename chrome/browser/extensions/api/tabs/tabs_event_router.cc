@@ -28,6 +28,8 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 
 using base::Value;
@@ -45,8 +47,8 @@ bool WillDispatchTabUpdatedEvent(
     Feature::Context target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    std::unique_ptr<base::Value::List>* event_args_out,
-    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
+    absl::optional<base::Value::List>& event_args_out,
+    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
@@ -61,10 +63,10 @@ bool WillDispatchTabUpdatedEvent(
       changed_properties.Set(property, value->Clone());
   }
 
-  *event_args_out = std::make_unique<base::Value::List>();
-  (*event_args_out)->Append(ExtensionTabUtil::GetTabId(contents));
-  (*event_args_out)->Append(std::move(changed_properties));
-  (*event_args_out)->Append(std::move(tab_value));
+  event_args_out.emplace();
+  event_args_out->Append(ExtensionTabUtil::GetTabId(contents));
+  event_args_out->Append(std::move(changed_properties));
+  event_args_out->Append(std::move(tab_value));
   return true;
 }
 
@@ -75,8 +77,8 @@ bool WillDispatchTabCreatedEvent(
     Feature::Context target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    std::unique_ptr<base::Value::List>* event_args_out,
-    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
+    absl::optional<base::Value::List>& event_args_out,
+    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
       ExtensionTabUtil::GetScrubTabBehavior(extension, target_context,
                                             contents);
@@ -86,8 +88,8 @@ bool WillDispatchTabCreatedEvent(
   tab_value.Set(tabs_constants::kSelectedKey, active);
   tab_value.Set(tabs_constants::kActiveKey, active);
 
-  *event_args_out = std::make_unique<base::Value::List>();
-  (*event_args_out)->Append(std::move(tab_value));
+  event_args_out.emplace();
+  event_args_out->Append(std::move(tab_value));
   return true;
 }
 

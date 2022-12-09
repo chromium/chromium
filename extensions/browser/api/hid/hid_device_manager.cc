@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/usb_device_permission.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -29,6 +30,7 @@
 #include "services/device/public/cpp/hid/hid_device_filter.h"
 #include "services/device/public/cpp/hid/hid_usage_and_page.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace hid = extensions::api::hid;
 
@@ -79,8 +81,8 @@ bool WillDispatchDeviceEvent(
     Feature::Context target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    std::unique_ptr<base::Value::List>* event_args_out,
-    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
+    absl::optional<base::Value::List>& event_args_out,
+    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   if (device_manager && extension) {
     return device_manager->HasPermission(extension, device_info, false);
   }

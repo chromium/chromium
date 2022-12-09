@@ -28,7 +28,6 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-blink-forward.h"
 
 using base::DictionaryValue;
-using base::ListValue;
 using base::Value;
 
 namespace extensions {
@@ -78,13 +77,13 @@ using EventListenerConstructor =
     base::RepeatingCallback<std::unique_ptr<EventListener>(
         const std::string& /* event_name */,
         content::RenderProcessHost* /* process */,
-        std::unique_ptr<base::Value::Dict> /* filter */)>;
+        base::Value::Dict /* filter */)>;
 
 std::unique_ptr<EventListener> CreateEventListenerForExtension(
     const std::string& extension_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    std::unique_ptr<base::Value::Dict> filter) {
+    base::Value::Dict filter) {
   return EventListener::ForExtension(event_name, extension_id, process,
                                      std::move(filter));
 }
@@ -93,7 +92,7 @@ std::unique_ptr<EventListener> CreateEventListenerForURL(
     const GURL& listener_url,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    std::unique_ptr<base::Value::Dict> filter) {
+    base::Value::Dict filter) {
   return EventListener::ForURL(event_name, listener_url, process,
                                std::move(filter));
 }
@@ -104,7 +103,7 @@ std::unique_ptr<EventListener> CreateEventListenerForExtensionServiceWorker(
     int worker_thread_id,
     const std::string& event_name,
     content::RenderProcessHost* process,
-    std::unique_ptr<base::Value::Dict> filter) {
+    base::Value::Dict filter) {
   content::BrowserContext* browser_context =
       process ? process->GetBrowserContext() : nullptr;
   return EventListener::ForExtensionServiceWorker(
@@ -144,16 +143,15 @@ scoped_refptr<const Extension> CreateServiceWorkerExtension() {
   return builder.Build();
 }
 
-std::unique_ptr<base::Value::Dict> CreateHostSuffixFilter(
-    const std::string& suffix) {
-  auto filter_dict = std::make_unique<base::Value::Dict>();
-  filter_dict->Set("hostSuffix", suffix);
+base::Value::Dict CreateHostSuffixFilter(const std::string& suffix) {
+  base::Value::Dict filter_dict;
+  filter_dict.Set("hostSuffix", Value(suffix));
 
   base::Value::List filter_list;
-  filter_list.Append(std::move(*filter_dict));
+  filter_list.Append(std::move(filter_dict));
 
-  auto filter = std::make_unique<base::Value::Dict>();
-  filter->Set("url", std::move(filter_list));
+  base::Value::Dict filter;
+  filter.Set("url", std::move(filter_list));
   return filter;
 }
 
@@ -322,8 +320,7 @@ void EventRouterTest::RunEventRouterObserverTest(
     const EventListenerConstructor& constructor) {
   EventRouter router(nullptr, nullptr);
   std::unique_ptr<EventListener> listener =
-      constructor.Run("event_name", render_process_host(),
-                      std::make_unique<base::Value::Dict>());
+      constructor.Run("event_name", render_process_host(), base::Value::Dict());
 
   // Add/remove works without any observers.
   router.OnListenerAdded(listener.get());
@@ -358,9 +355,8 @@ void EventRouterTest::RunEventRouterObserverTest(
   // Adding a listener with a sub-event notifies the main observer with
   // proper details.
   matching_observer.Reset();
-  std::unique_ptr<EventListener> sub_event_listener =
-      constructor.Run("event_name/1", render_process_host(),
-                      std::make_unique<base::Value::Dict>());
+  std::unique_ptr<EventListener> sub_event_listener = constructor.Run(
+      "event_name/1", render_process_host(), base::Value::Dict());
   router.OnListenerAdded(sub_event_listener.get());
   EXPECT_EQ(1, matching_observer.listener_added_count());
   EXPECT_EQ(0, matching_observer.listener_removed_count());
@@ -393,9 +389,9 @@ TEST_F(EventRouterTest, EventRouterObserverForServiceWorkers) {
 
 TEST_F(EventRouterTest, MultipleEventRouterObserver) {
   EventRouter router(nullptr, nullptr);
-  std::unique_ptr<EventListener> listener = EventListener::ForURL(
-      "event_name", GURL("http://google.com/path"), render_process_host(),
-      std::make_unique<base::Value::Dict>());
+  std::unique_ptr<EventListener> listener =
+      EventListener::ForURL("event_name", GURL("http://google.com/path"),
+                            render_process_host(), base::Value::Dict());
 
   // Add/remove works without any observers.
   router.OnListenerAdded(listener.get());
@@ -491,13 +487,12 @@ TEST_P(EventRouterFilterTest, Basic) {
     worker_identifier =
         absl::make_optional<ServiceWorkerIdentifier>(std::move(identifier));
   }
-  std::vector<std::unique_ptr<base::Value::Dict>> filters;
-  for (const std::string& host_suffix : kHostSuffixes) {
-    std::unique_ptr<base::Value::Dict> filter =
-        CreateHostSuffixFilter(host_suffix);
+  std::vector<base::Value::Dict> filters;
+  for (const auto& host_suffix : kHostSuffixes) {
+    base::Value::Dict filter = CreateHostSuffixFilter(host_suffix);
     event_router()->AddFilteredEventListener(kEventName, render_process_host(),
                                              param.Clone(), worker_identifier,
-                                             *filter, true);
+                                             filter, true);
     filters.push_back(std::move(filter));
   }
 
@@ -510,51 +505,51 @@ TEST_P(EventRouterFilterTest, Basic) {
   ASSERT_TRUE(iter->second.is_list());
   ASSERT_EQ(3u, iter->second.GetList().size());
 
-  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
-  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[1]));
-  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[2]));
+  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, filters[0]));
+  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, filters[1]));
+  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, filters[2]));
 
   // Remove the second filter.
   event_router()->RemoveFilteredEventListener(kEventName, render_process_host(),
                                               param.Clone(), worker_identifier,
-                                              *filters[1], true);
-  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, *filters[1]));
-  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[2]));
+                                              filters[1], true);
+  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, filters[0]));
+  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[1]));
+  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, filters[2]));
 
   // Remove the first filter.
   event_router()->RemoveFilteredEventListener(kEventName, render_process_host(),
                                               param.Clone(), worker_identifier,
-                                              *filters[0], true);
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, *filters[1]));
-  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[2]));
+                                              filters[0], true);
+  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[0]));
+  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[1]));
+  ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, filters[2]));
 
   // Remove the third filter.
   event_router()->RemoveFilteredEventListener(kEventName, render_process_host(),
                                               param.Clone(), worker_identifier,
-                                              *filters[2], true);
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, *filters[1]));
-  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, *filters[2]));
+                                              filters[2], true);
+  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[0]));
+  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[1]));
+  ASSERT_FALSE(ContainsFilter(kExtensionId, kEventName, filters[2]));
 }
 
 TEST_P(EventRouterFilterTest, URLBasedFilteredEventListener) {
   const std::string kEventName = "windows.onRemoved";
   const GURL kUrl("chrome-untrusted://terminal");
   absl::optional<ServiceWorkerIdentifier> worker_identifier = absl::nullopt;
-  auto filter = std::make_unique<base::Value::Dict>();
+  base::Value::Dict filter;
   bool lazy = false;
   EXPECT_FALSE(event_router()->HasEventListener(kEventName));
   event_router()->AddFilteredEventListener(
       kEventName, render_process_host(),
       mojom::EventListenerParam::NewListenerUrl(kUrl), worker_identifier,
-      *filter, lazy);
+      filter, lazy);
   EXPECT_TRUE(event_router()->HasEventListener(kEventName));
   event_router()->RemoveFilteredEventListener(
       kEventName, render_process_host(),
       mojom::EventListenerParam::NewListenerUrl(kUrl), worker_identifier,
-      *filter, lazy);
+      filter, lazy);
   EXPECT_FALSE(event_router()->HasEventListener(kEventName));
 }
 

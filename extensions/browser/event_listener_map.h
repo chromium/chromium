@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "extensions/common/event_filter.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -52,12 +53,12 @@ class EventListener {
       const std::string& event_name,
       const std::string& extension_id,
       content::RenderProcessHost* process,
-      std::unique_ptr<base::Value::Dict> filter);
+      absl::optional<base::Value::Dict> filter);
   static std::unique_ptr<EventListener> ForURL(
       const std::string& event_name,
       const GURL& listener_url,
       content::RenderProcessHost* process,
-      std::unique_ptr<base::Value::Dict> filter);
+      absl::optional<base::Value::Dict> filter);
   // Constructs EventListener for an Extension service worker.
   // Similar to ForExtension above with the only difference that
   // |worker_thread_id_| contains a valid worker thread, as opposed to
@@ -71,7 +72,7 @@ class EventListener {
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
       int worker_thread_id,
-      std::unique_ptr<base::Value::Dict> filter);
+      absl::optional<base::Value::Dict> filter);
 
   EventListener(const EventListener&) = delete;
   EventListener& operator=(const EventListener&) = delete;
@@ -98,7 +99,9 @@ class EventListener {
   const GURL& listener_url() const { return listener_url_; }
   content::RenderProcessHost* process() const { return process_; }
   content::BrowserContext* browser_context() const { return browser_context_; }
-  base::Value::Dict* filter() const { return filter_.get(); }
+  const base::Value::Dict* filter() const {
+    return filter_.has_value() ? &*filter_ : nullptr;
+  }
   EventFilter::MatcherID matcher_id() const { return matcher_id_; }
   void set_matcher_id(EventFilter::MatcherID id) { matcher_id_ = id; }
   int64_t service_worker_version_id() const {
@@ -115,7 +118,7 @@ class EventListener {
                 bool is_for_service_worker,
                 int64_t service_worker_version_id,
                 int worker_thread_id,
-                std::unique_ptr<base::Value::Dict> filter);
+                absl::optional<base::Value::Dict> filter);
 
   const std::string event_name_;
   const std::string extension_id_;
@@ -134,7 +137,7 @@ class EventListener {
   // worker events, this will be kMainThreadId.
   int worker_thread_id_;
 
-  std::unique_ptr<base::Value::Dict> filter_;
+  absl::optional<base::Value::Dict> filter_;
   EventFilter::MatcherID matcher_id_ = -1;
 };
 

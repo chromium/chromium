@@ -20,10 +20,12 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/common/api/usb.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/usb_device_permission.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace usb = extensions::api::usb;
 
@@ -72,8 +74,8 @@ bool WillDispatchDeviceEvent(
     Feature::Context target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    std::unique_ptr<base::Value::List>* event_args_out,
-    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
+    absl::optional<base::Value::List>& event_args_out,
+    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   // Check install-time and optional permissions.
   std::unique_ptr<UsbDevicePermission::CheckParam> param =
       UsbDevicePermission::CheckParam::ForUsbDevice(extension, device_info);

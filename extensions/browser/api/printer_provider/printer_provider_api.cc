@@ -35,6 +35,8 @@
 #include "extensions/common/api/printer_provider_internal.h"
 #include "extensions/common/api/usb.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -303,8 +305,8 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
       Feature::Context target_context,
       const Extension* extension,
       const base::Value::Dict* listener_filter,
-      std::unique_ptr<base::Value::List>* event_args_out,
-      mojom::EventFilteringInfoPtr* event_filtering_info_out);
+      absl::optional<base::Value::List>& event_args_out,
+      mojom::EventFilteringInfoPtr& event_filtering_info_out);
 
   raw_ptr<content::BrowserContext> browser_context_;
 
@@ -759,8 +761,8 @@ bool PrinterProviderAPIImpl::WillRequestPrinters(
     Feature::Context target_context,
     const Extension* extension,
     const base::Value::Dict* listener_filter,
-    std::unique_ptr<base::Value::List>* event_args_out,
-    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
+    absl::optional<base::Value::List>& event_args_out,
+    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
   if (!extension)
     return false;
   EventRouter* event_router = EventRouter::Get(browser_context_);
