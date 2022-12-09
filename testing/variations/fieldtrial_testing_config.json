@@ -10185,6 +10185,9 @@
     "SharingHubDesktopScreenshots": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
                 "linux",
                 "mac",
                 "windows"
