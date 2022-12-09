@@ -148,4 +148,19 @@ class PrivacyGuideMetricsDelegate {
                 assert false : "Unexpected CookieControlMode " + cookieControlsMode;
         }
     }
+
+    /**
+     * A method to record metrics on the back click of a card {@link
+     * PrivacyGuideFragment.FragmentType} in Privacy Guide.
+     * TODO(crbug.com/1238896): Support for other fragment types (SAFE_BROWSING, COOKIES)
+     *
+     * @param fragmentType A privacy guide {@link PrivacyGuideFragment.FragmentType}.
+     */
+    static void recordMetricsOnBackForCard(@PrivacyGuideFragment.FragmentType int fragmentType) {
+        switch (fragmentType) {
+            case PrivacyGuideFragment.FragmentType.SYNC: {
+                RecordUserAction.record("Settings.PrivacyGuide.BackClickHistorySync");
+            }
+        }
+    }
 }

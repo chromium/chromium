@@ -399,4 +399,29 @@ public class PrivacyGuideFragmentTest {
 
         mSettingsActivityTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(null);
     }
+
+    @Test
+    @SmallTest
+    @Feature({"PrivacyGuide"})
+    public void testSyncCard_backButton() {
+        launchPrivacyGuide();
+        mActionTester = new UserActionTester();
+
+        // Welcome page -> MSBB page
+        onView(withText(R.string.privacy_guide_welcome_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.privacy_guide_start_button)).perform(click());
+
+        // MSBB page -> Sync page
+        ViewUtils.waitForView(withText(R.string.url_keyed_anonymized_data_title));
+        onView(withText(R.string.next)).perform(click());
+
+        // MSBB page <- Sync page
+        ViewUtils.waitForView(withText(R.string.privacy_guide_sync_toggle));
+        onView(withText(R.string.back)).perform(click());
+
+        // Verify that the user action is emitted when the back button is clicked on the History
+        // sync card
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickHistorySync"));
+    }
 }

@@ -204,4 +204,13 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testCookies_changeCookiesOff() {
         PrivacyGuideMetricsDelegate.recordMetricsOnCookieControlsChange(CookieControlsMode.OFF);
     }
+
+    @Test
+    @SmallTest
+    public void testSync_backClickUserAction() {
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                PrivacyGuideFragment.FragmentType.SYNC);
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickHistorySync"));
+    }
 }

@@ -154,7 +154,8 @@ public class PrivacyGuideFragment extends Fragment {
 
     private void previousStep() {
         mFinishButton.setVisibility(View.GONE);
-        int prevIdx = mViewPager.getCurrentItem() - 1;
+        int currentIdx = mViewPager.getCurrentItem();
+        int prevIdx = currentIdx - 1;
         if (prevIdx >= 0) {
             mViewPager.setCurrentItem(prevIdx);
         }
@@ -163,6 +164,9 @@ public class PrivacyGuideFragment extends Fragment {
             mBackButton.setVisibility(View.INVISIBLE);
         }
 
+        // Record metrics when the user clicks the back button
+        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
+                mPagerAdapter.getFragmentType(currentIdx));
         // Record the initial state of the previous card
         mPrivacyGuideMetricsDelegate.setInitialStateForCard(mPagerAdapter.getFragmentType(prevIdx));
     }
