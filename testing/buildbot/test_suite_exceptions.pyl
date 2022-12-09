@@ -1311,11 +1311,6 @@
           'shards': 25,
         },
       },
-      'android-marshmallow-arm64-rel-swarming': {
-        'swarming': {
-          'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
-        },
-      },
       'android-nougat-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter',
@@ -1336,6 +1331,11 @@
           '--use-persistent-shell',
         ],
         'ci_only': True, # https://crbug.com/1233700
+      },
+      'android-pie-arm64-rel-swarming': {
+        'swarming': {
+          'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
+        },
       },
       'android-pie-x86-rel': {
         'args': [
@@ -3495,7 +3495,7 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.asan.unit_tests.filter',
         ],
       },
-      'android-marshmallow-arm64-rel-swarming': {
+      'android-pie-arm64-rel-swarming': {
         'swarming': {
           'shards': 8,
         },

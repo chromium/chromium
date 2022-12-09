@@ -86,7 +86,25 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
     )
 
 ci_builder(
-    name = "android-marshmallow-arm64-rel-swarming",
+    name = "android-pie-arm64-rel-swarming",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+            target_arch = builder_config.target_arch.ARM,
+        ),
+        android_config = builder_config.android_config(
+            config = "main_builder_mb",
+        ),
+    ),
 )
 
 ci_builder(

@@ -239,8 +239,8 @@
     },
 
     'chromium.dev': {
-      # This should be the same with 'android-marshmallow-arm64-rel'.
-      'android-marshmallow-arm64-rel-swarming':  'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild',
+      # This should be the same with 'android-pie-arm64-rel'.
+      'android-pie-arm64-rel-swarming':  'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild',
 
       # These should be the same with 'Linux Builder'.
       'linux-rel-swarming': 'gpu_tests_release_bot',

@@ -2300,7 +2300,7 @@
     'name': 'chromium.dev',
     'mixins': ['chromium-tester-dev-service-account'],
     'machines': {
-      'android-marshmallow-arm64-rel-swarming': {
+      'android-pie-arm64-rel-swarming': {
         'mixins': [
           'has_native_resultdb_integration',
           'pie_fleet',

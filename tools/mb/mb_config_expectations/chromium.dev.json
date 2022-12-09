@@ -1,5 +1,5 @@
 {
-  "android-marshmallow-arm64-rel-swarming": {
+  "android-pie-arm64-rel-swarming": {
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
