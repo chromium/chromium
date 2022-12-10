@@ -27,9 +27,19 @@ public class BookmarkId {
     private final long mId;
     private final int mType;
 
+    private BookmarkId parentFolder = null;
+
     public BookmarkId(long id, int type) {
         mId = id;
         mType = type;
+    }
+
+    public void setParentFolder(BookmarkId parentFolder) {
+        this.parentFolder = parentFolder;
+    }
+
+    public BookmarkId getParentFolder() {
+        return parentFolder;
     }
 
     /**

@@ -34,6 +34,8 @@ chrome_java_sources = [
   "java/src/com/ark/browser/core/utils/TaskTabHelper.java",
   "java/src/com/ark/browser/core/utils/WebContextFetcher.java",
 
+  "java/src/com/ark/browser/event/LoadUrlEvent.java",
+
   "java/src/com/ark/browser/settings/AppConfig.java",
   "java/src/com/ark/browser/settings/Keys.java",
 
@@ -88,12 +90,14 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/fragment/base/BaseSwipeBackFragment.java",
   "java/src/com/ark/browser/ui/fragment/base/SkinFragment.java",
 
+  "java/src/com/ark/browser/ui/fragment/dialog/BookmarkFolderPickerDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ClipboardInterceptDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/CollectionEditorDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ExitDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/MainMenuDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/SearchEngineSelectDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/ShareDialog.java",
+  "java/src/com/ark/browser/ui/fragment/dialog/ToolsDialog.java",
   "java/src/com/ark/browser/ui/fragment/dialog/UserAgentSelectDialog.java",
 
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
@@ -106,7 +110,9 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/widget/ShadowCircleImageView.java",
   "java/src/com/ark/browser/ui/widget/ShadowLayout.java",
   "java/src/com/ark/browser/ui/widget/SmartSearchPanel.java",
+  "java/src/com/ark/browser/ui/widget/SolidArrowView.java",
   "java/src/com/ark/browser/ui/widget/StatusBarView.java",
+  "java/src/com/ark/browser/ui/widget/TextCircleImageView.java",
   "java/src/com/ark/browser/ui/widget/indicator/CoolIndicator.java",
   "java/src/com/ark/browser/ui/widget/indicator/DrawableWrapper.java",
   "java/src/com/ark/browser/ui/widget/indicator/ShiftDrawable.java",

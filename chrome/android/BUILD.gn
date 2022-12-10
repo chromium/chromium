@@ -205,12 +205,14 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/main.xml",
     "//chrome/android/java/res_app/layout/activity_browser.xml",
 
+    "//chrome/android/java/res_app/layout/fragment_dialog_bookmark_folder_select.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_clipboard_intercept.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_collection_editor.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_exit.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_layout_center_impl_list.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_main_menu.xml",
     "//chrome/android/java/res_app/layout/fragment_dialog_share.xml",
+    "//chrome/android/java/res_app/layout/fragment_dialog_tool_box.xml",
     "//chrome/android/java/res_app/layout/fragment_main.xml",
 
     "//chrome/android/java/res_app/layout/item_checkbox.xml",
@@ -219,6 +221,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/item_menu.xml",
     "//chrome/android/java/res_app/layout/layout_controller.xml",
     "//chrome/android/java/res_app/layout/layout_dialog_header.xml",
+    "//chrome/android/java/res_app/layout/layout_icon_node.xml",
     "//chrome/android/java/res_app/layout/layout_menu.xml",
     "//chrome/android/java/res_app/layout/layout_smart_search.xml",
     "//chrome/android/java/res_app/layout/menu_action_mode.xml",

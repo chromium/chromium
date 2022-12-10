@@ -14,6 +14,7 @@ import com.ark.browser.core.bookmark.BookmarkBridge;
 import com.ark.browser.core.bookmark.BookmarkModel;
 import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
+import com.ark.browser.ui.fragment.dialog.ToolsDialog;
 import com.ark.browser.ui.widget.indicator.CoolIndicator;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.utils.KeyboardUtils;
@@ -84,6 +85,7 @@ public class BottomController {
 //            if (mCurrentPageInfo != null) {
 //                ToolsDialog.newInstance(mCurrentPageInfo.getPageId()).show(context);
 //            }
+            ToolsDialog.start(mContext, mPage);
         });
 
         starButton = view.findViewById(R.id.btn_star);

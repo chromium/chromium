@@ -69,6 +69,14 @@
         <attr name="alertMessage" format="string" />
     </declare-styleable>
 
+    <declare-styleable name="TextCircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_fill_color" format="color" />
+        <attr name="civ_circle_background_color" format="color" />
+    </declare-styleable>
+
     <attr name="backgroundColor" format="color" />
     <attr name="backgroundColorDark" format="color" />
     <attr name="backgroundColorAccent" format="color" />

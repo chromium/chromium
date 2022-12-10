@@ -119,7 +119,7 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
     @Override
     protected void initView(View view, @Nullable Bundle savedInstanceState) {
         super.initView(view, savedInstanceState);
-        mModel.finishLoadingBookmarkModel(() -> init());
+        mModel.finishLoadingBookmarkModel(this::init);
         mModel.loadEmptyPartnerBookmarkShimForTesting();
     }
 
@@ -228,23 +228,23 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
         });
 
         mFolderTextView.setOnClickListener(v -> {
-//            BookmarkFolderPickerDialog.startFolderSelectFragment(
-//                    _mActivity,
-//                    new BookmarkFolderPickerDialog.Callback() {
-//                        @Override
-//                        public void onSelectFolder(String selectedFolder, BookmarkId folderId) {
-//                            moveToFolderId = folderId;
-//                            PrefsHelper.with().putLong(KEY_MOVE_TO_BOOKMARK_FOLDER, folderId.getId());
-//                            mFolderTextView.setText(selectedFolder);
-//                        }
-//
-//                        @Override
-//                        public void onDestroy() {
-//
-//                        }
-//                    },
-//                    mBookmarkId
-//            );
+            BookmarkFolderPickerDialog.startFolderSelectFragment(
+                    _mActivity,
+                    new BookmarkFolderPickerDialog.Callback() {
+                        @Override
+                        public void onSelectFolder(String selectedFolder, BookmarkId folderId) {
+                            moveToFolderId = folderId;
+                            PrefsHelper.with().putLong(KEY_MOVE_TO_BOOKMARK_FOLDER, folderId.getId());
+                            mFolderTextView.setText(selectedFolder);
+                        }
+
+                        @Override
+                        public void onDestroy() {
+
+                        }
+                    },
+                    mBookmarkId
+            );
         });
 
         TextView add_to_bookmark = findViewById(R.id.add_to_bookmark);
@@ -359,15 +359,10 @@ public class CollectionEditorDialog extends OverDragBottomDialogFragment<Collect
 
     @Override
     public void onDestroyView() {
-        View view = _mActivity.getWindow().getDecorView();
-        SupportHelper.hideSoftInput(view);
+        hideSoftInput();
         super.onDestroyView();
         mModel.destroy();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 }
 

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="16dp"
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="8dp"
+    >
+
+    <View
+        android:layout_width="56dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_round_accent"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="16dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="网页背景色"
+            android:textColor="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.TextCircleImageView
+            android:id="@+id/color_1"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="#FFFFFF"
+            app:civ_border_color="#cccccc"
+            app:civ_border_width="1dp"
+            />
+
+        <com.ark.browser.ui.widget.TextCircleImageView
+            android:id="@+id/color_2"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="#F6F4EC"
+            app:civ_border_color="#cccccc"
+            app:civ_border_width="1dp"
+            />
+
+        <com.ark.browser.ui.widget.TextCircleImageView
+            android:id="@+id/color_3"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="#CCE8CF"
+            app:civ_border_color="#cccccc"
+            app:civ_border_width="1dp"
+            />
+
+        <com.ark.browser.ui.widget.TextCircleImageView
+            android:id="@+id/color_4"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="#F2F2F2"
+            app:civ_border_color="#cccccc"
+            app:civ_border_width="1dp"
+            />
+
+        <com.ark.browser.ui.widget.TextCircleImageView
+            android:id="@+id/color_5"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="#E1E6D7"
+            app:civ_border_color="#cccccc"
+            app:civ_border_width="1dp"
+            />
+
+    </LinearLayout>
+
+    <androidx.gridlayout.widget.GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:orientation="horizontal"
+        app:columnCount="4"
+        app:rowCount="2"
+        >
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_fullscreen"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_fullscreen"
+            android:text="全屏模式"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_edit_mode"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_screenshot"
+            android:text="编辑模式"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_reader_mode"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_safe"
+            android:text="阅读模式"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_smart_no_img"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_smart_no_img"
+            android:text="智能无图"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_log"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_log"
+            android:text="网络日志"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_resource"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_music"
+            android:text="资源嗅探"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_save_html"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_save"
+            android:text="保存网页"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_see_html"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_html"
+            android:text="查看源码"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_translate"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_translate"
+            android:text="翻译网页"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_page_search"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_search_v1"
+            android:text="页面搜索"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_console"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_vconsole"
+            android:text="调试控制台"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_refresh_timing"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_refresh"
+            android:text="定时刷新"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <!--        <com.ark.browser.ui.widget.DrawableTintTextView-->
+        <!--            android:id="@+id/tv_pure_mode"-->
+        <!--            style="@style/popup_menu_item"-->
+        <!--            android:drawableTop="@drawable/qianxun_safe"-->
+        <!--            android:text="纯净模式"-->
+        <!--            android:textColor="?attr/textColorMajor"-->
+        <!--            app:drawable_tint_color="?attr/textColorMajor"-->
+        <!--            />-->
+
+
+
+
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_history_stack"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_history"
+            android:text="历史栈"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+        <com.ark.browser.ui.widget.DrawableTintTextView
+            android:id="@+id/tv_website_settings"
+            style="@style/popup_menu_item"
+            android:drawableTop="@drawable/ic_settings"
+            android:text="网页设置"
+            android:textColor="?attr/textColorMajor"
+            app:drawable_tint_color="?attr/textColorMajor"
+            />
+
+    </androidx.gridlayout.widget.GridLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <ImageView
+            android:id="@+id/ib_share"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_share"
+            android:tint="?attr/textColorMajor"
+            android:paddingVertical="16dp"
+            />
+
+        <ImageView
+            android:id="@+id/ib_close"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2.5"
+            android:src="@drawable/ic_down"
+            android:tint="?attr/textColorMajor"
+            android:paddingVertical="16dp"
+            />
+
+        <ImageView
+            android:id="@+id/ib_info"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/btn_info"
+            android:tint="?attr/textColorMajor"
+            android:paddingVertical="16dp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

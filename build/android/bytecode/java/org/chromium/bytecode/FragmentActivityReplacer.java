@@ -62,8 +62,8 @@ public class FragmentActivityReplacer extends ByteCodeRewriter {
     protected ClassVisitor getClassVisitorForClass(String classPath, ClassVisitor delegate) {
         ClassVisitor invocationVisitor = new InvocationReplacer(delegate, mSingleAndroidX);
         switch (classPath) {
-            case "androidx/fragment/app/Fragment.class":
-                return new FragmentClassVisitor(invocationVisitor);
+//            case "androidx/fragment/app/Fragment.class":
+//                return new FragmentClassVisitor(invocationVisitor);
             case "com/google/android/gms/common/api/internal/SupportLifecycleFragmentImpl.class":
                 return new SupportLifecycleFragmentImplClassVisitor(invocationVisitor);
             default:

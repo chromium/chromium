@@ -87,7 +87,7 @@
                 app:drawable_tint_color="?attr/textColorMajor"
                 />
 
-            <com.ark.browser.ui.widget.DrawableTintEditText
+            <com.ark.browser.ui.widget.DrawableTintTextView
                 android:id="@+id/folder_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -13,6 +13,8 @@ import com.ark.browser.ArkCompositorViewHolder;
 import com.ark.browser.ArkNavigationHandler;
 import com.ark.browser.ArkWindowAndroid;
 import com.ark.browser.core.utils.NavigationPredictorBridge;
+import com.ark.browser.event.LoadUrlEvent;
+import com.ark.browser.tab.PageInfo;
 import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
@@ -20,6 +22,7 @@ import com.ark.browser.ui.fragment.base.BaseFragment;
 import com.ark.browser.ui.widget.BottomController;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
+import com.zpj.bus.ZBus;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
@@ -113,6 +116,12 @@ public class ArkMainFragment extends BaseFragment implements
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ZBus.with(this)
+                .observe(LoadUrlEvent.class)
+                .doOnChange(this::onSearchEvent)
+                .subscribe();
+
         TabListManager.getInstance().restore(getWindowAndroid(), new Callback<Void>() {
             @Override
             public void onResult(Void result) {
@@ -417,4 +426,66 @@ public class ArkMainFragment extends BaseFragment implements
             mViewHolder.onSafeAreaChanged(area);
         }
     }
+
+    public void onSearchEvent(LoadUrlEvent event) {
+        popTo(ArkMainFragment.class, false);
+        for (int i = 0; i < getChildFragmentManager().getBackStackEntryCount(); i++) {
+            popChild();
+        }
+        if (event.isNewTab() || getActivityTab() == null) {
+            loadUrlInNewTab(event.getPageInfo(), event.getUrl(), event.isIncognito());
+            return;
+        }
+
+        String url = event.getUrl();
+
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        loadUrlParams.setTransitionType(PageTransition.GENERATED);
+        if (getActivityTab() != null) {
+            loadUrl(loadUrlParams);
+        } else {
+            loadUrlInNewTab(event.getPageInfo(), loadUrlParams);
+        }
+    }public void loadUrl(String url) {
+        loadUrl(new LoadUrlParams(url));
+    }
+
+    public void loadUrl(LoadUrlParams params) {
+        loadUrl(params, TabListManager.getInstance().isIncognitoSelected());
+    }
+
+    public void loadUrl(String url, boolean incognito) {
+        loadUrl(new LoadUrlParams(url), incognito);
+    }
+
+    public void loadUrl(LoadUrlParams params, boolean incognito) {
+//        mLauncherManager.goToBrowser();
+        TabListManager.getInstance().openNewTab(
+                TabListManager.getInstance().getCurrentPageInfo(),
+                params, TabLaunchType.FROM_CHROME_UI, incognito);
+    }
+
+    public void loadUrlInNewTab(String url, boolean incognito) {
+        loadUrlInNewTab(null, url, incognito);
+    }
+
+    public void loadUrlInNewTab(PageInfo pageInfo, String url, boolean incognito) {
+        loadUrlInNewTab(pageInfo, new LoadUrlParams(url), incognito);
+    }
+
+    public void loadUrlInNewTab(LoadUrlParams params) {
+        loadUrlInNewTab(null, params);
+    }
+
+    public void loadUrlInNewTab(PageInfo pageInfo, LoadUrlParams params) {
+        loadUrlInNewTab(pageInfo, params, TabListManager.getInstance().isIncognitoSelected());
+    }
+
+    public void loadUrlInNewTab(PageInfo pageInfo, LoadUrlParams params, boolean incognito) {
+//        mLauncherManager.goToBrowser();
+        TabListManager.getInstance().openNewTab(pageInfo, params, TabLaunchType.FROM_CHROME_UI, incognito);
+    }
+
+
+
 }

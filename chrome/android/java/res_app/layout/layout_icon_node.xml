@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:paddingVertical="6dp"
+    android:background="?android:attr/selectableItemBackground"
+    >
+
+    <com.ark.browser.ui.widget.SolidArrowView
+        android:id="@+id/arrow_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        />
+
+    <ImageView
+        android:id="@+id/icon_view"
+        android:src="@drawable/ic_folder_special_black_24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:tint="?attr/textColorMajor"
+        />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="title"
+        android:textSize="14sp"
+        android:textColor="?attr/textColorMajor"
+        android:layout_gravity="center_vertical"
+        />
+
+</LinearLayout>
