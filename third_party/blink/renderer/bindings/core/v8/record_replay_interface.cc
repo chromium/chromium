@@ -2489,7 +2489,7 @@ static void HandleNetworkRequestDataFormEvent(const base::DictionaryValue& info)
 
 static std::string MakeRequestIdentifier(uint64_t identifier) {
   char request_id[64];
-  snprintf(request_id, 64, "%d.%llu", (int) getpid(), identifier);
+  snprintf(request_id, 64, "%d.%lu", (int) getpid(), (unsigned long) identifier);
   return std::string(request_id);
 }
 
