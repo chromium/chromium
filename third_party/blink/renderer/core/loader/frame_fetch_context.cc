@@ -396,8 +396,6 @@ static const char* GetRequestCauseString(ResourceRequest& req) {
       return "subresourceWebbundle";
     case mojom::blink::RequestContextType::TRACK:
       return "track";
-    case mojom::blink::RequestContextType::IMPORT:
-      return "import";
     case mojom::blink::RequestContextType::WORKER:
       return "worker";
     case mojom::blink::RequestContextType::UNSPECIFIED:
@@ -506,7 +504,7 @@ void FrameFetchContext::PrepareRequest(
       requestDataDict.SetString("requestId", request_id.Utf8());
       std::string dataStr = data.Utf8();
       requestDataDict.SetString("data", dataStr);
-      requestDataDict.SetInteger("dataLength", dataStr.size());
+      requestDataDict.SetInteger("dataLength", (int)dataStr.size());
       recordreplay::BrowserEvent("Network.RequestData.Form", requestDataDict);
     }
   }

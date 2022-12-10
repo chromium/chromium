@@ -2489,7 +2489,7 @@ static void HandleNetworkRequestDataFormEvent(const base::DictionaryValue& info)
 
 static std::string MakeRequestIdentifier(uint64_t identifier) {
   char request_id[64];
-  snprintf(request_id, 64, "%d.%lu", (int) getpid(), identifier);
+  snprintf(request_id, 64, "%d.%llu", (int) getpid(), identifier);
   return std::string(request_id);
 }
 
@@ -2682,7 +2682,7 @@ static void fromJsMakeDebuggeeValue(const v8::FunctionCallbackInfo<v8::Value>& a
     v8_crdtp::json::ConvertCBORToJSON(v8_crdtp::SpanFrom(cbor), &json);
     auto remoteObjectStr =
         v8::String::NewFromOneByte(isolate, json.data(),
-                                  v8::NewStringType::kNormal, json.size())
+                                   v8::NewStringType::kNormal, (int)json.size())
             .ToLocalChecked();
     args.GetReturnValue().Set(remoteObjectStr);
   }

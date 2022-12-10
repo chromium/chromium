@@ -388,9 +388,7 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   if (recordreplay::IsRecordingOrReplaying()) {
     // NOTE: we can also get absolute location, after calling
     // `ComputePageLocation`
-    size_t clientX = client_location_.X();
-    size_t clientY = client_location_.Y();
-    recordreplay::OnMouseEvent(type().Ascii().c_str(), clientX, clientY);
+    recordreplay::OnMouseEvent(type().Ascii().c_str(), client_x_, client_y_);
   }
 
   bool is_click = type() == event_type_names::kClick;
