@@ -307,7 +307,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Skia
   # and whatever else without interference from each other.
-  'skia_revision': 'd4e1f60d9789c8616f7b3f5101211ed4a4ce145e',
+  'skia_revision': '09d4cdd157936c7737e1cda40e77d2dc7bb6d46e',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
@@ -1855,7 +1855,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'eba1a78f3d741241b0dbee728561b61e9587a686',
 
   'src/third_party/webrtc':
-    'https://github.com/replayio/chromium-webrtc.git' + '@' + '23028dc11c72d9a6c0266af21f7e629c1e25223b',
+    'https://github.com/replayio/chromium-webrtc.git' + '@' + '87b1d6a77fe14d4b58254d5ec9dbfeec3c4c3a69',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
