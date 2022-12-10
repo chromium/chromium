@@ -73,192 +73,11 @@ ChromeMain(int argc, const char** argv);
 #error Unknown platform.
 #endif
 
-// On linux ChromeMain is the process entry point, whereas on macOS the main
-// function is in a different binary in chrome_exe_main_mac.cc. When we get to
-// ChromeMain we've already started recording/replaying, but still need to
-// initialize V8's record/replay bindings. On linux we need to start
-// recording/replaying, so have a bunch of code here duplicated from
-// chrome_exec_main_mac.cc.
-#ifdef OS_LINUX
-
-static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
-static void (*gRecordReplaySetApiKey)(const char* apiKey);
-static void (*gRecordReplayProfileExecution)(const char* path);
-static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
-static void (*gRecordReplaySaveRecording)(const char* dir);
-
-template <typename Src, typename Dst>
-static inline void CastPointer(const Src src, Dst* dst) {
-  static_assert(sizeof(Src) == sizeof(uintptr_t), "bad size");
-  static_assert(sizeof(Dst) == sizeof(uintptr_t), "bad size");
-  memcpy((void*)dst, (const void*)&src, sizeof(uintptr_t));
-}
-
-template <typename T>
-static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) {
-  void* sym = dlsym(handle, name);
-  if (!sym) {
-    fprintf(stderr, "Could not find %s in Record Replay driver.\n", name);
-    return;
-  }
-
-  CastPointer(sym, &function);
-}
-
-namespace recordreplay {
-  extern char gBuildId[];
-  extern char gRecordReplayDriver[];
-  extern int gRecordReplayDriverSize;
-}
-
-static void* OpenDriverHandle() {
-  const char* driver = getenv("RECORD_REPLAY_DRIVER");
-  bool temporaryDriver = false;
-
-  if (!driver) {
-    const char* tmpdir = getenv("TMPDIR");
-    if (!tmpdir) {
-      tmpdir = "/tmp";
-    }
-
-    char filename[1024];
-    snprintf(filename, sizeof(filename), "%s/recordreplay.so-XXXXXX", tmpdir);
-    int fd = mkstemp(filename);
-    if (fd < 0) {
-      fprintf(stderr, "mkstemp failed, can't create driver.\n");
-      return nullptr;
-    }
-
-    int nbytes = write(fd, recordreplay::gRecordReplayDriver, recordreplay::gRecordReplayDriverSize);
-    if (nbytes != recordreplay::gRecordReplayDriverSize) {
-      fprintf(stderr, "write to driver temporary file failed, can't create driver.\n");
-      return nullptr;
-    }
-
-    temporaryDriver = true;
-    driver = strdup(filename);
-    close(fd);
-  }
-
-  void* handle = dlopen(driver, RTLD_LAZY);
-
-  if (temporaryDriver) {
-    unlink(driver);
-  }
-
-  return handle;
-}
-
-#endif // OS_LINUX
-
 extern "C" void V8SetRecordingOrReplaying(void* handle);
 
-static void MaybeStartProfiling() {
-  const char* directory = getenv("RECORD_REPLAY_PROFILE_DIRECTORY");
-  if (!directory) {
-    return;
-  }
-
-  char path[1000];
-  snprintf(path, sizeof(path), "%s/profile-%d.log", directory, rand());
-
-  gRecordReplayProfileExecution(path);
-}
-
-static void RecordReplayAttach(int* pargc, const char*** pargv) {
-  // Figure out what type of process this is.
-  const char* type = nullptr;
-  for (int i = 0; i < *pargc; i++) {
-    if (!strncmp((*pargv)[i], "--type=", 7)) {
-      type = (*pargv)[i] + 7;
-      break;
-    }
-  }
-  if (type) {
-    // Only renderer processes are recorded/replayed.
-    if (strcmp(type, "renderer")) {
-      return;
-    }
-  } else {
-#ifdef OS_LINUX
-
-    // If there is no type, this is the main process. Add a couple command line
-    // arguments which are required to record/replay.
-    const char** nargv = new const char*[*pargc + 3];
-    memcpy(nargv, *pargv, *pargc * sizeof(char*));
-    *pargv = nargv;
-
-    // Recording processes currently need the sandbox disabled in order to
-    // write out recording IDs to the specified path name.
-    (*pargv)[*pargc] = strdup("--no-sandbox");
-
-    // Recording/replaying currently requires software rendering.
-    (*pargv)[*pargc + 1] = strdup("--disable-gpu");
-
-    (*pargv)[*pargc + 2] = nullptr;
-    *pargc += 2;
-
-#endif // OS_LINUX
-    return;
-  }
-
-  // When RECORD_REPLAY_DONT_RECORD we don't record, though the main browser
-  // process will still be configured as if we are recording, see above.
-  if (getenv("RECORD_REPLAY_DONT_RECORD")) {
-    return;
-  }
-
-#ifdef OS_LINUX
-
-  absl::optional<std::string> apiKey;
-  const char* val = getenv("RECORD_REPLAY_API_KEY");
-  if (val) {
-    apiKey.emplace(val);
-    // Unsetting the env var will make the variable unavailable via
-    // getenv and such, and also mutates the 'environ' global, so
-    // by the time gRecordReplayAttach runs, it will have no idea that
-    // this value existed and won't capture it in the recording itself,
-    // which is ideal for security.
-    CHECK(!unsetenv("RECORD_REPLAY_API_KEY"));
-  }
-
-  void* handle = OpenDriverHandle();
-  if (!handle) {
-    const char* error = dlerror();
-    fprintf(stderr, "Loading Record Replay driver failed: %s\n",
-            error ? error : "<no error>");
-    return;
-  }
-
-  RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
-  RecordReplayLoadSymbol(handle, "RecordReplaySetApiKey", gRecordReplaySetApiKey);
-  RecordReplayLoadSymbol(handle, "RecordReplayProfileExecution", gRecordReplayProfileExecution);
-  RecordReplayLoadSymbol(handle, "RecordReplaySaveRecording", gRecordReplaySaveRecording);
-  RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
-                         gRecordReplayRecordCommandLineArguments);
-
-  if (apiKey) {
-    gRecordReplaySetApiKey(apiKey->c_str());
-  }
-
-  const char* dispatchAddress = getenv("RECORD_REPLAY_SERVER");
-
-  gRecordReplayAttach(dispatchAddress, recordreplay::gBuildId);
-  gRecordReplayRecordCommandLineArguments(pargc, (char***)pargv);
-  gRecordReplaySaveRecording(nullptr);
-
-#else // !OS_LINUX
-
-  // Loading the driver handle when it wasn't explicitly specified on macOS is NYI.
-  CHECK(0);
-  void* handle = nullptr;
-
-#endif // !OS_LINUX
-
-  V8SetRecordingOrReplaying(handle);
-
-  MaybeStartProfiling();
-}
+#if BUILDFLAG(IS_LINUX)
+#include "./record_replay_main.cc"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
@@ -271,7 +90,25 @@ int ChromeMain(int argc, const char** argv) {
 #error Unknown platform.
 #endif
 
-  RecordReplayAttach(&argc, &argv);
+  // On linux ChromeMain is the process entry point, whereas on macOS the main
+  // function is in a different binary in chrome_exe_main_mac.cc. When we get to
+  // ChromeMain we've already started recording/replaying, but still need to
+  // initialize V8's record/replay bindings. On linux we need to start
+  // recording/replaying.
+#if BUILDFLAG(IS_LINUX)
+  void* handle = RecordReplayAttach(&argc, &argv);
+  if (handle) {
+    V8SetRecordingOrReplaying(handle);
+  }
+#elif BUILDFLAG(IS_MAC)
+  // Note: On macOS the library handle doesn't need to be specified when using dlsym.
+  void* sym = dlsym(nullptr, "RecordReplayAttach");
+  if (sym) {
+    V8SetRecordingOrReplaying(nullptr);
+  }
+#else
+#error "Unknown platform"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(USE_ALLOCATOR_SHIM) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

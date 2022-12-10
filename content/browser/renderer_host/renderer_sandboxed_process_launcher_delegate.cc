@@ -29,11 +29,10 @@
 
 namespace content {
 
+#if BUILDFLAG(USE_ZYGOTE_HANDLE)
 static inline bool MaybeRecordingOrReplaying() {
   return true;
 }
-
-#if BUILDFLAG(USE_ZYGOTE_HANDLE)
 ZygoteHandle RendererSandboxedProcessLauncherDelegate::GetZygote() {
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();

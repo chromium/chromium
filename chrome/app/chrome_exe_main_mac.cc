@@ -18,6 +18,7 @@
 #include <unistd.h>
 
 #include <memory>
+#include <string>
 
 #include "base/allocator/early_zone_registration_mac.h"
 #include "build/branding_buildflags.h"
@@ -27,8 +28,6 @@
 #if defined(HELPER_EXECUTABLE)
 #include "sandbox/mac/seatbelt_exec.h"  // nogncheck
 #endif
-
-#include "base/optional.h"
 
 extern "C" {
 // abort_report_np() records the message in a special section that both the
@@ -144,110 +143,10 @@ __attribute__((used)) const char kGrossPaddingForCrbug1300598[68 * 1024] = {};
 
 }  // namespace
 
-static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
-static void (*gRecordReplaySetApiKey)(const char* apiKey);
-static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
-
-template <typename Src, typename Dst>
-static inline void CastPointer(const Src src, Dst* dst) {
-  static_assert(sizeof(Src) == sizeof(uintptr_t), "bad size");
-  static_assert(sizeof(Dst) == sizeof(uintptr_t), "bad size");
-  memcpy((void*)dst, (const void*)&src, sizeof(uintptr_t));
-}
-
-template <typename T>
-static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) {
-  void* sym = dlsym(handle, name);
-  if (!sym) {
-    fprintf(stderr, "Could not find %s in Record Replay driver.\n", name);
-    return;
-  }
-
-  CastPointer(sym, &function);
-}
-
-#include "../../base/record_replay_build_id.cc"
-
-static void RecordReplayAttach(int* pargc, char*** pargv) {
-  const char* driver = getenv("RECORD_REPLAY_DRIVER");
-  if (!driver) {
-    // When not configured to record/replay, don't change anything.
-    return;
-  }
-
-  // Figure out what type of process this is.
-  char* type = nullptr;
-  for (int i = 0; i < *pargc; i++) {
-    if (!strncmp((*pargv)[i], "--type=", 7)) {
-      type = (*pargv)[i] + 7;
-      break;
-    }
-  }
-  if (type) {
-    // Only renderer processes are recorded/replayed.
-    if (strcmp(type, "renderer")) {
-      return;
-    }
-  } else {
-    // If there is no type, this is the main process. Add a couple command line
-    // arguments which are required to record/replay.
-    char** nargv = new char*[*pargc + 3];
-    memcpy(nargv, *pargv, *pargc * sizeof(char*));
-    *pargv = nargv;
-
-    // Recording processes currently need the sandbox disabled in order to
-    // write out recording IDs to the specified path name.
-    (*pargv)[*pargc] = strdup("--no-sandbox");
-
-    // Recording/replaying currently requires software rendering.
-    (*pargv)[*pargc + 1] = strdup("--disable-gpu");
-
-    (*pargv)[*pargc + 2] = nullptr;
-    *pargc += 2;
-    return;
-  }
-
-  const char* dispatchAddress = getenv("RECORD_REPLAY_SERVER");
-  if (!dispatchAddress) {
-    fprintf(stderr, "RECORD_REPLAY_SERVER not set.\n");
-    return;
-  }
-
-  base::Optional<std::string> apiKey;
-  const char* val = getenv("RECORD_REPLAY_API_KEY");
-  if (val) {
-    apiKey.emplace(val);
-    // Unsetting the env var will make the variable unavailable via
-    // getenv and such, and also mutates the 'environ' global, so
-    // by the time gRecordReplayAttach runs, it will have no idea that
-    // this value existed and won't capture it in the recording itself,
-    // which is ideal for security.
-    CHECK(!unsetenv("RECORD_REPLAY_API_KEY"));
-  }
-
-  void* handle = dlopen(driver, RTLD_LAZY);
-  if (!handle) {
-    fprintf(stderr, "Loading Record Replay driver failed.\n");
-    return;
-  }
-
-  RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
-  RecordReplayLoadSymbol(handle, "RecordReplaySetApiKey", gRecordReplaySetApiKey);
-  RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
-                         gRecordReplayRecordCommandLineArguments);
-
-  if (gRecordReplaySetApiKey && apiKey) {
-    gRecordReplaySetApiKey(apiKey->c_str());
-  }
-
-  if (gRecordReplayAttach) {
-    gRecordReplayAttach(dispatchAddress, recordreplay::gBuildId);
-    gRecordReplayRecordCommandLineArguments(pargc, pargv);
-  }
-}
+#include "./record_replay_main.cc"
 
 __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
-  RecordReplayAttach(&argc, &argv);
+  RecordReplayAttach(&argc, const_cast<const char***>(&argv));
 
   partition_alloc::EarlyMallocZoneRegistration();
 

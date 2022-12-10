@@ -86,7 +86,8 @@ ReadOnlySharedMemoryMapping ReadOnlySharedMemoryRegion::MapAt(
     return {};
 
 #ifdef OS_MAC
-  recordreplay::RecordReplayBytes("ReadOnlySharedMemoryRegion::MapAt", memory, size);
+  recordreplay::RecordReplayBytes("ReadOnlySharedMemoryRegion::MapAt",
+                                  result.value().data(), size);
 #endif
 
   return ReadOnlySharedMemoryMapping(result.value(), size, handle_.GetGUID(),

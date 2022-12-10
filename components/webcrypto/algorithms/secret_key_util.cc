@@ -13,7 +13,7 @@
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
-#include <sys/random.h>
+#include "crypto/random.h"
 
 namespace webcrypto {
 
@@ -31,8 +31,7 @@ Status GenerateWebCryptoSecretKey(const blink::WebCryptoKeyAlgorithm& algorithm,
     // Avoid calling RAND_bytes when recording/replaying as it can behave in
     // non-deterministic ways.
     if (recordreplay::IsRecordingOrReplaying()) {
-      if (getrandom(random_bytes.data(), keylen_bytes, 0) != keylen_bytes)
-        return Status::OperationError();
+      crypto::RandBytes(random_bytes.data(), keylen_bytes);
     } else {
       if (!RAND_bytes(random_bytes.data(), keylen_bytes))
         return Status::OperationError();

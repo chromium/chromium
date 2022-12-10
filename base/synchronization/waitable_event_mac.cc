@@ -39,8 +39,8 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : policy_(reset_policy) {
   // Pointer registration is needed for sorting in WaitSet.user_events_
-  recordreplay::RegisterPointer(this);
-  record_replay_ordered_lock_id_ = (int)recordreplay::CreateOrderedLock("WaitableEvent");
+  recordreplay::RegisterPointer("WaitableEvent", this);
+  record_replay_ordered_lock_id_ = recordreplay::CreateOrderedLock("WaitableEvent");
 
   mach_port_options_t options{};
   options.flags = MPO_INSERT_SEND_RIGHT;
