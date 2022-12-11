@@ -218,7 +218,7 @@ bool SpawnSubprocess(const std::vector<std::string>& argv,
                                 attr_p,
                                 argv_for_spawn,
                                 envp_for_spawn)) != 0) {
-      PLOG(FATAL) << (use_path ? "posix_spawnp" : "posix_spawn");
+      PLOG(FATAL) << (use_path ? "posix_spawnp " : "posix_spawn ") << argv_for_spawn[0];
     }
 
     // _exit() instead of exit(), because fork() was called.
