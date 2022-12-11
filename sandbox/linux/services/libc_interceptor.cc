@@ -410,6 +410,9 @@ namespace {
 std::atomic<bool> g_getaddrinfo_discouraged{false};
 }  // namespace
 
+// Disabled as dlsym doesn't work as expected with this wrapper when
+// recording/replaying.
+/*
 extern "C" {
 __attribute__((visibility("default"), noinline)) int getaddrinfo(
     const char* node,
@@ -425,6 +428,7 @@ __attribute__((visibility("default"), noinline)) int getaddrinfo(
   return CALL_FUNC(getaddrinfo, node, service, hints, res);
 }
 }
+*/
 
 void DiscourageGetaddrinfo() {
   g_getaddrinfo_discouraged = true;
