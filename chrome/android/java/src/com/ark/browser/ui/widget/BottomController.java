@@ -15,6 +15,7 @@ import com.ark.browser.core.bookmark.BookmarkModel;
 import com.ark.browser.ui.fragment.dialog.CollectionEditorDialog;
 import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
 import com.ark.browser.ui.fragment.dialog.ToolsDialog;
+import com.ark.browser.ui.fragment.search.SearchFragment2;
 import com.ark.browser.ui.widget.indicator.CoolIndicator;
 import com.ark.browser.utils.ArkLogger;
 import com.zpj.utils.KeyboardUtils;
@@ -108,6 +109,12 @@ public class BottomController {
         });
 
         loadingTitle = view.findViewById(R.id.loading_title);
+        loadingTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SearchFragment2().show(mContext);
+            }
+        });
 
         loadingCancel = view.findViewById(R.id.loading_cancel);
         loadingCancel.setOnClickListener(v -> {

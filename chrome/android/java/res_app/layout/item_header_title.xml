@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ark.browser.ui.widget.TitleHeaderLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_title_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:title_header_title="Title"
+    app:title_header_show_more="false"
+    />

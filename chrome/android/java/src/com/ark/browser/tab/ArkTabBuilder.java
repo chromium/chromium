@@ -167,7 +167,7 @@ public class ArkTabBuilder {
         return this;
     }
 
-    public Tab build() {
+    public ArkTabImpl build() {
         // Pre-condition check
         if (mCreationType != null) {
             if (!mFromFrozenState) {

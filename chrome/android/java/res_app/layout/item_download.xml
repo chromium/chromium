@@ -49,12 +49,19 @@
         <!--            style="@android:style/Widget.ProgressBar.Horizontal"-->
         <!--            />-->
 
-        <ProgressBar
+<!--        <ProgressBar-->
+<!--            android:id="@+id/progress_bar"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="3dp"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            style="?android:attr/progressBarStyleHorizontal"-->
+<!--            />-->
+
+        <com.ark.browser.ui.widget.AnimProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="match_parent"
             android:layout_height="3dp"
             android:layout_marginTop="8dp"
-            style="?android:attr/progressBarStyleHorizontal"
             />
 
         <LinearLayout

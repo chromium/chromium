@@ -256,7 +256,7 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         } else if (id == R.id.tv_website_settings) {
 //            SingleWebsiteFragment.start(mPageInfo);
         } else if (id == R.id.tv_history_stack) {
-//            HistoryStackDialogFragment.newInstance(mPageInfo).show(context);
+            HistoryStackDialogFragment.newInstance(mPage).show(context);
         } else if (id == R.id.tv_fullscreen) {
             boolean tag = !fullscreenMode;
 //                PrefsHelper.with().putBoolean("fullscreen_mode", tag);
@@ -287,15 +287,15 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
 //                                    DownloadUtils.recordDownloadPageMetrics(mTab);
             }
         } else if (id == R.id.tv_console) {
-//            tag = !showConsole;
-//            if (tag) {
-//                page.initVConsole();
-//            }
-////                PrefsHelper.with().putBoolean("use_console", tag);
-//            AppConfig.toggleShowConsole();
-//            DrawableTintTextView tvConsole = (DrawableTintTextView) v;
-//            tvConsole.setTint(getResources().getColor(tag ? R.color.colorPrimary : R.color.google_black_400));
-//            page.showVConsole(tag);
+            boolean tag = !showConsole;
+            if (tag) {
+                initVConsole();
+            }
+//                PrefsHelper.with().putBoolean("use_console", tag);
+            AppConfig.toggleShowConsole();
+            DrawableTintTextView tvConsole = (DrawableTintTextView) v;
+            tvConsole.setTint(getResources().getColor(tag ? R.color.colorPrimary : R.color.google_black_400));
+            showVConsole(tag);
         } else if (id == R.id.tv_refresh_timing) {
             boolean tag = !refreshTiming;
             AppConfig.toggleRefreshTiming();
@@ -338,5 +338,42 @@ public class ToolsDialog extends OverDragBottomDialogFragment<ToolsDialog> imple
         }
         dismiss();
     }
+
+    public void initVConsole() {
+        String js = "/*开发者调试工具*/\n" +
+                "javascript:" +
+                "window.vConsole = new window.VConsole({\n" +
+                "  defaultPlugins: ['system', 'network', 'element', 'storage'], // 可以在此设定要默认加载的面板\n" +
+                "  maxLogNumber: 1000,\n" +
+                "  // disableLogScrolling: true,\n" +
+                "  onReady: function() {\n" +
+                "    console.log('vConsole is ready.');\n" +
+                "  },\n" +
+                "  onClearLog: function() {\n" +
+                "    console.log('on clearLog');\n" +
+                "  }\n" +
+                "});" +
+                "console.info('欢迎使用 vConsole。vConsole 是一个由微信公众平台前端团队研发的 Web 前端开发者面板，可用于展示 console 日志，方便开发、调试。');";
+//                "var div = document.querySelector('div.vc-switch');" +
+//                "div.setAttribute('style', 'display:none;');";
+        mPage.getWebContents().evaluateJavaScript(js, null);
+    }
+
+    public void showVConsole(boolean flag) {
+        if (flag) {
+            mPage.getWebContents().evaluateJavaScript("javascript:" +
+                    "var div = document.querySelectorAll('div.vc-switch')[0];" +
+                    "if (div) {" +
+                    "   div.removeAttribute('style');" +
+                    "}", null);
+        } else {
+            mPage.getWebContents().evaluateJavaScript("javascript:" +
+                    "var div = document.querySelector('div.vc-switch');" +
+                    "if (div) {" +
+                    "   div.setAttribute('style', 'display:none;');" +
+                    "}", null);
+        }
+    }
+
 }
 

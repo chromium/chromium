@@ -6,6 +6,8 @@ package org.chromium.components.embedder_support.util;
 
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Patterns;
+import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
 import androidx.core.text.BidiFormatter;
@@ -19,6 +21,8 @@ import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.GURLUtils;
 import org.chromium.url.GURL;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -58,6 +62,9 @@ public class UrlUtilities {
                     ContentUrlConstants.ABOUT_SCHEME);
 
     private static final String TEL_SCHEME = "tel";
+
+    private static final Pattern URL_PATTERN =
+            Pattern.compile("(((https|http)?://)?([a-z0-9]+[.])|(www.))\\w+[.|\\/]([a-z0-9]{0,})?[[.]([a-z0-9]{0,})]+((/[\\S&&[^,;\u4E00-\u9FA5]]+)+)?([.][a-z0-9]{0,}+|/?)");
 
     /**
      * @param uri A URI.
@@ -337,6 +344,30 @@ public class UrlUtilities {
     public static boolean hasIntentScheme(GURL url) {
         return url.getScheme().equals(UrlConstants.APP_INTENT_SCHEME)
                 || url.getScheme().equals(UrlConstants.INTENT_SCHEME);
+    }
+
+    public static boolean isUrl(String urls) {
+        if (TextUtils.isEmpty(urls)) {
+            return false;
+        }
+
+        if (Patterns.WEB_URL.matcher(urls.trim()).matches()) {
+            return true;
+        }
+
+        if (URL_PATTERN.matcher(urls.trim()).matches()) {
+            return true;
+        }
+
+        if (URLUtil.isValidUrl(urls.trim())) {
+            try {
+                new URL(urls.trim());
+                return true;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     @NativeMethods

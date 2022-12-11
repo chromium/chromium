@@ -119,7 +119,7 @@ public class PageCacheManager {
                                     @TabLaunchType int type) {
         long start = System.currentTimeMillis();
 
-        Tab tab = ArkTabBuilder.createLiveTab(false)
+        ArkTabImpl tab = ArkTabBuilder.createLiveTab(false)
                 .setIncognito(tabInfo.getTabInfo().isIncognito())
                 .setLaunchType(type)
 //                .setWindow(nativeWindow)

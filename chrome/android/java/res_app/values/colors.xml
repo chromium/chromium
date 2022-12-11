@@ -30,6 +30,7 @@
     <!-- 酱红色 -->
     <!-- 深红色 -->
     <color name="red5">#ff7870</color>
+    <color name="light_red">#FF5E5E</color>
 
     <color name="light_blue4">#84d4f9</color>
 

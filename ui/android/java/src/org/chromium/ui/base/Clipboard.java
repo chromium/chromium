@@ -334,6 +334,10 @@ public class Clipboard {
         return ClipboardJni.get().getLastModifiedTimeToJavaTime(mNativeClipboard);
     }
 
+    public String getFirstText() {
+        return null;
+    }
+
     @NativeMethods
     interface Natives {
         void onPrimaryClipChanged(long nativeClipboardAndroid, Clipboard caller);

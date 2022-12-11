@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.ListUpdateCallback;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ark.browser.ArkBrowserActivity;
+import com.ark.browser.ui.widget.AnimProgressBar;
 import com.ark.browser.utils.ArkLogger;
 
 import org.chromium.base.ContextUtils;
@@ -219,8 +220,8 @@ public class DownloadManagerDialog {
                 holder.progressBar.setVisibility(View.GONE);
             } else {
                 holder.progressBar.setVisibility(View.VISIBLE);
-                holder.progressBar.setMax(100);
-                holder.progressBar.setProgress(getPercentage(item));
+//                holder.progressBar.setMax(100);
+                holder.progressBar.setProgress(getPercentage(item), true);
             }
         }
 
@@ -322,7 +323,7 @@ public class DownloadManagerDialog {
     private static class DownloadListViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvName;
-        private ProgressBar progressBar;
+        private AnimProgressBar progressBar;
         private TextView tvSize;
         private TextView tvStatus;
         private ImageView actionButton;

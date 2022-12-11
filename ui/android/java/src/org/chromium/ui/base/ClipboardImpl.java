@@ -529,6 +529,18 @@ public class ClipboardImpl
         return getLastModifiedTimeToJavaTime();
     }
 
+    @Override
+    public String getFirstText() {
+        try {
+            return mClipboardManager.getPrimaryClip()
+                    .getItemAt(0)
+                    .getText()
+                    .toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      * Grant permission to access a specific Uri to other packages. For sharing images through the
      * system’s clipboard, Outside of Android O permissions are already managed properly by the

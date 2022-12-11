@@ -27,7 +27,7 @@ public class TabListManager {
 
     private static final String TAG = "TabListManager";
 
-    private static TabListManager sInstance;
+    private static volatile TabListManager sInstance;
 
     private final ObserverList<TabManagerObserver> mObservers = new ObserverList<>();
     private final ITabGroup[] tabLists = new ITabGroup[2];
@@ -35,8 +35,13 @@ public class TabListManager {
     private int currentIndex = 0;
 
     public static TabListManager getInstance() {
-        ThreadUtils.assertOnUiThread();
-        if (sInstance == null) sInstance = new TabListManager();
+        if (sInstance == null) {
+            synchronized (TabListManager.class) {
+                if (sInstance == null) {
+                    sInstance = new TabListManager();
+                }
+            }
+        }
         return sInstance;
     }
 

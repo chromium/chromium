@@ -49,7 +49,7 @@ public class SearchEngineSelectDialog extends BottomSelectDialogFragment<Templat
         findViewById(R.id.btn_close).setOnClickListener(v -> dismiss());
     }
 
-    public int getSearchEngineIconRes(TemplateUrl templateUrl) {
+    public static int getSearchEngineIconRes(TemplateUrl templateUrl) {
         switch (templateUrl.getKeyword()) {
             case "google.com":
                 return R.drawable.ic_browser_engine_google;

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+    <com.zpj.widget.toolbar.ZSearchBar
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:z_toolbar_fillStatusBar="true"
+        app:z_toolbar_isLightStyle="true"
+        app:z_toolbar_statusBarColor="@color/transparent"
+        app:z_toolbar_titleBarColor="@color/transparent"
+        app:z_toolbar_background="@drawable/bg_round_search_inset"
+        app:z_toolbar_padding="8dp"
+        app:z_toolbar_rightImageResource="@drawable/ic_search_v2"
+        android:elevation="4dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="?attr/backgroundBottomDialog"
+        android:elevation="4dp"
+        >
+
+        <TextView
+            android:id="@+id/text_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="baidu"
+            android:textColor="?attr/textColorMajor"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            />
+
+        <TextView
+            android:layout_below="@id/text_title"
+            android:id="@+id/text_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="www.baidu.com"
+            android:layout_marginHorizontal="16dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:paddingHorizontal="8dp"
+            >
+
+            <ImageButton
+                android:id="@+id/btn_web"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_language_black_24dp"
+                android:padding="8dp"
+                android:background="?android:attr/actionBarItemBackground"
+                android:tint="?attr/textColorMajor"
+                />
+
+            <ImageButton
+                android:id="@+id/btn_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_search_v2"
+                android:padding="8dp"
+                android:background="?android:attr/actionBarItemBackground"
+                android:tint="?attr/textColorMajor"
+                />
+
+            <ImageButton
+                android:id="@+id/btn_copy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_content_copy_black"
+                android:padding="8dp"
+                android:background="?android:attr/actionBarItemBackground"
+                android:tint="?attr/textColorMajor"
+                />
+
+            <ImageButton
+                android:id="@+id/btn_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_edit_24dp"
+                android:padding="8dp"
+                android:background="?android:attr/actionBarItemBackground"
+                android:tint="?attr/textColorMajor"
+                android:layout_marginEnd="4dp"
+                />
+
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -10,18 +10,15 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 
 import com.ark.browser.tab.core.IPage;
+import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -149,6 +146,21 @@ public class TabSnapshotManager {
 
     public void loadTabSnapshot(ImageView ivThumbnail, PageInfo pageInfo) {
         loadTabSnapshot(ivThumbnail, pageInfo.getPageId());
+    }
+
+    public void loadTabSnapshot(FitWidthImageView ivThumbnail, PageInfo pageInfo) {
+        loadTabSnapshot(ivThumbnail, pageInfo.getPageId());
+    }
+
+    public void loadTabSnapshot(FitWidthImageView ivThumbnail, int tabId) {
+        loadTabSnapshot(tabId, value -> {
+            if (value == null) {
+//                    ivThumbnail.setImageResource(R.drawable.qianxun_home_wallpaper);
+                ivThumbnail.setImageBitmap(null);
+            } else {
+                ivThumbnail.setImageBitmap(value);
+            }
+        });
     }
 
     private static class SnapshotTask {

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:orientation="horizontal"
+    >
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/refine_btn"
+        android:paddingStart="10dp"
+        android:paddingEnd="0dp"
+        >
+
+        <TextView android:id="@+id/item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:textStyle="bold"
+            android:textColor="?attr/textColorMajor"
+            android:text="titile"
+            android:ellipsize="end"/>
+
+        <TextView
+            android:id="@+id/item_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:gravity="start"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="?attr/textColorNormal"
+            android:text="text"
+            tools:ignore="SmallSp"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/refine_btn"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/btn_suggestion_refine"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:padding="3dp"
+        android:background="?android:attr/actionBarItemBackground"
+        android:tint="?attr/textColorMajor"
+        />
+
+
+</RelativeLayout>

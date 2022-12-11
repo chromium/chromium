@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/backgroundColor">
+
+    <com.ark.browser.ui.widget.TitleHeaderLayout
+        android:id="@+id/bar_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title_header_title="搜索历史"
+        />
+
+    <ImageView
+        android:id="@+id/clear_search_history"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="end|center_vertical"
+        android:padding="2dp"
+        android:src="@drawable/ic_delete"
+        android:tint="@color/light_red"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+</FrameLayout>

@@ -9,6 +9,11 @@
         <attr name="dialog_header_title" format="string" />
     </declare-styleable>
 
+    <declare-styleable name="TitleHeaderLayout">
+        <attr name="title_header_title" format="string" />
+        <attr name="title_header_show_more" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="CheckLayout">
         <attr name="check_title" format="string"/>
         <attr name="check_content" format="string" />
