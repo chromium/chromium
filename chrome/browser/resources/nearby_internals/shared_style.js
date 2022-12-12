@@ -4,6 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 const styleMod = document.createElement('dom-module');
-styleMod.innerHTML = `{__html_template__}`;
+styleMod.appendChild(html`{__html_template__}`.content);
 styleMod.register('shared-style');
