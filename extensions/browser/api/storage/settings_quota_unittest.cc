@@ -15,8 +15,6 @@
 #include "extensions/browser/api/storage/settings_storage_quota_enforcer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::DictionaryValue;
-
 namespace extensions {
 
 // To save typing value_store::ValueStore::DEFAULTS/IGNORE_QUOTA everywhere.
