@@ -41,6 +41,8 @@ void PresentationTimeCallbackBuffer::RegisterMainThreadCallbacks(
     uint32_t frame_token,
     std::vector<Callback> callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (callbacks.empty())
+    return;
 
   // Splice the given `callbacks` onto the vector of existing callbacks.
   auto& sink = GetOrMakeRegistration(frame_token).main_callbacks;
@@ -52,6 +54,8 @@ void PresentationTimeCallbackBuffer::RegisterMainThreadSuccessfulCallbacks(
     uint32_t frame_token,
     std::vector<SuccessfulCallback> callbacks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (callbacks.empty())
+    return;
 
   // Splice the given `callbacks` onto the vector of existing callbacks.
   auto& sink = GetOrMakeRegistration(frame_token).main_successful_callbacks;
@@ -63,6 +67,9 @@ void PresentationTimeCallbackBuffer::
     RegisterCompositorThreadSuccessfulCallbacks(
         uint32_t frame_token,
         std::vector<SuccessfulCallback> callbacks) {
+  if (callbacks.empty())
+    return;
+
   // Splice the given |callbacks| onto the vector of existing callbacks.
   std::vector<SuccessfulCallback>& sink =
       GetOrMakeRegistration(frame_token).compositor_successful_callbacks;
