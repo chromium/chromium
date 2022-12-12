@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, NotInstalled) {
                            .Set("name", "Fake extension")
                            .Set("version", "1")
                            .Set("manifest_version", 2)
-                           .Build())
+                           .BuildDict())
           .Build();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
@@ -1484,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,
                            .Set("name", "Fake extension")
                            .Set("version", "1")
                            .Set("manifest_version", 2)
-                           .Build())
+                           .BuildDict())
           .Build();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));

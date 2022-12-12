@@ -52,16 +52,15 @@ scoped_refptr<const Extension> CreateExtensionWithPermissions(
                        .Set("manifest_version", 2)
                        .Set("version", "0.1.2.3")
                        .Set("permissions", std::move(permissions))
-                       .Build())
+                       .BuildDict())
       .AddFlags(creation_flags)
       .SetID(crx_file::id_util::GenerateId(name))
       .Build();
 }
 
 // Helper function to create a base::Value from a list of strings.
-std::unique_ptr<base::Value> StringVectorToValue(
-    const std::vector<std::string>& strings) {
-  return ListBuilder().Append(strings.begin(), strings.end()).Build();
+base::Value::List StringVectorToValue(const std::vector<std::string>& strings) {
+  return ListBuilder().Append(strings.begin(), strings.end()).BuildList();
 }
 
 // Runs permissions.request() with the provided |args|, and returns the result

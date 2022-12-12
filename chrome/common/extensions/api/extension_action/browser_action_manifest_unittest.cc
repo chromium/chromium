@@ -35,10 +35,10 @@ TEST_F(BrowserActionManifestTest,
                   .Set("name", "No default properties")
                   .Set("version", "1.0.0")
                   .Set("manifest_version", 2)
-                  .Set(
-                      "browser_action",
-                      DictionaryBuilder().Set("default_title", "Title").Build())
-                  .Build())
+                  .Set("browser_action", DictionaryBuilder()
+                                             .Set("default_title", "Title")
+                                             .BuildDict())
+                  .BuildDict())
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -59,8 +59,8 @@ TEST_F(BrowserActionManifestTest,
                   .Set("manifest_version", 2)
                   .Set("browser_action", DictionaryBuilder()
                                              .Set("default_icon", "icon.png")
-                                             .Build())
-                  .Build())
+                                             .BuildDict())
+                  .BuildDict())
           .Build();
 
   ASSERT_TRUE(extension.get());
@@ -92,9 +92,9 @@ TEST_F(BrowserActionManifestTest,
                                                     .Set("19", "icon19.png")
                                                     .Set("24", "icon24.png")
                                                     .Set("38", "icon38.png")
-                                                    .Build())
-                           .Build())
-                  .Build())
+                                                    .BuildDict())
+                           .BuildDict())
+                  .BuildDict())
           .Build();
 
   ASSERT_TRUE(extension.get());

@@ -41,8 +41,8 @@ scoped_refptr<const Extension> CreateExtensionWithBookmarksPermission(
                        .Set("name", "Test extension")
                        .Set("version", "1.0")
                        .Set("manifest_version", 2)
-                       .Set("permissions", permissions.Build())
-                       .Build())
+                       .Set("permissions", permissions.BuildList())
+                       .BuildDict())
       .Build();
 }
 

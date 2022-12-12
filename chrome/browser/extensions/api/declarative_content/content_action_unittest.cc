@@ -41,12 +41,12 @@ using testing::HasSubstr;
 using ContentActionType = declarative_content_constants::ContentActionType;
 using extensions::mojom::ManifestLocation;
 
-std::unique_ptr<base::DictionaryValue> SimpleManifest() {
+base::Value::Dict SimpleManifest() {
   return DictionaryBuilder()
       .Set("name", "extension")
       .Set("manifest_version", 2)
       .Set("version", "1.0")
-      .Build();
+      .BuildDict();
 }
 
 class RequestContentScriptTest : public ExtensionServiceTestBase {
@@ -123,7 +123,7 @@ TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
       .Set("description", "an extension");
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetManifest(manifest.Build())
+          .SetManifest(manifest.BuildDict())
           .SetLocation(ManifestLocation::kComponent)
           .Build();
   env.GetExtensionService()->AddExtension(extension.get());
@@ -236,12 +236,13 @@ TEST(DeclarativeContentActionTest, SetIcon) {
       case Base64: {
         std::string data64 =
             base::Base64Encode(skia::mojom::InlineBitmap::Serialize(&bitmap));
-        builder.Set("imageData", DictionaryBuilder().Set("19", data64).Build());
+        builder.Set("imageData",
+                    DictionaryBuilder().Set("19", data64).BuildDict());
         break;
       }
       case Mojo: {
         std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
-        builder.Set("imageData", DictionaryBuilder().Set("19", s).Build());
+        builder.Set("imageData", DictionaryBuilder().Set("19", s).BuildDict());
         break;
       }
       case MojoHuge: {
@@ -256,11 +257,11 @@ TEST(DeclarativeContentActionTest, SetIcon) {
                   mojo_base::BigBuffer::kMaxInlineBytes);
         bitmap.eraseARGB(255, 255, 0, 0);
         std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
-        builder.Set("imageData", DictionaryBuilder().Set("19", s).Build());
+        builder.Set("imageData", DictionaryBuilder().Set("19", s).BuildDict());
         break;
       }
     }
-    std::unique_ptr<base::DictionaryValue> dict = builder.Build();
+    base::Value::Dict dict = builder.BuildDict();
 
     const Extension* extension = env.MakeExtension(
         ParseJson(R"({"page_action": {"default_title": "Extension"}})"));
@@ -268,8 +269,8 @@ TEST(DeclarativeContentActionTest, SetIcon) {
     TestingProfile profile;
     std::string error;
     ContentAction::SetAllowInvisibleIconsForTest(false);
-    std::unique_ptr<const ContentAction> result =
-        ContentAction::Create(&profile, extension, *dict, &error);
+    std::unique_ptr<const ContentAction> result = ContentAction::Create(
+        &profile, extension, base::Value(std::move(dict)), &error);
     ContentAction::SetAllowInvisibleIconsForTest(true);
     EXPECT_EQ("", error);
     ASSERT_TRUE(result.get());

@@ -109,12 +109,11 @@ TEST_F(RulesRegistryServiceTest, TestConstructionAndMultiThreading) {
   base::RunLoop().RunUntilIdle();
 
   // Test extension uninstalling.
-  std::unique_ptr<base::DictionaryValue> manifest =
-      DictionaryBuilder()
-          .Set("name", "Extension")
-          .Set("version", "1.0")
-          .Set("manifest_version", 2)
-          .Build();
+  base::Value::Dict manifest = DictionaryBuilder()
+                                   .Set("name", "Extension")
+                                   .Set("version", "1.0")
+                                   .Set("manifest_version", 2)
+                                   .BuildDict();
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))

@@ -19,7 +19,11 @@ DictionaryBuilder::DictionaryBuilder(const base::DictionaryValue& init)
     : dict_(base::DictionaryValue::From(
           base::Value::ToUniquePtrValue(init.Clone()))) {}
 
-DictionaryBuilder::~DictionaryBuilder() {}
+DictionaryBuilder::DictionaryBuilder(const base::Value::Dict& init)
+    : dict_(base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(base::Value(init.Clone())))) {}
+
+DictionaryBuilder::~DictionaryBuilder() = default;
 
 std::string DictionaryBuilder::ToJSON() const {
   std::string json;
@@ -31,6 +35,6 @@ std::string DictionaryBuilder::ToJSON() const {
 // ListBuilder
 
 ListBuilder::ListBuilder() : list_(new base::ListValue) {}
-ListBuilder::~ListBuilder() {}
+ListBuilder::~ListBuilder() = default;
 
 }  // namespace extensions

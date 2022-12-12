@@ -46,6 +46,7 @@ class DictionaryBuilder {
  public:
   DictionaryBuilder();
   explicit DictionaryBuilder(const base::DictionaryValue& init);
+  explicit DictionaryBuilder(const base::Value::Dict& init);
 
   DictionaryBuilder(const DictionaryBuilder&) = delete;
   DictionaryBuilder& operator=(const DictionaryBuilder&) = delete;
