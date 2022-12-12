@@ -35,15 +35,7 @@ using signin::ConsentLevel;
 
 namespace {
 const int kProfileImageSize = 128;
-const char kSyncBenefitTitleKey[] = "title";
-const char kSyncBenefitIconNameKey[] = "iconName";
 }  // namespace
-
-const char kSyncBenefitBookmarksStringName[] = "syncConfirmationBookmarks";
-const char kSyncBenefitAutofillStringName[] = "syncConfirmationAutofill";
-const char kSyncBenefitExtensionsStringName[] = "syncConfirmationExtensions";
-const char kSyncBenefitHistoryAndMoreStringName[] =
-    "syncConfirmationHistoryAndMore";
 
 SyncConfirmationHandler::SyncConfirmationHandler(
     Profile* profile,
@@ -92,10 +84,6 @@ void SyncConfirmationHandler::RegisterMessages() {
       "accountInfoRequest",
       base::BindRepeating(&SyncConfirmationHandler::HandleAccountInfoRequest,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getSyncBenefitsList",
-      base::BindRepeating(&SyncConfirmationHandler::HandleGetSyncBenefitsList,
-                          base::Unretained(this)));
 }
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
@@ -129,42 +117,6 @@ void SyncConfirmationHandler::HandleAccountInfoRequest(
   // fired again through |OnAccountUpdated()|.
   if (primary_account_info.IsValid())
     SetAccountInfo(primary_account_info);
-}
-
-// TODO(crbug.com/1392115): Add a new method to `WebUIDataSource` that supports
-// passing an arbitrary `Value` to JS instead of using a callback.
-void SyncConfirmationHandler::HandleGetSyncBenefitsList(
-    const base::Value::List& args) {
-  AllowJavascript();
-  CHECK_EQ(1U, args.size());
-  const base::Value& callback_id = args[0];
-
-  base::Value::List sync_benefits_list;
-
-  // TODO(crbug.com/1383163): Select available types from SyncTypesListDisabled.
-
-  base::Value::Dict bookmarks;
-  bookmarks.Set(kSyncBenefitTitleKey, kSyncBenefitBookmarksStringName);
-  bookmarks.Set(kSyncBenefitIconNameKey, "signin:star-outline");
-  sync_benefits_list.Append(std::move(bookmarks));
-
-  base::Value::Dict autofill;
-  autofill.Set(kSyncBenefitTitleKey, kSyncBenefitAutofillStringName);
-  autofill.Set(kSyncBenefitIconNameKey, "signin:assignment-outline");
-  sync_benefits_list.Append(std::move(autofill));
-
-  base::Value::Dict extensions;
-  extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
-  extensions.Set(kSyncBenefitIconNameKey, "signin:extension-outline");
-  sync_benefits_list.Append(std::move(extensions));
-
-  base::Value::Dict history_and_more;
-  history_and_more.Set(kSyncBenefitTitleKey,
-                       kSyncBenefitHistoryAndMoreStringName);
-  history_and_more.Set(kSyncBenefitIconNameKey, "signin:devices");
-  sync_benefits_list.Append(std::move(history_and_more));
-
-  ResolveJavascriptCallback(callback_id, sync_benefits_list);
 }
 
 void SyncConfirmationHandler::RecordConsent(const base::Value::List& args) {

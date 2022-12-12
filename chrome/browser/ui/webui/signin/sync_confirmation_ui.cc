@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -43,6 +44,46 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/webui_generated_resources.h"
+
+namespace {
+const char kSyncBenefitAutofillStringName[] = "syncConfirmationAutofill";
+const char kSyncBenefitBookmarksStringName[] = "syncConfirmationBookmarks";
+const char kSyncBenefitExtensionsStringName[] = "syncConfirmationExtensions";
+const char kSyncBenefitHistoryAndMoreStringName[] =
+    "syncConfirmationHistoryAndMore";
+const char kSyncBenefitIconNameKey[] = "iconName";
+const char kSyncBenefitTitleKey[] = "title";
+
+std::string GetSyncBenefitsListJSON() {
+  base::Value::List sync_benefits_list;
+
+  // TODO(crbug.com/1383163): Select available types from SyncTypesListDisabled.
+  base::Value::Dict bookmarks;
+  bookmarks.Set(kSyncBenefitTitleKey, kSyncBenefitBookmarksStringName);
+  bookmarks.Set(kSyncBenefitIconNameKey, "signin:star-outline");
+  sync_benefits_list.Append(std::move(bookmarks));
+
+  base::Value::Dict autofill;
+  autofill.Set(kSyncBenefitTitleKey, kSyncBenefitAutofillStringName);
+  autofill.Set(kSyncBenefitIconNameKey, "signin:assignment-outline");
+  sync_benefits_list.Append(std::move(autofill));
+
+  base::Value::Dict extensions;
+  extensions.Set(kSyncBenefitTitleKey, kSyncBenefitExtensionsStringName);
+  extensions.Set(kSyncBenefitIconNameKey, "signin:extension-outline");
+  sync_benefits_list.Append(std::move(extensions));
+
+  base::Value::Dict history_and_more;
+  history_and_more.Set(kSyncBenefitTitleKey,
+                       kSyncBenefitHistoryAndMoreStringName);
+  history_and_more.Set(kSyncBenefitIconNameKey, "signin:devices");
+  sync_benefits_list.Append(std::move(history_and_more));
+
+  std::string json_benefits_list;
+  base::JSONWriter::Write(sync_benefits_list, &json_benefits_list);
+  return json_benefits_list;
+}
+}  // namespace
 
 SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui), profile_(Profile::FromWebUI(web_ui)) {
@@ -134,6 +175,8 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
 
   source->AddString("accountPictureUrl",
                     profiles::GetPlaceholderAvatarIconUrl());
+
+  source->AddString("syncBenefitsList", GetSyncBenefitsListJSON());
 
   // Default overrides without placeholders
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

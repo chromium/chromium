@@ -14,7 +14,6 @@ export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy
       'goToSettings',
       'initializedWithSize',
       'requestAccountInfo',
-      'getSyncBenefitsList',
     ]);
   }
 
@@ -36,10 +35,5 @@ export class TestSyncConfirmationBrowserProxy extends TestBrowserProxy
 
   requestAccountInfo() {
     this.methodCalled('requestAccountInfo');
-  }
-
-  getSyncBenefitsList() {
-    this.methodCalled('getSyncBenefitsList');
-    return Promise.resolve([]);
   }
 }

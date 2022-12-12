@@ -19,11 +19,6 @@ namespace signin {
 class IdentityManager;
 }
 
-extern const char kSyncBenefitBookmarksStringName[];
-extern const char kSyncBenefitAutofillStringName[];
-extern const char kSyncBenefitExtensionsStringName[];
-extern const char kSyncBenefitHistoryAndMoreStringName[];
-
 // WebUI message handler for the sync confirmation dialog. IdentityManager calls
 // in this class use signin::ConsentLevel::kSignin because the user hasn't
 // consented to sync yet.
@@ -80,10 +75,6 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // "account-info-changed" WebUIListener was added. This method calls
   // |SetAccountInfo| with the signed-in user's picture url.
   virtual void HandleAccountInfoRequest(const base::Value::List& args);
-
-  // Handles the "getSyncBenefitsList" message sent from the page. Sends a
-  // promise with the list of available sync benefits.
-  virtual void HandleGetSyncBenefitsList(const base::Value::List& args);
 
   // Records the user's consent to sync. Called from |HandleConfirm| and
   // |HandleGoToSettings|, and expects two parameters to be passed through

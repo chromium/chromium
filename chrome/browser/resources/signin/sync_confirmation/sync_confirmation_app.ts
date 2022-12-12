@@ -79,12 +79,11 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         value: false,
       },
 
-      /**
-       * Sync benefits list supplied by SyncConfirmationBrowserProxy.
-       */
       syncBenefitsList_: {
         type: Array,
-        value: () => [],
+        value() {
+          return JSON.parse(loadTimeData.getString('syncBenefitsList'));
+        },
       },
     };
   }
@@ -105,8 +104,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.addWebUiListener(
         'account-info-changed', this.handleAccountInfoChanged_.bind(this));
     this.syncConfirmationBrowserProxy_.requestAccountInfo();
-    this.syncConfirmationBrowserProxy_.getSyncBenefitsList().then(
-        list => this.syncBenefitsList_ = list);
   }
 
   private onConfirm_(e: Event) {

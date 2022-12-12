@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {sendWithPromise} from 'chrome://resources/js/cr.js';
-
 export interface SyncBenefit {
   title: string;
   iconName: string;
@@ -41,11 +39,6 @@ export interface SyncConfirmationBrowserProxy {
    * Called when the WebUIListener for "account-info-changed" was added.
    */
   requestAccountInfo(): void;
-
-  /**
-   * Called to fetch the list of available sync benefits.
-   */
-  getSyncBenefitsList(): Promise<SyncBenefit[]>;
 }
 
 export class SyncConfirmationBrowserProxyImpl implements
@@ -68,10 +61,6 @@ export class SyncConfirmationBrowserProxyImpl implements
 
   requestAccountInfo() {
     chrome.send('accountInfoRequest');
-  }
-
-  getSyncBenefitsList() {
-    return sendWithPromise('getSyncBenefitsList');
   }
 
   static getInstance(): SyncConfirmationBrowserProxy {
