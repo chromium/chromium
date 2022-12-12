@@ -504,6 +504,15 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
+    public void testKeepsScreenOnInLockTaskMode() {
+        mShadowActivityManager.setLockTaskModeState(ActivityManager.LOCK_TASK_MODE_PINNED);
+        mActivityLifecycle.create().start().resume();
+
+        Assert.assertTrue(Shadows.shadowOf(mActivityLifecycle.get().getWindow())
+                                  .getFlag(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON));
+    }
+
+    @Test
     @Config(shadows = {ExtendedShadowActivity.class})
     public void testEntersPipWhenAllowPipIsTrue() {
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);

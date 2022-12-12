@@ -180,7 +180,11 @@ public class CastWebContentsActivity extends Activity {
         });
 
         Observable<Unit> shouldKeepScreenOn =
-                mGotIntentState.filter(CastWebContentsIntentUtils::shouldKeepScreenOn).opaque();
+                mGotIntentState
+                        .filter(intent
+                                -> CastWebContentsIntentUtils.shouldKeepScreenOn(intent)
+                                        || isInLockTaskMode(this))
+                        .opaque();
 
         shouldKeepScreenOn.or(mediaPlaying.and(isDocked).opaque()).subscribe((x) -> {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
