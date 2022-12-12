@@ -450,9 +450,17 @@ class DriveIntegrationService::PreferenceWatcher
     }
 
     VLOG(1) << "Updating the bulk pinning state";
-    if (integration_service_->GetDriveFsPinManager()) {
-      integration_service_->GetDriveFsPinManager()->SetBulkPinningEnabled(
-          pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled));
+    auto* pin_manager = integration_service_->GetDriveFsPinManager();
+    if (!pin_manager) {
+      return;
+    }
+    bool enabled = pref_service_->GetBoolean(prefs::kDriveFsBulkPinningEnabled);
+    integration_service_->GetDriveFsPinManager()->SetBulkPinningEnabled(
+        enabled);
+    if (enabled) {
+      pin_manager->Start(base::DoNothing());
+    } else {
+      pin_manager->Stop();
     }
   }
 
@@ -956,6 +964,12 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
     }
   }
   drivefs_holder_->drivefs_host()->Unmount();
+
+  if (ash::features::IsDriveFsBulkPinningEnabled() && pin_manager_) {
+    pin_manager_->Stop();
+    drivefs_holder_->drivefs_host()->RemoveObserver(pin_manager_.get());
+    pin_manager_.reset();
+  }
 }
 
 void DriveIntegrationService::MaybeRemountFileSystem(
@@ -1034,16 +1048,12 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
     pin_manager_ = std::make_unique<drivefs::pinning::DriveFsPinManager>(
         profile_->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningEnabled),
         profile_->GetPath(), GetDriveFsInterface());
+    drivefs_holder_->drivefs_host()->AddObserver(pin_manager_.get());
   }
 }
 
 void DriveIntegrationService::OnUnmounted(
     absl::optional<base::TimeDelta> remount_delay) {
-  if (ash::features::IsDriveFsBulkPinningEnabled() && pin_manager_) {
-    pin_manager_->Stop();
-    drivefs_holder_->drivefs_host()->RemoveObserver(pin_manager_.get());
-    pin_manager_.reset();
-  }
   UmaEmitUnmountOutcome(remount_delay ? DriveMountStatus::kTemporaryUnavailable
                                       : DriveMountStatus::kUnknownFailure);
   MaybeRemountFileSystem(remount_delay, false);
