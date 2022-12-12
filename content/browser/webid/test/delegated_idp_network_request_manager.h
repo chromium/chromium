@@ -24,12 +24,12 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   DelegatedIdpNetworkRequestManager& operator=(
       const DelegatedIdpNetworkRequestManager&) = delete;
 
-  void FetchManifestList(const GURL& provider,
-                         FetchManifestListCallback callback) override;
-  void FetchManifest(const GURL& provider,
-                     int idp_brand_icon_ideal_size,
-                     int idp_brand_icon_minimum_size,
-                     FetchManifestCallback callback) override;
+  void FetchWellKnown(const GURL& provider,
+                      FetchWellKnownCallback callback) override;
+  void FetchConfig(const GURL& provider,
+                   int idp_brand_icon_ideal_size,
+                   int idp_brand_icon_minimum_size,
+                   FetchConfigCallback callback) override;
   void FetchClientMetadata(const GURL& endpoint,
                            const std::string& client_id,
                            FetchClientMetadataCallback callback) override;

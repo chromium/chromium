@@ -540,18 +540,18 @@ void FederatedAuthRequestImpl::RequestToken(
 
   int icon_ideal_size = request_dialog_controller_->GetBrandIconIdealSize();
   int icon_minimum_size = request_dialog_controller_->GetBrandIconMinimumSize();
-  std::unique_ptr<FederatedManifestRequester> manifest_requester =
-      std::make_unique<FederatedManifestRequester>(network_manager_.get());
+  std::unique_ptr<FederatedProviderFetcher> provider_fetcher =
+      std::make_unique<FederatedProviderFetcher>(network_manager_.get());
 
-  // FederatedManifestRequester is passed as a parameter of
-  // OnAllManifestsFetched() so that FederatedManifestRequester is destroyed
-  // when FederatedAuthRequestImpl is destroyed.
-  FederatedManifestRequester* manifest_requester_ptr = manifest_requester.get();
-  manifest_requester_ptr->Start(
+  // FederatedProviderFetcher is passed as a parameter of
+  // OnAllConfigAndWellKnownFetched() so that FederatedProviderFetcher is
+  // destroyed when FederatedAuthRequestImpl is destroyed.
+  FederatedProviderFetcher* provider_fetcher_ptr = provider_fetcher.get();
+  provider_fetcher_ptr->Start(
       idp_order_, icon_ideal_size, icon_minimum_size,
-      base::BindOnce(&FederatedAuthRequestImpl::OnAllManifestsFetched,
+      base::BindOnce(&FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(manifest_requester), std::move(get_infos)));
+                     std::move(provider_fetcher), std::move(get_infos)));
 }
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
@@ -647,11 +647,11 @@ bool FederatedAuthRequestImpl::HasPendingRequest() const {
   return has_pending_request;
 }
 
-void FederatedAuthRequestImpl::OnAllManifestsFetched(
-    std::unique_ptr<FederatedManifestRequester> manifest_requester,
+void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
+    std::unique_ptr<FederatedProviderFetcher> provider_fetcher,
     base::flat_map<GURL, IdentityProviderGetInfo> get_infos,
-    std::vector<FederatedManifestRequester::FetchResult> fetch_results) {
-  for (const FederatedManifestRequester::FetchResult& fetch_result :
+    std::vector<FederatedProviderFetcher::FetchResult> fetch_results) {
+  for (const FederatedProviderFetcher::FetchResult& fetch_result :
        fetch_results) {
     const GURL& identity_provider_config_url =
         fetch_result.identity_provider_config_url;
@@ -670,7 +670,7 @@ void FederatedAuthRequestImpl::OnAllManifestsFetched(
             get_info_it->second.prefer_auto_signin);
 
     if (fetch_result.error) {
-      const FederatedManifestRequester::FetchError& fetch_error =
+      const FederatedProviderFetcher::FetchError& fetch_error =
           *fetch_result.error;
       if (fetch_error.additional_console_error_message) {
         render_frame_host().AddMessageToConsole(

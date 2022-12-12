@@ -50,14 +50,13 @@ namespace {
 
 constexpr char kRpHostName[] = "rp.example";
 
-// Use localhost for IDP so that the manifest list can be fetched from the test
-// server's custom port.
-// IdpNetworkRequestManager::ComputeManifestListUrl() does not enforce a
-// specific port if the IDP is localhost.
+// Use localhost for IDP so that the well-known file can be fetched from the
+// test server's custom port. IdpNetworkRequestManager::ComputeWellKnownUrl()
+// does not enforce a specific port if the IDP is localhost.
 constexpr char kIdpOrigin[] = "https://127.0.0.1";
 
-constexpr char kExpectedManifestPath[] = "/fedcm.json";
-constexpr char kExpectedManifestListPath[] = "/.well-known/web-identity";
+constexpr char kExpectedConfigPath[] = "/fedcm.json";
+constexpr char kExpectedWellKnownPath[] = "/.well-known/web-identity";
 constexpr char kTestContentType[] = "application/json";
 constexpr char kIdpForbiddenHeader[] = "Sec-FedCM-CSRF";
 
@@ -81,7 +80,7 @@ bool IsGetRequestWithPath(const HttpRequest& request,
 // test HTTP server.
 class IdpTestServer {
  public:
-  struct ManifestDetails {
+  struct ConfigDetails {
     HttpStatusCode status_code;
     std::string content_type;
     std::string accounts_endpoint_url;
@@ -109,13 +108,13 @@ class IdpTestServer {
     }
 
     auto response = std::make_unique<BasicHttpResponse>();
-    if (IsGetRequestWithPath(request, kExpectedManifestPath)) {
-      BuildManifestResponseFromDetails(*response.get(), manifest_details_);
+    if (IsGetRequestWithPath(request, kExpectedConfigPath)) {
+      BuildConfigResponseFromDetails(*response.get(), config_details_);
       return response;
     }
 
-    if (IsGetRequestWithPath(request, kExpectedManifestListPath)) {
-      BuildManifestListResponse(*response.get());
+    if (IsGetRequestWithPath(request, kExpectedWellKnownPath)) {
+      BuildWellKnownResponse(*response.get());
       return response;
     }
 
@@ -139,13 +138,13 @@ class IdpTestServer {
     return response;
   }
 
-  void SetManifestResponseDetails(ManifestDetails details) {
-    manifest_details_ = details;
+  void SetConfigResponseDetails(ConfigDetails details) {
+    config_details_ = details;
   }
 
  private:
-  void BuildManifestResponseFromDetails(BasicHttpResponse& response,
-                                        const ManifestDetails& details) {
+  void BuildConfigResponseFromDetails(BasicHttpResponse& response,
+                                      const ConfigDetails& details) {
     std::string content = ConvertToJsonDictionary(
         {{"accounts_endpoint", details.accounts_endpoint_url},
          {"client_metadata_endpoint", details.client_metadata_endpoint_url},
@@ -155,9 +154,9 @@ class IdpTestServer {
     response.set_content_type(details.content_type);
   }
 
-  void BuildManifestListResponse(BasicHttpResponse& response) {
+  void BuildWellKnownResponse(BasicHttpResponse& response) {
     std::string content = base::StringPrintf("{\"provider_urls\": [\"%s\"]}",
-                                             kExpectedManifestPath);
+                                             kExpectedConfigPath);
     response.set_code(net::HTTP_OK);
     response.set_content(content);
     response.set_content_type("application/json");
@@ -175,7 +174,7 @@ class IdpTestServer {
     return out;
   }
 
-  ManifestDetails manifest_details_;
+  ConfigDetails config_details_;
 };
 
 }  // namespace
@@ -216,7 +215,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     std::vector<base::test::FeatureRef> features;
 
     // kSplitCacheByNetworkIsolationKey feature is needed to verify
-    // that the network shard for fetching the fedcm manifest file is different
+    // that the network shard for fetching the config file is different
     // from that used for other IdP transactions, to prevent data leakage.
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
     features.push_back(features::kFedCm);
@@ -250,7 +249,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     )";
   }
 
-  IdpTestServer::ManifestDetails BuildValidManifestDetails() {
+  IdpTestServer::ConfigDetails BuildValidConfigDetails() {
     std::string accounts_endpoint_url = "/fedcm/accounts_endpoint.json";
     std::string client_metadata_endpoint_url =
         "/fedcm/client_metadata_endpoint.json";
@@ -297,7 +296,7 @@ class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
 
 // Verify a standard login flow with IdP sign-in page.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FullLoginFlow) {
-  idp_server()->SetManifestResponseDetails(BuildValidManifestDetails());
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), GetBasicRequestString()));
 }
@@ -305,21 +304,21 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FullLoginFlow) {
 // Verify full login flow where the IdP uses absolute rather than relative
 // URLs.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, AbsoluteURLs) {
-  IdpTestServer::ManifestDetails manifest_details = BuildValidManifestDetails();
-  manifest_details.accounts_endpoint_url = "/fedcm/accounts_endpoint.json";
-  manifest_details.client_metadata_endpoint_url =
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+  config_details.accounts_endpoint_url = "/fedcm/accounts_endpoint.json";
+  config_details.client_metadata_endpoint_url =
       "/fedcm/client_metadata_endpoint.json";
-  manifest_details.id_assertion_endpoint_url =
+  config_details.id_assertion_endpoint_url =
       "/fedcm/id_assertion_endpoint.json";
 
-  idp_server()->SetManifestResponseDetails(manifest_details);
+  idp_server()->SetConfigResponseDetails(config_details);
 
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), GetBasicRequestString()));
 }
 
 // Verify an attempt to invoke FedCM with an insecure IDP path fails.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FailsOnHTTP) {
-  idp_server()->SetManifestResponseDetails(BuildValidManifestDetails());
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 
   std::string script = R"(
         (async () => {

@@ -46,8 +46,8 @@ const int kTestIdpBrandIconIdealSize = 32;
 
 const char kTestIdpUrl[] = "https://idp.test";
 const char kTestRpUrl[] = "https://rp.test";
-const char kTestManifestListUrl[] = "https://idp.test/.well-known/web-identity";
-const char kTestManifestUrl[] = "https://idp.test/fedcm.json";
+const char kTestWellKnownUrl[] = "https://idp.test/.well-known/web-identity";
+const char kTestConfigUrl[] = "https://idp.test/fedcm.json";
 const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
 const char kTestClientMetadataEndpoint[] =
@@ -107,11 +107,11 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   }
 
   std::tuple<FetchStatus, std::set<GURL>>
-  SendManifestListRequestAndWaitForResponse(
+  SendWellKnownRequestAndWaitForResponse(
       const char* test_data,
       net::HttpStatusCode http_status = net::HTTP_OK) {
-    GURL manifest_list_url(kTestManifestListUrl);
-    test_url_loader_factory().AddResponse(manifest_list_url.spec(), test_data,
+    GURL well_known_url(kTestWellKnownUrl);
+    test_url_loader_factory().AddResponse(well_known_url.spec(), test_data,
                                           http_status);
 
     base::RunLoop run_loop;
@@ -125,18 +125,18 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchManifestList(GURL(kTestIdpUrl), std::move(callback));
+    manager->FetchWellKnown(GURL(kTestIdpUrl), std::move(callback));
     run_loop.Run();
 
     return {parsed_fetch_status, parsed_urls};
   }
 
   std::tuple<FetchStatus, IdentityProviderMetadata>
-  SendManifestRequestAndWaitForResponse(
+  SendConfigRequestAndWaitForResponse(
       const char* test_data,
       net::HttpStatusCode http_status = net::HTTP_OK) {
-    GURL manifest_url(kTestManifestUrl);
-    test_url_loader_factory().AddResponse(manifest_url.spec(), test_data,
+    GURL config_url(kTestConfigUrl);
+    test_url_loader_factory().AddResponse(config_url.spec(), test_data,
                                           http_status);
 
     base::RunLoop run_loop;
@@ -151,8 +151,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->FetchManifest(GURL(kTestManifestUrl), kTestIdpBrandIconIdealSize,
-                           kTestIdpBrandIconMinimumSize, std::move(callback));
+    manager->FetchConfig(GURL(kTestConfigUrl), kTestIdpBrandIconIdealSize,
+                         kTestIdpBrandIconMinimumSize, std::move(callback));
     run_loop.Run();
 
     return {parsed_fetch_status, parsed_idp_metadata};
@@ -492,24 +492,24 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
   EXPECT_TRUE(accounts.empty());
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ComputeManifestListUrl) {
+TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
   EXPECT_EQ("https://localhost:8000/.well-known/web-identity",
-            IdpNetworkRequestManager::ComputeManifestListUrl(
+            IdpNetworkRequestManager::ComputeWellKnownUrl(
                 GURL("https://localhost:8000/test/"))
                 ->spec());
 
   EXPECT_EQ("https://google.com/.well-known/web-identity",
-            IdpNetworkRequestManager::ComputeManifestListUrl(
+            IdpNetworkRequestManager::ComputeWellKnownUrl(
                 GURL("https://www.google.com:8000/test/"))
                 ->spec());
 
-  EXPECT_EQ(absl::nullopt, IdpNetworkRequestManager::ComputeManifestListUrl(
+  EXPECT_EQ(absl::nullopt, IdpNetworkRequestManager::ComputeWellKnownUrl(
                                GURL("https://192.101.0.1/test/")));
 }
 
-// Test that IdpNetworkRequestManager::FetchManifestList() fails when the
+// Test that IdpNetworkRequestManager::FetchWellKnown() fails when the
 // identity provider domain is empty.
-TEST_F(IdpNetworkRequestManagerTest, FetchManifestListIllegalDomainFails) {
+TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
   GURL illegal_idp_url("https://192.101.0.1/test/");
 
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -524,65 +524,65 @@ TEST_F(IdpNetworkRequestManagerTest, FetchManifestListIllegalDomainFails) {
       [&](FetchStatus fetch_status, const std::set<GURL>& urls) {
         EXPECT_EQ(ParseStatus::kHttpNotFoundError, fetch_status.parse_status);
         // We receive OK here because
-        // IdpNetworkRequestManager::ComputeManifestListUrl() fails.
+        // IdpNetworkRequestManager::ComputeWellKnownUrl() fails.
         EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
         run_loop.Quit();
       });
-  network_manager->FetchManifestList(illegal_idp_url, std::move(callback));
+  network_manager->FetchWellKnown(illegal_idp_url, std::move(callback));
   run_loop.Run();
 
-  // Manifest list download should not have been attempted.
+  // Well-known download should not have been attempted.
   EXPECT_EQ(0, test_url_loader_factory.NumPending());
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseManifestList) {
+TEST_F(IdpNetworkRequestManagerTest, ParseWellKnown) {
   FetchStatus fetch_status;
   std::set<GURL> urls;
 
-  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"({
   "provider_urls": ["https://idp.test/fedcm.json"]
   })");
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")}, urls);
 
-  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"({
   "provider_urls": ["https://idp.test/path/fedcm.json"]
   })");
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/path/fedcm.json")}, urls);
 
   // Value not a list
-  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"({
   "provider_urls": "https://idp.test/fedcm.json"
   })");
   EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
 
   // Toplevel not a dictionary
-  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"(
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"(
   ["https://idp.test/fedcm.json"]
   )");
   EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
 
   // Incorrect key
-  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"({
   "providers": ["https://idp.test/fedcm.json"]
   })");
   EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
 
   // Array entry not a string
-  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"({
   "provider_urls": [1]
   })");
   EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
 
   // Relative URLs
-  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"({
   "provider_urls": ["/fedcm.json"]
   })");
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(std::set<GURL>{GURL("https://idp.test/fedcm.json")}, urls);
 
-  std::tie(fetch_status, urls) = SendManifestListRequestAndWaitForResponse(R"({
+  std::tie(fetch_status, urls) = SendWellKnownRequestAndWaitForResponse(R"({
   "provider_urls": ["fedcm.json"]
   })");
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
@@ -591,7 +591,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestList) {
 }
 
 // Test that the "alpha" value in the "branding" JSON is ignored.
-TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingRemoveAlpha) {
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingRemoveAlpha) {
   const char test_json[] = R"({
   "branding" : {
     "background_color": "#20202020"
@@ -601,7 +601,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingRemoveAlpha) {
   FetchStatus fetch_status;
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) =
-      SendManifestRequestAndWaitForResponse(test_json);
+      SendConfigRequestAndWaitForResponse(test_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -609,7 +609,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingRemoveAlpha) {
             idp_metadata.brand_background_color);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingInvalidColor) {
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingInvalidColor) {
   const char test_json[] = R"({
   "branding" : {
     "background_color": "fake_color"
@@ -619,7 +619,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingInvalidColor) {
   FetchStatus fetch_status;
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) =
-      SendManifestRequestAndWaitForResponse(test_json);
+      SendConfigRequestAndWaitForResponse(test_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -627,7 +627,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingInvalidColor) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest,
-       ParseManifestIgnoreInsufficientContrastTextColor) {
+       ParseConfigIgnoreInsufficientContrastTextColor) {
   const char test_json[] = R"({
   "branding" : {
     "background_color": "#000000",
@@ -638,7 +638,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   FetchStatus fetch_status;
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) =
-      SendManifestRequestAndWaitForResponse(test_json);
+      SendConfigRequestAndWaitForResponse(test_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -647,7 +647,7 @@ TEST_F(IdpNetworkRequestManagerTest,
 }
 
 TEST_F(IdpNetworkRequestManagerTest,
-       ParseManifestBrandingIgnoreCustomTextColorNoCustomBackgroundColor) {
+       ParseConfigBrandingIgnoreCustomTextColorNoCustomBackgroundColor) {
   const char test_json[] = R"({
   "branding" : {
     "color": "blue"
@@ -657,7 +657,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   FetchStatus fetch_status;
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) =
-      SendManifestRequestAndWaitForResponse(test_json);
+      SendConfigRequestAndWaitForResponse(test_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -665,7 +665,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(absl::nullopt, idp_metadata.brand_text_color);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingSelectBestSize) {
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingSelectBestSize) {
   const char test_json[] = R"({
   "branding" : {
     "icons": [
@@ -698,7 +698,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingSelectBestSize) {
   FetchStatus fetch_status;
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) =
-      SendManifestRequestAndWaitForResponse(test_json);
+      SendConfigRequestAndWaitForResponse(test_json);
 
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -706,9 +706,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingSelectBestSize) {
 }
 
 // Test that the icon is rejected if there is an explicit brand icon size in the
-// manifest and it is smaller than the `idp_brand_icon_minimum_size` parameter
-// passed to IdpNetworkRequestManager::FetchManifest().
-TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingMinSize) {
+// config and it is smaller than the `idp_brand_icon_minimum_size` parameter
+// passed to IdpNetworkRequestManager::FetchConfig().
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingMinSize) {
   ASSERT_EQ(16, kTestIdpBrandIconMinimumSize);
 
   {
@@ -726,7 +726,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingMinSize) {
     FetchStatus fetch_status;
     IdentityProviderMetadata idp_metadata;
     std::tie(fetch_status, idp_metadata) =
-        SendManifestRequestAndWaitForResponse(test_json);
+        SendConfigRequestAndWaitForResponse(test_json);
 
     EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
     EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -748,7 +748,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseManifestBrandingMinSize) {
     FetchStatus fetch_status;
     IdentityProviderMetadata idp_metadata;
     std::tie(fetch_status, idp_metadata) =
-        SendManifestRequestAndWaitForResponse(test_json);
+        SendConfigRequestAndWaitForResponse(test_json);
 
     EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
     EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
@@ -1011,29 +1011,29 @@ TEST_F(IdpNetworkRequestManagerTest, DontCallCallbackAfterManagerDeletion) {
   EXPECT_FALSE(callback_called);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingManifestList) {
+TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingWellKnown) {
   FetchStatus fetch_status;
   std::set<GURL> urls;
   std::tie(fetch_status, urls) =
-      SendManifestListRequestAndWaitForResponse(R"({
+      SendWellKnownRequestAndWaitForResponse(R"({
   "provider_urls": ["https://idp.test/fedcm.json"]
   })",
-                                                net::HTTP_REQUEST_TIMEOUT);
+                                             net::HTTP_REQUEST_TIMEOUT);
   EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_REQUEST_TIMEOUT, fetch_status.response_code);
   EXPECT_EQ(std::set<GURL>{}, urls);
 }
 
-TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingManifest) {
+TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingConfig) {
   FetchStatus fetch_status;
   IdentityProviderMetadata idp_metadata;
   std::tie(fetch_status, idp_metadata) =
-      SendManifestRequestAndWaitForResponse(R"({
+      SendConfigRequestAndWaitForResponse(R"({
   "branding" : {
     "color": "blue"
   }
   })",
-                                            net::HTTP_NOT_FOUND);
+                                          net::HTTP_NOT_FOUND);
   EXPECT_EQ(ParseStatus::kHttpNotFoundError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_NOT_FOUND, fetch_status.response_code);
 }

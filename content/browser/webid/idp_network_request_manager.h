@@ -125,9 +125,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using DownloadCallback =
       base::OnceCallback<void(std::unique_ptr<std::string> response_body,
                               int response_code)>;
-  using FetchManifestListCallback =
+  using FetchWellKnownCallback =
       base::OnceCallback<void(FetchStatus, const std::set<GURL>&)>;
-  using FetchManifestCallback = base::OnceCallback<
+  using FetchConfigCallback = base::OnceCallback<
       void(FetchStatus, Endpoints, IdentityProviderMetadata)>;
   using FetchClientMetadataCallback =
       base::OnceCallback<void(FetchStatus, ClientMetadata)>;
@@ -151,20 +151,19 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   IdpNetworkRequestManager(const IdpNetworkRequestManager&) = delete;
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
 
-  // Computes the manifest list URL from the identity provider URL.
-  static absl::optional<GURL> ComputeManifestListUrl(const GURL& url);
+  // Computes the well-known URL from the identity provider URL.
+  static absl::optional<GURL> ComputeWellKnownUrl(const GURL& url);
 
-  // Fetch the manifest list. This is the /.well-known/web-identity file on
+  // Fetch the well-known file. This is the /.well-known/web-identity file on
   // the eTLD+1 calculated from the provider URL, used to check that the
   // provider URL is valid for this eTLD+1.
-  virtual void FetchManifestList(const GURL& provider,
-                                 FetchManifestListCallback);
+  virtual void FetchWellKnown(const GURL& provider, FetchWellKnownCallback);
 
-  // Attempt to fetch the IDP's FedCM parameters from the fedcm.json manifest.
-  virtual void FetchManifest(const GURL& provider,
-                             int idp_brand_icon_ideal_size,
-                             int idp_brand_icon_minimum_size,
-                             FetchManifestCallback);
+  // Attempt to fetch the IDP's FedCM parameters from the config file.
+  virtual void FetchConfig(const GURL& provider,
+                           int idp_brand_icon_ideal_size,
+                           int idp_brand_icon_minimum_size,
+                           FetchConfigCallback);
 
   virtual void FetchClientMetadata(const GURL& endpoint,
                                    const std::string& client_id,

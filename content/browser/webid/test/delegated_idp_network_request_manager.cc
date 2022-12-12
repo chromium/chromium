@@ -15,19 +15,19 @@ DelegatedIdpNetworkRequestManager::DelegatedIdpNetworkRequestManager(
 DelegatedIdpNetworkRequestManager::~DelegatedIdpNetworkRequestManager() =
     default;
 
-void DelegatedIdpNetworkRequestManager::FetchManifestList(
+void DelegatedIdpNetworkRequestManager::FetchWellKnown(
     const GURL& provider,
-    FetchManifestListCallback callback) {
-  delegate_->FetchManifestList(provider, std::move(callback));
+    FetchWellKnownCallback callback) {
+  delegate_->FetchWellKnown(provider, std::move(callback));
 }
 
-void DelegatedIdpNetworkRequestManager::FetchManifest(
+void DelegatedIdpNetworkRequestManager::FetchConfig(
     const GURL& provider,
     int idp_brand_icon_ideal_size,
     int idp_brand_icon_minimum_size,
-    FetchManifestCallback callback) {
-  delegate_->FetchManifest(provider, idp_brand_icon_ideal_size,
-                           idp_brand_icon_minimum_size, std::move(callback));
+    FetchConfigCallback callback) {
+  delegate_->FetchConfig(provider, idp_brand_icon_ideal_size,
+                         idp_brand_icon_minimum_size, std::move(callback));
 }
 
 void DelegatedIdpNetworkRequestManager::FetchClientMetadata(

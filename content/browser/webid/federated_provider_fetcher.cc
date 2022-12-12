@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_manifest_requester.h"
+#include "content/browser/webid/federated_provider_fetcher.h"
 
 #include "content/browser/webid/webid_utils.h"
 
@@ -10,7 +10,7 @@ namespace content {
 
 namespace {
 
-// Maximum number of provider URLs in the manifest list.
+// Maximum number of provider URLs in the well-known file.
 // TODO(cbiesinger): Determine what the right number is.
 static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
 
@@ -19,9 +19,9 @@ static constexpr size_t kMaxProvidersInWellKnownFile = 1ul;
 using blink::mojom::FederatedAuthRequestResult;
 using TokenStatus = FedCmRequestIdTokenStatus;
 
-FederatedManifestRequester::FetchError::FetchError(const FetchError&) = default;
+FederatedProviderFetcher::FetchError::FetchError(const FetchError&) = default;
 
-FederatedManifestRequester::FetchError::FetchError(
+FederatedProviderFetcher::FetchError::FetchError(
     blink::mojom::FederatedAuthRequestResult result,
     FedCmRequestIdTokenStatus token_status,
     absl::optional<std::string> additional_console_error_message)
@@ -30,20 +30,20 @@ FederatedManifestRequester::FetchError::FetchError(
       additional_console_error_message(
           std::move(additional_console_error_message)) {}
 
-FederatedManifestRequester::FetchError::~FetchError() = default;
+FederatedProviderFetcher::FetchError::~FetchError() = default;
 
-FederatedManifestRequester::FetchResult::FetchResult() = default;
-FederatedManifestRequester::FetchResult::FetchResult(const FetchResult&) =
+FederatedProviderFetcher::FetchResult::FetchResult() = default;
+FederatedProviderFetcher::FetchResult::FetchResult(const FetchResult&) =
     default;
-FederatedManifestRequester::FetchResult::~FetchResult() = default;
+FederatedProviderFetcher::FetchResult::~FetchResult() = default;
 
-FederatedManifestRequester::FederatedManifestRequester(
+FederatedProviderFetcher::FederatedProviderFetcher(
     IdpNetworkRequestManager* network_manager)
     : network_manager_(network_manager) {}
 
-FederatedManifestRequester::~FederatedManifestRequester() = default;
+FederatedProviderFetcher::~FederatedProviderFetcher() = default;
 
-void FederatedManifestRequester::Start(
+void FederatedProviderFetcher::Start(
     const std::vector<GURL>& identity_provider_config_urls,
     int icon_ideal_size,
     int icon_minimum_size,
@@ -56,31 +56,30 @@ void FederatedManifestRequester::Start(
     fetch_result.identity_provider_config_url = identity_provider_config_url;
     fetch_results_.push_back(std::move(fetch_result));
 
-    pending_manifest_list_fetches_.insert(identity_provider_config_url);
-    pending_manifest_fetches_.insert(identity_provider_config_url);
+    pending_well_known_fetches_.insert(identity_provider_config_url);
+    pending_config_fetches_.insert(identity_provider_config_url);
   }
 
   // In a separate loop to avoid invalidating references when adding elements to
   // `fetch_results_`.
   for (FetchResult& fetch_result : fetch_results_) {
-    network_manager_->FetchManifestList(
+    network_manager_->FetchWellKnown(
         fetch_result.identity_provider_config_url,
-        base::BindOnce(&FederatedManifestRequester::OnManifestListFetched,
+        base::BindOnce(&FederatedProviderFetcher::OnWellKnownFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
-    network_manager_->FetchManifest(
+    network_manager_->FetchConfig(
         fetch_result.identity_provider_config_url, icon_ideal_size,
         icon_minimum_size,
-        base::BindOnce(&FederatedManifestRequester::OnManifestFetched,
+        base::BindOnce(&FederatedProviderFetcher::OnConfigFetched,
                        weak_ptr_factory_.GetWeakPtr(), std::ref(fetch_result)));
   }
 }
 
-void FederatedManifestRequester::OnManifestListFetched(
+void FederatedProviderFetcher::OnWellKnownFetched(
     FetchResult& fetch_result,
     IdpNetworkRequestManager::FetchStatus status,
     const std::set<GURL>& urls) {
-  pending_manifest_list_fetches_.erase(
-      fetch_result.identity_provider_config_url);
+  pending_well_known_fetches_.erase(fetch_result.identity_provider_config_url);
 
   constexpr char kWellKnownFileStr[] = "well-known file";
 
@@ -93,14 +92,14 @@ void FederatedManifestRequester::OnManifestListFetched(
       case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kErrorFetchingWellKnownHttpNotFound,
-                TokenStatus::kManifestListHttpNotFound,
+                TokenStatus::kWellKnownHttpNotFound,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kErrorFetchingWellKnownNoResponse,
-                TokenStatus::kManifestListNoResponse,
+                TokenStatus::kWellKnownNoResponse,
                 additional_console_error_message);
         return;
       }
@@ -108,7 +107,7 @@ void FederatedManifestRequester::OnManifestListFetched(
         OnError(
             fetch_result,
             FederatedAuthRequestResult::kErrorFetchingWellKnownInvalidResponse,
-            TokenStatus::kManifestListInvalidResponse,
+            TokenStatus::kWellKnownInvalidResponse,
             additional_console_error_message);
         return;
       }
@@ -120,7 +119,7 @@ void FederatedManifestRequester::OnManifestListFetched(
 
   if (urls.size() > kMaxProvidersInWellKnownFile) {
     OnError(fetch_result, FederatedAuthRequestResult::kErrorWellKnownTooBig,
-            TokenStatus::kManifestListTooBig,
+            TokenStatus::kWellKnownTooBig,
             /*additional_console_error_message=*/absl::nullopt);
     return;
   }
@@ -134,7 +133,7 @@ void FederatedManifestRequester::OnManifestListFetched(
   //     }],
   //   }
   // });
-  // must match the one in the manifest list:
+  // must match the one in the well-known file:
   // {
   //   "provider_urls": [
   //     "https://foo.idp.example/fedcm.json"
@@ -146,7 +145,7 @@ void FederatedManifestRequester::OnManifestListFetched(
   if (!provider_url_is_valid) {
     OnError(fetch_result,
             FederatedAuthRequestResult::kErrorConfigNotInWellKnown,
-            TokenStatus::kManifestNotInManifestList,
+            TokenStatus::kConfigNotInWellKnown,
             /*additional_console_error_message=*/absl::nullopt);
     return;
   }
@@ -154,12 +153,12 @@ void FederatedManifestRequester::OnManifestListFetched(
   RunCallbackIfDone();
 }
 
-void FederatedManifestRequester::OnManifestFetched(
+void FederatedProviderFetcher::OnConfigFetched(
     FetchResult& fetch_result,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata idp_metadata) {
-  pending_manifest_fetches_.erase(fetch_result.identity_provider_config_url);
+  pending_config_fetches_.erase(fetch_result.identity_provider_config_url);
 
   constexpr char kConfigFileStr[] = "config file";
 
@@ -172,21 +171,21 @@ void FederatedManifestRequester::OnManifestFetched(
       case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kErrorFetchingConfigHttpNotFound,
-                TokenStatus::kManifestHttpNotFound,
+                TokenStatus::kConfigHttpNotFound,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kErrorFetchingConfigNoResponse,
-                TokenStatus::kManifestNoResponse,
+                TokenStatus::kConfigNoResponse,
                 additional_console_error_message);
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
         OnError(fetch_result,
                 FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
-                TokenStatus::kManifestInvalidResponse,
+                TokenStatus::kConfigInvalidResponse,
                 additional_console_error_message);
         return;
       }
@@ -218,14 +217,14 @@ void FederatedManifestRequester::OnManifestFetched(
 
     OnError(fetch_result,
             FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse,
-            TokenStatus::kManifestInvalidResponse, console_message);
+            TokenStatus::kConfigInvalidResponse, console_message);
     return;
   }
 
   RunCallbackIfDone();
 }
 
-void FederatedManifestRequester::OnError(
+void FederatedProviderFetcher::OnError(
     FetchResult& fetch_result,
     blink::mojom::FederatedAuthRequestResult result,
     content::FedCmRequestIdTokenStatus token_status,
@@ -235,9 +234,8 @@ void FederatedManifestRequester::OnError(
   RunCallbackIfDone();
 }
 
-void FederatedManifestRequester::RunCallbackIfDone() {
-  if (pending_manifest_fetches_.empty() &&
-      pending_manifest_list_fetches_.empty()) {
+void FederatedProviderFetcher::RunCallbackIfDone() {
+  if (pending_config_fetches_.empty() && pending_well_known_fetches_.empty()) {
     std::move(callback_).Run(std::move(fetch_results_));
   }
 }

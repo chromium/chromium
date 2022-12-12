@@ -46,10 +46,10 @@ using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
 
-// Path to find the manifest list on the eTLD+1 host.
-constexpr char kManifestListPath[] = "/.well-known/web-identity";
+// Path to find the well-known file on the eTLD+1 host.
+constexpr char kWellKnownPath[] = "/.well-known/web-identity";
 
-// manifest list JSON keys
+// Well-known file JSON keys
 constexpr char kProviderUrlListKey[] = "provider_urls";
 
 // fedcm.json configuration keys.
@@ -126,7 +126,7 @@ net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
         })");
 }
 
-GURL ResolveManifestUrl(const GURL& config_url, const std::string& endpoint) {
+GURL ResolveConfigUrl(const GURL& config_url, const std::string& endpoint) {
   if (endpoint.empty())
     return GURL();
   return config_url.Resolve(endpoint);
@@ -314,9 +314,9 @@ void OnDownloadedJson(
                      response_code));
 }
 
-void OnManifestListParsed(
-    IdpNetworkRequestManager::FetchManifestListCallback callback,
-    const GURL& manifest_list_url,
+void OnWellKnownParsed(
+    IdpNetworkRequestManager::FetchWellKnownCallback callback,
+    const GURL& well_known_url,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
   if (callback.IsCancelled())
@@ -353,7 +353,7 @@ void OnManifestListParsed(
     }
     GURL url(*url_str);
     if (!url.is_valid()) {
-      url = manifest_list_url.Resolve(*url_str);
+      url = well_known_url.Resolve(*url_str);
     }
     urls.insert(url);
   }
@@ -362,12 +362,12 @@ void OnManifestListParsed(
                           urls);
 }
 
-void OnManifestParsed(const GURL& provider,
-                      int idp_brand_icon_ideal_size,
-                      int idp_brand_icon_minimum_size,
-                      IdpNetworkRequestManager::FetchManifestCallback callback,
-                      FetchStatus fetch_status,
-                      data_decoder::DataDecoder::ValueOrError result) {
+void OnConfigParsed(const GURL& provider,
+                    int idp_brand_icon_ideal_size,
+                    int idp_brand_icon_minimum_size,
+                    IdpNetworkRequestManager::FetchConfigCallback callback,
+                    FetchStatus fetch_status,
+                    data_decoder::DataDecoder::ValueOrError result) {
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
     std::move(callback).Run(fetch_status, Endpoints(),
                             IdentityProviderMetadata());
@@ -380,7 +380,7 @@ void OnManifestParsed(const GURL& provider,
     if (!endpoint || !endpoint->is_string()) {
       return GURL();
     }
-    return ResolveManifestUrl(provider, endpoint->GetString());
+    return ResolveConfigUrl(provider, endpoint->GetString());
   };
 
   Endpoints endpoints;
@@ -528,64 +528,63 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
 // static
-absl::optional<GURL> IdpNetworkRequestManager::ComputeManifestListUrl(
+absl::optional<GURL> IdpNetworkRequestManager::ComputeWellKnownUrl(
     const GURL& provider) {
-  GURL manifest_list_url;
+  GURL well_known_url;
   if (net::IsLocalhost(provider)) {
-    manifest_list_url = provider.GetWithEmptyPath();
+    well_known_url = provider.GetWithEmptyPath();
   } else {
     std::string etld_plus_one = GetDomainAndRegistry(
         provider, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 
     if (etld_plus_one.empty())
       return absl::nullopt;
-    manifest_list_url = GURL(provider.scheme() + "://" + etld_plus_one);
+    well_known_url = GURL(provider.scheme() + "://" + etld_plus_one);
   }
 
   GURL::Replacements replacements;
-  replacements.SetPathStr(kManifestListPath);
-  return manifest_list_url.ReplaceComponents(replacements);
+  replacements.SetPathStr(kWellKnownPath);
+  return well_known_url.ReplaceComponents(replacements);
 }
 
-void IdpNetworkRequestManager::FetchManifestList(
-    const GURL& provider,
-    FetchManifestListCallback callback) {
-  absl::optional<GURL> manifest_list_url =
-      IdpNetworkRequestManager::ComputeManifestListUrl(provider);
+void IdpNetworkRequestManager::FetchWellKnown(const GURL& provider,
+                                              FetchWellKnownCallback callback) {
+  absl::optional<GURL> well_known_url =
+      IdpNetworkRequestManager::ComputeWellKnownUrl(provider);
 
-  if (!manifest_list_url) {
+  if (!well_known_url) {
     // Pass net::HTTP_OK as the |response_code| so we do not add a console error
     // message about a fetch we didn't even attempt.
     FetchStatus fetch_status = {ParseStatus::kHttpNotFoundError, net::HTTP_OK};
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&OnManifestListParsed, std::move(callback),
-                                  /*manifest_list_url=*/GURL(), fetch_status,
+        FROM_HERE, base::BindOnce(&OnWellKnownParsed, std::move(callback),
+                                  /*well_known_url=*/GURL(), fetch_status,
                                   data_decoder::DataDecoder::ValueOrError()));
     return;
   }
 
   std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateUncredentialedResourceRequest(*manifest_list_url,
+      CreateUncredentialedResourceRequest(*well_known_url,
                                           /*send_origin=*/false,
                                           /* follow_redirects= */ true);
-  DownloadJsonAndParse(std::move(resource_request),
-                       /*url_encoded_post_data=*/absl::nullopt,
-                       base::BindOnce(&OnManifestListParsed,
-                                      std::move(callback), *manifest_list_url),
-                       maxResponseSizeInKiB * 1024);
+  DownloadJsonAndParse(
+      std::move(resource_request),
+      /*url_encoded_post_data=*/absl::nullopt,
+      base::BindOnce(&OnWellKnownParsed, std::move(callback), *well_known_url),
+      maxResponseSizeInKiB * 1024);
 }
 
-void IdpNetworkRequestManager::FetchManifest(const GURL& provider,
-                                             int idp_brand_icon_ideal_size,
-                                             int idp_brand_icon_minimum_size,
-                                             FetchManifestCallback callback) {
+void IdpNetworkRequestManager::FetchConfig(const GURL& provider,
+                                           int idp_brand_icon_ideal_size,
+                                           int idp_brand_icon_minimum_size,
+                                           FetchConfigCallback callback) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateUncredentialedResourceRequest(provider,
                                           /* send_origin= */ false);
   DownloadJsonAndParse(
       std::move(resource_request),
       /*url_encoded_post_data=*/absl::nullopt,
-      base::BindOnce(&OnManifestParsed, provider, idp_brand_icon_ideal_size,
+      base::BindOnce(&OnConfigParsed, provider, idp_brand_icon_ideal_size,
                      idp_brand_icon_minimum_size, std::move(callback)),
       maxResponseSizeInKiB * 1024);
 }

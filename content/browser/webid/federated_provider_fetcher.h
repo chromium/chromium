@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_WEBID_FEDERATED_MANIFEST_REQUESTER_H_
-#define CONTENT_BROWSER_WEBID_FEDERATED_MANIFEST_REQUESTER_H_
+#ifndef CONTENT_BROWSER_WEBID_FEDERATED_PROVIDER_FETCHER_H_
+#define CONTENT_BROWSER_WEBID_FEDERATED_PROVIDER_FETCHER_H_
 
 #include <memory>
 #include <set>
@@ -20,9 +20,9 @@
 
 namespace content {
 
-// Fetches the manifests and manifest lists for a list of identity providers.
+// Fetches the config and well-known files for a list of identity providers.
 // Validates returned information and calls callback when done.
-class FederatedManifestRequester {
+class FederatedProviderFetcher {
  public:
   struct FetchError {
     FetchError(const FetchError& info);
@@ -48,31 +48,29 @@ class FederatedManifestRequester {
 
   using RequesterCallback = base::OnceCallback<void(std::vector<FetchResult>)>;
 
-  explicit FederatedManifestRequester(
-      IdpNetworkRequestManager* network_manager);
-  ~FederatedManifestRequester();
+  explicit FederatedProviderFetcher(IdpNetworkRequestManager* network_manager);
+  ~FederatedProviderFetcher();
 
-  FederatedManifestRequester(const FederatedManifestRequester&) = delete;
-  FederatedManifestRequester& operator=(const FederatedManifestRequester&) =
-      delete;
+  FederatedProviderFetcher(const FederatedProviderFetcher&) = delete;
+  FederatedProviderFetcher& operator=(const FederatedProviderFetcher&) = delete;
 
-  // Starts fetch of manifests and manifest lists. Start() should be called at
-  // most once per FederatedManifestRequester instance.
+  // Starts fetch of config and well-known files. Start() should be called at
+  // most once per FederatedProviderFetcher instance.
   void Start(const std::vector<GURL>& identity_provider_config_urls,
              int icon_ideal_size,
              int icon_minimum_size,
              RequesterCallback callback);
 
  private:
-  void OnManifestListFetched(FetchResult& fetch_result,
-                             IdpNetworkRequestManager::FetchStatus status,
-                             const std::set<GURL>& urls);
-  void OnManifestFetched(FetchResult& fetch_result,
-                         IdpNetworkRequestManager::FetchStatus status,
-                         IdpNetworkRequestManager::Endpoints,
-                         IdentityProviderMetadata idp_metadata);
+  void OnWellKnownFetched(FetchResult& fetch_result,
+                          IdpNetworkRequestManager::FetchStatus status,
+                          const std::set<GURL>& urls);
+  void OnConfigFetched(FetchResult& fetch_result,
+                       IdpNetworkRequestManager::FetchStatus status,
+                       IdpNetworkRequestManager::Endpoints,
+                       IdentityProviderMetadata idp_metadata);
 
-  // Called when fetching either the manifest endpoint or the manifest list
+  // Called when fetching either the config endpoint or the well-known
   // endpoint fails.
   void OnError(FetchResult& fetch_result,
                blink::mojom::FederatedAuthRequestResult result,
@@ -84,20 +82,20 @@ class FederatedManifestRequester {
   RequesterCallback callback_;
 
   // Config endpoints which has not yet been fetched.
-  base::flat_set<GURL> pending_manifest_fetches_;
+  base::flat_set<GURL> pending_config_fetches_;
 
-  // Config endpoints for which associated manifest list has not yet been
+  // Config endpoints for which associated well-known has not yet been
   // fetched.
-  base::flat_set<GURL> pending_manifest_list_fetches_;
+  base::flat_set<GURL> pending_well_known_fetches_;
 
   std::vector<FetchResult> fetch_results_;
 
-  // Fetches the manifest and manifest list.
+  // Fetches the config and well-known files.
   base::raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> network_manager_;
 
-  base::WeakPtrFactory<FederatedManifestRequester> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FederatedProviderFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_WEBID_FEDERATED_MANIFEST_REQUESTER_H_
+#endif  // CONTENT_BROWSER_WEBID_FEDERATED_PROVIDER_FETCHER_H_

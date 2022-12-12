@@ -14,7 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/webid/fedcm_metrics.h"
-#include "content/browser/webid/federated_manifest_requester.h"
+#include "content/browser/webid/federated_provider_fetcher.h"
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
@@ -110,10 +110,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   bool HasPendingRequest() const;
 
-  void OnAllManifestsFetched(
-      std::unique_ptr<FederatedManifestRequester> manifest_requester,
+  void OnAllConfigAndWellKnownFetched(
+      std::unique_ptr<FederatedProviderFetcher> provider_fetcher,
       base::flat_map<GURL, IdentityProviderGetInfo> get_infos,
-      std::vector<FederatedManifestRequester::FetchResult> fetch_results);
+      std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
   void OnClientMetadataResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
       const IdpNetworkRequestManager::AccountList& accounts,
@@ -229,7 +229,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // RequestToken() method, so all metrics must be recorded after that.
   std::unique_ptr<FedCmMetrics> fedcm_metrics_;
 
-  // Populated in OnAllManifestsFetched().
+  // Populated in OnAllConfigAndWellKnownFetched().
   base::flat_map<GURL, GURL> metrics_endpoints_;
 
   // Populated by MaybeShowAccountsDialog().
