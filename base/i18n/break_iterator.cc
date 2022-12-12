@@ -19,24 +19,6 @@
 namespace base {
 namespace i18n {
 
-const size_t npos = static_cast<size_t>(-1);
-
-BreakIterator::BreakIterator(const StringPiece16& str, BreakType break_type)
-    : iter_(nullptr),
-      string_(str),
-      break_type_(break_type),
-      prev_(npos),
-      pos_(0) {}
-
-BreakIterator::BreakIterator(const StringPiece16& str,
-                             const std::u16string& rules)
-    : iter_(nullptr),
-      string_(str),
-      rules_(rules),
-      break_type_(RULE_BASED),
-      prev_(npos),
-      pos_(0) {}
-
 namespace {
 
 // We found the usage pattern of break iterator is to create, use and destroy.
@@ -119,6 +101,12 @@ static LazyInstance<DefaultLocaleBreakIteratorCache<UBRK_LINE>>::Leaky
     line_break_cache = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
+
+BreakIterator::BreakIterator(StringPiece16 str, BreakType break_type)
+    : string_(str), break_type_(break_type) {}
+
+BreakIterator::BreakIterator(StringPiece16 str, const std::u16string& rules)
+    : string_(str), rules_(rules), break_type_(RULE_BASED) {}
 
 BreakIterator::~BreakIterator() {
   if (iter_) {

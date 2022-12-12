@@ -95,13 +95,15 @@ class BASE_I18N_EXPORT BreakIterator {
     IS_LINE_OR_CHAR_BREAK
   };
 
+  static constexpr size_t npos = static_cast<size_t>(-1);
+
   // Requires |str| to live as long as the BreakIterator does.
-  BreakIterator(const StringPiece16& str, BreakType break_type);
+  BreakIterator(StringPiece16 str, BreakType break_type);
   // Make a rule-based iterator. BreakType == RULE_BASED is implied.
   // TODO(andrewhayden): This signature could easily be misinterpreted as
   // "(const std::u16string& str, const std::u16string& locale)". We should do
   // something better.
-  BreakIterator(const StringPiece16& str, const std::u16string& rules);
+  BreakIterator(StringPiece16 str, const std::u16string& rules);
 
   BreakIterator(const BreakIterator&) = delete;
   BreakIterator& operator=(const BreakIterator&) = delete;
@@ -177,7 +179,7 @@ class BASE_I18N_EXPORT BreakIterator {
   // This is actually an ICU UBreakiterator* type, which turns out to be
   // a typedef for a void* in the ICU headers. Using void* directly prevents
   // callers from needing access to the ICU public headers directory.
-  raw_ptr<void, DanglingUntriaged> iter_;
+  raw_ptr<void, DanglingUntriaged> iter_ = nullptr;
 
   // The string we're iterating over. Can be changed with SetText(...)
   StringPiece16 string_;
@@ -186,10 +188,11 @@ class BASE_I18N_EXPORT BreakIterator {
   const std::u16string rules_;
 
   // The breaking style (word/space/newline). Mutually exclusive with rules_
-  BreakType break_type_;
+  const BreakType break_type_;
 
   // Previous and current iterator positions.
-  size_t prev_, pos_;
+  size_t prev_ = npos;
+  size_t pos_ = 0;
 };
 
 }  // namespace i18n
