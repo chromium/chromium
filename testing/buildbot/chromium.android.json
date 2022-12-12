@@ -6703,8 +6703,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter",
-          "--gtest_filter=-ModuleCacheTest.CheckAgainstProcMaps"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.base_unittests.filter"
         ],
         "merge": {
           "args": [

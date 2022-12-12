@@ -34,3 +34,6 @@
 -BrokerProcessIntegrationTest.UnlinkNonexistentNoPermissions
 -BrokerProcessIntegrationTest.UnlinkNonexistentROPermissions
 -BrokerProcessIntegrationTest.UnlinkNonExistentRWPermissions
+
+# crbug.com/1368296
+-BrokerProcessIntegrationTest.TestOpenFilePermsENOENT

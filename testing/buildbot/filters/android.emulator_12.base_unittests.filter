@@ -1,0 +1,5 @@
+# crbug.com/1260521
+-ModuleCacheTest.CheckAgainstProcMaps
+
+# crbug.com/1399972
+-CheckExitCodeAfterSignalHandlerDeathTest.CheckSIGSEGVNonCanonicalAddress
