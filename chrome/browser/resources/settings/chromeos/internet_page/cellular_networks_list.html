@@ -95,15 +95,15 @@
               active="[[isDeviceInhibited_]]">
           </paper-spinner-lite>
         </template>
-        <template is="dom-if" if="[[shouldShowAddESimButton_(
+        <template is="dom-if" if="[[shouldShowAddEsimButton_(
             cellularDeviceState)]]" restamp>
           <cr-policy-indicator indicator-type="devicePolicy"
-              hidden="[[!shouldShowAddESimPolicyIcon_(globalPolicy)]]"
+              hidden="[[!shouldShowAddEsimPolicyIcon_(globalPolicy)]]"
               icon-aria-label="$i18n{internetAddCellular}">
           </cr-policy-indicator>
           <cr-icon-button class="icon-add-cellular add-button"
               aria-label="$i18n{internetAddCellular}" id="addESimButton"
-              disabled="[[isAddESimButtonDisabled_(cellularDeviceState,
+              disabled="[[isAddEsimButtonDisabled_(cellularDeviceState,
                   globalPolicy)]]"
               on-click="onAddEsimButtonTap_">
           </cr-icon-button>
@@ -111,7 +111,7 @@
         </template>
         <cr-icon-button id="moreESim" class="icon-more-vert"
             title="$i18n{moreActions}"
-            on-click="onESimDotsClick_">
+            on-click="onEsimDotsClick_">
         </cr-icon-button>
         <cr-lazy-render id="menu">
           <template>
@@ -145,12 +145,12 @@
       </network-list>
     </div>
   </template>
-  <template is="dom-if" if="[[shouldShowNoESimMessageOrDownloadLink_(
+  <template is="dom-if" if="[[shouldShowNoEsimMessageOrDownloadLink_(
       cellularDeviceState.inhibitReason, eSimNetworks_,
       eSimPendingProfileItems_)]]" restamp>
     <div id="eSimNoNetworkFound"
         class="cellular-network-content cellular-not-setup flex">
-      <div hidden="[[!shouldShowNoESimSubtextMessage_(
+      <div hidden="[[!shouldShowNoEsimSubtextMessage_(
                globalPolicy.allowOnlyPolicyCellularNetworks)]]">
         $i18n{eSimNetworkNotSetup}
       </div>
@@ -158,14 +158,14 @@
           link-disabled = "[[isDeviceInhibited_]]"
           on-link-clicked="onEsimLearnMoreClicked_"
           localized-string="$i18n{eSimNetworkNotSetupWithDownloadLink}"
-          hidden="[[shouldShowNoESimSubtextMessage_(
+          hidden="[[shouldShowNoEsimSubtextMessage_(
               globalPolicy.allowOnlyPolicyCellularNetworks)]]">
       </localized-link>
     </div>
   </template>
 </template>
 <template is="dom-if"
-    if="[[shouldShowPSimSection_(pSimNetworks_, cellularDeviceState,
+    if="[[shouldShowPsimSection_(pSimNetworks_, cellularDeviceState,
       cellularDeviceState.*)]]" restamp>
   <div class="cellular-network-list-separator"></div>
   <div class="cellular-network-list-header settings-box-text">

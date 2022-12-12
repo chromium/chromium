@@ -239,7 +239,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-    this.fetchEuiccAndESimPendingProfileList_();
+    this.fetchEuiccAndEsimPendingProfileList_();
   }
 
   override ready(): void {
@@ -256,11 +256,11 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   override onProfileListChanged(euicc: EuiccRemote): void {
-    this.fetchESimPendingProfileListForEuicc_(euicc);
+    this.fetchEsimPendingProfileListForEuicc_(euicc);
   }
 
   override onAvailableEuiccListChanged(): void {
-    this.fetchEuiccAndESimPendingProfileList_();
+    this.fetchEuiccAndEsimPendingProfileList_();
   }
 
   override async onProfileChanged(profile: ESimProfileRemote): Promise<void> {
@@ -278,7 +278,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         NetworkList.CustomItemType.ESIM_PENDING_PROFILE;
   }
 
-  private fetchEuiccAndESimPendingProfileList_(): void {
+  private fetchEuiccAndEsimPendingProfileList_(): void {
     getEuicc().then(euicc => {
       if (!euicc) {
         return;
@@ -293,7 +293,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         return;
       }
 
-      this.fetchESimPendingProfileListForEuicc_(euicc);
+      this.fetchEsimPendingProfileListForEuicc_(euicc);
     });
   }
 
@@ -311,30 +311,30 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     return !!this.euicc_ && eSimSlots > 0;
   }
 
-  private async fetchESimPendingProfileListForEuicc_(euicc: EuiccRemote):
+  private async fetchEsimPendingProfileListForEuicc_(euicc: EuiccRemote):
       Promise<void> {
     const profiles = await getPendingESimProfiles(euicc);
-    this.processESimPendingProfiles_(profiles);
+    this.processEsimPendingProfiles_(profiles);
   }
 
-  private async processESimPendingProfiles_(profiles: ESimProfileRemote[]):
+  private async processEsimPendingProfiles_(profiles: ESimProfileRemote[]):
       Promise<void> {
     this.profilesMap_ = new Map();
     const eSimPendingProfilePromises =
-        profiles.map(this.createESimPendingProfilePromise_.bind(this));
+        profiles.map(this.createEsimPendingProfilePromise_.bind(this));
     const eSimPendingProfileItems =
         await Promise.all(eSimPendingProfilePromises);
     this.eSimPendingProfileItems_ = eSimPendingProfileItems;
   }
 
-  private async createESimPendingProfilePromise_(profile: ESimProfileRemote):
+  private async createEsimPendingProfilePromise_(profile: ESimProfileRemote):
       Promise<NetworkList.CustomItemState> {
     const response = await profile.getProperties();
     this.profilesMap_.set(response.properties.iccid, profile);
-    return this.createESimPendingProfileItem_(response.properties);
+    return this.createEsimPendingProfileItem_(response.properties);
   }
 
-  private createESimPendingProfileItem_(properties: ESimProfileProperties):
+  private createEsimPendingProfileItem_(properties: ESimProfileProperties):
       NetworkList.CustomItemState {
     return {
       customItemType: properties.state === ProfileState.kInstalling ?
@@ -381,7 +381,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     return totalListLength > 0;
   }
 
-  private shouldShowPSimSection_(
+  private shouldShowPsimSection_(
       pSimNetworks: OncMojo.NetworkStateProperties[],
       cellularDeviceState: OncMojo.DeviceStateProperties|undefined): boolean {
     const {pSimSlots} = getSimSlotCount(cellularDeviceState);
@@ -421,7 +421,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     this.dispatchEvent(showCellularSetupEvent);
   }
 
-  private onESimDotsClick_(e: Event): void {
+  private onEsimDotsClick_(e: Event): void {
     const menu = this.shadowRoot!
                      .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
                          '#menu')!.get();
@@ -470,14 +470,14 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     this.shouldShowInstallErrorDialog_ = false;
   }
 
-  private shouldShowAddESimButton_(cellularDeviceState:
+  private shouldShowAddEsimButton_(cellularDeviceState:
                                        OncMojo.DeviceStateProperties|
                                    undefined): boolean {
     assert(this.euicc_);
     return this.deviceIsEnabled_(cellularDeviceState);
   }
 
-  private isAddESimButtonDisabled_(
+  private isAddEsimButtonDisabled_(
       cellularDeviceState: OncMojo.DeviceStateProperties|undefined,
       globalPolicy: GlobalPolicy): boolean {
     if (this.isDeviceInhibited_) {
@@ -497,7 +497,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * should be shown. This policy icon indicates the reason of disabling the
    * add cellular button.
    */
-  private shouldShowAddESimPolicyIcon_(globalPolicy: GlobalPolicy): boolean {
+  private shouldShowAddEsimPolicyIcon_(globalPolicy: GlobalPolicy): boolean {
     return globalPolicy && globalPolicy.allowOnlyPolicyCellularNetworks;
   }
 
@@ -563,7 +563,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * download eSIM profile link should be shown in eSIM section. This message
    * should not be shown when adding new eSIM profiles.
    */
-  private shouldShowNoESimMessageOrDownloadLink_(
+  private shouldShowNoEsimMessageOrDownloadLink_(
       inhibitReason: InhibitReason,
       eSimNetworks: NetworkList.NetworkListItemType[],
       eSimPendingProfiles: NetworkList.CustomItemState[]): boolean {
@@ -579,7 +579,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
    * shown in eSIM section. This message should not be shown when the download
    * eSIM profile link is shown.
    */
-  private shouldShowNoESimSubtextMessage_(): boolean {
+  private shouldShowNoEsimSubtextMessage_(): boolean {
     if (this.globalPolicy &&
         this.globalPolicy.allowOnlyPolicyCellularNetworks) {
       return true;
