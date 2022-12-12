@@ -626,6 +626,11 @@
     'browser_compositor': {
       'filepath': 'ui/compositor/'
     },
+    'browser_params': {
+      'filepath': 'chromeos/startup/browser_init_params'\
+                  '|chromeos/startup/browser_params_proxy'\
+                  '|chromeos/startup/browser_postlogin_params',
+    },
     'browser_scheduler': {
       'filepath': 'content/browser/scheduler'
     },
@@ -2480,6 +2485,7 @@
                   'mdjones+watch@chromium.org'],
     'browser_components': ['browser-components-watch@chromium.org'],
     'browser_compositor': ['vollick@chromium.org'],
+    'browser_params': ['andreaorru+watch@chromium.org'],
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
     'browsing_data': ['dullweber+watch@chromium.org',
                       'msramek+watch@chromium.org'],
@@ -2610,8 +2616,7 @@
     'cros_discovery': ['melzhang+watch+discovery@chromium.org'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'cros_sharesheet': ['melzhang+watch+sharesheet@chromium.org'],
-    'crosapi_mojom': ['andreaorru+watch@chromium.org',
-                      'elkurin+watch@chromium.org'],
+    'crosapi_mojom': ['elkurin+watch@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
                       'cros-printing-reviews@google.com'],
