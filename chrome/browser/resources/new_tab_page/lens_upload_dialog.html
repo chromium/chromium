@@ -339,7 +339,7 @@
 </style>
 
 <div id="dialog" hidden$="{{isHidden_}}" tabindex="-1" lang="$i18n{language}"
-    role="dialog" aria-modal="true">
+    role="dialog" aria-modal="true" on-focusout="onFocusOut_">
   <ntp-lens-form id="lensForm" on-loading="handleFormLoading_"
       on-error="handleFormError_">
   </ntp-lens-form>

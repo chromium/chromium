@@ -252,13 +252,6 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
                                                            DialogState.OFFLINE;
   }
 
-  private outsideClickHandler_ = (event: MouseEvent) => {
-    const outsideDialog = !event.composedPath().includes(this.$.dialog);
-    if (outsideDialog) {
-      this.closeDialog();
-    }
-  };
-
   private outsideKeyHandler_ = (event: KeyboardEvent) => {
     if (event.key === EventKeys.ESCAPE) {
       this.closeDialog();
@@ -267,7 +260,6 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
 
   private attachOutsideHandler_() {
     if (!this.outsideHandlerAttached_) {
-      document.addEventListener('click', this.outsideClickHandler_);
       document.addEventListener('keydown', this.outsideKeyHandler_);
       this.outsideHandlerAttached_ = true;
     }
@@ -275,7 +267,6 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
 
   private detachOutsideHandler_() {
     if (this.outsideHandlerAttached_) {
-      document.removeEventListener('click', this.outsideClickHandler_);
       document.removeEventListener('keydown', this.outsideKeyHandler_);
       this.outsideHandlerAttached_ = false;
     }
@@ -437,6 +428,13 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
       recordLensUploadDialogAction(LensUploadDialogAction.IMAGE_DROPPED);
     }
   }
+  private onFocusOut_ = (event: FocusEvent) => {
+    const outsideDialog = !event.relatedTarget ||
+        !this.$.dialog.contains(event.relatedTarget as Node);
+    if (outsideDialog) {
+      this.closeDialog();
+    }
+  };
 }
 declare global {
   interface HTMLElementTagNameMap {
