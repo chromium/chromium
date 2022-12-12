@@ -231,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.ConvolverNode.ImpulseResponseLength" units="ms"
-    expires_after="2023-01-22">
+    expires_after="2023-04-01">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <summary>
