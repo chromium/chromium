@@ -180,9 +180,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Memory.AudioService.PrivateMemoryFootprint" units="MB"
     expires_after="2023-05-14">
-  <owner>marinaciocea@chromium.org</owner>
-  <owner>maxmorin@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     A rough estimate of the private memory footprint of the audio service
     process.
@@ -203,6 +204,9 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-05-14">
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     An amount of private memory of the audio service process placed in swap
     (VmSwap).
@@ -217,6 +221,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Generic system health metric used to diagnose various performance issues. -->
 
   <owner>fdoray@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The size of the resident memory in a audio service process. This is
     influenced by factors we control (e.g. memory that is not accessed can be
@@ -237,9 +242,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.AudioService.SharedMemoryFootprint" units="MB"
-    expires_after="2023-01-10">
+    expires_after="2023-05-14">
   <owner>olka@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
+  <owner>tguilbert@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     A rough estimate of the shared memory footprint of the audio service
     process.
