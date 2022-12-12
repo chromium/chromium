@@ -201,9 +201,6 @@ class AutocompleteResult {
 
   void Swap(AutocompleteResult* other);
 
-  // operator=() by another name.
-  void CopyFrom(const AutocompleteResult& other);
-
 #if DCHECK_IS_ON()
   // Does a data integrity check on this result.
   void Validate() const;
@@ -284,6 +281,8 @@ class AutocompleteResult {
   FRIEND_TEST_ALL_PREFIXES(
       AutocompleteResultTest,
       GroupSuggestionsBySearchVsURLHonorsProtectedSuggestions);
+  friend class AutocompleteController;  // Friended to use `CopyFrom()`.
+  friend class AutocompleteProviderTest;
   friend class HistoryURLProviderTest;
 
   typedef std::map<AutocompleteProvider*, ACMatches> ProviderToMatches;
@@ -295,6 +294,10 @@ class AutocompleteResult {
 #else
   typedef ACMatches::iterator::difference_type matches_difference_type;
 #endif
+
+  // operator=() by another name.
+  // To be called in AutocompleteController and AutocompleteProviderTest only.
+  void CopyFrom(const AutocompleteResult& other);
 
   // Modifies |matches| such that any duplicate matches are coalesced into
   // representative "best" matches. The erased matches are moved into the
