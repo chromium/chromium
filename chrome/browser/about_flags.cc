@@ -9242,12 +9242,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAssistantNonPersonalizedVoiceSearch)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"stylus-input", flag_descriptions::kStylusWritingToInputName,
-     flag_descriptions::kStylusWritingToInputDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kStylusWritingToInput)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-media-dynamic-cgroup", flag_descriptions::kMediaDynamicCgroupName,
      flag_descriptions::kMediaDynamicCgroupDescription, kOsCrOS,

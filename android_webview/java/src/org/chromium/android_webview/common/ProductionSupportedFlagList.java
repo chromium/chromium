@@ -288,10 +288,6 @@ public final class ProductionSupportedFlagList {
                             + " rather than token count."),
             Flag.baseFeature(AwFeatures.WEBVIEW_HIT_TEST_IN_BLINK_ON_TOUCH_START,
                     "Hit test on touch start in blink"),
-            Flag.baseFeature(BlinkFeatures.STYLUS_WRITING_TO_INPUT,
-                    "Allows using a stylus for text input. This requires "
-                            + "either a Samsung device with Direct Writing enabled, or an "
-                            + "Android T device with stylus handwriting enabled."),
             Flag.baseFeature(BlinkFeatures.SCROLL_UPDATE_OPTIMIZATIONS,
                     "Enable scroll update optimizations. See https://crbug.com/1346789."),
             Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),

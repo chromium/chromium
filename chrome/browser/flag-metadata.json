@@ -6446,11 +6446,6 @@
     "expiry_milestone": 93
   },
   {
-    "name": "stylus-input",
-    "owners": ["peconn"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "suggestions-scrolling-ipad",
     "owners": [ "christianxu", "bling-flags@google.com" ],
     "expiry_milestone": 120
