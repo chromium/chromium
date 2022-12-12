@@ -57,6 +57,7 @@ class CustomizeChromePageHandler
   void UpdateTheme() override;
   void SetDefaultColor() override;
   void SetForegroundColor(SkColor foreground_color) override;
+  void SetClassicChromeDefaultTheme() override;
 
  private:
   // ui::NativeThemeObserver:

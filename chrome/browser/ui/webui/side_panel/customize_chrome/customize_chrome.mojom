@@ -76,6 +76,9 @@ interface CustomizeChromePageHandler {
 
   // Sets Chrome's theme according to |foreground_color|.
   SetForegroundColor(skia.mojom.SkColor foreground_color);
+
+  // Sets theme to default classic chrome.
+  SetClassicChromeDefaultTheme();
 };
 
 // WebUI-side handler for requests from the browser.

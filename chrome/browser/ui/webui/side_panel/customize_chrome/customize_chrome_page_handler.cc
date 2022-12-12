@@ -142,6 +142,11 @@ void CustomizeChromePageHandler::SetForegroundColor(SkColor foreground_color) {
   chrome_colors_service->ConfirmThemeChanges();
 }
 
+void CustomizeChromePageHandler::SetClassicChromeDefaultTheme() {
+  ntp_custom_background_service_->ResetCustomBackgroundInfo();
+  theme_service_->UseDefaultTheme();
+}
+
 void CustomizeChromePageHandler::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
   UpdateTheme();

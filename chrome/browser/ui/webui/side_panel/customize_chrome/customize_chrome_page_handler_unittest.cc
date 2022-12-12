@@ -70,6 +70,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
   explicit MockNtpCustomBackgroundService(Profile* profile)
       : NtpCustomBackgroundService(profile) {}
   MOCK_METHOD0(GetCustomBackground, absl::optional<CustomBackground>());
+  MOCK_METHOD0(ResetCustomBackgroundInfo, void());
 };
 
 class MockNtpBackgroundService : public NtpBackgroundService {
@@ -88,6 +89,7 @@ class MockThemeService : public ThemeService {
   using ThemeService::NotifyThemeChanged;
   MOCK_CONST_METHOD0(UsingDefaultTheme, bool());
   MOCK_CONST_METHOD0(UsingSystemTheme, bool());
+  MOCK_METHOD0(UseDefaultTheme, void());
 
  private:
   ThemeHelper theme_helper_;
@@ -368,4 +370,12 @@ TEST_F(CustomizeChromePageHandlerTest, SetForegroundColor) {
   handler().SetForegroundColor(SK_ColorBLUE);
 
   EXPECT_EQ(SK_ColorBLUE, color);
+}
+
+TEST_F(CustomizeChromePageHandlerTest, SetClassicChromeDefaultTheme) {
+  EXPECT_CALL(mock_ntp_custom_background_service_, ResetCustomBackgroundInfo)
+      .Times(1);
+  EXPECT_CALL(mock_theme_service(), UseDefaultTheme).Times(1);
+
+  handler().SetClassicChromeDefaultTheme();
 }
