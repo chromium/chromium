@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_DEPRECATED_APPS_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_DEPRECATED_APPS_DIALOG_VIEW_H_
 
-#include "base/memory/raw_ptr.h"
-#include "content/public/browser/web_contents.h"
-#include "extensions/common/extension_id.h"
-#include "ui/views/view.h"
+#include <string>
 
-class ForceInstalledDeprecatedAppsDialogView : public views::View {
+#include "base/functional/callback_forward.h"
+#include "extensions/common/extension_id.h"
+#include "ui/views/layout/box_layout_view.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+class ForceInstalledDeprecatedAppsDialogView : public views::BoxLayoutView {
  public:
   METADATA_HEADER(ForceInstalledDeprecatedAppsDialogView);
   ForceInstalledDeprecatedAppsDialogView(
@@ -20,16 +25,13 @@ class ForceInstalledDeprecatedAppsDialogView : public views::View {
   ~ForceInstalledDeprecatedAppsDialogView() override = default;
 
   // Create the dialog metadata and show it.
-  static void CreateAndShowDialog(extensions::ExtensionId app_id,
+  static void CreateAndShowDialog(const extensions::ExtensionId& app_id,
                                   content::WebContents* web_contents,
                                   base::OnceClosure launch_anyways);
 
  private:
-  ForceInstalledDeprecatedAppsDialogView(std::u16string app_name,
+  ForceInstalledDeprecatedAppsDialogView(const std::u16string& app_name,
                                          content::WebContents* web_contents);
-
-  std::u16string app_name_;
-  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_DEPRECATED_APPS_DIALOG_VIEW_H_

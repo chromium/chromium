@@ -274,6 +274,9 @@ class TestTabDialogs : public TabDialogs {
       const extensions::ExtensionId& app_id,
       content::WebContents* web_contents,
       base::OnceClosure launch_anyways) override {}
+  void ShowForceInstalledPreinstalledDeprecatedAppDialog(
+      const extensions::ExtensionId& app_id,
+      content::WebContents* web_contents) override {}
 
  private:
   raw_ptr<content::WebContents> contents_;

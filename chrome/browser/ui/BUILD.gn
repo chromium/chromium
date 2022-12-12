@@ -3511,6 +3511,8 @@ static_library("ui") {
       "views/web_apps/deprecated_apps_dialog_view.h",
       "views/web_apps/force_installed_deprecated_apps_dialog_view.cc",
       "views/web_apps/force_installed_deprecated_apps_dialog_view.h",
+      "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.cc",
+      "views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h",
       "webui/app_home/app_home_page_handler.cc",
       "webui/app_home/app_home_page_handler.h",
       "webui/app_home/app_home_ui.cc",

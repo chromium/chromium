@@ -5512,6 +5512,24 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </message>
       </if>
       <!-- End Force Installed Deprecated Apps Deletion Dialog strings. -->
+      <!-- Force Installed Preinstalled Deprecated Apps Deletion Dialog strings. -->
+      <message name="IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_TITLE" desc="Title of the force installed deprecated app dialog, prompting the user to contact their organization's administrator.">
+        Ask your admin to update this app
+      </message>
+      <message name="IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_CONTENT" desc="Content of the force installed preinstalled deprecated app dialog">
+        Chrome Apps are migrating to Progressive Web Apps. This Chrome App was installed on your browser by your organization. To open the Progressive Web App from the Apps list, first contact your administrator and ask them to uninstall the Chrome App. In the meantime, you can visit <ph name="EXTENSION_LAUNCH_URL">$1<ex>sheets.google.com</ex></ph> to open <ph name="EXTENSION_NAME">$2<ex>Google Sheets</ex></ph> on the web.
+      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_GO_TO_SITE_BUTTON" desc="Label for the button that opens the website for the app">
+          Go To Site
+        </message>
+      </if>
+        <if expr="not use_titlecase">
+        <message name="IDS_FORCE_INSTALLED_PREINSTALLED_DEPRECATED_APPS_GO_TO_SITE_BUTTON" desc="Label for the button that opens the website for the app">
+          Go to site
+        </message>
+      </if>
+      <!-- End Force Installed Preinstalled Deprecated Apps Deletion Dialog strings. -->
       <!-- Deprecated Apps Deletion Dialog strings. -->
       <message name="IDS_DEPRECATED_APPS_RENDERER_TITLE_PLURAL" desc="The title of the deprecated app dialog">
         <ph name="APPS">$1<ex>2</ex></ph> apps are no longer supported

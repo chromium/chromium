@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view.h"
-
 #include "base/feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -18,7 +17,7 @@
 #include "extensions/browser/test_management_policy.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 
 namespace {
@@ -125,8 +124,14 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
                        DialogLaunchedForForceInstalledPreinstalledApp) {
+  ASSERT_TRUE(embedded_test_server()->Start());
   // Set app as a preinstalled app.
   extensions::SetPreinstalledAppIdForTesting(app_id_.c_str());
+  auto link_config_reset = ForceInstalledPreinstalledDeprecatedAppDialogView::
+      SetOverrideLinkConfigForTesting(
+          {.link = GURL(embedded_test_server()->GetURL("/")),
+           .link_text = u"www.example.com"});
+
   auto handler = CreateLauncherHandler();
 
   base::Value::List input;
@@ -135,12 +140,19 @@ IN_PROC_BROWSER_TEST_P(ForceInstalledDeprecatedAppsDialogViewBrowserTest,
   bool disable_preinstalled_apps = GetParam();
 
   if (disable_preinstalled_apps) {
-    auto waiter =
-        views::NamedWidgetShownWaiter(views::test::AnyWidgetTestPasskey{},
-                                      "ForceInstalledDeprecatedAppsDialogView");
+    auto waiter = views::NamedWidgetShownWaiter(
+        views::test::AnyWidgetTestPasskey{},
+        "ForceInstalledPreinstalledDeprecatedAppDialogView");
     handler.HandleLaunchApp(input);
+    views::Widget* view = waiter.WaitIfNeededAndGet();
     // Widget is shown.
-    EXPECT_NE(waiter.WaitIfNeededAndGet(), nullptr);
+    EXPECT_NE(view, nullptr);
+    ui_test_utils::UrlLoadObserver url_observer(
+        embedded_test_server()->GetURL("/"),
+        content::NotificationService::AllSources());
+    views::test::AcceptDialog(view);
+    url_observer.Wait();
+
   } else {
     ui_test_utils::UrlLoadObserver url_observer(
         GURL(kAppUrl), content::NotificationService::AllSources());

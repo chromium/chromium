@@ -764,14 +764,20 @@ void AppLauncherHandler::HandleGetApps(const base::Value::List& args) {
                                    kForceInstallDialogQueryString, &app_id)) {
       if (extensions::IsExtensionUnsupportedDeprecatedApp(profile, app_id) &&
           extensions::IsExtensionForceInstalled(profile, app_id, nullptr)) {
-        TabDialogs::FromWebContents(web_contents)
-            ->ShowForceInstalledDeprecatedAppsDialog(
-                app_id, web_contents,
-                base::BindOnce(
-                    &AppLauncherHandler::LaunchApp,
-                    weak_ptr_factory_.GetWeakPtr(), app_id,
-                    extension_misc::AppLaunchBucket::APP_LAUNCH_CMD_LINE_APP,
-                    "", WindowOpenDisposition::CURRENT_TAB, true));
+        if (extensions::IsPreinstalledAppId(app_id)) {
+          TabDialogs::FromWebContents(web_contents)
+              ->ShowForceInstalledPreinstalledDeprecatedAppDialog(app_id,
+                                                                  web_contents);
+        } else {
+          TabDialogs::FromWebContents(web_contents)
+              ->ShowForceInstalledDeprecatedAppsDialog(
+                  app_id, web_contents,
+                  base::BindOnce(
+                      &AppLauncherHandler::LaunchApp,
+                      weak_ptr_factory_.GetWeakPtr(), app_id,
+                      extension_misc::AppLaunchBucket::APP_LAUNCH_CMD_LINE_APP,
+                      "", WindowOpenDisposition::CURRENT_TAB, true));
+        }
       }
     }
   }
@@ -816,6 +822,11 @@ void AppLauncherHandler::LaunchApp(
               base::BindOnce(&AppLauncherHandler::LaunchApp,
                              weak_ptr_factory_.GetWeakPtr(), extension_id,
                              launch_bucket, source_value, disposition, true));
+      return;
+    } else if (extensions::IsPreinstalledAppId(extension_id)) {
+      TabDialogs::FromWebContents(web_ui()->GetWebContents())
+          ->ShowForceInstalledPreinstalledDeprecatedAppDialog(
+              extension_id, web_ui()->GetWebContents());
       return;
     } else {
       TabDialogs::FromWebContents(web_ui()->GetWebContents())
