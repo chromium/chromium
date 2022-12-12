@@ -83,6 +83,14 @@ export class EventHandler {
     this.listening_ = false;
   }
 
+  /**
+   * @return {boolean} Whether this EventHandler is currently listening for
+   *     events.
+   */
+  listening() {
+    return this.listening_;
+  }
+
   /** @param {?function(!AutomationEvent)} callback */
   setCallback(callback) {
     this.callback_ = callback;

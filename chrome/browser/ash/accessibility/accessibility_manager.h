@@ -390,6 +390,8 @@ class AccessibilityManager
       base::RepeatingCallback<void()> observer);
   void SetCaretBoundsObserverForTest(
       base::RepeatingCallback<void(const gfx::Rect&)> observer);
+  void SetMagnifierBoundsObserverForTest(
+      base::RepeatingCallback<void()> observer);
   void SetSwitchAccessKeysForTest(const std::set<int>& action_keys,
                                   const std::string& pref_name);
 
@@ -619,6 +621,7 @@ class AccessibilityManager
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
   base::RepeatingCallback<void(const gfx::Rect&)>
       caret_bounds_observer_for_test_;
+  base::RepeatingCallback<void()> magnifier_bounds_observer_for_test_;
   base::OnceClosure enhanced_network_tts_waiter_for_test_;
 
   // Used to set the audio focus enforcement type for ChromeVox.

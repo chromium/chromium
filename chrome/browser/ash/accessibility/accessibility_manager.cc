@@ -914,6 +914,10 @@ void AccessibilityManager::MagnifierBoundsChanged(
 
   event_router->DispatchEventWithLazyListener(
       extension_misc::kAccessibilityCommonExtensionId, std::move(event));
+
+  if (magnifier_bounds_observer_for_test_) {
+    magnifier_bounds_observer_for_test_.Run();
+  }
 }
 
 void AccessibilityManager::EnableVirtualKeyboard(bool enabled) {
@@ -2129,6 +2133,11 @@ void AccessibilityManager::SetSelectToSpeakStateObserverForTest(
 void AccessibilityManager::SetCaretBoundsObserverForTest(
     base::RepeatingCallback<void(const gfx::Rect&)> observer) {
   caret_bounds_observer_for_test_ = observer;
+}
+
+void AccessibilityManager::SetMagnifierBoundsObserverForTest(
+    base::RepeatingCallback<void()> observer) {
+  magnifier_bounds_observer_for_test_ = observer;
 }
 
 void AccessibilityManager::SetSwitchAccessKeysForTest(

@@ -24,6 +24,8 @@ export class AccessibilityCommon {
     // For tests.
     /** @private {?function()} */
     this.autoclickLoadCallbackForTest_ = null;
+    /** @private {?function()} */
+    this.magnifierLoadCallbackForTest_ = null;
 
     this.init_();
   }
@@ -107,6 +109,11 @@ export class AccessibilityCommon {
   onMagnifierUpdated_(type, details) {
     if (details.value && !this.magnifier_) {
       this.magnifier_ = new Magnifier(type);
+      if (this.magnifierLoadCallbackForTest_) {
+        this.magnifier_.setOnLoadDesktopCallbackForTest(
+            this.magnifierLoadCallbackForTest_);
+        this.magnifierLoadCallbackForTest_ = null;
+      }
     } else if (
         !details.value && this.magnifier_ && this.magnifier_.type === type) {
       this.magnifier_.onMagnifierDisabled();
@@ -129,17 +136,27 @@ export class AccessibilityCommon {
   }
 
   /**
-   * Used by C++ tests to ensure Autoclick load is completed.
-   * Set on AccessibilityCommon in case Autoclick has not started up yet.
-   * @param {!function()} callback Callback for Autoclick JS load complete.
+   * Used by C++ tests to ensure a feature load is completed.
+   * Set on AccessibilityCommon in case the feature has not started up yet.
+   * @param {string} feature The feature name.
+   * @param {!function()} callback Callback for feature JS load complete.
    */
-  setAutoclickLoadCallbackForTest(callback) {
-    if (!this.autoclick_) {
-      this.autoclickLoadCallbackForTest_ = callback;
-      return;
+  setFeatureLoadCallbackForTest(feature, callback) {
+    if (feature === 'autoclick') {
+      if (!this.autoclick_) {
+        this.autoclickLoadCallbackForTest_ = callback;
+        return;
+      }
+      // Autoclick already loaded.
+      this.autoclick_.setOnLoadDesktopCallbackForTest(callback);
+    } else if (feature === 'magnifier') {
+      if (!this.magnifier_) {
+        this.magnifierLoadCallbackForTest_ = callback;
+        return;
+      }
+      // Magnifier already loaded.
+      this.magnifier_.setOnLoadDesktopCallbackForTest(callback);
     }
-    // Autoclick already loaded.
-    this.autoclick_.setOnLoadDesktopCallbackForTest(callback);
   }
 }
 

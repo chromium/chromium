@@ -92,6 +92,9 @@ export class Magnifier {
         [], chrome.automation.EventType.MOUSE_DRAGGED,
         event => this.onMouseMovedOrDragged_(event));
 
+    /** @private {?function()} */
+    this.onLoadDesktopCallbackForTest_ = null;
+
     this.init_();
   }
 
@@ -128,6 +131,10 @@ export class Magnifier {
       this.onMouseMovedHandler_.start();
       this.onMouseDraggedHandler_.setNodes(desktop);
       this.onMouseDraggedHandler_.start();
+      if (this.onLoadDesktopCallbackForTest_) {
+        this.onLoadDesktopCallbackForTest_();
+        this.onLoadDesktopCallbackForTest_ = null;
+      }
     });
 
     this.onMagnifierBoundsChangedHandler_.start();
@@ -292,6 +299,20 @@ export class Magnifier {
   onMouseMovedOrDragged_(event) {
     this.lastMouseMovedTime_ = new Date();
     this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
+  }
+
+  /**
+   * Used by C++ tests to ensure Magnifier load is competed.
+   * @param {!function()} callback Callback for when desktop is loaded from
+   * automation.
+   */
+  setOnLoadDesktopCallbackForTest(callback) {
+    if (!this.focusHandler_.listening()) {
+      this.onLoadDesktopCallbackForTest_ = callback;
+      return;
+    }
+    // Desktop already loaded.
+    callback();
   }
 }
 

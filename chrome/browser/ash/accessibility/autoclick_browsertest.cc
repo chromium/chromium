@@ -104,9 +104,10 @@ class AutoclickBrowserTest : public InProcessBrowserTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string script = base::StringPrintf(R"JS(
       (async function() {
-        window.accessibilityCommon.setAutoclickLoadCallbackForTest(() => {
-            window.domAutomationController.send('ready');
-          });
+        window.accessibilityCommon.setFeatureLoadCallbackForTest('autoclick',
+            () => {
+              window.domAutomationController.send('ready');
+            });
       })();
     )JS");
     std::string result =
