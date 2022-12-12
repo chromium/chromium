@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 import sys
 
-from presubmit_support import _CheckGM3Counterpart
+from presubmit_support import _CheckGM3Counterpart, _CheckNoDirectLitImport
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockFile
@@ -78,6 +78,64 @@ class GM3CounterpartPresubmit(unittest.TestCase):
         foo_cpp = MockFile(os.path.join('some', 'path', 'foo.cc'), '')
         self.mock_input_api.files.append(foo_js)
         self.mock_input_api.files.append(foo_cpp)
+        errors = _CheckGM3Counterpart(self.mock_input_api,
+                                      self.mock_output_api)
+        self.assertEqual([], errors)
+
+
+class NoDirectLitImportPresubmit(unittest.TestCase):
+    def setUp(self):
+        self.mock_input_api = MockInputApi()
+        self.mock_input_api.change.RepositoryRoot = lambda: os.path.join(
+            os.path.dirname(__file__), '..', '..', '..')
+
+        self.mock_output_api = MockOutputApi()
+
+    def testWarningWithDirectLitImport(self):
+        """
+        If a TS file foo.ts or a JS file foo.js is changed, and there's direct
+        Lit import in the file, show warnings.
+        """
+        lines = [
+            "import {aaa} from 'a.js';"
+            "import {css} from 'chrome://resources/mwc/lit/index.js';"
+        ]
+        foo_ts = MockFile(os.path.join('some', 'path', 'foo.ts'), lines)
+        foo_js = MockFile(os.path.join('some', 'path', 'foo.js'), lines)
+        self.mock_input_api.files.append(foo_ts)
+        self.mock_input_api.files.append(foo_js)
+        errors = _CheckNoDirectLitImport(self.mock_input_api,
+                                         self.mock_output_api)
+        self.assertEqual(2, len(errors))
+        self.assertTrue('some/path/foo.ts:1' in errors[0].message)
+        self.assertTrue('some/path/foo.js:1' in errors[1].message)
+
+    def testNoWarningWithDirectLitImportInXfBase(self):
+        """
+        If ui/file_manager/file_manager/widgets/xf_base.ts is changed, and
+        there's direct lit import in the file, no warnings.
+        """
+        lines = [
+            "import {aaa} from 'a.js';"
+            "import {css} from 'chrome://resources/mwc/lit/index.js';"
+        ]
+        xf_base_ts = MockFile(
+            os.path.join('ui', 'file_manager', 'file_manager', 'widgets',
+                         'xf_base.ts'), lines)
+        self.mock_input_api.files.append(xf_base_ts)
+        errors = _CheckNoDirectLitImport(self.mock_input_api,
+                                         self.mock_output_api)
+        self.assertEqual([], errors)
+
+    def testNoWarningWithoutDirectLitImport(self):
+        """
+        If a TS file foo.ts is changed, and there is no direct Lit import
+        in the file, no warnings.
+        """
+        foo_ts = MockFile(os.path.join('some', 'path', 'foo.ts'), '')
+        foo_js = MockFile(os.path.join('some', 'path', 'foo.js'), '')
+        self.mock_input_api.files.append(foo_ts)
+        self.mock_input_api.files.append(foo_js)
         errors = _CheckGM3Counterpart(self.mock_input_api,
                                       self.mock_output_api)
         self.assertEqual([], errors)

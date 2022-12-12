@@ -46,6 +46,8 @@ def ChecksCommon(input_api, output_api):
         import base.presubmit_support
         results += base.presubmit_support._CheckGM3Counterpart(
             input_api, output_api)
+        results += base.presubmit_support._CheckNoDirectLitImport(
+            input_api, output_api)
     finally:
         sys.path = old_sys_path
     return results
