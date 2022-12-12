@@ -29,7 +29,7 @@ base::Value::Dict PaymentAddressToValueDict(
     const mojom::PaymentAddress& address) {
   base::Value::Dict result;
   result.Set(kAddressCountry, address.country);
-  base::Value address_line_list(base::Value::Type::LIST);
+  base::Value::List address_line_list;
   for (const std::string& address_line_string : address.address_line) {
     if (!address_line_string.empty())
       address_line_list.Append(address_line_string);

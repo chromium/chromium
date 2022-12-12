@@ -20,7 +20,7 @@ TEST(PaymentMethodData, FromValueSuccess_SupportedMethodsString) {
   base::Value::Dict method_data_dict;
   method_data_dict.Set("supportedMethods", "basic-card");
   base::Value::Dict data_dict;
-  base::Value supported_networks_list(base::Value::Type::LIST);
+  base::Value::List supported_networks_list;
   supported_networks_list.Append("mastercard");
   data_dict.Set("supportedNetworks", std::move(supported_networks_list));
   method_data_dict.Set("data", std::move(data_dict));
@@ -41,13 +41,13 @@ TEST(PaymentMethodData, FromValueFailure) {
   EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 
   // The value in the supported methods list must be a string.
-  base::Value supported_methods_list1(base::Value::Type::LIST);
+  base::Value::List supported_methods_list1;
   supported_methods_list1.Append(13);
   method_data_dict.Set("supportedMethods", std::move(supported_methods_list1));
   EXPECT_FALSE(actual.FromValueDict(method_data_dict));
 
   // The value in the supported methods list must be a non-empty string.
-  base::Value supported_methods_list2(base::Value::Type::LIST);
+  base::Value::List supported_methods_list2;
   supported_methods_list2.Append("");
   method_data_dict.Set("supportedMethods", std::move(supported_methods_list2));
   EXPECT_FALSE(actual.FromValueDict(method_data_dict));
@@ -63,7 +63,7 @@ TEST(PaymentMethodData, FromValueFailure) {
   // Supported network list must include ASCII strings.
   method_data_dict.Set("supportedMethods", "some finance thing");
   base::Value::Dict data_dict;
-  base::Value supported_networks_list(base::Value::Type::LIST);
+  base::Value::List supported_networks_list;
   supported_networks_list.Append(123456);
   data_dict.Set("supportedNetworks", std::move(supported_networks_list));
   method_data_dict.Set("data", std::move(data_dict));
