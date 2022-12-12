@@ -773,7 +773,7 @@ class ClearedDebugKeyLog extends Log {
     renderA(
         td,
         'Cleared Debug Key',
-        'https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-extended-debugging-reports',
+        'https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#attribution-success-debugging-reports',
     );
   }
 

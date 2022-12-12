@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
 
     const description = '<a href="https://github.com/WICG/attribution-report' +
-                    'ing-api/blob/main/EVENT.md#optional-extended-debugging-' +
+                    'ing-api/blob/main/EVENT.md#attribution-success-debugging-' +
                     'reports" target="_blank">Cleared Debug Key</a>';
     const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
                      '<dt>From</dt><dd>Source</dd>'+
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         .shadowRoot.querySelector('tbody');
 
     const description = '<a href="https://github.com/WICG/attribution-report' +
-                    'ing-api/blob/main/EVENT.md#optional-extended-debugging-' +
+                    'ing-api/blob/main/EVENT.md#attribution-success-debugging-' +
                     'reports" target="_blank">Cleared Debug Key</a>';
     const metadata = '<dl><dt>Cleared Debug Key</dt><dd>1234</dd>' +
                      '<dt>From</dt><dd>Trigger</dd>'+
