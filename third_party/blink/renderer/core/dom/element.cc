@@ -4744,13 +4744,14 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
 
   DCHECK(AuthorShadowRoot());
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
-    return GetFocusDelegate(in_descendant_traversal);
+    return GetFocusDelegate(/*autofocus_only=*/false, in_descendant_traversal);
   } else {
     return FocusController::FindFocusableElementInShadowHost(*this);
   }
 }
 
-Element* Element::GetFocusDelegate(bool in_descendant_traversal) const {
+Element* Element::GetFocusDelegate(bool autofocus_only,
+                                   bool in_descendant_traversal) const {
   ShadowRoot* shadowroot = AuthorShadowRoot();
   if (shadowroot && !shadowroot->delegatesFocus())
     return nullptr;
@@ -4761,6 +4762,9 @@ Element* Element::GetFocusDelegate(bool in_descendant_traversal) const {
 
   if (Element* autofocus_delegate = where_to_look->GetAutofocusDelegate())
     return autofocus_delegate;
+
+  if (autofocus_only)
+    return nullptr;
 
   for (Element& descendant : ElementTraversal::DescendantsOf(*where_to_look)) {
     if (descendant.IsFocusable())

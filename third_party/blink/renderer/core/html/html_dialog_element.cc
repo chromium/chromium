@@ -353,7 +353,7 @@ void HTMLDialogElement::SetFocusForDialog() {
         HidePopoverForcingLevel::kHideAfterAnimations);
   }
 
-  Element* control = GetFocusDelegate();
+  Element* control = GetFocusDelegate(/*autofocus_only=*/false);
   if (!control)
     control = this;
 

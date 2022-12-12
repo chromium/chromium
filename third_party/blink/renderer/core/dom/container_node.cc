@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
@@ -1628,18 +1629,28 @@ NodeListsNodeData& ContainerNode::EnsureNodeLists() {
 
 // https://html.spec.whatwg.org/C/#autofocus-delegate
 Element* ContainerNode::GetAutofocusDelegate() const {
-  for (Node& node : NodeTraversal::DescendantsOf(*this)) {
-    auto* element = DynamicTo<Element>(node);
-    if (!element)
-      continue;
+  Element* element = ElementTraversal::Next(*this, this);
+  while (element) {
+    // TODO(jarhar): Add this to the HTML spec as a followup to the popover PR
+    if (auto* html_element = DynamicTo<HTMLElement>(element)) {
+      if (DynamicTo<HTMLDialogElement>(html_element) ||
+          html_element->HasPopoverAttribute()) {
+        element = ElementTraversal::NextSkippingChildren(*element, this);
+        continue;
+      }
+    }
 
-    if (!element->IsAutofocusable())
+    if (!element->IsAutofocusable()) {
+      element = ElementTraversal::Next(*element, this);
       continue;
+    }
 
     Element* focusable_area =
         element->IsFocusable() ? element : element->GetFocusableArea();
-    if (!focusable_area)
+    if (!focusable_area) {
+      element = ElementTraversal::Next(*element, this);
       continue;
+    }
 
     // The spec says to continue instead of returning focusable_area if
     // focusable_area is not click-focusable and the call was initiated by the
