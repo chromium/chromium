@@ -106,6 +106,7 @@ class NodeData : public GarbageCollected<NodeData> {
   explicit NodeData(ClassType sub_type)
       : connected_frame_count_(0),
         element_flags_(0),
+        is_pseudo_element_(false),
         bit_field_(RestyleFlags::encode(0) |
                    ClassTypeData::encode(static_cast<uint8_t>(sub_type))) {}
 
@@ -115,6 +116,7 @@ class NodeData : public GarbageCollected<NodeData> {
 
   uint16_t connected_frame_count_ : kConnectedFrameCountBits;
   uint16_t element_flags_ : kNumberOfElementFlags;
+  bool is_pseudo_element_ : 1;
   BitField bit_field_;
 
   friend struct DowncastTraits<NodeRareData>;
@@ -242,6 +244,9 @@ class NodeRareData : public NodeData {
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
   void InvalidateAssociatedAnimationEffects();
+
+  void SetIsPseudoElement(bool value) { is_pseudo_element_ = value; }
+  bool IsPseudoElement() const { return is_pseudo_element_; }
 
   void Trace(blink::Visitor*) const override;
 

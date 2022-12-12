@@ -338,7 +338,11 @@ class CORE_EXPORT Node : public EventTarget {
   }
 
   DISABLE_CFI_PERF bool IsPseudoElement() const {
-    return GetPseudoId() != kPseudoIdNone;
+#if DCHECK_IS_ON()
+    DCHECK_EQ(HasRareData() && DataAsNodeRareData()->IsPseudoElement(),
+              GetPseudoId() != kPseudoIdNone);
+#endif
+    return HasRareData() && DataAsNodeRareData()->IsPseudoElement();
   }
   DISABLE_CFI_PERF bool IsBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdBefore;
