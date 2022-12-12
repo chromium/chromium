@@ -266,8 +266,7 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
 
   return extension() &&
          extension_l10n_util::ValidateExtensionLocales(
-             extension_path_, extension()->manifest()->value()->GetDict(),
-             error) &&
+             extension_path_, *extension()->manifest()->value(), error) &&
          IndexAndPersistRulesIfNeeded(error);
 }
 

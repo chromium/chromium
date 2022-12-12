@@ -222,8 +222,7 @@ scoped_refptr<Extension> ConvertToExtension(
   // normal case, and because in tests, extensions may not have paths or keys,
   // but it's important to retain the same id.
   scoped_refptr<Extension> extension =
-      Extension::Create(params->path, params->location,
-                        base::Value::AsDictionaryValue(params->manifest),
+      Extension::Create(params->path, params->location, params->manifest,
                         params->creation_flags, params->id, error);
 
   if (!extension.get())

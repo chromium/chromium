@@ -553,19 +553,16 @@ void SandboxedUnpacker::ReadManifestDone(
   }
   extension->AddInstallWarnings(std::move(warnings));
 
-  UnpackExtensionSucceeded(std::move(manifest.value()));
+  UnpackExtensionSucceeded(std::move(manifest.value()).TakeDict());
 }
 
-void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
+void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value::Dict manifest) {
   DCHECK(unpacker_io_task_runner_->RunsTasksInCurrentSequence());
 
-  absl::optional<base::Value> final_manifest(RewriteManifestFile(manifest));
+  absl::optional<base::Value::Dict> final_manifest(
+      RewriteManifestFile(manifest));
   if (!final_manifest)
     return;
-
-  std::unique_ptr<base::DictionaryValue> final_manifest_dict =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(final_manifest.value())));
 
   // Create an extension object that refers to the temporary location the
   // extension was unpacked to. We use this until the extension is finally
@@ -578,7 +575,7 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
   // with std::u16string
   std::string utf8_error;
   if (!extension_l10n_util::LocalizeExtension(
-          extension_root_, &final_manifest_dict->GetDict(),
+          extension_root_, &final_manifest.value(),
           extension_l10n_util::GzippedMessagesPermission::kDisallow,
           &utf8_error)) {
     ReportFailure(
@@ -589,7 +586,7 @@ void SandboxedUnpacker::UnpackExtensionSucceeded(base::Value manifest) {
   }
 
   extension_ =
-      Extension::Create(extension_root_, location_, *final_manifest_dict,
+      Extension::Create(extension_root_, location_, final_manifest.value(),
                         Extension::REQUIRE_KEY | creation_flags_, &utf8_error);
 
   if (!extension_.get()) {
@@ -1026,8 +1023,7 @@ void SandboxedUnpacker::ReportSuccess() {
   // Client takes ownership of temporary directory, manifest, and extension.
   client_->OnUnpackSuccess(
       temp_dir_.Take(), extension_root_,
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(manifest_.value()))),
+      std::make_unique<base::Value::Dict>(std::move(manifest_.value())),
       extension_.get(), install_icon_, std::move(ruleset_install_prefs_));
 
   // Interestingly, the C++ standard doesn't guarantee that a moved-from vector
@@ -1039,24 +1035,24 @@ void SandboxedUnpacker::ReportSuccess() {
   Cleanup();
 }
 
-absl::optional<base::Value> SandboxedUnpacker::RewriteManifestFile(
-    const base::Value& manifest) {
+absl::optional<base::Value::Dict> SandboxedUnpacker::RewriteManifestFile(
+    const base::Value::Dict& manifest) {
   constexpr int64_t kMaxFingerprintSize = 1024;
 
   // Add the public key extracted earlier to the parsed manifest and overwrite
   // the original manifest. We do this to ensure the manifest doesn't contain an
   // exploitable bug that could be used to compromise the browser.
   DCHECK(!public_key_.empty());
-  base::Value final_manifest = manifest.Clone();
-  final_manifest.SetStringKey(manifest_keys::kPublicKey, public_key_);
+  base::Value::Dict final_manifest = manifest.Clone();
+  final_manifest.Set(manifest_keys::kPublicKey, public_key_);
 
   {
     std::string differential_fingerprint;
     if (base::ReadFileToStringWithMaxSize(
             extension_root_.Append(kDifferentialFingerprintFilename),
             &differential_fingerprint, kMaxFingerprintSize)) {
-      final_manifest.SetStringKey(manifest_keys::kDifferentialFingerprint,
-                                  std::move(differential_fingerprint));
+      final_manifest.Set(manifest_keys::kDifferentialFingerprint,
+                         std::move(differential_fingerprint));
     }
   }
 

@@ -57,7 +57,7 @@ class KioskExternalUpdateValidator
   void OnUnpackFailure(const extensions::CrxInstallError& error) override;
   void OnUnpackSuccess(const base::FilePath& temp_dir,
                        const base::FilePath& extension_dir,
-                       std::unique_ptr<base::DictionaryValue> original_manifest,
+                       std::unique_ptr<base::Value::Dict> original_manifest,
                        const extensions::Extension* extension,
                        const SkBitmap& install_icon,
                        extensions::declarative_net_request::RulesetInstallPrefs

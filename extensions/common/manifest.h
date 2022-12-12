@@ -185,11 +185,9 @@ class Manifest final {
   // Returns true if this equals the |other| manifest.
   bool EqualsForTesting(const Manifest& other) const;
 
-  // Gets the underlying DictionaryValue representing the manifest.
+  // Gets the underlying base::Value::Dict representing the manifest.
   // Note: only use this when you KNOW you don't need the validation.
-  const base::DictionaryValue* value() const {
-    return &base::Value::AsDictionaryValue(value_);
-  }
+  const base::Value::Dict* value() const { return &value_; }
 
   // Gets the underlying DictionaryValue representing the manifest with all
   // unavailable manifest keys removed.
@@ -222,9 +220,7 @@ class Manifest final {
   const mojom::ManifestLocation location_;
 
   // The underlying dictionary representation of the manifest.
-  // TODO(https://crbug.com/1366865): Make base::Value::Dict when callers of
-  // `value()` are migrated.
-  const base::Value value_;
+  const base::Value::Dict value_;
 
   // Same as |value_| but comprises only of keys available to this manifest.
   // TODO(https://crbug.com/1366865): Make base::Value::Dict when callers of

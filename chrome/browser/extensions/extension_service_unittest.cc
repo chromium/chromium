@@ -4099,10 +4099,10 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
   // Create a fake extension to be loaded as though it were read from prefs.
   base::FilePath path =
       data_dir().AppendASCII("management").AppendASCII("simple_extension");
-  base::DictionaryValue manifest;
-  manifest.SetStringPath(keys::kName, "simple_extension");
-  manifest.SetStringPath(keys::kVersion, "1");
-  manifest.SetIntPath(keys::kManifestVersion, 2);
+  base::Value::Dict manifest;
+  manifest.Set(keys::kName, "simple_extension");
+  manifest.Set(keys::kVersion, "1");
+  manifest.Set(keys::kManifestVersion, 2);
   // UNPACKED is for extensions loaded from a directory. We use it here, even
   // though we're testing loading from prefs, so that we don't need to provide
   // an extension key.

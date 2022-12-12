@@ -24,7 +24,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/values.h"
 #include "base/version.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/url_constants.h"
@@ -858,14 +857,13 @@ bool Extension::LoadShortName(std::u16string* error) {
   return true;
 }
 
-ExtensionInfo::ExtensionInfo(const base::DictionaryValue* manifest,
+ExtensionInfo::ExtensionInfo(const base::Value::Dict* manifest,
                              const std::string& id,
                              const base::FilePath& path,
                              ManifestLocation location)
     : extension_id(id), extension_path(path), extension_location(location) {
   if (manifest)
-    extension_manifest = base::DictionaryValue::From(
-        base::Value::ToUniquePtrValue(manifest->Clone()));
+    extension_manifest = std::make_unique<base::Value::Dict>(manifest->Clone());
 }
 
 ExtensionInfo::~ExtensionInfo() {}

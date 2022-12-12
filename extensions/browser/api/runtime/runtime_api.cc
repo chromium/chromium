@@ -496,7 +496,7 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
 void RuntimeEventRouter::DispatchOnUpdateAvailableEvent(
     content::BrowserContext* context,
     const std::string& extension_id,
-    const base::DictionaryValue* manifest) {
+    const base::Value::Dict* manifest) {
   ExtensionSystem* system = ExtensionSystem::Get(context);
   if (!system)
     return;

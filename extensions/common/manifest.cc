@@ -110,7 +110,7 @@ class AvailableValuesFilter {
  public:
   // Filters `manifest.values()` removing any unavailable keys.
   static base::Value::Dict Filter(const Manifest& manifest) {
-    return FilterInternal(manifest, manifest.value()->GetDict(), "");
+    return FilterInternal(manifest, *manifest.value(), "");
   }
 
  private:
@@ -269,8 +269,8 @@ Manifest::Manifest(ManifestLocation location,
       hashed_id_(HashedExtensionId(extension_id_)),
       location_(location),
       value_(std::move(value)),
-      type_(GetTypeFromManifestValue(value_.GetDict(), for_login_screen)),
-      manifest_version_(GetManifestVersion(value_.GetDict(), type_)) {
+      type_(GetTypeFromManifestValue(value_, for_login_screen)),
+      manifest_version_(GetManifestVersion(value_, type_)) {
   DCHECK(!extension_id_.empty());
 
   available_values_ = base::Value(AvailableValuesFilter::Filter(*this));
@@ -290,7 +290,7 @@ bool Manifest::ValidateManifest(
   const FeatureProvider* manifest_feature_provider =
       FeatureProvider::GetManifestFeatures();
   for (const auto& map_entry : manifest_feature_provider->GetAllFeatures()) {
-    if (!value_.GetDict().FindByDottedPath(map_entry.first))
+    if (!value_.FindByDottedPath(map_entry.first))
       continue;
 
     Feature::Availability result = map_entry.second->IsAvailableToManifest(
@@ -300,7 +300,7 @@ bool Manifest::ValidateManifest(
   }
 
   // Also generate warnings for keys that are not features.
-  for (const auto item : value_.GetDict()) {
+  for (const auto item : value_) {
     if (!manifest_feature_provider->GetFeature(item.first)) {
       warnings->push_back(InstallWarning(
           ErrorUtils::FormatErrorMessage(
@@ -310,8 +310,7 @@ bool Manifest::ValidateManifest(
   }
 
   if (IsUnpackedLocation(location_) &&
-      value_.GetDict().FindByDottedPath(
-          manifest_keys::kDifferentialFingerprint)) {
+      value_.FindByDottedPath(manifest_keys::kDifferentialFingerprint)) {
     warnings->push_back(
         InstallWarning(manifest_errors::kHasDifferentialFingerprint,
                        manifest_keys::kDifferentialFingerprint));

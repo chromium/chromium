@@ -135,7 +135,7 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
 
   void OnUnpackSuccess(const base::FilePath& temp_dir,
                        const base::FilePath& extension_root,
-                       std::unique_ptr<base::DictionaryValue> original_manifest,
+                       std::unique_ptr<base::Value::Dict> original_manifest,
                        const Extension* extension,
                        const SkBitmap& install_icon,
                        declarative_net_request::RulesetInstallPrefs
@@ -302,7 +302,8 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     sandboxed_unpacker_->extension_root_ = path;
   }
 
-  absl::optional<base::Value> RewriteManifestFile(const base::Value& manifest) {
+  absl::optional<base::Value::Dict> RewriteManifestFile(
+      const base::Value::Dict& manifest) {
     return sandboxed_unpacker_->RewriteManifestFile(manifest);
   }
 
@@ -486,12 +487,12 @@ TEST_F(SandboxedUnpackerTest, TestRewriteManifestInjections) {
                       FILE_PATH_LITERAL("manifest.fingerprint")),
                   fingerprint.c_str(),
                   base::checked_cast<int>(fingerprint.size()));
-  absl::optional<base::Value> manifest(RewriteManifestFile(
-      *DictionaryBuilder().Set(kVersionStr, kTestVersion).Build()));
-  auto* key = manifest->FindStringKey("key");
-  auto* version = manifest->FindStringKey(kVersionStr);
+  absl::optional<base::Value::Dict> manifest(RewriteManifestFile(
+      DictionaryBuilder().Set(kVersionStr, kTestVersion).BuildDict()));
+  auto* key = manifest->FindString("key");
+  auto* version = manifest->FindString(kVersionStr);
   auto* differential_fingerprint =
-      manifest->FindStringKey("differential_fingerprint");
+      manifest->FindString("differential_fingerprint");
   ASSERT_NE(nullptr, key);
   ASSERT_NE(nullptr, version);
   ASSERT_NE(nullptr, differential_fingerprint);

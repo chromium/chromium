@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_guid.h"
@@ -33,7 +34,6 @@
 
 namespace base {
 class DictAdapterForMigration;
-class DictionaryValue;
 }
 
 namespace extensions {
@@ -371,8 +371,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Initialize the extension from a parsed manifest.
   // TODO(aa): Rename to just Init()? There's no Value here anymore.
   // TODO(aa): It is really weird the way this class essentially contains a copy
-  // of the underlying DictionaryValue in its members. We should decide to
-  // either wrap the DictionaryValue and go with that only, or we should parse
+  // of the underlying base::Value::Dict in its members. We should decide to
+  // either wrap the base::Value::Dict and go with that only, or we should parse
   // into strong types and discard the value. But doing both is bad.
   bool InitFromValue(int flags, std::u16string* error);
 
@@ -497,7 +497,7 @@ typedef std::vector<scoped_refptr<const Extension> > ExtensionList;
 
 // Handy struct to pass core extension info around.
 struct ExtensionInfo {
-  ExtensionInfo(const base::DictionaryValue* manifest,
+  ExtensionInfo(const base::Value::Dict* manifest,
                 const ExtensionId& id,
                 const base::FilePath& path,
                 mojom::ManifestLocation location);
@@ -507,7 +507,7 @@ struct ExtensionInfo {
 
   // Note: This may be null (e.g. for unpacked extensions retrieved from the
   // Preferences file).
-  std::unique_ptr<base::DictionaryValue> extension_manifest;
+  std::unique_ptr<base::Value::Dict> extension_manifest;
 
   ExtensionId extension_id;
   base::FilePath extension_path;

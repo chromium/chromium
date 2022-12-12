@@ -150,8 +150,8 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
     expected_manifest_check_level_ = approval->manifest_check_level;
     if (expected_manifest_check_level_ !=
         WebstoreInstaller::MANIFEST_CHECK_LEVEL_NONE) {
-      expected_manifest_ = base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(approval->manifest->value()->Clone()));
+      expected_manifest_ = std::make_unique<base::Value::Dict>(
+          approval->manifest->value()->Clone());
     }
     expected_id_ = approval->extension_id;
   }
@@ -526,7 +526,7 @@ void CrxInstaller::OnUnpackFailure(const CrxInstallError& error) {
 void CrxInstaller::OnUnpackSuccess(
     const base::FilePath& temp_dir,
     const base::FilePath& extension_dir,
-    std::unique_ptr<base::DictionaryValue> original_manifest,
+    std::unique_ptr<base::Value::Dict> original_manifest,
     const Extension* extension,
     const SkBitmap& install_icon,
     declarative_net_request::RulesetInstallPrefs ruleset_install_prefs) {
@@ -542,7 +542,7 @@ void CrxInstaller::OnUnpackSuccess(
 void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
     base::FilePath temp_dir,
     base::FilePath extension_dir,
-    std::unique_ptr<base::DictionaryValue> original_manifest,
+    std::unique_ptr<base::Value::Dict> original_manifest,
     scoped_refptr<const Extension> extension,
     SkBitmap install_icon,
     declarative_net_request::RulesetInstallPrefs ruleset_install_prefs) {

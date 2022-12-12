@@ -19,7 +19,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 // Mojo struct to be used as argument on the LoadExtension method.
 struct ExtensionLoadedParams {
   // The subset of the extension manifest data we send to renderers.
-  mojo_base.mojom.Value manifest;
+  mojo_base.mojom.DictionaryValue manifest;
 
   // The location the extension was installed from. This is used in the renderer
   // only to generate the extension ID for extensions that are loaded unpacked.

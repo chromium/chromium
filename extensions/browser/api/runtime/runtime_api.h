@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/api/runtime/runtime_api_delegate.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -208,10 +209,9 @@ class RuntimeEventRouter {
                                        bool chrome_updated);
 
   // Dispatches the onUpdateAvailable event to the given extension.
-  static void DispatchOnUpdateAvailableEvent(
-      content::BrowserContext* context,
-      const std::string& extension_id,
-      const base::DictionaryValue* manifest);
+  static void DispatchOnUpdateAvailableEvent(content::BrowserContext* context,
+                                             const std::string& extension_id,
+                                             const base::Value::Dict* manifest);
 
   // Dispatches the onBrowserUpdateAvailable event to all extensions.
   static void DispatchOnBrowserUpdateAvailableEvent(

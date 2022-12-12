@@ -1433,13 +1433,11 @@ void ExtensionPrefs::UpdateManifest(const Extension* extension) {
     const base::Value::Dict* old_manifest =
         extension_dict->FindDict(kPrefManifest);
     bool update_required =
-        !old_manifest ||
-        extension->manifest()->value()->GetDict() != *old_manifest;
+        !old_manifest || *extension->manifest()->value() != *old_manifest;
     if (update_required) {
-      UpdateExtensionPref(
-          extension->id(), kPrefManifest,
-          base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-              extension->manifest()->value()->Clone())));
+      UpdateExtensionPref(extension->id(), kPrefManifest,
+                          std::make_unique<base::Value>(
+                              extension->manifest()->value()->Clone()));
     }
   }
 }
@@ -1494,10 +1492,8 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
   // Make path absolute. Most (but not all) extension types have relative paths.
   if (!file_path.IsAbsolute())
     file_path = install_directory_.Append(file_path);
-  const base::DictionaryValue* manifest_dict =
-      (manifest && manifest->is_dict())
-          ? &base::Value::AsDictionaryValue(*manifest)
-          : nullptr;
+  const base::Value::Dict* manifest_dict =
+      (manifest && manifest->is_dict()) ? &manifest->GetDict() : nullptr;
   return std::make_unique<ExtensionInfo>(manifest_dict, extension_id, file_path,
                                          location);
 }
@@ -1917,10 +1913,10 @@ void ExtensionPrefs::InitPrefStore() {
       // we could instead initialize the controlled preferences when the
       // extension is more finalized, but this also needs to happen sufficiently
       // before other subsystems are notified about the extension being loaded.
-      Manifest::Type type = info->extension_manifest
-                                ? Manifest::GetTypeFromManifestValue(
-                                      info->extension_manifest->GetDict())
-                                : Manifest::TYPE_UNKNOWN;
+      Manifest::Type type =
+          info->extension_manifest
+              ? Manifest::GetTypeFromManifestValue(*info->extension_manifest)
+              : Manifest::TYPE_UNKNOWN;
       bool is_theme = type == Manifest::TYPE_THEME;
       // Erase the entry if the extension won't be loaded.
       return !Manifest::ShouldAlwaysLoadExtension(info->extension_location,
@@ -2359,8 +2355,8 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   // We store prefs about LOAD extensions, but don't cache their manifest
   // since it may change on disk.
   if (!Manifest::IsUnpackedLocation(extension->location())) {
-    extension_dict->SetKey(kPrefManifest,
-                           extension->manifest()->value()->Clone());
+    extension_dict->SetKey(
+        kPrefManifest, base::Value(extension->manifest()->value()->Clone()));
   }
 
   // Only writes kPrefDoNotSync when it is not the default.
@@ -2585,7 +2581,7 @@ void ExtensionPrefs::MigrateToNewWithholdingPref() {
     // We only want to migrate extensions we can actually withhold permissions
     // from.
     Manifest::Type type =
-        Manifest::GetTypeFromManifestValue(info->extension_manifest->GetDict());
+        Manifest::GetTypeFromManifestValue(*info->extension_manifest);
     ManifestLocation location = info->extension_location;
     if (!util::CanWithholdPermissionsFromExtension(extension_id, type,
                                                    location))

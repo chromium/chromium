@@ -305,7 +305,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   void OnUnpackFailure(const CrxInstallError& error) override;
   void OnUnpackSuccess(const base::FilePath& temp_dir,
                        const base::FilePath& extension_dir,
-                       std::unique_ptr<base::DictionaryValue> original_manifest,
+                       std::unique_ptr<base::Value::Dict> original_manifest,
                        const Extension* extension,
                        const SkBitmap& install_icon,
                        declarative_net_request::RulesetInstallPrefs
@@ -364,7 +364,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   virtual void OnUnpackSuccessOnSharedFileThread(
       base::FilePath temp_dir,
       base::FilePath extension_dir,
-      std::unique_ptr<base::DictionaryValue> original_manifest,
+      std::unique_ptr<base::Value::Dict> original_manifest,
       scoped_refptr<const Extension> extension,
       SkBitmap install_icon,
       declarative_net_request::RulesetInstallPrefs ruleset_install_prefs);
@@ -420,7 +420,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // A copy of the expected manifest, before any transformations like
   // localization have taken place. If |approved_| is true, then the extension's
   // manifest must match this for the install to proceed.
-  std::unique_ptr<base::DictionaryValue> expected_manifest_;
+  std::unique_ptr<base::Value::Dict> expected_manifest_;
 
   // The level of checking when comparing the actual manifest against
   // the |expected_manifest_|.
@@ -455,7 +455,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
 
   // A copy of the unmodified original manifest, before any transformations like
   // localization have taken place.
-  std::unique_ptr<base::DictionaryValue> original_manifest_;
+  std::unique_ptr<base::Value::Dict> original_manifest_;
 
   // If valid, contains the current version of the extension we're
   // installing (for upgrades).

@@ -96,15 +96,13 @@ enum ExternalItemState {
   EXTERNAL_ITEM_MAX_ITEMS
 };
 
-bool IsManifestCorrupt(const base::DictionaryValue& manifest) {
+bool IsManifestCorrupt(const base::Value::Dict& manifest) {
   // Because of bug #272524 sometimes manifests got mangled in the preferences
   // file, one particularly bad case resulting in having both a background page
   // and background scripts values. In those situations we want to reload the
   // manifest from the extension to fix this.
-  const base::Value* background_page;
-  const base::Value* background_scripts;
-  return manifest.Get(manifest_keys::kBackgroundPage, &background_page) &&
-         manifest.Get(manifest_keys::kBackgroundScripts, &background_scripts);
+  return manifest.contains(manifest_keys::kBackgroundPage) &&
+         manifest.contains(manifest_keys::kBackgroundScripts);
 }
 
 ManifestReloadReason ShouldReloadExtensionManifest(const ExtensionInfo& info) {
@@ -117,8 +115,7 @@ ManifestReloadReason ShouldReloadExtensionManifest(const ExtensionInfo& info) {
     return NOT_NEEDED;
 
   // Reload the manifest if it needs to be relocalized.
-  if (extension_l10n_util::ShouldRelocalizeManifest(
-          info.extension_manifest->GetDict()))
+  if (extension_l10n_util::ShouldRelocalizeManifest(*info.extension_manifest))
     return NEEDS_RELOCALIZATION;
 
   // Reload if the copy of the manifest in the preferences is corrupt.
@@ -386,8 +383,8 @@ void InstalledLoader::LoadAllExtensions() {
       }
 
       extensions_info->at(i)->extension_manifest =
-          base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-              extension->manifest()->value()->Clone()));
+          std::make_unique<base::Value::Dict>(
+              extension->manifest()->value()->Clone());
       should_write_prefs = true;
     }
   }

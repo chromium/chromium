@@ -497,7 +497,7 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
     std::unique_ptr<ExtensionInfo> info(prefs()->GetDelayedInstallInfo(id));
     ASSERT_TRUE(info);
     const std::string* version =
-        info->extension_manifest->GetDict().FindString("version");
+        info->extension_manifest->FindString("version");
     ASSERT_TRUE(version);
     ASSERT_EQ("1." + base::NumberToString(num), *version);
     ASSERT_EQ(base::NumberToString(num),

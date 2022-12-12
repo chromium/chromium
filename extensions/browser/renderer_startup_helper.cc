@@ -75,9 +75,8 @@ mojom::ExtensionLoadedParamsPtr CreateExtensionLoadedParams(
   }
 
   return mojom::ExtensionLoadedParams::New(
-      static_cast<base::DictionaryValue&&>(
-          extension.manifest()->value()->Clone()),
-      extension.location(), extension.path(),
+      extension.manifest()->value()->Clone(), extension.location(),
+      extension.path(),
       CreatePermissionSet(permissions_data->active_permissions()),
       CreatePermissionSet(permissions_data->withheld_permissions()),
       std::move(tab_specific_permissions),
