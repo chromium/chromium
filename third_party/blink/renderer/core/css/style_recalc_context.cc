@@ -16,7 +16,7 @@ Element* ClosestInclusiveAncestorContainer(Element& element,
                                            Element* stay_within = nullptr) {
   for (auto* container = &element; container && container != stay_within;
        container = container->ParentOrShadowHostElement()) {
-    if (container->GetContainerQueryEvaluator())
+    if (container->ComputedStyleRef().IsContainerForSizeContainerQueries())
       return container;
   }
   return nullptr;
@@ -26,6 +26,7 @@ Element* ClosestInclusiveAncestorContainer(Element& element,
 
 StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
     Element& element) {
+  DCHECK(element.GetComputedStyle());
   return StyleRecalcContext{ClosestInclusiveAncestorContainer(element)};
 }
 

@@ -5989,7 +5989,12 @@ const ComputedStyle* Element::EnsureComputedStyle(
   HeapVector<Member<Element>> ancestors = CollectAncestorsToEnsure(*this);
 
   Element* top = ancestors.empty() ? this : ancestors.back().Get();
-  auto style_recalc_context = StyleRecalcContext::FromAncestors(*top);
+
+  // Don't call FromAncestors for elements outside the flat-tree, since
+  // those elements don't actually participate in style recalc.
+  auto style_recalc_context = LayoutTreeBuilderTraversal::Parent(*top)
+                                  ? StyleRecalcContext::FromAncestors(*top)
+                                  : StyleRecalcContext();
 
   while (!ancestors.empty()) {
     Element* ancestor = ancestors.back();

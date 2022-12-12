@@ -25,11 +25,18 @@ class CORE_EXPORT StyleRecalcContext {
  public:
   // Using the ancestor chain, build a StyleRecalcContext suitable for
   // resolving the style of the given Element.
+  //
+  // It is valid to pass an Element without a ComputedStyle only when
+  // the shadow-including parent of Element has a ComputedStyle.
   static StyleRecalcContext FromAncestors(Element&);
 
   // If the passed in StyleRecalcContext is nullptr, build a StyleRecalcContext
   // suitable for resolving the style for child elements of the passed in
   // element. Otherwise return the passed in context as a value.
+  //
+  // It is invalid to pass an Element without a ComputedStyle. This means that
+  // if the Element is in display:none, the ComputedStyle must be ensured
+  // before calling this function.
   static StyleRecalcContext FromInclusiveAncestors(Element&);
 
   // When traversing into slotted children, the container is in the shadow-
