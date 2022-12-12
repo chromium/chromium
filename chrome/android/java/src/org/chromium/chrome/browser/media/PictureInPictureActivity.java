@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.media;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
@@ -465,7 +464,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         // Finish the activity if OverlayWindowAndroid has already been destroyed
         // or InitiatorTab has been destroyed by user or crashed.
         if (mNativeOverlayWindowAndroid != sPendingNativeOverlayWindowAndroid
-                || !isInitiatorTabAlive()) {
+                || TabUtils.getActivity(mInitiatorTab) == null) {
             this.finish();
             return;
         }
@@ -533,22 +532,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     protected ActivityWindowAndroid createWindowAndroid() {
         return new ActivityWindowAndroid(
                 this, /* listenToActivityState= */ true, getIntentRequestTracker());
-    }
-
-    @SuppressLint("NewApi")
-    private boolean isInitiatorTabAlive() {
-        if (mInitiatorTab == null) return false;
-
-        ActivityManager activityManager =
-                (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.ACTIVITY_SERVICE);
-        for (ActivityManager.AppTask appTask : activityManager.getAppTasks()) {
-            if (appTask.getTaskInfo().id == TabUtils.getActivity(mInitiatorTab).getTaskId()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @CalledByNative
@@ -657,7 +640,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         intent.putExtra(NATIVE_POINTER_KEY, nativeOverlayWindowAndroid);
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Bundle optionsBundle = null;
         // Clamp the aspect ratio, which is okay even if they're unspecified.  We do this first in
         // case the width clamps to 0.  In that case, it's ignored as if it weren't given.
