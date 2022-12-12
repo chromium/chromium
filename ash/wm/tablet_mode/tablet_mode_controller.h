@@ -499,7 +499,7 @@ class ASH_EXPORT TabletModeController
   // hide shelf while taking a screenshot during tablet mode transition (so the
   // screenshot does not show the old version of the shelf and floated window in
   // the background).
-  std::unique_ptr<ScopedContainerHider> shelf_hider_;
+  std::unique_ptr<ScopedContainerHider> container_hider_;
 
   // Tracks and record transition smoothness.
   absl::optional<ui::ThroughputTracker> transition_tracker_;

@@ -353,6 +353,16 @@ aura::Window* GetTopWindow() {
   return windows.empty() ? nullptr : windows[0];
 }
 
+aura::Window* GetTopNonFloatedWindow() {
+  MruWindowTracker::WindowList windows =
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
+  for (aura::Window* window : windows) {
+    if (!WindowState::Get(window)->IsFloated())
+      return window;
+  }
+  return nullptr;
+}
+
 bool ShouldMinimizeTopWindowOnBack() {
   Shell* shell = Shell::Get();
   // We never want to minimize the main app window in the Kiosk session.

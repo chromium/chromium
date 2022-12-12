@@ -26,6 +26,7 @@
 #include "ash/wm/tablet_mode/internal_input_devices_event_blocker.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -180,16 +181,6 @@ void CheckHasPointingDevices(
     if (*out_has_external_pointing_device && *out_has_internal_pointing_device)
       return;
   }
-}
-
-aura::Window* GetTopNonFloatedWindow() {
-  MruWindowTracker::WindowList windows =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  for (aura::Window* window : windows) {
-    if (!WindowState::Get(window)->IsFloated())
-      return window;
-  }
-  return nullptr;
 }
 
 // The default behavior in Clamshell mode.
@@ -349,8 +340,6 @@ class TabletModeController::ScopedContainerHider {
  public:
   explicit ScopedContainerHider(aura::Window* root_window)
       : root_window_(root_window) {
-    Shell::Get()->overview_controller()->PauseOcclusionTracker();
-
     DCHECK(root_window->IsRootWindow());
 
     ui::Layer* screen_animation_container_layer =
@@ -363,8 +352,8 @@ class TabletModeController::ScopedContainerHider {
       std::unique_ptr<ui::LayerTreeOwner> phantom_layer =
           wm::RecreateLayers(container);
       ui::Layer* root = phantom_layer->root();
-      screen_animation_container_layer->Add(root);
-      screen_animation_container_layer->StackAtTop(root);
+      root_window->layer()->Add(root);
+      root_window->layer()->StackAbove(root, screen_animation_container_layer);
       phantom_layers_.push_back(std::move(phantom_layer));
 
       container->layer()->SetOpacity(0.0f);
@@ -888,7 +877,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
     // tablet mode does not cover the whole work area.
     // TODO(sammiequon): Handle the case where the top window is not on the
     // primary display.
-    aura::Window* top_window = GetTopNonFloatedWindow();
+    aura::Window* top_window = window_util::GetTopNonFloatedWindow();
     const bool top_window_on_primary_display =
         top_window &&
         top_window->GetRootWindow() == Shell::GetPrimaryRootWindow();
@@ -1213,7 +1202,7 @@ void TabletModeController::DeleteScreenshot() {
   screenshot_taken_callback_.Cancel();
   screenshot_set_callback_.Cancel();
   ResetDestroyObserver();
-  shelf_hider_.reset();
+  container_hider_.reset();
 }
 
 void TabletModeController::ResetDestroyObserver() {
@@ -1233,7 +1222,7 @@ void TabletModeController::TakeScreenshot(aura::Window* top_window) {
   base::OnceClosure callback = screenshot_set_callback_.callback();
 
   aura::Window* root_window = top_window->GetRootWindow();
-  shelf_hider_ = std::make_unique<ScopedContainerHider>(root_window);
+  container_hider_ = std::make_unique<ScopedContainerHider>(root_window);
 
   // Request a screenshot.
   screenshot_taken_callback_.Reset(base::BindOnce(
@@ -1254,7 +1243,7 @@ void TabletModeController::OnLayerCopyed(
       destroy_observer_ ? destroy_observer_->window() : nullptr;
   ResetDestroyObserver();
 
-  shelf_hider_.reset();
+  container_hider_.reset();
 
   // Cancel if the root window is deleted while taking a screenshot.
   if (!base::Contains(Shell::GetAllRootWindows(), root_window))

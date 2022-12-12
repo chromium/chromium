@@ -163,9 +163,9 @@ TabletModeWindowManager::~TabletModeWindowManager() = default;
 
 void TabletModeWindowManager::Init() {
   {
-    ScopedObserveWindowAnimation scoped_observe(window_util::GetTopWindow(),
-                                                this,
-                                                /*exiting_tablet_mode=*/false);
+    ScopedObserveWindowAnimation scoped_observe(
+        window_util::GetTopNonFloatedWindow(), this,
+        /*exiting_tablet_mode=*/false);
     ArrangeWindowsForTabletMode();
   }
   AddWindowCreationObservers();
@@ -232,8 +232,9 @@ void TabletModeWindowManager::Shutdown() {
   display_observer_.reset();
   RemoveWindowCreationObservers();
 
-  ScopedObserveWindowAnimation scoped_observe(window_util::GetTopWindow(), this,
-                                              /*exiting_tablet_mode=*/true);
+  ScopedObserveWindowAnimation scoped_observe(
+      window_util::GetTopNonFloatedWindow(), this,
+      /*exiting_tablet_mode=*/true);
   ArrangeWindowsForClamshellMode(carryover_windows_in_splitview,
                                  was_in_overview);
 }
