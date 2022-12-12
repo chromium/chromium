@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/history_clusters/core/query_clusters_state.h"
+#include "components/history_clusters/ui/query_clusters_state.h"
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -13,7 +13,6 @@
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 using ::testing::ElementsAre;
 
@@ -83,7 +82,7 @@ class QueryClustersStateTest : public testing::Test {
 
 TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
   base::HistogramTester histogram_tester;
-  QueryClustersState state(nullptr, "");
+  QueryClustersState state(nullptr, nullptr, "");
 
   std::vector<history::Cluster> raw_clusters;
   raw_clusters.push_back(
@@ -112,7 +111,7 @@ TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
 }
 
 TEST_F(QueryClustersStateTest, CrossBatchDeduplication) {
-  QueryClustersState state(nullptr, "myquery");
+  QueryClustersState state(nullptr, nullptr, "myquery");
 
   {
     std::vector<history::Cluster> raw_clusters;
@@ -182,7 +181,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
   const history::Cluster visible_cluster = {2, {}, {}, true};
 
   {
-    QueryClustersState state(nullptr, "");
+    QueryClustersState state(nullptr, nullptr, "");
 
     // If the response clusters is empty, the callback should not be invoked.
     InjectRawClustersAndExpectNoCallback(
@@ -221,7 +220,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
   }
 
   {
-    QueryClustersState state(nullptr, "");
+    QueryClustersState state(nullptr, nullptr, "");
 
     // `is_continuation` should be false on the first callback.
     // `can_load_more` should be true on non-last callback.
@@ -267,7 +266,7 @@ TEST_F(QueryClustersStateTest, OnGotClusters) {
 }
 
 TEST_F(QueryClustersStateTest, UniqueRawLabels) {
-  QueryClustersState state(nullptr, "");
+  QueryClustersState state(nullptr, nullptr, "");
 
   auto cluster1 = history::Cluster(1, {}, {});
   cluster1.raw_label = u"rawlabel1";

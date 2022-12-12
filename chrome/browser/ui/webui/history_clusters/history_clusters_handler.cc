@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -36,7 +37,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
-#include "components/history_clusters/core/query_clusters_state.h"
+#include "components/history_clusters/ui/query_clusters_state.h"
 #include "components/image_service/image_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
@@ -387,8 +388,11 @@ void HistoryClustersHandler::StartQueryClusters(const std::string& query,
   // request the first batch of clusters.
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
+  auto* image_service =
+      image_service::ImageServiceFactory::GetForBrowserContext(profile_);
   query_clusters_state_ = std::make_unique<QueryClustersState>(
-      history_clusters_service->GetWeakPtr(), query, recluster);
+      history_clusters_service->GetWeakPtr(), image_service->GetWeakPtr(),
+      query, recluster);
   LoadMoreClusters(query);
 }
 
@@ -396,7 +400,7 @@ void HistoryClustersHandler::LoadMoreClusters(const std::string& query) {
   if (query_clusters_state_) {
     DCHECK_EQ(query, query_clusters_state_->query());
     query_clusters_state_->LoadNextBatchOfClusters(
-        base::BindOnce(&HistoryClustersHandler::OnGotClustersBatch,
+        base::BindOnce(&HistoryClustersHandler::SendClustersToPage,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -511,36 +515,11 @@ Profile* HistoryClustersHandler::GetProfile() {
   return profile_;
 }
 
-void HistoryClustersHandler::OnGotClustersBatch(
+void HistoryClustersHandler::SendClustersToPage(
     const std::string& query,
     const std::vector<history::Cluster> clusters_batch,
     bool can_load_more,
     bool is_continuation) {
-  // TODO(tommycli): It's weird that there's one more post-processing step here
-  // that's not encapsulated within `QueryClustersState`. After componentizing
-  // ImageService, have HistoryClustersService pass a pointer to it in the
-  // constructor, so `QueryClustersState` can do this for itself.
-  if (auto* image_service =
-          GetConfig().images
-              ? image_service::ImageServiceFactory::GetForBrowserContext(
-                    GetProfile())
-              : nullptr) {
-    image_service->PopulateEntityImagesFor(
-        std::move(clusters_batch),
-        base::BindOnce(&HistoryClustersHandler::SendClustersToPage,
-                       weak_ptr_factory_.GetWeakPtr(), query, can_load_more,
-                       is_continuation));
-  } else {
-    SendClustersToPage(query, can_load_more, is_continuation,
-                       std::move(clusters_batch));
-  }
-}
-
-void HistoryClustersHandler::SendClustersToPage(
-    const std::string& query,
-    bool can_load_more,
-    bool is_continuation,
-    const std::vector<history::Cluster> clusters_batch) {
   auto query_result =
       QueryClustersResultToMojom(profile_, query, std::move(clusters_batch),
                                  can_load_more, is_continuation);

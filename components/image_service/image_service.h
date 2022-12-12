@@ -33,6 +33,10 @@ class COMPONENT_EXPORT(IMAGE_SERVICE) ImageService : public KeyedService {
 
   ~ImageService() override;
 
+  // Gets a weak pointer to this service. Used when UIs want to create an
+  // object whose lifetime might exceed the service.
+  base::WeakPtr<ImageService> GetWeakPtr();
+
   // Populates entity images into the `image_url` of any eligible visits within
   // every cluster in `clusters`. `clusters` should be moved into the parameter.
   // `callback` is called when we're done, and it can be called synchronously

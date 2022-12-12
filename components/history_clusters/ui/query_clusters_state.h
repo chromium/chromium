@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
-#define COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
+#ifndef COMPONENTS_HISTORY_CLUSTERS_UI_QUERY_CLUSTERS_STATE_H_
+#define COMPONENTS_HISTORY_CLUSTERS_UI_QUERY_CLUSTERS_STATE_H_
 
 #include <string>
 #include <vector>
@@ -19,6 +19,10 @@
 #include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace image_service {
+class ImageService;
+}  // namespace image_service
 
 namespace history_clusters {
 
@@ -45,6 +49,7 @@ class QueryClustersState {
                               bool is_continuation)>;
 
   QueryClustersState(base::WeakPtr<HistoryClustersService> service,
+                     base::WeakPtr<image_service::ImageService> image_service,
                      const std::string& query,
                      bool recluster = false);
   ~QueryClustersState();
@@ -91,12 +96,18 @@ class QueryClustersState {
                      QueryClustersContinuationParams continuation_params,
                      std::vector<history::Cluster> clusters);
 
+  // Callback to `OnGotClusters()`.
+  void OnGotImagedClusters(base::TimeTicks query_start_time,
+                           ResultCallback callback,
+                           QueryClustersContinuationParams continuation_params,
+                           std::vector<history::Cluster> clusters);
+
   // Updates the internal state of raw labels for this next batch of `clusters`.
   void UpdateUniqueRawLabels(const std::vector<history::Cluster>& clusters);
 
-  // A weak pointer to the service in case we outlive the service.
-  // Never nullptr, except in unit tests.
+  // Weak pointers to services we may outlive. Never nullptr except in tests.
   const base::WeakPtr<HistoryClustersService> service_;
+  const base::WeakPtr<image_service::ImageService> image_service_;
 
   // The string query the user entered into the searchbox.
   const std::string query_;
@@ -135,4 +146,4 @@ class QueryClustersState {
 
 }  // namespace history_clusters
 
-#endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
+#endif  // COMPONENTS_HISTORY_CLUSTERS_UI_QUERY_CLUSTERS_STATE_H_

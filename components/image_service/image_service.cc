@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/search_engines/template_url.h"
@@ -211,6 +212,10 @@ ImageService::ImageService(
               NewPersonalizedDataCollectionConsentHelper(sync_service)) {}
 
 ImageService::~ImageService() = default;
+
+base::WeakPtr<ImageService> ImageService::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 
 void ImageService::PopulateEntityImagesFor(
     std::vector<history::Cluster> clusters,
