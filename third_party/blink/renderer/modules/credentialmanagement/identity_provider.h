@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -19,6 +21,9 @@ class MODULES_EXPORT IdentityProvider : public ScriptWrappable {
   static ScriptPromise getUserInfo(ScriptState*,
                                    const blink::IdentityProviderConfig*,
                                    ExceptionState&);
+
+  static void login(ScriptState*);
+  static void logout(ScriptState*);
 };
 
 }  // namespace blink

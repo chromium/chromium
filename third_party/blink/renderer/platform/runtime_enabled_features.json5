@@ -1186,6 +1186,13 @@
       status: "stable",
     },
     {
+      // This only exists so we can use RuntimeEnabled in the IDL file
+      // when either implied_by flag is enabled.
+      name: "FedCmIdentityProviderInterface",
+      public: true,
+      implied_by: ["FedCmIdpSigninStatus", "FedCmUserInfo"],
+    },
+    {
       name: "FedCmIdpSigninStatus",
       depends_on: ["FedCm"],
       public: true,
