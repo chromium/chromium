@@ -15,12 +15,23 @@ namespace webui_examples {
 
 namespace {
 
+void EnableTrustedTypesCSP(content::WebUIDataSource* source) {
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::RequireTrustedTypesFor,
+      "require-trusted-types-for 'script';");
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      "trusted-types parse-html-subset sanitize-inner-html static-types "
+      // Add TrustedTypes policies for cr-lottie.
+      "lottie-worker-script-loader "
+      // Add TrustedTypes policies necessary for using Polymer.
+      "polymer-html-literal polymer-template-event-attribute-policy;");
+}
+
 void SetJSModuleDefaults(content::WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
-  // TODO(crbug.com/1098690): Trusted Type Polymer
-  source->DisableTrustedTypesCSP();
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, "frame-src 'self';");
   source->OverrideContentSecurityPolicy(
@@ -32,6 +43,7 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const webui::ResourcePath> resources,
                           int default_resource) {
   SetJSModuleDefaults(source);
+  EnableTrustedTypesCSP(source);
   source->AddResourcePaths(resources);
   source->AddResourcePath("", default_resource);
 }
