@@ -319,9 +319,6 @@ void ArcImeService::OnTextInputTypeChanged(
     ui::TextInputType type,
     bool is_personalized_learning_allowed,
     int flags) {
-  if (!ShouldSendUpdateToInputMethod())
-    return;
-
   if (ime_type_ == type &&
       is_personalized_learning_allowed_ == is_personalized_learning_allowed &&
       ime_flags_ == flags) {
@@ -330,6 +327,9 @@ void ArcImeService::OnTextInputTypeChanged(
   ime_type_ = type;
   is_personalized_learning_allowed_ = is_personalized_learning_allowed;
   ime_flags_ = flags;
+
+  if (!ShouldSendUpdateToInputMethod())
+    return;
 
   ui::InputMethod* const input_method = GetInputMethod();
   if (input_method)

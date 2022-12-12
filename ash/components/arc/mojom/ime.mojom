@@ -22,6 +22,8 @@ enum TextInputType {
   DATE,
   TIME,
   DATETIME,
+  // Corresponds to InputType.TYPE_NULL of Android.
+  ANDROID_NULL,
 };
 
 // Maps to ui::TextInputFlags in ui/base/ime/text_input_flags.h.

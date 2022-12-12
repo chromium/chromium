@@ -70,7 +70,7 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
   static bool FromMojom(MojoType input, ui::TextInputType* out) {
     switch (input) {
       case MojoType::NONE:
-        *out = ui::TEXT_INPUT_TYPE_NULL;
+        *out = ui::TEXT_INPUT_TYPE_NONE;
         return true;
       case MojoType::TEXT:
         *out = ui::TEXT_INPUT_TYPE_TEXT;
@@ -101,6 +101,9 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
         return true;
       case MojoType::DATETIME:
         *out = ui::TEXT_INPUT_TYPE_DATE_TIME_LOCAL;
+        return true;
+      case MojoType::ANDROID_NULL:
+        *out = ui::TEXT_INPUT_TYPE_NULL;
         return true;
     }
     NOTREACHED();
