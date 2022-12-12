@@ -7284,3 +7284,9 @@ crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-elemen
 crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child.tentative.sub.window.html [ Failure Pass Timeout ]
 crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-special-cases.tentative.sub.window.html [ Failure Pass Timeout ]
 crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild.tentative.sub.window.html [ Failure Pass Timeout ]
+
+# To be removed after cherry picking
+crbug.com/1386017 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-bfcache-reasons-stay.window.html [ Failure Pass ]
+crbug.com/1386017 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-cross-origin-bfcache.window.html [ Failure Pass ]
+crbug.com/1386017 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-not-bfcached.window.html [ Failure Pass ]
+crbug.com/1386017 external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-same-origin-bfcache.window.html [ Failure Pass ]

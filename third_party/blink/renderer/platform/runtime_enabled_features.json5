@@ -343,7 +343,7 @@
       status: "experimental",
       origin_trial_feature_name: "BackForwardCacheNotRestoredReasons",
       base_feature: "BackForwardCacheSendNotRestoredReasons",
-      base_feature_status: "enabled",
+      base_feature_status: "disabled",
       copied_from_base_feature_if: "overridden",
       public: true,
     },
