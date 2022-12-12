@@ -325,9 +325,6 @@ void ToastManagerImpl::OnRootWindowAdded(aura::Window* root_window) {
 }
 
 void ToastManagerImpl::OnRootWindowWillShutdown(aura::Window* root_window) {
-  if (current_toast_data_ && !current_toast_data_->show_on_all_root_windows)
-    return;
-
   root_window_to_overlay_.erase(root_window);
 }
 
