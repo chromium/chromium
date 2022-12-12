@@ -31,6 +31,7 @@ class SkiaGoldProperties():
     self._job_id = None
     self._local_pixel_tests = None
     self._no_luci_auth = None
+    self._service_account = None
     self._bypass_skia_gold_functionality = None
     self._code_review_system = None
     self._continuous_integration_system = None
@@ -72,6 +73,10 @@ class SkiaGoldProperties():
   @property
   def no_luci_auth(self) -> bool:
     return self._no_luci_auth
+
+  @property
+  def service_account(self) -> str:
+    return self._service_account
 
   @property
   def patchset(self) -> int:
@@ -149,6 +154,11 @@ class SkiaGoldProperties():
 
     if hasattr(args, 'no_luci_auth'):
       self._no_luci_auth = args.no_luci_auth
+
+    if hasattr(args, 'service_account'):
+      self._service_account = args.service_account
+      if self._service_account:
+        self._no_luci_auth = True
 
     if hasattr(args, 'bypass_skia_gold_functionality'):
       self._bypass_skia_gold_functionality = args.bypass_skia_gold_functionality

@@ -5490,7 +5490,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--service-account=skylab-drone@chromeos-service-accounts.iam.gserviceaccount.com"
         ],
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",
@@ -5561,7 +5562,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--service-account=skylab-drone@chromeos-service-accounts.iam.gserviceaccount.com"
         ],
         "autotest_name": "chromium_GPU",
         "bucket": "chromiumos-image-archive",

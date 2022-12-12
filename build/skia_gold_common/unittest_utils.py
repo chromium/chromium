@@ -11,6 +11,7 @@ from typing import Optional
 _SkiaGoldArgs = collections.namedtuple('_SkiaGoldArgs', [
     'local_pixel_tests',
     'no_luci_auth',
+    'service_account',
     'code_review_system',
     'continuous_integration_system',
     'git_revision',
@@ -24,6 +25,7 @@ _SkiaGoldArgs = collections.namedtuple('_SkiaGoldArgs', [
 
 def createSkiaGoldArgs(local_pixel_tests: Optional[bool] = None,
                        no_luci_auth: Optional[bool] = None,
+                       service_account: Optional[str] = None,
                        code_review_system: Optional[str] = None,
                        continuous_integration_system: Optional[str] = None,
                        git_revision: Optional[str] = None,
@@ -35,8 +37,8 @@ def createSkiaGoldArgs(local_pixel_tests: Optional[bool] = None,
                        ) -> argparse.Namespace:
   return typing.cast(
       argparse.Namespace,
-      _SkiaGoldArgs(local_pixel_tests, no_luci_auth, code_review_system,
-                    continuous_integration_system, git_revision, gerrit_issue,
-                    gerrit_patchset, buildbucket_id,
+      _SkiaGoldArgs(local_pixel_tests, no_luci_auth, service_account,
+                    code_review_system, continuous_integration_system,
+                    git_revision, gerrit_issue, gerrit_patchset, buildbucket_id,
                     bypass_skia_gold_functionality,
                     skia_gold_local_png_write_directory))

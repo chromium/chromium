@@ -106,6 +106,7 @@ class SkiaGoldSession():
                     output_manager: Any,
                     inexact_matching_args: Optional[List[str]] = None,
                     use_luci: bool = True,
+                    service_account: Optional[str] = None,
                     optional_keys: Optional[Dict[str, str]] = None,
                     force_dryrun: bool = False) -> StepRetVal:
     """Helper method to run all steps to compare a produced image.
@@ -126,6 +127,8 @@ class SkiaGoldSession():
       use_luci: If true, authentication will use the service account provided by
           the LUCI context. If false, will attempt to use whatever is set up in
           gsutil, which is only supported for local runs.
+      service_account: If set, uses the provided service account instead of
+          LUCI_CONTEXT or whatever is set in gsutil.
       optional_keys: A dict containing optional key/value pairs to pass to Gold
           for this comparison. Optional keys are keys unrelated to the
           configuration the image was produced on, e.g. a comment or whether
@@ -138,7 +141,8 @@ class SkiaGoldSession():
       SkiaGoldSession.StatusCodes signifying the result of the comparison.
       |error| is an error message describing the status if not successful.
     """
-    auth_rc, auth_stdout = self.Authenticate(use_luci=use_luci)
+    auth_rc, auth_stdout = self.Authenticate(use_luci=use_luci,
+                                             service_account=service_account)
     if auth_rc:
       return self.StatusCodes.AUTH_FAILURE, auth_stdout
 
@@ -170,13 +174,17 @@ class SkiaGoldSession():
       return self.StatusCodes.LOCAL_DIFF_FAILURE, diff_stdout
     return self.StatusCodes.COMPARISON_FAILURE_LOCAL, compare_stdout
 
-  def Authenticate(self, use_luci: bool = True) -> StepRetVal:
+  def Authenticate(self,
+                   use_luci: bool = True,
+                   service_account: Optional[str] = None) -> StepRetVal:
     """Authenticates with Skia Gold for this session.
 
     Args:
       use_luci: If true, authentication will use the service account provided
           by the LUCI context. If false, will attempt to use whatever is set up
           in gsutil, which is only supported for local runs.
+      service_account: If set, uses the provided service account instead of
+          LUCI_CONTEXT or whatever is set in gsutil.
 
     Returns:
       A tuple (return_code, output). |return_code| is the return code of the
@@ -189,14 +197,17 @@ class SkiaGoldSession():
       logging.warning('Not actually authenticating with Gold due to '
                       '--bypass-skia-gold-functionality being present.')
       return 0, None
+    assert not (use_luci and service_account)
 
     auth_cmd = [GOLDCTL_BINARY, 'auth', '--work-dir', self._working_dir]
     if use_luci:
       auth_cmd.append('--luci')
+    elif service_account:
+      auth_cmd.extend(['--service-account', service_account])
     elif not self._gold_properties.local_pixel_tests:
       raise RuntimeError(
-          'Cannot authenticate to Skia Gold with use_luci=False unless running '
-          'local pixel tests')
+          'Cannot authenticate to Skia Gold with use_luci=False without a '
+          'service account unless running local pixel tests')
 
     rc, stdout = self._RunCmdForRcAndOutput(auth_cmd)
     if rc == 0:

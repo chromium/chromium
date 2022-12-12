@@ -60,6 +60,14 @@ class SkiaGoldPropertiesInitializationTest(unittest.TestCase):
     sgp = skia_gold_properties.SkiaGoldProperties(args)
     self.verifySkiaGoldProperties(sgp, {'no_luci_auth': True})
 
+  def test_initializeSkiaGoldAttributes_explicitServiceAccount(self) -> None:
+    args = createSkiaGoldArgs(service_account='a')
+    sgp = skia_gold_properties.SkiaGoldProperties(args)
+    self.verifySkiaGoldProperties(sgp, {
+        'service_account': 'a',
+        'no_luci_auth': True
+    })
+
   def test_initializeSkiaGoldAttributes_explicitCrs(self) -> None:
     args = createSkiaGoldArgs(code_review_system='foo')
     sgp = skia_gold_properties.SkiaGoldProperties(args)
