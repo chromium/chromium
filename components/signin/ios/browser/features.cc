@@ -24,6 +24,6 @@ BASE_FEATURE(kNewMobileIdentityConsistencyFRE,
 
 BASE_FEATURE(kEnableUnicornAccountSupport,
              "EnableUnicornAccountSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace signin
