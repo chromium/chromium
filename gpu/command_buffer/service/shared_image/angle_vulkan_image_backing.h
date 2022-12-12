@@ -36,6 +36,7 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking,
   ~AngleVulkanImageBacking() override;
 
   bool Initialize(const base::span<const uint8_t>& data);
+  bool InitializeWihGMB(gfx::GpuMemoryBufferHandle handle);
 
  protected:
   // SharedImageBacking implementation.

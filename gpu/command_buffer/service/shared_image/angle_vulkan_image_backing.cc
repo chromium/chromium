@@ -17,6 +17,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_util.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -228,6 +229,33 @@ bool AngleVulkanImageBacking::Initialize(
   return true;
 }
 
+bool AngleVulkanImageBacking::InitializeWihGMB(
+    gfx::GpuMemoryBufferHandle handle) {
+  auto* vulkan_implementation =
+      context_state_->vk_context_provider()->GetVulkanImplementation();
+  auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
+  DCHECK(vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
+                                                         handle.type));
+
+  VkFormat vk_format = ToVkFormat(format().resource_format());
+  auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
+      device_queue, std::move(handle), size(), vk_format, color_space());
+
+  if (!vulkan_image) {
+    return false;
+  }
+
+  vulkan_image_ = std::move(vulkan_image);
+
+  GrVkImageInfo info = CreateGrVkImageInfo(vulkan_image_.get());
+  backend_texture_ = GrBackendTexture(size().width(), size().height(), info);
+  promise_texture_ = SkPromiseImageTexture::Make(backend_texture_);
+
+  SetCleared();
+
+  return true;
+}
+
 SharedImageBackingType AngleVulkanImageBacking::GetType() const {
   return SharedImageBackingType::kAngleVulkan;
 }
@@ -243,7 +271,7 @@ bool AngleVulkanImageBacking::UploadFromMemory(const SkPixmap& pixmap) {
 }
 
 void AngleVulkanImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-  NOTREACHED();
+  DCHECK(!in_fence);
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>

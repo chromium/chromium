@@ -6,9 +6,12 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/angle_vulkan_image_backing.h"
+#include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
 
 namespace gpu {
@@ -81,12 +84,39 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  NOTREACHED();
-  return nullptr;
+  auto resource_format = viz::GetResourceFormat(buffer_format);
+  auto si_format = viz::SharedImageFormat::SinglePlane(resource_format);
+  auto backing = std::make_unique<AngleVulkanImageBacking>(
+      context_state_, mailbox, si_format, size, color_space, surface_origin,
+      alpha_type, usage);
+
+  if (!backing->InitializeWihGMB(std::move(handle)))
+    return nullptr;
+
+  return backing;
+}
+
+bool AngleVulkanImageBackingFactory::IsGMBSupported(
+    gfx::GpuMemoryBufferType gmb_type) const {
+  switch (gmb_type) {
+    case gfx::EMPTY_BUFFER:
+      return true;
+    case gfx::NATIVE_PIXMAP: {
+      auto* vulkan_implementation =
+          context_state_->vk_context_provider()->GetVulkanImplementation();
+      auto* device_queue =
+          context_state_->vk_context_provider()->GetDeviceQueue();
+      return vulkan_implementation->CanImportGpuMemoryBuffer(device_queue,
+                                                             gmb_type);
+    }
+    default:
+      return false;
+  }
 }
 
 bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
-    uint32_t usage) const {
+    uint32_t usage,
+    gfx::GpuMemoryBufferType gmb_type) const {
   // Ignore for mipmap usage.
   usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
 
@@ -104,10 +134,16 @@ bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
   if (usage & ~kSupportedUsages)
     return false;
 
+  if (!IsGMBSupported(gmb_type))
+    return false;
+
   // AngleVulkan backing is used for GL & Vulkan interop, so the usage must
-  // contain GLES2
+  // contain GLES2, unless it is created from GPU memory buffer.
   // TODO(penghuang): use AngleVulkan backing for non GL & Vulkan interop usage?
-  return usage & SHARED_IMAGE_USAGE_GLES2;
+  if (gmb_type == gfx::EMPTY_BUFFER)
+    return usage & SHARED_IMAGE_USAGE_GLES2;
+
+  return true;
 }
 
 bool AngleVulkanImageBackingFactory::IsSupported(
@@ -124,13 +160,11 @@ bool AngleVulkanImageBackingFactory::IsSupported(
     return false;
   }
 
-  if (!CanUseAngleVulkanImageBacking(usage))
+  if (!CanUseAngleVulkanImageBacking(usage, gmb_type)) {
     return false;
+  }
 
-  if (thread_safe)
-    return false;
-
-  if (gmb_type != gfx::EMPTY_BUFFER) {
+  if (thread_safe) {
     return false;
   }
 

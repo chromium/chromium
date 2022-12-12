@@ -58,7 +58,9 @@ class AngleVulkanImageBackingFactory : public GLCommonImageBackingFactory {
                    base::span<const uint8_t> pixel_data) override;
 
  private:
-  bool CanUseAngleVulkanImageBacking(uint32_t usage) const;
+  bool IsGMBSupported(gfx::GpuMemoryBufferType gmb_type) const;
+  bool CanUseAngleVulkanImageBacking(uint32_t usage,
+                                     gfx::GpuMemoryBufferType gmb_type) const;
 
   raw_ptr<SharedContextState> context_state_;
 };
