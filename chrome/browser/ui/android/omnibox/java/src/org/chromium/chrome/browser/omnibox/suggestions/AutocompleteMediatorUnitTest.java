@@ -75,7 +75,7 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowLog.class, ShadowLooper.class, ShadowGURL.class})
-@Features.DisableFeatures({ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION})
+@Features.EnableFeatures({ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION})
 public class AutocompleteMediatorUnitTest {
     private static final int MINIMUM_NUMBER_OF_SUGGESTIONS_TO_SHOW = 5;
     private static final int SUGGESTION_MIN_HEIGHT = 20;

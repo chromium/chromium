@@ -529,7 +529,7 @@ BASE_FEATURE(kCastDeviceFilter,
 
 BASE_FEATURE(kClearOmniboxFocusAfterNavigation,
              "ClearOmniboxFocusAfterNavigation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCloseTabSuggestions,
              "CloseTabSuggestions",
@@ -647,7 +647,7 @@ BASE_FEATURE(kDontAutoHideBrowserControls,
 
 BASE_FEATURE(kCacheDeprecatedSystemLocationSetting,
              "CacheDeprecatedSystemLocationSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChromeNewDownloadTab,
              "ChromeNewDownloadTab",
@@ -853,7 +853,7 @@ BASE_FEATURE(kOpaqueOriginForIncomingIntents,
 
 BASE_FEATURE(kOptimizeGeolocationHeaderGeneration,
              "OptimizeGeolocationHeaderGeneration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOptimizeLayoutsForPullRefresh,
              "OptimizeLayoutsForPullRefresh",
@@ -861,7 +861,7 @@ BASE_FEATURE(kOptimizeLayoutsForPullRefresh,
 
 BASE_FEATURE(kPostTaskFocusTab,
              "PostTaskFocusTab",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProbabilisticCryptidRenderer,
              "ProbabilisticCryptidRenderer",
