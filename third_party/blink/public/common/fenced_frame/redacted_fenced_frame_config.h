@@ -76,6 +76,7 @@ struct BLINK_COMMON_EXPORT SharedStorageBudgetMetadata {
 template <class T>
 struct BLINK_COMMON_EXPORT RedactedFencedFrameProperty {
  public:
+  RedactedFencedFrameProperty() : potentially_opaque_value(absl::nullopt) {}
   explicit RedactedFencedFrameProperty(
       const absl::optional<T>& potentially_opaque_value)
       : potentially_opaque_value(potentially_opaque_value) {}
