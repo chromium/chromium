@@ -96,12 +96,24 @@ constexpr CGFloat kSectionFooterHeight = 8;
   self.tableView.allowsSelection = NO;
   self.definesPresentationContext = YES;
   if (!self.tableViewModel) {
-    if (self.popoverPresentationController) {
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       self.preferredContentSize = CGSizeMake(
           PopoverPreferredWidth, AlignValueToPixel(PopoverLoadingHeight));
     }
     [self startLoadingIndicatorWithLoadingMessage:@""];
     self.loadingIndicatorStartingDate = [NSDate date];
+  }
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    CGSize systemLayoutSize = self.tableView.contentSize;
+    CGFloat preferredHeight =
+        std::min(systemLayoutSize.height, PopoverMaxHeight);
+    preferredHeight = std::max(preferredHeight, PopoverMinHeight);
+    self.preferredContentSize =
+        CGSizeMake(PopoverPreferredWidth, preferredHeight);
   }
 }
 
@@ -263,16 +275,6 @@ constexpr CGFloat kSectionFooterHeight = 8;
     }
   }
   [self.tableView reloadData];
-  if (self.popoverPresentationController) {
-    // Update the preffered content size on iPad so the popover shows the right
-    // size.
-    [self.tableView layoutIfNeeded];
-    CGSize systemLayoutSize = self.tableView.contentSize;
-    CGFloat preferredHeight = MIN(systemLayoutSize.height, PopoverMaxHeight);
-    preferredHeight = MAX(preferredHeight, PopoverMinHeight);
-    self.preferredContentSize =
-        CGSizeMake(PopoverPreferredWidth, preferredHeight);
-  }
 }
 
 @end
