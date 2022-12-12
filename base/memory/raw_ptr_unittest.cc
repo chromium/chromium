@@ -212,6 +212,19 @@ TEST_F(RawPtrTest, NullExtractNoDereference) {
               CountingRawPtrHasCounts());
 }
 
+TEST_F(RawPtrTest, InvalidExtractNoDereference) {
+  // Some code uses invalid pointer values as indicators, so those values must
+  // be accepted by raw_ptr and passed through unchanged during extraction.
+  int* inv_ptr = reinterpret_cast<int*>(~static_cast<uintptr_t>(0));
+  CountingRawPtr<int> ptr = inv_ptr;
+  int* raw = ptr;
+  EXPECT_EQ(raw, inv_ptr);
+  EXPECT_THAT((CountingRawPtrExpectations{.get_for_dereference_cnt = 0,
+                                          .get_for_extraction_cnt = 1,
+                                          .get_for_comparison_cnt = 0}),
+              CountingRawPtrHasCounts());
+}
+
 TEST_F(RawPtrTest, NullCmpExplicit) {
   CountingRawPtr<int> ptr = nullptr;
   EXPECT_TRUE(ptr == nullptr);
@@ -1839,17 +1852,91 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   ASSERT_EQ(
       requested_size,
       allocator_.root()->AllocationCapacityFromRequestedSize(requested_size));
+  size_t requested_elements = requested_size / sizeof(int);
 
   int* ptr =
       reinterpret_cast<int*>(allocator_.root()->Alloc(requested_size, ""));
-  raw_ptr<int> protected_ptr = ptr;
+  int* ptr_end = ptr + requested_elements;
+
+  RawPtrCountingImpl::ClearCounters();
+
+  CountingRawPtr<int> protected_ptr = ptr;
+  CountingRawPtr<int> protected_ptr_end = protected_ptr + requested_elements;
+
+#if defined(PA_USE_OOB_POISON)
+  EXPECT_DEATH_IF_SUPPORTED(*protected_ptr_end = 1, "");
+#endif
 
   int gen_val = 1;
-  std::generate(protected_ptr, protected_ptr + requested_size / sizeof(int),
-                [&gen_val]() {
-                  gen_val ^= gen_val + 1;
-                  return gen_val;
-                });
+  std::generate(protected_ptr, protected_ptr_end, [&gen_val]() {
+    gen_val ^= gen_val + 1;
+    return gen_val;
+  });
+
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_dereference_cnt = requested_elements,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = (requested_elements + 1) * 2,
+              }),
+              CountingRawPtrHasCounts());
+
+  RawPtrCountingImpl::ClearCounters();
+
+  for (CountingRawPtr<int> protected_ptr_i = protected_ptr;
+       protected_ptr_i < protected_ptr_end; protected_ptr_i++) {
+    *protected_ptr_i ^= *protected_ptr_i + 1;
+  }
+
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_dereference_cnt = requested_elements * 2,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = (requested_elements + 1) * 2,
+              }),
+              CountingRawPtrHasCounts());
+
+  RawPtrCountingImpl::ClearCounters();
+
+  for (CountingRawPtr<int> protected_ptr_i = protected_ptr;
+       protected_ptr_i < ptr_end; protected_ptr_i++) {
+    *protected_ptr_i ^= *protected_ptr_i + 1;
+  }
+
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_dereference_cnt = requested_elements * 2,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = requested_elements + 1,
+              }),
+              CountingRawPtrHasCounts());
+
+  RawPtrCountingImpl::ClearCounters();
+
+  for (int* ptr_i = ptr; ptr_i < protected_ptr_end; ptr_i++) {
+    *ptr_i ^= *ptr_i + 1;
+  }
+
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 0,
+                  .get_for_comparison_cnt = requested_elements + 1,
+              }),
+              CountingRawPtrHasCounts());
+
+  RawPtrCountingImpl::ClearCounters();
+
+  size_t iter_cnt = 0;
+  for (int *ptr_i = protected_ptr, *ptr_i_end = protected_ptr_end;
+       ptr_i < ptr_i_end; ptr_i++) {
+    *ptr_i ^= *ptr_i + 1;
+    iter_cnt++;
+  }
+  EXPECT_EQ(iter_cnt, requested_elements);
+
+  EXPECT_THAT((CountingRawPtrExpectations{
+                  .get_for_dereference_cnt = 0,
+                  .get_for_extraction_cnt = 2,
+                  .get_for_comparison_cnt = 0,
+              }),
+              CountingRawPtrHasCounts());
 
   allocator_.root()->Free(ptr);
 }
@@ -1867,6 +1954,14 @@ TEST_F(BackupRefPtrTest, Duplicate) {
   // The poison bit should be propagated to the duplicate such that the OOB
   // access is disallowed:
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr2 = ' ', "");
+
+  // Assignment from a poisoned pointer should be allowed.
+  raw_ptr<char> protected_ptr3;
+  protected_ptr3 = protected_ptr1;
+
+  // The poison bit should be propagated via the assignment such that the OOB
+  // access is disallowed:
+  EXPECT_DEATH_IF_SUPPORTED(*protected_ptr3 = ' ', "");
 
   allocator_.root()->Free(ptr);
 }

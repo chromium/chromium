@@ -109,7 +109,6 @@ declare_args() {
   #   dangling during their lifetime.
   # - backup_ref_ptr_poison_oob_ptr: poison out-of-bounds (OOB) pointers to
   #   generate an exception in the event that an OOB pointer is dereferenced.
-  #   TODO(mdlemay): Does not yet work on Windows.
   put_ref_count_in_previous_slot =
       put_ref_count_in_previous_slot_default && enable_backup_ref_ptr_support
 

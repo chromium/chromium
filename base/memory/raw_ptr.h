@@ -537,6 +537,9 @@ struct BackupRefPtrImpl {
   template <typename T>
   static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForDereference(T* wrapped_ptr) {
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if defined(PA_USE_OOB_POISON)
+    PA_BASE_CHECK(!IsPtrOOB(wrapped_ptr));
+#endif
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     if (IsSupportedAndNotNull(address)) {
       PA_BASE_CHECK(wrapped_ptr != nullptr);
@@ -550,16 +553,31 @@ struct BackupRefPtrImpl {
   // function must handle nullptr gracefully.
   template <typename T>
   static PA_ALWAYS_INLINE T* SafelyUnwrapPtrForExtraction(T* wrapped_ptr) {
-    // This may be used for extracting an end-of-allocation pointer to be used
-    // as an endpoint in an iterative algorithm, so this removes the OOB poison
-    // bit.
-    return UnpoisonPtr(wrapped_ptr);
+    T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
+#if defined(PA_USE_OOB_POISON)
+    // Some code uses invalid pointer values as indicators, so those values must
+    // be passed through unchanged during extraction. The following check will
+    // pass invalid values through if those values do not fall within the BRP
+    // pool after being unpoisoned.
+    if (!IsSupportedAndNotNull(partition_alloc::UntagPtr(unpoisoned_ptr))) {
+      return wrapped_ptr;
+    }
+    // Poison-based OOB checks do not extend to extracted pointers. The
+    // alternative of retaining poison on extracted pointers could introduce new
+    // OOB conditions, e.g., in code that extracts an end-of-allocation pointer
+    // for use in a loop termination condition. The poison bit would make that
+    // pointer appear to reference a very high address.
+#endif
+    return unpoisoned_ptr;
   }
 
   // Unwraps the pointer, without making an assertion on whether memory was
   // freed or not.
   template <typename T>
   static PA_ALWAYS_INLINE T* UnsafelyUnwrapPtrForComparison(T* wrapped_ptr) {
+    // This may be used for unwrapping an end-of-allocation pointer to be used
+    // as an endpoint in an iterative algorithm, so this removes the OOB poison
+    // bit.
     return UnpoisonPtr(wrapped_ptr);
   }
 
@@ -579,7 +597,8 @@ struct BackupRefPtrImpl {
             typename = std::enable_if_t<offset_type<Z>, void>>
   static PA_ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-    T* new_ptr = UnpoisonPtr(wrapped_ptr) + delta_elems;
+    T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
+    T* new_ptr = unpoisoned_ptr + delta_elems;
     // First check if the new address didn't migrate in/out the BRP pool, and
     // that it lands within the same allocation. An end-of-allocation address is
     // ok, too, and that may lead to the pointer being poisoned if the relevant
@@ -593,7 +612,7 @@ struct BackupRefPtrImpl {
     // ref-count to go to 0 upon this pointer's destruction, even though there
     // may be another pointer still pointing to it, thus making it lose the BRP
     // protection prematurely.
-    uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(wrapped_ptr));
+    uintptr_t address = partition_alloc::UntagPtr(unpoisoned_ptr);
     // TODO(bartekn): Consider adding support for non-BRP pools too (without
     // removing the cross-pool migration check).
     if (IsSupportedAndNotNull(address)) {
