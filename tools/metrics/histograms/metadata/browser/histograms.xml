@@ -224,7 +224,11 @@ chromium-metrics-reviews@google.com.
     Browser.Responsiveness.JankyIntervalsPerThirtySeconds(1,2,3) and their
     history might be useful to understand how we got here.
 
-    Suffixed phases can be useful as diagnosis metrics: {Phase}
+    Suffixed phases can be useful as diagnosis metrics. This phase represents:
+    {Phase}
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
   <token key="Phase">
     <variant name=""
