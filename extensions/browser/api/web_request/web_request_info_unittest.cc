@@ -35,7 +35,7 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
                                                false, false, absl::nullopt,
                                                ukm::kInvalidSourceIdObj));
   ASSERT_TRUE(info.request_body_data);
-  base::Value* value = info.request_body_data->FindKey(
+  base::Value* value = info.request_body_data->Find(
       extension_web_request_api_constants::kRequestBodyRawKey);
   ASSERT_TRUE(value);
 

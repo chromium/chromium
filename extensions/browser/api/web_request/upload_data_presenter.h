@@ -94,12 +94,12 @@ class RawDataPresenter : public UploadDataPresenter {
 // This class inspects the contents of bytes elements. It uses the
 // parser classes inheriting from FormDataParser to parse the concatenated
 // content of such elements. If the parsing is successful, the parsed form is
-// returned as a DictionaryValue. For example, a form consisting of
+// returned as a Value of type DICT. For example, a form consisting of
 // <input name="check" type="checkbox" value="A" checked />
 // <input name="check" type="checkbox" value="B" checked />
 // <input name="text" type="text" value="abc" />
 // would be represented as {"check": ["A", "B"], "text": ["abc"]} (although as a
-// DictionaryValue, not as a JSON string).
+// Value, not as a JSON string).
 class ParsedDataPresenter : public UploadDataPresenter {
  public:
   explicit ParsedDataPresenter(const net::HttpRequestHeaders& request_headers);

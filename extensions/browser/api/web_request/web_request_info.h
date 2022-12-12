@@ -69,7 +69,7 @@ struct WebRequestInfoInitParams {
   WebRequestResourceType web_request_type = WebRequestResourceType::OTHER;
   bool is_async = false;
   net::HttpRequestHeaders extra_request_headers;
-  std::unique_ptr<base::DictionaryValue> request_body_data;
+  absl::optional<base::Value::Dict> request_body_data;
   bool is_web_view = false;
   int web_view_instance_id = -1;
   int web_view_rules_registry_id = -1;
@@ -152,7 +152,7 @@ struct WebRequestInfo {
   // A dictionary of request body data matching the format expected by
   // WebRequest API consumers. This may have a "formData" key and/or a "raw"
   // key. See WebRequest API documentation for more details.
-  std::unique_ptr<base::DictionaryValue> request_body_data;
+  absl::optional<base::Value::Dict> request_body_data;
 
   // Indicates whether this request was initiated by a <webview> instance.
   const bool is_web_view;
