@@ -179,6 +179,12 @@ Config::Config() {
             "omnibox_history_cluster_provider_shortcuts",
             omnibox_history_cluster_provider_shortcuts);
 
+    omnibox_history_cluster_provider_allow_default =
+        base::GetFieldTrialParamByFeatureAsBool(
+            internal::kOmniboxHistoryClusterProvider,
+            "omnibox_history_cluster_provider_allow_default",
+            omnibox_history_cluster_provider_allow_default);
+
     omnibox_history_cluster_provider_navigation_intent_score_threshold =
         base::GetFieldTrialParamByFeatureAsInt(
             internal::kOmniboxHistoryClusterProvider,

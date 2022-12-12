@@ -193,6 +193,10 @@ struct Config {
   // `omnibox_history_cluster_provider` is disabled.
   bool omnibox_history_cluster_provider_shortcuts = false;
 
+  // Whether journey suggestions from the `ShortcutsProvider` can be default.
+  // Journey suggestions from the `HistoryClusterProvider` can never be default.
+  bool omnibox_history_cluster_provider_allow_default = false;
+
   // If `omnibox_history_cluster_provider_on_navigation_intents` is false, this
   // threshold helps determine when the user is intending to perform a
   // navigation. Meaningless if either `omnibox_history_cluster_provider` is

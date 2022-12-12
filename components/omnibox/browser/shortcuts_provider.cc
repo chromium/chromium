@@ -490,7 +490,15 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
             !input.prevent_inline_autocomplete() ||
             match.inline_autocompletion.empty();
       }
+#if !BUILDFLAG(IS_IOS)
+    } else if (match.type != AutocompleteMatch::Type::HISTORY_CLUSTER ||
+               history_clusters::GetConfig()
+                   .omnibox_history_cluster_provider_allow_default) {
+      // Don't try to default history cluster suggestions unless
+      // `omnibox_history_cluster_provider_allow_default` is enabled.
+#else
     } else {
+#endif
       // Try rich autocompletion first. For document suggestions,
       // `match.contents` is the title, while `description` is something like
       // 'Google Docs' and shouldn't be autocompleted. For all other nav
