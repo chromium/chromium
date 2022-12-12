@@ -140,6 +140,15 @@ class SettingsInputMethodOptionsPageElement extends
   }
 
   /**
+   * For some engineId, we want to store the data in a different storage
+   * engineId. i.e. we want to use the nacl_mozc_jp settings data for
+   * the nacl_mozc_us settings.
+   */
+  getStorageEngineId_() {
+    return this.engineId_ !== 'nacl_mozc_us' ? this.engineId_ : 'nacl_mozc_jp';
+  }
+
+  /**
    * Get menu items for an option, and enrich the items with selected status and
    * i18n label.
    * @param {OptionType} name
@@ -163,10 +172,15 @@ class SettingsInputMethodOptionsPageElement extends
         this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
         loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'),
         loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
-    const prefValue = this.getPref(this.PREFS_PATH).value;
-    const currentSettings =
-        this.engineId_ in prefValue ? prefValue[this.engineId_] : {};
-    const defaultOverrides = this.getDefaultValueOverrides_(this.engineId_);
+    const inputMethodSpecificSettings = this.getPref(this.PREFS_PATH).value;
+    // The settings for Japanese for both engine nacl_mozc_us and nacl_mozc_jp
+    // types will be stored in nacl_mozc_us. See:
+    // https://crsrc.org/c/chrome/browser/ash/input_method/input_method_settings.cc;drc=5b784205e8043fb7d1c11e3d80521e80704947ca;l=25
+    const engineId = this.getStorageEngineId_();
+    const currentSettings = engineId in inputMethodSpecificSettings ?
+        inputMethodSpecificSettings[engineId] :
+        {};
+    const defaultOverrides = this.getDefaultValueOverrides_(engineId);
 
     const makeOption = (option) => {
       const name = option.name;
@@ -293,8 +307,10 @@ class SettingsInputMethodOptionsPageElement extends
     // new variable.
     const updatedSettings = {};
     Object.assign(updatedSettings, this.getPref(this.PREFS_PATH)['value']);
-    if (!(this.engineId_ in updatedSettings)) {
-      updatedSettings[this.engineId_] = {};
+
+    const engineId = this.getStorageEngineId_();
+    if (updatedSettings[engineId] === undefined) {
+      updatedSettings[engineId] = {};
     }
     if (shouldStoreAsNumber(optionName)) {
       if (loadTimeData.getBoolean('allowAutocorrectToggle')) {
@@ -303,7 +319,7 @@ class SettingsInputMethodOptionsPageElement extends
         newValue = parseInt(newValue, 10);
       }
     }
-    updatedSettings[this.engineId_][optionName] = newValue;
+    updatedSettings[engineId][optionName] = newValue;
 
     this.setPrefValue(this.PREFS_PATH, updatedSettings);
   }
