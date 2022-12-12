@@ -48,11 +48,13 @@ public class SafeModeController {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({SafeModeExecutionResult.SUCCESS, SafeModeExecutionResult.UNKNOWN_ERROR,
-            SafeModeExecutionResult.ACTION_FAILED, SafeModeExecutionResult.COUNT})
+            SafeModeExecutionResult.ACTION_FAILED, SafeModeExecutionResult.ACTION_UNKNOWN,
+            SafeModeExecutionResult.COUNT})
     public static @interface SafeModeExecutionResult {
         int SUCCESS = 0;
         int UNKNOWN_ERROR = 1;
         int ACTION_FAILED = 2;
+        int ACTION_UNKNOWN = 3;
         int COUNT = 3;
     }
 
@@ -145,7 +147,9 @@ public class SafeModeController {
         try {
             @SafeModeExecutionResult
             int overallStatus = SafeModeExecutionResult.SUCCESS;
+            Set<String> allIds = new HashSet<>();
             for (SafeModeAction action : mRegisteredActions) {
+                allIds.add(action.getId());
                 if (actionsToExecute.contains(action.getId())) {
                     // Allow SafeModeActions in general to perform disk reads and writes.
                     try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -156,6 +160,15 @@ public class SafeModeController {
                             overallStatus = SafeModeExecutionResult.ACTION_FAILED;
                             Log.e(TAG, "Finished executing %s (%s)", action.getId(), "failure");
                         }
+                    }
+                }
+            }
+
+            if (overallStatus != SafeModeExecutionResult.ACTION_FAILED) {
+                for (String action : actionsToExecute) {
+                    if (!allIds.contains(action)) {
+                        overallStatus = SafeModeExecutionResult.ACTION_UNKNOWN;
+                        break;
                     }
                 }
             }

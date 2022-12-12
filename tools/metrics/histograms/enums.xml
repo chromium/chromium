@@ -2794,6 +2794,7 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Success"/>
   <int value="1" label="Unknown error (Java Exception)"/>
   <int value="2" label="At least one action indiciates failure"/>
+  <int value="3" label="At least one action is unrecognized"/>
 </enum>
 
 <enum name="AndroidWebViewSingleOrMultiProcess">

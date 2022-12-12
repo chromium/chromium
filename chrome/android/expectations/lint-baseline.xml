@@ -5848,17 +5848,6 @@
     </issue>
 
     <issue
-        id="WrongConstant"
-        message="Must be one of: SafeModeExecutionResult.SUCCESS, SafeModeExecutionResult.UNKNOWN_ERROR, SafeModeExecutionResult.ACTION_FAILED"
-        errorLine1="                &quot;Android.WebView.SafeMode.ExecutionResult&quot;, result, SafeModeExecutionResult.COUNT);"
-        errorLine2="                                                                                            ~~~~~">
-        <location
-            file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumFactoryProvider.java"
-            line="541"
-            column="93"/>
-    </issue>
-
-    <issue
         id="UseSwitchCompatOrMaterialCode"
         message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library"
         errorLine1="        final Switch umaSwitch = mView.findViewById(R.id.fre_uma_dialog_switch);"

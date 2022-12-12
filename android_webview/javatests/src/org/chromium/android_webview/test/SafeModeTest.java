@@ -491,17 +491,48 @@ public class SafeModeTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSafeModeAction_doesNotExecuteUnregisteredActions() throws Throwable {
-        TestSafeModeAction testAction = new TestSafeModeAction("test", false);
+        TestSafeModeAction testAction = new TestSafeModeAction("test");
         SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
 
-        Set<String> actions = asSet("test", "unregistered1", "unregistered2");
+        Set<String> actions = asSet(testAction.getId(), "unregistered1", "unregistered2");
         @SafeModeController.SafeModeExecutionResult
         int success = SafeModeController.getInstance().executeActions(actions);
         Assert.assertEquals("TestSafeModeAction should have been executed exactly 1 time", 1,
                 testAction.getCallCount());
-        Assert.assertEquals("Overall status should be failure if at least one action fails",
-                success, SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+        Assert.assertEquals(
+                "Overall status should be unknown if at least one action is unrecognized and no actions failed",
+                success, SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN);
         Assert.assertEquals("Unregistered safemode actions should be logged", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Android.WebView.SafeMode.ExecutionResult",
+                        SafeModeController.SafeModeExecutionResult.ACTION_UNKNOWN));
+        // If we got this far without crashing, we assume SafeModeController correctly ignored the
+        // unregistered actions.
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSafeModeAction_testStatusHierarchyEnforcedCorrectly() throws Throwable {
+        TestSafeModeAction testActionFailed = new TestSafeModeAction("testFail", false);
+        TestSafeModeAction testActionSuccess = new TestSafeModeAction("testSuccess");
+        SafeModeController.getInstance().registerActions(
+                new SafeModeAction[] {testActionSuccess, testActionFailed});
+
+        // The possible execution statuses include SUCCESS, ACTION_FAILED, and ACTION_UNKNOWN.
+        // The precedence is ACTION_FAILED, ACTION_UNKNOWN, and then SUCCESS in descending order.
+        Set<String> actions = asSet(testActionSuccess.getId(), testActionFailed.getId(),
+                "unregistered1", "unregistered2");
+        @SafeModeController.SafeModeExecutionResult
+        int success = SafeModeController.getInstance().executeActions(actions);
+        Assert.assertEquals(testActionFailed.getId() + " should have been executed exactly 1 time",
+                1, testActionFailed.getCallCount());
+        Assert.assertEquals(testActionSuccess.getId() + " should have been executed exactly 1 time",
+                1, testActionSuccess.getCallCount());
+        Assert.assertEquals("Overall status should be failure if at least one"
+                        + " action is unrecognized and at least one action is a failure",
+                success, SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
+        Assert.assertEquals("Failed safemode actions should be logged", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.SafeMode.ExecutionResult",
                         SafeModeController.SafeModeExecutionResult.ACTION_FAILED));
@@ -590,12 +621,12 @@ public class SafeModeTest {
         SafeModeController.getInstance().registerActions(
                 new SafeModeAction[] {successAction1, failAction, successAction2});
         success = SafeModeController.getInstance().executeActions(oneFailure);
+        Assert.assertEquals("Overall status should be failure if at least one action fails",
+                success, SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
         Assert.assertEquals("Overall status should be failure if at least one action fails", 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.WebView.SafeMode.ExecutionResult",
                         SafeModeController.SafeModeExecutionResult.ACTION_FAILED));
-        Assert.assertEquals("Overall status should be failure if at least one action fails",
-                success, SafeModeController.SafeModeExecutionResult.ACTION_FAILED);
         // One step failing should not block subsequent steps from executing.
         Assert.assertEquals(
                 "successAction1 should have been executed again", 2, successAction1.getCallCount());

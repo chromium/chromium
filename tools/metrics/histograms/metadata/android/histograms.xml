@@ -4550,7 +4550,10 @@ chromium-metrics-reviews@google.com.
     Records whether SafeMode was able to execute all the specified SafeMode
     actions or if it encountered an error. This is recorded once during WebView
     startup and only if SafeMode is enabled (see
-    &quot;Android.WebView.SafeMode.SafeModeEnabled&quot;).
+    &quot;Android.WebView.SafeMode.SafeModeEnabled&quot;). If multiple fixes
+    have different statuses, then this will log a single status in the following
+    precedence: a. Unknown error b. Action failed c. Unrecognized action d.
+    Success (If all actions were successful).
   </summary>
 </histogram>
 
