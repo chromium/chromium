@@ -347,6 +347,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/chrome_browser_main_win.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_navigation_throttle.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
@@ -5058,6 +5059,17 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
                          MaybeCreateNavigationThrottle(handle),
                      &throttles);
   }
+
+#if BUILDFLAG(IS_WIN)
+  // Don't perform platform authentication in incognito and guest profiles.
+  if (profile && !profile->IsOffTheRecord()) {
+    MaybeAddThrottle(
+        enterprise_auth::PlatformAuthNavigationThrottle::MaybeCreateThrottleFor(
+            handle),
+        &throttles);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   return throttles;
 }
 

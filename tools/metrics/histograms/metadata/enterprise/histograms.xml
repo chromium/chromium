@@ -2185,6 +2185,42 @@ chromium-metrics-reviews@google.com.
   <summary>Result of the OpenNetworkConfiguration policy validation.</summary>
 </histogram>
 
+<histogram name="Enterprise.PlatformAuth.GetAuthData.Count" units="count"
+    expires_after="2023-10-31">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The number of proof-of-possession cookies retrieved from the platform to
+    authenticate the user to their IdP/STS. Recorded once per successful fetch.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PlatformAuth.GetAuthData.FailureHresult"
+    enum="Hresult" expires_after="2023-10-31">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The HRESULT returned by either CoCreateInstance or GetCookieInfoForUri when
+    trying to fetch proof-of-possession cookies from the platform to
+    authenticate the user to their IdP/STS.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PlatformAuth.GetAuthData.{Result}Time" units="ms"
+    expires_after="2023-10-31">
+  <owner>igorruvinov@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The elapsed time for a fetch of proof-of-possession cookies from the
+    platform to authenticate the user to their IdP/STS to {Result}. Recorded
+    once per fetch.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="fail"/>
+    <variant name="Success" summary="succeed"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.Policies" enum="EnterprisePolicies"
     expires_after="2023-05-07">
   <owner>mnissler@chromium.org</owner>

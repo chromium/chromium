@@ -9,3 +9,22 @@ source_set("features") {
 
   public_deps = [ "//base" ]
 }
+
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "mock_platform_auth_provider.cc",
+    "scoped_set_provider_for_testing.cc",
+  ]
+
+  public = [
+    "mock_platform_auth_provider.h",
+    "scoped_set_provider_for_testing.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser",
+    "//net",
+    "//testing/gmock",
+  ]
+}
