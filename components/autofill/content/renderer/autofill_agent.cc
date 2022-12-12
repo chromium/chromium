@@ -610,8 +610,11 @@ void AutofillAgent::ClearPreviewedForm() {
   if (password_autofill_agent_->DidClearAutofillSelection(element_))
     return;
 
-  if (password_generation_agent_->DidClearGenerationSuggestion(element_))
+  // |password_generation_agent_| can be null in android_webview & weblayer.
+  if (password_generation_agent_ &&
+      password_generation_agent_->DidClearGenerationSuggestion(element_)) {
     return;
+  }
 
   form_util::ClearPreviewedElements(previewed_elements_, element_,
                                     query_node_autofill_state_);
@@ -734,6 +737,7 @@ void AutofillAgent::PreviewPasswordSuggestion(const std::u16string& username,
 
 void AutofillAgent::PreviewPasswordGenerationSuggestion(
     const std::u16string& password) {
+  DCHECK(password_generation_agent_);
   password_generation_agent_->PreviewGenerationSuggestion(password);
 }
 

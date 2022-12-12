@@ -87,6 +87,11 @@ void PreviewGeneratedValue(WebInputElement& input_element,
   input_element.SetSuggestedValue(value);
 }
 
+void ClearPreviewedValue(WebInputElement& input_element) {
+  input_element.SetShouldRevealPassword(false);
+  input_element.SetSuggestedValue(blink::WebString());
+}
+
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -180,7 +185,8 @@ struct PasswordGenerationAgent::GenerationItemInfo {
   // FormData for the generation element.
   FormData form_data_;
 
-  // All the password elements in the form.
+  // Password elements (new password only or both new password and
+  // confirmation password) in the form.
   std::vector<blink::WebInputElement> password_elements_;
 
   // If the password field at |generation_element_| contains a generated
@@ -295,20 +301,10 @@ bool PasswordGenerationAgent::IsPrerendering() const {
 
 void PasswordGenerationAgent::PreviewGenerationSuggestion(
     const std::u16string& password) {
-  PasswordFormGenerationData* generation_data = GetCurrentGenerationData();
-  DCHECK(generation_data);
+  DCHECK(current_generation_item_);
 
-  WebInputElement new_password_element =
-      FindFieldByRendererId(generation_data->new_password_renderer_id);
-  if (new_password_element.IsNull())
-    return;
-  PreviewGeneratedValue(new_password_element,
-                        blink::WebString::FromUTF16(password));
-
-  WebInputElement confirmation_password_element =
-      FindFieldByRendererId(generation_data->confirmation_password_renderer_id);
-  if (!confirmation_password_element.IsNull()) {
-    PreviewGeneratedValue(confirmation_password_element,
+  for (auto& password_field : current_generation_item_->password_elements_) {
+    PreviewGeneratedValue(password_field,
                           blink::WebString::FromUTF16(password));
   }
 }
@@ -320,23 +316,16 @@ bool PasswordGenerationAgent::DidClearGenerationSuggestion(
       element != current_generation_item_->generation_element_)
     return false;
 
-  PasswordFormGenerationData* generation_data = GetCurrentGenerationData();
-  DCHECK(generation_data);
-  WebInputElement new_password_element =
-      FindFieldByRendererId(generation_data->new_password_renderer_id);
-  if (new_password_element.IsNull() ||
-      new_password_element.SuggestedValue().IsEmpty()) {
-    return false;
-  }
-  PreviewGeneratedValue(new_password_element, blink::WebString());
+  bool suggestion_cleared = false;
+  for (auto& password_field : current_generation_item_->password_elements_) {
+    if (password_field.SuggestedValue().IsEmpty())
+      continue;
 
-  WebInputElement confirmation_password_element =
-      FindFieldByRendererId(generation_data->confirmation_password_renderer_id);
-  if (!confirmation_password_element.IsNull() &&
-      !confirmation_password_element.SuggestedValue().IsEmpty()) {
-    PreviewGeneratedValue(confirmation_password_element, blink::WebString());
+    ClearPreviewedValue(password_field);
+    suggestion_cleared = true;
   }
-  return true;
+
+  return suggestion_cleared;
 }
 
 void PasswordGenerationAgent::GeneratedPasswordAccepted(
@@ -782,27 +771,6 @@ PasswordGenerationAgent::GetPasswordGenerationDriver() {
   }
 
   return *password_generation_client_;
-}
-
-PasswordFormGenerationData*
-PasswordGenerationAgent::GetCurrentGenerationData() {
-  if (!current_generation_item_)
-    return nullptr;
-  autofill::FieldRendererId password_generation_element_id(
-      current_generation_item_->generation_element_
-          .UniqueRendererFormControlId());
-  auto generation_data =
-      generation_enabled_fields_.find(password_generation_element_id);
-  return generation_data == generation_enabled_fields_.end()
-             ? nullptr
-             : &generation_data->second;
-}
-
-WebInputElement PasswordGenerationAgent::FindFieldByRendererId(
-    autofill::FieldRendererId field_id) {
-  WebDocument document = render_frame()->GetWebFrame()->GetDocument();
-  return form_util::FindFormControlElementByUniqueRendererId(document, field_id)
-      .DynamicTo<WebInputElement>();
 }
 
 void PasswordGenerationAgent::LogMessage(Logger::StringID message_id) {

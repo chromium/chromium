@@ -153,14 +153,6 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
       blink::WebInputElement element,
       FieldRendererId confirmation_password_renderer_id);
 
-  // Returns the generation data for |current_generation_item_| if available, or
-  // nullptr otherwise.
-  PasswordFormGenerationData* GetCurrentGenerationData();
-
-  // Finds the form control element with with the given id in the document.
-  blink::WebInputElement FindFieldByRendererId(
-      autofill::FieldRendererId field_id);
-
   void LogMessage(SavePasswordProgressLogger::StringID message_id);
   void LogBoolean(SavePasswordProgressLogger::StringID message_id,
                   bool truth_value);
