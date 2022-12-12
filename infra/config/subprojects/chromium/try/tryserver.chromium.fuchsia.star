@@ -25,9 +25,6 @@ try_.defaults.set(
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.list_view(
