@@ -124,12 +124,12 @@ module.exports = {
         },
         {
           selector: 'classMethod',
-          format: ['camelCase'],
+          format: ['strictCamelCase'],
           modifiers: ['public'],
         },
         {
           selector: 'classMethod',
-          format: ['camelCase'],
+          format: ['strictCamelCase'],
           modifiers: ['private'],
           trailingUnderscore: 'allow',
         },

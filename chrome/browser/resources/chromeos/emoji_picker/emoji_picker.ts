@@ -136,7 +136,7 @@ export class EmojiPicker extends PolymerElement {
     };
   }
 
-  initHistoryUI(incognito: boolean) {
+  initHistoryUi(incognito: boolean) {
     if (incognito !== this.incognito) {
       this.updateIncognitoState(incognito);
     }
@@ -232,7 +232,7 @@ export class EmojiPicker extends PolymerElement {
                           this.setActiveFeatures(response.featureList)),
                   this.apiProxy.isIncognitoTextField().then(
                       (response: {incognito: boolean}) =>
-                          this.initHistoryUI(response.incognito)),
+                          this.initHistoryUi(response.incognito)),
                 ],
                 )
             .then(values => values[0]);  // Map to the fetched data only.

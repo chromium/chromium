@@ -109,7 +109,7 @@ export class AppListElement extends PolymerElement {
     this.$.menu.close();
   }
 
-  private onCreateAShortcutItemClick_() {
+  private onCreateShortcutItemClick_() {
     this.$.menu.close();
   }
 
