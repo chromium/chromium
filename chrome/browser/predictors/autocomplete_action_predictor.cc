@@ -40,17 +40,18 @@
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace {
 
-const float kConfidenceCutoff[] = {
-  0.8f,
-  0.5f
-};
-
-static_assert(std::size(kConfidenceCutoff) ==
-                  predictors::AutocompleteActionPredictor::LAST_PREDICT_ACTION,
-              "kConfidenceCutoff count should match LAST_PREDICT_ACTION");
+// These are used as confidence cutoff threshold to determine the action should
+// be PRERENDER or PRECONNECT. Due to the current design, the prerender one
+// should be higher than the preconnect one, otherwise preconnect will never
+// run.
+const base::FeatureParam<double> kPrerenderDUIConfidenceCutoff{
+    &blink::features::kPrerender2, "prerender_dui_confidence_cutoff", 0.8};
+const base::FeatureParam<double> kPreconnectConfidenceCutoff{
+    &blink::features::kPrerender2, "preconnect_dui_confidence_cutoff", 0.5};
 
 const int kMinimumNumberOfHits = 3;
 const size_t kMaximumTransitionalMatchesSize = 1024 * 1024;  // 1 MB.
@@ -291,11 +292,10 @@ AutocompleteActionPredictor::RecommendAction(
 
   // Map the confidence to an action.
   Action action = ACTION_NONE;
-  for (int i = 0; i < LAST_PREDICT_ACTION; ++i) {
-    if (confidence >= kConfidenceCutoff[i]) {
-      action = static_cast<Action>(i);
-      break;
-    }
+  if (confidence >= kPrerenderDUIConfidenceCutoff.Get()) {
+    action = ACTION_PRERENDER;
+  } else if (confidence >= kPreconnectConfidenceCutoff.Get()) {
+    action = ACTION_PRECONNECT;
   }
 
   // Downgrade prefetch to preconnect if this is a search match.
