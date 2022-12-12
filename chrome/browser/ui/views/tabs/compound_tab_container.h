@@ -72,6 +72,10 @@ class CompoundTabContainer : public TabContainer {
       TabSlotController::HoverCardUpdateType update_type) override;
   void HandleLongTap(ui::GestureEvent* event) override;
   bool IsRectInContentArea(const gfx::Rect& rect) override;
+  absl::optional<ZOrderableTabContainerElement> GetLeadingElementForZOrdering()
+      const override;
+  absl::optional<ZOrderableTabContainerElement> GetTrailingElementForZOrdering()
+      const override;
   void OnTabSlotAnimationProgressed(TabSlotView* view) override;
   void OnTabCloseAnimationCompleted(Tab* tab) override;
   void InvalidateIdealBounds() override;

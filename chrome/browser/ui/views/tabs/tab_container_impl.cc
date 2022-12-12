@@ -546,6 +546,42 @@ bool TabContainerImpl::IsRectInContentArea(const gfx::Rect& rect) {
   return true;
 }
 
+absl::optional<ZOrderableTabContainerElement>
+TabContainerImpl::GetLeadingElementForZOrdering() const {
+  // Use `tabs_view_model_` instead of `layout_helper_` to ignore closing tabs
+  // to prevent discontinuous z-order flips when tab close animations end.
+  if (GetTabCount() == 0)
+    return absl::nullopt;
+  Tab* const leading_tab = tabs_view_model_.view_at(0);
+
+  // If `leading_tab` is grouped, it's preceded by its group header.
+  if (leading_tab->group().has_value()) {
+    return ZOrderableTabContainerElement(
+        group_views_.at(leading_tab->group().value())->header());
+  }
+
+  return ZOrderableTabContainerElement(leading_tab);
+}
+
+absl::optional<ZOrderableTabContainerElement>
+TabContainerImpl::GetTrailingElementForZOrdering() const {
+  // Use `tabs_view_model_` instead of `layout_helper_` to ignore closing tabs
+  // to prevent discontinuous z-order flips when tab close animations end.
+  if (GetTabCount() == 0)
+    return absl::nullopt;
+
+  Tab* const trailing_tab =
+      tabs_view_model_.view_at(tabs_view_model_.view_size() - 1);
+
+  // Tab group headers could be the trailing element, if the group is collapsed.
+  // However, this method doesn't need to consider that case because it is
+  // currently only called on the pinned TabContainer in a CompoundTabContainer,
+  // which can't have tab groups. DCHECK that assumption:
+  DCHECK(!trailing_tab->group().has_value());
+
+  return ZOrderableTabContainerElement(trailing_tab);
+}
+
 void TabContainerImpl::OnTabSlotAnimationProgressed(TabSlotView* view) {
   if (view && view->group())
     UpdateTabGroupVisuals(view->group().value());
@@ -737,6 +773,12 @@ void TabContainerImpl::Layout() {
 }
 
 void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
+  // N.B. We override PaintChildren only to define paint order for our children.
+  // We do this instead of GetChildrenInZOrder because GetChildrenInZOrder is
+  // called in many more contexts for many more reasons, e.g. whenever views are
+  // added or removed, and in particular can be called while we are partway
+  // through creating a tab group and are not in a self-consistent state.
+
   std::vector<ZOrderableTabContainerElement> orderable_children;
   for (views::View* child : children()) {
     if (!ZOrderableTabContainerElement::CanOrderView(child))

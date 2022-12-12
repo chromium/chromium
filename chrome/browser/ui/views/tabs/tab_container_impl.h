@@ -98,6 +98,11 @@ class TabContainerImpl : public TabContainer,
 
   bool IsRectInContentArea(const gfx::Rect& rect) override;
 
+  absl::optional<ZOrderableTabContainerElement> GetLeadingElementForZOrdering()
+      const override;
+  absl::optional<ZOrderableTabContainerElement> GetTrailingElementForZOrdering()
+      const override;
+
   void OnTabSlotAnimationProgressed(TabSlotView* view) override;
 
   void OnTabCloseAnimationCompleted(Tab* tab) override;
@@ -290,6 +295,10 @@ class TabContainerImpl : public TabContainer,
   // changing that to the first tab would cause |tab| to be pushed over enough
   // to clip).
   bool ShouldTabBeVisible(const Tab* tab) const;
+
+  // Returns true iff `tab` is a member of a collapsed group and the collapse
+  // animation is finished.
+  bool IsTabCollapsed(const Tab* tab) const;
 
   // -- Link Drag & Drop ------------------------------------------------------
 

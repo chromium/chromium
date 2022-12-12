@@ -7,6 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -56,19 +57,19 @@ class PinnedTabContainerController final : public TabContainerController {
   }
 
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override {
-    NOTREACHED();
+    NOTREACHED();  // Pinned container can't have groups.
     return false;
   }
 
   absl::optional<int> GetFirstTabInGroup(
       const tab_groups::TabGroupId& group) const override {
-    NOTREACHED();
+    NOTREACHED();  // Pinned container can't have groups.
     return absl::nullopt;
   }
 
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const override {
-    NOTREACHED();
+    NOTREACHED();  // Pinned container can't have groups.
     return gfx::Range();
   }
 
@@ -346,6 +347,7 @@ void CompoundTabContainer::SetActiveTab(
 }
 
 std::unique_ptr<Tab> CompoundTabContainer::TransferTabOut(int model_index) {
+  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
   NOTREACHED();
   return nullptr;
 }
@@ -353,9 +355,7 @@ std::unique_ptr<Tab> CompoundTabContainer::TransferTabOut(int model_index) {
 Tab* CompoundTabContainer::AddTabToViewModel(Tab* tab,
                                              int model_index,
                                              TabPinned pinned) {
-  // This method is implemented by TabContainerImpl for when it's a target for a
-  // pin or unpin animation. This would need to be implemented to nest
-  // CompoundTabContainers inside one another.
+  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
   NOTREACHED();
   return nullptr;
 }
@@ -514,11 +514,25 @@ bool CompoundTabContainer::IsRectInContentArea(const gfx::Rect& rect) {
           this, base::to_address(unpinned_tab_container_), gfx::RectF(rect))));
 }
 
+absl::optional<ZOrderableTabContainerElement>
+CompoundTabContainer::GetLeadingElementForZOrdering() const {
+  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
+  NOTREACHED();
+  return absl::nullopt;
+}
+absl::optional<ZOrderableTabContainerElement>
+CompoundTabContainer::GetTrailingElementForZOrdering() const {
+  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
+  NOTREACHED();
+  return absl::nullopt;
+}
+
 void CompoundTabContainer::OnTabSlotAnimationProgressed(TabSlotView* view) {
   GetTabContainerFor(view)->OnTabSlotAnimationProgressed(view);
 }
 
 void CompoundTabContainer::OnTabCloseAnimationCompleted(Tab* tab) {
+  // TODO(1395526): This only needs to be implemented in TabContainerImpl.
   NOTREACHED();
 }
 
@@ -637,9 +651,45 @@ void CompoundTabContainer::Layout() {
 }
 
 void CompoundTabContainer::PaintChildren(const views::PaintInfo& paint_info) {
-  // TODO(crbug.com/1346023): paint in the right order depending on tab paint
-  // order.
-  views::View::PaintChildren(paint_info);
+  TRACE_EVENT1("views", "View::PaintChildren", "class", GetClassName());
+
+  // N.B. We override PaintChildren only to define paint order for our children.
+  // We do this instead of GetChildrenInZOrder for consistency with
+  // TabContainerImpl.
+
+  // Paint our containers first, ordered based on their overlapping elements.
+  // I.e., the last tab in `pinned_tab_container_` will overlap the first tab
+  // (or group header) in `unpinned_tab_container_`, and to paint them in the
+  // right order, we have to paint their containers in the same order.
+  // N.B. if either are nullopt, it doesn't matter what order we paint in
+  // because that whole container must be empty and therefore won't paint
+  // anything at all.
+  absl::optional<ZOrderableTabContainerElement> trailing_pinned_element =
+      pinned_tab_container_->GetTrailingElementForZOrdering();
+  absl::optional<ZOrderableTabContainerElement> leading_unpinned_element =
+      unpinned_tab_container_->GetLeadingElementForZOrdering();
+  if (trailing_pinned_element < leading_unpinned_element) {
+    pinned_tab_container_->Paint(paint_info);
+    unpinned_tab_container_->Paint(paint_info);
+  } else {
+    unpinned_tab_container_->Paint(paint_info);
+    pinned_tab_container_->Paint(paint_info);
+  }
+
+  // Then paint all tabs animating between pinned and unpinned, ordered based on
+  // their individual z-values.
+  std::vector<ZOrderableTabContainerElement> orderable_children;
+  for (views::View* const child : children()) {
+    if (!ZOrderableTabContainerElement::CanOrderView(child))
+      continue;
+    orderable_children.emplace_back(child);
+  }
+
+  // Sort in ascending order by z-value. Stable sort breaks ties by child index.
+  std::stable_sort(orderable_children.begin(), orderable_children.end());
+
+  for (const ZOrderableTabContainerElement& child : orderable_children)
+    child.view()->Paint(paint_info);
 }
 
 void CompoundTabContainer::ChildPreferredSizeChanged(views::View* child) {
@@ -648,6 +698,7 @@ void CompoundTabContainer::ChildPreferredSizeChanged(views::View* child) {
 
 BrowserRootView::DropIndex CompoundTabContainer::GetDropIndex(
     const ui::DropTargetEvent& event) {
+  // TODO(1346023): Implement text drag and drop.
   NOTREACHED();
   return BrowserRootView::DropIndex();
 }
@@ -658,16 +709,19 @@ BrowserRootView::DropTarget* CompoundTabContainer::GetDropTarget(
 }
 
 views::View* CompoundTabContainer::GetViewForDrop() {
+  // TODO(1346023): Implement text drag and drop.
   NOTREACHED();
   return nullptr;
 }
 
 void CompoundTabContainer::HandleDragUpdate(
     const absl::optional<BrowserRootView::DropIndex>& index) {
+  // TODO(1346023): Implement text drag and drop.
   NOTREACHED();
 }
 
 void CompoundTabContainer::HandleDragExited() {
+  // TODO(1346023): Implement text drag and drop.
   NOTREACHED();
 }
 

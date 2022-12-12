@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
+#include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/view.h"
@@ -104,6 +105,11 @@ class TabContainer : public views::View, public BrowserRootView::DropTarget {
   virtual void HandleLongTap(ui::GestureEvent* event) = 0;
 
   virtual bool IsRectInContentArea(const gfx::Rect& rect) = 0;
+
+  virtual absl::optional<ZOrderableTabContainerElement>
+  GetLeadingElementForZOrdering() const = 0;
+  virtual absl::optional<ZOrderableTabContainerElement>
+  GetTrailingElementForZOrdering() const = 0;
 
   // Animation stuff. Will be public until fully moved down into TabContainer.
 

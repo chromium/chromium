@@ -1024,3 +1024,24 @@ TEST_F(TabContainerTest, TabDestroyedWhileOutOfContainerDoesNotActuallyReturn) {
   // Validate that `tab_container_` did not actually take the tab view back.
   EXPECT_EQ(tab->parent(), nullptr);
 }
+
+TEST_F(TabContainerTest, GetLeadingTrailingElementsForZOrdering) {
+  // An empty TabContainer has no leading/trailing views.
+  EXPECT_EQ(tab_container_->GetLeadingElementForZOrdering(), absl::nullopt);
+  EXPECT_EQ(tab_container_->GetTrailingElementForZOrdering(), absl::nullopt);
+
+  // Leading/trailing views could be tabs.
+  Tab* const first_tab = AddTab(0);
+  Tab* const last_tab = AddTab(1);
+  EXPECT_EQ(tab_container_->GetLeadingElementForZOrdering()->view(), first_tab);
+  EXPECT_EQ(tab_container_->GetTrailingElementForZOrdering()->view(), last_tab);
+
+  // Leading view could be a group header.
+  tab_groups::TabGroupId group = tab_groups::TabGroupId::GenerateNew();
+  AddTabToGroup(0, group);
+  AddTabToGroup(1, group);
+  TabGroupHeader* const group_header =
+      tab_container_->GetGroupViews(group)->header();
+  EXPECT_EQ(tab_container_->GetLeadingElementForZOrdering()->view(),
+            group_header);
+}
