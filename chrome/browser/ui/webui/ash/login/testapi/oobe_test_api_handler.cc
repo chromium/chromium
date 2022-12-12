@@ -118,13 +118,14 @@ void OobeTestAPIHandler::AdvanceToScreen(const std::string& screen) {
 }
 
 void OobeTestAPIHandler::SkipToLoginForTesting() {
-  WizardController* controller = WizardController::default_controller();
-  if (!controller || !controller->is_initialized()) {
-    LOG(ERROR)
+  if (!WizardController::default_controller() ||
+      !WizardController::default_controller()->is_initialized()) {
+    LOG(WARNING)
         << "SkipToLoginForTesting is called when WizardController is not yet "
            "initialized. Please report at https://crbug.com/1336940";
-    return;
+    LoginDisplayHost::default_host()->StartWizard(OOBE_SCREEN_UNKNOWN);
   }
+  WizardController* controller = WizardController::default_controller();
   controller->SkipToLoginForTesting();  // IN-TEST
 }
 

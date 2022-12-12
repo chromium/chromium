@@ -611,7 +611,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.authenticatorParams_ = params;
 
     this.loadAuthenticator_(params.doSamlRedirect);
-    chrome.send('authExtensionLoaded');
+    this.userActed('gaiaLoaded');
   }
 
   /**
@@ -765,7 +765,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   samlApiUsed_(isThirdPartyIdP) {
-    chrome.send('usingSAMLAPI', [isThirdPartyIdP]);
+    this.userActed(['usingSAMLAPI', isThirdPartyIdP]);
   }
 
   /**
@@ -787,7 +787,8 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       this.email_ = credentials.email;
       chrome.send('launchSAMLPublicSession', [credentials.email]);
     } else {
-      chrome.send('completeAuthentication', [
+      this.userActed([
+        'completeAuthentication',
         credentials.gaiaId,
         credentials.email,
         credentials.password,
@@ -912,7 +913,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onIdentifierEntered_(data) {
-    chrome.send('identifierEntered', [data.accountIdentifier]);
+    this.userActed(['identifierEntered', data.accountIdentifier]);
   }
 
   /**
