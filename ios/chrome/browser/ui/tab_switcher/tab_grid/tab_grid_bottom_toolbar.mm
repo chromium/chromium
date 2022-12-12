@@ -184,11 +184,19 @@
 }
 
 - (void)hide {
+  if (@available(iOS 16.0, *)) {
+    // The `_editButton` is hidden to dismiss its context menu if it's still
+    // presented.
+    _editButton.hidden = YES;
+  }
   _smallNewTabButton.alpha = 0.0;
   _largeNewTabButton.alpha = 0.0;
 }
 
 - (void)show {
+  if (@available(iOS 16.0, *)) {
+    _editButton.hidden = NO;
+  }
   _smallNewTabButton.alpha = 1.0;
   _largeNewTabButton.alpha = 1.0;
 }
