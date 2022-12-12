@@ -1172,11 +1172,11 @@ void QuicChromiumClientSession::UnregisterStreamPriority(quic::QuicStreamId id,
 
 void QuicChromiumClientSession::UpdateStreamPriority(
     quic::QuicStreamId id,
-    const spdy::SpdyStreamPrecedence& new_precedence) {
+    const quic::QuicStreamPriority& new_priority) {
   if (headers_include_h2_stream_dependency_ ||
       VersionUsesHttp3(connection()->transport_version())) {
-    auto updates = priority_dependency_state_.OnStreamUpdate(
-        id, new_precedence.spdy3_priority());
+    auto updates =
+        priority_dependency_state_.OnStreamUpdate(id, new_priority.urgency);
     for (auto update : updates) {
       if (!VersionUsesHttp3(connection()->transport_version())) {
         WritePriority(update.id, update.parent_stream_id, update.weight,
@@ -1184,7 +1184,7 @@ void QuicChromiumClientSession::UpdateStreamPriority(
       }
     }
   }
-  quic::QuicSpdySession::UpdateStreamPriority(id, new_precedence);
+  quic::QuicSpdySession::UpdateStreamPriority(id, new_priority);
 }
 
 void QuicChromiumClientSession::OnHttp3GoAway(uint64_t id) {

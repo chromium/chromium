@@ -301,7 +301,9 @@ void QuicChromiumClientStream::Handle::
 void QuicChromiumClientStream::Handle::SetPriority(
     const spdy::SpdyStreamPrecedence& precedence) {
   if (stream_)
-    stream_->SetPriority(precedence);
+    stream_->SetPriority(quic::QuicStreamPriority{
+        precedence.spdy3_priority(),
+        quic::QuicStreamPriority::kDefaultIncremental});
 }
 
 void QuicChromiumClientStream::Handle::Reset(
@@ -616,8 +618,8 @@ size_t QuicChromiumClientStream::WriteHeaders(
   net_log_.AddEvent(
       NetLogEventType::QUIC_CHROMIUM_CLIENT_STREAM_SEND_REQUEST_HEADERS,
       [&](NetLogCaptureMode capture_mode) {
-        return QuicRequestNetLogParams(
-            id(), &header_block, precedence().spdy3_priority(), capture_mode);
+        return QuicRequestNetLogParams(id(), &header_block, priority().urgency,
+                                       capture_mode);
       });
   size_t len = quic::QuicSpdyStream::WriteHeaders(std::move(header_block), fin,
                                                   std::move(ack_listener));

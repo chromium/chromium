@@ -658,7 +658,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void UnregisterStreamPriority(quic::QuicStreamId id, bool is_static) override;
   void UpdateStreamPriority(
       quic::QuicStreamId id,
-      const spdy::SpdyStreamPrecedence& new_precedence) override;
+      const quic::QuicStreamPriority& new_priority) override;
   void OnHttp3GoAway(uint64_t id) override;
   void OnAcceptChFrameReceivedViaAlps(
       const quic::AcceptChFrame& frame) override;
