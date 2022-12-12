@@ -1284,6 +1284,7 @@ void NativeInputMethodEngineObserver::FlushForTesting() {
 
 void NativeInputMethodEngineObserver::OnProfileWillBeDestroyed() {
   prefs_ = nullptr;
+  pref_change_recorder_.reset();
 }
 
 bool NativeInputMethodEngineObserver::IsInputMethodBound() {

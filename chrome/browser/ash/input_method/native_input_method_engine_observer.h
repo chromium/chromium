@@ -192,7 +192,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   std::unique_ptr<SuggestionsCollector> suggestions_collector_;
   std::unique_ptr<GrammarManager> grammar_manager_;
 
-  PrefChangeRecorder pref_change_recorder_;
+  absl::optional<PrefChangeRecorder> pref_change_recorder_;
 
   ui::CharacterComposer character_composer_;
 
