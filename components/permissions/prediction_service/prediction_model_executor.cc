@@ -137,7 +137,7 @@ PredictionModelExecutor::Postprocess(
       ->Add()
       ->mutable_grant_likelihood()
       ->set_discretized_likelihood(
-          data[1] >= threshold
+          data[1] > threshold
               ? PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY
               : PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED);
 
