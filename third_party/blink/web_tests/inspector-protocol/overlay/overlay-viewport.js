@@ -39,39 +39,39 @@
     })()`);
   });
 
-  await dp.Emulation.setDeviceMetricsOverride({
+  async function runTest(label, metrics, commandCount) {
+    const result = await dp.Emulation.setDeviceMetricsOverride(metrics);
+    testRunner.log('Response to setDeviceMetricsOverride:');
+    testRunner.log(result);
+    testRunner.log(label);
+    testRunner.log(await getViewportResetCommands(commandCount));
+  }
+
+  await runTest('Initial device metrics:', {
     width: 800,
     height: 600,
     deviceScaleFactor: 1,
     mobile: false,
     dontSetVisibleSize: false,
-  });
-
-  testRunner.log('Initial device metrics:');
-  testRunner.log(await getViewportResetCommands(1));
+  }, 1);
 
   await dp.Overlay.setShowViewportSizeOnResize({
     show: true,
   });
 
-  await dp.Emulation.setDeviceMetricsOverride({
+  await runTest('Device metrics with changed viewport:', {
     width: 500,
     height: 500,
     deviceScaleFactor: 1,
     mobile: false,
-  });
+  }, 3);
 
-  testRunner.log('Device metrics with changed viewport:');
-  testRunner.log(await getViewportResetCommands(3));
-
-  await dp.Emulation.setDeviceMetricsOverride({
+  await runTest('Device metrics with scrollbar:', {
     width: 300,
     height: 300,
     deviceScaleFactor: 1,
     mobile: false,
-  });
-  testRunner.log('Device metrics with scrollbar:');
-  testRunner.log(await getViewportResetCommands(3));
+  }, 3);
 
   testRunner.completeTest();
 });

@@ -1,4 +1,11 @@
 Verifies that Overlay.setShowViewportSizeOnResize works.
+Response to setDeviceMetricsOverride:
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
 Initial device metrics:
 [
   {
@@ -21,6 +28,13 @@ Initial device metrics:
     }
   }
 ]
+Response to setDeviceMetricsOverride:
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
 Device metrics with changed viewport:
 [
   {
@@ -51,6 +65,13 @@ Device metrics with changed viewport:
     "data": ""
   }
 ]
+Response to setDeviceMetricsOverride:
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
 Device metrics with scrollbar:
 [
   {
