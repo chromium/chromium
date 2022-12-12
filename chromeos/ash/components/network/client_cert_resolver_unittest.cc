@@ -650,7 +650,7 @@ TEST_F(ClientCertResolverTest, ExpiringCertificate) {
   // notified its observers with |network_properties_changed| = true.
   network_properties_changed_count_ = 0;
   test_clock_->SetNow(base::Time::Max());
-  SetWifiState(shill::kStateOffline);
+  SetWifiState(shill::kStateIdle);
   task_environment_.RunUntilIdle();
   GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
   EXPECT_EQ(std::string(), pkcs11_id);
@@ -687,7 +687,7 @@ TEST_F(ClientCertResolverTest, SameCertAfterNetworkConnectionStateChanged) {
   // certificate doesn't change and ClientCertResolver does not notify its
   // observers with |network_properties_changed| = true.
   network_properties_changed_count_ = 0;
-  SetWifiState(shill::kStateOffline);
+  SetWifiState(shill::kStateIdle);
   task_environment_.RunUntilIdle();
   GetServiceProperty(shill::kEapCertIdProperty, &pkcs11_id);
   EXPECT_EQ(test_cert_id_, pkcs11_id);

@@ -2390,7 +2390,6 @@ bool DeviceStatusCollector::GetNetworkStatus(
       {shill::kStateNoConnectivity, em::NetworkState::PORTAL},
       {shill::kStateRedirectFound, em::NetworkState::PORTAL},
       {shill::kStatePortalSuspected, em::NetworkState::PORTAL},
-      {shill::kStateOffline, em::NetworkState::OFFLINE},
       {shill::kStateOnline, em::NetworkState::ONLINE},
       {shill::kStateDisconnect, em::NetworkState::DISCONNECT},
       {shill::kStateFailure, em::NetworkState::FAILURE},

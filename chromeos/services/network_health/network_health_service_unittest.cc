@@ -326,7 +326,7 @@ TEST_F(NetworkHealthServiceTest, MultiWifiNetworkConnected) {
         .service_test()
         ->AddService(kWifiServicePath + idx, kWifiGuid + idx,
                      kWifiServiceName + idx, shill::kTypeWifi,
-                     shill::kStateOffline, true);
+                     shill::kStateIdle, true);
   }
 
   ValidateNetworkState(network_config::mojom::NetworkType::kWiFi,
@@ -380,8 +380,7 @@ TEST_F(NetworkHealthServiceTest, ConnectionStateChangeEvent) {
 
   // Change the connection state of the service.
   cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
-      kWifiServicePath, shill::kStateProperty,
-      base::Value(shill::kStateOffline));
+      kWifiServicePath, shill::kStateProperty, base::Value(shill::kStateIdle));
   // Wait until the connection state change event has been fired.
   task_environment_.RunUntilIdle();
 
@@ -549,7 +548,7 @@ TEST_F(NetworkHealthServiceTest, AnalyzeSignalStrengthActive) {
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
       ->AddService(kOtherWifiServicePath, kOtherWifiGuid, kOtherWifiServiceName,
-                   shill::kTypeWifi, shill::kStateOffline, true);
+                   shill::kTypeWifi, shill::kStateIdle, true);
 
   // Set five signal strength samples for the original network.
   for (int i = 0; i < 5; i++) {
@@ -558,8 +557,7 @@ TEST_F(NetworkHealthServiceTest, AnalyzeSignalStrengthActive) {
 
   // Swap the active WiFi networks.
   cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
-      kWifiServicePath, shill::kStateProperty,
-      base::Value(shill::kStateOffline));
+      kWifiServicePath, shill::kStateProperty, base::Value(shill::kStateIdle));
   cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
       kOtherWifiServicePath, shill::kStateProperty,
       base::Value(shill::kStateOnline));
@@ -596,8 +594,7 @@ TEST_F(NetworkHealthServiceTest, TrackActiveNetworks) {
   ASSERT_EQ(2u, network_health_.GetTrackedGuidsForTest().size());
 
   cros_network_config_test_helper_.network_state_helper().SetServiceProperty(
-      kWifiServicePath, shill::kStateProperty,
-      base::Value(shill::kStateOffline));
+      kWifiServicePath, shill::kStateProperty, base::Value(shill::kStateIdle));
 
   task_environment_.FastForwardBy(base::Hours(1));
 

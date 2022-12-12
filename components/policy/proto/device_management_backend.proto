@@ -927,9 +927,9 @@ message NetworkInterface {
 // any specific interface, or may be visible across multiple interfaces.
 message NetworkState {
   // The current state of this network.
-  // OFFLINE (7) is not used by the client.
   enum ConnectionState {
     reserved 1;   // CARRIER
+    reserved 6;   // OFFLINE
     reserved 10;  // ACTIVATION_FAILURE
 
     IDLE = 0;
@@ -937,7 +937,6 @@ message NetworkState {
     CONFIGURATION = 3;
     READY = 4;
     PORTAL = 5;
-    OFFLINE = 6;
     ONLINE = 7;
     DISCONNECT = 8;
     FAILURE = 9;

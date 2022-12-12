@@ -496,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
   network_state_test_helper_->service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
       /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
-      /*state=*/shill::kStateOffline, /*visible=*/true);
+      /*state=*/shill::kStateIdle, /*visible=*/true);
 
   reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
 
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideNetworkDialog) {
   network_state_test_helper_->service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
       /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
-      /*state=*/shill::kStateOffline, /*visible=*/true);
+      /*state=*/shill::kStateIdle, /*visible=*/true);
 
   reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
 
@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
   network_state_test_helper_->service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
       /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
-      /*state=*/shill::kStateOffline, /*visible=*/true);
+      /*state=*/shill::kStateIdle, /*visible=*/true);
 
   reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
 
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
   network_test_helper.service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
       /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
-      /*state=*/shill::kStateOffline, /*visible=*/true);
+      /*state=*/shill::kStateIdle, /*visible=*/true);
 
   reauth_dialog_helper->WaitForNetworkDialogAndSetHandlers();
 

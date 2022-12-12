@@ -293,8 +293,8 @@ class NetworkHealthProviderTest : public testing::Test {
     SetNetworkState(kEth0DevicePath, shill::kStateOnline);
   }
 
-  void SetEthernetDisconnected() {
-    SetNetworkState(kEth0DevicePath, shill::kStateOffline);
+  void SetEthernetIdle() {
+    SetNetworkState(kEth0DevicePath, shill::kStateIdle);
   }
 
   void SetDeviceState(const std::string& type, bool enabled) {
@@ -323,9 +323,7 @@ class NetworkHealthProviderTest : public testing::Test {
     SetNetworkState(kWlan0DevicePath, shill::kStateOnline);
   }
 
-  void SetWifiDisconnected() {
-    SetNetworkState(kWlan0DevicePath, shill::kStateOffline);
-  }
+  void SetWifiIdle() { SetNetworkState(kWlan0DevicePath, shill::kStateIdle); }
 
   void SetWifiPortal() {
     SetNetworkState(kWlan0DevicePath, shill::kStateRedirectFound);
@@ -335,8 +333,8 @@ class NetworkHealthProviderTest : public testing::Test {
     SetNetworkState(kCellular0DevicePath, shill::kStateReady);
   }
 
-  void SetCellularDisconnected() {
-    SetNetworkState(kCellular0DevicePath, shill::kStateOffline);
+  void SetCellularIdle() {
+    SetNetworkState(kCellular0DevicePath, shill::kStateIdle);
   }
 
   void SetCellularOnline() {
@@ -646,7 +644,7 @@ TEST_F(NetworkHealthProviderTest, SetupEthernetNetwork) {
 
   // Simulate unplug and network goes back to kNotConnected, and the active
   // guid should be cleared.
-  SetEthernetDisconnected();
+  SetEthernetIdle();
   ExpectListObserverFired(list_observer, &list_call_count);
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state,
@@ -740,7 +738,7 @@ TEST_F(NetworkHealthProviderTest, SetupWifiNetwork) {
 
   // Simulate disconnect and network goes back to kNotConnected, and the
   // active guid should be cleared.
-  SetWifiDisconnected();
+  SetWifiIdle();
   ExpectListObserverFired(list_observer, &list_call_count);
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state,
@@ -833,7 +831,7 @@ TEST_F(NetworkHealthProviderTest, SetupCellularNetwork) {
 
   // Simulate disconnect and network goes back to kNotConnected, and the
   // active guid should be cleared.
-  SetCellularDisconnected();
+  SetCellularIdle();
   ExpectListObserverFired(list_observer, &list_call_count);
   ExpectStateObserverFired(observer, &state_call_count);
   EXPECT_EQ(observer.GetLatestState()->state,
@@ -1139,7 +1137,7 @@ TEST_F(NetworkHealthProviderTest, EthernetOnlineThenConnectWifi) {
   EXPECT_EQ(eth_guid, list_observer.active_guid());
 
   // Disconnect ethernet and wifi should become the active network.
-  SetEthernetDisconnected();
+  SetEthernetIdle();
   ExpectListObserverFired(list_observer, &list_call_count);
   ExpectStateObserverFired(eth_observer, &state_call_count);
   EXPECT_EQ(eth_observer.GetLatestState()->state,
@@ -1407,14 +1405,14 @@ TEST_F(NetworkHealthProviderTest, EthernetAndWifiOrderedCorrectly) {
 
   // Now that Ethernet is disconnected, WiFi should be active and Ethernet
   // should be the second guid in the list of observer guids.
-  SetEthernetDisconnected();
+  SetEthernetIdle();
   EXPECT_FALSE(list_observer.active_guid().empty());
   EXPECT_EQ(wifi_guid, list_observer.active_guid());
   EXPECT_EQ(eth_guid, list_observer.observer_guids()[1]);
 
   // With both Ethernet and WiFi disconnected, neither of them should be
   // active and the Ethernet guid should be the first observer guid.
-  SetWifiDisconnected();
+  SetWifiIdle();
   EXPECT_TRUE(list_observer.active_guid().empty());
   EXPECT_EQ(eth_guid, list_observer.observer_guids()[0]);
   EXPECT_EQ(wifi_guid, list_observer.observer_guids()[1]);

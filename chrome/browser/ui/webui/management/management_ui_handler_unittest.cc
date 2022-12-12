@@ -1186,7 +1186,7 @@ TEST_F(ManagementUIHandlerTests, ProxyServerDisclosureDeviceOffline) {
       ash::ShillServiceClient::Get()->GetTestInterface();
   for (const auto* const network : networks) {
     service->SetServiceProperty(network->path(), shill::kStateProperty,
-                                base::Value(shill::kStateOffline));
+                                base::Value(shill::kStateIdle));
   }
   base::RunLoop().RunUntilIdle();
 

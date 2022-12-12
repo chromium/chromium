@@ -104,7 +104,7 @@ TEST_F(SignalStrengthRoutineTest, TestBadWiFiSignal) {
 }
 
 TEST_F(SignalStrengthRoutineTest, TestNoWiFiConnection) {
-  SetUpWiFi(shill::kStateOffline, kGoodWiFiSignal);
+  SetUpWiFi(shill::kStateIdle, kGoodWiFiSignal);
   std::vector<mojom::SignalStrengthProblem> expected_problems = {};
   signal_strength_routine()->RunRoutine(
       base::BindOnce(&SignalStrengthRoutineTest::CompareResult, weak_ptr(),

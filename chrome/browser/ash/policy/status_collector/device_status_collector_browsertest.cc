@@ -3834,8 +3834,6 @@ struct FakeNetworkState {
 // by convention shill will not report a signal strength of 0 for a visible
 // network, so we use 1 below.
 static const FakeNetworkState kFakeNetworks[] = {
-    {"offline", "/device/wifi", shill::kTypeWifi, 35, -72, shill::kStateOffline,
-     em::NetworkState::OFFLINE, "", "", true},
     {"ethernet", "/device/ethernet", shill::kTypeEthernet, 0, 0,
      shill::kStateOnline, em::NetworkState::ONLINE, "192.168.0.1", "8.8.8.8",
      true},
@@ -3864,8 +3862,8 @@ static const FakeNetworkState kUnconfiguredNetwork = {"unconfigured",
                                                       shill::kTypeWifi,
                                                       35,
                                                       -85,
-                                                      shill::kStateOffline,
-                                                      em::NetworkState::OFFLINE,
+                                                      shill::kStateIdle,
+                                                      em::NetworkState::IDLE,
                                                       "",
                                                       ""};
 

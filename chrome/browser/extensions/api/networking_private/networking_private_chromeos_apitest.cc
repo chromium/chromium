@@ -215,7 +215,7 @@ class NetworkingPrivateChromeOSApiTestBase
                        base::Value(shill::kProviderOpenVpn));
     AddServiceToProfile(kUser1ProfilePath, "stub_vpn1");
 
-    AddService("stub_vpn2", "vpn2", shill::kTypeVPN, shill::kStateOffline);
+    AddService("stub_vpn2", "vpn2", shill::kTypeVPN, shill::kStateIdle);
     SetServiceProperty("stub_vpn2", shill::kProviderTypeProperty,
                        base::Value(shill::kProviderThirdPartyVpn));
     SetServiceProperty("stub_vpn2", shill::kProviderHostProperty,
@@ -1017,8 +1017,9 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
 
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
                        GetCaptivePortalStatus) {
-  // Ethernet defaults to online. Set wifi1 to idle -> 'Offline', and wifi2 to
-  // redirect-found -> 'Portal'.
+  // Ethernet defaults to online.
+  // Set wifi1 to idle with captive portal status mapping 'Offline'.
+  // Set wifi2 to redirect-found with captive portal statu smapping 'Portal'.
   SetServiceProperty(kWifi1ServicePath, shill::kStateProperty,
                      base::Value(shill::kStateIdle));
   SetServiceProperty(kWifi2ServicePath, shill::kStateProperty,

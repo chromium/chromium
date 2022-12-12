@@ -107,7 +107,7 @@ TEST_F(HasSecureWiFiConnectionRoutineTest, TestInsecureWiFiConnection) {
 }
 
 TEST_F(HasSecureWiFiConnectionRoutineTest, TestWiFiNotConnected) {
-  SetUpWiFi(shill::kStateOffline, kSecureSecurity);
+  SetUpWiFi(shill::kStateIdle, kSecureSecurity);
   std::vector<mojom::HasSecureWiFiConnectionProblem> expected_problems = {};
   has_secure_wifi_connection_routine()->RunRoutine(base::BindOnce(
       &HasSecureWiFiConnectionRoutineTest::CompareResult, weak_ptr(),

@@ -141,7 +141,7 @@ TEST_F(GatewayCanBePingedRoutineTest, TestSingleActiveNetwork) {
 
 TEST_F(GatewayCanBePingedRoutineTest, TestNoActiveNetworks) {
   SetUpRoutine(kFakeValidICMPOutput);
-  SetUpWiFi(shill::kStateOffline);
+  SetUpWiFi(shill::kStateIdle);
   std::vector<mojom::GatewayCanBePingedProblem> expected_problems = {
       mojom::GatewayCanBePingedProblem::kUnreachableGateway};
   base::RunLoop run_loop;

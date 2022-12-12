@@ -294,7 +294,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 
     network_helper_->service_test()->AddService(
         kWifiServiceName, "wifi_guid", kWifiNetworkName, shill::kTypeWifi,
-        shill::kStateOffline, /*visible=*/true);
+        shill::kStateIdle, /*visible=*/true);
 
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
   }

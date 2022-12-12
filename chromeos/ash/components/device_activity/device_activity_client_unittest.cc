@@ -488,7 +488,7 @@ class DeviceActivityClientTest : public testing::Test {
        << "wifi_guid"
        << "\","
        << "  \"Type\": \"" << shill::kTypeWifi << "\","
-       << "  \"State\": \"" << shill::kStateOffline << "\""
+       << "  \"State\": \"" << shill::kStateIdle << "\""
        << "}";
 
     wifi_network_service_path_ =
@@ -719,7 +719,7 @@ TEST_F(DeviceActivityClientTest, NetworkRequestsUseFakeApiKey) {
 // so the client is expected to go back to |kIdle| state.
 TEST_F(DeviceActivityClientTest,
        FireTimerWithoutNetworkKeepsClientinIdleState) {
-  SetWifiNetworkState(shill::kStateOffline);
+  SetWifiNetworkState(shill::kStateIdle);
   FireTimer();
 
   EXPECT_EQ(device_activity_client_->GetState(),
@@ -747,7 +747,7 @@ TEST_F(DeviceActivityClientTest, NetworkReconnectsAfterSuccessfulCheckIn) {
   }
 
   // Reconnecting network connection triggers |TransitionOutOfIdle|.
-  SetWifiNetworkState(shill::kStateOffline);
+  SetWifiNetworkState(shill::kStateIdle);
   SetWifiNetworkState(shill::kStateOnline);
 
   // Check that no additional network requests are pending since all use cases
@@ -1003,7 +1003,7 @@ TEST_F(DeviceActivityClientTest, StayIdleIfTimerFiresWithoutNetworkConnected) {
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
 
-  SetWifiNetworkState(shill::kStateOffline);
+  SetWifiNetworkState(shill::kStateIdle);
   FireTimer();
 
   // Verify that no network requests were sent.
@@ -1055,7 +1055,7 @@ TEST_F(DeviceActivityClientTest, NetworkDisconnectsWhileWaitingForResponse) {
   EXPECT_GT(test_url_loader_factory_.NumPending(), 0);
 
   // Disconnect network.
-  SetWifiNetworkState(shill::kStateOffline);
+  SetWifiNetworkState(shill::kStateIdle);
 
   // All pending requests should be cancelled, and our device activity client
   // should get set back to |kIdle|.
@@ -1080,7 +1080,7 @@ TEST_F(DeviceActivityClientTest,
   EXPECT_NE(first_use_case->GetPsmRlweClient(), nullptr);
 
   // While waiting for OPRF request, simulate network disconnection.
-  SetWifiNetworkState(shill::kStateOffline);
+  SetWifiNetworkState(shill::kStateIdle);
 
   // Network offline should cancel all pending use cases, and clear the saved
   // state of the attempted pings.
@@ -1163,7 +1163,7 @@ TEST_F(DeviceActivityClientTest, NetworkDisconnectionClearsUseCaseState) {
   EXPECT_NE(first_use_case->GetPsmRlweClient(), nullptr);
 
   // While waiting for OPRF response, simulate network disconnection.
-  SetWifiNetworkState(shill::kStateOffline);
+  SetWifiNetworkState(shill::kStateIdle);
 
   // Network offline should cancel all pending use cases, and clear the saved
   // state of the attempted pings.

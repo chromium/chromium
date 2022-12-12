@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowCtorDtorTest, OpenPortalDialog) {
   network_state_test_helper_->service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
       /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
-      /*state=*/shill::kStateOffline, /*visible=*/true);
+      /*state=*/shill::kStateIdle, /*visible=*/true);
   base::RunLoop().RunUntilIdle();
 
   // Wait for ErrorScreen to appear.

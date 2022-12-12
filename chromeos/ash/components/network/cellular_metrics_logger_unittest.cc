@@ -787,13 +787,13 @@ TEST_F(CellularMetricsLoggerTest, CellularConnectResult) {
   // Set cellular networks to disconnected state.
   service_client_test()->SetServiceProperty(kTestPSimCellularServicePath,
                                             shill::kStateProperty,
-                                            base::Value(shill::kStateOffline));
+                                            base::Value(shill::kStateIdle));
   service_client_test()->SetServiceProperty(kTestESimCellularServicePath,
                                             shill::kStateProperty,
-                                            base::Value(shill::kStateOffline));
+                                            base::Value(shill::kStateIdle));
   service_client_test()->SetServiceProperty(kTestESimPolicyCellularServicePath,
                                             shill::kStateProperty,
-                                            base::Value(shill::kStateOffline));
+                                            base::Value(shill::kStateIdle));
   base::RunLoop().RunUntilIdle();
 
   // A connected to disconnected state change should not impact connection
@@ -966,7 +966,7 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnManagedDevice) {
 
   InitCellular();
   const base::Value kOnlineStateValue(shill::kStateOnline);
-  const base::Value kOfflineStateValue(shill::kStateOffline);
+  const base::Value kIdleStateValue(shill::kStateIdle);
   const base::Value kFailedToConnect(shill::kStateFailure);
 
   ON_CALL(*mock_managed_network_configuration_manager_, AllowCellularSimLock())
@@ -979,7 +979,7 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnManagedDevice) {
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   service_client_test()->SetServiceProperty(
-      kTestPSimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestPSimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   base::RunLoop().RunUntilIdle();
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kRestrictedActiveNetworkSIMLockStatus, 1);
@@ -991,13 +991,13 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnManagedDevice) {
 
   // Unlocked ESIM connection -> PSIM connection -> PinLocked ESiM connection
   service_client_test()->SetServiceProperty(
-      kTestESimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
 
   service_client_test()->SetServiceProperty(
-      kTestPSimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestPSimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   SetCellularSimLock(shill::kSIMLockPin);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kFailedToConnect);
@@ -1008,13 +1008,13 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnManagedDevice) {
 
   // PinLocked ESIM -> PSIM connection -> PukBlocked ESIM
   service_client_test()->SetServiceProperty(
-      kTestESimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
 
   service_client_test()->SetServiceProperty(
-      kTestPSimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestPSimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   SetCellularSimLock(shill::kSIMLockPuk);
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kFailedToConnect);
@@ -1029,7 +1029,7 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnUnmanagedDevice) {
 
   InitCellular();
   const base::Value kOnlineStateValue(shill::kStateOnline);
-  const base::Value kOfflineStateValue(shill::kStateOffline);
+  const base::Value kIdleStateValue(shill::kStateIdle);
 
   ON_CALL(*mock_managed_network_configuration_manager_, AllowCellularSimLock())
       .WillByDefault(testing::Return(true));
@@ -1054,7 +1054,7 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnUnmanagedDevice) {
   service_client_test()->SetServiceProperty(
       kTestESimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   service_client_test()->SetServiceProperty(
-      kTestPSimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestPSimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   base::RunLoop().RunUntilIdle();
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kUnrestrictedActiveNetworkSIMLockStatus, 1);
@@ -1063,7 +1063,7 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnUnmanagedDevice) {
 
   // ESIM connection -> PSIM connection
   service_client_test()->SetServiceProperty(
-      kTestESimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();
@@ -1072,16 +1072,16 @@ TEST_F(CellularMetricsLoggerTest, SwitchActiveNetworkOnUnmanagedDevice) {
 
   // PSIM connection -> No connection
   service_client_test()->SetServiceProperty(
-      kTestESimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   service_client_test()->SetServiceProperty(
-      kTestPSimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestPSimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   base::RunLoop().RunUntilIdle();
   histogram_tester_->ExpectTotalCount(
       CellularMetricsLogger::kUnrestrictedActiveNetworkSIMLockStatus, 2);
 
   // No connection -> PSIM connection
   service_client_test()->SetServiceProperty(
-      kTestESimCellularServicePath, shill::kStateProperty, kOfflineStateValue);
+      kTestESimCellularServicePath, shill::kStateProperty, kIdleStateValue);
   service_client_test()->SetServiceProperty(
       kTestPSimCellularServicePath, shill::kStateProperty, kOnlineStateValue);
   base::RunLoop().RunUntilIdle();

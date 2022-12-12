@@ -95,7 +95,7 @@ TEST_F(LanConnectivityRoutineTest, TestConnectedLan) {
 }
 
 TEST_F(LanConnectivityRoutineTest, TestDisconnectedLan) {
-  SetUpWiFi(shill::kStateOffline);
+  SetUpWiFi(shill::kStateIdle);
   lan_connectivity_routine()->RunRoutine(
       base::BindOnce(&LanConnectivityRoutineTest::CompareVerdict, weak_ptr(),
                      mojom::RoutineVerdict::kProblem));
